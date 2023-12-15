@@ -5,7 +5,7 @@
     position: sticky;
     top: 0;
     z-index: 10;
-    background: white;
+    background: @bg-11;
     padding: 17px;
     display: flex;
     justify-content: center;
@@ -29,7 +29,7 @@
   .dropdown-search-wrapper {
     position: sticky;
     top: 56px;
-    background-color: white;
+    background-color: @bg-11;
     padding: 4px 16px 8px;
     margin-bottom: 0;
   }
@@ -99,24 +99,10 @@
         width: 32px;
         height: 32px;
         margin-right: 16px;
-        .custom-svg,
-        div {
+        flex-shrink: 0;
+        .custom-svg {
           width: 32px;
           height: 32px;
-        }
-        .custom {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border: 1px solid @border-1;
-          border-radius: 50%;
-          background-color: @bg-13;
-          img {
-            width: 32px;
-            height: 32px;
-          }
-        }
-        .custom-svg {
           svg {
             width: 32px;
             height: 32px;

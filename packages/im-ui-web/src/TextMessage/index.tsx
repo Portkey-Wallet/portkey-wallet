@@ -2,12 +2,12 @@ import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { Popover, message } from 'antd';
 import { useCopyToClipboard } from 'react-use';
 import { ParsedText, ParseShape } from 'react-parsed-text';
-
 import clsx from 'clsx';
 import { ITextMessageProps } from '../type';
 import { formatTime } from '../utils';
 import PopoverMenuList from '../PopoverMenuList';
 import CustomSvg from '../components/CustomSvg';
+import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
 import './index.less';
 
 const TextMessage: React.FC<ITextMessageProps> = (props) => {
@@ -17,44 +17,49 @@ const TextMessage: React.FC<ITextMessageProps> = (props) => {
   );
   const [, setCopied] = useCopyToClipboard();
   const [popVisible, setPopVisible] = useState(false);
-  const hidePop = () => {
+  const hidePop = useCallback(() => {
     setPopVisible(false);
-  };
-  const popoverList = [
-    {
-      key: 'copy',
-      leftIcon: <CustomSvg type="Copy" />,
-      children: 'Copy',
-      onClick: () => {
-        setCopied(props.text);
-        message.success('Copy Success');
-      },
-    },
-    {
-      key: 'delete',
-      leftIcon: <CustomSvg type="Delete" />,
-      children: 'Delete',
-      onClick: (e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(e),
-    },
-  ];
-  const handleUrlPress: ParseShape['onClick'] = useCallback((url: string) => {
-    const WWW_URL_PATTERN = /^www\./i;
-    if (WWW_URL_PATTERN.test(url)) url = `https://${url}`;
-    const openWinder = window.open(url, '_blank');
-    if (openWinder) {
-      openWinder.opener = null;
-    }
   }, []);
+  const popoverList = useMemo(
+    () => [
+      {
+        key: 'copy',
+        leftIcon: <CustomSvg type="Copy" />,
+        children: 'Copy',
+        onClick: () => {
+          setCopied(props.text);
+          message.success('Copy Success');
+        },
+      },
+      {
+        key: 'delete',
+        leftIcon: <CustomSvg type="Delete" />,
+        children: 'Delete',
+        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(e),
+      },
+    ],
+    [props, setCopied],
+  );
+  const handleUrlPress: ParseShape['onClick'] = useCallback(
+    (url: string) => {
+      if (props.onClickUrl instanceof Function) {
+        props.onClickUrl(url);
+      }
+    },
+    [props],
+  );
   useEffect(() => {
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);
-  }, []);
+  }, [hidePop]);
   return (
-    <div className={clsx(['portkey-message-text', 'flex', props.position])}>
+    <div className="portkey-message-text">
       {props.subType === 'non-support-msg' ? (
         <div className={clsx(['text-body', 'flex', props.position])}>
           <div className="text-text">
-            <span className="non-support-msg">[Unsupported format]</span>
+            <span className="non-support-msg" onClick={props.onClickUnSupportMsg}>
+              {UN_SUPPORTED_FORMAT}
+            </span>
             <span className="text-date-hidden">{showDate}</span>
           </div>
           <div className="text-date">{showDate}</div>

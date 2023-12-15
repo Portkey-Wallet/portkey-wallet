@@ -8,7 +8,6 @@ import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import useDebounce from 'hooks/useDebounce';
 import NoData from 'components/NoData';
-import { Image } from '@rneui/themed';
 import { defaultColors } from 'assets/theme';
 import { useCaAddressInfoList, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import TokenListItem from 'components/TokenListItem';
@@ -24,6 +23,8 @@ import { useGStyles } from 'assets/theme/useGStyles';
 import myEvents from 'utils/deviceEvent';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import CommonAvatar from 'components/CommonAvatar';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 
 const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: IAssetItemType }) => {
   const { symbol, onPress, item } = props;
@@ -45,7 +46,7 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
     return (
       <TouchableOpacity style={itemStyle.wrap} onPress={() => onPress?.(item)}>
         {item.nftInfo.imageUrl ? (
-          <Image resizeMode={'contain'} style={[itemStyle.left]} source={{ uri: item?.nftInfo?.imageUrl }} />
+          <CommonAvatar style={[itemStyle.left]} imageUrl={item?.nftInfo?.imageUrl} />
         ) : (
           <Text style={[itemStyle.left, itemStyle.noPic]}>{item.symbol[0]}</Text>
         )}
@@ -77,7 +78,7 @@ const INIT_PAGE_INFO = {
   isLoading: false,
 };
 
-const AssetList = () => {
+const AssetList = ({ toAddress }: { toAddress: string }) => {
   const { t } = useLanguage();
   const caAddresses = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
@@ -139,29 +140,32 @@ const AssetList = () => {
     getTokenPrice();
   });
 
-  const renderItem = useCallback(({ item }: { item: IAssetItemType }) => {
-    return (
-      <AssetItem
-        symbol={item.symbol || ''}
-        // icon={'aelf-avatar'}
-        item={item}
-        onPress={() => {
-          OverlayModal.hide();
-          const routeParams = {
-            sendType: item?.nftInfo ? 'nft' : 'token',
-            assetInfo: item?.nftInfo
-              ? { ...item?.nftInfo, chainId: item.chainId, symbol: item.symbol }
-              : { ...item?.tokenInfo, chainId: item.chainId, symbol: item.symbol },
-            toInfo: {
-              address: '',
-              name: '',
-            },
-          };
-          navigationService.navigate('SendHome', routeParams as unknown as IToSendHomeParamsType);
-        }}
-      />
-    );
-  }, []);
+  const renderItem = useCallback(
+    ({ item }: { item: IAssetItemType }) => {
+      return (
+        <AssetItem
+          symbol={item.symbol || ''}
+          // icon={'aelf-avatar'}
+          item={item}
+          onPress={() => {
+            OverlayModal.hide();
+            const routeParams = {
+              sendType: item?.nftInfo ? 'nft' : 'token',
+              assetInfo: item?.nftInfo
+                ? { ...item?.nftInfo, chainId: item.chainId, symbol: item.symbol }
+                : { ...item?.tokenInfo, chainId: item.chainId, symbol: item.symbol },
+              toInfo: {
+                address: toAddress || '',
+                name: '',
+              },
+            };
+            navigationService.navigate('SendHome', routeParams as unknown as IToSendHomeParamsType);
+          }}
+        />
+      );
+    },
+    [toAddress],
+  );
 
   const noData = useMemo(() => {
     return debounceKeyword ? (
@@ -200,6 +204,7 @@ const AssetList = () => {
         data={listShow || []}
         renderItem={renderItem}
         keyExtractor={(_item, index) => `${index}`}
+        onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListEmptyComponent={noData}
         onEndReached={() => {
           getList();
@@ -209,8 +214,9 @@ const AssetList = () => {
   );
 };
 
-export const showAssetList = () => {
-  OverlayModal.show(<AssetList />, {
+export const showAssetList = (params?: { toAddress: string }) => {
+  const { toAddress = '' } = params || {};
+  OverlayModal.show(<AssetList toAddress={toAddress} />, {
     position: 'bottom',
     autoKeyboardInsets: false,
     enabledNestScrollView: true,

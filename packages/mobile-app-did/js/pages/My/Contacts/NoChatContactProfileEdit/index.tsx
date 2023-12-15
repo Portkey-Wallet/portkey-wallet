@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { StyleSheet, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import { AddressItem, ContactItemType, EditContactItemApiType } from '@portkey-wallet/types/types-ca/contact';
@@ -29,6 +29,7 @@ import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { defaultColors } from 'assets/theme';
 import myEvents from 'utils/deviceEvent';
+import { useInputFocus } from 'hooks/useInputFocus';
 
 type RouterParams = {
   contact?: ContactItemType;
@@ -54,6 +55,11 @@ const initEditContact: EditContactType = {
 
 const ContactEdit: React.FC = () => {
   const { contact, addressList } = useRouterParams<RouterParams>();
+  const isEdit = useMemo(() => contact !== undefined, [contact]);
+
+  const iptRef = useRef<TextInput>();
+  useInputFocus(iptRef, !isEdit);
+
   const defaultToken = useDefaultToken();
   const { t } = useLanguage();
 
@@ -77,7 +83,6 @@ const ContactEdit: React.FC = () => {
       })),
     });
   }, [contact]);
-  const isEdit = useMemo(() => contact !== undefined, [contact]);
 
   const { chainList = [], currentNetwork } = useCurrentWallet();
   const customChainList = useMemo<CustomChainItemType[]>(
@@ -132,24 +137,6 @@ const ContactEdit: React.FC = () => {
       error: { ...INIT_NONE_ERROR },
     }));
   }, []);
-
-  // const addAddress = useCallback(() => {
-  //   if (editContact.addresses.length >= ADDRESS_NUM_LIMIT) return;
-  //   if (chainList.length < 1) return;
-  //   setEditContact(preEditContact => ({
-  //     ...preEditContact,
-  //     addresses: [
-  //       ...preEditContact.addresses,
-  //       {
-  //         id: '',
-  //         chainType: currentNetwork,
-  //         chainId: chainList[0].chainId,
-  //         address: '',
-  //         error: { ...INIT_HAS_ERROR },
-  //       },
-  //     ],
-  //   }));
-  // }, [chainList, currentNetwork, editContact.addresses.length]);
 
   const deleteAddress = useCallback((deleteIdx: number) => {
     setEditContact(preEditContact => ({
@@ -243,8 +230,6 @@ const ContactEdit: React.FC = () => {
       const result = await (isEdit ? editContactApi(editContact) : addContactApi(editContact));
       CommonToast.success(t(isEdit ? 'Saved Successful' : 'Contact Added'));
 
-      console.log('contactcontact', contact, isEdit, result);
-
       if (result.imInfo?.relationId) {
         return ActionSheet.alert({
           title: 'DID Recognition',
@@ -255,6 +240,10 @@ const ContactEdit: React.FC = () => {
               title: 'OK',
               type: 'primary',
               onPress: () => {
+                myEvents.refreshMyContactDetailInfo.emit({
+                  contactName: editContact.name,
+                  contactAvatar: result.avatar,
+                });
                 navigationService.navigate('ChatContactProfile', {
                   contact: result,
                   relationId: result.imInfo?.relationId,
@@ -272,7 +261,7 @@ const ContactEdit: React.FC = () => {
           editContact.addresses[0].address === addressList?.[0]?.address &&
           editContact.addresses[0].chainId === addressList?.[0]?.chainId
         ) {
-          myEvents.refreshMyContactDetailInfo.emit({ contactName: editContact.name });
+          myEvents.refreshMyContactDetailInfo.emit({ contactName: editContact.name, contactAvatar: result.avatar });
         }
         navigationService.goBack();
       } else {
@@ -283,7 +272,7 @@ const ContactEdit: React.FC = () => {
     } finally {
       Loading.hide();
     }
-  }, [addContactApi, addressList, checkError, contact, editContact, editContactApi, isEdit, t]);
+  }, [addContactApi, addressList, checkError, editContact, editContactApi, isEdit, t]);
 
   const onDelete = useCallback(() => {
     ActionSheet.alert({
@@ -335,6 +324,7 @@ const ContactEdit: React.FC = () => {
         type="general"
         theme="white-bg"
         maxLength={16}
+        ref={iptRef}
         label={t('Name')}
         placeholder={t('Enter name')}
         inputStyle={pageStyles.nameInputStyle}
@@ -373,15 +363,6 @@ const ContactEdit: React.FC = () => {
                 onAddressChange={onAddressChange}
               />
             ))}
-
-            {/* {editContact.addresses.length < 5 && (
-              <View>
-                <Touchable onPress={addAddress} style={pageStyles.addAddressBtn}>
-                  <Svg icon="add-token" size={pTd(20)} />
-                  <TextM style={pageStyles.addAddressText}>{t('Add Address')}</TextM>
-                </Touchable>
-              </View>
-            )} */}
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAwareScrollView>

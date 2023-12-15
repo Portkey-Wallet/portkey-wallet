@@ -20,6 +20,7 @@ import { useEffectOnce } from 'react-use';
 import { ChainId } from '@portkey-wallet/types';
 import { useGoAddNewContact } from 'hooks/useProfile';
 import { ExtraTypeEnum } from 'types/Profile';
+import Avatar from 'pages/components/Avatar';
 
 const MAX_RESULT_COUNT = 10;
 const SKIP_COUNT = 0;
@@ -135,7 +136,7 @@ export default function RecentDetail() {
 
   const mainContent = () => {
     return (
-      <div className={clsx(['recent-detail', isPrompt ? 'detail-page-prompt' : null])}>
+      <div className={clsx(['recent-detail', isPrompt && 'detail-page-prompt'])}>
         <TitleWrapper
           className="recent-detail-header"
           title="Details"
@@ -146,7 +147,7 @@ export default function RecentDetail() {
           <div className="recent-detail-address-wrap">
             {state?.name && (
               <div className="recent-detail-contact flex-row-center">
-                <div className="flex-center avatar">{state?.index}</div>
+                <Avatar avatarUrl={state?.avatar} nameIndex={state?.index} size="large" />
                 <div className="name">{state?.name}</div>
               </div>
             )}

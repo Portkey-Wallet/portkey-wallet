@@ -1,6 +1,5 @@
-import { IImInfo } from '@portkey-wallet/im';
 import { ChainId } from '..';
-import { CaHolderInfo } from './wallet';
+import { CaHolderInfo, LoginType } from './wallet';
 
 export interface AddressItem {
   chainId: ChainId; // AELF tDVV tDVW
@@ -13,6 +12,12 @@ export interface RecentAddressItem extends AddressItem {
   transactionTime?: string;
 }
 
+export interface IImInfo {
+  relationId: string;
+  portkeyId: string;
+  name?: string;
+}
+
 export interface ContactItemType {
   id: string;
   index: string;
@@ -22,9 +27,18 @@ export interface ContactItemType {
   modificationTime: number;
   isDeleted: boolean;
   userId: string;
-  caHolderInfo?: CaHolderInfo;
-  imInfo?: IImInfo;
-  isImputation: boolean;
+  caHolderInfo?: Partial<CaHolderInfo>;
+  imInfo?: Partial<IImInfo>;
+  isImputation?: boolean;
+}
+
+export interface IContactProfileLoginAccount {
+  identifier: string;
+  privacyType: LoginType;
+}
+
+export interface IContactProfile extends ContactItemType {
+  loginAccounts?: IContactProfileLoginAccount[];
 }
 
 export interface EditContactItemApiType {
@@ -69,4 +83,17 @@ export interface IClickAddressProps {
   chainName?: string;
   addressChainId?: string;
   address: string;
+}
+
+export interface IContactPrivacy {
+  id?: string;
+  identifier: string;
+  privacyType: LoginType;
+  permission: ContactPermissionEnum;
+}
+
+export enum ContactPermissionEnum {
+  EVERY_BODY = 0,
+  MY_CONTACTS = 1,
+  NOBODY = 2,
 }

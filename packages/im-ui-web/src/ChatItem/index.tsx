@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Popover } from 'antd';
 import clsx from 'clsx';
 import Avatar from '../Avatar';
@@ -7,6 +7,7 @@ import CustomSvg from '../components/CustomSvg';
 import { IChatItemProps } from '../type';
 import { formatChatListTime } from '../utils';
 import PopoverMenuList from '../PopoverMenuList';
+import { ChannelTypeEnum } from '@portkey-wallet/im/types';
 import './index.less';
 
 const ChatItem: React.FC<IChatItemProps> = ({
@@ -14,15 +15,22 @@ const ChatItem: React.FC<IChatItemProps> = ({
   unread = 0,
   alt = 'portkey',
   showMute = true,
+  showLetter = false,
   onClickDelete,
   onClickMute,
   onClickPin,
   ...props
 }) => {
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    props.onClick?.(e);
-  };
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      props.onClick?.(e);
+    },
+    [props],
+  );
+  const hidePop = useCallback(() => {
+    setPopVisible(false);
+  }, []);
   const [popVisible, setPopVisible] = useState(false);
   const popList = useMemo(
     () => [
@@ -54,15 +62,12 @@ const ChatItem: React.FC<IChatItemProps> = ({
         },
       },
     ],
-    [onClickDelete, onClickMute, onClickPin, props.muted, props.pin],
+    [hidePop, onClickDelete, onClickMute, onClickPin, props.muted, props.pin],
   );
-  const hidePop = () => {
-    setPopVisible(false);
-  };
   useEffect(() => {
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);
-  }, []);
+  }, [hidePop]);
 
   return (
     <Popover
@@ -71,16 +76,28 @@ const ChatItem: React.FC<IChatItemProps> = ({
       placement="bottom"
       trigger="contextMenu"
       open={popVisible}
-      onOpenChange={(visible) => setPopVisible(visible)}
+      onOpenChange={(visible: boolean) => setPopVisible(visible)}
       showArrow={false}
       content={<PopoverMenuList data={popList} />}>
       <div key={props.id} className={clsx('portkey-chat-item flex-column', props.className)} onClick={handleClick}>
         <div className={clsx('chat-item', 'flex', props.pin && 'chat-item-pin')}>
           <div key={'avatar'} className="chat-item-avatar flex-center">
-            <Avatar src={props.avatar} alt={alt} letterItem={props.letterItem} />
+            {props.channelType && [ChannelTypeEnum.GROUP, ChannelTypeEnum.P2P].includes(props.channelType) ? (
+              <Avatar
+                src={props.avatar}
+                alt={alt}
+                showLetter={showLetter}
+                letter={props.letter}
+                channelType={props.channelType}
+              />
+            ) : (
+              <div className="flex-center avatar-unknown">
+                <CustomSvg type="Unknown" />
+              </div>
+            )}
           </div>
           <div key={'chat-item-body'} className="chat-item-body flex-column">
-            <div className="body-top flex">
+            <div className="body-top flex-row-center">
               <div className="body-top-title flex">
                 <span className="body-top-title-text">{props.title}</span>
                 {showMute && props.muted === true && <CustomSvg type="Mute" />}

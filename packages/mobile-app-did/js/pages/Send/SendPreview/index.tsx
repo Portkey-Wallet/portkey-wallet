@@ -12,14 +12,13 @@ import { useLanguage } from 'i18n/hooks';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
-import { Image } from '@rneui/base';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { usePin } from 'hooks/store';
 import { useCaAddressInfoList, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getManagerAccount } from 'utils/redux';
 import crossChainTransfer, {
-  CrossChainTransferParamsType,
+  CrossChainTransferIntervalParams,
   intervalCrossChainTransfer,
 } from 'utils/transfer/crossChainTransfer';
 import { useCurrentNetworkInfo, useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -46,6 +45,8 @@ import { ChainId } from '@portkey-wallet/types';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
+import CommonAvatar from 'components/CommonAvatar';
+import { useCheckTransferLimitWithJump } from 'hooks/security';
 
 const SendHome: React.FC = () => {
   const { t } = useLanguage();
@@ -73,6 +74,7 @@ const SendHome: React.FC = () => {
   const isTokenHasPrice = useIsTokenHasPrice(assetInfo.symbol);
 
   const isCrossChainTransfer = isCrossChain(toInfo.address, assetInfo.chainId);
+  const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
 
   const showRetry = useCallback(
     (retryFunc: () => void) => {
@@ -112,7 +114,18 @@ const SendHome: React.FC = () => {
     }
 
     const contract = contractRef.current;
-    const amount = timesDecimals(sendNumber, tokenInfo.decimals).toNumber();
+    const amount = timesDecimals(sendNumber, tokenInfo.decimals).toFixed();
+
+    const checkTransferLimitResult = await checkTransferLimitWithJump(
+      {
+        caContract: contract,
+        symbol: tokenInfo.symbol,
+        decimals: tokenInfo.decimals,
+        amount: String(sendNumber),
+      },
+      chainInfo.chainId,
+    );
+    if (!checkTransferLimitResult) return;
 
     if (isCrossChainTransfer) {
       if (!tokenContractRef.current) {
@@ -172,6 +185,7 @@ const SendHome: React.FC = () => {
     caAddressInfos,
     caAddresses,
     chainInfo,
+    checkTransferLimitWithJump,
     crossDefaultFee,
     currentNetwork.walletType,
     dispatch,
@@ -185,7 +199,7 @@ const SendHome: React.FC = () => {
   ]);
 
   const retryCrossChain = useCallback(
-    async (managerTransferTxId: string, data: CrossChainTransferParamsType) => {
+    async (managerTransferTxId: string, data: CrossChainTransferIntervalParams) => {
       const tokenInfo = {
         symbol: assetInfo.symbol,
         decimals: assetInfo.decimals ?? 0,
@@ -268,7 +282,7 @@ const SendHome: React.FC = () => {
           {!assetInfo?.imageUrl ? (
             <Text style={styles.noImg}>{assetInfo?.alias[0]}</Text>
           ) : (
-            <Image resizeMode={'contain'} style={styles.img} source={{ uri: assetInfo?.imageUrl }} />
+            <CommonAvatar avatarSize={pTd(64)} style={styles.img} imageUrl={assetInfo?.imageUrl || ''} />
           )}
           <View style={styles.topLeft}>
             <TextL style={[styles.nftTitle, fonts.mediumFont]}>{`${assetInfo.alias} #${assetInfo?.tokenId}`} </TextL>

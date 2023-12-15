@@ -1,5 +1,6 @@
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { MethodsBase } from '@portkey/provider-types';
+import { DAPP_WHITELIST, DappMap } from './network';
 
 export const SessionKeyMap = {
   [SessionExpiredPlan.hour1]: '1 hour',
@@ -15,10 +16,21 @@ export const SessionKeyArray = Object.entries(SessionKeyMap).map(([k, v]) => ({
   children: v,
 }));
 
-export const CA_METHOD_WHITELIST = ['ManagerForwardCall', 'ManagerTransfer'];
-
 export const REMEMBER_ME_ACTION_WHITELIST: string[] = [MethodsBase.SEND_TRANSACTION];
 
 export const DefaultDapp = {
   origin: 'default',
 };
+
+export enum ApproveMethod {
+  token = 'Approve',
+  ca = 'ManagerApprove',
+}
+
+export const CA_METHOD_WHITELIST = ['ManagerForwardCall', 'ManagerTransfer', ApproveMethod.ca];
+
+export const DAPP_WHITELIST_ACTION_WHITELIST: string[] = [MethodsBase.REQUEST_ACCOUNTS, MethodsBase.SEND_TRANSACTION];
+
+export { DAPP_WHITELIST, DappMap };
+
+export const ETransTokenList = ['USDT'];

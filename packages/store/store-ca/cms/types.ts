@@ -1,4 +1,5 @@
 import { NetworkType } from '@portkey-wallet/types';
+import { IEntrance } from '@portkey-wallet/types/types-ca/cms';
 
 export interface SocialMediaItem {
   index: number;
@@ -34,20 +35,22 @@ export interface DiscoverGroup {
   items: DiscoverItem[];
 }
 
-export interface BuyButtonType {
-  isBuySectionShow?: boolean;
-  isSellSectionShow?: boolean;
-  isAndroidBuyShow?: boolean;
-  isAndroidSellShow?: boolean;
-  isExtensionBuyShow?: boolean;
-  isExtensionSellShow?: boolean;
-  isIOSBuyShow?: boolean;
-  isIOSSellShow?: boolean;
-}
-
 export interface RememberMeBlackListSiteItem {
   name: string;
   url: string;
+}
+
+export interface EntranceControlType {
+  isAndroidBridgeShow?: boolean;
+  isExtensionBridgeShow?: boolean;
+  isIOSBridgeShow?: boolean;
+}
+
+export interface CmsWebsiteMapItem {
+  title?: string;
+  imgUrl?: {
+    filename_disk?: string;
+  };
 }
 
 export interface CMSState {
@@ -60,10 +63,13 @@ export interface CMSState {
   discoverGroupListNetMap: {
     [T in NetworkType]?: DiscoverGroup[];
   };
-  buyButtonNetMap?: {
-    [T in NetworkType]?: BuyButtonType;
-  };
   rememberMeBlackListMap?: {
     [T in NetworkType]?: RememberMeBlackListSiteItem[];
+  };
+  cmsWebsiteMap?: {
+    [url: string]: CmsWebsiteMapItem;
+  };
+  entranceNetMap?: {
+    [T in NetworkType]?: Partial<IEntrance>;
   };
 }

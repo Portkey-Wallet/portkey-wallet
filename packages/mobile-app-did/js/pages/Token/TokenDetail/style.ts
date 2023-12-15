@@ -13,7 +13,6 @@ export const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: bg4,
-    display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
   },
@@ -22,7 +21,7 @@ export const styles = StyleSheet.create({
   },
   tokenBalance: {
     ...fonts.mediumFont,
-    marginTop: pTd(60),
+    paddingTop: pTd(60),
     color: font5,
     fontSize: pTd(28),
     lineHeight: pTd(28),
@@ -66,4 +65,8 @@ export const styles = StyleSheet.create({
   subTitle: {
     fontSize: pTd(10),
   },
+  buttonWrapStyle1: {
+    marginHorizontal: pTd(16),
+  },
+  buttonRow: { width: '85%', justifyContent: 'space-around' },
 });

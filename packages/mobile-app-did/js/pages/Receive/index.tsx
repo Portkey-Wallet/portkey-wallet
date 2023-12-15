@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PageContainer from 'components/PageContainer';
 import { TextL, TextM, TextXL, TextS } from 'components/CommonText';
 import AccountCard from 'pages/Receive/components/AccountCard';
@@ -25,7 +25,6 @@ export default function Receive() {
 
   const tokenItem = useRouterParams<TokenItemShowType>();
   const { chainId, symbol } = tokenItem;
-
   const symbolImages = useSymbolImages();
   const currentWallet = useCurrentWalletInfo();
 
@@ -40,7 +39,7 @@ export default function Receive() {
           style={styles.svgStyle}
           title={symbol}
           avatarSize={pTd(32)}
-          svgName={symbol === defaultToken.symbol ? 'elf-icon' : undefined}
+          svgName={symbol === defaultToken.symbol ? 'testnet' : undefined}
           imageUrl={symbolImages?.[symbol] || ''}
         />
         <View>

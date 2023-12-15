@@ -21,8 +21,6 @@ import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import { useFocusEffect } from '@react-navigation/native';
-import Lottie from 'lottie-react-native';
-import { handleErrorMessage } from '@portkey-wallet/utils';
 
 interface ManageTokenListProps {
   route?: any;
@@ -65,7 +63,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
       }));
       setFilterTokenList(tmpToken);
     } catch (error) {
-      CommonToast.fail(handleErrorMessage(error));
+      CommonToast.failError(error);
     } finally {
       setIsSearching(false);
     }
@@ -94,7 +92,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
         }, 800);
       } catch (err) {
         Loading.hide();
-        CommonToast.fail(handleErrorMessage(err));
+        CommonToast.failError(err);
       }
     },
     [caAddressArray, caAddressInfos, chainIdList, debounceWord, dispatch, fetchSearchedTokenList],
@@ -144,19 +142,6 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
     [],
   );
 
-  const IptRightIcon = useMemo(() => {
-    if (isSearching)
-      return (
-        <Lottie style={pageStyles.loadingIcon} source={require('assets/lottieFiles/loading.json')} autoPlay loop />
-      );
-
-    return keyword ? (
-      <TouchableOpacity onPress={() => setKeyword('')}>
-        <Svg icon="clear3" size={pTd(16)} />
-      </TouchableOpacity>
-    ) : undefined;
-  }, [isSearching, keyword]);
-
   return (
     <PageContainer
       titleDom={t('Add Tokens')}
@@ -166,7 +151,8 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
       scrollViewProps={{ disabled: true }}>
       <View style={pageStyles.inputWrap}>
         <CommonInput
-          rightIcon={IptRightIcon}
+          allowClear
+          loading={isSearching}
           value={keyword}
           placeholder={t('Token Name')}
           onChangeText={v => {

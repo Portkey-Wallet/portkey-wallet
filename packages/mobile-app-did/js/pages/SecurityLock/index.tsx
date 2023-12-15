@@ -25,12 +25,13 @@ import { useThrottleCallback } from '@portkey-wallet/hooks';
 import ActionSheet from 'components/ActionSheet';
 import { isUserBiometricsError } from 'utils/biometrics';
 import GStyles from 'assets/theme/GStyles';
+import useLatestIsFocusedRef from 'hooks/useLatestIsFocusedRef';
 export default function SecurityLock() {
   const { biometrics } = useUser();
   const biometricsReady = useBiometricsReady();
   const [caInfo, setStateCAInfo] = useState<CAInfo>();
   const appStateRef = useRef<AppStateStatus>();
-  const verifyTimeRef = useRef<number>();
+  const isFocusedRef = useLatestIsFocusedRef();
   usePreventHardwareBack();
   const timer = useRef<TimerResult>();
   const onResultFail = useOnResultFail();
@@ -42,6 +43,7 @@ export default function SecurityLock() {
   const navigation = useNavigation();
   const onIntervalGetResult = useIntervalGetResult();
   const originChainId = useOriginChainId();
+  const locked = useRef<boolean>(false);
   useEffect(() => {
     if (isSyncCAInfo) {
       setTimeout(() => {
@@ -58,9 +60,11 @@ export default function SecurityLock() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSyncCAInfo]);
-  const handleRouter = useCallback(
+  const handleRouter = useThrottleCallback(
     (pinInput: string) => {
       Loading.hide();
+      if (!isFocusedRef.current) return;
+      locked.current = true;
       if (!managerInfo) return navigationService.reset('LoginPortkey');
       if (navigation.canGoBack()) {
         navigation.goBack();
@@ -73,6 +77,7 @@ export default function SecurityLock() {
       }
     },
     [biometrics, biometricsReady, managerInfo, navigation],
+    2000,
   );
   const handlePassword = useCallback(
     (pwd: string) => {
@@ -126,7 +131,7 @@ export default function SecurityLock() {
   );
   const verifyBiometrics = useThrottleCallback(
     async () => {
-      if (!biometrics || (verifyTimeRef.current && verifyTimeRef.current + 1000 > Date.now())) return;
+      if (!biometrics) return;
       try {
         const securePassword = await getSecureStoreItem('Pin');
         if (!securePassword) throw new Error('No password');
@@ -140,10 +145,9 @@ export default function SecurityLock() {
           });
         }
       }
-      verifyTimeRef.current = Date.now();
     },
     [biometrics, handlePassword],
-    1000,
+    2000,
   );
   const handleAppStateChange = useCallback(
     (nextAppState: AppStateStatus) => {

@@ -11,14 +11,17 @@ import { setWalletInfoAction } from 'store/reducers/loginCache/actions';
 import { getDeviceInfo } from 'utils/device';
 import { DEVICE_TYPE } from 'constants/index';
 import { DEVICE_INFO_VERSION } from '@portkey-wallet/constants/constants-ca/device';
-import { ScanBase, CustomSvg } from '@portkey/did-ui-react';
+import { ScanBase } from '@portkey/did-ui-react';
 import { setCAInfoType, setOriginChainId } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useCheckManager } from 'hooks/useLogout';
 import { message } from 'antd';
 import './index.less';
 // import didSignalr from '@portkey-wallet/socket/socket-did';
 // import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { randomId } from '@portkey-wallet/utils';
+import { handleErrorMessage, randomId } from '@portkey-wallet/utils';
+import InternalMessage from 'messages/InternalMessage';
+import InternalMessageTypes from 'messages/InternalMessageTypes';
+import CustomSvg from 'components/CustomSvg';
 
 export default function ScanCard() {
   const navigate = useNavigate();
@@ -85,25 +88,31 @@ export default function ScanCard() {
 
   useEffect(() => {
     const { caInfo, originChainId } = caWallet || {};
-    if (caInfo && newWallet && originChainId) {
-      if (pin) {
-        try {
-          dispatch(setCAInfoType({ caInfo, pin }));
-          navigate('/success-page/login');
-        } catch (error: any) {
-          message.error(error);
+    InternalMessage.payload(InternalMessageTypes.GET_SEED)
+      .send()
+      .then((getSeedResult) => {
+        const pin = getSeedResult.data.privateKey;
+
+        if (caInfo && newWallet && originChainId) {
+          if (pin) {
+            try {
+              dispatch(setCAInfoType({ caInfo, pin }));
+              navigate('/success-page/login');
+            } catch (error: any) {
+              message.error(handleErrorMessage(error));
+            }
+          } else {
+            dispatch(setOriginChainId(originChainId));
+            dispatch(
+              setWalletInfoAction({
+                walletInfo: newWallet,
+                caWalletInfo: caInfo,
+              }),
+            );
+            navigate('/login/set-pin/scan');
+          }
         }
-      } else {
-        dispatch(setOriginChainId(originChainId));
-        dispatch(
-          setWalletInfoAction({
-            walletInfo: newWallet,
-            caWalletInfo: caInfo,
-          }),
-        );
-        navigate('/login/set-pin/scan');
-      }
-    }
+      });
   }, [caWallet, dispatch, navigate, newWallet, pin]);
 
   return (

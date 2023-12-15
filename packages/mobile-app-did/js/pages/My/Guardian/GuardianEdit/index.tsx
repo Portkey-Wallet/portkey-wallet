@@ -13,7 +13,7 @@ import { useLanguage } from 'i18n/hooks';
 import CommonInput from 'components/CommonInput';
 import { checkEmail } from '@portkey-wallet/utils/check';
 import { useGuardiansInfo } from 'hooks/store';
-import { LOGIN_TYPE_LIST } from '@portkey-wallet/constants/verifier';
+import { LOGIN_TYPE_LIST } from 'constants/misc';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
 import { ApprovalType, VerificationType, OperationTypeEnum, VerifierItem } from '@portkey-wallet/types/verifier';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
@@ -49,10 +49,12 @@ import { checkIsLastLoginAccount } from '@portkey-wallet/utils/guardian';
 import { cancelLoginAccount } from 'utils/guardian';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import myEvents from 'utils/deviceEvent';
+import { ChainId } from '@portkey-wallet/types';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
   isEdit?: boolean;
+  accelerateChainId?: ChainId;
 };
 
 type thirdPartyInfoType = {
@@ -61,7 +63,6 @@ type thirdPartyInfoType = {
 };
 
 type TypeItemType = typeof LOGIN_TYPE_LIST[number];
-const loginTypeList = LOGIN_TYPE_LIST;
 
 const GuardianEdit: React.FC = () => {
   const { t } = useLanguage();
@@ -70,7 +71,7 @@ const GuardianEdit: React.FC = () => {
   const { caHash, address: managerAddress } = useCurrentWalletInfo();
   const getCurrentCAContract = useGetCurrentCAContract();
 
-  const { guardian: editGuardian, isEdit = false } = useRouterParams<RouterParams>();
+  const { guardian: editGuardian, isEdit = false, accelerateChainId = originChainId } = useRouterParams<RouterParams>();
 
   const { verifierMap, userGuardiansList } = useGuardiansInfo();
   const verifierList = useMemo(() => (verifierMap ? Object.values(verifierMap) : []), [verifierMap]);
@@ -183,9 +184,10 @@ const GuardianEdit: React.FC = () => {
         },
         verifiedTime: Date.now(),
         authenticationInfo: { [thirdPartyInfo.id]: thirdPartyInfo.accessToken },
+        accelerateChainId,
       });
     },
-    [verifyToken, originChainId],
+    [verifyToken, originChainId, accelerateChainId],
   );
 
   const onConfirm = useCallback(async () => {
@@ -265,6 +267,7 @@ const GuardianEdit: React.FC = () => {
                       verifierSessionId: req.verifierSessionId,
                     },
                     verificationType: VerificationType.addGuardian,
+                    accelerateChainId,
                   });
                 } else {
                   throw new Error('send fail');
@@ -287,6 +290,7 @@ const GuardianEdit: React.FC = () => {
     country.code,
     thirdPartyConfirm,
     originChainId,
+    accelerateChainId,
   ]);
 
   const onApproval = useCallback(() => {
@@ -503,7 +507,7 @@ const GuardianEdit: React.FC = () => {
     if (isEdit) {
       return (
         <View style={pageStyles.accountWrap}>
-          <TextM style={pageStyles.accountLabel}>Guardian Apple</TextM>
+          <TextM style={pageStyles.accountLabel}>Guardian {LoginType[editGuardian?.guardianType || 0]}</TextM>
           <GuardianAccountItem guardian={editGuardian} />
         </View>
       );
@@ -559,11 +563,16 @@ const GuardianEdit: React.FC = () => {
     t,
   ]);
 
+  const goBack = useCallback(() => {
+    if (isEdit) return navigationService.navigate('GuardianHome');
+    navigationService.goBack();
+  }, [isEdit]);
+
   return (
     <PageContainer
       safeAreaColor={['blue', 'gray']}
       titleDom={isEdit ? t('Edit Guardians') : t('Add Guardians')}
-      leftCallback={() => navigationService.navigate('GuardianHome')}
+      leftCallback={goBack}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View style={pageStyles.contentWrap}>
@@ -573,7 +582,7 @@ const GuardianEdit: React.FC = () => {
             <ListItem
               onPress={() => {
                 GuardianTypeSelectOverlay.showList({
-                  list: loginTypeList,
+                  list: LOGIN_TYPE_LIST,
                   labelAttrName: 'name',
                   value: selectedType?.value,
                   callBack: onChooseType,

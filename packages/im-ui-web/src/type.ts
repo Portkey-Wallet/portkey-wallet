@@ -1,9 +1,11 @@
 import React from 'react';
+import { ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
 
 export interface IChatItemProps {
   id: string | number;
   avatar?: string;
-  letterItem?: string;
+  showLetter?: boolean;
+  letter?: string;
   unread?: number;
   className?: string;
   alt?: string;
@@ -11,9 +13,11 @@ export interface IChatItemProps {
   subtitle?: string;
   date?: Date;
   dateString?: string;
+  channelType?: ChannelTypeEnum;
   muted?: boolean;
   showMute?: boolean;
   pin?: boolean;
+  status: ChannelStatusEnum;
   onClick?: React.MouseEventHandler;
   onClickMute?: React.MouseEventHandler;
   onClickPin?: React.MouseEventHandler;
@@ -41,13 +45,19 @@ export interface IMessage {
   position: string;
   text: string;
   title?: string;
+  from?: string;
   date?: number | string;
   dateString?: string;
   avatar?: string;
   className?: string;
-  letterItem?: string;
+  showLetter?: boolean;
+  letter?: string;
   type: string;
+  showAvatar?: boolean;
   onDeleteMsg?: React.MouseEventHandler;
+  onClickAvatar?: React.MouseEventHandler;
+  onClickUrl?: (v: string) => void;
+  onClickUnSupportMsg?: () => void;
 }
 
 export interface IImageMessage extends IMessage {
@@ -70,7 +80,9 @@ export interface IImageMessageProps extends IImageMessage {
   onPhotoError?: React.ReactEventHandler;
 }
 
-export type ISystemMessage = IMessage;
+export interface ISystemMessage extends IMessage {
+  subType?: string;
+}
 
 export type ISystemMessageProps = ISystemMessage;
 
@@ -87,19 +99,15 @@ export interface IMessageListProps {
   toBottomHeight?: String | number;
   downButton?: boolean;
   downButtonBadge?: number;
-  sendMessagePreview?: boolean;
   hasNext: boolean;
   loading: boolean;
   next: () => any;
   onScroll?: React.UIEventHandler;
-  onContextMenu?: MessageListEvent;
   onDeleteMsg?: MessageListEvent;
+  onClickAvatar?: MessageListEvent;
+  onClickUrl?: (v: string) => void;
+  onClickUnSupportMsg?: () => void;
   onDownButtonClick?: React.RefObject<HTMLButtonElement>;
-  onOpen?: MessageListEvent;
-  onDownload?: MessageListEvent;
-  onPhotoError?: MessageListEvent;
-  onClick?: MessageListEvent;
-  onTitleClick?: MessageListEvent;
 }
 
 export type MessageListEvent = (item: MessageType, index: number, event: React.MouseEvent<HTMLElement>) => any;
@@ -142,11 +150,47 @@ export interface IInputProps {
   onKeyUp?: React.KeyboardEventHandler;
 }
 
+export interface PopDataProps {
+  key: string;
+  children: React.ReactNode;
+  onClick?: () => void;
+}
+
+export interface IInputBarProps {
+  maxLength?: number;
+  moreData?: PopDataProps[];
+  showEmoji?: boolean;
+  onSendMessage: (v: string) => void;
+}
+
+export interface IPopoverMenuListData {
+  key: number | string;
+  leftIcon?: React.ReactNode;
+  children?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  onClick?: (v?: any) => void;
+  height?: number;
+  className?: string;
+}
+
+export interface IPopoverMenuListProps {
+  className?: string;
+  data?: IPopoverMenuListData[];
+}
+
+export type IAvatarSize = 'small' | 'default' | 'large';
+
 export interface IAvatarProps {
   src?: string;
-  letterItem?: string;
+  showLetter?: boolean;
+  letter?: string;
   className?: string;
   alt?: string;
+  channelType?: ChannelTypeEnum;
+  width?: number;
+  height?: number;
+  avatarSize?: IAvatarSize;
+  onClick?: React.MouseEventHandler;
 }
 
 export interface IUnreadTipProps {
@@ -170,4 +214,6 @@ export class SystemMessage extends React.Component<ISystemMessageProps> {}
 export class MessageList extends React.Component<MessageListType> {}
 export class Avatar extends React.Component<IAvatarProps> {}
 export class Input extends React.Component<IInputProps> {}
+export class InputBar extends React.Component<IInputBarProps> {}
+export class PopoverMenuList extends React.Component<IPopoverMenuListProps> {}
 export class UnreadTip extends React.Component<IUnreadTipProps> {}

@@ -1,12 +1,14 @@
+import { ContactItemType, IContactProfile } from '@portkey-wallet/types/types-ca/contact';
 import {
+  ChannelInfo,
   ChannelItem,
   ChannelMemberInfo,
   ChannelTypeEnum,
-  ContactItemType,
   Message,
   MessageCount,
   TriggerMessageEventActionEnum,
 } from '.';
+import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 
 export type IMServiceCommon<T> = Promise<{
   code: string;
@@ -41,11 +43,16 @@ export type GetUserInfoParams = {
   fields?: string[];
 };
 
+export type GetUserInfoListParams = {
+  keywords?: string;
+  fields?: string[];
+};
+
 export type GetUserInfoDefaultResult = {
-  avatar: string;
+  avatar?: string;
   name: string;
   relationId: string;
-  portkeyId: string;
+  portkeyId?: string;
 };
 
 export type GetOtherUserInfoDefaultResult = {
@@ -61,6 +68,7 @@ export type GetOtherUserInfoDefaultResult = {
 export type CreateChannelParams = {
   name: string;
   type: ChannelTypeEnum;
+  channelIcon?: string;
   members: string[];
 };
 
@@ -73,19 +81,6 @@ export type GetChannelInfoParams = {
 };
 
 export type GetChannelMembersParams = GetChannelInfoParams;
-
-export type GetChannelInfoResult = {
-  uuid: string;
-  name: string;
-  icon: string;
-  announcement: string;
-  pinAnnouncement: boolean;
-  openAccess: boolean;
-  type: ChannelTypeEnum;
-  mute: boolean;
-  pin: boolean;
-  members: ChannelMemberInfo[];
-};
 
 export type SendMessageParams = {
   channelUuid?: string;
@@ -130,6 +125,7 @@ export type GetChannelListParams = {
   cursor?: string;
   skipCount?: number;
   maxResultCount?: number;
+  channelUuid?: string;
 };
 
 export type GetChannelListResult = {
@@ -157,8 +153,42 @@ export type AddStrangerParams = {
 };
 
 export type GetProfileParams = {
-  relationId: string;
+  portkeyId?: string;
+  relationId?: string;
   id?: string;
+};
+
+export type DisbandChannelParams = {
+  channelUuid: string;
+};
+
+export type TransferChannelOwnerParams = {
+  channelUuid: string;
+  relationId: string;
+};
+
+export type AddChannelMembersParams = {
+  channelUuid: string;
+  members: string[];
+};
+
+export type RemoveChannelMembersParams = {
+  channelUuid: string;
+  members: string[];
+};
+
+export type LeaveChannelParams = {
+  channelUuid: string;
+};
+
+export type UpdateChannelInfoParams = {
+  channelUuid: string;
+  channelName: string;
+  channelIcon?: string;
+};
+
+export type JoinChannelParams = {
+  channelUuid: string;
 };
 
 export interface IIMService {
@@ -175,9 +205,10 @@ export interface IIMService {
     times?: number,
   ): IMServiceCommon<GetAuthTokenResult>;
   getUserInfo<T = GetUserInfoDefaultResult>(params?: GetUserInfoParams): IMServiceCommon<T>;
+  getUserInfoList<T = GetUserInfoDefaultResult>(params?: GetUserInfoListParams): IMServiceCommon<T[]>;
 
   createChannel(params: CreateChannelParams): IMServiceCommon<CreateChannelResult>;
-  getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<GetChannelInfoResult>;
+  getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<ChannelInfo>;
   getChannelMembers(params: GetChannelMembersParams): IMServiceCommon<ChannelMemberInfo[]>;
 
   sendMessage(params: SendMessageParams): IMServiceCommon<SendMessageResult>;
@@ -191,6 +222,16 @@ export interface IIMService {
   updateChannelPin(params: UpdateChannelPinParams): IMServiceCommon<null>;
   updateChannelMute(params: UpdateChannelMuteParams): IMServiceCommon<null>;
   hideChannel(params: HideChannelParams): IMServiceCommon<null>;
+  disbandChannel(params: DisbandChannelParams): IMServiceCommon<null>;
+  transferChannelOwner(params: TransferChannelOwnerParams): IMServiceCommon<null>;
+  addChannelMembers(params: AddChannelMembersParams): IMServiceCommon<null>;
+  removeChannelMembers(params: RemoveChannelMembersParams): IMServiceCommon<null>;
+  leaveChannel(params: LeaveChannelParams): IMServiceCommon<null>;
+  updateChannelInfo(params: UpdateChannelInfoParams): IMServiceCommon<null>;
+  joinChannel(params: JoinChannelParams): IMServiceCommon<null>;
+
   addStranger(params: AddStrangerParams): IMServiceCommon<ContactItemType>;
-  getProfile(params: GetProfileParams): IMServiceCommon<ContactItemType>;
+  getProfile(
+    params: RequireAtLeastOne<GetProfileParams, 'id' | 'portkeyId' | 'relationId'>,
+  ): IMServiceCommon<IContactProfile>;
 }

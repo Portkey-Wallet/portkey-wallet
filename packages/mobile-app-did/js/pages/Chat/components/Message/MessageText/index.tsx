@@ -3,8 +3,6 @@ import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { MessageTextProps, Time } from 'react-native-gifted-chat';
 import ParsedText from 'react-native-parsed-text';
 import { StyleSheet, Text, TextStyle } from 'react-native';
-import { useDiscoverJumpWithNetWork } from 'hooks/discover';
-import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
@@ -19,26 +17,19 @@ import { TextM } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import { GestureResponderEvent } from 'react-native';
 import CommonToast from 'components/CommonToast';
+import { useOnUrlPress } from 'hooks/chat';
 
 const UNICODE_SPACE = isIOS
   ? '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'
   : '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
-const WWW_URL_PATTERN = /^www\./i;
 
 function MessageText(props: MessageTextProps<ChatMessage>) {
   const { currentMessage, textProps, position = 'right', customTextStyle, textStyle } = props;
-  const jump = useDiscoverJumpWithNetWork();
   const currentChannelId = useCurrentChannelId();
   const deleteMessage = useDeleteMessage(currentChannelId || '');
   const { messageType } = currentMessage || {};
   const isNotSupported = useMemo(() => messageType === 'NOT_SUPPORTED', [messageType]);
-  const onUrlPress = useThrottleCallback(
-    (url: string) => {
-      if (WWW_URL_PATTERN.test(url)) url = `https://${url}`;
-      jump({ item: { url: url, name: url } });
-    },
-    [jump],
-  );
+  const onUrlPress = useOnUrlPress();
   const onLongPress = useCallback(
     (event: GestureResponderEvent) => {
       const { pageX, pageY } = event.nativeEvent;
@@ -65,20 +56,28 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
             }
           },
         });
-      ChatOverlay.showChatPopover({
-        list,
-        px: pageX,
-        py: pageY,
-        formatType: 'dynamicWidth',
-      });
+      list.length &&
+        ChatOverlay.showChatPopover({
+          list,
+          px: pageX,
+          py: pageY,
+          formatType: 'dynamicWidth',
+        });
     },
     [currentMessage?.content, currentMessage?.id, deleteMessage, isNotSupported, position],
   );
+
+  const onPress = useCallback(() => {
+    if (currentMessage?.messageType === 'NOT_SUPPORTED') {
+      CommonToast.warn('Downloading the latest Portkey for you. To proceed, please close and restart the App.');
+    }
+  }, [currentMessage?.messageType]);
+
   return (
-    <Touchable onLongPress={onLongPress}>
+    <Touchable onPress={onPress} onLongPress={onLongPress} style={styles.textRow}>
       <Text style={[messageStyles[position].text, textStyle && textStyle[position], customTextStyle]}>
         {isNotSupported ? (
-          <TextM style={FontStyles.font7}>{currentMessage?.text}</TextM>
+          <TextM style={FontStyles.font4}>{currentMessage?.text}</TextM>
         ) : (
           <ParsedText
             style={[messageStyles[position].text, textStyle && textStyle[position], customTextStyle]}
@@ -105,6 +104,10 @@ export default memo(Message, (prevProps, nextProps) => {
 });
 
 const styles = StyleSheet.create({
+  textRow: {
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
   textStyles: {
     fontSize: pTd(16),
     lineHeight: pTd(24),
@@ -136,7 +139,6 @@ const timeTextStyle = {
 
 const messageStyles = {
   left: StyleSheet.create({
-    container: {},
     text: {
       color: defaultColors.font5,
       ...styles.textStyles,
@@ -147,7 +149,6 @@ const messageStyles = {
     },
   }),
   right: StyleSheet.create({
-    container: {},
     text: {
       color: defaultColors.font5,
       ...styles.textStyles,

@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { View, Text, Platform } from 'react-native';
+import React, { useMemo } from 'react';
+import { View, Text, StyleProp, ViewProps } from 'react-native';
 import Svg from 'components/Svg';
 import { styles } from './style';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -11,74 +11,59 @@ import { TextM } from 'components/CommonText';
 import navigationService from 'utils/navigationService';
 import { defaultColors } from 'assets/theme';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import useQrScanPermission from 'hooks/useQrScanPermission';
-import ActionSheet from 'components/ActionSheet';
-import { useLanguage } from 'i18n/hooks';
-import BuyButton from 'components/BuyButton';
+import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import FaucetButton from 'components/FaucetButton';
-import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import GStyles from 'assets/theme/GStyles';
+import DepositButton from 'components/DepositButton';
+import { DepositItem, useDepositList } from 'hooks/deposit';
 
 const Card: React.FC = () => {
-  const { t } = useLanguage();
   const isMainnet = useIsMainnet();
-  const { walletName } = useWallet();
+  const { userInfo } = useWallet();
   const accountBalanceUSD = useAccountBalanceUSD();
-  const [, requestQrPermission] = useQrScanPermission();
-  const { isBuyButtonShow } = useBuyButtonShow(
-    Platform.OS === 'android' ? VersionDeviceType.Android : VersionDeviceType.iOS,
-  );
+  const qrScanPermissionAndToast = useQrScanPermissionAndToast();
+  const depositList = useDepositList();
+  const isDepositShow = useMemo(() => !!depositList.length, [depositList.length]);
+  const buttonCount = useMemo(() => {
+    let count = 3;
+    if (isDepositShow) count++;
+    // FaucetButton
+    if (!isMainnet) count++;
+    return count;
+  }, [isDepositShow, isMainnet]);
 
-  const showDialog = useCallback(
-    () =>
-      ActionSheet.alert({
-        title: t('Enable Camera Access'),
-        message: t('Cannot connect to the camera. Please make sure it is turned on'),
-        buttons: [
-          {
-            title: t('Close'),
-            type: 'solid',
-          },
-        ],
-      }),
-    [t],
+  const buttonGroupWrapStyle = useMemo(
+    () => (buttonCount < 5 ? (GStyles.flexCenter as StyleProp<ViewProps>) : undefined),
+    [buttonCount],
+  );
+  const buttonWrapStyle = useMemo(
+    () => (buttonCount < 5 ? (styles.buttonWrapStyle1 as StyleProp<ViewProps>) : undefined),
+    [buttonCount],
   );
 
   return (
-    <View style={styles.cardWrap}>
+    <View style={[styles.cardWrap]}>
       <View style={styles.refreshWrap}>
         <Text style={styles.block} />
         <TouchableOpacity
           style={styles.svgWrap}
           onPress={async () => {
-            if (!(await requestQrPermission())) return showDialog();
+            if (!(await qrScanPermissionAndToast())) return;
             navigationService.navigate('QrScanner');
           }}>
           <Svg icon="scan" size={22} color={defaultColors.font2} />
         </TouchableOpacity>
       </View>
       <Text style={styles.usdtBalance}>{isMainnet ? `$${accountBalanceUSD}` : 'Dev Mode'}</Text>
-      <TextM style={styles.accountName}>{walletName}</TextM>
-      <View style={styles.buttonGroupWrap}>
-        {isBuyButtonShow && (
-          <>
-            <BuyButton themeType="dashBoard" />
-            <View style={styles.spacerStyle} />
-          </>
-        )}
-        <SendButton themeType="dashBoard" />
-        <View style={styles.spacerStyle} />
-        <ReceiveButton themeType="dashBoard" />
-        <View style={styles.spacerStyle} />
-        {!isMainnet && (
-          <>
-            <FaucetButton themeType="dashBoard" />
-            <View style={styles.spacerStyle} />
-          </>
-        )}
-        <ActivityButton themeType="dashBoard" />
+      <TextM style={styles.accountName}>{userInfo?.nickName}</TextM>
+      <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.buttonGroupWrap, buttonGroupWrapStyle]}>
+        {isDepositShow && <DepositButton wrapStyle={buttonWrapStyle} list={depositList as DepositItem[]} />}
+        <SendButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
+        <ReceiveButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
+        {!isMainnet && <FaucetButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
+        <ActivityButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
       </View>
     </View>
   );

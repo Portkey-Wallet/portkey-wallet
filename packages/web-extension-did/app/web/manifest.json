@@ -3,9 +3,9 @@
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   },
-  "name": "Portkey: DID & Crypto & NFT",
-  "version": "1.4.0",
-  "description": "Identity System for Social Recover and Asset Management Tool",
+  "name": "Portkey Wallet: Crypto & Games",
+  "version": "1.4.11",
+  "description": "A User-Friendly and Secure AA Wallet for Asset Management and Web3 Experience",
   "icons": {
     "16": "assets/images/extension_logo.png",
     "48": "assets/images/extension_logo.png",
@@ -16,7 +16,7 @@
   },
   "action": {
     "default_icon": "assets/images/extension_logo.png",
-    "default_title": "Portkey: DID & Crypto & NFT",
+    "default_title": "Portkey Wallet: Crypto & Games",
     "default_popup": "popup.html"
   },
   "sandbox": {
@@ -51,9 +51,5 @@
       "matches": ["<all_urls>"]
     }
   ],
-  "options_page": "options.html",
-  "options_ui": {
-    "page": "options.html"
-  },
   "default_locale": "en"
 }

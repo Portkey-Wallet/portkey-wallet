@@ -1,10 +1,10 @@
-import im, { utils, MessageType, Message, TriggerMessageEventActionEnum } from '@portkey-wallet/im';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import im, { utils, MessageType, Message, TriggerMessageEventActionEnum, ChannelStatusEnum } from '@portkey-wallet/im';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { randomId } from '@portkey-wallet/utils';
 import { MESSAGE_LIST_LIMIT, SEARCH_CHANNEL_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
 
 import { useCurrentNetworkInfo } from '../network';
-import { useAppCommonDispatch, useLatestRef } from '../../index';
+import { useEffectOnce, useAppCommonDispatch, useLatestRef } from '../../index';
 import {
   removeChannel,
   updateChannelAttribute,
@@ -19,6 +19,9 @@ import s3Instance, { getThumbSize, UploadFileType } from '@portkey-wallet/utils/
 import { messageParser } from '@portkey-wallet/im/utils';
 import { useContactRelationIdMap } from '../contact';
 import { request } from '@portkey-wallet/api/api-did';
+import { useWallet } from '../wallet';
+import { IMServiceCommon, SendMessageResult } from '@portkey-wallet/im/types/service';
+import useLockCallback from '../../useLockCallback';
 
 export type ImageMessageFileType = {
   body: string | File;
@@ -48,26 +51,106 @@ export const useIsStranger = (relationId: string) => {
 export const useSendChannelMessage = () => {
   const dispatch = useAppCommonDispatch();
   const { networkType } = useCurrentNetworkInfo();
-  const relationId = useRelationId();
+  const { relationId, getRelationId } = useRelationId();
+  const { walletName } = useWallet();
+
+  const sendMessageToPeople = useCallback(
+    async ({
+      toRelationId,
+      channelId,
+      type = 'TEXT',
+      content,
+    }: {
+      toRelationId?: string;
+      channelId?: string;
+      type?: MessageType;
+      content: string;
+    }) => {
+      if (!(toRelationId || channelId)) {
+        throw new Error('No ID');
+      }
+      let _relationId = relationId;
+      if (!_relationId) {
+        try {
+          _relationId = await getRelationId();
+        } catch (error) {
+          throw new Error('No user info');
+        }
+      }
+      const uuid = randomId();
+      return im.service.sendMessage({
+        channelUuid: channelId,
+        toRelationId,
+        type,
+        content,
+        sendUuid: `${_relationId}-${toRelationId}-${Date.now()}-${uuid}`,
+      });
+    },
+    [getRelationId, relationId],
+  );
+
+  const sendMassMessage = useCallback(
+    ({
+      toRelationIds = [],
+      channelIds = [],
+      content,
+      type = 'TEXT',
+    }: {
+      toRelationIds?: string[];
+      channelIds?: string[];
+      content: string;
+      type?: MessageType;
+    }) => {
+      if (!(toRelationIds.length || channelIds.length)) {
+        throw new Error('No ID');
+      }
+      const promiseList: IMServiceCommon<SendMessageResult>[] = [];
+      toRelationIds.forEach(toRelationId => {
+        promiseList.push(
+          sendMessageToPeople({
+            toRelationId,
+            content,
+            type,
+          }),
+        );
+      });
+      channelIds.forEach(channelId => {
+        promiseList.push(
+          sendMessageToPeople({
+            channelId,
+            content,
+            type,
+          }),
+        );
+      });
+      return Promise.allSettled(promiseList);
+    },
+    [sendMessageToPeople],
+  );
 
   const sendChannelMessage = useCallback(
     async (channelId: string, content: string, type = 'TEXT' as MessageType) => {
-      if (!relationId) {
-        throw new Error('No user info');
+      let _relationId = relationId;
+      if (!_relationId) {
+        try {
+          _relationId = await getRelationId();
+        } catch (error) {
+          throw new Error('No user info');
+        }
       }
       const uuid = randomId();
       const msgParams = {
         channelUuid: channelId,
         type,
         content,
-        sendUuid: `${relationId}-${channelId}-${Date.now()}-${uuid}`,
+        sendUuid: `${_relationId}-${channelId}-${Date.now()}-${uuid}`,
       };
 
       const msgObj: Message = messageParser({
         ...msgParams,
-        from: relationId,
+        from: _relationId,
         fromAvatar: '',
-        fromName: '',
+        fromName: walletName,
         createAt: `${Date.now()}`,
       });
       dispatch(
@@ -106,7 +189,7 @@ export const useSendChannelMessage = () => {
         throw error;
       }
     },
-    [dispatch, networkType, relationId],
+    [dispatch, getRelationId, networkType, relationId, walletName],
   );
   const sendChannelImageByS3Result = useCallback(
     async (channelId: string, s3Result: UploadFileType & ImageMessageFileType) => {
@@ -162,6 +245,8 @@ export const useSendChannelMessage = () => {
   );
 
   return {
+    sendMessageToPeople,
+    sendMassMessage,
     sendChannelMessage,
     sendChannelImage,
     sendChannelImageByS3Result,
@@ -231,32 +316,16 @@ export const useDeleteMessage = (channelId: string) => {
   );
 };
 
-export const useChannel = (channelId: string) => {
+export const useChannelMessageList = (channelId: string) => {
   const { networkType } = useCurrentNetworkInfo();
-  const dispatch = useAppCommonDispatch();
-
-  const relationId = useRelationId();
   const list = useCurrentChannelMessageList(channelId);
   const listRef = useLatestRef(list);
-
-  const muteChannel = useMuteChannel();
-  const pinChannel = usePinChannel();
-  const hideChannel = useHideChannel();
-  const { sendChannelMessage, sendChannelImage } = useSendChannelMessage();
-  const deleteMessage = useDeleteMessage(channelId);
-  const info = useChannelItemInfo(channelId);
-  const isStranger = useIsStranger(info?.toRelationId || '');
-
-  const [hasNext, setHasNext] = useState(false);
-
   const [loading, setLoading] = useState(false);
-  const isNextLoading = useRef(false);
+  const [hasNext, setHasNext] = useState(true);
+  const dispatch = useAppCommonDispatch();
 
-  const next = useCallback(
+  const next = useLockCallback(
     async (isInit = false) => {
-      if (isNextLoading.current) return;
-      isNextLoading.current = true;
-
       let maxCreateAt = Date.now();
       if (!isInit) {
         const list = listRef.current;
@@ -310,7 +379,6 @@ export const useChannel = (channelId: string) => {
         throw error;
       } finally {
         setLoading(false);
-        isNextLoading.current = false;
       }
     },
     [channelId, dispatch, listRef, networkType],
@@ -319,6 +387,30 @@ export const useChannel = (channelId: string) => {
   const init = useCallback(() => {
     return next(true);
   }, [next]);
+
+  return {
+    list,
+    next,
+    hasNext,
+    init,
+    loading,
+  };
+};
+
+export const useChannel = (channelId: string) => {
+  const { networkType } = useCurrentNetworkInfo();
+  const dispatch = useAppCommonDispatch();
+
+  const { relationId } = useRelationId();
+
+  const muteChannel = useMuteChannel();
+  const pinChannel = usePinChannel();
+  const hideChannel = useHideChannel();
+  const { sendChannelMessage, sendChannelImage } = useSendChannelMessage();
+  const deleteMessage = useDeleteMessage(channelId);
+  const info = useChannelItemInfo(channelId);
+  const isStranger = useIsStranger(info?.toRelationId || '');
+  const { list, next, hasNext, init, loading } = useChannelMessageList(channelId);
 
   const connectHandler = useCallback(
     async (e: any) => {
@@ -369,7 +461,7 @@ export const useChannel = (channelId: string) => {
   const updateListRef = useRef(updateList);
   updateListRef.current = updateList;
 
-  useEffect(() => {
+  useEffectOnce(() => {
     const { remove: removeMsgObserver } = im.registerChannelMsgObserver(channelId, e => {
       updateListRef.current(e);
     });
@@ -386,6 +478,7 @@ export const useChannel = (channelId: string) => {
     }
 
     return () => {
+      console.log('exit channel');
       removeMsgObserver();
       removeConnectObserver();
 
@@ -397,8 +490,7 @@ export const useChannel = (channelId: string) => {
         });
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   const mute = useCallback(async (value: boolean) => muteChannel(channelId, value, false), [channelId, muteChannel]);
 
@@ -441,15 +533,16 @@ export const useMuteChannel = () => {
   const dispatch = useAppCommonDispatch();
 
   const mute = useCallback(
-    async (channelId: string, value: boolean, isRefreshTotal = true) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async (channelId: string, value: boolean, _isRefreshTotal = true) => {
       await im.service.updateChannelMute({
         channelUuid: channelId,
         mute: value,
       });
 
-      if (isRefreshTotal) {
-        await im.service.readMessage({ channelUuid: channelId, total: 9999 });
-      }
+      // if (isRefreshTotal) {
+      //   await im.service.readMessage({ channelUuid: channelId, total: 9999 });
+      // }
 
       dispatch(
         updateChannelAttribute({
@@ -457,14 +550,14 @@ export const useMuteChannel = () => {
           channelId: channelId,
           value: {
             mute: value,
-            unreadMessageCount: 0,
+            // unreadMessageCount: 0,
           },
         }),
       );
 
-      if (isRefreshTotal) {
-        im.refreshMessageCount();
-      }
+      // if (isRefreshTotal) {
+      //   im.refreshMessageCount();
+      // }
     },
     [dispatch, networkType],
   );
@@ -489,6 +582,7 @@ export const usePinChannel = () => {
           channelId: channelId,
           value: {
             pin: value,
+            pinAt: String(Date.now()),
           },
         }),
       );
@@ -504,20 +598,29 @@ export const useHideChannel = () => {
   const dispatch = useAppCommonDispatch();
 
   const hide = useCallback(
-    async (channelId: string) => {
+    async (channelId: string, isLocalImmediateDelete = false) => {
+      if (isLocalImmediateDelete) {
+        dispatch(
+          removeChannel({
+            network: networkType,
+            channelId,
+          }),
+        );
+      }
       await im.service.hideChannel({
         channelUuid: channelId,
       });
       im.service.readMessage({ channelUuid: channelId, total: 9999 }).then(() => {
         im.refreshMessageCount();
       });
-
-      dispatch(
-        removeChannel({
-          network: networkType,
-          channelId,
-        }),
-      );
+      if (!isLocalImmediateDelete) {
+        dispatch(
+          removeChannel({
+            network: networkType,
+            channelId,
+          }),
+        );
+      }
     },
     [dispatch, networkType],
   );
@@ -532,7 +635,7 @@ export const useSearchChannel = () => {
       cursor: '',
       maxResultCount: SEARCH_CHANNEL_LIMIT,
     });
-    return data?.list?.filter(ele => !!ele?.lastPostAt) || [];
+    return data?.list?.filter(ele => !!ele?.lastPostAt && ele?.status === ChannelStatusEnum.NORMAL) || [];
   }, []);
 };
 

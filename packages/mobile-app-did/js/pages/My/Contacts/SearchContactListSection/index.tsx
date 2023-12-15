@@ -38,7 +38,7 @@ const SearchContactListSection: React.FC<SearchContactListSectionType> = (props:
     [jumpToChatDetail],
   );
 
-  return <FlatList data={list} renderItem={renderItem} />;
+  return <FlatList keyExtractor={item => item.userId} data={list} renderItem={renderItem} />;
 };
 
 export default SearchContactListSection;

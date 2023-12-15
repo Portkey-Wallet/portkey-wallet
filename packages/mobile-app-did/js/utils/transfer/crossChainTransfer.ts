@@ -9,7 +9,7 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { ELF_DECIMAL } from '@portkey-wallet/constants/constants-ca/activity';
-import { getTokenInfo } from './getTokenInfo';
+import { getTokenIssueChainId } from './getTokenInfo';
 
 export interface CrossChainTransferParamsType {
   tokenInfo: BaseToken;
@@ -19,20 +19,20 @@ export interface CrossChainTransferParamsType {
   memo?: string;
   toAddress: string;
 }
-export type CrossChainTransferIntervalParams = Omit<CrossChainTransferParams, 'caHash' | 'fee'> & {
+export type CrossChainTransferIntervalParams = CrossChainTransferParamsType & {
   issueChainId: number;
 };
 
 export const intervalCrossChainTransfer = async (
   tokenContract: ContractBasic,
-  params: CrossChainTransferParamsType,
+  params: CrossChainTransferIntervalParams,
 ) => {
-  const { managerAddress, chainType, amount, tokenInfo, memo = '', toAddress } = params;
-  const issueChainId = getChainIdByAddress(managerAddress, chainType);
+  const { chainType, amount, tokenInfo, memo = '', toAddress, issueChainId } = params;
+  // const issueChainId = getChainIdByAddress(managerAddress, chainType);
   const toChainId = getChainIdByAddress(toAddress, chainType);
 
   const paramsOption: any = {
-    issueChainId: getChainNumber(issueChainId),
+    issueChainId,
     toChainId: getChainNumber(toChainId),
     symbol: tokenInfo.symbol,
     to: toAddress,
@@ -87,7 +87,7 @@ const crossChainTransfer = async ({
   crossDefaultFee,
 }: CrossChainTransferParams) => {
   let managerTransferResult;
-  const issueChainId = await getTokenInfo({ tokenContract, paramsOption: { symbol: tokenInfo.symbol } });
+  const issueChainId = await getTokenIssueChainId({ tokenContract, paramsOption: { symbol: tokenInfo.symbol } });
 
   try {
     // first transaction:transfer to manager itself

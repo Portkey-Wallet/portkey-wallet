@@ -12,7 +12,6 @@ import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { FontStyles } from 'assets/theme/styles';
 import { setStringAsync } from 'expo-clipboard';
 import CommonToast from 'components/CommonToast';
-import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import { isIOS } from '@rneui/base';
 import { useAppCASelector } from '@portkey-wallet/hooks';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
@@ -20,6 +19,7 @@ import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import { request } from '@portkey-wallet/api/api-did';
 import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
+import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 enum HANDLE_TYPE {
   REFRESH = 'Refresh',
@@ -48,6 +48,7 @@ const BrowserEditModal = ({
   const { bookmarkList, refresh } = useBookmarkList();
   const isBookmarkLoading = useRef(false);
   const [bookmark, setBookmark] = useState(bookmarkList.find(item => item.url === browserInfo?.url));
+  const { getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
 
   const handleUrl = useCallback(
     async (type: HANDLE_TYPE) => {
@@ -170,11 +171,11 @@ const BrowserEditModal = ({
   return (
     <View style={styles.modalStyle}>
       <View style={[GStyles.flexRow, GStyles.center]}>
-        <DiscoverWebsiteImage size={pTd(32)} imageUrl={getFaviconUrl(browserInfo?.url || '')} />
+        <DiscoverWebsiteImage size={pTd(32)} imageUrl={getCmsWebsiteInfoImageUrl(browserInfo?.url || '')} />
         <View style={styles.headerCenter}>
           <TextWithProtocolIcon title={browserInfo?.name} url={browserInfo.url} />
           <TextS numberOfLines={1} ellipsizeMode="tail" style={styles.url}>
-            {browserInfo?.url}
+            {getCmsWebsiteInfoName(browserInfo?.url) || browserInfo?.url}
           </TextS>
         </View>
         <TouchableOpacity onPress={() => handleUrl(HANDLE_TYPE.CANCEL)}>

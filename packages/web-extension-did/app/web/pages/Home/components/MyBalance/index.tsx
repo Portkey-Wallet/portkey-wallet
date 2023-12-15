@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Tabs } from 'antd';
 import { useLocation, useNavigate } from 'react-router';
 import BalanceCard from 'pages/components/BalanceCard';
@@ -14,6 +14,7 @@ import {
   useCaAddressInfoList,
   useChainIdList,
   useCurrentWallet,
+  useOriginChainId,
 } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { fetchAllTokenListAsync, getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
@@ -25,17 +26,23 @@ import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPric
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import useVerifierList from 'hooks/useVerifierList';
 import useGuardianList from 'hooks/useGuardianList';
-import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/payment';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import AccountConnect from 'pages/components/AccountConnect';
-import { useBuyButtonShow, useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import ChatEntry from 'pages/ChatEntry';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import ChatEntry from 'pages/IMChat/ChatEntry';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
+import { useCheckSecurity } from 'hooks/useSecurity';
+import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
+import DepositModal from '../DepositModal';
+import DepositDrawer from '../DepositDrawer';
+import { useExtensionBridgeButtonShow, useExtensionBuyButtonShow, useExtensionETransShow } from 'hooks/cms';
+import { ETransType } from 'types/eTrans';
+import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from '../../../components/DisclaimerModal';
+import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import './index.less';
-import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 
 export interface TransactionResult {
   total: number;
@@ -48,6 +55,7 @@ export default function MyBalance() {
   const [activeKey, setActiveKey] = useState<string>(BalanceTab.TOKEN);
   const [navTarget, setNavTarget] = useState<'send' | 'receive'>('send');
   const [tokenOpen, setTokenOpen] = useState(false);
+  const [depositOpen, setDepositOpen] = useState(false);
   const {
     accountToken: { accountTokenList },
     accountBalance,
@@ -61,6 +69,7 @@ export default function MyBalance() {
   const isMainNet = useIsMainnet();
   const { walletInfo } = useCurrentWallet();
   const caAddressInfos = useCaAddressInfoList();
+  const { eBridgeUrl = '', eTransferUrl = '' } = useCurrentNetworkInfo();
   const renderTabsData = useMemo(
     () => [
       {
@@ -85,10 +94,17 @@ export default function MyBalance() {
   const getGuardianList = useGuardianList();
   useFreshTokenPrice();
   useVerifierList();
-  const { isBuyButtonShow } = useBuyButtonShow(VersionDeviceType.Extension);
+  const [disclaimerOpen, setDisclaimerOpen] = useState<boolean>(false);
+  const disclaimerData = useRef<IDisclaimerProps>(initDisclaimerData);
+
   const isShowChat = useIsChatShow();
   const unreadCount = useUnreadCount();
-
+  const checkSecurity = useCheckSecurity();
+  const originChainId = useOriginChainId();
+  const { checkDappIsConfirmed } = useDisclaimer();
+  const { isBridgeShow } = useExtensionBridgeButtonShow();
+  const { isBuyButtonShow } = useExtensionBuyButtonShow();
+  const { isETransShow } = useExtensionETransShow();
   useEffect(() => {
     if (state?.key) {
       setActiveKey(state.key);
@@ -168,16 +184,75 @@ export default function MyBalance() {
     setActiveKey(key);
   }, []);
 
-  const handleBuy = useCallback(() => {
-    if (isMainNet) {
-      navigate('/buy');
-    } else {
-      const openWinder = window.open(FAUCET_URL, '_blank');
+  const handleBridge = useCallback(async () => {
+    const isSafe = await checkSecurity(originChainId);
+    if (!isSafe) return;
+    if (checkDappIsConfirmed(eBridgeUrl)) {
+      const openWinder = window.open(eBridgeUrl, '_blank');
       if (openWinder) {
         openWinder.opener = null;
       }
+      setDepositOpen(false);
+    } else {
+      disclaimerData.current = {
+        targetUrl: eBridgeUrl,
+        originUrl: eBridgeUrl,
+        dappIcon: 'BridgeFavicon',
+        originTitle: 'eBridge',
+        titleText: 'You will be directed to a third-party DApp: eBridge',
+      };
+      setDisclaimerOpen(true);
     }
-  }, [isMainNet, navigate]);
+  }, [checkDappIsConfirmed, checkSecurity, eBridgeUrl, originChainId]);
+
+  const handleClickETrans = useCallback(
+    async (eTransType: ETransType) => {
+      const isSafe = await checkSecurity(originChainId);
+      if (!isSafe) return;
+      const targetUrl = stringifyETrans({
+        url: eTransferUrl,
+        query: {
+          tokenSymbol: 'USDT',
+          type: eTransType,
+        },
+      });
+      if (checkDappIsConfirmed(eTransferUrl)) {
+        const openWinder = window.open(targetUrl, '_blank');
+        if (openWinder) {
+          openWinder.opener = null;
+        }
+        setDepositOpen(false);
+      } else {
+        disclaimerData.current = {
+          targetUrl,
+          originUrl: eTransferUrl,
+          dappIcon: 'ETransFavicon',
+          originTitle: 'ETransfer',
+          titleText: 'You will be directed to a third-party DApp: ETransfer',
+        };
+        setDisclaimerOpen(true);
+      }
+    },
+    [checkDappIsConfirmed, checkSecurity, eTransferUrl, originChainId],
+  );
+
+  const isShowDepositEntry = useMemo(
+    () => isBridgeShow || isBuyButtonShow || isETransShow,
+    [isBridgeShow, isBuyButtonShow, isETransShow],
+  );
+
+  const renderDeposit = useMemo(() => {
+    if (!isShowDepositEntry) {
+      return <></>;
+    }
+    const props = {
+      open: depositOpen,
+      onClose: () => setDepositOpen(false),
+      onClickBridge: handleBridge,
+      onClickETrans: handleClickETrans,
+    };
+    return isNotLessThan768 ? <DepositModal {...props} /> : <DepositDrawer {...props} />;
+  }, [depositOpen, handleBridge, handleClickETrans, isNotLessThan768, isShowDepositEntry]);
 
   return (
     <div className="balance">
@@ -199,9 +274,9 @@ export default function MyBalance() {
       </div>
       <BalanceCard
         amount={accountBalance}
-        isShowBuy={isBuyButtonShow}
-        onBuy={handleBuy}
-        onSend={() => {
+        isShowDeposit={isShowDepositEntry}
+        onClickDeposit={() => setDepositOpen(true)}
+        onSend={async () => {
           setNavTarget('send');
           return setTokenOpen(true);
         }}
@@ -209,10 +284,18 @@ export default function MyBalance() {
           setNavTarget('receive');
           return setTokenOpen(true);
         }}
+        isShowFaucet={!isMainNet}
       />
       {SelectTokenELe}
       <Tabs activeKey={activeKey} onChange={onChange} centered items={renderTabsData} className="balance-tab" />
-      {isPrompt ? <PromptEmptyElement className="empty-element" /> : null}
+      {isPrompt && <PromptEmptyElement className="empty-element" />}
+      <DisclaimerModal
+        open={disclaimerOpen}
+        onClose={() => setDisclaimerOpen(false)}
+        onCloseDepositModal={() => setDepositOpen(false)}
+        {...disclaimerData.current}
+      />
+      {renderDeposit}
     </div>
   );
 }

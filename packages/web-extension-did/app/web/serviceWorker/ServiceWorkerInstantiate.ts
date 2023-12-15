@@ -34,6 +34,7 @@ const permissionWhitelist = [
   // portkey method
   PortkeyMessageTypes.GET_SEED,
   PortkeyMessageTypes.SET_SEED,
+  PortkeyMessageTypes.CLEAR_SEED,
   PortkeyMessageTypes.LOCK_WALLET,
   PortkeyMessageTypes.CLOSE_PROMPT,
   PortkeyMessageTypes.REGISTER_WALLET,
@@ -137,8 +138,11 @@ export default class ServiceWorkerInstantiate {
       case PortkeyMessageTypes.SET_SEED:
         ServiceWorkerInstantiate.setSeed(sendResponse, message.payload);
         break;
+      case PortkeyMessageTypes.CLEAR_SEED:
+        ServiceWorkerInstantiate.clearSeed(sendResponse);
+        break;
       case PortkeyMessageTypes.LOCK_WALLET:
-        ServiceWorkerInstantiate.lockWallet(sendResponse);
+        ServiceWorkerInstantiate.lockWallet(sendResponse, true);
         break;
       case PortkeyMessageTypes.CHECK_WALLET_STATUS:
         this.checkWalletStatus(sendResponse);
@@ -162,7 +166,7 @@ export default class ServiceWorkerInstantiate {
         ServiceWorkerInstantiate.expandSetting();
         break;
       case PortkeyMessageTypes.ADD_GUARDIANS:
-        ServiceWorkerInstantiate.expandAddGuardians();
+        ServiceWorkerInstantiate.expandAddGuardians(message.payload);
         break;
       case PortkeyMessageTypes.GUARDIANS_VIEW:
         ServiceWorkerInstantiate.expandGuardiansView();
@@ -300,10 +304,11 @@ export default class ServiceWorkerInstantiate {
     );
   }
 
-  static expandAddGuardians() {
+  static expandAddGuardians(payload: any) {
     notificationService.openPrompt(
       {
         method: PromptRouteTypes.ADD_GUARDIANS,
+        search: payload,
       },
       'tabs',
     );
@@ -393,6 +398,11 @@ export default class ServiceWorkerInstantiate {
     });
   }
 
+  static clearSeed(sendResponse: SendResponseFun) {
+    seed = null;
+    sendResponse(errorHandler(0));
+  }
+
   static async checkTimingLock(sendResponse?: SendResponseFun) {
     apis.alarms.clear('timingLock');
 
@@ -419,12 +429,13 @@ export default class ServiceWorkerInstantiate {
     }
   }
 
-  static lockWallet(sendResponse?: SendResponseFun) {
+  static lockWallet(sendResponse?: SendResponseFun, isManualLockWallet?: boolean) {
     try {
       seed = null;
       setLocalStorage({
         locked: true,
       });
+      isManualLockWallet && SWEventController.dispatchEvent({ eventName: 'accountsChanged', data: {} });
       sendResponse?.(errorHandler(0));
     } catch (e) {
       sendResponse?.(errorHandler(500001, e));

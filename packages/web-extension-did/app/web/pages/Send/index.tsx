@@ -4,7 +4,7 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
 import { IClickAddressProps } from '@portkey-wallet/types/types-ca/contact';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
-import { getAddressChainId, isDIDAddress } from '@portkey-wallet/utils';
+import { getAddressChainId, handleErrorMessage, isDIDAddress } from '@portkey-wallet/utils';
 import { getAelfAddress, getEntireDIDAelfAddress, isCrossChain, isEqAddress } from '@portkey-wallet/utils/aelf';
 import aes from '@portkey-wallet/utils/aes';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
@@ -26,7 +26,6 @@ import getTransferFee from './utils/getTransferFee';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { TransactionError } from '@portkey-wallet/constants/constants-ca/assets';
 import { the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/activity';
-import { contractErrorHandler } from 'utils/tryErrorHandler';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
@@ -35,6 +34,9 @@ import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { ChainId } from '@portkey-wallet/types';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import './index.less';
+import { useCheckLimit, useCheckSecurity } from 'hooks/useSecurity';
+import { ExceedLimit, WalletIsNotSecure } from 'constants/security';
+import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
 
 export type Account = { address: string; name?: string };
 
@@ -116,7 +118,6 @@ export default function Send() {
   const retryCrossChain = useCallback(
     async ({ transactionId, params }: the2ThFailedActivityItemType) => {
       try {
-        //
         if (!chainInfo) return;
         const privateKey = aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed);
         if (!privateKey) return;
@@ -172,11 +173,11 @@ export default function Send() {
           chainType: currentNetwork.walletType,
           token: tokenInfo,
           caHash: wallet.caHash as string,
-          amount: timesDecimals(num || amount, tokenInfo.decimals).toNumber(),
+          amount: timesDecimals(num || amount, tokenInfo.decimals).toFixed(),
         });
         return feeRes;
       } catch (error) {
-        const _error = contractErrorHandler(error);
+        const _error = handleErrorMessage(error);
         console.log('getFee===error', _error);
       }
     },
@@ -194,15 +195,36 @@ export default function Send() {
     ],
   );
 
+  const checkLimit = useCheckLimit(tokenInfo.chainId);
+
+  const checkSecurity = useCheckSecurity();
   const handleCheckPreview = useCallback(async () => {
     try {
       setLoading(true);
       if (!ZERO.plus(amount).toNumber()) return 'Please input amount';
+      if (!balance) return TransactionError.TOKEN_NOT_ENOUGH;
+
       const _isManagerSynced = await checkManagerSyncState(state.chainId);
       if (!_isManagerSynced) {
         return 'Synchronizing on-chain account information...';
       }
+
+      // wallet security check
+      const securityRes = await checkSecurity(tokenInfo.chainId);
+      if (!securityRes) return WalletIsNotSecure;
+
+      // transfer limit check
+      const res = await checkLimit({
+        chainId: tokenInfo.chainId,
+        symbol: tokenInfo.symbol,
+        amount: amount,
+        decimals: tokenInfo.decimals,
+        from: ICheckLimitBusiness.SEND,
+      });
+      if (typeof res !== 'boolean') return ExceedLimit;
+
       if (type === 'token') {
+        // insufficient balance check
         if (timesDecimals(amount, tokenInfo.decimals).isGreaterThan(balance)) {
           return TransactionError.TOKEN_NOT_ENOUGH;
         }
@@ -235,11 +257,15 @@ export default function Send() {
   }, [
     setLoading,
     amount,
-    type,
     checkManagerSyncState,
     state.chainId,
+    type,
     getTranslationInfo,
+    checkSecurity,
+    tokenInfo.chainId,
+    tokenInfo.symbol,
     tokenInfo.decimals,
+    checkLimit,
     balance,
     toAccount.address,
     chainInfo?.chainId,
@@ -255,6 +281,25 @@ export default function Send() {
       if (!privateKey) return;
       if (!tokenInfo) throw 'No Symbol info';
       setLoading(true);
+      try {
+        // transfer limit check
+        const res = await checkLimit({
+          chainId: tokenInfo.chainId,
+          symbol: tokenInfo.symbol,
+          amount: amount,
+          decimals: tokenInfo.decimals,
+          from: ICheckLimitBusiness.SEND,
+        });
+        if (typeof res !== 'boolean') {
+          setLoading(false);
+          return ExceedLimit;
+        }
+      } catch (error) {
+        setLoading(false);
+
+        const msg = handleErrorMessage(error);
+        message.error(msg);
+      }
 
       if (isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF')) {
         await crossChainTransfer({
@@ -264,9 +309,9 @@ export default function Send() {
           managerAddress: wallet.address,
           tokenInfo,
           caHash: wallet?.caHash || '',
-          amount: timesDecimals(amount, tokenInfo.decimals).toNumber(),
+          amount: timesDecimals(amount, tokenInfo.decimals).toFixed(),
           toAddress: toAccount.address,
-          fee: timesDecimals(txFee, defaultToken.decimals).toNumber(),
+          fee: timesDecimals(txFee, defaultToken.decimals).toFixed(),
         });
       } else {
         console.log('sameChainTransfers==sendHandler');
@@ -276,7 +321,7 @@ export default function Send() {
           privateKey,
           tokenInfo,
           caHash: wallet?.caHash || '',
-          amount: timesDecimals(amount, tokenInfo.decimals).toNumber(),
+          amount: timesDecimals(amount, tokenInfo.decimals).toFixed(),
           toAddress: toAccount.address,
         });
       }
@@ -294,7 +339,7 @@ export default function Send() {
         showErrorModal(error.data);
         return;
       } else {
-        message.error(error);
+        message.error(handleErrorMessage(error));
       }
     } finally {
       setLoading(false);
@@ -302,6 +347,7 @@ export default function Send() {
   }, [
     amount,
     chainInfo,
+    checkLimit,
     currentNetwork.walletType,
     defaultToken.decimals,
     dispatch,
@@ -312,7 +358,9 @@ export default function Send() {
     toAccount.address,
     tokenInfo,
     txFee,
-    wallet,
+    wallet.AESEncryptPrivateKey,
+    wallet.address,
+    wallet?.caHash,
   ]);
 
   const StageObj: TypeStageObj = useMemo(
@@ -362,7 +410,7 @@ export default function Send() {
         btnText: 'Preview',
         handler: async () => {
           const res = await handleCheckPreview();
-          console.log('handleCheckPreview res', res);
+          if (res === ExceedLimit || res === WalletIsNotSecure) return;
           if (!res) {
             setTipMsg('');
             setStage(Stage.Preview);
@@ -446,7 +494,7 @@ export default function Send() {
   const { isPrompt } = useCommonState();
   const mainContent = useCallback(() => {
     return (
-      <div className={clsx(['page-send', isPrompt ? 'detail-page-prompt' : null])}>
+      <div className={clsx(['page-send', isPrompt && 'detail-page-prompt'])}>
         <TitleWrapper
           className="page-title"
           title={`Send ${type === 'token' ? symbol : ''}`}
@@ -487,7 +535,7 @@ export default function Send() {
             {StageObj[stage].btnText}
           </Button>
         </div>
-        {isPrompt ? <PromptEmptyElement /> : null}
+        {isPrompt && <PromptEmptyElement />}
       </div>
     );
   }, [StageObj, btnDisabled, errorMsg, isPrompt, navigate, stage, symbol, t, toAccount, type, walletName]);

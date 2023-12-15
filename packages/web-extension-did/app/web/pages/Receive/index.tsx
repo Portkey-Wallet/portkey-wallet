@@ -13,6 +13,8 @@ import QRCodeCommon from 'pages/components/QRCodeCommon';
 import { useCallback, useMemo } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
+import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
+import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import './index.less';
 
 export default function Receive() {
@@ -26,6 +28,7 @@ export default function Receive() {
     () => `ELF_${wallet?.[(state.chainId as ChainId) || 'AELF']?.caAddress}_${state.chainId}`,
     [state, wallet],
   );
+  const symbolImages = useSymbolImages();
 
   const rightElement = useMemo(() => {
     return (
@@ -62,14 +65,14 @@ export default function Receive() {
   const { isPrompt } = useCommonState();
   const mainContent = useCallback(() => {
     return (
-      <div className={clsx(['receive-wrapper', isPrompt ? 'detail-page-prompt' : null])}>
+      <div className={clsx(['receive-wrapper', isPrompt && 'detail-page-prompt'])}>
         <TitleWrapper leftElement rightElement={rightElement} />
         <div className="receive-content">
           <div className={clsx(['single-account'])}>
             <div className="name">My Wallet Address to Receive</div>
           </div>
           <div className="token-info">
-            {symbol === 'ELF' ? <CustomSvg type="elf-icon" /> : <div className="icon">{symbol?.[0]}</div>}
+            <TokenImageDisplay width={24} className="icon" symbol={symbol} src={symbolImages[symbol || '']} />
             <p className="symbol">{symbol}</p>
             <p className="network">{transNetworkText(state.chainId, isTestNet)}</p>
           </div>
@@ -79,10 +82,10 @@ export default function Receive() {
             <Copy className="copy-icon" toCopy={caAddress}></Copy>
           </div>
         </div>
-        {isPrompt ? <PromptEmptyElement /> : null}
+        {isPrompt && <PromptEmptyElement />}
       </div>
     );
-  }, [caAddress, isPrompt, isTestNet, rightElement, state.chainId, symbol, value]);
+  }, [caAddress, isPrompt, isTestNet, rightElement, state.chainId, symbol, symbolImages, value]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

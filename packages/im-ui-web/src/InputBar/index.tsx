@@ -3,23 +3,17 @@ import clsx from 'clsx';
 import { Popover } from 'antd';
 import { emojiList } from '../assets/emoji/index';
 import CustomSvg from '../components/CustomSvg';
-import PopoverMenuList, { IPopoverMenuListData } from '../PopoverMenuList';
+import PopoverMenuList from '../PopoverMenuList';
 import CustomInput from '../components/CustomInput';
+import { IInputBarProps, PopDataProps } from '../type';
 import './index.less';
 
-interface IInputBar {
-  maxLength?: number;
-  moreData?: IPopoverMenuListData[];
-  showEmoji?: boolean;
-  onSendMessage: (v: string) => void;
-}
-
-export default function InputBar({ moreData, showEmoji = true, onSendMessage, maxLength = 300 }: IInputBar) {
+export default function InputBar({ moreData, showEmoji = true, onSendMessage, maxLength = 300 }: IInputBarProps) {
   const [showEmojiIcon, setShowEmojiIcon] = useState(false);
   const [value, setValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const [popVisible, setPopVisible] = useState(false);
-  const formatMoreData = moreData?.map((item) => ({
+  const formatMoreData = moreData?.map((item: PopDataProps) => ({
     ...item,
     onClick: () => {
       setPopVisible(false);
@@ -40,24 +34,27 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
       console.log('===input bar hidePop error', e);
     }
   }, []);
-  const handleChange = (e: any) => {
+  const handleChange = useCallback((e: any) => {
     setValue(e.target.value);
-  };
-  const handleSend = () => {
+  }, []);
+  const handleSend = useCallback(() => {
     onSendMessage(value);
     setValue('');
-  };
-  const handleEnterKeyDown = (e: any) => {
-    if (e.keyCode === 13 && e.shiftKey) {
-      e.preventDefault();
-      setValue(e.target.value + '\n');
-    } else if (e.keyCode === 13) {
-      e.preventDefault();
-      if (value?.trim()) {
-        handleSend();
+  }, [onSendMessage, value]);
+  const handleEnterKeyDown = useCallback(
+    (e: any) => {
+      if (e.keyCode === 13 && e.shiftKey) {
+        e.preventDefault();
+        setValue(e.target.value + '\n');
+      } else if (e.keyCode === 13) {
+        e.preventDefault();
+        if (value?.trim()) {
+          handleSend();
+        }
       }
-    }
-  };
+    },
+    [handleSend, value],
+  );
   useEffect(() => {
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);

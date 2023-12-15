@@ -19,6 +19,7 @@ import CustomModal from 'pages/components/CustomModal';
 import { useGoProfile } from 'hooks/useProfile';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { ExtraType, ExtraTypeEnum } from 'types/Profile';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 
 export enum ContactInfoError {
   invalidAddress = 'Invalid address',
@@ -254,12 +255,13 @@ export default function AddContact() {
         }
       } catch (e: any) {
         console.log('onFinish==contact error', e);
-        message.error(t((e.error || {}).message || e.message || 'handle contact error'));
+        const msg = handleErrorMessage(e, 'handle contact error');
+        message.error(msg);
       } finally {
         setLoading(false);
       }
     },
-    [handleCheckAddress, handleCheckName, showChat, requestAddContact, setLoading, t],
+    [handleCheckAddress, handleCheckName, showChat, requestAddContact, setLoading],
   );
 
   // go back previous page
@@ -277,7 +279,10 @@ export default function AddContact() {
 
   const { isNotLessThan768 } = useCommonState();
 
-  const headerTitle = useMemo(() => t('Add New Contact'), [t]);
+  const headerTitle = useMemo(
+    () => (extra === ExtraTypeEnum.CANT_CHAT ? t('Edit Contact') : t('Add New Contact')),
+    [extra, t],
+  );
   return isNotLessThan768 ? (
     <AddContactPrompt
       headerTitle={headerTitle}

@@ -1,14 +1,17 @@
-import CustomSvg from 'components/CustomSvg';
 import MenuList from 'pages/components/MenuList';
 import SecondPageHeader from 'pages/components/SecondPageHeader';
-import { IWalletProps, WalletAvatar } from '..';
+import { IWalletProps } from '..';
 import ExitWallet from '../components/ExitWallet';
 import { Outlet } from 'react-router';
 import './index.less';
+import WalletEntry from '../components/WalletEntry';
 
 export default function WalletPrompt({
   headerTitle,
   walletAvatar,
+  walletName,
+  portkeyId,
+  clickAvatar,
   menuList,
   exitText,
   exitVisible,
@@ -22,9 +25,12 @@ export default function WalletPrompt({
         <div>
           <SecondPageHeader className="wallet-header" title={headerTitle} leftElement={false} paddingLeft={12} />
 
-          <div className="flex-center wallet-icon">
-            <CustomSvg type={(walletAvatar as WalletAvatar) || 'master1'} className="flex-center wallet-svg" />
-          </div>
+          <WalletEntry
+            walletAvatar={walletAvatar}
+            walletName={walletName}
+            portkeyId={portkeyId}
+            clickAvatar={clickAvatar}
+          />
 
           <MenuList list={menuList} isShowSelectedColor selected={select} />
         </div>

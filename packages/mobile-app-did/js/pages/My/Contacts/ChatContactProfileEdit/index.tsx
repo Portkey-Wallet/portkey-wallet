@@ -4,7 +4,7 @@ import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
-import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { IContactProfile } from '@portkey-wallet/types/types-ca/contact';
 import CommonToast from 'components/CommonToast';
 import { TextM } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';
@@ -20,11 +20,11 @@ import ActionSheet from 'components/ActionSheet';
 import Loading from 'components/Loading';
 import { useDeleteContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { isValidRemark } from '@portkey-wallet/utils/reg';
-import { handleErrorMessage } from '@portkey-wallet/utils';
 import { useEditIMContact } from '@portkey-wallet/hooks/hooks-ca/im';
+import ProfileLoginAccountsSection from '../components/ProfileLoginAccountsSection';
 
 type RouterParams = {
-  contact?: ContactItemType;
+  contact?: IContactProfile;
   isFromChatProfileEditPage?: boolean;
 };
 
@@ -44,10 +44,7 @@ const ChatContactProfileEdit: React.FC = () => {
     if (remark && !isValidRemark(remark)) return setError('Only a-z, A-Z, 0-9 and "_"  allowed');
     try {
       Loading.show();
-      await editContact(
-        { name: remark, id: contact?.id || '', relationId: contact?.imInfo?.relationId || '' },
-        contact?.caHolderInfo?.walletName,
-      );
+      await editContact({ name: remark, id: contact?.id || '', relationId: contact?.imInfo?.relationId || '' });
       CommonToast.success(t('Saved Successful'));
 
       navigationService.goBack();
@@ -79,7 +76,7 @@ const ChatContactProfileEdit: React.FC = () => {
               navigationService.goBack();
             } catch (e: any) {
               console.log('onDelete:error', e);
-              CommonToast.fail(handleErrorMessage(e));
+              CommonToast.failError(e);
             }
             Loading.hide();
           },
@@ -104,10 +101,11 @@ const ChatContactProfileEdit: React.FC = () => {
         <ProfileRemarkSection errorMessage={error} value={remark} onChangeText={v => setRemark(v)} />
         <ProfilePortkeyIDSection
           disable
-          title={isShowPortkeyId ? 'PortkeyId' : 'ID'}
+          title={isShowPortkeyId ? 'Portkey ID' : 'ID'}
           id={isShowPortkeyId ? contact?.caHolderInfo?.userId : contact?.imInfo?.relationId}
         />
         <ProfileAddressSection disable addressList={contact?.addresses} />
+        <ProfileLoginAccountsSection disable list={contact?.loginAccounts || []} />
       </ScrollView>
 
       <View style={pageStyles.btnContainer}>

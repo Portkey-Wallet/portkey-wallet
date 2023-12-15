@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Form, message } from 'antd';
-import { useLocation } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
@@ -9,17 +9,19 @@ import EditContactPrompt from './Prompt';
 import EditContactPopup from './Popup';
 import { BaseHeaderProps } from 'types/UI';
 import { useCommonState } from 'store/Provider/hooks';
-import { useGoProfile, useProfileCopy } from 'hooks/useProfile';
+import { useProfileCopy } from 'hooks/useProfile';
 import { IEditContactFormProps } from '../components/EditContactForm';
 import { ValidData } from '../AddContact';
 import CustomModal from 'pages/components/CustomModal';
 import { useEditIMContact } from '@portkey-wallet/hooks/hooks-ca/im';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 
 export type IEditContactProps = IEditContactFormProps & BaseHeaderProps;
 
 export default function EditContact() {
   const [form] = Form.useForm();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { state } = useLocation();
   const transState = useMemo(() => {
     return {
@@ -54,7 +56,10 @@ export default function EditContact() {
     [handleFormValueChange],
   );
 
-  const handleView = useGoProfile();
+  const handleView = useCallback(() => {
+    navigate(-1);
+  }, [navigate]);
+
   const onFinish = useCallback(
     async (values: ContactItemType & { remark: string }) => {
       const { remark } = values;
@@ -62,14 +67,11 @@ export default function EditContact() {
       try {
         setLoading(true);
 
-        const contactDetail = await editContactApi(
-          {
-            name: remark.trim(),
-            id: state.id,
-            relationId: state?.imInfo?.relationId,
-          },
-          state?.caHolderInfo?.walletName,
-        );
+        const contactDetail = await editContactApi({
+          name: remark.trim(),
+          id: state.id,
+          relationId: state?.imInfo?.relationId,
+        });
 
         appDispatch(fetchContactListAsync());
 
@@ -87,22 +89,23 @@ export default function EditContact() {
                 </div>
               </div>
             ),
-            onOk: () => handleView({ ...state, ...contactDetail }),
+            onOk: handleView,
             okText: 'Ok',
           });
         } else {
           // CANT CHAT
-          handleView({ ...state, ...contactDetail });
+          handleView();
           message.success('Edit Contact Successful');
         }
       } catch (e: any) {
         console.log('onFinish==contact error', e);
-        message.error(t((e.error || {}).message || e.message || 'handle contact error'));
+        const msg = handleErrorMessage(e, 'handle contact error');
+        message.error(msg);
       } finally {
         setLoading(false);
       }
     },
-    [appDispatch, editContactApi, handleView, setLoading, state, t],
+    [appDispatch, editContactApi, handleView, setLoading, state],
   );
 
   const handleCopy = useProfileCopy();
@@ -112,7 +115,7 @@ export default function EditContact() {
   return isNotLessThan768 ? (
     <EditContactPrompt
       headerTitle={headerTitle}
-      goBack={() => handleView(state)}
+      goBack={handleView}
       form={form}
       validName={validName}
       validRemark={validRemark}
@@ -126,7 +129,7 @@ export default function EditContact() {
   ) : (
     <EditContactPopup
       headerTitle={headerTitle}
-      goBack={() => handleView(state)}
+      goBack={handleView}
       form={form}
       validName={validName}
       validRemark={validRemark}

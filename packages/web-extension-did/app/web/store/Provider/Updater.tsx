@@ -4,7 +4,7 @@ import { keepAliveOnPages } from 'utils/keepSWActive';
 import useUpdateRedux from './useUpdateRedux';
 import { useChainListFetch } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCaInfoOnChain } from 'hooks/useCaInfoOnChain';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useRefreshTokenConfig } from '@portkey-wallet/hooks/hooks-ca/api';
 import { useUserInfo } from './hooks';
 import { request } from '@portkey-wallet/api/api-did';
@@ -17,18 +17,16 @@ import { useCheckUpdate } from 'hooks/useCheckUpdate';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { useLocation } from 'react-router';
-import {
-  useBuyButton,
-  useRememberMeBlackList,
-  useSocialMediaList,
-  useTabMenuList,
-} from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useRememberMeBlackList, useSocialMediaList, useTabMenuList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import usePortkeyUIConfig from 'hooks/usePortkeyUIConfig';
 import im from '@portkey-wallet/im';
 import s3Instance from '@portkey-wallet/utils/s3';
 import initIm from 'hooks/im';
 import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useExtensionEntrance } from 'hooks/cms';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+import { initConfig } from './initConfig';
 
 keepAliveOnPages({});
 request.setExceptionManager(exceptionManager);
@@ -38,6 +36,7 @@ export default function Updater() {
   const { pathname } = useLocation();
   const { passwordSeed } = useUserInfo();
   const checkManagerOnLogout = useCheckManagerOnLogout();
+  const isMainnet = useIsMainnet();
 
   const { apiUrl, imApiUrl, imWsUrl, imS3Bucket } = useCurrentNetworkInfo();
   useMemo(() => {
@@ -53,11 +52,12 @@ export default function Updater() {
     });
   }, [imApiUrl, imWsUrl]);
   useMemo(() => {
+    const s3_key = isMainnet ? process.env.IM_S3_KEY : process.env.IM_S3_TESTNET_KEY;
     s3Instance.setConfig({
       bucket: imS3Bucket || '',
-      key: process.env.IM_S3_KEY || '',
+      key: s3_key || '',
     });
-  }, [imS3Bucket]);
+  }, [imS3Bucket, isMainnet]);
   initIm();
   useVerifierList();
   useUpdateRedux();
@@ -86,9 +86,13 @@ export default function Updater() {
   }, [onLocking]);
   usePhoneCountryCode(true);
   useSocialMediaList(true);
-  useBuyButton(true);
+  useExtensionEntrance(true);
   useRememberMeBlackList(true);
   useTabMenuList(true);
   useCheckContactMap();
+
+  useEffectOnce(() => {
+    initConfig();
+  });
   return null;
 }

@@ -5,6 +5,7 @@ import { ReactNode } from 'react';
 export interface MenuItemInfo {
   key: number | string;
   element: ReactNode;
+  icon?: ReactNode;
   click: () => void;
 }
 
@@ -30,6 +31,7 @@ export default function MenuList({
       {list.map((item) => (
         <MenuItem
           showEnterIcon={showEnterIcon}
+          icon={item?.icon}
           key={item.key}
           className={isShowSelectedColor && selected === item.key ? 'item-selected' : undefined}
           height={height}

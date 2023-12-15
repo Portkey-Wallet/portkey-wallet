@@ -21,7 +21,7 @@
       box-shadow: none;
       z-index: 10;
       position: sticky;
-      background: white;
+      background: @bg-11;
       border-bottom: 1px solid @border-2;
 
       .@{app-prefix}-tabs-nav-wrap {
@@ -180,7 +180,7 @@
     border-top: 0;
     border-left: 0;
     border-right: 0;
-    background: white;
+    background: @bg-11;
     .@{app-prefix}-collapse-item {
       border-bottom: none;
     }
@@ -195,7 +195,7 @@
     .@{app-prefix}-collapse-header {
       flex-direction: row-reverse;
       align-items: center !important;
-      padding: 16px 18px 16px 0!important;
+      padding: 16px 18px 16px 0 !important;
       .@{app-prefix}-collapse-arrow {
         margin-right: 8px !important;
         svg {
@@ -216,16 +216,6 @@
       line-height: 20px;
       font-size: 14px;
       color: @font-11;
-      .icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        border: 1px solid @border-1;
-        background: @bg-13;
-      }
     }
     .content {
       display: flex;

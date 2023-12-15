@@ -83,8 +83,6 @@ const ContactsList: React.FC<ContactsListProps> = ({
           _flashListData = _flashListData.concat(indexContactList);
         }
       } else {
-        if (!_flashListData) console.log('uuuuuu');
-
         _flashListData.push({
           ...contactIndex,
         });
@@ -127,7 +125,7 @@ const ContactsList: React.FC<ContactsListProps> = ({
             // no suffix
             result = contactMap[addressInfo.address];
           } else {
-            result = contactMap[addressInfo.address].filter(item =>
+            result = contactMap[addressInfo.address]?.filter(item =>
               item.addresses.find(address => address.chainId === addressInfo.suffix),
             );
           }
@@ -194,7 +192,7 @@ const ContactsList: React.FC<ContactsListProps> = ({
         <View style={[BGStyles.bg5, GStyles.paddingArg(8, 20, 8)]}>
           <CommonInput
             value={keyWord}
-            placeholder={t('Name or address')}
+            placeholder={t('Name/address')}
             onChangeText={value => {
               onChangeKeywords(value);
             }}

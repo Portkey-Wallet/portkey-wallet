@@ -19,8 +19,12 @@ import { message } from 'antd';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import im from '@portkey-wallet/im';
-import { ExtraTypeEnum } from 'types/Profile';
+import { ExtraTypeEnum, IProfileDetailDataProps } from 'types/Profile';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { ILoginAccountListProps } from '../components/LoginAccountList';
+import { IContactProfileLoginAccount } from '@portkey-wallet/types/types-ca/contact';
 
 export default function ViewContact() {
   const { isNotLessThan768 } = useCommonState();
@@ -38,8 +42,7 @@ export default function ViewContact() {
 
   const { name, index } = useIndexAndName(state);
 
-  // unified data structure
-  const [data, setData] = useState({
+  const [data, setData] = useState<IProfileDetailDataProps>({
     ...state,
     id: state?.id,
     index: index,
@@ -57,45 +60,73 @@ export default function ViewContact() {
   const addedText = t('Added');
   const addContactText = t('Add Contact');
 
-  useEffect(() => {
-    const isMyContact = isMyContactFn({ relationId, contactId: state?.id });
+  const genLoginAccountMap = useCallback((loginAccounts: IContactProfileLoginAccount[]) => {
+    const loginAccountMap: ILoginAccountListProps = {
+      Phone: [],
+      Email: [],
+      Google: [],
+      Apple: [],
+    };
 
-    if (state?.id && isMyContact) {
-      // ================== case one ==================
-      // have contact id, get info from local map
-      setData({ ...state, ...contactInfo });
-    } else if (relationId && isMyContact) {
-      // ================== case two ==================
-      // Can chat, and is my contact, need to get full info from local map;
-      // Because it jumped from the chat-box, the data is incomplete
-      setData({ ...state, ...contactInfo });
-    } else if (!isMyContact) {
-      // ================== case three ==================
-      // Can chat, and is stranger, need to get full info from remote db;
-      // Because it jumped from the chat-box or find-more, the data is incomplete
-      try {
-        im.service.getProfile({ relationId: relationId }).then((res) => {
-          setData({ ...state, ...res?.data });
-        });
-      } catch (error) {
-        const err = handleErrorMessage(error, 'get profile error');
-        message.error(err);
+    loginAccounts?.forEach((element) => {
+      switch (element.privacyType) {
+        case LoginType.Phone:
+          loginAccountMap.Phone.push(element);
+          break;
+        case LoginType.Email:
+          loginAccountMap.Email.push(element);
+          break;
+        case LoginType.Google:
+          loginAccountMap.Google.push(element);
+          break;
+        case LoginType.Apple:
+          loginAccountMap.Apple.push(element);
+          break;
+
+        default:
+          break;
       }
-    }
+    });
+    return loginAccountMap;
+  }, []);
 
-    // ================== case four ==================
-    // default setData(state);
-    // Cant chat (no relationId), display data directly
-    // Because it jumped from contacts page only
-  }, [contactInfo, isMyContactFn, relationId, state, state?.id]);
+  useEffect(() => {
+    im.service
+      .getProfile({
+        id: state.id || undefined,
+        portkeyId: data.imInfo?.portkeyId || undefined,
+        relationId: relationId || undefined,
+      })
+      .then((res) => {
+        const loginAccountMap = genLoginAccountMap(res.data.loginAccounts || []);
+        setData({ ...state, ...res?.data, loginAccountMap });
+      });
+  }, [contactInfo, data.imInfo?.portkeyId, genLoginAccountMap, isMyContactFn, relationId, state, state.id]);
 
   const goBack = useCallback(() => {
-    if (state?.from === 'new-chat') {
-      navigate('/new-chat', { state });
-    } else if (state?.from === 'chat-box') {
-      navigate(`/chat-box/${state?.channelUuid}`);
-    } else {
-      navigate('/setting/contacts');
+    switch (state?.from) {
+      case 'new-chat':
+        navigate('/new-chat', { state });
+        break;
+      case 'chat-box':
+        navigate(`/chat-box/${state?.channelUuid}`);
+        break;
+      case 'chat-box-group':
+        navigate(`/chat-box-group/${state?.channelUuid}`);
+        break;
+      case 'chat-group-info':
+        navigate(`/chat-group-info/${state?.channelUuid}`);
+        break;
+      case 'chat-member-list':
+        navigate(`/chat-group-info/${state?.channelUuid}/member-list`, { state });
+        break;
+      case 'contact-list':
+        navigate('/setting/contacts');
+        break;
+
+      default:
+        navigate(-1);
+        break;
     }
   }, [navigate, state]);
 
@@ -104,7 +135,8 @@ export default function ViewContact() {
   const handleCopy = useProfileCopy();
 
   const addStrangerApi = useAddStrangerContact();
-  const handleAdd = async () => {
+
+  const handleAdd = useLockCallback(async () => {
     try {
       const res = await addStrangerApi(relationId);
       setData({ ...state, ...res?.data });
@@ -116,7 +148,7 @@ export default function ViewContact() {
       const err = handleErrorMessage(error, 'add stranger error');
       message.error(err);
     }
-  };
+  }, [addStrangerApi, dispatch, relationId, state]);
 
   const readImputationApi = useReadImputation();
   useEffect(() => {

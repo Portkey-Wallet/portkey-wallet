@@ -35,7 +35,6 @@ import { useEffectOnce } from 'react-use';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import BigNumber from 'bignumber.js';
 import CustomTipModal from 'pages/components/CustomModal';
-import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import {
   BUY_SOON_TEXT,
@@ -44,7 +43,10 @@ import {
   SERVICE_UNAVAILABLE_TEXT,
   SYNCHRONIZING_CHAIN_TEXT,
 } from '@portkey-wallet/constants/constants-ca/payment';
-import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { useCheckLimit, useCheckSecurity } from 'hooks/useSecurity';
+import { handleErrorMessage } from '@portkey-wallet/utils';
+import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { useExtensionBuyButtonShow } from 'hooks/cms';
 
 export default function Buy() {
   const { t } = useTranslation();
@@ -56,7 +58,7 @@ export default function Buy() {
   const valueSaveRef = useRef({ ...initValueSave });
   const [errMsg, setErrMsg] = useState<string>('');
   const [warningMsg, setWarningMsg] = useState<string>('');
-  const [page, setPage] = useState<PaymentTypeEnum>(PaymentTypeEnum.BUY);
+  const [page, setPage] = useState<PaymentTypeEnum>(state?.pageType || PaymentTypeEnum.BUY);
   const [rate, setRate] = useState('');
   const [amount, setAmount] = useState(initCurrency);
   const [receive, setReceive] = useState('');
@@ -64,11 +66,13 @@ export default function Buy() {
   const { setLoading } = useLoading();
   const [curFiat, setCurFiat] = useState<PartialFiatType>(initFiat);
   const [rateUpdateTime, setRateUpdateTime] = useState(MAX_UPDATE_TIME);
-  const { isBuySectionShow, isSellSectionShow, refreshBuyButton } = useBuyButtonShow(VersionDeviceType.Extension);
+  const { isBuySectionShow, isSellSectionShow, refreshBuyButton } = useExtensionBuyButtonShow();
   const checkManagerSyncState = useCheckManagerSyncState();
   useFetchTxFee();
   const { ach: achFee } = useGetTxFee('AELF');
   const defaultToken = useDefaultToken('AELF');
+  const checkSecurity = useCheckSecurity();
+  const checkLimit = useCheckLimit('AELF');
 
   const disabled = useMemo(() => !!errMsg || !amount, [errMsg, amount]);
   const showRateText = useMemo(
@@ -103,6 +107,12 @@ export default function Buy() {
         valueSaveRef.current.side = side;
         setAmount(initCrypto);
         valueSaveRef.current.amount = initCrypto;
+
+        // CHECK 1: security
+        checkSecurity('AELF').catch((error) => {
+          const msg = handleErrorMessage(error);
+          console.log('check security error: ', msg);
+        });
       }
       updateCrypto();
     }
@@ -281,6 +291,7 @@ export default function Buy() {
 
   const handlePageChange = useCallback(
     async (e: RadioChangeEvent) => {
+      // CHECK 1: is show buy\sell
       refreshBuyButton(); // fetch on\off ramp is display
 
       const side = e.target.value;
@@ -296,6 +307,21 @@ export default function Buy() {
           content: t(SELL_SOON_TEXT),
         });
         return;
+      }
+
+      // CHECK 2: security
+      if (side === PaymentTypeEnum.SELL) {
+        try {
+          setLoading(true);
+          const securityRes = await checkSecurity('AELF');
+          setLoading(false);
+          if (!securityRes) return;
+        } catch (error) {
+          setLoading(false);
+
+          const msg = handleErrorMessage(error);
+          message.error(msg);
+        }
       }
 
       stopInterval();
@@ -326,7 +352,7 @@ export default function Buy() {
         setLoading(false);
       }
     },
-    [isBuySectionShow, isSellSectionShow, refreshBuyButton, setLoading, stopInterval, t, updateCrypto],
+    [checkSecurity, isBuySectionShow, isSellSectionShow, refreshBuyButton, setLoading, stopInterval, t, updateCrypto],
   );
 
   const handleSelect = useCallback(
@@ -375,6 +401,8 @@ export default function Buy() {
   const handleNext = useCallback(async () => {
     const { side } = valueSaveRef.current;
     setLoading(true);
+
+    // CHECK 1: is show buy\sell
     const result = await refreshBuyButton();
     const isBuySectionShow = result.isBuySectionShow;
     const isSellSectionShow = result.isSellSectionShow;
@@ -398,7 +426,28 @@ export default function Buy() {
         setWarningMsg('');
       }
 
-      // search balance from contract
+      try {
+        // CHECK 2: security
+        const securityRes = await checkSecurity('AELF');
+        if (!securityRes) return setLoading(false);
+
+        // CHECK 3: transfer limit
+        const limitRes = await checkLimit({
+          chainId: 'AELF',
+          symbol: defaultToken.symbol,
+          amount: valueSaveRef.current?.amount,
+          decimals: defaultToken.decimals,
+          from: ICheckLimitBusiness.RAMP_SELL,
+        });
+        if (typeof limitRes !== 'boolean') return setLoading(false);
+      } catch (error) {
+        setLoading(false);
+
+        const msg = handleErrorMessage(error);
+        message.error(msg);
+      }
+
+      // CHECK 4: search balance from contract
       const result = await getBalance({
         rpcUrl: currentChain.endPoint,
         address: accountTokenList[0].tokenContractAddress || '',
@@ -437,7 +486,9 @@ export default function Buy() {
   }, [
     accountTokenList,
     achFee,
+    checkLimit,
     checkManagerSyncState,
+    checkSecurity,
     currentChain,
     currentNetwork.walletType,
     defaultToken.decimals,
@@ -534,7 +585,7 @@ export default function Buy() {
             {t('Next')}
           </Button>
         </div>
-        {isPrompt ? <PromptEmptyElement /> : null}
+        {isPrompt && <PromptEmptyElement />}
       </div>
     ),
     [

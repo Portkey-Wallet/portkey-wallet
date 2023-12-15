@@ -4,7 +4,7 @@ import { defaultColors } from 'assets/theme';
 import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import Collapsible from 'components/Collapsible';
-import { TextL, TextM, TextS, TextXXL } from 'components/CommonText';
+import { TextL, TextM, TextS } from 'components/CommonText';
 import Svg from 'components/Svg';
 import React, { memo, useState } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
@@ -12,6 +12,7 @@ import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@po
 import { pTd } from 'utils/unit';
 import { ChainId } from '@portkey-wallet/types';
 import navigationService from 'utils/navigationService';
+import CommonAvatar from 'components/CommonAvatar';
 
 export interface ItemType {
   fromChainId?: ChainId;
@@ -29,9 +30,14 @@ const SendContactItem: React.FC<ItemType> = props => {
   return (
     <TouchableOpacity style={styles.itemWrap}>
       <TouchableOpacity style={styles.topWrap} onPress={() => setCollapsed(!collapsed)}>
-        <View style={styles.itemAvatar}>
-          <TextXXL>{contact?.index}</TextXXL>
-        </View>
+        <CommonAvatar
+          hasBorder
+          resizeMode="cover"
+          title={(contact?.name || contact?.caHolderInfo?.walletName || contact.imInfo?.name)?.toUpperCase()}
+          avatarSize={pTd(36)}
+          imageUrl={contact.avatar || ''}
+          style={styles.itemAvatar}
+        />
         <TextL style={styles.contactName}>
           {contact?.name || contact.caHolderInfo?.walletName || contact.imInfo?.name}
         </TextL>
@@ -46,7 +52,10 @@ const SendContactItem: React.FC<ItemType> = props => {
               key={`${ele?.address}${ele?.chainId}`}
               onPress={() => {
                 const { address, chainId } = ele;
-                onPress?.({ address: addressFormat(address, chainId), name: contact.name });
+                onPress?.({
+                  address: addressFormat(address, chainId),
+                  name: contact.name || contact.caHolderInfo?.walletName || contact.imInfo?.name,
+                });
               }}>
               <TextM style={[styles.address, !isContacts && !ele?.transactionTime && FontStyles.font7]}>
                 {formatStr2EllipsisStr(addressFormat(ele?.address, ele.chainId), 10)}
@@ -63,6 +72,7 @@ const SendContactItem: React.FC<ItemType> = props => {
                     chainId: ele.chainId,
                     contactName: contact.name || contact.caHolderInfo?.walletName || contact.imInfo?.name,
                     fromChainId,
+                    avatar: contact.avatar,
                   })
                 }>
                 <Svg icon="more-info" size={pTd(20)} />
@@ -85,6 +95,7 @@ const SendContactItem: React.FC<ItemType> = props => {
                     chainId: ele.chainId,
                     contactName: contact.name,
                     fromChainId,
+                    avatar: contact.avatar,
                   })
                 }>
                 <Svg icon="more-info" size={pTd(20)} />
@@ -109,16 +120,7 @@ export const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg1,
   },
   itemAvatar: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border1,
-    width: pTd(36),
-    height: pTd(36),
-    borderRadius: pTd(23),
-    backgroundColor: defaultColors.bg4,
     marginRight: pTd(10),
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   topWrap: {
     ...GStyles.flexRowWrap,

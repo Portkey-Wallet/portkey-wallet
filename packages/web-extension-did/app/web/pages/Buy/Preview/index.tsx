@@ -25,8 +25,7 @@ import './index.less';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import { ACH_WITHDRAW_URL } from 'constants/index';
-import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { useExtensionBuyButtonShow } from 'hooks/cms';
 
 export default function Preview() {
   const { t } = useTranslation();
@@ -39,7 +38,7 @@ export default function Preview() {
   const { setLoading } = useLoading();
   const wallet = useCurrentWalletInfo();
   const { buyConfig } = useCurrentNetworkInfo();
-  const { refreshBuyButton } = useBuyButtonShow(VersionDeviceType.Extension);
+  const { refreshBuyButton } = useExtensionBuyButtonShow();
 
   const data = useMemo(() => ({ ...initPreviewData, ...state }), [state]);
   const showRateText = useMemo(() => `1 ${data.crypto} ≈ ${formatAmountShow(rate, 2)} ${data.fiat}`, [data, rate]);
@@ -235,7 +234,7 @@ export default function Preview() {
             {t('Go to AlchemyPay')}
           </Button>
         </div>
-        {isPrompt ? <PromptEmptyElement /> : null}
+        {isPrompt && <PromptEmptyElement />}
       </div>
     ),
     [

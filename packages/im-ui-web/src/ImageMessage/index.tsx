@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Image, Popover } from 'antd';
 import clsx from 'clsx';
 import { IImageMessageProps } from '../type';
@@ -21,26 +21,29 @@ const ImageMessage: React.FC<IImageMessageProps> = (props) => {
   );
   const [popVisible, setPopVisible] = useState(false);
 
-  const popoverList = [
-    {
-      key: 'delete',
-      leftIcon: <CustomSvg type="Delete" />,
-      children: 'Delete',
-      onClick: (e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(e),
-    },
-  ];
-  const hidePop = () => {
+  const popoverList = useMemo(
+    () => [
+      {
+        key: 'delete',
+        leftIcon: <CustomSvg type="Delete" />,
+        children: 'Delete',
+        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(e),
+      },
+    ],
+    [props],
+  );
+  const hidePop = useCallback(() => {
     setPopVisible(false);
-  };
+  }, []);
   useEffect(() => {
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);
-  }, []);
+  }, [hidePop]);
   const renderImage = useMemo(
     () => (
       <>
         <Image
-          style={imageSize}
+          style={{ width: imageSize.width, height: imageSize.height }}
           src={thumbImgUrl || imgUrl}
           preview={{
             src: imgUrl || thumbImgUrl,

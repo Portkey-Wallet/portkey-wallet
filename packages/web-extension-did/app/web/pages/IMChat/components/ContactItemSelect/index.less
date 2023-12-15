@@ -1,0 +1,37 @@
+@import '../../../../assets/theme/color.less';
+
+.contact-item-select {
+  .contact-item-left {
+    .contact-index-logo {
+      margin-right: 12px;
+      .avatar-letter {
+        font-size: 14px;
+      }
+    }
+    .contact-item-name {
+      color: @font-11;
+      font-size: 14px;
+      font-weight: normal;
+    }
+  }
+  .contact-item-right {
+    .not-selected-icon {
+      width: 24px;
+      height: 24px;
+    }
+    .selected-icon {
+      width: 24px;
+      height: 24px;
+    }
+  }
+  &.im-disable {
+    opacity: 0.3;
+    .selected-icon {
+      svg {
+        path {
+          fill: @svg-2;
+        }
+      }
+    }
+  }
+}

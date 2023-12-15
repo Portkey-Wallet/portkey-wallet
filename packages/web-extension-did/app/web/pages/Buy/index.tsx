@@ -49,6 +49,7 @@ import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecur
 import { useExtensionBuyButtonShow } from 'hooks/cms';
 import { GuardianItem } from 'types/guardians';
 import GuardianApproveModal from 'pages/components/GuardianApprovalModal';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 
 export default function Buy() {
   const { t } = useTranslation();
@@ -641,6 +642,7 @@ export default function Buy() {
         <GuardianApproveModal
           open={openGuardiansApprove}
           targetChainId="AELF"
+          operationType={OperationTypeEnum.transferApprove}
           onClose={onCloseGuardianApprove}
           getApproveRes={getApproveRes}
         />

@@ -8,6 +8,7 @@ export const APPROVAL_TO_OPERATION_MAP = {
   [ApprovalType.removeOtherManager]: OperationTypeEnum.removeOtherManager,
   [ApprovalType.managerApprove]: OperationTypeEnum.managerApprove,
   [ApprovalType.modifyTransferLimit]: OperationTypeEnum.modifyTransferLimit,
+  [ApprovalType.transferApprove]: OperationTypeEnum.transferApprove,
 };
 
 export const APPROVAL_TO_VERIFICATION_MAP = {
@@ -18,6 +19,7 @@ export const APPROVAL_TO_VERIFICATION_MAP = {
   [ApprovalType.communityRecovery]: VerificationType.communityRecovery,
   [ApprovalType.managerApprove]: VerificationType.managerApprove,
   [ApprovalType.modifyTransferLimit]: VerificationType.modifyTransferLimit,
+  [ApprovalType.transferApprove]: OperationTypeEnum.transferApprove,
 };
 
 export const VERIFICATION_TO_OPERATION_MAP = {
@@ -32,4 +34,5 @@ export const VERIFICATION_TO_OPERATION_MAP = {
   [VerificationType.addManager]: OperationTypeEnum.unknown,
   [VerificationType.managerApprove]: OperationTypeEnum.managerApprove,
   [VerificationType.modifyTransferLimit]: OperationTypeEnum.modifyTransferLimit,
+  [VerificationType.transferApprove]: OperationTypeEnum.transferApprove,
 };

@@ -40,6 +40,7 @@ import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecur
 import GuardianApproveModal from 'pages/components/GuardianApprovalModal';
 import { GuardianItem } from 'types/guardians';
 import { getBalance } from 'utils/sandboxUtil/getBalance';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 
 export type ToAccount = { address: string; name?: string };
 
@@ -622,6 +623,7 @@ export default function Send() {
         <GuardianApproveModal
           open={openGuardiansApprove}
           targetChainId={tokenInfo.chainId}
+          operationType={OperationTypeEnum.transferApprove}
           onClose={onCloseGuardianApprove}
           getApproveRes={getApproveRes}
         />

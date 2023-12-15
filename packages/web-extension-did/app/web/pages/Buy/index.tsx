@@ -58,7 +58,7 @@ export default function Buy() {
   const valueSaveRef = useRef({ ...initValueSave });
   const [errMsg, setErrMsg] = useState<string>('');
   const [warningMsg, setWarningMsg] = useState<string>('');
-  const [page, setPage] = useState<PaymentTypeEnum>(PaymentTypeEnum.BUY);
+  const [page, setPage] = useState<PaymentTypeEnum>(state?.side || PaymentTypeEnum.BUY);
   const [rate, setRate] = useState('');
   const [amount, setAmount] = useState(initCurrency);
   const [receive, setReceive] = useState('');
@@ -81,6 +81,7 @@ export default function Buy() {
   );
 
   useEffectOnce(() => {
+    // from preview back
     if (state && state.amount !== undefined) {
       const { amount, country, fiat, crypto, network, side } = state;
       setAmount(amount);
@@ -99,8 +100,14 @@ export default function Buy() {
         receive: '',
         isShowErrMsg: false,
       };
-      updateCrypto();
+    } else if (state && state.side === PaymentTypeEnum.SELL) {
+      // from sell entry
+      setPage(PaymentTypeEnum.SELL);
+      valueSaveRef.current.side = PaymentTypeEnum.SELL;
+      setAmount(initCrypto);
+      valueSaveRef.current.amount = initCrypto;
     } else {
+      // default and from token detail
       if (!isBuySectionShow && isSellSectionShow) {
         const side = PaymentTypeEnum.SELL;
         setPage(side);
@@ -114,8 +121,10 @@ export default function Buy() {
           console.log('check security error: ', msg);
         });
       }
-      updateCrypto();
     }
+
+    updateCrypto();
+
     return () => {
       clearInterval(updateTimerRef.current);
       updateTimerRef.current = undefined;

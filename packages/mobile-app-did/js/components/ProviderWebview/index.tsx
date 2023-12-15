@@ -16,6 +16,7 @@ import { useDeepEQMemo } from 'hooks';
 import * as Application from 'expo-application';
 import { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { PROTOCOL_ALLOW_LIST } from 'constants/web';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export interface IWebView {
   goBack: WebView['goBack'];
@@ -160,49 +161,55 @@ const ProviderWebview = forwardRef<
   if (!entryScriptWeb3) return null;
 
   return (
-    <WebView
-      ref={webViewRef}
-      style={styles.webView}
-      decelerationRate="normal"
-      originWhitelist={['*']}
-      injectedJavaScript={!isIOS ? entryScriptWeb3 : undefined}
-      injectedJavaScriptBeforeContentLoaded={isIOS ? entryScriptWeb3 : undefined}
-      applicationNameForUserAgent={`WebView Portkey did Mobile PortkeyV${Application.nativeApplicationVersion}`}
-      {...props}
-      source={source}
-      onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
-      onLoadStart={event => {
-        onLoadStart(event);
-        props.onLoadStart?.(event);
-      }}
-      onLoadEnd={event => {
-        if (!loadStartRef.current) return;
-        handleUpdate(event);
-        props.onLoadEnd?.(event);
-      }}
-      onLoad={event => {
-        if (!loadStartRef.current) return;
-        handleUpdate(event);
-        props.onLoad?.(event);
-      }}
-      onMessage={event => {
-        const { nativeEvent } = event;
-        operatorRef.current?.handleRequestMessage(nativeEvent.data);
-        props.onMessage?.(event);
-      }}
-      // fix webview show blank page when not used for some time in android
-      // https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md#onrenderprocessgone
-      onRenderProcessGone={() => webViewRef.current?.reload()}
-      // fix webview show blank page when not used for some time in iOS
-      // https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md#oncontentprocessdidterminate
-      onContentProcessDidTerminate={() => webViewRef.current?.reload()}
-    />
+    <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.scrollStyle}>
+      <WebView
+        ref={webViewRef}
+        // style={styles.webView}
+        decelerationRate="normal"
+        originWhitelist={['*']}
+        injectedJavaScript={!isIOS ? entryScriptWeb3 : undefined}
+        injectedJavaScriptBeforeContentLoaded={isIOS ? entryScriptWeb3 : undefined}
+        applicationNameForUserAgent={`WebView Portkey did Mobile PortkeyV${Application.nativeApplicationVersion}`}
+        {...props}
+        style={styles.webView}
+        source={source}
+        onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
+        onLoadStart={event => {
+          onLoadStart(event);
+          props.onLoadStart?.(event);
+        }}
+        onLoadEnd={event => {
+          if (!loadStartRef.current) return;
+          handleUpdate(event);
+          props.onLoadEnd?.(event);
+        }}
+        onLoad={event => {
+          if (!loadStartRef.current) return;
+          handleUpdate(event);
+          props.onLoad?.(event);
+        }}
+        onMessage={event => {
+          const { nativeEvent } = event;
+          operatorRef.current?.handleRequestMessage(nativeEvent.data);
+          props.onMessage?.(event);
+        }}
+        // fix webview show blank page when not used for some time in android
+        // https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md#onrenderprocessgone
+        onRenderProcessGone={() => webViewRef.current?.reload()}
+        // fix webview show blank page when not used for some time in iOS
+        // https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md#oncontentprocessdidterminate
+        onContentProcessDidTerminate={() => webViewRef.current?.reload()}
+      />
+    </KeyboardAwareScrollView>
   );
 });
 
 export default memo(ProviderWebview);
 
 export const styles = StyleSheet.create({
+  scrollStyle: {
+    flex: 1,
+  },
   webView: {
     flex: 1,
     zIndex: 1,

@@ -28,6 +28,8 @@ export const DEFAULT_ENTRANCE_SHOW: IEntrance = {
   buy: false,
   sell: false,
   bridge: false,
+  eTransDeposit: false,
+  eTransWithdraw: false,
 };
 
 export const generateEntranceShow = async (

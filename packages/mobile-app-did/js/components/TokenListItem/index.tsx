@@ -12,14 +12,19 @@ import { pTd } from 'utils/unit';
 import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { ChainId } from '@portkey-wallet/types';
+import Svg from 'components/Svg';
+import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 interface TokenListItemType {
+  currentSymbol?: string;
+  currentChainId?: ChainId;
   noBalanceShow?: boolean;
-  item?: any;
-  onPress?: (item: any) => void;
+  item: TokenItemShowType;
+  onPress?: (item: TokenItemShowType) => void;
 }
 
 const TokenListItem: React.FC<TokenListItemType> = props => {
-  const { noBalanceShow = false, onPress, item } = props;
+  const { noBalanceShow = false, onPress, item, currentSymbol, currentChainId } = props;
   const { currentNetwork } = useWallet();
   const defaultToken = useDefaultToken();
 
@@ -38,7 +43,7 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
         avatarSize={pTd(48)}
         // elf token icon is fixed , only use white background color
         svgName={item?.symbol === defaultToken.symbol ? 'testnet' : undefined}
-        imageUrl={symbolImages[item?.symbol]}
+        imageUrl={item?.imageUrl || symbolImages[item?.symbol]}
       />
       <View style={itemStyle.right}>
         <View style={itemStyle.infoWrap}>
@@ -64,6 +69,9 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
                 )}`}
             </TextS>
           </View>
+        )}
+        {noBalanceShow && currentSymbol === item?.symbol && currentChainId === item?.chainId && (
+          <Svg icon="selected" size={pTd(24)} />
         )}
       </View>
     </TouchableOpacity>

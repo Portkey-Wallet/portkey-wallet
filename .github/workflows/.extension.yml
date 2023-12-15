@@ -11,8 +11,14 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
+      - uses: actions/cache@v3
+        id: install-cache
+        with:
+          path: node_modules/
+          key: ${{ runner.os }}-install-${{ hashFiles('**/yarn.lock') }}
+
       - name: Build
         run: |
           yarn
-          yarn extension:did pro -- --max-old-space-size=2048
+          yarn extension:did pro
           zip -r public.zip ./packages/web-extension-did/app/public

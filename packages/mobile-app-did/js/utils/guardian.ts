@@ -1,8 +1,10 @@
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { VerifierInfo } from '@portkey-wallet/types/verifier';
-import { GuardiansStatus } from 'pages/Guardian/types';
+import { GuardiansApproved, GuardiansStatus } from 'pages/Guardian/types';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
+import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { SendOptions } from '@portkey-wallet/contracts/types';
 
 const getGuardiansApproved = (userGuardiansList: UserGuardianItem[], guardiansStatus: GuardiansStatus) => {
   return userGuardiansList
@@ -21,6 +23,21 @@ const getGuardiansApproved = (userGuardiansList: UserGuardianItem[], guardiansSt
       };
     })
     .filter(item => item !== null);
+};
+
+export const getGuardiansApprovedByApprove = (guardiansApprove: GuardiansApproved) => {
+  return guardiansApprove.map(item => {
+    const { guardianIdentifier } = handleVerificationDoc(item.verificationDoc);
+    return {
+      identifierHash: guardianIdentifier,
+      type: item.guardianType,
+      verificationInfo: {
+        id: item.verifierId,
+        signature: Object.values(Buffer.from(item.signature, 'hex')),
+        verificationDoc: item.verificationDoc,
+      },
+    };
+  });
 };
 
 export function deleteGuardian(
@@ -137,14 +154,19 @@ export function cancelLoginAccount(
   });
 }
 
-export function removeManager(contract: ContractBasic, address: string, caHash: string) {
-  return contract?.callSendMethod('RemoveManagerInfo', address, {
-    caHash,
-    managerInfo: {
-      address,
-      extraData: Date.now(),
+export function removeManager(contract: ContractBasic, address: string, caHash: string, sendOptions?: SendOptions) {
+  return contract?.callSendMethod(
+    'RemoveManagerInfo',
+    address,
+    {
+      caHash,
+      managerInfo: {
+        address,
+        extraData: Date.now(),
+      },
     },
-  });
+    sendOptions,
+  );
 }
 
 export function encodedDeletionManager(contract: ContractBasic, address: string, caHash: string) {
@@ -173,5 +195,23 @@ export function removeOtherManager(
     caHash,
     managerInfo,
     guardiansApproved: guardiansApproved,
+  });
+}
+
+export function modifyTransferLimit(
+  contract: ContractBasic,
+  address: string,
+  caHash: string,
+  userGuardiansList: UserGuardianItem[],
+  guardiansStatus: GuardiansStatus,
+  transferLimitDetail: ITransferLimitItem,
+) {
+  const guardiansApproved = getGuardiansApproved(userGuardiansList, guardiansStatus);
+  return contract?.callSendMethod('SetTransferLimit', address, {
+    caHash,
+    symbol: transferLimitDetail.symbol,
+    guardiansApproved: guardiansApproved,
+    singleLimit: transferLimitDetail.singleLimit,
+    dailyLimit: transferLimitDetail.dailyLimit,
   });
 }

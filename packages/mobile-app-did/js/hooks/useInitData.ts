@@ -1,18 +1,17 @@
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useCallback, useEffect, useRef } from 'react';
 import { useAppDispatch } from 'store/hooks';
 import { useGetCurrentCAViewContract } from './contract';
-import { useGetGuardiansInfoWriteStore, useGetVerifierServers } from './guardian';
+import { useGetGuardiansInfoWriteStore, useGetVerifierServers, useRegisterRefreshGuardianList } from './guardian';
 import useEffectOnce from './useEffectOnce';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
 import { reportUserCurrentNetwork } from 'utils/analysisiReport';
 import { useCheckAndInitNetworkDiscoverMap } from './discover';
 import { usePin } from './store';
 import { getManagerAccount } from 'utils/redux';
-import { useInitIM } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useGetRedPackageConfig, useInitIM } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import im from '@portkey-wallet/im';
@@ -37,14 +36,15 @@ export default function useInitData() {
   const { netWorkType } = useCurrentNetwork();
 
   const getGuardiansInfoWriteStore = useGetGuardiansInfoWriteStore();
-  const isMainNetwork = useIsMainnet();
   useCheckAndInitNetworkDiscoverMap();
+  useGetRedPackageConfig(true, true);
 
   const { refresh: loadBookmarkList } = useBookmarkList();
   const initIM = useInitIM();
   const initRamp = useInitRamp({
     clientType: isIOS ? 'iOS' : 'Android',
   });
+  const initGuardianList = useRegisterRefreshGuardianList();
 
   const loadIM = useCallback(async () => {
     if (!pin) return;
@@ -66,6 +66,7 @@ export default function useInitData() {
       getCurrentCAViewContract();
       dispatch(getCaHolderInfoAsync());
       dispatch(getSymbolImagesAsync());
+      initGuardianList();
 
       loadBookmarkList();
       initRamp();
@@ -83,7 +84,7 @@ export default function useInitData() {
     getGuardiansInfoWriteStore,
     getVerifierServers,
     initRamp,
-    isMainNetwork,
+    initGuardianList,
     loadBookmarkList,
     wallet.caHash,
   ]);

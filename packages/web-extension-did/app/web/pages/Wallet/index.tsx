@@ -2,53 +2,38 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
 import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
-import svgsList from 'assets/svgs';
 import WalletPopup from './Popup';
 import { MenuItemInfo } from 'pages/components/MenuList';
 import WalletPrompt from './Prompt';
 import { IExitWalletProps } from './components/ExitWallet';
 import { BaseHeaderProps } from 'types/UI';
-import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { IWalletEntryProps } from './components/WalletEntry';
 
-export type WalletAvatar = keyof typeof svgsList;
-
-export interface IWalletProps extends IExitWalletProps, BaseHeaderProps {
-  walletAvatar: WalletAvatar;
+export interface IWalletProps extends IExitWalletProps, BaseHeaderProps, IWalletEntryProps {
   menuList: MenuItemInfo[];
   select?: string;
   onClose?: () => void;
 }
+
+const AutoLockLabel = 'auto-lock';
+const SwitchNetworksLabel = 'switch-networks';
+const AboutUsLabel = 'about-us';
 
 export default function Wallet() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { isPrompt, isNotLessThan768 } = useCommonState();
-  const showChat = useIsChatShow();
-  const { walletName, walletAvatar } = useWalletInfo();
+  const { userInfo, userId } = useWalletInfo();
   const [exitVisible, setExitVisible] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<string>('');
 
-  const WalletNameLabel = 'wallet-name';
-  const MyDidLabel = 'my-did';
-  const AutoLockLabel = 'auto-lock';
-  const SwitchNetworksLabel = 'switch-networks';
-  const AboutUsLabel = 'about-us';
+  const clickAvatar = useCallback(() => {
+    navigate('/setting/wallet/wallet-name');
+  }, [navigate]);
 
   const MenuList: MenuItemInfo[] = useMemo(
     () => [
-      {
-        element: showChat ? 'My Wallet' : walletName,
-        key: showChat ? MyDidLabel : WalletNameLabel,
-        click: () => {
-          if (showChat) {
-            setSelectedItem(MyDidLabel);
-          } else {
-            setSelectedItem(WalletNameLabel);
-          }
-          navigate('/setting/wallet/wallet-name');
-        },
-      },
       {
         element: 'Auto-lock',
         key: AutoLockLabel,
@@ -75,7 +60,7 @@ export default function Wallet() {
       },
     ],
 
-    [showChat, walletName, navigate],
+    [navigate],
   );
 
   useEffect(() => {
@@ -88,7 +73,7 @@ export default function Wallet() {
         }
       });
     }
-  }, [MenuList, isPrompt, pathname, walletName]);
+  }, [MenuList, isPrompt, pathname]);
 
   const title = t('Wallet');
   const exitText = t('Exit Wallet');
@@ -106,7 +91,10 @@ export default function Wallet() {
       exitText={exitText}
       exitVisible={exitVisible}
       select={selectedItem}
-      walletAvatar={walletAvatar as WalletAvatar}
+      walletAvatar={userInfo?.avatar}
+      walletName={userInfo?.nickName || ''}
+      portkeyId={userId || ''}
+      clickAvatar={clickAvatar}
       menuList={MenuList}
       onExit={onExit}
       onCancelExit={onCancelExit}
@@ -116,7 +104,10 @@ export default function Wallet() {
       headerTitle={title}
       exitText={exitText}
       exitVisible={exitVisible}
-      walletAvatar={walletAvatar as WalletAvatar}
+      walletAvatar={userInfo?.avatar}
+      walletName={userInfo?.nickName || ''}
+      portkeyId={userId || ''}
+      clickAvatar={clickAvatar}
       menuList={MenuList}
       goBack={goBack}
       onExit={onExit}

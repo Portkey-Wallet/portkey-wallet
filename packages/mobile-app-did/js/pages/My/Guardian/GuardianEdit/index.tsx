@@ -16,11 +16,10 @@ import { useGuardiansInfo } from 'hooks/store';
 import { LOGIN_TYPE_LIST } from 'constants/misc';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
 import { ApprovalType, VerificationType, OperationTypeEnum, VerifierItem } from '@portkey-wallet/types/verifier';
-import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
+import { INIT_HAS_ERROR, INIT_NONE_ERROR, ErrorType } from '@portkey-wallet/constants/constants-ca/common';
 import GuardianTypeSelectOverlay from '../components/GuardianTypeSelectOverlay';
 import VerifierSelectOverlay from '../components/VerifierSelectOverlay';
 import ActionSheet from 'components/ActionSheet';
-import { ErrorType } from 'types/common';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { FontStyles } from 'assets/theme/styles';
 import Loading from 'components/Loading';
@@ -49,10 +48,12 @@ import { checkIsLastLoginAccount } from '@portkey-wallet/utils/guardian';
 import { cancelLoginAccount } from 'utils/guardian';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import myEvents from 'utils/deviceEvent';
+import { ChainId } from '@portkey-wallet/types';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
   isEdit?: boolean;
+  accelerateChainId?: ChainId;
 };
 
 type thirdPartyInfoType = {
@@ -69,7 +70,7 @@ const GuardianEdit: React.FC = () => {
   const { caHash, address: managerAddress } = useCurrentWalletInfo();
   const getCurrentCAContract = useGetCurrentCAContract();
 
-  const { guardian: editGuardian, isEdit = false } = useRouterParams<RouterParams>();
+  const { guardian: editGuardian, isEdit = false, accelerateChainId = originChainId } = useRouterParams<RouterParams>();
 
   const { verifierMap, userGuardiansList } = useGuardiansInfo();
   const verifierList = useMemo(() => (verifierMap ? Object.values(verifierMap) : []), [verifierMap]);
@@ -182,9 +183,10 @@ const GuardianEdit: React.FC = () => {
         },
         verifiedTime: Date.now(),
         authenticationInfo: { [thirdPartyInfo.id]: thirdPartyInfo.accessToken },
+        accelerateChainId,
       });
     },
-    [verifyToken, originChainId],
+    [verifyToken, originChainId, accelerateChainId],
   );
 
   const onConfirm = useCallback(async () => {
@@ -264,6 +266,7 @@ const GuardianEdit: React.FC = () => {
                       verifierSessionId: req.verifierSessionId,
                     },
                     verificationType: VerificationType.addGuardian,
+                    accelerateChainId,
                   });
                 } else {
                   throw new Error('send fail');
@@ -286,6 +289,7 @@ const GuardianEdit: React.FC = () => {
     country.code,
     thirdPartyConfirm,
     originChainId,
+    accelerateChainId,
   ]);
 
   const onApproval = useCallback(() => {
@@ -558,11 +562,16 @@ const GuardianEdit: React.FC = () => {
     t,
   ]);
 
+  const goBack = useCallback(() => {
+    if (isEdit) return navigationService.navigate('GuardianHome');
+    navigationService.goBack();
+  }, [isEdit]);
+
   return (
     <PageContainer
       safeAreaColor={['blue', 'gray']}
       titleDom={isEdit ? t('Edit Guardians') : t('Add Guardians')}
-      leftCallback={() => navigationService.navigate('GuardianHome')}
+      leftCallback={goBack}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View style={pageStyles.contentWrap}>

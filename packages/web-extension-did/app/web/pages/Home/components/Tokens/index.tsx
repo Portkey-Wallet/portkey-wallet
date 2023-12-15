@@ -1,4 +1,3 @@
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
@@ -8,13 +7,13 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 
 export default function TokenList({ tokenList }: { tokenList: TokenItemShowType[] }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isTestNet = useIsTestnet();
   const amountInUsdShow = useAmountInUsdShow();
-
   const onNavigate = useCallback(
     (tokenInfo: TokenItemShowType) => {
       navigate('/token-detail', { state: tokenInfo });
@@ -32,11 +31,7 @@ export default function TokenList({ tokenList }: { tokenList: TokenItemShowType[
       <ul className="token-list">
         {tokenList.map((item) => (
           <li className="token-list-item" key={`${item.chainId}_${item.symbol}`} onClick={() => onNavigate(item)}>
-            {item.symbol === ELF_SYMBOL ? (
-              <CustomSvg className="token-logo" type="elf-icon" />
-            ) : (
-              <div className="token-logo custom-word-logo">{item.symbol?.slice(0, 1)}</div>
-            )}
+            <TokenImageDisplay className="custom-logo" symbol={item.symbol} src={item.imageUrl} />
             <div className="desc">
               <div className="info">
                 <span>{item.symbol}</span>

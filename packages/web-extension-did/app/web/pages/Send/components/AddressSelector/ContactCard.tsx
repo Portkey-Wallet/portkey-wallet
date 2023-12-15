@@ -12,6 +12,7 @@ import { Collapse } from 'antd';
 import clsx from 'clsx';
 import CustomSvg from 'components/CustomSvg';
 import { useIsTestnet } from 'hooks/useNetwork';
+import Avatar from 'pages/components/Avatar';
 import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 
@@ -34,17 +35,24 @@ export default function ContactCard({ user, className, fromRecents = true, chain
   const header = useMemo(
     () => (
       <div className="header">
-        <div className="icon">{transIndex || ''}</div>
+        <Avatar avatarUrl={user?.avatar} nameIndex={transIndex} size="small" />
         <p>{transName}</p>
       </div>
     ),
-    [transIndex, transName],
+    [transIndex, transName, user.avatar],
   );
 
   const navigate = useNavigate();
   const goRecentDetail = (targetAddress: string, targetChainId: ChainId) => {
     navigate('/recent-detail', {
-      state: { chainId: chainId, targetAddress, targetChainId, name: transName, index: transIndex },
+      state: {
+        chainId: chainId,
+        targetAddress,
+        targetChainId,
+        name: transName,
+        index: transIndex,
+        avatar: user?.avatar,
+      },
     });
   };
 

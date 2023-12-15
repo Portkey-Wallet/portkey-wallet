@@ -1,18 +1,29 @@
 import { Popover, message } from 'antd';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ChatList as ChannelList, IChatItemProps, PopoverMenuList, StyleProvider } from '@portkey-wallet/im-ui-web';
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
-import { useChannelList, usePinChannel, useMuteChannel, useHideChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import {
+  useChannelList,
+  usePinChannel,
+  useMuteChannel,
+  useHideChannel,
+  useUnreadCount,
+} from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
 import { formatChatListTime } from '@portkey-wallet/utils/chat';
 import { MessageTypeWeb } from 'types/im';
-import { ChannelItem } from '@portkey-wallet/im';
+import { ChannelItem, ParsedRedPackage } from '@portkey-wallet/im';
 import './index.less';
 import { useHandleClickChatItem } from 'hooks/im';
 import { PIN_LIMIT_EXCEED, UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
+import { useWalletInfo } from 'store/Provider/hooks';
+import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
+import { setBadge } from 'utils/FCM';
+import { AppStatusUnit } from '@portkey-wallet/socket/socket-fcm/types';
+import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 
 export default function ChatList() {
   const navigate = useNavigate();
@@ -26,6 +37,8 @@ export default function ChatList() {
     next: nextChannelList,
     hasNext: hasNextChannelList,
   } = useChannelList();
+  const unreadCount = useUnreadCount();
+  const { userInfo } = useWalletInfo();
   const formatSubTitle = useCallback((item: ChannelItem) => {
     const _type = MessageTypeWeb[item.lastMessageType ?? ''];
     let subTitle = UN_SUPPORTED_FORMAT;
@@ -35,9 +48,24 @@ export default function ChatList() {
       subTitle = `${item.lastMessageContent}`;
     } else if (_type === MessageTypeWeb.SYS) {
       subTitle = `${item.lastMessageContent}`;
+    } else if (_type === MessageTypeWeb['REDPACKAGE-CARD']) {
+      const redPackage = (item.lastMessageContent as ParsedRedPackage).data;
+      subTitle = `${redPackage?.memo || RED_PACKAGE_DEFAULT_MEMO}`;
     }
     return subTitle;
   }, []);
+  const formatIsOwner = useCallback(
+    (item: ChannelItem) => {
+      const _type = MessageTypeWeb[item.lastMessageType ?? ''];
+      let isOwner = false;
+      if (_type === MessageTypeWeb['REDPACKAGE-CARD']) {
+        const senderId = (item.lastMessageContent as ParsedRedPackage).data?.senderId;
+        isOwner = senderId === userInfo?.userId;
+      }
+      return isOwner;
+    },
+    [userInfo?.userId],
+  );
   const popList = useMemo(
     () => [
       {
@@ -97,9 +125,12 @@ export default function ChatList() {
         unread: item.unreadMessageCount,
         channelType: item?.channelType,
         status: item.status,
+        avatar: item.channelIcon,
+        isOwner: formatIsOwner(item),
+        lastMessageType: MessageTypeWeb[item.lastMessageType ?? ''],
       };
     });
-  }, [chatList, formatSubTitle]);
+  }, [chatList, formatSubTitle, formatIsOwner]);
 
   const handleClickChatItem = useHandleClickChatItem();
 
@@ -143,6 +174,11 @@ export default function ChatList() {
   useEffectOnce(() => {
     initChannelList();
   });
+
+  useEffect(() => {
+    signalrFCM.reportAppStatus(AppStatusUnit.FOREGROUND, unreadCount);
+    setBadge({ value: unreadCount });
+  }, [unreadCount]);
 
   return (
     <div className="chat-list-page">

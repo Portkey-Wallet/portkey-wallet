@@ -10,8 +10,8 @@ import { useCaAddresses, useCaAddressInfoList, useChainIdList } from '@portkey-w
 import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { useIsTestnet } from 'hooks/useNetwork';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { useAmountInUsdShow, useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import TokenImageDisplay from '../TokenImageDisplay';
 import './index.less';
 
 export interface ICustomTokenListProps {
@@ -43,7 +43,6 @@ export default function CustomTokenList({
   const amountInUsdShow = useAmountInUsdShow();
   const caAddressInfos = useCaAddressInfoList();
   useFreshTokenPrice();
-
   useEffect(() => {
     if (drawerType === 'send') {
       setAssetList(accountAssets.accountAssetsList);
@@ -72,14 +71,8 @@ export default function CustomTokenList({
           className="item"
           key={`${token.symbol}_${token.chainId}`}
           onClick={onChange?.bind(undefined, token, 'token')}>
-          <div className="icon">
-            <div className="custom">
-              {token.symbol === ELF_SYMBOL ? (
-                <CustomSvg className="token-logo" type="elf-icon" />
-              ) : (
-                token?.symbol?.slice(0, 1)
-              )}
-            </div>
+          <div className="icon flex-center">
+            <TokenImageDisplay symbol={token?.symbol} src={token.tokenInfo?.imageUrl} />
           </div>
           <div className="info">
             <p className="symbol">{`${token.symbol}`}</p>
@@ -108,6 +101,7 @@ export default function CustomTokenList({
         symbol: token.symbol,
         address: token.address,
         tokenInfo: {
+          imageUrl: token.imageUrl,
           id: token.id || '',
           balance: token.balance,
           decimals: `${token.decimals}`,
@@ -120,14 +114,8 @@ export default function CustomTokenList({
           className="item"
           key={`${token.symbol}_${token.chainId}`}
           onClick={onChange?.bind(undefined, tokenTmp, 'token')}>
-          <div className="icon">
-            <div className="custom">
-              {token.symbol === ELF_SYMBOL ? (
-                <CustomSvg className="token-logo" type="elf-icon" />
-              ) : (
-                token?.symbol?.slice(0, 1)
-              )}
-            </div>
+          <div className="icon flex-center">
+            <TokenImageDisplay symbol={token?.symbol} src={token?.imageUrl} />
           </div>
           <div className="info">
             <p className="symbol">{`${token.symbol}`}</p>

@@ -25,6 +25,7 @@ import {
   rampPersistConfig,
   cmsPersistConfig,
   dappPersistConfig,
+  discoverPersistConfig,
   txFeePersistConfig,
   imPersistConfig,
 } from './config';
@@ -50,7 +51,7 @@ export const miscReducer = persistReducer(miscPersistConfig, miscSlice.reducer);
 export const rampReducer = persistReducer(rampPersistConfig, rampSlice.reducer);
 export const cmsReducer = persistReducer(cmsPersistConfig, cmsSlice.reducer);
 export const dappReducer = persistReducer(dappPersistConfig, dappSlice.reducer);
-export const discoverReducer = persistReducer(dappPersistConfig, discoverSlice.reducer);
+export const discoverReducer = persistReducer(discoverPersistConfig, discoverSlice.reducer);
 export const txFeeReducer = persistReducer(txFeePersistConfig, txFeeSlice.reducer);
 export const imReducer = persistReducer(imPersistConfig, imSlice.reducer);
 

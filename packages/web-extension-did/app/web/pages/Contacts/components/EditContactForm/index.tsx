@@ -5,6 +5,9 @@ import './index.less';
 import { ValidData } from 'pages/Contacts/AddContact';
 import EditButtonGroup from '../EditButtonGroup';
 import LoginAccountList from '../LoginAccountList';
+import Avatar from 'pages/components/Avatar';
+import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { useIndexAndName } from '@portkey-wallet/hooks/hooks-ca/contact';
 
 const { Item: FormItem } = Form;
 
@@ -30,6 +33,7 @@ export default function EditContactForm({
   onFinish,
 }: IEditContactFormProps) {
   const { t } = useTranslation();
+  const { index } = useIndexAndName(state as Partial<ContactItemType>);
 
   return (
     <Form
@@ -42,6 +46,10 @@ export default function EditContactForm({
       onFinish={onFinish}>
       <div className="edit-contact-form-body flex-1">
         <div className="form-content">
+          <div className="flex-center upload-avatar-wrapper">
+            <Avatar avatarUrl={state?.avatar} nameIndex={index} size="large" />
+          </div>
+
           <FormItem
             name="walletName"
             label={t('Wallet Name')}

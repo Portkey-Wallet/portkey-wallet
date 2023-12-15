@@ -46,13 +46,15 @@ import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wal
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import CommonAvatar from 'components/CommonAvatar';
+import { useCheckTransferLimitWithJump } from 'hooks/security';
 
 const SendHome: React.FC = () => {
   const { t } = useLanguage();
   const isTestnet = useIsTestnet();
   const defaultToken = useDefaultToken();
 
-  const { sendType, assetInfo, toInfo, transactionFee, sendNumber } = useRouterParams<IToSendPreviewParamsType>();
+  const { sendType, assetInfo, toInfo, transactionFee, sendNumber, successNavigateName } =
+    useRouterParams<IToSendPreviewParamsType>();
 
   useFetchTxFee();
   const { crossChain: crossDefaultFee } = useGetTxFee(assetInfo.chainId);
@@ -73,6 +75,7 @@ const SendHome: React.FC = () => {
   const isTokenHasPrice = useIsTokenHasPrice(assetInfo.symbol);
 
   const isCrossChainTransfer = isCrossChain(toInfo.address, assetInfo.chainId);
+  const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
 
   const showRetry = useCallback(
     (retryFunc: () => void) => {
@@ -112,7 +115,18 @@ const SendHome: React.FC = () => {
     }
 
     const contract = contractRef.current;
-    const amount = timesDecimals(sendNumber, tokenInfo.decimals).toNumber();
+    const amount = timesDecimals(sendNumber, tokenInfo.decimals).toFixed();
+
+    const checkTransferLimitResult = await checkTransferLimitWithJump(
+      {
+        caContract: contract,
+        symbol: tokenInfo.symbol,
+        decimals: tokenInfo.decimals,
+        amount: String(sendNumber),
+      },
+      chainInfo.chainId,
+    );
+    if (!checkTransferLimitResult) return;
 
     if (isCrossChainTransfer) {
       if (!tokenContractRef.current) {
@@ -164,14 +178,18 @@ const SendHome: React.FC = () => {
     } else {
       dispatch(fetchTokenListAsync({ caAddresses: caAddresses, caAddressInfos }));
     }
-
-    navigationService.navigate('Tab', { clearType: sendType + Math.random() });
+    if (successNavigateName) {
+      navigationService.navigate(successNavigateName);
+    } else {
+      navigationService.navigate('Tab', { clearType: sendType + Math.random() });
+    }
     CommonToast.success('success');
   }, [
     assetInfo,
     caAddressInfos,
     caAddresses,
     chainInfo,
+    checkTransferLimitWithJump,
     crossDefaultFee,
     currentNetwork.walletType,
     dispatch,
@@ -179,6 +197,7 @@ const SendHome: React.FC = () => {
     pin,
     sendNumber,
     sendType,
+    successNavigateName,
     toInfo.address,
     wallet.address,
     wallet.caHash,
@@ -347,33 +366,35 @@ const SendHome: React.FC = () => {
             )}
           </View>
 
-          {isCrossChainTransfer && assetInfo.symbol === defaultToken.symbol && (
-            <Text style={[styles.divider, styles.marginTop0]} />
-          )}
-          {isCrossChainTransfer && assetInfo.symbol === defaultToken.symbol && (
-            <View style={styles.section}>
-              <View style={[styles.flexSpaceBetween]}>
-                <TextM style={[styles.blackFontColor, styles.fontBold, styles.leftTitle]}>
-                  {t('Cross chain Transaction fee')}
-                </TextM>
-                <View>
-                  <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>{`${unitConverter(
-                    crossDefaultFee,
-                  )} ${defaultToken.symbol}`}</TextM>
-                  {!isTestnet ? (
-                    <TextS
-                      style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`$ ${unitConverter(
-                      ZERO.plus(crossDefaultFee).multipliedBy(tokenPriceObject[defaultToken.symbol]),
-                    )}`}</TextS>
-                  ) : (
-                    <TextM />
-                  )}
+          {isCrossChainTransfer && (
+            <>
+              <Text style={[styles.divider, styles.marginTop0]} />
+              <View style={styles.section}>
+                <View style={[styles.flexSpaceBetween]}>
+                  <TextM style={[styles.blackFontColor, styles.fontBold, styles.leftEstimatedTitle]}>
+                    {t('Estimated CrossChain Transfer')}
+                  </TextM>
+                  <View>
+                    <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>{`${unitConverter(
+                      crossDefaultFee,
+                    )} ${defaultToken.symbol}`}</TextM>
+                    {!isTestnet ? (
+                      <TextS
+                        style={[
+                          styles.blackFontColor,
+                          styles.lightGrayFontColor,
+                          GStyles.alignEnd,
+                        ]}>{`$ ${unitConverter(
+                        ZERO.plus(crossDefaultFee).multipliedBy(tokenPriceObject[defaultToken.symbol]),
+                      )}`}</TextS>
+                    ) : (
+                      <TextM />
+                    )}
+                  </View>
                 </View>
               </View>
-            </View>
-          )}
-          {isCrossChainTransfer && assetInfo.symbol === defaultToken.symbol && (
-            <Text style={[styles.divider, styles.marginTop0]} />
+              <Text style={[styles.divider, styles.marginTop0]} />
+            </>
           )}
           {isCrossChainTransfer && assetInfo.symbol === defaultToken.symbol && (
             <View style={styles.section}>
@@ -596,5 +617,8 @@ export const styles = StyleSheet.create({
   leftTitle: {
     width: pTd(120),
     lineHeight: pTd(20),
+  },
+  leftEstimatedTitle: {
+    width: pTd(180),
   },
 });

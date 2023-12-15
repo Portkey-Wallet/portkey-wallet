@@ -6,7 +6,7 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { useLanguage } from 'i18n/hooks';
 import { useMemo } from 'react';
 import { useRefreshTokenConfig } from '@portkey-wallet/hooks/hooks-ca/api';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import useLocking from 'hooks/useLocking';
 import { useCaInfoOnChain } from 'hooks/useCaInfoOnChain';
 import { useFetchSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
@@ -33,6 +33,8 @@ import { useAppEntrance } from 'hooks/cms';
 
 request.setExceptionManager(exceptionManager);
 export default function Updater() {
+  const isMainnet = useIsMainnet();
+
   // FIXME: delete language
   const { changeLanguage } = useLanguage();
   useEffectOnce(() => {
@@ -69,9 +71,9 @@ export default function Updater() {
   useMemo(() => {
     s3Instance.setConfig({
       bucket: imS3Bucket || '',
-      key: Config.IM_S3_KEY || '',
+      key: (isMainnet ? Config.IM_S3_KEY : Config.IM_S3_TESTNET_KEY) || '',
     });
-  }, [imS3Bucket]);
+  }, [imS3Bucket, isMainnet]);
 
   useMemo(() => {
     request.setLockCallBack(onLocking);

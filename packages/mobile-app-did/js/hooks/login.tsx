@@ -20,6 +20,7 @@ import {
   VerificationType,
   VerifierInfo,
   VerifierItem,
+  VerifyStatus,
 } from '@portkey-wallet/types/verifier';
 import { handleErrorCode, sleep } from '@portkey-wallet/utils';
 import Loading from 'components/Loading';
@@ -34,7 +35,7 @@ import CommonToast from 'components/CommonToast';
 import useEffectOnce from './useEffectOnce';
 import { resetUser, setCredentials } from 'store/user/actions';
 import { DigitInputInterface } from 'components/DigitInput';
-import { GuardiansApproved } from 'pages/Guardian/types';
+import { GuardiansApproved, GuardiansStatus } from 'pages/Guardian/types';
 import { useGetDeviceInfo } from './device';
 import { extraDataEncode } from '@portkey-wallet/utils/device';
 import { useGetGuardiansInfo, useGetVerifierServers } from './guardian';
@@ -44,17 +45,20 @@ import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import { useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useGetRegisterInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
 import { usePin, useUser } from './store';
-import { queryFailAlert } from 'utils/login';
+import { handleGuardiansApproved, queryFailAlert } from 'utils/login';
 import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import { ChainId } from '@portkey-wallet/types';
 import ActionSheet from 'components/ActionSheet';
 import { resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
 import { request as globalRequest } from '@portkey-wallet/api/api-did';
-import { useVerifyToken } from './authentication';
+import { VerifierAuthParams, useVerifierAuth, useVerifyToken } from './authentication';
 import { verification } from 'utils/api';
 import { Text } from 'react-native';
 import { TextL } from 'components/CommonText';
 import fonts from 'assets/theme/fonts';
+import { CreateAddressLoading } from '@portkey-wallet/constants/constants-ca/wallet';
+import { AuthTypes } from 'constants/guardian';
+import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 
 export function useOnResultFail() {
   const dispatch = useAppDispatch();
@@ -120,7 +124,9 @@ export function useOnManagerAddressAndQueryResult() {
     }) => {
       const isRecovery = managerInfo.verificationType === VerificationType.communityRecovery;
       showLoading &&
-        Loading.show({ text: t(isRecovery ? 'Initiating social recovery' : 'Creating address on the chain...') });
+        Loading.show({
+          text: t(isRecovery ? 'Initiating social recovery' : CreateAddressLoading),
+        });
 
       await sleep(500);
       try {
@@ -214,8 +220,56 @@ type LoginParams = {
 
 export function useGoGuardianApproval(isLogin?: boolean) {
   const dispatch = useAppDispatch();
+  const onRequestOrSetPin = useOnRequestOrSetPin();
+  const onVerifierAuth = useVerifierAuth();
+
+  const requestOrSetPin = useCallback(
+    async ({ guardianItem, originChainId, authenticationInfo }: VerifierAuthParams) => {
+      const req = await onVerifierAuth({ guardianItem, originChainId, authenticationInfo });
+      const verifierInfo: VerifierInfo = { ...req, verifierId: guardianItem?.verifier?.id };
+      const key = guardianItem.key as string;
+      return onRequestOrSetPin({
+        managerInfo: {
+          verificationType: VerificationType.communityRecovery,
+          loginAccount: guardianItem.guardianAccount,
+          type: guardianItem.guardianType,
+        } as ManagerInfo,
+        autoLogin: true,
+        guardiansApproved: handleGuardiansApproved({ [key]: { status: VerifyStatus.Verified, verifierInfo } }, [
+          guardianItem,
+        ]) as GuardiansApproved,
+        showLoading: true,
+      });
+    },
+    [onRequestOrSetPin, onVerifierAuth],
+  );
+
+  const goVerifierDetails = useCallback(
+    async ({ guardianItem, originChainId }: VerifierAuthParams) => {
+      const req = await verification.sendVerificationCode({
+        params: {
+          type: LoginType[guardianItem.guardianType],
+          guardianIdentifier: guardianItem.guardianAccount,
+          verifierId: guardianItem.verifier?.id,
+          chainId: originChainId,
+          operationType: OperationTypeEnum.communityRecovery,
+        },
+      });
+      if (!req?.verifierSessionId) throw new Error('verifierSessionId does not exist');
+      Loading.hide();
+      await sleep(200);
+      dispatch(setOriginChainId(originChainId));
+      return navigationService.push('VerifierDetails', {
+        autoLogin: true,
+        guardianItem,
+        requestCodeResult: req,
+        verificationType: VerificationType.communityRecovery,
+      });
+    },
+    [dispatch],
+  );
   return useCallback(
-    ({
+    async ({
       originChainId,
       loginAccount,
       userGuardiansList,
@@ -223,15 +277,46 @@ export function useGoGuardianApproval(isLogin?: boolean) {
     }: {
       originChainId: ChainId;
       loginAccount: string;
-      userGuardiansList?: any;
+      userGuardiansList?: UserGuardianItem[];
       authenticationInfo?: AuthenticationInfo;
     }) => {
-      const onConfirm = () => {
+      const onConfirm = async () => {
+        Loading.showOnce();
+        // auto login
+        if (userGuardiansList?.length === 1) {
+          const guardianItem = userGuardiansList[0];
+          if (AuthTypes.includes(guardianItem.guardianType)) {
+            return requestOrSetPin({ guardianItem, originChainId, authenticationInfo });
+          } else {
+            return goVerifierDetails({ guardianItem, originChainId });
+          }
+        }
+
+        // auto verify
+        const initGuardiansStatus: { [key: string]: GuardiansStatus } = {};
+        if (authenticationInfo) {
+          const list = userGuardiansList?.filter(item => item.isLoginAccount && item.guardianAccount === loginAccount);
+          if (Array.isArray(list) && list.length > 0) {
+            await Promise.all(
+              list.map(async guardianItem => {
+                const req = await onVerifierAuth({ guardianItem, originChainId, authenticationInfo });
+                if (req?.signature) {
+                  const status = VerifyStatus.Verified as any;
+                  const verifierInfo = { ...req, verifierId: guardianItem?.verifier?.id };
+                  initGuardiansStatus[guardianItem.key] = { verifierInfo, status };
+                }
+              }),
+            );
+          }
+        }
+
+        Loading.hide();
         dispatch(setOriginChainId(originChainId));
         navigationService.navigate('GuardianApproval', {
           loginAccount,
           userGuardiansList,
           authenticationInfo,
+          initGuardiansStatus,
         });
       };
       if (!isLogin) {
@@ -247,10 +332,10 @@ export function useGoGuardianApproval(isLogin?: boolean) {
           ],
         });
       } else {
-        onConfirm();
+        await onConfirm();
       }
     },
-    [dispatch, isLogin],
+    [dispatch, goVerifierDetails, isLogin, onVerifierAuth, requestOrSetPin],
   );
 }
 
@@ -278,7 +363,7 @@ export function useGoSelectVerifier(isLogin?: boolean) {
     async ({ loginAccount, loginType, authenticationInfo, selectedVerifier, chainId }: LoginAuthParams) => {
       const isRequestResult = !!(pin && address);
 
-      const loadingKey = Loading.show(isRequestResult ? { text: 'Creating address on the chain...' } : undefined);
+      const loadingKey = Loading.show(isRequestResult ? { text: CreateAddressLoading } : undefined);
 
       try {
         const rst = await verifyToken(loginType, {
@@ -347,7 +432,7 @@ export function useGoSelectVerifier(isLogin?: boolean) {
       dispatch(setOriginChainId(DefaultChainId));
 
       const loadingKey = Loading.show({
-        text: 'Assigning a verifier on-chain...',
+        text: 'Assigning a verifier on the blockchain...',
       });
       try {
         await sleep(ALLOCATE_SLEEP_TIME);
@@ -458,8 +543,9 @@ export function useOnLogin(isLogin?: boolean) {
         }
 
         const holderInfo = await getGuardiansInfo({ guardianIdentifier: loginAccount }, chainInfo);
-        if (holderInfo?.guardianAccounts || holderInfo?.guardianList) {
-          goGuardianApproval({
+        const { guardianList, guardianAccounts } = holderInfo || {};
+        if (guardianAccounts || guardianList) {
+          await goGuardianApproval({
             originChainId,
             loginAccount,
             userGuardiansList: handleUserGuardiansList(holderInfo, verifierServers),
@@ -500,12 +586,16 @@ export function useOnRequestOrSetPin() {
       managerInfo,
       verifierInfo,
       guardiansApproved,
+      autoLogin,
     }: {
       showLoading?: boolean;
       managerInfo: Omit<ManagerInfo, 'managerUniqueId'>;
       verifierInfo?: VerifierInfo;
       guardiansApproved?: GuardiansApproved;
+      autoLogin?: boolean;
     }) => {
+      console.log(guardiansApproved, showLoading, '====guardiansApproved');
+
       if (walletInfo?.address && pin) {
         onManagerAddressAndQueryResult({
           managerInfo,
@@ -520,6 +610,7 @@ export function useOnRequestOrSetPin() {
           managerInfo,
           guardiansApproved,
           verifierInfo,
+          autoLogin,
         });
       }
     },

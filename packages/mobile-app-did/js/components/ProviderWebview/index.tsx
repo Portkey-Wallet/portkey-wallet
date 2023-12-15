@@ -1,5 +1,5 @@
 import React, { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Linking, StyleSheet } from 'react-native';
 import WebView, { WebViewProps } from 'react-native-webview';
 import useEffectOnce from 'hooks/useEffectOnce';
 import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
@@ -12,6 +12,12 @@ import { DappOverlay } from 'dapp/dappOverlay';
 import { DappMobileManager } from 'dapp/dappManager';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { useDeepEQMemo } from 'hooks';
+import * as Application from 'expo-application';
+import { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
+import { PROTOCOL_ALLOW_LIST } from 'constants/web';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 export interface IWebView {
   goBack: WebView['goBack'];
   reload: WebView['reload'];
@@ -20,13 +26,18 @@ export interface IWebView {
   goForward: WebView['goForward'];
   autoApprove: () => void;
 }
+// DefaultSource
+// fix android not refreshing
+const DefaultSource = { uri: '' };
 
 const ProviderWebview = forwardRef<
   IWebView | undefined,
   WebViewProps & {
     isHidden?: boolean;
+    isDiscover?: boolean;
   }
 >(function ProviderWebview(props, forward) {
+  const [source, setSource] = useState<WebViewProps['source']>(DefaultSource);
   const webViewRef = useRef<WebView | null>(null);
   const operatorRef = useRef<DappMobileOperator | null>(null);
   // Android will trigger onLoadEnd before onLoadStart, Mark start status.
@@ -46,6 +57,16 @@ const ProviderWebview = forwardRef<
     };
   });
 
+  const memoSource = useDeepEQMemo(() => props.source, [props.source]);
+
+  useEffect(() => {
+    // fix android not refreshing
+    // asynchronously change Source
+    setTimeout(() => {
+      setSource(memoSource);
+    }, 0);
+  }, [memoSource]);
+
   useEffect(() => {
     operatorRef.current?.setIsLockDapp(!!props.isHidden);
   }, [props.isHidden]);
@@ -57,13 +78,14 @@ const ProviderWebview = forwardRef<
 
       operatorRef.current = new DappMobileOperator({
         origin,
+        isDiscover: props.isDiscover,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         stream: new MobileStream(webViewRef.current!),
         dappManager: new DappMobileManager({ store: store as any }),
         dappOverlay: new DappOverlay(),
       });
     },
-    [entryScriptWeb3],
+    [entryScriptWeb3, props.isDiscover],
   );
 
   const onLoadStart = useCallback(
@@ -101,7 +123,7 @@ const ProviderWebview = forwardRef<
       /**
        * Stop loading the current page.
        */
-      stopLoading: () => webViewRef.current?.reload(),
+      stopLoading: () => webViewRef.current?.stopLoading(),
 
       /**
        * Executes the JavaScript string.
@@ -124,47 +146,70 @@ const ProviderWebview = forwardRef<
     }),
     [],
   );
+
+  const onShouldStartLoadWithRequest = ({ url }: ShouldStartLoadRequest) => {
+    const { protocol } = new URL(url);
+    if (PROTOCOL_ALLOW_LIST.includes(protocol)) return true;
+    // if (SCHEME_ALLOW_LIST.includes(protocol)) {
+    // open natively
+    Linking.openURL(url).catch(er => {
+      console.log('Failed to open Link:', er.message);
+    });
+    // }
+    return false;
+  };
   if (!entryScriptWeb3) return null;
+
   return (
-    <WebView
-      ref={webViewRef}
-      style={styles.webView}
-      decelerationRate="normal"
-      injectedJavaScriptBeforeContentLoaded={isIOS ? entryScriptWeb3 : undefined}
-      applicationNameForUserAgent={'WebView Portkey did Mobile'}
-      {...props}
-      onLoadStart={event => {
-        onLoadStart(event);
-        props.onLoadStart?.(event);
-      }}
-      onLoadEnd={event => {
-        if (!loadStartRef.current) return;
-        handleUpdate(event);
-        props.onLoadEnd?.(event);
-      }}
-      onLoad={event => {
-        if (!loadStartRef.current) return;
-        handleUpdate(event);
-        props.onLoad?.(event);
-      }}
-      onMessage={event => {
-        const { nativeEvent } = event;
-        operatorRef.current?.handleRequestMessage(nativeEvent.data);
-        props.onMessage?.(event);
-      }}
-      // fix webview show blank page when not used for some time in android
-      // https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md#onrenderprocessgone
-      onRenderProcessGone={() => webViewRef.current?.reload()}
-      // fix webview show blank page when not used for some time in iOS
-      // https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md#oncontentprocessdidterminate
-      onContentProcessDidTerminate={() => webViewRef.current?.reload()}
-    />
+    <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.scrollStyle}>
+      <WebView
+        ref={webViewRef}
+        // style={styles.webView}
+        decelerationRate="normal"
+        originWhitelist={['*']}
+        injectedJavaScript={!isIOS ? entryScriptWeb3 : undefined}
+        injectedJavaScriptBeforeContentLoaded={isIOS ? entryScriptWeb3 : undefined}
+        applicationNameForUserAgent={`WebView Portkey did Mobile PortkeyV${Application.nativeApplicationVersion}`}
+        {...props}
+        style={styles.webView}
+        source={source}
+        onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
+        onLoadStart={event => {
+          onLoadStart(event);
+          props.onLoadStart?.(event);
+        }}
+        onLoadEnd={event => {
+          if (!loadStartRef.current) return;
+          handleUpdate(event);
+          props.onLoadEnd?.(event);
+        }}
+        onLoad={event => {
+          if (!loadStartRef.current) return;
+          handleUpdate(event);
+          props.onLoad?.(event);
+        }}
+        onMessage={event => {
+          const { nativeEvent } = event;
+          operatorRef.current?.handleRequestMessage(nativeEvent.data);
+          props.onMessage?.(event);
+        }}
+        // fix webview show blank page when not used for some time in android
+        // https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md#onrenderprocessgone
+        onRenderProcessGone={() => webViewRef.current?.reload()}
+        // fix webview show blank page when not used for some time in iOS
+        // https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md#oncontentprocessdidterminate
+        onContentProcessDidTerminate={() => webViewRef.current?.reload()}
+      />
+    </KeyboardAwareScrollView>
   );
 });
 
 export default memo(ProviderWebview);
 
 export const styles = StyleSheet.create({
+  scrollStyle: {
+    flex: 1,
+  },
   webView: {
     flex: 1,
     zIndex: 1,

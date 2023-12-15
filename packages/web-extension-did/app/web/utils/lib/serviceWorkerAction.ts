@@ -9,6 +9,15 @@ import { CloseParams } from 'service/NotificationService';
 import { CreatePromptType, ReCaptchaResponseParams, SendResponseParams } from 'types';
 import { getPortkeyFinanceUrl } from 'utils';
 import { getWalletState } from './SWGetReduxStore';
+import { apis } from 'utils/BrowserApis';
+
+export const closeTabPrompt = async (closeParams: CloseParams) => {
+  if (!closeParams?.windowId) {
+    const tab = await apis.tabs.getCurrent();
+    closeParams.windowId = tab?.id;
+  }
+  return closePrompt(closeParams, 'tabs');
+};
 
 export const closePrompt = async (closeParams?: CloseParams, promptType?: CreatePromptType) => {
   // await DappMiddle.middle

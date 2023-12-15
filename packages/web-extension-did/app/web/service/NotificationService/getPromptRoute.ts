@@ -29,6 +29,8 @@ const routMap: { [x in keyof typeof PromptRouteTypes]?: string } = {
   [PromptRouteTypes.ADD_GUARDIANS]: '#/setting/guardians/add',
   [PromptRouteTypes.GUARDIANS_VIEW]: '#/setting/guardians/view',
   [PromptRouteTypes.GUARDIANS_APPROVAL]: '#/setting/wallet-security/manage-devices/guardian-approval',
+  [PromptRouteTypes.ALLOWANCE_APPROVE]: '#/allowance-approve',
+  [PromptRouteTypes.WALLET_SECURITY_APPROVE]: '#/approve-wallet-security',
 };
 
 export interface PromptMessage {

@@ -4,6 +4,7 @@ import { ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
 export interface IChatItemProps {
   id: string | number;
   avatar?: string;
+  showLetter?: boolean;
   letter?: string;
   unread?: number;
   className?: string;
@@ -17,6 +18,8 @@ export interface IChatItemProps {
   showMute?: boolean;
   pin?: boolean;
   status: ChannelStatusEnum;
+  isOwner?: boolean;
+  lastMessageType: string;
   onClick?: React.MouseEventHandler;
   onClickMute?: React.MouseEventHandler;
   onClickPin?: React.MouseEventHandler;
@@ -49,6 +52,7 @@ export interface IMessage {
   dateString?: string;
   avatar?: string;
   className?: string;
+  showLetter?: boolean;
   letter?: string;
   type: string;
   showAvatar?: boolean;
@@ -116,6 +120,22 @@ export interface ITextMessage extends IMessage {
 
 export type ITextMessageProps = ITextMessage;
 
+export type ParsedRedPackage = {
+  image: string;
+  link: string;
+  data: {
+    id: string;
+    senderId: string;
+    memo: string;
+  };
+};
+
+export interface IRedPacketMessage extends IMessage {
+  redPacket?: ParsedRedPackage;
+}
+
+export type IRedPacketMessageProps = IRedPacketMessage;
+
 export interface IInputProps {
   autofocus?: boolean;
   reference?: any;
@@ -176,14 +196,18 @@ export interface IPopoverMenuListProps {
   data?: IPopoverMenuListData[];
 }
 
+export type IAvatarSize = 'small' | 'default' | 'large';
+
 export interface IAvatarProps {
   src?: string;
+  showLetter?: boolean;
   letter?: string;
   className?: string;
   alt?: string;
   channelType?: ChannelTypeEnum;
   width?: number;
   height?: number;
+  avatarSize?: IAvatarSize;
   onClick?: React.MouseEventHandler;
 }
 
@@ -196,6 +220,7 @@ export interface IUnreadTipProps {
 export type MessageType =
   | ({ type: 'image' } & IImageMessageProps)
   | ({ type: 'text' } & ITextMessageProps)
+  | ({ type: 'red-package-card' } & IRedPacketMessageProps)
   | ({ type: 'system' } & ISystemMessageProps);
 
 export type MessageListType = MessageType & IMessageListProps;

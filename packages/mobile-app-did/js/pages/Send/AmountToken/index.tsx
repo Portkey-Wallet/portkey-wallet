@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useMemo, useRef } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import { pTd } from 'utils/unit';
 import { parseInputChange } from '@portkey-wallet/utils/input';
 import { ZERO } from '@portkey-wallet/constants/misc';
@@ -12,13 +12,13 @@ import CommonAvatar from 'components/CommonAvatar';
 import { IToSendAssetParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { FontStyles } from 'assets/theme/styles';
-import { useFocusEffect } from '@react-navigation/native';
 import { TextM, TextS } from 'components/CommonText';
 
 import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useInputFocus } from 'hooks/useInputFocus';
 
 interface AmountTokenProps {
   onPressMax: () => void;
@@ -39,25 +39,19 @@ export default function AmountToken({
 }: AmountTokenProps) {
   const { t } = useLanguage();
   const defaultToken = useDefaultToken();
-  const iptRef = useRef<any>();
+  const iptRef = useRef<TextInput>(null);
+  useInputFocus(iptRef);
   const isTestNet = useIsTestnet();
   const isTokenHasPrice = useIsTokenHasPrice(selectedToken?.symbol);
 
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
 
   const symbolImages = useSymbolImages();
-  const aelfIconName = useMemo(() => (isTestNet ? 'testnet' : 'mainnet'), []);
+  const aelfIconName = useMemo(() => (isTestNet ? 'testnet' : 'mainnet'), [isTestNet]);
 
-  const formatTokenNameToSuffix = (str: string) => {
-    return `${str.slice(0, 5)}...`;
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      if (!iptRef || !iptRef?.current) return;
-      iptRef.current.focus();
-    }, []),
-  );
+  const formattedTokenNameToSuffix = useMemo(() => {
+    return selectedToken?.symbol?.length > 5 ? `${selectedToken?.symbol.slice(0, 5)}...` : selectedToken?.symbol;
+  }, [selectedToken?.symbol]);
 
   useEffectOnce(() => {
     getTokenPrice(selectedToken.symbol);
@@ -75,19 +69,16 @@ export default function AmountToken({
       </View>
       <View style={styles.middle}>
         <View style={styles.middleLeft}>
-          {selectedToken.symbol === defaultToken.symbol ? (
-            <CommonAvatar
-              shapeType="circular"
-              svgName={selectedToken.symbol === defaultToken.symbol ? aelfIconName : undefined}
-              imageUrl={symbolImages[selectedToken.symbol] || ''}
-              avatarSize={28}
-            />
-          ) : (
-            <Text style={styles.imgStyle}>{selectedToken?.symbol?.[0]}</Text>
-          )}
-          <Text style={styles.symbolName}>
-            {selectedToken?.symbol?.length > 5 ? formatTokenNameToSuffix(selectedToken?.symbol) : selectedToken?.symbol}
-          </Text>
+          <CommonAvatar
+            hasBorder
+            shapeType="circular"
+            title={selectedToken.symbol}
+            svgName={selectedToken.symbol === defaultToken.symbol ? aelfIconName : undefined}
+            imageUrl={selectedToken.imageUrl || symbolImages[selectedToken.symbol]}
+            avatarSize={28}
+            style={styles.avatarStyle}
+          />
+          <Text style={styles.symbolName}>{formattedTokenNameToSuffix}</Text>
         </View>
         <View style={styles.middleRight}>
           <Input
@@ -162,14 +153,8 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  imgStyle: {
-    width: pTd(28),
-    height: pTd(28),
-    lineHeight: pTd(28),
-    borderColor: defaultColors.border1,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: pTd(14),
-    textAlign: 'center',
+  avatarStyle: {
+    fontSize: pTd(16),
   },
   symbolName: {
     flex: 1,

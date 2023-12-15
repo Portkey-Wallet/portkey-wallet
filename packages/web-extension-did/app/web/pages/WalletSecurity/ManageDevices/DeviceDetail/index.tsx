@@ -35,6 +35,7 @@ export default function DeviceDetail() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
   const handleDelete = useCallback(async () => {
+    // ====== clear guardian cache ====== start
     dispatch(
       setLoginAccountAction({
         guardianAccount: walletInfo.managerInfo?.loginAccount as string,
@@ -43,6 +44,8 @@ export default function DeviceDetail() {
     );
     dispatch(resetUserGuardianStatus());
     await userGuardianList({ caHash: walletInfo.caHash });
+    // ====== clear guardian cache ====== end
+
     isPrompt
       ? navigate('/setting/wallet-security/manage-devices/guardian-approval', {
           state: `removeManage_${device.managerAddress}`,

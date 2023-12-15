@@ -16,7 +16,8 @@ import { changeCanLock } from 'utils/LockManager';
 import { AppState } from 'react-native';
 import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
+import { AuthenticationInfo, OperationTypeEnum } from '@portkey-wallet/types/verifier';
+import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 
 if (!isIOS) {
   GoogleSignin.configure({
@@ -247,6 +248,7 @@ export type VerifyTokenParams = {
   chainId: ChainId;
   id: string;
   operationType: OperationTypeEnum;
+  targetChainId?: ChainId;
 };
 
 export function useVerifyGoogleToken() {
@@ -314,5 +316,32 @@ export function useVerifyToken() {
       return (type === LoginType.Apple ? verifyAppleToken : verifyGoogleToken)(params);
     },
     [verifyAppleToken, verifyGoogleToken],
+  );
+}
+
+export type VerifierAuthParams = {
+  guardianItem: UserGuardianItem;
+  originChainId: ChainId;
+  operationType?: OperationTypeEnum;
+  authenticationInfo?: AuthenticationInfo;
+};
+export function useVerifierAuth() {
+  const verifyToken = useVerifyToken();
+  return useCallback(
+    async ({
+      guardianItem,
+      originChainId,
+      operationType = OperationTypeEnum.communityRecovery,
+      authenticationInfo,
+    }: VerifierAuthParams) => {
+      return verifyToken(guardianItem.guardianType, {
+        accessToken: authenticationInfo?.[guardianItem.guardianAccount],
+        id: guardianItem.guardianAccount,
+        verifierId: guardianItem.verifier?.id,
+        chainId: originChainId,
+        operationType,
+      });
+    },
+    [verifyToken],
   );
 }

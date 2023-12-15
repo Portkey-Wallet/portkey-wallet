@@ -1,0 +1,104 @@
+/* stylelint-disable alpha-value-notation */
+/* stylelint-disable color-function-notation */
+@import '../../../assets/theme/color.less';
+
+.upload-avatar-container {
+  gap: 8px;
+
+  .upload-avatar {
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    flex-shrink: 1;
+    background-color: @bg-25;
+
+    .upload-avatar-main {
+      position: relative;
+
+      .avatar-img {
+        .show-image {
+          object-fit: cover;
+        }
+      }
+
+      .camera-icon-mask {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.4);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        visibility: hidden;
+      }
+
+      &:hover {
+        .camera-icon-mask {
+          visibility: visible !important;
+        }
+      }
+    }
+
+    .camera-icon {
+      svg {
+        path {
+          fill: @bg-7;
+        }
+      }
+    }
+
+    &:hover {
+      background-color: @bg-7;
+      .camera-icon {
+        svg {
+          path {
+            fill: @bg-11;
+          }
+        }
+      }
+    }
+  }
+
+  .upload-avatar.upload-avatar-large {
+    width: 60px;
+    height: 60px;
+    min-height: 60px;
+    min-width: 60px;
+
+    .camera-icon {
+      width: 24px;
+      height: 24px;
+      svg {
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
+
+  .upload-avatar.upload-avatar-default {
+    width: 40px;
+    height: 40px;
+    min-height: 40px;
+    min-width: 40px;
+
+    .camera-icon {
+      width: 20px;
+      height: 20px;
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+
+  .upload-avatar-text {
+    font-size: 14px;
+    line-height: 20px;
+    cursor: pointer;
+    color: @font-9;
+  }
+}

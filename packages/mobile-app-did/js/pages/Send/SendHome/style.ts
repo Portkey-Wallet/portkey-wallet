@@ -49,6 +49,14 @@ export const styles = StyleSheet.create({
   space: {
     height: pTd(24),
   },
+  warningWrap: {
+    marginTop: pTd(12),
+    marginBottom: -pTd(8),
+    padding: pTd(12),
+    marginHorizontal: pTd(20),
+    borderRadius: pTd(6),
+    backgroundColor: defaultColors.bg18,
+  },
 });
 
 export const thirdGroupStyle = StyleSheet.create({

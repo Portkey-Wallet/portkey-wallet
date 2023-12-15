@@ -31,8 +31,6 @@ export const intervalCrossChainTransfer = async (params: CrossChainTransferInter
     });
   }
 
-  console.log(_issueChainId, 'issueChainId===');
-  console.log('error===sendHandler--intervalCrossChainTransfer------', params);
   try {
     const result = await crossChainTransferToCa({
       rpcUrl: chainInfo.endPoint,
@@ -64,10 +62,10 @@ interface CrossChainTransferParams {
   managerAddress: string;
   tokenInfo: BaseToken;
   caHash: string;
-  amount: number;
+  amount: number | string;
   toAddress: string;
   memo?: string;
-  fee: number;
+  fee: number | string;
 }
 const crossChainTransfer = async ({
   chainInfo,

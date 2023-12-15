@@ -30,8 +30,12 @@ import myEvents from 'utils/deviceEvent';
 import FloatingActionButton from '../components/FloatingActionButton';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import { measurePageY } from 'utils/measure';
+import GroupAvatarShow from '../components/GroupAvatarShow';
+import { useIsFocused } from '@react-navigation/native';
 
 const ChatGroupDetailsPage = () => {
+  const isFocused = useIsFocused();
+
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
@@ -154,19 +158,21 @@ const ChatGroupDetailsPage = () => {
   }, []);
 
   useHardwareBackPress(
-    useMemo(
-      () => () => {
-        onBack();
-        return true;
-      },
-      [onBack],
-    ),
+    useMemo(() => {
+      if (isFocused) {
+        return () => {
+          console.log('useHardwareBackPress');
+          onBack();
+          return true;
+        };
+      }
+    }, [isFocused, onBack]),
   );
 
   const leftDom = useMemo(
     () => (
       <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.paddingLeft(pTd(16))]}>
-        <Touchable style={GStyles.marginRight(pTd(20))} onPress={onBack}>
+        <Touchable onPress={onBack} style={GStyles.marginRight(pTd(20))}>
           <Svg size={pTd(20)} icon="left-arrow" color={defaultColors.bg1} />
         </Touchable>
         <Touchable
@@ -174,7 +180,12 @@ const ChatGroupDetailsPage = () => {
           onPress={() => {
             navigationService.navigate('GroupInfoPage');
           }}>
-          <Svg size={pTd(32)} icon="chat-group-avatar-header" />
+          <GroupAvatarShow
+            logoSize={pTd(12)}
+            avatarSize={pTd(32)}
+            imageUrl={groupInfo?.icon || ''}
+            svgName={groupInfo?.icon ? undefined : 'chat-group-avatar-header'}
+          />
           <View style={[GStyles.marginRight(pTd(4)), GStyles.marginLeft(pTd(8))]}>
             <TextL numberOfLines={1} style={[FontStyles.font2, FontStyles.weight500]}>
               {groupInfo?.name || displayName || ''}
@@ -185,7 +196,7 @@ const ChatGroupDetailsPage = () => {
         {mute && <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.bg1} />}
       </View>
     ),
-    [displayName, groupInfo?.name, mute, onBack],
+    [displayName, groupInfo?.icon, groupInfo?.name, mute, onBack],
   );
 
   return (

@@ -29,13 +29,23 @@ import {
   TransferChannelOwnerParams,
   TriggerMessageEvent,
   UpdateChannelMuteParams,
-  UpdateChannelNameParams,
+  UpdateChannelInfoParams,
   UpdateChannelPinParams,
   VerifySignatureLoopParams,
   VerifySignatureParams,
   VerifySignatureResult,
+  CreateRedPackageParams,
+  CreateRedPackageResult,
+  GetRedPackageConfigParams,
+  GetRedPackageCreationStatusResult,
+  GetRedPackageDetailParams,
+  GetRedPackageDetailResult,
+  GrabRedPackageParams,
+  GrabRedPackageResult,
+  SendRedPackageParams,
+  SendRedPackageResult,
 } from '../types/service';
-import { ChannelInfo, ChannelMemberInfo, Message, MessageCount } from '../types';
+import { ChannelInfo, ChannelMemberInfo, Message, MessageCount, RedPackageConfigType } from '../types';
 import { sleep } from '@portkey-wallet/utils';
 import { ContactItemType, IContactProfile } from '@portkey-wallet/types/types-ca/contact';
 import { RequireAtLeastOne } from '@portkey-wallet/types/common';
@@ -244,7 +254,7 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       method: 'POST',
     });
   }
-  updateChannelName(params: UpdateChannelNameParams): IMServiceCommon<null> {
+  updateChannelInfo(params: UpdateChannelInfoParams): IMServiceCommon<null> {
     return this._request.send({
       url: '/api/v1/channelContacts/update',
       params,
@@ -271,6 +281,49 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
   ): IMServiceCommon<IContactProfile> {
     return this._request.send({
       url: '/api/v1/contacts/profile',
+      params,
+      method: 'GET',
+    });
+  }
+
+  createRedPackage(params: CreateRedPackageParams): IMServiceCommon<CreateRedPackageResult> {
+    return this._request.send({
+      url: '/api/v1/redPackage/generate',
+      params,
+      method: 'POST',
+    });
+  }
+  sendRedPackage(params: SendRedPackageParams): IMServiceCommon<SendRedPackageResult> {
+    return this._request.send({
+      url: '/api/v1/redPackage/send',
+      params,
+      method: 'POST',
+    });
+  }
+  getRedPackageCreationStatus(params: SendRedPackageResult): IMServiceCommon<GetRedPackageCreationStatusResult> {
+    return this._request.send({
+      url: '/api/v1/redPackage/getCreationResult',
+      params,
+      method: 'GET',
+    });
+  }
+  getRedPackageDetail(params: GetRedPackageDetailParams): IMServiceCommon<GetRedPackageDetailResult> {
+    return this._request.send({
+      url: '/api/v1/redPackage/detail',
+      params,
+      method: 'GET',
+    });
+  }
+  grabRedPackage(params: GrabRedPackageParams): IMServiceCommon<GrabRedPackageResult> {
+    return this._request.send({
+      url: '/api/v1/redPackage/grab',
+      params,
+      method: 'POST',
+    });
+  }
+  getRedPackageConfig(params: GetRedPackageConfigParams): IMServiceCommon<RedPackageConfigType> {
+    return this._request.send({
+      url: '/api/v1/redPackage/config',
       params,
       method: 'GET',
     });

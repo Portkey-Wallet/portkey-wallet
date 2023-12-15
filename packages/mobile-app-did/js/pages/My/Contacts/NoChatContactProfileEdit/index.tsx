@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { StyleSheet, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import { AddressItem, ContactItemType, EditContactItemApiType } from '@portkey-wallet/types/types-ca/contact';
@@ -7,10 +7,9 @@ import Input from 'components/CommonInput';
 import CommonButton from 'components/CommonButton';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
-import { ErrorType } from 'types/common';
 import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
-import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
+import { INIT_HAS_ERROR, INIT_NONE_ERROR, ErrorType } from '@portkey-wallet/constants/constants-ca/common';
 import ContactAddress from '../ContactEdit/components/ContactAddress';
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
 import ChainOverlay from 'components/ChainOverlay';
@@ -29,6 +28,7 @@ import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { defaultColors } from 'assets/theme';
 import myEvents from 'utils/deviceEvent';
+import { useInputFocus } from 'hooks/useInputFocus';
 
 type RouterParams = {
   contact?: ContactItemType;
@@ -54,6 +54,11 @@ const initEditContact: EditContactType = {
 
 const ContactEdit: React.FC = () => {
   const { contact, addressList } = useRouterParams<RouterParams>();
+  const isEdit = useMemo(() => contact !== undefined, [contact]);
+
+  const iptRef = useRef<TextInput>();
+  useInputFocus(iptRef, !isEdit);
+
   const defaultToken = useDefaultToken();
   const { t } = useLanguage();
 
@@ -77,7 +82,6 @@ const ContactEdit: React.FC = () => {
       })),
     });
   }, [contact]);
-  const isEdit = useMemo(() => contact !== undefined, [contact]);
 
   const { chainList = [], currentNetwork } = useCurrentWallet();
   const customChainList = useMemo<CustomChainItemType[]>(
@@ -235,6 +239,10 @@ const ContactEdit: React.FC = () => {
               title: 'OK',
               type: 'primary',
               onPress: () => {
+                myEvents.refreshMyContactDetailInfo.emit({
+                  contactName: editContact.name,
+                  contactAvatar: result.avatar,
+                });
                 navigationService.navigate('ChatContactProfile', {
                   contact: result,
                   relationId: result.imInfo?.relationId,
@@ -252,7 +260,7 @@ const ContactEdit: React.FC = () => {
           editContact.addresses[0].address === addressList?.[0]?.address &&
           editContact.addresses[0].chainId === addressList?.[0]?.chainId
         ) {
-          myEvents.refreshMyContactDetailInfo.emit({ contactName: editContact.name });
+          myEvents.refreshMyContactDetailInfo.emit({ contactName: editContact.name, contactAvatar: result.avatar });
         }
         navigationService.goBack();
       } else {
@@ -315,6 +323,7 @@ const ContactEdit: React.FC = () => {
         type="general"
         theme="white-bg"
         maxLength={16}
+        ref={iptRef}
         label={t('Name')}
         placeholder={t('Enter name')}
         inputStyle={pageStyles.nameInputStyle}

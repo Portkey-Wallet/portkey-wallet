@@ -3,6 +3,7 @@ import { request } from '@portkey-wallet/api/api-did';
 import { RequestConfig } from '../../types';
 import { LoginKeyType } from '@portkey-wallet/types/types-ca/wallet';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
+import { ChainId } from '@portkey-wallet/types';
 
 type VerifierInfo = {
   verifierSessionId: string;
@@ -16,6 +17,7 @@ export interface SendVerificationConfig extends RequestConfig {
     verifierId?: string;
     chainId: string | number;
     operationType: OperationTypeEnum;
+    targetChainId?: ChainId;
   };
 }
 
@@ -67,7 +69,9 @@ export class Verification extends StorageBaseLoader {
     const key = (guardianIdentifier || '') + (verifierId || '');
     try {
       const req = await request.verify.sendVerificationRequest(config);
-      await this.set(key, { ...req, time: Date.now() });
+      if (req?.verifierSessionId) {
+        await this.set(key, { ...req, time: Date.now() });
+      }
       return req;
     } catch (error: any) {
       const { message } = error?.error || error || {};

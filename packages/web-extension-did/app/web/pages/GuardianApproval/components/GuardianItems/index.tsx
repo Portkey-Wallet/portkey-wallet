@@ -1,10 +1,10 @@
 import { setCurrentGuardianAction, setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { UserGuardianItem, UserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/type';
-import { OperationTypeEnum, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum, VerifyStatus } from '@portkey-wallet/types/verifier';
 import { Button, message } from 'antd';
 import clsx from 'clsx';
 import VerifierPair from 'components/VerifierPair';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
@@ -14,31 +14,32 @@ import { verifyErrorHandler } from 'utils/tryErrorHandler';
 import { verification } from 'utils/api';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import { useVerifyToken } from 'hooks/authentication';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
 import qs from 'query-string';
+import { ChainId } from '@portkey-wallet/types';
 import './index.less';
+import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
 
 interface GuardianItemProps {
   disabled?: boolean;
   isExpired?: boolean;
   item: UserGuardianStatus;
   loginAccount?: LoginInfo;
+  targetChainId?: ChainId;
 }
-export default function GuardianItems({ disabled, item, isExpired, loginAccount }: GuardianItemProps) {
+export default function GuardianItems({ disabled, item, isExpired, loginAccount, targetChainId }: GuardianItemProps) {
   const { t } = useTranslation();
   const { setLoading } = useLoading();
   const { state, search } = useLocation();
-  const [query, setQuery] = useState('');
-  useEffect(() => {
+  const query = useMemo(() => {
     if (search) {
       const { detail } = qs.parse(search);
-      setQuery(detail);
+      return detail;
     } else {
-      setQuery(state);
+      return state;
     }
-  }, [query, search, state]);
+  }, [search, state]);
+
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const originChainId = useOriginChainId();
@@ -50,15 +51,18 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
 
   const operationType: OperationTypeEnum = useMemo(() => {
     switch (query) {
-      case 'guardians/add':
-        return OperationTypeEnum.addGuardian;
       case 'guardians/edit':
         return OperationTypeEnum.editGuardian;
       case 'guardians/del':
         return OperationTypeEnum.deleteGuardian;
       default:
+        if (query && query.indexOf('guardians/add') !== -1) {
+          return OperationTypeEnum.addGuardian;
+        }
         if (query && query?.indexOf('removeManage') !== -1) {
           return OperationTypeEnum.removeOtherManager;
+        } else if (query && query?.indexOf('setTransferLimit') !== -1) {
+          return OperationTypeEnum.modifyTransferLimit;
         }
         return OperationTypeEnum.communityRecovery;
     }
@@ -132,6 +136,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
             verifierId: item.verifier?.id || '',
             chainId: originChainId,
             operationType,
+            targetChainId: targetChainId,
           },
         });
         setLoading(false);
@@ -153,10 +158,12 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
             }),
           );
           if (query && query.indexOf('removeManage') !== -1) {
-            navigate('/setting/wallet-security/manage-devices/verifier-account', { state: query });
-          } else {
-            navigate('/login/verifier-account', { state: 'login' });
+            return navigate('/setting/wallet-security/manage-devices/verifier-account', { state: query });
           }
+          if (query && query.indexOf('setTransferLimit') !== -1) {
+            return navigate('/setting/wallet-security/payment-security/verifier-account', { state: query });
+          }
+          return navigate('/login/verifier-account', { state: 'login' });
         }
       } catch (error: any) {
         console.log(error, 'error===');
@@ -165,56 +172,46 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
         message.error(_error);
       }
     },
-    [setLoading, query, loginAccount, originChainId, operationType, guardianSendCode, dispatch, navigate],
+    [
+      setLoading,
+      query,
+      loginAccount,
+      originChainId,
+      operationType,
+      targetChainId,
+      guardianSendCode,
+      dispatch,
+      navigate,
+    ],
   );
 
-  const verifyToken = useVerifyToken();
-
-  const socialVerifyHandler = useCallback(
-    async (item: UserGuardianItem) => {
-      try {
-        setLoading(true);
-        const result = await verifyToken(item.guardianType, {
-          accessToken: loginAccount?.authenticationInfo?.[item.guardianAccount],
-          id: item.guardianAccount,
-          verifierId: item.verifier?.id,
-          chainId: originChainId,
-          operationType,
-        });
-        const verifierInfo: VerifierInfo = { ...result, verifierId: item?.verifier?.id };
-        const { guardianIdentifier } = handleVerificationDoc(verifierInfo.verificationDoc);
-        dispatch(
-          setUserGuardianItemStatus({
-            key: item.key,
-            signature: verifierInfo.signature,
-            verificationDoc: verifierInfo.verificationDoc,
-            status: VerifyStatus.Verified,
-            identifierHash: guardianIdentifier,
-          }),
-        );
-      } catch (error) {
-        const msg = handleErrorMessage(error);
-        message.error(msg);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [setLoading, verifyToken, loginAccount, originChainId, operationType, dispatch],
-  );
-
+  const socialVerify = useSocialVerify();
   const verifyingHandler = useCallback(
     async (item: UserGuardianItem) => {
-      if (isSocialLogin) return socialVerifyHandler(item);
+      if (isSocialLogin) {
+        const verifiedInfo = await socialVerify({
+          operateGuardian: item,
+          operationType,
+          originChainId,
+          loginAccount,
+          targetChainId,
+        });
+        verifiedInfo && dispatch(setUserGuardianItemStatus(verifiedInfo));
+        return;
+      }
+
       dispatch(setCurrentGuardianAction({ ...item, isInitStatus: false }));
       if (query?.includes('guardians')) {
         navigate('/setting/guardians/verifier-account', { state: query });
       } else if (query?.includes('removeManage')) {
         navigate('/setting/wallet-security/manage-devices/verifier-account', { state: query });
+      } else if (query?.includes('setTransferLimit')) {
+        navigate('/setting/wallet-security/payment-security/verifier-account', { state: query });
       } else {
         navigate('/login/verifier-account', { state: 'login' });
       }
     },
-    [dispatch, isSocialLogin, navigate, socialVerifyHandler, query],
+    [isSocialLogin, socialVerify, operationType, originChainId, loginAccount, dispatch, query, navigate, targetChainId],
   );
 
   const accountShow = useCallback((guardian: UserGuardianItem) => {

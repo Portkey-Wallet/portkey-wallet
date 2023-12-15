@@ -25,10 +25,17 @@ import { useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
 import { getWalletInfo, isCurrentCaHash } from 'utils/redux';
 import { resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
-import { changeDrawerOpenStatus, resetDiscover } from '@portkey-wallet/store/store-ca/discover/slice';
+import {
+  changeDrawerOpenStatus,
+  resetDiscover,
+  resetDisclaimerConfirmedDapp,
+} from '@portkey-wallet/store/store-ca/discover/slice';
 import im from '@portkey-wallet/im';
 import { resetIm } from '@portkey-wallet/store/store-ca/im/actions';
 import { resetSecurity } from '@portkey-wallet/store/store-ca/security/actions';
+import signalrFCM from '@portkey-wallet/socket/socket-fcm';
+import { deleteFCMToken } from 'utils/FCM';
+import { resetBadge } from 'utils/notifee';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
@@ -41,8 +48,12 @@ export default function useLogOut() {
       resetStore();
       dispatch(resetDappList(currentNetwork));
       dispatch(resetDiscover(currentNetwork));
+      dispatch(resetDisclaimerConfirmedDapp(currentNetwork));
+
       dispatch(changeDrawerOpenStatus(false));
       im.destroy();
+      signalrFCM.exitWallet();
+
       dispatch(resetIm(currentNetwork));
       dispatch(resetSecurity(currentNetwork));
 
@@ -50,6 +61,8 @@ export default function useLogOut() {
         dispatch(resetCaInfo(currentNetwork));
         navigationService.reset('LoginPortkey');
       } else {
+        resetBadge();
+        deleteFCMToken();
         dispatch(resetWallet());
         dispatch(resetUser());
         dispatch(resetSettings());

@@ -1,11 +1,17 @@
 import { ContactItemType, IContactProfile } from '@portkey-wallet/types/types-ca/contact';
 import {
+  ChainId,
   ChannelInfo,
   ChannelItem,
   ChannelMemberInfo,
   ChannelTypeEnum,
   Message,
   MessageCount,
+  RedPackageConfigType,
+  RedPackageDetail,
+  RedPackageGrabInfoItem,
+  RedPackageStatusEnum,
+  RedPackageTypeEnum,
   TriggerMessageEventActionEnum,
 } from '.';
 import { RequireAtLeastOne } from '@portkey-wallet/types/common';
@@ -68,6 +74,7 @@ export type GetOtherUserInfoDefaultResult = {
 export type CreateChannelParams = {
   name: string;
   type: ChannelTypeEnum;
+  channelIcon?: string;
   members: string[];
 };
 
@@ -127,10 +134,14 @@ export type GetChannelListParams = {
   channelUuid?: string;
 };
 
+export type ChannelItemResult = ChannelItem & {
+  lastMessageContent: string | null;
+};
+
 export type GetChannelListResult = {
   totalCount: number;
   cursor: string;
-  list: ChannelItem[];
+  list: ChannelItemResult[];
 };
 
 export type UpdateChannelPinParams = {
@@ -180,13 +191,93 @@ export type LeaveChannelParams = {
   channelUuid: string;
 };
 
-export type UpdateChannelNameParams = {
+export type UpdateChannelInfoParams = {
   channelUuid: string;
   channelName: string;
+  channelIcon?: string;
 };
 
 export type JoinChannelParams = {
   channelUuid: string;
+};
+
+export type CreateRedPackageParams = {
+  chainId: ChainId;
+  symbol: string;
+};
+
+export type CreateRedPackageResult = {
+  id: string;
+  publicKey: string;
+  chainId: ChainId;
+  minAmount: string;
+  symbol: string;
+  decimal: string | number;
+  expireTime: string;
+  redPackageContractAddress: string;
+};
+
+export type SendRedPackageParams = {
+  id: string;
+  totalAmount: string;
+  type: RedPackageTypeEnum;
+  count: number;
+  chainId: ChainId;
+  symbol: string;
+  memo: string;
+  channelUuid: string;
+  rawTransaction: string;
+  message: string;
+};
+
+export type SendRedPackageResult = {
+  sessionId: string;
+};
+
+export type GetRedPackageCreationStatusParams = SendRedPackageResult;
+
+export enum RedPackageCreationStatusEnum {
+  PENDING = 0,
+  SUCCESS = 1,
+  FAIL = 2,
+}
+export type GetRedPackageCreationStatusResult = {
+  status: RedPackageCreationStatusEnum;
+  message: string;
+  TransactionId: string;
+  TransactionResult: string;
+};
+
+export type GetRedPackageDetailParams = {
+  id: string;
+  skipCount: number;
+  maxResultCount: number;
+};
+
+export type GetRedPackageDetailResult = RedPackageDetail & {
+  items: RedPackageGrabInfoItem[];
+};
+
+export type GrabRedPackageParams = {
+  id: string;
+  channelUuid: string;
+};
+
+export enum GrabRedPackageResultEnum {
+  SUCCESS = 1,
+  FAIL = 2,
+}
+export type GrabRedPackageResult = {
+  result: GrabRedPackageResultEnum;
+  errorMessage: string;
+  amount: string;
+  decimal: string | number;
+  viewStatus: RedPackageStatusEnum;
+};
+
+export type GetRedPackageConfigParams = {
+  chainId?: ChainId;
+  token?: string;
 };
 
 export interface IIMService {
@@ -225,11 +316,20 @@ export interface IIMService {
   addChannelMembers(params: AddChannelMembersParams): IMServiceCommon<null>;
   removeChannelMembers(params: RemoveChannelMembersParams): IMServiceCommon<null>;
   leaveChannel(params: LeaveChannelParams): IMServiceCommon<null>;
-  updateChannelName(params: UpdateChannelNameParams): IMServiceCommon<null>;
+  updateChannelInfo(params: UpdateChannelInfoParams): IMServiceCommon<null>;
   joinChannel(params: JoinChannelParams): IMServiceCommon<null>;
 
   addStranger(params: AddStrangerParams): IMServiceCommon<ContactItemType>;
   getProfile(
     params: RequireAtLeastOne<GetProfileParams, 'id' | 'portkeyId' | 'relationId'>,
   ): IMServiceCommon<IContactProfile>;
+
+  createRedPackage(params: CreateRedPackageParams): IMServiceCommon<CreateRedPackageResult>;
+  sendRedPackage(params: SendRedPackageParams): IMServiceCommon<SendRedPackageResult>;
+  getRedPackageCreationStatus(
+    params: GetRedPackageCreationStatusParams,
+  ): IMServiceCommon<GetRedPackageCreationStatusResult>;
+  getRedPackageDetail(params: GetRedPackageDetailParams): IMServiceCommon<GetRedPackageDetailResult>;
+  grabRedPackage(params: GrabRedPackageParams): IMServiceCommon<GrabRedPackageResult>;
+  getRedPackageConfig(params: GetRedPackageConfigParams): IMServiceCommon<RedPackageConfigType>;
 }

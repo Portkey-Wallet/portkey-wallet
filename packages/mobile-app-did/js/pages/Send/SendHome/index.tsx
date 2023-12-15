@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import navigationService from 'utils/navigationService';
@@ -22,14 +22,14 @@ import CommonButton from 'components/CommonButton';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentChain, useDefaultToken, useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { getManagerAccount } from 'utils/redux';
+import { getManagerAccount, isMyPayTransactionFee } from 'utils/redux';
 import { usePin } from 'hooks/store';
-import { divDecimals, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
+import { divDecimals, divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
 import { IToSendHomeParamsType, IToSendPreviewParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import BigNumber from 'bignumber.js';
 
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';
-import { BGStyles } from 'assets/theme/styles';
+import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import Loading from 'components/Loading';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
@@ -43,6 +43,14 @@ import {
 import { getAddressChainId, isSameAddresses } from '@portkey-wallet/utils';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { request } from '@portkey-wallet/api/api-did';
+import { CalculateTransactionFeeResponse } from '@portkey-wallet/types';
+import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import { useCheckTransferLimitWithJump, useSecuritySafeCheckAndToast } from 'hooks/security';
+import CommonToast from 'components/CommonToast';
+import { TextM } from 'components/CommonText';
+import GStyles from 'assets/theme/GStyles';
+import Touchable from 'components/Touchable';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 
 const SendHome: React.FC = () => {
   const {
@@ -55,6 +63,7 @@ const SendHome: React.FC = () => {
 
   const wallet = useCurrentWalletInfo();
   const chainInfo = useCurrentChain(assetInfo?.chainId);
+  const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
 
   const pin = usePin();
 
@@ -66,7 +75,7 @@ const SendHome: React.FC = () => {
   const [selectedFromAccount] = useState({ name: '', address: '' }); // from
   const [selectedToContact, setSelectedToContact] = useState(toInfo); // to
   const [selectedAssets, setSelectedAssets] = useState(assetInfo); // token or nft
-  const [sendNumber, setSendNumber] = useState<string>('0'); // tokenNumber  like 100
+  const [sendNumber, setSendNumber] = useState<string>(''); // tokenNumber  like 100
   const debounceSendNumber = useDebounce(sendNumber, 500);
   const [, setTransactionFee] = useState<string>('0'); // like 1.2ELF
 
@@ -75,6 +84,8 @@ const SendHome: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<any[]>([]);
 
   const checkManagerSyncState = useCheckManagerSyncState();
+  const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
+  const contractRef = useRef<ContractBasic>();
 
   useEffect(() => {
     setSelectedToContact(toInfo);
@@ -87,11 +98,14 @@ const SendHome: React.FC = () => {
       const account = getManagerAccount(pin);
       if (!account) return;
 
-      const contract = await getContractBasic({
-        contractAddress: chainInfo.caContractAddress,
-        rpcUrl: chainInfo?.endPoint,
-        account: account,
-      });
+      if (!contractRef.current) {
+        contractRef.current = await getContractBasic({
+          contractAddress: chainInfo.caContractAddress,
+          rpcUrl: chainInfo.endPoint,
+          account,
+        });
+      }
+      const contract = contractRef.current;
 
       const firstMethodName = isCross ? 'ManagerTransfer' : 'ManagerForwardCall';
       const secondParams = isCross
@@ -100,7 +114,7 @@ const SendHome: React.FC = () => {
             caHash: wallet.caHash,
             symbol: selectedAssets.symbol,
             to: wallet.address,
-            amount: timesDecimals(sendAmount ?? debounceSendNumber, selectedAssets.decimals || '0').toNumber(),
+            amount: timesDecimals(sendAmount ?? debounceSendNumber, selectedAssets.decimals || '0').toFixed(),
             memo: '',
           }
         : {
@@ -110,21 +124,30 @@ const SendHome: React.FC = () => {
             args: {
               symbol: selectedAssets.symbol,
               to: selectedToContact.address,
-              amount: timesDecimals(sendAmount ?? debounceSendNumber, selectedAssets.decimals || '0').toNumber(),
+              amount: timesDecimals(sendAmount ?? debounceSendNumber, selectedAssets.decimals || '0').toFixed(),
               memo: '',
             },
           };
 
       const req = await contract.calculateTransactionFee(firstMethodName, secondParams);
 
-      if (req.error) request.errorReport('calculateTransactionFee', secondParams, req.error);
+      if (req?.error) request.errorReport('calculateTransactionFee', secondParams, req.error);
 
-      const { TransactionFee } = req.data || {};
-      if (!TransactionFee) throw { code: 500, message: 'no enough fee' };
-
-      return unitConverter(divDecimals(TransactionFee?.[defaultToken.symbol], defaultToken.decimals));
+      const { TransactionFees, TransactionFee } = (req.data as CalculateTransactionFeeResponse) || {};
+      // V2 calculateTransactionFee
+      if (TransactionFees) {
+        const { ChargingAddress, Fee } = TransactionFees;
+        const myPayFee = isMyPayTransactionFee(ChargingAddress, assetInfo?.chainId);
+        if (myPayFee) return divDecimalsStr(Fee?.[defaultToken.symbol], defaultToken.decimals).toString();
+        return '0';
+      }
+      // V1 calculateTransactionFee
+      if (TransactionFee)
+        return divDecimalsStr(TransactionFee?.[defaultToken.symbol], defaultToken.decimals).toString();
+      throw { code: 500, message: 'no enough fee' };
     },
     [
+      assetInfo?.chainId,
       chainInfo,
       debounceSendNumber,
       defaultToken.decimals,
@@ -163,13 +186,13 @@ const SendHome: React.FC = () => {
       setSendNumber(
         divDecimals(selectedAssets.balance, selectedAssets.decimals || '0')
           .minus(fee || '0')
-          .toString(),
+          .toFixed(),
       );
     } catch (err: any) {
       if (err?.code === 500) {
         setTransactionFee(String(maxFee));
         const selectedAssetsNum = divDecimals(selectedAssets.balance, selectedAssets.decimals || '0');
-        setSendNumber(selectedAssetsNum.minus(maxFee).toString());
+        setSendNumber(selectedAssetsNum.minus(maxFee).toFixed());
       }
     } finally {
       Loading.hide();
@@ -208,7 +231,7 @@ const SendHome: React.FC = () => {
 
   // warning dialog
   const showDialog = useCallback(
-    (type: 'clearAddress' | 'crossChain', confirmCallBack?: () => void) => {
+    (type: 'clearAddress' | 'crossChain' | 'exchange', confirmCallBack?: () => void) => {
       switch (type) {
         case 'clearAddress':
           ActionSheet.alert({
@@ -238,6 +261,21 @@ const SendHome: React.FC = () => {
                 onPress: () => {
                   confirmCallBack?.();
                 },
+              },
+            ],
+          });
+          break;
+
+        case 'exchange':
+          ActionSheet.alert({
+            title: t('Send to exchange account?'),
+            message: t(
+              "Please note that assets on the SideChain can't be sent directly to exchanges. You can transfer your SideChain assets to the MainChain before sending them to your exchange account.",
+            ),
+            buttons: [
+              {
+                title: t('Got it'),
+                type: 'primary',
               },
             ],
           });
@@ -313,48 +351,103 @@ const SendHome: React.FC = () => {
     let fee;
     setErrorMessage([]);
 
+    if (!chainInfo || !pin) {
+      return { status: false };
+    }
+    const account = getManagerAccount(pin);
+    if (!account) {
+      return { status: false };
+    }
+
+    Loading.show();
+    // check is security safe
     try {
-      // check is SYNCHRONIZING
-      const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
-      if (!_isManagerSynced) {
-        setErrorMessage([TransactionError.SYNCHRONIZING]);
+      const securitySafeResult = await securitySafeCheckAndToast(assetInfo.chainId);
+      if (!securitySafeResult) {
+        Loading.hide();
         return { status: false };
       }
+    } catch (err) {
+      CommonToast.failError(err);
+      Loading.hide();
+    }
 
-      const sendBigNumber = timesDecimals(sendNumber, selectedAssets.decimals || '0');
-      const assetBalanceBigNumber = ZERO.plus(selectedAssets.balance);
-      const isCross = isCrossChain(selectedToContact.address, assetInfo.chainId);
+    // checkTransferLimitResult
+    try {
+      if (!contractRef.current) {
+        contractRef.current = await getContractBasic({
+          contractAddress: chainInfo.caContractAddress,
+          rpcUrl: chainInfo.endPoint,
+          account,
+        });
+      }
+      const contract = contractRef.current;
+      const checkTransferLimitResult = await checkTransferLimitWithJump(
+        {
+          caContract: contract,
+          symbol: assetInfo.symbol,
+          decimals: assetInfo.decimals,
+          amount: sendNumber,
+        },
+        chainInfo.chainId,
+      );
+      if (!checkTransferLimitResult) {
+        Loading.hide();
+        return { status: false };
+      }
+    } catch (error) {
+      CommonToast.failError(error);
+      Loading.hide();
+      return { status: false };
+    }
 
-      // input check
-      if (sendType === 'token') {
-        // token
-        if (assetInfo.symbol === defaultToken.symbol) {
-          // ELF
-          if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
-            setErrorMessage([TransactionError.TOKEN_NOT_ENOUGH]);
-            return { status: false };
-          }
+    // check is SYNCHRONIZING
+    const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
+    if (!_isManagerSynced) {
+      Loading.hide();
+      setErrorMessage([TransactionError.SYNCHRONIZING]);
+      return { status: false };
+    }
 
-          if (isCross && sendBigNumber.isLessThanOrEqualTo(timesDecimals(crossFee, defaultToken.decimals))) {
-            setErrorMessage([TransactionError.CROSS_NOT_ENOUGH]);
-            return { status: false };
-          }
-        } else {
-          //Other Token
-          if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
-            setErrorMessage([TransactionError.TOKEN_NOT_ENOUGH]);
-            return { status: false };
-          }
+    const sendBigNumber = timesDecimals(sendNumber, selectedAssets.decimals || '0');
+    const assetBalanceBigNumber = ZERO.plus(selectedAssets.balance);
+    const isCross = isCrossChain(selectedToContact.address, assetInfo.chainId);
+
+    // input check
+    if (sendType === 'token') {
+      // token
+      if (assetInfo.symbol === defaultToken.symbol) {
+        // ELF
+        if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
+          setErrorMessage([TransactionError.TOKEN_NOT_ENOUGH]);
+          Loading.hide();
+          return { status: false };
+        }
+
+        if (isCross && sendBigNumber.isLessThanOrEqualTo(timesDecimals(crossFee, defaultToken.decimals))) {
+          setErrorMessage([TransactionError.CROSS_NOT_ENOUGH]);
+          Loading.hide();
+          return { status: false };
         }
       } else {
         // nft
         if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
-          setErrorMessage([TransactionError.NFT_NOT_ENOUGH]);
+          setErrorMessage([TransactionError.TOKEN_NOT_ENOUGH]);
+          Loading.hide();
           return { status: false };
         }
       }
+    } else {
+      // nft
+      if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
+        setErrorMessage([TransactionError.NFT_NOT_ENOUGH]);
+        Loading.hide();
+        return { status: false };
+      }
+    }
 
-      // transaction fee check
+    // transaction fee check
+    try {
       fee = await getTransactionFee(isCross);
       setTransactionFee(fee || '0');
     } catch (err: any) {
@@ -370,13 +463,17 @@ const SendHome: React.FC = () => {
     return { status: true, fee };
   }, [
     assetInfo.chainId,
+    assetInfo.decimals,
     assetInfo.symbol,
-    chainInfo?.chainId,
+    chainInfo,
     checkManagerSyncState,
+    checkTransferLimitWithJump,
     crossFee,
     defaultToken.decimals,
     defaultToken.symbol,
     getTransactionFee,
+    pin,
+    securitySafeCheckAndToast,
     selectedAssets.balance,
     selectedAssets.decimals,
     selectedToContact.address,
@@ -469,6 +566,16 @@ const SendHome: React.FC = () => {
           {t(err)}
         </Text>
       ))}
+
+      {assetInfo?.chainId !== MAIN_CHAIN_ID && (
+        <Touchable
+          style={[GStyles.flexRow, GStyles.itemCenter, styles.warningWrap]}
+          onPress={() => showDialog('exchange')}>
+          <Svg icon="warning1" size={pTd(16)} />
+          <TextM style={[GStyles.marginLeft(pTd(8)), GStyles.flex1, FontStyles.font3]}>Send to exchange account?</TextM>
+          <Svg icon="down-arrow" size={pTd(16)} />
+        </Touchable>
+      )}
 
       {/* Group 2 token */}
       {sendType === 'token' && step === 2 && (

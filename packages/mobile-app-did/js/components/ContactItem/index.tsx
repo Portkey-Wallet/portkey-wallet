@@ -1,13 +1,13 @@
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { BGStyles, BorderStyles, FontStyles } from 'assets/theme/styles';
-import { TextL, TextS, TextXXL } from 'components/CommonText';
+import { FontStyles } from 'assets/theme/styles';
+import CommonAvatar from 'components/CommonAvatar';
+import { TextL, TextS } from 'components/CommonText';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import React, { memo } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
-// import { formatStr2EllipsisStr } from 'utils';
 import { pTd } from 'utils/unit';
 
 export interface ItemType {
@@ -25,11 +25,16 @@ const ContactItem: React.FC<ItemType> = props => {
   return (
     <TouchableOpacity onPress={() => onPress?.(contact)}>
       <View style={styles.itemWrap}>
-        <View style={[styles.itemAvatar, BGStyles.bg4, BorderStyles.border1, styles.avatarWrap]}>
+        <View style={[styles.itemAvatar, styles.avatarWrap]}>
           {isShowWarning && <View style={styles.warningCycle} />}
-          <TextXXL style={FontStyles.font5}>
-            {(contact?.name || contact?.caHolderInfo?.walletName || contact.imInfo?.name)?.[0]?.toUpperCase()}
-          </TextXXL>
+          <CommonAvatar
+            hasBorder
+            resizeMode="cover"
+            title={(contact?.name || contact?.caHolderInfo?.walletName || contact.imInfo?.name)?.toUpperCase()}
+            avatarSize={pTd(36)}
+            imageUrl={contact.avatar || ''}
+            style={styles.itemAvatar}
+          />
         </View>
         <View style={styles.itemNameWrap}>
           <TextL numberOfLines={1} style={FontStyles.font5}>
@@ -64,17 +69,11 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomColor: defaultColors.border6,
     borderBottomWidth: StyleSheet.hairlineWidth,
+    marginBottom: StyleSheet.hairlineWidth,
     ...GStyles.paddingArg(0, 20),
   },
   itemAvatar: {
-    width: pTd(36),
-    height: pTd(36),
-    borderRadius: pTd(20),
     marginRight: pTd(12),
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: pTd(1),
   },
   itemNameWrap: {
     flex: 1,

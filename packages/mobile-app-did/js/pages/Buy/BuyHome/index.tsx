@@ -1,5 +1,5 @@
 import { defaultColors } from 'assets/theme';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import PageContainer from 'components/PageContainer';
@@ -12,15 +12,18 @@ import BuyForm from './components/BuyForm';
 import SellForm from './components/SellForm';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import ActionSheet from 'components/ActionSheet';
+import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import Loading from 'components/Loading';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import useEffectOnce from 'hooks/useEffectOnce';
+import CommonToast from 'components/CommonToast';
+import { useSecuritySafeCheckAndToast } from 'hooks/security';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { useAppBuyButtonShow } from 'hooks/cms';
+import { TabItemType } from 'components/CommonTouchableTabs';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 
-type TabItemType = {
-  name: string;
-  type: PaymentTypeEnum;
-  component: JSX.Element;
-};
-
-const tabList: TabItemType[] = [
+const tabList: TabItemType<PaymentTypeEnum>[] = [
   {
     name: 'Buy',
     type: PaymentTypeEnum.BUY,
@@ -36,12 +39,30 @@ const tabList: TabItemType[] = [
 export default function BuyHome() {
   const { t } = useLanguage();
   const { isBuySectionShow, isSellSectionShow, refreshBuyButton } = useAppBuyButtonShow();
+  const { caHash } = useCurrentWalletInfo();
+  const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
+
+  const { toTab } = useRouterParams<{ toTab: PaymentTypeEnum }>();
+
   const [selectTab, setSelectTab] = useState<PaymentTypeEnum>(
-    isBuySectionShow ? PaymentTypeEnum.BUY : PaymentTypeEnum.SELL,
+    toTab !== PaymentTypeEnum.SELL && isBuySectionShow ? PaymentTypeEnum.BUY : PaymentTypeEnum.SELL,
   );
 
-  const onTabPress = useCallback(
-    (type: PaymentTypeEnum) => {
+  useEffectOnce(() => {
+    (async () => {
+      if (!isBuySectionShow) {
+        try {
+          if (!(await securitySafeCheckAndToast(MAIN_CHAIN_ID))) return;
+        } catch (error) {
+          console.log('error', error);
+          return;
+        }
+      }
+    })();
+  });
+
+  const onTabPress = useLockCallback(
+    async (type: PaymentTypeEnum) => {
       if (type === PaymentTypeEnum.BUY && !isBuySectionShow) {
         ActionSheet.alert({
           title2: (
@@ -66,9 +87,21 @@ export default function BuyHome() {
         refreshBuyButton();
         return;
       }
+
+      if (type === PaymentTypeEnum.SELL) {
+        Loading.show();
+        try {
+          if (!(await securitySafeCheckAndToast(MAIN_CHAIN_ID))) return;
+        } catch (error) {
+          CommonToast.failError(error);
+          return;
+        } finally {
+          Loading.hide();
+        }
+      }
       setSelectTab(type);
     },
-    [isBuySectionShow, isSellSectionShow, refreshBuyButton],
+    [caHash, isBuySectionShow, isSellSectionShow, refreshBuyButton],
   );
 
   return (
@@ -81,15 +114,13 @@ export default function BuyHome() {
         <View style={styles.tabHeader}>
           {tabList.map(tabItem => (
             <TouchableOpacity
+              activeOpacity={0.8}
               key={tabItem.name}
-              onPress={() => {
-                onTabPress(tabItem.type);
-              }}>
-              <View style={[styles.tabWrap, selectTab === tabItem.type && styles.selectTabStyle]}>
-                <TextM style={[FontStyles.font7, selectTab === tabItem.type && styles.selectTabTextStyle]}>
-                  {tabItem.name}
-                </TextM>
-              </View>
+              onPress={() => onTabPress(tabItem.type)}
+              style={[styles.tabWrap, selectTab === tabItem.type && styles.selectTabStyle]}>
+              <TextM style={[FontStyles.font7, selectTab === tabItem.type && styles.selectTabTextStyle]}>
+                {tabItem.name}
+              </TextM>
             </TouchableOpacity>
           ))}
         </View>
@@ -120,6 +151,7 @@ const styles = StyleSheet.create({
     borderRadius: pTd(6),
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   selectTabStyle: {
     shadowColor: defaultColors.shadow1,

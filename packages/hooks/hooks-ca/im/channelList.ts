@@ -14,6 +14,7 @@ import {
 } from '@portkey-wallet/store/store-ca/im/actions';
 import { useIMChannelListNetMapState, useIMHasNextNetMapState } from '.';
 import useLockCallback from '../../useLockCallback';
+import { messageContentParser } from '@portkey-wallet/im/utils';
 
 export const useNextChannelList = () => {
   const channelListNetMap = useIMChannelListNetMapState();
@@ -37,7 +38,11 @@ export const useNextChannelList = () => {
           maxResultCount: CHANNEL_LIST_LIMIT,
         });
 
-        const list = result.data?.list || [];
+        const list =
+          result.data?.list.map(item => ({
+            ...item,
+            lastMessageContent: messageContentParser(item.lastMessageType, item.lastMessageContent || ''),
+          })) || [];
         const cursor = result.data?.cursor || lastCursor;
 
         const hasNextValue = list.length >= CHANNEL_LIST_LIMIT;
@@ -180,7 +185,7 @@ export const useCreateP2pChannel = () => {
                 channelId: channelUuid,
                 value: {
                   displayName: channelInfo.members.find(item => item.relationId === relationId)?.name || '',
-                  channelIcon: channelInfo.icon,
+                  channelIcon: channelInfo.members.find(item => item.relationId === relationId)?.avatar || '',
                   mute: channelInfo.mute,
                   pin: channelInfo.pin,
                 },
@@ -204,10 +209,11 @@ export const useCreateGroupChannel = () => {
   const dispatch = useAppCommonDispatch();
 
   const createChannel = useCallback(
-    async (name: string, relationIds: string[]) => {
+    async (name: string, relationIds: string[], icon?: string) => {
       const result = await im.service.createChannel({
         name,
         type: ChannelTypeEnum.GROUP,
+        channelIcon: icon,
         members: relationIds,
       });
 

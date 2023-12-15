@@ -9,12 +9,14 @@ import { formatChatListTime } from '../utils';
 import PopoverMenuList from '../PopoverMenuList';
 import { ChannelTypeEnum } from '@portkey-wallet/im/types';
 import './index.less';
+import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
 
 const ChatItem: React.FC<IChatItemProps> = ({
   date = new Date().getTime(),
   unread = 0,
   alt = 'portkey',
   showMute = true,
+  showLetter = false,
   onClickDelete,
   onClickMute,
   onClickPin,
@@ -68,6 +70,25 @@ const ChatItem: React.FC<IChatItemProps> = ({
     return () => document.removeEventListener('click', hidePop);
   }, [hidePop]);
 
+  const renderSubtitle = useMemo(() => {
+    const { subtitle, muted, isOwner, lastMessageType } = props;
+    const showRedPacket = lastMessageType === 'red-package-card';
+    const showRedPacketHighlight = !muted && !isOwner && unread > 0;
+    if (showRedPacket) {
+      return (
+        <div className="red-packet flex">
+          <span
+            className={clsx(
+              'red-packet-tag',
+              showRedPacketHighlight && 'red-packet-tag-highlight',
+            )}>{`[Crypto Box]`}</span>
+          <span className="red-packet-subtitle">{subtitle || RED_PACKAGE_DEFAULT_MEMO}</span>
+        </div>
+      );
+    }
+    return subtitle;
+  }, [props, unread]);
+
   return (
     <Popover
       key={`pop-${props.id}`}
@@ -82,7 +103,13 @@ const ChatItem: React.FC<IChatItemProps> = ({
         <div className={clsx('chat-item', 'flex', props.pin && 'chat-item-pin')}>
           <div key={'avatar'} className="chat-item-avatar flex-center">
             {props.channelType && [ChannelTypeEnum.GROUP, ChannelTypeEnum.P2P].includes(props.channelType) ? (
-              <Avatar src={props.avatar} alt={alt} letter={props.letter} channelType={props.channelType} />
+              <Avatar
+                src={props.avatar}
+                alt={alt}
+                showLetter={showLetter}
+                letter={props.letter}
+                channelType={props.channelType}
+              />
             ) : (
               <div className="flex-center avatar-unknown">
                 <CustomSvg type="Unknown" />
@@ -99,7 +126,7 @@ const ChatItem: React.FC<IChatItemProps> = ({
             </div>
 
             <div className="body-bottom flex">
-              <div className="body-bottom-title">{props.subtitle}</div>
+              <div className="body-bottom-title">{renderSubtitle}</div>
               <div className="body-bottom-status">
                 {unread && unread > 0 ? (
                   <UnreadTip unread={unread} muted={showMute && props.muted} />

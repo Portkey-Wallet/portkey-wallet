@@ -4,7 +4,7 @@ import { keepAliveOnPages } from 'utils/keepSWActive';
 import useUpdateRedux from './useUpdateRedux';
 import { useChainListFetch } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCaInfoOnChain } from 'hooks/useCaInfoOnChain';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useRefreshTokenConfig } from '@portkey-wallet/hooks/hooks-ca/api';
 import { request } from '@portkey-wallet/api/api-did';
 import useLocking from 'hooks/useLocking';
@@ -26,6 +26,9 @@ import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useExtensionEntrance } from 'hooks/cms';
 import { useInitRamp } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { getPin } from 'utils/lib/serviceWorkerAction';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+import { initConfig, initRequest } from './initConfig';
+import useFCM from 'hooks/useFCM';
 
 keepAliveOnPages({});
 request.setExceptionManager(exceptionManager);
@@ -34,6 +37,8 @@ export default function Updater() {
   const onLocking = useLocking();
   const { pathname } = useLocation();
   const checkManagerOnLogout = useCheckManagerOnLogout();
+
+  const isMainnet = useIsMainnet();
 
   const { apiUrl, imApiUrl, imWsUrl, imS3Bucket } = useCurrentNetworkInfo();
   useMemo(async () => {
@@ -49,11 +54,14 @@ export default function Updater() {
     });
   }, [imApiUrl, imWsUrl]);
   useMemo(() => {
+    const s3_key = isMainnet ? process.env.IM_S3_KEY : process.env.IM_S3_TESTNET_KEY;
     s3Instance.setConfig({
       bucket: imS3Bucket || '',
-      key: process.env.IM_S3_KEY || '',
+      key: s3_key || '',
     });
-  }, [imS3Bucket]);
+  }, [imS3Bucket, isMainnet]);
+
+  useFCM();
   initIm();
   useVerifierList();
   useUpdateRedux();
@@ -94,5 +102,10 @@ export default function Updater() {
   useRememberMeBlackList(true);
   useTabMenuList(true);
   useCheckContactMap();
+
+  useEffectOnce(() => {
+    initConfig();
+    initRequest();
+  });
   return null;
 }

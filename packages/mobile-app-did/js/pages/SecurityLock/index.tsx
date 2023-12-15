@@ -25,23 +25,26 @@ import { useThrottleCallback } from '@portkey-wallet/hooks';
 import ActionSheet from 'components/ActionSheet';
 import { isUserBiometricsError } from 'utils/biometrics';
 import GStyles from 'assets/theme/GStyles';
+import useLatestIsFocusedRef from 'hooks/useLatestIsFocusedRef';
+import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
+import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
 export default function SecurityLock() {
   const { biometrics } = useUser();
   const biometricsReady = useBiometricsReady();
   const [caInfo, setStateCAInfo] = useState<CAInfo>();
   const appStateRef = useRef<AppStateStatus>();
-  const verifyTimeRef = useRef<number>();
+  const isFocusedRef = useLatestIsFocusedRef();
   usePreventHardwareBack();
   const timer = useRef<TimerResult>();
   const onResultFail = useOnResultFail();
   const digitInput = useRef<DigitInputInterface>();
-  const [errorMessage, setErrorMessage] = useState<string>();
   const { managerInfo, address, caHash } = useCurrentWalletInfo();
   const dispatch = useAppDispatch();
   const isSyncCAInfo = useMemo(() => address && managerInfo && !caHash, [address, caHash, managerInfo]);
   const navigation = useNavigation();
   const onIntervalGetResult = useIntervalGetResult();
   const originChainId = useOriginChainId();
+  const locked = useRef<boolean>(false);
   useEffect(() => {
     if (isSyncCAInfo) {
       setTimeout(() => {
@@ -58,9 +61,11 @@ export default function SecurityLock() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSyncCAInfo]);
-  const handleRouter = useCallback(
+  const handleRouter = useThrottleCallback(
     (pinInput: string) => {
       Loading.hide();
+      if (!isFocusedRef.current) return;
+      locked.current = true;
       if (!managerInfo) return navigationService.reset('LoginPortkey');
       if (navigation.canGoBack()) {
         navigation.goBack();
@@ -73,6 +78,7 @@ export default function SecurityLock() {
       }
     },
     [biometrics, biometricsReady, managerInfo, navigation],
+    2000,
   );
   const handlePassword = useCallback(
     (pwd: string) => {
@@ -126,7 +132,7 @@ export default function SecurityLock() {
   );
   const verifyBiometrics = useThrottleCallback(
     async () => {
-      if (!biometrics || (verifyTimeRef.current && verifyTimeRef.current + 1000 > Date.now())) return;
+      if (!biometrics) return;
       try {
         const securePassword = await getSecureStoreItem('Pin');
         if (!securePassword) throw new Error('No password');
@@ -140,10 +146,9 @@ export default function SecurityLock() {
           });
         }
       }
-      verifyTimeRef.current = Date.now();
     },
     [biometrics, handlePassword],
-    1000,
+    2000,
   );
   const handleAppStateChange = useCallback(
     (nextAppState: AppStateStatus) => {
@@ -164,20 +169,22 @@ export default function SecurityLock() {
       listener.remove();
     };
   }, [handleAppStateChange]);
+
+  const { error: textError, setError: setTextError } = useErrorMessage();
   const onChangeText = useCallback(
     (enterPin: string) => {
       if (enterPin.length === PIN_SIZE) {
         if (!checkPin(enterPin)) {
           digitInput.current?.reset();
-          setErrorMessage('Incorrect Pin');
+          setTextError('Incorrect Pin', VERIFY_INVALID_TIME);
           return;
         }
         handlePassword(enterPin);
-      } else if (errorMessage) {
-        setErrorMessage(undefined);
+      } else if (textError.isError) {
+        setTextError();
       }
     },
-    [errorMessage, handlePassword],
+    [textError.isError, handlePassword, setTextError],
   );
   return (
     <PageContainer hideHeader containerStyles={GStyles.flex1} scrollViewProps={{ disabled: true }}>
@@ -185,7 +192,7 @@ export default function SecurityLock() {
         ref={digitInput}
         title="Enter Pin"
         onChangeText={onChangeText}
-        errorMessage={errorMessage}
+        errorMessage={textError.errorMsg}
         isBiometrics={biometrics && biometricsReady}
         onBiometricsPress={verifyBiometrics}
       />

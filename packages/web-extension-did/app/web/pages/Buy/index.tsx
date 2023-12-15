@@ -1,10 +1,10 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Radio, RadioChangeEvent } from 'antd';
+import { Radio, RadioChangeEvent, message } from 'antd';
 import BackHeader from 'components/BackHeader';
 import CustomSvg from 'components/CustomSvg';
 import { useLocation, useNavigate } from 'react-router';
-import { useCommonState } from 'store/Provider/hooks';
+import { useCommonState, useLoading } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
 import './index.less';
@@ -14,15 +14,19 @@ import BuyForm from './components/BuyForm';
 import SellForm from './components/SellForm';
 import { useEffectOnce } from 'react-use';
 import CustomTipModal from 'pages/components/CustomModal';
-import { BUY_SOON_TEXT, SELL_SOON_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { RampType } from '@portkey-wallet/ramp';
+import { BUY_SOON_TEXT, SELL_SOON_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
+import { useCheckSecurity } from 'hooks/useSecurity';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 
 export default function Buy() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { state } = useLocation();
   const { isPrompt } = useCommonState();
+  const { setLoading } = useLoading();
+  const checkSecurity = useCheckSecurity();
 
   const [page, setPage] = useState<RampType>(state?.side || RampType.BUY);
 
@@ -56,10 +60,23 @@ export default function Buy() {
         return;
       }
 
+      // CHECK 2: security
+      if (side === RampType.SELL) {
+        try {
+          setLoading(true);
+          const securityRes = await checkSecurity('AELF');
+          setLoading(false);
+          if (!securityRes) return;
+        } catch (error) {
+          setLoading(false);
+          message.error(handleErrorMessage(error));
+        }
+      }
+
       // stopInterval();
       setPage(side);
     },
-    [isBuySectionShow, isSellSectionShow, refreshRampShow, t],
+    [checkSecurity, isBuySectionShow, isSellSectionShow, refreshRampShow, setLoading, t],
   );
 
   const handleBack = useCallback(() => {

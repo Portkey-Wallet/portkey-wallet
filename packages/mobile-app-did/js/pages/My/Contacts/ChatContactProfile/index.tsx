@@ -15,7 +15,6 @@ import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
 import im from '@portkey-wallet/im';
 import { useIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
 import CommonToast from 'components/CommonToast';
-import { handleErrorMessage } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { useJumpToChatDetails } from 'hooks/chat';
 import { useAddStrangerContact, useContactInfo, useReadImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
@@ -140,6 +139,7 @@ const ContactProfile: React.FC = () => {
       <ScrollView alwaysBounceVertical={true} style={pageStyles.scrollWrap}>
         <ProfileHeaderSection
           noMarginTop={false}
+          avatarUrl={contactInfo?.avatar || ''}
           showRemark={!isStranger}
           name={contactInfo?.caHolderInfo?.walletName || contactInfo?.imInfo?.name || ''}
           remark={contactInfo?.name}
@@ -151,7 +151,7 @@ const ContactProfile: React.FC = () => {
             try {
               navToChatDetail({ toRelationId: relationId || contactInfo?.imInfo?.relationId || '' });
             } catch (error) {
-              CommonToast.fail(handleErrorMessage(error));
+              CommonToast.failError(error);
             }
           }}
         />

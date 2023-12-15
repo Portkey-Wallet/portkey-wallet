@@ -1,6 +1,7 @@
 import { IContactItemRes } from 'pages/Contacts/FindMore';
 import './index.less';
 import CustomSvg from 'components/CustomSvg';
+import Avatar from 'pages/components/Avatar';
 
 export interface IContactItemProps {
   item: IContactItemRes;
@@ -12,7 +13,12 @@ export default function FindMoreItem({ item, hasChatEntry = true, clickChat }: I
   return (
     <div className="flex-between-center find-more-item">
       <div className="flex-center find-more-item-right">
-        <div className="flex-center find-more-index-logo">{item.index}</div>
+        <Avatar
+          avatarUrl={item?.avatar || ''}
+          nameIndex={item?.index || ''}
+          size="small"
+          wrapperClass="find-more-index-logo"
+        />
         <div>
           <span className="find-more-item-name">{item.name}</span>
           {item.isAdded && (

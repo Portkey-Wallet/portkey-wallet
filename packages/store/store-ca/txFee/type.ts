@@ -5,6 +5,7 @@ export type TxFeeItem = {
     ach: number;
     crossChain: number;
     max: number;
+    redPackage: number;
   };
 };
 

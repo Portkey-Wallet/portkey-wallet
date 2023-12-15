@@ -2,6 +2,8 @@ import { ChainId, ChainType, NetworkType } from '@portkey-wallet/types';
 import { isAddress as web3IsAddress } from 'web3-utils';
 import { isAelfAddress, isDIDAelfAddress } from './aelf';
 import * as uuid from 'uuid';
+import { textProcessor } from './textProcessor';
+import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
 
 /**
  * format address like "aaa...bbb" to "ELF_aaa...bbb_AELF"
@@ -150,10 +152,9 @@ export const handleError = (error: any) => {
 
 export const handleErrorMessage = (error: any, errorText?: string) => {
   error = handleError(error);
-  if (!error) return errorText;
-  if (typeof error === 'string') return error;
-  if (typeof error.message === 'string') return error.message;
-  return errorText;
+  if (typeof error === 'string') errorText = error;
+  if (typeof error?.message === 'string') errorText = error.message;
+  return textProcessor.format(errorText || '') || '';
 };
 
 export const chainShowText = (chain: ChainId) => (chain === 'AELF' ? 'MainChain' : 'SideChain');
@@ -245,20 +246,45 @@ export function handlePhoneNumber(str?: string) {
   return str || '';
 }
 
-export const handleLoopFetch = async <T>(
-  fetch: () => Promise<T>,
+export const handleLoopFetch = async <T>({
+  fetch,
   times = 0,
-  interval = 0,
-  checkIsContinue?: () => boolean,
-): Promise<T> => {
+  interval = 1000,
+  checkIsContinue,
+  checkIsInvalid,
+}: {
+  fetch: () => Promise<T>;
+  times?: number;
+  interval?: number;
+  checkIsContinue?: (param: T) => boolean;
+  checkIsInvalid?: () => boolean;
+}): Promise<T> => {
   try {
-    return await fetch();
+    const result = await fetch();
+    if (checkIsContinue) {
+      const isContinue = checkIsContinue(result);
+      if (!isContinue) return result;
+    } else {
+      return result;
+    }
   } catch (error) {
-    const isContinue = checkIsContinue ? checkIsContinue() : true;
-    if (!isContinue) throw new Error('fetch invalid');
-    if (times === 1) throw error;
+    const isInvalid = checkIsInvalid ? checkIsInvalid() : true;
+    if (!isInvalid) throw new Error('fetch invalid');
     console.log('handleLoopFetch: error', times, error);
   }
+  if (times === 1) {
+    throw new Error('fetch exceed limit');
+  }
   await sleep(interval);
-  return handleLoopFetch(fetch, times - 1, interval, checkIsContinue);
+  return handleLoopFetch({
+    fetch,
+    times: times - 1,
+    interval,
+    checkIsContinue,
+    checkIsInvalid,
+  });
+};
+
+export const checkIsUserCancel = (error: any) => {
+  return handleErrorMessage(error) === USER_CANCELED;
 };

@@ -193,10 +193,14 @@ module.exports = (env, argv) => {
   const envConfig = {};
   if (argv.mode === 'development') {
     envConfig.SENTRY_DSN = devConfig.SENTRY_DSN;
-    envConfig.IM_S3_KEY = devConfig.IM_S3_KEY
+    envConfig.IM_S3_KEY = devConfig.IM_S3_KEY;
+    envConfig.IM_S3_TESTNET_KEY = devConfig.IM_S3_TESTNET_KEY;
+    envConfig.FCM_PROJECT_ID = devConfig.FCM_PROJECT_ID;
   } else {
     envConfig.SENTRY_DSN = productionConfig.SENTRY_DSN;
-    envConfig.IM_S3_KEY = productionConfig.IM_S3_KEY
+    envConfig.IM_S3_KEY = productionConfig.IM_S3_KEY;
+    envConfig.IM_S3_TESTNET_KEY = productionConfig.IM_S3_TESTNET_KEY;
+    envConfig.FCM_PROJECT_ID = productionConfig.FCM_PROJECT_ID;
   }
 
   // console.log(JSON.stringify(envConfig.SENTRY_DSN), 'SENTRY_DSN===')
@@ -208,6 +212,8 @@ module.exports = (env, argv) => {
     'process.env.DEVICE': JSON.stringify('extension'),
     'process.env.SENTRY_DSN': JSON.stringify(envConfig.SENTRY_DSN),
     'process.env.IM_S3_KEY': JSON.stringify(envConfig.IM_S3_KEY),
+    'process.env.IM_S3_TESTNET_KEY': JSON.stringify(envConfig.IM_S3_TESTNET_KEY),
+    'process.env.FCM_PROJECT_ID': JSON.stringify(envConfig.FCM_PROJECT_ID),
   });
 
   config.plugins.push(

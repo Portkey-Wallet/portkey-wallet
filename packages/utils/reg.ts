@@ -30,7 +30,7 @@ export function isSymbol(symbol: string) {
   return SYMBOL_REG.test(symbol);
 }
 
-const P_N_REG = /^[0-9]+.?[0-9]*$/;
+const P_N_REG = /^[0-9]+\.?[0-9]*$/;
 
 export function isValidNumber(n: string) {
   if (n.includes('-')) return false;
@@ -83,6 +83,12 @@ export function isValidPositiveInteger(num?: string) {
   return POSITIVE_INTEGER.test(num);
 }
 
+export const Valid_Integer = /^(0*[1-9]\d*)$/;
+export function isValidInteger(num?: string) {
+  if (!num) return false;
+  return Valid_Integer.test(num);
+}
+
 export const isValidUrl = (url: string) => {
   var urlRegex = /^(https?|ftp):\/\/(-\.)?([^\s/?\.#]+\.?)+(\/[^\s]*)?$/i;
   return urlRegex.test(url);
@@ -90,4 +96,9 @@ export const isValidUrl = (url: string) => {
 
 export const isValidBase58 = (str: string) => {
   return !/[\u4e00-\u9fa5\u3000-\u303f\uff01-\uff5e]/.test(str);
+};
+
+export const POTENTIAL_NUMBER = /^(0|[1-9]\d*)(\.\d*)?$/;
+export const isPotentialNumber = (str: string) => {
+  return POTENTIAL_NUMBER.test(str);
 };

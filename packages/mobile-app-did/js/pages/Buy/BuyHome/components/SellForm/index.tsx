@@ -18,8 +18,7 @@ import { FontStyles } from 'assets/theme/styles';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
 import { getCryptoList } from '@portkey-wallet/api/api-did/payment/util';
-import { ErrorType } from 'types/common';
-import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
+import { INIT_HAS_ERROR, INIT_NONE_ERROR, ErrorType } from '@portkey-wallet/constants/constants-ca/common';
 import { CryptoInfoType } from '@portkey-wallet/api/api-did/payment/type';
 import { CryptoItemType } from 'pages/Buy/types';
 import { INIT_SELL_AMOUNT, tokenList } from 'pages/Buy/constants';
@@ -38,12 +37,20 @@ import { PaymentLimitType, PaymentTypeEnum } from '@portkey-wallet/types/types-c
 import CommonToast from 'components/CommonToast';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
+import { useGetCurrentCAContract } from 'hooks/contract';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { useCheckTransferLimitWithJump, useSecuritySafeCheckAndToast } from 'hooks/security';
 import { useAppBuyButtonShow } from 'hooks/cms';
+import { isPotentialNumber } from '@portkey-wallet/utils/reg';
 
 export default function SellForm() {
   const { sellFiatList: fiatList } = usePayment();
   const { refreshBuyButton } = useAppBuyButtonShow();
   const checkManagerSyncState = useCheckManagerSyncState();
+  const getCurrentCAContract = useGetCurrentCAContract(MAIN_CHAIN_ID);
+  const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
+  const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
 
   const [fiat, setFiat] = useState<FiatType | undefined>(
     fiatList.find(item => item.currency === 'USD' && item.country === 'US'),
@@ -136,20 +143,19 @@ export default function SellForm() {
   const onAmountInput = useCallback((text: string) => {
     isRefreshReceiveValid.current = false;
     setAmountLocalError(INIT_NONE_ERROR);
-    const reg = /^(0|[1-9]\d*)(\.\d*)?$/;
 
     if (text === '') {
       setAmount('');
       return;
     }
-    if (!reg.test(text)) return;
+    if (!isPotentialNumber(text)) return;
     const arr = text.split('.');
     if (arr[1]?.length > 8) return;
     if (arr.join('').length > 13) return;
     setAmount(text);
   }, []);
 
-  const onNext = useCallback(async () => {
+  const onNext = useLockCallback(async () => {
     if (!limitAmountRef.current || !refreshReceiveRef.current) return;
     const amountNum = Number(amount);
     const { min, max } = limitAmountRef.current;
@@ -184,7 +190,17 @@ export default function SellForm() {
     }
 
     try {
-      Loading.show();
+      if (!(await securitySafeCheckAndToast(MAIN_CHAIN_ID))) {
+        Loading.hide();
+        return;
+      }
+    } catch (error) {
+      CommonToast.failError(error);
+      Loading.hide();
+      return;
+    }
+
+    try {
       const _isManagerSynced = await checkManagerSyncState(chainId);
       if (!_isManagerSynced) {
         setAmountLocalError({
@@ -200,6 +216,21 @@ export default function SellForm() {
         throw new Error('Insufficient funds');
       }
       const isRefreshReceiveValidValue = isRefreshReceiveValid.current;
+
+      const caContract = await getCurrentCAContract();
+      const checkTransferLimitResult = await checkTransferLimitWithJump(
+        {
+          caContract,
+          symbol,
+          decimals,
+          amount,
+        },
+        chainId,
+      );
+      if (!checkTransferLimitResult) {
+        Loading.hide();
+        return;
+      }
 
       const account = getManagerAccount(pin);
       if (!account) return;
@@ -248,9 +279,11 @@ export default function SellForm() {
     fiat,
     token,
     refreshBuyButton,
+    wallet,
     checkManagerSyncState,
     achFee,
-    wallet,
+    getCurrentCAContract,
+    checkTransferLimitWithJump,
   ]);
 
   return (

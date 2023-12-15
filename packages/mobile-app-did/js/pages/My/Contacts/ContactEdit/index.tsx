@@ -6,16 +6,11 @@ import { useLanguage } from 'i18n/hooks';
 import { AddressItem, ContactItemType, EditContactItemApiType } from '@portkey-wallet/types/types-ca/contact';
 import Input from 'components/CommonInput';
 import CommonButton from 'components/CommonButton';
-import { TextM } from 'components/CommonText';
-import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
-import { ErrorType } from 'types/common';
 import { FontStyles } from 'assets/theme/styles';
-import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
-import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
-import { ADDRESS_NUM_LIMIT } from '@portkey-wallet/constants/constants-ca/contact';
+import { INIT_HAS_ERROR, INIT_NONE_ERROR, ErrorType } from '@portkey-wallet/constants/constants-ca/common';
 import ContactAddress from './components/ContactAddress';
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
 import ChainOverlay from 'components/ChainOverlay';
@@ -240,11 +235,13 @@ const ContactEdit: React.FC = () => {
     if (isErrorExist) return;
     Loading.show();
     try {
+      let result;
+
       if (isEdit) {
-        await editContactApi(editContact);
+        result = await editContactApi(editContact);
         CommonToast.success(t('Saved Successful'), undefined, 'bottom');
       } else {
-        await addContactApi(editContact);
+        result = await addContactApi(editContact);
         CommonToast.success(t('Contact Added'), undefined, 'bottom');
       }
 
@@ -253,7 +250,10 @@ const ContactEdit: React.FC = () => {
           editContact.addresses[0].address === addressList?.[0]?.address &&
           editContact.addresses[0].chainId === addressList?.[0]?.chainId
         ) {
-          myEvents.refreshMyContactDetailInfo.emit({ contactName: editContact.name });
+          myEvents.refreshMyContactDetailInfo.emit({
+            contactName: editContact.name,
+            contactAvatar: result.avatar || '',
+          });
         }
         navigationService.goBack();
       } else {

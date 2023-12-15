@@ -10,12 +10,14 @@ import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import { isIOS, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { formatChatListTime, formatMessageCountToStr } from '@portkey-wallet/utils/chat';
-import { ChannelItem, ChannelTypeEnum } from '@portkey-wallet/im/types';
+import { ChannelItem, ChannelTypeEnum, ParsedRedPackage } from '@portkey-wallet/im/types';
 import CommonAvatar from 'components/CommonAvatar';
 import { useDeviceEvent } from 'hooks/useDeviceEvent';
 import myEvents from 'utils/deviceEvent';
 import { getChatListSvgName } from 'pages/Chat/utils';
 import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
+import GroupAvatarShow from 'pages/Chat/components/GroupAvatarShow';
+import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 type ChatHomeListItemSwipedType<T> = {
   item: T;
@@ -29,6 +31,7 @@ const DELETE_TO_END = screenWidth;
 
 export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipedType<ChannelItem>) {
   const { item, onPress, onLongPress, onDelete } = props;
+  const { userInfo } = useWallet();
   const [isEdit, setIsEdit] = useState(false);
   const swipeableRef = useRef<SwipeableItemImperativeRef>(null);
   const listenerCallBack = useCallback(
@@ -39,17 +42,43 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
   );
 
   const eventEmit = useDeviceEvent(myEvents.chatHomeListCloseSwiped.name, listenerCallBack);
-  const lastMessage = useMemo(() => {
-    if (item.lastMessageType === 'TEXT') {
-      return item.lastMessageContent;
-    } else if (item.lastMessageType === 'SYS') {
-      return item.lastMessageContent;
-    } else if (item.lastMessageType === 'IMAGE') {
-      return '[Image]';
-    } else {
-      return UN_SUPPORTED_FORMAT;
+  const renderLastMessage = useMemo(() => {
+    // red packet
+    if (item.lastMessageType === 'REDPACKAGE-CARD') {
+      const redPacketIsHighLight: boolean =
+        item.unreadMessageCount > 0 &&
+        !item.mute &&
+        item.lastMessageType === 'REDPACKAGE-CARD' &&
+        (item.lastMessageContent as ParsedRedPackage)?.data?.senderId !== userInfo?.userId;
+
+      return (
+        <View style={[GStyles.flexRow, styles.message]}>
+          <TextS numberOfLines={1} style={[FontStyles.font7, redPacketIsHighLight && FontStyles.font6]}>
+            {`[Crypto Box] `}
+          </TextS>
+          <TextS numberOfLines={1} style={[FontStyles.font7, styles.redPacketLastMessageContent]}>
+            {(item.lastMessageContent as ParsedRedPackage)?.data?.memo}
+          </TextS>
+        </View>
+      );
     }
-  }, [item.lastMessageContent, item.lastMessageType]);
+
+    // not red packet
+    let message = '';
+    if (item.lastMessageType === 'TEXT' || item.lastMessageType === 'SYS') {
+      message = item.lastMessageContent as string;
+    } else if (item.lastMessageType === 'IMAGE') {
+      message = '[Image]';
+    } else {
+      message = UN_SUPPORTED_FORMAT;
+    }
+
+    return (
+      <TextS numberOfLines={1} style={[FontStyles.font7, styles.message]}>
+        {message}
+      </TextS>
+    );
+  }, [item, userInfo?.userId]);
 
   const deleteItem = useCallback(() => {
     swipeableRef.current?.close();
@@ -101,6 +130,32 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
     );
   }, [item.channelType, item.mute, item.pin, item.unreadMessageCount]);
 
+  const Avatar = useMemo(() => {
+    if (item.channelType === ChannelTypeEnum.P2P) {
+      return (
+        <CommonAvatar
+          hasBorder
+          avatarSize={pTd(48)}
+          resizeMode="cover"
+          style={styles.avatar}
+          imageUrl={item.channelIcon || ''}
+          title={item.displayName}
+          svgName={getChatListSvgName(item.channelType)}
+        />
+      );
+    }
+
+    return (
+      <GroupAvatarShow
+        logoSize={pTd(14)}
+        avatarSize={pTd(48)}
+        wrapStyle={styles.avatar}
+        imageUrl={item.channelIcon || ''}
+        svgName={item.channelIcon ? undefined : 'chat-group-avatar'}
+      />
+    );
+  }, [item.channelIcon, item.channelType, item.displayName]);
+
   return (
     <SwipeableItem
       swipeEnabled
@@ -118,13 +173,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
         onLongPress={onLongPressItem}
         onPressIn={eventEmit}>
         <>
-          <CommonAvatar
-            hasBorder
-            title={item.displayName}
-            svgName={getChatListSvgName(item.channelType)}
-            avatarSize={48}
-            style={styles.avatar}
-          />
+          {Avatar}
           <View style={[styles.rightDom, GStyles.flex1, GStyles.flexCenter]}>
             <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemCenter]}>
               <View style={[GStyles.flex1, GStyles.flexRow, GStyles.itemCenter, GStyles.paddingRight(30)]}>
@@ -137,9 +186,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
             </View>
             <View style={styles.blank} />
             <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween]}>
-              <TextS numberOfLines={1} style={[FontStyles.font7, styles.message]}>
-                {lastMessage}
-              </TextS>
+              {renderLastMessage}
               {RightBottomSection}
             </View>
           </View>
@@ -191,6 +238,9 @@ const styles = StyleSheet.create({
   },
   message: {
     maxWidth: pTd(240),
+  },
+  redPacketLastMessageContent: {
+    width: pTd(150),
   },
   messageNum: {
     backgroundColor: defaultColors.bg17,

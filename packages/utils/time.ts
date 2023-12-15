@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc.js';
+dayjs.extend(utc);
 
 export function ensureMilliseconds(timestamp: string | number) {
   if (typeof timestamp === 'number') timestamp = timestamp.toString();

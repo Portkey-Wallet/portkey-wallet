@@ -1,7 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { TokenState } from '@portkey-wallet/types/types-ca/token';
+import { TokenItemShowType, TokenState } from '@portkey-wallet/types/types-ca/token';
 import { fetchAllTokenListAsync, getSymbolImagesAsync } from './action';
-import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 
 const initialState: TokenState = {
   tokenDataShowInMarket: [],
@@ -45,6 +44,7 @@ export const tokenManagementSlice = createSlice({
           tokenName: item.token.symbol,
           id: item.token.id,
           name: item.token.symbol,
+          imageUrl: item.token.imageUrl,
         }));
 
         state.tokenDataShowInMarket = tmpToken;
@@ -55,7 +55,10 @@ export const tokenManagementSlice = createSlice({
         // state.status = 'failed';
       })
       .addCase(getSymbolImagesAsync.fulfilled, (state, action) => {
-        state.symbolImages = action.payload;
+        state.symbolImages = {
+          ...state.symbolImages,
+          ...action.payload,
+        };
       })
       .addCase(getSymbolImagesAsync.rejected, (_state, action) => {
         console.log('getSymbolImagesAsync:rejected', action);

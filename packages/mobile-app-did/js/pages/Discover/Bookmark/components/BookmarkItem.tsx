@@ -16,8 +16,8 @@ import { defaultColors } from 'assets/theme';
 import myEvents from 'utils/deviceEvent';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { IBookmarkItem } from '@portkey-wallet/store/store-ca/discover/type';
-import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
+import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 type BookmarkItemProps<T> = RenderItemParams<T> & {
   onDelete: (item: T) => void;
@@ -29,6 +29,7 @@ export default memo(
     const swipeableRef = useRef<SwipeableItemImperativeRef>(null);
     const [{ isEdit }] = useBookmark();
     const discoverJump = useDiscoverJumpWithNetWork();
+    const { getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
     const preIsEdit = usePrevious(isEdit);
 
     useEffect(() => {
@@ -77,6 +78,13 @@ export default memo(
       );
     }, [isEdit]);
 
+    const bookmarkInfo = useMemo(() => {
+      return {
+        title: getCmsWebsiteInfoName(item.url || ''),
+        imageUrl: getCmsWebsiteInfoImageUrl(item.url || ''),
+      };
+    }, [getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName, item.url]);
+
     return (
       <ScaleDecorator activeScale={1.05}>
         <SwipeableItem
@@ -89,9 +97,9 @@ export default memo(
           <Touchable onPress={onClickJump}>
             <View style={[GStyles.flexRow, GStyles.itemCenter, styles.itemRow, BGStyles.bg1]}>
               {EditDom}
-              <DiscoverWebsiteImage imageUrl={getFaviconUrl(item.url)} size={pTd(40)} style={styles.websiteIconStyle} />
+              <DiscoverWebsiteImage imageUrl={bookmarkInfo.imageUrl} size={pTd(40)} style={styles.websiteIconStyle} />
               <View style={styles.infoWrap}>
-                <TextWithProtocolIcon title={item?.name} url={item.url} textFontSize={pTd(16)} />
+                <TextWithProtocolIcon title={bookmarkInfo?.title} url={bookmarkInfo?.imageUrl} textFontSize={pTd(16)} />
                 <TextS style={[FontStyles.font7]} numberOfLines={1} ellipsizeMode="tail">
                   {item?.url}
                 </TextS>

@@ -96,6 +96,7 @@ const showList = (params: SelectListProps) => {
   Keyboard.dismiss();
   OverlayModal.show(<SelectList {...params} />, {
     position: 'bottom',
+    enabledNestScrollView: true,
   });
 };
 

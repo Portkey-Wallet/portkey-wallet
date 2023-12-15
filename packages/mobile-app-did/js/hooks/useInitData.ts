@@ -13,7 +13,7 @@ import { reportUserCurrentNetwork } from 'utils/analysisiReport';
 import { useCheckAndInitNetworkDiscoverMap } from './discover';
 import { usePin } from './store';
 import { getManagerAccount } from 'utils/redux';
-import { useInitIM } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useGetRedPackageConfig, useInitIM } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import im from '@portkey-wallet/im';
@@ -38,6 +38,7 @@ export default function useInitData() {
   const getGuardiansInfoWriteStore = useGetGuardiansInfoWriteStore();
   const isMainNetwork = useIsMainnet();
   useCheckAndInitNetworkDiscoverMap();
+  useGetRedPackageConfig(true, true);
 
   const { refresh: loadBookmarkList } = useBookmarkList();
   const initIM = useInitIM();

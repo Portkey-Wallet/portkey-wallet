@@ -122,7 +122,7 @@ export default function Transaction() {
     if (transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(transactionType)) {
       return (
         <p className="amount">
-          {`${formatWithCommas({ amount, decimals, sign })} ${symbol ?? ''}`}
+          {`${formatWithCommas({ amount, decimals, sign, digits: Number(decimals) })} ${symbol ?? ''}`}
           {!isTestNet && <span className="usd">{amountInUsdShow(amount, decimals || 0, symbol)}</span>}
         </p>
       );
@@ -232,6 +232,7 @@ export default function Transaction() {
                   <span>{`${formatWithCommas({
                     amount: item.fee,
                     decimals: item.decimals || defaultToken.decimals,
+                    digits: Number(item.decimals),
                   })} ${item.symbol ?? ''}`}</span>
                   {!isTestNet && (
                     <span className="right-usd">

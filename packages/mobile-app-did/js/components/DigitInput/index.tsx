@@ -8,11 +8,14 @@ import DigitText, { DigitTextProps } from 'components/DigitText';
 
 export type DigitInputProps = {
   onFinish?: (code: string) => void;
+  isInputLocked?: boolean;
 } & InputProps &
   DigitTextProps;
 
 export type DigitInputInterface = {
   reset: () => void;
+  lockInput: () => void;
+  unLockInput: () => void;
 };
 
 const DigitInput = forwardRef(function DigitInput(
@@ -26,22 +29,32 @@ const DigitInput = forwardRef(function DigitInput(
   }: DigitInputProps,
   forwardedRef,
 ) {
+  const isLockedRef = useRef(false);
   const input = useRef<any>();
   const [text, setText] = useState('');
   const styleProps = useMemo(() => {
     return {
-      inputItem: {
-        width: screenWidth / (maxLength + 4),
-        height: screenWidth / (maxLength + 2),
-      },
       inputStyle: {
-        width: (screenWidth / (maxLength + 2)) * maxLength,
+        height: screenWidth / (maxLength + 2),
       },
     };
   }, [maxLength]);
 
-  const reset = useCallback(() => setText(''), []);
-  useImperativeHandle(forwardedRef, () => ({ reset }), [reset]);
+  const reset = useCallback(() => {
+    setText('');
+    const isFocused = input.current?.isFocused();
+    !isFocused && input.current?.focus();
+  }, []);
+
+  const lockInput = useCallback(() => {
+    isLockedRef.current = true;
+  }, []);
+
+  const unLockInput = useCallback(() => {
+    isLockedRef.current = false;
+  }, []);
+
+  useImperativeHandle(forwardedRef, () => ({ reset, lockInput, unLockInput }), [reset, lockInput, unLockInput]);
 
   return (
     <TouchableHighlight onPress={() => input.current?.focus()} activeOpacity={1} underlayColor="transparent">
@@ -56,6 +69,7 @@ const DigitInput = forwardRef(function DigitInput(
           autoFocus={true}
           keyboardType={keyboardType}
           onChangeText={_value => {
+            if (isLockedRef.current) return;
             if (_value && !isValidPositiveInteger(_value)) return;
             setText(_value);
             onChangeText?.(_value);
@@ -69,9 +83,9 @@ const DigitInput = forwardRef(function DigitInput(
 export default memo(DigitInput);
 const styles = StyleSheet.create({
   inputStyle: {
-    height: 45,
     zIndex: 99,
     position: 'absolute',
+    width: '100%',
     opacity: 0,
   },
 });

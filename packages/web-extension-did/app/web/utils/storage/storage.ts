@@ -22,6 +22,8 @@ const storage = {
   locationState: 'LOCATION_STATE',
   lastLocationState: 'LAST_LOCATION_STATE',
   popupCloseTime: 'POPUP_CLOSE_TIME',
+
+  deviceId: 'DEVICE_ID',
 };
 
 export default storage;

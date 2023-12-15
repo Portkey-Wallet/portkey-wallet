@@ -1,5 +1,5 @@
 export type MessageType = 'TEXT' | 'IMAGE' | 'SYS';
-export type ParsedContent = string | ParsedImage;
+export type ParsedContent = string | ParsedImage | undefined;
 export type ParsedImage = {
   type: string;
   action: string;
@@ -25,6 +25,10 @@ export type Message = {
   quote?: Message;
   parsedContent?: ParsedContent;
   unidentified?: boolean | undefined;
+
+  pinner?: string;
+  pinnerName?: string;
+  pinnedAt?: string;
 };
 
 export type SocketMessage = Message & {

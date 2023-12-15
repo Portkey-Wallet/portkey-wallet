@@ -288,7 +288,10 @@ export default function HomeScreen() {
           onPress={async () => {
             try {
               const { channelUuid } = await createChannel('e7i7y-giaaa-aaaaj-2ooma-cai');
-              const result2 = await sendChannelMessage(channelUuid, 'test message');
+              const result2 = await sendChannelMessage({
+                channelId: channelUuid,
+                content: 'test message',
+              });
               console.log('result2', result2);
               // const result = await muteChannel('0a88cea1efde493a805a0afdbf471d08', true);
               // console.log('test', result);

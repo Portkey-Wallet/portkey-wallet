@@ -191,6 +191,17 @@ export type JoinChannelParams = {
   channelUuid: string;
 };
 
+export type GetPinListParams = {
+  channelUuid: string;
+  maxCreateAt: number;
+  limit: number;
+};
+
+export type UnSetPinParams = {
+  id: string;
+  channelUuid: string;
+};
+
 export interface IIMService {
   verifySignature(params: VerifySignatureParams): IMServiceCommon<VerifySignatureResult>;
   verifySignatureLoop(
@@ -234,4 +245,7 @@ export interface IIMService {
   getProfile(
     params: RequireAtLeastOne<GetProfileParams, 'id' | 'portkeyId' | 'relationId'>,
   ): IMServiceCommon<IContactProfile>;
+  getPinList(params: GetPinListParams): IMServiceCommon<Message[]>;
+  setPin(params: Message): IMServiceCommon<null>;
+  unSetPin(params: UnSetPinParams): IMServiceCommon<null>;
 }

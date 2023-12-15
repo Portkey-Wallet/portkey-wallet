@@ -83,7 +83,10 @@ export function BottomBarContainer({
 
     try {
       scrollToBottom?.();
-      typeof text === 'string' && (await sendChannelMessage(text.trim()));
+      typeof text === 'string' &&
+        (await sendChannelMessage({
+          content: text.trim(),
+        }));
     } catch (error: any) {
       if (error?.code === NO_LONGER_IN_GROUP) {
         hideChannel();

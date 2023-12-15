@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { Text } from 'react-native';
@@ -33,6 +33,8 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     hasBorder,
     resizeMode = 'contain',
   } = props;
+
+  const [loadError, setLoadError] = useState(false);
   const initialsTitle = String(title?.[0] || '').toUpperCase();
 
   const sizeStyle = useMemo(
@@ -60,7 +62,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
       />
     );
 
-  if (imageUrl) {
+  if (imageUrl && !loadError) {
     return checkIsSvgUrl(imageUrl) ? (
       <SvgCssUri
         uri={imageUrl}
@@ -70,6 +72,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
       <FastImage
         resizeMode={resizeMode}
         style={[styles.avatarWrap, shapeType === 'square' && styles.squareStyle, sizeStyle, style]}
+        onError={() => setLoadError(true)}
         source={{
           uri: imageUrl,
         }}

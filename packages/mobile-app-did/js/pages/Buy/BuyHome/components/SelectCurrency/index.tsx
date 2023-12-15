@@ -86,6 +86,7 @@ const showList = (params: SelectListProps) => {
   Keyboard.dismiss();
   OverlayModal.show(<SelectCurrency {...params} />, {
     position: 'bottom',
+    enabledNestScrollView: true,
   });
 };
 

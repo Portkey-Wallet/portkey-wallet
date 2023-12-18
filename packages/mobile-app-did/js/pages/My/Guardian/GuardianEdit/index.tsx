@@ -38,6 +38,7 @@ import {
   AppleAuthentication,
   useAppleAuthentication,
   useGoogleAuthentication,
+  useTelegramAuthentication,
   useVerifyToken,
 } from 'hooks/authentication';
 import GuardianAccountItem from '../components/GuardianAccountItem';
@@ -84,6 +85,8 @@ const GuardianEdit: React.FC = () => {
   const { localPhoneCountryCode: country } = usePhoneCountryCode();
   const { appleSign } = useAppleAuthentication();
   const { googleSign } = useGoogleAuthentication();
+  const { telegramSign } = useTelegramAuthentication();
+
   const verifyToken = useVerifyToken();
   const [firstName, setFirstName] = useState<string>();
 
@@ -459,6 +462,22 @@ const GuardianEdit: React.FC = () => {
     Loading.hide();
   }, [googleSign]);
 
+  const onTelegramSign = useCallback(async () => {
+    Loading.show();
+    try {
+      const userInfo = await telegramSign();
+      // setAccount(userInfo.user.email);
+      // setFirstName(userInfo.user.givenName || undefined);
+      // thirdPartyInfoRef.current = {
+      //   id: userInfo.user.id,
+      //   accessToken: userInfo.accessToken,
+      // };
+    } catch (error) {
+      CommonToast.failError(error);
+    }
+    Loading.hide();
+  }, [telegramSign]);
+
   const renderGoogleAccount = useCallback(() => {
     return (
       <>
@@ -503,6 +522,29 @@ const GuardianEdit: React.FC = () => {
     );
   }, [account, firstName, onAppleSign]);
 
+  const renderTelegramAccount = useCallback(() => {
+    //  TODO: add telegram account
+    return (
+      <>
+        <TextM style={pageStyles.accountLabel}>Guardian Telegram</TextM>
+        {account ? (
+          <View style={pageStyles.thirdPartAccount}>
+            {firstName && <TextM style={pageStyles.firstNameStyle}>{firstName}</TextM>}
+            <TextS style={[!!firstName && FontStyles.font3]} numberOfLines={1}>
+              {account}
+            </TextS>
+          </View>
+        ) : (
+          <Touchable onPress={onTelegramSign}>
+            <View style={pageStyles.oAuthBtn}>
+              <TextM style={[FontStyles.font4, fonts.mediumFont]}>Click Add Telegram Account</TextM>
+            </View>
+          </Touchable>
+        )}
+      </>
+    );
+  }, [account, firstName, onTelegramSign]);
+
   const renderGuardianAccount = useCallback(() => {
     if (isEdit) {
       return (
@@ -545,6 +587,8 @@ const GuardianEdit: React.FC = () => {
         return renderGoogleAccount();
       case LoginType.Apple:
         return renderAppleAccount();
+      case LoginType.Telegram:
+        return renderTelegramAccount();
       default:
         break;
     }
@@ -559,6 +603,7 @@ const GuardianEdit: React.FC = () => {
     onAccountChange,
     renderAppleAccount,
     renderGoogleAccount,
+    renderTelegramAccount,
     selectedType,
     t,
   ]);

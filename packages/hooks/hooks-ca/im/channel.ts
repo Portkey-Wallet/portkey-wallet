@@ -7,7 +7,6 @@ import im, {
   RedPackageStatusEnum,
 } from '@portkey-wallet/im';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { randomId } from '@portkey-wallet/utils';
 import { MESSAGE_LIST_LIMIT, SEARCH_CHANNEL_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
 
 import { useCurrentNetworkInfo } from '../network';
@@ -29,6 +28,7 @@ import { request } from '@portkey-wallet/api/api-did';
 import { useWallet } from '../wallet';
 import { IMServiceCommon, SendMessageResult } from '@portkey-wallet/im/types/service';
 import useLockCallback from '../../useLockCallback';
+import { getSendUuid } from '@portkey-wallet/utils/chat';
 
 export type ImageMessageFileType = {
   body: string | File;
@@ -84,15 +84,16 @@ export const useSendChannelMessage = () => {
           throw new Error('No user info');
         }
       }
-      const uuid = randomId();
+
       return im.service.sendMessage({
         channelUuid: channelId,
         toRelationId,
         type,
         content,
-        sendUuid: `${_relationId}-${toRelationId}-${Date.now()}-${uuid}`,
+        sendUuid: getSendUuid(_relationId, toRelationId || ''),
       });
     },
+
     [getRelationId, relationId],
   );
 
@@ -145,12 +146,11 @@ export const useSendChannelMessage = () => {
           throw new Error('No user info');
         }
       }
-      const uuid = randomId();
       const msgParams = {
         channelUuid: channelId,
         type,
         content,
-        sendUuid: `${_relationId}-${channelId}-${Date.now()}-${uuid}`,
+        sendUuid: getSendUuid(_relationId, channelId),
       };
 
       const msgObj: Message = messageParser({

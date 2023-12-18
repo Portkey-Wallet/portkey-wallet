@@ -3,7 +3,7 @@ import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { ChainId } from '@portkey-wallet/types';
 import { ParsedTransfer, TransferTypeEnum } from '@portkey-wallet/im/types';
 import im, { Message, MessageTypeEnum } from '@portkey-wallet/im';
-import { handleLoopFetch, randomId } from '@portkey-wallet/utils';
+import { handleLoopFetch } from '@portkey-wallet/utils';
 import { useRelationId } from '.';
 import { TransferStatusEnum } from '@portkey-wallet/im/types';
 import { messageParser } from '@portkey-wallet/im/utils';
@@ -12,10 +12,11 @@ import { useAppCommonDispatch } from '../../index';
 import { addChannelMessage, updateChannelAttribute } from '@portkey-wallet/store/store-ca/im/actions';
 import { useCurrentNetworkInfo } from '../network';
 import { generateTransferRawTransaction } from '@portkey-wallet/utils/transfer';
+import { getSendUuid } from '@portkey-wallet/utils/chat';
 
 export interface ISendIMTransferParams {
   toUserId?: string;
-  channelId?: string;
+  channelId: string;
   chainId: ChainId;
   tokenContractAddress: string;
   toCAAddress: string;
@@ -87,24 +88,20 @@ export const useSendIMTransfer = () => {
           blockHash: '',
         },
       };
-      // TODO: channelId may undefined
-      const uuid = randomId();
+
       const message = {
-        // toRelationId: '',
-        // channelUuid: channelId || '',
+        channelUuid: channelId,
         type: MessageTypeEnum.TRANSFER_CARD,
         content: JSON.stringify(transferContent),
-        sendUuid: `${_relationId}-${channelId}-${Date.now()}-${uuid}`,
+        sendUuid: getSendUuid(_relationId, channelId),
       };
 
       const {
         data: { transferId },
       } = await im.service.sendTransfer({
-        amount,
         type,
         toUserId,
         chainId,
-        symbol,
         channelUuid: channelId,
         rawTransaction,
         message: JSON.stringify(message),
@@ -129,7 +126,6 @@ export const useSendIMTransfer = () => {
       message.content = JSON.stringify(transferContent);
       const msgObj: Message = messageParser({
         ...message,
-        channelUuid: statusResult.channelUuid,
         from: _relationId,
         fromAvatar: userInfo.avatar,
         fromName: userInfo.nickName,
@@ -137,26 +133,24 @@ export const useSendIMTransfer = () => {
         id: '', // TODO: from creationStatus
       });
 
-      if (type === TransferTypeEnum.P2P) {
-        dispatch(
-          addChannelMessage({
-            network: networkType,
-            channelId: channelId || '',
-            message: msgObj,
-          }),
-        );
-        dispatch(
-          updateChannelAttribute({
-            network: networkType,
-            channelId: channelId || '',
-            value: {
-              lastMessageType: msgObj.type,
-              lastMessageContent: msgObj.parsedContent,
-              lastPostAt: msgObj.createAt,
-            },
-          }),
-        );
-      }
+      dispatch(
+        addChannelMessage({
+          network: networkType,
+          channelId: channelId || '',
+          message: msgObj,
+        }),
+      );
+      dispatch(
+        updateChannelAttribute({
+          network: networkType,
+          channelId: channelId || '',
+          value: {
+            lastMessageType: msgObj.type,
+            lastMessageContent: msgObj.parsedContent,
+            lastPostAt: msgObj.createAt,
+          },
+        }),
+      );
     },
     [dispatch, getRelationId, networkType, relationId, userInfo, wallet],
   );

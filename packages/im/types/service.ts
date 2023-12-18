@@ -280,12 +280,9 @@ export type GetRedPackageConfigParams = {
 };
 
 export type SendTransferParams = {
-  amount: string;
   type: TransferTypeEnum;
   toUserId?: string;
   chainId: ChainId;
-  symbol: string;
-  memo?: string;
   channelUuid?: string;
   rawTransaction: string;
   message: string;

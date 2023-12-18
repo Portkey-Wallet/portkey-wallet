@@ -13,6 +13,7 @@ import { setReplyMessageInfo } from '../../../context/chatsContext';
 export function ReplyContent() {
   const replyMessageInfo = useChatReplyMessageInfo();
   const dispatch = useChatsDispatch();
+  const { messageType, message } = replyMessageInfo || {};
 
   const closeReply = useCallback(() => {
     dispatch(setReplyMessageInfo(undefined));
@@ -22,8 +23,9 @@ export function ReplyContent() {
   return (
     <View style={[GStyles.flexRow, GStyles.itemCenter, styles.wrap]}>
       <View style={styles.leftBlue} />
-      {/* TODO */}
-      {replyMessageInfo.img && <Image style={styles.img} resizeMode="cover" source={{ uri: replyMessageInfo.img }} />}
+      {messageType === 'img' && (
+        <Image style={styles.img} resizeMode="cover" source={{ uri: message?.imageInfo?.imgUri }} />
+      )}
       <View style={GStyles.flex1}>
         <TextM numberOfLines={1} style={[FontStyles.font5, GStyles.flex1]}>
           {`Reply to ${replyMessageInfo.message?.fromName}`}

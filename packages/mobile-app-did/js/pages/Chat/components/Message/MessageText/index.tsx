@@ -28,27 +28,33 @@ const TIME_UNICODE_SPACE = isIOS
   : '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
 
 function ReplyMessageText(props: MessageTextProps<ChatMessage>) {
-  const { position } = props;
+  const { position, currentMessage } = props;
+
+  if (!currentMessage?.quote) return null;
+  if (!(typeof currentMessage?.quote.parsedContent === 'string')) return null;
 
   return (
     <View style={[replyMessageTextStyles.wrap, position === 'right' && replyMessageImageStyles.rightWrap]}>
       <View style={replyMessageTextStyles.blueBlank} />
-      <TextM style={replyMessageTextStyles.name}>Guo</TextM>
+      <TextM style={replyMessageTextStyles.name}>{currentMessage?.quote?.fromName}</TextM>
       <TextM style={replyMessageTextStyles.content} numberOfLines={2}>
-        Hi, Do you want to buy or sell some tokens? Buy tokens want to buy or sell some tokens? Buy tokens want to buy
+        {currentMessage?.quote?.content}
       </TextM>
     </View>
   );
 }
 
 function ReplyMessageImage(props: MessageTextProps<ChatMessage>) {
-  const { position } = props;
+  const { position, currentMessage } = props;
+  if (!currentMessage?.quote) return null;
+  if (!currentMessage?.quote.imageInfo) return null;
+
   return (
     <View style={[replyMessageImageStyles.wrap, position === 'right' && replyMessageImageStyles.rightWrap]}>
       <View style={replyMessageImageStyles.blueBlank} />
-      <Image style={replyMessageImageStyles.img} source={{ uri: '' }} />
+      <Image style={replyMessageImageStyles.img} source={{ uri: currentMessage?.quote?.imageInfo?.imgUri }} />
       <View style={replyMessageImageStyles.rightWrap}>
-        <TextM style={replyMessageImageStyles.name}>Guo</TextM>
+        <TextM style={replyMessageImageStyles.name}>{currentMessage?.quote?.fromName}</TextM>
         <TextM style={replyMessageImageStyles.content} numberOfLines={1}>
           Photo
         </TextM>
@@ -61,6 +67,10 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
   const { currentMessage, textProps, position = 'right', customTextStyle, textStyle } = props;
   const currentChannelId = useCurrentChannelId();
   const dispatch = useChatsDispatch();
+
+  if (currentMessage?.content === 'Hi~') {
+    console.log('MessageText', currentMessage);
+  }
 
   const deleteMessage = useDeleteMessage(currentChannelId || '');
   const { messageType } = currentMessage || {};
@@ -139,8 +149,8 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
 
   return (
     <Touchable onPress={onPress} onLongPress={onLongPress} style={styles.textRow}>
-      {/* <ReplyMessageText {...props} /> */}
-      {/* <ReplyMessageImage {...props} /> */}
+      <ReplyMessageImage {...props} />
+      <ReplyMessageText {...props} />
       <Text style={[messageStyles[position].text, textStyle && textStyle[position], customTextStyle]}>
         {isNotSupported ? (
           <TextM style={FontStyles.font4}>{currentMessage?.text}</TextM>

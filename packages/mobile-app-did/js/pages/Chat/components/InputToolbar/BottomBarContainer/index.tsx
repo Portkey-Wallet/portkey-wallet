@@ -7,9 +7,9 @@ import { Animated } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useKeyboardAnim, useSendCurrentChannelMessage, useHideCurrentChannel } from '../../hooks';
-import { useBottomBarStatus, useChatText, useChatsDispatch } from '../../../context/hooks';
+import { useBottomBarStatus, useChatReplyMessageInfo, useChatText, useChatsDispatch } from '../../../context/hooks';
 import { ChatBottomBarStatus } from 'store/chat/slice';
-import { setBottomBarStatus, setChatText } from '../../../context/chatsContext';
+import { setBottomBarStatus, setChatText, setReplyMessageInfo } from '../../../context/chatsContext';
 import { BGStyles } from 'assets/theme/styles';
 import { SendMessageButton } from '../SendMessageButton';
 import { ChatInput, ChatInputBar } from '../ChatInput';
@@ -44,6 +44,7 @@ export function BottomBarContainer({
   const bottomBarStatus = useBottomBarStatus();
   const dispatch = useChatsDispatch();
   const text = useChatText();
+  const replyMessageInfo = useChatReplyMessageInfo();
   const textInputRef = useRef<ChatInput>(null);
   const keyboardAnim = useKeyboardAnim({ textInputRef });
   const timer = useRef<NodeJS.Timeout>();
@@ -79,6 +80,7 @@ export function BottomBarContainer({
   });
   const onSend = useCallback(async () => {
     dispatch(setChatText(''));
+    dispatch(setReplyMessageInfo(undefined));
     chatInputRecorder?.reset();
 
     try {
@@ -86,6 +88,7 @@ export function BottomBarContainer({
       typeof text === 'string' &&
         (await sendChannelMessage({
           content: text.trim(),
+          quoteMessage: replyMessageInfo?.message,
         }));
     } catch (error: any) {
       if (error?.code === NO_LONGER_IN_GROUP) {
@@ -104,7 +107,7 @@ export function BottomBarContainer({
 
       CommonToast.fail('Failed to send message');
     }
-  }, [dispatch, hideChannel, scrollToBottom, sendChannelMessage, text]);
+  }, [dispatch, hideChannel, replyMessageInfo?.message, scrollToBottom, sendChannelMessage, text]);
 
   return (
     <View style={styles.wrap}>

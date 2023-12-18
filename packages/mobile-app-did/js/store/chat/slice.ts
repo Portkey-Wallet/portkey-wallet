@@ -9,11 +9,6 @@ export enum ChatBottomBarStatus {
 }
 
 export type ReplyMessageInfoType = {
-  // TODO: delete some of these
-  fromId?: string;
-  fromName?: string;
-  img?: string;
-  text?: string;
   messageType: 'text' | 'img';
   message?: ChatMessage;
 };

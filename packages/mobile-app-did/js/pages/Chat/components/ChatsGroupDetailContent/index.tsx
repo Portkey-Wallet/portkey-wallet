@@ -96,7 +96,7 @@ export default function ChatsGroupDetailContent() {
   }, [dispatch]);
 
   const renderMessageText: GiftedChatProps['renderMessageText'] = useCallback(
-    (props: MessageTextProps<ChatMessage>) => <MessageText {...props} />,
+    (props: MessageTextProps<ChatMessage>) => <MessageText key={props.currentMessage?._id} {...props} />,
     [],
   );
 

@@ -8,13 +8,14 @@ import Touchable from 'components/Touchable';
 import ChatOverlay from '../../ChatOverlay';
 import { ChatMessage } from 'pages/Chat/types';
 import { formatImageSize } from '@portkey-wallet/utils/img';
-import { useCurrentChannelId } from 'pages/Chat/context/hooks';
+import { useChatsDispatch, useCurrentChannelId } from 'pages/Chat/context/hooks';
 import { useDeleteMessage } from '@portkey-wallet/hooks/hooks-ca/im';
 import isEqual from 'lodash/isEqual';
 import CommonToast from 'components/CommonToast';
 import Broken_Image from 'assets/image/pngs/broken-image.png';
 import { ListItemType } from '../../ChatOverlay/chatPopover';
 import Svg from 'components/Svg';
+import { setReplyMessageInfo } from 'pages/Chat/context/chatsContext';
 
 const maxWidth = pTd(280);
 const maxHeight = pTd(280);
@@ -23,8 +24,10 @@ const min = pTd(100);
 
 function MessageImage(props: MessageProps<ChatMessage>) {
   const { currentMessage, position } = props;
+  const dispatch = useChatsDispatch();
   const currentChannelId = useCurrentChannelId();
   const deleteMessage = useDeleteMessage(currentChannelId || '');
+
   const { imageInfo } = currentMessage || {};
   const { imgUri, thumbUri, width, height } = imageInfo || {};
 
@@ -105,9 +108,23 @@ function MessageImage(props: MessageProps<ChatMessage>) {
         });
       }
 
+      list.push({
+        // TODO: reply
+        title: 'Reply',
+        iconName: 'chat-pin',
+        onPress: async () => {
+          dispatch(
+            setReplyMessageInfo({
+              message: currentMessage,
+              messageType: 'img',
+            }),
+          );
+        },
+      });
+
       list.length && ChatOverlay.showChatPopover({ list, px: pageX, py: pageY, formatType: 'dynamicWidth' });
     },
-    [currentMessage?.id, deleteMessage, position],
+    [currentMessage, deleteMessage, dispatch, position],
   );
 
   return (

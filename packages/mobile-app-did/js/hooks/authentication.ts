@@ -241,6 +241,19 @@ export function useAppleAuthentication() {
   );
 }
 
+export function useTelegramAuthentication() {
+  // todo: add Telegram authentication
+  return useMemo(
+    () => ({
+      appleResponse: '',
+      telegramSign: () => {
+        console.log('telegramSign');
+      },
+    }),
+    [],
+  );
+}
+
 export type VerifyTokenParams = {
   accessToken?: string;
   verifierId?: string;

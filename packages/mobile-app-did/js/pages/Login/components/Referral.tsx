@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import navigationService from 'utils/navigationService';
@@ -6,7 +6,7 @@ import styles from '../styles';
 import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
 import { TextL } from 'components/CommonText';
-import Svg from 'components/Svg';
+import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import qrCode from 'assets/image/pngs/QR-code.png';
 import { PageLoginType, PageType } from '../types';
@@ -15,21 +15,24 @@ import TermsServiceButton from './TermsServiceButton';
 import { defaultColors } from 'assets/theme';
 import Divider from 'components/Divider';
 import CommonToast from 'components/CommonToast';
-import { useAppleAuthentication, useGoogleAuthentication } from 'hooks/authentication';
+import { useAppleAuthentication, useGoogleAuthentication, useTelegramAuthentication } from 'hooks/authentication';
 import { useOnLogin } from 'hooks/login';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import Loading from 'components/Loading';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import RoundButton from './RoundButton';
+import fonts from 'assets/theme/fonts';
 const TitleMap = {
   [PageType.login]: {
     apple: 'Login with Apple',
     google: 'Login with Google',
-    button: 'Login with Phone / Email',
+    telegram: 'Login with Telegram',
   },
   [PageType.signup]: {
     apple: 'Signup with Apple',
     google: 'Signup with Google',
-    button: 'Signup with Phone / Email',
+    telegram: 'Signup with Telegram',
   },
 };
 
@@ -42,6 +45,7 @@ export default function Referral({
 }) {
   const { appleSign } = useAppleAuthentication();
   const { googleSign } = useGoogleAuthentication();
+  const { telegramSign } = useTelegramAuthentication();
 
   const onLogin = useOnLogin(type === PageType.login);
 
@@ -59,6 +63,7 @@ export default function Referral({
     }
     Loading.hide(loadingKey);
   }, [appleSign, onLogin]);
+
   const onGoogleSign = useLockCallback(async () => {
     const loadingKey = Loading.show();
     try {
@@ -73,6 +78,34 @@ export default function Referral({
     }
     Loading.hide(loadingKey);
   }, [googleSign, onLogin]);
+
+  const onTelegramSign = useLockCallback(async () => {
+    const loadingKey = Loading.show();
+    try {
+      console.log('telegramSign');
+    } catch (error) {
+      CommonToast.failError(error);
+    }
+    Loading.hide(loadingKey);
+  }, [googleSign, onLogin]);
+
+  const otherLoginTypeList = useMemo<{ icon: IconName; onPress: () => any }[]>(() => {
+    return [
+      {
+        icon: isIOS ? 'google' : 'apple',
+        onPress: isIOS ? onGoogleSign : onAppleSign,
+      },
+      {
+        icon: 'phone-login',
+        onPress: () => setLoginType(PageLoginType.phone),
+      },
+      {
+        icon: 'email-login',
+        onPress: () => setLoginType(PageLoginType.email),
+      },
+    ];
+  }, [onAppleSign, onGoogleSign, setLoginType]);
+
   return (
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter, GStyles.spaceBetween]}>
       {type === PageType.login && (
@@ -83,24 +116,29 @@ export default function Referral({
       <View style={GStyles.width100}>
         <CommonButton
           type="outline"
-          onPress={onGoogleSign}
-          title={TitleMap[type].google}
-          icon={<Svg icon="google" size={24} />}
+          onPress={isIOS ? onAppleSign : onGoogleSign}
+          title={TitleMap[type][isIOS ? 'apple' : 'google']}
+          icon={<Svg icon={isIOS ? 'apple' : 'google'} size={pTd(20)} />}
           containerStyle={pageStyles.outlineContainerStyle}
-          titleStyle={[FontStyles.font3, pageStyles.outlineTitleStyle]}
+          titleStyle={[FontStyles.font3, fonts.mediumFont, pageStyles.outlineTitleStyle]}
         />
-
         <CommonButton
           type="outline"
-          onPress={onAppleSign}
-          title={TitleMap[type].apple}
-          icon={<Svg icon="apple" size={24} />}
+          onPress={onTelegramSign}
+          title={TitleMap[type].telegram}
+          icon={<Svg icon="telegram-blue" size={pTd(20)} />}
           containerStyle={pageStyles.outlineContainerStyle}
-          titleStyle={[FontStyles.font3, pageStyles.outlineTitleStyle]}
+          titleStyle={[FontStyles.font3, fonts.mediumFont, pageStyles.outlineTitleStyle]}
         />
-
         <Divider title="OR" inset={true} style={pageStyles.dividerStyle} />
-        <CommonButton type="primary" onPress={() => setLoginType(PageLoginType.phone)} title={TitleMap[type].button} />
+        <View style={[GStyles.flexRow, GStyles.flexCenter]}>
+          {otherLoginTypeList.map((ele, index) => (
+            <>
+              {index !== 0 && <View style={pageStyles.blank} />}
+              <RoundButton key={index} icon={ele.icon} onPress={ele.onPress} />
+            </>
+          ))}
+        </View>
       </View>
       {type === PageType.login && (
         <Touchable
@@ -128,5 +166,8 @@ const pageStyles = StyleSheet.create({
   },
   dividerStyle: {
     marginVertical: 16,
+  },
+  blank: {
+    width: pTd(24),
   },
 });

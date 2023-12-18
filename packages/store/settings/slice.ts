@@ -5,6 +5,7 @@ const initialState: SettingsState = {
   autoLockingTime: 60,
   leaveTime: -Infinity,
   closeNotificationsModalTime: 0,
+  hasShowUploadV2WaringModal: false,
 };
 
 //it automatically uses the immer library to let you write simpler immutable updates with normal mutative code
@@ -19,7 +20,6 @@ export const settingsSlice = createSlice({
       }>,
     ) => {
       const { time } = action.payload;
-
       state.autoLockingTime = time;
       state.leaveTime = -Infinity;
     },
@@ -31,6 +31,12 @@ export const settingsSlice = createSlice({
       console.log('leaver', Date.now());
       state.leaveTime = Date.now();
     },
+    setHasShowUploadV2WaringModal: (state, action: PayloadAction<boolean>) => {
+      state.hasShowUploadV2WaringModal = action.payload;
+    },
+    resetHasShowUploadV2WaringModal: state => {
+      state.hasShowUploadV2WaringModal = false;
+    },
     addNotificationsModalTime: state => {
       state.closeNotificationsModalTime = (state.closeNotificationsModalTime || 0) + 1;
     },
@@ -40,7 +46,14 @@ export const settingsSlice = createSlice({
   },
 });
 
-export const { changeLockingTime, initLeaveTime, setLeaveTime, addNotificationsModalTime, resetSettings } =
-  settingsSlice.actions;
+export const {
+  changeLockingTime,
+  initLeaveTime,
+  setLeaveTime,
+  addNotificationsModalTime,
+  setHasShowUploadV2WaringModal,
+  resetHasShowUploadV2WaringModal,
+  resetSettings,
+} = settingsSlice.actions;
 
 export default settingsSlice;

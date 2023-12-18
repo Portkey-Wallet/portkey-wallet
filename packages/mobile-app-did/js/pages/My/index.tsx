@@ -10,6 +10,8 @@ import { RootStackName } from 'navigation';
 import { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
+import CommonButton from 'components/CommonButton';
+import { useUploadWarning } from 'hooks/uploadWarning';
 
 interface MenuItemType {
   name: RootStackName;
@@ -46,6 +48,7 @@ const MenuList: Array<MenuItemType> = [
 ];
 
 export default function MyMenu() {
+  const { showUploadWaring } = useUploadWarning();
   const { t } = useLanguage();
   const isImputation = useIsImputation();
 
@@ -55,6 +58,12 @@ export default function MyMenu() {
       titleDom={t('My')}
       safeAreaColor={['blue', 'white']}
       containerStyles={styles.container}>
+      <CommonButton
+        title={'V2 Launched'}
+        onPress={() => {
+          showUploadWaring();
+        }}
+      />
       {MenuList.map(ele => {
         return (
           <MenuItem

@@ -43,6 +43,7 @@ const SelectGroupMembersToTransferPage = () => {
       isFixedToContact: true,
       toAddress: 'xxxx',
       name: 'yyy',
+      chainIds: ['AELF'],
     });
   }, []);
 

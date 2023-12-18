@@ -21,6 +21,7 @@ import { useOnUrlPress } from 'hooks/chat';
 import Svg from 'components/Svg';
 import { setReplyMessageInfo } from 'pages/Chat/context/chatsContext';
 import { websiteRE } from '@portkey-wallet/utils/reg';
+import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
 
 const PIN_UNICODE_SPACE = '\u00A0\u00A0\u00A0\u00A0';
 const TIME_UNICODE_SPACE = isIOS
@@ -38,7 +39,7 @@ function ReplyMessageText(props: MessageTextProps<ChatMessage>) {
       <View style={replyMessageTextStyles.blueBlank} />
       <TextM style={replyMessageTextStyles.name}>{currentMessage?.quote?.fromName}</TextM>
       <TextM style={replyMessageTextStyles.content} numberOfLines={2}>
-        {currentMessage?.quote?.content}
+        {currentMessage?.quote?.messageType === 'NOT_SUPPORTED' ? UN_SUPPORTED_FORMAT : currentMessage?.quote?.content}
       </TextM>
     </View>
   );
@@ -56,7 +57,7 @@ function ReplyMessageImage(props: MessageTextProps<ChatMessage>) {
       <View style={replyMessageImageStyles.rightWrap}>
         <TextM style={replyMessageImageStyles.name}>{currentMessage?.quote?.fromName}</TextM>
         <TextM style={replyMessageImageStyles.content} numberOfLines={1}>
-          Photo
+          {currentMessage?.quote?.messageType === 'NOT_SUPPORTED' ? UN_SUPPORTED_FORMAT : 'Photo'}
         </TextM>
       </View>
     </View>

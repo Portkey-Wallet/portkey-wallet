@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
-import { setCurrentChannelId } from 'pages/Chat/context/chatsContext';
+import { setCurrentChannelId, setReplyMessageInfo } from 'pages/Chat/context/chatsContext';
 import { useChatsDispatch } from 'pages/Chat/context/hooks';
 import navigationService from 'utils/navigationService';
 import CommonToast from 'components/CommonToast';
@@ -31,6 +31,7 @@ export function useJumpToChatDetails() {
           const channelInfo = await createChannel(toRelationId || '');
           chatDispatch(setCurrentChannelId(channelInfo.channelUuid || ''));
         }
+        chatDispatch(setReplyMessageInfo());
 
         // if group chat exist, destroy it
         if (routesArr.find(ele => ele.name === 'ChatGroupDetailsPage')) {
@@ -62,6 +63,8 @@ export function useJumpToChatGroupDetails() {
           const channelInfo = await createChannel(toRelationId || '');
           chatDispatch(setCurrentChannelId(channelInfo.channelUuid || ''));
         }
+
+        chatDispatch(setReplyMessageInfo());
         navigationService.navigate('ChatGroupDetailsPage');
       } catch (error) {
         console.log(error);

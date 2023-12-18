@@ -30,6 +30,7 @@ type ShowAssetListParamsType = {
   toAddress?: string;
   name?: string;
   isFixedToContact?: boolean;
+  chainIds?: ChainId[];
 };
 
 const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: IAssetItemType }) => {
@@ -84,7 +85,7 @@ const INIT_PAGE_INFO = {
   isLoading: false,
 };
 
-const AssetList = ({ toAddress, name, isFixedToContact }: ShowAssetListParamsType) => {
+const AssetList = ({ toAddress, name, isFixedToContact, chainIds }: ShowAssetListParamsType) => {
   const { t } = useLanguage();
   const caAddresses = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
@@ -98,6 +99,14 @@ const AssetList = ({ toAddress, name, isFixedToContact }: ShowAssetListParamsTyp
   const pageInfoRef = useRef({
     ...INIT_PAGE_INFO,
   });
+
+  const filterList = useCallback(
+    (list: IAssetItemType[]) => {
+      if (!chainIds || chainIds?.length === 0) return list;
+      return list.filter(item => chainIds?.includes(item?.chainId as ChainId));
+    },
+    [chainIds],
+  );
 
   const getList = useCallback(
     async (_keyword = '', isInit = false) => {
@@ -118,16 +127,16 @@ const AssetList = ({ toAddress, name, isFixedToContact }: ShowAssetListParamsTyp
         console.log('fetchAccountAssetsByKeywords:', response);
 
         if (isInit) {
-          setListShow(response.data);
+          setListShow(filterList(response.data));
         } else {
-          setListShow(pre => pre.concat(response.data));
+          setListShow(pre => filterList(pre.concat(response.data)));
         }
       } catch (err) {
         console.log('fetchAccountAssetsByKeywords err:', err);
       }
       pageInfoRef.current.isLoading = false;
     },
-    [caAddressInfos, caAddresses, listShow.length],
+    [caAddressInfos, caAddresses, filterList, listShow.length],
   );
 
   const onKeywordChange = useCallback(() => {

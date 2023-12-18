@@ -47,16 +47,43 @@ export const useCheckTransferLimitWithJump = () => {
         // use MAX_TRANSACTION_FEE to make sure that transfer will success after approve
         const isAllowApprove = ZERO.plus(amount).plus(MAX_TRANSACTION_FEE).lt(balance);
 
-        if (isAllowApprove) {
-          // TODO: 1.4.13
-
-          navigationService.navigateByMultiLevelParams('GuardianApproval', {
-            params: {
-              approvalType: ApprovalType.transferApprove,
+        const gotoLimitEdit = async () => {
+          navigationService.navigate('PaymentSecurityEdit', {
+            transferLimitDetail: {
+              chainId,
+              symbol: symbol,
+              dailyLimit: dailyLimit.toFixed(0),
+              singleLimit: singleBalance.toFixed(0),
+              restricted: !dailyLimit.eq(-1),
+              decimals: decimals,
+              defaultDailyLimit: defaultDailyLimit?.toFixed(0),
+              defaultSingleLimit: defaultSingleLimit?.toFixed(0),
             },
-            multiLevelParams: approveMultiLevelParams,
           });
-          return;
+        };
+
+        if (isAllowApprove) {
+          ActionSheet.alert({
+            title2: `Maximum limit per transaction exceeded. To proceed with this specific transaction, you may request one-time approval from guardians. Alternatively, you have the option to modify the limit, lifting restrictions on all future transactions.`,
+            buttonGroupDirection: 'column',
+            isCloseShow: true,
+            buttons: [
+              {
+                title: 'Request One-Time Approval',
+                onPress: () => {
+                  navigationService.navigateByMultiLevelParams('GuardianApproval', {
+                    params: {
+                      approvalType: ApprovalType.transferApprove,
+                    },
+                    multiLevelParams: approveMultiLevelParams,
+                  });
+                },
+              },
+              { title: 'Modify Transfer Limit for All', type: 'transparent', onPress: gotoLimitEdit },
+            ],
+          });
+
+          return false;
         }
 
         ActionSheet.alert({
@@ -70,20 +97,7 @@ export const useCheckTransferLimitWithJump = () => {
             },
             {
               title: 'Modify',
-              onPress: async () => {
-                navigationService.navigate('PaymentSecurityEdit', {
-                  transferLimitDetail: {
-                    chainId,
-                    symbol: symbol,
-                    dailyLimit: dailyLimit.toFixed(0),
-                    singleLimit: singleBalance.toFixed(0),
-                    restricted: !dailyLimit.eq(-1),
-                    decimals: decimals,
-                    defaultDailyLimit: defaultDailyLimit?.toFixed(0),
-                    defaultSingleLimit: defaultSingleLimit?.toFixed(0),
-                  },
-                });
-              },
+              onPress: gotoLimitEdit,
             },
           ],
         });

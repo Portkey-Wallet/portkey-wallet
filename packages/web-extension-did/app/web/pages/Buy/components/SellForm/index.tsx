@@ -18,7 +18,7 @@ import { useLoading } from 'store/Provider/hooks';
 import { useEffectOnce } from 'react-use';
 import { Button, message } from 'antd';
 import { SERVICE_UNAVAILABLE_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -28,12 +28,14 @@ import { useFetchTxFee, useGetOneTxFee } from '@portkey-wallet/hooks/hooks-ca/us
 import { generateRateText } from 'pages/Buy/utils';
 import { getSellFiat } from '@portkey-wallet/utils/ramp';
 import { useGetChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import useLocationState from 'hooks/useLocationState';
+import { RampRouteState } from 'pages/Buy/types';
 
 export default function SellFrom() {
   const { t } = useTranslation();
   const { setLoading } = useLoading();
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const { state } = useLocationState<RampRouteState>();
 
   // get data
   const { refreshRampShow } = useRampEntryShow();
@@ -42,18 +44,25 @@ export default function SellFrom() {
   const cryptoList = useSellCryptoListState();
   const defaultFiatList = useSellDefaultFiatListState();
   const filterCryptoSelected = useMemo(
-    () => cryptoList.filter((item) => item.symbol === defaultCrypto && item.network === defaultNetwork),
-    [cryptoList, defaultCrypto, defaultNetwork],
+    () =>
+      cryptoList.filter(
+        (item) =>
+          item.symbol === (state?.crypto || defaultCrypto) && item.network === (state?.network || defaultNetwork),
+      ),
+    [cryptoList, defaultCrypto, defaultNetwork, state?.crypto, state?.network],
   );
   const filterFiatSelected = useMemo(
-    () => defaultFiatList.filter((item) => item.symbol === defaultFiat && item.country === defaultCountry),
-    [defaultCountry, defaultFiat, defaultFiatList],
+    () =>
+      defaultFiatList.filter(
+        (item) => item.symbol === (state?.fiat || defaultFiat) && item.country === (state?.country || defaultCountry),
+      ),
+    [defaultCountry, defaultFiat, defaultFiatList, state?.country, state?.fiat],
   );
   useFetchTxFee();
 
   // pay
-  const [cryptoAmount, setCryptoAmount] = useState<string>(defaultCryptoAmount);
-  const cryptoAmountRef = useRef<string>(defaultCryptoAmount);
+  const [cryptoAmount, setCryptoAmount] = useState<string>(state?.amount || defaultCryptoAmount);
+  const cryptoAmountRef = useRef<string>(state?.amount || defaultCryptoAmount);
   const [cryptoSelected, setCryptoSelected] = useState<IRampCryptoItem>({ ...filterCryptoSelected[0] });
   const cryptoSelectedRef = useRef<IRampCryptoItem>({ ...filterCryptoSelected[0] });
 

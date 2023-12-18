@@ -52,6 +52,7 @@ export type IRampProviderCreateOrderParams = {
   fiat: string;
   amount: string;
   withdrawUrl?: string; // only for sell
+  portkeyId?: string; // only for transak
 };
 
 export type IRampProviderCreateOrderResult = { orderId: string; url: string };

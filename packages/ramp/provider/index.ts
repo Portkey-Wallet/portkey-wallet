@@ -12,6 +12,7 @@ import {
   ITransDirectEnum,
   IGetOrderNoRequest,
 } from '../types';
+import { stringifyUrl } from 'query-string';
 
 export abstract class RampProvider implements IRampProvider {
   public providerInfo: IRampProviderInfo;
@@ -109,10 +110,38 @@ export class TransakProvider extends RampProvider implements IRampProvider {
   }
 
   async createOrder(params: IRampProviderCreateOrderParams): Promise<IRampProviderCreateOrderResult> {
-    // TODO
+    const { baseUrl, appId, key, callbackUrl } = this.providerInfo;
+    const { type, network, country, fiat, crypto, amount, address, email, portkeyId } = params;
+
+    const orderId = await this.getOrderId({
+      transDirect: type === RampType.BUY ? ITransDirectEnum.TOKEN_BUY : ITransDirectEnum.TOKEN_SELL,
+      merchantName: key,
+    });
+
     if (params.type === RampType.BUY) {
-      return { orderId: '', url: '' };
+      const handleOrderUrl = stringifyUrl(
+        {
+          url: baseUrl,
+          query: {
+            apiKey: appId,
+            productsAvailed: type,
+            fiatAmount: amount,
+            fiatCurrency: fiat,
+            countryCode: country,
+            network: network,
+            cryptoCurrencyCode: crypto,
+            walletAddress: address,
+            email: email,
+            redirectURL: callbackUrl,
+            partnerOrderId: orderId,
+            partnerCustomerId: portkeyId,
+          },
+        },
+        { encode: true },
+      );
+      return { orderId, url: handleOrderUrl };
     }
-    return { orderId: '', url: '' };
+    // TODO sell
+    return { orderId, url: '' };
   }
 }

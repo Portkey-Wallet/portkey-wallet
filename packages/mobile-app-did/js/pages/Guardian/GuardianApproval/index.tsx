@@ -32,7 +32,14 @@ import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/ho
 import CommonToast from 'components/CommonToast';
 import { useAppDispatch } from 'store/hooks';
 import { setPreGuardianAction } from '@portkey-wallet/store/store-ca/guardians/actions';
-import { addGuardian, deleteGuardian, editGuardian, modifyTransferLimit, removeOtherManager } from 'utils/guardian';
+import {
+  addGuardian,
+  deleteGuardian,
+  editGuardian,
+  getGuardiansApproved,
+  modifyTransferLimit,
+  removeOtherManager,
+} from 'utils/guardian';
 import { useGetCAContract, useGetCurrentCAContract } from 'hooks/contract';
 import { GuardiansApproved, GuardiansStatus, GuardiansStatusItem } from '../types';
 import { handleGuardiansApproved } from 'utils/login';
@@ -48,6 +55,9 @@ import { useCheckRouteExistInRouteStack } from 'hooks/route';
 import { useGetVerifierServers, useRefreshGuardiansList } from 'hooks/guardian';
 import { SendResult } from '@portkey-wallet/contracts/types';
 import { useIsFocused } from '@react-navigation/native';
+import { NavigateMultiLevelParams } from 'types/navigate';
+import { useGetTransferFee } from '@portkey-wallet/hooks/hooks-ca/transfer';
+import { isCrossChain } from '@portkey-wallet/utils/aelf';
 
 export type RouterParams = {
   loginAccount?: string;
@@ -65,6 +75,8 @@ export type RouterParams = {
   accelerateChainId?: ChainId;
   initGuardiansStatus?: GuardiansStatus;
 };
+
+type MultiLevelParams = Pick<NavigateMultiLevelParams, 'successNavigate' | 'sendTransferPreviewApprove'>;
 export default function GuardianApproval() {
   const {
     loginAccount,
@@ -81,7 +93,11 @@ export default function GuardianApproval() {
     targetChainId,
     accelerateChainId,
     initGuardiansStatus,
-  } = useRouterParams<RouterParams>();
+
+    // multiLevelParams
+    successNavigate,
+    sendTransferPreviewApprove,
+  } = useRouterParams<RouterParams & MultiLevelParams>();
   const dispatch = useAppDispatch();
   const checkRouteExistInRouteStack = useCheckRouteExistInRouteStack();
 
@@ -456,6 +472,51 @@ export default function GuardianApproval() {
     userGuardiansList,
   ]);
 
+  const getTransferFee = useGetTransferFee();
+  const onTransferApprove = useCallback(async () => {
+    if (!guardiansStatus || !userGuardiansList) return;
+    const guardiansApproved = getGuardiansApproved(userGuardiansList, guardiansStatus);
+
+    if (successNavigate) {
+      navigationService.pop(1);
+      navigationService.navigate(successNavigate.name, {
+        ...successNavigate.params,
+        guardiansApproved,
+      });
+      return;
+    }
+    if (sendTransferPreviewApprove) {
+      const previewParams = sendTransferPreviewApprove.params;
+      const { assetInfo } = previewParams;
+      const isCross = isCrossChain(assetInfo.chainId, previewParams.toInfo.chainId || 'AELF');
+      const caContract = await getCAContract(assetInfo.chainId);
+
+      let transferFee: string | undefined;
+      try {
+        transferFee = await getTransferFee({
+          isCross,
+          sendAmount: `${previewParams.sendNumber}`,
+          decimals: assetInfo.decimals,
+          symbol: assetInfo.symbol,
+          caContract,
+          tokenContractAddress: assetInfo.tokenContractAddress,
+          toAddress: previewParams.toInfo.address,
+          chainId: assetInfo.chainId,
+        });
+      } catch (error) {
+        console.log('approve getTransferFee error', error);
+      }
+
+      navigationService.pop(1);
+      navigationService.navigate(sendTransferPreviewApprove.successNavigateName, {
+        ...sendTransferPreviewApprove.params,
+        guardiansApproved,
+        transactionFee: transferFee || '0',
+      });
+      return;
+    }
+  }, [getCAContract, getTransferFee, guardiansStatus, sendTransferPreviewApprove, successNavigate, userGuardiansList]);
+
   const onFinish = useCallback(async () => {
     switch (approvalType) {
       case ApprovalType.communityRecovery:
@@ -479,6 +540,9 @@ export default function GuardianApproval() {
       case ApprovalType.modifyTransferLimit:
         onModifyTransferLimit();
         break;
+      case ApprovalType.transferApprove:
+        onTransferApprove();
+        break;
       default:
         break;
     }
@@ -491,6 +555,7 @@ export default function GuardianApproval() {
     onRemoveOtherManager,
     dappApprove,
     onModifyTransferLimit,
+    onTransferApprove,
   ]);
 
   return (

@@ -1,3 +1,4 @@
+import { GuardiansApprovedType } from 'utils/guardian';
 import { ChainId, ChainType } from '..';
 import type { SendType } from './send';
 
@@ -37,4 +38,6 @@ export interface IToSendPreviewParamsType extends IToSendHomeParamsType {
   transactionFee: string | number;
   sendNumber: string | number;
   successNavigateName?: any;
+  guardiansApproved?: GuardiansApprovedType[];
+  isAutoSend?: boolean;
 }

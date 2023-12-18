@@ -32,5 +32,3 @@ export enum LimitType {
   Single = 'Single',
   Daily = 'Daily',
 }
-
-export const MAX_TRANSACTION_FEE = '0.1';

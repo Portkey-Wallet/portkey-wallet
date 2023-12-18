@@ -14,7 +14,6 @@ import {
   SecurityAccelerateContent,
   SecurityAccelerateErrorTip,
   LimitType,
-  MAX_TRANSACTION_FEE,
 } from 'constants/security';
 import {
   useTransferLimitApprovalModal,
@@ -40,6 +39,7 @@ import { getCurrentChainInfo } from 'utils/lib/SWGetReduxStore';
 import CustomSvg from 'components/CustomSvg';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { divDecimals } from '@portkey-wallet/utils/converter';
+import { MAX_TRANSACTION_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
 
 export const useCheckSecurity = () => {
   const wallet = useCurrentWalletInfo();

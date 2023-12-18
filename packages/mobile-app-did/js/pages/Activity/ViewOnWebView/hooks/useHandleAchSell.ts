@@ -13,6 +13,7 @@ import { useCallback, useMemo } from 'react';
 import { getManagerAccount } from 'utils/redux';
 import AElf from 'aelf-sdk';
 import SparkMD5 from 'spark-md5';
+import { GuardiansApprovedType } from 'utils/guardian';
 
 export const useHandleAchSell = () => {
   const sellTransfer = useSellTransfer();
@@ -26,7 +27,10 @@ export const useHandleAchSell = () => {
   const wallet = useCurrentWalletInfo();
 
   const paymentSellTransfer = useCallback(
-    async (params: AchTxAddressReceivedType): Promise<PaymentSellTransferResult> => {
+    async (
+      params: AchTxAddressReceivedType,
+      guardiansApproved?: GuardiansApprovedType[],
+    ): Promise<PaymentSellTransferResult> => {
       const { decimals, symbol, chainId } = aelfToken || {};
       const { caContractAddress, endPoint } = chainInfo || {};
       const { caHash } = wallet;
@@ -64,6 +68,7 @@ export const useHandleAchSell = () => {
           amount,
           memo: '',
         },
+        guardiansApproved,
       });
       if (!rawResult || !rawResult.data) {
         throw new Error('Failed to get raw transaction.');
@@ -83,7 +88,7 @@ export const useHandleAchSell = () => {
   );
 
   return useCallback(
-    async (orderId: string) => {
+    async (orderId: string, guardiansApproved?: GuardiansApprovedType[]) => {
       console.log('sell Transfer, Start', Date.now());
       try {
         Loading.show({ text: 'Payment is being processed and may take around 10 seconds to complete.' });
@@ -91,6 +96,7 @@ export const useHandleAchSell = () => {
           merchantName: ACH_MERCHANT_NAME,
           orderId,
           paymentSellTransfer,
+          guardiansApproved: guardiansApproved,
         });
         CommonToast.success('Transaction completed.');
       } catch (error: any) {

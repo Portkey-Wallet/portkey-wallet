@@ -30,6 +30,7 @@ import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useAppBuyButtonShow } from 'hooks/cms';
+import { GuardiansApprovedType } from 'utils/guardian';
 
 interface RouterParams {
   type?: PaymentTypeEnum;
@@ -38,6 +39,7 @@ interface RouterParams {
   amount?: string;
   receiveAmount?: string;
   rate?: string;
+  guardiansApproved?: GuardiansApprovedType[];
 }
 
 export default function BuyPreview() {
@@ -48,6 +50,7 @@ export default function BuyPreview() {
     amount,
     receiveAmount: receiveAmountProps,
     rate: rateProps,
+    guardiansApproved,
   } = useRouterParams<RouterParams>();
 
   const { t } = useLanguage();
@@ -133,6 +136,7 @@ export default function BuyPreview() {
               ? undefined
               : {
                   orderNo,
+                  guardiansApproved,
                 },
         });
       } catch (error) {
@@ -148,6 +152,7 @@ export default function BuyPreview() {
       buyConfig?.ach?.baseUrl,
       fiat,
       getAchTokenInfo,
+      guardiansApproved,
       receiveAmount,
       refreshBuyButton,
       token,

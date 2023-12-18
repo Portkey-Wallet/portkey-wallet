@@ -30,6 +30,8 @@ import { getSellFiat } from '@portkey-wallet/utils/ramp';
 import { useGetChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import useLocationState from 'hooks/useLocationState';
 import { RampRouteState } from 'pages/Buy/types';
+import { useCheckLimit, useCheckSecurity } from 'hooks/useSecurity';
+import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
 
 export default function SellFrom() {
   const { t } = useTranslation();
@@ -167,11 +169,13 @@ export default function SellFrom() {
   const currentNetwork = useCurrentNetworkInfo();
   const wallet = useCurrentWalletInfo();
   const getOneTxFee = useGetOneTxFee();
-
+  const checkSecurity = useCheckSecurity();
+  const checkLimit = useCheckLimit(cryptoSelectedRef.current.chainId); // TODO change => callback params
   const handleNext = useCallback(async () => {
     try {
       setLoading(true);
 
+      // CHECK 1: is show buy\sell
       // Compatible with the situation where the function is turned off when the user is on the page.
       const { isSellSectionShow } = await refreshRampShow();
       if (!isSellSectionShow) {
@@ -180,14 +184,14 @@ export default function SellFrom() {
         return navigate('/');
       }
 
-      const chainId = cryptoSelectedRef.current.chainId;
+      // CHECK 2: account security
+      const securityRes = await checkSecurity(cryptoSelectedRef.current.chainId);
+      if (!securityRes) return setLoading(false);
 
+      // CHECK 3: balance and tx fee
+      const chainId = cryptoSelectedRef.current.chainId;
       const currentChain = getCurrentChain(chainId);
       if (!currentChain) return setLoading(false);
-
-      const _isManagerSynced = await checkManagerSynced();
-      if (!_isManagerSynced) return setLoading(false);
-
       // search balance from contract
       const result = await getBalance({
         rpcUrl: currentChain.endPoint,
@@ -200,9 +204,7 @@ export default function SellFrom() {
       });
       setLoading(false);
       const balance = result.result.balance;
-
       const achFee = getOneTxFee(chainId, 'MAIN');
-
       if (
         ZERO.plus(divDecimals(balance, currentChain.defaultToken.decimals)).isLessThanOrEqualTo(
           ZERO.plus(achFee.ach).plus(cryptoAmountRef.current),
@@ -211,6 +213,20 @@ export default function SellFrom() {
         setInsufficientFundsMsg();
         return;
       }
+
+      // CHECK 4: manager sync
+      const _isManagerSynced = await checkManagerSynced();
+      if (!_isManagerSynced) return setLoading(false);
+
+      // CHECK 5: transfer limit
+      const limitRes = await checkLimit({
+        chainId: 'AELF',
+        symbol: cryptoSelectedRef.current.symbol,
+        amount: cryptoAmount,
+        decimals: cryptoSelectedRef.current.decimals,
+        from: ICheckLimitBusiness.RAMP_SELL,
+      });
+      if (typeof limitRes !== 'boolean') return setLoading(false);
 
       navigate('/buy/preview', {
         state: {
@@ -230,7 +246,10 @@ export default function SellFrom() {
     }
   }, [
     accountTokenList,
+    checkLimit,
     checkManagerSynced,
+    checkSecurity,
+    cryptoAmount,
     currentNetwork.walletType,
     getCurrentChain,
     getOneTxFee,
@@ -243,6 +262,9 @@ export default function SellFrom() {
   ]);
 
   useEffectOnce(() => {
+    // CHECK 1: security
+    checkSecurity('AELF');
+
     updateSellReceive();
   });
 

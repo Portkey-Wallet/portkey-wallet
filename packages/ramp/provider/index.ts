@@ -111,7 +111,7 @@ export class TransakProvider extends RampProvider implements IRampProvider {
 
   async createOrder(params: IRampProviderCreateOrderParams): Promise<IRampProviderCreateOrderResult> {
     const { baseUrl, appId, key, callbackUrl } = this.providerInfo;
-    const { type, network, country, fiat, crypto, amount, address, email, portkeyId } = params;
+    const { type, network, country, fiat, crypto, amount, address, email } = params;
 
     const orderId = await this.getOrderId({
       transDirect: type === RampType.BUY ? ITransDirectEnum.TOKEN_BUY : ITransDirectEnum.TOKEN_SELL,
@@ -134,7 +134,6 @@ export class TransakProvider extends RampProvider implements IRampProvider {
             email: email,
             redirectURL: callbackUrl,
             partnerOrderId: orderId,
-            partnerCustomerId: portkeyId,
           },
         },
         { encode: true },

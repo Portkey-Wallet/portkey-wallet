@@ -6,7 +6,7 @@ import CustomSvg from 'components/CustomSvg';
 import { useLocation, useNavigate } from 'react-router';
 import { InitProviderSelected, MAX_UPDATE_TIME } from '../const';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
-import { useCommonState, useGuardiansInfo, useLoading, useWalletInfo } from 'store/Provider/hooks';
+import { useCommonState, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import { DISCLAIMER_TEXT, SERVICE_UNAVAILABLE_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
 import clsx from 'clsx';
@@ -33,7 +33,6 @@ export default function Preview() {
   const { setLoading } = useLoading();
   const wallet = useCurrentWalletInfo();
   const { refreshRampShow } = useRampEntryShow();
-  const { userInfo } = useWalletInfo();
 
   const [providerList, setProviderList] = useState<Array<IGetBuyDetail | IGetSellDetail>>([]);
   const [providerSelected, setProviderSelected] = useState<IGetBuyDetail | IGetSellDetail>(InitProviderSelected);
@@ -145,7 +144,6 @@ export default function Preview() {
         fiat: fiat,
         amount: amount,
         withdrawUrl: ACH_WITHDRAW_URL,
-        portkeyId: userInfo?.userId,
       });
 
       console.log('go to pay url: ', url);
@@ -168,7 +166,6 @@ export default function Preview() {
     refreshRampShow,
     setLoading,
     userGuardiansList,
-    userInfo?.userId,
     wallet?.AELF?.caAddress,
   ]);
 

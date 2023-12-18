@@ -333,27 +333,19 @@ export const useCheckLimit = (targetChainId: ChainId) => {
           balance = result.result.balance;
         }
 
-        if (limitRes?.isSingleLimited) {
-          if (
-            ZERO.plus(amount)
-              .plus(MAX_TRANSACTION_FEE)
-              .gte(ZERO.plus(divDecimals(balance, decimals)))
-          ) {
-            transferLimitModal(settingParams, LimitType.Single);
-          } else {
-            transferLimitApprovalModal(settingParams, LimitType.Single, onOneTimeApproval);
-          }
-        }
-        if (limitRes?.isDailyLimited) {
-          if (
-            ZERO.plus(amount)
-              .plus(MAX_TRANSACTION_FEE)
-              .gte(ZERO.plus(divDecimals(balance, decimals)))
-          ) {
-            transferLimitModal(settingParams, LimitType.Daily);
-          } else {
-            transferLimitApprovalModal(settingParams, LimitType.Daily, onOneTimeApproval);
-          }
+        // check limit type and show modal
+        if (
+          ZERO.plus(amount)
+            .plus(MAX_TRANSACTION_FEE)
+            .gte(ZERO.plus(divDecimals(balance, decimals)))
+        ) {
+          transferLimitModal(settingParams, limitRes?.isSingleLimited ? LimitType.Single : LimitType.Daily);
+        } else {
+          transferLimitApprovalModal(
+            settingParams,
+            limitRes?.isSingleLimited ? LimitType.Single : LimitType.Daily,
+            onOneTimeApproval,
+          );
         }
         return false;
       }

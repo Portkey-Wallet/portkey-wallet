@@ -318,15 +318,6 @@ export default function Send() {
       const balance = result.result.balance;
       if (!balance) return TransactionError.TOKEN_NOT_ENOUGH;
 
-      const _isManagerSynced = await checkManagerSyncState(chainId);
-      if (!_isManagerSynced) {
-        return 'Synchronizing on-chain account information...';
-      }
-
-      // wallet security check
-      const securityRes = await checkSecurity(tokenInfo.chainId);
-      if (!securityRes) return WalletIsNotSecure;
-
       if (type === 'token') {
         // insufficient balance check
         if (timesDecimals(amount, tokenInfo.decimals).isGreaterThan(balance)) {
@@ -344,6 +335,15 @@ export default function Send() {
       } else {
         return 'input error';
       }
+
+      const _isManagerSynced = await checkManagerSyncState(chainId);
+      if (!_isManagerSynced) {
+        return 'Synchronizing on-chain account information...';
+      }
+
+      // wallet security check
+      const securityRes = await checkSecurity(tokenInfo.chainId);
+      if (!securityRes) return WalletIsNotSecure;
 
       // transfer limit check
       const limitRes = await checkLimit({

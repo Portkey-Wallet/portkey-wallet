@@ -77,7 +77,6 @@ export default function Buy() {
   const checkSecurity = useCheckSecurity();
   const checkLimit = useCheckLimit('AELF');
   const [openGuardiansApprove, setOpenGuardiansApprove] = useState<boolean>(false);
-  const oneTimeApprovalList = useRef<GuardianItem[]>([]);
   const handleOneTimeApproval = useCallback(() => {
     setOpenGuardiansApprove(true);
     console.log('🌈 🌈 🌈 🌈 🌈 🌈 handleOneTimeApproval', '');
@@ -102,7 +101,6 @@ export default function Buy() {
   const getApproveRes = useCallback(
     async (approveList: GuardianItem[]) => {
       try {
-        oneTimeApprovalList.current = approveList;
         if (Array.isArray(approveList) && approveList.length > 0) {
           console.log('🌈 🌈 🌈 🌈 🌈 🌈 approveList', approveList);
           setOpenGuardiansApprove(false);

@@ -17,6 +17,7 @@ import * as Application from 'expo-application';
 import { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { PROTOCOL_ALLOW_LIST } from 'constants/web';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import PTBridgeScript from 'utils/ptBridgeScript';
 
 export interface IWebView {
   goBack: WebView['goBack'];
@@ -47,7 +48,8 @@ const ProviderWebview = forwardRef<
   useEffectOnce(() => {
     const getEntryScriptWeb3 = async () => {
       const script = await EntryScriptWeb3.get();
-      setEntryScriptWeb3(script);
+      const ptBridgeScript = await PTBridgeScript.get();
+      setEntryScriptWeb3(`${script};${ptBridgeScript}`);
       if (!isIOS) webViewRef.current?.injectJavaScript(script);
     };
 

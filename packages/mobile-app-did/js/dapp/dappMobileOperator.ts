@@ -33,6 +33,7 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { getGuardiansApprovedByApprove } from 'utils/guardian';
 import { ChainId } from '@portkey-wallet/types';
 import { checkSecuritySafe } from 'utils/security';
+import { portkeyBridge } from './mobileBridge';
 
 const SEND_METHOD: { [key: string]: true } = {
   [MethodsBase.SEND_TRANSACTION]: true,
@@ -463,9 +464,24 @@ export default class DappMobileOperator extends Operator {
   };
 
   handleRequest = async (request: IRequestParams): Promise<IResponseType> => {
-    if (SEND_METHOD[request.method]) return this.handleSendRequest(request);
-    if (this.isLockDapp) return this.userDenied(request.eventName);
-    return this.handleViewRequest(request);
+    try {
+      if (SEND_METHOD[request.method]) return await this.handleSendRequest(request);
+      const bridgeMethod = (portkeyBridge as any)[request.method];
+      if (bridgeMethod) {
+        return generateNormalResponse({
+          eventName: request.eventName,
+          data: await bridgeMethod(),
+        });
+      }
+      if (this.isLockDapp) return await this.userDenied(request.eventName);
+      return await this.handleViewRequest(request);
+    } catch (error: any) {
+      return generateErrorResponse({
+        eventName: request.eventName,
+        code: ResponseCode.INTERNAL_ERROR,
+        msg: error?.message,
+      });
+    }
   };
 
   protected userDenied(eventName: string) {

@@ -24,8 +24,12 @@ import {
   setPinList,
   nextPinList,
   setLastPinMessage,
+  updateChannelMessageRedPackageAttribute,
+  updateChannelRedPackageAttribute,
+  setRedPackageConfig,
 } from './actions';
 import { formatChannelList } from './util';
+import { MessageTypeEnum, ParsedRedPackage } from '@portkey-wallet/im';
 
 const initialState: IMStateType = {
   channelListNetMap: {},
@@ -34,6 +38,7 @@ const initialState: IMStateType = {
   relationIdNetMap: {},
   relationTokenNetMap: {},
   groupInfoMapNetMap: {},
+  redPackageConfigMap: {},
   pinListNetMap: {},
   lastPinNetMap: {},
 };
@@ -89,6 +94,32 @@ export const imSlice = createSlice({
                 ...item,
                 ...value,
                 ...plusAttribute,
+              };
+            }
+            return item;
+          }),
+        };
+
+        state.channelListNetMap[network] = formatChannelList(channelList);
+        return state;
+      })
+      .addCase(updateChannelRedPackageAttribute, (state, action): any => {
+        const { network, channelId, id, value } = action.payload;
+
+        const preChannelList = state.channelListNetMap[network];
+        if (!preChannelList) return state;
+
+        const channelList = {
+          ...preChannelList,
+          list: preChannelList.list.map(item => {
+            if (
+              item.channelUuid === channelId &&
+              item.lastMessageType === MessageTypeEnum.REDPACKAGE_CARD &&
+              (item.lastMessageContent as ParsedRedPackage)?.data?.id === id
+            ) {
+              return {
+                ...item,
+                redPackage: value,
               };
             }
             return item;
@@ -212,6 +243,32 @@ export const imSlice = createSlice({
                     return {
                       ...item,
                       ...value,
+                    };
+                  }
+                  return item;
+                }) || []),
+              ],
+            },
+          },
+        };
+      })
+      .addCase(updateChannelMessageRedPackageAttribute, (state, action) => {
+        const { network, channelId, id, value } = action.payload;
+        return {
+          ...state,
+          channelMessageListNetMap: {
+            ...state.channelMessageListNetMap,
+            [network]: {
+              ...state.channelMessageListNetMap?.[network],
+              [channelId]: [
+                ...(state.channelMessageListNetMap?.[network]?.[channelId]?.map(item => {
+                  if (
+                    item.type === MessageTypeEnum.REDPACKAGE_CARD &&
+                    (item.parsedContent as ParsedRedPackage)?.data.id === id
+                  ) {
+                    return {
+                      ...item,
+                      redPackage: value,
                     };
                   }
                   return item;
@@ -345,6 +402,18 @@ export const imSlice = createSlice({
           },
         };
       })
+
+      .addCase(setRedPackageConfig, (state, action) => {
+        const { network, value } = action.payload;
+        return {
+          ...state,
+          redPackageConfigMap: {
+            ...state.redPackageConfigMap,
+            [network]: value,
+          },
+        };
+      })
+
       .addCase(setPinList, (state, action) => {
         const { network, channelId, list, fetchTime } = action.payload;
         const preListObj = state.pinListNetMap?.[network]?.[channelId];
@@ -415,6 +484,7 @@ export const imSlice = createSlice({
           },
         };
       })
+
       .addCase(resetIm, (state, action) => {
         return {
           ...state,

@@ -48,6 +48,9 @@ export default function ExitWalletModal({ open, onCancel }: ExitWalletModalProps
             extraData: `${DEVICE_TYPE},${Date.now()}`,
           },
         },
+        sendOptions: {
+          onMethod: 'transactionHash',
+        },
       });
       console.log('removeManager', 'removeManager==result', result);
       logout();

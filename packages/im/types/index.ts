@@ -1,5 +1,17 @@
-export type MessageType = 'TEXT' | 'IMAGE' | 'SYS' | 'PIN-SYS';
-export type ParsedContent = string | ParsedImage | undefined;
+export type MessageType = 'TEXT' | 'IMAGE' | 'SYS' | 'REDPACKAGE-CARD' | 'TRANSFER-CARD' | 'PIN-SYS';
+export type ParsedContent = string | ParsedImage | ParsedRedPackage | ParsedTransfer | undefined;
+import { RedPackageStatusInfo } from './redPackage';
+
+export type ChainId = 'AELF' | 'tDVV' | 'tDVW';
+
+export enum MessageTypeEnum {
+  TEXT = 'TEXT',
+  IMAGE = 'IMAGE',
+  SYS = 'SYS',
+  REDPACKAGE_CARD = 'REDPACKAGE-CARD',
+  TRANSFER_CARD = 'TRANSFER-CARD',
+}
+
 export type ParsedImage = {
   type: string;
   action: string;
@@ -9,6 +21,27 @@ export type ParsedImage = {
   thumbS3Key?: string;
   width?: string;
   height?: string;
+};
+export type ParsedRedPackage = {
+  image: string;
+  link: string;
+  data: {
+    id: string;
+    senderId: string;
+    memo: string;
+  };
+};
+
+export type ParsedTransfer = {
+  image: string;
+  link: string;
+  data: {
+    id: string;
+    senderId: string;
+    memo: string;
+    transactionId: string;
+    blockHash: string;
+  };
 };
 
 export type PinInfoType = {
@@ -32,6 +65,7 @@ export type Message = {
   parsedContent?: ParsedContent;
   unidentified?: boolean | undefined;
 
+  redPackage?: RedPackageStatusInfo;
   pinInfo?: PinInfoType;
 };
 
@@ -80,12 +114,13 @@ export type ChannelItem = {
   unreadMessageCount: number;
   mentionsCount: number;
   lastMessageType: MessageType | null;
-  lastMessageContent: string | null;
+  lastMessageContent: ParsedContent | null;
   lastPostAt: string | null;
   mute: boolean;
   pin: boolean;
   pinAt: string;
   toRelationId?: string;
+  redPackage?: RedPackageStatusInfo;
 };
 
 export enum IMStatusEnum {
@@ -113,3 +148,23 @@ export type GroupMemberItemType = {
   avatar: string;
   isAdmin: boolean;
 };
+
+export type RedPackageTokenInfo = {
+  chainId: ChainId;
+  symbol: string;
+  decimal: string | number;
+  minAmount: string;
+};
+export type RedPackageContractAddressInfo = {
+  chainId: ChainId;
+  contractAddress: string;
+};
+
+export type RedPackageConfigType = {
+  tokenInfo: RedPackageTokenInfo[];
+  redPackageContractAddress: RedPackageContractAddressInfo[];
+};
+
+export * from './service';
+export * from './redPackage';
+export * from './transfer';

@@ -7,7 +7,6 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 
 export default function TokenList({ tokenList }: { tokenList: TokenItemShowType[] }) {
@@ -15,7 +14,6 @@ export default function TokenList({ tokenList }: { tokenList: TokenItemShowType[
   const navigate = useNavigate();
   const isTestNet = useIsTestnet();
   const amountInUsdShow = useAmountInUsdShow();
-  const symbolImages = useSymbolImages();
   const onNavigate = useCallback(
     (tokenInfo: TokenItemShowType) => {
       navigate('/token-detail', { state: tokenInfo });
@@ -33,7 +31,7 @@ export default function TokenList({ tokenList }: { tokenList: TokenItemShowType[
       <ul className="token-list">
         {tokenList.map((item) => (
           <li className="token-list-item" key={`${item.chainId}_${item.symbol}`} onClick={() => onNavigate(item)}>
-            <TokenImageDisplay className="custom-logo" symbol={item.symbol} src={symbolImages[item.symbol]} />
+            <TokenImageDisplay className="custom-logo" symbol={item.symbol} src={item.imageUrl} />
             <div className="desc">
               <div className="info">
                 <span>{item.symbol}</span>

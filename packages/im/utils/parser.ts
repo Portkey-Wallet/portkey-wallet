@@ -28,6 +28,9 @@ export const messageContentParser = (type: MessageType | null, content: string):
       return content;
     case 'IMAGE':
       return imageMessageParser(content);
+    case 'REDPACKAGE-CARD':
+    case 'TRANSFER-CARD':
+      return JSON.parse(content);
     default:
       return undefined;
   }

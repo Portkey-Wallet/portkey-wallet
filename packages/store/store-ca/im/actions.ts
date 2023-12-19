@@ -1,6 +1,13 @@
 import { createAction } from '@reduxjs/toolkit';
 import { ChannelList, UpdateChannelAttributeTypeEnum } from './type';
-import { ChannelInfo, ChannelItem, ChannelMemberInfo, Message } from '@portkey-wallet/im';
+import {
+  ChannelInfo,
+  ChannelItem,
+  ChannelMemberInfo,
+  Message,
+  RedPackageConfigType,
+  RedPackageStatusInfo,
+} from '@portkey-wallet/im';
 import { NetworkType } from '@portkey-wallet/types';
 
 export const setChannelList = createAction<{
@@ -24,6 +31,13 @@ export const updateChannelAttribute = createAction<{
   value: Partial<ChannelItem>;
   type?: UpdateChannelAttributeTypeEnum;
 }>('im/updateChannelAttribute');
+
+export const updateChannelRedPackageAttribute = createAction<{
+  network: NetworkType;
+  channelId: string;
+  id: string;
+  value: RedPackageStatusInfo;
+}>('im/updateChannelRedPackageAttribute');
 
 export const addChannel = createAction<{
   network: NetworkType;
@@ -65,6 +79,13 @@ export const updateChannelMessageAttribute = createAction<{
   sendUuid: string;
   value: Partial<Message>;
 }>('im/updateChannelMessageAttribute');
+
+export const updateChannelMessageRedPackageAttribute = createAction<{
+  network: NetworkType;
+  channelId: string;
+  id: string;
+  value: RedPackageStatusInfo;
+}>('im/updateChannelMessageRedPackageAttribute');
 
 export const setRelationId = createAction<{
   network: NetworkType;
@@ -125,5 +146,9 @@ export const setLastPinMessage = createAction<{
   message: Message | undefined;
   fetchTime: number;
 }>('im/setLastPinMessage');
+export const setRedPackageConfig = createAction<{
+  network: NetworkType;
+  value: RedPackageConfigType;
+}>('im/setRedPackageConfig');
 
 export const resetIm = createAction<NetworkType>('im/resetIm');

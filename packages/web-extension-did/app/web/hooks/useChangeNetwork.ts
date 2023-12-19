@@ -1,5 +1,5 @@
 import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useOtherNetworkLogged } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { changeNetworkType, setWalletNameAction } from '@portkey-wallet/store/store-ca/wallet/actions';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
@@ -8,34 +8,28 @@ import { useNavigate } from 'react-router';
 import { useAppDispatch, useCommonState } from 'store/Provider/hooks';
 import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import { sleep } from '@portkey-wallet/utils';
-import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import OpenNewTabController from 'controllers/openNewTabController';
 import im from '@portkey-wallet/im';
+import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 
 export function useChangeNetwork() {
   const dispatch = useAppDispatch();
-  const wallet = useWallet();
   const navigate = useNavigate();
   const { isPrompt } = useCommonState();
   const resetStore = useResetStore();
+  const otherNetworkLogged = useOtherNetworkLogged();
 
   return useCallback(
     async (network: NetworkItem) => {
-      const { walletInfo, originChainId } = wallet || {};
-      const { caInfo } = walletInfo || {};
-      const tmpCaInfo = caInfo?.[network.networkType];
-      const tmpChainId = tmpCaInfo?.originChainId || originChainId || DefaultChainId;
-
       resetStore();
       im.destroy();
+      signalrFCM.switchNetwork();
       dispatch(setWalletNameAction(''));
       dispatch(changeNetworkType(network.networkType));
-      if (tmpCaInfo?.managerInfo && tmpCaInfo?.[tmpChainId]?.caAddress) {
+      if (otherNetworkLogged) {
         if (!isPrompt) {
-          await OpenNewTabController.closeOpenTabs();
-
           await sleep(500);
-          InternalMessage.payload(PortkeyMessageTypes.EXPAND_FULL_SCREEN).send();
+          await InternalMessage.payload(PortkeyMessageTypes.EXPAND_FULL_SCREEN).send();
         } else {
           await OpenNewTabController.closeOpenTabs(true);
 
@@ -51,6 +45,6 @@ export function useChangeNetwork() {
         }
       }
     },
-    [wallet, resetStore, dispatch, isPrompt, navigate],
+    [resetStore, dispatch, otherNetworkLogged, isPrompt, navigate],
   );
 }

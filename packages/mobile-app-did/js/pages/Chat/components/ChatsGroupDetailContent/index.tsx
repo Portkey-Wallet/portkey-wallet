@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   AvatarProps,
   BubbleProps,
@@ -13,7 +13,7 @@ import {
 } from 'react-native-gifted-chat';
 import { AccessoryBar, BottomBarContainer } from '../InputToolbar';
 import { randomId } from '@portkey-wallet/utils';
-import { ActivityIndicator, FlatList, Keyboard, StyleSheet } from 'react-native';
+import { ActivityIndicator, FlatList, Keyboard, StyleSheet, View } from 'react-native';
 import { useChatsDispatch, useCurrentChannelId } from '../../context/hooks';
 import CustomBubble from '../CustomBubble';
 import { setBottomBarStatus, setChatText, setShowSoftInputOnFocus } from '../../context/chatsContext';
@@ -39,6 +39,7 @@ import CustomChatAvatar from '../CustomChatAvatar';
 import SystemInfo from '../SystemInfo';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
+import CustomView from '../CustomView';
 
 const ListViewProps = {
   // windowSize: 50,
@@ -55,7 +56,7 @@ export default function ChatsGroupDetailContent() {
   const dispatch = useChatsDispatch();
   const messageContainerRef = useRef<FlatList>();
 
-  const { list, init, hasNext, next } = useGroupChannel(currentChannelId || '');
+  const { list, init, hasNext, next, loading } = useGroupChannel(currentChannelId || '');
   const [initializing, setInitializing] = useState(true);
   const formattedList = useMemo(() => formatMessageList(list), [list]);
   const { relationId } = useRelationId();
@@ -69,14 +70,18 @@ export default function ChatsGroupDetailContent() {
       console.log('error', error);
     }
   }, [hasNext, initializing, next]);
-
-  useEffectOnce(() => {
-    initChatInputRecorder();
+  useEffect(() => {
+    if (!initializing && !loading) return;
     const timer = setTimeout(() => {
       setInitializing(false);
-    }, 200);
+    }, 1000);
     return () => {
       clearTimeout(timer);
+    };
+  }, [initializing, loading]);
+  useEffectOnce(() => {
+    initChatInputRecorder();
+    return () => {
       dispatch(setChatText(''));
       dispatch(setBottomBarStatus(undefined));
       dispatch(setShowSoftInputOnFocus(true));
@@ -96,7 +101,8 @@ export default function ChatsGroupDetailContent() {
   }, [dispatch]);
 
   const renderMessageText: GiftedChatProps['renderMessageText'] = useCallback(
-    (props: MessageTextProps<ChatMessage>) => <MessageText {...props} />,
+    (props: MessageTextProps<ChatMessage>) =>
+      props.currentMessage?.messageType === 'REDPACKAGE-CARD' ? null : <MessageText {...props} />,
     [],
   );
 
@@ -135,6 +141,13 @@ export default function ChatsGroupDetailContent() {
     [onDismiss],
   );
 
+  const renderCustomView = useCallback(
+    (props: MessageProps<ChatMessage>) => {
+      return <CustomView onDismiss={onDismiss} {...props} />;
+    },
+    [onDismiss],
+  );
+
   const renderSystemMessage: GiftedChatProps['renderSystemMessage'] = useCallback(
     (props: SystemMessageProps<ChatMessage>) => {
       return <SystemInfo {...props} />;
@@ -164,40 +177,42 @@ export default function ChatsGroupDetailContent() {
   return (
     <>
       <Touchable disabled={disabledTouchable} activeOpacity={1} onPress={onDismiss} style={GStyles.flex1}>
-        {initializing ? (
-          <ActivityIndicator size={'small'} color={FontStyles.font4.color} />
-        ) : (
-          <GiftedChat
-            alignTop
-            user={user}
-            messageContainerRef={messageContainerRef as any}
-            messageIdGenerator={randomId}
-            alwaysShowSend
-            scrollToBottom
-            renderUsername={Empty}
-            renderTime={Empty}
-            isCustomViewBottom
-            renderAvatarOnTop
-            renderAvatar={renderAvatar as GiftedChatProps['renderAvatar']}
-            showUserAvatar={false}
-            messages={formattedList}
-            minInputToolbarHeight={0}
-            renderUsernameOnMessage={true}
-            renderInputToolbar={Empty}
-            renderDay={renderDay}
-            renderSystemMessage={renderSystemMessage}
-            renderBubble={renderBubble}
-            renderMessage={renderMessage}
-            listViewProps={listViewProps}
-            showAvatarForEveryMessage={true}
-            isKeyboardInternallyHandled={false}
-            scrollToBottomComponent={renderScrollToBottomComponent}
-            messagesContainerStyle={styles.messagesContainerStyle}
-            renderMessageText={renderMessageText}
-            renderMessageImage={renderMessageImage}
-            onLoadEarlier={onLoadEarlier}
-          />
+        {!!initializing && (
+          <View style={styles.loadingBox}>
+            <ActivityIndicator size={'small'} color={FontStyles.font4.color} />
+          </View>
         )}
+        <GiftedChat
+          alignTop
+          user={user}
+          messageContainerRef={messageContainerRef as any}
+          messageIdGenerator={randomId}
+          alwaysShowSend
+          scrollToBottom
+          renderUsername={Empty}
+          renderTime={Empty}
+          isCustomViewBottom
+          renderAvatarOnTop
+          renderAvatar={renderAvatar as GiftedChatProps['renderAvatar']}
+          showUserAvatar={false}
+          messages={formattedList}
+          minInputToolbarHeight={0}
+          renderUsernameOnMessage={true}
+          renderInputToolbar={Empty}
+          renderDay={renderDay}
+          renderSystemMessage={renderSystemMessage}
+          renderBubble={renderBubble}
+          renderMessage={renderMessage}
+          listViewProps={listViewProps}
+          showAvatarForEveryMessage={true}
+          isKeyboardInternallyHandled={false}
+          scrollToBottomComponent={renderScrollToBottomComponent}
+          messagesContainerStyle={styles.messagesContainerStyle}
+          renderMessageText={renderMessageText}
+          renderMessageImage={renderMessageImage}
+          onLoadEarlier={onLoadEarlier}
+          renderCustomView={renderCustomView}
+        />
       </Touchable>
       {bottomBar}
     </>
@@ -212,4 +227,5 @@ const styles = StyleSheet.create({
   contentStyle: {
     paddingTop: pTd(24),
   },
+  loadingBox: { position: 'absolute', top: 5, alignSelf: 'center' },
 });

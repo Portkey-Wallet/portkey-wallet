@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
-import { setCurrentChannel } from 'pages/Chat/context/chatsContext';
+import { setCurrentChannel, setReplyMessageInfo } from 'pages/Chat/context/chatsContext';
 import { useChatsDispatch } from 'pages/Chat/context/hooks';
 import navigationService from 'utils/navigationService';
 import CommonToast from 'components/CommonToast';
@@ -37,6 +37,7 @@ export function useJumpToChatDetails() {
             }),
           );
         }
+        chatDispatch(setReplyMessageInfo());
 
         const routesArr = navigationService.getState()?.routes;
 
@@ -88,6 +89,7 @@ export function useJumpToChatGroupDetails() {
           navigationService.reset([{ name: 'Tab' }, { name: 'ChatGroupDetailsPage' }]);
         }
 
+        chatDispatch(setReplyMessageInfo());
         await sleep(1000);
         myEvents.navToBottomTab.emit({ tabName: ChatTabName });
       } catch (error) {

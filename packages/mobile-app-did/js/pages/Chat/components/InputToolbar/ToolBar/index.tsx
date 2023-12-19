@@ -129,15 +129,22 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
           navigationService.navigate(currentIsGroupChat ? 'SendPacketGroupPage' : 'SendPacketP2PPage');
         },
       },
+      {
+        label: 'Transfer',
+        icon: 'chat-transfer',
+        onPress: () => {
+          navigationService.navigate('SelectGroupMembersToTransferPage');
+        },
+      },
     ];
   }, [currentIsGroupChat, requestQrPermission, selectPhoto, sendChannelMessage, showDialog]);
 
   return (
     <View style={[GStyles.flex1, GStyles.flexRowWrap, styles.wrap, style]}>
-      {toolList.map((ele, idx) => (
+      {toolList.map((ele, index) => (
         <Touchable
           key={ele.label}
-          style={[GStyles.center, styles.toolsItem, idx % 4 === 3 && styles.marginRight0]}
+          style={[GStyles.center, styles.toolsItem, index % 4 === 3 && styles.marginRight0]}
           onPress={ele.onPress}>
           <View style={[GStyles.center, styles.toolsItemIconWrap]}>
             <Svg icon={ele.icon} size={pTd(24)} color={defaultColors.font5} />
@@ -154,12 +161,10 @@ const styles = StyleSheet.create({
     padding: pTd(16),
   },
   toolsItem: {
-    width: pTd(77),
+    width: pTd(77.8),
     height: pTd(76),
     marginRight: pTd(10),
-  },
-  marginRight0: {
-    marginRight: 0,
+    marginBottom: pTd(12),
   },
   toolsItemIconWrap: {
     backgroundColor: defaultColors.bg1,
@@ -167,5 +172,8 @@ const styles = StyleSheet.create({
     width: pTd(52),
     height: pTd(52),
     borderRadius: pTd(6),
+  },
+  marginRight0: {
+    marginRight: 0,
   },
 });

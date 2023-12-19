@@ -33,7 +33,7 @@ export default function useInitData() {
   const getCurrentCAViewContract = useGetCurrentCAViewContract();
   const wallet = useCurrentWalletInfo();
   const getVerifierServers = useGetVerifierServers();
-  const { netWorkType } = useCurrentNetwork();
+  const { networkType } = useCurrentNetwork();
 
   const getGuardiansInfoWriteStore = useGetGuardiansInfoWriteStore();
   const isMainNetwork = useIsMainnet();
@@ -111,6 +111,6 @@ export default function useInitData() {
 
   useEffect(() => {
     // report user`s current environment of network
-    reportUserCurrentNetwork(netWorkType);
-  }, [netWorkType]);
+    reportUserCurrentNetwork(networkType);
+  }, [networkType]);
 }

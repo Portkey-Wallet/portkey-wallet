@@ -33,7 +33,7 @@ export const BackEndNetWorkMap: {
   'back-end-test2': {
     name: 'aelf Mainnet',
     walletType: 'aelf',
-    networkType: 'MAIN',
+    networkType: 'MAINNET',
     isActive: true,
     apiUrl: 'https://localtest-applesign2.portkey.finance',
     graphqlUrl: 'http://192.168.67.51:8083/AElfIndexer_DApp/PortKeyIndexerCASchema/graphql',
@@ -70,7 +70,7 @@ export const BackEndNetWorkMap: {
   'back-end-test2-ip': {
     name: 'aelf Mainnet',
     walletType: 'aelf',
-    networkType: 'MAIN',
+    networkType: 'MAINNET',
     isActive: true,
     apiUrl: 'http://192.168.67.51:5577',
     graphqlUrl: 'http://192.168.67.51:8083/AElfIndexer_DApp/PortKeyIndexerCASchema/graphql',
@@ -90,7 +90,7 @@ export const BackEndNetWorkMap: {
   'back-end-test3': {
     name: 'aelf Mainnet',
     walletType: 'aelf',
-    networkType: 'MAIN',
+    networkType: 'MAINNET',
     isActive: true,
     apiUrl: 'http://192.168.66.203:5001',
     graphqlUrl: 'http://192.168.66.203:8083/AElfIndexer_DApp/PortKeyIndexerCASchema/graphql',
@@ -110,7 +110,7 @@ export const BackEndNetWorkMap: {
   'back-end-test4': {
     name: 'aelf Mainnet',
     walletType: 'aelf',
-    networkType: 'MAIN',
+    networkType: 'MAINNET',
     isActive: true,
     apiUrl: 'http://192.168.67.179:5001',
     graphqlUrl: 'http://192.168.67.67:8083/AElfIndexer_DApp/PortKeyIndexerCASchema/graphql',
@@ -146,7 +146,7 @@ export const BackEndNetWorkMap: {
   'back-end-mainnet': {
     name: 'aelf Mainnet',
     walletType: 'aelf',
-    networkType: 'MAIN',
+    networkType: 'MAINNET',
     isActive: true,
     apiUrl: 'https://did-portkey.portkey.finance',
     graphqlUrl: 'https://dapp-portkey.portkey.finance/Portkey_DID/PortKeyIndexerCASchema/graphql',

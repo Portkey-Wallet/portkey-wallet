@@ -5,7 +5,7 @@ export const NetworkList: NetworkItem[] = [
   {
     name: 'aelf Mainnet',
     walletType: 'aelf',
-    networkType: 'MAIN',
+    networkType: 'MAINNET',
     apiUrl: '',
     graphqlUrl: '',
     connectUrl: '',

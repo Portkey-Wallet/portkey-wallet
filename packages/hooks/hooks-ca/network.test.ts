@@ -18,8 +18,8 @@ describe('useCurrentNetworkInfo', () => {
     const { result } = renderHook(() => useCurrentNetworkInfo());
     expect(result.current).toEqual(NetworkList[1]);
   });
-  it('currentNetwork is MAIN, and return successfully', () => {
-    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('MAIN'));
+  it('currentNetwork is MAINNET, and return successfully', () => {
+    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('MAINNET'));
     const { result } = renderHook(() => useCurrentNetworkInfo());
     expect(result.current).toEqual(NetworkList[0]);
   });
@@ -76,8 +76,8 @@ describe('useIsTestnet', () => {
     const { result } = renderHook(() => useIsTestnet());
     expect(result.current).toEqual(true);
   });
-  it('currentNetwork is MAIN, and return false', () => {
-    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('MAIN'));
+  it('currentNetwork is MAINNET, and return false', () => {
+    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('MAINNET'));
     const { result } = renderHook(() => useIsTestnet());
     expect(result.current).toEqual(false);
   });
@@ -89,8 +89,8 @@ describe('useIsMainnet', () => {
     const { result } = renderHook(() => useIsMainnet());
     expect(result.current).toEqual(false);
   });
-  it('currentNetwork is MAIN, and return true', () => {
-    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('MAIN'));
+  it('currentNetwork is MAINNET, and return true', () => {
+    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('MAINNET'));
     const { result } = renderHook(() => useIsMainnet());
     expect(result.current).toEqual(true);
   });

@@ -55,7 +55,7 @@ export default function Receive() {
     () => ({
       type: 'send',
       sendType: 'token',
-      netWorkType: currentNetwork,
+      networkType: currentNetwork,
       chainType: 'aelf',
       toInfo: {
         address: caAddress,

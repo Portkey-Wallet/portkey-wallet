@@ -175,7 +175,7 @@ export const formatChainInfoToShow = (
 ): string => {
   if (chainType !== 'aelf') return chainType;
   if (typeof networkType === 'string')
-    return `${chainId === 'AELF' ? 'MainChain' : 'SideChain'} ${chainId} ${networkType === 'MAIN' ? '' : 'Testnet'}`;
+    return `${chainId === 'AELF' ? 'MainChain' : 'SideChain'} ${chainId} ${networkType === 'MAINNET' ? '' : 'Testnet'}`;
 
   return `${chainId === 'AELF' ? 'MainChain' : 'SideChain'} ${chainId}`;
 };
@@ -217,7 +217,7 @@ export const formatAddress2NoPrefix = (address: string): string => {
  * @param network
  * @returns
  */
-export const isMainNet = (network: NetworkType): boolean => network === 'MAIN';
+export const isMainNet = (network: NetworkType): boolean => network === 'MAINNET';
 
 export const getAddressChainId = (toAddress: string, defaultChainId: ChainId) => {
   if (!toAddress.includes('_')) return defaultChainId;

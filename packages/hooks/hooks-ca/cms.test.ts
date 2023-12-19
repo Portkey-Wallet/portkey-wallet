@@ -162,7 +162,7 @@ describe('useDiscoverGroupList', () => {
 //     jest.spyOn(networkHook, 'useCurrentNetworkInfo').mockReturnValue(MainnetNetworkInfo);
 
 //     const buyButtonNetMap = {
-//       MAIN: {
+//       MAINNET: {
 //         isBuySectionShow: false,
 //         isSellSectionShow: false,
 //       },
@@ -249,7 +249,7 @@ describe('useDiscoverGroupList', () => {
 //     jest.spyOn(networkHook, 'useCurrentNetworkInfo').mockReturnValue(MainnetNetworkInfo);
 
 //     const buyButtonNetMap = {
-//       MAIN: {
+//       MAINNET: {
 //         isBuySectionShow: false,
 //         isSellSectionShow: false,
 //       },

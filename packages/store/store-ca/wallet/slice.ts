@@ -24,7 +24,7 @@ const initialState: WalletState = {
   walletType: 'aelf',
   walletName: '',
   userId: '',
-  currentNetwork: 'MAIN',
+  currentNetwork: 'MAINNET',
   chainList: [],
   userInfo: { avatar: '', nickName: '', userId: '' },
 };

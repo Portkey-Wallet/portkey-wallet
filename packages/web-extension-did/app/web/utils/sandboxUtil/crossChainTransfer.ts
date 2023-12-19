@@ -11,13 +11,24 @@ import { the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/act
 import { getTxFee } from 'store/utils/getStore';
 import { DEFAULT_TOKEN } from '@portkey-wallet/constants/constants-ca/wallet';
 import { getTokenInfo } from './getTokenInfo';
+import { GuardianItem } from 'types/guardians';
 
 export type CrossChainTransferIntervalParams = Omit<CrossChainTransferParams, 'caHash' | 'fee'> & {
   issueChainId: number;
 };
 
 export const intervalCrossChainTransfer = async (params: CrossChainTransferIntervalParams, count = 0) => {
-  const { chainInfo, chainType, privateKey, issueChainId, amount, tokenInfo, memo = '', toAddress } = params;
+  const {
+    chainInfo,
+    chainType,
+    privateKey,
+    issueChainId,
+    amount,
+    tokenInfo,
+    memo = '',
+    toAddress,
+    guardiansApproved,
+  } = params;
   const toChainId = getChainIdByAddress(toAddress, chainType);
   let _issueChainId = issueChainId;
   if (!_issueChainId) {
@@ -46,6 +57,7 @@ export const intervalCrossChainTransfer = async (params: CrossChainTransferInter
         to: toAddress,
         amount,
         memo,
+        guardiansApproved,
       },
     });
     console.log(result, 'crossChainTransferToCa');
@@ -68,6 +80,7 @@ interface CrossChainTransferParams {
   toAddress: string;
   memo?: string;
   fee: number | string;
+  guardiansApproved?: GuardianItem[];
 }
 const crossChainTransfer = async ({
   chainInfo,
@@ -79,6 +92,7 @@ const crossChainTransfer = async ({
   tokenInfo,
   memo = '',
   toAddress,
+  guardiansApproved,
 }: CrossChainTransferParams) => {
   let managerTransferResult;
   const issueChainId = await getTokenInfo({
@@ -126,6 +140,7 @@ const crossChainTransfer = async ({
         to: managerAddress,
         amount: amount,
         memo,
+        guardiansApproved,
       },
     });
   } catch (error) {
@@ -156,6 +171,7 @@ const crossChainTransfer = async ({
     memo,
     toAddress,
     issueChainId,
+    guardiansApproved,
   };
   try {
     await intervalCrossChainTransfer(crossChainTransferParams);

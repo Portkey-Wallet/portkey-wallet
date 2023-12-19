@@ -16,6 +16,8 @@ import getTransactionRaw from 'utils/sandboxUtil/getTransactionRaw';
 import AElf from 'aelf-sdk';
 import { getWallet } from '@portkey-wallet/utils/aelf';
 import SparkMD5 from 'spark-md5';
+import { chromeStorage } from 'store/utils';
+import { PORTKEY_OFF_RAMP_GUARDIANS_APPROVE_LIST } from 'constants/index';
 
 export const useHandleAchSell = () => {
   const { setLoading } = useLoading();
@@ -42,7 +44,7 @@ export const useHandleAchSell = () => {
       if (!aelfToken) throw new Error('Sell Transfer: No Token');
       const manager = getWallet(privateKey);
       if (!manager?.keyPair) throw new Error('Sell Transfer: No keyPair');
-
+      const guardiansApprovedStr = await chromeStorage.getItem(PORTKEY_OFF_RAMP_GUARDIANS_APPROVE_LIST);
       const rawResult = await getTransactionRaw({
         contractAddress: chainInfo.caContractAddress,
         rpcUrl: chainInfo?.endPoint || '',
@@ -58,6 +60,7 @@ export const useHandleAchSell = () => {
             to: `ELF_${params.address}_AELF`,
             amount: timesDecimals(params.cryptoAmount, aelfToken.decimals).toNumber(),
           },
+          guardiansApproved: JSON.parse(guardiansApprovedStr || ''),
         },
       });
       if (!rawResult || !rawResult.result) {

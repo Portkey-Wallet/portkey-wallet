@@ -220,6 +220,7 @@ export default function Send() {
           amount: timesDecimals(amount, tokenInfo.decimals).toFixed(),
           toAddress: toAccount.address,
           fee: timesDecimals(txFee, defaultToken.decimals).toFixed(),
+          guardiansApproved: oneTimeApprovalList.current,
         });
       } else {
         console.log('sameChainTransfers==sendHandler');
@@ -231,6 +232,7 @@ export default function Send() {
           caHash: wallet?.caHash || '',
           amount: timesDecimals(amount, tokenInfo.decimals).toFixed(),
           toAddress: toAccount.address,
+          guardiansApproved: oneTimeApprovalList.current,
         });
       }
       message.success('success');
@@ -506,6 +508,7 @@ export default function Send() {
           setStage(SendStage.Address);
           setAmount('');
           setTipMsg('');
+          oneTimeApprovalList.current = [];
         },
         element: (
           <AmountInput
@@ -536,6 +539,7 @@ export default function Send() {
         },
         backFun: () => {
           setStage(SendStage.Amount);
+          oneTimeApprovalList.current = [];
         },
         element: (
           <SendPreview

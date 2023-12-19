@@ -11,6 +11,9 @@ export const reduxStorageName = `persist:${reduxStorageRoot}`;
 export const reduxStorageToken = `persist:${reduxToken}`;
 export const reduxStorageWallet = `persist:${reduxWallet}`;
 
+// storage key
+export const PORTKEY_OFF_RAMP_GUARDIANS_APPROVE_LIST = 'PORTKEY_OFF_RAMP_GUARDIANS_APPROVE_LIST';
+
 export const CUSTOM_REHYDRATE = 'CUSTOM_REHYDRATE';
 
 export const WORKER_KEEP_ALIVE_MESSAGE = 'WORKER_KEEP_ALIVE_MESSAGE';

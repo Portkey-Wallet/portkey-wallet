@@ -1,11 +1,12 @@
 import CustomSvg from 'components/CustomSvg';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router';
-import { useExtensionBridgeButtonShow, useExtensionBuyButtonShow, useExtensionETransShow } from 'hooks/cms';
+import { useExtensionBridgeButtonShow, useExtensionETransShow } from 'hooks/cms';
 import { RampType } from '@portkey-wallet/ramp';
 import { ETransType } from 'types/eTrans';
 import { DepositType, IDepositItem, depositList } from './constant';
 import './index.less';
+import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 
 export interface IDepositListProps {
   onClose: () => void;
@@ -16,7 +17,7 @@ export interface IDepositListProps {
 export default function DepositList({ onClose, onClickBridge, onClickETrans }: IDepositListProps) {
   const navigate = useNavigate();
   const { isBridgeShow } = useExtensionBridgeButtonShow();
-  const { isBuySectionShow, isSellSectionShow } = useExtensionBuyButtonShow();
+  const { isBuySectionShow, isSellSectionShow } = useRampEntryShow();
   const { isETransDepositShow, isETransWithdrawShow } = useExtensionETransShow();
 
   const handleBuy = useCallback(() => {

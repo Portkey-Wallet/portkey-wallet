@@ -156,9 +156,9 @@ const ActivityDetail = () => {
                     ELF_DECIMAL,
                   )} ${item.symbol}`}</TextM>
                   {!isTestnet && (
-                    <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{`$ ${formatAmountUSDShow(
-                      item?.feeInUsd ?? 0,
-                    )}`}</TextS>
+                    <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>
+                      {formatAmountUSDShow(item?.feeInUsd ?? 0)}
+                    </TextS>
                   )}
                 </View>
               ))}

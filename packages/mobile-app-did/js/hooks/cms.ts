@@ -20,11 +20,6 @@ export const useAppEntrance = (isInit = false) => {
   return useEntrance(config, isInit);
 };
 
-export const useAppBuyButtonShow = () => {
-  const config = useEntranceConfig();
-  return useBuyButtonShow(config);
-};
-
 export const useAppETransShow = () => {
   const config = useEntranceConfig();
   return useETransShow(config);

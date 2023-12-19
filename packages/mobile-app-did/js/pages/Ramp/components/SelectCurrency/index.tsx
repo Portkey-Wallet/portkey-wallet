@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { FlatList, Image, Keyboard, StyleSheet, View } from 'react-native';
+import { FlatList, Keyboard, StyleSheet, View } from 'react-native';
 import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
 import { TextL } from 'components/CommonText';
@@ -44,7 +44,14 @@ const SelectCurrency = ({ list, callBack, value }: SelectListProps) => {
             callBack(item);
           }}>
           <View style={styles.itemRow}>
-            <CommonAvatar hasBorder title={item.symbol} avatarSize={pTd(32)} imageUrl={item.icon || ' '} />
+            <CommonAvatar
+              hasBorder
+              title={item.symbol}
+              avatarSize={pTd(32)}
+              width={pTd(32)}
+              height={pTd(32)}
+              imageUrl={item.icon || ' '}
+            />
             <View style={styles.itemContent}>
               <TextL>{`${item.countryName || ''} - ${item.symbol}`}</TextL>
 

@@ -2,8 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MAX_REFRESH_TIME } from './constants';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
-import { ErrorType } from 'types/common';
-import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
+import { ErrorType, INIT_HAS_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/constants/constants-ca/common';
 import isEqual from 'lodash/isEqual';
 import {
   IBuyPriceResult,
@@ -126,7 +125,7 @@ export const useReceive = ({
     }
 
     let params: IGetBuyDetailRequest | IGetSellDetailRequest;
-    let rst: IBuyPriceResult | ISellPriceResult;
+    let rst: IBuyPriceResult | ISellPriceResult | undefined;
     let providerRst: IBuyProviderPrice[] | ISellProviderPrice[] = [];
     try {
       if (type === RampType.BUY) {
@@ -138,9 +137,10 @@ export const useReceive = ({
           fiatAmount: amount,
         };
         lastParams.current = params;
-        rst = await getBuyPrice(params);
         if (isProviderShow) {
           providerRst = await getBuyDetail(params);
+        } else {
+          rst = await getBuyPrice(params);
         }
       } else {
         params = {
@@ -152,9 +152,10 @@ export const useReceive = ({
         };
         lastParams.current = params;
 
-        rst = await getSellPrice(params);
         if (isProviderShow) {
           providerRst = await getSellDetail(params);
+        } else {
+          rst = await getSellPrice(params);
         }
       }
 
@@ -164,45 +165,59 @@ export const useReceive = ({
 
       if (!isFocusedRef.current) return;
       if (!isEqual(params, lastParams.current)) return;
-      if (
-        !rst ||
-        !rst.exchange ||
-        (type === RampType.BUY && !(rst as IBuyPriceResult).cryptoAmount) ||
-        (type === RampType.SELL && !(rst as ISellPriceResult).fiatAmount)
-      ) {
-        setRate('');
-        setReceiveAmount('');
-        return;
-      }
 
       if (isRefreshReceiveValid) isRefreshReceiveValid.current = true;
-      const _rate = Number(rst.exchange).toFixed(2) + '';
-      let _receiveAmount = '';
-      if (type === RampType.BUY) {
-        _receiveAmount = formatAmountShow((rst as IBuyPriceResult).cryptoAmount || '', 4);
-      } else {
-        _receiveAmount = formatAmountShow((rst as ISellPriceResult).fiatAmount, 4);
-      }
 
-      if (isProviderShow && providerRst && Array.isArray(providerRst)) {
+      let _rate = '';
+      let _receiveAmount = '';
+      if (isProviderShow) {
+        if (!providerRst || !Array.isArray(providerRst)) {
+          setRate('');
+          setReceiveAmount('');
+          setProviderPriceList([]);
+          return;
+        }
+        _rate = formatAmountShow(providerRst[0]?.exchange || '', 2);
         if (type === RampType.BUY) {
           providerRst = providerRst.map(item => ({
             ...item,
+            exchange: formatAmountShow(item.exchange || '', 2),
             cryptoAmount: formatAmountShow((item as IBuyProviderPrice).cryptoAmount || '', 4),
           }));
+          _receiveAmount = formatAmountShow(providerRst[0]?.cryptoAmount || '', 4);
         } else {
           providerRst = providerRst.map(item => ({
             ...item,
-            cryptoAmount: formatAmountShow((item as ISellProviderPrice).fiatAmount || '', 4),
+            exchange: formatAmountShow(item.exchange || '', 2),
+            fiatAmount: formatAmountShow((item as ISellProviderPrice).fiatAmount || '', 4),
           }));
-        }
-      } else {
-        providerRst = [];
-      }
 
-      setRate(_rate);
-      setReceiveAmount(_receiveAmount);
-      isProviderShow && setProviderPriceList(providerRst);
+          _receiveAmount = formatAmountShow(providerRst[0]?.fiatAmount || '', 4);
+        }
+        setRate(_rate);
+        setReceiveAmount(_receiveAmount);
+        setProviderPriceList(providerRst);
+      } else {
+        if (
+          !rst ||
+          !rst.exchange ||
+          (type === RampType.BUY && !(rst as IBuyPriceResult).cryptoAmount) ||
+          (type === RampType.SELL && !(rst as ISellPriceResult).fiatAmount)
+        ) {
+          setRate('');
+          setReceiveAmount('');
+          return;
+        }
+
+        _rate = formatAmountShow(rst.exchange, 2);
+        if (type === RampType.BUY) {
+          _receiveAmount = formatAmountShow((rst as IBuyPriceResult).cryptoAmount || '', 4);
+        } else {
+          _receiveAmount = formatAmountShow((rst as ISellPriceResult).fiatAmount, 4);
+        }
+        setRate(_rate);
+        setReceiveAmount(_receiveAmount);
+      }
 
       return {
         rate: _rate,
@@ -236,9 +251,14 @@ export const useReceive = ({
   }, []);
   debounceRefreshReceiveRef.current = debounceRefreshReceive;
 
+  const isResponseInputRef = useRef(false);
   useEffect(() => {
     setAmountError(INIT_NONE_ERROR);
-    debounceRefreshReceiveRef.current?.();
+    if (isResponseInputRef.current) {
+      debounceRefreshReceiveRef.current?.();
+    } else {
+      isResponseInputRef.current = true;
+    }
   }, [amount]);
 
   useEffect(() => {

@@ -12,17 +12,15 @@ import fonts from 'assets/theme/fonts';
 import SelectToken from '../SelectToken';
 import { usePin } from 'hooks/store';
 import SelectCurrency from '../SelectCurrency';
-
+import { ErrorType, INIT_HAS_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/constants/constants-ca/common';
 import { FontStyles } from 'assets/theme/styles';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
-import { ErrorType } from 'types/common';
-import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import Loading from 'components/Loading';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useReceive } from '../../hooks';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
-import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { getManagerAccount } from 'utils/redux';
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -30,15 +28,16 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import CommonToast from 'components/CommonToast';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
-import { useAppBuyButtonShow } from 'hooks/cms';
-import { useSellCrypto } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { useRampEntryShow, useSellCrypto } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { IRampCryptoItem, IRampFiatItem, RampType } from '@portkey-wallet/ramp';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { IRampLimit } from '@portkey-wallet/types/types-ca/ramp';
 import isEqual from 'lodash/isEqual';
-import { getSellLimit } from '@portkey-wallet/utils/ramp';
+import { getSellFiat, getSellLimit } from '@portkey-wallet/utils/ramp';
 import CommonAvatar from 'components/CommonAvatar';
-import { ChainId } from '@portkey-wallet/types';
+import { useCheckTransferLimitWithJump, useSecuritySafeCheckAndToast } from 'hooks/security';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { useGetCurrentCAContract } from 'hooks/contract';
 
 export default function SellForm() {
   const {
@@ -49,37 +48,38 @@ export default function SellForm() {
     refreshSellCrypto,
   } = useSellCrypto();
 
-  const { refreshBuyButton } = useAppBuyButtonShow();
+  const { refreshRampShow } = useRampEntryShow();
 
   const [cryptoList, setCryptoList] = useState<IRampCryptoItem[]>(cryptoListState);
-  const [crypto, setCrypto] = useState<IRampCryptoItem | undefined>(
-    cryptoList.find(item => item.symbol === defaultCrypto.symbol && item.network === defaultCrypto.network),
-  );
-  const cryptoRef = useRef<IRampCryptoItem | undefined>(crypto);
-  cryptoRef.current = crypto;
-
   const [fiatList, setFiatList] = useState<IRampFiatItem[]>(defaultFiatList);
-  const [fiat, setFiat] = useState<IRampFiatItem | undefined>(
-    defaultFiatList.find(item => item.symbol === defaultFiat.symbol && item.country === defaultFiat.country),
-  );
-  const fiatRef = useRef<IRampFiatItem | undefined>(fiat);
-  fiatRef.current = fiat;
+
+  const [currency, setCurrency] = useState({
+    crypto: cryptoListState.find(
+      item => item.symbol === defaultCrypto.symbol && item.network === defaultCrypto.network,
+    ),
+    fiat: defaultFiatList.find(item => item.symbol === defaultFiat.symbol && item.country === defaultFiat.country),
+  });
+  const currencyRef = useRef(currency);
+  currencyRef.current = currency;
+  const crypto = useMemo(() => currency.crypto, [currency]);
+  const fiat = useMemo(() => currency.fiat, [currency]);
 
   const checkManagerSyncState = useCheckManagerSyncState();
   useFetchTxFee();
-  // TODO: useGetTxFee input
-  const { ach: achFee } = useGetTxFee('AELF');
+  const { ach: achFee } = useGetTxFee(MAIN_CHAIN_ID);
 
   const [amount, setAmount] = useState<string>(defaultCrypto.amount);
   const [amountLocalError, setAmountLocalError] = useState<ErrorType>(INIT_NONE_ERROR);
 
-  const chainInfo = useCurrentChain('AELF');
+  const chainInfo = useCurrentChain(MAIN_CHAIN_ID);
   const pin = usePin();
   const wallet = useCurrentWalletInfo();
 
   const refreshList = useCallback(async () => {
+    Loading.show();
     try {
       const { sellDefaultCrypto, sellCryptoList, sellDefaultFiatList, sellDefaultFiat } = await refreshSellCrypto();
+      Loading.hide();
       setCryptoList(sellCryptoList);
       setFiatList(sellDefaultFiatList);
       const _fiat = sellDefaultFiatList.find(
@@ -88,52 +88,47 @@ export default function SellForm() {
       const _crypto = sellCryptoList.find(
         item => item.symbol === sellDefaultCrypto.symbol && item.network === sellDefaultCrypto.network,
       );
-      if (_fiat) {
-        setFiat(pre => {
-          if (_fiat.symbol !== pre?.symbol || _fiat.country !== pre?.country) {
-            return _fiat;
-          }
-          return pre;
-        });
-      }
-      if (_crypto) {
-        setCrypto(pre => {
-          if (_crypto.symbol !== pre?.symbol || _crypto.network !== pre?.network) {
-            return _crypto;
-          }
-          return pre;
-        });
-      }
+
+      setAmount(sellDefaultCrypto.amount);
+      setCurrency({
+        crypto: _crypto,
+        fiat: _fiat,
+      });
     } catch (error) {
+      Loading.hide();
       console.log('error', error);
     }
   }, [refreshSellCrypto]);
   useEffectOnce(() => {
-    refreshList();
+    if (cryptoListState.length === 0 || defaultFiatList.length === 0) {
+      refreshList();
+    }
   });
 
   const limitAmountRef = useRef<IRampLimit>();
   const isRefreshReceiveValid = useRef<boolean>(false);
+
   const setLimitAmount = useCallback(async () => {
     limitAmountRef.current = undefined;
-    if (fiat === undefined || crypto === undefined) return;
+    const { fiat: _fiat, crypto: _crypto } = currency;
+    if (_fiat === undefined || _crypto === undefined) return;
 
     const loadingKey = Loading.show();
     try {
       const limitResult = await getSellLimit({
-        crypto: crypto.symbol,
-        network: crypto.network,
-        fiat: fiat.symbol,
-        country: fiat.country,
+        crypto: _crypto.symbol,
+        network: _crypto.network,
+        fiat: _fiat.symbol,
+        country: _fiat.country,
       });
-      if (isEqual(fiat, fiatRef.current) && isEqual(crypto, cryptoRef.current)) {
+      if (isEqual(_fiat, currencyRef.current.fiat) && isEqual(_crypto, currencyRef.current.crypto)) {
         limitAmountRef.current = limitResult;
       }
     } catch (error) {
-      console.log('Buy setLimitAmount', error);
+      console.log('Sell setLimitAmount', error);
     }
     Loading.hide(loadingKey);
-  }, [crypto, fiat]);
+  }, [currency]);
 
   const {
     receiveAmount,
@@ -161,6 +156,26 @@ export default function SellForm() {
     }
     return amountLocalError;
   }, [amountFetchError, amountLocalError]);
+
+  const onCryptoChange = useCallback(async (_crypto: IRampCryptoItem) => {
+    try {
+      const { sellFiatList: _fiatList, sellDefaultFiat: _defaultFiat } = await getSellFiat({
+        crypto: _crypto.symbol,
+        network: _crypto.network,
+      });
+      setFiatList(_fiatList);
+      setCurrency({
+        crypto: _crypto,
+        fiat: _fiatList.find(item => item.symbol === _defaultFiat.symbol && item.country === _defaultFiat.country),
+      });
+    } catch (error) {
+      console.log('onCryptoChange', error);
+    }
+  }, []);
+
+  const onFiatChange = useCallback((_fiat: IRampFiatItem) => {
+    setCurrency(pre => ({ ...pre, fiat: _fiat }));
+  }, []);
 
   const onChooseChange = useCallback(async () => {
     isRefreshReceiveValid.current = false;
@@ -190,10 +205,15 @@ export default function SellForm() {
     setAmount(text);
   }, []);
 
+  const defaultToken = useDefaultToken();
+  const getCurrentCAContract = useGetCurrentCAContract(MAIN_CHAIN_ID);
+  const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
+  const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
   const onNext = useCallback(async () => {
     if (!limitAmountRef.current || !refreshReceiveRef.current) return;
     const amountNum = Number(amount);
     const { minLimit, maxLimit } = limitAmountRef.current;
+
     if (amountNum < minLimit || amountNum > maxLimit) {
       setAmountLocalError({
         ...INIT_HAS_ERROR,
@@ -203,11 +223,12 @@ export default function SellForm() {
       });
       return;
     }
+
     let _rate = rate,
       _receiveAmount = receiveAmount;
 
-    const { address: tokenContractAddress, decimals, symbol, network } = crypto || {};
-    const chainId: ChainId = ((network || '').split('-')[1] || 'AELF') as ChainId;
+    const tokenContractAddress = defaultToken.address;
+    const { decimals, symbol, chainId } = crypto || {};
     const { endPoint } = chainInfo || {};
     if (!tokenContractAddress || decimals === undefined || !symbol || !chainId) return;
     if (!pin || !endPoint) return;
@@ -215,7 +236,7 @@ export default function SellForm() {
     Loading.show();
     let isSellSectionShow = false;
     try {
-      const result = await refreshBuyButton();
+      const result = await refreshRampShow();
       isSellSectionShow = result.isSellSectionShow;
     } catch (error) {
       console.log(error);
@@ -223,6 +244,17 @@ export default function SellForm() {
     if (!isSellSectionShow) {
       CommonToast.fail('Sorry, the service you are using is temporarily unavailable.');
       navigationService.navigate('Tab');
+      Loading.hide();
+      return;
+    }
+
+    try {
+      if (!(await securitySafeCheckAndToast(MAIN_CHAIN_ID))) {
+        Loading.hide();
+        return;
+      }
+    } catch (error) {
+      CommonToast.failError(error);
       Loading.hide();
       return;
     }
@@ -244,6 +276,22 @@ export default function SellForm() {
         throw new Error('Insufficient funds');
       }
       const isRefreshReceiveValidValue = isRefreshReceiveValid.current;
+
+      const caContract = await getCurrentCAContract();
+      const checkTransferLimitResult = await checkTransferLimitWithJump(
+        {
+          caContract,
+          symbol,
+          decimals,
+          amount,
+        },
+        chainId,
+      );
+
+      if (!checkTransferLimitResult) {
+        Loading.hide();
+        return;
+      }
 
       const account = getManagerAccount(pin);
       if (!account) return;
@@ -286,13 +334,17 @@ export default function SellForm() {
     amount,
     rate,
     receiveAmount,
+    defaultToken.address,
     crypto,
     chainInfo,
     pin,
     fiat,
-    refreshBuyButton,
+    refreshRampShow,
+    securitySafeCheckAndToast,
     checkManagerSyncState,
     achFee,
+    getCurrentCAContract,
+    checkTransferLimitWithJump,
     wallet,
   ]);
 
@@ -311,7 +363,7 @@ export default function SellForm() {
                 SelectToken.showList({
                   value: `${crypto?.network}_${crypto?.symbol}`,
                   list: cryptoList,
-                  callBack: setCrypto,
+                  callBack: onCryptoChange,
                 });
               }}>
               {crypto?.icon && (
@@ -348,11 +400,19 @@ export default function SellForm() {
                 SelectCurrency.showList({
                   value: `${fiat?.country}_${fiat?.symbol}`,
                   list: fiatList,
-                  callBack: setFiat,
+                  callBack: onFiatChange,
                 });
               }}>
               {fiat?.icon && (
-                <CommonAvatar hasBorder title={fiat?.symbol || ''} style={styles.unitIconStyle} imageUrl={fiat?.icon} />
+                <CommonAvatar
+                  avatarSize={pTd(24)}
+                  width={pTd(24)}
+                  height={pTd(24)}
+                  hasBorder
+                  title={fiat?.symbol || ''}
+                  style={styles.unitIconStyle}
+                  imageUrl={fiat?.icon}
+                />
               )}
               <TextL style={[GStyles.flex1, fonts.mediumFont]}>{fiat?.symbol || ''}</TextL>
               <Svg size={16} icon="down-arrow" color={defaultColors.icon1} />

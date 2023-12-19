@@ -18,15 +18,6 @@ import im from '@portkey-wallet/im';
 import { useInitRamp } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
-// const getCurrentCAContract = useGetCurrentCAContract();
-
-// const getDeviceInfo = useGetDeviceInfo();
-// const originChainId = useOriginChainId();
-// const chainInfo = useCurrentChain(originChainId);
-// const getHolderInfo = useGetHolderInfo();
-// const { userGuardiansList } = useGuardiansInfo();
-// const createChannel = useCreateP2pChannel();
-
 export default function useInitData() {
   const dispatch = useAppDispatch();
   const pin = usePin();

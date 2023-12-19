@@ -1,6 +1,6 @@
 import { defaultColors } from 'assets/theme';
-import React, { useCallback, useMemo } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
@@ -9,25 +9,31 @@ import { TextM, TextS } from 'components/CommonText';
 import fonts from 'assets/theme/fonts';
 import { FontStyles } from 'assets/theme/styles';
 import CommonButton from 'components/CommonButton';
-import achImg from 'assets/image/pngs/ach.png';
-import achPaymentImg from 'assets/image/pngs/ach_payment.png';
 import ActionSheet from 'components/ActionSheet';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useReceive } from '../hooks';
-import { useGetAchTokenInfo } from '@portkey-wallet/hooks/hooks-ca/payment';
-import { getAchSignature, getPaymentOrderNo } from '@portkey-wallet/api/api-did/payment/util';
-import { ACH_MERCHANT_NAME, TransDirectEnum } from '@portkey-wallet/constants/constants-ca/payment';
 import navigationService from 'utils/navigationService';
-import { useCurrentApiUrl } from '@portkey-wallet/hooks/hooks-ca/network';
-import paymentApi from '@portkey-wallet/api/api-did/payment';
 import CommonToast from 'components/CommonToast';
 import Loading from 'components/Loading';
-import { ACH_REDIRECT_URL, ACH_WITHDRAW_URL } from 'constants/common';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useAppBuyButtonShow } from 'hooks/cms';
-import { IRampCryptoItem, IRampFiatItem, RampType } from '@portkey-wallet/ramp';
+import ramp, {
+  IBuyProviderPrice,
+  IRampCryptoItem,
+  IRampFiatItem,
+  IRampProviderInfo,
+  IRampProviderType,
+  ISellProviderPrice,
+  RampType,
+} from '@portkey-wallet/ramp';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+import CommonAvatar from 'components/CommonAvatar';
+import Svg from 'components/Svg';
+import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import Touchable from 'components/Touchable';
+import { useGuardiansInfo } from 'hooks/store';
+import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { RAMP_BUY_URL, RAMP_SELL_URL } from 'constants/common';
 
 interface RouterParams {
   type?: RampType;
@@ -37,6 +43,52 @@ interface RouterParams {
   receiveAmount?: string;
   rate?: string;
 }
+
+const renderProviderCard = (
+  type: RampType,
+  crypto: IRampCryptoItem | undefined,
+  fiat: IRampFiatItem | undefined,
+  item: IBuyProviderPrice | ISellProviderPrice,
+  currentProviderKey: string | undefined,
+) => {
+  const isActive = currentProviderKey === item.providerInfo.key;
+
+  return (
+    <View style={[styles.providerWrap, isActive && styles.providerActiveStyle]}>
+      {isActive && (
+        <View style={styles.providerActiveTagWrap}>
+          <Svg oblongSize={[pTd(9), pTd(7)]} icon="selected4" />
+        </View>
+      )}
+      <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemCenter, GStyles.marginBottom(24)]}>
+        <View style={styles.logoWrap}>
+          <CommonAvatar
+            width={'auto'}
+            height={pTd(20)}
+            shapeType={'square'}
+            preserveAspectRatio="xMinYMid meet"
+            style={styles.imgStyle}
+            imageUrl={item.providerInfo.logo}
+          />
+        </View>
+        <TextM style={FontStyles.font3}>{`1 ${crypto?.symbol || ''} ≈ ${item.exchange} ${fiat?.symbol}`}</TextM>
+      </View>
+      <View style={GStyles.flexRow}>
+        {item.providerInfo.paymentTags.map((iconUrl, idx) => (
+          <View key={idx} style={styles.iconWrap}>
+            <CommonAvatar
+              width={pTd(32)}
+              height={pTd(16)}
+              shapeType={'square'}
+              style={styles.imgStyle}
+              imageUrl={iconUrl || ''}
+            />
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+};
 
 export default function RampPreview() {
   const {
@@ -50,7 +102,7 @@ export default function RampPreview() {
 
   const { t } = useLanguage();
   const defaultToken = useDefaultToken();
-  const { rate, receiveAmount, providerPriceList } = useReceive({
+  const { receiveAmount, providerPriceList, refreshReceive } = useReceive({
     type,
     amount: amount || '',
     fiat,
@@ -60,26 +112,52 @@ export default function RampPreview() {
     isProviderShow: true,
   });
   const isBuy = useMemo(() => type === RampType.BUY, [type]);
-  const apiUrl = useCurrentApiUrl();
   const wallet = useCurrentWalletInfo();
-  const { buyConfig } = useCurrentNetworkInfo();
-  const { refreshBuyButton } = useAppBuyButtonShow();
+  const [providerKey, setProviderKey] = useState<string>();
+  const { refreshRampShow } = useRampEntryShow();
+  const { userGuardiansList } = useGuardiansInfo();
 
-  const getAchTokenInfo = useGetAchTokenInfo();
-  const goPayPage = useCallback(
-    async (isNoEmail = false) => {
-      const appId = buyConfig?.ach?.appId;
-      const baseUrl = buyConfig?.ach?.baseUrl;
-      if (!amount || !receiveAmount || !fiat || !crypto || !appId || !baseUrl) return;
-      Loading.show();
+  useEffectOnce(() => {
+    refreshReceive();
+  });
 
-      let isSectionShow = false;
-      try {
-        const result = await refreshBuyButton();
-        isSectionShow = type === RampType.BUY ? result.isBuySectionShow : result.isSellSectionShow;
-      } catch (error) {
-        console.log(error);
+  useEffect(() => {
+    if (!providerPriceList.length) {
+      setProviderKey(undefined);
+      return;
+    }
+    setProviderKey(pre => {
+      if (pre) {
+        const preProvider = providerPriceList.find(item => item.providerInfo.key === pre);
+        if (preProvider) return pre;
       }
+      return providerPriceList[0].providerInfo.key;
+    });
+  }, [providerPriceList]);
+
+  const onProviderChange = useCallback((provider: IRampProviderInfo) => {
+    setProviderKey(provider.key);
+  }, []);
+
+  const currentProvider = useMemo(
+    () => providerPriceList.find(item => item.providerInfo.key === providerKey),
+    [providerKey, providerPriceList],
+  );
+
+  const goPayPage = useCallback(async () => {
+    if (!providerKey || !amount || !fiat || !crypto) return;
+
+    try {
+      const provider = ramp.getProvider(providerKey as IRampProviderType);
+      if (!provider) throw new Error('Failed to get ramp provider');
+
+      const emailGuardian = userGuardiansList?.find(
+        item => item.guardianType === LoginType.Email && item.isLoginAccount,
+      );
+
+      Loading.show();
+      const showResult = await refreshRampShow();
+      const isSectionShow = type === RampType.BUY ? showResult.isBuySectionShow : showResult.isSellSectionShow;
       if (!isSectionShow) {
         CommonToast.fail('Sorry, the service you are using is temporarily unavailable.');
         navigationService.navigate('Tab');
@@ -87,80 +165,47 @@ export default function RampPreview() {
         return;
       }
 
-      try {
-        const callbackUrl = encodeURIComponent(`${apiUrl}${paymentApi.updateAchOrder}`);
-        let achUrl = `${baseUrl}/?crypto=${crypto.symbol}&network=${crypto.network}&country=${fiat.country}&fiat=${fiat.symbol}&appId=${appId}&callbackUrl=${callbackUrl}`;
+      const { url, orderId } = await provider.createOrder({
+        type,
+        address: wallet?.AELF?.caAddress || '',
+        email: emailGuardian?.guardianAccount,
+        crypto: crypto.symbol || '',
+        network: currentProvider?.providerNetwork || '',
+        country: fiat.country || '',
+        fiat: fiat.symbol || '',
+        amount: amount,
+        withdrawUrl: type === RampType.BUY ? RAMP_BUY_URL : RAMP_SELL_URL,
+      });
 
-        const orderNo = await getPaymentOrderNo({
-          transDirect: type === RampType.BUY ? TransDirectEnum.TOKEN_BUY : TransDirectEnum.TOKEN_SELL,
-          merchantName: ACH_MERCHANT_NAME,
-        });
-        achUrl += `&merchantOrderNo=${orderNo}`;
-
-        if (type === RampType.BUY) {
-          const achTokenInfo = await getAchTokenInfo();
-          if (achTokenInfo !== undefined && isNoEmail === false) {
-            achUrl += `&token=${encodeURIComponent(achTokenInfo.token)}`;
-          }
-
-          const address = wallet.AELF?.caAddress;
-          if (!address) {
-            throw new Error('address is undefined');
-          }
-          achUrl += `&address=${address}`;
-
-          const signature = await getAchSignature({ address });
-          achUrl += `&type=buy&fiatAmount=${amount}&redirectUrl=${encodeURIComponent(
-            ACH_REDIRECT_URL,
-          )}&sign=${encodeURIComponent(signature)}`;
-        } else {
-          const withdrawUrl = encodeURIComponent(ACH_WITHDRAW_URL);
-          achUrl += `&type=sell&cryptoAmount=${amount}&withdrawUrl=${withdrawUrl}&source=3#/sell-formUserInfo`;
-        }
-
-        console.log('achUrl', achUrl);
-        // const injectedJavaScript: string | undefined =
-        //   achTokenInfo === undefined || isNoEmail
-        //     ? `
-        //     if ( window.location.href.startsWith('${achUrl}') ) {
-        //       window.localStorage.removeItem('token');
-        //       window.localStorage.removeItem('login_email');
-        //     }`
-        //     : undefined;
-        const injectedJavaScript = undefined;
-
-        navigationService.navigate('ViewOnWebView', {
-          title: 'Alchemy Pay Ramp',
-          url: achUrl,
-          webViewPageType: type === RampType.BUY ? 'ach' : 'achSell',
-          injectedJavaScript,
-          params:
-            type === RampType.BUY
-              ? undefined
-              : {
-                  orderNo,
-                },
-        });
-      } catch (error) {
-        CommonToast.fail(`There is a network error, please try again.`);
-        console.log(error);
-      }
+      navigationService.navigate('ViewOnWebView', {
+        // TODO: ramp adjust title
+        title: 'Ramp',
+        url: url,
+        webViewPageType: type === RampType.BUY ? 'ramp-buy' : 'ramp-sell',
+        injectedJavaScript: undefined,
+        params:
+          type === RampType.BUY
+            ? undefined
+            : {
+                orderId,
+              },
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
       Loading.hide();
-    },
-    [
-      amount,
-      apiUrl,
-      buyConfig?.ach?.appId,
-      buyConfig?.ach?.baseUrl,
-      fiat,
-      getAchTokenInfo,
-      receiveAmount,
-      refreshBuyButton,
-      crypto,
-      type,
-      wallet.AELF?.caAddress,
-    ],
-  );
+    }
+  }, [
+    amount,
+    crypto,
+    currentProvider?.providerNetwork,
+    fiat,
+    providerKey,
+    refreshRampShow,
+    type,
+    userGuardiansList,
+    wallet?.AELF?.caAddress,
+  ]);
 
   return (
     <PageContainer
@@ -179,44 +224,49 @@ export default function RampPreview() {
           </TextM>
         </View>
 
-        <TextS style={GStyles.marginLeft(8)}>Service provider</TextS>
-        <View style={styles.paymentWrap}>
-          <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemCenter, GStyles.marginBottom(24)]}>
-            <Image resizeMode="contain" source={achImg} style={styles.achImgStyle} />
-            <TextM style={FontStyles.font3}>{`1 ${crypto?.symbol || ''} ≈ ${rate} ${fiat?.symbol}`}</TextM>
-          </View>
-          <Image resizeMode="contain" source={achPaymentImg} style={styles.achPaymentImgStyle} />
-        </View>
+        <TextS style={styles.serviceLabel}>Service provider</TextS>
+        {providerPriceList.map((item, idx) => (
+          <Touchable
+            onPress={() => {
+              onProviderChange(item.providerInfo);
+            }}
+            key={idx}>
+            {renderProviderCard(type, crypto, fiat, item, providerKey)}
+          </Touchable>
+        ))}
       </View>
       <View>
-        <TextM style={GStyles.marginBottom(26)}>
-          Proceeding with this transaction means that you have read and understood{' '}
-          <TextM
-            style={FontStyles.font4}
-            onPress={() => {
-              ActionSheet.alert({
-                title: 'Disclaimer',
-                title2: (
-                  <TextM style={[FontStyles.font3, GStyles.textAlignCenter, GStyles.marginBottom(20)]}>
-                    AlchemyPay is a fiat-to-crypto platform independently operated by a third-party entity. Portkey
-                    shall not be held liable for any losses or damages suffered as a result of using AlchemyPay
-                    services.
-                  </TextM>
-                ),
-                buttons: [{ title: 'OK' }],
-              });
-            }}>
-            the Disclaimer
-          </TextM>
-          .
-        </TextM>
-        <CommonButton
-          type="primary"
-          onPress={() => {
-            goPayPage();
-          }}>
-          Go to AlchemyPay
-        </CommonButton>
+        {currentProvider && (
+          <>
+            <TextM style={GStyles.marginBottom(26)}>
+              Proceeding with this transaction means that you have read and understood{' '}
+              <TextM
+                style={FontStyles.font4}
+                onPress={() => {
+                  ActionSheet.alert({
+                    title: 'Disclaimer',
+                    title2: (
+                      <TextM style={[FontStyles.font3, GStyles.textAlignCenter, GStyles.marginBottom(20)]}>
+                        {`${currentProvider.providerInfo.name} is a fiat-to-crypto platform independently operated by a third-party entity. Portkey shall not be held liable for any losses or damages suffered as a result of using ${currentProvider.providerInfo.name} services.`}
+                      </TextM>
+                    ),
+                    buttons: [{ title: 'OK' }],
+                  });
+                }}>
+                the Disclaimer
+              </TextM>
+              .
+            </TextM>
+            <CommonButton
+              type="primary"
+              disabled={!providerKey}
+              onPress={() => {
+                goPayPage();
+              }}>
+              {`Go to ${currentProvider?.providerInfo.name}`}
+            </CommonButton>
+          </>
+        )}
       </View>
     </PageContainer>
   );
@@ -250,17 +300,49 @@ const styles = StyleSheet.create({
     ...fonts.mediumFont,
     marginBottom: pTd(4),
   },
-  paymentWrap: {
-    marginTop: pTd(8),
+  serviceLabel: {
+    marginLeft: pTd(8),
+    marginBottom: pTd(8),
+  },
+  providerWrap: {
     borderRadius: pTd(6),
     borderColor: defaultColors.border6,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: pTd(1),
+    overflow: 'hidden',
+    marginBottom: pTd(12),
     ...GStyles.paddingArg(16, 12),
   },
-  achImgStyle: {
-    height: pTd(22),
+  providerActiveStyle: {
+    borderColor: defaultColors.border3,
   },
-  achPaymentImgStyle: {
+  providerActiveTagWrap: {
+    width: pTd(24),
+    height: pTd(18),
+    backgroundColor: defaultColors.bg5,
+    borderBottomLeftRadius: pTd(6),
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  imgStyle: {
+    backgroundColor: 'transparent',
+    borderRadius: 0,
+  },
+  logoWrap: {
+    width: pTd(120),
+    height: pTd(24),
+    marginRight: pTd(16),
+  },
+  iconWrap: {
+    width: pTd(36),
     height: pTd(20),
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: pTd(2),
+    borderWidth: 1,
+    borderColor: defaultColors.border6,
+    marginRight: pTd(6),
   },
 });

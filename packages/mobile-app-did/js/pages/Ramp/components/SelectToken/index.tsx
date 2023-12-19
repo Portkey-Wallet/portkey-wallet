@@ -13,7 +13,6 @@ import { defaultColors } from 'assets/theme';
 import CommonAvatar from 'components/CommonAvatar';
 import { chainShowText } from '@portkey-wallet/utils';
 import { FontStyles } from 'assets/theme/styles';
-import { ChainId } from '@portkey-wallet/types';
 import { IRampCryptoItem } from '@portkey-wallet/ramp';
 
 type ItemType = IRampCryptoItem;
@@ -62,9 +61,7 @@ const SelectList = ({ list, callBack, value }: SelectListProps) => {
                   <View style={styles.itemContent}>
                     <View>
                       <TextL>{item.symbol}</TextL>
-                      <TextM style={FontStyles.font7}>{`${chainShowText(
-                        ((item.network || '').split('-')[1] || 'AELF') as ChainId,
-                      )} ${item.network}`}</TextM>
+                      <TextM style={FontStyles.font7}>{`${chainShowText(item.chainId)} ${item.chainId}`}</TextM>
                     </View>
 
                     {value !== undefined && value === `${item.network}_${item.symbol}` && (

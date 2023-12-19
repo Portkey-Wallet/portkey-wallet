@@ -19,10 +19,7 @@ export const useSellDefaultCryptoState = () => useAppCASelector(state => state.r
 export const useSellDefaultFiatListState = () => useAppCASelector(state => state.ramp.sellDefaultFiatList);
 export const useSellDefaultFiatState = () => useAppCASelector(state => state.ramp.sellDefaultFiat);
 
-export interface UseInitRampParams {
-  clientType: IClientType;
-}
-export const useInitRamp = ({ clientType }: UseInitRampParams) => {
+export const useInitRamp = ({ clientType }: { clientType: IClientType }) => {
   const { refreshRampShow } = useRampEntryShow();
   const { refreshBuyFiat } = useBuyFiat();
   const { refreshSellCrypto } = useSellCrypto();

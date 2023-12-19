@@ -1,9 +1,9 @@
-import BuyHome from './RampHome';
-import BuyPreview from './RampPreview';
+import RampHome from './RampHome';
+import RampPreview from './RampPreview';
 
 const stackNav = [
-  { name: 'RampHome', component: BuyHome },
-  { name: 'RampPreview', component: BuyPreview },
+  { name: 'RampHome', component: RampHome },
+  { name: 'RampPreview', component: RampPreview },
 ] as const;
 
 export default stackNav;

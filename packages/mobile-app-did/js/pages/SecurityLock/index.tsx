@@ -26,6 +26,8 @@ import ActionSheet from 'components/ActionSheet';
 import { isUserBiometricsError } from 'utils/biometrics';
 import GStyles from 'assets/theme/GStyles';
 import useLatestIsFocusedRef from 'hooks/useLatestIsFocusedRef';
+import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
+import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
 export default function SecurityLock() {
   const { biometrics } = useUser();
   const biometricsReady = useBiometricsReady();
@@ -36,7 +38,6 @@ export default function SecurityLock() {
   const timer = useRef<TimerResult>();
   const onResultFail = useOnResultFail();
   const digitInput = useRef<DigitInputInterface>();
-  const [errorMessage, setErrorMessage] = useState<string>();
   const { managerInfo, address, caHash } = useCurrentWalletInfo();
   const dispatch = useAppDispatch();
   const isSyncCAInfo = useMemo(() => address && managerInfo && !caHash, [address, caHash, managerInfo]);
@@ -168,20 +169,22 @@ export default function SecurityLock() {
       listener.remove();
     };
   }, [handleAppStateChange]);
+
+  const { error: textError, setError: setTextError } = useErrorMessage();
   const onChangeText = useCallback(
     (enterPin: string) => {
       if (enterPin.length === PIN_SIZE) {
         if (!checkPin(enterPin)) {
           digitInput.current?.reset();
-          setErrorMessage('Incorrect Pin');
+          setTextError('Incorrect Pin', VERIFY_INVALID_TIME);
           return;
         }
         handlePassword(enterPin);
-      } else if (errorMessage) {
-        setErrorMessage(undefined);
+      } else if (textError.isError) {
+        setTextError();
       }
     },
-    [errorMessage, handlePassword],
+    [textError.isError, handlePassword, setTextError],
   );
   return (
     <PageContainer hideHeader containerStyles={GStyles.flex1} scrollViewProps={{ disabled: true }}>
@@ -189,7 +192,7 @@ export default function SecurityLock() {
         ref={digitInput}
         title="Enter Pin"
         onChangeText={onChangeText}
-        errorMessage={errorMessage}
+        errorMessage={textError.errorMsg}
         isBiometrics={biometrics && biometricsReady}
         onBiometricsPress={verifyBiometrics}
       />

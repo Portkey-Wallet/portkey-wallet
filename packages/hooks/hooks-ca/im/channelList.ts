@@ -14,6 +14,7 @@ import {
 } from '@portkey-wallet/store/store-ca/im/actions';
 import { useIMChannelListNetMapState, useIMHasNextNetMapState } from '.';
 import useLockCallback from '../../useLockCallback';
+import { messageContentParser } from '@portkey-wallet/im/utils';
 
 export const useNextChannelList = () => {
   const channelListNetMap = useIMChannelListNetMapState();
@@ -37,7 +38,11 @@ export const useNextChannelList = () => {
           maxResultCount: CHANNEL_LIST_LIMIT,
         });
 
-        const list = result.data?.list || [];
+        const list =
+          result.data?.list.map(item => ({
+            ...item,
+            lastMessageContent: messageContentParser(item.lastMessageType, item.lastMessageContent || ''),
+          })) || [];
         const cursor = result.data?.cursor || lastCursor;
 
         const hasNextValue = list.length >= CHANNEL_LIST_LIMIT;

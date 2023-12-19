@@ -100,3 +100,8 @@ export const isValidUrl = (url: string) => {
 export const isValidBase58 = (str: string) => {
   return !/[\u4e00-\u9fa5\u3000-\u303f\uff01-\uff5e]/.test(str);
 };
+
+export const POTENTIAL_NUMBER = /^(0|[1-9]\d*)(\.\d*)?$/;
+export const isPotentialNumber = (str: string) => {
+  return POTENTIAL_NUMBER.test(str);
+};

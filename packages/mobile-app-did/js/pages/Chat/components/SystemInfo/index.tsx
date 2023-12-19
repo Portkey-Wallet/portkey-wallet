@@ -14,7 +14,7 @@ function SystemInfo(props: SystemMessageProps<ChatMessage> & { previousMessage?:
     if (previousMessage?.messageType === currentMessage?.messageType) return true;
   }, [currentMessage, previousMessage]);
 
-  console.log('previousMessage', previousMessage, currentMessage);
+  // console.log('previousMessage', previousMessage, currentMessage);
 
   return (
     <TextS style={[styles.textStyles, isMarginTop6 && GStyles.marginTop(pTd(6))]}>{currentMessage?.content}</TextS>

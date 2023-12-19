@@ -32,3 +32,5 @@ export const CA_METHOD_WHITELIST = ['ManagerForwardCall', 'ManagerTransfer', App
 export const DAPP_WHITELIST_ACTION_WHITELIST: string[] = [MethodsBase.REQUEST_ACCOUNTS, MethodsBase.SEND_TRANSACTION];
 
 export { DAPP_WHITELIST, DappMap };
+
+export const ETransTokenList = ['USDT'];

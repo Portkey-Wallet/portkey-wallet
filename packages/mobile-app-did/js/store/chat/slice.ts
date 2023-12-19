@@ -13,7 +13,10 @@ export type ReplyMessageInfoType = {
   message?: ChatMessage;
 };
 export interface ChatsState {
-  currentChannelId?: string;
+  currentChannel?: {
+    currentChannelId: string;
+    currentChannelType: 'P2P' | 'Group';
+  };
   showTools?: boolean;
   bottomBarStatus?: ChatBottomBarStatus;
   text: string;
@@ -30,11 +33,11 @@ export const chatSlice = createSlice({
     setChatText: (state, action: PayloadAction<ChatsState['text']>) => {
       state.text = action.payload;
     },
+    setCurrentChannel: (state, action: PayloadAction<ChatsState['currentChannel']>) => {
+      state.currentChannel = action.payload;
+    },
     setReplyMessageInfo: (state, action: PayloadAction<ChatsState['replyMessageInfo']>) => {
       state.replyMessageInfo = action.payload;
-    },
-    setCurrentChannelId: (state, action: PayloadAction<ChatsState['currentChannelId']>) => {
-      state.currentChannelId = action.payload;
     },
     setChatSelection: (state, action: PayloadAction<ChatsState['selection']>) => {
       state.selection = action.payload;

@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
 import navigationService from 'utils/navigationService';
-import { TextM } from 'components/CommonText';
+import { TextS } from 'components/CommonText';
 import * as ImagePicker from 'expo-image-picker';
 import { useQrScanPermission } from 'hooks/useQrScan';
 import ActionSheet from 'components/ActionSheet';
@@ -23,9 +23,12 @@ import { getInfo } from 'utils/fs';
 import { MAX_FILE_SIZE_BYTE } from '@portkey-wallet/constants/constants-ca/im';
 import { changeCanLock } from 'utils/LockManager';
 import { useLanguage } from 'i18n/hooks';
+import { useCurrentChannel } from 'pages/Chat/context/hooks';
 
 export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType }) {
   const { t } = useLanguage();
+  const currentChannel = useCurrentChannel();
+  const currentIsGroupChat = currentChannel?.currentChannelType === 'Group';
   const [, requestQrPermission] = useQrScanPermission();
   const { sendChannelImage, sendChannelMessage } = useSendCurrentChannelMessage();
 
@@ -120,10 +123,10 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
           }),
       },
       {
-        label: 'Crypto ',
-        icon: 'chat-bookmark',
+        label: 'Crypto Box',
+        icon: 'send-red-packet-button',
         onPress: () => {
-          console.log('Crypto');
+          navigationService.navigate(currentIsGroupChat ? 'SendPacketGroupPage' : 'SendPacketP2PPage');
         },
       },
       {
@@ -134,7 +137,7 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
         },
       },
     ];
-  }, [requestQrPermission, selectPhoto, sendChannelMessage, showDialog]);
+  }, [currentIsGroupChat, requestQrPermission, selectPhoto, sendChannelMessage, showDialog]);
 
   return (
     <View style={[GStyles.flex1, GStyles.flexRowWrap, styles.wrap, style]}>
@@ -146,7 +149,7 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
           <View style={[GStyles.center, styles.toolsItemIconWrap]}>
             <Svg icon={ele.icon} size={pTd(24)} color={defaultColors.font5} />
           </View>
-          <TextM style={FontStyles.font3}>{ele.label}</TextM>
+          <TextS style={FontStyles.font3}>{ele.label}</TextS>
         </Touchable>
       ))}
     </View>

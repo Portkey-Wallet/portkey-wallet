@@ -274,7 +274,7 @@ const replyMessageTextStyles = StyleSheet.create({
     overflow: 'hidden',
   },
   rightWrap: {
-    backgroundColor: defaultColors.bg22,
+    backgroundColor: defaultColors.bg25,
   },
   blueBlank: {
     position: 'absolute',
@@ -313,7 +313,7 @@ const replyMessageImageStyles = StyleSheet.create({
     alignItems: 'center',
   },
   rightWrap: {
-    backgroundColor: defaultColors.bg22,
+    backgroundColor: defaultColors.bg25,
   },
   blueBlank: {
     position: 'absolute',

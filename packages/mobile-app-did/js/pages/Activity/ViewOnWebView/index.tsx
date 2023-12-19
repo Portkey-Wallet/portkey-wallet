@@ -6,7 +6,7 @@ import CustomHeader from 'components/CustomHeader';
 import SafeAreaBox from 'components/SafeAreaBox';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { pTd } from 'utils/unit';
-import navigationService from 'utils/navigationService';
+import navigationService, { NavigateName } from 'utils/navigationService';
 import { ACH_REDIRECT_URL, ACH_WITHDRAW_URL } from 'constants/common';
 import { useHandleAchSell } from './hooks/useHandleAchSell';
 import CommonToast from 'components/CommonToast';
@@ -41,7 +41,7 @@ const ViewOnWebView: React.FC = () => {
     injectedJavaScript?: string;
     params?: any;
   }>();
-
+  const { successNavigateName } = useRouterParams<{ successNavigateName: NavigateName }>();
   const [browserInfo] = useState({ url, title });
 
   const webViewRef = React.useRef<WebView>(null);
@@ -55,7 +55,11 @@ const ViewOnWebView: React.FC = () => {
       if (webViewPageType === 'default') return;
       if (webViewPageType === 'ach') {
         if (navState.url.startsWith(ACH_REDIRECT_URL)) {
-          navigationService.navigate('Tab');
+          if (successNavigateName) {
+            navigationService.navigate(successNavigateName);
+          } else {
+            navigationService.navigate('Tab');
+          }
         }
         return;
       }
@@ -72,7 +76,7 @@ const ViewOnWebView: React.FC = () => {
         }
       }
     },
-    [handleAchSell, params, webViewPageType],
+    [handleAchSell, params, successNavigateName, webViewPageType],
   );
 
   return (

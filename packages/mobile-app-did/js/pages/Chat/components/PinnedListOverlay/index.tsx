@@ -85,7 +85,6 @@ function PinnedListOverlay() {
       dispatch(setChatText(''));
       dispatch(setBottomBarStatus(undefined));
       dispatch(setShowSoftInputOnFocus(true));
-      // dispatch(setCurrentChannelId());
       destroyChatInputRecorder();
     };
   });

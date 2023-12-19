@@ -12,3 +12,8 @@ export interface ChatMessage extends IMessage, Message {
   messageType?: Message['type'] | 'NOT_SUPPORTED';
   quote?: ChatMessage;
 }
+
+export enum GroupRedPacketTabEnum {
+  Random = 'Random',
+  Fixed = 'Fixed',
+}

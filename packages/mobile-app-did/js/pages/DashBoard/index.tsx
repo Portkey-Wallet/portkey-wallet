@@ -7,9 +7,11 @@ import { RootStackName } from 'navigation';
 import myEvents from 'utils/deviceEvent';
 import useExceptionMessage from 'hooks/userExceptionMessage';
 import { useEffectOnce } from '@portkey-wallet/hooks';
+import { useReportingSignalR } from 'hooks/FCM';
 
 const DashBoard: React.FC<any> = ({ navigation }) => {
   const exceptionMessage = useExceptionMessage();
+  useReportingSignalR();
 
   const navToChat = useCallback(
     (tabName: RootStackName) => {
@@ -30,6 +32,7 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
     return () => listener.remove();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.bg5]}>
       <Card />

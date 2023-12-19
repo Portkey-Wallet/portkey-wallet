@@ -37,4 +37,5 @@ export interface IToSendHomeParamsType {
 export interface IToSendPreviewParamsType extends IToSendHomeParamsType {
   transactionFee: string | number;
   sendNumber: string | number;
+  successNavigateName?: any;
 }

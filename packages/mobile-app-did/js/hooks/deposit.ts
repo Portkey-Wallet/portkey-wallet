@@ -1,7 +1,7 @@
 import { RampType } from '@portkey-wallet/ramp';
 import { useCallback, useMemo } from 'react';
 import navigationService from 'utils/navigationService';
-import { useAppBridgeButtonShow, useAppBuyButtonShow, useAppETransShow } from './cms';
+import { useAppBridgeButtonShow, useAppETransShow } from './cms';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import { useSecuritySafeCheckAndToast } from './security';
@@ -11,6 +11,7 @@ import CommonToast from 'components/CommonToast';
 import { getUrlObj } from '@portkey-wallet/utils/dapp/browser';
 import { IconName } from 'components/Svg';
 import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
+import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 
 export type DepositItem = {
   title: string;
@@ -24,13 +25,13 @@ const DepositMap = {
     title: 'Buy Crypto',
     icon: 'buy2',
     description: 'Buy crypto using fiat currency',
-    onPress: () => navigationService.navigate('BuyHome', { toTab: RampType.BUY }),
+    onPress: () => navigationService.navigate('RampHome', { toTab: RampType.BUY }),
   },
   sell: {
     title: 'Sell Crypto',
     icon: 'sell',
     description: 'Sell crypto for fiat currency',
-    onPress: () => navigationService.navigate('BuyHome', { toTab: RampType.SELL }),
+    onPress: () => navigationService.navigate('RampHome', { toTab: RampType.SELL }),
   },
   depositUSDT: {
     title: 'Deposit USDT',
@@ -110,7 +111,7 @@ export function useOnDisclaimerModalPress() {
 }
 
 export function useDepositList() {
-  const { isBuyButtonShow, isSellSectionShow } = useAppBuyButtonShow();
+  const { isRampShow, isSellSectionShow } = useRampEntryShow();
   const { isBridgeShow } = useAppBridgeButtonShow();
   const { isETransDepositShow, isETransWithdrawShow } = useAppETransShow();
 
@@ -119,7 +120,7 @@ export function useDepositList() {
   const onDisclaimerModalPress = useOnDisclaimerModalPress();
   return useMemo(() => {
     const list = [];
-    if (isBuyButtonShow) list.push(DepositMap.buy);
+    if (isRampShow) list.push(DepositMap.buy);
     if (isSellSectionShow) list.push(DepositMap.sell);
     if (isETransDepositShow)
       list.push({
@@ -163,7 +164,7 @@ export function useDepositList() {
     eBridgeUrl,
     eTransferUrl,
     isBridgeShow,
-    isBuyButtonShow,
+    isRampShow,
     isETransDepositShow,
     isETransWithdrawShow,
     isSellSectionShow,

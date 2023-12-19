@@ -17,7 +17,7 @@ export type IRampInfoResult = {
   thirdPart: IThirdPartsInfo;
 };
 
-export type IThirdPartsInfo = Record<keyof typeof IRampProviderType, IThirdPartInfo>;
+export type IThirdPartsInfo = Record<IRampProviderType, IThirdPartInfo>;
 
 export type IThirdPartInfo = Omit<IRampProviderInfo, 'key'>;
 

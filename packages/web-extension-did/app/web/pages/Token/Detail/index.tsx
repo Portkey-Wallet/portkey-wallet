@@ -9,7 +9,7 @@ import clsx from 'clsx';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/payment';
+import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useExtensionETransShow } from 'hooks/cms';
 import { ETransType } from 'types/eTrans';

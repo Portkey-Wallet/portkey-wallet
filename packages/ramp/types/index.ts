@@ -27,6 +27,7 @@ export interface IOrderInfo {
   crypto: string;
   cryptoAmount: string;
   cryptoPrice: string;
+  decimals: string;
   status: string;
   displayStatus: string;
   transDirect: ITransDirectEnum; // TokenBuy,TokenSell

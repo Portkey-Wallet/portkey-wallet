@@ -15,20 +15,18 @@ import SelectCurrency from '../SelectCurrency';
 import { FontStyles } from 'assets/theme/styles';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
-import { ErrorType } from 'types/common';
-import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import Loading from 'components/Loading';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useReceive } from '../../hooks';
 import CommonToast from 'components/CommonToast';
-import { useAppBuyButtonShow } from 'hooks/cms';
-import { useBuyFiat } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { useBuyFiat, useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { IRampCryptoItem, IRampFiatItem, RampType } from '@portkey-wallet/ramp';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { IRampLimit } from '@portkey-wallet/types/types-ca/ramp';
 import isEqual from 'lodash/isEqual';
-import { getBuyLimit } from '@portkey-wallet/utils/ramp';
+import { getBuyCrypto, getBuyLimit } from '@portkey-wallet/utils/ramp';
 import CommonAvatar from 'components/CommonAvatar';
+import { ErrorType, INIT_HAS_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/constants/constants-ca/common';
 
 export default function BuyForm() {
   const {
@@ -39,28 +37,29 @@ export default function BuyForm() {
     refreshBuyFiat,
   } = useBuyFiat();
 
-  const { refreshBuyButton } = useAppBuyButtonShow();
+  const { refreshRampShow } = useRampEntryShow();
 
   const [fiatList, setFiatList] = useState<IRampFiatItem[]>(fiatListState);
-  const [fiat, setFiat] = useState<IRampFiatItem | undefined>(
-    fiatList.find(item => item.symbol === defaultFiat.symbol && item.country === defaultFiat.country),
-  );
-  const fiatRef = useRef<IRampFiatItem | undefined>(fiat);
-  fiatRef.current = fiat;
-
   const [cryptoList, setCryptoList] = useState<IRampCryptoItem[]>(defaultCryptoList);
-  const [crypto, setCrypto] = useState<IRampCryptoItem | undefined>(
-    defaultCryptoList.find(item => item.symbol === defaultCrypto.symbol && item.network === defaultCrypto.network),
-  );
-  const cryptoRef = useRef<IRampCryptoItem | undefined>(crypto);
-  cryptoRef.current = crypto;
+  const [currency, setCurrency] = useState({
+    crypto: defaultCryptoList.find(
+      item => item.symbol === defaultCrypto.symbol && item.network === defaultCrypto.network,
+    ),
+    fiat: fiatListState.find(item => item.symbol === defaultFiat.symbol && item.country === defaultFiat.country),
+  });
+  const currencyRef = useRef(currency);
+  currencyRef.current = currency;
+  const fiat = useMemo(() => currency.fiat, [currency]);
+  const crypto = useMemo(() => currency.crypto, [currency]);
 
   const [amount, setAmount] = useState<string>(defaultFiat.amount);
   const [amountLocalError, setAmountLocalError] = useState<ErrorType>(INIT_NONE_ERROR);
 
   const refreshList = useCallback(async () => {
+    Loading.show();
     try {
       const { buyDefaultFiat, buyFiatList, buyDefaultCryptoList, buyDefaultCrypto } = await refreshBuyFiat();
+      Loading.hide();
       setFiatList(buyFiatList);
       setCryptoList(buyDefaultCryptoList);
       const _fiat = buyFiatList.find(
@@ -69,28 +68,20 @@ export default function BuyForm() {
       const _crypto = buyDefaultCryptoList.find(
         item => item.symbol === buyDefaultCrypto.symbol && item.network === buyDefaultCrypto.network,
       );
-      if (_fiat) {
-        setFiat(pre => {
-          if (_fiat.symbol !== pre?.symbol || _fiat.country !== pre?.country) {
-            return _fiat;
-          }
-          return pre;
-        });
-      }
-      if (_crypto) {
-        setCrypto(pre => {
-          if (_crypto.symbol !== pre?.symbol || _crypto.network !== pre?.network) {
-            return _crypto;
-          }
-          return pre;
-        });
-      }
+      setAmount(buyDefaultFiat.amount);
+      setCurrency({
+        crypto: _crypto,
+        fiat: _fiat,
+      });
     } catch (error) {
+      Loading.hide();
       console.log('error', error);
     }
   }, [refreshBuyFiat]);
   useEffectOnce(() => {
-    refreshList();
+    if (fiatListState.length === 0 || defaultCryptoList.length === 0) {
+      refreshList();
+    }
   });
 
   const limitAmountRef = useRef<IRampLimit>();
@@ -98,24 +89,25 @@ export default function BuyForm() {
 
   const setLimitAmount = useCallback(async () => {
     limitAmountRef.current = undefined;
-    if (fiat === undefined || crypto === undefined) return;
+    const { fiat: _fiat, crypto: _crypto } = currency;
+    if (_fiat === undefined || _crypto === undefined) return;
 
     const loadingKey = Loading.show();
     try {
       const limitResult = await getBuyLimit({
-        crypto: crypto.symbol,
-        network: crypto.network,
-        fiat: fiat.symbol,
-        country: fiat.country,
+        crypto: _crypto.symbol,
+        network: _crypto.network,
+        fiat: _fiat.symbol,
+        country: _fiat.country,
       });
-      if (isEqual(fiat, fiatRef.current) && isEqual(crypto, cryptoRef.current)) {
+      if (isEqual(_fiat, currencyRef.current.fiat) && isEqual(_crypto, currencyRef.current.crypto)) {
         limitAmountRef.current = limitResult;
       }
     } catch (error) {
       console.log('Buy setLimitAmount', error);
     }
     Loading.hide(loadingKey);
-  }, [fiat, crypto]);
+  }, [currency]);
 
   const {
     receiveAmount,
@@ -143,6 +135,28 @@ export default function BuyForm() {
     }
     return amountLocalError;
   }, [amountFetchError, amountLocalError]);
+
+  const onFiatChange = useCallback(async (_fiat: IRampFiatItem) => {
+    try {
+      const { buyCryptoList: _cryptoList, buyDefaultCrypto: _defaultCrypto } = await getBuyCrypto({
+        fiat: _fiat.symbol,
+        country: _fiat.country,
+      });
+      setCryptoList(_cryptoList);
+      setCurrency({
+        fiat: _fiat,
+        crypto: _cryptoList.find(
+          item => item.symbol === _defaultCrypto.symbol && item.network === _defaultCrypto.network,
+        ),
+      });
+    } catch (error) {
+      console.log('onFiatChange', error);
+    }
+  }, []);
+
+  const onCryptoChange = useCallback((_crypto: IRampCryptoItem) => {
+    setCurrency(pre => ({ ...pre, crypto: _crypto }));
+  }, []);
 
   const onChooseChange = useCallback(async () => {
     isRefreshReceiveValid.current = false;
@@ -186,7 +200,7 @@ export default function BuyForm() {
     Loading.show();
     let isBuySectionShow = false;
     try {
-      const result = await refreshBuyButton();
+      const result = await refreshRampShow();
       isBuySectionShow = result.isBuySectionShow;
     } catch (error) {
       console.log(error);
@@ -218,7 +232,7 @@ export default function BuyForm() {
       receiveAmount: _receiveAmount,
       rate: _rate,
     });
-  }, [amount, fiat, rate, receiveAmount, refreshBuyButton, crypto]);
+  }, [amount, fiat, rate, receiveAmount, refreshRampShow, crypto]);
 
   return (
     <View style={styles.formContainer}>
@@ -235,7 +249,7 @@ export default function BuyForm() {
                 SelectCurrency.showList({
                   value: `${fiat?.country}_${fiat?.symbol}`,
                   list: fiatList,
-                  callBack: setFiat,
+                  callBack: onFiatChange,
                 });
               }}>
               {fiat?.icon && (
@@ -266,7 +280,7 @@ export default function BuyForm() {
                 SelectToken.showList({
                   value: `${crypto?.network}_${crypto?.symbol}`,
                   list: cryptoList,
-                  callBack: setCrypto,
+                  callBack: onCryptoChange,
                 });
               }}>
               {crypto?.icon && (

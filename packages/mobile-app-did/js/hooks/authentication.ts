@@ -18,6 +18,7 @@ import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authe
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { AuthenticationInfo, OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
+import TelegramOverlay from 'components/TelegramOverlay';
 
 if (!isIOS) {
   GoogleSignin.configure({
@@ -247,8 +248,8 @@ export function useTelegramAuthentication() {
   return useMemo(
     () => ({
       appleResponse: '',
-      telegramSign: () => {
-        console.log('telegramSign');
+      telegramSign: async () => {
+        await TelegramOverlay.sign();
       },
     }),
     [],

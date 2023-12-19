@@ -23,6 +23,7 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import RoundButton from './RoundButton';
 import fonts from 'assets/theme/fonts';
+import { checkIsUserCancel } from '@portkey-wallet/utils';
 const TitleMap = {
   [PageType.login]: {
     apple: 'Login with Apple',
@@ -82,12 +83,19 @@ export default function Referral({
   const onTelegramSign = useLockCallback(async () => {
     const loadingKey = Loading.show();
     try {
-      console.log('telegramSign');
+      const userInfo = await telegramSign();
+      console.log(userInfo, '=====userInfo');
+
+      // await onLogin({
+      //   loginAccount: userInfo.user.id,
+      //   loginType: LoginType.Google,
+      //   authenticationInfo: { [userInfo.user.id]: userInfo.accessToken },
+      // });
     } catch (error) {
-      CommonToast.failError(error);
+      if (!checkIsUserCancel(error)) CommonToast.failError(error);
     }
     Loading.hide(loadingKey);
-  }, [googleSign, onLogin]);
+  }, [telegramSign, onLogin]);
 
   const otherLoginTypeList = useMemo<{ icon: IconName; onPress: () => any }[]>(() => {
     return [

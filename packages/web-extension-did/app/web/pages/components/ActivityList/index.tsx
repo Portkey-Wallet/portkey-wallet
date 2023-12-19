@@ -65,7 +65,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
       <p className="row-1 flex-row-between">
         <span className="row-1-left flex-row-between">
           <span>{transactionName}</span>
-          {nftInfo?.nftId && <span>#{nftInfo.nftId}</span>}
+          {nftInfo?.nftId && <span className="nft-id-show">#{nftInfo.nftId}</span>}
           {!nftInfo?.nftId && (
             <span className="amount-show">{`${formatWithCommas({
               sign,
@@ -122,7 +122,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         title: (
           <div className="flex-column-center transaction-msg">
             <CustomSvg type="warnRed" />
-            {t('Transaction failed ！')}
+            {t('Transaction failed !')}
           </div>
         ),
         onOk: () => {

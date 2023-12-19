@@ -384,7 +384,6 @@ export class IM {
       },
     });
     request.set('headers', {
-      ...request.defaultConfig.headers,
       'R-Authorization': `Bearer ${token}`,
     });
   }

@@ -17,10 +17,9 @@ export const getFCMToken = async (): Promise<string> => {
   return new Promise((resolve) => {
     chrome.gcm.register([`${process.env.FCM_PROJECT_ID}`], (registrationId) => {
       if (chrome.runtime.lastError) {
-        console.log('===getGCMToken===reject===', chrome.runtime.lastError);
+        console.log('getGCMToken===reject===', chrome.runtime.lastError);
         resolve('');
       } else {
-        console.log(registrationId, '===getGCMToken===register===');
         resolve(registrationId);
       }
     });

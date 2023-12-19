@@ -22,6 +22,8 @@ import { PIN_LIMIT_EXCEED, UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants
 import { useWalletInfo } from 'store/Provider/hooks';
 import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
 import { setBadge } from 'utils/FCM';
+import { AppStatusUnit } from '@portkey-wallet/socket/socket-fcm/types';
+import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 
 export default function ChatList() {
   const navigate = useNavigate();
@@ -174,6 +176,7 @@ export default function ChatList() {
   });
 
   useEffect(() => {
+    signalrFCM.reportAppStatus(AppStatusUnit.FOREGROUND, unreadCount);
     setBadge({ value: unreadCount });
   }, [unreadCount]);
 

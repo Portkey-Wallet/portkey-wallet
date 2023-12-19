@@ -80,7 +80,7 @@ export const useSendRedPackage = () => {
         chainId,
         symbol,
       });
-      const { id, publicKey, signature, minAmount, redPackageContractAddress, expireTime } = redPackageInfo.data;
+      const { id, publicKey, minAmount, redPackageContractAddress, expireTime } = redPackageInfo.data;
 
       const rawTransaction = await generateRedPackageRawTransaction({
         caContract,
@@ -95,7 +95,6 @@ export const useSendRedPackage = () => {
         totalCount: count,
         type,
         publicKey,
-        signature,
       });
 
       const redPackageContent: ParsedRedPackage = {

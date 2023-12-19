@@ -26,7 +26,7 @@ export default function DepositList({ onClose, onClickBridge, onClickETrans }: I
 
   const handleSell = useCallback(() => {
     onClose();
-    navigate('/buy', { state: { pageType: PaymentTypeEnum.SELL } });
+    navigate('/buy', { state: { side: PaymentTypeEnum.SELL } });
   }, [navigate, onClose]);
 
   const formatDepositList = depositList.filter((item) => {

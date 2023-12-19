@@ -57,24 +57,22 @@ export interface IGenerateRedPackageRawTransaction {
   totalCount: number;
   type: RedPackageTypeEnum;
   publicKey: string;
-  signature: string;
 }
 export const generateRedPackageRawTransaction = async (params: IGenerateRedPackageRawTransaction) => {
   const rawResult = await params.caContract.encodedTx('ManagerForwardCall', {
     caHash: params.caHash,
     contractAddress: params.contractAddress,
-    methodName: 'CreateRedPacket',
+    methodName: 'CreateCryptoBox',
     args: {
-      redPacketId: params.id,
-      redPacketSymbol: params.symbol,
+      cryptoBoxId: params.id,
+      cryptoBoxSymbol: params.symbol,
       totalAmount: params.totalAmount,
       minAmount: params.minAmount,
       expirationTime: params.expirationTime,
       totalCount: params.totalCount,
-      redPacketType: params.type,
+      cryptoBoxType: params.type,
       publicKey: params.publicKey,
-      redPacketSignature: params.signature,
-      senderAddress: params.caAddress,
+      sender: params.caAddress,
     },
   });
   if (!rawResult || !rawResult.data) {

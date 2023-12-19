@@ -54,9 +54,7 @@ const RedPacketReceiverItem: React.FC<IReceiverItemProps> = props => {
               <Svg icon="luckiest" size={pTd(16)} />
               <TextM style={itemStyle.luckiest}>Luckiest Draw</TextM>
             </View>
-          ) : (
-            <TextM>{''}</TextM>
-          )}
+          ) : null}
         </View>
       </View>
     </View>

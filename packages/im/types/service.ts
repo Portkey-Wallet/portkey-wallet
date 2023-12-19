@@ -213,7 +213,6 @@ export type CreateRedPackageResult = {
   id: string;
   publicKey: string;
   chainId: ChainId;
-  signature: string;
   minAmount: string;
   symbol: string;
   decimal: string | number;

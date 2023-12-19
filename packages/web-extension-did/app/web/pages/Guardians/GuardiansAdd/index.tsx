@@ -417,7 +417,6 @@ export default function AddGuardian() {
         });
       }
       const { guardianIdentifier } = handleVerificationDoc(res.verificationDoc);
-      console.log('guardianAdd - guardians item', JSON.parse(JSON.stringify(curKey)));
       dispatch(
         setUserGuardianItemStatus({
           key: curKey,

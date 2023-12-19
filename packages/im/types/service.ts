@@ -9,6 +9,7 @@ import {
   TriggerMessageEventActionEnum,
 } from '.';
 import { RequireAtLeastOne } from '@portkey-wallet/types/common';
+import { IM_PIN_LIST_SORT_TYPE_ENUM } from '../constant';
 
 export type IMServiceCommon<T> = Promise<{
   code: string;
@@ -193,11 +194,17 @@ export type JoinChannelParams = {
 
 export type GetPinListParams = {
   channelUuid: string;
-  maxCreateAt: number;
-  limit: number;
+  sortType: IM_PIN_LIST_SORT_TYPE_ENUM;
+  ascending: boolean;
+  maxResultCount: number;
+  skipCount: number;
+};
+export type GetPinListResult = {
+  items: Message[];
+  totalCount: number;
 };
 
-export type UnSetPinParams = {
+export type UnPinParams = {
   id: string;
   channelUuid: string;
 };
@@ -245,7 +252,7 @@ export interface IIMService {
   getProfile(
     params: RequireAtLeastOne<GetProfileParams, 'id' | 'portkeyId' | 'relationId'>,
   ): IMServiceCommon<IContactProfile>;
-  getPinList(params: GetPinListParams): IMServiceCommon<Message[]>;
+  getPinList(params: GetPinListParams): IMServiceCommon<GetPinListResult>;
   setPin(params: Message): IMServiceCommon<null>;
-  unSetPin(params: UnSetPinParams): IMServiceCommon<null>;
+  unPin(params: UnPinParams): IMServiceCommon<null>;
 }

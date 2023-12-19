@@ -26,6 +26,8 @@ export const useIMChannelMessageListNetMapState = () => useAppCASelector(state =
 export const useIMRelationIdNetMapNetMapState = () => useAppCASelector(state => state.im.relationIdNetMap);
 export const useIMRelationTokenNetMapNetMapState = () => useAppCASelector(state => state.im.relationTokenNetMap);
 export const useIMGroupInfoMapNetMapState = () => useAppCASelector(state => state.im.groupInfoMapNetMap);
+export const useIMPinListNetMapState = () => useAppCASelector(state => state.im.pinListNetMap);
+export const useIMLastPinNetMapState = () => useAppCASelector(state => state.im.lastPinNetMap);
 
 export const useUnreadCount = () => {
   const [unreadCount, setUnreadCount] = useState(0);

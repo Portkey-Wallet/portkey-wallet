@@ -1,4 +1,4 @@
-export type MessageType = 'TEXT' | 'IMAGE' | 'SYS';
+export type MessageType = 'TEXT' | 'IMAGE' | 'SYS' | 'PIN-SYS';
 export type ParsedContent = string | ParsedImage | undefined;
 export type ParsedImage = {
   type: string;
@@ -9,6 +9,12 @@ export type ParsedImage = {
   thumbS3Key?: string;
   width?: string;
   height?: string;
+};
+
+export type PinInfoType = {
+  pinner: string;
+  pinnerName: string;
+  pinnedAt: string;
 };
 
 export type Message = {
@@ -26,9 +32,7 @@ export type Message = {
   parsedContent?: ParsedContent;
   unidentified?: boolean | undefined;
 
-  pinner?: string;
-  pinnerName?: string;
-  pinnedAt?: string;
+  pinInfo?: PinInfoType;
 };
 
 export type SocketMessage = Message & {

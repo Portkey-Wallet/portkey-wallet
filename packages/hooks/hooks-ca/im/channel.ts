@@ -22,6 +22,7 @@ import { request } from '@portkey-wallet/api/api-did';
 import { useWallet } from '../wallet';
 import { IMServiceCommon, SendMessageResult } from '@portkey-wallet/im/types/service';
 import useLockCallback from '../../useLockCallback';
+import { useIMPin } from './pin';
 
 export type ImageMessageFileType = {
   body: string | File;
@@ -294,11 +295,13 @@ export const useSendChannelMessage = () => {
 export const useDeleteMessage = (channelId: string) => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
+  const { refresh: refreshPin, addMockPinSysMessage } = useIMPin(channelId);
 
   const list = useCurrentChannelMessageList(channelId);
   const listRef = useLatestRef(list);
   return useCallback(
-    async (id?: string) => {
+    async (message: Message) => {
+      const { id } = message;
       if (!id) {
         throw new Error('no message id');
       }
@@ -345,12 +348,17 @@ export const useDeleteMessage = (channelId: string) => {
             id,
           }),
         );
+
+        if (message.pinInfo) {
+          refreshPin();
+          addMockPinSysMessage('', message);
+        }
       } catch (error) {
         console.log('deleteMessage: error', error);
         throw error;
       }
     },
-    [channelId, dispatch, listRef, networkType],
+    [addMockPinSysMessage, channelId, dispatch, listRef, networkType, refreshPin],
   );
 };
 

@@ -105,4 +105,25 @@ export const updateGroupInfo = createAction<{
   value: Partial<ChannelInfo>;
 }>('im/updateGroupInfo');
 
+export const setPinList = createAction<{
+  network: NetworkType;
+  channelId: string;
+  list: Message[];
+  fetchTime: number;
+}>('im/setPinList');
+
+export const nextPinList = createAction<{
+  network: NetworkType;
+  channelId: string;
+  list: Message[];
+  fetchTime: number;
+}>('im/nextPinList');
+
+export const setLastPinMessage = createAction<{
+  network: NetworkType;
+  channelId: string;
+  message: Message | undefined;
+  fetchTime: number;
+}>('im/setLastPinMessage');
+
 export const resetIm = createAction<NetworkType>('im/resetIm');

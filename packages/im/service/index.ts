@@ -35,7 +35,8 @@ import {
   VerifySignatureParams,
   VerifySignatureResult,
   GetPinListParams,
-  UnSetPinParams,
+  UnPinParams,
+  GetPinListResult,
 } from '../types/service';
 import { ChannelInfo, ChannelMemberInfo, Message, MessageCount } from '../types';
 import { sleep } from '@portkey-wallet/utils';
@@ -278,13 +279,25 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
     });
   }
 
-  getPinList(params: GetPinListParams): IMServiceCommon<Message[]> {
-    throw new Error('Method not implemented.');
+  getPinList(params: GetPinListParams): IMServiceCommon<GetPinListResult> {
+    return this._request.send({
+      url: '/api/v1/pin/list',
+      params,
+      method: 'POST',
+    });
   }
   setPin(params: Message): IMServiceCommon<null> {
-    throw new Error('Method not implemented.');
+    return this._request.send({
+      url: '/api/v1/pin/add',
+      params,
+      method: 'POST',
+    });
   }
-  unSetPin(params: UnSetPinParams): IMServiceCommon<null> {
-    throw new Error('Method not implemented.');
+  unPin(params: UnPinParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/pin/cancel',
+      params,
+      method: 'POST',
+    });
   }
 }

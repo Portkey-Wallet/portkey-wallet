@@ -31,6 +31,22 @@ export interface IMStateType {
       [channelId: string]: ChannelInfo;
     };
   };
+  pinListNetMap?: {
+    [T in NetworkType]?: {
+      [channelId: string]: {
+        list: Message[];
+        fetchTime: number;
+      };
+    };
+  };
+  lastPinNetMap?: {
+    [T in NetworkType]?: {
+      [channelId: string]: {
+        message: Message;
+        fetchTime: number;
+      };
+    };
+  };
 }
 
 export enum UpdateChannelAttributeTypeEnum {

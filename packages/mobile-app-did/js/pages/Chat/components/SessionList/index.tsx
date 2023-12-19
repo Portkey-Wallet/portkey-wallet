@@ -169,10 +169,6 @@ export default function SessionList() {
     [hideChannel, navToChatDetails, navToChatGroupDetails],
   );
 
-  useEffectOnce(() => {
-    initChannelList();
-  });
-
   return (
     <Touchable style={[GStyles.flex1, BGStyles.bg1]} activeOpacity={1} onPress={myEvents.chatHomeListCloseSwiped.emit}>
       <FlatList

@@ -12,30 +12,27 @@ import navigationService from 'utils/navigationService';
 import { defaultColors } from 'assets/theme';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
-import BuyButton from 'components/BuyButton';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import FaucetButton from 'components/FaucetButton';
-import BridgeButton from 'components/BridgeButton';
 import GStyles from 'assets/theme/GStyles';
-import { useAppBridgeButtonShow, useAppBuyButtonShow } from 'hooks/cms';
+import DepositButton from 'components/DepositButton';
+import { DepositItem, useDepositList } from 'hooks/deposit';
 
 const Card: React.FC = () => {
   const isMainnet = useIsMainnet();
   const { userInfo } = useWallet();
   const accountBalanceUSD = useAccountBalanceUSD();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
-  const { isBuyButtonShow } = useAppBuyButtonShow();
-  const { isBridgeShow } = useAppBridgeButtonShow();
-
+  const depositList = useDepositList();
+  const isDepositShow = useMemo(() => !!depositList.length, [depositList.length]);
   const buttonCount = useMemo(() => {
     let count = 3;
-    if (isBuyButtonShow) count++;
-    if (isBridgeShow) count++;
+    if (isDepositShow) count++;
     // FaucetButton
     if (!isMainnet) count++;
     return count;
-  }, [isBridgeShow, isBuyButtonShow, isMainnet]);
+  }, [isDepositShow, isMainnet]);
 
   const buttonGroupWrapStyle = useMemo(
     () => (buttonCount < 5 ? (GStyles.flexCenter as StyleProp<ViewProps>) : undefined),

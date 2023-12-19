@@ -141,6 +141,7 @@ export const BackEndNetWorkMap: {
     imS3Bucket: 'portkey-im-testnet',
     portkeyFinanceUrl: 'https://test.portkey.finance',
     eBridgeUrl: 'https://test.ebridge.exchange',
+    eTransferUrl: 'https://test.etransfer.exchange',
   },
   'back-end-mainnet': {
     name: 'aelf Mainnet',
@@ -163,5 +164,6 @@ export const BackEndNetWorkMap: {
     imWsUrl: 'wss://diok8uqxgvc3.cloudfront.net/ws/',
     imS3Bucket: 'portkey-im',
     eBridgeUrl: 'https://ebridge.exchange',
+    eTransferUrl: 'https://etransfer.exchange',
   },
 };

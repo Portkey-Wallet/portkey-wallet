@@ -155,44 +155,6 @@ export const useEntrance = (config: IEntranceMatchValueConfig, isInit = false) =
   };
 };
 
-export const useBuyButtonShow = (config: IEntranceMatchValueConfig) => {
-  const { entrance, refresh } = useEntrance(config);
-  const isMainnet = useIsMainnet();
-
-  const isBuySectionShow = useMemo(() => isMainnet && entrance.buy, [entrance.buy, isMainnet]);
-
-  const isSellSectionShow = useMemo(() => isMainnet && entrance.sell, [entrance.sell, isMainnet]);
-
-  const isBuyButtonShow = useMemo(
-    () => isMainnet && (isBuySectionShow || isSellSectionShow || false),
-    [isBuySectionShow, isMainnet, isSellSectionShow],
-  );
-
-  const refreshBuyButton = useCallback(async () => {
-    let isBuySectionShow = false;
-    let isSellSectionShow = false;
-    try {
-      const result = await refresh();
-      isBuySectionShow = result.buy;
-      isSellSectionShow = result.sell;
-    } catch (error) {
-      console.log('refreshBuyButton error');
-    }
-
-    return {
-      isBuySectionShow: isMainnet && isBuySectionShow,
-      isSellSectionShow: isMainnet && isSellSectionShow,
-    };
-  }, [isMainnet, refresh]);
-
-  return {
-    isBuyButtonShow,
-    isBuySectionShow,
-    isSellSectionShow,
-    refreshBuyButton,
-  };
-};
-
 export const useETransShow = (config: IEntranceMatchValueConfig) => {
   const { entrance, refresh } = useEntrance(config);
   const { eTransferUrl } = useCurrentNetworkInfo();

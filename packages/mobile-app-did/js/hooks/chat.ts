@@ -12,7 +12,7 @@ import { parseLinkPortkeyUrl } from 'utils/scheme';
 import { useDiscoverJumpWithNetWork } from './discover';
 import { useHandlePortkeyId, useHandleGroupId } from './useQrScan';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-const WWW_URL_PATTERN = /^www\./i;
+import { prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
 
 export function useJumpToChatDetails() {
   const chatDispatch = useChatsDispatch();
@@ -109,7 +109,7 @@ export function useOnUrlPress() {
 
   return useThrottleCallback(
     (url: string) => {
-      if (WWW_URL_PATTERN.test(url)) url = `https://${url}`;
+      url = prefixUrlWithProtocol(url);
       const { id, type } = parseLinkPortkeyUrl(url);
 
       if (type === 'addContact' && isChatShow)

@@ -221,7 +221,7 @@ export default function SellFrom() {
 
       // CHECK 5: transfer limit
       const limitRes = await checkLimit({
-        chainId: MAIN_CHAIN_ID,
+        chainId: cryptoSelectedRef.current.chainId,
         symbol: cryptoSelectedRef.current.symbol,
         amount: cryptoAmount,
         decimals: cryptoSelectedRef.current.decimals,
@@ -264,7 +264,7 @@ export default function SellFrom() {
 
   useEffectOnce(() => {
     // CHECK 1: security
-    checkSecurity(MAIN_CHAIN_ID, () => navigate('/'));
+    checkSecurity(cryptoSelectedRef.current.chainId || MAIN_CHAIN_ID, () => navigate('/'));
 
     updateSellReceive();
   });

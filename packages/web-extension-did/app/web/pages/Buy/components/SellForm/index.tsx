@@ -32,6 +32,7 @@ import useLocationState from 'hooks/useLocationState';
 import { RampRouteState } from 'pages/Buy/types';
 import { useCheckLimit, useCheckSecurity } from 'hooks/useSecurity';
 import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 
 export default function SellFrom() {
   const { t } = useTranslation();
@@ -220,7 +221,7 @@ export default function SellFrom() {
 
       // CHECK 5: transfer limit
       const limitRes = await checkLimit({
-        chainId: 'AELF',
+        chainId: MAIN_CHAIN_ID,
         symbol: cryptoSelectedRef.current.symbol,
         amount: cryptoAmount,
         decimals: cryptoSelectedRef.current.decimals,
@@ -263,7 +264,7 @@ export default function SellFrom() {
 
   useEffectOnce(() => {
     // CHECK 1: security
-    checkSecurity('AELF');
+    checkSecurity(MAIN_CHAIN_ID, () => navigate('/'));
 
     updateSellReceive();
   });

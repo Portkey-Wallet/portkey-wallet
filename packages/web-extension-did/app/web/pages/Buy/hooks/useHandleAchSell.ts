@@ -14,16 +14,18 @@ import AElf from 'aelf-sdk';
 import { getWallet } from '@portkey-wallet/utils/aelf';
 import SparkMD5 from 'spark-md5';
 import ramp, { IOrderInfo } from '@portkey-wallet/ramp';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 
 export const useHandleAchSell = () => {
   const { setLoading } = useLoading();
 
   const { accountToken } = useAssets();
   const aelfToken = useMemo(
-    () => accountToken.accountTokenList.find((item) => item.symbol === 'ELF' && item.chainId === 'AELF'),
+    () => accountToken.accountTokenList.find((item) => item.symbol === ELF_SYMBOL && item.chainId === MAIN_CHAIN_ID),
     [accountToken],
   );
-  const chainInfo = useCurrentChain('AELF');
+  const chainInfo = useCurrentChain(MAIN_CHAIN_ID);
   const wallet = useCurrentWalletInfo();
   const currentNetwork = useCurrentNetworkInfo();
 

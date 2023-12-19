@@ -1,3 +1,5 @@
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { IRampProviderType, RampType } from '@portkey-wallet/ramp';
 import { IGetBuyDetail, IGetSellDetail } from '@portkey-wallet/utils/ramp';
 
@@ -5,8 +7,8 @@ export const MAX_UPDATE_TIME = 15;
 export const initCryptoAmount = '400';
 
 export const initPreviewData = {
-  crypto: 'ELF',
-  network: 'AELF-AELF',
+  crypto: ELF_SYMBOL,
+  network: MAIN_CHAIN_ID,
   fiat: 'USD',
   country: 'US',
   amount: initCryptoAmount,

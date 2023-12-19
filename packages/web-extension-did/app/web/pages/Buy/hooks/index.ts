@@ -8,6 +8,7 @@ import { limitText, validValueCheck } from '../utils';
 import { IErrMsgHandlerParams } from '../types';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 
 interface IUpdateReceiveAndIntervalProps {
   cryptoSelectedRef: MutableRefObject<IRampCryptoItem>;
@@ -184,7 +185,7 @@ export const useUpdateReceiveAndInterval = (type: RampType, params: IUpdateRecei
   }, [stopInterval]);
 
   const checkManagerSynced = useCallback(async () => {
-    const _isManagerSynced = await checkManagerSyncState('AELF');
+    const _isManagerSynced = await checkManagerSyncState(MAIN_CHAIN_ID);
 
     if (!_isManagerSynced) {
       setWarningMsg(SYNCHRONIZING_CHAIN_TEXT);

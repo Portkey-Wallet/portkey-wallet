@@ -44,7 +44,7 @@ export const useCheckSecurity = () => {
   const synchronizingModal = useSynchronizingModal();
 
   return useCallback(
-    async (targetChainId: ChainId): Promise<boolean> => {
+    async (targetChainId: ChainId, onCancel?: () => void): Promise<boolean> => {
       try {
         setLoading(true);
         const res: CheckSecurityResult = await request.security.balanceCheck({
@@ -56,7 +56,7 @@ export const useCheckSecurity = () => {
 
         if (wallet.originChainId === targetChainId) {
           if (res.isOriginChainSafe) return true;
-          addGuardiansModal(targetChainId);
+          addGuardiansModal(targetChainId, onCancel);
           return false;
         } else {
           if (res.isSynchronizing && res.isOriginChainSafe) {
@@ -73,7 +73,7 @@ export const useCheckSecurity = () => {
             });
             return false;
           }
-          addGuardiansModal(targetChainId);
+          addGuardiansModal(targetChainId, onCancel);
           return false;
         }
       } catch (error) {
@@ -211,8 +211,8 @@ export function useAddGuardiansModal() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   return useCallback(
-    (accelerateChainId: ChainId) => {
-      CustomModal({
+    (accelerateChainId: ChainId, onCancel?: () => void) => {
+      const modal = CustomModal({
         type: 'confirm',
         content: (
           <div className="security-modal">
@@ -229,6 +229,10 @@ export function useAddGuardiansModal() {
         ),
         cancelText: t('Not Now'),
         okText: t('Add Guardians'),
+        onCancel: () => {
+          onCancel?.();
+          modal.destroy();
+        },
         onOk: () => navigate('/setting/guardians', { state: { accelerateChainId } }),
       });
     },

@@ -19,6 +19,7 @@ import { RampType } from '@portkey-wallet/ramp';
 import { BUY_SOON_TEXT, SELL_SOON_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useCheckSecurity } from 'hooks/useSecurity';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 
 export default function Buy() {
   const { t } = useTranslation();
@@ -64,7 +65,7 @@ export default function Buy() {
       if (side === RampType.SELL) {
         try {
           setLoading(true);
-          const securityRes = await checkSecurity('AELF');
+          const securityRes = await checkSecurity(MAIN_CHAIN_ID);
           setLoading(false);
           if (!securityRes) return;
         } catch (error) {

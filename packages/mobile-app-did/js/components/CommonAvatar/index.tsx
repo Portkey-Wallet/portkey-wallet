@@ -72,8 +72,8 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     return checkIsSvgUrl(imageUrl) ? (
       <SvgCssUri
         uri={imageUrl}
-        width={width}
-        height={height}
+        width={sizeStyle.width}
+        height={sizeStyle.height}
         preserveAspectRatio={preserveAspectRatio}
         style={[styles.avatarWrap, shapeType === 'square' && styles.squareStyle, sizeStyle, style]}
       />

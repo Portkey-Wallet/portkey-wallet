@@ -63,6 +63,9 @@ export class RampService implements IRampService {
       url: RampApi.getCrypto.target,
       method: RampApi.getCrypto.config.method,
       params: { type: RampType.BUY, ...params },
+      headers: {
+        'Client-Type': this.clientType,
+      },
     });
   }
   getBuyFiatData(params?: IGetFiatDataRequest): IRampServiceCommon<IRampFiatResult> {
@@ -70,6 +73,9 @@ export class RampService implements IRampService {
       url: RampApi.getFiat.target,
       method: RampApi.getFiat.config.method,
       params: { type: RampType.BUY, ...params },
+      headers: {
+        'Client-Type': this.clientType,
+      },
     });
   }
   getBuyLimit(params: IGetLimitRequest): IRampServiceCommon<IBuyLimitResult> {
@@ -77,6 +83,9 @@ export class RampService implements IRampService {
       url: RampApi.getRampLimit.target,
       method: RampApi.getRampLimit.config.method,
       params: { type: RampType.BUY, ...params },
+      headers: {
+        'Client-Type': this.clientType,
+      },
     });
   }
   getBuyExchange(params: IGetExchangeRequest): IRampServiceCommon<IRampExchangeResult> {
@@ -84,6 +93,9 @@ export class RampService implements IRampService {
       url: RampApi.getRampExchange.target,
       method: RampApi.getRampExchange.config.method,
       params: { type: RampType.BUY, ...params },
+      headers: {
+        'Client-Type': this.clientType,
+      },
     });
   }
   getBuyPrice(params: IGetBuyPriceRequest): IRampServiceCommon<IBuyPriceResult> {
@@ -91,6 +103,9 @@ export class RampService implements IRampService {
       url: RampApi.getRampPrice.target,
       method: RampApi.getRampPrice.config.method,
       params: { type: RampType.BUY, ...params },
+      headers: {
+        'Client-Type': this.clientType,
+      },
     });
   }
   getBuyDetail(params: IGetBuyDetailRequest): IRampServiceCommon<IBuyDetailResult> {
@@ -108,6 +123,9 @@ export class RampService implements IRampService {
       url: RampApi.getCrypto.target,
       method: RampApi.getCrypto.config.method,
       params: { type: RampType.SELL, ...params },
+      headers: {
+        'Client-Type': this.clientType,
+      },
     });
   }
   getSellFiatData(params?: IGetFiatDataRequest): IRampServiceCommon<IRampFiatResult> {
@@ -115,6 +133,9 @@ export class RampService implements IRampService {
       url: RampApi.getFiat.target,
       method: RampApi.getFiat.config.method,
       params: { type: RampType.SELL, ...params },
+      headers: {
+        'Client-Type': this.clientType,
+      },
     });
   }
   getSellLimit(params: IGetLimitRequest): IRampServiceCommon<ISellLimitResult> {
@@ -122,6 +143,9 @@ export class RampService implements IRampService {
       url: RampApi.getRampLimit.target,
       method: RampApi.getRampLimit.config.method,
       params: { type: RampType.SELL, ...params },
+      headers: {
+        'Client-Type': this.clientType,
+      },
     });
   }
   getSellExchange(params: IGetExchangeRequest): IRampServiceCommon<IRampExchangeResult> {
@@ -129,6 +153,9 @@ export class RampService implements IRampService {
       url: RampApi.getRampExchange.target,
       method: RampApi.getRampExchange.config.method,
       params: { type: RampType.SELL, ...params },
+      headers: {
+        'Client-Type': this.clientType,
+      },
     });
   }
   getSellPrice(params: IGetSellPriceRequest): IRampServiceCommon<ISellPriceResult> {
@@ -136,6 +163,9 @@ export class RampService implements IRampService {
       url: RampApi.getRampPrice.target,
       method: RampApi.getRampPrice.config.method,
       params: { type: RampType.SELL, ...params },
+      headers: {
+        'Client-Type': this.clientType,
+      },
     });
   }
   getSellDetail(params: IGetSellDetailRequest): IRampServiceCommon<ISellDetailResult> {

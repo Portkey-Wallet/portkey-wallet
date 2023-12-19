@@ -1,3 +1,4 @@
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { IRampStateType } from './type';
 
 export const initialRampState: IRampStateType = {
@@ -18,14 +19,14 @@ export const initialRampState: IRampStateType = {
     symbol: '',
     amount: '',
     network: '',
-    chainId: 'AELF',
+    chainId: MAIN_CHAIN_ID,
   },
   sellCryptoList: [],
   sellDefaultCrypto: {
     symbol: '',
     amount: '',
     network: '',
-    chainId: 'AELF',
+    chainId: MAIN_CHAIN_ID,
   },
   sellDefaultFiatList: [],
   sellDefaultFiat: {

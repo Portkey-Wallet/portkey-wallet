@@ -18,7 +18,7 @@ import { useLoading } from 'store/Provider/hooks';
 import { useEffectOnce } from 'react-use';
 import { Button, message } from 'antd';
 import { SERVICE_UNAVAILABLE_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -28,12 +28,17 @@ import { useFetchTxFee, useGetOneTxFee } from '@portkey-wallet/hooks/hooks-ca/us
 import { generateRateText } from 'pages/Buy/utils';
 import { getSellFiat } from '@portkey-wallet/utils/ramp';
 import { useGetChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import useLocationState from 'hooks/useLocationState';
+import { RampRouteState } from 'pages/Buy/types';
+import { useCheckLimit, useCheckSecurity } from 'hooks/useSecurity';
+import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 
 export default function SellFrom() {
   const { t } = useTranslation();
   const { setLoading } = useLoading();
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const { state } = useLocationState<RampRouteState>();
 
   // get data
   const { refreshRampShow } = useRampEntryShow();
@@ -42,18 +47,25 @@ export default function SellFrom() {
   const cryptoList = useSellCryptoListState();
   const defaultFiatList = useSellDefaultFiatListState();
   const filterCryptoSelected = useMemo(
-    () => cryptoList.filter((item) => item.symbol === defaultCrypto && item.network === defaultNetwork),
-    [cryptoList, defaultCrypto, defaultNetwork],
+    () =>
+      cryptoList.filter(
+        (item) =>
+          item.symbol === (state?.crypto || defaultCrypto) && item.network === (state?.network || defaultNetwork),
+      ),
+    [cryptoList, defaultCrypto, defaultNetwork, state?.crypto, state?.network],
   );
   const filterFiatSelected = useMemo(
-    () => defaultFiatList.filter((item) => item.symbol === defaultFiat && item.country === defaultCountry),
-    [defaultCountry, defaultFiat, defaultFiatList],
+    () =>
+      defaultFiatList.filter(
+        (item) => item.symbol === (state?.fiat || defaultFiat) && item.country === (state?.country || defaultCountry),
+      ),
+    [defaultCountry, defaultFiat, defaultFiatList, state?.country, state?.fiat],
   );
   useFetchTxFee();
 
   // pay
-  const [cryptoAmount, setCryptoAmount] = useState<string>(defaultCryptoAmount);
-  const cryptoAmountRef = useRef<string>(defaultCryptoAmount);
+  const [cryptoAmount, setCryptoAmount] = useState<string>(state?.amount || defaultCryptoAmount);
+  const cryptoAmountRef = useRef<string>(state?.amount || defaultCryptoAmount);
   const [cryptoSelected, setCryptoSelected] = useState<IRampCryptoItem>({ ...filterCryptoSelected[0] });
   const cryptoSelectedRef = useRef<IRampCryptoItem>({ ...filterCryptoSelected[0] });
 
@@ -158,11 +170,13 @@ export default function SellFrom() {
   const currentNetwork = useCurrentNetworkInfo();
   const wallet = useCurrentWalletInfo();
   const getOneTxFee = useGetOneTxFee();
-
+  const checkSecurity = useCheckSecurity();
+  const checkLimit = useCheckLimit(cryptoSelectedRef.current.chainId); // TODO change => callback params
   const handleNext = useCallback(async () => {
     try {
       setLoading(true);
 
+      // CHECK 1: is show buy\sell
       // Compatible with the situation where the function is turned off when the user is on the page.
       const { isSellSectionShow } = await refreshRampShow();
       if (!isSellSectionShow) {
@@ -171,14 +185,14 @@ export default function SellFrom() {
         return navigate('/');
       }
 
-      const chainId = cryptoSelectedRef.current.chainId;
+      // CHECK 2: account security
+      const securityRes = await checkSecurity(cryptoSelectedRef.current.chainId);
+      if (!securityRes) return setLoading(false);
 
+      // CHECK 3: balance and tx fee
+      const chainId = cryptoSelectedRef.current.chainId;
       const currentChain = getCurrentChain(chainId);
       if (!currentChain) return setLoading(false);
-
-      const _isManagerSynced = await checkManagerSynced();
-      if (!_isManagerSynced) return setLoading(false);
-
       // search balance from contract
       const result = await getBalance({
         rpcUrl: currentChain.endPoint,
@@ -191,9 +205,7 @@ export default function SellFrom() {
       });
       setLoading(false);
       const balance = result.result.balance;
-
       const achFee = getOneTxFee(chainId, 'MAIN');
-
       if (
         ZERO.plus(divDecimals(balance, currentChain.defaultToken.decimals)).isLessThanOrEqualTo(
           ZERO.plus(achFee.ach).plus(cryptoAmountRef.current),
@@ -202,6 +214,20 @@ export default function SellFrom() {
         setInsufficientFundsMsg();
         return;
       }
+
+      // CHECK 4: manager sync
+      const _isManagerSynced = await checkManagerSynced();
+      if (!_isManagerSynced) return setLoading(false);
+
+      // CHECK 5: transfer limit
+      const limitRes = await checkLimit({
+        chainId: MAIN_CHAIN_ID,
+        symbol: cryptoSelectedRef.current.symbol,
+        amount: cryptoAmount,
+        decimals: cryptoSelectedRef.current.decimals,
+        from: ICheckLimitBusiness.RAMP_SELL,
+      });
+      if (typeof limitRes !== 'boolean') return setLoading(false);
 
       navigate('/buy/preview', {
         state: {
@@ -221,7 +247,10 @@ export default function SellFrom() {
     }
   }, [
     accountTokenList,
+    checkLimit,
     checkManagerSynced,
+    checkSecurity,
+    cryptoAmount,
     currentNetwork.walletType,
     getCurrentChain,
     getOneTxFee,
@@ -234,6 +263,9 @@ export default function SellFrom() {
   ]);
 
   useEffectOnce(() => {
+    // CHECK 1: security
+    checkSecurity(MAIN_CHAIN_ID, () => navigate('/'));
+
     updateSellReceive();
   });
 

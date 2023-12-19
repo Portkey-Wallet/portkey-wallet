@@ -16,35 +16,38 @@ import { useUpdateReceiveAndInterval } from 'pages/Buy/hooks';
 import { useLoading } from 'store/Provider/hooks';
 import { Button, message } from 'antd';
 import { SERVICE_UNAVAILABLE_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { generateRateText } from 'pages/Buy/utils';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { getBuyCrypto } from '@portkey-wallet/utils/ramp';
+import { RampRouteState } from 'pages/Buy/types';
+import useLocationState from 'hooks/useLocationState';
 
 export default function BuyForm() {
   const { t } = useTranslation();
   const { setLoading } = useLoading();
   const navigate = useNavigate();
-  const { state } = useLocation();
-
+  const { state } = useLocationState<RampRouteState>();
   // get data
   const { refreshRampShow } = useRampEntryShow();
   const { symbol: defaultFiat, amount: defaultFiatAmount, country: defaultCountry } = useBuyDefaultFiatState();
   const { symbol: defaultCrypto, network: defaultNetwork } = useBuyDefaultCryptoState();
   const fiatList = useBuyFiatListState();
   const defaultCryptoList = useBuyDefaultCryptoListState();
-  const filterFiatSelected = useMemo(
-    () => fiatList.filter((item) => item.symbol === defaultFiat && item.country === defaultCountry),
-    [defaultCountry, defaultFiat, fiatList],
-  );
-  const filterCryptoSelected = useMemo(
-    () => defaultCryptoList.filter((item) => item.symbol === defaultCrypto && item.network === defaultNetwork),
-    [defaultCrypto, defaultCryptoList, defaultNetwork],
-  );
+  const filterFiatSelected = useMemo(() => {
+    return fiatList.filter(
+      (item) => item.symbol === (state?.fiat || defaultFiat) && item.country === (state?.country || defaultCountry),
+    );
+  }, [defaultCountry, defaultFiat, fiatList, state?.country, state?.fiat]);
+  const filterCryptoSelected = useMemo(() => {
+    return defaultCryptoList.filter(
+      (item) => item.symbol === (state?.crypto || defaultCrypto) && item.network === (state?.network || defaultNetwork),
+    );
+  }, [defaultCrypto, defaultCryptoList, defaultNetwork, state?.crypto, state?.network]);
 
   // pay
-  const [fiatAmount, setFiatAmount] = useState<string>(defaultFiatAmount);
-  const fiatAmountRef = useRef<string>(defaultFiatAmount);
+  const [fiatAmount, setFiatAmount] = useState<string>(state?.amount || defaultFiatAmount);
+  const fiatAmountRef = useRef<string>(state?.amount || defaultFiatAmount);
   const [fiatSelected, setFiatSelected] = useState<IRampFiatItem>({ ...filterFiatSelected[0] });
   const fiatSelectedRef = useRef<IRampFiatItem>({ ...filterFiatSelected[0] });
 

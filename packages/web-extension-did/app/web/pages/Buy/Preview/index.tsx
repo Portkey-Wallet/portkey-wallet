@@ -16,10 +16,11 @@ import './index.less';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { ACH_WITHDRAW_URL } from 'constants/index';
 import { generateRateText, generateReceiveText } from '../utils';
-import ramp, { RampType } from '@portkey-wallet/ramp';
+import ramp, { IRampProviderType, RampType } from '@portkey-wallet/ramp';
 import { IGetBuyDetail, IGetSellDetail, getBuyDetail, getSellDetail } from '@portkey-wallet/utils/ramp';
 import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { sleep } from '@portkey-wallet/utils';
 
 export default function Preview() {
   const { t } = useTranslation();
@@ -35,6 +36,7 @@ export default function Preview() {
 
   const [providerList, setProviderList] = useState<Array<IGetBuyDetail | IGetSellDetail>>([]);
   const [providerSelected, setProviderSelected] = useState<IGetBuyDetail | IGetSellDetail>(InitProviderSelected);
+  const providerSelectedKey = useRef<IRampProviderType>(InitProviderSelected.thirdPart);
 
   const data = useMemo(() => ({ ...state }), [state]);
   const showRateText = useMemo(() => generateRateText(data.crypto, rate, data.fiat), [data.crypto, data.fiat, rate]);
@@ -48,6 +50,7 @@ export default function Preview() {
   );
 
   const onSwitchProvider = useCallback((provider: IGetBuyDetail | IGetSellDetail) => {
+    providerSelectedKey.current = provider.thirdPart;
     setProviderSelected(provider);
     setReceive(provider.amount);
     setRate(provider.exchange);
@@ -75,22 +78,17 @@ export default function Preview() {
       }
 
       setProviderList(canUseProviders);
-      const providerSelectedExit = canUseProviders.filter((item) => item?.thirdPart === providerSelected?.thirdPart);
-
+      const providerSelectedExit = canUseProviders.filter((item) => item?.thirdPart === providerSelectedKey.current);
       if (providerSelectedExit.length === 0) {
         // providerSelected not exit
-        setProviderSelected(canUseProviders[0]);
-        setReceive(canUseProviders[0].amount);
-        setRate(canUseProviders[0].exchange);
+        onSwitchProvider(canUseProviders[0]);
       } else {
-        setProviderSelected(providerSelectedExit[0]);
-        setReceive(providerSelectedExit[0].amount);
-        setRate(providerSelectedExit[0].exchange);
+        onSwitchProvider(providerSelectedExit[0]);
       }
     } catch (error) {
       console.log('getRampDetail error:', error);
     }
-  }, [data.side, providerSelected?.thirdPart, state.amount, state.country, state.crypto, state.fiat, state.network]);
+  }, [data.side, onSwitchProvider, state.amount, state.country, state.crypto, state.fiat, state.network]);
 
   useEffect(() => {
     getRampDetail();
@@ -153,7 +151,7 @@ export default function Preview() {
       if (openWinder) {
         openWinder.opener = null;
       }
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await sleep(500);
       navigate('/');
     } catch (error) {
       message.error('There is a network error, please try again.');

@@ -1,3 +1,6 @@
+import { RampType } from '@portkey-wallet/ramp';
+import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+
 export interface ILimitTextParams {
   min: string | number;
   max: string | number;
@@ -12,3 +15,13 @@ export interface IValidValueCheckParams {
   min: string | number;
   max: string | number;
 }
+
+export type RampRouteState = {
+  crypto: string;
+  network: string;
+  fiat: string;
+  country: string;
+  amount: string;
+  side: RampType;
+  tokenInfo?: TokenItemShowType;
+};

@@ -20,7 +20,7 @@ export const APPROVAL_TO_VERIFICATION_MAP = {
   [ApprovalType.communityRecovery]: VerificationType.communityRecovery,
   [ApprovalType.managerApprove]: VerificationType.managerApprove,
   [ApprovalType.modifyTransferLimit]: VerificationType.modifyTransferLimit,
-  [ApprovalType.setLoginAccount]: VerificationType.addGuardianByApprove,
+  [ApprovalType.setLoginAccount]: VerificationType.setLoginAccountByApprove,
   [ApprovalType.unsetLoginAccount]: VerificationType.unsetLoginAccountByApprove,
 };
 

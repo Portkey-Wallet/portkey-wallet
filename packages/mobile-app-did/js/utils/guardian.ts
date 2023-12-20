@@ -141,14 +141,9 @@ export function setLoginAccount(
     },
   };
   const guardiansApproved = getGuardiansApproved(userGuardiansList, guardiansStatus);
-  console.log('SetGuardianForLogin params', address, {
-    caHash,
-    guardian: guardian,
-    guardiansApproved: guardiansApproved,
-  });
   return contract?.callSendMethod('SetGuardianForLogin', address, {
     caHash,
-    guardian: guardian,
+    guardianToSetLogin: guardian,
     guardiansApproved: guardiansApproved,
   });
 }
@@ -172,14 +167,9 @@ export function unsetLoginAccount(
     },
   };
   const guardiansApproved = getGuardiansApproved(userGuardiansList, guardiansStatus);
-  console.log('UnsetGuardianForLogin params', address, {
-    caHash,
-    guardian: guardian,
-    guardiansApproved: guardiansApproved,
-  });
   return contract?.callSendMethod('UnsetGuardianForLogin', address, {
     caHash,
-    guardian: guardian,
+    guardianToUnsetLogin: guardian,
     guardiansApproved: guardiansApproved,
   });
 }

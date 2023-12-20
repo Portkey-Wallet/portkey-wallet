@@ -318,6 +318,9 @@ export type GetPinListResult = {
 
 export type UnPinParams = {
   id: string;
+};
+
+export type UnPinAllParams = {
   channelUuid: string;
 };
 
@@ -380,4 +383,5 @@ export interface IIMService {
   getPinList(params: GetPinListParams): IMServiceCommon<GetPinListResult>;
   setPin(params: Message): IMServiceCommon<null>;
   unPin(params: UnPinParams): IMServiceCommon<null>;
+  unPinAll(params: UnPinAllParams): IMServiceCommon<null>;
 }

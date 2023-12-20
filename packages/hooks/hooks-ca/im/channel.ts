@@ -30,6 +30,7 @@ import { IMServiceCommon, SendMessageResult } from '@portkey-wallet/im/types/ser
 import useLockCallback from '../../useLockCallback';
 import { useIMPin } from './pin';
 import { getSendUuid } from '@portkey-wallet/utils/chat';
+import { PIN_OPERATION_TYPE_ENUM } from '@portkey-wallet/im/types/pin';
 
 export type ImageMessageFileType = {
   body: string | File;
@@ -358,7 +359,7 @@ export const useDeleteMessage = (channelId: string) => {
 
         if (message.pinInfo) {
           refreshPin();
-          addMockPinSysMessage('', message);
+          addMockPinSysMessage(PIN_OPERATION_TYPE_ENUM.UnPin, message);
         }
       } catch (error) {
         console.log('deleteMessage: error', error);

@@ -27,6 +27,7 @@ import {
   updateChannelMessageRedPackageAttribute,
   updateChannelRedPackageAttribute,
   setRedPackageConfig,
+  cleanALLChannelMessagePin,
 } from './actions';
 import { formatChannelList } from './util';
 import { MessageTypeEnum, ParsedRedPackage } from '@portkey-wallet/im';
@@ -459,6 +460,26 @@ export const imSlice = createSlice({
                 list: [..._list, ...(preListObj?.list || [])],
                 fetchTime,
               },
+            },
+          },
+        };
+      })
+      .addCase(cleanALLChannelMessagePin, (state, action) => {
+        const { network, channelId } = action.payload;
+        return {
+          ...state,
+          channelMessageListNetMap: {
+            ...state.channelMessageListNetMap,
+            [network]: {
+              ...state.channelMessageListNetMap?.[network],
+              [channelId]: [
+                ...(state.channelMessageListNetMap?.[network]?.[channelId]?.map(item => {
+                  return {
+                    ...item,
+                    pinInfo: undefined,
+                  };
+                }) || []),
+              ],
             },
           },
         };

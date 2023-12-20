@@ -140,6 +140,11 @@ export const nextPinList = createAction<{
   fetchTime: number;
 }>('im/nextPinList');
 
+export const cleanALLChannelMessagePin = createAction<{
+  network: NetworkType;
+  channelId: string;
+}>('im/cleanALLChannelMessagePin');
+
 export const setLastPinMessage = createAction<{
   network: NetworkType;
   channelId: string;

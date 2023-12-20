@@ -1,11 +1,12 @@
 import { useCallback, useMemo, useRef } from 'react';
 import { useIMLastPinNetMapState, useIMPinListNetMapState } from '.';
 import { useCurrentNetworkInfo } from '../network';
-import im, { Message, SocketMessage } from '@portkey-wallet/im';
+import im, { Message, MessageTypeEnum, ParsedPinSys, SocketMessage } from '@portkey-wallet/im';
 import { PIN_MESSAGE_LIST_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
 import { useAppCommonDispatch, useEffectOnce } from '../../index';
 import {
   addChannelMessage,
+  cleanALLChannelMessagePin,
   nextPinList,
   setLastPinMessage,
   setPinList,
@@ -13,11 +14,15 @@ import {
   updateChannelMessageAttribute,
 } from '@portkey-wallet/store/store-ca/im/actions';
 import { IM_PIN_LIST_SORT_TYPE_ENUM } from '@portkey-wallet/im/constant';
-import { randomId } from '@portkey-wallet/utils';
+import { PIN_OPERATION_TYPE_ENUM } from '@portkey-wallet/im/types/pin';
+import { getSendUuid } from '@portkey-wallet/utils/chat';
+import { messageParser } from '@portkey-wallet/im/utils';
+import { useWallet } from '../wallet';
 
 export const useIMPin = (channelId: string, isRegister = false) => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
+  const { userInfo } = useWallet();
 
   const pinListNetMap = useIMPinListNetMapState();
   const list = useMemo(
@@ -138,11 +143,64 @@ export const useIMPin = (channelId: string, isRegister = false) => {
   const refreshRef = useRef(refresh);
   refreshRef.current = refresh;
 
-  const handlePinSystemMsg = useCallback((e: SocketMessage) => {
-    // TODO: 1.4.13
-    if (e.type !== 'PIN-SYS') return;
-    refreshRef.current();
-  }, []);
+  const handlePinSystemMsg = useCallback(
+    (e: SocketMessage) => {
+      if (e.type !== MessageTypeEnum.PIN_SYS) return;
+      const fetchTime = Date.now();
+      const pinSysMessage = messageParser(e);
+      const parsedContent = pinSysMessage.parsedContent as ParsedPinSys | undefined;
+      if (!parsedContent) {
+        refreshRef.current();
+        return;
+      }
+      if (parsedContent.pinMessageOperationType === PIN_OPERATION_TYPE_ENUM.UnPinAll) {
+        dispatch(
+          cleanALLChannelMessagePin({
+            network: networkType,
+            channelId: channelId,
+          }),
+        );
+        dispatch(
+          setLastPinMessage({
+            network: networkType,
+            channelId: channelId,
+            message: undefined,
+            fetchTime,
+          }),
+        );
+        dispatch(
+          setPinList({
+            network: networkType,
+            channelId: channelId,
+            list: [],
+            fetchTime: fetchTime,
+          }),
+        );
+        refreshRef.current();
+        return;
+      }
+
+      dispatch(
+        updateChannelMessageAttribute({
+          network: networkType,
+          channelId: channelId,
+          sendUuid: parsedContent.sendUuid,
+          value: {
+            pinInfo:
+              parsedContent.pinMessageOperationType === PIN_OPERATION_TYPE_ENUM.Pin
+                ? {
+                    pinner: parsedContent.userInfo?.portkeyId || '',
+                    pinnerName: parsedContent.userInfo?.name || '',
+                    pinnedAt: `${fetchTime}`,
+                  }
+                : undefined,
+          },
+        }),
+      );
+      refreshRef.current();
+    },
+    [channelId, dispatch, networkType],
+  );
   const handlePinSystemMsgRef = useRef(handlePinSystemMsg);
   handlePinSystemMsgRef.current = handlePinSystemMsg;
 
@@ -162,19 +220,37 @@ export const useIMPin = (channelId: string, isRegister = false) => {
     };
   });
 
-  // TODO: 1.4.13 add mock pin system msg
   const addMockPinSysMessage = useCallback(
-    (type: string, message?: Message) => {
+    (type: PIN_OPERATION_TYPE_ENUM, message?: Message) => {
       const createAt = `${Date.now()}`;
-      const uuid = randomId();
-      const pinSysMessage: Message = {
-        channelUuid: channelId,
-        sendUuid: `${channelId}-${Date.now()}-${uuid}`,
-        type: 'PIN-SYS',
+
+      const pinSysContent: ParsedPinSys = {
+        userInfo: {
+          portkeyId: userInfo?.userId || '',
+          name: userInfo?.nickName || '',
+        },
+        pinMessageOperationType: type,
+        messageType: MessageTypeEnum.TEXT,
         content: '',
+        messageId: '',
+        sendUuid: '',
+      };
+
+      if (type !== PIN_OPERATION_TYPE_ENUM.UnPinAll && message) {
+        pinSysContent.messageType = message.type;
+        pinSysContent.content = message.content;
+      }
+
+      const pinSysMessageRaw: Message = {
+        channelUuid: channelId,
+        sendUuid: getSendUuid('', channelId),
+        type: MessageTypeEnum.PIN_SYS,
+        content: JSON.stringify(pinSysContent),
         createAt,
         from: '',
       };
+
+      const pinSysMessage = messageParser(pinSysMessageRaw);
 
       dispatch(
         addChannelMessage({
@@ -188,14 +264,14 @@ export const useIMPin = (channelId: string, isRegister = false) => {
           network: networkType,
           channelId: channelId,
           value: {
-            lastMessageType: 'PIN-SYS',
-            lastMessageContent: pinSysMessage.content, //TODO: 1.4.13 parse
+            lastMessageType: MessageTypeEnum.PIN_SYS,
+            lastMessageContent: pinSysMessage.parsedContent,
             lastPostAt: createAt,
           },
         }),
       );
     },
-    [channelId, dispatch, networkType],
+    [channelId, dispatch, networkType, userInfo?.nickName, userInfo?.userId],
   );
 
   const pin = useCallback(
@@ -223,8 +299,8 @@ export const useIMPin = (channelId: string, isRegister = false) => {
 
       const createAt = `${Date.now()}`;
       const pinInfo = {
-        pinner: '',
-        pinnerName: '',
+        pinner: userInfo?.userId || '',
+        pinnerName: userInfo?.nickName || '',
         pinnedAt: createAt,
       };
       dispatch(
@@ -238,10 +314,9 @@ export const useIMPin = (channelId: string, isRegister = false) => {
         }),
       );
 
-      // TODO: 1.4.3 add pin system msg
-      addMockPinSysMessage('', message);
+      addMockPinSysMessage(PIN_OPERATION_TYPE_ENUM.Pin, message);
     },
-    [addMockPinSysMessage, channelId, dispatch, initList, networkType],
+    [addMockPinSysMessage, channelId, dispatch, initList, networkType, userInfo?.nickName, userInfo?.userId],
   );
 
   const unPin = useCallback(
@@ -249,7 +324,6 @@ export const useIMPin = (channelId: string, isRegister = false) => {
       const { id } = message;
       if (!id) return;
       await im.service.unPin({
-        channelUuid: channelId,
         id,
       });
       if (lastPinMessageRef.current?.id === id) {
@@ -267,37 +341,40 @@ export const useIMPin = (channelId: string, isRegister = false) => {
           },
         }),
       );
-      // TODO: 1.4.3 add pin system msg
-      addMockPinSysMessage('', message);
+
+      addMockPinSysMessage(PIN_OPERATION_TYPE_ENUM.UnPin, message);
     },
     [addMockPinSysMessage, channelId, dispatch, initList, networkType, refreshLastPin],
   );
 
   const unPinAll = useCallback(async () => {
     const fetchTime = Date.now();
-    try {
-      //TODO: 1.4.3 add removeALL
-      dispatch(
-        setLastPinMessage({
-          network: networkType,
-          channelId: channelId,
-          message: undefined,
-          fetchTime,
-        }),
-      );
-      dispatch(
-        setPinList({
-          network: networkType,
-          channelId: channelId,
-          list: [],
-          fetchTime: fetchTime,
-        }),
-      );
-      // TODO: 1.4.3 add pin system msg
-      addMockPinSysMessage('');
-    } catch (error) {
-      //
-    }
+    await im.service.unPinAll({
+      channelUuid: channelId,
+    });
+    dispatch(
+      cleanALLChannelMessagePin({
+        network: networkType,
+        channelId: channelId,
+      }),
+    );
+    dispatch(
+      setLastPinMessage({
+        network: networkType,
+        channelId: channelId,
+        message: undefined,
+        fetchTime,
+      }),
+    );
+    dispatch(
+      setPinList({
+        network: networkType,
+        channelId: channelId,
+        list: [],
+        fetchTime: fetchTime,
+      }),
+    );
+    addMockPinSysMessage(PIN_OPERATION_TYPE_ENUM.UnPinAll);
   }, [addMockPinSysMessage, channelId, dispatch, networkType]);
 
   return {

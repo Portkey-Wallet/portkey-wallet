@@ -1,4 +1,4 @@
-import { Message, MessageType, ParsedContent, ParsedImage } from '../types';
+import { Message, MessageType, ParsedContent, ParsedImage, ParsedPinSys } from '../types';
 
 const imageMessageParser = (str: string): ParsedImage => {
   str = str.replace(/,/g, ';');
@@ -31,6 +31,13 @@ export const messageContentParser = (type: MessageType | null, content: string):
     case 'REDPACKAGE-CARD':
     case 'TRANSFER-CARD':
       return JSON.parse(content);
+    case 'PIN-SYS':
+      const pinSysParsedContent: ParsedPinSys = JSON.parse(content);
+      pinSysParsedContent.parsedContent = messageContentParser(
+        pinSysParsedContent.messageType,
+        pinSysParsedContent.content,
+      );
+      return pinSysParsedContent;
     default:
       return undefined;
   }

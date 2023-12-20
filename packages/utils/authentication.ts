@@ -50,3 +50,26 @@ export async function getGoogleUserInfo(accessToken = ''): Promise<GoogleUserInf
     lastName: TmpUserInfo[accessToken].family_name,
   };
 }
+
+interface TelegramUserInfo {
+  isExpired: boolean;
+  userId: string;
+  id: string;
+  expirationTime: number;
+  firstName: string;
+  lastName?: string;
+  picture?: string;
+}
+
+export function parseTelegramToken(token?: string | null): TelegramUserInfo {
+  if (!token) throw 'Invalid TelegramToken';
+  const parts = token.split('.');
+  const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
+  const expirationTime = payload.exp * 1000;
+  const isExpired = new Date(expirationTime) < new Date();
+  const userId = payload.userId;
+  const firstName = payload.firstName;
+  const picture = payload.protoUrl;
+  const lastName = payload.lastName;
+  return { isExpired, userId, expirationTime, firstName, picture, lastName, id: userId };
+}

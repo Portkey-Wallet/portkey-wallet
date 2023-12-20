@@ -8,13 +8,19 @@ import { formatTime } from '../utils';
 import PopoverMenuList from '../PopoverMenuList';
 import CustomSvg from '../components/CustomSvg';
 import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
+import RepliedMsg from '../components/RepliedMsg';
 import './index.less';
 
 const TextMessage: React.FC<ITextMessageProps> = (props) => {
-  const showDate = useMemo(
-    () => (props.dateString ? props.dateString : formatTime(props.date as any)),
-    [props.date, props.dateString],
-  );
+  const showMask = useMemo(() => {
+    const dataShow = props.dateString ? props.dateString : formatTime(props.date as any);
+    return (
+      <span className="flex-center">
+        {props.pin && <CustomSvg type="MsgPin" />}
+        <span>{dataShow}</span>
+      </span>
+    );
+  }, [props.date, props.dateString, props.pin]);
   const [, setCopied] = useCopyToClipboard();
   const [popVisible, setPopVisible] = useState(false);
   const hidePop = useCallback(() => {
@@ -36,6 +42,24 @@ const TextMessage: React.FC<ITextMessageProps> = (props) => {
         leftIcon: <CustomSvg type="Delete" />,
         children: 'Delete',
         onClick: (e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(e),
+      },
+      {
+        key: 'pin',
+        leftIcon: <CustomSvg type="Pin" />,
+        children: 'Pin',
+        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onPinMsg?.(e),
+      },
+      {
+        key: 'unpin',
+        leftIcon: <CustomSvg type="UnPin" />,
+        children: 'Unpin',
+        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onPinMsg?.(e),
+      },
+      {
+        key: 'reply',
+        leftIcon: <CustomSvg type="Reply" />,
+        children: 'Reply',
+        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onReplyMsg?.(e),
       },
     ],
     [props, setCopied],
@@ -60,9 +84,9 @@ const TextMessage: React.FC<ITextMessageProps> = (props) => {
             <span className="non-support-msg" onClick={props.onClickUnSupportMsg}>
               {UN_SUPPORTED_FORMAT}
             </span>
-            <span className="text-date-hidden">{showDate}</span>
+            <span className="text-date-hidden">{showMask}</span>
           </div>
-          <div className="text-date">{showDate}</div>
+          <div className="text-date">{showMask}</div>
         </div>
       ) : (
         <Popover
@@ -80,20 +104,23 @@ const TextMessage: React.FC<ITextMessageProps> = (props) => {
             />
           }>
           <div className={clsx(['text-body', 'flex', props.position])}>
-            <div className="text-text">
-              <ParsedText
-                parse={[
-                  {
-                    type: 'url',
-                    className: 'text-link',
-                    onClick: handleUrlPress,
-                  },
-                ]}>
-                {props.text}
-              </ParsedText>
-              <span className="text-date-hidden">{showDate}</span>
+            <div className="text-container flex-column">
+              <RepliedMsg msgType="text" position="left" msgContent="test" from="Guo" />
+              <div className="text-text">
+                <ParsedText
+                  parse={[
+                    {
+                      type: 'url',
+                      className: 'text-link',
+                      onClick: handleUrlPress,
+                    },
+                  ]}>
+                  {props.text}
+                </ParsedText>
+                <span className="text-date-hidden">{showMask}</span>
+              </div>
             </div>
-            <div className="text-date">{showDate}</div>
+            <div className="text-date">{showMask}</div>
           </div>
         </Popover>
       )}

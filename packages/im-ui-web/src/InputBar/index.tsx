@@ -6,6 +6,7 @@ import CustomSvg from '../components/CustomSvg';
 import PopoverMenuList from '../PopoverMenuList';
 import CustomInput from '../components/CustomInput';
 import { IInputBarProps, PopDataProps } from '../type';
+import ReplyMsg from './ReplyMsg';
 import './index.less';
 
 export default function InputBar({ moreData, showEmoji = true, onSendMessage, maxLength = 300 }: IInputBarProps) {
@@ -63,6 +64,7 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
   return (
     <div>
       <div className="portkey-input-bar">
+        <ReplyMsg msgType="image" msgContent="" toName="" />
         {showEmojiIcon && (
           <div className="input-emoji">
             <div className="show-icon flex">

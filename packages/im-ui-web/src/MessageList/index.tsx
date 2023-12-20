@@ -97,6 +97,8 @@ const MessageList: FC<IMessageListProps> = ({
           key={x.key}
           className={clsx([isShowMargin && 'show-margin', hiddenAvatar && 'hidden-avatar'])}
           onDeleteMsg={(e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(x, i, e)}
+          onPinMsg={(e: React.MouseEvent<HTMLElement>) => props?.onPinMsg?.(x, i, e)}
+          onReplyMsg={(e: React.MouseEvent<HTMLElement>) => props?.onReplyMsg?.(x, i, e)}
           onClickUrl={props?.onClickUrl}
           onClickUnSupportMsg={props?.onClickUnSupportMsg}
           onClickAvatar={(e: React.MouseEvent<HTMLElement>) => props?.onClickAvatar?.(x, i, e)}

@@ -11,7 +11,7 @@ import { MAX_INPUT_LENGTH } from '@portkey-wallet/constants/constants-ca/im';
 import ChatBoxTip from '../../components/ChatBoxTip';
 import CustomUpload from '../../components/CustomUpload';
 import { useEffectOnce } from 'react-use';
-import { useHandle } from '../useHandle';
+import { useHandle } from '../useHandleMsg';
 import ChatBoxHeader from '../components/ChatBoxHeader';
 import CustomModal from 'pages/components/CustomModal';
 import { useClickUrl } from 'hooks/im';
@@ -19,6 +19,7 @@ import WarnTip from 'pages/IMChat/components/WarnTip';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 import { NO_LONGER_IN_GROUP } from '@portkey-wallet/constants/constants-ca/chat';
 import { ChannelTypeEnum } from '@portkey-wallet/im';
+import ChatBoxPinnedMsg from 'pages/IMChat/components/ChatBoxPinnedMsg';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
@@ -52,7 +53,7 @@ export default function ChatBox() {
   const { relationId } = useRelationId();
   const messageList: MessageType[] = useMemo(() => formatMessageList(list, relationId!, true), [list, relationId]);
   const leaveGroup = useLeaveChannel();
-  const { handleDeleteMsg, handlePin, handleMute } = useHandle({ info, mute, pin, deleteMessage });
+  const { handleDeleteMsg, handlePin, handleMute, handlePinMsg } = useHandle({ info, mute, pin, deleteMessage });
   const handleDeleteBox = useCallback(() => {
     CustomModalConfirm({
       content: t('Delete chat?'),
@@ -220,6 +221,11 @@ export default function ChatBox() {
         popVisible={popVisible}
         setPopVisible={setPopVisible}
       />
+      <ChatBoxPinnedMsg
+        msgCount={3}
+        msgType="text"
+        onViewMore={() => navigate(`/chat-box-group/${channelUuid}/pinned-msg`)}
+      />
       {isAdmin && showAddMemTip && (
         <ChatBoxTip onConfirm={handleAddMember} onClose={() => setShowAddMemTip(false)}>
           <div className="content flex-center">
@@ -239,6 +245,7 @@ export default function ChatBox() {
             dataSource={messageList}
             onClickAvatar={handleGoProfile}
             onDeleteMsg={handleDeleteMsg}
+            onPinMsg={handlePinMsg}
             onClickUrl={clickUrl}
             onClickUnSupportMsg={WarnTip}
           />

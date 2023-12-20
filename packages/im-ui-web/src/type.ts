@@ -56,6 +56,9 @@ export interface IMessage {
   letter?: string;
   type: string;
   showAvatar?: boolean;
+  pin?: boolean;
+  onPinMsg?: React.MouseEventHandler;
+  onReplyMsg?: React.MouseEventHandler;
   onDeleteMsg?: React.MouseEventHandler;
   onClickAvatar?: React.MouseEventHandler;
   onClickUrl?: (v: string) => void;
@@ -106,6 +109,8 @@ export interface IMessageListProps {
   next: () => any;
   onScroll?: React.UIEventHandler;
   onDeleteMsg?: MessageListEvent;
+  onReplyMsg?: MessageListEvent;
+  onPinMsg?: MessageListEvent;
   onClickAvatar?: MessageListEvent;
   onClickUrl?: (v: string) => void;
   onClickUnSupportMsg?: () => void;

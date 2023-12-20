@@ -9,10 +9,15 @@ import PopoverMenuList from '../PopoverMenuList';
 import './index.less';
 
 const ImageMessage: React.FC<IImageMessageProps> = (props) => {
-  const showDate = useMemo(
-    () => (props.dateString ? props.dateString : formatTime(props.date)),
-    [props.dateString, props.date],
-  );
+  const showMask = useMemo(() => {
+    const dataShow = props.dateString ? props.dateString : formatTime(props.date as any);
+    return (
+      <span className="show-mask flex-center">
+        {props.pin && <CustomSvg type="MsgPin" />}
+        <span>{dataShow}</span>
+      </span>
+    );
+  }, [props.date, props.dateString, props.pin]);
   const [loadErr, setLoadErr] = useState(false);
   const { thumbImgUrl, width, height, imgUrl } = props.imgData || {};
   const imageSize = useMemo(
@@ -28,6 +33,24 @@ const ImageMessage: React.FC<IImageMessageProps> = (props) => {
         leftIcon: <CustomSvg type="Delete" />,
         children: 'Delete',
         onClick: (e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(e),
+      },
+      {
+        key: 'pin',
+        leftIcon: <CustomSvg type="Pin" />,
+        children: 'Pin',
+        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onPinMsg?.(e),
+      },
+      {
+        key: 'unpin',
+        leftIcon: <CustomSvg type="UnPin" />,
+        children: 'Unpin',
+        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onPinMsg?.(e),
+      },
+      {
+        key: 'reply',
+        leftIcon: <CustomSvg type="Reply" />,
+        children: 'Reply',
+        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onReplyMsg?.(e),
       },
     ],
     [props],
@@ -50,10 +73,10 @@ const ImageMessage: React.FC<IImageMessageProps> = (props) => {
           }}
           onError={() => setLoadErr(true)}
         />
-        <div className="image-date">{showDate}</div>
+        <div className="image-date flex-center">{showMask}</div>
       </>
     ),
-    [imageSize, imgUrl, showDate, thumbImgUrl],
+    [imageSize, imgUrl, showMask, thumbImgUrl],
   );
   return (
     <div className={clsx(['portkey-message-image', 'flex', props.position])}>

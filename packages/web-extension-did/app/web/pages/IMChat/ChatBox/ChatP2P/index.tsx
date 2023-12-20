@@ -15,7 +15,7 @@ import { MAX_INPUT_LENGTH } from '@portkey-wallet/constants/constants-ca/im';
 import CustomUpload from 'pages/IMChat/components/CustomUpload';
 import ChatBoxTip from 'pages/IMChat/components/ChatBoxTip';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { useHandle } from '../useHandle';
+import { useHandle } from '../useHandleMsg';
 import ChatBoxHeader from '../components/ChatBoxHeader';
 import { useClickUrl } from 'hooks/im';
 import WarnTip from 'pages/IMChat/components/WarnTip';

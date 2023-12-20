@@ -1,5 +1,6 @@
 export type MessageType = 'TEXT' | 'IMAGE' | 'SYS' | 'REDPACKAGE-CARD' | 'TRANSFER-CARD' | 'PIN-SYS';
-export type ParsedContent = string | ParsedImage | ParsedRedPackage | ParsedTransfer | undefined;
+export type ParsedContent = string | ParsedImage | ParsedRedPackage | ParsedTransfer | ParsedPinSys | undefined;
+import { PIN_OPERATION_TYPE_ENUM } from './pin';
 import { RedPackageStatusInfo } from './redPackage';
 
 export type ChainId = 'AELF' | 'tDVV' | 'tDVW';
@@ -10,6 +11,7 @@ export enum MessageTypeEnum {
   SYS = 'SYS',
   REDPACKAGE_CARD = 'REDPACKAGE-CARD',
   TRANSFER_CARD = 'TRANSFER-CARD',
+  PIN_SYS = 'PIN-SYS',
 }
 
 export type ParsedImage = {
@@ -42,6 +44,20 @@ export type ParsedTransfer = {
     transactionId: string;
     blockHash: string;
   };
+};
+
+export type ParsedPinSys = {
+  userInfo: {
+    portkeyId: string;
+    name: string;
+  };
+  pinMessageOperationType: PIN_OPERATION_TYPE_ENUM;
+  messageType: MessageType;
+  content: string;
+  messageId: string;
+  sendUuid: string;
+
+  parsedContent?: ParsedContent;
 };
 
 export type PinInfoType = {

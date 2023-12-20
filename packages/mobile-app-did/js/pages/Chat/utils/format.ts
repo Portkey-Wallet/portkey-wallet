@@ -59,6 +59,9 @@ export const formatMessageItem = (message: IMMessage): ChatMessage => {
     case 'SYS':
       msg.system = true;
       break;
+    case 'REDPACKAGE-CARD':
+      msg.messageType = 'REDPACKAGE-CARD';
+      break;
     default: {
       msg.messageType = 'NOT_SUPPORTED';
       msg.text = UN_SUPPORTED_FORMAT;

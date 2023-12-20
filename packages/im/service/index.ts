@@ -51,6 +51,7 @@ import {
   GetPinListParams,
   UnPinParams,
   GetPinListResult,
+  UnPinAllParams,
 } from '../types/service';
 import { ChannelInfo, ChannelMemberInfo, Message, MessageCount, RedPackageConfigType } from '../types';
 import { sleep } from '@portkey-wallet/utils';
@@ -368,6 +369,13 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
   unPin(params: UnPinParams): IMServiceCommon<null> {
     return this._request.send({
       url: '/api/v1/pin/cancel',
+      params,
+      method: 'POST',
+    });
+  }
+  unPinAll(params: UnPinAllParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/pin/cancelAll',
       params,
       method: 'POST',
     });

@@ -47,6 +47,8 @@ export enum OperationTypeEnum {
   setLoginAccount = 7,
   managerApprove = 8,
   modifyTransferLimit = 9,
+  singleTransfer = 10,
+  unsetLoginAccount = 11,
 }
 
 export interface VerifierInfo {

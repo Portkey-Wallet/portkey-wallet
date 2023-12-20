@@ -62,6 +62,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
         </View>
       );
     }
+    // TODO: transfer
 
     // not red packet
     let message = '';

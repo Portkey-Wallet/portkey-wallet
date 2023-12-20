@@ -20,6 +20,7 @@ import {
   useIsMyRedPacket,
 } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useCurrentChannelId } from 'pages/Chat/context/hooks';
+import fonts from 'assets/theme/fonts';
 
 function RedPacket(props: MessageProps<ChatMessage>) {
   const { currentMessage } = props;
@@ -120,8 +121,9 @@ const styles = StyleSheet.create({
     height: pTd(2),
   },
   memo: {
-    color: defaultColors.font2,
-    lineHeight: pTd(22),
+   color: defaultColors.font2,
+    lineHeight: pTd(18),
+    ...fonts.mediumFont,
   },
   state: {
     color: defaultColors.font2,

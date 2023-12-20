@@ -5,12 +5,12 @@ import SafeAreaBox from 'components/SafeAreaBox';
 import { BGStyles } from 'assets/theme/styles';
 import { RootStackName } from 'navigation';
 import myEvents from 'utils/deviceEvent';
-import useExceptionMessage from 'hooks/userExceptionMessage';
+import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useReportingSignalR } from 'hooks/FCM';
 
 const DashBoard: React.FC<any> = ({ navigation }) => {
-  const exceptionMessage = useExceptionMessage();
+  const reportAnalyticsEvent = useReportAnalyticsEvent();
   useReportingSignalR();
 
   const navToChat = useCallback(
@@ -23,7 +23,7 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
   );
 
   useEffectOnce(() => {
-    exceptionMessage('DashBoard');
+    reportAnalyticsEvent({ message: 'DashBoard' });
   });
 
   // nav's to chat tab

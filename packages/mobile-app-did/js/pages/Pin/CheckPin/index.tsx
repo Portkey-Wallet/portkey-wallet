@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef } from 'react';
 import PageContainer from 'components/PageContainer';
 import { DigitInputInterface } from 'components/DigitInput';
 import navigationService from 'utils/navigationService';
@@ -10,22 +10,26 @@ import myEvents from 'utils/deviceEvent';
 import { useFocusEffect } from '@react-navigation/native';
 import PinContainer from 'components/PinContainer';
 import { StyleSheet } from 'react-native';
+import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
+import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
 
 export default function CheckPin() {
   const { openBiometrics } = useRouterParams<{ openBiometrics?: boolean }>();
-  const [errorMessage, setErrorMessage] = useState<string>();
   const pinRef = useRef<DigitInputInterface>();
   useFocusEffect(
     useCallback(() => {
       pinRef.current?.reset();
     }, []),
   );
+
+  const { error: textError, setError: setTextError } = useErrorMessage();
   const onChangeText = useCallback(
     (pin: string) => {
       if (pin.length === PIN_SIZE) {
         if (!checkPin(pin)) {
           pinRef.current?.reset();
-          return setErrorMessage(PinErrorMessage.invalidPin);
+          setTextError(PinErrorMessage.invalidPin, VERIFY_INVALID_TIME);
+          return;
         }
         if (openBiometrics) {
           myEvents.openBiometrics.emit(pin);
@@ -33,11 +37,11 @@ export default function CheckPin() {
         } else {
           navigationService.navigate('SetPin', { oldPin: pin });
         }
-      } else if (errorMessage) {
-        setErrorMessage(undefined);
+      } else if (textError.isError) {
+        setTextError();
       }
     },
-    [errorMessage, openBiometrics],
+    [openBiometrics, setTextError, textError.isError],
   );
   return (
     <PageContainer
@@ -46,7 +50,13 @@ export default function CheckPin() {
       backTitle={!openBiometrics ? 'Change Pin' : 'Authentication'}
       containerStyles={styles.container}
       scrollViewProps={{ disabled: true }}>
-      <PinContainer showHeader ref={pinRef} title="Enter Pin" errorMessage={errorMessage} onChangeText={onChangeText} />
+      <PinContainer
+        showHeader
+        ref={pinRef}
+        title="Enter Pin"
+        errorMessage={textError.errorMsg}
+        onChangeText={onChangeText}
+      />
     </PageContainer>
   );
 }

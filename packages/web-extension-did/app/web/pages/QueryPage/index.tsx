@@ -12,11 +12,13 @@ import { useCallback } from 'react';
 import { useEffectOnce } from 'react-use';
 import { useLoading } from 'store/Provider/hooks';
 import useFetchDidWallet from 'hooks/useFetchDidWallet';
+import { useNavigate } from 'react-router';
 
 export default function QueryPage() {
   const { setLoading } = useLoading();
   const fetchWalletResult = useFetchDidWallet();
   const currentWalletInfo = useCurrentWalletInfo();
+  const navigate = useNavigate();
 
   const fetchCreateWalletResult = useCallback(
     async (pwd: string) => {
@@ -34,10 +36,11 @@ export default function QueryPage() {
         setLoading(false);
         console.log(error, 'fetch error===');
         message.error(error);
+        navigate('/register/start');
       }
       setLoading(false);
     },
-    [currentWalletInfo, setLoading, fetchWalletResult],
+    [setLoading, currentWalletInfo.managerInfo, currentWalletInfo.address, fetchWalletResult, navigate],
   );
 
   useEffectOnce(() => {

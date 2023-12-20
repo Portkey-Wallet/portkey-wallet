@@ -17,8 +17,9 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import myEvents from 'utils/deviceEvent';
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { GuardiansStatusItem } from '../types';
+import { useGetCurrentCAContract } from 'hooks/contract';
+import { LoginType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
+import { GuardiansApproved, GuardiansStatusItem } from '../types';
 import { verification } from 'utils/api';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useOnRequestOrSetPin } from 'hooks/login';
@@ -28,7 +29,11 @@ import {
   VERIFICATION_TO_OPERATION_MAP,
 } from '@portkey-wallet/constants/constants-ca/verifier';
 import { ChainId } from '@portkey-wallet/types';
-import { CreateAddressLoading } from '@portkey-wallet/constants/constants-ca/wallet';
+import { CreateAddressLoading, VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
+import { handleGuardiansApproved } from 'utils/login';
+import { checkVerifierIsInvalidCode } from '@portkey-wallet/utils/guardian';
+import { pTd } from 'utils/unit';
+import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
 
 type RouterParams = {
   guardianItem?: UserGuardianItem;
@@ -37,6 +42,7 @@ type RouterParams = {
   verificationType?: VerificationType;
   targetChainId?: ChainId;
   accelerateChainId?: ChainId;
+  autoLogin?: boolean;
 };
 function TipText({ guardianAccount, isRegister }: { guardianAccount?: string; isRegister?: boolean }) {
   const [first, last] = useMemo(() => {
@@ -64,9 +70,9 @@ export default function VerifierDetails() {
     verificationType,
     targetChainId,
     accelerateChainId,
+    autoLogin,
   } = useRouterParams<RouterParams>();
   const originChainId = useOriginChainId();
-
   const countdown = useRef<VerifierCountdownInterface>();
   useEffectOnce(() => {
     if (!startResend) countdown.current?.resetTime(60);
@@ -77,6 +83,8 @@ export default function VerifierDetails() {
   const { address: managerAddress } = useCurrentWalletInfo();
   const pin = usePin();
   const onRequestOrSetPin = useOnRequestOrSetPin();
+  const getCurrentCAContract = useGetCurrentCAContract();
+
   const setGuardianStatus = useCallback(
     (status: GuardiansStatusItem) => {
       myEvents.setGuardianStatus.emit({
@@ -92,11 +100,42 @@ export default function VerifierDetails() {
     [verificationType],
   );
 
+  const registerAccount = useCallback(
+    async ({
+      verifierInfo,
+      codeResult,
+    }: {
+      verifierInfo: VerifierInfo;
+      codeResult?: {
+        verifierSessionId: string;
+      };
+    }) => {
+      if (!guardianItem) return CommonToast.fail('Guardian not found');
+      const key = guardianItem.key as string;
+      onRequestOrSetPin({
+        managerInfo: {
+          verificationType: VerificationType.communityRecovery,
+          loginAccount: guardianItem.guardianAccount,
+          type: guardianItem.guardianType,
+        } as ManagerInfo,
+        guardiansApproved: handleGuardiansApproved(
+          { [key]: { status: VerifyStatus.Verified, verifierInfo, requestCodeResult: codeResult } },
+          [guardianItem],
+        ) as GuardiansApproved,
+        showLoading: true,
+        autoLogin: true,
+      });
+    },
+    [guardianItem, onRequestOrSetPin],
+  );
+
+  const { error: codeError, setError: setCodeError } = useErrorMessage();
   const onFinish = useLockCallback(
     async (code: string) => {
       if (!requestCodeResult || !guardianItem || !code) return;
       const isRequestResult = pin && verificationType === VerificationType.register && managerAddress;
-      Loading.show(isRequestResult ? { text: CreateAddressLoading } : undefined);
+      digitInput.current?.lockInput();
+      const loadingKey = Loading.show(isRequestResult ? { text: CreateAddressLoading } : undefined, true);
       try {
         const rst = await verification.checkVerificationCode({
           params: {
@@ -144,6 +183,13 @@ export default function VerifierDetails() {
             }
             break;
 
+          case VerificationType.communityRecovery: {
+            if (autoLogin) {
+              registerAccount({ verifierInfo, codeResult: requestCodeResult });
+              break;
+            }
+          }
+          // eslint-disable-next-line no-fallthrough
           default:
             setGuardianStatus({
               requestCodeResult: requestCodeResult,
@@ -154,11 +200,18 @@ export default function VerifierDetails() {
             break;
         }
       } catch (error) {
-        CommonToast.failError(error, 'Verify Fail');
+        const _isInvalidCode = checkVerifierIsInvalidCode(error);
+        if (_isInvalidCode) {
+          setCodeError('', VERIFY_INVALID_TIME);
+        } else {
+          CommonToast.failError(error, 'Verify Fail');
+        }
+
         digitInput.current?.reset();
-        Loading.hide();
+        Loading.hide(loadingKey);
       }
-      !isRequestResult && Loading.hide();
+      digitInput.current?.unLockInput();
+      !isRequestResult && Loading.hide(loadingKey);
     },
     [
       requestCodeResult,
@@ -172,13 +225,16 @@ export default function VerifierDetails() {
       onRequestOrSetPin,
       setGuardianStatus,
       accelerateChainId,
+      autoLogin,
+      registerAccount,
+      setCodeError,
     ],
   );
 
-  const resendCode = useCallback(async () => {
+  const resendCode = useLockCallback(async () => {
+    digitInput.current?.lockInput();
+    Loading.show(undefined, true);
     try {
-      Loading.show();
-
       const req = await verification.sendVerificationCode({
         params: {
           type: LoginType[guardianItem?.guardianType as LoginType],
@@ -200,6 +256,7 @@ export default function VerifierDetails() {
     } catch (error) {
       CommonToast.failError(error, 'Verify Fail');
     }
+    digitInput.current?.unLockInput();
     digitInput.current?.reset();
     Loading.hide();
   }, [guardianItem, operationType, originChainId, setGuardianStatus, targetChainId]);
@@ -211,14 +268,28 @@ export default function VerifierDetails() {
         isRegister={!verificationType || (verificationType as VerificationType) === VerificationType.register}
         guardianAccount={guardianItem?.guardianAccount}
       />
-      <DigitInput ref={digitInput} onFinish={onFinish} maxLength={DIGIT_CODE.length} />
-      <VerifierCountdown style={GStyles.marginTop(24)} onResend={resendCode} ref={countdown} />
+      <DigitInput
+        ref={digitInput}
+        onChangeText={() => {
+          setCodeError();
+        }}
+        onFinish={onFinish}
+        maxLength={DIGIT_CODE.length}
+        isError={codeError.isError}
+      />
+      <VerifierCountdown
+        isInvalidCode={codeError.isError}
+        style={GStyles.marginTop(24)}
+        onResend={resendCode}
+        ref={countdown}
+      />
     </PageContainer>
   );
 }
 
 const styles = StyleSheet.create({
   containerStyles: {
-    paddingTop: 8,
+    paddingTop: pTd(8),
+    paddingHorizontal: pTd(20),
   },
 });

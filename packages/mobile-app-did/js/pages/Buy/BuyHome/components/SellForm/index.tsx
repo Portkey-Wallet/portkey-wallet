@@ -18,8 +18,7 @@ import { FontStyles } from 'assets/theme/styles';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
 import { getCryptoList } from '@portkey-wallet/api/api-did/payment/util';
-import { ErrorType } from 'types/common';
-import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
+import { INIT_HAS_ERROR, INIT_NONE_ERROR, ErrorType } from '@portkey-wallet/constants/constants-ca/common';
 import { CryptoInfoType } from '@portkey-wallet/api/api-did/payment/type';
 import { CryptoItemType } from 'pages/Buy/types';
 import { INIT_SELL_AMOUNT, tokenList } from 'pages/Buy/constants';
@@ -43,6 +42,7 @@ import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useCheckTransferLimitWithJump, useSecuritySafeCheckAndToast } from 'hooks/security';
 import { useAppBuyButtonShow } from 'hooks/cms';
+import { isPotentialNumber } from '@portkey-wallet/utils/reg';
 
 export default function SellForm() {
   const { sellFiatList: fiatList } = usePayment();
@@ -143,13 +143,12 @@ export default function SellForm() {
   const onAmountInput = useCallback((text: string) => {
     isRefreshReceiveValid.current = false;
     setAmountLocalError(INIT_NONE_ERROR);
-    const reg = /^(0|[1-9]\d*)(\.\d*)?$/;
 
     if (text === '') {
       setAmount('');
       return;
     }
-    if (!reg.test(text)) return;
+    if (!isPotentialNumber(text)) return;
     const arr = text.split('.');
     if (arr[1]?.length > 8) return;
     if (arr.join('').length > 13) return;

@@ -4,6 +4,7 @@ import { GuardiansApproved, GuardiansStatus } from 'pages/Guardian/types';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
 import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { SendOptions } from '@portkey-wallet/contracts/types';
 
 const getGuardiansApproved = (userGuardiansList: UserGuardianItem[], guardiansStatus: GuardiansStatus) => {
   return userGuardiansList
@@ -183,14 +184,19 @@ export function unsetLoginAccount(
   });
 }
 
-export function removeManager(contract: ContractBasic, address: string, caHash: string) {
-  return contract?.callSendMethod('RemoveManagerInfo', address, {
-    caHash,
-    managerInfo: {
-      address,
-      extraData: Date.now(),
+export function removeManager(contract: ContractBasic, address: string, caHash: string, sendOptions?: SendOptions) {
+  return contract?.callSendMethod(
+    'RemoveManagerInfo',
+    address,
+    {
+      caHash,
+      managerInfo: {
+        address,
+        extraData: Date.now(),
+      },
     },
-  });
+    sendOptions,
+  );
 }
 
 export function encodedDeletionManager(contract: ContractBasic, address: string, caHash: string) {

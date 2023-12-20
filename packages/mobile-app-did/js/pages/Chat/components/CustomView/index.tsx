@@ -6,13 +6,17 @@ import { pTd } from 'utils/unit';
 import { ChatMessage } from 'pages/Chat/types';
 import isEqual from 'lodash/isEqual';
 import RedPacket from './RedPacket';
+import Transfer from './Transfer';
 
 function CustomView(props: MessageProps<ChatMessage> & { onDismiss: () => void }) {
   const { currentMessage } = props;
 
-  if (currentMessage?.messageType !== 'REDPACKAGE-CARD') return null;
+  // TODO: type change
+  if (currentMessage?.messageType === 'REDPACKAGE-CARD') return <Transfer {...props} />;
 
-  return <RedPacket {...props} />;
+  if (currentMessage?.messageType === 'REDPACKAGE-CARD') return <RedPacket {...props} />;
+
+  return null;
 }
 
 export default memo(CustomView, (prevProps, nextProps) => {

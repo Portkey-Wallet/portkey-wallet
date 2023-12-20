@@ -7,7 +7,7 @@ import fonts from 'assets/theme/fonts';
 import FormItem from 'components/FormItem';
 import CommonInput from 'components/CommonInput';
 import CommonButton from 'components/CommonButton';
-import { TextL } from 'components/CommonText';
+import { TextM, TextS } from 'components/CommonText';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
@@ -245,8 +245,13 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
                 svgName={values?.symbol === defaultToken.symbol ? 'testnet' : undefined}
                 imageUrl={values.imageUrl || symbolImages[values.symbol]}
               />
-              <TextL style={[GStyles.flex1, fonts.mediumFont]}>{values.symbol}</TextL>
-              <Svg size={16} icon="down-arrow" color={defaultColors.icon1} />
+              <View style={[GStyles.flex1]}>
+                <TextM style={[GStyles.flex1, fonts.mediumFont]}>{values.symbol}</TextM>
+                <TextS style={[GStyles.flex1, FontStyles.font3]} numberOfLines={1}>
+                  {formatChainInfoToShow(values.chainId)}
+                </TextS>
+              </View>
+              <Svg size={pTd(16)} icon="down-arrow" color={defaultColors.icon1} />
             </Touchable>
           }
           maxLength={30}
@@ -306,12 +311,13 @@ const styles = StyleSheet.create({
     marginBottom: pTd(8),
   },
   unitWrap: {
-    width: pTd(112),
+    width: pTd(156),
     flexDirection: 'row',
     alignItems: 'center',
     borderLeftColor: defaultColors.border6,
     borderLeftWidth: StyleSheet.hairlineWidth,
     paddingLeft: pTd(12),
+    height: pTd(38),
   },
   unitIconStyle: {
     width: pTd(24),

@@ -100,7 +100,8 @@ function MessageImage(props: MessageProps<ChatMessage>) {
           iconName: 'chat-delete',
           onPress: async () => {
             try {
-              await deleteMessage(currentMessage?.id);
+              if (!currentMessage) return;
+              await deleteMessage(currentMessage);
             } catch (error) {
               CommonToast.fail('Failed to delete message');
             }

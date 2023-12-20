@@ -69,10 +69,6 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
   const currentChannelId = useCurrentChannelId();
   const dispatch = useChatsDispatch();
 
-  if (currentMessage?.content === 'Hi~') {
-    console.log('MessageText', currentMessage);
-  }
-
   const deleteMessage = useDeleteMessage(currentChannelId || '');
   const { messageType } = currentMessage || {};
   const isNotSupported = useMemo(() => messageType === 'NOT_SUPPORTED', [messageType]);
@@ -125,7 +121,8 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
           iconName: 'chat-delete',
           onPress: async () => {
             try {
-              await deleteMessage(currentMessage?.id);
+              if (!currentMessage) return;
+              await deleteMessage(currentMessage);
             } catch (error) {
               CommonToast.fail('Failed to delete message');
             }

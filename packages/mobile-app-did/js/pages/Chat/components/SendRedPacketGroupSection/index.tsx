@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import GStyles from 'assets/theme/GStyles';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
@@ -28,6 +28,8 @@ import { FontStyles } from 'assets/theme/styles';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { isEmojiString } from 'pages/Chat/utils';
 import { isPotentialNumber } from '@portkey-wallet/utils/reg';
+import { formatChainInfoToShow } from '@portkey-wallet/utils';
+
 
 export type ValuesType = {
   packetNum?: string;

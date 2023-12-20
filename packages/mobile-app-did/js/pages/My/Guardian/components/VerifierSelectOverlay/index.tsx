@@ -3,9 +3,8 @@ import OverlayModal from 'components/OverlayModal';
 import { Keyboard, ScrollView, View } from 'react-native';
 import Touchable from 'components/Touchable';
 import styles from './styles';
-import GStyles from 'assets/theme/GStyles';
 import Svg from 'components/Svg';
-import { TextL, TextXL } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { VerifierImage } from 'pages/Guardian/components/VerifierImage';
@@ -13,6 +12,7 @@ import { ModalBody } from 'components/ModalBody';
 import { useGuardiansInfo } from 'hooks/store';
 import { VerifierItem } from '@portkey-wallet/types/verifier';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
+import { defaultColors } from 'assets/theme';
 
 type SelectListProps = {
   id?: string;
@@ -35,12 +35,12 @@ const SelectList = ({ callBack, id, editGuardian }: SelectListProps) => {
   }, [editGuardian, userGuardiansList]);
 
   return (
-    <ModalBody title={t('Select verifiers')} modalBodyType="bottom">
+    <ModalBody title={t('Select Verifier')} modalBodyType="bottom">
       <ScrollView alwaysBounceVertical={false}>
         {verifierList.map(item => {
           return (
             <Touchable
-              style={disabledMap[item.id] && { opacity: 0.6 }}
+              style={disabledMap[item.id] && styles.disableWrap}
               disabled={disabledMap[item.id]}
               key={item.id}
               onPress={() => {
@@ -64,6 +64,10 @@ const SelectList = ({ callBack, id, editGuardian }: SelectListProps) => {
             </Touchable>
           );
         })}
+        <View style={styles.warnWrap}>
+          <Svg icon="warning2" size={pTd(16)} color={defaultColors.font9} />
+          <TextM style={styles.warnLabelWrap}>{'Used verifiers cannot be selected.'}</TextM>
+        </View>
       </ScrollView>
     </ModalBody>
   );

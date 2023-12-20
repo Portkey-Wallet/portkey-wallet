@@ -1,7 +1,7 @@
 import CommonButton from 'components/CommonButton';
 import { TextL, TextM } from 'components/CommonText';
 import React, { useCallback } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import PageContainer from 'components/PageContainer';
@@ -13,29 +13,16 @@ import { useGuardiansInfo } from 'hooks/store';
 import { useGetGuardiansInfo } from 'hooks/guardian';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
-import { VerificationType, OperationTypeEnum, ApprovalType } from '@portkey-wallet/types/verifier';
-import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { VerifierImage } from 'pages/Guardian/components/VerifierImage';
-import { verification } from 'utils/api';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import fonts from 'assets/theme/fonts';
 import GuardianAccountItem from '../components/GuardianAccountItem';
 import Divider from 'components/Divider';
-import {
-  AppleAuthentication,
-  GoogleAuthentication,
-  useAppleAuthentication,
-  useGoogleAuthentication,
-  useVerifyToken,
-} from 'hooks/authentication';
 import { checkIsLastLoginAccount } from '@portkey-wallet/utils/guardian';
+import { useSetLoginAccount } from '../hooks/useSetLoginAccount';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
 };
-
-const THIRD_PART_LOGIN_TYPE = [LoginType.Apple, LoginType.Google];
 
 export default function GuardianDetail() {
   const {
@@ -43,114 +30,7 @@ export default function GuardianDetail() {
   } = useRoute<RouteProp<{ params: RouterParams }>>();
   const getGuardiansInfo = useGetGuardiansInfo();
   const { userGuardiansList } = useGuardiansInfo();
-  const { appleSign } = useAppleAuthentication();
-  const { googleSign } = useGoogleAuthentication();
-  const originChainId = useOriginChainId();
-
-  // Email & Phone
-  const sendLoginAccountVerify = useCallback(
-    async (currentGuardian: UserGuardianItem, isLoginAccount: boolean) => {
-      try {
-        Loading.show();
-        const req = await verification.sendVerificationCode({
-          params: {
-            type: LoginType[currentGuardian.guardianType],
-            guardianIdentifier: currentGuardian.guardianAccount,
-            verifierId: currentGuardian.verifier?.id,
-            chainId: originChainId,
-            operationType: isLoginAccount ? OperationTypeEnum.setLoginAccount : OperationTypeEnum.unsetLoginAccount,
-          },
-        });
-        if (req.verifierSessionId) {
-          navigationService.navigate('VerifierDetails', {
-            guardianItem: currentGuardian,
-            requestCodeResult: {
-              verifierSessionId: req.verifierSessionId,
-            },
-            verificationType: isLoginAccount ? VerificationType.setLoginAccount : VerificationType.unsetLoginAccount,
-          });
-        } else {
-          console.log('send fail');
-        }
-      } catch (error) {
-        CommonToast.failError(error);
-      }
-      Loading.hide();
-    },
-    [originChainId],
-  );
-
-  // Email & Phone
-  const setCommonLoginAccount = useCallback(
-    async (currentGuardian: UserGuardianItem, isLoginAccount: boolean) => {
-      ActionSheet.alert({
-        title2: (
-          <Text>
-            <TextL>{`${currentGuardian.verifier?.name} will send a verification code to `}</TextL>
-            <TextL style={fonts.mediumFont}>{currentGuardian.guardianAccount}</TextL>
-            <TextL>{` to verify your ${
-              currentGuardian.guardianType === LoginType.Phone ? 'phone number' : 'email address'
-            }.`}</TextL>
-          </Text>
-        ),
-        buttons: [
-          {
-            title: 'Cancel',
-            type: 'outline',
-          },
-          {
-            title: 'Confirm',
-            onPress: () => {
-              sendLoginAccountVerify(currentGuardian, isLoginAccount);
-            },
-          },
-        ],
-      });
-    },
-    [sendLoginAccountVerify],
-  );
-
-  const verifyToken = useVerifyToken();
-  const setThirdPartyLoginAccount = useCallback(
-    async (currentGuardian: UserGuardianItem, isLoginAccount: boolean) => {
-      Loading.show();
-      try {
-        const userInfo = await (currentGuardian.guardianType === LoginType.Apple ? appleSign : googleSign)();
-        const guardianAccount = userInfo.user.id;
-        if (guardianAccount !== currentGuardian.guardianAccount)
-          throw new Error('Account does not match your guardian');
-        // CommonToast.success('Verified Successfully');
-        let accessToken = '';
-        if (currentGuardian.guardianType === LoginType.Apple) {
-          accessToken = (userInfo as AppleAuthentication).identityToken;
-        } else {
-          accessToken = (userInfo as GoogleAuthentication).accessToken;
-        }
-        const rst = await verifyToken(currentGuardian.guardianType, {
-          accessToken,
-          id: guardianAccount,
-          verifierId: currentGuardian.verifier?.id,
-          chainId: originChainId,
-          operationType: isLoginAccount ? OperationTypeEnum.setLoginAccount : OperationTypeEnum.unsetLoginAccount,
-        });
-
-        navigationService.navigate('GuardianApproval', {
-          approvalType: isLoginAccount ? ApprovalType.setLoginAccount : ApprovalType.unsetLoginAccount,
-          guardianItem: currentGuardian,
-          verifierInfo: {
-            ...rst,
-            verifierId: currentGuardian.verifier?.id,
-          },
-          verifiedTime: Date.now(),
-          authenticationInfo: { [guardianAccount]: accessToken },
-        });
-      } catch (error) {
-        CommonToast.failError(error);
-      }
-      Loading.hide();
-    },
-    [appleSign, googleSign, originChainId, verifyToken],
-  );
+  const setLoginAccount = useSetLoginAccount();
 
   const onLoginAccountChange = useCallback(
     async (value: boolean) => {
@@ -170,12 +50,7 @@ export default function GuardianDetail() {
           return;
         }
 
-        if (THIRD_PART_LOGIN_TYPE.includes(guardian.guardianType)) {
-          setThirdPartyLoginAccount(guardian, false);
-        } else {
-          setCommonLoginAccount(guardian, false);
-        }
-
+        setLoginAccount(guardian, false);
         return;
       }
 
@@ -215,13 +90,9 @@ export default function GuardianDetail() {
         }
       }
 
-      if (THIRD_PART_LOGIN_TYPE.includes(guardian.guardianType)) {
-        setThirdPartyLoginAccount(guardian, true);
-      } else {
-        setCommonLoginAccount(guardian, true);
-      }
+      setLoginAccount(guardian, true);
     },
-    [getGuardiansInfo, guardian, setCommonLoginAccount, setThirdPartyLoginAccount, userGuardiansList],
+    [getGuardiansInfo, guardian, setLoginAccount, userGuardiansList],
   );
 
   return (

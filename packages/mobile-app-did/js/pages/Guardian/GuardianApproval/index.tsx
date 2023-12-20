@@ -21,7 +21,7 @@ import {
 import GuardianItem from '../components/GuardianItem';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
-import navigationService from 'utils/navigationService';
+import navigationService, { NavigateName } from 'utils/navigationService';
 import { LoginType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
 import Touchable from 'components/Touchable';
 import ActionSheet from 'components/ActionSheet';
@@ -72,6 +72,10 @@ export type RouterParams = {
   targetChainId?: ChainId;
   accelerateChainId?: ChainId;
   initGuardiansStatus?: GuardiansStatus;
+  successNavigate?: {
+    name: NavigateName;
+    params?: any;
+  };
 };
 
 const EXCLUDE_CURRENT_APPROVAL_TYPES = [
@@ -97,6 +101,7 @@ export default function GuardianApproval() {
     targetChainId,
     accelerateChainId,
     initGuardiansStatus,
+    successNavigate,
   } = useRouterParams<RouterParams>();
   const dispatch = useAppDispatch();
   const checkRouteExistInRouteStack = useCheckRouteExistInRouteStack();
@@ -482,7 +487,11 @@ export default function GuardianApproval() {
       );
       if (req && !req.error) {
         myEvents.refreshGuardiansList.emit();
-        // navigationService.navigate('GuardianHome');
+        if (successNavigate) {
+          navigationService.navigate(successNavigate.name, successNavigate.params);
+        } else {
+          navigationService.navigate('GuardianHome');
+        }
       } else {
         CommonToast.fail(req?.error?.message || '');
       }
@@ -490,7 +499,17 @@ export default function GuardianApproval() {
     } catch (error) {
       //TODO: 1.4.13
     }
-  }, [caHash, getCurrentCAContract, guardianItem, guardiansStatus, managerAddress, t, userGuardiansList, verifierInfo]);
+  }, [
+    caHash,
+    getCurrentCAContract,
+    guardianItem,
+    guardiansStatus,
+    managerAddress,
+    successNavigate,
+    t,
+    userGuardiansList,
+    verifierInfo,
+  ]);
 
   const onUnsetLoginAccount = useCallback(async () => {
     if (!managerAddress || !caHash || !verifierInfo || !guardianItem || !guardiansStatus || !userGuardiansList) return;
@@ -508,7 +527,11 @@ export default function GuardianApproval() {
       );
       if (req && !req.error) {
         myEvents.refreshGuardiansList.emit();
-        // navigationService.navigate('GuardianHome');
+        if (successNavigate) {
+          navigationService.navigate(successNavigate.name, successNavigate.params);
+        } else {
+          navigationService.navigate('GuardianHome');
+        }
       } else {
         CommonToast.fail(req?.error?.message || '');
       }
@@ -516,7 +539,17 @@ export default function GuardianApproval() {
     } catch (error) {
       //TODO: 1.4.13
     }
-  }, [caHash, getCurrentCAContract, guardianItem, guardiansStatus, managerAddress, t, userGuardiansList, verifierInfo]);
+  }, [
+    caHash,
+    getCurrentCAContract,
+    guardianItem,
+    guardiansStatus,
+    managerAddress,
+    successNavigate,
+    t,
+    userGuardiansList,
+    verifierInfo,
+  ]);
 
   const onFinish = useCallback(async () => {
     switch (approvalType) {

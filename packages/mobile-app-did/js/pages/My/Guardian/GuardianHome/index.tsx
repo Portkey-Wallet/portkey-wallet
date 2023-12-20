@@ -1,7 +1,7 @@
 import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import PageContainer from 'components/PageContainer';
@@ -12,6 +12,7 @@ import Touchable from 'components/Touchable';
 import { useRefreshGuardianList } from 'hooks/guardian';
 import useEffectOnce from 'hooks/useEffectOnce';
 import GStyles from 'assets/theme/GStyles';
+import { TextM } from 'components/CommonText';
 
 export default function GuardianHome() {
   const { t } = useLanguage();
@@ -46,7 +47,7 @@ export default function GuardianHome() {
       safeAreaColor={['blue', 'white']}
       titleDom={t('Guardians')}
       containerStyles={pageStyles.pageWrap}
-      scrollViewProps={{ disabled: false }}
+      scrollViewProps={{ disabled: true }}
       rightDom={
         isAddAllowed && (
           <TouchableOpacity
@@ -58,7 +59,7 @@ export default function GuardianHome() {
           </TouchableOpacity>
         )
       }>
-      <View>
+      <ScrollView showsVerticalScrollIndicator={false}>
         {guardianList.map((guardian, idx) => (
           <Touchable
             key={idx}
@@ -73,7 +74,15 @@ export default function GuardianHome() {
             />
           </Touchable>
         ))}
-      </View>
+      </ScrollView>
+      {!isAddAllowed && (
+        <View style={pageStyles.warnWrap}>
+          <Svg icon="warning2" size={pTd(16)} color={defaultColors.font9} />
+          <TextM style={pageStyles.warnLabelWrap}>
+            {'The number of guardians has reached the maximum limit. Please delete some before trying to add new ones.'}
+          </TextM>
+        </View>
+      )}
     </PageContainer>
   );
 }
@@ -82,6 +91,17 @@ const pageStyles = StyleSheet.create({
   pageWrap: {
     flex: 1,
     backgroundColor: defaultColors.bg1,
-    ...GStyles.paddingArg(16, 20),
+    ...GStyles.paddingArg(16, 20, 10, 20),
+  },
+  warnWrap: {
+    backgroundColor: defaultColors.bg6,
+    borderRadius: pTd(6),
+    padding: pTd(12),
+    flexDirection: 'row',
+  },
+  warnLabelWrap: {
+    color: defaultColors.font3,
+    marginLeft: pTd(8),
+    flex: 1,
   },
 });

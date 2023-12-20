@@ -10,14 +10,14 @@ import { defaultColors } from 'assets/theme';
 
 function SystemTime(_props: DayProps<IMessage>) {
   const sameDay = isSameDay(_props.previousMessage?.createdAt, _props.currentMessage?.createdAt);
-  const isMarginBottom8 = useMemo(() => {
+  const isMarginBottom6 = useMemo(() => {
     return _props.previousMessage?.user && _props.previousMessage?.user._id === _props.currentMessage?.user._id;
   }, [_props.currentMessage?.user._id, _props.previousMessage?.user]);
 
   if (sameDay && !!_props?.previousMessage?.createdAt) return null;
 
   return (
-    <View style={[GStyles.center, styles.wrap, isMarginBottom8 && GStyles.marginBottom(8)]}>
+    <View style={[GStyles.center, styles.wrap, isMarginBottom6 && GStyles.marginBottom(6)]}>
       <TextS style={styles.textStyles}>{formatMessageTime(_props.currentMessage?.createdAt)}</TextS>
     </View>
   );
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   wrap: {
     width: '100%',
     marginBottom: pTd(0),
-    marginTop: pTd(16),
+    marginTop: pTd(12),
   },
   textStyles: {
     textAlign: 'center',

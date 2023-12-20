@@ -29,6 +29,7 @@ export const messageContentParser = (type: MessageType | null, content: string):
     case 'IMAGE':
       return imageMessageParser(content);
     case 'REDPACKAGE-CARD':
+    case 'TRANSFER-CARD':
       return JSON.parse(content);
     default:
       return undefined;
@@ -36,10 +37,16 @@ export const messageContentParser = (type: MessageType | null, content: string):
 };
 
 export const messageParser = (message: Message): Message => {
+  let quote = message.quote;
+  if (quote) {
+    quote = messageParser(quote);
+  }
+
   const parsedContent = messageContentParser(message.type, message.content);
   return {
     ...message,
     parsedContent: parsedContent,
     unidentified: parsedContent === undefined,
+    quote,
   };
 };

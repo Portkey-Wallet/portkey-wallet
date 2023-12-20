@@ -19,9 +19,11 @@ export const useSocialVerify = () => {
       originChainId,
       operationType,
       loginAccount,
+      targetChainId,
     }: {
       operateGuardian: UserGuardianItem;
       originChainId: ChainId;
+      targetChainId?: ChainId;
       operationType: OperationTypeEnum;
       loginAccount?: LoginInfo;
     }) => {
@@ -33,6 +35,7 @@ export const useSocialVerify = () => {
           verifierId: operateGuardian.verifier?.id,
           chainId: originChainId,
           operationType: operationType,
+          targetChainId,
         });
         const verifierInfo: VerifierInfo = { ...result, verifierId: operateGuardian?.verifier?.id };
         const { guardianIdentifier } = handleVerificationDoc(verifierInfo.verificationDoc);

@@ -54,7 +54,7 @@ import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 
 const SendHome: React.FC = () => {
   const {
-    params: { sendType = 'token', toInfo, assetInfo },
+    params: { sendType = 'token', toInfo, assetInfo, isFixedToContact },
   } = useRoute<RouteProp<{ params: IToSendHomeParamsType }>>();
   const { t } = useLanguage();
   useFetchTxFee();
@@ -79,7 +79,7 @@ const SendHome: React.FC = () => {
   const debounceSendNumber = useDebounce(sendNumber, 500);
   const [, setTransactionFee] = useState<string>('0'); // like 1.2ELF
 
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2>(isFixedToContact ? 2 : 1);
   const [isLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<any[]>([]);
 
@@ -536,7 +536,7 @@ const SendHome: React.FC = () => {
       safeAreaColor={['blue', step === 1 ? 'white' : 'gray']}
       titleDom={`${t('Send')}${sendType === 'token' ? ' ' + assetInfo.symbol : ''}`}
       rightDom={
-        sendType === 'token' ? (
+        sendType === 'token' && !isFixedToContact ? (
           <TouchableOpacity
             onPress={async () => {
               if (selectedToContact?.address) return showDialog('clearAddress');
@@ -554,6 +554,7 @@ const SendHome: React.FC = () => {
       <View style={styles.group}>
         <From />
         <To
+          isFixedToContact={isFixedToContact}
           step={step}
           setStep={setStep}
           setErrorMessage={setErrorMessage}

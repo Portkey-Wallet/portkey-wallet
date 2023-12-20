@@ -2,12 +2,12 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { MessageTextProps, Time } from 'react-native-gifted-chat';
 import ParsedText from 'react-native-parsed-text';
-import { StyleSheet, Text, TextStyle } from 'react-native';
+import { StyleSheet, Text, TextStyle, View, Image } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
 import ChatOverlay from '../../ChatOverlay';
-import { useCurrentChannelId } from 'pages/Chat/context/hooks';
+import { useChatsDispatch, useCurrentChannelId } from 'pages/Chat/context/hooks';
 import { useDeleteMessage } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ChatMessage } from 'pages/Chat/types';
 import { ShowChatPopoverParams } from '../../ChatOverlay/chatPopover';
@@ -18,14 +18,57 @@ import { FontStyles } from 'assets/theme/styles';
 import { GestureResponderEvent } from 'react-native';
 import CommonToast from 'components/CommonToast';
 import { useOnUrlPress } from 'hooks/chat';
+import Svg from 'components/Svg';
+import { setReplyMessageInfo } from 'pages/Chat/context/chatsContext';
+import { websiteRE } from '@portkey-wallet/utils/reg';
+import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
 
-const UNICODE_SPACE = isIOS
+const PIN_UNICODE_SPACE = '\u00A0\u00A0\u00A0\u00A0';
+const TIME_UNICODE_SPACE = isIOS
   ? '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'
   : '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
+
+function ReplyMessageText(props: MessageTextProps<ChatMessage>) {
+  const { position, currentMessage } = props;
+
+  if (!currentMessage?.quote) return null;
+  if (!(typeof currentMessage?.quote.parsedContent === 'string')) return null;
+
+  return (
+    <View style={[replyMessageTextStyles.wrap, position === 'right' && replyMessageImageStyles.rightWrap]}>
+      <View style={replyMessageTextStyles.blueBlank} />
+      <TextM style={replyMessageTextStyles.name}>{currentMessage?.quote?.fromName}</TextM>
+      <TextM style={replyMessageTextStyles.content} numberOfLines={2}>
+        {currentMessage?.quote?.messageType === 'NOT_SUPPORTED' ? UN_SUPPORTED_FORMAT : currentMessage?.quote?.content}
+      </TextM>
+    </View>
+  );
+}
+
+function ReplyMessageImage(props: MessageTextProps<ChatMessage>) {
+  const { position, currentMessage } = props;
+  if (!currentMessage?.quote) return null;
+  if (!currentMessage?.quote.imageInfo) return null;
+
+  return (
+    <View style={[replyMessageImageStyles.wrap, position === 'right' && replyMessageImageStyles.rightWrap]}>
+      <View style={replyMessageImageStyles.blueBlank} />
+      <Image style={replyMessageImageStyles.img} source={{ uri: currentMessage?.quote?.imageInfo?.imgUri }} />
+      <View style={replyMessageImageStyles.rightWrap}>
+        <TextM style={replyMessageImageStyles.name}>{currentMessage?.quote?.fromName}</TextM>
+        <TextM style={replyMessageImageStyles.content} numberOfLines={1}>
+          {currentMessage?.quote?.messageType === 'NOT_SUPPORTED' ? UN_SUPPORTED_FORMAT : 'Photo'}
+        </TextM>
+      </View>
+    </View>
+  );
+}
 
 function MessageText(props: MessageTextProps<ChatMessage>) {
   const { currentMessage, textProps, position = 'right', customTextStyle, textStyle } = props;
   const currentChannelId = useCurrentChannelId();
+  const dispatch = useChatsDispatch();
+
   const deleteMessage = useDeleteMessage(currentChannelId || '');
   const { messageType } = currentMessage || {};
   const isNotSupported = useMemo(() => messageType === 'NOT_SUPPORTED', [messageType]);
@@ -33,6 +76,7 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
   const onLongPress = useCallback(
     (event: GestureResponderEvent) => {
       const { pageX, pageY } = event.nativeEvent;
+
       const list: ShowChatPopoverParams['list'] = isNotSupported
         ? []
         : [
@@ -43,6 +87,33 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
                 await copyText(currentMessage?.content || '');
               },
             },
+            {
+              // TODO: if not pinned message, show pin
+              title: 'Pin',
+              iconName: 'chat-pin',
+              onPress: async () => {
+                try {
+                  // todo: pin message
+                  await copyText(currentMessage?.content || '');
+                } catch (error) {
+                  // TODO: change to failError
+                  CommonToast.failError(error);
+                }
+              },
+            },
+            {
+              // TODO: reply
+              title: 'Reply',
+              iconName: 'chat-pin',
+              onPress: async () => {
+                dispatch(
+                  setReplyMessageInfo({
+                    message: currentMessage,
+                    messageType: 'text',
+                  }),
+                );
+              },
+            },
           ];
       if (position === 'right')
         list.push({
@@ -50,7 +121,8 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
           iconName: 'chat-delete',
           onPress: async () => {
             try {
-              await deleteMessage(currentMessage?.id);
+              if (!currentMessage) return;
+              await deleteMessage(currentMessage);
             } catch (error) {
               CommonToast.fail('Failed to delete message');
             }
@@ -64,7 +136,7 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
           formatType: 'dynamicWidth',
         });
     },
-    [currentMessage?.content, currentMessage?.id, deleteMessage, isNotSupported, position],
+    [currentMessage, deleteMessage, dispatch, isNotSupported, position],
   );
 
   const onPress = useCallback(() => {
@@ -75,21 +147,32 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
 
   return (
     <Touchable onPress={onPress} onLongPress={onLongPress} style={styles.textRow}>
+      <ReplyMessageImage {...props} />
+      <ReplyMessageText {...props} />
       <Text style={[messageStyles[position].text, textStyle && textStyle[position], customTextStyle]}>
         {isNotSupported ? (
           <TextM style={FontStyles.font4}>{currentMessage?.text}</TextM>
         ) : (
           <ParsedText
             style={[messageStyles[position].text, textStyle && textStyle[position], customTextStyle]}
-            parse={[{ type: 'url', style: styles.linkStyle as TextStyle, onPress: onUrlPress }]}
+            parse={[
+              { type: 'url', style: styles.linkStyle as TextStyle, onPress: onUrlPress },
+              // TODO: test it
+              { pattern: websiteRE, style: styles.linkStyle as TextStyle, onPress: onUrlPress },
+            ]}
             childrenProps={{ ...textProps }}>
             {currentMessage?.text}
           </ParsedText>
         )}
-
-        {UNICODE_SPACE}
+        {/* todo: when pinned show this */}
+        {PIN_UNICODE_SPACE}
+        {TIME_UNICODE_SPACE}
       </Text>
-      <Time timeFormat="HH:mm" timeTextStyle={timeTextStyle} containerStyle={timeContainerStyle} {...props} />
+      <View style={styles.timeBoxStyle}>
+        {/* todo: if pinned show this */}
+        <Svg icon="pin-message" size={pTd(12)} iconStyle={styles.iconStyle} color={defaultColors.font7} />
+        <Time timeFormat="HH:mm" timeTextStyle={timeTextStyle} containerStyle={timeInnerWrapStyle} {...props} />
+      </View>
     </Touchable>
   );
 }
@@ -110,26 +193,41 @@ const styles = StyleSheet.create({
   },
   textStyles: {
     fontSize: pTd(16),
-    lineHeight: pTd(24),
+    lineHeight: pTd(22),
     marginVertical: pTd(8),
     marginHorizontal: pTd(12),
   },
   linkStyle: {
     color: defaultColors.font4,
   },
+  iconStyle: {
+    marginRight: pTd(4),
+  },
   timeBoxStyle: {
     position: 'absolute',
+    paddingHorizontal: pTd(8),
+    bottom: pTd(4),
     right: pTd(8),
-    bottom: pTd(0),
+    height: pTd(16),
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  timeInnerWrapStyle: {
+    marginRight: 0,
+    marginLeft: 0,
+    marginBottom: 0,
+    marginTop: 0,
   },
   timeTextStyle: {
     color: defaultColors.font7,
   },
 });
 
-const timeContainerStyle = {
-  left: styles.timeBoxStyle,
-  right: styles.timeBoxStyle,
+const timeInnerWrapStyle = {
+  left: styles.timeInnerWrapStyle,
+  right: styles.timeInnerWrapStyle,
 };
 
 const timeTextStyle = {
@@ -159,3 +257,80 @@ const messageStyles = {
     },
   }),
 };
+
+const replyMessageTextStyles = StyleSheet.create({
+  wrap: {
+    position: 'relative',
+    backgroundColor: defaultColors.bg3,
+    borderRadius: pTd(8),
+    paddingVertical: pTd(4),
+    paddingLeft: pTd(11),
+    paddingRight: pTd(8),
+    margin: pTd(8),
+    marginBottom: 0,
+    overflow: 'hidden',
+  },
+  rightWrap: {
+    backgroundColor: defaultColors.bg25,
+  },
+  blueBlank: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: pTd(3),
+    height: pTd(300),
+    backgroundColor: defaultColors.primaryColor,
+  },
+  img: {
+    width: pTd(32),
+    height: pTd(32),
+    borderRadius: pTd(3),
+  },
+  name: {
+    color: defaultColors.font5,
+  },
+  content: {
+    color: defaultColors.font3,
+  },
+});
+
+const replyMessageImageStyles = StyleSheet.create({
+  wrap: {
+    position: 'relative',
+    backgroundColor: defaultColors.bg3,
+    borderRadius: pTd(8),
+    paddingVertical: pTd(4),
+    paddingLeft: pTd(11),
+    paddingRight: pTd(8),
+    margin: pTd(8),
+    marginBottom: 0,
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  rightWrap: {
+    backgroundColor: defaultColors.bg25,
+  },
+  blueBlank: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: pTd(3),
+    height: pTd(300),
+    backgroundColor: defaultColors.primaryColor,
+  },
+  img: {
+    width: pTd(32),
+    height: pTd(32),
+    marginRight: pTd(8),
+    borderRadius: pTd(3),
+    backgroundColor: defaultColors.bg5,
+  },
+  name: {
+    color: defaultColors.font5,
+  },
+  content: {
+    color: defaultColors.font3,
+  },
+});

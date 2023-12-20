@@ -32,6 +32,7 @@ import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import { measurePageY } from 'utils/measure';
 import GroupAvatarShow from '../components/GroupAvatarShow';
 import { useIsFocused } from '@react-navigation/native';
+import HeaderPinSection from '../components/HeaderPinSection';
 
 const ChatGroupDetailsPage = () => {
   const isFocused = useIsFocused();
@@ -199,6 +200,13 @@ const ChatGroupDetailsPage = () => {
     [displayName, groupInfo?.icon, groupInfo?.name, mute, onBack],
   );
 
+  const headerDom = useMemo(() => {
+    // if pin exit, show pin section
+    return <HeaderPinSection />;
+
+    return <FloatingActionButton title="Add Members" shouldShowFirstTime={isAdmin} onPressButton={addMembers} />;
+  }, [addMembers, isAdmin]);
+
   return (
     <PageContainer
       noCenterDom
@@ -212,7 +220,7 @@ const ChatGroupDetailsPage = () => {
           <Svg size={pTd(20)} icon="more" color={defaultColors.bg1} />
         </Touchable>
       }>
-      <FloatingActionButton title="Add Members" shouldShowFirstTime={isAdmin} onPressButton={addMembers} />
+      {headerDom}
       <ChatsGroupDetailContent />
     </PageContainer>
   );

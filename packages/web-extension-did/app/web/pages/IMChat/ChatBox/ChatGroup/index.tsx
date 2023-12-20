@@ -180,7 +180,9 @@ export default function ChatBox() {
   const handleSendMessage = useCallback(
     async (v: string) => {
       try {
-        await sendMessage(v.trim() ?? '');
+        await sendMessage({
+          content: v.trim() ?? '',
+        });
         messageRef.current.scrollTop = messageRef.current.scrollHeight;
       } catch (e: any) {
         handleSendMsgError(e);

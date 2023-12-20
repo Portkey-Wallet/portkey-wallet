@@ -85,7 +85,6 @@ export default function ChatsDetailContent() {
       dispatch(setChatText(''));
       dispatch(setBottomBarStatus(undefined));
       dispatch(setShowSoftInputOnFocus(true));
-      // dispatch(setCurrentChannelId());
       destroyChatInputRecorder();
     };
   });

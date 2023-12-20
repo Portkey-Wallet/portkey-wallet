@@ -28,6 +28,8 @@ import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import CommonTouchableTabs, { TabItemType } from 'components/CommonTouchableTabs';
 import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
 import { createTimeRecorder } from '@portkey-wallet/utils/timeRecorder';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+
 export default function SendPacketGroupPage() {
   const currentChannelId = useCurrentChannelId();
   const calculateRedPacketFee = useCalculateRedPacketFee();
@@ -40,7 +42,7 @@ export default function SendPacketGroupPage() {
   const checkManagerSyncState = useCheckManagerSyncState();
   const { getContractAddress } = useGetRedPackageConfig(true);
   const reportAnalyticsEvent = useReportAnalyticsEvent();
-  const onPressBtn = useCallback(
+  const onPressBtn = useLockCallback(
     async (values: ValuesType) => {
       Loading.show();
       try {

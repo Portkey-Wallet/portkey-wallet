@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -27,6 +27,7 @@ import myEvents from 'utils/deviceEvent';
 import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
 import { createTimeRecorder } from '@portkey-wallet/utils/timeRecorder';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 export default function SendPacketP2PPage() {
   const currentChannelId = useCurrentChannelId();
@@ -40,7 +41,7 @@ export default function SendPacketP2PPage() {
   const [, resetOverlayCount] = useState(0);
   const reportAnalyticsEvent = useReportAnalyticsEvent();
 
-  const onPressBtn = useCallback(
+  const onPressBtn = useLockCallback(
     async (values: ValuesType) => {
       Loading.show();
       try {

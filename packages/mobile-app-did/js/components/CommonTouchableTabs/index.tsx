@@ -35,26 +35,26 @@ export default function CommonTouchableTabs<T>({
   tabTextStyle,
   selectTabTextStyle,
 }: CommonTouchableTabsProps<T>) {
-  const tabTitleStyle = useMemo(() => {
-    const tabTitleStyles: TextStyleType = [FontStyles.font7];
-    if (tabTextStyle) tabTitleStyles.push(tabTextStyle);
-    if (selectTab) {
-      tabTitleStyles.push(styles.selectTabTextStyle);
-      if (selectTabTextStyle) tabTitleStyles.push(selectTabTextStyle);
-    }
-    return tabTitleStyles;
-  }, [selectTab, selectTabTextStyle, tabTextStyle]);
   return (
     <View style={[styles.tabHeader, tabHeaderStyle]}>
-      {tabList.map(tabItem => (
-        <Touchable
-          key={tabItem.name}
-          activeOpacity={0.8}
-          onPress={() => onTabPress(tabItem.type)}
-          style={[styles.tabWrap, selectTab === tabItem.type && styles.selectTabStyle, tabWrapStyle]}>
-          <TextM style={tabTitleStyle}>{tabItem.name}</TextM>
-        </Touchable>
-      ))}
+      {tabList.map(tabItem => {
+        const selectedTab = selectTab === tabItem.type;
+        const tabTitleStyles: TextStyleType = [FontStyles.font7];
+        if (tabTextStyle) tabTitleStyles.push(tabTextStyle);
+        if (selectedTab) {
+          tabTitleStyles.push(styles.selectTabTextStyle);
+          if (selectTabTextStyle) tabTitleStyles.push(selectTabTextStyle);
+        }
+        return (
+          <Touchable
+            key={tabItem.name}
+            activeOpacity={0.8}
+            onPress={() => onTabPress(tabItem.type)}
+            style={[styles.tabWrap, selectedTab && styles.selectTabStyle, tabWrapStyle]}>
+            <TextM style={tabTitleStyles}>{tabItem.name}</TextM>
+          </Touchable>
+        );
+      })}
     </View>
   );
 }

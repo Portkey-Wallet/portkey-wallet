@@ -51,7 +51,6 @@ import { GuardianItem } from 'types/guardians';
 import GuardianApproveModal from 'pages/components/GuardianApprovalModal';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { chromeStorage } from 'store/utils';
-import { PORTKEY_OFF_RAMP_GUARDIANS_APPROVE_LIST } from 'constants/index';
 
 export default function Buy() {
   const { t } = useTranslation();
@@ -105,7 +104,7 @@ export default function Buy() {
       try {
         if (Array.isArray(approveList) && approveList.length > 0) {
           console.log('🌈 🌈 🌈 🌈 🌈 🌈 approveList', approveList);
-          chromeStorage.setItem(PORTKEY_OFF_RAMP_GUARDIANS_APPROVE_LIST, JSON.stringify(approveList));
+          chromeStorage.setItem('portkeyOffRampGuardiansApproveList', JSON.stringify(approveList));
           setOpenGuardiansApprove(false);
           goPreview();
         } else {

@@ -209,6 +209,8 @@ export default function Send() {
       if (!privateKey) return;
       if (!tokenInfo) throw 'No Symbol info';
 
+      setLoading(true);
+
       if (isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF')) {
         await crossChainTransfer({
           chainInfo,
@@ -413,9 +415,9 @@ export default function Send() {
 
   const sendHandler = useCallback(async (): Promise<string | void> => {
     if (!oneTimeApprovalList.current || oneTimeApprovalList.current.length === 0) {
+      if (!tokenInfo) throw 'No Symbol info';
+      setLoading(true);
       try {
-        if (!tokenInfo) throw 'No Symbol info';
-        setLoading(true);
         // transfer limit check
         const limitRes = await checkLimit({
           chainId: tokenInfo.chainId,
@@ -444,6 +446,7 @@ export default function Send() {
 
         const msg = handleErrorMessage(error);
         message.error(msg);
+        return;
       }
     }
     await sendTransfer();

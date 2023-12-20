@@ -79,7 +79,7 @@ export default function GuardianApproveModal({
   }, [getGuardianList, setLoading]);
 
   const onApproveSuccess = useCallback(
-    (approvalInfo: GuardiansApproved[]) => {
+    async (approvalInfo: GuardiansApproved[]) => {
       try {
         setLoading(true);
         console.log('🌈 🌈 🌈 🌈 🌈 🌈 approvalInfo', approvalInfo);

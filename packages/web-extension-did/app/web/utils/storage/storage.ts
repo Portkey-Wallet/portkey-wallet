@@ -22,6 +22,7 @@ const storage = {
   locationState: 'LOCATION_STATE',
   lastLocationState: 'LAST_LOCATION_STATE',
   popupCloseTime: 'POPUP_CLOSE_TIME',
+  portkeyOffRampGuardiansApproveList: 'PORTKEY_OFF_RAMP_GUARDIANS_APPROVE_LIST',
 };
 
 export default storage;

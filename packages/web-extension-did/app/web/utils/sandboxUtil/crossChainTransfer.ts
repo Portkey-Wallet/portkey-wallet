@@ -3,7 +3,6 @@ import { ChainType } from '@portkey-wallet/types';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { getChainIdByAddress } from '@portkey-wallet/utils';
 import { crossChainTransferToCa } from './crossChainTransferToCa';
-import { managerTransfer } from './managerTransfer';
 import { getChainNumber } from '@portkey-wallet/utils/aelf';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
@@ -12,23 +11,14 @@ import { getTxFee } from 'store/utils/getStore';
 import { DEFAULT_TOKEN } from '@portkey-wallet/constants/constants-ca/wallet';
 import { getTokenInfo } from './getTokenInfo';
 import { GuardianItem } from 'types/guardians';
+import { managerForwardCall } from './managerForwardCall';
 
 export type CrossChainTransferIntervalParams = Omit<CrossChainTransferParams, 'caHash' | 'fee'> & {
   issueChainId: number;
 };
 
 export const intervalCrossChainTransfer = async (params: CrossChainTransferIntervalParams, count = 0) => {
-  const {
-    chainInfo,
-    chainType,
-    privateKey,
-    issueChainId,
-    amount,
-    tokenInfo,
-    memo = '',
-    toAddress,
-    guardiansApproved,
-  } = params;
+  const { chainInfo, chainType, privateKey, issueChainId, amount, tokenInfo, memo = '', toAddress } = params;
   const toChainId = getChainIdByAddress(toAddress, chainType);
   let _issueChainId = issueChainId;
   if (!_issueChainId) {
@@ -57,7 +47,6 @@ export const intervalCrossChainTransfer = async (params: CrossChainTransferInter
         to: toAddress,
         amount,
         memo,
-        guardiansApproved,
       },
     });
     console.log(result, 'crossChainTransferToCa');
@@ -108,38 +97,22 @@ const crossChainTransfer = async ({
 
   if (typeof issueChainId !== 'number') throw Error('GetTokenInfo Error');
   try {
-    // let _amount = amount;
-    // if (tokenInfo.symbol === nativeToken.symbol) {
-    //   //
-    //   _amount = ZERO.plus(amount).plus(fee).toNumber();
-    // } else {
-    //   await managerTransfer({
-    //     rpcUrl: chainInfo.endPoint,
-    //     address: chainInfo.caContractAddress,
-    //     chainType,
-    //     privateKey,
-    //     paramsOption: {
-    //       caHash,
-    //       symbol: 'ELF',
-    //       to: managerAddress,
-    //       amount: fee,
-    //       memo,
-    //     },
-    //   });
-    // }
-
     // first transaction:transfer to manager itself
-    managerTransferResult = await managerTransfer({
+    managerTransferResult = await managerForwardCall({
       rpcUrl: chainInfo.endPoint,
       address: chainInfo.caContractAddress,
       chainType,
       privateKey,
       paramsOption: {
         caHash,
-        symbol: tokenInfo.symbol,
-        to: managerAddress,
-        amount: amount,
-        memo,
+        contractAddress: tokenInfo.address,
+        methodName: 'Transfer',
+        args: {
+          symbol: tokenInfo.symbol,
+          to: managerAddress,
+          amount,
+          memo,
+        },
         guardiansApproved,
       },
     });
@@ -171,7 +144,6 @@ const crossChainTransfer = async ({
     memo,
     toAddress,
     issueChainId,
-    guardiansApproved,
   };
   try {
     await intervalCrossChainTransfer(crossChainTransferParams);

@@ -127,7 +127,7 @@ const PaymentModal = ({
           </View>
         </View>
         <View style={GStyles.alignEnd}>
-          {!!currentTokenInfo?.price && (
+          {!!defaultTokenPrice && (
             <TextS style={FontStyles.font3}>
               {convertAmountUSDShow(divDecimals(fee.value, defaultToken.decimals), defaultTokenPrice)}
             </TextS>
@@ -135,15 +135,7 @@ const PaymentModal = ({
         </View>
       </View>
     );
-  }, [
-    currentTokenInfo?.price,
-    defaultToken.decimals,
-    defaultToken.symbol,
-    defaultTokenPrice,
-    fee?.error,
-    fee?.loading,
-    fee.value,
-  ]);
+  }, [defaultToken.decimals, defaultToken.symbol, defaultTokenPrice, fee?.error, fee?.loading, fee.value]);
 
   const getButtonComponent = useMemo(() => {
     if (!fee.error) return;

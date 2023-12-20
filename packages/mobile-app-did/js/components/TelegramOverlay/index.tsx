@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { Keyboard, View } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
@@ -9,25 +9,23 @@ import { StyleSheet } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import { BGStyles } from 'assets/theme/styles';
 import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
+import { parseUrl } from 'query-string';
+import { TelegramUserInfo, parseTelegramToken } from '@portkey-wallet/utils/authentication';
 
 type TelegramSignProps = {
-  onConfirm: (value: unknown) => void;
+  onConfirm: (userInfo: TGUserInfo) => void;
   onReject: (reason: any) => void;
 };
 
-const InjectedJavaScript = `(()=>{
-  try {
-    if(!window.opener) window.opener = {}
-    window.opener.postMessage = obj => {
-      window.ReactNativeWebView.postMessage(JSON.stringify(obj));
-    };
-  } catch (error) {
-    window.ReactNativeWebView.postMessage(JSON.stringify(error));
-  }
-})()`;
+type TGUserInfo = {
+  user: TelegramUserInfo;
+  accessToken: string;
+};
 
-function TelegramSign({ onConfirm }: TelegramSignProps) {
+function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
   const [loading, setLoading] = useState(true);
+  const [uri, setUri] = useState('https://openlogin-test.portkey.finance/social-login/Telegram?botUsername=sTestABot');
+  const ref = useRef<WebView>();
   return (
     <ModalBody title="Telegram Login" modalBodyType="bottom">
       <View style={styles.container}>
@@ -42,16 +40,32 @@ function TelegramSign({ onConfirm }: TelegramSignProps) {
           </View>
         )}
         <WebView
-          injectedJavaScriptBeforeContentLoaded={InjectedJavaScript}
-          source={{ uri: 'https://bean-go-newttt.vercel.app/telegram' }}
+          ref={ref as any}
+          source={{ uri }}
           onLoadProgress={({ nativeEvent }) => {
+            console.log(nativeEvent.progress);
             if (nativeEvent.progress > 0.5) setLoading(false);
           }}
-          onLoadStart={() => {
-            console.log('onLoadStart');
+          onLoadStart={async ({ nativeEvent }) => {
+            try {
+              if (nativeEvent.url.includes('auth-callback')) {
+                const parseData = parseUrl(nativeEvent.url);
+                const { token } = parseData.query || {};
+                if (typeof token === 'string') {
+                  const userInfo: TGUserInfo = {
+                    user: parseTelegramToken(token),
+                    accessToken: token,
+                  };
+                  onConfirm(userInfo);
+                  OverlayModal.hide(false);
+                }
+              }
+            } catch (error) {
+              onReject(error);
+            }
           }}
-          onMessage={event => {
-            console.log(event, '=====event');
+          onMessage={({ nativeEvent }) => {
+            console.log(nativeEvent, '=====nativeEvent');
           }}
         />
       </View>

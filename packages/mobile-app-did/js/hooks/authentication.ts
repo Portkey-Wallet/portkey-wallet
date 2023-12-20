@@ -248,9 +248,7 @@ export function useTelegramAuthentication() {
   return useMemo(
     () => ({
       appleResponse: '',
-      telegramSign: async () => {
-        await TelegramOverlay.sign();
-      },
+      telegramSign: TelegramOverlay.sign,
     }),
     [],
   );

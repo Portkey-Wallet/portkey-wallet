@@ -465,6 +465,8 @@ const GuardianEdit: React.FC = () => {
     Loading.show();
     try {
       const userInfo = await telegramSign();
+      console.log(userInfo, '=====userInfo');
+
       // setAccount(userInfo.user.email);
       // setFirstName(userInfo.user.givenName || undefined);
       // thirdPartyInfoRef.current = {

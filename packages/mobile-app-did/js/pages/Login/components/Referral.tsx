@@ -84,7 +84,7 @@ export default function Referral({
     const loadingKey = Loading.show();
     try {
       const userInfo = await telegramSign();
-      console.log(userInfo, '=====userInfo');
+      console.log(userInfo, '=====userInfo2');
 
       // await onLogin({
       //   loginAccount: userInfo.user.id,

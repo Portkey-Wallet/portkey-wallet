@@ -51,7 +51,7 @@ export async function getGoogleUserInfo(accessToken = ''): Promise<GoogleUserInf
   };
 }
 
-interface TelegramUserInfo {
+export interface TelegramUserInfo {
   isExpired: boolean;
   userId: string;
   id: string;

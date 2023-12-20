@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     fontSize: pTd(16),
     lineHeight: pTd(20),
   },
-  emojiStyle: { position: 'absolute', bottom: 8 },
+  emojiStyle: { position: 'absolute', bottom: pTd(8) },
   emojiSvg: {
     marginLeft: 0,
     marginBottom: 0,

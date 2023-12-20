@@ -22,16 +22,23 @@ const maxHeight = pTd(280);
 
 const min = pTd(100);
 
-function MessageImage(props: MessageProps<ChatMessage>) {
-  const { currentMessage, position } = props;
+function MessageImage(
+  props: MessageProps<ChatMessage> & {
+    isGroupChat?: boolean;
+    isAdmin?: boolean;
+    isHidePinStyle?: boolean;
+  },
+) {
+  const { currentMessage, position, isGroupChat = false, isAdmin = false, isHidePinStyle = false } = props;
+  const { imageInfo } = currentMessage || {};
+  const { imgUri, thumbUri, width, height } = imageInfo || {};
   const dispatch = useChatsDispatch();
   const currentChannelId = useCurrentChannelId();
   const deleteMessage = useDeleteMessage(currentChannelId || '');
 
-  const { imageInfo } = currentMessage || {};
-  const { imgUri, thumbUri, width, height } = imageInfo || {};
-
   const [loadError, setLoadError] = useState(false);
+
+  const isPinned = useMemo(() => !isHidePinStyle && currentMessage?.pinInfo, [currentMessage?.pinInfo, isHidePinStyle]);
 
   const radiusStyle = useMemo(
     () => (position === 'left' ? { borderTopLeftRadius: 0 } : { borderTopRightRadius: 0 }),
@@ -77,10 +84,24 @@ function MessageImage(props: MessageProps<ChatMessage>) {
 
       const list: ListItemType[] = [];
 
-      // if pinned, hide pin icon
-      if (!pageX) {
+      if (isGroupChat)
         list.push({
-          // TODO: if not pinned message, show pin
+          // TODO: reply
+          title: 'Reply',
+          iconName: 'chat-pin',
+          onPress: async () => {
+            dispatch(
+              setReplyMessageInfo({
+                message: currentMessage,
+                messageType: 'img',
+              }),
+            );
+          },
+        });
+
+      if (isGroupChat && isAdmin)
+        //  TODO: if pinned, hide pin icon
+        list.push({
           title: 'Pin',
           iconName: 'chat-pin',
           onPress: async () => {
@@ -92,9 +113,8 @@ function MessageImage(props: MessageProps<ChatMessage>) {
             }
           },
         });
-      }
 
-      if (position === 'right') {
+      if (position === 'right')
         list.push({
           title: 'Delete',
           iconName: 'chat-delete',
@@ -107,25 +127,10 @@ function MessageImage(props: MessageProps<ChatMessage>) {
             }
           },
         });
-      }
-
-      list.push({
-        // TODO: reply
-        title: 'Reply',
-        iconName: 'chat-pin',
-        onPress: async () => {
-          dispatch(
-            setReplyMessageInfo({
-              message: currentMessage,
-              messageType: 'img',
-            }),
-          );
-        },
-      });
 
       list.length && ChatOverlay.showChatPopover({ list, px: pageX, py: pageY, formatType: 'dynamicWidth' });
     },
-    [currentMessage, deleteMessage, dispatch, position],
+    [currentMessage, deleteMessage, dispatch, isAdmin, isGroupChat, position],
   );
 
   return (
@@ -133,8 +138,7 @@ function MessageImage(props: MessageProps<ChatMessage>) {
       {loadError ? errorImg : img}
       {!loadError && (
         <View style={styles.timeBoxStyle}>
-          {/* todo: if pinned show this */}
-          <Svg icon="pin-message" size={pTd(12)} iconStyle={styles.iconStyle} />
+          {isPinned && <Svg icon="pin-message" size={pTd(12)} iconStyle={styles.iconStyle} />}
           <Time
             timeFormat="HH:mm"
             timeTextStyle={timeTextStyle}

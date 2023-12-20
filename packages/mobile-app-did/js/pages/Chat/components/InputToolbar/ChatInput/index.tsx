@@ -181,6 +181,7 @@ const styles = StyleSheet.create({
   inputStyle: { 
     paddingRight: pTd(40),
     fontSize: pTd(16),
+    lineHeight: pTd(20),
   },
   emojiStyle: { position: 'absolute', bottom: 8 },
   emojiSvg: {

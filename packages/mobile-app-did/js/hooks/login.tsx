@@ -228,6 +228,7 @@ export function useGoGuardianApproval(isLogin?: boolean) {
       const req = await onVerifierAuth({ guardianItem, originChainId, authenticationInfo });
       const verifierInfo: VerifierInfo = { ...req, verifierId: guardianItem?.verifier?.id };
       const key = guardianItem.key as string;
+      dispatch(setOriginChainId(originChainId));
       return onRequestOrSetPin({
         managerInfo: {
           verificationType: VerificationType.communityRecovery,
@@ -241,7 +242,7 @@ export function useGoGuardianApproval(isLogin?: boolean) {
         showLoading: true,
       });
     },
-    [onRequestOrSetPin, onVerifierAuth],
+    [dispatch, onRequestOrSetPin, onVerifierAuth],
   );
 
   const goVerifierDetails = useCallback(

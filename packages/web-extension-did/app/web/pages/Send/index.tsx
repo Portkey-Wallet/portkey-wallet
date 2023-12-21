@@ -39,20 +39,22 @@ import { ExceedLimit, WalletIsNotSecure } from 'constants/security';
 import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import GuardianApproveModal from 'pages/components/GuardianApprovalModal';
 import { GuardianItem } from 'types/guardians';
+import { getBalance } from 'utils/sandboxUtil/getBalance';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import CustomModal from 'pages/components/CustomModal';
 import { SideChainTipContent, SideChainTipTitle } from '@portkey-wallet/constants/constants-ca/send';
 
-export type Account = { address: string; name?: string };
+export type ToAccount = { address: string; name?: string };
 
-enum Stage {
+export enum SendStage {
   'Address',
   'Amount',
   'Preview',
 }
 
 type TypeStageObj = {
-  [key in Stage]: { btnText: string; handler: () => void; backFun: () => void; element: ReactElement };
+  [key in SendStage]: { btnText: string; handler: () => void; backFun: () => void; element: ReactElement };
 };
 
 export default function Send() {
@@ -61,7 +63,8 @@ export default function Send() {
   // TODO need get data from state and wait for BE data structure
   const { type, symbol } = useParams();
   const { state } = useLocation();
-  const chainInfo = useCurrentChain(state.chainId);
+  const chainId: ChainId = useMemo(() => state.targetChainId || state.chainId, [state.chainId, state.targetChainId]);
+  const chainInfo = useCurrentChain(chainId);
   const wallet = useCurrentWalletInfo();
   const currentNetwork = useCurrentNetworkInfo();
   const { passwordSeed } = useUserInfo();
@@ -73,19 +76,19 @@ export default function Send() {
   const oneTimeApprovalList = useRef<GuardianItem[]>([]);
   const [errorMsg, setErrorMsg] = useState('');
   const [tipMsg, setTipMsg] = useState('');
-  const [toAccount, setToAccount] = useState<{ name?: string; address: string }>({ address: '' });
-  const [stage, setStage] = useState<Stage>(Stage.Address);
-  const [amount, setAmount] = useState('');
-  const [balance, setBalance] = useState('');
+  const [toAccount, setToAccount] = useState<ToAccount>(state?.toAccount || { address: '' });
+  const [stage, setStage] = useState<SendStage>(state?.stage || SendStage.Address);
+  const [amount, setAmount] = useState(state?.amount || '');
+  const [balance, setBalance] = useState(state?.balance || '');
   const isValidSuffix = useIsValidSuffix();
   const checkManagerSyncState = useCheckManagerSyncState();
   const [txFee, setTxFee] = useState<string>();
-  const currentChain = useCurrentChain(state.chainId);
+  const currentChain = useCurrentChain(chainId);
   useFetchTxFee();
-  const { crossChain: crossChainFee } = useGetTxFee(state.chainId);
-  const tokenInfo = useMemo(
+  const { crossChain: crossChainFee } = useGetTxFee(chainId);
+  const tokenInfo: BaseToken = useMemo(
     () => ({
-      chainId: state.chainId,
+      chainId: chainId,
       decimals: state.decimals, // 8
       address: state.address, // "ArPnUb5FtxG2oXTaWX2DxNZowDEruJLs2TEkhRCzDdrRDfg8B",        state address  contract address
       symbol: state.symbol, // "ELF"   the name showed
@@ -94,9 +97,9 @@ export default function Send() {
       alias: state.alias,
       tokenId: state.tokenId,
     }),
-    [state],
+    [chainId, state.address, state.alias, state.decimals, state.imageUrl, state.symbol, state.tokenId],
   );
-  const defaultToken = useDefaultToken(state.chainId as ChainId);
+  const defaultToken = useDefaultToken(chainId);
 
   const validateToAddress = useCallback(
     (value: { name?: string; address: string } | undefined) => {
@@ -106,19 +109,19 @@ export default function Send() {
         setErrorMsg(AddressCheckError.recipientAddressIsInvalid);
         return false;
       }
-      const selfAddress = wallet?.[state.chainId as ChainId]?.caAddress || '';
-      if (isEqAddress(selfAddress, getAelfAddress(toAccount.address)) && suffix === state.chainId) {
+      const selfAddress = wallet?.[chainId]?.caAddress || '';
+      if (isEqAddress(selfAddress, getAelfAddress(toAccount.address)) && suffix === chainId) {
         setErrorMsg(AddressCheckError.equalIsValid);
         return false;
       }
       setErrorMsg('');
       return true;
     },
-    [chainInfo, isValidSuffix, state.chainId, toAccount.address, wallet],
+    [chainId, chainInfo?.chainId, isValidSuffix, toAccount.address, wallet],
   );
 
   const btnDisabled = useMemo(() => {
-    if (toAccount.address === '' || (stage === Stage.Amount && amount === '')) return true;
+    if (toAccount.address === '' || (stage === SendStage.Amount && amount === '')) return true;
     return false;
   }, [amount, stage, toAccount.address]);
 
@@ -211,6 +214,8 @@ export default function Send() {
       if (!privateKey) return;
       if (!tokenInfo) throw 'No Symbol info';
 
+      setLoading(true);
+
       if (isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF')) {
         await crossChainTransfer({
           chainInfo,
@@ -222,6 +227,7 @@ export default function Send() {
           amount: timesDecimals(amount, tokenInfo.decimals).toFixed(),
           toAddress: toAccount.address,
           fee: timesDecimals(txFee, defaultToken.decimals).toFixed(),
+          guardiansApproved: oneTimeApprovalList.current,
         });
       } else {
         console.log('sameChainTransfers==sendHandler');
@@ -233,6 +239,7 @@ export default function Send() {
           caHash: wallet?.caHash || '',
           amount: timesDecimals(amount, tokenInfo.decimals).toFixed(),
           toAddress: toAccount.address,
+          guardiansApproved: oneTimeApprovalList.current,
         });
       }
       message.success('success');
@@ -285,12 +292,10 @@ export default function Send() {
       try {
         oneTimeApprovalList.current = approveList;
         if (Array.isArray(approveList) && approveList.length > 0) {
-          console.log('🌈 🌈 🌈 🌈 🌈 🌈 approveList', approveList);
           setOpenGuardiansApprove(false);
-          console.log('🌈 🌈 🌈 🌈 🌈 🌈 stage', stage);
-          if (stage === Stage.Amount) {
-            setStage(Stage.Preview);
-          } else if (stage === Stage.Preview) {
+          if (stage === SendStage.Amount) {
+            setStage(SendStage.Preview);
+          } else if (stage === SendStage.Preview) {
             await sendTransfer();
           }
         } else {
@@ -308,16 +313,19 @@ export default function Send() {
     try {
       setLoading(true);
       if (!ZERO.plus(amount).toNumber()) return 'Please input amount';
+      if (!currentChain) return;
+      const result = await getBalance({
+        rpcUrl: currentChain.endPoint,
+        address: tokenInfo.address,
+        chainType: currentNetwork.walletType,
+        paramsOption: {
+          owner: wallet?.[chainId]?.caAddress || '',
+          symbol: tokenInfo.symbol,
+        },
+      });
+      setBalance(result.result.balance);
+      const balance = result.result.balance;
       if (!balance) return TransactionError.TOKEN_NOT_ENOUGH;
-
-      const _isManagerSynced = await checkManagerSyncState(state.chainId);
-      if (!_isManagerSynced) {
-        return 'Synchronizing on-chain account information...';
-      }
-
-      // wallet security check
-      const securityRes = await checkSecurity(tokenInfo.chainId);
-      if (!securityRes) return WalletIsNotSecure;
 
       if (type === 'token') {
         // insufficient balance check
@@ -337,7 +345,15 @@ export default function Send() {
         return 'input error';
       }
 
-      // TODO guardians :amount + constants >=balance // limit all
+      const _isManagerSynced = await checkManagerSyncState(chainId);
+      if (!_isManagerSynced) {
+        return 'Synchronizing on-chain account information...';
+      }
+
+      // wallet security check
+      const securityRes = await checkSecurity(tokenInfo.chainId);
+      if (!securityRes) return WalletIsNotSecure;
+
       // transfer limit check
       const limitRes = await checkLimit({
         chainId: tokenInfo.chainId,
@@ -346,6 +362,15 @@ export default function Send() {
         decimals: tokenInfo.decimals,
         from: ICheckLimitBusiness.SEND,
         balance,
+        extra: {
+          stage,
+          amount: amount,
+          address: tokenInfo.address,
+          imageUrl: tokenInfo.imageUrl,
+          alias: tokenInfo.alias,
+          tokenId: tokenInfo.tokenId,
+          toAccount,
+        },
         onOneTimeApproval: handleOneTimeApproval,
       });
       if (!limitRes) return ExceedLimit;
@@ -368,18 +393,25 @@ export default function Send() {
   }, [
     setLoading,
     amount,
-    balance,
-    checkManagerSyncState,
-    state.chainId,
-    checkSecurity,
-    tokenInfo.chainId,
+    currentChain,
+    tokenInfo.address,
     tokenInfo.symbol,
+    tokenInfo.chainId,
     tokenInfo.decimals,
+    tokenInfo.imageUrl,
+    tokenInfo.alias,
+    tokenInfo.tokenId,
+    currentNetwork.walletType,
+    wallet,
+    chainId,
+    checkManagerSyncState,
+    checkSecurity,
     type,
-    getTranslationInfo,
     checkLimit,
+    stage,
+    toAccount,
     handleOneTimeApproval,
-    toAccount.address,
+    getTranslationInfo,
     chainInfo?.chainId,
     symbol,
     defaultToken.symbol,
@@ -388,9 +420,9 @@ export default function Send() {
 
   const sendHandler = useCallback(async (): Promise<string | void> => {
     if (!oneTimeApprovalList.current || oneTimeApprovalList.current.length === 0) {
+      if (!tokenInfo) throw 'No Symbol info';
+      setLoading(true);
       try {
-        if (!tokenInfo) throw 'No Symbol info';
-        setLoading(true);
         // transfer limit check
         const limitRes = await checkLimit({
           chainId: tokenInfo.chainId,
@@ -399,6 +431,15 @@ export default function Send() {
           decimals: tokenInfo.decimals,
           from: ICheckLimitBusiness.SEND,
           balance,
+          extra: {
+            stage,
+            amount: amount,
+            address: tokenInfo.address,
+            imageUrl: tokenInfo.imageUrl,
+            alias: tokenInfo.alias,
+            tokenId: tokenInfo.tokenId,
+            toAccount,
+          },
           onOneTimeApproval: handleOneTimeApproval,
         });
         if (!limitRes) {
@@ -410,10 +451,11 @@ export default function Send() {
 
         const msg = handleErrorMessage(error);
         message.error(msg);
+        return;
       }
     }
     await sendTransfer();
-  }, [amount, balance, checkLimit, handleOneTimeApproval, sendTransfer, setLoading, tokenInfo]);
+  }, [amount, balance, checkLimit, handleOneTimeApproval, sendTransfer, setLoading, stage, toAccount, tokenInfo]);
 
   const StageObj: TypeStageObj = useMemo(
     () => ({
@@ -434,11 +476,11 @@ export default function Send() {
               centered: true,
               okText: t('Continue'),
               cancelText: t('Cancel'),
-              onOk: () => setStage(Stage.Amount),
+              onOk: () => setStage(SendStage.Amount),
             });
           }
 
-          setStage(Stage.Amount);
+          setStage(SendStage.Amount);
         },
         backFun: () => {
           navigate(-1);
@@ -465,21 +507,22 @@ export default function Send() {
           if (res === ExceedLimit || res === WalletIsNotSecure) return;
           if (!res) {
             setTipMsg('');
-            setStage(Stage.Preview);
+            setStage(SendStage.Preview);
           } else {
             setTipMsg(res);
           }
         },
         backFun: () => {
-          setStage(Stage.Address);
+          setStage(SendStage.Address);
           setAmount('');
           setTipMsg('');
+          oneTimeApprovalList.current = [];
         },
         element: (
           <AmountInput
             type={type as any}
             fromAccount={{
-              address: wallet?.[state.chainId as ChainId]?.caAddress || '',
+              address: wallet?.[chainId]?.caAddress || '',
               AESEncryptPrivateKey: wallet.AESEncryptPrivateKey,
             }}
             toAccount={{
@@ -503,7 +546,8 @@ export default function Send() {
           sendHandler();
         },
         backFun: () => {
-          setStage(Stage.Amount);
+          setStage(SendStage.Amount);
+          oneTimeApprovalList.current = [];
         },
         element: (
           <SendPreview
@@ -515,8 +559,8 @@ export default function Send() {
             amount={amount}
             symbol={tokenInfo?.symbol || ''}
             alias={tokenInfo.alias || ''}
-            imageUrl={tokenInfo.imageUrl}
-            chainId={state.chainId}
+            imageUrl={tokenInfo.imageUrl || ''}
+            chainId={chainId}
             transactionFee={txFee || ''}
             isCross={isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF')}
             tokenId={tokenInfo.tokenId || ''}
@@ -525,16 +569,16 @@ export default function Send() {
       },
     }),
     [
+      tokenInfo,
       type,
       wallet,
-      state.chainId,
+      chainId,
       toAccount,
       amount,
       tipMsg,
-      tokenInfo,
       getTranslationInfo,
-      txFee,
       chainInfo?.chainId,
+      txFee,
       validateToAddress,
       t,
       navigate,
@@ -583,7 +627,7 @@ export default function Send() {
           }}
           rightElement={<CustomSvg type="Close2" onClick={() => navigate('/')} />}
         />
-        {stage !== Stage.Preview && (
+        {stage !== SendStage.Preview && (
           <div className={clsx(['address-form', state.chainId !== MAIN_CHAIN_ID && 'address-form-side-chain'])}>
             <div className="address-wrap">
               <div className="item from">
@@ -595,12 +639,12 @@ export default function Send() {
               <div className="item to">
                 <span className="label">{t('To_with_colon')}</span>
                 <div className="control">
-                  <ToAccount value={toAccount} onChange={(v) => setToAccount(v)} focus={stage !== Stage.Amount} />
+                  <ToAccount value={toAccount} onChange={(v) => setToAccount(v)} focus={stage !== SendStage.Amount} />
                   {toAccount.address && (
                     <CustomSvg
                       type="Close2"
                       onClick={() => {
-                        setStage(Stage.Address);
+                        setStage(SendStage.Address);
                         setToAccount({ address: '' });
                       }}
                     />
@@ -622,6 +666,7 @@ export default function Send() {
         <GuardianApproveModal
           open={openGuardiansApprove}
           targetChainId={tokenInfo.chainId}
+          operationType={OperationTypeEnum.transferApprove}
           onClose={onCloseGuardianApprove}
           getApproveRes={getApproveRes}
         />

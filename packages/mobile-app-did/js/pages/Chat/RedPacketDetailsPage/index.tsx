@@ -181,9 +181,8 @@ export const RedPacketDetails = () => {
   ]);
 
   const nextList = useCallback(() => {
-    if (redPacketData?.isRedPackageFullyClaimed) return;
     next();
-  }, [next, redPacketData?.isRedPackageFullyClaimed]);
+  }, [next]);
 
   return (
     <PageContainer

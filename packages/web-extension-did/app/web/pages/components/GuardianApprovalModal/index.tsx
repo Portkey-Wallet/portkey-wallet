@@ -4,6 +4,7 @@ import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCallback, useEffect, useState } from 'react';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum as OperationTypeEnumSDK } from '@portkey/services';
 import { message } from 'antd';
 import { GuardiansApproved } from '@portkey/services';
 import { useGuardiansInfo, useLoading } from 'store/Provider/hooks';
@@ -18,6 +19,7 @@ import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 interface GuardianApprovalModalProps {
   open: boolean;
   targetChainId: ChainId;
+  operationType: OperationTypeEnum;
   onClose: () => void;
   getApproveRes: (list: GuardianItem[]) => void;
 }
@@ -27,6 +29,7 @@ const PrefixCls = 'guardian-approval-modal';
 export default function GuardianApproveModal({
   open,
   targetChainId,
+  operationType,
   onClose,
   getApproveRes,
 }: GuardianApprovalModalProps) {
@@ -76,7 +79,7 @@ export default function GuardianApproveModal({
   }, [getGuardianList, setLoading]);
 
   const onApproveSuccess = useCallback(
-    (approvalInfo: GuardiansApproved[]) => {
+    async (approvalInfo: GuardiansApproved[]) => {
       try {
         setLoading(true);
         console.log('🌈 🌈 🌈 🌈 🌈 🌈 approvalInfo', approvalInfo);
@@ -114,7 +117,7 @@ export default function GuardianApproveModal({
         guardianList={guardianList}
         onConfirm={onApproveSuccess}
         onError={(error) => message.error(handleErrorMessage(error.error))}
-        operationType={OperationTypeEnum.managerApprove}
+        operationType={operationType as OperationTypeEnumSDK}
       />
     </CustomPromptModal>
   );

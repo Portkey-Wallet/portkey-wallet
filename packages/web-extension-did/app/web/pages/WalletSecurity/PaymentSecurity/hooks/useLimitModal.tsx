@@ -35,7 +35,7 @@ export function useTransferLimitApprovalModal() {
         onOk: onOneTimeApproval,
         onCancel: () =>
           navigate('/setting/wallet-security/payment-security/transfer-settings-edit', {
-            state: { ...state, initStateBackUp: state },
+            state: { ...state, initStateBackUp: state, ...state.extra },
           }),
       });
       return transferLimitModal;
@@ -61,7 +61,7 @@ export function useTransferLimitModal() {
         cancelText: t('Cancel'),
         onOk: () =>
           navigate('/setting/wallet-security/payment-security/transfer-settings-edit', {
-            state: { ...state, initStateBackUp: state },
+            state: { ...state, initStateBackUp: state, ...state.extra },
           }),
       });
     },

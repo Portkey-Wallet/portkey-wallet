@@ -49,6 +49,8 @@ import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecur
 import { useExtensionBuyButtonShow } from 'hooks/cms';
 import { GuardianItem } from 'types/guardians';
 import GuardianApproveModal from 'pages/components/GuardianApprovalModal';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
+import { chromeStorage } from 'store/utils';
 
 export default function Buy() {
   const { t } = useTranslation();
@@ -76,7 +78,6 @@ export default function Buy() {
   const checkSecurity = useCheckSecurity();
   const checkLimit = useCheckLimit('AELF');
   const [openGuardiansApprove, setOpenGuardiansApprove] = useState<boolean>(false);
-  const oneTimeApprovalList = useRef<GuardianItem[]>([]);
   const handleOneTimeApproval = useCallback(() => {
     setOpenGuardiansApprove(true);
     console.log('🌈 🌈 🌈 🌈 🌈 🌈 handleOneTimeApproval', '');
@@ -101,9 +102,9 @@ export default function Buy() {
   const getApproveRes = useCallback(
     async (approveList: GuardianItem[]) => {
       try {
-        oneTimeApprovalList.current = approveList;
         if (Array.isArray(approveList) && approveList.length > 0) {
           console.log('🌈 🌈 🌈 🌈 🌈 🌈 approveList', approveList);
+          chromeStorage.setItem('portkeyOffRampGuardiansApproveList', JSON.stringify(approveList));
           setOpenGuardiansApprove(false);
           goPreview();
         } else {
@@ -518,6 +519,14 @@ export default function Buy() {
         decimals: defaultToken.decimals,
         from: ICheckLimitBusiness.RAMP_SELL,
         balance,
+        extra: {
+          side,
+          country: valueSaveRef.current.country,
+          fiat: valueSaveRef.current.currency,
+          crypto: valueSaveRef.current.crypto,
+          network: valueSaveRef.current.network,
+          amount: valueSaveRef.current?.amount,
+        },
         onOneTimeApproval: handleOneTimeApproval,
       });
       if (!limitRes) return setLoading(false);
@@ -633,6 +642,7 @@ export default function Buy() {
         <GuardianApproveModal
           open={openGuardiansApprove}
           targetChainId="AELF"
+          operationType={OperationTypeEnum.transferApprove}
           onClose={onCloseGuardianApprove}
           getApproveRes={getApproveRes}
         />

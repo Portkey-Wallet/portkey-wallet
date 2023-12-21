@@ -40,6 +40,10 @@ import CustomSvg from 'components/CustomSvg';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { divDecimals } from '@portkey-wallet/utils/converter';
 import { MAX_TRANSACTION_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
+import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
+import { SendStage, ToAccount } from 'pages/Send';
+import { BaseToken } from '@portkey-wallet/types/types-ca/token';
+import { getBalance } from 'utils/sandboxUtil/getBalance';
 
 export const useCheckSecurity = () => {
   const wallet = useCurrentWalletInfo();
@@ -247,11 +251,28 @@ export interface ICheckLimitParams {
   amount: string;
   from: ICheckLimitBusiness;
   balance: string;
+  extra: ICheckRampLimitExtraParams | ICheckSendLimitExtraParams;
   onOneTimeApproval: () => void;
+}
+
+export interface ICheckRampLimitExtraParams {
+  side: PaymentTypeEnum;
+  country: string;
+  fiat: string;
+  crypto: string;
+  network: string;
+  amount: string;
+}
+
+export interface ICheckSendLimitExtraParams extends Pick<BaseToken, 'address' | 'imageUrl' | 'alias' | 'tokenId'> {
+  stage: SendStage;
+  amount: string;
+  toAccount: ToAccount;
 }
 
 export const useCheckLimit = (targetChainId: ChainId) => {
   const currentChain = useCurrentChain(targetChainId);
+  const currentNetwork = useCurrentNetworkInfo();
   const { walletInfo } = useCurrentWallet();
   const { passwordSeed } = useUserInfo();
   const checkTransferLimit = useCheckTransferLimit();
@@ -266,8 +287,9 @@ export const useCheckLimit = (targetChainId: ChainId) => {
       amount,
       from,
       balance,
+      extra,
       onOneTimeApproval,
-    }: ICheckLimitParams): Promise<boolean | object> => {
+    }: ICheckLimitParams): Promise<boolean> => {
       const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
       if (!currentChain?.endPoint || !privateKey) return message.error('Invalid user information, please check');
 
@@ -284,36 +306,46 @@ export const useCheckLimit = (targetChainId: ChainId) => {
         amount,
       });
 
-      const settingParams: ITransferLimitRouteState = {
-        chainId: chainId,
-        symbol,
-        singleLimit: limitRes?.singleBalance.toFixed() || '',
-        dailyLimit: limitRes?.dailyLimit.toFixed() || '',
-        restricted: !limitRes?.dailyLimit.eq(-1),
-        decimals,
-        from,
-      };
-      if (limitRes?.isSingleLimited) {
-        if (
-          ZERO.plus(amount)
-            .plus(MAX_TRANSACTION_FEE)
-            .gte(ZERO.plus(divDecimals(balance, decimals)))
-        ) {
-          transferLimitModal(settingParams, LimitType.Single);
-        } else {
-          transferLimitApprovalModal(settingParams, LimitType.Single, onOneTimeApproval);
+      if (limitRes?.isSingleLimited || limitRes?.isDailyLimited) {
+        const settingParams: ITransferLimitRouteState = {
+          chainId: chainId,
+          symbol,
+          singleLimit: limitRes?.singleBalance.toFixed() || '',
+          dailyLimit: limitRes?.dailyLimit.toFixed() || '',
+          restricted: !limitRes?.dailyLimit.eq(-1),
+          decimals,
+          from,
+          extra,
+        };
+
+        // get balance
+        if (!balance) {
+          if (!currentChain) return false;
+          const result = await getBalance({
+            rpcUrl: currentChain.endPoint,
+            address: currentChain.defaultToken.address,
+            chainType: currentNetwork.walletType,
+            paramsOption: {
+              owner: walletInfo[targetChainId]?.caAddress || '',
+              symbol: symbol,
+            },
+          });
+          balance = result.result.balance;
         }
-        return false;
-      }
-      if (limitRes?.isDailyLimited) {
+
+        // check limit type and show modal
         if (
           ZERO.plus(amount)
             .plus(MAX_TRANSACTION_FEE)
             .gte(ZERO.plus(divDecimals(balance, decimals)))
         ) {
-          transferLimitModal(settingParams, LimitType.Daily);
+          transferLimitModal(settingParams, limitRes?.isSingleLimited ? LimitType.Single : LimitType.Daily);
         } else {
-          transferLimitApprovalModal(settingParams, LimitType.Daily, onOneTimeApproval);
+          transferLimitApprovalModal(
+            settingParams,
+            limitRes?.isSingleLimited ? LimitType.Single : LimitType.Daily,
+            onOneTimeApproval,
+          );
         }
         return false;
       }
@@ -321,12 +353,13 @@ export const useCheckLimit = (targetChainId: ChainId) => {
     },
     [
       checkTransferLimit,
-      currentChain?.caContractAddress,
-      currentChain?.endPoint,
+      currentChain,
+      currentNetwork.walletType,
       passwordSeed,
+      targetChainId,
       transferLimitApprovalModal,
       transferLimitModal,
-      walletInfo.AESEncryptPrivateKey,
+      walletInfo,
     ],
   );
 };

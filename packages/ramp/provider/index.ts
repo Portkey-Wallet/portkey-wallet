@@ -110,7 +110,7 @@ export class TransakProvider extends RampProvider implements IRampProvider {
   }
 
   async createOrder(params: IRampProviderCreateOrderParams): Promise<IRampProviderCreateOrderResult> {
-    const { baseUrl, appId, key, callbackUrl } = this.providerInfo;
+    const { baseUrl, appId, key } = this.providerInfo;
     const { type, network, country, fiat, crypto, amount, address, email } = params;
 
     const orderId = await this.getOrderId({
@@ -132,7 +132,6 @@ export class TransakProvider extends RampProvider implements IRampProvider {
             cryptoCurrencyCode: crypto,
             walletAddress: address,
             email: email,
-            redirectURL: callbackUrl,
             partnerOrderId: orderId,
           },
         },

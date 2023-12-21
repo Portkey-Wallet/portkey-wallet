@@ -1,5 +1,6 @@
 {
   "name": "@portkey-wallet/ramp",
+  "private": true,
   "publishConfig": {
     "access": "public"
   },

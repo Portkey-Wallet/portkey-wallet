@@ -1,6 +1,6 @@
 {
   "name": "web-extension-did",
-  "version": "1.4.12",
+  "version": "1.4.13",
   "description": "web-extension-did",
   "private": true,
   "dependencies": {
@@ -21,7 +21,9 @@
     "@portkey/provider-utils": "1.1.1-alpha.1",
     "@portkey/provider-types": "1.1.1-alpha.1",
     "@portkey/providers": "1.1.1-alpha.1",
-    "@portkey/did-ui-react": "1.5.0-alpha.22",
+    "@portkey/did-ui-react": "1.5.4-alpha.0",
+    "@portkey/did": "1.5.4-alpha.0",
+    "@portkey/socket": "1.5.4-alpha.0",
     "@reduxjs/toolkit": "^1.8.5",
     "@sentry/browser": "^7.37.1",
     "@sentry/core": "^7.37.1",
@@ -111,7 +113,6 @@
     "postcss": "^8.4.16",
     "postcss-less": "^6.0.0",
     "prettier": "^2.7.1",
-    "sass-loader": "^13.0.2",
     "spark-md5": "^3.0.2",
     "stream-browserify": "^3.0.0",
     "style-loader": "^3.3.1",
@@ -140,7 +141,7 @@
     "none:watch": "webpack watch --mode none",
     "dev": "webpack --mode development",
     "dev:watch": "webpack watch --mode development",
-    "pro": "webpack --mode production",
+    "pro": "rm -rf app/public && webpack --mode production",
     "pro:watch": "webpack watch --mode production",
     "prepare": "husky install"
   },

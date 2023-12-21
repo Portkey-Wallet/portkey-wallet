@@ -122,7 +122,8 @@ const styles = StyleSheet.create({
   },
   memo: {
     color: defaultColors.font2,
-    lineHeight: pTd(18),
+    lineHeight: pTd(19),
+    fontSize: pTd(16),
     ...fonts.mediumFont,
   },
   state: {

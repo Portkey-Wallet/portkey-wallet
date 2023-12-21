@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useRef, useState } from 'react';
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { Text, View, StyleSheet, ScrollView } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -26,7 +26,7 @@ import { useCaAddresses, useCurrentWalletInfo } from '@portkey-wallet/hooks/hook
 import { formatAmountShow, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
 import sameChainTransfer from 'utils/transfer/sameChainTransfer';
 import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
 import CommonToast from 'components/CommonToast';
 import navigationService from 'utils/navigationService';
 import Loading from 'components/Loading';
@@ -47,14 +47,26 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import CommonAvatar from 'components/CommonAvatar';
 import { useCheckTransferLimitWithJump } from 'hooks/security';
+import { useFocusEffect } from '@react-navigation/native';
 
 const SendHome: React.FC = () => {
   const { t } = useLanguage();
   const isTestnet = useIsTestnet();
   const defaultToken = useDefaultToken();
 
-  const { sendType, assetInfo, toInfo, transactionFee, sendNumber, successNavigateName } =
-    useRouterParams<IToSendPreviewParamsType>();
+  const routerParams = useRouterEffectParams<IToSendPreviewParamsType>();
+  const {
+    sendType,
+    assetInfo,
+    toInfo,
+    transactionFee,
+    sendNumber,
+    successNavigateName,
+    guardiansApproved,
+    isAutoSend = false,
+  } = routerParams;
+
+  const isApproved = useMemo(() => guardiansApproved && guardiansApproved.length > 0, [guardiansApproved]);
 
   useFetchTxFee();
   const { crossChain: crossDefaultFee } = useGetTxFee(assetInfo.chainId);
@@ -117,16 +129,25 @@ const SendHome: React.FC = () => {
     const contract = contractRef.current;
     const amount = timesDecimals(sendNumber, tokenInfo.decimals).toFixed();
 
-    const checkTransferLimitResult = await checkTransferLimitWithJump(
-      {
+    if (!isApproved) {
+      const checkTransferLimitResult = await checkTransferLimitWithJump({
         caContract: contract,
         symbol: tokenInfo.symbol,
         decimals: tokenInfo.decimals,
         amount: String(sendNumber),
-      },
-      chainInfo.chainId,
-    );
-    if (!checkTransferLimitResult) return;
+        chainId: chainInfo.chainId,
+        approveMultiLevelParams: {
+          successNavigate: {
+            name: 'SendPreview',
+            params: {
+              ...routerParams,
+              isAutoSend: true,
+            },
+          },
+        },
+      });
+      if (!checkTransferLimitResult) return;
+    }
 
     if (isCrossChainTransfer) {
       if (!tokenContractRef.current) {
@@ -148,6 +169,7 @@ const SendHome: React.FC = () => {
         amount,
         crossDefaultFee,
         toAddress: toInfo.address,
+        guardiansApproved,
       });
 
       console.log('crossChainTransferResult', crossChainTransferResult);
@@ -162,6 +184,7 @@ const SendHome: React.FC = () => {
         caHash: wallet.caHash || '',
         amount,
         toAddress: toInfo.address,
+        guardiansApproved,
       });
 
       if (sameTransferResult.error) {
@@ -193,8 +216,11 @@ const SendHome: React.FC = () => {
     crossDefaultFee,
     currentNetwork.walletType,
     dispatch,
+    guardiansApproved,
+    isApproved,
     isCrossChainTransfer,
     pin,
+    routerParams,
     sendNumber,
     sendType,
     successNavigateName,
@@ -238,7 +264,7 @@ const SendHome: React.FC = () => {
     [assetInfo.decimals, assetInfo.symbol, assetInfo.tokenContractAddress, chainInfo, dispatch, pin, showRetry],
   );
 
-  const onSend = async () => {
+  const onSend = useCallback(async () => {
     Loading.show();
     try {
       await transfer();
@@ -264,7 +290,14 @@ const SendHome: React.FC = () => {
       }
     }
     Loading.hide();
-  };
+  }, [dispatch, retryCrossChain, showRetry, transfer]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!isAutoSend) return;
+      onSend();
+    }, [isAutoSend, onSend]),
+  );
 
   const networkInfoShow = (address: string) => {
     const chainId = address.split('_')[2] as ChainId;

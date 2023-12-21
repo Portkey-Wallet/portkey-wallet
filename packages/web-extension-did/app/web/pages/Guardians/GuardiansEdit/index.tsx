@@ -2,7 +2,7 @@ import { Button, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useGuardiansInfo, useLoading, useLoginInfo } from 'store/Provider/hooks';
 import CustomSelect from 'pages/components/CustomSelect';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -41,6 +41,8 @@ export default function GuardiansEdit() {
     () => getVerifierStatusMap(verifierMap, userGuardiansList, preGuardian),
     [preGuardian, userGuardiansList, verifierMap],
   );
+  const guardiansSaveRef = useRef({ verifierMap, userGuardiansList });
+  guardiansSaveRef.current = { verifierMap, userGuardiansList };
   const [selectVal, setSelectVal] = useState<string>(opGuardian?.verifier?.id as string);
   const [verifierExist, setVerifierExist] = useState<boolean>(false);
   const { walletInfo } = useCurrentWallet();
@@ -109,12 +111,13 @@ export default function GuardiansEdit() {
       setLoading(false);
       console.log('===guardian edit userGuardianList error', error);
     }
+    const { verifierMap, userGuardiansList } = guardiansSaveRef.current;
     const _verifierStatusMap = getVerifierStatusMap(verifierMap, userGuardiansList);
     const _verifierIsExist = Object.values(_verifierStatusMap).some(
       (verifier) => verifier.id === selectVal && verifier.isUsed,
     );
     return _verifierIsExist;
-  }, [selectVal, setLoading, userGuardianList, userGuardiansList, verifierMap, walletInfo.caHash]);
+  }, [selectVal, setLoading, userGuardianList, walletInfo.caHash]);
 
   const guardiansChangeHandler = useCallback(async () => {
     const existFlag: boolean = await checkVerifierIsExist();

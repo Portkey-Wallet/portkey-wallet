@@ -172,9 +172,9 @@ const PaymentSecurityEdit: React.FC = () => {
               maxLength={maxLength}
               errorMessage={dailyLimitError.isError ? dailyLimitError.errorMsg : ''}
             />
-            <TextM style={FontStyles.font3}>
+            <TextM style={pageStyles.tipsWrap}>
               {
-                'Transfers exceeding the limits cannot be conducted unless you modify the limit settings first, which needs guardian approval.'
+                'Transfers within the limits do not need approval from guardians. However, if a transfer exceeds these limits, you must either request a one-time approval for that specific transaction or modify the settings beforehand. \nPlease note that settings of the limits will be applied universally to all your token transfers.'
               }
             </TextM>
           </>
@@ -205,6 +205,10 @@ const pageStyles = StyleSheet.create({
     height: pTd(56),
     alignItems: 'center',
     borderRadius: pTd(6),
+  },
+  tipsWrap: {
+    lineHeight: pTd(20),
+    color: defaultColors.font3,
   },
 });
 

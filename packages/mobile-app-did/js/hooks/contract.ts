@@ -101,3 +101,22 @@ export function useGetCAContract() {
     [AESEncryptPrivateKey, address, caContracts, dispatch, getChain, pin],
   );
 }
+
+export function useGetTokenViewContract() {
+  const getChain = useGetChain();
+
+  return useCallback(
+    async (chainId: ChainId) => {
+      const chainInfo = getChain(chainId);
+      if (!chainInfo) throw Error('Could not find chain information');
+
+      const contract = await getContractBasic({
+        contractAddress: chainInfo.defaultToken.address,
+        rpcUrl: chainInfo.endPoint,
+        account: getDefaultWallet(),
+      });
+      return contract as ContractBasic;
+    },
+    [getChain],
+  );
+}

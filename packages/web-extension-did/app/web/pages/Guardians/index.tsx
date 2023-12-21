@@ -14,6 +14,8 @@ import GuardiansPrompt from './Prompt';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import AccountShow from './components/AccountShow';
+import { getVerifierStatusMap } from './utils';
+import { guardiansExceedTip } from '@portkey-wallet/constants/constants-ca/guardian';
 import './index.less';
 
 export default function Guardians() {
@@ -21,7 +23,11 @@ export default function Guardians() {
   const dispatch = useAppDispatch();
   const { state } = useLocation();
   const navigate = useNavigate();
-  const { userGuardiansList } = useGuardiansInfo();
+  const { verifierMap, userGuardiansList } = useGuardiansInfo();
+  const verifierEnableNum = useMemo(() => {
+    const verifierStatusMap = getVerifierStatusMap(verifierMap, userGuardiansList);
+    return Object.values(verifierStatusMap).filter((verifier) => !verifier.isUsed).length;
+  }, [userGuardiansList, verifierMap]);
   const { walletInfo } = useCurrentWallet();
   const { isPrompt, isNotLessThan768 } = useCommonState();
   const getGuardianList = useGuardianList();
@@ -90,22 +96,31 @@ export default function Guardians() {
     [dispatch, formatGuardianList, isPrompt, navigate, t],
   );
 
-  const renderAddBtn = useMemo(
-    () => (
+  const renderAddBtn = useMemo(() => {
+    return verifierEnableNum > 0 ? (
       <Button onClick={onAdd} className="guardian-add-btn">
         Add Guardians
       </Button>
-    ),
-    [onAdd],
-  );
+    ) : null;
+  }, [onAdd, verifierEnableNum]);
+
+  const renderGuardianTip = useMemo(() => {
+    return verifierEnableNum === 0 ? (
+      <div className="guardian-exceed-tip flex-row-center">
+        <CustomSvg type="Warning" />
+        <span className="exceed-tip-content">{guardiansExceedTip}</span>
+      </div>
+    ) : null;
+  }, [verifierEnableNum]);
 
   const props = useMemo(
     () => ({
       headerTitle,
       renderAddBtn,
       renderGuardianList,
+      renderGuardianTip,
     }),
-    [headerTitle, renderAddBtn, renderGuardianList],
+    [headerTitle, renderAddBtn, renderGuardianList, renderGuardianTip],
   );
 
   return isNotLessThan768 ? <GuardiansPrompt {...props} /> : <GuardiansPopup {...props} onBack={onBack} />;

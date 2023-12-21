@@ -3,7 +3,7 @@ import { ChainType } from '@portkey-wallet/types';
 import SandboxEventTypes from 'messages/SandboxEventTypes';
 import SandboxEventService, { SandboxErrorCode } from 'service/SandboxEventService';
 
-export const handleGuardian = async ({
+export const handleGuardianByContract = async ({
   rpcUrl,
   chainType,
   address, // contract address
@@ -27,7 +27,7 @@ export const handleGuardian = async ({
     paramsOption: paramsOption.params,
     sendOptions,
   });
-
+  console.log('resMessage', resMessage);
   if (resMessage.code === SandboxErrorCode.error) throw resMessage.error;
   const message = resMessage.message;
   return {

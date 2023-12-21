@@ -30,7 +30,7 @@ import { ChainId } from '@portkey/provider-types';
 import { ICheckLimitBusiness, ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
-import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
+import { handleGuardianByContract } from 'utils/sandboxUtil/handleGuardianByContract';
 import { getAelfTxResult } from '@portkey-wallet/utils/aelf';
 import { CheckSecurityResult, getAccelerateGuardianTxId } from '@portkey-wallet/utils/securityTest';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -112,7 +112,7 @@ export function useSynchronizingModal() {
         const result = await getAelfTxResult(originChainInfo?.endPoint, accelerateGuardiansTxId);
         if (result.Status !== 'MINED') return message.error(SecurityAccelerateErrorTip);
         const params = JSON.parse(result.Transaction.Params);
-        const res = await handleGuardian({
+        const res = await handleGuardianByContract({
           rpcUrl: accelerateChainInfo?.endPoint as string,
           chainType: currentNetwork.walletType,
           address: accelerateChainInfo?.caContractAddress as string,
@@ -127,9 +127,9 @@ export function useSynchronizingModal() {
           },
         });
         message.success('Guardian added');
-        console.log('===handleGuardian accelerate res', res);
+        console.log('===handleGuardianByContract accelerate res', res);
       } catch (error: any) {
-        console.log('===handleGuardian accelerate error', error);
+        console.log('===handleGuardianByContract accelerate error', error);
         message.error(SecurityAccelerateErrorTip);
       }
     },

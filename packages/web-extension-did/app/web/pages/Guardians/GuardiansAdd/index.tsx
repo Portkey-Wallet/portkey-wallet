@@ -7,7 +7,7 @@ import {
 import { Input, Button, message } from 'antd';
 import { useNavigate, useLocation } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useGuardiansInfo, useLoading, useWalletInfo } from 'store/Provider/hooks';
 import { EmailReg } from '@portkey-wallet/utils/reg';
 import { ISocialLogin, LoginType } from '@portkey-wallet/types/types-ca/wallet';
@@ -52,6 +52,8 @@ export default function AddGuardian() {
     () => getVerifierStatusMap(verifierMap, userGuardiansList),
     [userGuardiansList, verifierMap],
   );
+  const guardiansSaveRef = useRef({ verifierMap, userGuardiansList });
+  guardiansSaveRef.current = { verifierMap, userGuardiansList };
   const [guardianType, setGuardianType] = useState<LoginType>();
   const [verifierVal, setVerifierVal] = useState<string>();
   const [verifierName, setVerifierName] = useState<string>();
@@ -535,6 +537,13 @@ export default function AddGuardian() {
     }
     // 2、check verifier
     if (!selectVerifierItem) return message.error('Can not get the current verifier message');
+
+    // 3、check account is exist
+    if (checkAccountIsExist()) {
+      setAccountErr(guardianExistTip);
+      return;
+    }
+    // 4、check verifier is exist
     try {
       setLoading(true);
       await userGuardianList({ caHash: walletInfo.caHash });
@@ -543,13 +552,8 @@ export default function AddGuardian() {
       console.log('===guardian add userGuardianList error', error);
       setLoading(false);
     }
-    // 3、check account is exist
-    if (checkAccountIsExist()) {
-      setAccountErr(guardianExistTip);
-      return;
-    }
+    const { verifierMap, userGuardiansList } = guardiansSaveRef.current;
     const _verifierStatusMap = getVerifierStatusMap(verifierMap, userGuardiansList);
-    // 4、check verifier is exist
     const _verifierIsExist = Object.values(_verifierStatusMap).some(
       (verifier) => verifier.id === selectVerifierItem.id && verifier.isUsed,
     );
@@ -576,8 +580,6 @@ export default function AddGuardian() {
     guardianType,
     selectVerifierItem,
     checkAccountIsExist,
-    verifierMap,
-    userGuardiansList,
     emailVal,
     setLoading,
     userGuardianList,

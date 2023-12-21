@@ -253,3 +253,48 @@
     }
   }
 }
+
+.transfer-limit-modal{
+  border-radius: 8px;
+  overflow: hidden;
+  .@{app-prefix}-modal-body {
+    padding: 0;
+    .@{app-prefix}-modal-confirm-content {
+      padding: 32px 24px 24px;
+      margin: 0;
+      border-bottom: 1px solid @border-2;
+      text-align: center;
+      line-height: 20px;
+      font-size: 14px;
+      color: @font-13;
+      position: relative;
+      .close-icon{
+        width: 24px;
+        height: 24px;
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        cursor: pointer;
+      }
+    }
+  }
+  .@{app-prefix}-modal-confirm-btns {
+    padding: 15px 16px 17px;
+    margin: 0;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 13px;
+    button {
+      width: 288px;
+      height: 48px;
+      border-radius: 24px;
+      margin: 0 !important;
+      line-height: 22px;
+      font-size: 16px;
+    }
+    .@{app-prefix}-btn-default{
+      border: none;
+      height: auto;
+    }
+  }
+}

@@ -11,6 +11,7 @@ import { ACH_REDIRECT_URL, ACH_WITHDRAW_URL } from 'constants/common';
 import { useHandleAchSell } from './hooks/useHandleAchSell';
 import CommonToast from 'components/CommonToast';
 import Progressbar, { IProgressbar } from 'components/Progressbar';
+import { GuardiansApprovedType } from 'utils/guardian';
 
 const safeAreaColorMap = {
   white: defaultColors.bg1,
@@ -25,6 +26,7 @@ type WebViewPageType = 'default' | 'ach' | 'achSell';
 
 export interface AchSellParams {
   orderNo?: string;
+  guardiansApproved?: GuardiansApprovedType[];
 }
 
 const ViewOnWebView: React.FC = () => {
@@ -67,12 +69,12 @@ const ViewOnWebView: React.FC = () => {
         if (navState.url.startsWith(ACH_WITHDRAW_URL) && !isAchSellHandled.current) {
           isAchSellHandled.current = true;
           navigationService.navigate('Tab');
-          const { orderNo } = (params as AchSellParams) || {};
+          const { orderNo, guardiansApproved } = (params as AchSellParams) || {};
           if (!orderNo) {
             CommonToast.failError('Transaction failed.');
             return;
           }
-          handleAchSell(orderNo);
+          handleAchSell(orderNo, guardiansApproved);
         }
       }
     },

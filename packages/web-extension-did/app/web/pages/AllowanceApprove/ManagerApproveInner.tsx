@@ -192,7 +192,7 @@ export default function ManagerApproveInner({
           originChainId={originChainId}
           targetChainId={targetChainId}
           guardianList={guardianList}
-          onConfirm={(approvalInfo) => {
+          onConfirm={async (approvalInfo) => {
             const approved: IGuardiansApproved[] = approvalInfo.map((guardian) => ({
               type: AccountTypeEnum[guardian.type || 'Google'],
               identifierHash: guardian.identifierHash || '',

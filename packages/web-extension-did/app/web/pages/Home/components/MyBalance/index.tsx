@@ -214,7 +214,7 @@ export default function MyBalance() {
   useEffect(() => {
     if (!isFCMEnable()) return;
     signalrFCM.reportAppStatus(AppStatusUnit.FOREGROUND, unreadCount);
-    setBadge({ value: unreadCount });
+    signalrFCM.signalr && setBadge({ value: unreadCount });
   }, [isFCMEnable, unreadCount]);
   const handleClickETrans = useCallback(
     async (eTransType: ETransType) => {

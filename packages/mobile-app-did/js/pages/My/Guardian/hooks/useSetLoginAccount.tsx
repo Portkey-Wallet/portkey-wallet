@@ -51,13 +51,17 @@ export const useSetLoginAccount = (isEdit = false) => {
               verificationType: isLoginAccount ? VerificationType.setLoginAccount : VerificationType.unsetLoginAccount,
             },
             multiLevelParams: {
-              successNavigate: {
-                name: isEdit ? 'GuardianEdit' : 'GuardianDetail',
-                params: {
+              setLoginAccountNavigate: {
+                from: isEdit ? 'GuardianEdit' : 'GuardianDetail',
+                successParams: {
                   guardian: {
                     ...currentGuardian,
                     isLoginAccount,
                   },
+                  isEdit: isEdit || undefined,
+                },
+                backParams: {
+                  guardian: { ...currentGuardian },
                   isEdit: isEdit || undefined,
                 },
               },
@@ -71,7 +75,7 @@ export const useSetLoginAccount = (isEdit = false) => {
       }
       Loading.hide();
     },
-    [originChainId],
+    [isEdit, originChainId],
   );
 
   const setCommonLoginAccount = useCallback(
@@ -138,13 +142,17 @@ export const useSetLoginAccount = (isEdit = false) => {
             authenticationInfo: { [guardianAccount]: accessToken },
           },
           multiLevelParams: {
-            successNavigate: {
-              name: isEdit ? 'GuardianEdit' : 'GuardianDetail',
-              params: {
+            setLoginAccountNavigate: {
+              from: isEdit ? 'GuardianEdit' : 'GuardianDetail',
+              successParams: {
                 guardian: {
                   ...currentGuardian,
                   isLoginAccount,
                 },
+                isEdit: isEdit || undefined,
+              },
+              backParams: {
+                guardian: { ...currentGuardian },
                 isEdit: isEdit || undefined,
               },
             },
@@ -155,7 +163,7 @@ export const useSetLoginAccount = (isEdit = false) => {
       }
       Loading.hide();
     },
-    [appleSign, googleSign, originChainId, verifyToken],
+    [appleSign, googleSign, isEdit, originChainId, verifyToken],
   );
 
   const setLoginAccount = useCallback(

@@ -19,7 +19,7 @@ export const APPROVAL_TO_VERIFICATION_MAP = {
   [ApprovalType.communityRecovery]: VerificationType.communityRecovery,
   [ApprovalType.managerApprove]: VerificationType.managerApprove,
   [ApprovalType.modifyTransferLimit]: VerificationType.modifyTransferLimit,
-  [ApprovalType.transferApprove]: OperationTypeEnum.transferApprove,
+  [ApprovalType.transferApprove]: VerificationType.transferApprove,
 };
 
 export const VERIFICATION_TO_OPERATION_MAP = {

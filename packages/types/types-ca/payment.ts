@@ -1,4 +1,5 @@
 import { ACH_MERCHANT_NAME } from '@portkey-wallet/constants/constants-ca/payment';
+import { GuardiansApprovedType } from './guardian';
 
 export interface CountryItem {
   country: string;
@@ -28,7 +29,11 @@ export interface PaymentSellTransferResult {
 }
 
 export type SellTransferParams = Pick<AchTxAddressReceivedType, 'merchantName' | 'orderId'> & {
-  paymentSellTransfer: (params: AchTxAddressReceivedType) => Promise<PaymentSellTransferResult>;
+  paymentSellTransfer: (
+    params: AchTxAddressReceivedType,
+    guardiansApproved?: GuardiansApprovedType[],
+  ) => Promise<PaymentSellTransferResult>;
+  guardiansApproved?: GuardiansApprovedType[];
 };
 
 export enum PaymentTypeEnum {

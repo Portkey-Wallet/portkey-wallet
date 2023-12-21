@@ -5,11 +5,15 @@ import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
 import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { SendOptions } from '@portkey-wallet/contracts/types';
+import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
 
-const getGuardiansApproved = (userGuardiansList: UserGuardianItem[], guardiansStatus: GuardiansStatus) => {
+export const getGuardiansApproved = (
+  userGuardiansList: UserGuardianItem[],
+  guardiansStatus: GuardiansStatus,
+): GuardiansApprovedType[] => {
   return userGuardiansList
+    .filter(item => guardiansStatus[item.key] && guardiansStatus[item.key].verifierInfo)
     .map(guardian => {
-      if (!guardiansStatus[guardian.key] || !guardiansStatus[guardian.key].verifierInfo) return null;
       const verificationDoc = guardiansStatus[guardian.key].verifierInfo?.verificationDoc || '';
       const { guardianIdentifier } = handleVerificationDoc(verificationDoc);
       return {
@@ -21,8 +25,7 @@ const getGuardiansApproved = (userGuardiansList: UserGuardianItem[], guardiansSt
           verificationDoc,
         },
       };
-    })
-    .filter(item => item !== null);
+    });
 };
 
 export const getGuardiansApprovedByApprove = (guardiansApprove: GuardiansApproved) => {

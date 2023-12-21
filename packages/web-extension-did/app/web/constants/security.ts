@@ -6,11 +6,12 @@ export const NoLimit = 'No limit for transfer';
 export const SingleExceedDaily = 'Cannot exceed the daily limit';
 
 export const ExceedSingleLimit =
-  'Maximum limit per transaction exceeded. To proceed, please modify the transfer limit first.';
+  'Maximum limit per transaction exceeded. To proceed with this specific transaction, you may request one-time approval from guardians. Alternatively, you have the option to modify the limit, lifting restrictions on all future transactions.';
 
 export const LimitFormatTip = 'Please enter a positive whole number';
 
-export const ExceedDailyLimit = 'Maximum daily limit exceeded. To proceed, please modify the transfer limit first.';
+export const ExceedDailyLimit =
+  'Maximum daily limit exceeded. To proceed with this specific transaction, you may request one-time approval from guardians. Alternatively, you have the option to modify the limit, lifting restrictions on all future transactions.';
 
 export const SecurityVulnerabilityTitle = 'Upgrade Wallet Security Level';
 
@@ -26,3 +27,8 @@ export const SecurityVulnerabilityTip =
 export const ExceedLimit = 'ExceedLimit';
 
 export const WalletIsNotSecure = 'WalletIsNotSecure';
+
+export enum LimitType {
+  Single = 'Single',
+  Daily = 'Daily',
+}

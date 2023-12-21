@@ -47,7 +47,7 @@ export const useSellTransfer = () => {
   const status = useRef<STAGE>(STAGE.ACHTXADS);
 
   return useCallback(
-    async ({ merchantName, orderId, paymentSellTransfer }: SellTransferParams) => {
+    async ({ merchantName, orderId, paymentSellTransfer, guardiansApproved }: SellTransferParams) => {
       if (!isMainnet || merchantName !== ACH_MERCHANT_NAME) return;
 
       let signalrAchTxRemove: (() => void) | undefined;
@@ -78,7 +78,7 @@ export const useSellTransfer = () => {
 
           try {
             status.current = STAGE.TRANSACTION;
-            const result = await paymentSellTransfer(data);
+            const result = await paymentSellTransfer(data, guardiansApproved);
             await request.payment.sendSellTransaction({
               params: {
                 merchantName: ACH_MERCHANT_NAME,

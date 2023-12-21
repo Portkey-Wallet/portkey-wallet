@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
 import BigNumber from 'bignumber.js';
+import { ParsedImage } from '@portkey-wallet/im';
 
 dayjs.extend(utc);
 
@@ -27,3 +28,10 @@ export const formatChatListTime = (timeStamp?: number | string): string => {
 export const formatTime = (timeStamp?: number | string) => dayjs(Number(timeStamp)).format('HH:mm');
 
 export const ZERO = new BigNumber(0);
+
+export const formatImageData = (parsedContent: ParsedImage) => ({
+  thumbImgUrl: decodeURIComponent(parsedContent.thumbImgUrl || ''),
+  imgUrl: decodeURIComponent(parsedContent.imgUrl || ''),
+  width: parsedContent.width,
+  height: parsedContent.height,
+});

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
 import { message } from 'antd';
-import { MessageList, InputBar, StyleProvider, MessageType, PopDataProps } from '@portkey-wallet/im-ui-web';
+import { MessageList, InputBar, StyleProvider, MessageContentType, PopDataProps } from '@portkey-wallet/im-ui-web';
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { useChannel, useIsStranger, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
@@ -15,7 +15,7 @@ import { MAX_INPUT_LENGTH } from '@portkey-wallet/constants/constants-ca/im';
 import CustomUpload from 'pages/IMChat/components/CustomUpload';
 import ChatBoxTip from 'pages/IMChat/components/ChatBoxTip';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { useHandle } from '../useHandle';
+import { useHandle } from '../useHandleMsg';
 import ChatBoxHeader from '../components/ChatBoxHeader';
 import { useClickUrl } from 'hooks/im';
 import WarnTip from 'pages/IMChat/components/WarnTip';
@@ -33,14 +33,17 @@ export default function ChatBox() {
   const { list, init, sendMessage, pin, mute, exit, info, sendImage, deleteMessage, hasNext, next, loading } =
     useChannel(`${channelUuid}`);
   const isStranger = useIsStranger(info?.toRelationId || '');
-  const { handleDeleteMsg, handlePin, handleMute } = useHandle({ info, mute, pin, deleteMessage });
+  const { handleDeleteMsg, handlePin, handleMute } = useHandle({ info, mute, pin, deleteMessage, list });
   const { setLoading } = useLoading();
   const clickUrl = useClickUrl({ fromChannelUuid: channelUuid, isGroup: false });
   useEffectOnce(() => {
     init();
   });
   const { relationId } = useRelationId();
-  const messageList: MessageType[] = useMemo(() => formatMessageList(list, relationId!), [list, relationId]);
+  const messageList: MessageContentType[] = useMemo(
+    () => formatMessageList({ list, ownerRelationId: relationId! }),
+    [list, relationId],
+  );
   const handleDelete = useCallback(() => {
     CustomModalConfirm({
       content: t('Delete chat?'),

@@ -252,6 +252,7 @@ export default function AddGuardian() {
           }
         } else if (v === 'Telegram') {
           const userInfo = parseTelegramToken(data?.access_token);
+          if (!userInfo) throw 'Telegram auth error';
           const { firstName, userId } = userInfo;
           setSocialVale({
             name: firstName,
@@ -515,7 +516,7 @@ export default function AddGuardian() {
         userGuardiansList,
       );
 
-    if ([LoginType.Apple, LoginType.Google].includes(guardianType as LoginType))
+    if ([LoginType.Apple, LoginType.Google, LoginType.Telegram].includes(guardianType as LoginType))
       return guardianAccountIsExist(
         { guardianType: guardianType as LoginType, guardianAccount: socialValue?.id || '' },
         userGuardiansList,

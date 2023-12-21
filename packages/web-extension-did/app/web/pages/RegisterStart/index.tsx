@@ -354,6 +354,7 @@ export default function RegisterStart() {
           userId = userInfo?.userId || '';
         } else if (type === 'Telegram') {
           const userInfo = parseTelegramToken(data?.access_token);
+          if (!userInfo) throw 'Telegram auth error';
           userId = userInfo?.userId;
         } else {
           throw `LoginType:${type} is not support`;

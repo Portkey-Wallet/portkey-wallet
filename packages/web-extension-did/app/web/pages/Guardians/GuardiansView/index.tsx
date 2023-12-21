@@ -50,7 +50,10 @@ export default function GuardiansView() {
   const socialVerify = useSocialVerify();
   const { loginAccount } = useLoginInfo();
   const isSocialGuardian = useMemo(
-    () => opGuardian?.guardianType === LoginType.Google || opGuardian?.guardianType === LoginType.Apple,
+    () =>
+      opGuardian?.guardianType === LoginType.Google ||
+      opGuardian?.guardianType === LoginType.Apple ||
+      opGuardian?.guardianType === LoginType.Telegram,
     [opGuardian?.guardianType],
   );
   const [btnLoading, setBtnLoading] = useState<boolean>(false);

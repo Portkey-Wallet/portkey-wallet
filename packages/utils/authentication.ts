@@ -64,8 +64,8 @@ interface TelegramUserInfo {
   email?: undefined;
 }
 
-export function parseTelegramToken(token?: string | null): TelegramUserInfo {
-  if (!token) throw 'Invalid TelegramToken';
+export function parseTelegramToken(token?: string | null): TelegramUserInfo | undefined {
+  if (!token) return;
   const parts = token.split('.');
   const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
   const expirationTime = payload.exp * 1000;

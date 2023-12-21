@@ -5,6 +5,7 @@ export const guardianTypeList: IGuardianType[] = [
   { label: 'Phone', value: LoginType.Phone, icon: 'GuardianPhone' },
   { label: 'Email', value: LoginType.Email, icon: 'email' },
   { label: 'Google', value: LoginType.Google, icon: 'GuardianGoogle' },
+  { label: 'Telegram', value: LoginType.Telegram, icon: 'GuardianTelegram' },
   { label: 'Apple', value: LoginType.Apple, icon: 'GuardianApple' },
 ];
 

@@ -24,7 +24,7 @@ import { EmailError } from '@portkey-wallet/utils/check';
 import { guardianTypeList, phoneInit, socialInit } from 'constants/guardians';
 import { IPhoneInput, ISocialInput } from 'types/guardians';
 import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
-import { getGoogleUserInfo, parseAppleIdentityToken } from '@portkey-wallet/utils/authentication';
+import { getGoogleUserInfo, parseAppleIdentityToken, parseTelegramToken } from '@portkey-wallet/utils/authentication';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { request } from '@portkey-wallet/api/api-did';
 import { handleErrorMessage } from '@portkey-wallet/utils';
@@ -86,6 +86,7 @@ export default function AddGuardian() {
           break;
         }
         case LoginType.Apple:
+        case LoginType.Telegram:
         case LoginType.Google: {
           check = !(socialValue?.id || socialValue?.value);
           break;
@@ -144,6 +145,7 @@ export default function AddGuardian() {
         break;
       }
       case LoginType.Apple:
+      case LoginType.Telegram:
       case LoginType.Google: {
         key = `${socialValue?.id}&${verifierVal}`;
         tempAccount = `${socialValue?.value}`;
@@ -169,6 +171,7 @@ export default function AddGuardian() {
           break;
         case LoginType.Google:
         case LoginType.Apple:
+        case LoginType.Telegram:
           setSocialVale(opGuardian.social);
           break;
       }
@@ -230,6 +233,16 @@ export default function AddGuardian() {
               isPrivate: isPrivate,
             });
           }
+        } else if (v === 'Telegram') {
+          const userInfo = parseTelegramToken(data?.access_token);
+          const { firstName, userId } = userInfo;
+          setSocialVale({
+            name: firstName,
+            value: '',
+            id: userId,
+            accessToken: data?.access_token,
+            isPrivate: true,
+          });
         } else {
           message.error(`type:${v} is not support`);
         }
@@ -290,6 +303,10 @@ export default function AddGuardian() {
       [LoginType.Apple]: {
         element: renderSocialGuardianAccount('Apple'),
         label: t('Guardian Apple'),
+      },
+      [LoginType.Telegram]: {
+        element: renderSocialGuardianAccount('Telegram'),
+        label: t('Guardian Telegram'),
       },
     }),
     [
@@ -415,6 +432,10 @@ export default function AddGuardian() {
         res = await request.verify.verifyGoogleToken({
           params,
         });
+      } else if (guardianType === LoginType.Telegram) {
+        res = await request.verify.verifyTelegramToken({
+          params,
+        });
       }
       const { guardianIdentifier } = handleVerificationDoc(res.verificationDoc);
       dispatch(
@@ -498,7 +519,7 @@ export default function AddGuardian() {
     };
     dispatch(setOpGuardianAction(_opGuardian));
 
-    if ([LoginType.Google, LoginType.Apple].includes(guardianType as LoginType)) {
+    if ([LoginType.Google, LoginType.Apple, LoginType.Telegram].includes(guardianType as LoginType)) {
       handleSocialVerify();
     } else {
       CustomModal({

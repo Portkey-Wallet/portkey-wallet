@@ -25,7 +25,6 @@ import useGuardianList from 'hooks/useGuardianList';
 import { verification } from 'utils/api';
 import aes from '@portkey-wallet/utils/aes';
 import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
-import { getGoogleUserInfo, parseAppleIdentityToken } from '@portkey-wallet/utils/authentication';
 import { request } from '@portkey-wallet/api/api-did';
 import GuardianViewPrompt from './Prompt';
 import GuardianViewPopup from './Popup';
@@ -78,20 +77,18 @@ export default function GuardiansView() {
         accessToken: data?.access_token,
         operationType: OperationTypeEnum.setLoginAccount,
       };
+      setLoading(true);
+
       if (v === 'Google') {
-        await getGoogleUserInfo(data?.access_token);
-        // const userInfo = await getGoogleUserInfo(data?.access_token);
-        // const { firstName, email, id } = userInfo;
-        setLoading(true);
         await request.verify.verifyGoogleToken({
           params: verifySocialParams,
         });
       } else if (v === 'Apple') {
-        parseAppleIdentityToken(data?.access_token);
-        // const userInfo = parseAppleIdentityToken(data?.access_token);
-        // const { email, userId } = userInfo;
-        setLoading(true);
         await request.verify.verifyAppleToken({
+          params: verifySocialParams,
+        });
+      } else if (v === 'Telegram') {
+        await request.verify.verifyTelegramToken({
           params: verifySocialParams,
         });
       }
@@ -177,6 +174,9 @@ export default function GuardiansView() {
         } else if (LoginType.Google === opGuardian?.guardianType) {
           handleSocialVerify('Google');
           return;
+        } else if (LoginType.Telegram === opGuardian?.guardianType) {
+          handleSocialVerify('Telegram');
+          return;
         }
         setLoading(true);
 
@@ -230,6 +230,8 @@ export default function GuardiansView() {
       handleSocialVerify('Apple');
     } else if (opGuardian?.guardianType === LoginType.Google) {
       handleSocialVerify('Google');
+    } else if (opGuardian?.guardianType === LoginType.Telegram) {
+      handleSocialVerify('Telegram');
     } else {
       CustomModal({
         type: 'confirm',

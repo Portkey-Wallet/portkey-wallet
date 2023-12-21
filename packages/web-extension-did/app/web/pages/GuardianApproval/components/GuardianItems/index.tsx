@@ -46,7 +46,10 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
   const originChainId = useOriginChainId();
 
   const isSocialLogin = useMemo(
-    () => item.guardianType === LoginType.Google || item.guardianType === LoginType.Apple,
+    () =>
+      item.guardianType === LoginType.Google ||
+      item.guardianType === LoginType.Apple ||
+      item.guardianType === LoginType.Telegram,
     [item.guardianType],
   );
 
@@ -235,6 +238,13 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
           <div className="account-text account-text-two-row">
             <div className="name">{guardian.firstName}</div>
             <div className="detail">{guardian.isPrivate ? '******' : guardian.thirdPartyEmail}</div>
+          </div>
+        );
+      case LoginType.Telegram:
+        return (
+          <div className="account-text account-text-two-row">
+            <div className="name">{guardian.firstName}</div>
+            <div className="detail">{'******'}</div>
           </div>
         );
     }

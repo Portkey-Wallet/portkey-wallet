@@ -8,6 +8,7 @@ export const guardianIconMap: Record<LoginType, IconType> = {
   [LoginType.Phone]: 'GuardianPhone',
   [LoginType.Apple]: 'GuardianApple',
   [LoginType.Google]: 'GuardianGoogle',
+  [LoginType.Telegram]: 'GuardianTelegram',
 };
 
 export interface IGuardianTypeAccount {

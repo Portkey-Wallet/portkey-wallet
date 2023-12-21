@@ -41,6 +41,9 @@ import GuardianApproveModal from 'pages/components/GuardianApprovalModal';
 import { GuardianItem } from 'types/guardians';
 import { getBalance } from 'utils/sandboxUtil/getBalance';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import CustomModal from 'pages/components/CustomModal';
+import { SideChainTipContent, SideChainTipTitle } from '@portkey-wallet/constants/constants-ca/send';
 
 export type ToAccount = { address: string; name?: string };
 
@@ -153,7 +156,7 @@ export default function Send() {
         title: (
           <div className="flex-column-center transaction-msg">
             <CustomSvg type="warnRed" />
-            {t('Transaction failed ！')}
+            {t('Transaction failed !')}
           </div>
         ),
         onOk: () => {
@@ -172,7 +175,9 @@ export default function Send() {
         const privateKey = await aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed);
         if (!privateKey) throw t(WalletError.invalidPrivateKey);
         if (!currentChain) throw 'No ChainInfo';
+        const _caAddress = wallet?.[(state.chainId as ChainId) || defaultToken.symbol]?.caAddress;
         const feeRes = await getTransferFee({
+          caAddress: _caAddress || '',
           managerAddress: wallet.address,
           toAddress: toAccount?.address,
           privateKey,
@@ -192,13 +197,13 @@ export default function Send() {
       amount,
       currentChain,
       currentNetwork.walletType,
+      defaultToken.symbol,
       passwordSeed,
+      state.chainId,
       t,
       toAccount?.address,
       tokenInfo,
-      wallet.AESEncryptPrivateKey,
-      wallet.address,
-      wallet.caHash,
+      wallet,
     ],
   );
 
@@ -582,6 +587,34 @@ export default function Send() {
     ],
   );
 
+  const showSideChainModal = useCallback(() => {
+    const modal = CustomModal({
+      className: 'side-chain-modal',
+      content: (
+        <div>
+          <div className="modal-title">{SideChainTipTitle}</div>
+          <div>{SideChainTipContent}</div>
+        </div>
+      ),
+      okText: 'Got it',
+      onOk: () => modal.destroy(),
+    });
+  }, []);
+
+  const renderSideChainTip = useCallback(() => {
+    return (
+      state.chainId !== MAIN_CHAIN_ID && (
+        <div className="flex-row-between side-chain-tip" onClick={showSideChainModal}>
+          <div className="flex">
+            <CustomSvg type="Info" />
+            <div>{SideChainTipTitle}</div>
+          </div>
+          <CustomSvg type="LeftArrow" />
+        </div>
+      )
+    );
+  }, [showSideChainModal, state.chainId]);
+
   const { isPrompt } = useCommonState();
   const mainContent = useCallback(() => {
     return (
@@ -595,29 +628,32 @@ export default function Send() {
           rightElement={<CustomSvg type="Close2" onClick={() => navigate('/')} />}
         />
         {stage !== SendStage.Preview && (
-          <div className="address-wrap">
-            <div className="item from">
-              <span className="label">{t('From_with_colon')}</span>
-              <div className={'from-wallet control'}>
-                <div className="name">{walletName}</div>
+          <div className={clsx(['address-form', state.chainId !== MAIN_CHAIN_ID && 'address-form-side-chain'])}>
+            <div className="address-wrap">
+              <div className="item from">
+                <span className="label">{t('From_with_colon')}</span>
+                <div className={'from-wallet control'}>
+                  <div className="name">{walletName}</div>
+                </div>
               </div>
-            </div>
-            <div className="item to">
-              <span className="label">{t('To_with_colon')}</span>
-              <div className="control">
-                <ToAccount value={toAccount} onChange={(v) => setToAccount(v)} focus={stage !== SendStage.Amount} />
-                {stage === SendStage.Amount && (
-                  <CustomSvg
-                    type="Close2"
-                    onClick={() => {
-                      setStage(SendStage.Address);
-                      setToAccount({ address: '' });
-                    }}
-                  />
-                )}
+              <div className="item to">
+                <span className="label">{t('To_with_colon')}</span>
+                <div className="control">
+                  <ToAccount value={toAccount} onChange={(v) => setToAccount(v)} focus={stage !== SendStage.Amount} />
+                  {toAccount.address && (
+                    <CustomSvg
+                      type="Close2"
+                      onClick={() => {
+                        setStage(SendStage.Address);
+                        setToAccount({ address: '' });
+                      }}
+                    />
+                  )}
+                </div>
               </div>
+              {errorMsg && <span className="error-msg">{errorMsg}</span>}
             </div>
-            {errorMsg && <span className="error-msg">{errorMsg}</span>}
+            {renderSideChainTip()}
           </div>
         )}
         <div className="stage-ele">{StageObj[stage].element}</div>
@@ -647,7 +683,9 @@ export default function Send() {
     navigate,
     onCloseGuardianApprove,
     openGuardiansApprove,
+    renderSideChainTip,
     stage,
+    state.chainId,
     symbol,
     t,
     toAccount,

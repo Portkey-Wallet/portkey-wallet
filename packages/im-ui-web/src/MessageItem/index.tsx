@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import ImageMessage from '../ImageMessage';
 import TextMessage from '../TextMessage';
 import SystemMessage from '../SystemMessage';
+import RedPacketMessage from '../RedPacketMessage';
 import { MessageType } from '../type';
 import Avatar from '../Avatar';
 import './index.less';
@@ -28,6 +29,12 @@ const MessageItem: React.FC<MessageType> = ({ className, avatar, ...props }) => 
         <div>
           {props.showAvatar && <div className="message-item-form-name">{props.title}</div>}
           <ImageMessage {...props} />
+        </div>
+      )}
+      {props.type === 'red-package-card' && (
+        <div className="flex-column">
+          {props.showAvatar && <div className="message-item-form-name">{props.title}</div>}
+          <RedPacketMessage {...props} />
         </div>
       )}
     </div>

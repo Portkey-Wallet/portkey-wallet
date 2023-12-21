@@ -1,5 +1,8 @@
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc.js';
 import BigNumber from 'bignumber.js';
+
+dayjs.extend(utc);
 
 export const formatChatListTime = (timeStamp?: number | string): string => {
   if (!timeStamp) return '';

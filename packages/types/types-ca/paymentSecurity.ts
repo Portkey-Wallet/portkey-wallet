@@ -10,6 +10,7 @@ export interface ITransferLimitItem {
   decimals: number | string;
   defaultDailyLimit?: string;
   defaultSingleLimit?: string;
+  imageUrl?: string;
 }
 
 export enum ICheckLimitBusiness {

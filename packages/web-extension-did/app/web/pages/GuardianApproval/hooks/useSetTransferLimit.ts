@@ -1,38 +1,36 @@
 import { message } from 'antd';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import qs from 'query-string';
-import aes from '@portkey-wallet/utils/aes';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useGuardiansInfo, useLoading, useUserInfo } from 'store/Provider/hooks';
+import { useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import { formatGuardianValue } from '../utils/formatGuardianValue';
 import { setTransferLimit } from 'utils/sandboxUtil/setTransferLimit';
 import ModalTip from 'pages/components/ModalTip';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { ICheckLimitBusiness, ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { ChainId } from '@portkey-wallet/types';
+import getSeed from 'utils/getSeed';
 
 export const useSetTransferLimit = (targetChainId?: ChainId) => {
   const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
-  const { passwordSeed } = useUserInfo();
+
   const currentChain = useCurrentChain(targetChainId);
   const { state, search } = useLocation();
   const navigate = useNavigate();
   const currentNetwork = useCurrentNetworkInfo();
   const { userGuardianStatus } = useGuardiansInfo();
-  const [query, setQuery] = useState('');
-
-  useEffect(() => {
+  const query = useMemo(() => {
     if (search) {
       const { detail } = qs.parse(search);
-      setQuery(detail);
+      return detail;
     } else {
-      setQuery(state);
+      return state;
     }
-  }, [query, search, state]);
+  }, [search, state]);
 
   const checkBackPath = useCallback(
     (state: ITransferLimitRouteState) => {
@@ -59,9 +57,8 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
       if (!targetChainId) throw Error('No chainId');
 
       setLoading(true);
-
-      const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
-      if (!currentChain?.endPoint || !privateKey) return message.error('SetTransferLimit error');
+      const { privateKey } = await getSeed();
+      if (!currentChain?.endPoint || !privateKey) return message.error('set TransferLimit error');
       const { guardiansApproved } = formatGuardianValue(userGuardianStatus);
       const i = query.indexOf('_');
       const _query = query.substring(i + 1);
@@ -107,12 +104,10 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
     currentChain?.caContractAddress,
     currentChain?.endPoint,
     currentNetwork.walletType,
-    passwordSeed,
     query,
     setLoading,
     targetChainId,
     userGuardianStatus,
-    walletInfo.AESEncryptPrivateKey,
     walletInfo?.caHash,
   ]);
 };

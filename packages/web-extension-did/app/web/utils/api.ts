@@ -28,7 +28,10 @@ export class ExtensionVerification extends Verification {
           };
         }
         const req = await request.verify.sendVerificationRequest(config);
-        await this.set(key, { ...req, time: Date.now() });
+        if (req?.verifierSessionId) {
+          await this.set(key, { ...req, time: Date.now() });
+        }
+
         return req;
       }
     } catch (error: any) {

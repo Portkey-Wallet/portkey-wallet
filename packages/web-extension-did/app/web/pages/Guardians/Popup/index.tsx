@@ -29,7 +29,7 @@ const GuardiansPopup = (props: IGuardianProps) => {
       </div>
       <div className="guardians-content flex-column-between flex-1">
         <div className="content-guardian-list flex-1">{renderGuardianList}</div>
-        <div className="content-guardian-tip">{renderGuardianTip}</div>
+        <div className="content-guardian-tip flex-center">{renderGuardianTip}</div>
       </div>
     </div>
   );

@@ -1,7 +1,6 @@
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo, useOtherNetworkLogged } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePin } from './store';
-
 import { FCMMessageData } from 'types/common';
 import { NOTIFY_ACTION } from 'constants/notify';
 import messaging from '@react-native-firebase/messaging';
@@ -14,6 +13,8 @@ import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import { useCurrentNetwork, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ChannelTypeEnum } from '@portkey-wallet/im';
 import { useChangeNetwork } from './network';
+import { useLatestRef } from '@portkey-wallet/hooks';
+
 
 export const useNotifyAction = () => {
   const jumpToChatGroupDetails = useJumpToChatGroupDetails();
@@ -54,7 +55,10 @@ export const useNotify = () => {
   const currentNetwork = useCurrentNetwork();
   const isMainnet = useIsMainnet();
 
+  const otherNetworkLogged = useOtherNetworkLogged();
   const logged = useMemo(() => !!address && caHash, [address, caHash]);
+  const lastLogged = useLatestRef(logged);
+  const lastOtherNetworkLogged = useLatestRef(otherNetworkLogged);
   const [remoteData, setRemoteData] = useState<any>();
 
   const notifyAct = useNotifyAction();
@@ -92,12 +96,15 @@ export const useNotify = () => {
 
   useEffect(() => {
     messaging().onNotificationOpenedApp(remoteMessage => {
+      if (!lastLogged.current && !lastOtherNetworkLogged.current) return;
+
       console.log('--remoteMessage onNotificationOpenedApp', remoteMessage);
       setRemoteData(remoteMessage.data);
     });
     messaging()
       .getInitialNotification()
       .then(remoteMessage => {
+        if (!lastLogged.current && !lastOtherNetworkLogged.current) return;
         console.log('--remoteMessage getInitialNotification', remoteMessage);
         setRemoteData(remoteMessage?.data);
       });

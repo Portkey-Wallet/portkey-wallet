@@ -10,7 +10,7 @@ import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { ELF_DECIMAL } from '@portkey-wallet/constants/constants-ca/activity';
 import { getTokenIssueChainId } from './getTokenInfo';
-import { GuardiansApprovedType } from 'utils/guardian';
+import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
 
 export interface CrossChainTransferParamsType {
   tokenInfo: BaseToken;

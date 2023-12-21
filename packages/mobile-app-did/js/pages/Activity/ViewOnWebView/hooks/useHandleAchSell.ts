@@ -13,7 +13,7 @@ import { useCallback, useMemo } from 'react';
 import { getManagerAccount } from 'utils/redux';
 import AElf from 'aelf-sdk';
 import SparkMD5 from 'spark-md5';
-import { GuardiansApprovedType } from 'utils/guardian';
+import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
 
 export const useHandleAchSell = () => {
   const sellTransfer = useSellTransfer();

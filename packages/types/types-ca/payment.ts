@@ -1,5 +1,5 @@
 import { ACH_MERCHANT_NAME } from '@portkey-wallet/constants/constants-ca/payment';
-import { GuardiansApprovedType } from 'utils/guardian';
+import { GuardiansApprovedType } from './guardian';
 
 export interface CountryItem {
   country: string;

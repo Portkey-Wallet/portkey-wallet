@@ -36,8 +36,11 @@ import GuardianAddPopup from './Popup';
 import CustomModal from '../../components/CustomModal';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useCommonState } from 'store/Provider/hooks';
-import { MessageType } from 'antd/lib/message';
 import qs from 'query-string';
+import clsx from 'clsx';
+import { getVerifierStatusMap, guardianAccountIsExist } from '../utils';
+import OptionTip from '../components/SelectOptionTip';
+import { guardianExistTip, verifierExistTip } from '@portkey-wallet/constants/constants-ca/guardian';
 import './index.less';
 
 export default function AddGuardian() {
@@ -45,14 +48,18 @@ export default function AddGuardian() {
   const { t } = useTranslation();
   const { state, search } = useLocation();
   const { verifierMap, userGuardiansList, opGuardian } = useGuardiansInfo();
+  const verifierStatusMap = useMemo(
+    () => getVerifierStatusMap(verifierMap, userGuardiansList),
+    [userGuardiansList, verifierMap],
+  );
   const [guardianType, setGuardianType] = useState<LoginType>();
   const [verifierVal, setVerifierVal] = useState<string>();
   const [verifierName, setVerifierName] = useState<string>();
   const [emailVal, setEmailVal] = useState<string>();
   const [phoneValue, setPhoneValue] = useState<IPhoneInput>();
   const [socialValue, setSocialVale] = useState<ISocialInput>();
-  const [emailErr, setEmailErr] = useState<string>();
-  const [exist, setExist] = useState<boolean>(false);
+  const [accountErr, setAccountErr] = useState<string>();
+  const [verifierExist, setVerifierExist] = useState<boolean>(false);
   const [curKey, setCurKey] = useState<string>('');
   const [accountShow, setAccountShow] = useState<string>('');
   const dispatch = useAppDispatch();
@@ -95,23 +102,33 @@ export default function AddGuardian() {
           check = true;
       }
     }
-    return check || exist || !!emailErr;
-  }, [guardianType, verifierVal, exist, emailErr, emailVal, phoneValue, socialValue]);
+    return check || verifierExist || !!accountErr;
+  }, [
+    verifierVal,
+    verifierExist,
+    accountErr,
+    guardianType,
+    emailVal,
+    phoneValue?.phoneNumber,
+    socialValue?.id,
+    socialValue?.value,
+  ]);
 
   const selectVerifierItem = useMemo(() => verifierMap?.[verifierVal || ''], [verifierMap, verifierVal]);
 
   const verifierOptions = useMemo(
     () =>
-      Object.values(verifierMap ?? {})?.map((item) => ({
+      Object.values(verifierStatusMap ?? {})?.map((item) => ({
         value: item.id,
         children: (
-          <div className="flex select-option">
+          <div className={clsx(['flex', 'select-option', item.isUsed && 'no-use'])}>
             <BaseVerifierIcon fallback={item.name[0]} src={item.imageUrl} />
             <span className="title">{item.name}</span>
           </div>
         ),
+        disabled: item.isUsed,
       })),
-    [verifierMap],
+    [verifierStatusMap],
   );
 
   const guardianTypeOptions = useMemo(
@@ -179,26 +196,26 @@ export default function AddGuardian() {
   });
 
   const guardianTypeChange = useCallback((value: LoginType) => {
-    setExist(false);
+    setVerifierExist(false);
     setGuardianType(value);
     setEmailVal('');
     setPhoneValue(phoneInit);
     setSocialVale(socialInit);
-    setEmailErr('');
+    setAccountErr('');
   }, []);
 
   const verifierChange = useCallback(
     (value: string) => {
       setVerifierVal(value);
       setVerifierName(verifierMap?.[value]?.name);
-      setExist(false);
+      setVerifierExist(false);
     },
     [verifierMap],
   );
 
   const handleEmailInputChange = useCallback((v: string) => {
-    setEmailErr('');
-    setExist(false);
+    setAccountErr('');
+    setVerifierExist(false);
     setEmailVal(v);
   }, []);
 
@@ -488,36 +505,55 @@ export default function AddGuardian() {
     navigate('/setting/guardians');
   }, [dispatch, navigate]);
 
-  const handleCheck = useCallback((): void | MessageType => {
+  const checkAccountIsExist = useCallback(() => {
+    if (guardianType === LoginType.Email)
+      return guardianAccountIsExist({ guardianType, guardianAccount: emailVal || '' }, userGuardiansList);
+
+    if (guardianType === LoginType.Phone)
+      return guardianAccountIsExist(
+        { guardianType, guardianAccount: `+${phoneValue?.code}${phoneValue?.phoneNumber}` },
+        userGuardiansList,
+      );
+
+    if ([LoginType.Apple, LoginType.Google].includes(guardianType as LoginType))
+      return guardianAccountIsExist(
+        { guardianType: guardianType as LoginType, guardianAccount: socialValue?.id || '' },
+        userGuardiansList,
+      );
+
+    return false;
+  }, [emailVal, guardianType, phoneValue?.code, phoneValue?.phoneNumber, socialValue?.id, userGuardiansList]);
+
+  const handleCheck = useCallback(async () => {
+    // 1、check email
     if (guardianType === LoginType.Email) {
       if (!EmailReg.test(emailVal as string)) {
-        setEmailErr(EmailError.invalidEmail);
+        setAccountErr(EmailError.invalidEmail);
         return;
       }
     }
+    // 2、check verifier
     if (!selectVerifierItem) return message.error('Can not get the current verifier message');
-    const isExist: boolean =
-      Object.values(userGuardiansList ?? {})?.some((item) => {
-        return item.key === curKey;
-      }) ?? false;
-    setExist(isExist);
-    if (isExist) return;
-
-    const _opGuardian: StoreUserGuardianItem = {
-      isLoginAccount: false,
-      verifier: selectVerifierItem,
-      guardianAccount: emailVal || '',
-      guardianType: guardianType as LoginType,
-      firstName: socialValue?.name,
-      thirdPartyEmail: socialValue?.value,
-      key: curKey,
-      isInitStatus: true,
-      identifierHash: '',
-      salt: '',
-      phone: phoneValue,
-      social: socialValue,
-    };
-    dispatch(setOpGuardianAction(_opGuardian));
+    try {
+      setLoading(true);
+      await userGuardianList({ caHash: walletInfo.caHash });
+      setLoading(false);
+    } catch (error) {
+      console.log('===guardian add userGuardianList error', error);
+      setLoading(false);
+    }
+    // 3、check account is exist
+    if (checkAccountIsExist()) {
+      setAccountErr(guardianExistTip);
+      return;
+    }
+    const _verifierStatusMap = getVerifierStatusMap(verifierMap, userGuardiansList);
+    // 4、check verifier is exist
+    const _verifierIsExist = Object.values(_verifierStatusMap).some(
+      (verifier) => verifier.id === selectVerifierItem.id && verifier.isUsed,
+    );
+    setVerifierExist(_verifierIsExist);
+    if (_verifierIsExist) return;
 
     if ([LoginType.Google, LoginType.Apple, LoginType.Telegram].includes(guardianType as LoginType)) {
       handleSocialVerify();
@@ -538,12 +574,13 @@ export default function AddGuardian() {
   }, [
     guardianType,
     selectVerifierItem,
+    checkAccountIsExist,
+    verifierMap,
     userGuardiansList,
-    socialValue,
-    curKey,
-    phoneValue,
-    dispatch,
     emailVal,
+    setLoading,
+    userGuardianList,
+    walletInfo.caHash,
     handleSocialVerify,
     verifierName,
     accountShow,
@@ -570,7 +607,7 @@ export default function AddGuardian() {
             <div className="input-item">
               <p className="label">{renderGuardianAccount[guardianType].label}</p>
               {renderGuardianAccount[guardianType].element}
-              {emailErr && <span className="err-text">{emailErr}</span>}
+              {accountErr && <span className="err-text">{accountErr}</span>}
             </div>
           )}
           <div className="input-item">
@@ -581,8 +618,9 @@ export default function AddGuardian() {
               placeholder={t('Select guardian verifiers')}
               onChange={verifierChange}
               items={verifierOptions}
+              customChild={OptionTip()}
             />
-            {exist && <div className="error">{t('This guardian already exists')}</div>}
+            {verifierExist && <div className="error">{verifierExistTip}</div>}
           </div>
         </div>
         <div className="btn-wrap">
@@ -593,9 +631,8 @@ export default function AddGuardian() {
       </div>
     ),
     [
+      accountErr,
       disabled,
-      emailErr,
-      exist,
       guardianType,
       guardianTypeChange,
       guardianTypeOptions,
@@ -603,6 +640,7 @@ export default function AddGuardian() {
       renderGuardianAccount,
       t,
       verifierChange,
+      verifierExist,
       verifierOptions,
       verifierVal,
     ],

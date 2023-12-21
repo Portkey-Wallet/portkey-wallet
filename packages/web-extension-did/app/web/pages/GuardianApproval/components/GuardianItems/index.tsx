@@ -7,7 +7,7 @@ import VerifierPair from 'components/VerifierPair';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
-import { useAppDispatch, useLoading } from 'store/Provider/hooks';
+import { useAppDispatch, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import { LoginInfo } from 'store/reducers/loginCache/type';
 import { verifyErrorHandler } from 'utils/tryErrorHandler';
@@ -29,6 +29,7 @@ interface GuardianItemProps {
 }
 export default function GuardianItems({ disabled, item, isExpired, loginAccount, targetChainId }: GuardianItemProps) {
   const { t } = useTranslation();
+  const { opGuardian } = useGuardiansInfo();
   const { setLoading } = useLoading();
   const { state, search } = useLocation();
   const query = useMemo(() => {
@@ -67,9 +68,12 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
         } else if (query && query?.indexOf('setTransferLimit') !== -1) {
           return OperationTypeEnum.modifyTransferLimit;
         }
+        if (query && query?.indexOf('guardians/loginGuardian') !== -1) {
+          return opGuardian?.isLoginAccount ? OperationTypeEnum.unsetLoginAccount : OperationTypeEnum.setLoginAccount;
+        }
         return OperationTypeEnum.communityRecovery;
     }
-  }, [query]);
+  }, [opGuardian?.isLoginAccount, query]);
   console.log('operationType====', operationType);
 
   const guardianSendCode = useCallback(

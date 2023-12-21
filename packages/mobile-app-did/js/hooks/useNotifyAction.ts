@@ -91,20 +91,18 @@ export const useNotify = () => {
   );
 
   useEffect(() => {
-    if (!logged) return;
-
     messaging().onNotificationOpenedApp(remoteMessage => {
       console.log('--remoteMessage onNotificationOpenedApp', remoteMessage);
       setRemoteData(remoteMessage.data);
     });
-
     messaging()
       .getInitialNotification()
       .then(remoteMessage => {
         console.log('--remoteMessage getInitialNotification', remoteMessage);
         setRemoteData(remoteMessage?.data);
       });
-  }, [logged]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;

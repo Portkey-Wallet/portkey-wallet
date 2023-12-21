@@ -5,17 +5,7 @@ import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
 import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { SendOptions } from '@portkey-wallet/contracts/types';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-
-export type GuardiansApprovedType = {
-  identifierHash: string;
-  type: LoginType;
-  verificationInfo: {
-    id: string | undefined;
-    signature: number[];
-    verificationDoc: string;
-  };
-};
+import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
 
 export const getGuardiansApproved = (
   userGuardiansList: UserGuardianItem[],

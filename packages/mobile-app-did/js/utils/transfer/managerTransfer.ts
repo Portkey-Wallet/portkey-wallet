@@ -1,7 +1,7 @@
 import { SendOptions } from '@portkey-wallet/contracts/types';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { managerForwardCall } from './managerForwardCall';
-import { GuardiansApprovedType } from 'utils/guardian';
+import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
 
 export const managerTransfer = ({
   caContract,

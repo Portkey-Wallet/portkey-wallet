@@ -13,7 +13,7 @@ import { handleLoopFetch, randomId } from '@portkey-wallet/utils';
 import { useRedPackageConfigMapState, useRelationId } from '.';
 import { RedPackageCreationStatusEnum } from '@portkey-wallet/im/types/service';
 import { messageParser } from '@portkey-wallet/im/utils';
-import { useCurrentWalletInfo, useWallet } from '../wallet';
+import { useCurrentWalletInfo, useUserInfo, useWallet } from '../wallet';
 import { useAppCommonDispatch, useEffectOnce } from '../../index';
 import {
   addChannelMessage,
@@ -53,7 +53,7 @@ export interface ISendRedPackageHookParams {
 export const useSendRedPackage = () => {
   const { relationId, getRelationId } = useRelationId();
   const { networkType } = useCurrentNetworkInfo();
-  const { userInfo } = useWallet();
+  const userInfo = useUserInfo();
   const wallet = useCurrentWalletInfo();
   const dispatch = useAppCommonDispatch();
 

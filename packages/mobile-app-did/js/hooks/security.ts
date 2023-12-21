@@ -12,6 +12,7 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { MAX_TRANSACTION_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
 import { ApprovalType } from '@portkey-wallet/types/verifier';
 import { NavigateMultiLevelParams } from 'types/navigate';
+import { timesDecimals } from '@portkey-wallet/utils/converter';
 
 type CheckTransferLimitWithJumpParams = CheckTransferLimitParams & {
   balance?: string;
@@ -45,7 +46,7 @@ export const useCheckTransferLimitWithJump = () => {
         }
 
         // use MAX_TRANSACTION_FEE to make sure that transfer will success after approve
-        const isAllowApprove = ZERO.plus(amount).plus(MAX_TRANSACTION_FEE).lt(balance);
+        const isAllowApprove = timesDecimals(ZERO.plus(amount).plus(MAX_TRANSACTION_FEE), decimals).lt(balance);
 
         const gotoLimitEdit = async () => {
           navigationService.navigate('PaymentSecurityEdit', {
@@ -62,9 +63,14 @@ export const useCheckTransferLimitWithJump = () => {
           });
         };
 
+        console.log('isAllowApprove', isAllowApprove, amount, balance);
         if (isAllowApprove) {
           ActionSheet.alert({
-            title2: `Maximum limit per transaction exceeded. To proceed with this specific transaction, you may request one-time approval from guardians. Alternatively, you have the option to modify the limit, lifting restrictions on all future transactions.`,
+            title2: isDailyLimited
+              ? `Maximum daily limit exceeded. 
+            To proceed with this specific transaction, you may request one-time approval from guardians. Alternatively, you have the option to modify the limit, lifting restrictions on all future transactions.`
+              : `Maximum limit per transaction exceeded. 
+            To proceed with this specific transaction, you may request a one-time approval from guardians. Alternatively, you have the option to modify the limit, lifting restrictions on all future transactions.`,
             buttonGroupDirection: 'column',
             isCloseShow: true,
             buttons: [
@@ -88,8 +94,8 @@ export const useCheckTransferLimitWithJump = () => {
 
         ActionSheet.alert({
           title2: isDailyLimited
-            ? 'Maximum daily limit exceeded. To proceed, please modify the transfer limit first.'
-            : 'Maximum limit per transaction exceeded. To proceed, please modify the transfer limit first. ',
+            ? 'Maximum daily limit exceeded. To proceed, you need to modify the limit first.'
+            : 'Maximum limit per transaction exceeded. To proceed, you need to modify the limit first.',
           buttons: [
             {
               title: 'Cancel',

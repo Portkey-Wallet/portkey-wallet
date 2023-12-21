@@ -11,7 +11,7 @@ import { ACH_REDIRECT_URL, ACH_WITHDRAW_URL } from 'constants/common';
 import { useHandleAchSell } from './hooks/useHandleAchSell';
 import CommonToast from 'components/CommonToast';
 import Progressbar, { IProgressbar } from 'components/Progressbar';
-import { GuardiansApprovedType } from 'utils/guardian';
+import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
 
 const safeAreaColorMap = {
   white: defaultColors.bg1,

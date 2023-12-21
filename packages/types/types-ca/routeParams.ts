@@ -1,5 +1,5 @@
-import { GuardiansApprovedType } from 'utils/guardian';
 import { ChainId, ChainType } from '..';
+import { GuardiansApprovedType } from './guardian';
 import type { SendType } from './send';
 
 export interface IToSendHomeAssetParamsBaseType {

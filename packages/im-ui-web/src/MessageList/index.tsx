@@ -3,7 +3,8 @@ import clsx from 'clsx';
 import MessageItem from '../MessageItem';
 import CustomSvg from '../components/CustomSvg';
 import CircleLoading from '../components/CircleLoading';
-import { IMessageListProps, MessageType } from '../type';
+import { IMessageListProps, MessageContentType } from '../type';
+import { MessageTypeEnum } from '@portkey-wallet/im';
 import './index.less';
 
 const MessageList: FC<IMessageListProps> = ({
@@ -58,7 +59,7 @@ const MessageList: FC<IMessageListProps> = ({
       } else {
         setDownButton(false);
       }
-      if (reference.current.scrollTop === 0 && hasNext) next();
+      if (reference.current.scrollTop === 0 && hasNext) next?.();
       props?.onScroll?.(e);
     },
     [getBottom, hasNext, next, props, reference, toBottomHeight],
@@ -81,19 +82,19 @@ const MessageList: FC<IMessageListProps> = ({
   }, [reference]);
 
   const renderMessageItem = useMemo(() => {
-    let prev: MessageType | undefined = undefined;
+    let prev: MessageContentType | undefined = undefined;
     let isShowMargin = false;
     let hiddenAvatar = false;
     return props.dataSource.map((x, i: number) => {
-      hiddenAvatar = x?.title === prev?.title;
+      hiddenAvatar = x?.fromName === prev?.fromName;
       isShowMargin = prev?.position !== x.position;
-      if (x.type === 'system' && prev?.type === 'system') {
+      if (x.type === MessageTypeEnum.SYS && prev?.type === MessageTypeEnum.SYS) {
         isShowMargin = x.subType !== prev?.subType;
       }
       prev = x;
       return (
         <MessageItem
-          {...(x as MessageType)}
+          {...(x as MessageContentType)}
           key={x.key}
           className={clsx([isShowMargin && 'show-margin', hiddenAvatar && 'hidden-avatar'])}
           onDeleteMsg={(e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(x, i, e)}

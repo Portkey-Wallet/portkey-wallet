@@ -2,41 +2,40 @@ import CustomSvg from 'components/CustomSvg';
 import { useMemo } from 'react';
 import ImageShow from '../ImageShow';
 import './index.less';
+import { MessageType, MessageTypeEnum } from '@portkey-wallet/im';
 
 export interface IChatBoxPinnedMsgProps {
   msgCount: number;
-  msgType: 'text' | 'image';
-  showClose?: boolean;
+  msgContent: string;
+  msgType: MessageType;
   onViewMore?: () => void;
-  onClose?: () => void;
-  children?: React.ReactNode;
 }
 
-const ChatBoxPinnedMsg = ({ msgCount = 3, msgType, onViewMore }: IChatBoxPinnedMsgProps) => {
+const ChatBoxPinnedMsg = ({ msgCount, msgType, msgContent, onViewMore }: IChatBoxPinnedMsgProps) => {
   const renderText = useMemo(
     () => (
       <>
         <div className="content-title">{`Pinned Message ${msgCount}`}</div>
-        <div className="content-pin-msg">Hi, Do you want to buy or sell some tokens? Buy tokens?</div>
+        <div className="content-pin-msg">{msgContent}</div>
       </>
     ),
-    [msgCount],
+    [msgContent, msgCount],
   );
   const renderImage = useMemo(
     () => (
       <div className="image-content flex">
-        <ImageShow src="https://lmg.jj20.com/up/allimg/4k/s/02/210924233115O14-0-lp.jpg" />
+        <ImageShow src={msgContent} />
         <div>
           <div className="content-title">{`Pinned Message ${msgCount}`}</div>
           <div className="content-pin-msg">Photo</div>
         </div>
       </div>
     ),
-    [msgCount],
+    [msgContent, msgCount],
   );
   return (
     <div className="chat-box-pinned-msg-container flex-between-center">
-      <div className="container-content">{msgType === 'text' ? renderText : renderImage}</div>
+      <div className="container-content">{msgType === MessageTypeEnum.TEXT ? renderText : renderImage}</div>
       <div className="container-right-icon">
         <CustomSvg type="TopPin" onClick={onViewMore} />
       </div>

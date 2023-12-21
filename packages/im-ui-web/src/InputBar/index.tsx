@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Popover } from 'antd';
 import { emojiList } from '../assets/emoji/index';
@@ -7,9 +7,17 @@ import PopoverMenuList from '../PopoverMenuList';
 import CustomInput from '../components/CustomInput';
 import { IInputBarProps, PopDataProps } from '../type';
 import ReplyMsg from './ReplyMsg';
+import { MessageTypeEnum } from '@portkey-wallet/im/types';
 import './index.less';
 
-export default function InputBar({ moreData, showEmoji = true, onSendMessage, maxLength = 300 }: IInputBarProps) {
+export default function InputBar({
+  moreData,
+  showEmoji = true,
+  replyMsg,
+  maxLength = 300,
+  onCloseReply,
+  onSendMessage,
+}: IInputBarProps) {
   const [showEmojiIcon, setShowEmojiIcon] = useState(false);
   const [value, setValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -56,6 +64,22 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
     },
     [handleSend, value],
   );
+  const renderReplyMsg = useMemo(() => {
+    if (replyMsg) {
+      if ([MessageTypeEnum.IMAGE, MessageTypeEnum.TEXT].includes(replyMsg.msgType)) {
+        return (
+          <ReplyMsg
+            msgType={replyMsg.msgType}
+            msgContent={replyMsg.msgContent}
+            toName={replyMsg.toName}
+            onCloseReply={onCloseReply}
+          />
+        );
+      }
+      return <></>;
+    }
+    return <></>;
+  }, [onCloseReply, replyMsg]);
   useEffect(() => {
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);
@@ -64,7 +88,7 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
   return (
     <div>
       <div className="portkey-input-bar">
-        <ReplyMsg msgType="image" msgContent="" toName="" />
+        {renderReplyMsg}
         {showEmojiIcon && (
           <div className="input-emoji">
             <div className="show-icon flex">

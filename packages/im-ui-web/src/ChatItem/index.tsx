@@ -7,9 +7,9 @@ import CustomSvg from '../components/CustomSvg';
 import { IChatItemProps } from '../type';
 import { formatChatListTime } from '../utils';
 import PopoverMenuList from '../PopoverMenuList';
-import { ChannelTypeEnum } from '@portkey-wallet/im/types';
-import './index.less';
+import { ChannelTypeEnum, MessageTypeEnum } from '@portkey-wallet/im/types';
 import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
+import './index.less';
 
 const ChatItem: React.FC<IChatItemProps> = ({
   date = new Date().getTime(),
@@ -72,7 +72,7 @@ const ChatItem: React.FC<IChatItemProps> = ({
 
   const renderSubtitle = useMemo(() => {
     const { subtitle, muted, isOwner, lastMessageType } = props;
-    const showRedPacket = lastMessageType === 'red-package-card';
+    const showRedPacket = lastMessageType === MessageTypeEnum.REDPACKAGE_CARD;
     const showRedPacketHighlight = !muted && !isOwner && unread > 0;
     if (showRedPacket) {
       return (

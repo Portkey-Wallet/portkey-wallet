@@ -1,26 +1,30 @@
 import { PIN_LIMIT_EXCEED } from '@portkey-wallet/constants/constants-ca/chat';
-import { ChannelItem } from '@portkey-wallet/im';
-import { MessageType } from '@portkey-wallet/im-ui-web';
+import { ChannelItem, Message } from '@portkey-wallet/im';
+import { MessageContentType } from '@portkey-wallet/im-ui-web';
 import { message, Modal } from 'antd';
 import { useCallback } from 'react';
 
 export interface HandleProps {
   info?: ChannelItem;
-  deleteMessage: (id?: string | undefined) => Promise<void>;
+  list: Message[];
+  deleteMessage: (message: Message) => Promise<void>;
   pin: (value: boolean) => Promise<void>;
   mute: (value: boolean) => Promise<void>;
+  pinMsg?: (message: Message) => Promise<void>;
+  unPinMsg?: (message: Message) => Promise<void>;
 }
-export const useHandle = ({ deleteMessage, pin, info, mute }: HandleProps) => {
+export const useHandle = ({ deleteMessage, pin, info, mute, list, pinMsg, unPinMsg }: HandleProps) => {
   const handleDeleteMsg = useCallback(
-    async (item: MessageType) => {
+    async (item: MessageContentType) => {
+      const msg = list.find((temp) => temp.id === item.id);
       try {
-        await deleteMessage(`${item.id}`);
+        await deleteMessage(msg as Message);
       } catch (e) {
         message.error('Failed to delete message');
         console.log('===handle delete message error', e);
       }
     },
-    [deleteMessage],
+    [deleteMessage, list],
   );
   const handlePin = useCallback(async () => {
     try {
@@ -43,8 +47,10 @@ export const useHandle = ({ deleteMessage, pin, info, mute }: HandleProps) => {
     }
   }, [info?.mute, mute]);
   const handlePinMsg = useCallback(
-    async (item: MessageType) => {
-      if (!item.pin) {
+    async (item: MessageContentType) => {
+      const msg: Message | undefined = list.find((temp) => temp.id === item.id);
+      if (!msg) return;
+      if (msg.pinInfo) {
         Modal.confirm({
           width: 320,
           content: (
@@ -61,8 +67,7 @@ export const useHandle = ({ deleteMessage, pin, info, mute }: HandleProps) => {
           cancelText: 'Cancel',
           onOk: async () => {
             try {
-              // TODO pin
-              await deleteMessage(`${item.id}`);
+              await unPinMsg?.(msg);
             } catch (e) {
               message.error('Failed to unpin message');
               console.log('===handle unpin message error', e);
@@ -71,15 +76,14 @@ export const useHandle = ({ deleteMessage, pin, info, mute }: HandleProps) => {
         });
       } else {
         try {
-          // TODO pin
-          await deleteMessage(`${item.id}`);
+          await pinMsg?.({ ...msg });
         } catch (e) {
           message.error('Failed to pin message');
           console.log('===handle pin message error', e);
         }
       }
     },
-    [deleteMessage],
+    [list, pinMsg, unPinMsg],
   );
   return {
     handleDeleteMsg,

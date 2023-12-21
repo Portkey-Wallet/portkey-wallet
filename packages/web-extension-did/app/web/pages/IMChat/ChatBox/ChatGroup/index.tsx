@@ -2,10 +2,18 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
 import { message } from 'antd';
-import { MessageList, InputBar, StyleProvider, MessageType, PopDataProps, Avatar } from '@portkey-wallet/im-ui-web';
+import {
+  MessageList,
+  InputBar,
+  StyleProvider,
+  MessageContentType,
+  PopDataProps,
+  Avatar,
+  IInputReplyMsgProps,
+} from '@portkey-wallet/im-ui-web';
 import { useGroupChannel, useHideChannel, useLeaveChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import BookmarkListDrawer from '../../components/BookmarkListDrawer';
-import { formatMessageList } from '../../utils';
+import { formatImageData, formatMessageList } from '../../utils';
 import { useTranslation } from 'react-i18next';
 import { MAX_INPUT_LENGTH } from '@portkey-wallet/constants/constants-ca/im';
 import ChatBoxTip from '../../components/ChatBoxTip';
@@ -18,8 +26,9 @@ import { useClickUrl } from 'hooks/im';
 import WarnTip from 'pages/IMChat/components/WarnTip';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 import { NO_LONGER_IN_GROUP } from '@portkey-wallet/constants/constants-ca/chat';
-import { ChannelTypeEnum } from '@portkey-wallet/im';
+import { ChannelTypeEnum, Message, MessageTypeEnum, ParsedImage } from '@portkey-wallet/im';
 import ChatBoxPinnedMsg from 'pages/IMChat/components/ChatBoxPinnedMsg';
+import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
@@ -29,6 +38,25 @@ export default function ChatBox() {
   const messageRef = useRef<any>(null);
   const [popVisible, setPopVisible] = useState(false);
   const [showAddMemTip, setShowAddMemTip] = useState(true);
+  const [replyMsg, setReplyMsg] = useState<Message>();
+  const showReplyMsg: IInputReplyMsgProps | undefined = useMemo(() => {
+    if (replyMsg?.type === MessageTypeEnum.TEXT) {
+      return {
+        msgType: MessageTypeEnum.TEXT,
+        toName: `${replyMsg.fromName}`,
+        msgContent: `${replyMsg.content}`,
+      };
+    }
+    if (replyMsg?.type === MessageTypeEnum.IMAGE) {
+      const { thumbImgUrl, imgUrl } = formatImageData(replyMsg?.parsedContent as ParsedImage);
+      return {
+        msgType: MessageTypeEnum.IMAGE,
+        toName: `${replyMsg.fromName}`,
+        msgContent: thumbImgUrl || imgUrl || '',
+      };
+    }
+    return undefined;
+  }, [replyMsg]);
   const {
     init,
     list,
@@ -45,15 +73,59 @@ export default function ChatBox() {
     groupInfo,
     info,
   } = useGroupChannel(`${channelUuid}`);
+  const {
+    list: pinList,
+    lastPinMessage,
+    refresh: refreshAllPinList,
+    pin: pinMsg,
+    unPin: unPinMsg,
+  } = useIMPin(`${channelUuid}`, true);
   const clickUrl = useClickUrl({ fromChannelUuid: channelUuid, isGroup: true });
   useEffectOnce(() => {
     init();
   });
+  const lastPinMsgShow = useMemo(() => {
+    if (lastPinMessage?.type === MessageTypeEnum.TEXT) {
+      return {
+        msgType: MessageTypeEnum.TEXT,
+        msgContent: `${lastPinMessage.content}`,
+      };
+    }
+    if (lastPinMessage?.type === MessageTypeEnum.IMAGE) {
+      const { thumbImgUrl, imgUrl } = formatImageData(lastPinMessage?.parsedContent as ParsedImage);
+      return {
+        msgType: MessageTypeEnum.IMAGE,
+        msgContent: thumbImgUrl || imgUrl || '',
+      };
+    }
+    return undefined;
+  }, [lastPinMessage]);
   const hideChannel = useHideChannel();
   const { relationId } = useRelationId();
-  const messageList: MessageType[] = useMemo(() => formatMessageList(list, relationId!, true), [list, relationId]);
+  const messageList: MessageContentType[] = useMemo(
+    () => formatMessageList({ list, ownerRelationId: relationId!, isGroup: true, isAdmin }),
+    [isAdmin, list, relationId],
+  );
+  const handleCancelReply = useCallback(() => {
+    setReplyMsg(undefined);
+  }, []);
+  const handleClickReply = useCallback(
+    (item: MessageContentType) => {
+      const _msg = list.find((temp) => temp.id === item.id);
+      setReplyMsg(_msg);
+    },
+    [list],
+  );
   const leaveGroup = useLeaveChannel();
-  const { handleDeleteMsg, handlePin, handleMute, handlePinMsg } = useHandle({ info, mute, pin, deleteMessage });
+  const { handleDeleteMsg, handlePin, handleMute, handlePinMsg } = useHandle({
+    info,
+    mute,
+    pin,
+    deleteMessage,
+    list,
+    pinMsg,
+    unPinMsg,
+  });
   const handleDeleteBox = useCallback(() => {
     CustomModalConfirm({
       content: t('Delete chat?'),
@@ -182,16 +254,18 @@ export default function ChatBox() {
       try {
         await sendMessage({
           content: v.trim() ?? '',
+          quoteMessage: replyMsg,
         });
+        setReplyMsg(undefined);
         messageRef.current.scrollTop = messageRef.current.scrollHeight;
       } catch (e: any) {
         handleSendMsgError(e);
       }
     },
-    [handleSendMsgError, sendMessage],
+    [handleSendMsgError, replyMsg, sendMessage],
   );
   const handleGoProfile = useCallback(
-    (item: MessageType) => {
+    (item: MessageContentType) => {
       navigate('/setting/contacts/view', {
         state: { relationId: item?.from, from: 'chat-box-group', channelUuid },
       });
@@ -210,6 +284,22 @@ export default function ChatBox() {
     ),
     [handleGoGroupInfo, groupInfo?.icon, groupInfo?.name, info?.displayName, info?.mute],
   );
+  const renderAddMember = useMemo(
+    () =>
+      isAdmin &&
+      showAddMemTip && (
+        <ChatBoxTip onConfirm={handleAddMember} onClose={() => setShowAddMemTip(false)}>
+          <div className="content flex-center">
+            <CustomSvg type="ChatAddContact" />
+            <span className="text">Add Members</span>
+          </div>
+        </ChatBoxTip>
+      ),
+    [handleAddMember, isAdmin, showAddMemTip],
+  );
+  useEffect(() => {
+    refreshAllPinList();
+  }, [refreshAllPinList]);
   useEffect(() => {
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);
@@ -223,18 +313,15 @@ export default function ChatBox() {
         popVisible={popVisible}
         setPopVisible={setPopVisible}
       />
-      <ChatBoxPinnedMsg
-        msgCount={3}
-        msgType="text"
-        onViewMore={() => navigate(`/chat-box-group/${channelUuid}/pinned-msg`)}
-      />
-      {isAdmin && showAddMemTip && (
-        <ChatBoxTip onConfirm={handleAddMember} onClose={() => setShowAddMemTip(false)}>
-          <div className="content flex-center">
-            <CustomSvg type="ChatAddContact" />
-            <span className="text">Add Members</span>
-          </div>
-        </ChatBoxTip>
+      {lastPinMsgShow ? (
+        <ChatBoxPinnedMsg
+          msgCount={pinList?.length}
+          msgType={lastPinMsgShow.msgType}
+          msgContent={lastPinMsgShow.msgContent}
+          onViewMore={() => navigate(`/chat-box-group/${channelUuid}/pinned-msg`)}
+        />
+      ) : (
+        renderAddMember
       )}
       <div className="chat-box-content">
         <StyleProvider prefixCls="portkey">
@@ -250,12 +337,19 @@ export default function ChatBox() {
             onPinMsg={handlePinMsg}
             onClickUrl={clickUrl}
             onClickUnSupportMsg={WarnTip}
+            onReplyMsg={handleClickReply}
           />
         </StyleProvider>
       </div>
       <div className="chat-box-footer">
         <StyleProvider prefixCls="portkey">
-          <InputBar moreData={inputMorePopList} maxLength={MAX_INPUT_LENGTH} onSendMessage={handleSendMessage} />
+          <InputBar
+            moreData={inputMorePopList}
+            maxLength={MAX_INPUT_LENGTH}
+            replyMsg={showReplyMsg}
+            onCloseReply={handleCancelReply}
+            onSendMessage={handleSendMessage}
+          />
         </StyleProvider>
       </div>
       <BookmarkListDrawer

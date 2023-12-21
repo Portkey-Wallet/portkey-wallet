@@ -1,31 +1,23 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Image, Popover } from 'antd';
 import clsx from 'clsx';
-import { IImageMessageProps } from '../type';
-import { formatTime } from '../utils';
+import { formatImageData, formatTime } from '../utils';
 import CustomSvg from '../components/CustomSvg';
 import { formatImageSize } from '@portkey-wallet/utils/img';
 import PopoverMenuList from '../PopoverMenuList';
+import { ParsedImage } from '@portkey-wallet/im';
+import { IMessage } from '../type';
 import './index.less';
 
-const ImageMessage: React.FC<IImageMessageProps> = (props) => {
-  const showMask = useMemo(() => {
-    const dataShow = props.dateString ? props.dateString : formatTime(props.date as any);
-    return (
-      <span className="show-mask flex-center">
-        {props.pin && <CustomSvg type="MsgPin" />}
-        <span>{dataShow}</span>
-      </span>
-    );
-  }, [props.date, props.dateString, props.pin]);
+const ImageMessage: React.FC<IMessage> = (props) => {
+  const { isGroup, pinInfo, parsedContent, isAdmin, createAt } = props;
+  const { thumbImgUrl, width, height, imgUrl } = formatImageData(parsedContent as ParsedImage);
   const [loadErr, setLoadErr] = useState(false);
-  const { thumbImgUrl, width, height, imgUrl } = props.imgData || {};
   const imageSize = useMemo(
     () => formatImageSize({ width, height, maxWidth: 272, maxHeight: 272, minHeight: 92, minWidth: 92 }),
     [width, height],
   );
   const [popVisible, setPopVisible] = useState(false);
-
   const popoverList = useMemo(
     () => [
       {
@@ -34,18 +26,20 @@ const ImageMessage: React.FC<IImageMessageProps> = (props) => {
         children: 'Delete',
         onClick: (e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(e),
       },
-      {
-        key: 'pin',
-        leftIcon: <CustomSvg type="Pin" />,
-        children: 'Pin',
-        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onPinMsg?.(e),
-      },
-      {
-        key: 'unpin',
-        leftIcon: <CustomSvg type="UnPin" />,
-        children: 'Unpin',
-        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onPinMsg?.(e),
-      },
+      pinInfo
+        ? {
+            key: 'unpin',
+            leftIcon: <CustomSvg type="UnPin" />,
+            children: 'Unpin',
+            onClick: (e: React.MouseEvent<HTMLElement>) => props?.onPinMsg?.(e),
+          }
+        : {
+            key: 'pin',
+            leftIcon: <CustomSvg type="Pin" />,
+            children: 'Pin',
+            onClick: (e: React.MouseEvent<HTMLElement>) => props?.onPinMsg?.(e),
+          },
+
       {
         key: 'reply',
         leftIcon: <CustomSvg type="Reply" />,
@@ -53,7 +47,25 @@ const ImageMessage: React.FC<IImageMessageProps> = (props) => {
         onClick: (e: React.MouseEvent<HTMLElement>) => props?.onReplyMsg?.(e),
       },
     ],
-    [props],
+    [pinInfo, props],
+  );
+  const showMask = useMemo(() => {
+    const dataShow = props.dateString ? props.dateString : formatTime(createAt);
+    return (
+      <span className="show-mask flex-center">
+        {pinInfo && <CustomSvg type="MsgPin" />}
+        <span>{dataShow}</span>
+      </span>
+    );
+  }, [createAt, pinInfo, props.dateString]);
+  const showPopoverList = useMemo(
+    () =>
+      isGroup
+        ? isAdmin
+          ? popoverList
+          : popoverList.filter((item) => ['delete', 'reply'].includes(item.key))
+        : popoverList.filter((item) => ['delete'].includes(item.key)),
+    [isAdmin, isGroup, popoverList],
   );
   const hidePop = useCallback(() => {
     setPopVisible(false);
@@ -94,7 +106,7 @@ const ImageMessage: React.FC<IImageMessageProps> = (props) => {
               placement="bottom"
               trigger="contextMenu"
               showArrow={false}
-              content={<PopoverMenuList data={popoverList} />}>
+              content={<PopoverMenuList data={showPopoverList} />}>
               {renderImage}
             </Popover>
           </>

@@ -51,7 +51,7 @@ export type ParsedPinSys = {
     portkeyId: string;
     name: string;
   };
-  pinMessageOperationType: PIN_OPERATION_TYPE_ENUM;
+  pinType: PIN_OPERATION_TYPE_ENUM;
   messageType: MessageType;
   content: string;
   messageId: string;

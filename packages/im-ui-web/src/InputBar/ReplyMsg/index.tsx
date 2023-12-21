@@ -1,44 +1,37 @@
 import { useMemo } from 'react';
 import ImageShow from '../../components/ImageShow';
 import CustomSvg from '../../components/CustomSvg';
+import { IInputReplyMsgProps } from '../../type';
+import { MessageTypeEnum } from '@portkey-wallet/im/types';
 import './index.less';
 
-export interface IReplyMsgProps {
-  msgType: 'text' | 'image';
-  msgContent: string;
-  toName: string;
-}
-
-export default function ReplyMsg({ msgType }: IReplyMsgProps) {
+export default function ReplyMsg({ msgType, msgContent, toName, onCloseReply }: IInputReplyMsgProps) {
   const renderText = useMemo(
     () => (
       <>
-        <div className="container-title">Reply to Guo</div>
-        <div className="container-content">
-          Hi, Do you want to buy or sell some tokens? Buy tokens want to buy or sell?
-        </div>
+        <div className="container-title">{`Reply to ${toName}`}</div>
+        <div className="container-content">{msgContent}</div>
       </>
     ),
-    [],
+    [msgContent, toName],
   );
   const renderImage = useMemo(
     () => (
       <div className="reply-message-image flex-row-center">
-        {/* <ImageShow src="httfdfdps://lmg.jj20.com/up/allimg/4k/s/02/210924233115O14-0-lp.jpg" /> */}
-        <ImageShow src="https://lmg.jj20.com/up/allimg/4k/s/02/210924233115O14-0-lp.jpg" />
+        <ImageShow src={msgContent} />
         <div>
-          <div className="container-title">Reply to Guo</div>
+          <div className="container-title">{`Reply to ${toName}`}</div>
           <div className="container-content">Photo</div>
         </div>
       </div>
     ),
-    [],
+    [msgContent, toName],
   );
 
   return (
     <div className="input-bar-reply-message-body flex-between-center">
-      <div className="reply-message-container">{msgType === 'text' ? renderText : renderImage}</div>
-      <CustomSvg type="Close" />
+      <div className="reply-message-container">{msgType === MessageTypeEnum.TEXT ? renderText : renderImage}</div>
+      <CustomSvg type="Close" onClick={onCloseReply} />
     </div>
   );
 }

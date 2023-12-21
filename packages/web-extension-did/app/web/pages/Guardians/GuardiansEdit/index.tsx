@@ -50,7 +50,10 @@ export default function GuardiansEdit() {
   const { isNotLessThan768 } = useCommonState();
   const isPhoneType = useMemo(() => preGuardian?.guardianType === LoginType.Phone, [preGuardian?.guardianType]);
   const isSocialGuardian = useMemo(
-    () => preGuardian?.guardianType === LoginType.Google || preGuardian?.guardianType === LoginType.Apple,
+    () =>
+      preGuardian?.guardianType === LoginType.Google ||
+      preGuardian?.guardianType === LoginType.Apple ||
+      preGuardian?.guardianType === LoginType.Telegram,
     [preGuardian?.guardianType],
   );
   const selectOptions = useMemo(

@@ -1,14 +1,33 @@
-import { Button } from 'antd';
+import { message } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import { useIsTestnet } from 'hooks/useNetwork';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { RegisterType, SocialLoginFinishHandler } from 'types/wallet';
 import DividerCenter from '../DividerCenter';
 import SocialContent from '../SocialContent';
 import TermsOfServiceItem from '../TermsOfServiceItem';
+import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
+import { useLoading, useWalletInfo } from 'store/Provider/hooks';
+import { ISocialLogin } from '@portkey-wallet/types/types-ca/wallet';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 import './index.less';
+
+const guardianList = [
+  {
+    icon: <CustomSvg type="Apple-Login" />,
+    type: 'Apple',
+  },
+  {
+    icon: <CustomSvg type="Phone-Login" />,
+    type: 'Phone',
+  },
+  {
+    icon: <CustomSvg type="Email-Login" />,
+    type: 'Email',
+  },
+] as const;
 
 export default function SocialLogin({
   type,
@@ -19,11 +38,13 @@ export default function SocialLogin({
   type: RegisterType;
   onBack?: () => void;
   onFinish: SocialLoginFinishHandler;
-  switchLogin?: () => void;
+  switchLogin?: (type: 'Email' | 'Phone') => void;
 }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isTestnet = useIsTestnet();
+  const { currentNetwork } = useWalletInfo();
+  const { setLoading } = useLoading();
 
   const isLogin = useMemo(() => type === 'Login', [type]);
 
@@ -40,6 +61,26 @@ export default function SocialLogin({
     return title;
   }, [isLogin, isTestnet, t]);
 
+  const onSocialChange = useCallback(
+    async (v: ISocialLogin) => {
+      try {
+        setLoading(true);
+        const result = await socialLoginAction(v, currentNetwork);
+        setLoading(false);
+        if (result.error) throw result.message ?? result.Error;
+        onFinish?.({
+          type: v,
+          data: result.data,
+        });
+      } catch (error) {
+        setLoading(false);
+        const msg = handleErrorMessage(error);
+        message.error(msg);
+      }
+    },
+    [currentNetwork, onFinish, setLoading],
+  );
+
   return (
     <>
       <div className="card-content">
@@ -49,11 +90,24 @@ export default function SocialLogin({
           {isLogin && <CustomSvg type="QRCode" onClick={() => navigate('/register/start/scan')} />}
         </h1>
         <div className="social-login-content">
-          <SocialContent type={type} onFinish={onFinish} />
+          <SocialContent type={type} onSocialChange={onSocialChange} />
           <DividerCenter />
-          <Button type="primary" className="login-by-input-btn" onClick={() => switchLogin?.()}>
-            {`${isLogin ? t('Login') : t('Sign up')} with Phone / Email`}
-          </Button>
+          <div className="flex-center extra-guardian-type-content">
+            {guardianList.map((item) => (
+              <div
+                key={item.type}
+                onClick={() => {
+                  if (item.type === 'Apple') {
+                    onSocialChange('Apple');
+                    return;
+                  }
+                  switchLogin?.(item.type);
+                }}>
+                {item.icon}
+              </div>
+            ))}
+          </div>
+
           {isLogin && (
             <div className="go-sign-up">
               <span>{t('No account?')}</span>

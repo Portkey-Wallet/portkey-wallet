@@ -24,6 +24,9 @@ export enum VerificationType {
   managerApprove,
   modifyTransferLimit,
   transferApprove,
+  setLoginAccountByApprove,
+  unsetLoginAccount,
+  unsetLoginAccountByApprove,
 }
 
 export enum ApprovalType {
@@ -35,6 +38,8 @@ export enum ApprovalType {
   managerApprove,
   modifyTransferLimit,
   transferApprove,
+  setLoginAccount,
+  unsetLoginAccount,
 }
 
 // Indicates the type of operation to generate a signature file

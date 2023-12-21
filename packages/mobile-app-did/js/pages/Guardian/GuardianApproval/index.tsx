@@ -39,6 +39,8 @@ import {
   getGuardiansApproved,
   modifyTransferLimit,
   removeOtherManager,
+  setLoginAccount,
+  unsetLoginAccount,
 } from 'utils/guardian';
 import { useGetCAContract, useGetCurrentCAContract } from 'hooks/contract';
 import { GuardiansApproved, GuardiansStatus, GuardiansStatusItem } from '../types';
@@ -52,7 +54,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useUpdateTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
 import { useCheckRouteExistInRouteStack } from 'hooks/route';
-import { useGetVerifierServers, useRefreshGuardiansList } from 'hooks/guardian';
+import { useRefreshGuardianList } from 'hooks/guardian';
 import { SendResult } from '@portkey-wallet/contracts/types';
 import { useIsFocused } from '@react-navigation/native';
 import { NavigateMultiLevelParams } from 'types/navigate';
@@ -77,6 +79,13 @@ export type RouterParams = {
 };
 
 type MultiLevelParams = Pick<NavigateMultiLevelParams, 'successNavigate' | 'sendTransferPreviewApprove'>;
+const EXCLUDE_CURRENT_APPROVAL_TYPES = [
+  ApprovalType.deleteGuardian,
+  ApprovalType.editGuardian,
+  ApprovalType.setLoginAccount,
+  ApprovalType.unsetLoginAccount,
+];
+
 export default function GuardianApproval() {
   const {
     loginAccount,
@@ -115,16 +124,7 @@ export default function GuardianApproval() {
 
   const lastOnEmitDapp = useLatestRef(onEmitDapp);
 
-  const getVerifierServers = useGetVerifierServers();
-  const refreshGuardiansList = useRefreshGuardiansList();
-  const initGuardian = useCallback(async () => {
-    try {
-      await getVerifierServers();
-      refreshGuardiansList();
-    } catch (error) {
-      console.log(error, 'GuardianApprove initGuardian ==error');
-    }
-  }, [getVerifierServers, refreshGuardiansList]);
+  const { init: initGuardian } = useRefreshGuardianList();
 
   const { userGuardiansList: storeUserGuardiansList, preGuardian } = useGuardiansInfo();
 
@@ -137,7 +137,7 @@ export default function GuardianApproval() {
 
   const userGuardiansList = useMemo(() => {
     if (paramUserGuardiansList) return paramUserGuardiansList;
-    if (approvalType === ApprovalType.deleteGuardian || approvalType === ApprovalType.editGuardian) {
+    if (EXCLUDE_CURRENT_APPROVAL_TYPES.includes(approvalType)) {
       return storeUserGuardiansList?.filter(item => item.key !== guardianItem?.key);
     }
     return storeUserGuardiansList;
@@ -209,13 +209,21 @@ export default function GuardianApproval() {
   }, [isSuccess, isFocused, isExpired]);
   const onBack = useCallback(() => {
     lastOnEmitDapp.current();
-    if (approvalType === ApprovalType.addGuardian) {
-      navigationService.navigate('GuardianEdit');
-    } else {
-      navigationService.goBack();
+    switch (approvalType) {
+      case ApprovalType.addGuardian:
+        navigationService.navigate('GuardianEdit');
+        break;
+      case ApprovalType.setLoginAccount:
+      case ApprovalType.unsetLoginAccount:
+        navigationService.navigate('GuardianDetail', { guardian: guardianItem });
+        break;
+      default:
+        navigationService.goBack();
+        break;
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [approvalType]);
+  }, [approvalType, guardianItem]);
   const onRequestOrSetPin = useOnRequestOrSetPin();
 
   const dappApprove = useCallback(() => {
@@ -264,8 +272,6 @@ export default function GuardianApproval() {
   const onAddGuardian = useCallback(async () => {
     if (!managerAddress || !caHash || !verifierInfo || !guardianItem || !guardiansStatus || !userGuardiansList) return;
 
-    console.log('accelerateChainId', accelerateChainId);
-
     Loading.show({ text: t('Processing on the chain...') });
     let req: SendResult | undefined;
     try {
@@ -289,7 +295,7 @@ export default function GuardianApproval() {
     if (accelerateChainId && accelerateChainId !== originChainId) {
       try {
         const accelerateCAContract = await getCAContract(accelerateChainId);
-        const accelerateReq = await addGuardian(
+        await addGuardian(
           accelerateCAContract,
           managerAddress,
           caHash,
@@ -298,7 +304,6 @@ export default function GuardianApproval() {
           userGuardiansList,
           guardiansStatus,
         );
-        console.log('accelerateReq', accelerateReq);
       } catch (error) {
         console.log('accelerateReq error', error);
       }
@@ -315,7 +320,6 @@ export default function GuardianApproval() {
         } else {
           navigationService.pop(2);
         }
-        refreshGuardiansList();
       }
     } else {
       CommonToast.fail(req?.error?.message || '');
@@ -330,7 +334,6 @@ export default function GuardianApproval() {
     guardiansStatus,
     managerAddress,
     originChainId,
-    refreshGuardiansList,
     t,
     userGuardiansList,
     verifierInfo,
@@ -516,6 +519,85 @@ export default function GuardianApproval() {
       return;
     }
   }, [getCAContract, getTransferFee, guardiansStatus, sendTransferPreviewApprove, successNavigate, userGuardiansList]);
+  const onSetLoginAccount = useCallback(async () => {
+    if (!managerAddress || !caHash || !verifierInfo || !guardianItem || !guardiansStatus || !userGuardiansList) return;
+    Loading.show({ text: t('Processing on the chain...') });
+    try {
+      const caContract = await getCurrentCAContract();
+      const req = await setLoginAccount(
+        caContract,
+        managerAddress,
+        caHash,
+        verifierInfo,
+        guardianItem,
+        userGuardiansList,
+        guardiansStatus,
+      );
+      if (req && !req.error) {
+        myEvents.refreshGuardiansList.emit();
+        if (successNavigate) {
+          navigationService.navigate(successNavigate.name, successNavigate.params);
+        } else {
+          navigationService.navigate('GuardianHome');
+        }
+      } else {
+        CommonToast.fail(req?.error?.message || '');
+      }
+      Loading.hide();
+    } catch (error) {
+      //TODO: 1.4.13
+    }
+  }, [
+    caHash,
+    getCurrentCAContract,
+    guardianItem,
+    guardiansStatus,
+    managerAddress,
+    successNavigate,
+    t,
+    userGuardiansList,
+    verifierInfo,
+  ]);
+
+  const onUnsetLoginAccount = useCallback(async () => {
+    if (!managerAddress || !caHash || !verifierInfo || !guardianItem || !guardiansStatus || !userGuardiansList) return;
+    Loading.show({ text: t('Processing on the chain...') });
+    try {
+      const caContract = await getCurrentCAContract();
+      const req = await unsetLoginAccount(
+        caContract,
+        managerAddress,
+        caHash,
+        verifierInfo,
+        guardianItem,
+        userGuardiansList,
+        guardiansStatus,
+      );
+      if (req && !req.error) {
+        myEvents.refreshGuardiansList.emit();
+        if (successNavigate) {
+          navigationService.navigate(successNavigate.name, successNavigate.params);
+        } else {
+          navigationService.navigate('GuardianHome');
+        }
+      } else {
+        CommonToast.fail(req?.error?.message || '');
+      }
+      Loading.hide();
+    } catch (error) {
+      //TODO: 1.4.13
+    }
+  }, [
+    caHash,
+    getCurrentCAContract,
+    guardianItem,
+    guardiansStatus,
+    managerAddress,
+    successNavigate,
+    t,
+    userGuardiansList,
+    verifierInfo,
+  ]);
 
   const onFinish = useCallback(async () => {
     switch (approvalType) {
@@ -524,6 +606,12 @@ export default function GuardianApproval() {
         break;
       case ApprovalType.addGuardian:
         onAddGuardian();
+        break;
+      case ApprovalType.setLoginAccount:
+        onSetLoginAccount();
+        break;
+      case ApprovalType.unsetLoginAccount:
+        onUnsetLoginAccount();
         break;
       case ApprovalType.deleteGuardian:
         onDeleteGuardian();
@@ -550,6 +638,8 @@ export default function GuardianApproval() {
     approvalType,
     registerAccount,
     onAddGuardian,
+    onSetLoginAccount,
+    onUnsetLoginAccount,
     onDeleteGuardian,
     onEditGuardian,
     onRemoveOtherManager,

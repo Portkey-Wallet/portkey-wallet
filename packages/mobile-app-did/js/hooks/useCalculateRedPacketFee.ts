@@ -10,7 +10,7 @@ type CalculateRedPackageFeeParams = {
   chainId: ChainId;
   symbol: string;
 };
-
+export const InsufficientTransactionFee = 'Insufficient transaction fee';
 export function useCalculateRedPacketFee() {
   const defaultToken = useDefaultToken();
   return useCallback(
@@ -47,9 +47,9 @@ export function useCalculateRedPacketFee() {
 
       if (feeBalance?.data) {
         if (bigFee.gt(feeBalance?.data.balance) || amount.gt(currentBalance?.data.balance))
-          throw new Error('Insufficient transaction fee');
+          throw new Error(InsufficientTransactionFee);
       } else {
-        if (amount.plus(bigFee).gt(currentBalance?.data.balance)) throw new Error('Insufficient transaction fee');
+        if (amount.plus(bigFee).gt(currentBalance?.data.balance)) throw new Error(InsufficientTransactionFee);
       }
       return timesDecimals(fee, defaultToken.decimals).toString();
     },

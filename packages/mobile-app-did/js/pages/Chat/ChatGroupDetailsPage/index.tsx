@@ -188,7 +188,7 @@ const ChatGroupDetailsPage = () => {
             svgName={groupInfo?.icon ? undefined : 'chat-group-avatar-header'}
           />
           <View style={[GStyles.marginRight(pTd(4)), GStyles.marginLeft(pTd(8))]}>
-            <TextL numberOfLines={1} style={[FontStyles.font2, FontStyles.weight500]}>
+            <TextL numberOfLines={1} style={[FontStyles.font2, FontStyles.weight500, styles.name]}>
               {groupInfo?.name || displayName || ''}
             </TextL>
           </View>
@@ -240,5 +240,8 @@ const styles = StyleSheet.create({
   },
   lottieLoadingStyle: {
     width: pTd(10),
+  },
+  name: {
+    maxWidth: pTd(150),
   },
 });

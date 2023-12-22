@@ -7,6 +7,7 @@ import im, {
   RedPackageStatusEnum,
 } from '@portkey-wallet/im';
 import { useCallback, useMemo, useRef, useState } from 'react';
+import { sleep } from '@portkey-wallet/utils';
 import { MESSAGE_LIST_LIMIT, SEARCH_CHANNEL_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
 
 import { useCurrentNetworkInfo } from '../network';
@@ -385,6 +386,20 @@ export const useChannelMessageList = (channelId: string) => {
         const list = listRef.current;
         const lastMsg = list[0];
         maxCreateAt = lastMsg?.createAt ? Number(lastMsg?.createAt) : Date.now();
+      } else {
+        im.service.readMessage({ channelUuid: channelId, total: 9999 }).then(async () => {
+          await sleep(500);
+          dispatch(
+            updateChannelAttribute({
+              network: networkType,
+              channelId: channelId,
+              value: {
+                unreadMessageCount: 0,
+              },
+            }),
+          );
+          im.refreshMessageCount();
+        });
       }
 
       setLoading(true);
@@ -407,18 +422,6 @@ export const useChannelMessageList = (channelId: string) => {
               list,
             }),
           );
-          im.service.readMessage({ channelUuid: channelId, total: 9999 }).then(() => {
-            im.refreshMessageCount();
-            dispatch(
-              updateChannelAttribute({
-                network: networkType,
-                channelId: channelId,
-                value: {
-                  unreadMessageCount: 0,
-                },
-              }),
-            );
-          });
         } else {
           dispatch(
             nextChannelMessageList({

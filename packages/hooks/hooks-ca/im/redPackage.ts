@@ -13,7 +13,7 @@ import { handleLoopFetch } from '@portkey-wallet/utils';
 import { useRedPackageConfigMapState, useRelationId } from '.';
 import { RedPackageCreationStatusEnum } from '@portkey-wallet/im/types';
 import { messageParser } from '@portkey-wallet/im/utils';
-import { useCurrentWalletInfo, useWallet } from '../wallet';
+import { useCurrentWalletInfo, useUserInfo, useWallet } from '../wallet';
 import { useAppCommonDispatch, useEffectOnce } from '../../index';
 import {
   addChannelMessage,
@@ -53,7 +53,7 @@ export interface ISendRedPackageHookParams {
 export const useSendRedPackage = () => {
   const { relationId, getRelationId } = useRelationId();
   const { networkType } = useCurrentNetworkInfo();
-  const { userInfo } = useWallet();
+  const userInfo = useUserInfo();
   const wallet = useCurrentWalletInfo();
   const dispatch = useAppCommonDispatch();
 
@@ -197,22 +197,28 @@ export const useGetRedPackageDetail = (id?: string) => {
 
   const next: (params?: NextRedPackageDetailParams) => Promise<NextRedPackageDetailResult> = useLockCallback(
     async (params?: NextRedPackageDetailParams) => {
-      const { skipCount, maxResultCount } = pagerRef.current;
-      const { id: _id, skipCount: _skipCount, maxResultCount: _maxResultCount } = params || {};
+      const { skipCount, maxResultCount, totalCount } = pagerRef.current;
 
       const fetchParams = {
-        id: _id ?? id ?? '',
-        skipCount: _skipCount ?? skipCount ?? 0,
-        maxResultCount: _maxResultCount ?? maxResultCount ?? 20,
+        id: params?.id ?? id ?? '',
+        skipCount: params?.skipCount ?? skipCount ?? 0,
+        maxResultCount: params?.maxResultCount ?? maxResultCount ?? 20,
       };
+
+      const _skipCount = fetchParams.skipCount;
+      if (_skipCount !== 0 && _skipCount >= totalCount) {
+        return {
+          info: infoRef.current,
+          list: [],
+        };
+      }
 
       const {
         data: { items, ...detail },
       } = await im.service.getRedPackageDetail(fetchParams);
 
       setInfo(detail);
-
-      if (skipCount === 0) {
+      if (fetchParams.skipCount === 0) {
         setList(items);
         pagerRef.current = {
           skipCount: items.length,

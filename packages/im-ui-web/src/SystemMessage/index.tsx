@@ -23,14 +23,14 @@ const SystemMessage: React.FC<MessageContentType> = (props) => {
           <div className="portkey-system-pin flex-center">
             <span className="pin-msg-user">{userInfo.name}</span>
             <span>{`pinned`}</span>
-            <span className="pin-msg-content">{msgContent}</span>
+            <span className="pin-msg-content">{`"${msgContent}"`}</span>
           </div>
         );
       }
       if (pinType === PIN_OPERATION_TYPE_ENUM.UnPin) {
         return (
           <div className="portkey-system-pin flex-center">
-            <span className="pin-msg-content">{msgContent}</span>
+            <span className="pin-msg-content">{`"${msgContent}"`}</span>
             <span>{`unpinned`}</span>
           </div>
         );
@@ -38,7 +38,7 @@ const SystemMessage: React.FC<MessageContentType> = (props) => {
       if (pinType === PIN_OPERATION_TYPE_ENUM.RemoveAll) {
         return <div className="portkey-system-pin flex-center">{`All X messages unpinned`}</div>;
       }
-      return <></>;
+      return <>{pinType}</>;
     }
     return (
       <div className="portkey-system-default">

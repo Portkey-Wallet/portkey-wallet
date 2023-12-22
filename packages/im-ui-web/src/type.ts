@@ -88,6 +88,13 @@ export interface IMessageEvent {
   onClickUrl?: (v: string) => void;
   onClickUnSupportMsg?: () => void;
 }
+
+export type IMessageShowPage = 'PIN-PAGE' | 'MSG-PAGE';
+
+export enum MessageShowPageEnum {
+  'PIN-PAGE' = 'PIN-PAGE',
+  'MSG-PAGE' = 'MSG-PAGE',
+}
 export interface IMessage extends Message, IMessageEvent {
   key: string;
   position: string;
@@ -99,6 +106,7 @@ export interface IMessage extends Message, IMessageEvent {
   subType?: string;
   isAdmin?: boolean;
   isGroup?: boolean;
+  showPageType?: IMessageShowPage;
 }
 
 export interface IMessageListProps {

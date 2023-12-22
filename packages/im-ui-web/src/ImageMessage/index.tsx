@@ -6,11 +6,11 @@ import CustomSvg from '../components/CustomSvg';
 import { formatImageSize } from '@portkey-wallet/utils/img';
 import PopoverMenuList from '../PopoverMenuList';
 import { ParsedImage } from '@portkey-wallet/im';
-import { IMessage } from '../type';
+import { IMessage, MessageShowPageEnum } from '../type';
 import './index.less';
 
 const ImageMessage: React.FC<IMessage> = (props) => {
-  const { isGroup, pinInfo, parsedContent, isAdmin, createAt } = props;
+  const { isGroup, pinInfo, parsedContent, isAdmin, createAt, showPageType = MessageShowPageEnum['MSG-PAGE'] } = props;
   const { thumbImgUrl, width, height, imgUrl } = formatImageData(parsedContent as ParsedImage);
   const [loadErr, setLoadErr] = useState(false);
   const imageSize = useMemo(
@@ -28,7 +28,7 @@ const ImageMessage: React.FC<IMessage> = (props) => {
       },
       pinInfo
         ? {
-            key: 'unpin',
+            key: 'pin',
             leftIcon: <CustomSvg type="UnPin" />,
             children: 'Unpin',
             onClick: (e: React.MouseEvent<HTMLElement>) => props?.onPinMsg?.(e),
@@ -49,24 +49,31 @@ const ImageMessage: React.FC<IMessage> = (props) => {
     ],
     [pinInfo, props],
   );
+  const popListFilter = useMemo(() => {
+    if (showPageType === MessageShowPageEnum['MSG-PAGE']) {
+      if (isGroup) {
+        return isAdmin ? ['delete', 'pin', 'reply'] : ['delete', 'reply'];
+      }
+      return ['delete'];
+    }
+    if (showPageType === MessageShowPageEnum['PIN-PAGE']) {
+      return isAdmin ? ['delete', 'pin'] : ['delete'];
+    }
+    return [];
+  }, [isAdmin, isGroup, showPageType]);
+  const showPopoverList = useMemo(
+    () => popoverList.filter((item) => popListFilter.includes(item.key)),
+    [popListFilter, popoverList],
+  );
   const showMask = useMemo(() => {
     const dataShow = props.dateString ? props.dateString : formatTime(createAt);
     return (
       <span className="show-mask flex-center">
-        {pinInfo && <CustomSvg type="MsgPin" />}
+        {pinInfo && showPageType === MessageShowPageEnum['MSG-PAGE'] && <CustomSvg type="MsgPin" />}
         <span>{dataShow}</span>
       </span>
     );
-  }, [createAt, pinInfo, props.dateString]);
-  const showPopoverList = useMemo(
-    () =>
-      isGroup
-        ? isAdmin
-          ? popoverList
-          : popoverList.filter((item) => ['delete', 'reply'].includes(item.key))
-        : popoverList.filter((item) => ['delete'].includes(item.key)),
-    [isAdmin, isGroup, popoverList],
-  );
+  }, [createAt, pinInfo, props.dateString, showPageType]);
   const hidePop = useCallback(() => {
     setPopVisible(false);
   }, []);

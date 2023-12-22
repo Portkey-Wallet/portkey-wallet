@@ -78,7 +78,10 @@ export type RouterParams = {
   initGuardiansStatus?: GuardiansStatus;
 };
 
-type MultiLevelParams = Pick<NavigateMultiLevelParams, 'successNavigate' | 'sendTransferPreviewApprove'>;
+type MultiLevelParams = Pick<
+  NavigateMultiLevelParams,
+  'successNavigate' | 'sendTransferPreviewApprove' | 'setLoginAccountNavigate'
+>;
 const EXCLUDE_CURRENT_APPROVAL_TYPES = [
   ApprovalType.deleteGuardian,
   ApprovalType.editGuardian,
@@ -106,6 +109,7 @@ export default function GuardianApproval() {
     // multiLevelParams
     successNavigate,
     sendTransferPreviewApprove,
+    setLoginAccountNavigate,
   } = useRouterParams<RouterParams & MultiLevelParams>();
   const dispatch = useAppDispatch();
   const checkRouteExistInRouteStack = useCheckRouteExistInRouteStack();
@@ -215,7 +219,11 @@ export default function GuardianApproval() {
         break;
       case ApprovalType.setLoginAccount:
       case ApprovalType.unsetLoginAccount:
-        navigationService.navigate('GuardianDetail', { guardian: guardianItem });
+        if (setLoginAccountNavigate) {
+          navigationService.navigate(setLoginAccountNavigate.from, setLoginAccountNavigate.backParams);
+        } else {
+          navigationService.navigate('GuardianDetail', { guardian: guardianItem });
+        }
         break;
       default:
         navigationService.goBack();
@@ -535,8 +543,8 @@ export default function GuardianApproval() {
       );
       if (req && !req.error) {
         myEvents.refreshGuardiansList.emit();
-        if (successNavigate) {
-          navigationService.navigate(successNavigate.name, successNavigate.params);
+        if (setLoginAccountNavigate) {
+          navigationService.navigate(setLoginAccountNavigate.from, setLoginAccountNavigate.successParams);
         } else {
           navigationService.navigate('GuardianHome');
         }
@@ -553,7 +561,7 @@ export default function GuardianApproval() {
     guardianItem,
     guardiansStatus,
     managerAddress,
-    successNavigate,
+    setLoginAccountNavigate,
     t,
     userGuardiansList,
     verifierInfo,
@@ -575,8 +583,8 @@ export default function GuardianApproval() {
       );
       if (req && !req.error) {
         myEvents.refreshGuardiansList.emit();
-        if (successNavigate) {
-          navigationService.navigate(successNavigate.name, successNavigate.params);
+        if (setLoginAccountNavigate) {
+          navigationService.navigate(setLoginAccountNavigate.from, setLoginAccountNavigate.successParams);
         } else {
           navigationService.navigate('GuardianHome');
         }
@@ -593,7 +601,7 @@ export default function GuardianApproval() {
     guardianItem,
     guardiansStatus,
     managerAddress,
-    successNavigate,
+    setLoginAccountNavigate,
     t,
     userGuardiansList,
     verifierInfo,

@@ -161,7 +161,7 @@ export default function ChatList() {
 
   useEffect(() => {
     signalrFCM.reportAppStatus(AppStatusUnit.FOREGROUND, unreadCount);
-    setBadge({ value: unreadCount });
+    signalrFCM.signalr && setBadge({ value: unreadCount });
   }, [unreadCount]);
 
   return (

@@ -56,7 +56,6 @@ const ProviderImageHeight = pTd(20);
 const ProviderSvgWidth = pTd(120);
 
 const renderProviderCard = (
-  type: RampType,
   crypto: IRampCryptoItem | undefined,
   fiat: IRampFiatItem | undefined,
   item: IBuyProviderPrice | ISellProviderPrice,
@@ -275,14 +274,7 @@ export default function RampPreview() {
               onProviderChange(item.providerInfo);
             }}
             key={idx}>
-            {renderProviderCard(
-              type,
-              crypto,
-              fiat,
-              item,
-              providerKey,
-              providerImageSizeMap[item?.providerInfo?.key || ''],
-            )}
+            {renderProviderCard(crypto, fiat, item, providerKey, providerImageSizeMap[item?.providerInfo?.key || ''])}
           </Touchable>
         ))}
       </View>

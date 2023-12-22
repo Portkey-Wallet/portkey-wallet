@@ -224,8 +224,7 @@ export default function SellForm() {
       return;
     }
 
-    let _rate = rate,
-      _receiveAmount = receiveAmount;
+    let _rate = rate;
 
     const tokenContractAddress = defaultToken.address;
     const { decimals, symbol, chainId } = crypto || {};
@@ -312,7 +311,6 @@ export default function SellForm() {
         const rst = await refreshReceiveRef.current();
         if (!rst) return;
         _rate = rst.rate;
-        _receiveAmount = rst.receiveAmount;
       }
     } catch (error) {
       setAmountLocalError({ ...INIT_HAS_ERROR, errorMsg: 'Insufficient funds' });
@@ -327,13 +325,11 @@ export default function SellForm() {
       fiat,
       crypto,
       type: RampType.SELL,
-      receiveAmount: _receiveAmount,
       rate: _rate,
     });
   }, [
     amount,
     rate,
-    receiveAmount,
     defaultToken.address,
     crypto,
     chainInfo,

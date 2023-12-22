@@ -169,7 +169,6 @@ export class Ramp extends BaseRamp {
     Object.keys(thirdPart).forEach(key => {
       switch (key) {
         case IRampProviderType.AlchemyPay:
-          const thirdPartTrans: any = thirdPart;
           this.setProvider(
             new AlchemyPayProvider({
               providerInfo: {

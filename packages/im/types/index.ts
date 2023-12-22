@@ -2,13 +2,14 @@ import { RedPackageStatusInfo } from './redPackage';
 
 export type ChainId = 'AELF' | 'tDVV' | 'tDVW';
 
-export type MessageType = 'TEXT' | 'IMAGE' | 'SYS' | 'REDPACKAGE-CARD';
+export type MessageType = 'TEXT' | 'IMAGE' | 'SYS' | 'REDPACKAGE-CARD' | 'TRANSFER-CARD';
 
 export enum MessageTypeEnum {
   TEXT = 'TEXT',
   IMAGE = 'IMAGE',
   SYS = 'SYS',
   REDPACKAGE_CARD = 'REDPACKAGE-CARD',
+  TRANSFER_CARD = 'TRANSFER-CARD',
 }
 
 export type ParsedContent = string | ParsedImage | ParsedRedPackage | undefined;
@@ -29,6 +30,18 @@ export type ParsedRedPackage = {
     id: string;
     senderId: string;
     memo: string;
+  };
+};
+
+export type ParsedTransfer = {
+  image: string;
+  link: string;
+  data: {
+    id: string;
+    senderId: string;
+    memo: string;
+    transactionId: string;
+    blockHash: string;
   };
 };
 
@@ -147,3 +160,4 @@ export type RedPackageConfigType = {
 
 export * from './service';
 export * from './redPackage';
+export * from './transfer';

@@ -44,6 +44,10 @@ import {
   GrabRedPackageResult,
   SendRedPackageParams,
   SendRedPackageResult,
+  GetTransferStatusParams,
+  GetTransferStatusResult,
+  SendTransferParams,
+  SendTransferResult,
 } from '../types/service';
 import { ChannelInfo, ChannelMemberInfo, Message, MessageCount, RedPackageConfigType } from '../types';
 import { sleep } from '@portkey-wallet/utils';
@@ -324,6 +328,21 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
   getRedPackageConfig(params: GetRedPackageConfigParams): IMServiceCommon<RedPackageConfigType> {
     return this._request.send({
       url: '/api/v1/redPackage/config',
+      params,
+      method: 'GET',
+    });
+  }
+
+  sendTransfer(params: SendTransferParams): IMServiceCommon<SendTransferResult> {
+    return this._request.send({
+      url: '/api/v1/transfer/send',
+      params,
+      method: 'POST',
+    });
+  }
+  getTransferStatus(params: GetTransferStatusParams): IMServiceCommon<GetTransferStatusResult> {
+    return this._request.send({
+      url: '/api/v1/transfer/getResult',
       params,
       method: 'GET',
     });

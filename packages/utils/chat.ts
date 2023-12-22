@@ -3,6 +3,7 @@ import utc from 'dayjs/plugin/utc.js';
 import { dateToDayjs } from './time';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { RedPackageTypeEnum } from '@portkey-wallet/im';
+import { randomId } from '.';
 dayjs.extend(utc);
 
 export const formatMessageCountToStr = (num: number): string | undefined => {
@@ -39,6 +40,9 @@ export const formatMessageTime = (date?: dayjs.ConfigType): string => {
     return messageTime.format('YYYY-MM-DD');
   }
 };
+
+export const getSendUuid = (relationId: string, channelId: string) =>
+  `${relationId}-${channelId}-${Date.now()}-${randomId()}`;
 
 export interface IGenerateRedPackageRawTransaction {
   caContract: ContractBasic;

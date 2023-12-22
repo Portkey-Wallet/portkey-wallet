@@ -1,7 +1,13 @@
 import { ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { Modal } from 'antd';
 import CustomSvg from 'components/CustomSvg';
-import { ExceedDailyLimit, ExceedSingleLimit, LimitType } from 'constants/security';
+import {
+  ApproveExceedDailyLimit,
+  ApproveExceedSingleLimit,
+  ExceedDailyLimit,
+  ExceedSingleLimit,
+  LimitType,
+} from 'constants/security';
 // import { useGuardiansNavigate } from 'hooks/guardians'; // TODO guardians
 import CustomModal from 'pages/components/CustomModal';
 import { useCallback } from 'react';
@@ -23,7 +29,7 @@ export function useTransferLimitApprovalModal() {
               <CustomSvg type="Close2" />
             </div>
 
-            <span>{type === LimitType.Daily ? ExceedDailyLimit : ExceedSingleLimit}</span>
+            <span>{type === LimitType.Daily ? ApproveExceedDailyLimit : ApproveExceedSingleLimit}</span>
           </div>
         ),
         className: 'transfer-limit-modal',

@@ -3,7 +3,7 @@ import { Popover, message } from 'antd';
 import { useCopyToClipboard } from 'react-use';
 import { ParsedText, ParseShape } from 'react-parsed-text';
 import clsx from 'clsx';
-import { ExtraMessageTypeEnum, IMessage } from '../type';
+import { ExtraMessageTypeEnum, IMessage, MessageShowPageEnum } from '../type';
 import { formatImageData, formatTime } from '../utils';
 import PopoverMenuList from '../PopoverMenuList';
 import CustomSvg from '../components/CustomSvg';
@@ -13,22 +13,31 @@ import { MessageTypeEnum, ParsedImage } from '@portkey-wallet/im/types';
 import './index.less';
 
 const TextMessage: React.FC<IMessage> = (props) => {
-  const { isGroup, quote, position, pinInfo, parsedContent = '', isAdmin, createAt } = props;
+  const {
+    isGroup,
+    quote,
+    position,
+    pinInfo,
+    parsedContent = '',
+    isAdmin,
+    createAt,
+    showPageType = MessageShowPageEnum['MSG-PAGE'],
+  } = props;
   const showMask = useMemo(() => {
     const dataShow = props.dateString ? props.dateString : formatTime(createAt);
     return (
       <span className="flex-center">
-        {pinInfo && <CustomSvg type="MsgPin" />}
+        {pinInfo && showPageType === MessageShowPageEnum['MSG-PAGE'] && <CustomSvg type="MsgPin" />}
         <span>{dataShow}</span>
       </span>
     );
-  }, [props.dateString, createAt, pinInfo]);
+  }, [props.dateString, createAt, pinInfo, showPageType]);
   const [, setCopied] = useCopyToClipboard();
   const [popVisible, setPopVisible] = useState(false);
   const hidePop = useCallback(() => {
     setPopVisible(false);
   }, []);
-  const popoverList = useMemo(
+  const popoverAllList = useMemo(
     () => [
       {
         key: 'copy',
@@ -47,7 +56,7 @@ const TextMessage: React.FC<IMessage> = (props) => {
       },
       pinInfo
         ? {
-            key: 'unpin',
+            key: 'pin',
             leftIcon: <CustomSvg type="UnPin" />,
             children: 'Unpin',
             onClick: (e: React.MouseEvent<HTMLElement>) => props?.onPinMsg?.(e),
@@ -67,18 +76,28 @@ const TextMessage: React.FC<IMessage> = (props) => {
     ],
     [parsedContent, pinInfo, props, setCopied],
   );
-  const showPopoverList = useMemo(
-    () =>
-      isGroup
-        ? isAdmin
-          ? popoverList
-          : popoverList.filter((item) => ['copy', 'delete', 'reply'].includes(item.key))
-        : popoverList.filter((item) => ['copy', 'delete'].includes(item.key)),
-    [isAdmin, isGroup, popoverList],
+  const popListFilter = useMemo(() => {
+    if (showPageType === MessageShowPageEnum['MSG-PAGE']) {
+      if (isGroup) {
+        return isAdmin ? ['copy', 'delete', 'pin', 'reply'] : ['copy', 'delete', 'reply'];
+      }
+      return ['copy', 'delete'];
+    }
+    if (showPageType === MessageShowPageEnum['PIN-PAGE']) {
+      return isAdmin ? ['copy', 'delete', 'pin'] : ['copy', 'delete'];
+    }
+    return [];
+  }, [isAdmin, isGroup, showPageType]);
+  const popoverShowList = useMemo(
+    () => popoverAllList.filter((item) => popListFilter.includes(item.key)),
+    [popListFilter, popoverAllList],
   );
   const renderReplyMsg = useMemo(() => {
     if (!quote) {
       return <></>;
+    }
+    if (!quote.channelUuid) {
+      return <RepliedMsg position={position} />;
     }
     if (quote.type === MessageTypeEnum.IMAGE) {
       const { thumbImgUrl, imgUrl } = formatImageData(quote.parsedContent as ParsedImage);
@@ -96,8 +115,8 @@ const TextMessage: React.FC<IMessage> = (props) => {
         <RepliedMsg
           msgType={MessageTypeEnum.TEXT}
           position={position}
-          msgContent={quote.content}
-          from={quote.fromName || 'Wallet'}
+          msgContent={quote.channelUuid ? quote.content : 'The message has been hidden.'}
+          from={quote.fromName}
         />
       );
     }
@@ -137,7 +156,7 @@ const TextMessage: React.FC<IMessage> = (props) => {
           showArrow={false}
           content={
             <PopoverMenuList
-              data={showPopoverList.filter(
+              data={popoverShowList.filter(
                 (pop) => position === 'right' || (position === 'left' && pop.key !== 'delete'),
               )}
             />

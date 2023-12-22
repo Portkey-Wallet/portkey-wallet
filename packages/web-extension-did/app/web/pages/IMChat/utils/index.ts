@@ -9,7 +9,7 @@ import {
   ParsedPinSys,
   ParsedRedPackage,
 } from '@portkey-wallet/im';
-import { ExtraMessageTypeEnum, MessageContentType } from '@portkey-wallet/im-ui-web';
+import { ExtraMessageTypeEnum, IMessageShowPage, MessageContentType } from '@portkey-wallet/im-ui-web';
 import { formatMessageTime } from '@portkey-wallet/utils/chat';
 import { isSameDay } from '@portkey-wallet/utils/time';
 
@@ -42,9 +42,16 @@ export interface IFormatMessageList {
   ownerRelationId: string;
   isGroup?: boolean;
   isAdmin?: boolean;
+  showPageType?: IMessageShowPage;
 }
 
-export const formatMessageList = ({ list, ownerRelationId, isGroup = false, isAdmin = false }: IFormatMessageList) => {
+export const formatMessageList = ({
+  list,
+  ownerRelationId,
+  isGroup = false,
+  isAdmin = false,
+  showPageType,
+}: IFormatMessageList) => {
   const formatList: MessageContentType[] = [];
   let transItem: MessageContentType;
   list?.forEach((item, i) => {
@@ -57,6 +64,7 @@ export const formatMessageList = ({ list, ownerRelationId, isGroup = false, isAd
         position: supportSysMsgType.includes(item.type) ? 'center' : item.from === ownerRelationId ? 'right' : 'left',
         isGroup,
         isAdmin,
+        showPageType,
       };
     } else {
       transItem = {

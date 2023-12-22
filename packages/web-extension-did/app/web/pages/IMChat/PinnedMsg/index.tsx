@@ -1,8 +1,8 @@
-import { useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useGroupChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import { message } from 'antd';
 import SettingHeader from 'pages/components/SettingHeader';
 import { useNavigate, useParams } from 'react-router';
-import { MessageList, MessageContentType, StyleProvider } from '@portkey-wallet/im-ui-web';
+import { MessageList, MessageContentType, StyleProvider, MessageShowPageEnum } from '@portkey-wallet/im-ui-web';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
@@ -18,13 +18,21 @@ const PinnedMsg = () => {
     unPin: unPinMsg,
     unPinAll: unPinAllMsg,
   } = useIMPin(`${channelUuid}`, true);
+  const { isAdmin } = useGroupChannel(`${channelUuid}`);
   const navigate = useNavigate();
   const { t } = useTranslation();
   const messageRef = useRef<any>(null);
   const { relationId } = useRelationId();
   const messageList: MessageContentType[] = useMemo(
-    () => formatMessageList({ list: pinList, ownerRelationId: relationId!, isGroup: true }),
-    [pinList, relationId],
+    () =>
+      formatMessageList({
+        list: pinList,
+        ownerRelationId: relationId!,
+        isGroup: true,
+        isAdmin,
+        showPageType: MessageShowPageEnum['PIN-PAGE'],
+      }),
+    [isAdmin, pinList, relationId],
   );
   useEffect(() => {
     initPinList();
@@ -53,8 +61,9 @@ const PinnedMsg = () => {
         return;
       }
       await unPinMsg(_msg);
+      if (pinList.length === 1) navigate(`/chat-box-group/${channelUuid}`);
     },
-    [pinList, unPinMsg],
+    [channelUuid, navigate, pinList, unPinMsg],
   );
   return (
     <div className="group-pinned-message-page flex-column-between">

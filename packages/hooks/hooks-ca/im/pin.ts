@@ -78,12 +78,14 @@ export const useIMPin = (channelId: string, isRegister = false) => {
         pagerRef.current.skipCount = skipCount + items.length;
         pagerRef.current.totalCount = totalCount;
 
+        const _parseMsgs = items.map(_item => messageParser(_item));
+
         if (skipCount === 0) {
           dispatch(
             setPinList({
               network: networkType,
               channelId: channelId,
-              list: items,
+              list: _parseMsgs,
               fetchTime: fetchTime,
             }),
           );
@@ -92,7 +94,7 @@ export const useIMPin = (channelId: string, isRegister = false) => {
             nextPinList({
               network: networkType,
               channelId: channelId,
-              list: items,
+              list: _parseMsgs,
               fetchTime: fetchTime,
             }),
           );

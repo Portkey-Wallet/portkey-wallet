@@ -1,12 +1,7 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { useAppCASelector } from '../.';
 import { useAppCommonDispatch, useEffectOnce } from '../../index';
-import {
-  useCurrentNetworkInfo,
-  useIsIMServiceExist,
-  useIsMainnet,
-  useNetworkList,
-} from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsIMServiceExist, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
 import {
   getDiscoverGroupAsync,
   getSocialMediaAsync,

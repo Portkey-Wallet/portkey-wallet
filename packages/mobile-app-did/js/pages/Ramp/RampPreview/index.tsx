@@ -34,6 +34,7 @@ import Touchable from 'components/Touchable';
 import { useGuardiansInfo } from 'hooks/store';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { RAMP_BUY_URL, RAMP_SELL_URL } from 'constants/common';
+import { checkIsSvgUrl } from 'utils';
 
 interface RouterParams {
   type?: RampType;
@@ -63,7 +64,7 @@ const renderProviderCard = (
       <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemCenter, GStyles.marginBottom(24)]}>
         <View style={styles.logoWrap}>
           <CommonAvatar
-            width={'auto'}
+            width={checkIsSvgUrl(item.providerInfo.logo || '') ? 'auto' : undefined}
             height={pTd(20)}
             shapeType={'square'}
             preserveAspectRatio="xMinYMid meet"

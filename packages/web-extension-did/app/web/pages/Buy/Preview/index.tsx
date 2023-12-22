@@ -29,7 +29,6 @@ export default function Preview() {
   const { isPrompt } = useCommonState();
   const updateRef = useRef(MAX_UPDATE_TIME);
   const [receive, setReceive] = useState('1');
-  const [rate, setRate] = useState('1');
   const { setLoading } = useLoading();
   const wallet = useCurrentWalletInfo();
   const { refreshRampShow } = useRampEntryShow();
@@ -39,7 +38,6 @@ export default function Preview() {
   const providerSelectedKey = useRef<IRampProviderType>(InitProviderSelected.thirdPart);
 
   const data = useMemo(() => ({ ...state }), [state]);
-  const showRateText = useMemo(() => generateRateText(data.crypto, rate, data.fiat), [data.crypto, data.fiat, rate]);
   const receiveText = useMemo(
     () => receive && generateReceiveText(receive, data.side === RampType.BUY ? data.crypto : data.fiat),
     [data.crypto, data.fiat, data.side, receive],
@@ -53,7 +51,6 @@ export default function Preview() {
     providerSelectedKey.current = provider.thirdPart;
     setProviderSelected(provider);
     setReceive(provider.amount);
-    setRate(provider.exchange);
   }, []);
 
   const getRampDetail = useCallback(async () => {
@@ -174,7 +171,7 @@ export default function Preview() {
       content: (
         <>
           <div className="title">Disclaimer</div>
-          {providerSelected?.providerInfo.name + DISCLAIMER_TEXT}
+          {providerSelected?.providerInfo.name + DISCLAIMER_TEXT + providerSelected?.providerInfo.name + ' services.'}
         </>
       ),
     });
@@ -199,7 +196,7 @@ export default function Preview() {
             onClick={() => onSwitchProvider(item)}>
             <div className="flex-row-center ramp-provider">
               <img src={item?.providerInfo.logo} className="ramp-provider-logo" />
-              <div className="rate">{showRateText}</div>
+              <div className="rate">{generateRateText(data.crypto, item.exchange, data.fiat)}</div>
             </div>
             <div className="ramp-provider-pay">
               {item?.providerInfo.paymentTags.map((tag, index) => (
@@ -213,7 +210,7 @@ export default function Preview() {
         ))}
       </div>
     ) : null;
-  }, [onSwitchProvider, providerList, providerSelected?.providerInfo.key, showRateText, t]);
+  }, [data.crypto, data.fiat, onSwitchProvider, providerList, providerSelected?.providerInfo.key, t]);
 
   const renderFooter = useMemo(() => {
     return providerSelected?.providerInfo.name ? (

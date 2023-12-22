@@ -15,7 +15,7 @@ import TermsServiceButton from './TermsServiceButton';
 import { defaultColors } from 'assets/theme';
 import Divider from 'components/Divider';
 import CommonToast from 'components/CommonToast';
-import { useAppleAuthentication, useGoogleAuthentication, useTelegramAuthentication } from 'hooks/authentication';
+import { useAuthenticationSign } from 'hooks/authentication';
 import { useOnLogin } from 'hooks/login';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import Loading from 'components/Loading';
@@ -44,16 +44,14 @@ export default function Referral({
   setLoginType: (type: PageLoginType) => void;
   type?: PageType;
 }) {
-  const { appleSign } = useAppleAuthentication();
-  const { googleSign } = useGoogleAuthentication();
-  const { telegramSign } = useTelegramAuthentication();
+  const authenticationSign = useAuthenticationSign();
 
   const onLogin = useOnLogin(type === PageType.login);
 
   const onAppleSign = useLockCallback(async () => {
     const loadingKey = Loading.show();
     try {
-      const userInfo = await appleSign();
+      const userInfo = await authenticationSign(LoginType.Apple);
       await onLogin({
         loginAccount: userInfo.user.id,
         loginType: LoginType.Apple,
@@ -63,12 +61,12 @@ export default function Referral({
       CommonToast.failError(error);
     }
     Loading.hide(loadingKey);
-  }, [appleSign, onLogin]);
+  }, [authenticationSign, onLogin]);
 
   const onGoogleSign = useLockCallback(async () => {
     const loadingKey = Loading.show();
     try {
-      const userInfo = await googleSign();
+      const userInfo = await authenticationSign(LoginType.Google);
       await onLogin({
         loginAccount: userInfo.user.id,
         loginType: LoginType.Google,
@@ -78,24 +76,22 @@ export default function Referral({
       CommonToast.failError(error);
     }
     Loading.hide(loadingKey);
-  }, [googleSign, onLogin]);
+  }, [authenticationSign, onLogin]);
 
   const onTelegramSign = useLockCallback(async () => {
     const loadingKey = Loading.show();
     try {
-      const userInfo = await telegramSign();
-      console.log(userInfo, '=====userInfo2');
-
-      // await onLogin({
-      //   loginAccount: userInfo.user.id,
-      //   loginType: LoginType.Google,
-      //   authenticationInfo: { [userInfo.user.id]: userInfo.accessToken },
-      // });
+      const userInfo = await authenticationSign(LoginType.Telegram);
+      await onLogin({
+        loginAccount: userInfo.user.id,
+        loginType: LoginType.Telegram,
+        authenticationInfo: { [userInfo.user.id]: userInfo.accessToken },
+      });
     } catch (error) {
       if (!checkIsUserCancel(error)) CommonToast.failError(error);
     }
     Loading.hide(loadingKey);
-  }, [telegramSign, onLogin]);
+  }, [authenticationSign, onLogin]);
 
   const otherLoginTypeList = useMemo<{ icon: IconName; onPress: () => any }[]>(() => {
     return [

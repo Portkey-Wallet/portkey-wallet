@@ -59,6 +59,7 @@ export interface TelegramUserInfo {
   id: string;
   expirationTime: number;
   firstName: string;
+  givenName: string;
   lastName?: string;
   picture?: string;
   email?: undefined;
@@ -72,7 +73,8 @@ export function parseTelegramToken(token?: string | null): TelegramUserInfo | un
   const isExpired = new Date(expirationTime) < new Date();
   const userId = payload.userId;
   const firstName = payload.firstName;
+  const givenName = payload.firstName;
   const picture = payload.protoUrl;
   const lastName = payload.lastName;
-  return { isExpired, userId, expirationTime, firstName, picture, lastName, id: userId };
+  return { isExpired, userId, expirationTime, firstName, picture, lastName, id: userId, givenName };
 }

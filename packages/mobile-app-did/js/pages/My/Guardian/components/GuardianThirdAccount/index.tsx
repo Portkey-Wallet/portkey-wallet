@@ -19,11 +19,13 @@ type GuardianThirdAccountProps = {
 const LABEL_MAP: Record<any, string> = {
   [LoginType.Google]: 'Guardian Google',
   [LoginType.Apple]: 'Guardian Apple',
+  [LoginType.Telegram]: 'Guardian Telegram',
 };
 
 const BUTTON_LABEL_MAP: Record<any, string> = {
   [LoginType.Google]: 'Click Add Google Account',
   [LoginType.Apple]: 'Click Add Apple ID',
+  [LoginType.Telegram]: 'Click Add Telegram Account',
 };
 
 const GuardianThirdAccount = ({

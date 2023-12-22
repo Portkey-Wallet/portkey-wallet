@@ -47,6 +47,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { useRefreshGuardiansList } from 'hooks/guardian';
 import GuardianThirdAccount from '../components/GuardianThirdAccount';
 import { useSetLoginAccount } from '../hooks/useSetLoginAccount';
+import { AuthTypes } from 'constants/guardian';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
@@ -93,7 +94,7 @@ const GuardianEdit: React.FC = () => {
   useEffect(() => {
     if (editGuardian) {
       setSelectedType(LOGIN_TYPE_LIST.find(item => item.value === editGuardian?.guardianType));
-      if ([LoginType.Apple, LoginType.Google].includes(editGuardian.guardianType)) {
+      if (AuthTypes.includes(editGuardian.guardianType)) {
         setAccount(editGuardian.isPrivate ? PRIVATE_GUARDIAN_ACCOUNT : editGuardian.thirdPartyEmail);
       } else {
         setAccount(editGuardian.guardianAccount);
@@ -226,7 +227,7 @@ const GuardianEdit: React.FC = () => {
       return;
     }
 
-    if ([LoginType.Apple, LoginType.Google].includes(guardianType)) {
+    if (AuthTypes.includes(guardianType)) {
       if (!thirdPartyInfoRef.current) return;
       try {
         Loading.showOnce();

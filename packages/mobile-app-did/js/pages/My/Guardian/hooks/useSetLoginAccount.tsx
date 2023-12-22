@@ -18,8 +18,9 @@ import {
   useGoogleAuthentication,
   useVerifyToken,
 } from 'hooks/authentication';
+import { AuthTypes } from 'constants/guardian';
 
-const THIRD_PART_LOGIN_TYPE = [LoginType.Apple, LoginType.Google];
+const THIRD_PART_LOGIN_TYPE = AuthTypes;
 
 export const useSetLoginAccount = (isEdit = false) => {
   const originChainId = useOriginChainId();

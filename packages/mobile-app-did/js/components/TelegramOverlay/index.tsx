@@ -10,21 +10,51 @@ import GStyles from 'assets/theme/GStyles';
 import { BGStyles } from 'assets/theme/styles';
 import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
 import { parseUrl } from 'query-string';
-import { TelegramUserInfo, parseTelegramToken } from '@portkey-wallet/utils/authentication';
+import { parseTelegramToken } from '@portkey-wallet/utils/authentication';
+import { ThirdParty } from '@portkey-wallet/constants/constants-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
-type TelegramSignProps = {
-  onConfirm: (userInfo: TGUserInfo) => void;
-  onReject: (reason: any) => void;
+import { stringifyUrl } from 'query-string';
+import { TelegramAuthentication } from 'hooks/authentication';
+const oAuthTelegramURL = 'https://oauth.telegram.org/auth';
+export const getTelegramAuthToken = ({
+  botId,
+  requestAccess = 'write',
+  redirectUrl,
+  origin,
+  lang = 'en',
+}: {
+  botId: string;
+  requestAccess?: string;
+  redirectUrl?: string;
+  lang?: string;
+  origin: string;
+}) => {
+  return stringifyUrl(
+    {
+      url: oAuthTelegramURL,
+      query: {
+        bot_id: botId,
+        request_access: requestAccess,
+        origin,
+        embed: 1,
+        return_to: redirectUrl,
+        lang,
+      },
+    },
+    { encode: true },
+  );
 };
 
-type TGUserInfo = {
-  user: TelegramUserInfo;
-  accessToken: string;
+type TelegramSignProps = {
+  onConfirm: (userInfo: TelegramAuthentication) => void;
+  onReject: (reason: any) => void;
 };
 
 function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
   const [loading, setLoading] = useState(true);
-  const [uri, setUri] = useState('https://openlogin-test.portkey.finance/social-login/Telegram?botUsername=sTestABot');
+  const { networkType } = useCurrentNetworkInfo();
+  const [uri, setUri] = useState(`${ThirdParty}/social-login/Telegram?from=portkey&network=${networkType}`);
   const ref = useRef<WebView>();
   return (
     <ModalBody title="Telegram Login" modalBodyType="bottom">
@@ -46,26 +76,30 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
             console.log(nativeEvent.progress);
             if (nativeEvent.progress > 0.5) setLoading(false);
           }}
-          onLoadStart={async ({ nativeEvent }) => {
-            try {
-              if (nativeEvent.url.includes('auth-callback')) {
-                const parseData = parseUrl(nativeEvent.url);
-                const { token } = parseData.query || {};
-                if (typeof token === 'string') {
-                  const userInfo: TGUserInfo = {
-                    user: parseTelegramToken(token),
-                    accessToken: token,
-                  };
-                  onConfirm(userInfo);
-                  OverlayModal.hide(false);
+          onLoadStart={({ nativeEvent }) => {
+            console.log(nativeEvent, '====nativeEvent');
+
+            if (nativeEvent.url.includes('auth-callback')) {
+              try {
+                if (nativeEvent.url.includes('auth-callback')) {
+                  const parseData = parseUrl(nativeEvent.url);
+                  const { token } = parseData.query || {};
+                  if (typeof token === 'string') {
+                    const user = parseTelegramToken(token);
+                    if (!user) return onReject(new Error('Invalid Token'));
+                    const userInfo: TelegramAuthentication = {
+                      user,
+                      accessToken: token,
+                    };
+                    onConfirm(userInfo);
+                  }
                 }
+              } catch (error) {
+                onReject(error);
+              } finally {
+                OverlayModal.hide(false);
               }
-            } catch (error) {
-              onReject(error);
             }
-          }}
-          onMessage={({ nativeEvent }) => {
-            console.log(nativeEvent, '=====nativeEvent');
           }}
         />
       </View>
@@ -75,7 +109,7 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
 
 const sign = () => {
   Keyboard.dismiss();
-  return new Promise((resolve, reject) => {
+  return new Promise<TelegramAuthentication>((resolve, reject) => {
     OverlayModal.show(<TelegramSign onConfirm={resolve} onReject={reject} />, {
       position: 'bottom',
       onDisappearCompleted: () => reject(new Error(USER_CANCELED)),

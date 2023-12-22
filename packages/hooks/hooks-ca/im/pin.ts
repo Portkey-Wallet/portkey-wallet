@@ -61,7 +61,7 @@ export const useIMPin = (channelId: string, isRegister = false) => {
 
       try {
         const {
-          data: { items, totalCount },
+          data: { data: items, totalCount },
         } = await im.service.getPinList({
           channelUuid: channelId,
           sortType: IM_PIN_LIST_SORT_TYPE_ENUM.MessageCreate,
@@ -78,12 +78,14 @@ export const useIMPin = (channelId: string, isRegister = false) => {
         pagerRef.current.skipCount = skipCount + items.length;
         pagerRef.current.totalCount = totalCount;
 
+        const _parseMsgs = items.map(_item => messageParser(_item));
+
         if (skipCount === 0) {
           dispatch(
             setPinList({
               network: networkType,
               channelId: channelId,
-              list: items,
+              list: _parseMsgs,
               fetchTime: fetchTime,
             }),
           );
@@ -92,7 +94,7 @@ export const useIMPin = (channelId: string, isRegister = false) => {
             nextPinList({
               network: networkType,
               channelId: channelId,
-              list: items,
+              list: _parseMsgs,
               fetchTime: fetchTime,
             }),
           );
@@ -112,7 +114,7 @@ export const useIMPin = (channelId: string, isRegister = false) => {
     const fetchTime = Date.now();
     try {
       const {
-        data: { items: pinList },
+        data: { data: pinList },
       } = await im.service.getPinList({
         channelUuid: channelId,
         sortType: IM_PIN_LIST_SORT_TYPE_ENUM.Pin,
@@ -153,7 +155,7 @@ export const useIMPin = (channelId: string, isRegister = false) => {
         refreshRef.current();
         return;
       }
-      if (parsedContent.pinMessageOperationType === PIN_OPERATION_TYPE_ENUM.UnPinAll) {
+      if (parsedContent.pinType === PIN_OPERATION_TYPE_ENUM.RemoveAll) {
         dispatch(
           cleanALLChannelMessagePin({
             network: networkType,
@@ -187,7 +189,7 @@ export const useIMPin = (channelId: string, isRegister = false) => {
           sendUuid: parsedContent.sendUuid,
           value: {
             pinInfo:
-              parsedContent.pinMessageOperationType === PIN_OPERATION_TYPE_ENUM.Pin
+              parsedContent.pinType === PIN_OPERATION_TYPE_ENUM.Pin
                 ? {
                     pinner: parsedContent.userInfo?.portkeyId || '',
                     pinnerName: parsedContent.userInfo?.name || '',
@@ -229,14 +231,14 @@ export const useIMPin = (channelId: string, isRegister = false) => {
           portkeyId: userInfo?.userId || '',
           name: userInfo?.nickName || '',
         },
-        pinMessageOperationType: type,
+        pinType: type,
         messageType: MessageTypeEnum.TEXT,
         content: '',
         messageId: '',
         sendUuid: '',
       };
 
-      if (type !== PIN_OPERATION_TYPE_ENUM.UnPinAll && message) {
+      if (type !== PIN_OPERATION_TYPE_ENUM.RemoveAll && message) {
         pinSysContent.messageType = message.type;
         pinSysContent.content = message.content;
       }
@@ -325,6 +327,7 @@ export const useIMPin = (channelId: string, isRegister = false) => {
       if (!id) return;
       await im.service.unPin({
         id,
+        channelUuid: channelId,
       });
       if (lastPinMessageRef.current?.id === id) {
         refreshLastPin();
@@ -374,7 +377,7 @@ export const useIMPin = (channelId: string, isRegister = false) => {
         fetchTime: fetchTime,
       }),
     );
-    addMockPinSysMessage(PIN_OPERATION_TYPE_ENUM.UnPinAll);
+    addMockPinSysMessage(PIN_OPERATION_TYPE_ENUM.RemoveAll);
   }, [addMockPinSysMessage, channelId, dispatch, networkType]);
 
   return {

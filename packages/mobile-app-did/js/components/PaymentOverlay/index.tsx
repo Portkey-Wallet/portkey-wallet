@@ -143,7 +143,7 @@ const PaymentModal = ({
               </View>
             </View>
             <View style={GStyles.alignEnd}>
-              {!!defaultTokenPrice && (
+              {!!currentTokenInfo?.price && (
                 <TextS style={FontStyles.font3}>
                   {convertAmountUSDShow(divDecimals(fee.value, defaultToken.decimals), defaultTokenPrice)}
                 </TextS>
@@ -155,6 +155,7 @@ const PaymentModal = ({
     );
   }, [
     calcFeeError,
+    currentTokenInfo?.price,
     defaultToken.decimals,
     defaultToken.symbol,
     defaultTokenPrice,

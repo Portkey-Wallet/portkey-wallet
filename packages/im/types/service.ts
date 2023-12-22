@@ -312,12 +312,13 @@ export type GetPinListParams = {
   skipCount: number;
 };
 export type GetPinListResult = {
-  items: Message[];
+  data: Message[];
   totalCount: number;
 };
 
 export type UnPinParams = {
   id: string;
+  channelUuid: string;
 };
 
 export type UnPinAllParams = {

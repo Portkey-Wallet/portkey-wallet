@@ -25,7 +25,7 @@ import MessageImage from '../Message/MessageImage';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 
 import Touchable from 'components/Touchable';
-import { useGroupChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useGroupChannel, useGroupChannelInfo, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import GStyles from 'assets/theme/GStyles';
 import { ChatMessage } from 'pages/Chat/types';
 import { FontStyles } from 'assets/theme/styles';
@@ -57,6 +57,8 @@ export default function ChatsGroupDetailContent() {
   const messageContainerRef = useRef<FlatList>();
 
   const { list, init, hasNext, next, loading } = useGroupChannel(currentChannelId || '');
+  const { isAdmin } = useGroupChannelInfo(currentChannelId || '', false);
+
   const [initializing, setInitializing] = useState(true);
   const formattedList = useMemo(() => formatMessageList(list), [list]);
   const { relationId } = useRelationId();
@@ -102,14 +104,16 @@ export default function ChatsGroupDetailContent() {
   const renderMessageText: GiftedChatProps['renderMessageText'] = useCallback(
     (props: MessageTextProps<ChatMessage>) =>
       props.currentMessage?.messageType === 'REDPACKAGE-CARD' ? null : (
-        <MessageText key={props.currentMessage?._id} {...props} />
+        <MessageText key={props.currentMessage?._id} isGroupChat isAdmin={isAdmin} {...props} />
       ),
-    [],
+    [isAdmin],
   );
 
   const renderMessageImage: GiftedChatProps['renderMessageImage'] = useCallback(
-    (props: MessageImageProps<ChatMessage>) => <MessageImage {...(props as MessageProps<ChatMessage>)} />,
-    [],
+    (props: MessageImageProps<ChatMessage>) => (
+      <MessageImage isGroupChat isAdmin={isAdmin} {...(props as MessageProps<ChatMessage>)} />
+    ),
+    [isAdmin],
   );
 
   const renderDay: GiftedChatProps['renderDay'] = useCallback(

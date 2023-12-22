@@ -23,7 +23,7 @@ export default function HeaderPinSection() {
           Pin Message Pin Message Pin Message Pin Message Pin Message Pin Message Pin Message Pin Message
         </TextM>
       </View>
-      <Svg icon="add-contact" size={pTd(20)} />
+      <Svg icon="pin-list-icon" size={pTd(20)} />
     </Touchable>
   );
 }

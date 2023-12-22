@@ -22,6 +22,7 @@ import Svg from 'components/Svg';
 import { setReplyMessageInfo } from 'pages/Chat/context/chatsContext';
 import { websiteRE } from '@portkey-wallet/utils/reg';
 import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
+import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
 
 const PIN_UNICODE_SPACE = '\u00A0\u00A0\u00A0\u00A0';
 const TIME_UNICODE_SPACE = isIOS
@@ -31,14 +32,20 @@ const TIME_UNICODE_SPACE = isIOS
 function ReplyMessageText(props: MessageTextProps<ChatMessage>) {
   const { position, currentMessage } = props;
 
+  const isDeleted = useMemo(() => !currentMessage?.quote?.channelUuid, [currentMessage?.quote?.channelUuid]);
+
   if (!currentMessage?.quote) return null;
   if (!(typeof currentMessage?.quote.parsedContent === 'string')) return null;
+
+  console.log('!currentMessage?.channelUuid', currentMessage?.channelUuid);
 
   return (
     <View style={[replyMessageTextStyles.wrap, position === 'right' && replyMessageImageStyles.rightWrap]}>
       <View style={replyMessageTextStyles.blueBlank} />
-      <TextM style={replyMessageTextStyles.name}>{currentMessage?.quote?.fromName}</TextM>
-      <TextM style={replyMessageTextStyles.content} numberOfLines={2}>
+      {currentMessage?.quote?.fromName && (
+        <TextM style={replyMessageTextStyles.name}>{currentMessage?.quote?.fromName}</TextM>
+      )}
+      <TextM style={[replyMessageTextStyles.content, isDeleted && FontStyles.font7]} numberOfLines={2}>
         {currentMessage?.quote?.messageType === 'NOT_SUPPORTED' ? UN_SUPPORTED_FORMAT : currentMessage?.quote?.content}
       </TextM>
     </View>
@@ -64,70 +71,97 @@ function ReplyMessageImage(props: MessageTextProps<ChatMessage>) {
   );
 }
 
-function MessageText(props: MessageTextProps<ChatMessage>) {
-  const { currentMessage, textProps, position = 'right', customTextStyle, textStyle } = props;
+function MessageText(
+  props: MessageTextProps<ChatMessage> & { isGroupChat?: boolean; isAdmin?: boolean; isHidePinStyle?: boolean },
+) {
+  const {
+    currentMessage,
+    textProps,
+    position = 'right',
+    customTextStyle,
+    textStyle,
+    isGroupChat = false,
+    isAdmin = false,
+    isHidePinStyle = false,
+  } = props;
   const currentChannelId = useCurrentChannelId();
   const dispatch = useChatsDispatch();
-
   const deleteMessage = useDeleteMessage(currentChannelId || '');
+  const { pin, unPin } = useIMPin(currentChannelId || '');
+
+  if (currentMessage?.pinInfo) {
+    console.log('pinInfopinInfopinInfo', currentMessage);
+  }
+
   const { messageType } = currentMessage || {};
   const isNotSupported = useMemo(() => messageType === 'NOT_SUPPORTED', [messageType]);
+  const isPinned = useMemo(() => !isHidePinStyle && currentMessage?.pinInfo, [currentMessage?.pinInfo, isHidePinStyle]);
+
   const onUrlPress = useOnUrlPress();
   const onLongPress = useCallback(
     (event: GestureResponderEvent) => {
       const { pageX, pageY } = event.nativeEvent;
 
-      const list: ShowChatPopoverParams['list'] = isNotSupported
-        ? []
-        : [
-            {
-              title: 'Copy',
-              iconName: 'copy3',
-              onPress: async () => {
-                await copyText(currentMessage?.content || '');
-              },
-            },
-            {
-              // TODO: if not pinned message, show pin
-              title: 'Pin',
-              iconName: 'chat-pin',
-              onPress: async () => {
-                try {
-                  // todo: pin message
-                  await copyText(currentMessage?.content || '');
-                } catch (error) {
-                  // TODO: change to failError
-                  CommonToast.failError(error);
-                }
-              },
-            },
-            {
-              // TODO: reply
-              title: 'Reply',
-              iconName: 'chat-pin',
-              onPress: async () => {
-                dispatch(
-                  setReplyMessageInfo({
-                    message: currentMessage,
-                    messageType: 'text',
-                  }),
-                );
-              },
-            },
-          ];
-      if (position === 'right')
-        list.push({
-          title: 'Delete',
-          iconName: 'chat-delete',
+      let list: ShowChatPopoverParams['list'] = [
+        {
+          title: 'Copy',
+          iconName: 'copy3',
           onPress: async () => {
+            await copyText(currentMessage?.content || '');
+          },
+        },
+      ];
+
+      if (isGroupChat) {
+        list.push({
+          // TODO: reply
+          title: 'Reply',
+          iconName: 'chat-pin',
+          onPress: async () => {
+            dispatch(
+              setReplyMessageInfo({
+                message: currentMessage,
+                messageType: 'text',
+              }),
+            );
+          },
+        });
+      }
+
+      if (isGroupChat && isAdmin) {
+        list.push({
+          // TODO: pin or unPin
+          title: currentMessage?.pinInfo ? 'UnPin' : 'Pin',
+          iconName: currentMessage?.pinInfo ? 'chat-unpin' : 'chat-pin',
+          onPress: async () => {
+            if (!currentMessage) return;
             try {
-              if (!currentMessage) return;
-              await deleteMessage(currentMessage);
+              currentMessage?.pinInfo ? await unPin(currentMessage) : await pin(currentMessage);
+              CommonToast.success(currentMessage?.pinInfo ? 'unpin success' : 'pin success');
             } catch (error) {
-              CommonToast.fail('Failed to delete message');
+              CommonToast.failError(error);
             }
           },
         });
+      }
+
+      if (currentMessage)
+        if (position === 'right')
+          list.push({
+            title: 'Delete',
+            iconName: 'chat-delete',
+            onPress: async () => {
+              try {
+                if (!currentMessage) return;
+                await deleteMessage(currentMessage);
+              } catch (error) {
+                CommonToast.fail('Failed to delete message');
+              }
+            },
+          });
+
+      list = isNotSupported ? [] : list;
+
       list.length &&
         ChatOverlay.showChatPopover({
           list,
@@ -136,7 +170,7 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
           formatType: 'dynamicWidth',
         });
     },
-    [currentMessage, deleteMessage, dispatch, isNotSupported, position],
+    [currentMessage, deleteMessage, dispatch, isAdmin, isGroupChat, isNotSupported, pin, position, unPin],
   );
 
   const onPress = useCallback(() => {
@@ -157,27 +191,26 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
             style={[messageStyles[position].text, textStyle && textStyle[position], customTextStyle]}
             parse={[
               { type: 'url', style: styles.linkStyle as TextStyle, onPress: onUrlPress },
-              // TODO: test it
               { pattern: websiteRE, style: styles.linkStyle as TextStyle, onPress: onUrlPress },
             ]}
             childrenProps={{ ...textProps }}>
             {currentMessage?.text}
           </ParsedText>
         )}
-        {/* todo: when pinned show this */}
-        {PIN_UNICODE_SPACE}
+        {isPinned && PIN_UNICODE_SPACE}
         {TIME_UNICODE_SPACE}
       </Text>
       <View style={styles.timeBoxStyle}>
-        {/* todo: if pinned show this */}
-        <Svg icon="pin-message" size={pTd(12)} iconStyle={styles.iconStyle} color={defaultColors.font7} />
+        {isPinned && <Svg icon="pin-message" size={pTd(12)} iconStyle={styles.iconStyle} color={defaultColors.font7} />}
         <Time timeFormat="HH:mm" timeTextStyle={timeTextStyle} containerStyle={timeInnerWrapStyle} {...props} />
       </View>
     </Touchable>
   );
 }
 
-function Message(props: MessageTextProps<ChatMessage>) {
+function Message(
+  props: MessageTextProps<ChatMessage> & { isGroupChat?: boolean; isAdmin?: boolean; isHidePinStyle?: boolean },
+) {
   // const { messageType, text } = props?.currentMessage || {};
   return <MessageText {...props} />;
 }
@@ -325,7 +358,6 @@ const replyMessageImageStyles = StyleSheet.create({
     height: pTd(32),
     marginRight: pTd(8),
     borderRadius: pTd(3),
-    backgroundColor: defaultColors.bg5,
   },
   name: {
     color: defaultColors.font5,

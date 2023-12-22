@@ -14,7 +14,12 @@ function SystemInfo(props: SystemMessageProps<ChatMessage> & { previousMessage?:
     if (previousMessage?.messageType === currentMessage?.messageType) return true;
   }, [currentMessage, previousMessage]);
 
-  // console.log('previousMessage', previousMessage, currentMessage);
+  console.log('SystemInfo pinInfo', currentMessage);
+
+  if (currentMessage?.messageType === 'PIN-SYS')
+    return (
+      <TextS style={[styles.textStyles, isMarginTop6 && GStyles.marginTop(pTd(6))]}>{currentMessage?.content}</TextS>
+    );
 
   return (
     <TextS style={[styles.textStyles, isMarginTop6 && GStyles.marginTop(pTd(6))]}>{currentMessage?.content}</TextS>

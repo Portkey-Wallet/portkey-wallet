@@ -564,11 +564,12 @@ export const useChannel = (channelId: string) => {
   const exit = useCallback(async () => hideChannel(channelId), [channelId, hideChannel]);
 
   const sendMessage = useCallback(
-    ({ content, type }: { content: string; type?: MessageType }) => {
+    ({ content, type, quoteMessage }: { content: string; type?: MessageType; quoteMessage?: Message }) => {
       return sendChannelMessage({
         channelId,
         content,
         type,
+        quoteMessage,
       });
     },
     [channelId, sendChannelMessage],

@@ -59,8 +59,15 @@ export const formatMessageItem = (message: IMMessage): ChatMessage => {
     case 'SYS':
       msg.system = true;
       break;
+    case 'PIN-SYS':
+      msg.system = true;
+      msg.messageType = 'PIN-SYS';
+      break;
     case 'REDPACKAGE-CARD':
       msg.messageType = 'REDPACKAGE-CARD';
+      break;
+    case 'TRANSFER-CARD':
+      msg.messageType = 'TRANSFER-CARD';
       break;
     default: {
       msg.messageType = 'NOT_SUPPORTED';

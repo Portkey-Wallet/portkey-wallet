@@ -25,7 +25,7 @@ import MessageImage from '../Message/MessageImage';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 
 import Touchable from 'components/Touchable';
-import { useGroupChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useGroupChannel, useGroupChannelInfo, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import GStyles from 'assets/theme/GStyles';
 import { ChatMessage } from 'pages/Chat/types';
 import { FontStyles } from 'assets/theme/styles';
@@ -61,6 +61,8 @@ function PinnedListOverlay() {
   const gStyles = useGStyles();
 
   const { list, init, hasNext, next } = useGroupChannel(currentChannelId || '');
+  const { isAdmin } = useGroupChannelInfo(currentChannelId || '', false);
+
   const [initializing, setInitializing] = useState(true);
   const formattedList = useMemo(() => formatMessageList(list), [list]);
   const { relationId } = useRelationId();
@@ -95,13 +97,15 @@ function PinnedListOverlay() {
   }, [dispatch]);
 
   const renderMessageText: GiftedChatProps['renderMessageText'] = useCallback(
-    (props: MessageTextProps<ChatMessage>) => <MessageText {...props} />,
-    [],
+    (props: MessageTextProps<ChatMessage>) => <MessageText isHidePinStyle isGroupChat isAdmin={isAdmin} {...props} />,
+    [isAdmin],
   );
 
   const renderMessageImage: GiftedChatProps['renderMessageImage'] = useCallback(
-    (props: MessageImageProps<ChatMessage>) => <MessageImage {...(props as MessageProps<ChatMessage>)} />,
-    [],
+    (props: MessageImageProps<ChatMessage>) => (
+      <MessageImage isHidePinStyle isGroupChat isAdmin={isAdmin} {...(props as MessageProps<ChatMessage>)} />
+    ),
+    [isAdmin],
   );
 
   const renderDay: GiftedChatProps['renderDay'] = useCallback(
@@ -132,13 +136,13 @@ function PinnedListOverlay() {
 
   const renderSystemMessage: GiftedChatProps['renderSystemMessage'] = useCallback(
     (props: SystemMessageProps<ChatMessage>) => {
-      return <SystemInfo {...props} />;
+      return <SystemInfo key={props.currentMessage?._id} {...props} />;
     },
     [],
   );
 
   const renderAvatar = useCallback((props: AvatarProps<ChatMessage>) => {
-    return <CustomChatAvatar {...props} />;
+    return <CustomChatAvatar key={props.currentMessage?._id} {...props} />;
   }, []);
 
   const disabledTouchable = useMemo(() => formattedList.length > 10, [formattedList.length]);

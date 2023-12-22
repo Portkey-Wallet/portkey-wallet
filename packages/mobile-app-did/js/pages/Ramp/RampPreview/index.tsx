@@ -35,6 +35,7 @@ import { useGuardiansInfo } from 'hooks/store';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { RAMP_BUY_URL, RAMP_SELL_URL } from 'constants/common';
 import { checkIsSvgUrl } from 'utils';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 interface RouterParams {
   type?: RampType;
@@ -64,7 +65,7 @@ const renderProviderCard = (
       <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemCenter, GStyles.marginBottom(24)]}>
         <View style={styles.logoWrap}>
           <CommonAvatar
-            width={checkIsSvgUrl(item.providerInfo.logo || '') ? 'auto' : undefined}
+            width={isIOS && checkIsSvgUrl(item.providerInfo.logo || '') ? 'auto' : undefined}
             height={pTd(20)}
             shapeType={'square'}
             preserveAspectRatio="xMinYMid meet"
@@ -329,6 +330,7 @@ const styles = StyleSheet.create({
   },
   imgStyle: {
     backgroundColor: 'transparent',
+    // backgroundColor: 'red',
     borderRadius: 0,
   },
   logoWrap: {

@@ -16,4 +16,9 @@ export type NavigateMultiLevelParams = {
     successNavigateName: NavigateName;
     params: IToSendPreviewParamsType;
   };
+  setLoginAccountNavigate?: {
+    from: NavigateName;
+    successParams?: any;
+    backParams?: any;
+  };
 };

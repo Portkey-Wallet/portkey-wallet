@@ -534,7 +534,7 @@ const GuardianEdit: React.FC = () => {
             firstName={firstName}
             guardianAccountError={guardianAccountError}
             onPress={onAppleSign}
-            type={LoginType.Google}
+            type={LoginType.Apple}
           />
         );
       case LoginType.Telegram:

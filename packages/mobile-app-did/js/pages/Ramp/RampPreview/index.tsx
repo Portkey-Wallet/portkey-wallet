@@ -1,5 +1,5 @@
 import { defaultColors } from 'assets/theme';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import PageContainer from 'components/PageContainer';
@@ -35,23 +35,32 @@ import { useGuardiansInfo } from 'hooks/store';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { RAMP_BUY_URL, RAMP_SELL_URL } from 'constants/common';
 import { checkIsSvgUrl } from 'utils';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { Image } from 'react-native';
+import { formatAmountShow } from '@portkey-wallet/utils/converter';
 
 interface RouterParams {
   type?: RampType;
   crypto?: IRampCryptoItem;
   fiat?: IRampFiatItem;
   amount?: string;
-  receiveAmount?: string;
   rate?: string;
 }
 
+type ImageSizeType = {
+  w?: number;
+  h?: number;
+  isSvg: boolean;
+};
+
+const ProviderImageHeight = pTd(20);
+const ProviderSvgWidth = pTd(120);
+
 const renderProviderCard = (
-  type: RampType,
   crypto: IRampCryptoItem | undefined,
   fiat: IRampFiatItem | undefined,
   item: IBuyProviderPrice | ISellProviderPrice,
   currentProviderKey: string | undefined,
+  size?: ImageSizeType,
 ) => {
   const isActive = currentProviderKey === item.providerInfo.key;
 
@@ -64,14 +73,16 @@ const renderProviderCard = (
       )}
       <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemCenter, GStyles.marginBottom(24)]}>
         <View style={styles.logoWrap}>
-          <CommonAvatar
-            width={isIOS && checkIsSvgUrl(item.providerInfo.logo || '') ? 'auto' : undefined}
-            height={pTd(20)}
-            shapeType={'square'}
-            preserveAspectRatio="xMinYMid meet"
-            style={styles.imgStyle}
-            imageUrl={item.providerInfo.logo}
-          />
+          {size && (
+            <CommonAvatar
+              width={size.isSvg ? ProviderSvgWidth : size.w}
+              height={size.h || ProviderImageHeight}
+              shapeType={'square'}
+              preserveAspectRatio="xMinYMid meet"
+              style={styles.imgStyle}
+              imageUrl={item.providerInfo.logo}
+            />
+          )}
         </View>
         <TextM style={FontStyles.font3}>{`1 ${crypto?.symbol || ''} ≈ ${item.exchange} ${fiat?.symbol}`}</TextM>
       </View>
@@ -93,23 +104,15 @@ const renderProviderCard = (
 };
 
 export default function RampPreview() {
-  const {
-    type = RampType.BUY,
-    crypto,
-    fiat,
-    amount,
-    receiveAmount: receiveAmountProps,
-    rate: rateProps,
-  } = useRouterParams<RouterParams>();
+  const { type = RampType.BUY, crypto, fiat, amount, rate: rateProps } = useRouterParams<RouterParams>();
 
   const { t } = useLanguage();
   const defaultToken = useDefaultToken();
-  const { receiveAmount, providerPriceList, refreshReceive } = useReceive({
+  const { providerPriceList, refreshReceive } = useReceive({
     type,
     amount: amount || '',
     fiat,
     crypto,
-    initialReceiveAmount: receiveAmountProps,
     initialRate: rateProps,
     isProviderShow: true,
   });
@@ -145,6 +148,37 @@ export default function RampPreview() {
     () => providerPriceList.find(item => item.providerInfo.key === providerKey),
     [providerKey, providerPriceList],
   );
+
+  const [providerImageSizeMap, setProviderImageSizeMap] = useState<Record<string, ImageSizeType>>({});
+  const providerImageSizeMapRef = useRef(providerImageSizeMap);
+  providerImageSizeMapRef.current = providerImageSizeMap;
+  useEffect(() => {
+    const _providerImageSizeMap = providerImageSizeMapRef.current;
+    providerPriceList.forEach(item => {
+      const key = item?.providerInfo?.key;
+      const logo = item?.providerInfo?.logo;
+      if (!key || !logo || _providerImageSizeMap[key]) return;
+      if (checkIsSvgUrl(logo)) {
+        setProviderImageSizeMap(pre => ({
+          ...pre,
+          [key]: {
+            isSvg: true,
+          },
+        }));
+        return;
+      }
+      Image.getSize(logo, (w, h) => {
+        setProviderImageSizeMap(pre => ({
+          ...pre,
+          [key]: {
+            w: (w / h) * ProviderImageHeight,
+            h: ProviderImageHeight,
+            isSvg: false,
+          },
+        }));
+      });
+    });
+  }, [providerPriceList]);
 
   const goPayPage = useCallback(async () => {
     if (!providerKey || !amount || !fiat || !crypto) return;
@@ -209,6 +243,13 @@ export default function RampPreview() {
     wallet?.AELF?.caAddress,
   ]);
 
+  const receiveAmount = useMemo(() => {
+    if (!currentProvider) return '';
+    return isBuy
+      ? (currentProvider as IBuyProviderPrice).cryptoAmount
+      : (currentProvider as ISellProviderPrice).fiatAmount;
+  }, [currentProvider, isBuy]);
+
   return (
     <PageContainer
       safeAreaColor={['blue', 'white']}
@@ -218,7 +259,7 @@ export default function RampPreview() {
       <View>
         <View style={styles.amountContainer}>
           <View style={styles.primaryWrap}>
-            <Text style={styles.primaryAmount}>{amount}</Text>
+            <Text style={styles.primaryAmount}>{formatAmountShow(amount || '', 4)}</Text>
             <TextM style={styles.primaryUnit}>{isBuy ? fiat?.symbol || '' : crypto?.symbol || ''}</TextM>
           </View>
           <TextM style={FontStyles.font3}>
@@ -233,7 +274,7 @@ export default function RampPreview() {
               onProviderChange(item.providerInfo);
             }}
             key={idx}>
-            {renderProviderCard(type, crypto, fiat, item, providerKey)}
+            {renderProviderCard(crypto, fiat, item, providerKey, providerImageSizeMap[item?.providerInfo?.key || ''])}
           </Touchable>
         ))}
       </View>
@@ -330,7 +371,6 @@ const styles = StyleSheet.create({
   },
   imgStyle: {
     backgroundColor: 'transparent',
-    // backgroundColor: 'red',
     borderRadius: 0,
   },
   logoWrap: {

@@ -125,7 +125,7 @@ const GuardianEdit: React.FC = () => {
           guardianAccount = account;
         }
       } else {
-        // LoginType.Apple & LoginType.Google
+        // LoginType.Apple & LoginType.Google & LoginType.Telegram
         guardianAccount = isEdit ? editGuardian?.guardianAccount : thirdPartyInfoRef.current?.id;
       }
 
@@ -162,6 +162,7 @@ const GuardianEdit: React.FC = () => {
       verifierInfo: VerifierItem,
       guardianType: LoginType,
     ) => {
+      Loading.showOnce();
       const rst = await verifyToken(guardianType, {
         accessToken: thirdPartyInfo.accessToken,
         id: thirdPartyInfo.id,
@@ -224,9 +225,11 @@ const GuardianEdit: React.FC = () => {
     }
 
     if ([LoginType.Apple, LoginType.Google].includes(guardianType)) {
-      if (!thirdPartyInfoRef.current) return;
+      if (!thirdPartyInfoRef.current) {
+        Loading.hide();
+        return;
+      }
       try {
-        Loading.showOnce();
         await thirdPartyConfirm(guardianAccount || '', thirdPartyInfoRef.current, selectedVerifier, guardianType);
       } catch (error) {
         CommonToast.failError(error);
@@ -234,6 +237,7 @@ const GuardianEdit: React.FC = () => {
       Loading.hide();
       return;
     }
+    Loading.hide();
 
     ActionSheet.alert({
       title2: (
@@ -252,39 +256,39 @@ const GuardianEdit: React.FC = () => {
           title: 'Confirm',
           onPress: async () => {
             try {
-              if ([LoginType.Email, LoginType.Phone].includes(guardianType)) {
-                Loading.show();
-                const req = await verification.sendVerificationCode({
-                  params: {
-                    type: LoginType[guardianType],
-                    guardianIdentifier: guardianAccount,
-                    verifierId: selectedVerifier.id,
-                    chainId: originChainId,
-                    operationType: OperationTypeEnum.addGuardian,
+              if (![LoginType.Email, LoginType.Phone].includes(guardianType)) return;
+              Loading.show();
+              const req = await verification.sendVerificationCode({
+                params: {
+                  type: LoginType[guardianType],
+                  guardianIdentifier: guardianAccount,
+                  verifierId: selectedVerifier.id,
+                  chainId: originChainId,
+                  operationType: OperationTypeEnum.addGuardian,
+                },
+              });
+              if (req.verifierSessionId) {
+                navigationService.navigate('VerifierDetails', {
+                  guardianItem: {
+                    isLoginAccount: false,
+                    verifier: selectedVerifier,
+                    guardianAccount,
+                    guardianType: guardianType,
                   },
+                  requestCodeResult: {
+                    verifierSessionId: req.verifierSessionId,
+                  },
+                  verificationType: VerificationType.addGuardian,
+                  accelerateChainId,
                 });
-                if (req.verifierSessionId) {
-                  navigationService.navigate('VerifierDetails', {
-                    guardianItem: {
-                      isLoginAccount: false,
-                      verifier: selectedVerifier,
-                      guardianAccount,
-                      guardianType: guardianType,
-                    },
-                    requestCodeResult: {
-                      verifierSessionId: req.verifierSessionId,
-                    },
-                    verificationType: VerificationType.addGuardian,
-                    accelerateChainId,
-                  });
-                } else {
-                  throw new Error('send fail');
-                }
+              } else {
+                throw new Error('send fail');
               }
             } catch (error) {
               CommonToast.failError(error);
+            } finally {
+              Loading.hide();
             }
-            Loading.hide();
           },
         },
       ],
@@ -309,8 +313,8 @@ const GuardianEdit: React.FC = () => {
     Loading.show();
     const _userGuardiansList = await refreshGuardiansList();
     const isValid2 = checkCurGuardianRepeat(_userGuardiansList || []);
+    Loading.hide();
     if (!isValid2) {
-      Loading.hide();
       return;
     }
 

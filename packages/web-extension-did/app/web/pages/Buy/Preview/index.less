@@ -1,0 +1,122 @@
+@import '../../../assets/theme/color.less';
+
+.preview-frame {
+  height: 100vh;
+  background-color: @bg-11;
+
+  .preview-title {
+    padding-top: 16px;
+    background-color: @bg-13;
+  }
+
+  .preview-content {
+    padding: 0 24px;
+    flex: 1;
+    background-color: @bg-11;
+    height: 376px;
+    overflow-y: auto;
+
+    .transaction {
+      margin: 32px;
+      .send {
+        font-weight: 500;
+        color: @font-11;
+        .amount {
+          font-size: 28px;
+          line-height: 28px;
+        }
+        .currency {
+          margin-left: 8px;
+          font-size: 12px;
+          line-height: 16px;
+        }
+      }
+      .receive {
+        margin-top: 12px;
+        font-size: 12px;
+        line-height: 16px;
+        color: @font-13;
+      }
+    }
+
+    .card {
+      width: 100%;
+      .label {
+        margin: 0 0 8px 8px;
+        font-size: 12px;
+        line-height: 16px;
+      }
+      .card-item {
+        padding: 16px 12px;
+        border: 1px solid @border-2;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        position: relative;
+        overflow: hidden;
+        .ramp-provider {
+          height: 20px;
+          .ramp-provider-logo {
+            height: 24px;
+            margin-right: 16px;
+          }
+          .rate {
+            padding: 2px 0;
+            font-size: 12px;
+            line-height: 16px;
+            color: @font-13;
+          }
+        }
+        .ramp-provider-pay {
+          margin-top: 24px;
+          .ramp-provider-pay-item {
+            border-radius: 2px;
+            border: 0.5px solid @border-2;
+            min-width: 20px;
+            height: 20px;
+            margin-right: 6px;
+          }
+        }
+        &:nth-last-child(1) {
+          margin-bottom: 24px;
+        }
+      }
+
+      .card-item-selected {
+        border: 1px solid @border-3;
+        .card-selected-icon {
+          position: absolute;
+          top: -1px;
+          right: -1px;
+          width: 24px;
+          height: 18px;
+        }
+      }
+    }
+  }
+
+  .preview-footer {
+    width: 100%;
+    height: 128px;
+    padding: 16px;
+    border-top: 1px solid @border-2;
+    background-color: @bg-11;
+
+    .disclaimer {
+      margin: 0 8px 8px;
+      font-size: 14px;
+      line-height: 20px;
+      background-color: @bg-11;
+      .highlight {
+        color: @font-9;
+        cursor: pointer;
+      }
+    }
+
+    .@{app-prefix}-btn {
+      height: 48px;
+      border-radius: 22px;
+      font-size: 16px;
+      line-height: 22px;
+    }
+  }
+}

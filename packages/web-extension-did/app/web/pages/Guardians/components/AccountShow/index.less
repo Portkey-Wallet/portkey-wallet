@@ -1,0 +1,25 @@
+@import '../../../../assets/theme/color.less';
+@import '../../../../assets/theme/constants.less';
+
+.account {
+  flex: 1;
+  width: 0; // responsive placeholder, to fix overflow
+  font-size: @font-12;
+  word-wrap: break-word;
+}
+
+.account-text-one-row {
+  .text-overflow(2);
+}
+
+.account-text-two-row {
+  .name {
+    .text-overflow(1);
+  }
+  .detail {
+    font-size: 12px;
+    line-height: 16px;
+    color: @font-13;
+    .text-overflow(1);
+  }
+}

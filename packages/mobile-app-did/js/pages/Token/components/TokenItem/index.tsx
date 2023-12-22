@@ -1,0 +1,93 @@
+import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
+import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { defaultColors } from 'assets/theme';
+import React from 'react';
+import { TextL, TextS } from 'components/CommonText';
+import { pTd } from 'utils/unit';
+import Svg from 'components/Svg';
+import CommonSwitch from 'components/CommonSwitch';
+import CommonAvatar from 'components/CommonAvatar';
+import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { FontStyles } from 'assets/theme/styles';
+import { NetworkType } from '@portkey-wallet/types';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+
+type TokenItemProps = {
+  networkType: NetworkType;
+  item: TokenItemShowType;
+  onHandleToken: (item: TokenItemShowType, isDisplay: boolean) => void;
+};
+
+const TokenItem = ({ networkType, item, onHandleToken }: TokenItemProps) => {
+  const symbolImages = useSymbolImages();
+  const defaultToken = useDefaultToken();
+
+  return (
+    <TouchableOpacity style={itemStyle.wrap} key={`${item.symbol}${item.address}${item.chainId}}`}>
+      <CommonAvatar
+        hasBorder
+        shapeType="circular"
+        title={item.symbol}
+        svgName={item.symbol === defaultToken.symbol ? 'testnet' : undefined}
+        imageUrl={item.imageUrl || symbolImages[item.symbol]}
+        avatarSize={pTd(48)}
+        style={itemStyle.left}
+      />
+
+      <View style={itemStyle.right}>
+        <View>
+          <TextL numberOfLines={1} ellipsizeMode={'tail'}>
+            {item.symbol}
+          </TextL>
+          <TextS numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font3]}>
+            {`${formatChainInfoToShow(item.chainId, networkType)}`}
+          </TextS>
+        </View>
+
+        {item.isDefault ? (
+          <Svg icon="lock" size={pTd(20)} iconStyle={itemStyle.addedStyle} />
+        ) : (
+          <TouchableOpacity
+            onPress={() => {
+              onHandleToken(item, !!item.isAdded);
+            }}>
+            <View pointerEvents="none">
+              <CommonSwitch value={!!item.isAdded} />
+            </View>
+          </TouchableOpacity>
+        )}
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+export default TokenItem;
+
+const itemStyle = StyleSheet.create({
+  wrap: {
+    height: pTd(72),
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  left: {
+    marginLeft: pTd(16),
+  },
+  right: {
+    height: pTd(72),
+    marginLeft: pTd(16),
+    paddingRight: pTd(16),
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottomColor: defaultColors.border6,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  addedStyle: {
+    marginRight: pTd(14),
+  },
+});

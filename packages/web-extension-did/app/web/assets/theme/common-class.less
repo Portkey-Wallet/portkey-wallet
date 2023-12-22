@@ -1,0 +1,330 @@
+.min-height-container {
+  font-family: Roboto-Regular;
+  min-height: calc(100% - @footer-height);
+}
+.full-screen-height {
+  height: 100vh;
+}
+.width-100-percent {
+  width: 100%;
+}
+.flex-row-center {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.flex-row-between {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex {
+  display: flex;
+}
+.flex-1 {
+  flex: 1;
+}
+.flex-between-center {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+}
+.flex-column-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.flex-column-between {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.flex-start-center {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+.margin-auto {
+  margin: auto;
+}
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.font-5 {
+  color: @font-5;
+}
+.font-1 {
+  color: @font-1;
+}
+
+.text-center {
+  text-align: center;
+}
+.text-right {
+  text-align: right;
+}
+
+.modal-title {
+  margin-bottom: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 22px;
+  color: @font-11;
+}
+
+/* set list-style */
+ul,
+ol {
+  list-style: none;
+}
+
+/* set text-decoration */
+a,
+a:hover {
+  text-decoration: none;
+}
+
+/* clear margin & padding */
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+p,
+blockquote,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+pre,
+fieldset,
+button,
+input,
+textarea,
+th,
+td {
+  /* table elements */
+  margin: 0;
+  padding: 0;
+  line-height: unset;
+}
+
+.grid-span2 {
+  grid-column-start: span 2;
+}
+
+.common-page {
+  width: @page-width;
+  margin: auto;
+}
+
+.common-content {
+  width: @page-content;
+  margin: auto;
+}
+
+.common-content1 {
+  width: @page-content1;
+  margin: auto;
+  padding-top: 16px;
+  > .title {
+    line-height: 47px;
+    font-size: 40px;
+    margin-bottom: 8px;
+    text-align: center;
+    color: @font-11;
+  }
+  .description {
+    line-height: 22px;
+    font-size: 16px;
+    margin-bottom: 32px;
+    text-align: center;
+    color: @font-11;
+  }
+}
+
+.common-page1 {
+  width: @page-width;
+  margin: auto;
+}
+
+.fix-max-content {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  // overflow-y: scroll;
+  overflow-y: auto;
+}
+
+.brand-tip {
+  line-height: 22px;
+  color: @font-11;
+  font-size: 16px;
+}
+
+.popup-body {
+  width: 360px !important;
+  height: 600px;
+}
+
+.portkey-modal-wrap {
+  overflow: hidden;
+}
+
+.custom-svg {
+  width: 16px;
+  height: 16px;
+}
+
+.min-width-max-height {
+  min-width: 360px;
+  height: 100%;
+}
+
+// =========================================================
+// ============ Large screen adaptation [start] ============
+// =========================================================
+.portkey-prompt {
+  width: 100%;
+  min-width: @min-width;
+  min-height: 100%;
+  height: 100vh;
+  background-color: @bg-20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: overlay;
+
+  .portkey-header {
+    z-index: 101;
+    background-color: @bg-20;
+    margin: 0 auto;
+  }
+
+  .portkey-body {
+    height: calc(100vh - 96px);
+    min-height: 593px;
+    margin: 0 auto;
+  }
+  .portkey-prompt-media();
+}
+
+.portkey-prompt-media {
+  // screen >= 1820, contentWidth = 1440
+  @media screen and (min-width: @max-screen) {
+    .portkey-body,
+    .portkey-header {
+      max-width: @max-width;
+      width: @max-width;
+
+      .portkey-header-body {
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+  }
+  // 1280 < screen < 1820, maxContentWidth = 1440, marginLeftAndRight = 190
+  @media screen and (max-width: 1819px) and (min-width: @mid-screen) {
+    .portkey-header {
+      width: calc(100vw - @max-margin * 2);
+
+      .portkey-header-body {
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+    .portkey-body {
+      width: calc(100vw - @max-margin * 2);
+    }
+  }
+  // 768 < screen < 1280, maxContentWidth = 1024, marginLeftAndRight = 44
+  @media screen and (max-width: 1279px) and (min-width: @min-screen) {
+    .portkey-header {
+      max-width: @mid-width;
+      width: calc(100vw - @min-margin * 2);
+      .portkey-header-body {
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+    .portkey-body {
+      max-width: @mid-width;
+      width: calc(100vw - @min-margin * 2);
+    }
+  }
+  // screen < 768, maxContentWidth = screen, minContentWidth = 360, paddingLeftAndRight = 24
+  @media screen and (max-width: 767px) {
+    padding-bottom: 0 !important;
+    .portkey-header {
+      width: 100vw;
+      min-width: @min-width;
+    }
+    .portkey-body {
+      width: 100vw;
+      min-width: @min-width;
+      min-height: calc(100vh - 72px);
+    }
+  }
+}
+
+// This style is suitable for detail pages, such as transaction、asset preview page...
+.detail-page-prompt {
+  width: inherit;
+  max-width: @detail-width;
+  min-width: @min-width;
+  height: calc(100vh - 72px); // height - navHeight
+  max-height: @max-detail-height;
+  min-height: @min-detail-height;
+
+  @media screen and (max-width: 767px) {
+    min-height: calc(100vh - 72px);
+  }
+}
+
+.popup-header-wrap {
+  overflow: hidden;
+  width: 100%;
+  padding-top: 16px;
+  background-color: @bg-13;
+  border-bottom: 1px solid @border-2;
+  z-index: 10;
+}
+
+.three-level-prompt-container {
+  width: 100%;
+  flex: 1;
+  border-left: 1px solid @border-2;
+  overflow-y: auto;
+
+  .three-level-prompt-body {
+    height: 100%;
+  }
+}
+// =========================================================
+// ============= Large screen adaptation [end] =============
+// =========================================================

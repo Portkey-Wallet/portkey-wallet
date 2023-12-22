@@ -1,0 +1,46 @@
+@import '../../../../assets/theme/color.less';
+
+.contact-addresses {
+  .address-item {
+    margin-bottom: 24px;
+    font-size: 12px;
+    line-height: 16px;
+
+    .address {
+      font-size: 14px;
+      font-weight: normal;
+      color: @font-13;
+      overflow-wrap: anywhere;
+    }
+    .address-wrapper {
+      overflow: hidden;
+      flex: 1;
+      margin-right: 10px;
+    }
+    .chain {
+      margin-top: 8px;
+      .chain-img {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background-color: @bg-13;
+      }
+      .chain-elf {
+        svg {
+          width: 16px;
+          height: 16px;
+        }
+      }
+      .chain-text {
+        font-size: 12px;
+        margin-left: 8px;
+        color: @font-13;
+      }
+    }
+    .address-copy-icon {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+  }
+}

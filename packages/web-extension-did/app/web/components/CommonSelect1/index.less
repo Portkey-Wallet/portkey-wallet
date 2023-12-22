@@ -1,0 +1,88 @@
+@import '../../assets/theme/color.less';
+
+/** select */
+.common-select1 {
+  margin-bottom: 32px;
+  width: 100%;
+  &.@{app-prefix}-select-single:not(.@{app-prefix}-select-customize-input) .@{app-prefix}-select-selector {
+    height: 48px;
+    padding: 0 16px;
+  }
+  &.@{app-prefix}-select-single .@{app-prefix}-select-selector .@{app-prefix}-select-selection-item {
+    line-height: 48px;
+    display: flex;
+  }
+  &:not(.@{app-prefix}-select-customize-input) .@{app-prefix}-select-selector {
+    border-radius: 6px;
+    align-items: center;
+  }
+  &:not(.@{app-prefix}-select-customize-input)
+    .@{app-prefix}-select-selector
+    .@{app-prefix}-select-selection-search-input {
+    height: 48px;
+  }
+  .@{app-prefix}-select-selector::after {
+    width: 16px;
+    height: 16px;
+    visibility: visible;
+    display: inline-block;
+    background: url('../../assets/svgIcon/Down.svg') center no-repeat;
+    background-size: 16px;
+  }
+  &.@{app-prefix}-select-open {
+    .@{app-prefix}-select-selector::after {
+      transform: rotate(180deg);
+    }
+  }
+}
+.label-item {
+  .label-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 54px;
+    svg {
+      width: 32px;
+      height: 32px;
+    }
+  }
+  .title {
+    color: @font-11;
+    font-size: 16px;
+    margin-left: 12px;
+  }
+}
+.@{app-prefix}-select-dropdown {
+  // padding: 0;
+  box-shadow: 0 2px 6px 0 rgb(77 78 89 / 13%);
+  border-radius: 6px;
+  .@{app-prefix}-select-item {
+    padding: 0 16px 0 48px;
+    line-height: 48px;
+    font-size: 14px;
+    &:not(&:last-child) {
+      border-bottom: 1px solid @border-2;
+    }
+  }
+}
+.@{app-prefix}-select-item-option-selected:not(.@{app-prefix}-select-item-option-disabled) {
+  font-weight: 400;
+  background-color: transparent;
+  position: relative;
+  .title {
+    color: @font-9;
+  }
+  &::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: url('../../assets/svgIcon/selected.svg') center;
+    background-size: cover;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+.@{app-prefix}-select-item-option-active:not(.@{app-prefix}-select-item-option-disabled) {
+  background-color: transparent;
+}

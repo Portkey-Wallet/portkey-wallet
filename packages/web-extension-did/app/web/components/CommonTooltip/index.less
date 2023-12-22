@@ -1,0 +1,18 @@
+@import '../../assets/theme/color.less';
+.common-tooltip {
+  .@{app-prefix}-tooltip-inner {
+    box-shadow: 0 3px 10px 0 rgb(77 78 89 / 24%);
+    padding: 16px;
+    line-height: 16px;
+    font-size: 12px;
+    border-radius: 6px;
+    color: @font-13;
+    background-color: @bg-11;
+  }
+  .portkey-tooltip-arrow-content,
+  .@{app-prefix}-tooltip-arrow-content::before {
+    background-color: @bg-11;
+    /* stylelint-disable-next-line custom-property-empty-line-before */
+    --antd-arrow-background-color: @bg-11;
+  }
+}

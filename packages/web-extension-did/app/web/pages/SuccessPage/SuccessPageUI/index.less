@@ -1,0 +1,94 @@
+@import '../../../assets/theme/color.less';
+
+.success-page-wrapper {
+  position: relative;
+
+  .success-page-content-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    .success-page-content {
+      padding-top: 72px;
+      .congratulations-icon {
+        width: 140px;
+        height: 140px;
+        display: inline-block;
+      }
+
+      & > h1 {
+        color: @font-11;
+        font-size: 40px;
+        padding: 24px 0;
+        font-weight: 400;
+      }
+      .open-btn {
+        line-height: 48px;
+        width: 260px;
+        border-radius: 28px;
+        font-size: 16px;
+      }
+    }
+  }
+
+  .created-tip-wrapper {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    padding: 24px 16px 16px 24px;
+    width: 298px;
+    box-shadow: 0 3px 10px rgb(77 78 89 / 12%);
+    border-radius: 6px;
+    background-color: @bg-11;
+    border: 1px solid @border-2;
+
+    .created-tip-content {
+      .tip-wrapper {
+        padding: 12px 24px;
+        border-radius: 6px;
+        border: 1px solid @border-2;
+        margin-bottom: 16px;
+        position: relative;
+        &::before {
+          content: '';
+          text-align: center;
+          width: 24px;
+          height: 24px;
+          line-height: 24px;
+          font-size: 16px;
+          font-weight: 500;
+          position: absolute;
+          top: 0;
+          left: 0;
+          transform: translate(-50%, -50%);
+          border-radius: 100%;
+          color: @font-5;
+          background-color: @bg-7;
+        }
+        &.tip1::before {
+          content: '1';
+        }
+        &.tip2::before {
+          content: '2';
+        }
+        .custom-svg {
+          width: auto;
+          height: auto;
+          line-height: 1;
+        }
+      }
+
+      .tip-title {
+        font-size: 14px;
+        line-height: 20px;
+        margin-bottom: 8px;
+        color: @font-17;
+      }
+      .tip3 {
+        font-size: 14px;
+        line-height: 20px;
+        color: @font-1;
+      }
+    }
+  }
+}

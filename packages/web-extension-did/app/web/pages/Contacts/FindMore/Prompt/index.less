@@ -1,0 +1,67 @@
+@import '../../../../assets/theme/constants.less';
+
+.find-more-prompt {
+  border-left: 1px solid @border-2;
+  flex: 1;
+  .find-more-top {
+    // margin-bottom: 24px;
+
+    .find-more-header {
+      position: relative;
+      .title-right-col {
+        position: absolute;
+        right: 0;
+      }
+    }
+    .find-more-search {
+      width: auto;
+      margin-bottom: 12px;
+      margin-left: 24px;
+    }
+    .find-more-id {
+      margin: 0 24px;
+      gap: 16px;
+      align-items: flex-end;
+      font-weight: normal;
+      .my-portkey-id {
+        font-size: 12px;
+        line-height: 16px;
+        color: @font-13;
+        .portkey-id-show {
+          flex: 1;
+          word-break: break-all;
+          .text-overflow(1);
+        }
+      }
+      .show-icon {
+        gap: 16px;
+        cursor: pointer;
+      }
+    }
+  }
+  .find-more-body {
+    height: calc(100% - 133px);
+    overflow-y: auto;
+
+    .no-search-result {
+      margin-top: 60px;
+      line-height: 22px;
+      color: @font-12;
+      font-size: 16px;
+    }
+
+    .find-more-body-contact {
+      height: 62px;
+      padding: 0 24px;
+      border-bottom: 1px solid @border-2;
+    }
+
+    .no-data {
+      color: @font-12;
+      font-size: 16px;
+      font-weight: normal;
+      margin-top: 60px;
+      text-align: center;
+    }
+  }
+}

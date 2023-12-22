@@ -1,0 +1,29 @@
+@import '../../../../assets/theme/color.less';
+@import '../../../../assets/theme/constants.less';
+
+.scan-card {
+  width: 406px;
+  height: 474px;
+  padding: 0 20px 24px;
+  border-radius: 6px;
+  background-color: @bg-11;
+  box-shadow: @box-shadow5;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  .scan-card-inner {
+    flex: 1;
+    .scan-title {
+      padding-top: 80px;
+      padding-bottom: 8px;
+      .back-icon-wrapper {
+        right: -16px;
+      }
+    }
+    .pc-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+    }
+  }
+}

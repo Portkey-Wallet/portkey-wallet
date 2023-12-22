@@ -1,0 +1,272 @@
+@import '../../../../assets/theme/color.less';
+
+.address-selector {
+  .no-data {
+    padding-top: 32px;
+    padding-bottom: 16px;
+    width: 100%;
+    line-height: 20px;
+    color: @font-12;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+  &.@{app-prefix}-tabs {
+    overflow: auto;
+    flex: 1;
+
+    .@{app-prefix}-tabs-nav {
+      margin: 0;
+      box-shadow: none;
+      z-index: 10;
+      position: sticky;
+      background: @bg-11;
+      border-bottom: 1px solid @border-2;
+
+      .@{app-prefix}-tabs-nav-wrap {
+        min-width: 100%;
+        max-width: 100%;
+
+        .@{app-prefix}-tabs-nav-list {
+          flex: 1;
+          justify-content: space-between;
+          padding: 0 24px;
+          .@{app-prefix}-tabs-tab {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 13px 0;
+            margin: 0;
+
+            .@{app-prefix}-tabs-tab-btn {
+              font-weight: 400;
+              font-size: 16px;
+              height: 22px;
+              line-height: 22px;
+              text-align: center;
+              color: @font-13 !important;
+              text-shadow: unset;
+            }
+          }
+
+          .@{app-prefix}-tabs-tab-active {
+            .@{app-prefix}-tabs-tab-btn {
+              color: @font-11 !important;
+            }
+          }
+
+          .@{app-prefix}-tabs-ink-bar {
+            width: 50%;
+          }
+        }
+      }
+    }
+    .@{app-prefix}-tabs-content {
+      overflow: auto;
+      height: 100%;
+    }
+  }
+
+  // common address-item style, for Recents and My address
+  .address-item {
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+    gap: 4px;
+    line-height: 16px;
+    .address {
+      display: flex;
+      color: @font-11;
+    }
+    .network {
+      color: @font-13;
+    }
+  }
+  // common go-detail style, for Recents and Contacts
+  .go-detail-common {
+    width: 32px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    .go-detail-icon {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  // ================ Recent component style ================
+  .recents {
+    .recent-item {
+      border-top: none !important;
+      border-bottom: 1px solid @border-2;
+      padding: 13px 16px 11px 24px;
+      .main-info {
+        flex: 1;
+        margin-right: 24px;
+        cursor: pointer;
+        .address-item();
+      }
+      .go-detail {
+        .go-detail-common();
+      }
+    }
+    .contact-card-in-recent {
+      border-bottom: 1px solid @border-2;
+      .@{app-prefix}-collapse-header {
+        padding-left: 24px !important;
+      }
+    }
+    .loading {
+      margin-top: 14px;
+    }
+  }
+
+  // ================ Contacts component style ================
+  .contacts {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .contacts-body {
+      flex: 1;
+      overflow-y: hidden;
+
+      .contact-empty {
+        display: none;
+      }
+
+      &.index-bar-hidden {
+        .adm-index-bar-sidebar {
+          display: none;
+        }
+      }
+    }
+    .adm-index-bar-anchor-title {
+      padding: 8px 24px;
+      line-height: 16px;
+      color: @font-13;
+      font-size: 12px;
+      height: 32px;
+    }
+    .adm-list-item {
+      padding: 0;
+      border-top: 1px solid @border-2;
+      .adm-list-item-content {
+        padding: 0;
+        border-top: none;
+        .adm-list-item-content-main {
+          padding: 0;
+          width: 100%;
+        }
+      }
+    }
+    .user {
+      .@{app-prefix}-collapse-header {
+        padding: 4px 6px 4px 18px !important;
+      }
+      .@{app-prefix}-collapse-item {
+        border: none;
+      }
+    }
+  }
+
+  // ================ ContactCard component style ================
+  .contact-card {
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    background: @bg-11;
+    .@{app-prefix}-collapse-item {
+      border-bottom: none;
+    }
+    .@{app-prefix}-collapse-item-active {
+      .@{app-prefix}-collapse-arrow {
+        margin-right: 8px !important;
+        svg {
+          transform: rotate(-90deg) !important;
+        }
+      }
+    }
+    .@{app-prefix}-collapse-header {
+      flex-direction: row-reverse;
+      align-items: center !important;
+      padding: 16px 18px 16px 0 !important;
+      .@{app-prefix}-collapse-arrow {
+        margin-right: 8px !important;
+        svg {
+          transform: rotate(90deg);
+        }
+      }
+    }
+    .@{app-prefix}-collapse-content {
+      border-top: 0;
+    }
+    .@{app-prefix}-collapse-content-box {
+      padding: 0 16px 20px 24px;
+    }
+    .header {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      line-height: 20px;
+      font-size: 14px;
+      color: @font-11;
+    }
+    .content {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow: hidden;
+      .content-item {
+        .main-info {
+          cursor: pointer;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          line-height: 16px;
+          font-size: 12px;
+          color: @font-11;
+          padding-left: 34px;
+          margin-right: 24px;
+
+          &.disabled {
+            cursor: not-allowed;
+            color: @font-12;
+          }
+        }
+        .network {
+          color: @font-13;
+          &.disabled {
+            cursor: not-allowed;
+            color: @font-12;
+          }
+        }
+        .go-detail {
+          .go-detail-common();
+        }
+      }
+      .not-recent-address {
+        color: @font-12;
+      }
+    }
+  }
+
+  // ================ My address component style ================
+  .my-address {
+    .my-address-item {
+      border-top: none !important;
+      border-bottom: 1px solid @border-2;
+      padding: 13px 24px 11px;
+      .address-item();
+    }
+    .loading {
+      margin-top: 14px;
+    }
+  }
+}

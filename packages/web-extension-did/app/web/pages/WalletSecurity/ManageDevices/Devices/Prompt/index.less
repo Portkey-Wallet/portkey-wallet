@@ -1,0 +1,35 @@
+@import '../../../../../assets/theme/color.less';
+
+.devices-prompt {
+  width: 100%;
+  flex: 1;
+  border-left: 1px solid @border-2;
+  overflow-y: auto;
+  .devices-prompt-body {
+    .content {
+      .desc {
+        margin: 0 24px;
+        padding: 13px 0 24px;
+        font-size: 14px;
+        line-height: 20px;
+        color: @font-13;
+        border-bottom: 1px solid @border-2;
+      }
+      .device-list {
+        padding: 0 24px;
+        .device-item {
+          padding-right: 0;
+          .item-desc {
+            .icon {
+              margin-right: 10px;
+              margin-left: 0;
+            }
+          }
+          .item-time {
+            padding-left: 26px;
+          }
+        }
+      }
+    }
+  }
+}

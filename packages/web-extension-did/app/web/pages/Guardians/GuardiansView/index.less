@@ -1,0 +1,100 @@
+@import '../../../assets/theme/color.less';
+@import '../../../assets/theme/constants.less';
+
+.guardian-view-title {
+  padding-top: 16px;
+  background-color: @bg-13;
+}
+.close2-icon {
+  width: 18px;
+  height: 18px;
+}
+.guardian-view-content {
+  height: 100%;
+  .input-content {
+    position: relative;
+    border-bottom: 1px solid @border-1;
+    .input-item {
+      margin: 0 24px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      .label {
+        line-height: 20px;
+        color: @font-11;
+        font-size: 14px;
+      }
+      .control {
+        width: 100%;
+        height: 48px;
+        border-radius: 6px;
+        background-color: @bg-13;
+        border: 1px solid @border-1;
+        display: flex;
+        align-items: center;
+        padding: 14px 16px;
+        left: 40px;
+        line-height: 20px;
+        color: @font-11;
+        font-size: 14px;
+
+        .custom-svg {
+          width: 32px;
+          height: 32px;
+          flex-shrink: 0;
+          svg {
+            width: 32px;
+            height: 32px;
+          }
+        }
+        .base-verifier-icon {
+          margin-right: 12px;
+        }
+        .account {
+          margin-left: 12px;
+          color: @font-12;
+        }
+        .account-text-two-row .detail {
+          color: @font-12;
+        }
+      }
+    }
+  }
+  .login-content {
+    padding: 24px 24px 0;
+    display: flex;
+    flex-direction: column;
+    /* stylelint-disable-next-line no-descending-specificity */
+    .label {
+      margin-bottom: 8px;
+      line-height: 22px;
+      color: @font-11;
+      font-size: 18px;
+    }
+    .value {
+      line-height: 20px;
+      color: @font-13;
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+    .status-wrap {
+      display: flex;
+      align-items: center;
+      .status {
+        line-height: 22px;
+        color: @font-13;
+        font-size: 16px;
+        margin-left: 16px;
+      }
+    }
+  }
+  .btn-wrap {
+    border-top: 1px solid @border-1;
+    padding: 16px;
+    button {
+      width: 100%;
+      height: 48px;
+      border-radius: 22px;
+    }
+  }
+}

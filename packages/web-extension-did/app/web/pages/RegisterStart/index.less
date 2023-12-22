@@ -1,0 +1,147 @@
+@import '../../assets/theme/constants.less';
+.register-start-content {
+  width: @page-width1;
+  margin: auto;
+  padding-top: 74px;
+  .text-content {
+    padding-top: 66px;
+    .portkey-icon {
+      width: 85.24px;
+      height: 88px;
+    }
+    h1 {
+      padding-top: 24px;
+      font-size: 32px;
+      line-height: 38px;
+      color: @font-13;
+      font-weight: 600;
+    }
+  }
+
+  .login-primary-btn {
+    border-radius: 28px;
+    line-height: 48px;
+    font-size: 16px;
+  }
+}
+
+.network-list-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 24px;
+  .@{app-prefix}-select-item-option-disabled {
+    .label-item .title {
+      color: @font-12;
+    }
+  }
+  .network-list-select {
+    width: 366px;
+    margin: 0;
+
+    & > .@{app-prefix}-select-selector {
+      border: none;
+      &::after {
+        visibility: hidden;
+      }
+      .@{app-prefix}-select-selection-item {
+        justify-content: center;
+        .label-item {
+          .title {
+            display: flex;
+            align-items: center;
+            line-height: 20px;
+            font-size: 14px;
+            color: @primary-color;
+            &::after {
+              content: '';
+              margin-left: 6px;
+              display: block;
+              width: 16px;
+              height: 16px;
+              background: url('../../assets/svgIcon/Down-primary.svg') no-repeat center;
+              color: @primary-color;
+            }
+          }
+        }
+      }
+      .label-icon {
+        display: none;
+      }
+    }
+    &.@{app-prefix}-select-focused .@{app-prefix}-select-selector {
+      border: none !important;
+      box-shadow: none !important;
+    }
+    &.@{app-prefix}-select-single:not(.@{app-prefix}-select-customize-input) .@{app-prefix}-select-selector {
+      height: 22px;
+    }
+    &.@{app-prefix}-select-single .@{app-prefix}-select-selector .@{app-prefix}-select-selection-item {
+      line-height: 22px;
+    }
+  }
+}
+
+.register-start-card {
+  width: 406px;
+  height: 474px;
+  padding: 0 20px 24px;
+  border-radius: 6px;
+  background-color: @bg-11;
+  box-shadow: @box-shadow5;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  .card-content {
+    flex: 1;
+  }
+  .title {
+    text-align: center;
+    padding: 24px 0;
+    line-height: 32px;
+    color: @font-11;
+    font-size: 24px;
+    font-weight: 500;
+    position: relative;
+    .backleft-icon {
+      cursor: pointer;
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      left: 0;
+      top: 50%;
+      margin-top: -20px;
+    }
+    .testnet-flag {
+      justify-content: center;
+      .flag-text {
+        width: 41px;
+        height: 18px;
+        font-size: 12px;
+        line-height: 16px;
+        color: @font-9;
+        background-color: @bg-9;
+        border-radius: 10px;
+      }
+    }
+  }
+  .qrcode-icon,
+  .pc-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    top: 4px;
+    right: -16px;
+    cursor: pointer;
+    position: absolute;
+  }
+
+  .sign-btn {
+    border-radius: 24px;
+    line-height: 48px;
+    font-size: 16px;
+    color: @font-9;
+    background-color: @bg-9;
+    border: none;
+  }
+}

@@ -1,0 +1,192 @@
+.min-height-container {
+  font-family: Roboto-Regular;
+  min-height: calc(100% - @footer-height);
+}
+.full-screen-height {
+  height: 100vh;
+}
+.width-100-percent {
+  width: 100%;
+}
+.flex-row-center {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex {
+  display: flex;
+}
+.flex-1 {
+  flex: 1;
+}
+.flex-between-center {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+}
+.flex-column-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.flex-column-between {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.flex-start-center {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+.margin-auto {
+  margin: auto;
+}
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.font-5 {
+  color: @font-3;
+}
+.font-1 {
+  color: @font-1;
+}
+
+.text-center {
+  text-align: center;
+}
+.text-right {
+  text-align: right;
+}
+
+/* set list-style */
+ul,
+ol {
+  list-style: none;
+}
+
+/* set text-decoration */
+a,
+a:hover {
+  text-decoration: none;
+}
+
+/* clear margin & padding */
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+p,
+blockquote,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+pre,
+fieldset,
+button,
+input,
+textarea,
+th,
+td {
+  /* table elements */
+  margin: 0;
+  padding: 0;
+  line-height: unset;
+}
+
+.grid-span2 {
+  grid-column-start: span 2;
+}
+
+.common-page {
+  width: @page-width;
+  margin: auto;
+}
+
+.common-content {
+  width: @page-content;
+  margin: auto;
+}
+
+.common-content1 {
+  width: @page-content1;
+  margin: auto;
+  padding-top: 16px;
+  > .title {
+    line-height: 47px;
+    font-size: 40px;
+    margin-bottom: 8px;
+    text-align: center;
+    color: @font-5;
+  }
+  .description {
+    line-height: 22px;
+    font-size: 16px;
+    margin-bottom: 32px;
+    text-align: center;
+    color: @font-5;
+  }
+}
+
+.common-page1 {
+  width: @page-width;
+  margin: auto;
+}
+
+.fix-max-content {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  // overflow-y: scroll;
+  overflow-y: auto;
+}
+
+.brand-tip {
+  line-height: 22px;
+  color: @font-5;
+  font-size: 16px;
+}
+
+.popup-body {
+  width: 360px !important;
+  height: 600px;
+}
+
+.portkey-modal-wrap {
+  overflow: hidden;
+}
+
+.custom-svg {
+  width: 16px;
+  height: 16px;
+}
+
+.min-width-max-height {
+  min-width: 360px;
+  height: 100%;
+}

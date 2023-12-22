@@ -12,7 +12,7 @@ export enum MessageTypeEnum {
   TRANSFER_CARD = 'TRANSFER-CARD',
 }
 
-export type ParsedContent = string | ParsedImage | ParsedRedPackage | undefined;
+export type ParsedContent = string | ParsedImage | ParsedRedPackage | ParsedTransfer | undefined;
 export type ParsedImage = {
   type: string;
   action: string;

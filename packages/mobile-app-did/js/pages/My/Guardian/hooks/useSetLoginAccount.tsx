@@ -11,21 +11,15 @@ import { verification } from 'utils/api';
 import navigationService from 'utils/navigationService';
 import { Text } from 'react-native';
 import { FontStyles } from 'assets/theme/styles';
-import {
-  AppleAuthentication,
-  GoogleAuthentication,
-  useAppleAuthentication,
-  useGoogleAuthentication,
-  useVerifyToken,
-} from 'hooks/authentication';
+import { useAuthenticationSign, useVerifyToken } from 'hooks/authentication';
 import { AuthTypes } from 'constants/guardian';
 
 const THIRD_PART_LOGIN_TYPE = AuthTypes;
 
 export const useSetLoginAccount = (isEdit = false) => {
   const originChainId = useOriginChainId();
-  const { appleSign } = useAppleAuthentication();
-  const { googleSign } = useGoogleAuthentication();
+
+  const authenticationSign = useAuthenticationSign();
   const verifyToken = useVerifyToken();
 
   // Email & Phone
@@ -112,20 +106,29 @@ export const useSetLoginAccount = (isEdit = false) => {
     async (currentGuardian: UserGuardianItem, isLoginAccount: boolean) => {
       Loading.show();
       try {
-        const userInfo = await (currentGuardian.guardianType === LoginType.Apple ? appleSign : googleSign)();
-        const guardianAccount = userInfo.user.id;
+        let userInfo,
+          accessToken = '';
+        switch (currentGuardian.guardianType) {
+          case LoginType.Apple:
+            userInfo = await authenticationSign(LoginType.Apple);
+            accessToken = userInfo.identityToken;
+            break;
+          case LoginType.Google:
+            userInfo = await authenticationSign(LoginType.Google);
+            accessToken = userInfo.accessToken;
+            break;
+          case LoginType.Telegram:
+            userInfo = await authenticationSign(LoginType.Telegram);
+            accessToken = userInfo.accessToken;
+            break;
+        }
+        const guardianAccount = userInfo?.user.id;
         if (guardianAccount !== currentGuardian.guardianAccount)
           throw new Error('Account does not match your guardian');
 
-        let accessToken = '';
-        if (currentGuardian.guardianType === LoginType.Apple) {
-          accessToken = (userInfo as AppleAuthentication).identityToken;
-        } else {
-          accessToken = (userInfo as GoogleAuthentication).accessToken;
-        }
         const rst = await verifyToken(currentGuardian.guardianType, {
           accessToken,
-          id: guardianAccount,
+          id: currentGuardian.guardianAccount,
           verifierId: currentGuardian.verifier?.id,
           chainId: originChainId,
           operationType: isLoginAccount ? OperationTypeEnum.setLoginAccount : OperationTypeEnum.unsetLoginAccount,
@@ -164,7 +167,7 @@ export const useSetLoginAccount = (isEdit = false) => {
       }
       Loading.hide();
     },
-    [appleSign, googleSign, isEdit, originChainId, verifyToken],
+    [authenticationSign, isEdit, originChainId, verifyToken],
   );
 
   const setLoginAccount = useCallback(

@@ -18,6 +18,7 @@ import { PIN_OPERATION_TYPE_ENUM } from '@portkey-wallet/im/types/pin';
 import { getSendUuid } from '@portkey-wallet/utils/chat';
 import { messageParser } from '@portkey-wallet/im/utils';
 import { useWallet } from '../wallet';
+import { sleep } from '@portkey-wallet/utils';
 
 export const useIMPin = (channelId: string, isRegister = false) => {
   const { networkType } = useCurrentNetworkInfo();
@@ -236,6 +237,7 @@ export const useIMPin = (channelId: string, isRegister = false) => {
         content: '',
         messageId: '',
         sendUuid: '',
+        unpinnedCount: list?.length,
       };
 
       if (type !== PIN_OPERATION_TYPE_ENUM.RemoveAll && message) {
@@ -273,7 +275,7 @@ export const useIMPin = (channelId: string, isRegister = false) => {
         }),
       );
     },
-    [channelId, dispatch, networkType, userInfo?.nickName, userInfo?.userId],
+    [channelId, dispatch, list?.length, networkType, userInfo?.nickName, userInfo?.userId],
   );
 
   const pin = useCallback(
@@ -297,7 +299,6 @@ export const useIMPin = (channelId: string, isRegister = false) => {
           fetchTime: Date.now(),
         }),
       );
-      initList();
 
       const createAt = `${Date.now()}`;
       const pinInfo = {
@@ -317,6 +318,9 @@ export const useIMPin = (channelId: string, isRegister = false) => {
       );
 
       addMockPinSysMessage(PIN_OPERATION_TYPE_ENUM.Pin, message);
+
+      await sleep(500);
+      initList();
     },
     [addMockPinSysMessage, channelId, dispatch, initList, networkType, userInfo?.nickName, userInfo?.userId],
   );
@@ -332,8 +336,6 @@ export const useIMPin = (channelId: string, isRegister = false) => {
       if (lastPinMessageRef.current?.id === id) {
         refreshLastPin();
       }
-      initList();
-
       dispatch(
         updateChannelMessageAttribute({
           network: networkType,
@@ -346,6 +348,9 @@ export const useIMPin = (channelId: string, isRegister = false) => {
       );
 
       addMockPinSysMessage(PIN_OPERATION_TYPE_ENUM.UnPin, message);
+
+      await sleep(500);
+      initList();
     },
     [addMockPinSysMessage, channelId, dispatch, initList, networkType, refreshLastPin],
   );
@@ -355,6 +360,9 @@ export const useIMPin = (channelId: string, isRegister = false) => {
     await im.service.unPinAll({
       channelUuid: channelId,
     });
+
+    addMockPinSysMessage(PIN_OPERATION_TYPE_ENUM.RemoveAll);
+
     dispatch(
       cleanALLChannelMessagePin({
         network: networkType,
@@ -377,7 +385,6 @@ export const useIMPin = (channelId: string, isRegister = false) => {
         fetchTime: fetchTime,
       }),
     );
-    addMockPinSysMessage(PIN_OPERATION_TYPE_ENUM.RemoveAll);
   }, [addMockPinSysMessage, channelId, dispatch, networkType]);
 
   return {

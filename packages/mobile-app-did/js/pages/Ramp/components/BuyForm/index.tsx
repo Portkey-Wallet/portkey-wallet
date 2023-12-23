@@ -249,7 +249,15 @@ export default function BuyForm() {
                 });
               }}>
               {fiat?.icon && (
-                <CommonAvatar hasBorder title={fiat?.symbol || ''} style={styles.unitIconStyle} imageUrl={fiat?.icon} />
+                <CommonAvatar
+                  avatarSize={pTd(24)}
+                  width={pTd(24)}
+                  height={pTd(24)}
+                  hasBorder
+                  title={fiat?.symbol || ''}
+                  style={styles.unitIconStyle}
+                  imageUrl={fiat?.icon}
+                />
               )}
               <TextL style={[GStyles.flex1, fonts.mediumFont]}>{fiat?.symbol}</TextL>
               <Svg size={16} icon="down-arrow" color={defaultColors.icon1} />

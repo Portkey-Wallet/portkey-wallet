@@ -20,7 +20,7 @@ export const InjectTelegramLoginJavaScript = `(()=>{
 
 export enum PATHS {
   CallPortkey = '/api/app/telegramAuth/receive/portkey',
-  Load = '/social-login-auth/Telegram?from=portkey',
+  Load = '/social-login/Telegram?from=portkey',
 }
 
 export const TGAuthResult = '#tgAuthResult=';

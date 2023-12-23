@@ -122,7 +122,7 @@ export const useIMPin = (channelId: string, isRegister = false) => {
       } = await im.service.getPinList({
         channelUuid: channelId,
         sortType: IM_PIN_LIST_SORT_TYPE_ENUM.Pin,
-        ascending: true,
+        ascending: false,
         maxResultCount: 1,
         skipCount: 0,
       });

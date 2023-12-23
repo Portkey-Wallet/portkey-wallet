@@ -6,25 +6,19 @@ import './index.less';
 
 export interface IRepliedMsgProps {
   position: string;
-  msgType?: MessageTypeEnum.IMAGE | MessageTypeEnum.TEXT;
+  msgType: MessageTypeEnum.IMAGE | MessageTypeEnum.TEXT;
   msgContent?: string;
+  thumbImgUrl?: string;
+  imgUrl?: string;
   from?: string;
 }
 
-export default function RepliedMsg({ msgType, from, msgContent, position }: IRepliedMsgProps) {
-  const renderDefault = useMemo(
-    () => (
-      <>
-        <div className="container-desc hide-msg">The message has been hidden.</div>
-      </>
-    ),
-    [],
-  );
+export default function RepliedMsg({ msgType, from, msgContent, position, thumbImgUrl, imgUrl }: IRepliedMsgProps) {
   const renderText = useMemo(
     () => (
       <>
         <div className="container-title">{from}</div>
-        <div className="container-desc">{msgContent}</div>
+        <div className={clsx('container-desc', !from && 'hide-msg')}>{msgContent}</div>
       </>
     ),
     [from, msgContent],
@@ -32,27 +26,21 @@ export default function RepliedMsg({ msgType, from, msgContent, position }: IRep
   const renderImage = useMemo(
     () => (
       <div className="reply-message-image flex-row-center">
-        <ImageShow src={msgContent!} />
+        <ImageShow src={thumbImgUrl || imgUrl || ''} fallback={imgUrl} />
         <div>
           <div className="container-title">{from}</div>
           <div className="container-desc">Photo</div>
         </div>
       </div>
     ),
-    [from, msgContent],
+    [from, imgUrl, thumbImgUrl],
   );
-  const renderContent = useMemo(() => {
-    if (!msgType) {
-      return renderDefault;
-    }
-    return msgType === MessageTypeEnum.TEXT ? renderText : renderImage;
-  }, [msgType, renderDefault, renderImage, renderText]);
 
   return (
     <div className="reply-message-body">
       <div className={clsx('reply-message-container flex', position)}>
         <div className="container-left"></div>
-        <div className="container-content">{renderContent}</div>
+        <div className="container-content">{msgType === MessageTypeEnum.TEXT ? renderText : renderImage}</div>
       </div>
     </div>
   );

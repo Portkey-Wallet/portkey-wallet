@@ -1,17 +1,26 @@
 import CustomSvg from 'components/CustomSvg';
 import { useMemo } from 'react';
 import ImageShow from '../ImageShow';
-import './index.less';
 import { MessageType, MessageTypeEnum } from '@portkey-wallet/im';
+import './index.less';
 
 export interface IChatBoxPinnedMsgProps {
   msgCount: number;
-  msgContent: string;
+  msgContent?: string;
+  thumbImgUrl?: string;
+  imgUrl?: string;
   msgType: MessageType;
   onViewMore?: () => void;
 }
 
-const ChatBoxPinnedMsg = ({ msgCount, msgType, msgContent, onViewMore }: IChatBoxPinnedMsgProps) => {
+const ChatBoxPinnedMsg = ({
+  msgCount,
+  msgType,
+  msgContent = '',
+  onViewMore,
+  thumbImgUrl = '',
+  imgUrl = '',
+}: IChatBoxPinnedMsgProps) => {
   const renderText = useMemo(
     () => (
       <>
@@ -24,14 +33,14 @@ const ChatBoxPinnedMsg = ({ msgCount, msgType, msgContent, onViewMore }: IChatBo
   const renderImage = useMemo(
     () => (
       <div className="image-content flex">
-        <ImageShow src={msgContent} />
+        <ImageShow src={thumbImgUrl || imgUrl} fallback={imgUrl} />
         <div>
           <div className="content-title">{`Pinned Message ${msgCount}`}</div>
           <div className="content-pin-msg">Photo</div>
         </div>
       </div>
     ),
-    [msgContent, msgCount],
+    [imgUrl, msgCount, thumbImgUrl],
   );
   return (
     <div className="chat-box-pinned-msg-container flex-between-center">

@@ -108,7 +108,7 @@ const ChatItem: React.FC<IChatItemProps> = ({
                 alt={alt}
                 showLetter={showLetter}
                 letter={props.letter}
-                channelType={props.channelType}
+                isGroupAvatar={props.channelType === ChannelTypeEnum.GROUP}
               />
             ) : (
               <div className="flex-center avatar-unknown">

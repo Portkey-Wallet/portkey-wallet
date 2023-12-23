@@ -9,7 +9,7 @@ import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import { isIOS, screenWidth } from '@portkey-wallet/utils/mobile/device';
-import { formatChatListTime, formatMessageCountToStr } from '@portkey-wallet/utils/chat';
+import { formatChatListTime, formatMessageCountToStr, formatPinSysMessageToStr } from '@portkey-wallet/utils/chat';
 import { ChannelItem, ChannelTypeEnum, ParsedPinSys, ParsedRedPackage } from '@portkey-wallet/im/types';
 import CommonAvatar from 'components/CommonAvatar';
 import { useDeviceEvent } from 'hooks/useDeviceEvent';
@@ -18,7 +18,6 @@ import { getChatListSvgName } from 'pages/Chat/utils';
 import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
 import GroupAvatarShow from 'pages/Chat/components/GroupAvatarShow';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { formatPinSysMessageToStr } from 'pages/Chat/utils/format';
 
 type ChatHomeListItemSwipedType<T> = {
   item: T;

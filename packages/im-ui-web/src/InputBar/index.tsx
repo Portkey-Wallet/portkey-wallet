@@ -71,6 +71,8 @@ export default function InputBar({
           <ReplyMsg
             msgType={replyMsg.msgType}
             msgContent={replyMsg.msgContent}
+            thumbImgUrl={replyMsg.thumbImgUrl}
+            imgUrl={replyMsg.imgUrl}
             toName={replyMsg.toName}
             onCloseReply={onCloseReply}
           />

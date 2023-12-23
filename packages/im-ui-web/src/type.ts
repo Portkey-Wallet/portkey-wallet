@@ -177,7 +177,9 @@ export interface PopDataProps {
 
 export interface IInputReplyMsgProps {
   msgType: MessageTypeEnum.IMAGE | MessageTypeEnum.TEXT;
-  msgContent: string;
+  msgContent?: string;
+  thumbImgUrl?: string;
+  imgUrl?: string;
   toName: string;
   onCloseReply?: () => void;
 }
@@ -213,7 +215,7 @@ export interface IAvatarProps {
   letter?: string;
   className?: string;
   alt?: string;
-  channelType?: ChannelTypeEnum;
+  isGroupAvatar?: boolean;
   width?: number;
   height?: number;
   avatarSize?: IAvatarSize;

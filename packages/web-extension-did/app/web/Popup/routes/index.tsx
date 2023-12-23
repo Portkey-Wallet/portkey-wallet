@@ -51,7 +51,7 @@ import HandleMember from 'pages/IMChat/HandleMember';
 import ChatPrivacy from 'pages/AccountSetting/ChatPrivacy';
 import ChatPrivacyEdit from 'pages/AccountSetting/ChatPrivacyEdit';
 import GroupQRCode from 'pages/IMChat/GroupQRCode';
-import PinnedMsg from 'pages/IMChat/PinnedMsg';
+import PinnedMsg from 'pages/IMChat/PinnedMsgPage';
 
 export const PageRouter = () =>
   useRoutes([

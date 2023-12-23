@@ -1,3 +1,4 @@
+import { TransferTypeEnum } from '@portkey-wallet/im';
 import { ChainId, ChainType } from '..';
 import type { SendType } from './send';
 
@@ -22,6 +23,13 @@ export interface IToSendNftParamsType extends IToSendHomeAssetParamsBaseType {
 
 export type IToSendAssetParamsType = IToSendTokenParamsType | IToSendNftParamsType;
 
+export type ImTransferInfoType = {
+  isGroupChat?: boolean;
+  channelId?: string;
+  toUserId?: string;
+  name?: string;
+  addresses?: { address: string; chainId: ChainId; chainName?: string }[];
+};
 export interface IToSendHomeParamsType {
   sendType: SendType;
   toInfo: {
@@ -31,7 +39,7 @@ export interface IToSendHomeParamsType {
     chainType?: ChainType;
   };
   assetInfo: IToSendAssetParamsType;
-  isFixedToContact?: boolean;
+  imTransferInfo?: ImTransferInfoType;
 }
 
 export interface IToSendPreviewParamsType extends IToSendHomeParamsType {

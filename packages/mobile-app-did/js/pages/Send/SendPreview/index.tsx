@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useRef, useState } from 'react';
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { Text, View, StyleSheet, ScrollView } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -47,13 +47,16 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import CommonAvatar from 'components/CommonAvatar';
 import { useCheckTransferLimitWithJump } from 'hooks/security';
+import { useSendIMTransfer } from '@portkey-wallet/hooks/hooks-ca/im/transfer';
+import { TransferTypeEnum } from '@portkey-wallet/im';
+import { useJumpToChatDetails, useJumpToChatGroupDetails } from 'hooks/chat';
 
 const SendHome: React.FC = () => {
   const { t } = useLanguage();
   const isTestnet = useIsTestnet();
   const defaultToken = useDefaultToken();
 
-  const { sendType, assetInfo, toInfo, transactionFee, sendNumber, successNavigateName } =
+  const { sendType, assetInfo, toInfo, transactionFee, sendNumber, successNavigateName, imTransferInfo } =
     useRouterParams<IToSendPreviewParamsType>();
 
   useFetchTxFee();
@@ -63,6 +66,10 @@ const SendHome: React.FC = () => {
   const pin = usePin();
   const chainInfo = useCurrentChain(assetInfo.chainId);
   const caAddresses = useCaAddresses();
+
+  const sendIMTransfer = useSendIMTransfer();
+  const jumpToChatDetails = useJumpToChatDetails();
+  const jumpToChatGroupDetails = useJumpToChatGroupDetails();
 
   const [isLoading] = useState(false);
   const currentNetwork = useCurrentNetworkInfo();
@@ -76,6 +83,11 @@ const SendHome: React.FC = () => {
 
   const isCrossChainTransfer = isCrossChain(toInfo.address, assetInfo.chainId);
   const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
+
+  const amount = useMemo(
+    () => timesDecimals(sendNumber, assetInfo.decimals).toFixed(),
+    [assetInfo.decimals, sendNumber],
+  );
 
   const showRetry = useCallback(
     (retryFunc: () => void) => {
@@ -115,7 +127,6 @@ const SendHome: React.FC = () => {
     }
 
     const contract = contractRef.current;
-    const amount = timesDecimals(sendNumber, tokenInfo.decimals).toFixed();
 
     const checkTransferLimitResult = await checkTransferLimitWithJump(
       {
@@ -185,6 +196,7 @@ const SendHome: React.FC = () => {
     }
     CommonToast.success('success');
   }, [
+    amount,
     assetInfo,
     caAddressInfos,
     caAddresses,
@@ -238,7 +250,78 @@ const SendHome: React.FC = () => {
     [assetInfo.decimals, assetInfo.symbol, assetInfo.tokenContractAddress, chainInfo, dispatch, pin, showRetry],
   );
 
-  const onSend = async () => {
+  const imSend = useCallback(async () => {
+    // todo: change feedback
+    if (!chainInfo || !pin) return;
+    const account = getManagerAccount(pin);
+    if (!account) return;
+
+    if (!contractRef.current) {
+      contractRef.current = await getContractBasic({
+        contractAddress: chainInfo.caContractAddress,
+        rpcUrl: chainInfo.endPoint,
+        account,
+      });
+    }
+
+    console.log(
+      'imTransferInfo',
+      imTransferInfo,
+      contractRef.current,
+      imTransferInfo?.channelId,
+      imTransferInfo?.toUserId,
+      assetInfo.chainId,
+      assetInfo.symbol,
+      amount,
+      toInfo.address,
+    );
+
+    if (!contractRef.current || !imTransferInfo?.channelId || !imTransferInfo?.toUserId) return;
+    Loading.show();
+    try {
+      const params = {
+        channelId: imTransferInfo?.channelId || '',
+        toUserId: imTransferInfo?.toUserId || '',
+        chainId: assetInfo.chainId,
+        symbol: assetInfo.symbol,
+        amount,
+        image: '',
+        memo: '',
+        type: TransferTypeEnum.GROUP,
+        caContract: contractRef.current,
+        tokenContractAddress: assetInfo.tokenContractAddress,
+        toCAAddress: toInfo.address,
+      };
+
+      console.log('imSend', imSend);
+      await sendIMTransfer(params);
+
+      if (imTransferInfo.isGroupChat) {
+        await jumpToChatGroupDetails({ channelUuid: imTransferInfo.channelId });
+      } else {
+        await jumpToChatDetails({ channelUuid: imTransferInfo.channelId });
+      }
+    } catch (error: any) {
+      console.log('IM send error', error);
+    } finally {
+      Loading.hide();
+    }
+    Loading.hide();
+  }, [
+    amount,
+    assetInfo.chainId,
+    assetInfo.symbol,
+    assetInfo.tokenContractAddress,
+    chainInfo,
+    imTransferInfo,
+    jumpToChatDetails,
+    jumpToChatGroupDetails,
+    pin,
+    sendIMTransfer,
+    toInfo.address,
+  ]);
+
+  const GeneralSend = useCallback(async () => {
     Loading.show();
     try {
       await transfer();
@@ -264,7 +347,11 @@ const SendHome: React.FC = () => {
       }
     }
     Loading.hide();
-  };
+  }, [dispatch, retryCrossChain, showRetry, transfer]);
+
+  const onSend = useCallback(() => {
+    imTransferInfo ? imSend() : GeneralSend();
+  }, [GeneralSend, imSend, imTransferInfo]);
 
   const networkInfoShow = (address: string) => {
     const chainId = address.split('_')[2] as ChainId;

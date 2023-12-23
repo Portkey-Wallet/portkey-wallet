@@ -21,7 +21,6 @@ export interface ISendIMTransferParams {
   tokenContractAddress: string;
   toCAAddress: string;
   symbol: string;
-  decimal: string | number;
   amount: string;
   type: TransferTypeEnum;
   memo: string;
@@ -86,6 +85,8 @@ export const useSendIMTransfer = () => {
           memo,
           transactionId: '',
           blockHash: '',
+          toUserId: '',
+          toUserName: '',
         },
       };
 

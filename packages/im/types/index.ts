@@ -43,6 +43,19 @@ export type ParsedTransfer = {
     memo: string;
     transactionId: string;
     blockHash: string;
+    toUserId: string;
+    toUserName: string;
+  };
+  transferExtraData?: {
+    tokenInfo?: {
+      amount: string | number;
+      decimal: string;
+      symbol: string;
+    };
+    nftInfo?: {
+      nftId: string;
+      alias: string;
+    };
   };
 };
 
@@ -96,6 +109,7 @@ export type ChannelMemberInfo = {
   name: string;
   avatar: string;
   isAdmin: boolean;
+  userId?: string;
   addresses?: {
     chainId: ChainId;
     chainName?: string;

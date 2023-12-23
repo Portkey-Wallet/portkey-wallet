@@ -26,11 +26,16 @@ import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/u
 import CommonAvatar from 'components/CommonAvatar';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 
-type ShowAssetListParamsType = {
-  toAddress?: string;
+export type ImTransferInfoType = {
+  isGroupChat?: boolean;
+  channelId?: string;
+  toUserId?: string;
   name?: string;
-  isFixedToContact?: boolean;
-  chainIds?: ChainId[];
+  addresses?: { address: string; chainId: ChainId; chainName?: string }[];
+};
+
+export type ShowAssetListParamsType = {
+  imTransferInfo?: ImTransferInfoType;
 };
 
 const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: IAssetItemType }) => {
@@ -85,12 +90,16 @@ const INIT_PAGE_INFO = {
   isLoading: false,
 };
 
-const AssetList = ({ toAddress, name, isFixedToContact, chainIds }: ShowAssetListParamsType) => {
+const AssetList = ({ imTransferInfo }: ShowAssetListParamsType) => {
+  const { addresses = [], isGroupChat, toUserId } = imTransferInfo || {};
+  console.log('addresses', addresses);
   const { t } = useLanguage();
   const caAddresses = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
   const [keyword, setKeyword] = useState('');
   const gStyles = useGStyles();
+
+  const chainIds = useMemo(() => addresses?.map(item => item.chainId), [addresses]);
 
   const debounceKeyword = useDebounce(keyword, 800);
 
@@ -170,17 +179,30 @@ const AssetList = ({ toAddress, name, isFixedToContact, chainIds }: ShowAssetLis
                 ? { ...item?.nftInfo, chainId: item.chainId, symbol: item.symbol }
                 : { ...item?.tokenInfo, chainId: item.chainId, symbol: item.symbol },
               toInfo: {
-                address: toAddress || '',
-                name: name || '',
+                address: addresses?.find(ele => ele.chainId === item.chainId)?.address || '',
+                name: '',
               },
-              isFixedToContact,
             };
-            navigationService.navigate('SendHome', routeParams as unknown as IToSendHomeParamsType);
+
+            if (imTransferInfo?.channelId) {
+              navigationService.navigateByMultiLevelParams('SendHome', {
+                params: routeParams as unknown as IToSendHomeParamsType,
+                multiLevelParams: {
+                  imTransferInfo: {
+                    isGroupChat,
+                    channelId: imTransferInfo?.channelId,
+                    toUserId,
+                  },
+                },
+              });
+            } else {
+              navigationService.navigate('SendHome', routeParams as unknown as IToSendHomeParamsType);
+            }
           }}
         />
       );
     },
-    [isFixedToContact, name, toAddress],
+    [addresses, imTransferInfo?.channelId, isGroupChat, toUserId],
   );
 
   const noData = useMemo(() => {

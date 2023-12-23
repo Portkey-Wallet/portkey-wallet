@@ -53,19 +53,24 @@ import Touchable from 'components/Touchable';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 
 const SendHome: React.FC = () => {
+  const IM = useRoute<RouteProp<{ params: IToSendHomeParamsType }>>();
   const {
-    params: { sendType = 'token', toInfo, assetInfo, isFixedToContact },
+    params: { sendType = 'token', toInfo, assetInfo, imTransferInfo },
   } = useRoute<RouteProp<{ params: IToSendHomeParamsType }>>();
   const { t } = useLanguage();
   useFetchTxFee();
   const isValidChainId = useIsValidSuffix();
   const defaultToken = useDefaultToken();
 
+  console.log('SendHomeSendHomeSendHome', IM);
+
   const wallet = useCurrentWalletInfo();
   const chainInfo = useCurrentChain(assetInfo?.chainId);
   const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
 
   const pin = usePin();
+
+  const isFixedToContact = useMemo(() => !!imTransferInfo?.channelId, [imTransferInfo?.channelId]);
 
   const { max: maxFee, crossChain: crossFee } = useGetTxFee(assetInfo?.chainId);
 

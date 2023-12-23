@@ -6,13 +6,13 @@ import { pTd } from 'utils/unit';
 import { ChatMessage } from 'pages/Chat/types';
 import isEqual from 'lodash/isEqual';
 import RedPacket from './RedPacket';
-import Transfer from './Transfer';
+import TransferCard from './TransferCard';
 
 function CustomView(props: MessageProps<ChatMessage> & { onDismiss: () => void }) {
   const { currentMessage } = props;
 
   // TODO: type change
-  if (currentMessage?.messageType === 'REDPACKAGE-CARD') return <Transfer {...props} />;
+  if (currentMessage?.messageType === 'TRANSFER-CARD') return <TransferCard {...props} />;
 
   if (currentMessage?.messageType === 'REDPACKAGE-CARD') return <RedPacket {...props} />;
 

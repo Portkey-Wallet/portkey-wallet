@@ -9,8 +9,13 @@ import {
   ParsedPinSys,
   ParsedRedPackage,
 } from '@portkey-wallet/im';
-import { ExtraMessageTypeEnum, IMessageShowPage, MessageContentType } from '@portkey-wallet/im-ui-web';
-import { formatMessageTime } from '@portkey-wallet/utils/chat';
+import {
+  ExtraMessageTypeEnum,
+  IMessageShowPage,
+  MessageContentType,
+  SupportSysMsgType,
+} from '@portkey-wallet/im-ui-web';
+import { formatMessageTime, formatPinSysMessageToStr } from '@portkey-wallet/utils/chat';
 import { isSameDay } from '@portkey-wallet/utils/time';
 
 export const supportedMsgType: MessageType[] = [
@@ -59,7 +64,7 @@ export const formatMessageList = ({
       transItem = {
         ...item,
         key: item.sendUuid,
-        showAvatar: item.from !== ownerRelationId && isGroup,
+        showAvatar: isGroup && !SupportSysMsgType.includes(item.type) && item.from !== ownerRelationId,
         letter: item.fromName?.slice(0, 1)?.toUpperCase(),
         position: supportSysMsgType.includes(item.type) ? 'center' : item.from === ownerRelationId ? 'right' : 'left',
         isGroup,
@@ -128,8 +133,7 @@ export const formatChatListSubTitle = (item: ChannelItem) => {
     return `${item.lastMessageContent}`;
   }
   if (_type === MessageTypeEnum.PIN_SYS) {
-    console.log('MessageTypeEnum.PIN_SYS', item);
-    return (item.lastMessageContent as ParsedPinSys).content;
+    return formatPinSysMessageToStr(item.lastMessageContent as ParsedPinSys);
   }
   if (_type === MessageTypeEnum.REDPACKAGE_CARD) {
     const redPackage = (item.lastMessageContent as ParsedRedPackage).data;
@@ -139,8 +143,8 @@ export const formatChatListSubTitle = (item: ChannelItem) => {
 };
 
 export const formatImageData = (parsedContent: ParsedImage) => ({
-  thumbImgUrl: decodeURIComponent(parsedContent.thumbImgUrl || ''),
-  imgUrl: decodeURIComponent(parsedContent.imgUrl || ''),
-  width: parsedContent.width,
-  height: parsedContent.height,
+  thumbImgUrl: decodeURIComponent(parsedContent?.thumbImgUrl || ''),
+  imgUrl: decodeURIComponent(parsedContent?.imgUrl || ''),
+  width: parsedContent?.width,
+  height: parsedContent?.height,
 });

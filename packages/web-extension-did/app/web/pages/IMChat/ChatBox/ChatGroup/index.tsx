@@ -26,7 +26,7 @@ import { useClickUrl } from 'hooks/im';
 import WarnTip from 'pages/IMChat/components/WarnTip';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 import { NO_LONGER_IN_GROUP } from '@portkey-wallet/constants/constants-ca/chat';
-import { ChannelTypeEnum, Message, MessageTypeEnum, ParsedImage } from '@portkey-wallet/im';
+import { Message, MessageTypeEnum, ParsedImage } from '@portkey-wallet/im';
 import ChatBoxPinnedMsg from 'pages/IMChat/components/ChatBoxPinnedMsg';
 import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
 
@@ -52,7 +52,8 @@ export default function ChatBox() {
       return {
         msgType: MessageTypeEnum.IMAGE,
         toName: `${replyMsg.fromName}`,
-        msgContent: thumbImgUrl || imgUrl || '',
+        thumbImgUrl: thumbImgUrl || imgUrl,
+        imgUrl,
       };
     }
     return undefined;
@@ -86,6 +87,7 @@ export default function ChatBox() {
   });
   const lastPinMsgShow = useMemo(() => {
     if (lastPinMessage?.type === MessageTypeEnum.TEXT) {
+      setShowAddMemTip(false);
       return {
         msgType: MessageTypeEnum.TEXT,
         msgContent: `${lastPinMessage.content}`,
@@ -93,9 +95,11 @@ export default function ChatBox() {
     }
     if (lastPinMessage?.type === MessageTypeEnum.IMAGE) {
       const { thumbImgUrl, imgUrl } = formatImageData(lastPinMessage?.parsedContent as ParsedImage);
+      setShowAddMemTip(false);
       return {
         msgType: MessageTypeEnum.IMAGE,
-        msgContent: thumbImgUrl || imgUrl || '',
+        thumbImgUrl: thumbImgUrl || imgUrl,
+        imgUrl,
       };
     }
     return undefined;
@@ -276,7 +280,7 @@ export default function ChatBox() {
     () => (
       <div className="flex title-element">
         <div className="title-content flex-center" onClick={handleGoGroupInfo}>
-          <Avatar channelType={ChannelTypeEnum.GROUP} src={groupInfo?.icon} />
+          <Avatar isGroupAvatar={true} src={groupInfo?.icon} />
           <div className="title-name">{groupInfo?.name || info?.displayName || ''}</div>
         </div>
         <div>{info?.mute && <CustomSvg type="Mute" />}</div>
@@ -318,6 +322,8 @@ export default function ChatBox() {
           msgCount={pinList?.length}
           msgType={lastPinMsgShow.msgType}
           msgContent={lastPinMsgShow.msgContent}
+          thumbImgUrl={lastPinMsgShow.thumbImgUrl}
+          imgUrl={lastPinMsgShow.imgUrl}
           onViewMore={() => navigate(`/chat-box-group/${channelUuid}/pinned-msg`)}
         />
       ) : (

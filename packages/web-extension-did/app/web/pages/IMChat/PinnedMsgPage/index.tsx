@@ -1,4 +1,4 @@
-import { useGroupChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useDeleteMessage, useGroupChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import { message } from 'antd';
 import SettingHeader from 'pages/components/SettingHeader';
 import { useNavigate, useParams } from 'react-router';
@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 import { formatMessageList } from '../utils';
 import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
+import { Message } from '@portkey-wallet/im';
 import './index.less';
 
 const PinnedMsg = () => {
@@ -15,9 +16,11 @@ const PinnedMsg = () => {
   const {
     list: pinList,
     initList: initPinList,
+    refresh: refreshPinList,
     unPin: unPinMsg,
     unPinAll: unPinAllMsg,
   } = useIMPin(`${channelUuid}`, true);
+  const deleteMsg = useDeleteMessage(channelUuid || '');
   const { isAdmin } = useGroupChannel(`${channelUuid}`);
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -39,9 +42,13 @@ const PinnedMsg = () => {
   }, [initPinList]);
   const handleUnpinAllMsg = useCallback(() => {
     CustomModalConfirm({
-      content: `Do you want to unpin all ${pinList?.length} messages in this chat?`,
-      okText: t('Yes'),
-      cancelText: t('No'),
+      content: (
+        <div className="modal-unpin-content flex-column-center">
+          <div className="unpin-content-title">Unpin All Messages</div>
+          <div>{`Do you want to unpin all ${pinList?.length} messages in this chat?`}</div>
+        </div>
+      ),
+      okText: t('Unpin'),
       onOk: async () => {
         try {
           await unPinAllMsg();
@@ -60,10 +67,39 @@ const PinnedMsg = () => {
         message.error('cannot find message');
         return;
       }
-      await unPinMsg(_msg);
-      if (pinList.length === 1) navigate(`/chat-box-group/${channelUuid}`);
+      CustomModalConfirm({
+        content: (
+          <div className="modal-unpin-content flex-column-center">
+            <div className="unpin-content-title">Unpin Message</div>
+            <div>Do you like to unpin this message?</div>
+          </div>
+        ),
+        okText: t('Unpin'),
+        onOk: async () => {
+          try {
+            await unPinMsg(_msg);
+            if (pinList.length === 1) navigate(`/chat-box-group/${channelUuid}`);
+          } catch (e) {
+            message.error('Failed to unpin all message');
+            console.log('===Failed to unpin all message error', e);
+          }
+        },
+      });
     },
-    [channelUuid, navigate, pinList, unPinMsg],
+    [channelUuid, navigate, pinList, t, unPinMsg],
+  );
+  const handleDeleteMsg = useCallback(
+    async (item: MessageContentType) => {
+      const msg = pinList.find((temp) => temp.id === item.id);
+      try {
+        await deleteMsg(msg as Message);
+        refreshPinList();
+      } catch (e) {
+        message.error('Failed to delete message');
+        console.log('===handle delete message error', e);
+      }
+    },
+    [deleteMsg, pinList, refreshPinList],
   );
   return (
     <div className="group-pinned-message-page flex-column-between">
@@ -74,11 +110,13 @@ const PinnedMsg = () => {
         />
       </div>
       <div className="pinned-message-container flex">
-        <div className="pinned-message-footer flex-center">
-          <span className="content" onClick={handleUnpinAllMsg}>
-            {`Unpin All ${pinList?.length} Messages`}
-          </span>
-        </div>
+        {isAdmin && (
+          <div className="pinned-message-footer flex-center">
+            <span className="content" onClick={handleUnpinAllMsg}>
+              {`Unpin All ${pinList?.length} Messages`}
+            </span>
+          </div>
+        )}
         <div className="pinned-message-content">
           <StyleProvider prefixCls="portkey">
             <MessageList
@@ -88,6 +126,7 @@ const PinnedMsg = () => {
               lockable
               dataSource={messageList}
               onPinMsg={handleUnpinMsg}
+              onDeleteMsg={handleDeleteMsg}
             />
           </StyleProvider>
         </div>

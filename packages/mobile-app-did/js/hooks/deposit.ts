@@ -111,7 +111,7 @@ export function useOnDisclaimerModalPress() {
 }
 
 export function useDepositList() {
-  const { isRampShow, isSellSectionShow } = useRampEntryShow();
+  const { isBuySectionShow, isSellSectionShow } = useRampEntryShow();
   const { isBridgeShow } = useAppBridgeButtonShow();
   const { isETransDepositShow, isETransWithdrawShow } = useAppETransShow();
 
@@ -120,7 +120,7 @@ export function useDepositList() {
   const onDisclaimerModalPress = useOnDisclaimerModalPress();
   return useMemo(() => {
     const list = [];
-    if (isRampShow) list.push(DepositMap.buy);
+    if (isBuySectionShow) list.push(DepositMap.buy);
     if (isSellSectionShow) list.push(DepositMap.sell);
     if (isETransDepositShow)
       list.push({
@@ -161,13 +161,13 @@ export function useDepositList() {
 
     return list;
   }, [
-    eBridgeUrl,
-    eTransferUrl,
-    isBridgeShow,
-    isRampShow,
+    isBuySectionShow,
+    isSellSectionShow,
     isETransDepositShow,
     isETransWithdrawShow,
-    isSellSectionShow,
+    isBridgeShow,
     onDisclaimerModalPress,
+    eTransferUrl,
+    eBridgeUrl,
   ]);
 }

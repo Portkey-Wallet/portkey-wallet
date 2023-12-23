@@ -1,8 +1,9 @@
-import { Message as IMMessage, ParsedImage } from '@portkey-wallet/im/types';
+import { Message as IMMessage, ParsedImage, ParsedPinSys } from '@portkey-wallet/im/types';
 import { ChatMessage } from '../types';
 import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
+import { PIN_OPERATION_TYPE_ENUM } from '@portkey-wallet/im/types/pin';
 dayjs.extend(utc);
 
 export const ONE_SECONDS = 1000;
@@ -92,50 +93,6 @@ export const formatMessageList = (messageList: IMMessage[]): ChatMessage[] => {
       return formatMessageItem(ele);
     })
     .reverse();
-  // .map(ele => {
-  //   const msg = {
-  //     _id: ele.sendUuid,
-  //     ...ele,
-  //     text: ele.content,
-  //     createdAt: Number(ele.createAt),
-  //     messageType: ele.type,
-  //     user: {
-  //       _id: ele.from,
-  //     },
-  //   } as ChatMessage;
-  //   switch (ele.type) {
-  //     case 'IMAGE': {
-  //       if (typeof ele.parsedContent !== 'string') {
-  //         delete (msg as any).text;
-  //         msg.image = decodeURIComponent(ele.parsedContent?.thumbImgUrl || ele.parsedContent?.imgUrl || '');
-  //         msg.imageInfo = {
-  //           width: ele.parsedContent?.width,
-  //           height: ele.parsedContent?.height,
-  //           imgUri: decodeURIComponent(ele.parsedContent?.imgUrl || ''),
-  //           thumbUri: decodeURIComponent(ele.parsedContent?.thumbImgUrl || ''),
-  //         };
-  //       }
-  //       break;
-  //     }
-  //     case 'TEXT':
-  //       break;
-  //     case 'SYS':
-  //       msg.system = true;
-  //       break;
-  //     default: {
-  //       msg.messageType = 'NOT_SUPPORTED';
-  //       msg.text = UN_SUPPORTED_FORMAT;
-  //       break;
-  //     }
-  //   }
-
-  //   if (typeof ele.content !== 'string') {
-  //     msg.messageType = 'NOT_SUPPORTED';
-  //     msg.text = UN_SUPPORTED_FORMAT;
-  //   }
-  //   return msg;
-  // })
-  // .reverse();
 };
 
 export const getNumberWithUnit = (num: number, singleUnit: string, pluralUnit: string) => {
@@ -166,4 +123,23 @@ export const getEllipsisTokenShow = (amountShow: string, symbol: string, digits 
   if (amountShowLen + symbolLen > digits) return `${amountShow.slice(0, digits - symbolLen)}... ${symbol}`;
 
   return `${amountShow} ${symbol}`;
+};
+
+export const getEllipsisPinSysMessage = (message: string) => {
+  if (message?.length > 15) return `"${message.slice(0, 15)}..."`;
+  return `"${message}"`;
+};
+
+export const formatPinSysMessageToStr = (pinInfo: ParsedPinSys): string => {
+  const isImg = pinInfo?.messageType === 'IMAGE';
+
+  if (pinInfo?.pinType === PIN_OPERATION_TYPE_ENUM.Pin)
+    return `${pinInfo.userInfo?.name} pinned ${isImg ? 'a photo' : getEllipsisPinSysMessage(pinInfo.content)}`;
+
+  if (pinInfo?.pinType === PIN_OPERATION_TYPE_ENUM.UnPin)
+    return `${pinInfo.userInfo?.name} unpinned ${isImg ? 'a photo' : getEllipsisPinSysMessage(pinInfo.content)}`;
+
+  if (pinInfo?.pinType === PIN_OPERATION_TYPE_ENUM.RemoveAll) return `All ${pinInfo.unpinnedCount} messages unpinned`;
+
+  return '';
 };

@@ -33,6 +33,8 @@ import { measurePageY } from 'utils/measure';
 import GroupAvatarShow from '../components/GroupAvatarShow';
 import { useIsFocused } from '@react-navigation/native';
 import HeaderPinSection from '../components/HeaderPinSection';
+import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 
 const ChatGroupDetailsPage = () => {
   const isFocused = useIsFocused();
@@ -43,6 +45,9 @@ const ChatGroupDetailsPage = () => {
   const currentChannelId = useCurrentChannelId();
   const { isAdmin, groupInfo } = useGroupChannelInfo(currentChannelId || '', true);
   const { pin, mute, displayName } = useChannelItemInfo(currentChannelId || '') || {};
+  const { lastPinMessage, refreshLastPin, refresh } = useIMPin(currentChannelId || '', true);
+
+  console.log('useIMPin(currentChannelId || ', lastPinMessage);
 
   const leaveGroup = useLeaveChannel();
 
@@ -201,11 +206,14 @@ const ChatGroupDetailsPage = () => {
   );
 
   const headerDom = useMemo(() => {
-    // if pin exit, show pin section
-    return <HeaderPinSection />;
-
+    if (lastPinMessage) return <HeaderPinSection channelUUid={currentChannelId || ''} />;
     return <FloatingActionButton title="Add Members" shouldShowFirstTime={isAdmin} onPressButton={addMembers} />;
-  }, [addMembers, isAdmin]);
+  }, [addMembers, currentChannelId, isAdmin, lastPinMessage]);
+
+  useEffectOnce(() => {
+    refreshLastPin();
+    refresh();
+  });
 
   return (
     <PageContainer

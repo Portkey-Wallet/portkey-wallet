@@ -10,7 +10,7 @@ import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import { isIOS, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { formatChatListTime, formatMessageCountToStr } from '@portkey-wallet/utils/chat';
-import { ChannelItem, ChannelTypeEnum, ParsedRedPackage } from '@portkey-wallet/im/types';
+import { ChannelItem, ChannelTypeEnum, ParsedPinSys, ParsedRedPackage } from '@portkey-wallet/im/types';
 import CommonAvatar from 'components/CommonAvatar';
 import { useDeviceEvent } from 'hooks/useDeviceEvent';
 import myEvents from 'utils/deviceEvent';
@@ -18,6 +18,7 @@ import { getChatListSvgName } from 'pages/Chat/utils';
 import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
 import GroupAvatarShow from 'pages/Chat/components/GroupAvatarShow';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { formatPinSysMessageToStr } from 'pages/Chat/utils/format';
 
 type ChatHomeListItemSwipedType<T> = {
   item: T;
@@ -48,7 +49,6 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
       const redPacketIsHighLight: boolean =
         item.unreadMessageCount > 0 &&
         !item.mute &&
-        item.lastMessageType === 'REDPACKAGE-CARD' &&
         (item.lastMessageContent as ParsedRedPackage)?.data?.senderId !== userInfo?.userId;
 
       return (
@@ -62,12 +62,31 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
         </View>
       );
     }
-    // TODO: transfer
+    if (item.lastMessageType === 'TRANSFER-CARD') {
+      const redPacketIsHighLight: boolean =
+        item.unreadMessageCount > 0 &&
+        !item.mute &&
+        (item.lastMessageContent as ParsedRedPackage)?.data?.senderId !== userInfo?.userId;
+
+      // TODO: transfer
+      return (
+        <View style={[GStyles.flexRow, styles.message]}>
+          <TextS numberOfLines={1} style={[FontStyles.font7, redPacketIsHighLight && FontStyles.font6]}>
+            {`[Transfer] `}
+          </TextS>
+          <TextS numberOfLines={1} style={[FontStyles.font7, styles.redPacketLastMessageContent]}>
+            {(item.lastMessageContent as ParsedRedPackage)?.data?.memo}
+          </TextS>
+        </View>
+      );
+    }
 
     // not red packet
     let message = '';
     if (item.lastMessageType === 'TEXT' || item.lastMessageType === 'SYS') {
       message = item.lastMessageContent as string;
+    } else if (item.lastMessageType === 'PIN-SYS') {
+      message = formatPinSysMessageToStr(item.lastMessageContent as ParsedPinSys);
     } else if (item.lastMessageType === 'IMAGE') {
       message = '[Image]';
     } else {

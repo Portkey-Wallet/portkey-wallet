@@ -82,7 +82,6 @@ export default function GuardianApproveModal({
     async (approvalInfo: GuardiansApproved[]) => {
       try {
         setLoading(true);
-        console.log('🌈 🌈 🌈 🌈 🌈 🌈 approvalInfo', approvalInfo);
         const guardiansApproved: GuardianItem[] =
           approvalInfo?.map((item) => ({
             type: item?.type ? LoginType[item.type] : LoginType.Email, // TODO

@@ -44,6 +44,9 @@ import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import CustomModal from 'pages/components/CustomModal';
 import { SideChainTipContent, SideChainTipTitle } from '@portkey-wallet/constants/constants-ca/send';
+import InternalMessage from 'messages/InternalMessage';
+import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
+import qs from 'query-string';
 
 export type ToAccount = { address: string; name?: string };
 
@@ -57,13 +60,41 @@ type TypeStageObj = {
   [key in SendStage]: { btnText: string; handler: () => void; backFun: () => void; element: ReactElement };
 };
 
+export interface SendRouteData {
+  chainId: ChainId;
+  targetChainId?: ChainId;
+  symbol: string;
+  address: string;
+  decimals: number;
+  tokenId: any;
+  alias: string;
+  imageUrl?: string;
+  amount?: string;
+  balance?: string;
+  toAccount?: ToAccount;
+  stage?: SendStage;
+  showGuardiansApproveModal?: boolean;
+}
+
 export default function Send() {
   const navigate = useNavigate();
   const { walletName } = useWalletInfo();
+  const { isPrompt } = useCommonState();
   // TODO need get data from state and wait for BE data structure
   const { type, symbol } = useParams();
-  const { state } = useLocation();
-  const chainId: ChainId = useMemo(() => state.targetChainId || state.chainId, [state.chainId, state.targetChainId]);
+  const { state, search } = useLocation();
+  const { detail } = qs.parse(search);
+  const routeData: SendRouteData = useMemo(() => {
+    if (detail) {
+      const detailObj = JSON.parse(detail);
+      return { ...state, ...detailObj };
+    }
+    return state;
+  }, [detail, state]);
+  const chainId: ChainId = useMemo(
+    () => routeData.targetChainId || routeData.chainId,
+    [routeData.chainId, routeData.targetChainId],
+  );
   const chainInfo = useCurrentChain(chainId);
   const wallet = useCurrentWalletInfo();
   const currentNetwork = useCurrentNetworkInfo();
@@ -72,14 +103,14 @@ export default function Send() {
   const { setLoading } = useLoading();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
-  const [openGuardiansApprove, setOpenGuardiansApprove] = useState<boolean>(false);
+  const [openGuardiansApprove, setOpenGuardiansApprove] = useState<boolean>(!!routeData?.showGuardiansApproveModal);
   const oneTimeApprovalList = useRef<GuardianItem[]>([]);
   const [errorMsg, setErrorMsg] = useState('');
   const [tipMsg, setTipMsg] = useState('');
-  const [toAccount, setToAccount] = useState<ToAccount>(state?.toAccount || { address: '' });
-  const [stage, setStage] = useState<SendStage>(state?.stage || SendStage.Address);
-  const [amount, setAmount] = useState(state?.amount || '');
-  const [balance, setBalance] = useState(state?.balance || '');
+  const [toAccount, setToAccount] = useState<ToAccount>(routeData?.toAccount || { address: '' });
+  const [stage, setStage] = useState<SendStage>(routeData?.stage || SendStage.Address);
+  const [amount, setAmount] = useState(routeData?.amount || '');
+  const [balance, setBalance] = useState(routeData?.balance || '');
   const isValidSuffix = useIsValidSuffix();
   const checkManagerSyncState = useCheckManagerSyncState();
   const [txFee, setTxFee] = useState<string>();
@@ -89,15 +120,23 @@ export default function Send() {
   const tokenInfo: BaseToken = useMemo(
     () => ({
       chainId: chainId,
-      decimals: state.decimals, // 8
-      address: state.address, // "ArPnUb5FtxG2oXTaWX2DxNZowDEruJLs2TEkhRCzDdrRDfg8B",        state address  contract address
-      symbol: state.symbol, // "ELF"   the name showed
-      name: state.symbol,
-      imageUrl: state.imageUrl,
-      alias: state.alias,
-      tokenId: state.tokenId,
+      decimals: routeData.decimals, // 8
+      address: routeData?.address, // "ArPnUb5FtxG2oXTaWX2DxNZowDEruJLs2TEkhRCzDdrRDfg8B",        routeData address  contract address
+      symbol: routeData.symbol, // "ELF"   the name showed
+      name: routeData.symbol,
+      imageUrl: routeData?.imageUrl,
+      alias: routeData?.alias,
+      tokenId: routeData?.tokenId,
     }),
-    [chainId, state.address, state.alias, state.decimals, state.imageUrl, state.symbol, state.tokenId],
+    [
+      chainId,
+      routeData?.address,
+      routeData?.alias,
+      routeData.decimals,
+      routeData?.imageUrl,
+      routeData.symbol,
+      routeData?.tokenId,
+    ],
   );
   const defaultToken = useDefaultToken(chainId);
 
@@ -175,7 +214,7 @@ export default function Send() {
         const privateKey = await aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed);
         if (!privateKey) throw t(WalletError.invalidPrivateKey);
         if (!currentChain) throw 'No ChainInfo';
-        const _caAddress = wallet?.[(state.chainId as ChainId) || defaultToken.symbol]?.caAddress;
+        const _caAddress = wallet?.[chainId]?.caAddress;
         const feeRes = await getTransferFee({
           caAddress: _caAddress || '',
           managerAddress: wallet.address,
@@ -193,18 +232,7 @@ export default function Send() {
         console.log('getFee===error', _error);
       }
     },
-    [
-      amount,
-      currentChain,
-      currentNetwork.walletType,
-      defaultToken.symbol,
-      passwordSeed,
-      state.chainId,
-      t,
-      toAccount?.address,
-      tokenInfo,
-      wallet,
-    ],
+    [amount, chainId, currentChain, currentNetwork.walletType, passwordSeed, t, toAccount?.address, tokenInfo, wallet],
   );
 
   const sendTransfer = useCallback(async () => {
@@ -281,9 +309,45 @@ export default function Send() {
 
   const checkLimit = useCheckLimit(tokenInfo.chainId);
   const handleOneTimeApproval = useCallback(() => {
-    setOpenGuardiansApprove(true);
-    console.log('🌈 🌈 🌈 🌈 🌈 🌈 handleOneTimeApproval', '');
-  }, []);
+    if (isPrompt) {
+      setOpenGuardiansApprove(true);
+    } else {
+      InternalMessage.payload(
+        PortkeyMessageTypes.SEND_TOKEN,
+        JSON.stringify({
+          pathSuffix: routeData.symbol,
+          search: {
+            chainId: chainId,
+            targetChainId: chainId,
+            symbol: routeData.symbol,
+            address: tokenInfo.address,
+            decimals: routeData.decimals,
+            tokenId: tokenInfo.tokenId,
+            alias: tokenInfo.alias,
+            imageUrl: tokenInfo?.imageUrl,
+            stage,
+            amount,
+            balance,
+            toAccount,
+            showGuardiansApproveModal: true,
+          },
+        }),
+      ).send();
+    }
+  }, [
+    amount,
+    balance,
+    chainId,
+    isPrompt,
+    routeData.decimals,
+    routeData.symbol,
+    stage,
+    toAccount,
+    tokenInfo.address,
+    tokenInfo.alias,
+    tokenInfo?.imageUrl,
+    tokenInfo.tokenId,
+  ]);
   const onCloseGuardianApprove = useCallback(() => {
     setOpenGuardiansApprove(false);
   }, []);
@@ -603,7 +667,7 @@ export default function Send() {
 
   const renderSideChainTip = useCallback(() => {
     return (
-      state.chainId !== MAIN_CHAIN_ID && (
+      chainId !== MAIN_CHAIN_ID && (
         <div className="flex-row-between side-chain-tip" onClick={showSideChainModal}>
           <div className="flex">
             <CustomSvg type="Info" />
@@ -613,9 +677,8 @@ export default function Send() {
         </div>
       )
     );
-  }, [showSideChainModal, state.chainId]);
+  }, [chainId, showSideChainModal]);
 
-  const { isPrompt } = useCommonState();
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['page-send', isPrompt && 'detail-page-prompt'])}>
@@ -628,7 +691,7 @@ export default function Send() {
           rightElement={<CustomSvg type="Close2" onClick={() => navigate('/')} />}
         />
         {stage !== SendStage.Preview && (
-          <div className={clsx(['address-form', state.chainId !== MAIN_CHAIN_ID && 'address-form-side-chain'])}>
+          <div className={clsx(['address-form', chainId !== MAIN_CHAIN_ID && 'address-form-side-chain'])}>
             <div className="address-wrap">
               <div className="item from">
                 <span className="label">{t('From_with_colon')}</span>
@@ -677,6 +740,7 @@ export default function Send() {
   }, [
     StageObj,
     btnDisabled,
+    chainId,
     errorMsg,
     getApproveRes,
     isPrompt,
@@ -685,7 +749,6 @@ export default function Send() {
     openGuardiansApprove,
     renderSideChainTip,
     stage,
-    state.chainId,
     symbol,
     t,
     toAccount,

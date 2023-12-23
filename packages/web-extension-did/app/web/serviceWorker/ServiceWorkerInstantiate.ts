@@ -186,6 +186,12 @@ export default class ServiceWorkerInstantiate {
       case PortkeyMessageTypes.GUARDIANS_APPROVAL_PAYMENT_SECURITY:
         ServiceWorkerInstantiate.expandPaymentSecurityGuardiansApproval(message.payload);
         break;
+      case PortkeyMessageTypes.SEND_TOKEN:
+        ServiceWorkerInstantiate.expandSend(message.payload);
+        break;
+      case PortkeyMessageTypes.RAMP:
+        ServiceWorkerInstantiate.expandRamp(message.payload);
+        break;
       case PortkeyMessageTypes.OPEN_RECAPTCHA_PAGE:
         this.openRecaptchaPage(sendResponse, message.payload);
         break;
@@ -361,6 +367,27 @@ export default class ServiceWorkerInstantiate {
     notificationService.openPrompt(
       {
         method: PromptRouteTypes.GUARDIANS_APPROVAL_PAYMENT_SECURITY,
+        search: payload,
+      },
+      'tabs',
+    );
+  }
+
+  static expandSend(payload: any) {
+    notificationService.openPrompt(
+      {
+        method: PromptRouteTypes.SEND_TOKEN,
+        pathSuffix: payload ? JSON.parse(payload)?.pathSuffix : '',
+        search: payload ? JSON.stringify(JSON.parse(payload)?.search) : '',
+      },
+      'tabs',
+    );
+  }
+
+  static expandRamp(payload: any) {
+    notificationService.openPrompt(
+      {
+        method: PromptRouteTypes.RAMP,
         search: payload,
       },
       'tabs',

@@ -32,6 +32,8 @@ export default async function getPromptConfig({ message }: PromptConfigParam) {
     case PromptRouteTypes.GUARDIANS_APPROVAL:
     case PromptRouteTypes.GUARDIANS_APPROVAL_PAYMENT_SECURITY:
     case PromptRouteTypes.WALLET_SECURITY_APPROVE:
+    case PromptRouteTypes.SEND_TOKEN:
+    case PromptRouteTypes.RAMP:
       isFullscreen = true;
       break;
     default:

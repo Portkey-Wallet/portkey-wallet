@@ -8,7 +8,6 @@ import {
   ExceedSingleLimit,
   LimitType,
 } from 'constants/security';
-// import { useGuardiansNavigate } from 'hooks/guardians'; // TODO guardians
 import CustomModal from 'pages/components/CustomModal';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +16,6 @@ import { useNavigate } from 'react-router';
 export function useTransferLimitApprovalModal() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  // const guardiansNavigate = useGuardiansNavigate();
 
   return useCallback(
     (state: ITransferLimitRouteState, type: LimitType, onOneTimeApproval: () => void) => {

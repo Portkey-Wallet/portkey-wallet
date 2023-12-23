@@ -44,18 +44,40 @@ import {
   SYNCHRONIZING_CHAIN_TEXT,
 } from '@portkey-wallet/constants/constants-ca/payment';
 import { useCheckLimit, useCheckSecurity } from 'hooks/useSecurity';
-import { handleErrorMessage } from '@portkey-wallet/utils';
+import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { useExtensionBuyButtonShow } from 'hooks/cms';
 import { GuardianItem } from 'types/guardians';
 import GuardianApproveModal from 'pages/components/GuardianApprovalModal';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { chromeStorage } from 'store/utils';
+import InternalMessage from 'messages/InternalMessage';
+import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
+import qs from 'query-string';
+
+interface RampRouteData {
+  amount: string;
+  fiat: string;
+  country: string;
+  crypto: string;
+  network: string;
+  side: PaymentTypeEnum;
+  tokenInfo?: any;
+  isShowGuardiansApproveModal?: boolean;
+}
 
 export default function Buy() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const { state, search } = useLocation();
+  const { detail } = qs.parse(search);
+  const routeData: RampRouteData = useMemo(() => {
+    if (detail) {
+      const detailObj = JSON.parse(detail);
+      return { ...state, ...detailObj };
+    }
+    return state;
+  }, [detail, state]);
   const { isPrompt } = useCommonState();
   const updateTimeRef = useRef(MAX_UPDATE_TIME);
   const updateTimerRef = useRef<NodeJS.Timer | number>();
@@ -77,11 +99,27 @@ export default function Buy() {
   const defaultToken = useDefaultToken('AELF');
   const checkSecurity = useCheckSecurity();
   const checkLimit = useCheckLimit('AELF');
-  const [openGuardiansApprove, setOpenGuardiansApprove] = useState<boolean>(false);
+  const [openGuardiansApprove, setOpenGuardiansApprove] = useState<boolean>(!!routeData?.isShowGuardiansApproveModal);
   const handleOneTimeApproval = useCallback(() => {
-    setOpenGuardiansApprove(true);
-    console.log('🌈 🌈 🌈 🌈 🌈 🌈 handleOneTimeApproval', '');
-  }, []);
+    if (isPrompt) {
+      setOpenGuardiansApprove(true);
+    } else {
+      const { amount, currency, country, crypto, network, side } = valueSaveRef.current;
+      InternalMessage.payload(
+        PortkeyMessageTypes.RAMP,
+        JSON.stringify({
+          crypto,
+          network,
+          fiat: currency,
+          country,
+          amount,
+          side,
+          tokenInfo: routeData ? routeData?.tokenInfo : null,
+          isShowGuardiansApproveModal: true,
+        }),
+      ).send();
+    }
+  }, [isPrompt, routeData]);
   const onCloseGuardianApprove = useCallback(() => {
     setOpenGuardiansApprove(false);
   }, []);
@@ -95,15 +133,14 @@ export default function Buy() {
         country,
         amount,
         side,
-        tokenInfo: state ? state.tokenInfo : null,
+        tokenInfo: routeData ? routeData.tokenInfo : null,
       },
     });
-  }, [navigate, state]);
+  }, [navigate, routeData]);
   const getApproveRes = useCallback(
     async (approveList: GuardianItem[]) => {
       try {
         if (Array.isArray(approveList) && approveList.length > 0) {
-          console.log('🌈 🌈 🌈 🌈 🌈 🌈 approveList', approveList);
           chromeStorage.setItem('portkeyOffRampGuardiansApproveList', JSON.stringify(approveList));
           setOpenGuardiansApprove(false);
           goPreview();
@@ -125,8 +162,8 @@ export default function Buy() {
 
   useEffectOnce(() => {
     // from preview back
-    if (state && state.amount !== undefined) {
-      const { amount, country, fiat, crypto, network, side } = state;
+    if (routeData && routeData.amount !== undefined) {
+      const { amount, country, fiat, crypto, network, side } = routeData;
       setAmount(amount);
       setCurFiat({ country, currency: fiat });
       setCurToken({ crypto, network });
@@ -143,7 +180,7 @@ export default function Buy() {
         receive: '',
         isShowErrMsg: false,
       };
-    } else if (state && state.side === PaymentTypeEnum.SELL) {
+    } else if (routeData && routeData.side === PaymentTypeEnum.SELL) {
       // from sell entry
       setPage(PaymentTypeEnum.SELL);
       valueSaveRef.current.side = PaymentTypeEnum.SELL;
@@ -165,8 +202,10 @@ export default function Buy() {
         });
       }
     }
-
-    updateCrypto();
+    (async () => {
+      await sleep(1000);
+      await updateCrypto();
+    })();
 
     return () => {
       clearInterval(updateTimerRef.current);
@@ -554,14 +593,14 @@ export default function Buy() {
   ]);
 
   const handleBack = useCallback(() => {
-    if (state && state.tokenInfo) {
+    if (routeData && routeData?.tokenInfo) {
       navigate('/token-detail', {
-        state: state.tokenInfo,
+        state: routeData.tokenInfo,
       });
     } else {
       navigate('/');
     }
-  }, [navigate, state]);
+  }, [navigate, routeData]);
 
   const renderRate = useMemo(
     () => (

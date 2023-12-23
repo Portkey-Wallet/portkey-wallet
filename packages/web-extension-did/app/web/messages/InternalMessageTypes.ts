@@ -23,6 +23,11 @@ export const PromptRouteTypes = {
   GUARDIANS_VIEW: 'GUARDIANS_VIEW',
   GUARDIANS_APPROVAL: 'GUARDIANS_APPROVAL',
   GUARDIANS_APPROVAL_PAYMENT_SECURITY: 'GUARDIANS_APPROVAL_PAYMENT_SECURITY',
+
+  // send
+  SEND_TOKEN: 'SEND_TOKEN',
+  // ramp
+  RAMP: 'RAMP',
 } as const;
 
 export const WalletMessageTypes = walletMessage;
@@ -71,6 +76,11 @@ export const PortkeyMessageTypes = {
   GUARDIANS_VIEW: 'GUARDIANS_VIEW',
   GUARDIANS_APPROVAL: 'GUARDIANS_APPROVAL',
   GUARDIANS_APPROVAL_PAYMENT_SECURITY: 'GUARDIANS_APPROVAL_PAYMENT_SECURITY',
+
+  // send
+  SEND_TOKEN: 'SEND_TOKEN',
+  // ramp
+  RAMP: 'RAMP',
 } as const;
 
 /**

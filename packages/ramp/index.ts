@@ -64,6 +64,10 @@ export abstract class BaseRamp implements IBaseRamp {
     return provider;
   }
 
+  public clearProvider() {
+    this.providerMap = {};
+  }
+
   async transferCrypto(orderId: string, generateTransaction: IGenerateTransaction): Promise<IOrderInfo> {
     const clientId = randomId();
     try {
@@ -165,6 +169,8 @@ export class Ramp extends BaseRamp {
     const {
       data: { thirdPart },
     } = await this.service.getRampInfo();
+
+    this.clearProvider();
 
     Object.keys(thirdPart).forEach(key => {
       switch (key) {

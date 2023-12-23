@@ -21,10 +21,10 @@ const ImageMessage: React.FC<IMessage> = (props) => {
   const popoverList = useMemo(
     () => [
       {
-        key: 'delete',
-        leftIcon: <CustomSvg type="Delete" />,
-        children: 'Delete',
-        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(e),
+        key: 'reply',
+        leftIcon: <CustomSvg type="Reply" />,
+        children: 'Reply',
+        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onReplyMsg?.(e),
       },
       pinInfo
         ? {
@@ -39,12 +39,11 @@ const ImageMessage: React.FC<IMessage> = (props) => {
             children: 'Pin',
             onClick: (e: React.MouseEvent<HTMLElement>) => props?.onPinMsg?.(e),
           },
-
       {
-        key: 'reply',
-        leftIcon: <CustomSvg type="Reply" />,
-        children: 'Reply',
-        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onReplyMsg?.(e),
+        key: 'delete',
+        leftIcon: <CustomSvg type="Delete" />,
+        children: 'Delete',
+        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(e),
       },
     ],
     [pinInfo, props],
@@ -90,7 +89,13 @@ const ImageMessage: React.FC<IMessage> = (props) => {
           preview={{
             src: imgUrl || thumbImgUrl,
           }}
-          onError={() => setLoadErr(true)}
+          fallback={imgUrl}
+          onError={(error: any) => {
+            const _targetSrc = error.target?.currentSrc;
+            if (_targetSrc === imgUrl) {
+              setLoadErr(true);
+            }
+          }}
         />
         <div className="image-date flex-center">{showMask}</div>
       </>

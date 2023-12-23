@@ -49,10 +49,10 @@ const TextMessage: React.FC<IMessage> = (props) => {
         },
       },
       {
-        key: 'delete',
-        leftIcon: <CustomSvg type="Delete" />,
-        children: 'Delete',
-        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(e),
+        key: 'reply',
+        leftIcon: <CustomSvg type="Reply" />,
+        children: 'Reply',
+        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onReplyMsg?.(e),
       },
       pinInfo
         ? {
@@ -68,10 +68,10 @@ const TextMessage: React.FC<IMessage> = (props) => {
             onClick: (e: React.MouseEvent<HTMLElement>) => props?.onPinMsg?.(e),
           },
       {
-        key: 'reply',
-        leftIcon: <CustomSvg type="Reply" />,
-        children: 'Reply',
-        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onReplyMsg?.(e),
+        key: 'delete',
+        leftIcon: <CustomSvg type="Delete" />,
+        children: 'Delete',
+        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(e),
       },
     ],
     [parsedContent, pinInfo, props, setCopied],
@@ -96,17 +96,15 @@ const TextMessage: React.FC<IMessage> = (props) => {
     if (!quote) {
       return <></>;
     }
-    if (!quote.channelUuid) {
-      return <RepliedMsg position={position} />;
-    }
     if (quote.type === MessageTypeEnum.IMAGE) {
       const { thumbImgUrl, imgUrl } = formatImageData(quote.parsedContent as ParsedImage);
       return (
         <RepliedMsg
           msgType={MessageTypeEnum.IMAGE}
           position={position}
-          msgContent={thumbImgUrl || imgUrl}
-          from={quote.fromName || 'Wallet'}
+          thumbImgUrl={thumbImgUrl || imgUrl}
+          imgUrl={imgUrl}
+          from={quote.fromName}
         />
       );
     }
@@ -115,7 +113,7 @@ const TextMessage: React.FC<IMessage> = (props) => {
         <RepliedMsg
           msgType={MessageTypeEnum.TEXT}
           position={position}
-          msgContent={quote.channelUuid ? quote.content : 'The message has been hidden.'}
+          msgContent={quote.content || 'The message has been hidden.'}
           from={quote.fromName}
         />
       );

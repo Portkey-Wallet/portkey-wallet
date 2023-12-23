@@ -56,8 +56,8 @@ export type ParsedPinSys = {
   content: string;
   messageId: string;
   sendUuid: string;
-  unpinnedCount?: number;
 
+  unpinnedCount?: number;
   parsedContent?: ParsedContent;
 };
 
@@ -96,7 +96,7 @@ export type ChannelMemberInfo = {
   name: string;
   avatar: string;
   isAdmin: boolean;
-  addresses: {
+  addresses?: {
     chainId: ChainId;
     chainName?: string;
     address: string;

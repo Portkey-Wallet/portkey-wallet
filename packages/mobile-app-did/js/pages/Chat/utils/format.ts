@@ -124,22 +124,3 @@ export const getEllipsisTokenShow = (amountShow: string, symbol: string, digits 
 
   return `${amountShow} ${symbol}`;
 };
-
-export const getEllipsisPinSysMessage = (message: string) => {
-  if (message?.length > 15) return `"${message.slice(0, 15)}..."`;
-  return `"${message}"`;
-};
-
-export const formatPinSysMessageToStr = (pinInfo: ParsedPinSys): string => {
-  const isImg = pinInfo?.messageType === 'IMAGE';
-
-  if (pinInfo?.pinType === PIN_OPERATION_TYPE_ENUM.Pin)
-    return `${pinInfo.userInfo?.name} pinned ${isImg ? 'a photo' : getEllipsisPinSysMessage(pinInfo.content)}`;
-
-  if (pinInfo?.pinType === PIN_OPERATION_TYPE_ENUM.UnPin)
-    return `${pinInfo.userInfo?.name} unpinned ${isImg ? 'a photo' : getEllipsisPinSysMessage(pinInfo.content)}`;
-
-  if (pinInfo?.pinType === PIN_OPERATION_TYPE_ENUM.RemoveAll) return `All ${pinInfo.unpinnedCount} messages unpinned`;
-
-  return '';
-};

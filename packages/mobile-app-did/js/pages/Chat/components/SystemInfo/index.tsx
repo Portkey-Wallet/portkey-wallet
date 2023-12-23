@@ -7,7 +7,7 @@ import { defaultColors } from 'assets/theme';
 import { ChatMessage } from 'pages/Chat/types';
 import GStyles from 'assets/theme/GStyles';
 import { ParsedPinSys } from '@portkey-wallet/im';
-import { formatPinSysMessageToStr } from 'pages/Chat/utils/format';
+import { formatPinSysMessageToStr } from '@portkey-wallet/utils/chat';
 
 function SystemInfo(props: SystemMessageProps<ChatMessage> & { previousMessage?: ChatMessage }) {
   const { previousMessage, currentMessage } = props;

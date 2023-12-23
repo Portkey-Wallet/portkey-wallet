@@ -212,15 +212,12 @@ export default function BuyForm() {
       return;
     }
 
-    let _rate = rate,
-      _receiveAmount = receiveAmount;
-
+    let _rate = rate;
     if (isRefreshReceiveValid.current === false) {
       const rst = await refreshReceiveRef.current();
       Loading.hide();
       if (!rst) return;
       _rate = rst.rate;
-      _receiveAmount = rst.receiveAmount;
     }
 
     Loading.hide();
@@ -229,10 +226,9 @@ export default function BuyForm() {
       fiat,
       crypto,
       type: RampType.BUY,
-      receiveAmount: _receiveAmount,
       rate: _rate,
     });
-  }, [amount, fiat, rate, receiveAmount, refreshRampShow, crypto]);
+  }, [amount, fiat, rate, refreshRampShow, crypto]);
 
   return (
     <View style={styles.formContainer}>
@@ -253,7 +249,15 @@ export default function BuyForm() {
                 });
               }}>
               {fiat?.icon && (
-                <CommonAvatar hasBorder title={fiat?.symbol || ''} style={styles.unitIconStyle} imageUrl={fiat?.icon} />
+                <CommonAvatar
+                  avatarSize={pTd(24)}
+                  width={pTd(24)}
+                  height={pTd(24)}
+                  hasBorder
+                  title={fiat?.symbol || ''}
+                  style={styles.unitIconStyle}
+                  imageUrl={fiat?.icon}
+                />
               )}
               <TextL style={[GStyles.flex1, fonts.mediumFont]}>{fiat?.symbol}</TextL>
               <Svg size={16} icon="down-arrow" color={defaultColors.icon1} />

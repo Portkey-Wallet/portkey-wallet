@@ -66,7 +66,7 @@ const TokenDetail: React.FC = () => {
   const { accountToken } = useAppCASelector(state => state.assets);
   const isTokenHasPrice = useIsTokenHasPrice(tokenInfo.symbol);
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
-  const { isRampShow } = useRampEntryShow();
+  const { isBuySectionShow } = useRampEntryShow();
 
   const [reFreshing, setFreshing] = useState(false);
 
@@ -136,8 +136,8 @@ const TokenDetail: React.FC = () => {
   });
 
   const isBuyButtonShow = useMemo(
-    () => tokenInfo.symbol === defaultToken.symbol && tokenInfo.chainId === 'AELF' && isRampShow,
-    [defaultToken.symbol, isRampShow, tokenInfo.chainId, tokenInfo.symbol],
+    () => tokenInfo.symbol === defaultToken.symbol && tokenInfo.chainId === 'AELF' && isBuySectionShow,
+    [defaultToken.symbol, isBuySectionShow, tokenInfo.chainId, tokenInfo.symbol],
   );
 
   const isFaucetButtonShow = useMemo(

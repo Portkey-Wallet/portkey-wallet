@@ -42,7 +42,6 @@ export default function RampHome() {
   const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
 
   const { toTab } = useRouterParams<{ toTab: RampType }>();
-  console.log('toTab', toTab);
   const [selectTab, setSelectTab] = useState<RampType>(
     toTab !== RampType.SELL && isBuySectionShow ? RampType.BUY : RampType.SELL,
   );

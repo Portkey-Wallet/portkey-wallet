@@ -32,10 +32,13 @@ export const useIMPin = (channelId: string, isRegister = false) => {
   );
 
   const LastPinNetMap = useIMLastPinNetMapState();
-  const lastPinMessage: Message | undefined = useMemo(
-    () => LastPinNetMap?.[networkType]?.[channelId]?.message,
-    [LastPinNetMap, channelId, networkType],
-  );
+  const lastPinMessage: Message | undefined = useMemo(() => {
+    const _msg = LastPinNetMap?.[networkType]?.[channelId]?.message;
+    if (_msg) {
+      return messageParser(_msg);
+    }
+    return _msg;
+  }, [LastPinNetMap, channelId, networkType]);
   const lastPinMessageRef = useRef(lastPinMessage);
   lastPinMessageRef.current = lastPinMessage;
 

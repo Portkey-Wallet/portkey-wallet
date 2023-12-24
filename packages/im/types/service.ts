@@ -121,6 +121,7 @@ export type GetMessageListParams = {
 
 export type DeleteMessageParams = {
   id: string;
+  sendUuid: string;
 };
 
 export type TriggerMessageEvent = {
@@ -318,6 +319,7 @@ export type GetPinListResult = {
 
 export type UnPinParams = {
   id: string;
+  sendUuid: string;
   channelUuid: string;
 };
 

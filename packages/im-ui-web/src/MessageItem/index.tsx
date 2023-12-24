@@ -10,14 +10,16 @@ import { MessageTypeEnum } from '@portkey-wallet/im';
 import { SupportSysMsgType } from '../constants';
 import './index.less';
 
-const MessageItem: React.FC<MessageContentType> = (props) => {
-  const { className, fromAvatar, fromName, type, showAvatar = false } = props;
+const MessageItem: React.FC<MessageContentType> = ({ className, ...props }) => {
+  const { fromAvatar, fromName, type, showAvatar = false, hideAvatar } = props;
   const positionClassName = useMemo(
     () => (SupportSysMsgType.includes(type) ? 'center' : props.position),
     [props.position, type],
   );
   return (
-    <div key={props.key} className={clsx('portkey-message-item', 'flex', positionClassName, className)}>
+    <div
+      key={props.key}
+      className={clsx('portkey-message-item', 'flex', positionClassName, className, hideAvatar && 'hidden-avatar')}>
       {showAvatar && (
         <Avatar {...props} src={fromAvatar} onClick={(e: React.MouseEvent<HTMLElement>) => props?.onClickAvatar?.(e)} />
       )}

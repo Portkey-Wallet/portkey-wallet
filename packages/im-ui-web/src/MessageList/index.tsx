@@ -5,6 +5,7 @@ import CustomSvg from '../components/CustomSvg';
 import CircleLoading from '../components/CircleLoading';
 import { ExtraMessageTypeEnum, IMessageListProps, MessageContentType } from '../type';
 import { MessageTypeEnum } from '@portkey-wallet/im';
+import { SupportSysMsgType } from '../constants';
 import './index.less';
 
 const MessageList: FC<IMessageListProps> = ({
@@ -87,7 +88,9 @@ const MessageList: FC<IMessageListProps> = ({
     let hiddenAvatar = false;
     return props.dataSource.map((x, i: number) => {
       // hidden avatar logic
-      hiddenAvatar = x?.fromName === prev?.fromName;
+      if (prev?.type) {
+        hiddenAvatar = !SupportSysMsgType.includes(prev?.type) && x?.fromName === prev?.fromName;
+      }
       isShowMargin = prev?.position !== x.position;
       if (prev?.position !== x.position) {
         isShowMargin = true;
@@ -102,7 +105,8 @@ const MessageList: FC<IMessageListProps> = ({
         <MessageItem
           {...(x as MessageContentType)}
           key={x.key}
-          className={clsx([isShowMargin && 'show-margin', hiddenAvatar && 'hidden-avatar'])}
+          hideAvatar={hiddenAvatar}
+          className={clsx([isShowMargin && 'show-margin'])}
           onDeleteMsg={(e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(x, i, e)}
           onPinMsg={(e: React.MouseEvent<HTMLElement>) => props?.onPinMsg?.(x, i, e)}
           onReplyMsg={(e: React.MouseEvent<HTMLElement>) => props?.onReplyMsg?.(x, i, e)}

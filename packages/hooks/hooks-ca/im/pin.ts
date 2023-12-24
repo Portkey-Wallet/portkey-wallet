@@ -330,10 +330,11 @@ export const useIMPin = (channelId: string, isRegister = false) => {
 
   const unPin = useCallback(
     async (message: Message) => {
-      const { id } = message;
-      if (!id) return;
+      const { id, sendUuid } = message;
+      if (!(id && sendUuid)) return;
       await im.service.unPin({
         id,
+        sendUuid,
         channelUuid: channelId,
       });
       if (lastPinMessageRef.current?.id === id) {

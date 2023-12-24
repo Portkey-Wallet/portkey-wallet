@@ -10,6 +10,7 @@ import CustomSvg from '../components/CustomSvg';
 import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
 import RepliedMsg from '../components/RepliedMsg';
 import { MessageTypeEnum, ParsedImage } from '@portkey-wallet/im/types';
+import { websiteRE } from '@portkey-wallet/utils/reg';
 import './index.less';
 
 const TextMessage: React.FC<IMessage> = (props) => {
@@ -22,16 +23,21 @@ const TextMessage: React.FC<IMessage> = (props) => {
     isAdmin,
     createAt,
     showPageType = MessageShowPageEnum['MSG-PAGE'],
+    dateString,
   } = props;
+  const dataShowStr = useMemo(() => dateString || formatTime(createAt), [createAt, dateString]);
+  const isPinIconShow = useMemo(
+    () => pinInfo && showPageType === MessageShowPageEnum['MSG-PAGE'],
+    [pinInfo, showPageType],
+  );
   const showMask = useMemo(() => {
-    const dataShow = props.dateString ? props.dateString : formatTime(createAt);
     return (
       <span className="flex-center">
-        {pinInfo && showPageType === MessageShowPageEnum['MSG-PAGE'] && <CustomSvg type="MsgPin" />}
-        <span>{dataShow}</span>
+        {isPinIconShow && <CustomSvg type="MsgPin" />}
+        <span>{dataShowStr}</span>
       </span>
     );
-  }, [props.dateString, createAt, pinInfo, showPageType]);
+  }, [isPinIconShow, dataShowStr]);
   const [, setCopied] = useCopyToClipboard();
   const [popVisible, setPopVisible] = useState(false);
   const hidePop = useCallback(() => {
@@ -140,7 +146,7 @@ const TextMessage: React.FC<IMessage> = (props) => {
             <span className="non-support-msg" onClick={props.onClickUnSupportMsg}>
               {UN_SUPPORTED_FORMAT}
             </span>
-            <span className="text-date-hidden">{showMask}</span>
+            <span className={clsx('text-date-hidden', isPinIconShow && 'pin-icon')}>{dataShowStr}</span>
           </div>
           <div className="text-date">{showMask}</div>
         </div>
@@ -170,10 +176,15 @@ const TextMessage: React.FC<IMessage> = (props) => {
                       className: 'text-link',
                       onClick: handleUrlPress,
                     },
+                    {
+                      pattern: websiteRE,
+                      className: 'text-link',
+                      onClick: handleUrlPress,
+                    },
                   ]}>
                   {parsedContent as string}
                 </ParsedText>
-                <span className="text-date-hidden">{showMask}</span>
+                <span className={clsx('text-date-hidden', isPinIconShow && 'pin-icon')}>{dataShowStr}</span>
               </div>
             </div>
             <div className="text-date">{showMask}</div>

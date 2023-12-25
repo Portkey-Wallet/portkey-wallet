@@ -8,6 +8,7 @@ import { IMessage, MessageContentType } from '../type';
 import Avatar from '../Avatar';
 import { MessageTypeEnum } from '@portkey-wallet/im';
 import { SupportSysMsgType } from '../constants';
+import TransferMessage from '../TransferMessage';
 import './index.less';
 
 const MessageItem: React.FC<MessageContentType> = ({ className, ...props }) => {
@@ -40,6 +41,12 @@ const MessageItem: React.FC<MessageContentType> = ({ className, ...props }) => {
         <div className="flex-column">
           {showAvatar && <div className="message-item-form-name">{fromName}</div>}
           <RedPacketMessage {...(props as IMessage)} />
+        </div>
+      )}
+      {type === MessageTypeEnum.TRANSFER_CARD && (
+        <div className="flex-column">
+          {showAvatar && <div className="message-item-form-name">{fromName}</div>}
+          <TransferMessage {...(props as IMessage)} />
         </div>
       )}
     </div>

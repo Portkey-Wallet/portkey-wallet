@@ -110,6 +110,7 @@ export interface IMessage extends Message, IMessageEvent {
   isGroup?: boolean;
   showPageType?: IMessageShowPage;
   hideAvatar?: boolean;
+  extraData?: Record<string, any>;
 }
 
 export interface IMessageListProps {

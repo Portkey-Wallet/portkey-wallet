@@ -1,4 +1,3 @@
-import { TransferTypeEnum } from '@portkey-wallet/im';
 import { ChainId, ChainType } from '..';
 import type { SendType } from './send';
 

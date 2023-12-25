@@ -8,6 +8,7 @@ import {
   ParsedImage,
   ParsedPinSys,
   ParsedRedPackage,
+  ParsedTransfer,
 } from '@portkey-wallet/im';
 import {
   ExtraMessageTypeEnum,
@@ -16,6 +17,7 @@ import {
   SupportSysMsgType,
 } from '@portkey-wallet/im-ui-web';
 import { formatMessageTime, formatPinSysMessageToStr } from '@portkey-wallet/utils/chat';
+import { divDecimalsToShow } from '@portkey-wallet/utils/converter';
 import { isSameDay } from '@portkey-wallet/utils/time';
 
 export const supportedMsgType: MessageType[] = [
@@ -70,6 +72,9 @@ export const formatMessageList = ({
         isGroup,
         isAdmin,
         showPageType,
+        extraData: {
+          myPortkeyId: ownerRelationId,
+        },
       };
     } else {
       transItem = {
@@ -138,6 +143,17 @@ export const formatChatListSubTitle = (item: ChannelItem) => {
   if (_type === MessageTypeEnum.REDPACKAGE_CARD) {
     const redPackage = (item.lastMessageContent as ParsedRedPackage).data;
     return `${redPackage?.memo || RED_PACKAGE_DEFAULT_MEMO}`;
+  }
+  if (_type === MessageTypeEnum.TRANSFER_CARD) {
+    const asset = (item.lastMessageContent as ParsedTransfer)?.transferExtraData || {};
+    const { nftInfo, tokenInfo } = asset;
+    if (nftInfo) {
+      return `${nftInfo.alias} #${nftInfo.nftId}`;
+    }
+    if (tokenInfo) {
+      return `${divDecimalsToShow(tokenInfo.amount, tokenInfo.decimal)} ${tokenInfo.symbol}`;
+    }
+    return '';
   }
   return UN_SUPPORTED_FORMAT;
 };

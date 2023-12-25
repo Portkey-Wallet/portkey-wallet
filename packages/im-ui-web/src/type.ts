@@ -64,6 +64,7 @@ export interface INotSupportMessage extends IMessageEvent {
   subType: INotSupportMessageType;
   parsedContent: string;
   className?: string;
+  hideAvatar?: boolean;
 }
 export interface IDateSysMessage extends IMessageEvent {
   key: string;
@@ -78,6 +79,7 @@ export interface IDateSysMessage extends IMessageEvent {
   className?: string;
   subType: IDateSysMessageType;
   parsedContent: string;
+  hideAvatar?: boolean;
 }
 
 export interface IMessageEvent {
@@ -107,6 +109,8 @@ export interface IMessage extends Message, IMessageEvent {
   isAdmin?: boolean;
   isGroup?: boolean;
   showPageType?: IMessageShowPage;
+  hideAvatar?: boolean;
+  extraData?: Record<string, any>;
 }
 
 export interface IMessageListProps {

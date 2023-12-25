@@ -310,13 +310,14 @@ export const useDeleteMessage = (channelId: string) => {
   const listRef = useLatestRef(list);
   return useCallback(
     async (message: Message) => {
-      const { id } = message;
-      if (!id) {
+      const { id, sendUuid } = message;
+      if (!(id && sendUuid)) {
         throw new Error('no message id');
       }
       try {
         await im.service.deleteMessage({
           id,
+          sendUuid,
         });
 
         const list = listRef.current || [];

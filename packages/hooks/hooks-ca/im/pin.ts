@@ -212,8 +212,9 @@ export const useIMPin = (channelId: string, isRegister = false) => {
 
   useEffectOnce(() => {
     if (!isRegister) return;
-    const { remove: removeMsgObserver } = im.registerChannelMsgObserver(channelId, (e: SocketMessage) => {
-      handlePinSystemMsgRef.current(e);
+    const { remove: removeMsgObserver } = im.registerChannelMsgObserver(channelId, (e: any) => {
+      const _msg: SocketMessage = e['im-message'];
+      handlePinSystemMsgRef.current(_msg);
     });
     const { remove: removeConnectObserver } = im.registerConnectObserver(() => {
       refreshRef.current();
@@ -330,10 +331,11 @@ export const useIMPin = (channelId: string, isRegister = false) => {
 
   const unPin = useCallback(
     async (message: Message) => {
-      const { id } = message;
-      if (!id) return;
+      const { id, sendUuid } = message;
+      if (!(id && sendUuid)) return;
       await im.service.unPin({
         id,
+        sendUuid,
         channelUuid: channelId,
       });
       if (lastPinMessageRef.current?.id === id) {

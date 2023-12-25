@@ -9,6 +9,7 @@ import { formatChatListTime } from '../utils';
 import PopoverMenuList from '../PopoverMenuList';
 import { ChannelTypeEnum, MessageTypeEnum } from '@portkey-wallet/im/types';
 import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
+import { RedPacketSubtitle, TransferSubtitle } from '../constants';
 import './index.less';
 
 const ChatItem: React.FC<IChatItemProps> = ({
@@ -73,16 +74,14 @@ const ChatItem: React.FC<IChatItemProps> = ({
   const renderSubtitle = useMemo(() => {
     const { subtitle, muted, isOwner, lastMessageType } = props;
     const showRedPacket = lastMessageType === MessageTypeEnum.REDPACKAGE_CARD;
+    const showTransfer = lastMessageType === MessageTypeEnum.TRANSFER_CARD;
     const showRedPacketHighlight = !muted && !isOwner && unread > 0;
-    if (showRedPacket) {
+    if (showRedPacket || showTransfer) {
+      const tag = showRedPacket ? RedPacketSubtitle : TransferSubtitle;
       return (
-        <div className="red-packet flex">
-          <span
-            className={clsx(
-              'red-packet-tag',
-              showRedPacketHighlight && 'red-packet-tag-highlight',
-            )}>{`[Crypto Box]`}</span>
-          <span className="red-packet-subtitle">{subtitle || RED_PACKAGE_DEFAULT_MEMO}</span>
+        <div className="transaction flex">
+          <span className={clsx('transaction-tag', showRedPacketHighlight && 'transaction-tag-highlight')}>{tag}</span>
+          <span className="transaction-subtitle">{subtitle || RED_PACKAGE_DEFAULT_MEMO}</span>
         </div>
       );
     }

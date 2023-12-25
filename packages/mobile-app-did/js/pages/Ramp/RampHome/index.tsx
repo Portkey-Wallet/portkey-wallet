@@ -48,7 +48,7 @@ export default function RampHome() {
 
   useEffectOnce(() => {
     (async () => {
-      if (!isBuySectionShow) {
+      if (!isBuySectionShow || toTab === RampType.SELL) {
         try {
           if (!(await securitySafeCheckAndToast(MAIN_CHAIN_ID))) return;
         } catch (error) {

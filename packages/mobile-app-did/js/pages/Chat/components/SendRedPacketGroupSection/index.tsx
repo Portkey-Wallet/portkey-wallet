@@ -30,7 +30,6 @@ import { isEmojiString } from 'pages/Chat/utils';
 import { isPotentialNumber } from '@portkey-wallet/utils/reg';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 
-
 export type ValuesType = {
   packetNum?: string;
   count: string;

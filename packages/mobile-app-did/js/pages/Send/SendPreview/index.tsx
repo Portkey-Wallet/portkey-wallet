@@ -244,8 +244,9 @@ const SendHome: React.FC = () => {
         showRetry(() => {
           retryCrossChain(managerTransferTxId, data);
         });
+      } finally {
+        Loading.hide();
       }
-      Loading.hide();
     },
     [assetInfo.decimals, assetInfo.symbol, assetInfo.tokenContractAddress, chainInfo, dispatch, pin, showRetry],
   );
@@ -264,18 +265,6 @@ const SendHome: React.FC = () => {
       });
     }
 
-    console.log(
-      'imTransferInfo',
-      imTransferInfo,
-      contractRef.current,
-      imTransferInfo?.channelId,
-      imTransferInfo?.toUserId,
-      assetInfo.chainId,
-      assetInfo.symbol,
-      amount,
-      toInfo.address,
-    );
-
     if (!contractRef.current || !imTransferInfo?.channelId || !imTransferInfo?.toUserId) return;
     Loading.show();
     try {
@@ -293,20 +282,19 @@ const SendHome: React.FC = () => {
         toCAAddress: toInfo.address,
       };
 
-      console.log('imSend', imSend);
       await sendIMTransfer(params);
-
+      CommonToast.success('Successfully sent');
+    } catch (error: any) {
+      console.log('IM send error', error);
+      CommonToast.failError('Transferred failed');
+    } finally {
       if (imTransferInfo.isGroupChat) {
         await jumpToChatGroupDetails({ channelUuid: imTransferInfo.channelId });
       } else {
         await jumpToChatDetails({ channelUuid: imTransferInfo.channelId });
       }
-    } catch (error: any) {
-      console.log('IM send error', error);
-    } finally {
       Loading.hide();
     }
-    Loading.hide();
   }, [
     amount,
     assetInfo.chainId,

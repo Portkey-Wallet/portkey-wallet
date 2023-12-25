@@ -1,6 +1,7 @@
 import SandboxEventTypes from 'messages/SandboxEventTypes';
 import SandboxEventService, { SandboxErrorCode } from 'service/SandboxEventService';
 import { BaseSendOption } from './types';
+import { GuardianItem } from 'types/guardians';
 
 export const managerTransfer = async ({
   rpcUrl,
@@ -10,7 +11,14 @@ export const managerTransfer = async ({
   paramsOption,
   sendOptions,
 }: BaseSendOption & {
-  paramsOption: { caHash: string; symbol: string; to: string; amount: number | string; memo?: string };
+  paramsOption: {
+    caHash: string;
+    symbol: string;
+    to: string;
+    amount: number | string;
+    memo?: string;
+    guardiansApproved?: GuardianItem[];
+  };
 }) => {
   const resMessage = await SandboxEventService.dispatchAndReceive(SandboxEventTypes.callSendMethod, {
     rpcUrl: rpcUrl,

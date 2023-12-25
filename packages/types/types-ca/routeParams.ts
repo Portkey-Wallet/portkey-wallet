@@ -1,4 +1,5 @@
 import { ChainId, ChainType } from '..';
+import { GuardiansApprovedType } from './guardian';
 import type { SendType } from './send';
 
 export interface IToSendHomeAssetParamsBaseType {
@@ -45,4 +46,6 @@ export interface IToSendPreviewParamsType extends IToSendHomeParamsType {
   transactionFee: string | number;
   sendNumber: string | number;
   successNavigateName?: any;
+  guardiansApproved?: GuardiansApprovedType[];
+  isAutoSend?: boolean;
 }

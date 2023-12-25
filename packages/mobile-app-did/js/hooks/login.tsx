@@ -451,6 +451,7 @@ export function useGoSelectVerifier(isLogin?: boolean) {
         switch (loginType) {
           case LoginType.Apple:
           case LoginType.Google:
+          case LoginType.Telegram:
             onConfirmAuth({
               ...confirmParams,
               selectedVerifier: allotVerifier,

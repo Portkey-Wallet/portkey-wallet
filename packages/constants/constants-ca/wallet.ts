@@ -25,3 +25,4 @@ export const InitialTxFee = {
 };
 
 export const VERIFY_INVALID_TIME = 2 * 1000;
+export const MAX_TRANSACTION_FEE = '0.1';

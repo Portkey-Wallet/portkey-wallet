@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
 import { dateToDayjs } from './time';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
-import { ParsedPinSys, RedPackageTypeEnum } from '@portkey-wallet/im';
+import { MessageType, ParsedPinSys, RedPackageTypeEnum } from '@portkey-wallet/im';
 import { randomId } from '.';
 import { PIN_OPERATION_TYPE_ENUM } from '@portkey-wallet/im/types/pin';
 dayjs.extend(utc);
@@ -100,4 +100,10 @@ export const formatPinSysMessageToStr = (pinInfo: ParsedPinSys): string => {
     return `All ${pinInfo?.unpinnedCount || ''} messages unpinned`;
 
   return pinInfo?.pinType;
+};
+
+export const isMemberMessage = (messageType: MessageType | 'NOT_SUPPORTED'): boolean => {
+  if (messageType === 'PIN-SYS' || messageType === 'SYS') return false;
+
+  return true;
 };

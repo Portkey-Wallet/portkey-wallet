@@ -99,6 +99,7 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
           source={{ uri }}
           originWhitelist={['*']}
           javaScriptCanOpenWindowsAutomatically={true}
+          setSupportMultipleWindows={false}
           onLoadProgress={({ nativeEvent }) => {
             if (nativeEvent.url.includes('telegram.org') && nativeEvent.progress > 0.7) setLoading(false);
           }}

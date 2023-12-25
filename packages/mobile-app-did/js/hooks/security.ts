@@ -67,10 +67,8 @@ export const useCheckTransferLimitWithJump = () => {
         if (isAllowApprove) {
           ActionSheet.alert({
             title2: isDailyLimited
-              ? `Maximum daily limit exceeded. 
-            To proceed with this specific transaction, you may request one-time approval from guardians. Alternatively, you have the option to modify the limit, lifting restrictions on all future transactions.`
-              : `Maximum limit per transaction exceeded. 
-            To proceed with this specific transaction, you may request a one-time approval from guardians. Alternatively, you have the option to modify the limit, lifting restrictions on all future transactions.`,
+              ? `Maximum daily limit exceeded. To proceed with this specific transaction, you may request a one-time approval from guardians. Alternatively, you have the option to modify the limit, lifting restrictions on all future transactions.`
+              : `Maximum limit per transaction exceeded. To proceed with this specific transaction, you may request a one-time approval from guardians. Alternatively, you have the option to modify the limit, lifting restrictions on all future transactions.`,
             buttonGroupDirection: 'column',
             isCloseShow: true,
             buttons: [

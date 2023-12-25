@@ -314,9 +314,7 @@ const GuardianEdit: React.FC = () => {
     const _userGuardiansList = await refreshGuardiansList();
     const isValid2 = checkCurGuardianRepeat(_userGuardiansList || []);
     Loading.hide();
-    if (!isValid2) {
-      return;
-    }
+    if (!isValid2) return;
 
     dispatch(setPreGuardianAction(editGuardian));
     navigationService.navigate('GuardianApproval', {

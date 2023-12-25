@@ -171,7 +171,6 @@ function PinnedListOverlay() {
           <ActivityIndicator size={'small'} color={FontStyles.font4.color} />
         ) : (
           <GiftedChat
-            alignTop
             user={user}
             messageContainerRef={messageContainerRef as any}
             messageIdGenerator={randomId}

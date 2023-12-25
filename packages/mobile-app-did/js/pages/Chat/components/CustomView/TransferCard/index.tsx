@@ -23,8 +23,6 @@ function TransferCard(props: MessageProps<ChatMessage>) {
 
   const transferInfo = useMemo<ParsedTransfer>(() => parsedContent as ParsedTransfer, [parsedContent]);
 
-  console.log('TransferCardTransferCard', currentMessage);
-
   const isReceived = useMemo(() => transferInfo?.data?.toUserId === userId, [transferInfo?.data?.toUserId, userId]);
 
   const onPress = useCallback(() => {

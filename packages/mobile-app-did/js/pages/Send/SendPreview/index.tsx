@@ -6,7 +6,7 @@ import { pTd } from 'utils/unit';
 import { TextM, TextS, TextL } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';
 import ActionSheet from 'components/ActionSheet';
-import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
+import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr, handleErrorMessage } from '@portkey-wallet/utils';
 import { isCrossChain } from '@portkey-wallet/utils/aelf';
 import { useLanguage } from 'i18n/hooks';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
@@ -285,8 +285,14 @@ const SendHome: React.FC = () => {
       await sendIMTransfer(params);
       CommonToast.success('Successfully sent');
     } catch (error: any) {
+      const errorMessage = handleErrorMessage(error);
+      if (errorMessage === 'fetch exceed limit') {
+        // TODO : change text
+        CommonToast.warn('time out');
+      } else {
+        CommonToast.failError('Transferred failed');
+      }
       console.log('IM send error', error);
-      CommonToast.failError('Transferred failed');
     } finally {
       if (imTransferInfo.isGroupChat) {
         await jumpToChatGroupDetails({ channelUuid: imTransferInfo.channelId });

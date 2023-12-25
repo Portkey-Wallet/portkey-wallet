@@ -541,8 +541,15 @@ export default function GuardianApproval() {
         userGuardiansList,
         guardiansStatus,
       );
+
       if (req && !req.error) {
         myEvents.refreshGuardiansList.emit();
+        myEvents.setLoginAccount.emit({
+          guardian: {
+            ...guardianItem,
+            isLoginAccount: true,
+          },
+        });
         if (setLoginAccountNavigate) {
           navigationService.navigate(setLoginAccountNavigate.from, setLoginAccountNavigate.successParams);
         } else {
@@ -551,9 +558,10 @@ export default function GuardianApproval() {
       } else {
         CommonToast.fail(req?.error?.message || '');
       }
-      Loading.hide();
     } catch (error) {
-      //TODO: 1.4.13
+      CommonToast.failError(error);
+    } finally {
+      Loading.hide();
     }
   }, [
     caHash,
@@ -583,6 +591,12 @@ export default function GuardianApproval() {
       );
       if (req && !req.error) {
         myEvents.refreshGuardiansList.emit();
+        myEvents.setLoginAccount.emit({
+          guardian: {
+            ...guardianItem,
+            isLoginAccount: false,
+          },
+        });
         if (setLoginAccountNavigate) {
           navigationService.navigate(setLoginAccountNavigate.from, setLoginAccountNavigate.successParams);
         } else {
@@ -591,9 +605,10 @@ export default function GuardianApproval() {
       } else {
         CommonToast.fail(req?.error?.message || '');
       }
-      Loading.hide();
     } catch (error) {
-      //TODO: 1.4.13
+      CommonToast.failError(error);
+    } finally {
+      Loading.hide();
     }
   }, [
     caHash,

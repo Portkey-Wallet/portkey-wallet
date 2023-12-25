@@ -199,9 +199,7 @@ export class IM {
 
   onReceiveMessage = (e: any) => {
     console.log('RECEIVE_MSG_OK msg', e);
-    const _rawMsg: SocketMessage = e['im-message'];
-    const rawMsg = { ..._rawMsg, id: `${_rawMsg.id}` };
-    e['im-message'] = rawMsg;
+    const rawMsg: SocketMessage = e['im-message'];
     const channelId = rawMsg.channelUuid;
     const channelObservers = this._channelMsgObservers.get(channelId);
     if (channelObservers) {

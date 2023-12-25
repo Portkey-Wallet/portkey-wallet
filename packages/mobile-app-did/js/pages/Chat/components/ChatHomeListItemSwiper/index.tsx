@@ -80,20 +80,15 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
           )} ${transferInfo?.transferExtraData?.tokenInfo?.symbol}`
         : `${transferInfo?.transferExtraData?.nftInfo?.alias} #${transferInfo?.transferExtraData?.nftInfo?.nftId}`;
 
-      // TODO: transfer
       return (
-        <View style={[GStyles.flexRow, styles.message]}>
-          <TextS numberOfLines={1} style={[FontStyles.font7, isHighLight && FontStyles.font6]}>
-            {`[Transfer] ${infoShow}`}
-          </TextS>
-          <TextS numberOfLines={1} style={[FontStyles.font7, styles.redPacketLastMessageContent]}>
-            {(item.lastMessageContent as ParsedRedPackage)?.data?.memo}
-          </TextS>
-        </View>
+        <TextS numberOfLines={1} style={[GStyles.flexRow, styles.message]}>
+          <TextS style={[FontStyles.font7, isHighLight && FontStyles.font6]}>{`[Transfer] `}</TextS>
+          <TextS style={FontStyles.font7}>{infoShow}</TextS>
+        </TextS>
       );
     }
 
-    // not red packet
+    // general message
     let message = '';
     if (item.lastMessageType === 'TEXT' || item.lastMessageType === 'SYS') {
       message = item.lastMessageContent as string;

@@ -33,7 +33,7 @@ export default function HeaderPinSection(props: HeaderPinSection) {
       {isImg && <Image style={styles.img} resizeMode="cover" source={{ uri: 'lastPinMessage.parsedContent' }} />}
       <View style={GStyles.flex1}>
         <TextM numberOfLines={1} style={[FontStyles.font5, GStyles.flex1]}>
-          {`Pin Message ${list.length}`}
+          {`Pinned Message ${list.length}`}
         </TextM>
         <TextM numberOfLines={1} style={[FontStyles.font3, GStyles.flex1]}>
           {isImg ? 'Photo' : lastPinMessage.content}

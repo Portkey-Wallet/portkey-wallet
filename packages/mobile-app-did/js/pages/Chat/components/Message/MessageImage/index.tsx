@@ -17,6 +17,8 @@ import { ListItemType } from '../../ChatOverlay/chatPopover';
 import Svg from 'components/Svg';
 import { setReplyMessageInfo } from 'pages/Chat/context/chatsContext';
 import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
+import ActionSheet from 'components/ActionSheet';
+import OverlayModal from 'components/OverlayModal';
 
 const maxWidth = pTd(280);
 const maxHeight = pTd(280);
@@ -37,7 +39,7 @@ function MessageImage(
   const { imgUri, thumbUri, width, height } = imageInfo || {};
   const dispatch = useChatsDispatch();
   const currentChannelId = useCurrentChannelId();
-  const { pin, unPin } = useIMPin(currentChannelId || '');
+  const { pin, unPin, list: pinList } = useIMPin(currentChannelId || '');
   const deleteMessage = useDeleteMessage(currentChannelId || '');
 
   const [loadError, setLoadError] = useState(false);
@@ -104,14 +106,45 @@ function MessageImage(
 
       if (isGroupChat && isAdmin)
         list.push({
-          title: currentMessage?.pinInfo ? 'UnPin' : 'Pin',
+          title: currentMessage?.pinInfo ? 'Unpin' : 'Pin',
           iconName: currentMessage?.pinInfo ? 'chat-unpin' : 'chat-pin',
           onPress: async () => {
             if (!currentMessage) return;
+
+            // unPin in messageList page
+            if (currentMessage?.pinInfo && !isHidePinStyle)
+              return ActionSheet.alert({
+                title: 'Would you like to unpin this message?',
+                buttons: [
+                  {
+                    title: 'Cancel',
+                    type: 'outline',
+                  },
+                  {
+                    title: 'Unpin',
+                    type: 'primary',
+                    onPress: async () => {
+                      try {
+                        await unPin(currentMessage);
+                      } catch (error) {
+                        CommonToast.failError(error);
+                      }
+                    },
+                  },
+                ],
+              });
+
+            // unPin & pin
             try {
-              currentMessage?.pinInfo ? await unPin(currentMessage) : await pin(currentMessage);
-            } catch (error) {
-              CommonToast.failError(error);
+              if (currentMessage?.pinInfo) {
+                // in overlay and just 1 pin message
+                if (pinList?.length === 1 && isHidePinStyle) OverlayModal.hide();
+                await unPin(currentMessage);
+              } else {
+                await pin(currentMessage);
+              }
+            } catch (err) {
+              CommonToast.failError(err);
             }
           },
         });
@@ -132,7 +165,19 @@ function MessageImage(
 
       list.length && ChatOverlay.showChatPopover({ list, px: pageX, py: pageY, formatType: 'dynamicWidth' });
     },
-    [currentMessage, deleteMessage, dispatch, isAdmin, isGroupChat, isHideReply, pin, position, unPin],
+    [
+      currentMessage,
+      deleteMessage,
+      dispatch,
+      isAdmin,
+      isGroupChat,
+      isHidePinStyle,
+      isHideReply,
+      pin,
+      pinList?.length,
+      position,
+      unPin,
+    ],
   );
 
   return (

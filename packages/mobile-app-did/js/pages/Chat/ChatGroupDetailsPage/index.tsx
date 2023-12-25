@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { GestureResponderEvent, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -42,12 +42,12 @@ const ChatGroupDetailsPage = () => {
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
+
+  const [hasPinWhenInit, setHasPinWhenInit] = useState(true);
   const currentChannelId = useCurrentChannelId();
   const { isAdmin, groupInfo } = useGroupChannelInfo(currentChannelId || '', true);
   const { pin, mute, displayName } = useChannelItemInfo(currentChannelId || '') || {};
   const { lastPinMessage, refreshLastPin, refresh } = useIMPin(currentChannelId || '', true);
-
-  console.log('useIMPin(currentChannelId || ', lastPinMessage);
 
   const leaveGroup = useLeaveChannel();
 
@@ -207,12 +207,19 @@ const ChatGroupDetailsPage = () => {
 
   const headerDom = useMemo(() => {
     if (lastPinMessage) return <HeaderPinSection channelUUid={currentChannelId || ''} />;
-    return <FloatingActionButton title="Add Members" shouldShowFirstTime={isAdmin} onPressButton={addMembers} />;
-  }, [addMembers, currentChannelId, isAdmin, lastPinMessage]);
+
+    return hasPinWhenInit ? null : (
+      <FloatingActionButton title="Add Members" shouldShowFirstTime={isAdmin} onPressButton={addMembers} />
+    );
+  }, [addMembers, currentChannelId, hasPinWhenInit, isAdmin, lastPinMessage]);
 
   useEffectOnce(() => {
     refreshLastPin();
     refresh();
+  });
+
+  useEffectOnce(() => {
+    setHasPinWhenInit(!!lastPinMessage);
   });
 
   return (

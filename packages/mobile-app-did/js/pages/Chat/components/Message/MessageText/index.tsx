@@ -23,6 +23,8 @@ import { setReplyMessageInfo } from 'pages/Chat/context/chatsContext';
 import { websiteRE } from '@portkey-wallet/utils/reg';
 import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
 import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
+import ActionSheet from 'components/ActionSheet';
+import OverlayModal from 'components/OverlayModal';
 
 const PIN_UNICODE_SPACE = '\u00A0\u00A0\u00A0\u00A0';
 const TIME_UNICODE_SPACE = isIOS
@@ -72,7 +74,12 @@ function ReplyMessageImage(props: MessageTextProps<ChatMessage>) {
 }
 
 function MessageText(
-  props: MessageTextProps<ChatMessage> & { isGroupChat?: boolean; isAdmin?: boolean; isHidePinStyle?: boolean },
+  props: MessageTextProps<ChatMessage> & {
+    isHideReply?: boolean;
+    isGroupChat?: boolean;
+    isAdmin?: boolean;
+    isHidePinStyle?: boolean;
+  },
 ) {
   const {
     currentMessage,
@@ -83,15 +90,12 @@ function MessageText(
     isGroupChat = false,
     isAdmin = false,
     isHidePinStyle = false,
+    isHideReply = false,
   } = props;
   const currentChannelId = useCurrentChannelId();
   const dispatch = useChatsDispatch();
   const deleteMessage = useDeleteMessage(currentChannelId || '');
-  const { pin, unPin } = useIMPin(currentChannelId || '');
-
-  if (currentMessage?.pinInfo) {
-    console.log('pinInfopinInfopinInfo', currentMessage);
-  }
+  const { pin, unPin, list: pinList } = useIMPin(currentChannelId || '');
 
   const { messageType } = currentMessage || {};
   const isNotSupported = useMemo(() => messageType === 'NOT_SUPPORTED', [messageType]);
@@ -112,11 +116,10 @@ function MessageText(
         },
       ];
 
-      if (isGroupChat) {
+      if (isGroupChat && !isHideReply) {
         list.push({
-          // TODO: reply
           title: 'Reply',
-          iconName: 'chat-pin',
+          iconName: 'chat-reply',
           onPress: async () => {
             dispatch(
               setReplyMessageInfo({
@@ -130,16 +133,45 @@ function MessageText(
 
       if (isGroupChat && isAdmin) {
         list.push({
-          // TODO: pin or unPin
-          title: currentMessage?.pinInfo ? 'UnPin' : 'Pin',
+          title: currentMessage?.pinInfo ? 'Unpin' : 'Pin',
           iconName: currentMessage?.pinInfo ? 'chat-unpin' : 'chat-pin',
           onPress: async () => {
             if (!currentMessage) return;
+
+            // unPin in messageList page
+            if (currentMessage?.pinInfo && !isHidePinStyle)
+              return ActionSheet.alert({
+                title: 'Would you like to unpin this message?',
+                buttons: [
+                  {
+                    title: 'Cancel',
+                    type: 'outline',
+                  },
+                  {
+                    title: 'Unpin',
+                    type: 'primary',
+                    onPress: async () => {
+                      try {
+                        await unPin(currentMessage);
+                      } catch (error) {
+                        CommonToast.failError(error);
+                      }
+                    },
+                  },
+                ],
+              });
+
+            // unPin & pin
             try {
-              currentMessage?.pinInfo ? await unPin(currentMessage) : await pin(currentMessage);
-              CommonToast.success(currentMessage?.pinInfo ? 'unpin success' : 'pin success');
-            } catch (error) {
-              CommonToast.failError(error);
+              if (currentMessage?.pinInfo) {
+                // in overlay and just 1 pin message
+                if (pinList?.length === 1 && isHidePinStyle) OverlayModal.hide();
+                await unPin(currentMessage);
+              } else {
+                await pin(currentMessage);
+              }
+            } catch (err) {
+              CommonToast.failError(err);
             }
           },
         });
@@ -170,7 +202,20 @@ function MessageText(
           formatType: 'dynamicWidth',
         });
     },
-    [currentMessage, deleteMessage, dispatch, isAdmin, isGroupChat, isNotSupported, pin, position, unPin],
+    [
+      currentMessage,
+      deleteMessage,
+      dispatch,
+      isAdmin,
+      isGroupChat,
+      isHidePinStyle,
+      isHideReply,
+      isNotSupported,
+      pin,
+      pinList?.length,
+      position,
+      unPin,
+    ],
   );
 
   const onPress = useCallback(() => {
@@ -209,7 +254,12 @@ function MessageText(
 }
 
 function Message(
-  props: MessageTextProps<ChatMessage> & { isGroupChat?: boolean; isAdmin?: boolean; isHidePinStyle?: boolean },
+  props: MessageTextProps<ChatMessage> & {
+    isGroupChat?: boolean;
+    isAdmin?: boolean;
+    isHidePinStyle?: boolean;
+    isHideReply?: boolean;
+  },
 ) {
   // const { messageType, text } = props?.currentMessage || {};
   return <MessageText {...props} />;

@@ -4,6 +4,7 @@ import { AppState, AppStateStatus } from 'react-native';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { AppStatusUnit } from '@portkey-wallet/socket/socket-fcm/types';
 import useEffectOnce from './useEffectOnce';
+import { useLatestRef } from '@portkey-wallet/hooks';
 
 export function useReportingSignalR() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -19,15 +20,19 @@ export function useReportingSignalR() {
     setAppStatus(appState);
   }, []);
 
+  const lastAppStatus = useLatestRef(appStatus);
+  const lastUnreadCount = useLatestRef(unreadCount);
+
   useEffect(() => {
     timerRef.current = setInterval(() => {
-      signalrFCM.reportAppStatus(appStatus, unreadCount);
+      signalrFCM.reportAppStatus(lastAppStatus.current, lastUnreadCount.current);
     }, 3000);
 
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [appStatus, unreadCount]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffectOnce(() => {
     const listener = AppState.addEventListener('change', handleAppStateChange);

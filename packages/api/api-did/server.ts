@@ -8,11 +8,14 @@ import { sleep } from '@portkey-wallet/utils';
 import im from '@portkey-wallet/im';
 import { IM_TOKEN_ERROR_ARRAY } from '@portkey-wallet/im/constant';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
+import { IStorageSuite } from '@portkey/types';
 
 const C_T_EVENT_NAME = 'connectTokenChange';
+const C_T_STORAGE_KEY = 'DidServiceConnectTokenStorageKey';
 export class DidService extends ServiceInit {
   protected refreshTokenConfig?: RefreshTokenConfig;
   protected onLockApp?: (expired?: boolean) => void;
+  protected storage?: IStorageSuite;
   locked?: boolean;
   exceptionManager?: IExceptionManager;
   constructor() {
@@ -34,9 +37,8 @@ export class DidService extends ServiceInit {
     try {
       if (!this.refreshTokenConfig || !isValidRefreshTokenConfig(this.refreshTokenConfig)) return;
       const authorization = await queryAuthorization(this.refreshTokenConfig);
-      this.set('headers', { Authorization: authorization });
-      this.emitConnectTokenChange(authorization);
-
+      this.saveAuthorization(authorization);
+      this.setAuthorization(authorization);
       this.locked = false;
       return authorization;
     } catch (error) {
@@ -132,6 +134,26 @@ export class DidService extends ServiceInit {
       },
       rep: fetchResult,
     });
+  };
+
+  initStorageAuthorization = async () => {
+    try {
+      const authorization = await this.storage?.getItem(C_T_STORAGE_KEY);
+      if (authorization) this.setAuthorization(authorization);
+    } catch (error) {
+      this.exceptionManager?.reportError(error, Severity.Fatal);
+    }
+  };
+  setStorage = (storage: IStorageSuite) => {
+    this.storage = storage;
+    this.initStorageAuthorization();
+  };
+  setAuthorization = (authorization: string) => {
+    this.set('headers', { Authorization: authorization });
+    this.emitConnectTokenChange(authorization);
+  };
+  saveAuthorization = (authorization: string) => {
+    this.storage?.setItem(C_T_STORAGE_KEY, authorization);
   };
 }
 

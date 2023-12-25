@@ -26,6 +26,9 @@ import { checkIsUserCancel, handleErrorMessage } from '@portkey-wallet/utils';
 import myEvents from 'utils/deviceEvent';
 import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import CommonTouchableTabs, { TabItemType } from 'components/CommonTouchableTabs';
+import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
+import { createTimeRecorder } from '@portkey-wallet/utils/timeRecorder';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 export default function SendPacketGroupPage() {
   const currentChannelId = useCurrentChannelId();
@@ -38,8 +41,8 @@ export default function SendPacketGroupPage() {
   const checkAllowanceAndApprove = useCheckAllowanceAndApprove();
   const checkManagerSyncState = useCheckManagerSyncState();
   const { getContractAddress } = useGetRedPackageConfig(true);
-
-  const onPressBtn = useCallback(
+  const reportAnalyticsEvent = useReportAnalyticsEvent();
+  const onPressBtn = useLockCallback(
     async (values: ValuesType) => {
       Loading.show();
       try {
@@ -96,6 +99,7 @@ export default function SendPacketGroupPage() {
       }
 
       Loading.showOnce();
+      const timeRecorder = createTimeRecorder();
       try {
         await sendRedPackage({
           chainId: values.chainId,
@@ -110,15 +114,20 @@ export default function SendPacketGroupPage() {
         });
         CommonToast.success('Sent successfully!');
         navigationService.goBack();
+        reportAnalyticsEvent({ view: 'SendPacketGroupPage', time: timeRecorder.endBySecond() }, 'RecordMessage');
       } catch (error) {
-        console.log(error, 'sendRedPackage ====error');
-        if (handleErrorMessage(error) === 'fetch exceed limit') {
+        const errorMessage = handleErrorMessage(error);
+        if (errorMessage === 'fetch exceed limit') {
           CommonToast.warn('You can view the crypto box you sent later in the chat window.');
           navigationService.navigate('Tab');
           myEvents.navToBottomTab.emit({ tabName: ChatTabName });
         } else {
           CommonToast.failError('Crypto box failed to be sent. Please try again.');
         }
+        reportAnalyticsEvent(
+          { view: 'SendPacketGroupPage', time: timeRecorder.endBySecond(), errorMessage },
+          'RecordMessage',
+        );
       } finally {
         Loading.hide();
       }
@@ -130,6 +139,7 @@ export default function SendPacketGroupPage() {
       currentChannelId,
       getCAContract,
       getContractAddress,
+      reportAnalyticsEvent,
       securitySafeCheckAndToast,
       selectTab,
       sendRedPackage,

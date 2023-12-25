@@ -38,7 +38,7 @@ export default function useFCM() {
     if (!isFCMEnabled()) return;
     timerRef.current = setInterval(() => {
       signalrFCM.reportAppStatus(AppStatusUnit.FOREGROUND, lastUnreadCount.current);
-      setBadge({ value: lastUnreadCount.current });
+      signalrFCM.signalr && setBadge({ value: lastUnreadCount.current });
     }, 5000);
 
     return () => {

@@ -5614,7 +5614,7 @@
     spark-md5 "^3.0.2"
     uuid "^8.3.2"
 
-"@portkey/did@^1.5.4-alpha.0":
+"@portkey/did@1.5.4-alpha.0", "@portkey/did@^1.5.4-alpha.0":
   version "1.5.4-alpha.0"
   resolved "https://registry.npmjs.org/@portkey/did/-/did-1.5.4-alpha.0.tgz#75e392964ff3500183842b63112ff5c659f0f445"
   integrity sha512-ubpoV/ZdTw6JiWgFAyB5JVXbkfDDv7e3Kgu3rDJNQZHJCJPs4CXQN9/2fquuQS2wq7Uud8H+8ObxiM6DVtOyBw==

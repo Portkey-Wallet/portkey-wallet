@@ -124,9 +124,8 @@ export const isTargetMember = (item: ChannelMemberInfo, keyword: string): boolea
     addressesList.some(i => {
       if (keyword?.includes('_')) {
         const arr = keyword?.split('_');
-        if (isAelfAddress(arr[arr.length - 1])) {
-          keyword = arr[arr.length - 1];
-        }
+        const _address = arr.find(_i => isAelfAddress(_i));
+        if (_address) keyword = _address;
       }
       return i?.address === keyword;
     }, [])

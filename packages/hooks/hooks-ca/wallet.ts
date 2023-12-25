@@ -7,7 +7,11 @@ import { useCurrentNetworkInfo } from './network';
 import { useCurrentChain, useCurrentChainList } from './chainList';
 import { request } from '@portkey-wallet/api/api-did';
 import { useAppCommonDispatch } from '../index';
-import { setWalletNameAction, setUserInfoAction } from '@portkey-wallet/store/store-ca/wallet/actions';
+import {
+  setWalletNameAction,
+  setUserInfoAction,
+  getCaHolderInfoAsync,
+} from '@portkey-wallet/store/store-ca/wallet/actions';
 import { DeviceInfoType } from '@portkey-wallet/types/types-ca/device';
 import { extraDataListDecode } from '@portkey-wallet/utils/device';
 import { ChainId } from '@portkey-wallet/types';
@@ -53,6 +57,19 @@ export function getCurrentWalletInfo(
 }
 
 export const useWallet = () => useAppCASelector(state => state.wallet);
+
+export const useUserInfo = () => {
+  const { userInfo } = useWallet();
+  const dispatch = useAppCommonDispatch();
+
+  useEffect(() => {
+    if (!userInfo?.userId) {
+      dispatch(getCaHolderInfoAsync());
+    }
+  }, [dispatch, userInfo]);
+
+  return userInfo;
+};
 
 export const useCurrentWalletInfo = () => {
   const { currentNetwork, walletInfo } = useWallet();

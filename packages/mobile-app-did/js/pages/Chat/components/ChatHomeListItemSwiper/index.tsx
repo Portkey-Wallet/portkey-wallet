@@ -68,9 +68,9 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
 
       console.log('item.lastMessageContent', item.lastMessageContent);
 
-      const transferInfo = item.lastMessageContent as ParsedTransfer;
+      const transferInfo = item?.lastMessageContent as ParsedTransfer;
 
-      const infoShow = transferInfo.transferExtraData?.tokenInfo
+      const infoShow = transferInfo?.transferExtraData?.tokenInfo
         ? `${formatAmountShow(
             divDecimals(
               transferInfo?.transferExtraData?.tokenInfo?.amount || '',

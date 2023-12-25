@@ -54,6 +54,7 @@ export class DidService extends ServiceInit {
       ...this.defaultConfig.headers,
       Authorization: '',
     };
+    this.storage?.removeItem(C_T_STORAGE_KEY);
   };
 
   setRefreshTokenConfig = (config: RefreshTokenConfig) => {

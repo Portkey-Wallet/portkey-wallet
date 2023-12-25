@@ -30,6 +30,7 @@ import s3Instance from '@portkey-wallet/utils/s3';
 import Config from 'react-native-config';
 import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useAppEntrance } from 'hooks/cms';
+import { baseStore } from '@portkey-wallet/utils/mobile/storage';
 
 request.setExceptionManager(exceptionManager);
 export default function Updater() {
@@ -55,6 +56,7 @@ export default function Updater() {
   useFetchTxFee();
   useMemo(() => {
     request.set('baseURL', apiUrl);
+    request.setStorage(baseStore);
     if (service.defaults.baseURL !== apiUrl) {
       service.defaults.baseURL = apiUrl;
     }

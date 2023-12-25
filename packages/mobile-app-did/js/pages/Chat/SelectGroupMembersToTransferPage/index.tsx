@@ -43,12 +43,11 @@ const SelectGroupMembersToTransferPage = () => {
 
   const onPressItem = useCallback(
     (toRelationId: string, item: GroupMemberItemType) => {
-      console.log('onPressItem', item);
       showAssetList({
         imTransferInfo: {
           isGroupChat: true,
           addresses: item.addresses || [],
-          name: item.name,
+          name: item.title,
           toUserId: item?.userId || '',
           channelId: channelId || '',
         },
@@ -63,7 +62,7 @@ const SelectGroupMembersToTransferPage = () => {
 
   return (
     <PageContainer
-      titleDom="Select Group Members"
+      titleDom="Select Recipient"
       safeAreaColor={['blue', 'white']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>

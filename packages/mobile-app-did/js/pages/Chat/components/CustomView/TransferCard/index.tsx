@@ -13,14 +13,19 @@ import fonts from 'assets/theme/fonts';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { ParsedTransfer } from '@portkey-wallet/im';
 import navigationService from 'utils/navigationService';
+import { useUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 function TransferCard(props: MessageProps<ChatMessage>) {
+  const { userId } = useUserInfo() || {};
+
   const { currentMessage } = props;
   const { parsedContent } = currentMessage || {};
 
   const transferInfo = useMemo<ParsedTransfer>(() => parsedContent as ParsedTransfer, [parsedContent]);
 
   console.log('TransferCardTransferCard', currentMessage);
+
+  const isReceived = useMemo(() => transferInfo?.data?.toUserId === userId, [transferInfo?.data?.toUserId, userId]);
 
   const onPress = useCallback(() => {
     navigationService.navigate('ActivityDetail', {
@@ -56,7 +61,9 @@ function TransferCard(props: MessageProps<ChatMessage>) {
             {transferInfoShow}
           </TextXL>
           <TextS style={styles.blank} />
-          <TextS style={styles.state} numberOfLines={1}>{`Transfer to ${transferInfo?.data?.toUserName}`}</TextS>
+          <TextS style={styles.state} numberOfLines={1}>{`${isReceived ? 'Received from' : 'Transfer to'} ${
+            transferInfo?.data?.toUserName
+          }`}</TextS>
         </View>
       </View>
     </Touchable>

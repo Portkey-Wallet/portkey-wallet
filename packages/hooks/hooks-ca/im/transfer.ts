@@ -115,7 +115,7 @@ export const useSendIMTransfer = () => {
           });
         },
         times: 10,
-        interval: 2000,
+        interval: 5000,
         checkIsContinue: _statusResult => {
           return _statusResult?.data?.status === TransferStatusEnum.PENDING;
         },

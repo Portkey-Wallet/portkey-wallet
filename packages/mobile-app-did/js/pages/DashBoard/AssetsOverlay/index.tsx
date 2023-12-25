@@ -17,7 +17,7 @@ import { fetchAssetList } from '@portkey-wallet/store/store-ca/assets/api';
 import { IAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
 import navigationService from 'utils/navigationService';
 import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
-import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { addressFormat, formatChainInfoToShow } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
 import { useGStyles } from 'assets/theme/useGStyles';
 import myEvents from 'utils/deviceEvent';
@@ -46,7 +46,7 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
   if (item.tokenInfo)
     return (
       <TokenListItem
-        item={{ ...item, ...item?.tokenInfo, tokenContractAddress: item.address }}
+        item={{ name: '', ...item, ...item?.tokenInfo, tokenContractAddress: item.address }}
         onPress={() => onPress(item)}
       />
     );
@@ -166,6 +166,8 @@ const AssetList = ({ imTransferInfo }: ShowAssetListParamsType) => {
 
   const renderItem = useCallback(
     ({ item }: { item: IAssetItemType }) => {
+      const addressItem = addresses?.find(ele => ele?.chainId === item.chainId);
+
       return (
         <AssetItem
           symbol={item.symbol || ''}
@@ -179,8 +181,8 @@ const AssetList = ({ imTransferInfo }: ShowAssetListParamsType) => {
                 ? { ...item?.nftInfo, chainId: item.chainId, symbol: item.symbol }
                 : { ...item?.tokenInfo, chainId: item.chainId, symbol: item.symbol },
               toInfo: {
-                address: addresses?.find(ele => ele.chainId === item.chainId)?.address || '',
-                name: '',
+                address: addressItem ? addressFormat(addressItem.address, addressItem.chainId) : '',
+                name: imTransferInfo?.name || '',
               },
             };
 
@@ -202,7 +204,7 @@ const AssetList = ({ imTransferInfo }: ShowAssetListParamsType) => {
         />
       );
     },
-    [addresses, imTransferInfo?.channelId, isGroupChat, toUserId],
+    [addresses, imTransferInfo?.channelId, imTransferInfo?.name, isGroupChat, toUserId],
   );
 
   const noData = useMemo(() => {

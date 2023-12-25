@@ -153,6 +153,7 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
                   addresses: data.addresses || [],
                   toUserId: data.userId,
                   channelId: currentChannelId || '',
+                  name: data.name || data.caHolderInfo?.walletName || data.imInfo?.name || '',
                 },
               });
             } catch (e) {

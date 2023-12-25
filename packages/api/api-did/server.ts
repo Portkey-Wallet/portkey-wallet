@@ -54,7 +54,7 @@ export class DidService extends ServiceInit {
     };
   };
 
-  setRefreshTokenConfig = (config: RefreshTokenConfig) => {
+  setRefreshTokenConfig = async (config: RefreshTokenConfig) => {
     // make sure clean Authorization
     if (this.refreshTokenConfig?.ca_hash !== config.ca_hash) {
       this.defaultConfig.headers = {
@@ -64,9 +64,10 @@ export class DidService extends ServiceInit {
     }
     this.refreshTokenConfig = config;
     try {
-      this.getConnectToken();
+      return await this.getConnectToken();
     } catch (error) {
       console.log(error);
+      return undefined;
     }
   };
   send = async (base: BaseConfig, config?: RequestConfig, reCount = 0): Promise<any> => {

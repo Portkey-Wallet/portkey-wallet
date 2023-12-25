@@ -59,6 +59,7 @@ import fonts from 'assets/theme/fonts';
 import { CreateAddressLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 import { AuthTypes } from 'constants/guardian';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
+import { useLatestRef } from '@portkey-wallet/hooks';
 
 export function useOnResultFail() {
   const dispatch = useAppDispatch();
@@ -103,6 +104,7 @@ export function useOnManagerAddressAndQueryResult() {
     };
   });
   const originChainId = useOriginChainId();
+  const latestOriginChainId = useLatestRef(originChainId);
   const onIntervalGetResult = useIntervalGetResult();
   return useCallback(
     async ({
@@ -140,7 +142,7 @@ export function useOnManagerAddressAndQueryResult() {
             clientId: tmpWalletInfo.address,
             requestId: tmpWalletInfo.address,
           },
-          chainId: originChainId,
+          chainId: latestOriginChainId.current,
         };
 
         let fetch = request.verify.registerRequest;
@@ -169,7 +171,7 @@ export function useOnManagerAddressAndQueryResult() {
           dispatch(
             createWallet({
               walletInfo: tmpWalletInfo,
-              caInfo: { managerInfo: _managerInfo, originChainId },
+              caInfo: { managerInfo: _managerInfo, originChainId: latestOriginChainId.current },
               pin: confirmPin,
             }),
           );
@@ -189,7 +191,7 @@ export function useOnManagerAddressAndQueryResult() {
                 setCAInfo({
                   caInfo,
                   pin: confirmPin,
-                  chainId: originChainId,
+                  chainId: latestOriginChainId.current,
                 }),
               );
               navigationService.reset('Tab');
@@ -203,7 +205,7 @@ export function useOnManagerAddressAndQueryResult() {
         pinRef?.current?.reset();
       }
     },
-    [biometrics, biometricsReady, dispatch, getDeviceInfo, onIntervalGetResult, onResultFail, originChainId, t],
+    [biometrics, biometricsReady, dispatch, getDeviceInfo, latestOriginChainId, onIntervalGetResult, onResultFail, t],
   );
 }
 

@@ -1,6 +1,6 @@
 import CommonButton from 'components/CommonButton';
 import { TextL, TextM } from 'components/CommonText';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
@@ -19,6 +19,7 @@ import GuardianAccountItem from '../components/GuardianAccountItem';
 import Divider from 'components/Divider';
 import { checkIsLastLoginAccount } from '@portkey-wallet/utils/guardian';
 import { useSetLoginAccount } from '../hooks/useSetLoginAccount';
+import myEvents from 'utils/deviceEvent';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
@@ -26,11 +27,31 @@ type RouterParams = {
 
 export default function GuardianDetail() {
   const {
-    params: { guardian },
+    params: { guardian: guardianRouter },
   } = useRoute<RouteProp<{ params: RouterParams }>>();
   const getGuardiansInfo = useGetGuardiansInfo();
   const { userGuardiansList } = useGuardiansInfo();
   const setLoginAccount = useSetLoginAccount();
+
+  const [guardian, setGuardian] = useState(guardianRouter);
+  useEffect(() => {
+    setGuardian(guardianRouter);
+  }, [guardianRouter]);
+
+  useEffect(() => {
+    const listener = myEvents.setLoginAccount.addListener(({ guardian: _guardian }: { guardian: UserGuardianItem }) => {
+      setGuardian(pre => {
+        if (pre?.key !== _guardian.key) return pre;
+        return {
+          ...pre,
+          isLoginAccount: _guardian.isLoginAccount,
+        };
+      });
+    });
+    return () => {
+      listener.remove();
+    };
+  }, []);
 
   const onLoginAccountChange = useCallback(
     async (value: boolean) => {

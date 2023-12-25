@@ -29,10 +29,12 @@ import { NO_LONGER_IN_GROUP } from '@portkey-wallet/constants/constants-ca/chat'
 import { Message, MessageTypeEnum, ParsedImage } from '@portkey-wallet/im';
 import ChatBoxPinnedMsg from 'pages/IMChat/components/ChatBoxPinnedMsg';
 import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
+import { useWalletInfo } from 'store/Provider/hooks';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
   const { t } = useTranslation();
+  const { userInfo } = useWalletInfo();
   const navigate = useNavigate();
   const [showBookmark, setShowBookmark] = useState(false);
   const messageRef = useRef<any>(null);
@@ -84,6 +86,7 @@ export default function ChatBox() {
   const clickUrl = useClickUrl({ fromChannelUuid: channelUuid, isGroup: true });
   useEffectOnce(() => {
     init();
+    refreshAllPinList();
   });
   const lastPinMsgShow = useMemo(() => {
     if (lastPinMessage?.type === MessageTypeEnum.TEXT) {
@@ -107,8 +110,9 @@ export default function ChatBox() {
   const hideChannel = useHideChannel();
   const { relationId } = useRelationId();
   const messageList: MessageContentType[] = useMemo(
-    () => formatMessageList({ list, ownerRelationId: relationId!, isGroup: true, isAdmin }),
-    [isAdmin, list, relationId],
+    () =>
+      formatMessageList({ list, ownerRelationId: relationId!, isGroup: true, isAdmin, myPortkeyId: userInfo?.userId }),
+    [isAdmin, list, relationId, userInfo?.userId],
   );
   const handleCancelReply = useCallback(() => {
     setReplyMsg(undefined);
@@ -301,9 +305,6 @@ export default function ChatBox() {
       ),
     [handleAddMember, isAdmin, showAddMemTip],
   );
-  useEffect(() => {
-    refreshAllPinList();
-  }, [refreshAllPinList]);
   useEffect(() => {
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);

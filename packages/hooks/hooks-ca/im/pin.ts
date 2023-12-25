@@ -18,7 +18,7 @@ import { PIN_OPERATION_TYPE_ENUM } from '@portkey-wallet/im/types/pin';
 import { getSendUuid } from '@portkey-wallet/utils/chat';
 import { messageParser } from '@portkey-wallet/im/utils';
 import { useWallet } from '../wallet';
-import { sleep } from '@portkey-wallet/utils';
+// import { sleep } from '@portkey-wallet/utils';
 
 export const useIMPin = (channelId: string, isRegister = false) => {
   const { networkType } = useCurrentNetworkInfo();
@@ -323,7 +323,7 @@ export const useIMPin = (channelId: string, isRegister = false) => {
 
       addMockPinSysMessage(PIN_OPERATION_TYPE_ENUM.Pin, message);
 
-      await sleep(500);
+      // await sleep(500);
       initList();
     },
     [addMockPinSysMessage, channelId, dispatch, initList, networkType, userInfo?.nickName, userInfo?.userId],
@@ -331,11 +331,10 @@ export const useIMPin = (channelId: string, isRegister = false) => {
 
   const unPin = useCallback(
     async (message: Message) => {
-      const { id, sendUuid } = message;
-      if (!(id && sendUuid)) return;
+      const { id } = message;
+      if (!id) return;
       await im.service.unPin({
         id,
-        sendUuid,
         channelUuid: channelId,
       });
       if (lastPinMessageRef.current?.id === id) {
@@ -354,7 +353,7 @@ export const useIMPin = (channelId: string, isRegister = false) => {
 
       addMockPinSysMessage(PIN_OPERATION_TYPE_ENUM.UnPin, message);
 
-      await sleep(500);
+      // await sleep(500);
       initList();
     },
     [addMockPinSysMessage, channelId, dispatch, initList, networkType, refreshLastPin],

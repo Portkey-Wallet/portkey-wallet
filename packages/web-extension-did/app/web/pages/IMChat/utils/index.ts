@@ -47,6 +47,7 @@ export const getPixel = async (url: string): Promise<{ width: number; height: nu
 export interface IFormatMessageList {
   list: Message[];
   ownerRelationId: string;
+  myPortkeyId?: string;
   isGroup?: boolean;
   isAdmin?: boolean;
   showPageType?: IMessageShowPage;
@@ -55,6 +56,7 @@ export interface IFormatMessageList {
 export const formatMessageList = ({
   list,
   ownerRelationId,
+  myPortkeyId,
   isGroup = false,
   isAdmin = false,
   showPageType,
@@ -73,7 +75,7 @@ export const formatMessageList = ({
         isAdmin,
         showPageType,
         extraData: {
-          myPortkeyId: ownerRelationId,
+          myPortkeyId,
         },
       };
     } else {

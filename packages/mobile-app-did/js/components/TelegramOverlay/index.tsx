@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { Keyboard, View } from 'react-native';
+import { Keyboard, Linking, View } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
 import WebView from 'react-native-webview';
 import Lottie from 'lottie-react-native';
@@ -24,6 +24,7 @@ import {
   TGAuthCallBack,
   TGAuthResult,
   TG_FUN,
+  TelegramUrl,
   parseTGAuthResult,
 } from './config';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -79,11 +80,16 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
       const { data } = nativeEvent;
       try {
         const obj = JSON.parse(data);
-        if (data === TG_FUN.LoginCancel || data === TG_FUN.DeclineRequest || data === TG_FUN.Error) {
+        const { type } = obj;
+        if (type === TG_FUN.LoginCancel || type === TG_FUN.DeclineRequest || type === TG_FUN.Error) {
           onReject(USER_CANCELED);
           OverlayModal.hide();
-        } else if (!isIOS && typeof obj === 'object' && obj.type === TG_FUN.Open) {
+        } else if (!isIOS && type === TG_FUN.Open) {
           go(obj.url);
+        } else if (type === TG_FUN.RequestConfirmation) {
+          Linking.openURL(TelegramUrl).catch(error => {
+            console.log(error, '===Linking-Telegram-error');
+          });
         }
       } catch (error) {
         console.log(error);
@@ -114,7 +120,8 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
             if (nativeEvent.url.includes('telegram.org') && nativeEvent.progress > 0.7) setLoading(false);
           }}
           onMessage={onMessage}
-          onLoadEnd={() => {
+          onLoadEnd={({ nativeEvent }) => {
+            console.log(nativeEvent, '=======onLoadEnd');
             ref.current?.injectJavaScript(InjectTelegramLoginJavaScript);
           }}
           onLoadStart={onLoadStart}

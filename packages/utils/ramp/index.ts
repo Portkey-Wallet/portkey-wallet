@@ -12,6 +12,7 @@ import ramp, {
   ISellProviderPrice,
   IBuyProviderPrice,
 } from '@portkey-wallet/ramp';
+import { isErrorCode } from '@portkey-wallet/ramp/utils';
 import { IRampLimit } from '@portkey-wallet/types/types-ca/ramp';
 import BigNumber from 'bignumber.js';
 
@@ -23,9 +24,7 @@ export const getBuyFiat = async (params?: IGetFiatDataRequest) => {
     message,
     success,
   } = await ramp.service.getBuyFiatData(params);
-  if (!success || code.substring(0, 1) !== '2') {
-    throw new Error(message);
-  }
+  isErrorCode(message, success, code);
   return { fiatList, defaultFiat };
 };
 
@@ -36,9 +35,7 @@ export const getBuyCrypto = async (params: Required<IGetCryptoDataRequest>) => {
     message,
     success,
   } = await ramp.service.getBuyCryptoData(params);
-  if (!success || code.substring(0, 1) !== '2') {
-    throw new Error(message);
-  }
+  isErrorCode(message, success, code);
   return { buyCryptoList: cryptoList, buyDefaultCrypto: defaultCrypto };
 };
 
@@ -51,9 +48,7 @@ export const getBuyLimit = async (params: IGetLimitRequest): Promise<IRampLimit>
     message,
     success,
   } = await ramp.service.getBuyLimit(params);
-  if (!success || code.substring(0, 1) !== '2') {
-    throw new Error(message);
-  }
+  isErrorCode(message, success, code);
   return {
     symbol,
     minLimit: Number(ZERO.plus(minLimit).decimalPlaces(4, BigNumber.ROUND_UP).valueOf()),
@@ -68,9 +63,7 @@ export const getBuyExchange = async (params: IGetExchangeRequest) => {
     message,
     success,
   } = await ramp.service.getBuyExchange(params);
-  if (!success || code.substring(0, 1) !== '2') {
-    throw new Error(message);
-  }
+  isErrorCode(message, success, code);
   return exchange;
 };
 
@@ -81,9 +74,7 @@ export const getBuyPrice = async (params: IGetBuyPriceRequest) => {
     message,
     success,
   } = await ramp.service.getBuyPrice(params);
-  if (!success || code.substring(0, 1) !== '2') {
-    throw new Error(message);
-  }
+  isErrorCode(message, success, code);
   return { cryptoAmount, exchange, feeInfo };
 };
 
@@ -98,9 +89,7 @@ export const getBuyDetail = async (params: IGetBuyDetailRequest) => {
     success,
   } = await ramp.service.getBuyDetail(params);
 
-  if (!success || code.substring(0, 1) !== '2') {
-    throw new Error(message);
-  }
+  isErrorCode(message, success, code);
 
   const providersList: IGetBuyDetail[] = [];
   resultList.forEach(item => {
@@ -124,9 +113,7 @@ export const getSellCrypto = async (params?: IGetCryptoDataRequest) => {
     message,
     success,
   } = await ramp.service.getSellCryptoData(params);
-  if (!success || code.substring(0, 1) !== '2') {
-    throw new Error(message);
-  }
+  isErrorCode(message, success, code);
   return { cryptoList, defaultCrypto };
 };
 
@@ -138,9 +125,7 @@ export const getSellFiat = async (params: Required<IGetFiatDataRequest>) => {
     success,
   } = await ramp.service.getSellFiatData(params);
 
-  if (!success || code.substring(0, 1) !== '2') {
-    throw new Error(message);
-  }
+  isErrorCode(message, success, code);
 
   return { sellFiatList: fiatList, sellDefaultFiat: defaultFiat };
 };
@@ -155,9 +140,7 @@ export const getSellLimit = async (params: IGetLimitRequest): Promise<IRampLimit
     success,
   } = await ramp.service.getSellLimit(params);
 
-  if (!success || code.substring(0, 1) !== '2') {
-    throw new Error(message);
-  }
+  isErrorCode(message, success, code);
 
   return {
     symbol,
@@ -174,9 +157,7 @@ export const getSellExchange = async (params: IGetExchangeRequest) => {
     success,
   } = await ramp.service.getSellExchange(params);
 
-  if (!success || code.substring(0, 1) !== '2') {
-    throw new Error(message);
-  }
+  isErrorCode(message, success, code);
 
   return exchange;
 };
@@ -189,9 +170,7 @@ export const getSellPrice = async (params: IGetSellPriceRequest) => {
     success,
   } = await ramp.service.getSellPrice(params);
 
-  if (!success || code.substring(0, 1) !== '2') {
-    throw new Error(message);
-  }
+  isErrorCode(message, success, code);
 
   return { fiatAmount, exchange, feeInfo };
 };
@@ -204,9 +183,7 @@ export const getSellDetail = async (params: IGetSellDetailRequest) => {
     success,
   } = await ramp.service.getSellDetail(params);
 
-  if (!success || code.substring(0, 1) !== '2') {
-    throw new Error(message);
-  }
+  isErrorCode(message, success, code);
 
   const providersList: IGetSellDetail[] = [];
   resultList.forEach(item => {

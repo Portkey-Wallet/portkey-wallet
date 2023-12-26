@@ -13,6 +13,7 @@ import {
   IGetOrderNoRequest,
 } from '../types';
 import { stringifyUrl } from 'query-string';
+import { isErrorCode } from '../utils';
 
 export abstract class RampProvider implements IRampProvider {
   public providerInfo: IRampProviderInfo;
@@ -25,9 +26,7 @@ export abstract class RampProvider implements IRampProvider {
 
   public async getOrderId(params: IGetOrderNoRequest) {
     const { data, message, success, code } = await this.service.getOrderNo(params);
-    if (!success || code.substring(0, 1) !== '2') {
-      throw new Error(message);
-    }
+    isErrorCode(message, success, code);
     return data.orderId;
   }
 
@@ -84,17 +83,13 @@ export class AlchemyPayProvider extends RampProvider implements IAlchemyPayProvi
 
   public async getToken(email: string) {
     const { data, success, code, message } = await this.service.getAchPayToken({ email });
-    if (!success || code.substring(0, 1) !== '2') {
-      throw new Error(message);
-    }
+    isErrorCode(message, success, code);
     return data;
   }
 
   public async getSignature(address: string) {
     const { data, success, code, message } = await this.service.getAchPaySignature({ address });
-    if (!success || code.substring(0, 1) !== '2') {
-      throw new Error(message);
-    }
+    isErrorCode(message, success, code);
     return data.signature;
   }
 }

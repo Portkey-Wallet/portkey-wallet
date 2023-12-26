@@ -66,8 +66,6 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
       const isHighLight: boolean =
         !item.mute && (item.lastMessageContent as ParsedTransfer)?.data?.toUserId === userInfo?.userId;
 
-      console.log('item.lastMessageContent', item.lastMessageContent);
-
       const transferInfo = item?.lastMessageContent as ParsedTransfer;
 
       const infoShow = transferInfo?.transferExtraData?.tokenInfo

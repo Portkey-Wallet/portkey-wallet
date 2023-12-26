@@ -7,10 +7,10 @@ import SafeAreaBox from 'components/SafeAreaBox';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { pTd } from 'utils/unit';
 import navigationService, { NavigateName } from 'utils/navigationService';
-import { ACH_REDIRECT_URL, ACH_WITHDRAW_URL } from 'constants/common';
-import { useHandleAchSell } from './hooks/useHandleAchSell';
+import { useHandleRampSell } from './hooks/useHandleRampSell';
 import CommonToast from 'components/CommonToast';
 import Progressbar, { IProgressbar } from 'components/Progressbar';
+import { RAMP_BUY_URL, RAMP_SELL_URL } from 'constants/common';
 
 const safeAreaColorMap = {
   white: defaultColors.bg1,
@@ -21,10 +21,10 @@ const safeAreaColorMap = {
 
 export type SafeAreaColorMapKeyUnit = keyof typeof safeAreaColorMap;
 
-type WebViewPageType = 'default' | 'ach' | 'achSell';
+type WebViewPageType = 'default' | 'ramp-buy' | 'ramp-sell';
 
-export interface AchSellParams {
-  orderNo?: string;
+export interface RampSellParams {
+  orderId?: string;
 }
 
 const ViewOnWebView: React.FC = () => {
@@ -47,14 +47,15 @@ const ViewOnWebView: React.FC = () => {
   const webViewRef = React.useRef<WebView>(null);
   const progressBarRef = React.useRef<IProgressbar>(null);
 
-  const handleAchSell = useHandleAchSell();
+  const handleRampSell = useHandleRampSell();
   const isAchSellHandled = useRef(false);
 
   const handleNavigationStateChange = useCallback(
     (navState: any) => {
       if (webViewPageType === 'default') return;
-      if (webViewPageType === 'ach') {
-        if (navState.url.startsWith(ACH_REDIRECT_URL)) {
+
+      if (webViewPageType === 'ramp-buy') {
+        if (navState.url.startsWith(RAMP_BUY_URL)) {
           if (successNavigateName) {
             navigationService.navigate(successNavigateName);
           } else {
@@ -63,20 +64,20 @@ const ViewOnWebView: React.FC = () => {
         }
         return;
       }
-      if (webViewPageType === 'achSell') {
-        if (navState.url.startsWith(ACH_WITHDRAW_URL) && !isAchSellHandled.current) {
+      if (webViewPageType === 'ramp-sell') {
+        if (navState.url.startsWith(RAMP_SELL_URL) && !isAchSellHandled.current) {
           isAchSellHandled.current = true;
           navigationService.navigate('Tab');
-          const { orderNo } = (params as AchSellParams) || {};
-          if (!orderNo) {
+          const { orderId } = (params as RampSellParams) || {};
+          if (!orderId) {
             CommonToast.failError('Transaction failed.');
             return;
           }
-          handleAchSell(orderNo);
+          handleRampSell(orderId);
         }
       }
     },
-    [handleAchSell, params, successNavigateName, webViewPageType],
+    [handleRampSell, params, successNavigateName, webViewPageType],
   );
 
   return (

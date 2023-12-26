@@ -53,6 +53,8 @@ export default function RegisterStart() {
   const isMainnet = useIsMainnet();
   const [open, setOpen] = useState<boolean>();
   const { t } = useTranslation();
+  // TODO
+  // const { v2url } = useCms();
 
   const networkList = useNetworkList();
 
@@ -330,11 +332,9 @@ export default function RegisterStart() {
           return setOpen(true);
         } else return onLoginFinish(loginInfo);
       }
-      if (type === 'create') return onSignFinish(loginInfo);
-      else {
-        setLoading(false);
-        return setOpen(true);
-      }
+      console.log('onSignFinish', onSignFinish);
+      setLoading(false);
+      return setOpen(true);
     },
     [onLoginFinish, onSignFinish, setLoading, type],
   );
@@ -426,7 +426,11 @@ export default function RegisterStart() {
         onConfirm={() => {
           if (!loginInfoRef.current) return setOpen(false);
           if (isHasAccount?.current) return onLoginFinish(loginInfoRef.current);
-          onSignFinish(loginInfoRef.current);
+          // TODO
+          // const openWinder = window.open(v2url, '_blank');
+          // if (openWinder) {
+          //   openWinder.opener = null;
+          // }
           setOpen(false);
         }}
       />

@@ -15,6 +15,7 @@ import { ParsedTransfer } from '@portkey-wallet/im';
 import navigationService from 'utils/navigationService';
 import { useUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useGetContactLabel } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { ActivityTypeEnum } from '@portkey-wallet/store/store-ca/activity/type';
 
 function TransferCard(props: MessageProps<ChatMessage>) {
   const { userId } = useUserInfo() || {};
@@ -31,6 +32,7 @@ function TransferCard(props: MessageProps<ChatMessage>) {
     navigationService.navigate('ActivityDetail', {
       transactionId: transferInfo.data?.transactionId,
       blockHash: transferInfo.data?.blockHash,
+      activityType: ActivityTypeEnum.TRANSFER_CARD,
     });
   }, [transferInfo.data?.blockHash, transferInfo.data?.transactionId]);
 

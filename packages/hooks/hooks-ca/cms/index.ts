@@ -1,12 +1,7 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { useAppCASelector } from '../.';
 import { useAppCommonDispatch, useEffectOnce } from '../../index';
-import {
-  useCurrentNetworkInfo,
-  useIsIMServiceExist,
-  useIsMainnet,
-  useNetworkList,
-} from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsIMServiceExist, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
 import {
   getDiscoverGroupAsync,
   getSocialMediaAsync,
@@ -155,57 +150,26 @@ export const useEntrance = (config: IEntranceMatchValueConfig, isInit = false) =
   };
 };
 
-export const useBuyButtonShow = (config: IEntranceMatchValueConfig) => {
-  const { entrance, refresh } = useEntrance(config);
-  const isMainnet = useIsMainnet();
-
-  const isBuySectionShow = useMemo(() => isMainnet && entrance.buy, [entrance.buy, isMainnet]);
-
-  const isSellSectionShow = useMemo(() => isMainnet && entrance.sell, [entrance.sell, isMainnet]);
-
-  const isBuyButtonShow = useMemo(
-    () => isMainnet && (isBuySectionShow || isSellSectionShow || false),
-    [isBuySectionShow, isMainnet, isSellSectionShow],
-  );
-
-  const refreshBuyButton = useCallback(async () => {
-    let isBuySectionShow = false;
-    let isSellSectionShow = false;
-    try {
-      const result = await refresh();
-      isBuySectionShow = result.buy;
-      isSellSectionShow = result.sell;
-    } catch (error) {
-      console.log('refreshBuyButton error');
-    }
-
-    return {
-      isBuySectionShow: isMainnet && isBuySectionShow,
-      isSellSectionShow: isMainnet && isSellSectionShow,
-    };
-  }, [isMainnet, refresh]);
-
-  return {
-    isBuyButtonShow,
-    isBuySectionShow,
-    isSellSectionShow,
-    refreshBuyButton,
-  };
-};
-
 export const useETransShow = (config: IEntranceMatchValueConfig) => {
   const { entrance, refresh } = useEntrance(config);
+  const { eTransferUrl } = useCurrentNetworkInfo();
 
-  const isETransDepositShow = useMemo(() => entrance.eTransDeposit, [entrance.eTransDeposit]);
+  const isETransDepositShow = useMemo(
+    () => !!(entrance.eTransDeposit && eTransferUrl),
+    [eTransferUrl, entrance.eTransDeposit],
+  );
 
-  const isETransWithdrawShow = useMemo(() => entrance.eTransWithdraw, [entrance.eTransWithdraw]);
+  const isETransWithdrawShow = useMemo(
+    () => !!(entrance.eTransWithdraw && eTransferUrl),
+    [eTransferUrl, entrance.eTransWithdraw],
+  );
 
   const isETransShow = useMemo(
     () => isETransDepositShow || isETransWithdrawShow || false,
     [isETransDepositShow, isETransWithdrawShow],
   );
 
-  const refreshBuyButton = useCallback(async () => {
+  const refreshETrans = useCallback(async () => {
     let _isETransDepositShow = false;
     let _isETransWithdrawShow = false;
     try {
@@ -226,7 +190,7 @@ export const useETransShow = (config: IEntranceMatchValueConfig) => {
     isETransShow,
     isETransDepositShow,
     isETransWithdrawShow,
-    refreshBuyButton,
+    refreshETrans,
   };
 };
 export const useBridgeButtonShow = (config: IEntranceMatchValueConfig) => {

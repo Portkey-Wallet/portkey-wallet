@@ -31,9 +31,9 @@ function LoadingBody({ text }: { text?: string; position?: LoadingPositionType; 
 }
 
 export default class Loading extends React.Component {
-  static show(options?: ShowOptionsType): number {
+  static show(options?: ShowOptionsType, isKeyboardShow?: boolean): number {
     const { text = 'Loading...', iconType = 'loading', isMaskTransparent = true, overlayProps = {} } = options || {};
-    Keyboard.dismiss();
+    !isKeyboardShow && Keyboard.dismiss();
     Loading.hide();
     const overlayView = (
       <Overlay.PopView

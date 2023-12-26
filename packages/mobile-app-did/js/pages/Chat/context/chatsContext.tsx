@@ -1,3 +1,3 @@
 import { chatSlice } from 'store/chat/slice';
 
-export const { setChatText, setBottomBarStatus, setShowSoftInputOnFocus, setCurrentChannelId } = chatSlice.actions;
+export const { setChatText, setBottomBarStatus, setShowSoftInputOnFocus, setCurrentChannel } = chatSlice.actions;

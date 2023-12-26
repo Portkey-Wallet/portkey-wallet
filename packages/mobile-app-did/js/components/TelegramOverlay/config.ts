@@ -57,4 +57,4 @@ export function parseTGAuthResult(url: string) {
   return stringify(JSON.parse(tgAuthResult));
 }
 
-export const TelegramUrl = 'https://t.me/+42777';
+export const TelegramUrl = 'tg://resolve?phone=42777';

@@ -12,6 +12,7 @@ import { getManagerAccount } from 'utils/redux';
 import AElf from 'aelf-sdk';
 import SparkMD5 from 'spark-md5';
 import ramp, { IGenerateTransactionResult, IOrderInfo } from '@portkey-wallet/ramp';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 
 export const useHandleRampSell = () => {
   const { accountToken } = useAssets();
@@ -19,7 +20,7 @@ export const useHandleRampSell = () => {
     () => accountToken.accountTokenList.find(item => item.symbol === 'ELF' && item.chainId === 'AELF'),
     [accountToken],
   );
-  const chainInfo = useCurrentChain('AELF');
+  const chainInfo = useCurrentChain(DefaultChainId);
   const pin = usePin();
   const wallet = useCurrentWalletInfo();
 

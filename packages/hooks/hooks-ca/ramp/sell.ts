@@ -11,7 +11,7 @@ import {
   useSellDefaultCryptoState,
   useSellDefaultFiatListState,
   useSellDefaultFiatState,
-} from '.';
+} from './index';
 import { getSellCrypto, getSellFiat } from '@portkey-wallet/utils/ramp';
 
 export const useSellCrypto = () => {

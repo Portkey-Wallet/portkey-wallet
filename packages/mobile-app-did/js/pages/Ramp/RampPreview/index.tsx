@@ -214,7 +214,6 @@ export default function RampPreview() {
       });
 
       navigationService.navigate('ViewOnWebView', {
-        // TODO: ramp adjust title
         title: 'Ramp',
         url: url,
         webViewPageType: type === RampType.BUY ? 'ramp-buy' : 'ramp-sell',

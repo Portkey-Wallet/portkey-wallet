@@ -18,7 +18,6 @@ import { PIN_OPERATION_TYPE_ENUM } from '@portkey-wallet/im/types/pin';
 import { getSendUuid } from '@portkey-wallet/utils/chat';
 import { messageParser } from '@portkey-wallet/im/utils';
 import { useWallet } from '../wallet';
-// import { sleep } from '@portkey-wallet/utils';
 
 export const useIMPin = (channelId: string, isRegister = false) => {
   const { networkType } = useCurrentNetworkInfo();
@@ -73,7 +72,6 @@ export const useIMPin = (channelId: string, isRegister = false) => {
           maxResultCount,
           skipCount,
         });
-
         // handle next
         if (skipCount !== 0 && preInitTime !== pagerRef.current.initTime) return;
         if (pagerRef.current.fetchTime > fetchTime) return;
@@ -323,7 +321,6 @@ export const useIMPin = (channelId: string, isRegister = false) => {
 
       addMockPinSysMessage(PIN_OPERATION_TYPE_ENUM.Pin, message);
 
-      // await sleep(500);
       initList();
     },
     [addMockPinSysMessage, channelId, dispatch, initList, networkType, userInfo?.nickName, userInfo?.userId],
@@ -353,7 +350,6 @@ export const useIMPin = (channelId: string, isRegister = false) => {
 
       addMockPinSysMessage(PIN_OPERATION_TYPE_ENUM.UnPin, message);
 
-      // await sleep(500);
       initList();
     },
     [addMockPinSysMessage, channelId, dispatch, initList, networkType, refreshLastPin],

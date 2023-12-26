@@ -9,6 +9,7 @@ import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 import { formatMessageList } from '../utils';
 import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
 import { Message } from '@portkey-wallet/im';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 import './index.less';
 
 const PinnedMsg = () => {
@@ -37,9 +38,12 @@ const PinnedMsg = () => {
       }),
     [isAdmin, pinList, relationId],
   );
-  useEffect(() => {
+  useEffectOnce(() => {
     initPinList();
-  }, [initPinList]);
+  });
+  useEffect(() => {
+    if (pinList.length === 0) navigate(`/chat-box-group/${channelUuid}`);
+  }, [channelUuid, navigate, pinList.length]);
   const handleUnpinAllMsg = useCallback(() => {
     CustomModalConfirm({
       content: (
@@ -51,15 +55,14 @@ const PinnedMsg = () => {
       okText: t('Unpin'),
       onOk: async () => {
         try {
-          await unPinAllMsg();
-          navigate(`/chat-box-group/${channelUuid}`);
+          unPinAllMsg();
         } catch (e) {
           message.error('Failed to unpin all message');
           console.log('===Failed to unpin all message error', e);
         }
       },
     });
-  }, [channelUuid, navigate, pinList?.length, t, unPinAllMsg]);
+  }, [pinList?.length, t, unPinAllMsg]);
   const handleUnpinMsg = useCallback(
     async (item: MessageContentType) => {
       const _msg = pinList.find((temp) => temp.id === item.id);
@@ -77,8 +80,7 @@ const PinnedMsg = () => {
         okText: t('Unpin'),
         onOk: async () => {
           try {
-            await unPinMsg(_msg);
-            if (pinList.length === 1) navigate(`/chat-box-group/${channelUuid}`);
+            unPinMsg(_msg);
           } catch (e) {
             message.error('Failed to unpin all message');
             console.log('===Failed to unpin all message error', e);
@@ -86,7 +88,7 @@ const PinnedMsg = () => {
         },
       });
     },
-    [channelUuid, navigate, pinList, t, unPinMsg],
+    [pinList, t, unPinMsg],
   );
   const handleDeleteMsg = useCallback(
     async (item: MessageContentType) => {

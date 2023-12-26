@@ -10,7 +10,15 @@ import { IMessage, MessageShowPageEnum } from '../type';
 import './index.less';
 
 const ImageMessage: React.FC<IMessage> = (props) => {
-  const { isGroup, pinInfo, parsedContent, isAdmin, createAt, showPageType = MessageShowPageEnum['MSG-PAGE'] } = props;
+  const {
+    isGroup,
+    pinInfo,
+    parsedContent,
+    isAdmin,
+    createAt,
+    showPageType = MessageShowPageEnum['MSG-PAGE'],
+    position,
+  } = props;
   const { thumbImgUrl, width, height, imgUrl } = formatImageData(parsedContent as ParsedImage);
   const [loadErr, setLoadErr] = useState(false);
   const imageSize = useMemo(
@@ -18,7 +26,7 @@ const ImageMessage: React.FC<IMessage> = (props) => {
     [width, height],
   );
   const [popVisible, setPopVisible] = useState(false);
-  const popoverList = useMemo(
+  const popAllList = useMemo(
     () => [
       {
         key: 'reply',
@@ -49,21 +57,21 @@ const ImageMessage: React.FC<IMessage> = (props) => {
     [pinInfo, props],
   );
   const popListFilter = useMemo(() => {
+    let _popList: string[] = [];
+    const isMine = position === 'right';
     if (showPageType === MessageShowPageEnum['MSG-PAGE']) {
       if (isGroup) {
-        return isAdmin ? ['delete', 'pin', 'reply'] : ['delete', 'reply'];
+        _popList = isAdmin ? ['pin', 'reply'] : ['reply'];
       }
-      return ['delete'];
     }
     if (showPageType === MessageShowPageEnum['PIN-PAGE']) {
-      return isAdmin ? ['delete', 'pin'] : ['delete'];
+      _popList = isAdmin ? ['pin'] : [];
     }
-    return [];
-  }, [isAdmin, isGroup, showPageType]);
-  const showPopoverList = useMemo(
-    () => popoverList.filter((item) => popListFilter.includes(item.key)),
-    [popListFilter, popoverList],
-  );
+    if (isMine) {
+      _popList.unshift('delete');
+    }
+    return popAllList.filter((t) => _popList.includes(t.key));
+  }, [isAdmin, isGroup, popAllList, position, showPageType]);
   const showMask = useMemo(() => {
     const dataShow = props.dateString ? props.dateString : formatTime(createAt);
     return (
@@ -103,25 +111,23 @@ const ImageMessage: React.FC<IMessage> = (props) => {
     [imageSize, imgUrl, showMask, thumbImgUrl],
   );
   return (
-    <div className={clsx(['portkey-message-image', 'flex', props.position])}>
-      <div className={clsx(['image-body', props.position])}>
+    <div className={clsx(['portkey-message-image', 'flex', position])}>
+      <div className={clsx(['image-body', position])}>
         {loadErr ? (
           <div className="image-error">
             <CustomSvg type="ImgErr" />
           </div>
-        ) : props.position === 'right' ? (
-          <>
-            <Popover
-              open={popVisible}
-              onOpenChange={(v) => setPopVisible(v)}
-              overlayClassName={clsx(['message-image-popover', props.position])}
-              placement="bottom"
-              trigger="contextMenu"
-              showArrow={false}
-              content={<PopoverMenuList data={showPopoverList} />}>
-              {renderImage}
-            </Popover>
-          </>
+        ) : popListFilter.length ? (
+          <Popover
+            open={popVisible}
+            onOpenChange={(v) => setPopVisible(v)}
+            overlayClassName={clsx(['message-image-popover', position])}
+            placement="bottom"
+            trigger="contextMenu"
+            showArrow={false}
+            content={<PopoverMenuList data={popListFilter} />}>
+            {renderImage}
+          </Popover>
         ) : (
           renderImage
         )}

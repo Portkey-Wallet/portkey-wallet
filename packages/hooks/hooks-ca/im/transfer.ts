@@ -21,7 +21,6 @@ export interface ISendIMTransferParams {
   tokenContractAddress: string;
   toCAAddress: string;
   symbol: string;
-  decimal: string | number;
   amount: string;
   type: TransferTypeEnum;
   memo: string;
@@ -86,6 +85,8 @@ export const useSendIMTransfer = () => {
           memo,
           transactionId: '',
           blockHash: '',
+          toUserId: '',
+          toUserName: '',
         },
       };
 
@@ -114,7 +115,7 @@ export const useSendIMTransfer = () => {
           });
         },
         times: 10,
-        interval: 2000,
+        interval: 5000,
         checkIsContinue: _statusResult => {
           return _statusResult?.data?.status === TransferStatusEnum.PENDING;
         },

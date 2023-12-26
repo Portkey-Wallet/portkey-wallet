@@ -17,7 +17,7 @@ import { fetchAssetList } from '@portkey-wallet/store/store-ca/assets/api';
 import { IAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
 import navigationService from 'utils/navigationService';
 import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
-import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { addressFormat, formatChainInfoToShow } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
 import { useGStyles } from 'assets/theme/useGStyles';
 import myEvents from 'utils/deviceEvent';
@@ -26,11 +26,16 @@ import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/u
 import CommonAvatar from 'components/CommonAvatar';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 
-type ShowAssetListParamsType = {
-  toAddress?: string;
+export type ImTransferInfoType = {
+  isGroupChat?: boolean;
+  channelId?: string;
+  toUserId?: string;
   name?: string;
-  isFixedToContact?: boolean;
-  chainIds?: ChainId[];
+  addresses?: { address: string; chainId: ChainId; chainName?: string }[];
+};
+
+export type ShowAssetListParamsType = {
+  imTransferInfo?: ImTransferInfoType;
 };
 
 const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: IAssetItemType }) => {
@@ -41,7 +46,7 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
   if (item.tokenInfo)
     return (
       <TokenListItem
-        item={{ ...item, ...item?.tokenInfo, tokenContractAddress: item.address }}
+        item={{ name: '', ...item, ...item?.tokenInfo, tokenContractAddress: item.address }}
         onPress={() => onPress(item)}
       />
     );
@@ -85,12 +90,16 @@ const INIT_PAGE_INFO = {
   isLoading: false,
 };
 
-const AssetList = ({ toAddress, name, isFixedToContact, chainIds }: ShowAssetListParamsType) => {
+const AssetList = ({ imTransferInfo }: ShowAssetListParamsType) => {
+  const { addresses = [], isGroupChat, toUserId } = imTransferInfo || {};
+  console.log('addresses', addresses);
   const { t } = useLanguage();
   const caAddresses = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
   const [keyword, setKeyword] = useState('');
   const gStyles = useGStyles();
+
+  const chainIds = useMemo(() => addresses?.map(item => item.chainId), [addresses]);
 
   const debounceKeyword = useDebounce(keyword, 800);
 
@@ -157,6 +166,8 @@ const AssetList = ({ toAddress, name, isFixedToContact, chainIds }: ShowAssetLis
 
   const renderItem = useCallback(
     ({ item }: { item: IAssetItemType }) => {
+      const addressItem = addresses?.find(ele => ele?.chainId === item.chainId);
+
       return (
         <AssetItem
           symbol={item.symbol || ''}
@@ -170,17 +181,30 @@ const AssetList = ({ toAddress, name, isFixedToContact, chainIds }: ShowAssetLis
                 ? { ...item?.nftInfo, chainId: item.chainId, symbol: item.symbol }
                 : { ...item?.tokenInfo, chainId: item.chainId, symbol: item.symbol },
               toInfo: {
-                address: toAddress || '',
-                name: name || '',
+                address: addressItem ? addressFormat(addressItem.address, addressItem.chainId) : '',
+                name: imTransferInfo?.name || '',
               },
-              isFixedToContact,
             };
-            navigationService.navigate('SendHome', routeParams as unknown as IToSendHomeParamsType);
+
+            if (imTransferInfo?.channelId) {
+              navigationService.navigateByMultiLevelParams('SendHome', {
+                params: routeParams as unknown as IToSendHomeParamsType,
+                multiLevelParams: {
+                  imTransferInfo: {
+                    isGroupChat,
+                    channelId: imTransferInfo?.channelId,
+                    toUserId,
+                  },
+                },
+              });
+            } else {
+              navigationService.navigate('SendHome', routeParams as unknown as IToSendHomeParamsType);
+            }
           }}
         />
       );
     },
-    [isFixedToContact, name, toAddress],
+    [addresses, imTransferInfo?.channelId, imTransferInfo?.name, isGroupChat, toUserId],
   );
 
   const noData = useMemo(() => {

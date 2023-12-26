@@ -6,13 +6,15 @@ import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { ChatMessage } from 'pages/Chat/types';
 import { TextS } from 'components/CommonText';
+import { isCommonView } from 'pages/Chat/utils';
 
 export default function CustomBubble(props: BubbleProps<ChatMessage> & { isGroupChat?: boolean }) {
   const { isGroupChat, currentMessage, previousMessage, user } = props || {};
   const { messageType } = currentMessage || {};
 
-  // not red packets
-  const isGeneralMessage = currentMessage?.messageType !== 'REDPACKAGE-CARD';
+  const isGeneralMessage = useMemo(() => !isCommonView(messageType), [messageType]);
+
+  currentMessage?.messageType !== 'REDPACKAGE-CARD';
 
   const isHideName = useMemo(
     () => currentMessage?.user?._id === previousMessage?.user?._id || user?._id === currentMessage?.user?._id,

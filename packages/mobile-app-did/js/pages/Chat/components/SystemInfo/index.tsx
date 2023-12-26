@@ -6,6 +6,8 @@ import { TextS } from 'components/CommonText';
 import { defaultColors } from 'assets/theme';
 import { ChatMessage } from 'pages/Chat/types';
 import GStyles from 'assets/theme/GStyles';
+import { ParsedPinSys } from '@portkey-wallet/im';
+import { formatPinSysMessageToStr } from '@portkey-wallet/utils/chat';
 
 function SystemInfo(props: SystemMessageProps<ChatMessage> & { previousMessage?: ChatMessage }) {
   const { previousMessage, currentMessage } = props;
@@ -16,10 +18,15 @@ function SystemInfo(props: SystemMessageProps<ChatMessage> & { previousMessage?:
 
   console.log('SystemInfo pinInfo', currentMessage);
 
+  const pinInfo = useMemo<ParsedPinSys>(
+    () => currentMessage?.parsedContent as ParsedPinSys,
+    [currentMessage?.parsedContent],
+  );
+
+  const pinMessageContent = useMemo(() => formatPinSysMessageToStr(pinInfo), [pinInfo]);
+
   if (currentMessage?.messageType === 'PIN-SYS')
-    return (
-      <TextS style={[styles.textStyles, isMarginTop6 && GStyles.marginTop(pTd(6))]}>{currentMessage?.content}</TextS>
-    );
+    return <TextS style={[styles.textStyles, isMarginTop6 && GStyles.marginTop(pTd(6))]}>{pinMessageContent}</TextS>;
 
   return (
     <TextS style={[styles.textStyles, isMarginTop6 && GStyles.marginTop(pTd(6))]}>{currentMessage?.content}</TextS>

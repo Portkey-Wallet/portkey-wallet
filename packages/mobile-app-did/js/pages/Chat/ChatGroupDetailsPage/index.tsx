@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { GestureResponderEvent, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -33,6 +33,8 @@ import { measurePageY } from 'utils/measure';
 import GroupAvatarShow from '../components/GroupAvatarShow';
 import { useIsFocused } from '@react-navigation/native';
 import HeaderPinSection from '../components/HeaderPinSection';
+import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 
 const ChatGroupDetailsPage = () => {
   const isFocused = useIsFocused();
@@ -40,9 +42,12 @@ const ChatGroupDetailsPage = () => {
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
+
+  const [hasPinWhenInit, setHasPinWhenInit] = useState(true);
   const currentChannelId = useCurrentChannelId();
   const { isAdmin, groupInfo } = useGroupChannelInfo(currentChannelId || '', true);
   const { pin, mute, displayName } = useChannelItemInfo(currentChannelId || '') || {};
+  const { lastPinMessage, refreshLastPin, refresh } = useIMPin(currentChannelId || '', true);
 
   const leaveGroup = useLeaveChannel();
 
@@ -201,11 +206,21 @@ const ChatGroupDetailsPage = () => {
   );
 
   const headerDom = useMemo(() => {
-    // if pin exit, show pin section
-    return <HeaderPinSection />;
+    if (lastPinMessage) return <HeaderPinSection channelUUid={currentChannelId || ''} />;
 
-    return <FloatingActionButton title="Add Members" shouldShowFirstTime={isAdmin} onPressButton={addMembers} />;
-  }, [addMembers, isAdmin]);
+    return hasPinWhenInit ? null : (
+      <FloatingActionButton title="Add Members" shouldShowFirstTime={isAdmin} onPressButton={addMembers} />
+    );
+  }, [addMembers, currentChannelId, hasPinWhenInit, isAdmin, lastPinMessage]);
+
+  useEffectOnce(() => {
+    refreshLastPin();
+    refresh();
+  });
+
+  useEffectOnce(() => {
+    setHasPinWhenInit(!!lastPinMessage);
+  });
 
   return (
     <PageContainer

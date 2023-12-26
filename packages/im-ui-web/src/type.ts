@@ -1,5 +1,12 @@
 import React from 'react';
-import { ChannelStatusEnum, ChannelTypeEnum, Message, MessageType, MessageTypeEnum } from '@portkey-wallet/im';
+import {
+  ChannelStatusEnum,
+  ChannelTypeEnum,
+  Message,
+  MessageType,
+  MessageTypeEnum,
+  ParsedContent,
+} from '@portkey-wallet/im';
 
 export interface IChatItemProps {
   id: string | number;
@@ -18,8 +25,9 @@ export interface IChatItemProps {
   showMute?: boolean;
   pin?: boolean;
   status: ChannelStatusEnum;
-  isOwner?: boolean;
   lastMessageType: MessageType;
+  lastMessageContent: ParsedContent | null;
+  myPortkeyId?: string;
   onClick?: React.MouseEventHandler;
   onClickMute?: React.MouseEventHandler;
   onClickPin?: React.MouseEventHandler;
@@ -64,6 +72,7 @@ export interface INotSupportMessage extends IMessageEvent {
   subType: INotSupportMessageType;
   parsedContent: string;
   className?: string;
+  hideAvatar?: boolean;
 }
 export interface IDateSysMessage extends IMessageEvent {
   key: string;
@@ -78,6 +87,7 @@ export interface IDateSysMessage extends IMessageEvent {
   className?: string;
   subType: IDateSysMessageType;
   parsedContent: string;
+  hideAvatar?: boolean;
 }
 
 export interface IMessageEvent {
@@ -107,6 +117,8 @@ export interface IMessage extends Message, IMessageEvent {
   isAdmin?: boolean;
   isGroup?: boolean;
   showPageType?: IMessageShowPage;
+  hideAvatar?: boolean;
+  extraData?: Record<string, any>;
 }
 
 export interface IMessageListProps {
@@ -177,7 +189,9 @@ export interface PopDataProps {
 
 export interface IInputReplyMsgProps {
   msgType: MessageTypeEnum.IMAGE | MessageTypeEnum.TEXT;
-  msgContent: string;
+  msgContent?: string;
+  thumbImgUrl?: string;
+  imgUrl?: string;
   toName: string;
   onCloseReply?: () => void;
 }
@@ -213,7 +227,7 @@ export interface IAvatarProps {
   letter?: string;
   className?: string;
   alt?: string;
-  channelType?: ChannelTypeEnum;
+  isGroupAvatar?: boolean;
   width?: number;
   height?: number;
   avatarSize?: IAvatarSize;

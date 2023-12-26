@@ -1,7 +1,9 @@
 import { PIN_LIMIT_EXCEED } from '@portkey-wallet/constants/constants-ca/chat';
 import { ChannelItem, Message } from '@portkey-wallet/im';
 import { MessageContentType } from '@portkey-wallet/im-ui-web';
-import { message, Modal } from 'antd';
+import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
+import { message } from 'antd';
+import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 import { useCallback } from 'react';
 
 export interface HandleProps {
@@ -12,19 +14,31 @@ export interface HandleProps {
   mute: (value: boolean) => Promise<void>;
   pinMsg?: (message: Message) => Promise<void>;
   unPinMsg?: (message: Message) => Promise<void>;
+  refreshAllPinList?: () => Promise<void>;
 }
-export const useHandle = ({ deleteMessage, pin, info, mute, list, pinMsg, unPinMsg }: HandleProps) => {
+export const useHandle = ({
+  deleteMessage,
+  pin,
+  info,
+  mute,
+  list,
+  pinMsg,
+  unPinMsg,
+  refreshAllPinList,
+}: HandleProps) => {
   const handleDeleteMsg = useCallback(
     async (item: MessageContentType) => {
       const msg = list.find((temp) => temp.id === item.id);
       try {
         await deleteMessage(msg as Message);
+        await sleep(200);
+        refreshAllPinList?.();
       } catch (e) {
         message.error('Failed to delete message');
         console.log('===handle delete message error', e);
       }
     },
-    [deleteMessage, list],
+    [deleteMessage, list, refreshAllPinList],
   );
   const handlePin = useCallback(async () => {
     try {
@@ -51,25 +65,20 @@ export const useHandle = ({ deleteMessage, pin, info, mute, list, pinMsg, unPinM
       const msg: Message | undefined = list.find((temp) => temp.id === item.id);
       if (!msg) return;
       if (msg.pinInfo) {
-        Modal.confirm({
-          width: 320,
+        CustomModalConfirm({
           content: (
-            <div className="unpin-content flex-column-center">
+            <div className="modal-unpin-content flex-column-center">
               <div className="unpin-content-title">Unpin Message</div>
-              <div>Do you like to unpin this message?</div>
+              <div>Would you like to unpin this message?</div>
             </div>
           ),
-          className: 'cross-modal unpin-modal',
-          autoFocusButton: null,
-          icon: null,
-          centered: true,
           okText: 'Unpin',
-          cancelText: 'Cancel',
           onOk: async () => {
             try {
-              await unPinMsg?.(msg);
+              unPinMsg?.(msg);
             } catch (e) {
-              message.error('Failed to unpin message');
+              const _err = handleErrorMessage(e, 'Failed to unpin message');
+              message.error(_err);
               console.log('===handle unpin message error', e);
             }
           },
@@ -78,7 +87,8 @@ export const useHandle = ({ deleteMessage, pin, info, mute, list, pinMsg, unPinM
         try {
           await pinMsg?.({ ...msg });
         } catch (e) {
-          message.error('Failed to pin message');
+          const _err = handleErrorMessage(e, 'Failed to pin message');
+          message.error(_err);
           console.log('===handle pin message error', e);
         }
       }

@@ -8,9 +8,16 @@ import {
   ParsedImage,
   ParsedPinSys,
   ParsedRedPackage,
+  ParsedTransfer,
 } from '@portkey-wallet/im';
-import { ExtraMessageTypeEnum, IMessageShowPage, MessageContentType } from '@portkey-wallet/im-ui-web';
-import { formatMessageTime } from '@portkey-wallet/utils/chat';
+import {
+  ExtraMessageTypeEnum,
+  IMessageShowPage,
+  MessageContentType,
+  SupportSysMsgType,
+} from '@portkey-wallet/im-ui-web';
+import { formatMessageTime, formatPinSysMessageToStr } from '@portkey-wallet/utils/chat';
+import { divDecimalsToShow } from '@portkey-wallet/utils/converter';
 import { isSameDay } from '@portkey-wallet/utils/time';
 
 export const supportedMsgType: MessageType[] = [
@@ -40,6 +47,7 @@ export const getPixel = async (url: string): Promise<{ width: number; height: nu
 export interface IFormatMessageList {
   list: Message[];
   ownerRelationId: string;
+  myPortkeyId?: string;
   isGroup?: boolean;
   isAdmin?: boolean;
   showPageType?: IMessageShowPage;
@@ -48,6 +56,7 @@ export interface IFormatMessageList {
 export const formatMessageList = ({
   list,
   ownerRelationId,
+  myPortkeyId,
   isGroup = false,
   isAdmin = false,
   showPageType,
@@ -59,12 +68,15 @@ export const formatMessageList = ({
       transItem = {
         ...item,
         key: item.sendUuid,
-        showAvatar: item.from !== ownerRelationId && isGroup,
+        showAvatar: isGroup && !SupportSysMsgType.includes(item.type) && item.from !== ownerRelationId,
         letter: item.fromName?.slice(0, 1)?.toUpperCase(),
         position: supportSysMsgType.includes(item.type) ? 'center' : item.from === ownerRelationId ? 'right' : 'left',
         isGroup,
         isAdmin,
         showPageType,
+        extraData: {
+          myPortkeyId,
+        },
       };
     } else {
       transItem = {
@@ -128,19 +140,29 @@ export const formatChatListSubTitle = (item: ChannelItem) => {
     return `${item.lastMessageContent}`;
   }
   if (_type === MessageTypeEnum.PIN_SYS) {
-    console.log('MessageTypeEnum.PIN_SYS', item);
-    return (item.lastMessageContent as ParsedPinSys).content;
+    return formatPinSysMessageToStr(item.lastMessageContent as ParsedPinSys);
   }
   if (_type === MessageTypeEnum.REDPACKAGE_CARD) {
     const redPackage = (item.lastMessageContent as ParsedRedPackage).data;
     return `${redPackage?.memo || RED_PACKAGE_DEFAULT_MEMO}`;
   }
+  if (_type === MessageTypeEnum.TRANSFER_CARD) {
+    const asset = (item.lastMessageContent as ParsedTransfer)?.transferExtraData || {};
+    const { nftInfo, tokenInfo } = asset;
+    if (nftInfo) {
+      return `${nftInfo.alias} #${nftInfo.nftId}`;
+    }
+    if (tokenInfo) {
+      return `${divDecimalsToShow(tokenInfo.amount, tokenInfo.decimal)} ${tokenInfo.symbol}`;
+    }
+    return '';
+  }
   return UN_SUPPORTED_FORMAT;
 };
 
 export const formatImageData = (parsedContent: ParsedImage) => ({
-  thumbImgUrl: decodeURIComponent(parsedContent.thumbImgUrl || ''),
-  imgUrl: decodeURIComponent(parsedContent.imgUrl || ''),
-  width: parsedContent.width,
-  height: parsedContent.height,
+  thumbImgUrl: decodeURIComponent(parsedContent?.thumbImgUrl || ''),
+  imgUrl: decodeURIComponent(parsedContent?.imgUrl || ''),
+  width: parsedContent?.width,
+  height: parsedContent?.height,
 });

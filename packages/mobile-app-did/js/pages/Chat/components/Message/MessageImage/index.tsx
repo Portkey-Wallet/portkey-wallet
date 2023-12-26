@@ -16,6 +16,9 @@ import Broken_Image from 'assets/image/pngs/broken-image.png';
 import { ListItemType } from '../../ChatOverlay/chatPopover';
 import Svg from 'components/Svg';
 import { setReplyMessageInfo } from 'pages/Chat/context/chatsContext';
+import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
+import ActionSheet from 'components/ActionSheet';
+import OverlayModal from 'components/OverlayModal';
 
 const maxWidth = pTd(280);
 const maxHeight = pTd(280);
@@ -27,13 +30,16 @@ function MessageImage(
     isGroupChat?: boolean;
     isAdmin?: boolean;
     isHidePinStyle?: boolean;
+    isHideReply?: boolean;
   },
 ) {
-  const { currentMessage, position, isGroupChat = false, isAdmin = false, isHidePinStyle = false } = props;
+  const { currentMessage, position, isGroupChat = false, isAdmin = false, isHidePinStyle = false, isHideReply } = props;
   const { imageInfo } = currentMessage || {};
+
   const { imgUri, thumbUri, width, height } = imageInfo || {};
   const dispatch = useChatsDispatch();
   const currentChannelId = useCurrentChannelId();
+  const { pin, unPin, list: pinList } = useIMPin(currentChannelId || '');
   const deleteMessage = useDeleteMessage(currentChannelId || '');
 
   const [loadError, setLoadError] = useState(false);
@@ -84,11 +90,10 @@ function MessageImage(
 
       const list: ListItemType[] = [];
 
-      if (isGroupChat)
+      if (isGroupChat && !isHideReply)
         list.push({
-          // TODO: reply
           title: 'Reply',
-          iconName: 'chat-pin',
+          iconName: 'chat-reply',
           onPress: async () => {
             dispatch(
               setReplyMessageInfo({
@@ -100,16 +105,46 @@ function MessageImage(
         });
 
       if (isGroupChat && isAdmin)
-        //  TODO: if pinned, hide pin icon
         list.push({
-          title: 'Pin',
-          iconName: 'chat-pin',
+          title: currentMessage?.pinInfo ? 'Unpin' : 'Pin',
+          iconName: currentMessage?.pinInfo ? 'chat-unpin' : 'chat-pin',
           onPress: async () => {
+            if (!currentMessage) return;
+
+            // unPin in messageList page
+            if (currentMessage?.pinInfo && !isHidePinStyle)
+              return ActionSheet.alert({
+                title: 'Would you like to unpin this message?',
+                buttons: [
+                  {
+                    title: 'Cancel',
+                    type: 'outline',
+                  },
+                  {
+                    title: 'Unpin',
+                    type: 'primary',
+                    onPress: async () => {
+                      try {
+                        await unPin(currentMessage);
+                      } catch (error) {
+                        CommonToast.failError(error);
+                      }
+                    },
+                  },
+                ],
+              });
+
+            // unPin & pin
             try {
-              // todo: pin IMG
-            } catch (error) {
-              // TODO: change to failError
-              CommonToast.failError(error);
+              if (currentMessage?.pinInfo) {
+                // in overlay and just 1 pin message
+                if (pinList?.length === 1 && isHidePinStyle) OverlayModal.hide();
+                await unPin(currentMessage);
+              } else {
+                await pin(currentMessage);
+              }
+            } catch (err) {
+              CommonToast.failError(err);
             }
           },
         });
@@ -130,7 +165,19 @@ function MessageImage(
 
       list.length && ChatOverlay.showChatPopover({ list, px: pageX, py: pageY, formatType: 'dynamicWidth' });
     },
-    [currentMessage, deleteMessage, dispatch, isAdmin, isGroupChat, position],
+    [
+      currentMessage,
+      deleteMessage,
+      dispatch,
+      isAdmin,
+      isGroupChat,
+      isHidePinStyle,
+      isHideReply,
+      pin,
+      pinList?.length,
+      position,
+      unPin,
+    ],
   );
 
   return (

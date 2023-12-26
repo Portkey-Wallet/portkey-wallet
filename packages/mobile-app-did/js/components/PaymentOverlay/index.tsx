@@ -18,7 +18,7 @@ import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { TextS } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';
 import CommonAvatar from 'components/CommonAvatar';
-import { formatChainInfoToShow, handleError, handleErrorMessage } from '@portkey-wallet/utils';
+import { formatChainInfoToShow, handleErrorMessage } from '@portkey-wallet/utils';
 import { useCurrentCaInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Touchable from 'components/Touchable';
 import { BGStyles } from 'assets/theme/styles';
@@ -143,7 +143,7 @@ const PaymentModal = ({
               </View>
             </View>
             <View style={GStyles.alignEnd}>
-              {!!currentTokenInfo?.price && (
+              {!!defaultTokenPrice && (
                 <TextS style={FontStyles.font3}>
                   {convertAmountUSDShow(divDecimals(fee.value, defaultToken.decimals), defaultTokenPrice)}
                 </TextS>
@@ -155,7 +155,6 @@ const PaymentModal = ({
     );
   }, [
     calcFeeError,
-    currentTokenInfo?.price,
     defaultToken.decimals,
     defaultToken.symbol,
     defaultTokenPrice,

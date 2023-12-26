@@ -33,7 +33,10 @@ function ChatMessageContainer(
 }
 
 export default memo(ChatMessageContainer, (prevProps, nextProps) => {
-  return isEqual(prevProps.currentMessage, nextProps.currentMessage);
+  return (
+    isEqual(prevProps.currentMessage, nextProps.currentMessage) &&
+    isEqual(prevProps.previousMessage?._id, nextProps.previousMessage?._id)
+  );
 });
 
 const styles = StyleSheet.create({

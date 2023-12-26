@@ -3,7 +3,7 @@ import { FlatList, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import GroupMemberItem from '../components/GroupMemberItem';
+import GroupMemberItem, { GroupMemberItemType } from '../components/GroupMemberItem';
 import CommonInput from 'components/CommonInput';
 import useDebounce from 'hooks/useDebounce';
 import NoData from 'components/NoData';
@@ -11,12 +11,15 @@ import { useCurrentChannelId } from '../context/hooks';
 import { useGroupChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ChannelMemberInfo } from '@portkey-wallet/im/types/index';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { strIncludes } from '@portkey-wallet/utils';
 import { showAssetList } from 'pages/DashBoard/AssetsOverlay';
+import { useUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { isTargetMember } from '../utils';
 
 const SelectGroupMembersToTransferPage = () => {
   const currentChannelId = useCurrentChannelId();
   const { groupInfo } = useGroupChannelInfo(currentChannelId || '', false);
+
+  const { userId: myUserId } = useUserInfo() || {};
   const { members = [] } = groupInfo || {};
   const [rawMemberList, setRawMemberList] = useState<ChannelMemberInfo[]>([]);
 
@@ -24,28 +27,34 @@ const SelectGroupMembersToTransferPage = () => {
   const debounceKeyword = useDebounce(keyword, 200);
   const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>([]);
 
+  const channelId = useCurrentChannelId();
+
   useEffect(() => {
     setFilterMembers(() => {
       let result = [];
       if (debounceKeyword) {
-        result = rawMemberList.filter(ele => strIncludes(ele.name, debounceKeyword) && !ele.isAdmin);
+        result = rawMemberList.filter(ele => isTargetMember(ele, debounceKeyword) && ele.addresses !== myUserId);
       } else {
-        result = rawMemberList.filter(ele => !ele.isAdmin);
+        result = rawMemberList.filter(ele => ele.userId !== myUserId);
       }
       return [...result];
     });
-  }, [debounceKeyword, rawMemberList]);
+  }, [debounceKeyword, rawMemberList, myUserId]);
 
-  const onPressItem = useCallback((id: string) => {
-    // todo: change item
-    console.log('id', id);
-    showAssetList({
-      isFixedToContact: true,
-      toAddress: 'xxxx',
-      name: 'yyy',
-      chainIds: ['AELF'],
-    });
-  }, []);
+  const onPressItem = useCallback(
+    (toRelationId: string, item: GroupMemberItemType) => {
+      showAssetList({
+        imTransferInfo: {
+          isGroupChat: true,
+          addresses: item.addresses || [],
+          name: item.title,
+          toUserId: item?.userId || '',
+          channelId: channelId || '',
+        },
+      });
+    },
+    [channelId],
+  );
 
   useEffectOnce(() => {
     setRawMemberList([...members]);
@@ -53,7 +62,7 @@ const SelectGroupMembersToTransferPage = () => {
 
   return (
     <PageContainer
-      titleDom="Select Group Members"
+      titleDom="Select Recipient"
       safeAreaColor={['blue', 'white']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
@@ -77,6 +86,7 @@ const SelectGroupMembersToTransferPage = () => {
             key={item.relationId}
             multiple={false}
             item={{
+              ...item,
               title: item.name,
               relationId: item.relationId,
               avatar: item.avatar,

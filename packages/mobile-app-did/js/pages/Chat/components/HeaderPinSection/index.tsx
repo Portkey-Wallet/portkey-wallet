@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TextM } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
@@ -8,19 +8,35 @@ import { Image, StyleSheet, View } from 'react-native';
 import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
 import { showPinnedListOverlay } from '../PinnedListOverlay';
+import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
 
-export default function HeaderPinSection() {
+export type HeaderPinSection = {
+  channelUUid: string;
+};
+
+export default function HeaderPinSection(props: HeaderPinSection) {
+  const { channelUUid = '' } = props;
+
+  const { list, lastPinMessage } = useIMPin(channelUUid, true);
+
+  const isImg = useMemo(() => {
+    if (!lastPinMessage) return false;
+    return lastPinMessage.type === 'IMAGE';
+  }, [lastPinMessage]);
+
+  console.log('lastPinMessage', lastPinMessage, list);
+  if (!lastPinMessage) return null;
+
   return (
-    <Touchable style={[GStyles.flexRow, GStyles.itemCenter, styles.wrap]} onPress={() => showPinnedListOverlay({})}>
+    <Touchable style={[GStyles.flexRow, GStyles.itemCenter, styles.wrap]} onPress={() => showPinnedListOverlay()}>
       <View style={styles.leftBlue} />
-      {/* TODO */}
-      <Image style={styles.img} resizeMode="cover" source={{ uri: '' }} />
+      {isImg && <Image style={styles.img} resizeMode="cover" source={{ uri: 'lastPinMessage.parsedContent' }} />}
       <View style={GStyles.flex1}>
         <TextM numberOfLines={1} style={[FontStyles.font5, GStyles.flex1]}>
-          {`Pin Message 1`}
+          {`Pinned Message ${list.length}`}
         </TextM>
         <TextM numberOfLines={1} style={[FontStyles.font3, GStyles.flex1]}>
-          Pin Message Pin Message Pin Message Pin Message Pin Message Pin Message Pin Message Pin Message
+          {isImg ? 'Photo' : lastPinMessage.content}
         </TextM>
       </View>
       <Svg icon="pin-list-icon" size={pTd(20)} />

@@ -12,6 +12,7 @@ import UnreadTip from './UnreadTip';
 import StyleProvider from './StyleProvider';
 
 export * from './type';
+export * from './constants';
 export {
   ChatList,
   TextMessage,

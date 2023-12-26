@@ -25,7 +25,7 @@ import MessageImage from '../Message/MessageImage';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 
 import Touchable from 'components/Touchable';
-import { useGroupChannel, useGroupChannelInfo, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useGroupChannelInfo, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import GStyles from 'assets/theme/GStyles';
 import { ChatMessage } from 'pages/Chat/types';
 import { FontStyles } from 'assets/theme/styles';
@@ -36,19 +36,16 @@ import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import SystemInfo from '../SystemInfo';
-import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 import OverlayModal from 'components/OverlayModal';
 import { useGStyles } from 'assets/theme/useGStyles';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import CustomChatAvatar from '../CustomChatAvatar';
 import { TextL } from 'components/CommonText';
+import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
+import CommonToast from 'components/CommonToast';
 
 const ListViewProps = {
-  // windowSize: 50,
-  // maxToRenderPerBatch: 5,
-  // removeClippedSubviews: false,
-  // legacyImplementation: true,
   initialNumToRender: 20,
   alwaysBounceVertical: false,
 };
@@ -60,22 +57,15 @@ function PinnedListOverlay() {
   const messageContainerRef = useRef<FlatList>();
   const gStyles = useGStyles();
 
-  const { list, init, hasNext, next } = useGroupChannel(currentChannelId || '');
   const { isAdmin } = useGroupChannelInfo(currentChannelId || '', false);
 
+  const { list, unPinAll } = useIMPin(currentChannelId || '');
   const [initializing, setInitializing] = useState(true);
   const formattedList = useMemo(() => formatMessageList(list), [list]);
   const { relationId } = useRelationId();
   const user = useMemo(() => ({ _id: relationId || '' }), [relationId]);
 
-  const onLoadEarlier = useLockCallback(async () => {
-    if (initializing) return;
-    try {
-      if (hasNext) await next();
-    } catch (error) {
-      console.log('error', error);
-    }
-  }, [hasNext, initializing, next]);
+  console.log('formattedList', list);
 
   useEffectOnce(() => {
     initChatInputRecorder();
@@ -97,13 +87,21 @@ function PinnedListOverlay() {
   }, [dispatch]);
 
   const renderMessageText: GiftedChatProps['renderMessageText'] = useCallback(
-    (props: MessageTextProps<ChatMessage>) => <MessageText isHidePinStyle isGroupChat isAdmin={isAdmin} {...props} />,
+    (props: MessageTextProps<ChatMessage>) => (
+      <MessageText isHidePinStyle isHideReply isGroupChat isAdmin={isAdmin} {...props} />
+    ),
     [isAdmin],
   );
 
   const renderMessageImage: GiftedChatProps['renderMessageImage'] = useCallback(
     (props: MessageImageProps<ChatMessage>) => (
-      <MessageImage isHidePinStyle isGroupChat isAdmin={isAdmin} {...(props as MessageProps<ChatMessage>)} />
+      <MessageImage
+        isHidePinStyle
+        isHideReply
+        isGroupChat
+        isAdmin={isAdmin}
+        {...(props as MessageProps<ChatMessage>)}
+      />
     ),
     [isAdmin],
   );
@@ -121,11 +119,10 @@ function PinnedListOverlay() {
     return {
       ...ListViewProps,
       contentContainerStyle: styles.contentStyle,
-      onEndReached: () => onLoadEarlier(),
       onEndReachedThreshold: ON_END_REACHED_THRESHOLD,
       onScrollBeginDrag: onDismiss,
     };
-  }, [onDismiss, onLoadEarlier]);
+  }, [onDismiss]);
 
   const renderMessage = useCallback(
     (props: MessageProps<ChatMessage>) => {
@@ -147,20 +144,24 @@ function PinnedListOverlay() {
 
   const disabledTouchable = useMemo(() => formattedList.length > 10, [formattedList.length]);
 
-  useEffectOnce(() => {
-    init();
-  });
+  // useEffectOnce(() => {
+  //   init();
+  // });
 
-  const unPinAll = useCallback(() => {
-    // TODO
-    console.log('unPinAll');
+  const onPressUnPinAll = useCallback(async () => {
+    try {
+      unPinAll();
+    } catch (error) {
+      CommonToast.failError(error);
+    }
+
     OverlayModal.hide();
-  }, []);
+  }, [unPinAll]);
 
   return (
     <View style={[gStyles.overlayStyle, styles.wrap]}>
       <View style={[GStyles.flexCenter, styles.header]}>
-        <Text style={styles.headerTitle}>5 pinned messages</Text>
+        <Text style={styles.headerTitle}>{`${list?.length} pinned messages`}</Text>
         <Touchable style={styles.closeWrap} onPress={() => OverlayModal.hide()}>
           <Svg icon="close1" size={pTd(12.5)} />
         </Touchable>
@@ -170,7 +171,6 @@ function PinnedListOverlay() {
           <ActivityIndicator size={'small'} color={FontStyles.font4.color} />
         ) : (
           <GiftedChat
-            alignTop
             user={user}
             messageContainerRef={messageContainerRef as any}
             messageIdGenerator={randomId}
@@ -195,21 +195,21 @@ function PinnedListOverlay() {
             messagesContainerStyle={styles.messagesContainerStyle}
             renderMessageText={renderMessageText}
             renderMessageImage={renderMessageImage}
-            onLoadEarlier={onLoadEarlier}
           />
         )}
       </Touchable>
-      <Touchable style={styles.bottomButtonWrap} onPress={unPinAll}>
-        <TextL style={FontStyles.font4}>{`Unpin All 5 Messages`}</TextL>
-      </Touchable>
+      {isAdmin && (
+        <Touchable style={styles.bottomButtonWrap} onPress={onPressUnPinAll}>
+          <TextL style={FontStyles.font4}>{`Unpin All ${list?.length} Messages`}</TextL>
+        </Touchable>
+      )}
     </View>
   );
 }
 
-export const showPinnedListOverlay = (params: any) => {
-  console.log(params);
+export const showPinnedListOverlay = () => {
   Keyboard.dismiss();
-  OverlayModal.show(<PinnedListOverlay {...params} />, {
+  OverlayModal.show(<PinnedListOverlay />, {
     position: 'bottom',
     enabledNestScrollView: true,
     containerStyle: { backgroundColor: defaultColors.bg6 },

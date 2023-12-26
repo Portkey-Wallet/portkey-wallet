@@ -4,7 +4,7 @@ import { useCaAddresses, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
-import { addressFormat, formatChainInfoToShow, getExploreLink } from '@portkey-wallet/utils';
+import { addressFormat, formatChainInfoToShow, getExploreLink, handleLoopFetch } from '@portkey-wallet/utils';
 import { divDecimals, divDecimalsStr, formatAmountShow, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
@@ -45,22 +45,31 @@ const ActivityDetail = () => {
 
   const { explorerUrl } = useCurrentChain(activityItem?.fromChainId) ?? {};
 
-  useEffectOnce(() => {
+  const getActivityDetail = useCallback(async () => {
     const params = {
       caAddresses,
       transactionId,
       blockHash,
     };
-    fetchActivity(params)
-      .then(res => {
-        if (isReceivedParams !== undefined) {
-          res.isReceived = isReceivedParams;
-        }
-        setActivityItem(res);
-      })
-      .catch(error => {
-        throw Error(JSON.stringify(error));
+    try {
+      const res = await handleLoopFetch({
+        fetch: () => fetchActivity(params),
+        times: 5,
+        interval: 1000,
+        checkIsContinue: data => !data.transactionId,
       });
+
+      if (isReceivedParams !== undefined) {
+        res.isReceived = isReceivedParams;
+      }
+      setActivityItem(res);
+    } catch (error) {
+      CommonToast.fail('This transfer is being processed on the blockchain. Please check the details later.');
+    }
+  }, [blockHash, caAddresses, isReceivedParams, transactionId]);
+
+  useEffectOnce(() => {
+    getActivityDetail();
   });
 
   const isNft = useMemo(() => !!activityItem?.nftInfo?.nftId, [activityItem?.nftInfo?.nftId]);

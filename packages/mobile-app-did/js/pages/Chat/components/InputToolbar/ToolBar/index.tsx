@@ -23,7 +23,11 @@ import { getInfo } from 'utils/fs';
 import { MAX_FILE_SIZE_BYTE } from '@portkey-wallet/constants/constants-ca/im';
 import { changeCanLock } from 'utils/LockManager';
 import { useLanguage } from 'i18n/hooks';
-import { useCurrentChannel } from 'pages/Chat/context/hooks';
+import { useCurrentChannel, useCurrentChannelId } from 'pages/Chat/context/hooks';
+import { showAssetList } from 'pages/DashBoard/AssetsOverlay';
+import im from '@portkey-wallet/im';
+import { useChannelItemInfo } from '@portkey-wallet/hooks/hooks-ca/im';
+import Loading from 'components/Loading';
 
 export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType }) {
   const { t } = useLanguage();
@@ -31,6 +35,10 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
   const currentIsGroupChat = currentChannel?.currentChannelType === 'Group';
   const [, requestQrPermission] = useQrScanPermission();
   const { sendChannelImage, sendChannelMessage } = useSendCurrentChannelMessage();
+
+  const currentChannelId = useCurrentChannelId();
+  const currentChannelInfo = useChannelItemInfo(currentChannelId || '');
+  const { toRelationId } = currentChannelInfo || {};
 
   const showDialog = useCallback(
     () =>
@@ -132,12 +140,43 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
       {
         label: 'Transfer',
         icon: 'chat-transfer',
-        onPress: () => {
-          navigationService.navigate('SelectGroupMembersToTransferPage');
+        onPress: async () => {
+          // todo: change back
+          if (currentChannel?.currentChannelType === 'P2P') {
+            try {
+              Loading.show();
+              const { data } = await im.service.getProfile({
+                relationId: toRelationId || '',
+              });
+              showAssetList({
+                imTransferInfo: {
+                  addresses: data.addresses || [],
+                  toUserId: data.userId,
+                  channelId: currentChannelId || '',
+                  name: data.name || data.caHolderInfo?.walletName || data.imInfo?.name || '',
+                },
+              });
+            } catch (e) {
+              console.log('e', e);
+            } finally {
+              Loading.hide();
+            }
+          } else {
+            navigationService.navigate('SelectGroupMembersToTransferPage');
+          }
         },
       },
     ];
-  }, [currentIsGroupChat, requestQrPermission, selectPhoto, sendChannelMessage, showDialog]);
+  }, [
+    currentChannel?.currentChannelType,
+    currentChannelId,
+    currentIsGroupChat,
+    requestQrPermission,
+    selectPhoto,
+    sendChannelMessage,
+    showDialog,
+    toRelationId,
+  ]);
 
   return (
     <View style={[GStyles.flex1, GStyles.flexRowWrap, styles.wrap, style]}>

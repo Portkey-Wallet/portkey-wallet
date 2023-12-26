@@ -2,8 +2,9 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
 import { dateToDayjs } from './time';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
-import { RedPackageTypeEnum } from '@portkey-wallet/im';
+import { MessageType, ParsedPinSys, RedPackageTypeEnum } from '@portkey-wallet/im';
 import { randomId } from '.';
+import { PIN_OPERATION_TYPE_ENUM } from '@portkey-wallet/im/types/pin';
 dayjs.extend(utc);
 
 export const formatMessageCountToStr = (num: number): string | undefined => {
@@ -79,4 +80,30 @@ export const generateRedPackageRawTransaction = async (params: IGenerateRedPacka
     throw new Error('Failed to get raw transaction.');
   }
   return rawResult.data;
+};
+
+export const getEllipsisPinSysMessage = (message: string) => {
+  if (message?.length > 15) return `"${message.slice(0, 15)}..."`;
+  return `"${message}"`;
+};
+
+export const formatPinSysMessageToStr = (pinInfo: ParsedPinSys): string => {
+  const isImg = pinInfo?.messageType === 'IMAGE';
+
+  if (pinInfo?.pinType === PIN_OPERATION_TYPE_ENUM.Pin)
+    return `${pinInfo.userInfo?.name} pinned ${isImg ? 'a photo' : getEllipsisPinSysMessage(pinInfo.content)}`;
+
+  if (pinInfo?.pinType === PIN_OPERATION_TYPE_ENUM.UnPin)
+    return `${isImg ? 'a photo' : getEllipsisPinSysMessage(pinInfo.content)} unpinned`;
+
+  if (pinInfo?.pinType === PIN_OPERATION_TYPE_ENUM.RemoveAll)
+    return `All ${pinInfo?.unpinnedCount || ''} messages unpinned`;
+
+  return pinInfo?.pinType;
+};
+
+export const isMemberMessage = (messageType: MessageType | 'NOT_SUPPORTED'): boolean => {
+  if (messageType === 'PIN-SYS' || messageType === 'SYS') return false;
+
+  return true;
 };

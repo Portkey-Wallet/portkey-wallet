@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useRef, useState } from 'react';
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { Text, View, StyleSheet, ScrollView } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -6,7 +6,7 @@ import { pTd } from 'utils/unit';
 import { TextM, TextS, TextL } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';
 import ActionSheet from 'components/ActionSheet';
-import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
+import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr, handleErrorMessage } from '@portkey-wallet/utils';
 import { isCrossChain } from '@portkey-wallet/utils/aelf';
 import { useLanguage } from 'i18n/hooks';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
@@ -47,13 +47,16 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import CommonAvatar from 'components/CommonAvatar';
 import { useCheckTransferLimitWithJump } from 'hooks/security';
+import { useSendIMTransfer } from '@portkey-wallet/hooks/hooks-ca/im/transfer';
+import { TransferTypeEnum } from '@portkey-wallet/im';
+import { useJumpToChatDetails, useJumpToChatGroupDetails } from 'hooks/chat';
 
 const SendHome: React.FC = () => {
   const { t } = useLanguage();
   const isTestnet = useIsTestnet();
   const defaultToken = useDefaultToken();
 
-  const { sendType, assetInfo, toInfo, transactionFee, sendNumber, successNavigateName } =
+  const { sendType, assetInfo, toInfo, transactionFee, sendNumber, successNavigateName, imTransferInfo } =
     useRouterParams<IToSendPreviewParamsType>();
 
   useFetchTxFee();
@@ -63,6 +66,10 @@ const SendHome: React.FC = () => {
   const pin = usePin();
   const chainInfo = useCurrentChain(assetInfo.chainId);
   const caAddresses = useCaAddresses();
+
+  const sendIMTransfer = useSendIMTransfer();
+  const jumpToChatDetails = useJumpToChatDetails();
+  const jumpToChatGroupDetails = useJumpToChatGroupDetails();
 
   const [isLoading] = useState(false);
   const currentNetwork = useCurrentNetworkInfo();
@@ -76,6 +83,11 @@ const SendHome: React.FC = () => {
 
   const isCrossChainTransfer = isCrossChain(toInfo.address, assetInfo.chainId);
   const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
+
+  const amount = useMemo(
+    () => timesDecimals(sendNumber, assetInfo.decimals).toFixed(),
+    [assetInfo.decimals, sendNumber],
+  );
 
   const showRetry = useCallback(
     (retryFunc: () => void) => {
@@ -115,7 +127,6 @@ const SendHome: React.FC = () => {
     }
 
     const contract = contractRef.current;
-    const amount = timesDecimals(sendNumber, tokenInfo.decimals).toFixed();
 
     const checkTransferLimitResult = await checkTransferLimitWithJump(
       {
@@ -185,6 +196,7 @@ const SendHome: React.FC = () => {
     }
     CommonToast.success('success');
   }, [
+    amount,
     assetInfo,
     caAddressInfos,
     caAddresses,
@@ -232,13 +244,77 @@ const SendHome: React.FC = () => {
         showRetry(() => {
           retryCrossChain(managerTransferTxId, data);
         });
+      } finally {
+        Loading.hide();
       }
-      Loading.hide();
     },
     [assetInfo.decimals, assetInfo.symbol, assetInfo.tokenContractAddress, chainInfo, dispatch, pin, showRetry],
   );
 
-  const onSend = async () => {
+  const imSend = useCallback(async () => {
+    // todo: change feedback
+    if (!chainInfo || !pin) return;
+    const account = getManagerAccount(pin);
+    if (!account) return;
+
+    if (!contractRef.current) {
+      contractRef.current = await getContractBasic({
+        contractAddress: chainInfo.caContractAddress,
+        rpcUrl: chainInfo.endPoint,
+        account,
+      });
+    }
+
+    if (!contractRef.current || !imTransferInfo?.channelId || !imTransferInfo?.toUserId) return;
+    Loading.show();
+    try {
+      const params = {
+        channelId: imTransferInfo?.channelId || '',
+        toUserId: imTransferInfo?.toUserId || '',
+        chainId: assetInfo.chainId,
+        symbol: assetInfo.symbol,
+        amount,
+        image: '',
+        memo: '',
+        type: TransferTypeEnum.GROUP,
+        caContract: contractRef.current,
+        tokenContractAddress: assetInfo.tokenContractAddress,
+        toCAAddress: toInfo.address,
+      };
+
+      await sendIMTransfer(params);
+      CommonToast.success('Successfully sent');
+    } catch (error: any) {
+      const errorMessage = handleErrorMessage(error);
+      if (errorMessage === 'fetch exceed limit') {
+        CommonToast.warn('This transfer is being processed on the blockchain. Please check the details later.');
+      } else {
+        CommonToast.failError('Transferred failed');
+      }
+      console.log('IM send error', error);
+    } finally {
+      if (imTransferInfo.isGroupChat) {
+        await jumpToChatGroupDetails({ channelUuid: imTransferInfo.channelId });
+      } else {
+        await jumpToChatDetails({ channelUuid: imTransferInfo.channelId });
+      }
+      Loading.hide();
+    }
+  }, [
+    amount,
+    assetInfo.chainId,
+    assetInfo.symbol,
+    assetInfo.tokenContractAddress,
+    chainInfo,
+    imTransferInfo,
+    jumpToChatDetails,
+    jumpToChatGroupDetails,
+    pin,
+    sendIMTransfer,
+    toInfo.address,
+  ]);
+
+  const GeneralSend = useCallback(async () => {
     Loading.show();
     try {
       await transfer();
@@ -264,7 +340,11 @@ const SendHome: React.FC = () => {
       }
     }
     Loading.hide();
-  };
+  }, [dispatch, retryCrossChain, showRetry, transfer]);
+
+  const onSend = useCallback(() => {
+    imTransferInfo ? imSend() : GeneralSend();
+  }, [GeneralSend, imSend, imTransferInfo]);
 
   const networkInfoShow = (address: string) => {
     const chainId = address.split('_')[2] as ChainId;

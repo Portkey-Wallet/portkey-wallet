@@ -9,13 +9,13 @@ export enum TG_FUN {
 export const InjectTelegramLoginJavaScript = `(()=>{
   try {
     window.declineRequest = ()=>{
-      window.ReactNativeWebView.postMessage('${TG_FUN.DeclineRequest}');
+      window.ReactNativeWebView.postMessage(JSON.stringify({type:'${TG_FUN.DeclineRequest}'}));
     }
     window.loginCancel = ()=>{
-      window.ReactNativeWebView.postMessage('${TG_FUN.LoginCancel}');
+      window.ReactNativeWebView.postMessage(JSON.stringify({type:'${TG_FUN.LoginCancel}'}));
     }
   } catch (error) {
-    window.ReactNativeWebView.postMessage('${TG_FUN.Error}');
+    window.ReactNativeWebView.postMessage(JSON.stringify({type:'${TG_FUN.Error}'}));
   }
 })()`;
 
@@ -25,7 +25,7 @@ export const InjectTelegramOpenJavaScript = `(()=>{
       window.ReactNativeWebView.postMessage(JSON.stringify({url,type:'${TG_FUN.Open}'}));
     }
   } catch (error) {
-    window.ReactNativeWebView.postMessage('${TG_FUN.Error}');
+    window.ReactNativeWebView.postMessage(JSON.stringify({type:'${TG_FUN.Error}'}));
   }
 })()`;
 

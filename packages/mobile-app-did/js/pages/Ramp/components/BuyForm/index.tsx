@@ -27,6 +27,7 @@ import isEqual from 'lodash/isEqual';
 import { getBuyCrypto, getBuyLimit } from '@portkey-wallet/utils/ramp';
 import CommonAvatar from 'components/CommonAvatar';
 import { ErrorType, INIT_HAS_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/constants/constants-ca/common';
+import { isPotentialNumber } from '@portkey-wallet/utils/reg';
 
 export default function BuyForm() {
   const {
@@ -173,13 +174,12 @@ export default function BuyForm() {
   const onAmountInput = useCallback((text: string) => {
     isRefreshReceiveValid.current = false;
     setAmountLocalError(INIT_NONE_ERROR);
-    const reg = /^(0|[1-9]\d*)(\.\d*)?$/;
 
     if (text === '') {
       setAmount('');
       return;
     }
-    if (!reg.test(text)) return;
+    if (!isPotentialNumber(text)) return;
     setAmount(text);
   }, []);
 

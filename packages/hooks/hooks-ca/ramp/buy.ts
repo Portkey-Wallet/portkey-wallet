@@ -6,7 +6,12 @@ import {
   setBuyDefaultFiat,
   setBuyFiatList,
 } from '@portkey-wallet/store/store-ca/ramp/actions';
-import { useBuyDefaultCryptoListState, useBuyDefaultCryptoState, useBuyDefaultFiatState, useBuyFiatListState } from '.';
+import {
+  useBuyDefaultCryptoListState,
+  useBuyDefaultCryptoState,
+  useBuyDefaultFiatState,
+  useBuyFiatListState,
+} from './index';
 import { getBuyCrypto, getBuyFiat } from '@portkey-wallet/utils/ramp';
 
 export const useBuyFiat = () => {

@@ -7,7 +7,7 @@ import CustomSvg from '../components/CustomSvg';
 import { IChatItemProps } from '../type';
 import { formatChatListTime } from '../utils';
 import PopoverMenuList from '../PopoverMenuList';
-import { ChannelTypeEnum, MessageTypeEnum } from '@portkey-wallet/im/types';
+import { ChannelTypeEnum, MessageTypeEnum, ParsedRedPackage, ParsedTransfer } from '@portkey-wallet/im/types';
 import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
 import { RedPacketSubtitle, TransferSubtitle } from '../constants';
 import './index.less';
@@ -18,6 +18,7 @@ const ChatItem: React.FC<IChatItemProps> = ({
   alt = 'portkey',
   showMute = true,
   showLetter = false,
+  myPortkeyId,
   onClickDelete,
   onClickMute,
   onClickPin,
@@ -72,21 +73,39 @@ const ChatItem: React.FC<IChatItemProps> = ({
   }, [hidePop]);
 
   const renderSubtitle = useMemo(() => {
-    const { subtitle, muted, isOwner, lastMessageType } = props;
-    const showRedPacket = lastMessageType === MessageTypeEnum.REDPACKAGE_CARD;
-    const showTransfer = lastMessageType === MessageTypeEnum.TRANSFER_CARD;
-    const showRedPacketHighlight = !muted && !isOwner && unread > 0;
-    if (showRedPacket || showTransfer) {
-      const tag = showRedPacket ? RedPacketSubtitle : TransferSubtitle;
-      return (
-        <div className="transaction flex">
-          <span className={clsx('transaction-tag', showRedPacketHighlight && 'transaction-tag-highlight')}>{tag}</span>
-          <span className="transaction-subtitle">{subtitle || RED_PACKAGE_DEFAULT_MEMO}</span>
-        </div>
-      );
+    const { lastMessageType, subtitle } = props;
+    if (lastMessageType !== MessageTypeEnum.REDPACKAGE_CARD && lastMessageType !== MessageTypeEnum.TRANSFER_CARD) {
+      return subtitle;
     }
-    return subtitle;
-  }, [props, unread]);
+    const { muted, channelType, lastMessageContent } = props;
+    const isGroup = channelType === ChannelTypeEnum.GROUP;
+    let _showHighlight = !muted && unread > 0;
+    let _tag = '';
+    if (lastMessageType === MessageTypeEnum.REDPACKAGE_CARD) {
+      const senderId = (lastMessageContent as ParsedRedPackage).data?.senderId;
+      const fromMe = senderId === myPortkeyId;
+      _showHighlight = _showHighlight && !fromMe;
+      _tag = RedPacketSubtitle;
+    }
+    if (lastMessageType === MessageTypeEnum.TRANSFER_CARD) {
+      if (isGroup) {
+        const toUserId = (lastMessageContent as ParsedTransfer).data?.toUserId;
+        const toMe = toUserId === myPortkeyId;
+        _showHighlight = _showHighlight && toMe;
+      } else {
+        const senderId = (lastMessageContent as ParsedTransfer).data?.senderId;
+        const fromMe = senderId === myPortkeyId;
+        _showHighlight = _showHighlight && !fromMe;
+      }
+      _tag = TransferSubtitle;
+    }
+    return (
+      <div className="transaction flex">
+        <span className={clsx('transaction-tag', _showHighlight && 'transaction-tag-highlight')}>{_tag}</span>
+        <span className="transaction-subtitle">{subtitle || RED_PACKAGE_DEFAULT_MEMO}</span>
+      </div>
+    );
+  }, [myPortkeyId, props, unread]);
 
   return (
     <Popover

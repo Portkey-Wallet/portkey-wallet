@@ -42,6 +42,7 @@ export default function ChatListSearch() {
             status: item.status,
             avatar: item.channelIcon,
             lastMessageType: item.lastMessageType || 'TEXT',
+            lastMessageContent: item.lastMessageContent,
           }));
           setChatList(transRes);
         } catch (e) {

@@ -83,8 +83,9 @@ export const generateRedPackageRawTransaction = async (params: IGenerateRedPacka
 };
 
 export const getEllipsisPinSysMessage = (message: string) => {
-  if (message?.length > 15) return `"${message.slice(0, 15)}..."`;
-  return `"${message}"`;
+  const processedMessage = message.replace(/\n/g, `      `);
+  if (processedMessage?.length > 15) return `"${processedMessage.slice(0, 15)}..."`;
+  return `"${processedMessage}"`;
 };
 
 export const formatPinSysMessageToStr = (pinInfo: ParsedPinSys): string => {

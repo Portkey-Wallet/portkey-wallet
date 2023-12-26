@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
   textStyles: {
     fontSize: pTd(16),
     lineHeight: pTd(22),
-    marginVertical: pTd(8),
+    marginVertical: pTd(5),
     marginHorizontal: pTd(12),
   },
   linkStyle: {

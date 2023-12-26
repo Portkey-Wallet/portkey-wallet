@@ -314,8 +314,7 @@ const SendHome: React.FC = () => {
     } catch (error: any) {
       const errorMessage = handleErrorMessage(error);
       if (errorMessage === 'fetch exceed limit') {
-        // TODO : change text
-        CommonToast.warn('time out');
+        CommonToast.warn('This transfer is being processed on the blockchain. Please check the details later.');
       } else {
         CommonToast.failError('Transferred failed');
       }

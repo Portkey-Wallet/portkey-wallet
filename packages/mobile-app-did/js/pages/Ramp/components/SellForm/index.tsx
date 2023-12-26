@@ -38,6 +38,7 @@ import CommonAvatar from 'components/CommonAvatar';
 import { useCheckTransferLimitWithJump, useSecuritySafeCheckAndToast } from 'hooks/security';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { useGetCurrentCAContract } from 'hooks/contract';
+import { isPotentialNumber } from '@portkey-wallet/utils/reg';
 
 export default function SellForm() {
   const {
@@ -192,13 +193,12 @@ export default function SellForm() {
   const onAmountInput = useCallback((text: string) => {
     isRefreshReceiveValid.current = false;
     setAmountLocalError(INIT_NONE_ERROR);
-    const reg = /^(0|[1-9]\d*)(\.\d*)?$/;
 
     if (text === '') {
       setAmount('');
       return;
     }
-    if (!reg.test(text)) return;
+    if (!isPotentialNumber(text)) return;
     const arr = text.split('.');
     if (arr[1]?.length > 8) return;
     if (arr.join('').length > 13) return;

@@ -14,8 +14,8 @@ export class RampSignalr<T extends DefaultRampListenListType = DefaultRampListen
 
   requestRampOrderStatus(clientId: string, orderId: string): Promise<void> {
     return this.invoke('RequestRampOrderStatus', {
-      TargetClientId: clientId,
-      OrderId: orderId,
+      targetClientId: clientId,
+      orderId: orderId,
     });
   }
 

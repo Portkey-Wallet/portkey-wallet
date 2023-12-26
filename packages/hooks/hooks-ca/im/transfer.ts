@@ -13,6 +13,7 @@ import { addChannelMessage, updateChannelAttribute } from '@portkey-wallet/store
 import { useCurrentNetworkInfo } from '../network';
 import { generateTransferRawTransaction } from '@portkey-wallet/utils/transfer';
 import { getSendUuid } from '@portkey-wallet/utils/chat';
+import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
 
 export interface ISendIMTransferParams {
   toUserId?: string;
@@ -26,6 +27,7 @@ export interface ISendIMTransferParams {
   memo: string;
   caContract: ContractBasic;
   image?: string;
+  guardiansApproved?: GuardiansApprovedType[];
 }
 
 export const useSendIMTransfer = () => {
@@ -49,6 +51,7 @@ export const useSendIMTransfer = () => {
         tokenContractAddress,
         toCAAddress,
         toUserId,
+        guardiansApproved,
       } = params;
       const caHash = wallet.caHash;
       const caAddress = wallet[chainId]?.caAddress;
@@ -74,6 +77,7 @@ export const useSendIMTransfer = () => {
         symbol,
         amount,
         to: toCAAddress,
+        guardiansApproved,
       });
 
       const transferContent: ParsedTransfer = {

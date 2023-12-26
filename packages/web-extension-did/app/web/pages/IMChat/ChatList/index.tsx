@@ -14,7 +14,6 @@ import {
 } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
 import { formatChatListTime } from '@portkey-wallet/utils/chat';
-import { ChannelItem, MessageTypeEnum, ParsedRedPackage } from '@portkey-wallet/im';
 import { useHandleClickChatItem } from 'hooks/im';
 import { PIN_LIMIT_EXCEED } from '@portkey-wallet/constants/constants-ca/chat';
 import { useWalletInfo } from 'store/Provider/hooks';
@@ -38,18 +37,6 @@ export default function ChatList() {
   } = useChannelList();
   const unreadCount = useUnreadCount();
   const { userInfo } = useWalletInfo();
-  const formatIsOwner = useCallback(
-    (item: ChannelItem) => {
-      const _type = item.lastMessageType;
-      let isOwner = false;
-      if (_type === MessageTypeEnum.REDPACKAGE_CARD) {
-        const senderId = (item.lastMessageContent as ParsedRedPackage).data?.senderId;
-        isOwner = senderId === userInfo?.userId;
-      }
-      return isOwner;
-    },
-    [userInfo?.userId],
-  );
   const popList = useMemo(
     () => [
       {
@@ -110,11 +97,12 @@ export default function ChatList() {
         channelType: item?.channelType,
         status: item.status,
         avatar: item.channelIcon,
-        isOwner: formatIsOwner(item),
+        myPortkeyId: userInfo?.userId,
         lastMessageType: item.lastMessageType || 'TEXT',
+        lastMessageContent: item.lastMessageContent,
       };
     });
-  }, [chatList, formatIsOwner]);
+  }, [chatList, userInfo?.userId]);
 
   const handleClickChatItem = useHandleClickChatItem();
 

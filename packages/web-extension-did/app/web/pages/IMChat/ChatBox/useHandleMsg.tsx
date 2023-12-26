@@ -75,7 +75,7 @@ export const useHandle = ({
           okText: 'Unpin',
           onOk: async () => {
             try {
-              await unPinMsg?.(msg);
+              unPinMsg?.(msg);
             } catch (e) {
               const _err = handleErrorMessage(e, 'Failed to unpin message');
               message.error(_err);

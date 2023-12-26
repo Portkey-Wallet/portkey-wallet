@@ -24,6 +24,8 @@ export default function PromptMy() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isImputation = useIsImputation();
+  // TODO
+  // const {} = useIsShowNew();
 
   const { pathname } = useLocation();
 
@@ -107,6 +109,26 @@ export default function PromptMy() {
                 {t(item.label)}
               </MenuItem>
             ))}
+            <MenuItem
+              className="menu-item-common"
+              key="referral"
+              height={56}
+              icon={<CustomSvg type="Referral" />}
+              onClick={() => {
+                // TODO
+                // 1. adjust status show
+                // 2.
+                // const openWinder = window.open(url, '_blank');
+                // if (openWinder) {
+                //   openWinder.opener = null;
+                // }
+              }}
+              showEnterIcon={false}>
+              <div className="flex">
+                <div>Referral</div>
+                <div className="referral-tag flex-center">New</div>
+              </div>
+            </MenuItem>
             <div className="lock-row flex-center" onClick={handleLock}>
               {/* eslint-disable-next-line no-inline-styles/no-inline-styles */}
               <CustomSvg type={'Lock'} style={{ width: 16, height: 16 }} />

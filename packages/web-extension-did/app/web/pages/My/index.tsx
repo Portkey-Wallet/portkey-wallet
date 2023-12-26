@@ -106,6 +106,22 @@ export default function My() {
               {t(item.label)}
             </MenuItem>
           ))}
+          <MenuItem
+            key="referral"
+            height={56}
+            icon={<CustomSvg type="Referral" />}
+            onClick={() => {
+              // TODO
+              // const openWinder = window.open(url, '_blank');
+              // if (openWinder) {
+              //   openWinder.opener = null;
+              // }
+            }}>
+            <div className="flex-between-center">
+              <div>Referral</div>
+              <div className="referral-tag flex-center">New</div>
+            </div>
+          </MenuItem>
         </div>
         {!isPrompt && (
           <div className="btn flex-center">

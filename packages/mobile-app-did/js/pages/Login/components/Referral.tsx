@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, Fragment } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import navigationService from 'utils/navigationService';
@@ -137,10 +137,10 @@ export default function Referral({
         <Divider title="OR" inset={true} style={pageStyles.dividerStyle} />
         <View style={[GStyles.flexRow, GStyles.flexCenter]}>
           {otherLoginTypeList.map((ele, index) => (
-            <>
+            <Fragment key={index}>
               {index !== 0 && <View style={pageStyles.blank} />}
               <RoundButton key={index} icon={ele.icon} onPress={ele.onPress} />
-            </>
+            </Fragment>
           ))}
         </View>
         {type === PageType.login && (

@@ -4,6 +4,7 @@ export enum TG_FUN {
   LoginCancel = 'tg_loginCancel',
   DeclineRequest = 'tg_declineRequest',
   Error = 'tg_error',
+  Open = 'tg_open',
 }
 export const InjectTelegramLoginJavaScript = `(()=>{
   try {
@@ -12,6 +13,16 @@ export const InjectTelegramLoginJavaScript = `(()=>{
     }
     window.loginCancel = ()=>{
       window.ReactNativeWebView.postMessage('${TG_FUN.LoginCancel}');
+    }
+  } catch (error) {
+    window.ReactNativeWebView.postMessage('${TG_FUN.Error}');
+  }
+})()`;
+
+export const InjectTelegramOpenJavaScript = `(()=>{
+  try {
+    window.open = (url)=>{
+      window.ReactNativeWebView.postMessage(JSON.stringify({url,type:'${TG_FUN.Open}'}));
     }
   } catch (error) {
     window.ReactNativeWebView.postMessage('${TG_FUN.Error}');

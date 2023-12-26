@@ -19,12 +19,15 @@ import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
 import { WebViewMessageEvent } from 'react-native-webview';
 import {
   InjectTelegramLoginJavaScript,
+  InjectTelegramOpenJavaScript,
   PATHS,
   TGAuthCallBack,
   TGAuthResult,
   TG_FUN,
   parseTGAuthResult,
 } from './config';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 type TelegramSignProps = {
   onConfirm: (userInfo: TelegramAuthentication) => void;
@@ -74,16 +77,23 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
   const onMessage = useCallback(
     ({ nativeEvent }: WebViewMessageEvent) => {
       const { data } = nativeEvent;
-      if (data === TG_FUN.LoginCancel || data === TG_FUN.DeclineRequest || data === TG_FUN.Error) {
-        onReject(USER_CANCELED);
-        OverlayModal.hide();
+      try {
+        const obj = JSON.parse(data);
+        if (data === TG_FUN.LoginCancel || data === TG_FUN.DeclineRequest || data === TG_FUN.Error) {
+          onReject(USER_CANCELED);
+          OverlayModal.hide();
+        } else if (!isIOS && typeof obj === 'object' && obj.type === TG_FUN.Open) {
+          go(obj.url);
+        }
+      } catch (error) {
+        console.log(error);
       }
     },
     [onReject],
   );
   return (
     <ModalBody title="Telegram Login" modalBodyType="bottom">
-      <View style={styles.container}>
+      <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.container}>
         {loading && (
           <View style={styles.loadingBox}>
             <Lottie
@@ -98,8 +108,8 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
           ref={ref as any}
           source={{ uri }}
           originWhitelist={['*']}
+          injectedJavaScript={!isIOS ? InjectTelegramOpenJavaScript : undefined}
           javaScriptCanOpenWindowsAutomatically={true}
-          setSupportMultipleWindows={false}
           onLoadProgress={({ nativeEvent }) => {
             if (nativeEvent.url.includes('telegram.org') && nativeEvent.progress > 0.7) setLoading(false);
           }}
@@ -109,7 +119,7 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
           }}
           onLoadStart={onLoadStart}
         />
-      </View>
+      </KeyboardAwareScrollView>
     </ModalBody>
   );
 }

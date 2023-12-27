@@ -6,6 +6,7 @@ import CircleLoading from '../components/CircleLoading';
 import { ExtraMessageTypeEnum, IMessageListProps, MessageContentType } from '../type';
 import { MessageTypeEnum } from '@portkey-wallet/im';
 import { SupportSysMsgType } from '../constants';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 import './index.less';
 
 const MessageList: FC<IMessageListProps> = ({
@@ -16,21 +17,24 @@ const MessageList: FC<IMessageListProps> = ({
   hasNext,
   next,
   loading = false,
+  dataSource,
   ...props
 }) => {
   const scrollBottomRef = useRef<number>(0);
-  const [_downButton, setDownButton] = useState(false);
-  const prevProps = useRef(props);
+  const [showDownButton, setShowDownButton] = useState(false);
+  const prevProps = useRef(dataSource);
 
   const checkScroll = useCallback(() => {
     if (!reference || !reference.current) return;
-
-    if (toBottomHeight === '100%' || (toBottomHeight && scrollBottomRef.current < (toBottomHeight as number))) {
+    if (toBottomHeight && scrollBottomRef.current < (toBottomHeight as number)) {
       reference.current.scrollTop = reference.current.scrollHeight; // scroll to bottom
     } else {
       if (lockable === true) {
         reference.current.scrollTop =
           reference.current.scrollHeight - reference.current.offsetHeight - scrollBottomRef.current;
+        if (!reference.current.scrollTop) {
+          setShowDownButton(false);
+        }
       }
     }
   }, [lockable, reference, toBottomHeight]);
@@ -43,50 +47,42 @@ const MessageList: FC<IMessageListProps> = ({
   useEffect(() => {
     if (!reference) return;
 
-    if (prevProps.current.dataSource.length !== props.dataSource.length) {
+    if (prevProps.current.length !== dataSource.length) {
       checkScroll();
       scrollBottomRef.current = getBottom(reference);
     }
 
-    prevProps.current = props;
-  }, [checkScroll, getBottom, prevProps, props, reference]);
+    prevProps.current = dataSource;
+  }, [checkScroll, dataSource, getBottom, reference]);
 
   const onScroll = useCallback(
     (e: React.UIEvent<HTMLElement>): void => {
       const bottom = getBottom(e.currentTarget);
       scrollBottomRef.current = bottom;
-      if (toBottomHeight === '100%' || (toBottomHeight && bottom > (toBottomHeight as number))) {
-        setDownButton(true);
+      if (toBottomHeight && bottom > (toBottomHeight as number)) {
+        setShowDownButton(true);
       } else {
-        setDownButton(false);
+        setShowDownButton(false);
       }
       if (reference.current.scrollTop === 0 && hasNext) next?.();
-      props?.onScroll?.(e);
     },
-    [getBottom, hasNext, next, props, reference, toBottomHeight],
+    [getBottom, hasNext, next, reference, toBottomHeight],
   );
 
-  const toBottom = useCallback(
-    (e?: React.MouseEvent<HTMLElement>) => {
-      if (!reference) return;
-      reference.current.scrollTop = reference.current.scrollHeight;
-      if (props.onDownButtonClick instanceof Function) {
-        props.onDownButtonClick(e);
-      }
-    },
-    [props, reference],
-  );
-
-  useEffect(() => {
+  const toBottom = useCallback(() => {
     if (!reference) return;
     reference.current.scrollTop = reference.current.scrollHeight;
   }, [reference]);
+
+  useEffectOnce(() => {
+    toBottom();
+  });
 
   const renderMessageItem = useMemo(() => {
     let prev: MessageContentType | undefined = undefined;
     let isShowMargin = false;
     let hiddenAvatar = false;
-    return props.dataSource.map((x, i: number) => {
+    return dataSource.map((x, i: number) => {
       // hidden avatar logic
       if (prev?.type) {
         hiddenAvatar = !SupportSysMsgType.includes(prev?.type) && x?.fromName === prev?.fromName;
@@ -116,7 +112,7 @@ const MessageList: FC<IMessageListProps> = ({
         />
       );
     });
-  }, [props]);
+  }, [dataSource, props]);
 
   return (
     <div className={clsx(['portkey-message-list', 'flex', props.className])} {...props.customProps}>
@@ -128,7 +124,7 @@ const MessageList: FC<IMessageListProps> = ({
         )}
         {renderMessageItem}
       </div>
-      {downButton === true && _downButton && toBottomHeight !== '100%' && (
+      {downButton && showDownButton && (
         <div className="message-list-down-button flex-center" onClick={toBottom}>
           <CustomSvg type="DoubleDown" />
         </div>

@@ -306,6 +306,7 @@ const SendHome: React.FC = () => {
         caContract: contractRef.current,
         tokenContractAddress: assetInfo.tokenContractAddress,
         toCAAddress: toInfo.address,
+        guardiansApproved,
       };
 
       await sendIMTransfer(params);
@@ -313,8 +314,7 @@ const SendHome: React.FC = () => {
     } catch (error: any) {
       const errorMessage = handleErrorMessage(error);
       if (errorMessage === 'fetch exceed limit') {
-        // TODO : change text
-        CommonToast.warn('time out');
+        CommonToast.warn('You can view the transfer later in the chat window.');
       } else {
         CommonToast.failError('Transferred failed');
       }
@@ -333,7 +333,10 @@ const SendHome: React.FC = () => {
     assetInfo.symbol,
     assetInfo.tokenContractAddress,
     chainInfo,
-    imTransferInfo,
+    guardiansApproved,
+    imTransferInfo?.channelId,
+    imTransferInfo?.isGroupChat,
+    imTransferInfo?.toUserId,
     jumpToChatDetails,
     jumpToChatGroupDetails,
     pin,

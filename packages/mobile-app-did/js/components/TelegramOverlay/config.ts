@@ -49,6 +49,7 @@ export enum PATHS {
 }
 
 export const TGAuthResult = '#tgAuthResult=';
+export const TGAuthPush = 'oauth.telegram.org/auth/push';
 
 export const TGAuthCallBack = 'auth-callback';
 

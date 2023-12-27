@@ -43,10 +43,10 @@ const ChatBoxPinnedMsg = ({
     [imgUrl, msgCount, thumbImgUrl],
   );
   return (
-    <div className="chat-box-pinned-msg-container flex-between-center">
+    <div className="chat-box-pinned-msg-container flex-between-center" onClick={onViewMore}>
       <div className="container-content">{msgType === MessageTypeEnum.TEXT ? renderText : renderImage}</div>
       <div className="container-right-icon">
-        <CustomSvg type="TopPin" onClick={onViewMore} />
+        <CustomSvg type="TopPin" />
       </div>
     </div>
   );

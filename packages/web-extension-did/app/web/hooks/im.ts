@@ -54,8 +54,8 @@ export const useClickUrl = ({ fromChannelUuid = '', isGroup = false }: IClickUrl
   const clickChatUrl = useClickChatUrl({ fromChannelUuid, isGroup });
 
   return useThrottleCallback((url: string) => {
-    const WWW_URL_PATTERN = /^www\./i;
-    if (WWW_URL_PATTERN.test(url)) url = `https://${url}`;
+    const URL_PATTERN = /^(http|https):\/\//i;
+    if (!URL_PATTERN.test(url)) url = `https://${url}`;
     const { id, type } = parseLinkPortkeyUrl(url);
     if (id && isShowChat) {
       clickChatUrl({ id, type });

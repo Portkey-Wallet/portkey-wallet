@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { Keyboard, Linking, View } from 'react-native';
+import { Keyboard, View } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
 import WebView from 'react-native-webview';
 import Lottie from 'lottie-react-native';
@@ -11,7 +11,7 @@ import { BGStyles } from 'assets/theme/styles';
 import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
 import { parseUrl } from 'query-string';
 import { parseTelegramToken } from '@portkey-wallet/utils/authentication';
-import { ThirdParty } from '@portkey-wallet/constants/constants-ca/network';
+import { OpenLogin } from '@portkey-wallet/constants/constants-ca/network';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
 import { TelegramAuthentication } from 'hooks/authentication';
@@ -22,9 +22,9 @@ import {
   InjectTelegramOpenJavaScript,
   PATHS,
   TGAuthCallBack,
+  TGAuthPush,
   TGAuthResult,
   TG_FUN,
-  TelegramUrl,
   parseTGAuthResult,
 } from './config';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -38,15 +38,17 @@ type TelegramSignProps = {
 function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
   const [loading, setLoading] = useState(true);
   const { networkType, apiUrl } = useCurrentNetworkInfo();
-  const [uri, go] = useState(`${ThirdParty}${PATHS.Load}&network=${networkType}`);
+  const [uri, go] = useState(`${OpenLogin}${PATHS.Load}&network=${networkType}`);
   const ref = useRef<WebView>();
   const onLoadStart = useCallback(
     ({ nativeEvent }: WebViewNavigationEvent) => {
       try {
-        if (nativeEvent.url.includes(TGAuthResult)) {
+        if (nativeEvent.url.includes(TGAuthPush)) {
+          setLoading(true);
+        } else if (nativeEvent.url.includes(TGAuthResult)) {
+          setLoading(true);
           go(`${apiUrl}${PATHS.CallPortkey}?${parseTGAuthResult(nativeEvent.url)}`);
-        }
-        if (nativeEvent.url.includes(TGAuthCallBack)) {
+        } else if (nativeEvent.url.includes(TGAuthCallBack)) {
           try {
             if (nativeEvent.url.includes(TGAuthCallBack)) {
               const parseData = parseUrl(nativeEvent.url);
@@ -86,10 +88,6 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
           OverlayModal.hide();
         } else if (!isIOS && type === TG_FUN.Open) {
           go(obj.url);
-        } else if (type === TG_FUN.RequestConfirmation) {
-          Linking.openURL(TelegramUrl).catch(error => {
-            console.log(error, '===Linking-Telegram-error');
-          });
         }
       } catch (error) {
         console.log(error);
@@ -120,8 +118,7 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
             if (nativeEvent.url.includes('telegram.org') && nativeEvent.progress > 0.7) setLoading(false);
           }}
           onMessage={onMessage}
-          onLoadEnd={({ nativeEvent }) => {
-            console.log(nativeEvent, '=======onLoadEnd');
+          onLoadEnd={() => {
             ref.current?.injectJavaScript(InjectTelegramLoginJavaScript);
           }}
           onLoadStart={onLoadStart}

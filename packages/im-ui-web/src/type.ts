@@ -137,14 +137,12 @@ export interface IMessageListProps {
   hasNext: boolean;
   loading: boolean;
   next?: () => any;
-  onScroll?: React.UIEventHandler;
   onDeleteMsg?: MessageListEvent;
   onReplyMsg?: MessageListEvent;
   onPinMsg?: MessageListEvent;
   onClickAvatar?: MessageListEvent;
   onClickUrl?: (v: string) => void;
   onClickUnSupportMsg?: () => void;
-  onDownButtonClick?: React.RefObject<HTMLButtonElement>;
 }
 
 export type MessageListEvent = (item: MessageContentType, index: number, event: React.MouseEvent<HTMLElement>) => any;

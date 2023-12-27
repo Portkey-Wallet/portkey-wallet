@@ -1,6 +1,6 @@
 {
   "name": "web-extension-did",
-  "version": "1.4.13",
+  "version": "1.4.15",
   "description": "web-extension-did",
   "private": true,
   "dependencies": {
@@ -21,7 +21,7 @@
     "@portkey/provider-utils": "1.1.1-alpha.1",
     "@portkey/provider-types": "1.1.1-alpha.1",
     "@portkey/providers": "1.1.1-alpha.1",
-    "@portkey/did-ui-react": "1.5.4-alpha.0",
+    "@portkey/did-ui-react": "1.5.4-alpha.1",
     "@portkey/did": "1.5.4-alpha.0",
     "@portkey/socket": "1.5.4-alpha.0",
     "@reduxjs/toolkit": "^1.8.5",

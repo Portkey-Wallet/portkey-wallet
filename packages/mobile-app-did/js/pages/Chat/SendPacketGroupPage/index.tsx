@@ -114,7 +114,7 @@ export default function SendPacketGroupPage() {
         });
         CommonToast.success('Sent successfully!');
         navigationService.goBack();
-        reportAnalyticsEvent({ view: 'SendPacketGroupPage', time: timeRecorder.endBySecond() }, 'RecordMessage');
+        reportAnalyticsEvent({ page: 'SendPacketGroupPage', time: timeRecorder.endBySecond() }, 'RecordMessage');
       } catch (error) {
         const errorMessage = handleErrorMessage(error);
         if (errorMessage === 'fetch exceed limit') {
@@ -125,7 +125,7 @@ export default function SendPacketGroupPage() {
           CommonToast.failError('Crypto box failed to be sent. Please try again.');
         }
         reportAnalyticsEvent(
-          { view: 'SendPacketGroupPage', time: timeRecorder.endBySecond(), errorMessage },
+          { page: 'SendPacketGroupPage', time: timeRecorder.endBySecond(), errorMessage },
           'RecordMessage',
         );
       } finally {

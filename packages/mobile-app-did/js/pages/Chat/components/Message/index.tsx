@@ -41,15 +41,17 @@ export default memo(ChatMessageContainer, (prevProps, nextProps) => {
 
 const styles = StyleSheet.create({
   leftMessageContainer: {
-    marginLeft: pTd(16),
+    marginLeft: pTd(12),
     marginRight: 0,
     marginTop: pTd(12),
     marginBottom: 0,
+    paddingRight: pTd(12),
   },
   rightMessageContainer: {
     marginLeft: 0,
-    marginRight: pTd(16),
+    marginRight: pTd(12),
     marginTop: pTd(12),
     marginBottom: 0,
+    paddingLeft: pTd(12),
   },
 });

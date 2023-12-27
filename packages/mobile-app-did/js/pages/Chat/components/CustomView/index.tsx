@@ -8,7 +8,6 @@ import TransferCard from './TransferCard';
 function CustomView(props: MessageProps<ChatMessage> & { onDismiss: () => void }) {
   const { currentMessage } = props;
 
-  // TODO: type change
   if (currentMessage?.messageType === 'TRANSFER-CARD') return <TransferCard {...props} />;
 
   if (currentMessage?.messageType === 'REDPACKAGE-CARD') return <RedPacket {...props} />;

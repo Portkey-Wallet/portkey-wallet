@@ -9,6 +9,7 @@ import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
 import { showPinnedListOverlay } from '../PinnedListOverlay';
 import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
+import { ParsedImage } from '@portkey-wallet/im';
 
 export type HeaderPinSection = {
   channelUUid: string;
@@ -24,12 +25,17 @@ export default function HeaderPinSection(props: HeaderPinSection) {
     return lastPinMessage.type === 'IMAGE';
   }, [lastPinMessage]);
 
+  const url = useMemo(
+    () => decodeURIComponent((lastPinMessage?.parsedContent as ParsedImage).thumbImgUrl || ''),
+    [lastPinMessage?.parsedContent],
+  );
+
   if (!lastPinMessage) return null;
 
   return (
     <Touchable style={[GStyles.flexRow, GStyles.itemCenter, styles.wrap]} onPress={() => showPinnedListOverlay()}>
       <View style={styles.leftBlue} />
-      {isImg && <Image style={styles.img} resizeMode="cover" source={{ uri: 'lastPinMessage.parsedContent' }} />}
+      {isImg && <Image style={styles.img} resizeMode="cover" source={{ uri: url }} />}
       <View style={GStyles.flex1}>
         <TextM numberOfLines={1} style={[FontStyles.font5, GStyles.flex1]}>
           {`Pinned Message ${list.length}`}

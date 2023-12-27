@@ -39,8 +39,6 @@ function ReplyMessageText(props: MessageTextProps<ChatMessage>) {
   if (!currentMessage?.quote) return null;
   if (!(typeof currentMessage?.quote.parsedContent === 'string')) return null;
 
-  console.log('!currentMessage?.channelUuid', currentMessage?.channelUuid);
-
   return (
     <View style={[replyMessageTextStyles.wrap, position === 'right' && replyMessageImageStyles.rightWrap]}>
       <View style={replyMessageTextStyles.blueBlank} />
@@ -344,7 +342,7 @@ const messageStyles = {
 const replyMessageTextStyles = StyleSheet.create({
   wrap: {
     position: 'relative',
-    backgroundColor: defaultColors.bg3,
+    backgroundColor: defaultColors.bg26,
     borderRadius: pTd(8),
     paddingVertical: pTd(4),
     paddingLeft: pTd(11),
@@ -380,7 +378,7 @@ const replyMessageTextStyles = StyleSheet.create({
 const replyMessageImageStyles = StyleSheet.create({
   wrap: {
     position: 'relative',
-    backgroundColor: defaultColors.bg3,
+    backgroundColor: defaultColors.bg26,
     borderRadius: pTd(8),
     paddingVertical: pTd(4),
     paddingLeft: pTd(11),

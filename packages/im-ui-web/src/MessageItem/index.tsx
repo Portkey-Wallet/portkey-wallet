@@ -21,9 +21,7 @@ const MessageItem: React.FC<MessageContentType> = ({ className, ...props }) => {
     <div
       key={props.key}
       className={clsx('portkey-message-item', 'flex', positionClassName, className, hideAvatar && 'hidden-avatar')}>
-      {showAvatar && (
-        <Avatar {...props} src={fromAvatar} onClick={(e: React.MouseEvent<HTMLElement>) => props?.onClickAvatar?.(e)} />
-      )}
+      {showAvatar && <Avatar {...props} src={fromAvatar} onClick={() => props?.onClickAvatar?.(props)} />}
       {SupportSysMsgType.includes(type) && <SystemMessage {...props} />}
       {type === MessageTypeEnum.TEXT && (
         <div className="flex-column">

@@ -1,23 +1,11 @@
-import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
-import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
-import {
-  ChannelItem,
-  Message,
-  MessageType,
-  MessageTypeEnum,
-  ParsedImage,
-  ParsedPinSys,
-  ParsedRedPackage,
-  ParsedTransfer,
-} from '@portkey-wallet/im';
+import { Message, MessageType, MessageTypeEnum, ParsedImage } from '@portkey-wallet/im';
 import {
   ExtraMessageTypeEnum,
   IMessageShowPage,
   MessageContentType,
   SupportSysMsgType,
 } from '@portkey-wallet/im-ui-web';
-import { formatMessageTime, formatPinSysMessageToStr } from '@portkey-wallet/utils/chat';
-import { divDecimalsToShow } from '@portkey-wallet/utils/converter';
+import { formatMessageTime } from '@portkey-wallet/utils/chat';
 import { isSameDay } from '@portkey-wallet/utils/time';
 
 export const supportedMsgType: MessageType[] = [
@@ -47,7 +35,6 @@ export const getPixel = async (url: string): Promise<{ width: number; height: nu
 export interface IFormatMessageList {
   list: Message[];
   ownerRelationId: string;
-  myPortkeyId?: string;
   isGroup?: boolean;
   isAdmin?: boolean;
   showPageType?: IMessageShowPage;
@@ -56,7 +43,6 @@ export interface IFormatMessageList {
 export const formatMessageList = ({
   list,
   ownerRelationId,
-  myPortkeyId,
   isGroup = false,
   isAdmin = false,
   showPageType,
@@ -69,21 +55,16 @@ export const formatMessageList = ({
         ...item,
         key: item.sendUuid,
         showAvatar: isGroup && !SupportSysMsgType.includes(item.type) && item.from !== ownerRelationId,
-        letter: item.fromName?.slice(0, 1)?.toUpperCase(),
         position: supportSysMsgType.includes(item.type) ? 'center' : item.from === ownerRelationId ? 'right' : 'left',
         isGroup,
         isAdmin,
         showPageType,
-        extraData: {
-          myPortkeyId,
-        },
       };
     } else {
       transItem = {
         key: `${item.createAt}`,
         id: `${item.createAt}`,
         fromName: item.fromName,
-        letter: item.fromName?.slice(0, 1)?.toUpperCase(),
         from: item.from,
         position: item.from === ownerRelationId ? 'right' : 'left',
         showAvatar: item.from !== ownerRelationId && isGroup,
@@ -126,38 +107,6 @@ export const formatMessageList = ({
     }
   });
   return formatList;
-};
-
-export const formatChatListSubTitle = (item: ChannelItem) => {
-  const _type = item.lastMessageType;
-  if (_type === MessageTypeEnum.IMAGE) {
-    return '[Image]';
-  }
-  if (_type === MessageTypeEnum.TEXT) {
-    return `${item.lastMessageContent}`;
-  }
-  if (_type === MessageTypeEnum.SYS) {
-    return `${item.lastMessageContent}`;
-  }
-  if (_type === MessageTypeEnum.PIN_SYS) {
-    return formatPinSysMessageToStr(item.lastMessageContent as ParsedPinSys);
-  }
-  if (_type === MessageTypeEnum.REDPACKAGE_CARD) {
-    const redPackage = (item.lastMessageContent as ParsedRedPackage).data;
-    return `${redPackage?.memo || RED_PACKAGE_DEFAULT_MEMO}`;
-  }
-  if (_type === MessageTypeEnum.TRANSFER_CARD) {
-    const asset = (item.lastMessageContent as ParsedTransfer)?.transferExtraData || {};
-    const { nftInfo, tokenInfo } = asset;
-    if (nftInfo) {
-      return `${nftInfo.alias} #${nftInfo.nftId}`;
-    }
-    if (tokenInfo) {
-      return `${divDecimalsToShow(tokenInfo.amount, tokenInfo.decimal)} ${tokenInfo.symbol}`;
-    }
-    return '';
-  }
-  return UN_SUPPORTED_FORMAT;
 };
 
 export const formatImageData = (parsedContent: ParsedImage) => ({

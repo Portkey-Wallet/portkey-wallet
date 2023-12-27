@@ -10,7 +10,7 @@ import { TextXL, TextS } from 'components/CommonText';
 import Svg from 'components/Svg';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimalsToShow } from '@portkey-wallet/utils/converter';
 import { ParsedTransfer } from '@portkey-wallet/im';
 import navigationService from 'utils/navigationService';
 import { useUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -37,22 +37,17 @@ function TransferCard(props: MessageProps<ChatMessage>) {
   }, [transferInfo.data?.blockHash, transferInfo.data?.transactionId]);
 
   const transferInfoShow = useMemo(() => {
+    if (!transferInfo?.transferExtraData) return ' - ';
+
     if (transferInfo.transferExtraData?.tokenInfo) {
-      return `${formatAmountShow(
-        divDecimals(
-          transferInfo?.transferExtraData?.tokenInfo?.amount || '',
-          transferInfo?.transferExtraData?.tokenInfo?.decimal,
-        ),
+      return `${divDecimalsToShow(
+        transferInfo?.transferExtraData?.tokenInfo?.amount || '',
         transferInfo?.transferExtraData?.tokenInfo?.decimal,
       )} ${transferInfo?.transferExtraData?.tokenInfo?.symbol}`;
     } else {
       return `${transferInfo?.transferExtraData?.nftInfo?.alias} #${transferInfo?.transferExtraData?.nftInfo?.nftId}`;
     }
-  }, [
-    transferInfo.transferExtraData?.nftInfo?.alias,
-    transferInfo.transferExtraData?.nftInfo?.nftId,
-    transferInfo.transferExtraData?.tokenInfo,
-  ]);
+  }, [transferInfo.transferExtraData]);
 
   return (
     <Touchable underlayColor={defaultColors.bg24} style={styles.wrap} onPress={onPress}>

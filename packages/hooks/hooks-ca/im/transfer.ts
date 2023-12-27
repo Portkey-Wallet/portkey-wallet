@@ -126,6 +126,10 @@ export const useSendIMTransfer = () => {
         },
       });
 
+      if (statusResult?.status !== TransferStatusEnum.SUCCESS) {
+        throw new Error('Creation FAIL');
+      }
+
       transferContent.data.id = transferId;
       transferContent.data.transactionId = statusResult.transactionId;
       transferContent.data.blockHash = statusResult.blockHash;

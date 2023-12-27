@@ -134,7 +134,7 @@ function MessageText(
           title: currentMessage?.pinInfo ? 'Unpin' : 'Pin',
           iconName: currentMessage?.pinInfo ? 'chat-unpin' : 'chat-pin',
           onPress: async () => {
-            if (!currentMessage) return;
+            if (!currentMessage || !currentMessage.rawMessage) return;
 
             // unPin in messageList page
             if (currentMessage?.pinInfo && !isHidePinStyle)
@@ -150,7 +150,8 @@ function MessageText(
                     type: 'primary',
                     onPress: async () => {
                       try {
-                        await unPin(currentMessage);
+                        if (!currentMessage.rawMessage) return;
+                        await unPin(currentMessage.rawMessage);
                       } catch (error) {
                         CommonToast.failError(error);
                       }
@@ -164,9 +165,9 @@ function MessageText(
               if (currentMessage?.pinInfo) {
                 // in overlay and just 1 pin message
                 if (pinList?.length === 1 && isHidePinStyle) OverlayModal.hide();
-                await unPin(currentMessage);
+                await unPin(currentMessage.rawMessage);
               } else {
-                await pin(currentMessage);
+                await pin(currentMessage.rawMessage);
               }
             } catch (err) {
               CommonToast.failError(err);

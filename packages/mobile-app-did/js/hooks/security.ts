@@ -77,6 +77,7 @@ export const useCheckTransferLimitWithJump = () => {
                   navigationService.navigateByMultiLevelParams('GuardianApproval', {
                     params: {
                       approvalType: ApprovalType.transferApprove,
+                      targetChainId: chainId,
                     },
                     multiLevelParams: approveMultiLevelParams,
                   });

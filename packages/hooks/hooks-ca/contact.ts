@@ -410,7 +410,8 @@ export const useGetContactLabel = () => {
         targetContact?.name ||
         targetContact?.caHolderInfo?.walletName ||
         defaultNameFromBackEnd ||
-        targetContact?.imInfo?.name
+        targetContact?.imInfo?.name ||
+        ''
       );
     },
     [contactPortkeyIdMap],

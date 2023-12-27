@@ -279,7 +279,6 @@ const SendHome: React.FC = () => {
   );
 
   const imSend = useCallback(async () => {
-    // todo: change feedback
     if (!chainInfo || !pin) return;
     const account = getManagerAccount(pin);
     if (!account) return;
@@ -303,7 +302,7 @@ const SendHome: React.FC = () => {
         amount,
         image: '',
         memo: '',
-        type: TransferTypeEnum.GROUP,
+        type: imTransferInfo.isGroupChat ? TransferTypeEnum.GROUP : TransferTypeEnum.P2P,
         caContract: contractRef.current,
         tokenContractAddress: assetInfo.tokenContractAddress,
         toCAAddress: toInfo.address,

@@ -144,7 +144,7 @@ export const useSendChannelMessage = () => {
       channelId,
       content,
       type = 'TEXT',
-      quoteMessage,
+      quoteMessage: _quoteMessage,
     }: {
       channelId: string;
       content: string;
@@ -159,6 +159,7 @@ export const useSendChannelMessage = () => {
           throw new Error('No user info');
         }
       }
+      const quoteMessage = _quoteMessage ? { ..._quoteMessage } : undefined;
       const msgParams = {
         channelUuid: channelId,
         type,

@@ -16,8 +16,6 @@ function SystemInfo(props: SystemMessageProps<ChatMessage> & { previousMessage?:
     if (previousMessage?.messageType === currentMessage?.messageType) return true;
   }, [currentMessage, previousMessage]);
 
-  console.log('SystemInfo pinInfo', currentMessage);
-
   const pinInfo = useMemo<ParsedPinSys>(
     () => currentMessage?.parsedContent as ParsedPinSys,
     [currentMessage?.parsedContent],

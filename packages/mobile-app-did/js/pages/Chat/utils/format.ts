@@ -45,6 +45,7 @@ export const formatMessageItem = (message: IMMessage): ChatMessage => {
     text: message.content,
     createdAt: Number(message.createAt),
     messageType: message.type,
+    rawMessage: message,
     user: {
       _id: message.from,
     },

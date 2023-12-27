@@ -88,7 +88,7 @@ export function BottomBarContainer({
       typeof text === 'string' &&
         (await sendChannelMessage({
           content: text.trim(),
-          quoteMessage: replyMessageInfo?.message,
+          quoteMessage: replyMessageInfo?.message?.rawMessage,
         }));
     } catch (error: any) {
       if (error?.code === NO_LONGER_IN_GROUP) {

@@ -141,7 +141,7 @@ const reduxPersistConfig = {
     dappSlice.name,
     discoverSlice.name,
     txFeeSlice.name,
-    imSlice.name,
+    // imSlice.name,
     securitySlice.name,
   ],
   // More info here:  https://shift.infinite.red/shipping-persistant-reducers-7341691232b1

@@ -33,7 +33,7 @@ const SelectGroupMembersToTransferPage = () => {
     setFilterMembers(() => {
       let result = [];
       if (debounceKeyword) {
-        result = rawMemberList.filter(ele => isTargetMember(ele, debounceKeyword) && ele.addresses !== myUserId);
+        result = rawMemberList.filter(ele => isTargetMember(ele, debounceKeyword) && ele.userId !== myUserId);
       } else {
         result = rawMemberList.filter(ele => ele.userId !== myUserId);
       }

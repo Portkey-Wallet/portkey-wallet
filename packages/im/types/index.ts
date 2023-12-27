@@ -40,6 +40,7 @@ export type ParsedTransfer = {
   data: {
     id: string;
     senderId: string;
+    senderName: string;
     memo: string;
     transactionId: string;
     blockHash: string;

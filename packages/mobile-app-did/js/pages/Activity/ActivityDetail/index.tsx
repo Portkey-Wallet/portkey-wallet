@@ -28,13 +28,14 @@ import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
 import { useIsTokenHasPrice, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import CommonAvatar from 'components/CommonAvatar';
+import { IActivityApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 
 const ActivityDetail = () => {
   const { t } = useLanguage();
   const defaultToken = useDefaultToken();
 
-  const activityItemFromRoute = useRouterParams<ActivityItemType>();
-  const { transactionId = '', blockHash = '', isReceived: isReceivedParams } = activityItemFromRoute;
+  const activityItemFromRoute = useRouterParams<ActivityItemType & IActivityApiParams>();
+  const { transactionId = '', blockHash = '', isReceived: isReceivedParams, activityType } = activityItemFromRoute;
   const caAddresses = useCaAddresses();
   const isTestnet = useIsTestnet();
   const isTokenHasPrice = useIsTokenHasPrice(activityItemFromRoute?.symbol);
@@ -50,6 +51,7 @@ const ActivityDetail = () => {
       caAddresses,
       transactionId,
       blockHash,
+      activityType,
     };
     try {
       const res = await handleLoopFetch({
@@ -66,7 +68,7 @@ const ActivityDetail = () => {
     } catch (error) {
       CommonToast.fail('This transfer is being processed on the blockchain. Please check the details later.');
     }
-  }, [blockHash, caAddresses, isReceivedParams, transactionId]);
+  }, [activityType, blockHash, caAddresses, isReceivedParams, transactionId]);
 
   useEffectOnce(() => {
     getActivityDetail();

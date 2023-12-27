@@ -86,10 +86,11 @@ export const useSendIMTransfer = () => {
         data: {
           id: '',
           senderId: userInfo.userId,
+          senderName: userInfo.nickName,
           memo,
           transactionId: '',
           blockHash: '',
-          toUserId: '',
+          toUserId: toUserId || '',
           toUserName: '',
         },
       };

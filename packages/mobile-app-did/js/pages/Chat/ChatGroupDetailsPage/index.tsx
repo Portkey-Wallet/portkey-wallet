@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { GestureResponderEvent, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -43,7 +43,7 @@ const ChatGroupDetailsPage = () => {
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
 
-  const [hasPinWhenInit, setHasPinWhenInit] = useState(true);
+  const [hasPinWhenInit, setHasPinWhenInit] = useState(false);
   const currentChannelId = useCurrentChannelId();
   const { isAdmin, groupInfo } = useGroupChannelInfo(currentChannelId || '', true);
   const { pin, mute, displayName } = useChannelItemInfo(currentChannelId || '') || {};
@@ -218,9 +218,10 @@ const ChatGroupDetailsPage = () => {
     refresh();
   });
 
-  useEffectOnce(() => {
+  useEffect(() => {
+    if (!lastPinMessage) return;
     setHasPinWhenInit(!!lastPinMessage);
-  });
+  }, [lastPinMessage]);
 
   return (
     <PageContainer

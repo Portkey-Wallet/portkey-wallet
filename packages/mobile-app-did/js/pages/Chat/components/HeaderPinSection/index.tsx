@@ -24,7 +24,6 @@ export default function HeaderPinSection(props: HeaderPinSection) {
     return lastPinMessage.type === 'IMAGE';
   }, [lastPinMessage]);
 
-  console.log('lastPinMessage', lastPinMessage, list);
   if (!lastPinMessage) return null;
 
   return (
@@ -36,7 +35,7 @@ export default function HeaderPinSection(props: HeaderPinSection) {
           {`Pinned Message ${list.length}`}
         </TextM>
         <TextM numberOfLines={1} style={[FontStyles.font3, GStyles.flex1]}>
-          {isImg ? 'Photo' : lastPinMessage.content}
+          {isImg ? 'Photo' : lastPinMessage?.content}
         </TextM>
       </View>
       <Svg icon="pin-list-icon" size={pTd(20)} />

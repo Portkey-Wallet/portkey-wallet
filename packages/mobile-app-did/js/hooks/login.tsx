@@ -598,8 +598,6 @@ export function useOnRequestOrSetPin() {
       guardiansApproved?: GuardiansApproved;
       autoLogin?: boolean;
     }) => {
-      console.log(guardiansApproved, showLoading, '====guardiansApproved');
-
       if (walletInfo?.address && pin) {
         onManagerAddressAndQueryResult({
           managerInfo,

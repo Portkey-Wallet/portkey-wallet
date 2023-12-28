@@ -7,13 +7,13 @@ import { ParsedTransfer } from '@portkey-wallet/im';
 import './index.less';
 
 const TransferMessage: React.FC<IMessage> = (props) => {
-  const { createAt, dateString, parsedContent, position, extraData, isGroup } = props;
+  const { createAt, dateString, parsedContent, position, isGroup, myPortkeyId } = props;
   const { data } = (parsedContent as ParsedTransfer) || {};
   const showDateStr = useMemo(() => dateString || formatTime(createAt), [createAt, dateString]);
   const transferText = useMemo(() => {
     if (position === 'right') return TransferTextByMine;
     if (isGroup) {
-      if (data?.toUserId === extraData?.myPortkeyId) {
+      if (data?.toUserId === myPortkeyId) {
         return TransferTextToMe;
       } else {
         return TransferTextToOther;
@@ -21,7 +21,7 @@ const TransferMessage: React.FC<IMessage> = (props) => {
     } else {
       return TransferTextToMe;
     }
-  }, [data?.toUserId, extraData?.myPortkeyId, isGroup, position]);
+  }, [data?.toUserId, isGroup, myPortkeyId, position]);
   const renderContainer = useMemo(() => {
     return (
       <div className={clsx(['transfer-body', 'flex', position])}>

@@ -110,9 +110,8 @@ export default function ChatBox() {
   const hideChannel = useHideChannel();
   const { relationId } = useRelationId();
   const messageList: MessageContentType[] = useMemo(
-    () =>
-      formatMessageList({ list, ownerRelationId: relationId!, isGroup: true, isAdmin, myPortkeyId: userInfo?.userId }),
-    [isAdmin, list, relationId, userInfo?.userId],
+    () => formatMessageList({ list, ownerRelationId: relationId!, isGroup: true, isAdmin }),
+    [isAdmin, list, relationId],
   );
   const handleCancelReply = useCallback(() => {
     setReplyMsg(undefined);
@@ -338,6 +337,7 @@ export default function ChatBox() {
             hasNext={hasNext}
             next={next}
             lockable
+            myPortkeyId={userInfo?.userId}
             dataSource={messageList}
             onClickAvatar={handleGoProfile}
             onDeleteMsg={handleDeleteMsg}

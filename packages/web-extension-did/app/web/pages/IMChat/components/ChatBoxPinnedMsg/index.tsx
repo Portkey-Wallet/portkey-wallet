@@ -33,7 +33,7 @@ const ChatBoxPinnedMsg = ({
   const renderImage = useMemo(
     () => (
       <div className="image-content flex">
-        <ImageShow src={thumbImgUrl || imgUrl} fallback={imgUrl} />
+        <ImageShow src={thumbImgUrl || imgUrl} fallback={imgUrl} preview={false} />
         <div>
           <div className="content-title">{`Pinned Message ${msgCount}`}</div>
           <div className="content-pin-msg">Photo</div>

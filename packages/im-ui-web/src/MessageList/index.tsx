@@ -4,7 +4,6 @@ import MessageItem from '../MessageItem';
 import CustomSvg from '../components/CustomSvg';
 import CircleLoading from '../components/CircleLoading';
 import { ExtraMessageTypeEnum, IMessageListProps, MessageContentType } from '../type';
-import { MessageTypeEnum } from '@portkey-wallet/im';
 import { SupportSysMsgType } from '../constants';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import './index.less';
@@ -84,18 +83,22 @@ const MessageList: FC<IMessageListProps> = ({
     let isShowMargin = false;
     let hiddenAvatar = false;
     return dataSource.map((x) => {
+      isShowMargin = false;
+      hiddenAvatar = false;
       // hidden avatar logic
       if (prev?.type) {
         hiddenAvatar = !SupportSysMsgType.includes(prev?.type) && x?.fromName === prev?.fromName;
       }
-      isShowMargin = prev?.position !== x.position;
       if (prev?.position !== x.position) {
         isShowMargin = true;
       } else {
-        isShowMargin = x.subType === ExtraMessageTypeEnum['DATE-SYS-MSG'];
-      }
-      if (x.type === MessageTypeEnum.SYS && prev?.type === MessageTypeEnum.SYS) {
-        isShowMargin = x.subType !== prev?.subType;
+        if (x.position === 'left') {
+          isShowMargin = x.from !== prev?.from;
+        }
+        if (x.position === 'center') {
+          isShowMargin =
+            x.subType === ExtraMessageTypeEnum['DATE-SYS-MSG'] || prev.subType === ExtraMessageTypeEnum['DATE-SYS-MSG'];
+        }
       }
       prev = x;
       return (

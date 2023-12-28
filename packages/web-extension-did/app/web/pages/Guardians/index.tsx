@@ -106,7 +106,7 @@ export default function Guardians() {
 
   const renderGuardianTip = useMemo(() => {
     return verifierEnableNum === 0 ? (
-      <div className="guardian-exceed-tip flex-row-center">
+      <div className="guardian-exceed-tip flex">
         <CustomSvg type="Warning" />
         <span className="exceed-tip-content">{guardiansExceedTip}</span>
       </div>

@@ -1,5 +1,12 @@
 import React from 'react';
-import { ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
+import {
+  ChannelStatusEnum,
+  ChannelTypeEnum,
+  Message,
+  MessageType,
+  MessageTypeEnum,
+  ParsedContent,
+} from '@portkey-wallet/im';
 
 export interface IChatItemProps {
   id: string | number;
@@ -18,8 +25,9 @@ export interface IChatItemProps {
   showMute?: boolean;
   pin?: boolean;
   status: ChannelStatusEnum;
-  isOwner?: boolean;
-  lastMessageType: string;
+  lastMessageType: MessageType;
+  lastMessageContent: ParsedContent | null;
+  myPortkeyId?: string;
   onClick?: React.MouseEventHandler;
   onClickMute?: React.MouseEventHandler;
   onClickPin?: React.MouseEventHandler;
@@ -41,52 +49,77 @@ export interface IChatListProps {
 
 export type ChatListEvent = (item: IChatItemProps, index?: number, event?: React.MouseEvent<HTMLElement>) => any;
 
-export interface IMessage {
+export type INotSupportMessageType = 'NO-SUPPORT-MSG';
+
+export type IDateSysMessageType = 'DATE-SYS-MSG';
+
+export enum ExtraMessageTypeEnum {
+  'NO-SUPPORT-MSG' = 'NO-SUPPORT-MSG',
+  'DATE-SYS-MSG' = 'DATE-SYS-MSG',
+}
+
+export interface INotSupportMessage extends IMessageEvent {
   key: string;
-  id: string | number;
-  position: string;
-  text: string;
-  title?: string;
+  id: string;
   from?: string;
-  date?: number | string;
-  dateString?: string;
-  avatar?: string;
-  className?: string;
-  showLetter?: boolean;
+  fromName?: string;
+  fromAvatar?: string;
   letter?: string;
-  type: string;
+  position: string;
   showAvatar?: boolean;
+  createAt: string;
+  type: MessageType;
+  subType: INotSupportMessageType;
+  parsedContent: string;
+  className?: string;
+  hideAvatar?: boolean;
+}
+export interface IDateSysMessage extends IMessageEvent {
+  key: string;
+  id: string;
+  position: string;
+  createAt: string;
+  type: MessageType;
+  from?: string;
+  fromName?: string;
+  fromAvatar?: string;
+  showAvatar?: boolean;
+  className?: string;
+  subType: IDateSysMessageType;
+  parsedContent: string;
+  hideAvatar?: boolean;
+}
+
+export interface IMessageEvent {
+  onPinMsg?: React.MouseEventHandler;
+  onReplyMsg?: React.MouseEventHandler;
   onDeleteMsg?: React.MouseEventHandler;
   onClickAvatar?: React.MouseEventHandler;
   onClickUrl?: (v: string) => void;
   onClickUnSupportMsg?: () => void;
 }
 
-export interface IImageMessage extends IMessage {
-  imgData?: {
-    thumbImgUrl?: string;
-    imgUrl?: string;
-    width?: string;
-    height?: string;
-    name?: string;
-    size?: number;
-    id?: string;
-    alt?: string;
-  };
-}
+export type IMessageShowPage = 'PIN-PAGE' | 'MSG-PAGE';
 
-export interface IImageMessageProps extends IImageMessage {
-  onDownload?: React.MouseEventHandler;
-  onOpen?: React.MouseEventHandler;
-  onLoad?: React.ReactEventHandler;
-  onPhotoError?: React.ReactEventHandler;
+export enum MessageShowPageEnum {
+  'PIN-PAGE' = 'PIN-PAGE',
+  'MSG-PAGE' = 'MSG-PAGE',
 }
-
-export interface ISystemMessage extends IMessage {
+export interface IMessage extends Message, IMessageEvent {
+  key: string;
+  position: string;
+  showAvatar?: boolean;
+  dateString?: string;
+  className?: string;
+  showLetter?: boolean;
+  letter?: string;
   subType?: string;
+  isAdmin?: boolean;
+  isGroup?: boolean;
+  showPageType?: IMessageShowPage;
+  hideAvatar?: boolean;
+  extraData?: Record<string, any>;
 }
-
-export type ISystemMessageProps = ISystemMessage;
 
 export interface IMessageListProps {
   className?: string;
@@ -96,45 +129,23 @@ export interface IMessageListProps {
   children?: React.ReactNode;
   isShowChild?: boolean;
   reference: any;
-  dataSource: MessageType[];
+  dataSource: MessageContentType[];
   lockable: boolean;
   toBottomHeight?: String | number;
   downButton?: boolean;
   downButtonBadge?: number;
   hasNext: boolean;
   loading: boolean;
-  next: () => any;
-  onScroll?: React.UIEventHandler;
+  next?: () => any;
   onDeleteMsg?: MessageListEvent;
+  onReplyMsg?: MessageListEvent;
+  onPinMsg?: MessageListEvent;
   onClickAvatar?: MessageListEvent;
   onClickUrl?: (v: string) => void;
   onClickUnSupportMsg?: () => void;
-  onDownButtonClick?: React.RefObject<HTMLButtonElement>;
 }
 
-export type MessageListEvent = (item: MessageType, index: number, event: React.MouseEvent<HTMLElement>) => any;
-
-export interface ITextMessage extends IMessage {
-  subType?: string;
-}
-
-export type ITextMessageProps = ITextMessage;
-
-export type ParsedRedPackage = {
-  image: string;
-  link: string;
-  data: {
-    id: string;
-    senderId: string;
-    memo: string;
-  };
-};
-
-export interface IRedPacketMessage extends IMessage {
-  redPacket?: ParsedRedPackage;
-}
-
-export type IRedPacketMessageProps = IRedPacketMessage;
+export type MessageListEvent = (item: MessageContentType, index: number, event: React.MouseEvent<HTMLElement>) => any;
 
 export interface IInputProps {
   autofocus?: boolean;
@@ -174,10 +185,20 @@ export interface PopDataProps {
   onClick?: () => void;
 }
 
+export interface IInputReplyMsgProps {
+  msgType: MessageTypeEnum.IMAGE | MessageTypeEnum.TEXT;
+  msgContent?: string;
+  thumbImgUrl?: string;
+  imgUrl?: string;
+  toName: string;
+  onCloseReply?: () => void;
+}
 export interface IInputBarProps {
   maxLength?: number;
   moreData?: PopDataProps[];
   showEmoji?: boolean;
+  replyMsg?: IInputReplyMsgProps;
+  onCloseReply?: () => void;
   onSendMessage: (v: string) => void;
 }
 
@@ -204,7 +225,7 @@ export interface IAvatarProps {
   letter?: string;
   className?: string;
   alt?: string;
-  channelType?: ChannelTypeEnum;
+  isGroupAvatar?: boolean;
   width?: number;
   height?: number;
   avatarSize?: IAvatarSize;
@@ -217,22 +238,4 @@ export interface IUnreadTipProps {
   bgColorString?: string;
 }
 
-export type MessageType =
-  | ({ type: 'image' } & IImageMessageProps)
-  | ({ type: 'text' } & ITextMessageProps)
-  | ({ type: 'red-package-card' } & IRedPacketMessageProps)
-  | ({ type: 'system' } & ISystemMessageProps);
-
-export type MessageListType = MessageType & IMessageListProps;
-
-export class ChatItem extends React.Component<IChatItemProps> {}
-export class ChatList extends React.Component<IChatListProps> {}
-export class ImageMessage extends React.Component<IImageMessageProps> {}
-export class TextMessage extends React.Component<ITextMessageProps> {}
-export class SystemMessage extends React.Component<ISystemMessageProps> {}
-export class MessageList extends React.Component<MessageListType> {}
-export class Avatar extends React.Component<IAvatarProps> {}
-export class Input extends React.Component<IInputProps> {}
-export class InputBar extends React.Component<IInputBarProps> {}
-export class PopoverMenuList extends React.Component<IPopoverMenuListProps> {}
-export class UnreadTip extends React.Component<IUnreadTipProps> {}
+export type MessageContentType = IMessage | IDateSysMessage | INotSupportMessage;

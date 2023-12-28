@@ -18,6 +18,7 @@ export const GuardianTypeIcon: Record<LoginType, IconType> = {
   [LoginType.Phone]: 'GuardianPhone',
   [LoginType.Google]: 'GuardianGoogle',
   [LoginType.Apple]: 'GuardianApple',
+  [LoginType.Telegram]: 'GuardianTelegram',
 };
 
 export default function VerifierPair({

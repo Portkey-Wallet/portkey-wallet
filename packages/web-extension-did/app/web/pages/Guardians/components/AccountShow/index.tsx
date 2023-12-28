@@ -9,6 +9,7 @@ export default function AccountShow({ guardian }: { guardian: StoreUserGuardianI
       return <div className="account account-text-one-row">{guardian.guardianAccount}</div>;
     case LoginType.Google:
     case LoginType.Apple:
+    case LoginType.Telegram:
       return (
         <div className="account account-text-two-row flex-column">
           <span className="name">{guardian.firstName}</span>

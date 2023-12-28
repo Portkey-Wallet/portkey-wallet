@@ -25,6 +25,7 @@ export const BackEndNetWorkMap: {
     cmsUrl: 'http://192.168.66.62:8055/graphql',
     s3Url: 'https://portkey-cms-dev.s3.ap-northeast-1.amazonaws.com',
     portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
+    portkeyOpenLoginUrl: 'https://openlogin-test.portkey.finance/',
     imApiUrl: 'http://192.168.66.243:5007',
     imWsUrl: 'wss://testnet.relationlabs.ai/pk-sim/ws/',
     imS3Bucket: 'portkey-im-dev',
@@ -41,13 +42,8 @@ export const BackEndNetWorkMap: {
     cmsUrl: 'http://192.168.66.62:8055/graphql',
     s3Url: 'https://portkey-cms-dev.s3.ap-northeast-1.amazonaws.com',
     portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
+    portkeyOpenLoginUrl: 'https://openlogin-test.portkey.finance/',
     imS3Bucket: 'portkey-im-dev',
-    buyConfig: {
-      ach: {
-        appId: 'f83Is2y7L425rxl8',
-        baseUrl: 'https://ramptest.alchemypay.org',
-      },
-    },
     eBridgeUrl: 'http://192.168.67.173:3000',
   },
   'back-end-test1-ip': {
@@ -62,6 +58,7 @@ export const BackEndNetWorkMap: {
     cmsUrl: 'http://192.168.66.62:8055/graphql',
     s3Url: 'https://portkey-cms-dev.s3.ap-northeast-1.amazonaws.com',
     portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
+    portkeyOpenLoginUrl: 'https://openlogin-test.portkey.finance/',
     imApiUrl: 'http://192.168.66.243:5007',
     imWsUrl: 'wss://testnet.relationlabs.ai/pk-sim/ws/',
     imS3Bucket: 'portkey-im-dev',
@@ -78,13 +75,8 @@ export const BackEndNetWorkMap: {
     cmsUrl: 'http://192.168.66.62:8055/graphql',
     s3Url: 'https://portkey-cms-dev.s3.ap-northeast-1.amazonaws.com',
     portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
+    portkeyOpenLoginUrl: 'https://openlogin-test.portkey.finance/',
     imS3Bucket: 'portkey-im-dev',
-    buyConfig: {
-      ach: {
-        appId: 'f83Is2y7L425rxl8',
-        baseUrl: 'https://ramptest.alchemypay.org',
-      },
-    },
     eBridgeUrl: 'http://192.168.67.173:3000',
   },
   'back-end-test3': {
@@ -99,13 +91,14 @@ export const BackEndNetWorkMap: {
     s3Url: 'https://portkey-cms-dev.s3.ap-northeast-1.amazonaws.com',
     imS3Bucket: 'portkey-im-dev',
     portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
+    eBridgeUrl: 'http://192.168.67.235:3000',
+    portkeyOpenLoginUrl: 'https://openlogin-test.portkey.finance/',
     buyConfig: {
       ach: {
         appId: 'f83Is2y7L425rxl8',
         baseUrl: 'https://ramptest.alchemypay.org',
       },
     },
-    eBridgeUrl: 'http://192.168.67.173:3000',
   },
   'back-end-test4': {
     name: 'aelf Mainnet',
@@ -119,6 +112,7 @@ export const BackEndNetWorkMap: {
     s3Url: 'https://portkey-cms-dev.s3.ap-northeast-1.amazonaws.com',
     imS3Bucket: 'portkey-im-dev',
     portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
+    portkeyOpenLoginUrl: 'https://openlogin-test.portkey.finance/',
     buyConfig: {
       ach: {
         appId: 'f83Is2y7L425rxl8',
@@ -140,6 +134,7 @@ export const BackEndNetWorkMap: {
     s3Url: 'https://portkey-cms-testnet.s3.ap-northeast-1.amazonaws.com',
     imS3Bucket: 'portkey-im-testnet',
     portkeyFinanceUrl: 'https://test.portkey.finance',
+    portkeyOpenLoginUrl: 'https://openlogin.portkey.finance/',
     eBridgeUrl: 'https://test.ebridge.exchange',
     eTransferUrl: 'https://test.etransfer.exchange',
   },
@@ -154,6 +149,7 @@ export const BackEndNetWorkMap: {
     cmsUrl: 'https://cms.portkey.finance/graphql',
     s3Url: 'https://portkey-cms-mainnet.s3.ap-northeast-1.amazonaws.com',
     portkeyFinanceUrl: 'https://portkey.finance',
+    portkeyOpenLoginUrl: 'https://openlogin.portkey.finance/',
     buyConfig: {
       ach: {
         appId: 'P0e0l39jipsNYT46',

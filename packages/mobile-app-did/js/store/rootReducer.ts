@@ -14,7 +14,6 @@ import { tokenManagementSlice } from '@portkey-wallet/store/store-ca/tokenManage
 
 import { activitySlice } from '@portkey-wallet/store/store-ca/activity/slice';
 import { guardiansSlice } from '@portkey-wallet/store/store-ca/guardians/slice';
-import { paymentSlice } from '@portkey-wallet/store/store-ca/payment/slice';
 import { discoverSlice } from '@portkey-wallet/store/store-ca/discover/slice';
 import { miscSlice } from '@portkey-wallet/store/store-ca/misc/slice';
 import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
@@ -23,6 +22,7 @@ import { txFeeSlice } from '@portkey-wallet/store/store-ca/txFee/slice';
 import imSlice from '@portkey-wallet/store/store-ca/im/slice';
 import { chatSlice } from './chat/slice';
 import securitySlice from '@portkey-wallet/store/store-ca/security/slice';
+import { rampSlice } from '@portkey-wallet/store/store-ca/ramp/slice';
 
 const userPersistConfig = {
   key: userSlice.name,
@@ -39,7 +39,7 @@ const discoverPersistConfig = {
 const imPersistConfig = {
   key: imSlice.name,
   storage: AsyncStorage,
-  blacklist: ['channelMessageListNetMap', 'groupInfoMapNetMap'],
+  blacklist: ['channelMessageListNetMap', 'groupInfoMapNetMap', 'pinListNetMap', 'lastPinNetMap'],
 };
 
 export const userReducer = persistReducer(userPersistConfig, userSlice.reducer);
@@ -57,7 +57,6 @@ const rootReducer = combineReducers({
   [assetsSlice.name]: assetsSlice.reducer,
   [activitySlice.name]: activitySlice.reducer,
   [tokenManagementSlice.name]: tokenManagementSlice.reducer,
-  [paymentSlice.name]: paymentSlice.reducer,
   [dappSlice.name]: dappSlice.reducer,
   [cmsSlice.name]: cmsSlice.reducer,
   [userSlice.name]: userReducer,
@@ -66,6 +65,7 @@ const rootReducer = combineReducers({
   [imSlice.name]: imReducer,
   [securitySlice.name]: securitySlice.reducer,
   [chatSlice.name]: chatSlice.reducer,
+  [rampSlice.name]: rampSlice.reducer,
 });
 
 export default rootReducer;

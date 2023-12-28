@@ -11,7 +11,6 @@ import './index.less';
 import SearchList from '../components/SearchList';
 import { ISearchItem } from '../components/SearchItem';
 import { useHandleClickChatItem } from 'hooks/im';
-import { MessageTypeWeb } from 'types/im';
 
 export default function ChatListSearch() {
   const { t } = useTranslation();
@@ -42,7 +41,8 @@ export default function ChatListSearch() {
             title: item.displayName,
             status: item.status,
             avatar: item.channelIcon,
-            lastMessageType: MessageTypeWeb[item.lastMessageType || 'TEXT'],
+            lastMessageType: item.lastMessageType || 'TEXT',
+            lastMessageContent: item.lastMessageContent,
           }));
           setChatList(transRes);
         } catch (e) {

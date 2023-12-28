@@ -12,6 +12,7 @@ export type NetworkItem = {
   cmsUrl?: string;
   s3Url?: string;
   portkeyFinanceUrl?: string; // portkey website url
+  portkeyOpenLoginUrl?: string; // web page
   buyConfig?: {
     ach?: {
       appId?: string;

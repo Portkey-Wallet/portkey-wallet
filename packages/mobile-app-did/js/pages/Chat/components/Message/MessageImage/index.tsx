@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { MessageProps, Time } from 'react-native-gifted-chat';
-import { GestureResponderEvent, StyleSheet, Image } from 'react-native';
+import { GestureResponderEvent, StyleSheet, Image, View } from 'react-native';
 import CacheImage from 'components/CacheImage';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
@@ -8,25 +8,43 @@ import Touchable from 'components/Touchable';
 import ChatOverlay from '../../ChatOverlay';
 import { ChatMessage } from 'pages/Chat/types';
 import { formatImageSize } from '@portkey-wallet/utils/img';
-import { useCurrentChannelId } from 'pages/Chat/context/hooks';
+import { useChatsDispatch, useCurrentChannelId } from 'pages/Chat/context/hooks';
 import { useDeleteMessage } from '@portkey-wallet/hooks/hooks-ca/im';
 import isEqual from 'lodash/isEqual';
 import CommonToast from 'components/CommonToast';
 import Broken_Image from 'assets/image/pngs/broken-image.png';
+import { ListItemType } from '../../ChatOverlay/chatPopover';
+import Svg from 'components/Svg';
+import { setReplyMessageInfo } from 'pages/Chat/context/chatsContext';
+import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
+import ActionSheet from 'components/ActionSheet';
+import OverlayModal from 'components/OverlayModal';
 
 const maxWidth = pTd(280);
 const maxHeight = pTd(280);
 
 const min = pTd(100);
 
-function MessageImage(props: MessageProps<ChatMessage>) {
-  const { currentMessage, position } = props;
-  const currentChannelId = useCurrentChannelId();
-  const deleteMessage = useDeleteMessage(currentChannelId || '');
+function MessageImage(
+  props: MessageProps<ChatMessage> & {
+    isGroupChat?: boolean;
+    isAdmin?: boolean;
+    isHidePinStyle?: boolean;
+    isHideReply?: boolean;
+  },
+) {
+  const { currentMessage, position, isGroupChat = false, isAdmin = false, isHidePinStyle = false, isHideReply } = props;
   const { imageInfo } = currentMessage || {};
+
   const { imgUri, thumbUri, width, height } = imageInfo || {};
+  const dispatch = useChatsDispatch();
+  const currentChannelId = useCurrentChannelId();
+  const { pin, unPin, list: pinList } = useIMPin(currentChannelId || '');
+  const deleteMessage = useDeleteMessage(currentChannelId || '');
 
   const [loadError, setLoadError] = useState(false);
+
+  const isPinned = useMemo(() => !isHidePinStyle && currentMessage?.pinInfo, [currentMessage?.pinInfo, isHidePinStyle]);
 
   const radiusStyle = useMemo(
     () => (position === 'left' ? { borderTopLeftRadius: 0 } : { borderTopRightRadius: 0 }),
@@ -69,39 +87,112 @@ function MessageImage(props: MessageProps<ChatMessage>) {
   const onShowChatPopover = useCallback(
     (event: GestureResponderEvent) => {
       const { pageX, pageY } = event.nativeEvent;
-      if (position === 'right')
-        ChatOverlay.showChatPopover({
-          list: [
-            {
-              title: 'Delete',
-              iconName: 'chat-delete',
-              onPress: async () => {
-                try {
-                  await deleteMessage(currentMessage?.id);
-                } catch (error) {
-                  CommonToast.fail('Failed to delete message');
-                }
-              },
-            },
-          ],
-          px: pageX,
-          py: pageY,
-          formatType: 'dynamicWidth',
+
+      const list: ListItemType[] = [];
+
+      if (isGroupChat && !isHideReply)
+        list.push({
+          title: 'Reply',
+          iconName: 'chat-reply',
+          onPress: async () => {
+            dispatch(
+              setReplyMessageInfo({
+                message: currentMessage,
+                messageType: 'img',
+              }),
+            );
+          },
         });
+
+      if (isGroupChat && isAdmin)
+        list.push({
+          title: currentMessage?.pinInfo ? 'Unpin' : 'Pin',
+          iconName: currentMessage?.pinInfo ? 'chat-unpin' : 'chat-pin',
+          onPress: async () => {
+            if (!currentMessage) return;
+
+            // unPin in messageList page
+            if (currentMessage?.pinInfo && !isHidePinStyle)
+              return ActionSheet.alert({
+                title: 'Would you like to unpin this message?',
+                buttons: [
+                  {
+                    title: 'Cancel',
+                    type: 'outline',
+                  },
+                  {
+                    title: 'Unpin',
+                    type: 'primary',
+                    onPress: async () => {
+                      try {
+                        await unPin(currentMessage);
+                      } catch (error) {
+                        CommonToast.failError(error);
+                      }
+                    },
+                  },
+                ],
+              });
+
+            // unPin & pin
+            try {
+              if (currentMessage?.pinInfo) {
+                // in overlay and just 1 pin message
+                if (pinList?.length === 1 && isHidePinStyle) OverlayModal.hide();
+                await unPin(currentMessage);
+              } else {
+                await pin(currentMessage);
+              }
+            } catch (err) {
+              CommonToast.failError(err);
+            }
+          },
+        });
+
+      if (position === 'right')
+        list.push({
+          title: 'Delete',
+          iconName: 'chat-delete',
+          onPress: async () => {
+            try {
+              if (!currentMessage) return;
+              await deleteMessage(currentMessage);
+            } catch (error) {
+              CommonToast.fail('Failed to delete message');
+            }
+          },
+        });
+
+      list.length && ChatOverlay.showChatPopover({ list, px: pageX, py: pageY, formatType: 'dynamicWidth' });
     },
-    [currentMessage?.id, deleteMessage, position],
+    [
+      currentMessage,
+      deleteMessage,
+      dispatch,
+      isAdmin,
+      isGroupChat,
+      isHidePinStyle,
+      isHideReply,
+      pin,
+      pinList?.length,
+      position,
+      unPin,
+    ],
   );
 
   return (
     <Touchable onPress={onPreviewImage} onLongPress={onShowChatPopover}>
       {loadError ? errorImg : img}
       {!loadError && (
-        <Time
-          timeFormat="HH:mm"
-          timeTextStyle={timeTextStyle}
-          containerStyle={timeContainerStyle}
-          currentMessage={currentMessage}
-        />
+        <View style={styles.timeBoxStyle}>
+          {isPinned && <Svg icon="pin-message" size={pTd(12)} iconStyle={styles.iconStyle} />}
+          <Time
+            timeFormat="HH:mm"
+            timeTextStyle={timeTextStyle}
+            containerStyle={timeInnerWrapStyle}
+            currentMessage={currentMessage}
+          />
+        </View>
       )}
     </Touchable>
   );
@@ -135,9 +226,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: pTd(8),
     borderRadius: pTd(8),
     opacity: 0.8,
-    bottom: 0,
-    right: -pTd(4),
+    bottom: pTd(8),
+    right: pTd(8),
     height: pTd(16),
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconStyle: {
+    marginRight: pTd(4),
+  },
+  timeInnerWrap: {
+    margin: 0,
+    marginLeft: 0,
+    marginRight: 0,
   },
   timeTextStyle: {
     color: defaultColors.font2,
@@ -146,9 +248,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const timeContainerStyle = {
-  left: styles.timeBoxStyle,
-  right: styles.timeBoxStyle,
+const timeInnerWrapStyle = {
+  left: styles.timeInnerWrap,
+  right: styles.timeInnerWrap,
 };
 
 const timeTextStyle = {

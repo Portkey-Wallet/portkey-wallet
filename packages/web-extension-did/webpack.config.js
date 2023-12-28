@@ -19,7 +19,6 @@ let config = {
   // When mode is production or not defined, minimize is enabled. This option automatically adds Uglify plugin.
   // production will remove the 'dead code'. Look at Tree Shaking
   // mode: 'none',
-  devtool: 'source-map',
   // mode: 'development',
   entry: {
     // wallet: './app/web/js/index.jsx',
@@ -160,8 +159,13 @@ let config = {
           toType: 'file',
         },
         {
-          from: './app/web/assets',
-          to: `./${outputDir}/assets`,
+          from: './app/web/assets/fonts',
+          to: `./${outputDir}/assets/fonts`,
+          toType: 'dir',
+        },
+        {
+          from: './app/web/assets/images',
+          to: `./${outputDir}/assets/images`,
           toType: 'dir',
         },
         {
@@ -221,6 +225,7 @@ module.exports = (env, argv) => {
   );
 
   if (argv.mode === 'production') {
+
     config.plugins.push(
       new TerserPlugin({
         //   cache: true,
@@ -246,6 +251,8 @@ module.exports = (env, argv) => {
         },
       }),
     );
+  } else {
+    config.devtool = 'source-map'
   }
 
   return config;

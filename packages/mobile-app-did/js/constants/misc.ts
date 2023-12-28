@@ -6,6 +6,7 @@ export const LoginGuardianTypeIcon: any = {
   [LoginType.Phone]: 'phone',
   [LoginType.Google]: 'google-icon',
   [LoginType.Apple]: 'apple-icon',
+  [LoginType.Telegram]: 'telegram-icon',
 };
 
 export const LOGIN_TYPE_LIST = [
@@ -28,5 +29,10 @@ export const LOGIN_TYPE_LIST = [
     value: LoginType.Apple,
     name: LOGIN_TYPE_LABEL_MAP[LoginType.Apple],
     icon: LoginGuardianTypeIcon[LoginType.Apple],
+  },
+  {
+    value: LoginType.Telegram,
+    name: LOGIN_TYPE_LABEL_MAP[LoginType.Telegram],
+    icon: LoginGuardianTypeIcon[LoginType.Telegram],
   },
 ];

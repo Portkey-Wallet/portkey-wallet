@@ -5,7 +5,7 @@ import navigationService from 'utils/navigationService';
 import styles from '../styles';
 import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
-import { TextL } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import qrCode from 'assets/image/pngs/QR-code.png';
@@ -123,7 +123,7 @@ export default function Referral({
           onPress={isIOS ? onAppleSign : onGoogleSign}
           title={TitleMap[type][isIOS ? 'apple' : 'google']}
           icon={<Svg icon={isIOS ? 'apple' : 'google'} size={pTd(20)} />}
-          containerStyle={pageStyles.outlineContainerStyle}
+          containerStyle={[pageStyles.outlineContainerStyle, pageStyles.firstBtn]}
           titleStyle={[FontStyles.font3, fonts.mediumFont, pageStyles.outlineTitleStyle]}
         />
         <CommonButton
@@ -147,9 +147,9 @@ export default function Referral({
           <Touchable
             style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flexCenter, styles.signUpTip]}
             onPress={() => navigationService.navigate('SignupPortkey')}>
-            <TextL style={FontStyles.font3}>
+            <TextM style={FontStyles.font3}>
               No account? <Text style={FontStyles.font4}>Sign up </Text>
-            </TextL>
+            </TextM>
             <Svg size={pTd(20)} color={FontStyles.font4.color} icon="right-arrow2" />
           </Touchable>
         )}
@@ -162,7 +162,7 @@ export default function Referral({
 
 const pageStyles = StyleSheet.create({
   outlineContainerStyle: {
-    marginTop: 20,
+    marginTop: pTd(16),
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: defaultColors.border1,
   },
@@ -174,5 +174,8 @@ const pageStyles = StyleSheet.create({
   },
   blank: {
     width: pTd(24),
+  },
+  firstBtn: {
+    marginTop: pTd(40),
   },
 });

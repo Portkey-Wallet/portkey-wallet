@@ -10,6 +10,7 @@ import Svg from 'components/Svg';
 import { showPinnedListOverlay } from '../PinnedListOverlay';
 import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
 import { ParsedImage } from '@portkey-wallet/im';
+import fonts from 'assets/theme/fonts';
 
 export type HeaderPinSection = {
   channelUUid: string;
@@ -37,10 +38,10 @@ export default function HeaderPinSection(props: HeaderPinSection) {
       <View style={styles.leftBlue} />
       {isImg && <Image style={styles.img} resizeMode="cover" source={{ uri: url }} />}
       <View style={GStyles.flex1}>
-        <TextM numberOfLines={1} style={[FontStyles.font5, GStyles.flex1]}>
+        <TextM numberOfLines={1} style={[fonts.mediumFont, FontStyles.font4, GStyles.flex1]}>
           {`Pinned Message ${list.length}`}
         </TextM>
-        <TextM numberOfLines={1} style={[FontStyles.font3, GStyles.flex1]}>
+        <TextM numberOfLines={1} style={[FontStyles.font5, GStyles.flex1]}>
           {isImg ? 'Photo' : lastPinMessage?.content}
         </TextM>
       </View>
@@ -57,6 +58,10 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg1,
     borderBottomColor: defaultColors.border6,
     borderBottomWidth: StyleSheet.hairlineWidth,
+    shadowColor: defaultColors.shadow1,
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 2,
   },
   leftBlue: {
     width: pTd(3),

@@ -12,8 +12,10 @@ import { formatPinSysMessageToStr } from '@portkey-wallet/utils/chat';
 function SystemInfo(props: SystemMessageProps<ChatMessage> & { previousMessage?: ChatMessage }) {
   const { previousMessage, currentMessage } = props;
 
-  const isMarginTop6 = useMemo(() => {
+  const isMarginTop4 = useMemo(() => {
     if (previousMessage?.messageType === currentMessage?.messageType) return true;
+
+    return false;
   }, [currentMessage, previousMessage]);
 
   const pinInfo = useMemo<ParsedPinSys>(
@@ -24,10 +26,10 @@ function SystemInfo(props: SystemMessageProps<ChatMessage> & { previousMessage?:
   const pinMessageContent = useMemo(() => formatPinSysMessageToStr(pinInfo), [pinInfo]);
 
   if (currentMessage?.messageType === 'PIN-SYS')
-    return <TextS style={[styles.textStyles, isMarginTop6 && GStyles.marginTop(pTd(6))]}>{pinMessageContent}</TextS>;
+    return <TextS style={[styles.textStyles, isMarginTop4 && GStyles.marginTop(pTd(4))]}>{pinMessageContent}</TextS>;
 
   return (
-    <TextS style={[styles.textStyles, isMarginTop6 && GStyles.marginTop(pTd(6))]}>{currentMessage?.content}</TextS>
+    <TextS style={[styles.textStyles, isMarginTop4 && GStyles.marginTop(pTd(4))]}>{currentMessage?.content}</TextS>
   );
 }
 
@@ -37,7 +39,7 @@ const styles = StyleSheet.create({
   textStyles: {
     textAlign: 'center',
     color: defaultColors.font7,
-    marginTop: pTd(6),
+    marginTop: pTd(12),
     marginBottom: 0,
     paddingHorizontal: pTd(12),
     lineHeight: pTd(16),

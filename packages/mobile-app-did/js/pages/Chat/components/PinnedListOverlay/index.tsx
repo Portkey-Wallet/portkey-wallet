@@ -30,7 +30,7 @@ import GStyles from 'assets/theme/GStyles';
 import { ChatMessage } from 'pages/Chat/types';
 import { FontStyles } from 'assets/theme/styles';
 import ChatMessageContainer from '../Message';
-import { formatMessageList } from 'pages/Chat/utils/format';
+import { formatMessageList, getUnit } from 'pages/Chat/utils/format';
 import SystemTime from '../SystemTime';
 import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
@@ -44,6 +44,7 @@ import CustomChatAvatar from '../CustomChatAvatar';
 import { TextL } from 'components/CommonText';
 import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
 import CommonToast from 'components/CommonToast';
+import myEvents from 'utils/deviceEvent';
 
 const ListViewProps = {
   initialNumToRender: 20,
@@ -161,12 +162,23 @@ function PinnedListOverlay() {
   return (
     <View style={[gStyles.overlayStyle, styles.wrap]}>
       <View style={[GStyles.flexCenter, styles.header]}>
-        <Text style={styles.headerTitle}>{`${list?.length} pinned messages`}</Text>
+        <Text style={styles.headerTitle}>{`${list?.length} pinned ${getUnit(
+          list?.length,
+          'message',
+          'messages',
+        )}`}</Text>
         <Touchable style={styles.closeWrap} onPress={() => OverlayModal.hide()}>
           <Svg icon="close1" size={pTd(12.5)} />
         </Touchable>
       </View>
-      <Touchable disabled={disabledTouchable} activeOpacity={1} onPress={onDismiss} style={GStyles.flex1}>
+      <Touchable
+        disabled={disabledTouchable}
+        activeOpacity={1}
+        onPress={onDismiss}
+        style={GStyles.flex1}
+        onLayout={e => {
+          myEvents.nestScrollViewLayout.emit(e.nativeEvent.layout);
+        }}>
         {initializing ? (
           <ActivityIndicator size={'small'} color={FontStyles.font4.color} />
         ) : (
@@ -255,7 +267,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: defaultColors.bg6,
-    borderTopWidth: pTd(0.5),
+    borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: defaultColors.border6,
   },
 });

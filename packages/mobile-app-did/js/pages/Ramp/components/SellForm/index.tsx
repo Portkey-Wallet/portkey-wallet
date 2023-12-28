@@ -276,22 +276,6 @@ export default function SellForm() {
       }
       const isRefreshReceiveValidValue = isRefreshReceiveValid.current;
 
-      const caContract = await getCurrentCAContract();
-      const checkTransferLimitResult = await checkTransferLimitWithJump(
-        {
-          caContract,
-          symbol,
-          decimals,
-          amount,
-        },
-        chainId,
-      );
-
-      if (!checkTransferLimitResult) {
-        Loading.hide();
-        return;
-      }
-
       const account = getManagerAccount(pin);
       if (!account) return;
 
@@ -303,15 +287,45 @@ export default function SellForm() {
 
       const balance = await getELFChainBalance(tokenContract, symbol, wallet?.[chainId]?.caAddress || '');
 
-      if (divDecimals(balance, decimals).minus(achFee).isLessThan(amount)) {
-        throw new Error('Insufficient funds');
-      }
-
       if (isRefreshReceiveValidValue === false) {
         const rst = await refreshReceiveRef.current();
         if (!rst) return;
         _rate = rst.rate;
       }
+
+      const navigateParams = {
+        amount,
+        fiat,
+        token,
+        type: RampType.SELL,
+        receiveAmount: _receiveAmount,
+        rate: _rate,
+      };
+
+      const caContract = await getCurrentCAContract();
+      const checkTransferLimitResult = await checkTransferLimitWithJump({
+        caContract,
+        symbol,
+        decimals,
+        amount,
+        chainId,
+        balance,
+        approveMultiLevelParams: {
+          successNavigate: {
+            name: 'BuyPreview',
+            params: navigateParams,
+          },
+        },
+      });
+      if (!checkTransferLimitResult) {
+        Loading.hide();
+        return;
+      }
+
+      if (divDecimals(balance, decimals).minus(achFee).isLessThan(amount)) {
+        throw new Error('Insufficient funds');
+      }
+      navigationService.navigate('BuyPreview', navigateParams);
     } catch (error) {
       setAmountLocalError({ ...INIT_HAS_ERROR, errorMsg: 'Insufficient funds' });
       console.log('error', error);

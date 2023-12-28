@@ -1,14 +1,15 @@
 import React, { useMemo } from 'react';
 import clsx from 'clsx';
-import { IRedPacketMessageProps } from '../type';
+import { IMessage } from '../type';
 import { formatTime } from '../utils';
 import { RedPacketTextByMine, RedPacketTextByOthers } from '../constants';
 import './index.less';
 
-const RedPacketMessage: React.FC<IRedPacketMessageProps> = (props) => {
+const RedPacketMessage: React.FC<IMessage> = (props) => {
+  const { createAt } = props;
   const showDate = useMemo(
-    () => (props.dateString ? props.dateString : formatTime(props.date as any)),
-    [props.date, props.dateString],
+    () => (props.dateString ? props.dateString : formatTime(createAt)),
+    [createAt, props.dateString],
   );
   const renderContainer = useMemo(() => {
     const redPacketText = props.position === 'right' ? RedPacketTextByMine : RedPacketTextByOthers;

@@ -13,6 +13,7 @@ import AElf from 'aelf-sdk';
 import SparkMD5 from 'spark-md5';
 import ramp, { IGenerateTransactionResult, IOrderInfo } from '@portkey-wallet/ramp';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
+import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
 
 export const useHandleRampSell = () => {
   const { accountToken } = useAssets();
@@ -25,7 +26,7 @@ export const useHandleRampSell = () => {
   const wallet = useCurrentWalletInfo();
 
   const paymentSellTransfer = useCallback(
-    async (orderInfo: IOrderInfo): Promise<IGenerateTransactionResult> => {
+    async (orderInfo: IOrderInfo, guardiansApproved?: GuardiansApprovedType[]): Promise<IGenerateTransactionResult> => {
       const { address, cryptoAmount, orderId } = orderInfo;
       const { caContractAddress, endPoint } = chainInfo || {};
       const { caHash } = wallet;
@@ -54,6 +55,7 @@ export const useHandleRampSell = () => {
           amount,
           memo: '',
         },
+        guardiansApproved,
       });
       if (!rawResult || !rawResult.data) {
         throw new Error('Failed to get raw transaction.');
@@ -73,11 +75,11 @@ export const useHandleRampSell = () => {
   );
 
   return useCallback(
-    async (orderId: string) => {
+    async (orderId: string, guardiansApproved?: GuardiansApprovedType[]) => {
       console.log('sell Transfer, Start', Date.now());
       try {
         Loading.show({ text: 'Payment is being processed and may take around 10 seconds to complete.' });
-        await ramp.transferCrypto(orderId, paymentSellTransfer);
+        await ramp.transferCrypto(orderId, paymentSellTransfer, guardiansApproved);
 
         CommonToast.success('Transaction completed.');
       } catch (error: any) {

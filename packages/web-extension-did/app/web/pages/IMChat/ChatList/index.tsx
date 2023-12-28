@@ -14,16 +14,14 @@ import {
 } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
 import { formatChatListTime } from '@portkey-wallet/utils/chat';
-import { MessageTypeWeb } from 'types/im';
-import { ChannelItem, ParsedRedPackage } from '@portkey-wallet/im';
-import './index.less';
 import { useHandleClickChatItem } from 'hooks/im';
-import { PIN_LIMIT_EXCEED, UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
+import { PIN_LIMIT_EXCEED } from '@portkey-wallet/constants/constants-ca/chat';
 import { useWalletInfo } from 'store/Provider/hooks';
-import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
 import { setBadge } from 'utils/FCM';
 import { AppStatusUnit } from '@portkey-wallet/socket/socket-fcm/types';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
+import { formatChatListSubTitle } from '../utils';
+import './index.less';
 
 export default function ChatList() {
   const navigate = useNavigate();
@@ -39,33 +37,6 @@ export default function ChatList() {
   } = useChannelList();
   const unreadCount = useUnreadCount();
   const { userInfo } = useWalletInfo();
-  const formatSubTitle = useCallback((item: ChannelItem) => {
-    const _type = MessageTypeWeb[item.lastMessageType ?? ''];
-    let subTitle = UN_SUPPORTED_FORMAT;
-    if (_type === MessageTypeWeb.IMAGE) {
-      subTitle = '[Image]';
-    } else if (_type === MessageTypeWeb.TEXT) {
-      subTitle = `${item.lastMessageContent}`;
-    } else if (_type === MessageTypeWeb.SYS) {
-      subTitle = `${item.lastMessageContent}`;
-    } else if (_type === MessageTypeWeb['REDPACKAGE-CARD']) {
-      const redPackage = (item.lastMessageContent as ParsedRedPackage).data;
-      subTitle = `${redPackage?.memo || RED_PACKAGE_DEFAULT_MEMO}`;
-    }
-    return subTitle;
-  }, []);
-  const formatIsOwner = useCallback(
-    (item: ChannelItem) => {
-      const _type = MessageTypeWeb[item.lastMessageType ?? ''];
-      let isOwner = false;
-      if (_type === MessageTypeWeb['REDPACKAGE-CARD']) {
-        const senderId = (item.lastMessageContent as ParsedRedPackage).data?.senderId;
-        isOwner = senderId === userInfo?.userId;
-      }
-      return isOwner;
-    },
-    [userInfo?.userId],
-  );
   const popList = useMemo(
     () => [
       {
@@ -118,7 +89,7 @@ export default function ChatList() {
         id: item.channelUuid,
         letter: item.displayName.substring(0, 1).toUpperCase(),
         title: item.displayName,
-        subtitle: formatSubTitle(item),
+        subtitle: formatChatListSubTitle(item),
         dateString: formatChatListTime(item.lastPostAt),
         muted: item.mute,
         pin: item.pin,
@@ -126,11 +97,12 @@ export default function ChatList() {
         channelType: item?.channelType,
         status: item.status,
         avatar: item.channelIcon,
-        isOwner: formatIsOwner(item),
-        lastMessageType: MessageTypeWeb[item.lastMessageType ?? ''],
+        myPortkeyId: userInfo?.userId,
+        lastMessageType: item.lastMessageType || 'TEXT',
+        lastMessageContent: item.lastMessageContent,
       };
     });
-  }, [chatList, formatSubTitle, formatIsOwner]);
+  }, [chatList, userInfo?.userId]);
 
   const handleClickChatItem = useHandleClickChatItem();
 

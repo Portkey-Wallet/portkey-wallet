@@ -23,6 +23,10 @@ export enum VerificationType {
   deleteGuardian,
   managerApprove,
   modifyTransferLimit,
+  transferApprove,
+  setLoginAccountByApprove,
+  unsetLoginAccount,
+  unsetLoginAccountByApprove,
 }
 
 export enum ApprovalType {
@@ -33,6 +37,9 @@ export enum ApprovalType {
   removeOtherManager,
   managerApprove,
   modifyTransferLimit,
+  transferApprove,
+  setLoginAccount,
+  unsetLoginAccount,
 }
 
 // Indicates the type of operation to generate a signature file
@@ -47,6 +54,8 @@ export enum OperationTypeEnum {
   setLoginAccount = 7,
   managerApprove = 8,
   modifyTransferLimit = 9,
+  transferApprove = 10,
+  unsetLoginAccount = 11,
 }
 
 export interface VerifierInfo {

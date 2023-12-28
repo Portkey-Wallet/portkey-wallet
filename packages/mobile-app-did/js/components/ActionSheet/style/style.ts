@@ -43,6 +43,10 @@ export const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: pTd(24),
   },
+  alertBoxWithClose: {
+    paddingTop: pTd(32),
+    paddingBottom: pTd(16),
+  },
   alertTitle: {
     textAlign: 'center',
     marginBottom: pTd(16),
@@ -56,5 +60,14 @@ export const styles = StyleSheet.create({
     color: defaultColors.font5,
     marginBottom: pTd(12),
     textAlign: 'center',
+  },
+  closeWrap: {
+    width: pTd(20),
+    height: pTd(20),
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    right: pTd(12),
+    top: pTd(12),
   },
 });

@@ -27,7 +27,6 @@ interface AmountTokenProps {
   setSendTokenNumber: any;
   selectedAccount: any;
   selectedToken: IToSendAssetParamsType;
-  setSelectedToken: any;
 }
 
 export default function AmountToken({

@@ -11,6 +11,7 @@ import { useHandleRampSell } from './hooks/useHandleRampSell';
 import CommonToast from 'components/CommonToast';
 import Progressbar, { IProgressbar } from 'components/Progressbar';
 import { RAMP_BUY_URL, RAMP_SELL_URL } from 'constants/common';
+import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
 
 const safeAreaColorMap = {
   white: defaultColors.bg1,
@@ -25,6 +26,7 @@ type WebViewPageType = 'default' | 'ramp-buy' | 'ramp-sell';
 
 export interface RampSellParams {
   orderId?: string;
+  guardiansApproved?: GuardiansApprovedType[];
 }
 
 const ViewOnWebView: React.FC = () => {
@@ -68,12 +70,12 @@ const ViewOnWebView: React.FC = () => {
         if (navState.url.startsWith(RAMP_SELL_URL) && !isAchSellHandled.current) {
           isAchSellHandled.current = true;
           navigationService.navigate('Tab');
-          const { orderId } = (params as RampSellParams) || {};
+          const { orderId, guardiansApproved } = (params as RampSellParams) || {};
           if (!orderId) {
             CommonToast.failError('Transaction failed.');
             return;
           }
-          handleRampSell(orderId);
+          handleRampSell(orderId, guardiansApproved);
         }
       }
     },

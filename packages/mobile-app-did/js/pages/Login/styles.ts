@@ -1,4 +1,4 @@
-import { screenHeight, screenWidth, windowHeight, windowWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenHeight, screenWidth, windowHeight } from '@portkey-wallet/utils/mobile/device';
 import { StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 
@@ -45,12 +45,17 @@ const styles = StyleSheet.create({
     height: 60,
   },
   signUpTip: {
-    position: 'absolute',
-    bottom: 80,
+    marginTop: pTd(40),
   },
   termsServiceTip: {
     position: 'absolute',
     bottom: 24,
+    textAlign: 'center',
+  },
+  textWrap: {
+    width: '100%',
+    textAlign: 'center',
+    lineHeight: pTd(16),
   },
   qrCodeTitle: {
     marginTop: 18,

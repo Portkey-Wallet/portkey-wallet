@@ -1,4 +1,5 @@
-import { ChannelTypeEnum } from '@portkey-wallet/im/types';
+import { ChannelMemberInfo, ChannelTypeEnum, MessageType } from '@portkey-wallet/im/types';
+import { isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { IconName } from 'components/Svg';
 import { TextInputScrollEventData, TextInputSelectionChangeEventData } from 'react-native';
 
@@ -105,6 +106,35 @@ function getChatListSvgName(channelType?: ChannelTypeEnum): IconName | undefined
   return 'chat-unsupported-channel';
 }
 
+function isCommonView(type?: MessageType | 'NOT_SUPPORTED'): boolean {
+  if (type === 'REDPACKAGE-CARD' || type === 'TRANSFER-CARD') return true;
+  return false;
+}
+
+export const isTargetMember = (item: ChannelMemberInfo, keyword: string): boolean => {
+  // name
+  if (item?.name?.toLocaleLowerCase()?.trim()?.includes(keyword?.toLocaleLowerCase()?.trim())) return true;
+
+  // portkeyId
+  if (item?.userId?.trim() === keyword?.trim()) return true;
+
+  // addresses
+  const addressesList = item?.addresses || [];
+  if (
+    addressesList.some(i => {
+      if (keyword?.includes('_')) {
+        const arr = keyword?.split('_');
+        const _address = arr.find(_i => isAelfAddress(_i));
+        if (_address) keyword = _address;
+      }
+      return i?.address === keyword;
+    }, [])
+  )
+    return true;
+
+  return false;
+};
+
 export {
   chatInputRecorder,
   initChatInputRecorder,
@@ -112,4 +142,5 @@ export {
   handleInputText,
   handleDeleteText,
   getChatListSvgName,
+  isCommonView,
 };

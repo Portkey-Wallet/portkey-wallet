@@ -1,8 +1,12 @@
 @import '../../../assets/theme/color.less';
 .guardians-popup {
-  .guardians-title {
+  .guardians-body {
     padding-top: 16px;
     background-color: @bg-13;
+    overflow-y: auto;
+  }
+  .guardians-content {
+    overflow: scroll;
   }
   .title-right-col {
     & > div {

@@ -52,7 +52,7 @@ type ImageSizeType = {
   isSvg: boolean;
 };
 
-const ProviderImageHeight = pTd(20);
+const ProviderImageHeight = pTd(24);
 const ProviderSvgWidth = pTd(120);
 
 const renderProviderCard = (

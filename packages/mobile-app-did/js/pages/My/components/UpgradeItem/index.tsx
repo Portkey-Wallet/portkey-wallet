@@ -1,61 +1,63 @@
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
-import CommonAvatar from 'components/CommonAvatar';
-import { CommonInputProps } from 'components/CommonInput';
 import { TextM, TextS } from 'components/CommonText';
 import Touchable from 'components/Touchable';
 import React, { memo } from 'react';
-import { ImageBackground, StyleSheet, View } from 'react-native';
-import upGrade_Background from 'assets/images/upgrade_background.png';
+import { ImageBackground, StyleSheet, View, Image } from 'react-native';
+import upGradeBackground from 'assets/image/pngs/upGradeBackground.png';
+import upGrade from 'assets/image/pngs/upGrade.png';
 import { pTd } from 'utils/unit';
-import { useUploadWarning } from 'hooks/useUloadWarning';
+import { useUploadWarning } from 'hooks/useUploadWarning';
+import { FontStyles } from 'assets/theme/styles';
 
-const WalletMenuItem: React.FC<CommonInputProps> = () => {
+const UpgradeItem: React.FC = () => {
   const { showUploadWaring } = useUploadWarning();
 
   return (
-    <ImageBackground source={upGrade_Background} style={[GStyles.flexRow, GStyles.center, styles.itemWrap]}>
-      <CommonAvatar />
-      <View>
-        <TextM>Portkey Upgraded</TextM>
-
-        <TextS>With enhanced user experience! </TextS>
+    <ImageBackground
+      source={upGradeBackground}
+      resizeMode="stretch"
+      style={[GStyles.flexRow, GStyles.center, styles.itemWrap]}>
+      <Image source={upGrade} style={styles.img} />
+      <View style={GStyles.flex1}>
+        <TextM style={FontStyles.font5}>Portkey Upgraded</TextM>
+        <TextM style={styles.blank} />
+        <TextS style={FontStyles.font3}>With enhanced user experience! </TextS>
       </View>
-
-      <Touchable onPress={() => showUploadWaring()}>
-        <TextS>Upgrade</TextS>
+      <Touchable
+        onPress={() => showUploadWaring('dashBoard')}
+        style={[GStyles.flexCenter, GStyles.itemCenter, styles.btn]}>
+        <TextS style={FontStyles.font11}>Upgrade</TextS>
       </Touchable>
     </ImageBackground>
   );
 };
 
-export default memo(WalletMenuItem);
+export default memo(UpgradeItem);
 
 const styles = StyleSheet.create({
   itemWrap: {
-    height: pTd(108),
-    paddingHorizontal: pTd(16),
-    marginBottom: pTd(24),
-    backgroundColor: defaultColors.bg1,
+    marginHorizontal: pTd(20),
+    paddingHorizontal: pTd(12),
+    paddingVertical: pTd(10),
     borderRadius: pTd(6),
+    overflow: 'hidden',
   },
-  avatar: {
-    fontSize: pTd(24),
-    backgroundColor: defaultColors.bg18,
-  },
-  centerSection: {
-    paddingHorizontal: pTd(16),
-  },
-  nickName: {
-    ...fonts.mediumFont,
-  },
-  portkeyId: {
-    width: pTd(200),
-    color: defaultColors.font3,
+  img: {
+    width: pTd(52),
+    height: pTd(52),
+    marginRight: pTd(8.5),
+    marginLeft: 0,
   },
   blank: {
-    width: '100%',
     height: pTd(4),
+  },
+  btn: {
+    width: pTd(70),
+    height: pTd(24),
+    backgroundColor: defaultColors.bg5,
+    borderRadius: pTd(6),
+    overflow: 'hidden',
   },
 });

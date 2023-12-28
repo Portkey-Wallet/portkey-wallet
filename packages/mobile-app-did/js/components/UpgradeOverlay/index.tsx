@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { TextTitle, TextM } from 'components/CommonText';
 import { View, Image } from 'react-native';
@@ -10,25 +10,42 @@ import CommonButton from 'components/CommonButton';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 
 export type ShowUpgradeOverlayPropsType = {
+  type?: 'dashBoard' | 'chat';
   onDownLoad: () => void;
   onNotNow: () => void;
 };
 
 function UpgradeOverlay(props: ShowUpgradeOverlayPropsType) {
-  const { onDownLoad, onNotNow } = props;
+  const { type = 'dashBoard', onDownLoad, onNotNow } = props;
+
+  const content = useMemo(() => {
+    if (type === 'dashBoard') {
+      return (
+        <>
+          <TextM style={styles.textStyle}>
+            {`• Portkey unveiled a fully upgraded version with exciting features like keeping user addresses identical on MainChain and SideChains. We warmly invite you to download it for an enhanced experience.`}
+          </TextM>
+          <View style={styles.blank} />
+          <TextM style={styles.textStyle}>
+            {`• If you choose to stick with the current Portkey, rest assured that your accounts and assets will stay safe, yet the services won't receive any further upgrades.`}
+          </TextM>
+        </>
+      );
+    }
+
+    return (
+      <TextM style={styles.textStyle}>
+        {`Portkey unveiled a fully upgraded version with exciting features. The current Portkey will no longer support the chat function, if you want to continue to use this function, please download the upgraded version.`}
+      </TextM>
+    );
+  }, [type]);
 
   return (
     <View style={styles.alertBox}>
       <Image source={upGradeApp} style={styles.imageWrap} />
       <View style={styles.contentWrap}>
         <TextTitle style={styles.titleStyle}>Portkey Upgraded</TextTitle>
-        <TextM style={styles.textStyle}>
-          {`• Portkey unveiled a fully upgraded version with exciting features like keeping user addresses identical on MainChain and SideChains. We warmly invite you to download it for an enhanced experience.`}
-        </TextM>
-        <View style={styles.blank} />
-        <TextM style={styles.textStyle}>
-          {`• If you choose to stick with the current Portkey, rest assured that your accounts and assets will stay safe, yet the services won't receive any further upgrades.`}
-        </TextM>
+        {content}
         <View style={styles.btnWrap}>
           <CommonButton title="Download" type="primary" onPress={onDownLoad} />
           <CommonButton

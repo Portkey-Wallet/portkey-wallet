@@ -10,8 +10,7 @@ import { RootStackName } from 'navigation';
 import { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
-import CommonButton from 'components/CommonButton';
-import { useUploadWarning } from 'hooks/uploadWarning';
+import UpgradeItem from './components/UpgradeItem';
 
 interface MenuItemType {
   name: RootStackName;
@@ -48,7 +47,6 @@ const MenuList: Array<MenuItemType> = [
 ];
 
 export default function MyMenu() {
-  const { showUploadWaring } = useUploadWarning();
   const { t } = useLanguage();
   const isImputation = useIsImputation();
 
@@ -58,25 +56,22 @@ export default function MyMenu() {
       titleDom={t('My')}
       safeAreaColor={['blue', 'white']}
       containerStyles={styles.container}>
-      <CommonButton
-        title={'V2 Launched'}
-        onPress={() => {
-          showUploadWaring();
-        }}
-      />
-      {MenuList.map(ele => {
-        return (
-          <MenuItem
-            showWarningCycle={ele.name === 'ContactsHome' && isImputation}
-            style={styles.menuItemWrap}
-            icon={ele?.icon || 'setting'}
-            title={t(ele.label)}
-            key={ele.name}
-            iconStyle={styles.MenuItemIconStyle}
-            onPress={() => navigationService.navigate(ele.name)}
-          />
-        );
-      })}
+      <>
+        <UpgradeItem />
+        {MenuList.map(ele => {
+          return (
+            <MenuItem
+              showWarningCycle={ele.name === 'ContactsHome' && isImputation}
+              style={styles.menuItemWrap}
+              icon={ele?.icon || 'setting'}
+              title={t(ele.label)}
+              key={ele.name}
+              iconStyle={styles.MenuItemIconStyle}
+              onPress={() => navigationService.navigate(ele.name)}
+            />
+          );
+        })}
+      </>
     </PageContainer>
   );
 }
@@ -85,7 +80,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: defaultColors.bg1,
-    paddingTop: pTd(9),
+    paddingTop: pTd(16),
     paddingHorizontal: 0,
   },
   menuItemWrap: {

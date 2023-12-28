@@ -6,6 +6,7 @@ import { showUpgradeOverlay } from 'components/UpgradeOverlay';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { ANDROID_DOWNLOAD_LINK_V2, IOS_DOWNLOAD_LINK_V2 } from '@portkey-wallet/constants/constants-ca/link';
 import { Linking } from 'react-native';
+import OverlayModal from 'components/OverlayModal';
 
 export const useUploadWarning = () => {
   const dispatch = useAppDispatch();
@@ -27,15 +28,20 @@ export const useUploadWarning = () => {
   const onDownLoad = useCallback(() => {
     setHasShowUploadV2WaringModalState(true);
     Linking.openURL(isIOS ? IOS_DOWNLOAD_LINK_V2 : ANDROID_DOWNLOAD_LINK_V2);
+    OverlayModal.hide();
   }, [setHasShowUploadV2WaringModalState]);
 
   const onNotNow = useCallback(() => {
     setHasShowUploadV2WaringModalState(true);
+    OverlayModal.hide();
   }, [setHasShowUploadV2WaringModalState]);
 
-  const showUploadWaring = useCallback(() => {
-    showUpgradeOverlay({ onDownLoad, onNotNow });
-  }, [onDownLoad, onNotNow]);
+  const showUploadWaring = useCallback(
+    (type: 'dashBoard' | 'chat') => {
+      showUpgradeOverlay({ type, onDownLoad, onNotNow });
+    },
+    [onDownLoad, onNotNow],
+  );
 
   return { setHasShowUploadV2WaringModalState, shouldShowUploadWarning, showUploadWaring };
 };

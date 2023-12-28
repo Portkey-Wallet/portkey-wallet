@@ -52,6 +52,12 @@ export interface CmsWebsiteMapItem {
     filename_disk?: string;
   };
 }
+export interface ServiceSuspensionItem {
+  androidUrl: string;
+  extensionUrl: string;
+  iOSUrl: string;
+  isSuspended: boolean;
+}
 
 export interface CMSState {
   socialMediaListNetMap: {
@@ -71,5 +77,8 @@ export interface CMSState {
   };
   entranceNetMap?: {
     [T in NetworkType]?: Partial<IEntrance>;
+  };
+  serviceSuspensionMap?: {
+    [T in NetworkType]?: ServiceSuspensionItem;
   };
 }

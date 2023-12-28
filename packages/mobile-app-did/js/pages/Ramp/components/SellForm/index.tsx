@@ -259,7 +259,6 @@ export default function SellForm() {
     }
 
     try {
-      Loading.show();
       const _isManagerSynced = await checkManagerSyncState(chainId);
       if (!_isManagerSynced) {
         setAmountLocalError({
@@ -287,6 +286,10 @@ export default function SellForm() {
 
       const balance = await getELFChainBalance(tokenContract, symbol, wallet?.[chainId]?.caAddress || '');
 
+      if (divDecimals(balance, decimals).minus(achFee).isLessThan(amount)) {
+        throw new Error('Insufficient funds');
+      }
+
       if (isRefreshReceiveValidValue === false) {
         const rst = await refreshReceiveRef.current();
         if (!rst) return;
@@ -294,11 +297,10 @@ export default function SellForm() {
       }
 
       const navigateParams = {
-        amount,
-        fiat,
-        token,
         type: RampType.SELL,
-        receiveAmount: _receiveAmount,
+        crypto,
+        fiat,
+        amount,
         rate: _rate,
       };
 
@@ -312,7 +314,7 @@ export default function SellForm() {
         balance,
         approveMultiLevelParams: {
           successNavigate: {
-            name: 'BuyPreview',
+            name: 'RampPreview',
             params: navigateParams,
           },
         },
@@ -322,25 +324,13 @@ export default function SellForm() {
         return;
       }
 
-      if (divDecimals(balance, decimals).minus(achFee).isLessThan(amount)) {
-        throw new Error('Insufficient funds');
-      }
-      navigationService.navigate('BuyPreview', navigateParams);
+      navigationService.navigate('RampPreview', navigateParams);
     } catch (error) {
       setAmountLocalError({ ...INIT_HAS_ERROR, errorMsg: 'Insufficient funds' });
       console.log('error', error);
-      return;
     } finally {
       Loading.hide();
     }
-
-    navigationService.navigate('RampPreview', {
-      amount,
-      fiat,
-      crypto,
-      type: RampType.SELL,
-      rate: _rate,
-    });
   }, [
     amount,
     rate,

@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import PageContainer from 'components/PageContainer';
-import { useLanguage } from 'i18n/hooks';
 import GStyles from 'assets/theme/GStyles';
 import { TextM, TextS } from 'components/CommonText';
 import fonts from 'assets/theme/fonts';
@@ -37,6 +36,7 @@ import { RAMP_BUY_URL, RAMP_SELL_URL } from 'constants/common';
 import { checkIsSvgUrl } from 'utils';
 import { Image } from 'react-native';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
+import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
 
 interface RouterParams {
   type?: RampType;
@@ -44,6 +44,7 @@ interface RouterParams {
   fiat?: IRampFiatItem;
   amount?: string;
   rate?: string;
+  guardiansApproved?: GuardiansApprovedType[];
 }
 
 type ImageSizeType = {
@@ -104,9 +105,15 @@ const renderProviderCard = (
 };
 
 export default function RampPreview() {
-  const { type = RampType.BUY, crypto, fiat, amount, rate: rateProps } = useRouterParams<RouterParams>();
+  const {
+    type = RampType.BUY,
+    crypto,
+    fiat,
+    amount,
+    rate: rateProps,
+    guardiansApproved,
+  } = useRouterParams<RouterParams>();
 
-  const { t } = useLanguage();
   const defaultToken = useDefaultToken();
   const { providerPriceList, refreshReceive } = useReceive({
     type,
@@ -223,6 +230,7 @@ export default function RampPreview() {
             ? undefined
             : {
                 orderId,
+                guardiansApproved,
               },
       });
     } catch (error) {
@@ -235,6 +243,7 @@ export default function RampPreview() {
     crypto,
     currentProvider?.providerNetwork,
     fiat,
+    guardiansApproved,
     providerKey,
     refreshRampShow,
     type,
@@ -252,7 +261,7 @@ export default function RampPreview() {
   return (
     <PageContainer
       safeAreaColor={['blue', 'white']}
-      titleDom={`${t(isBuy ? 'Buy' : 'Sell')} ${defaultToken.symbol} `}
+      titleDom={`${isBuy ? 'Buy' : 'Sell'} ${defaultToken.symbol} `}
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View>

@@ -79,7 +79,7 @@ export const useHandleRampSell = () => {
       console.log('sell Transfer, Start', Date.now());
       try {
         Loading.show({ text: 'Payment is being processed and may take around 10 seconds to complete.' });
-        await ramp.transferCrypto(orderId, paymentSellTransfer, guardiansApproved);
+        await ramp.transferCrypto(orderId, orderInfo => paymentSellTransfer(orderInfo, guardiansApproved));
 
         CommonToast.success('Transaction completed.');
       } catch (error: any) {

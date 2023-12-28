@@ -19,7 +19,6 @@ import { useCreateGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im/channel
 import { sleep } from '@portkey-wallet/utils';
 import { useJumpToChatGroupDetails } from 'hooks/chat';
 import ImageWithUploadFunc, { ImageWithUploadFuncInstance } from 'components/ImageWithUploadFunc';
-import { isIOS } from '@rneui/base';
 
 const ChatGroupDetails = () => {
   const uploadRef = useRef<ImageWithUploadFuncInstance>(null);

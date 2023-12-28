@@ -2646,7 +2646,7 @@
     node-forge "^1.2.1"
     nullthrows "^1.1.1"
 
-"@expo/config-plugins@^5.0.1", "@expo/config-plugins@~5.0.0", "@expo/config-plugins@~5.0.1":
+"@expo/config-plugins@~5.0.0", "@expo/config-plugins@~5.0.1":
   version "5.0.1"
   resolved "https://registry.npmmirror.com/@expo/config-plugins/-/config-plugins-5.0.1.tgz#66bc8d15785bdcd3598e466344f8c0518390179d"
   integrity sha512-1OfnsOrfeSkB0VZfT01UjQ5Uq6p+yYbq8yNkj0e99K/6NLHpyvIxj+5tZIV0nQXgkOcqBIABL2uA7lwB8CkaBQ==
@@ -2788,6 +2788,23 @@
   version "0.3.20"
   resolved "https://registry.npmmirror.com/@expo/image-utils/-/image-utils-0.3.20.tgz#b8777a2ca18e331f084e62ee8e0f047a6fc52c16"
   integrity sha512-NgF/80XENyCS+amwC0P6uk1fauEtUq7gijD19jvl2xknJaADq8M2dMCRHwWMVOXosr2v46f3Z++G/NjmyOVS7A==
+  dependencies:
+    "@expo/spawn-async" "1.5.0"
+    chalk "^4.0.0"
+    fs-extra "9.0.0"
+    getenv "^1.0.0"
+    jimp-compact "0.16.1"
+    mime "^2.4.4"
+    node-fetch "^2.6.0"
+    parse-png "^2.1.0"
+    resolve-from "^5.0.0"
+    semver "7.3.2"
+    tempy "0.3.0"
+
+"@expo/image-utils@^0.3.18":
+  version "0.3.23"
+  resolved "https://registry.yarnpkg.com/@expo/image-utils/-/image-utils-0.3.23.tgz#f14fd7e1f5ff6f8e4911a41e27dd274470665c3f"
+  integrity sha512-nhUVvW0TrRE4jtWzHQl8TR4ox7kcmrc2I0itaeJGjxF5A54uk7avgA0wRt7jP1rdvqQo1Ke1lXyLYREdhN9tPw==
   dependencies:
     "@expo/spawn-async" "1.5.0"
     chalk "^4.0.0"
@@ -3925,6 +3942,11 @@
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/@iarna/toml/-/toml-2.2.5.tgz#b32366c89b43c6f8cefbdefac778b9c828e3ba8c"
   integrity sha512-trnsAYxU3xnS1gPHPyU961coFyLkh4gAD/0zQ5mymY4yOZ+CYvsPqUbOFSw0aDM4y0tV7tiFxL/1XfXPNC6IPg==
+
+"@ide/backoff@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@ide/backoff/-/backoff-1.0.0.tgz#466842c25bd4a4833e0642fab41ccff064010176"
+  integrity sha512-F0YfUDjvT+Mtt/R4xdl2X0EYCHMMiJqNLdxHD++jDT5ydEFIyqbCHh51Qx2E211dgZprPKhV7sHmnXKpLuvc5g==
 
 "@invertase/react-native-apple-authentication@^2.2.2":
   version "2.2.2"
@@ -5516,6 +5538,15 @@
     "@portkey/provider-types" "^1.1.0"
     aelf-sdk "^3.2.45-beta.0"
 
+"@portkey/chain@^1.1.1-alpha.1":
+  version "1.1.1-alpha.1"
+  resolved "https://registry.npmjs.org/@portkey/chain/-/chain-1.1.1-alpha.1.tgz#389b4a6c5971e69043e6d79eaeaf54b70c100bb4"
+  integrity sha512-VKrPz7oHM8QyzwOcpFz5jacWaBq7b8a2nM79zD83yvwr1XFtTti1qaMlkxC3hlcvfpaye5ZNYeXJhBudFKRX5g==
+  dependencies:
+    "@portkey/contracts" "^1.4.3"
+    "@portkey/provider-types" "^1.1.1-alpha.1"
+    aelf-sdk "^3.2.45-beta.0"
+
 "@portkey/contracts@^1.4.3":
   version "1.4.3"
   resolved "https://registry.yarnpkg.com/@portkey/contracts/-/contracts-1.4.3.tgz#c6ce40dc13e00766ae5a944cc804f44cf8edf260"
@@ -5583,13 +5614,13 @@
     aelf-sdk "3.2.45-beta.0"
     react "^18.2.0"
 
-"@portkey/extension-provider@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.npmjs.org/@portkey/extension-provider/-/extension-provider-1.1.0.tgz#63a0b82fee16ea12292fd59a50e5d83597220f8a"
-  integrity sha512-Mo1j0NmW9dOaYXZ1dzaNCb55XgHs2biRUK7QYcQvGD3oAirCNPbQyTi1PCpT4yZW37QzzWli8FOKg8voI0+Smw==
+"@portkey/extension-provider@1.1.1-alpha.1":
+  version "1.1.1-alpha.1"
+  resolved "https://registry.npmjs.org/@portkey/extension-provider/-/extension-provider-1.1.1-alpha.1.tgz#eab0a8dee4b1d512b7b402ba754520bb0028d6b9"
+  integrity sha512-n/379umZgDdaNqG9aIH10tybHcPxo66KeokgGOAf5l2qolPL+Dh4KgIyn2eceOgE7qTVh6pbjOTnKKVRHLMCgg==
   dependencies:
-    "@portkey/provider-types" "^1.1.0"
-    "@portkey/providers" "^1.1.0"
+    "@portkey/provider-types" "^1.1.1-alpha.1"
+    "@portkey/providers" "^1.1.1-alpha.1"
     "@types/elliptic" "^6.4.14"
     readable-stream "^4.4.0"
 
@@ -5637,6 +5668,14 @@
     "@portkey/types" "1.0.0-alpha.4"
     "@types/readable-stream" "^2.3.15"
 
+"@portkey/provider-types@1.1.1-alpha.1", "@portkey/provider-types@^1.1.1-alpha.1":
+  version "1.1.1-alpha.1"
+  resolved "https://registry.npmjs.org/@portkey/provider-types/-/provider-types-1.1.1-alpha.1.tgz#0dcfacf297129ce9692c0fcf4f4836b05877b164"
+  integrity sha512-9MMQSHU9Rq8iNJ4nkTvRgyZcZWoNZHrCQvcZY+2v9ZsZmjXC8Ua+csncKJzoApSKbhO9WIGZfkCKluF1V7TP5Q==
+  dependencies:
+    "@portkey/types" "^1.0.0-alpha.4"
+    "@types/readable-stream" "^2.3.15"
+
 "@portkey/provider-types@^1.0.1-alpha.0":
   version "1.0.1-alpha.0"
   resolved "https://registry.npmjs.org/@portkey/provider-types/-/provider-types-1.0.1-alpha.0.tgz#303b383ac7306d91923b6b88c6ec356935371b2e"
@@ -5652,7 +5691,14 @@
   dependencies:
     "@portkey/provider-types" "^1.1.0"
 
-"@portkey/providers@1.1.0", "@portkey/providers@^1.1.0":
+"@portkey/provider-utils@1.1.1-alpha.1", "@portkey/provider-utils@^1.1.1-alpha.1":
+  version "1.1.1-alpha.1"
+  resolved "https://registry.npmjs.org/@portkey/provider-utils/-/provider-utils-1.1.1-alpha.1.tgz#60f19f6201bf5d87c8983dd9e9900ecd16399fb8"
+  integrity sha512-2T3SGYx8KF8K18NTdkuit5uNBqE/fpCy22MRqPUdcSv+/XUkpwz6maHAuy+PORmQNMBHNjdt/wZ09oA8iGtK9g==
+  dependencies:
+    "@portkey/provider-types" "^1.1.1-alpha.1"
+
+"@portkey/providers@1.1.0":
   version "1.1.0"
   resolved "https://registry.npmjs.org/@portkey/providers/-/providers-1.1.0.tgz#e55092bd28a51ac3daced45a6a76b4c89ec445b8"
   integrity sha512-6hQZ39AbSISi97/KJXt4y2rZtel3yVWtMcY7ryNLU+jhsU1dq/D3BG0eKTwSUJgddRv198+s3pbTr5Fyk2I0bg==
@@ -5660,6 +5706,18 @@
     "@portkey/chain" "^1.1.0"
     "@portkey/provider-types" "^1.1.0"
     "@portkey/provider-utils" "^1.1.0"
+    "@types/readable-stream" "^2.3.15"
+    lodash "^4.17.21"
+    readable-stream "^4.4.0"
+
+"@portkey/providers@1.1.1-alpha.1", "@portkey/providers@^1.1.1-alpha.1":
+  version "1.1.1-alpha.1"
+  resolved "https://registry.npmjs.org/@portkey/providers/-/providers-1.1.1-alpha.1.tgz#6fcee25f95f938058b0becd184b2bc8270e1d971"
+  integrity sha512-UohGOP08mU4udMjlzLeSxejZr6/G8zfPMVqPeMFfIjUKEyybv9Q8WSNtevjdNsBCJTW8jyAiEF6qxl31W+jSNg==
+  dependencies:
+    "@portkey/chain" "^1.1.1-alpha.1"
+    "@portkey/provider-types" "^1.1.1-alpha.1"
+    "@portkey/provider-utils" "^1.1.1-alpha.1"
     "@types/readable-stream" "^2.3.15"
     lodash "^4.17.21"
     readable-stream "^4.4.0"
@@ -5724,6 +5782,11 @@
   integrity sha512-mOSl89fN+hQ4zun6MF2uuQH5Bz8Owf6eA+N1HJ5fwKUMbQqr+7uI1HJZstoTSLFTLPjVSAIaIauXb2sfdRIm7A==
   dependencies:
     "@types/elliptic" "^6.4.14"
+
+"@portkey/types@^1.0.0-alpha.4":
+  version "1.5.2"
+  resolved "https://registry.npmjs.org/@portkey/types/-/types-1.5.2.tgz#c0d14e28c5ce1c1aa0b23783cde11e15209ba373"
+  integrity sha512-ZSlxD/zS2vnkt+5RNbYzpVsuwJYs355n01EAZnSzkJXMzvyrpXexAvEH66PvC8pd/O31xn7BpqXr7CPFMObs4Q==
 
 "@portkey/types@^1.3.0-alpha.3":
   version "1.3.0-alpha.3"
@@ -6068,39 +6131,40 @@
   resolved "https://registry.npmmirror.com/@react-native-community/eslint-plugin/-/eslint-plugin-1.2.0.tgz#7d6d789ae8edf73dc9bed1246cd48277edea8066"
   integrity sha512-o6aam+0Ug1xGK3ABYmBm0B1YuEKfM/5kaoZO0eHbZwSpw9UzDX4G5y4Nx/K20FHqUmJHkZmLvOUFYwN4N+HqKA==
 
-"@react-native-firebase/analytics@^15.3.0":
-  version "15.7.0"
-  resolved "https://registry.npmmirror.com/@react-native-firebase/analytics/-/analytics-15.7.0.tgz#1e7d52fdaa762be48da85bc542bafdd549269f67"
-  integrity sha512-ZAS59mpl9AwRdgLl5n3RbKi1zhmlhPQcmkh4ZF+kCoXifHLkiYm9BghhP7QOh8qqrO/czXq8WNKAzvaBjTwsRg==
+"@react-native-firebase/analytics@^18.5.0":
+  version "18.6.0"
+  resolved "https://registry.npmjs.org/@react-native-firebase/analytics/-/analytics-18.6.0.tgz#2fbcab066c871e54f8dce5936063ecf1ff1e1892"
+  integrity sha512-RQN8Ch/sGlRrSk/wv+5bwzRq6yLxI9k1mCxF2c+Hovv+/XsUCvQdkWokQX2L5HdNQRCnLWJVlaPI6TcJbHNsdA==
 
-"@react-native-firebase/app@^15.3.0":
-  version "15.7.0"
-  resolved "https://registry.npmmirror.com/@react-native-firebase/app/-/app-15.7.0.tgz#0649cf398b7675b67d75f07756b51918ae20f450"
-  integrity sha512-ZyrvewIkQC0UHDuHxXyc25/V8xYOa4xlukIHIbtJeBzVCCyVgZxF4Svyqs+CosqbHOuwWnmg+AW0rMvjrRcdmw==
+"@react-native-firebase/app-check@^18.5.0":
+  version "18.6.0"
+  resolved "https://registry.npmjs.org/@react-native-firebase/app-check/-/app-check-18.6.0.tgz#a51e5a10fafe21289732797e557fe8f858fe71c7"
+  integrity sha512-ReuAsEIZbfxf0msHTQqHIh4zxxaKGm/E+cJyjFrVz8aJHYaMEO1Jv7rwHcNqkOyLcTPnfX3Qc6YnRdR26i5WuA==
+
+"@react-native-firebase/app@^18.5.0":
+  version "18.6.0"
+  resolved "https://registry.npmjs.org/@react-native-firebase/app/-/app-18.6.0.tgz#939c92fda17c2641079314f30d52797db43a673e"
+  integrity sha512-pJwq2D0VBk8QvmIw6qZ5P3Y5Uaq4LL9NarAcTdEIA342VlhmTB1rovcYHE/F/hohdGBwFzi5qXAQnZmTxv27sg==
   dependencies:
-    "@expo/config-plugins" "^5.0.1"
-    opencollective-postinstall "^2.0.1"
+    opencollective-postinstall "^2.0.3"
     superstruct "^0.6.2"
 
-"@react-native-firebase/crashlytics@^15.3.0":
-  version "15.7.0"
-  resolved "https://registry.npmmirror.com/@react-native-firebase/crashlytics/-/crashlytics-15.7.0.tgz#917692582e47b19074bfbf0960b86fd9ca7a5b6d"
-  integrity sha512-RTEZErJA+VhiwKqdlErSw/9msy6F8EonhTVw/VDNgCwUjN+cfWhSOpp8XG6dp2slTNeU1HtjAG8hA5G49s3rVQ==
+"@react-native-firebase/crashlytics@^18.5.0":
+  version "18.6.0"
+  resolved "https://registry.npmjs.org/@react-native-firebase/crashlytics/-/crashlytics-18.6.0.tgz#3a37d03178de6f2a1019f8054376f015f940503a"
+  integrity sha512-VGBvY8hNbyk30Fd1rTsQlUvSO425AnOootB+B0HCmuS2Mhn02RDA/ylPbkjGAavX+bM8TB6bOZ7hbpCAFgpa0Q==
   dependencies:
-    "@expo/config-plugins" "^5.0.1"
-    stacktrace-js "^2.0.0"
+    stacktrace-js "^2.0.2"
 
-"@react-native-firebase/messaging@^15.3.0":
-  version "15.7.0"
-  resolved "https://registry.npmmirror.com/@react-native-firebase/messaging/-/messaging-15.7.0.tgz#fa81872ceb202125652678ebf310ae5e22107d2a"
-  integrity sha512-c2BLLbBm4kMjbkm1fJ465qZ2o24GHylLxeHSjU63SHIUVhnD5j7rWV/XvumNIEkSWtZmy9v+uGpmArLCAjZraw==
+"@react-native-firebase/messaging@^18.5.0":
+  version "18.6.0"
+  resolved "https://registry.npmjs.org/@react-native-firebase/messaging/-/messaging-18.6.0.tgz#be0a7b8841c65a7b6d4dfd8407e9e216e7b57633"
+  integrity sha512-0fBDvbu13MJazAJhiT1rm//hnxhzOSu1ZpqmGUKpNu73llxPqVYDk4L8uZ7WBRtu3e6TP7Mw8IfH3gGB1qeelA==
 
-"@react-native-firebase/perf@^15.3.0":
-  version "15.7.0"
-  resolved "https://registry.npmmirror.com/@react-native-firebase/perf/-/perf-15.7.0.tgz#8b61060fce4eb2ecdc83cabf62631ce559d2e270"
-  integrity sha512-uvKVCRyYuTgkq2uBenC4XiefTifCJhXkerlm/SN82uUTMlqpFPLz8I2mw1n+5KjSRJiAbhExCHphmfVsDzs2Gg==
-  dependencies:
-    "@expo/config-plugins" "^5.0.1"
+"@react-native-firebase/perf@^18.5.0":
+  version "18.6.0"
+  resolved "https://registry.npmjs.org/@react-native-firebase/perf/-/perf-18.6.0.tgz#6edc13cbf770ed378ccbe1dadead40167bbf87d9"
+  integrity sha512-hVtG0mAs4LBSobBG4DQ0vtJOEvQRGg9+oVQUDb5VgWKW21IAfljEpeFo831xoolpaE/Oyz33tmyrBgqPKKzZ+w==
 
 "@react-native-google-signin/google-signin@^8.0.0":
   version "8.2.2"
@@ -10601,6 +10665,11 @@ backo2@1.0.2, backo2@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npmmirror.com/backo2/-/backo2-1.0.2.tgz#31ab1ac8b129363463e35b3ebb69f4dfcfba7947"
   integrity sha512-zj6Z6M7Eq+PBZ7PQxl5NT665MvJdAkzp0f60nAJ+sLaSCBPMwVak5ZegFbgVCzFcCJTKFoMizvM5Ld7+JrRJHA==
+
+badgin@^1.1.5:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/badgin/-/badgin-1.2.3.tgz#994b5f519827d7d5422224825b2c8faea2bc43ad"
+  integrity sha512-NQGA7LcfCpSzIbGRbkgjgdWkjy7HI+Th5VLxTJfW5EeaAf3fnS+xWQaQOCYiny+q6QSvxqoSO04vCx+4u++EJw==
 
 balanced-match@^1.0.0:
   version "1.0.2"
@@ -15201,6 +15270,11 @@ expo-application@^4.2.0, expo-application@~4.2.2:
   resolved "https://registry.npmmirror.com/expo-application/-/expo-application-4.2.2.tgz#c9500819723c59eaee5ca9832bf17d1fd4139f74"
   integrity sha512-bFEaFRUdV6aK2iBd+HzkHNPYsyj88EAhaQW5leznmO0qQMJxpAQ3eoUXMey1hfDBh1qgkkHgSyCZ9BIgMAGJ1g==
 
+expo-application@~5.0.0:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/expo-application/-/expo-application-5.0.1.tgz#628aeee74697d7aa39d0c0173dbf9383e06e53e9"
+  integrity sha512-bThxK5zH/Lc2tkCvEXGjfM7ayvOVmPWYcWzXsMIU1RtG73TyXo4cq+73FvfDNIWn6gKS0WyMcmoPB3WXEV/jsw==
+
 expo-asset@~8.6.1:
   version "8.6.1"
   resolved "https://registry.npmmirror.com/expo-asset/-/expo-asset-8.6.1.tgz#86355b3e231e8aa6cf68a456ce9746dff1478b48"
@@ -15367,6 +15441,21 @@ expo-network@^4.3.0:
   version "4.3.0"
   resolved "https://registry.npmjs.org/expo-network/-/expo-network-4.3.0.tgz#4bad33aed3bdde835062926c488843aab6a559b3"
   integrity sha512-Rcw6jUXajbS1esNVbk9jRMQfOTouoxegsj7HkZyKe1oTS12+VuhbiKmR31nBEhpfqE4WeQ21LBvKmKvZwl130Q==
+
+expo-notifications@0.17.0:
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/expo-notifications/-/expo-notifications-0.17.0.tgz#c99198cf67d9acae044e6e5acc5b481230751bd8"
+  integrity sha512-PPjV5WaL5iIKAqi/qsNUVf0g4htz+Mx+6tZ/Py7vIurAHbA2PymgV7UPSEB1gUbhzi5PZMGj/DNFJpSZwgqmNg==
+  dependencies:
+    "@expo/image-utils" "^0.3.18"
+    "@ide/backoff" "^1.0.0"
+    abort-controller "^3.0.0"
+    assert "^2.0.0"
+    badgin "^1.1.5"
+    expo-application "~5.0.0"
+    expo-constants "~14.0.0"
+    fs-extra "^9.1.0"
+    uuid "^3.4.0"
 
 expo-random@^12.3.0:
   version "12.3.0"
@@ -22117,9 +22206,9 @@ open@^8.0.4, open@^8.0.9, open@^8.3.0, open@^8.4.0:
     is-docker "^2.1.1"
     is-wsl "^2.2.0"
 
-opencollective-postinstall@^2.0.1:
+opencollective-postinstall@^2.0.3:
   version "2.0.3"
-  resolved "https://registry.npmmirror.com/opencollective-postinstall/-/opencollective-postinstall-2.0.3.tgz#7a0fff978f6dbfa4d006238fbac98ed4198c3259"
+  resolved "https://registry.npmjs.org/opencollective-postinstall/-/opencollective-postinstall-2.0.3.tgz#7a0fff978f6dbfa4d006238fbac98ed4198c3259"
   integrity sha512-8AV/sCtuzUeTo8gQK5qDZzARrulB3egtLzFgteqB2tcT4Mw7B8Kt7JcDHmltjz6FOAHsvTevk70gZEbhM4ZS9Q==
 
 opener@^1.5.2:
@@ -24371,6 +24460,11 @@ react-native-crypto@^2.2.0:
     public-encrypt "^4.0.0"
     randomfill "^1.0.3"
 
+react-native-device-info@^10.11.0:
+  version "10.11.0"
+  resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-10.11.0.tgz#2c9f378f1c3c5eb9aafa803d015b84325991a9aa"
+  integrity sha512-qRzhuYOm5ZXQi5dhfJFjDq157oipxcEW/fo0QyMm5+TI6V6/+P/tju+Hif6z0rpLCf7MV7iDVRv2Kqha4D/yvQ==
+
 react-native-draggable-flatlist@^4.0.1:
   version "4.0.1"
   resolved "https://registry.npmjs.org/react-native-draggable-flatlist/-/react-native-draggable-flatlist-4.0.1.tgz#2f027d387ba4b8f3eb0907340e32cb85e6460df2"
@@ -24498,6 +24592,11 @@ react-native-parsed-text@0.0.22:
   integrity sha512-hfD83RDXZf9Fvth3DowR7j65fMnlqM9PpxZBGWkzVcUTFtqe6/yPcIoIAgrJbKn6YmtzkivmhWE2MCE4JKBXrQ==
   dependencies:
     prop-types "^15.7.x"
+
+react-native-permissions@^3.10.1:
+  version "3.10.1"
+  resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-3.10.1.tgz#cb0171c8d12113869deaabbdfb979aad1a44752b"
+  integrity sha512-Gc5BxxpjZn4QNUDiVeHOO0vXh3AH7ToolmwTJozqC6DsxV7NAf3ttap+8BSmzDR8WxuAM3Cror+YNiBhHJx7/w==
 
 react-native-qrcode-styled@^0.2.1:
   version "0.2.1"
@@ -26705,7 +26804,7 @@ stacktrace-gps@^3.0.4:
     source-map "0.5.6"
     stackframe "^1.3.4"
 
-stacktrace-js@^2.0.0, stacktrace-js@^2.0.2:
+stacktrace-js@^2.0.2:
   version "2.0.2"
   resolved "https://registry.npmmirror.com/stacktrace-js/-/stacktrace-js-2.0.2.tgz#4ca93ea9f494752d55709a081d400fdaebee897b"
   integrity sha512-Je5vBeY4S1r/RnLydLl0TBTi3F2qdfWmYsGvtfZgEI+SCprPppaIhQf5nGcal4gI4cGpCV/duLcAzT1np6sQqg==

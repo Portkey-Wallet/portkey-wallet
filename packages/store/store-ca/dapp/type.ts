@@ -5,6 +5,7 @@ export type DappStoreItem = {
   origin: string;
   name?: string;
   icon?: string;
+  svgIcon?: string;
   sessionInfo?: SessionInfo;
   connectedTime?: Timestamp;
 };

@@ -1,6 +1,4 @@
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchBuyFiatListAsync, fetchSellFiatListAsync } from '@portkey-wallet/store/store-ca/payment/actions';
 import { getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useCallback, useEffect, useRef } from 'react';
@@ -13,19 +11,12 @@ import { reportUserCurrentNetwork } from 'utils/analysisiReport';
 import { useCheckAndInitNetworkDiscoverMap } from './discover';
 import { usePin } from './store';
 import { getManagerAccount } from 'utils/redux';
-import { useInitIM } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useGetRedPackageConfig, useInitIM } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import im from '@portkey-wallet/im';
-
-// const getCurrentCAContract = useGetCurrentCAContract();
-
-// const getDeviceInfo = useGetDeviceInfo();
-// const originChainId = useOriginChainId();
-// const chainInfo = useCurrentChain(originChainId);
-// const getHolderInfo = useGetHolderInfo();
-// const { userGuardiansList } = useGuardiansInfo();
-// const createChannel = useCreateP2pChannel();
+import { useInitRamp } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 export default function useInitData() {
   const dispatch = useAppDispatch();
@@ -36,11 +27,14 @@ export default function useInitData() {
   const { netWorkType } = useCurrentNetwork();
 
   const getGuardiansInfoWriteStore = useGetGuardiansInfoWriteStore();
-  const isMainNetwork = useIsMainnet();
   useCheckAndInitNetworkDiscoverMap();
+  useGetRedPackageConfig(true, true);
 
   const { refresh: loadBookmarkList } = useBookmarkList();
   const initIM = useInitIM();
+  const initRamp = useInitRamp({
+    clientType: isIOS ? 'iOS' : 'Android',
+  });
   const initGuardianList = useRegisterRefreshGuardianList();
 
   const loadIM = useCallback(async () => {
@@ -60,17 +54,13 @@ export default function useInitData() {
 
   const init = useCallback(async () => {
     try {
-      // mainnet only
-      if (isMainNetwork) {
-        dispatch(fetchBuyFiatListAsync());
-        dispatch(fetchSellFiatListAsync());
-      }
       getCurrentCAViewContract();
       dispatch(getCaHolderInfoAsync());
       dispatch(getSymbolImagesAsync());
       initGuardianList();
 
       loadBookmarkList();
+      initRamp();
       // getGuardiansInfoWriteStore after getVerifierServers
       await getVerifierServers();
       getGuardiansInfoWriteStore({
@@ -84,8 +74,8 @@ export default function useInitData() {
     getCurrentCAViewContract,
     getGuardiansInfoWriteStore,
     getVerifierServers,
+    initRamp,
     initGuardianList,
-    isMainNetwork,
     loadBookmarkList,
     wallet.caHash,
   ]);

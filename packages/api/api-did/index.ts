@@ -5,7 +5,6 @@ import chainApi from './chain';
 import assetsApi from './assets';
 import recentApi from './recent';
 import tokenApi from './token';
-import paymentApi from './payment';
 import deviceApi from './device';
 import messageApi from './message';
 import switchApi from './switch';
@@ -49,7 +48,6 @@ export const EXPAND_APIS = {
   assets: assetsApi,
   recent: recentApi,
   token: tokenApi,
-  payment: paymentApi,
   device: deviceApi,
   message: messageApi,
   switch: switchApi,

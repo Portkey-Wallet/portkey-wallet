@@ -18,6 +18,7 @@ const MessageList: FC<IMessageListProps> = ({
   next,
   loading = false,
   dataSource,
+  myPortkeyId,
   ...props
 }) => {
   const scrollBottomRef = useRef<number>(0);
@@ -82,7 +83,7 @@ const MessageList: FC<IMessageListProps> = ({
     let prev: MessageContentType | undefined = undefined;
     let isShowMargin = false;
     let hiddenAvatar = false;
-    return dataSource.map((x, i: number) => {
+    return dataSource.map((x) => {
       // hidden avatar logic
       if (prev?.type) {
         hiddenAvatar = !SupportSysMsgType.includes(prev?.type) && x?.fromName === prev?.fromName;
@@ -100,19 +101,20 @@ const MessageList: FC<IMessageListProps> = ({
       return (
         <MessageItem
           {...(x as MessageContentType)}
+          myPortkeyId={myPortkeyId}
           key={x.key}
           hideAvatar={hiddenAvatar}
           className={clsx([isShowMargin && 'show-margin'])}
-          onDeleteMsg={(e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(x, i, e)}
-          onPinMsg={(e: React.MouseEvent<HTMLElement>) => props?.onPinMsg?.(x, i, e)}
-          onReplyMsg={(e: React.MouseEvent<HTMLElement>) => props?.onReplyMsg?.(x, i, e)}
+          onDeleteMsg={props?.onDeleteMsg}
+          onPinMsg={props?.onPinMsg}
+          onReplyMsg={props?.onReplyMsg}
           onClickUrl={props?.onClickUrl}
           onClickUnSupportMsg={props?.onClickUnSupportMsg}
-          onClickAvatar={(e: React.MouseEvent<HTMLElement>) => props?.onClickAvatar?.(x, i, e)}
+          onClickAvatar={props?.onClickAvatar}
         />
       );
     });
-  }, [dataSource, props]);
+  }, [dataSource, myPortkeyId, props]);
 
   return (
     <div className={clsx(['portkey-message-list', 'flex', props.className])} {...props.customProps}>

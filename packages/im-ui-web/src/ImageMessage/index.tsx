@@ -20,6 +20,7 @@ const ImageMessage: React.FC<IMessage> = (props) => {
     position,
   } = props;
   const { thumbImgUrl, width, height, imgUrl } = formatImageData(parsedContent as ParsedImage);
+  const [currentSrc, setCurrentSrc] = useState(thumbImgUrl);
   const [loadErr, setLoadErr] = useState(false);
   const imageSize = useMemo(
     () => formatImageSize({ width, height, maxWidth: 272, maxHeight: 272, minHeight: 92, minWidth: 92 }),
@@ -32,26 +33,26 @@ const ImageMessage: React.FC<IMessage> = (props) => {
         key: 'reply',
         leftIcon: <CustomSvg type="Reply" />,
         children: 'Reply',
-        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onReplyMsg?.(e),
+        onClick: () => props?.onReplyMsg?.(props),
       },
       pinInfo
         ? {
             key: 'pin',
             leftIcon: <CustomSvg type="UnPin" />,
             children: 'Unpin',
-            onClick: (e: React.MouseEvent<HTMLElement>) => props?.onPinMsg?.(e),
+            onClick: () => props?.onPinMsg?.(props),
           }
         : {
             key: 'pin',
             leftIcon: <CustomSvg type="Pin" />,
             children: 'Pin',
-            onClick: (e: React.MouseEvent<HTMLElement>) => props?.onPinMsg?.(e),
+            onClick: () => props?.onPinMsg?.(props),
           },
       {
         key: 'delete',
         leftIcon: <CustomSvg type="Delete" />,
         children: 'Delete',
-        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(e),
+        onClick: () => props?.onDeleteMsg?.(props),
       },
     ],
     [pinInfo, props],
@@ -93,22 +94,23 @@ const ImageMessage: React.FC<IMessage> = (props) => {
       <>
         <Image
           style={{ width: imageSize.width, height: imageSize.height }}
-          src={thumbImgUrl || imgUrl}
+          src={currentSrc}
           preview={{
-            src: imgUrl || thumbImgUrl,
+            src: imgUrl,
           }}
-          fallback={imgUrl}
           onError={(error: any) => {
             const _targetSrc = error.target?.currentSrc;
             if (_targetSrc === imgUrl) {
               setLoadErr(true);
+            } else {
+              setCurrentSrc(imgUrl);
             }
           }}
         />
         <div className="image-date flex-center">{showMask}</div>
       </>
     ),
-    [imageSize, imgUrl, showMask, thumbImgUrl],
+    [currentSrc, imageSize.height, imageSize.width, imgUrl, showMask],
   );
   return (
     <div className={clsx(['portkey-message-image', 'flex', position])}>

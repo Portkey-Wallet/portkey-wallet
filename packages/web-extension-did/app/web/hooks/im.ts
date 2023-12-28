@@ -127,23 +127,23 @@ export const useHandleClickChatItem = () => {
     (item: IChatItemProps) => {
       switch (item.channelType) {
         case ChannelTypeEnum.P2P:
-          navigate(`/chat-box/${item.id}`);
+          navigate(`/chat-box/${item.channelUuid}`);
           break;
         case ChannelTypeEnum.GROUP:
           if (item.status === ChannelStatusEnum.NORMAL) {
-            navigate(`/chat-box-group/${item.id}`);
+            navigate(`/chat-box-group/${item.channelUuid}`);
           } else if (item.status === ChannelStatusEnum.DISBAND) {
             CustomModal({
               content: 'This group has been deleted by the owner',
-              onOk: () => hideChannel(String(item.id)),
+              onOk: () => hideChannel(String(item.channelUuid)),
             });
           } else if (item.status === ChannelStatusEnum.BE_REMOVED) {
             CustomModal({
               content: 'You have been removed by the group owner',
-              onOk: () => hideChannel(String(item.id)),
+              onOk: () => hideChannel(String(item.channelUuid)),
             });
           } else {
-            hideChannel(String(item.id));
+            hideChannel(String(item.channelUuid));
           }
           break;
         default:

@@ -99,7 +99,6 @@ export const BackEndNetWorkMap: {
         baseUrl: 'https://ramptest.alchemypay.org',
       },
     },
-    eBridgeUrl: 'http://192.168.67.173:3000',
   },
   'back-end-test4': {
     name: 'aelf Mainnet',

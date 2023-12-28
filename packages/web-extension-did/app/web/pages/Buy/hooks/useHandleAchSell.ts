@@ -64,6 +64,7 @@ export const useHandleAchSell = () => {
       if (!rawResult || !rawResult.result) {
         throw new Error('Failed to get raw transaction.');
       }
+      await chromeStorage.removeItem('portkeyOffRampGuardiansApproveList');
       const publicKey = manager.keyPair.getPublic('hex');
       const message = SparkMD5.hash(`${params.orderId}${rawResult.result.data}`);
       const signature = AElf.wallet.sign(Buffer.from(message).toString('hex'), manager.keyPair).toString('hex');

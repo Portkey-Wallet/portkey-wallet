@@ -40,10 +40,10 @@ import CustomSvg from 'components/CustomSvg';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { divDecimals } from '@portkey-wallet/utils/converter';
 import { MAX_TRANSACTION_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
-import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import { SendStage, ToAccount } from 'pages/Send';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { getBalance } from 'utils/sandboxUtil/getBalance';
+import { RampType } from '@portkey-wallet/ramp';
 
 export const useCheckSecurity = () => {
   const wallet = useCurrentWalletInfo();
@@ -260,7 +260,7 @@ export interface ICheckLimitParams {
 }
 
 export interface ICheckRampLimitExtraParams {
-  side: PaymentTypeEnum;
+  side: RampType;
   country: string;
   fiat: string;
   crypto: string;

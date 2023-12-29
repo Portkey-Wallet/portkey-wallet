@@ -41,6 +41,9 @@ export const useUpdateReceiveAndInterval = (type: RampType, params: IUpdateRecei
           stopInterval();
           return;
         }
+
+        await checkBuyLimit();
+
         const { cryptoAmount, exchange } = await getBuyPrice({
           network: cryptoSelectedRef.current.network,
           crypto: cryptoSelectedRef.current.symbol,
@@ -48,8 +51,6 @@ export const useUpdateReceiveAndInterval = (type: RampType, params: IUpdateRecei
           fiat: fiatSelectedRef.current.symbol,
           country: fiatSelectedRef.current.country,
         });
-
-        await checkBuyLimit();
 
         setExchange(exchange);
         if (isShowErrorRef.current) return;
@@ -59,6 +60,7 @@ export const useUpdateReceiveAndInterval = (type: RampType, params: IUpdateRecei
           resetTimer();
         }
       } catch (error) {
+        setReceive('');
         console.log('updateBuyReceive error:', error);
       }
     };
@@ -73,6 +75,9 @@ export const useUpdateReceiveAndInterval = (type: RampType, params: IUpdateRecei
           stopInterval();
           return;
         }
+
+        await checkSellLimit();
+
         const { fiatAmount, exchange } = await getSellPrice({
           network: cryptoSelectedRef.current.network,
           crypto: cryptoSelectedRef.current.symbol,
@@ -80,8 +85,6 @@ export const useUpdateReceiveAndInterval = (type: RampType, params: IUpdateRecei
           fiat: fiatSelectedRef.current.symbol,
           country: fiatSelectedRef.current.country,
         });
-
-        await checkSellLimit();
 
         setExchange(exchange);
         if (isShowErrorRef.current) return;
@@ -91,6 +94,7 @@ export const useUpdateReceiveAndInterval = (type: RampType, params: IUpdateRecei
           resetTimer();
         }
       } catch (error) {
+        setReceive('');
         console.log('updateSellReceive error:', error);
       }
     };

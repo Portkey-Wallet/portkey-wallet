@@ -69,7 +69,6 @@ export const useSendIMTransfer = () => {
 
       await im.refreshToken();
 
-      // TODO: generate raw transaction
       const rawTransaction = await generateTransferRawTransaction({
         caContract,
         contractAddress: tokenContractAddress,

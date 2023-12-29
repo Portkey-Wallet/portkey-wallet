@@ -23,7 +23,7 @@ const GuardiansPrompt = ({ headerTitle, renderAddBtn, renderGuardianList, render
         />
         <div className="guardians-content flex-column-between flex-1">
           <div className="content-guardian-list flex-1">{renderGuardianList}</div>
-          <div className="content-guardian-tip flex-center">{renderGuardianTip}</div>
+          <div className="content-guardian-tip flex">{renderGuardianTip}</div>
         </div>
       </div>
       <Outlet />

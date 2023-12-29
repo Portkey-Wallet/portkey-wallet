@@ -47,7 +47,7 @@ import Touchable from 'components/Touchable';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { useGetCAContract, useGetTokenViewContract } from 'hooks/contract';
 import { useEffectOnce } from '@portkey-wallet/hooks';
-import { useGetTransferFee } from '@portkey-wallet/hooks/hooks-ca/transfer';
+import { useGetTransferFee } from 'hooks/transfer';
 
 const SendHome: React.FC = () => {
   const IM = useRoute<RouteProp<{ params: IToSendHomeParamsType }>>();

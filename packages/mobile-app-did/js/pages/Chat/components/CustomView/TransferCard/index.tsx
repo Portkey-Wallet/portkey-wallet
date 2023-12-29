@@ -57,7 +57,7 @@ function TransferCard(props: MessageProps<ChatMessage>) {
           </TextL>
           <TextS style={styles.blank} />
           <TextS style={styles.state} numberOfLines={1}>{`${isReceived ? 'Received from' : 'Transfer to'} ${
-            isReceived ? transferInfo?.data?.senderName : transferInfo?.data?.toUserName
+            isReceived ? transferInfo?.data?.senderName || '' : transferInfo?.data?.toUserName || ''
           }`}</TextS>
         </View>
       </View>

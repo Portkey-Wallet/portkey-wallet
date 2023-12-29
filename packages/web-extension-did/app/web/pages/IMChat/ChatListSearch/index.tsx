@@ -11,7 +11,6 @@ import './index.less';
 import SearchList from '../components/SearchList';
 import { ISearchItem } from '../components/SearchItem';
 import { useHandleClickChatItem } from 'hooks/im';
-import { MessageTypeWeb } from 'types/im';
 
 export default function ChatListSearch() {
   const { t } = useTranslation();
@@ -30,6 +29,7 @@ export default function ChatListSearch() {
         try {
           const res = await searchChannel(keyword);
           const transRes = res.map((item) => ({
+            ...item,
             id: item.channelUuid,
             index: item.displayName.slice(0, 1).toUpperCase(),
             name: item.displayName,
@@ -38,11 +38,7 @@ export default function ChatListSearch() {
             isDeleted: false,
             userId: '',
             isImputation: false,
-            channelType: item.channelType,
             title: item.displayName,
-            status: item.status,
-            avatar: item.channelIcon,
-            lastMessageType: MessageTypeWeb[item.lastMessageType || 'TEXT'],
           }));
           setChatList(transRes);
         } catch (e) {

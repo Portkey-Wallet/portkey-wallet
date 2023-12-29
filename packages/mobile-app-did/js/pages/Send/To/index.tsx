@@ -16,9 +16,17 @@ interface ToProps {
   step: 1 | 2;
   setStep: (step: 1 | 2) => void;
   setErrorMessage: any;
+  isFixedToContact?: boolean;
 }
 
-export default function To({ setErrorMessage, selectedToContact, setSelectedToContact, step, setStep }: ToProps) {
+export default function To({
+  setErrorMessage,
+  selectedToContact,
+  setSelectedToContact,
+  step,
+  setStep,
+  isFixedToContact,
+}: ToProps) {
   const { t } = useLanguage();
 
   const clearInput = useCallback(() => {
@@ -26,6 +34,8 @@ export default function To({ setErrorMessage, selectedToContact, setSelectedToCo
     setSelectedToContact({ address: '', name: '' });
     setErrorMessage?.([]);
   }, [setErrorMessage, setSelectedToContact, setStep]);
+
+  console.log('isFixedToContact', isFixedToContact);
 
   return (
     <View style={styles.toWrap}>
@@ -42,7 +52,7 @@ export default function To({ setErrorMessage, selectedToContact, setSelectedToCo
             onChangeText={v => setSelectedToContact({ name: '', address: v.trim() })}
           />
 
-          {!!selectedToContact?.address && (
+          {!!selectedToContact?.address && !isFixedToContact && (
             <TouchableOpacity style={styles.iconWrap} onPress={() => clearInput()}>
               <Svg icon="clear2" size={pTd(16)} />
             </TouchableOpacity>
@@ -52,9 +62,11 @@ export default function To({ setErrorMessage, selectedToContact, setSelectedToCo
         <View style={styles.middle}>
           <TextM style={styles.middleTitle}>{selectedToContact?.name || ''}</TextM>
           <TextM style={styles.middleAddress}>{formatStr2EllipsisStr(selectedToContact?.address, 15)}</TextM>
-          <TouchableOpacity style={styles.iconWrap} onPress={() => clearInput()}>
-            <Svg icon="clear2" size={pTd(16)} />
-          </TouchableOpacity>
+          {!isFixedToContact && (
+            <TouchableOpacity style={styles.iconWrap} onPress={() => clearInput()}>
+              <Svg icon="clear2" size={pTd(16)} />
+            </TouchableOpacity>
+          )}
         </View>
       )}
     </View>

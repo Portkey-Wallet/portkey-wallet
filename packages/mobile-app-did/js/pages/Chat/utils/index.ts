@@ -1,4 +1,5 @@
-import { ChannelTypeEnum } from '@portkey-wallet/im/types';
+import { ChannelMemberInfo, ChannelTypeEnum, MessageType } from '@portkey-wallet/im/types';
+import { isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { IconName } from 'components/Svg';
 import { TextInputScrollEventData, TextInputSelectionChangeEventData } from 'react-native';
 
@@ -21,19 +22,19 @@ export class ChatInputRecorder {
     this.contentOffset = undefined;
   }
 }
-let chatInputRecorder: ChatInputRecorder | undefined;
+export let chatInputRecorder: ChatInputRecorder | undefined;
 
-function initChatInputRecorder() {
+export function initChatInputRecorder() {
   if (chatInputRecorder) return;
   chatInputRecorder = new ChatInputRecorder();
 }
 
-function destroyChatInputRecorder() {
+export function destroyChatInputRecorder() {
   if (!chatInputRecorder) return;
   chatInputRecorder = undefined;
 }
 
-function handleInputText(code: string): string {
+export function handleInputText(code: string): string {
   let text = chatInputRecorder?.text || '';
   if (chatInputRecorder?.selection) {
     const { start, end } = chatInputRecorder?.selection;
@@ -69,7 +70,7 @@ export function isEmojiString(text: string) {
   );
 }
 
-function handleDeleteText(): string {
+export function handleDeleteText(): string {
   let text = chatInputRecorder?.text || '';
   if (chatInputRecorder?.selection) {
     const { start, end } = chatInputRecorder?.selection;
@@ -99,17 +100,42 @@ function handleDeleteText(): string {
   return text;
 }
 
-function getChatListSvgName(channelType?: ChannelTypeEnum): IconName | undefined {
+export function getChatListSvgName(channelType?: ChannelTypeEnum): IconName | undefined {
   if (channelType === ChannelTypeEnum.GROUP) return 'chat-group-avatar';
   if (channelType === ChannelTypeEnum.P2P) return undefined;
   return 'chat-unsupported-channel';
 }
 
-export {
-  chatInputRecorder,
-  initChatInputRecorder,
-  destroyChatInputRecorder,
-  handleInputText,
-  handleDeleteText,
-  getChatListSvgName,
+export function isCommonView(type?: MessageType | 'NOT_SUPPORTED'): boolean {
+  if (type === 'REDPACKAGE-CARD' || type === 'TRANSFER-CARD') return true;
+  return false;
+}
+
+export function isSystemTypeMessage(type?: MessageType | 'NOT_SUPPORTED'): boolean {
+  if (type === 'PIN-SYS' || type === 'SYS') return true;
+  return false;
+}
+
+export const isTargetMember = (item: ChannelMemberInfo, keyword: string): boolean => {
+  // name
+  if (item?.name?.toLocaleLowerCase()?.trim()?.includes(keyword?.toLocaleLowerCase()?.trim())) return true;
+
+  // portkeyId
+  if (item?.userId?.trim() === keyword?.trim()) return true;
+
+  // addresses
+  const addressesList = item?.addresses || [];
+  if (
+    addressesList.some(i => {
+      if (keyword?.includes('_')) {
+        const arr = keyword?.split('_');
+        const _address = arr.find(_i => isAelfAddress(_i));
+        if (_address) keyword = _address;
+      }
+      return i?.address === keyword;
+    }, [])
+  )
+    return true;
+
+  return false;
 };

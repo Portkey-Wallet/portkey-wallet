@@ -5,4 +5,5 @@ export const LOGIN_TYPE_LABEL_MAP: { [key in LoginType]: string } = {
   [LoginType.Phone]: 'Phone',
   [LoginType.Apple]: 'Apple',
   [LoginType.Google]: 'Google',
+  [LoginType.Telegram]: 'Telegram',
 };

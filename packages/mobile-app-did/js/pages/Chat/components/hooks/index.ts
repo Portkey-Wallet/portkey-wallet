@@ -8,7 +8,7 @@ import { useBottomBarStatus, useChatsDispatch, useCurrentChannelId } from '../..
 import { ChatBottomBarStatus } from 'store/chat/slice';
 import { setBottomBarStatus } from '../../context/chatsContext';
 import { useHideChannel, useSendChannelMessage } from '@portkey-wallet/hooks/hooks-ca/im';
-import { MessageType } from '@portkey-wallet/im';
+import { Message, MessageType } from '@portkey-wallet/im';
 import { readFile } from 'utils/fs';
 import { formatRNImage } from '@portkey-wallet/utils/s3';
 import { bindUriToLocalImage } from 'utils/fs/img';
@@ -17,7 +17,7 @@ import { pTd } from 'utils/unit';
 
 const TopSpacing = isIOS ? bottomBarHeight : isXiaoMi ? Math.max(-bottomBarHeight, -10) : 0;
 
-const ToolsHeight = pTd(120);
+const ToolsHeight = pTd(196);
 
 export function useKeyboardAnim({ textInputRef }: { textInputRef: React.RefObject<TextInput> }) {
   const keyboardAnim = useRef(new Animated.Value(0)).current;
@@ -67,10 +67,24 @@ export function useKeyboardAnim({ textInputRef }: { textInputRef: React.RefObjec
 export function useSendCurrentChannelMessage() {
   const currentChannelId = useCurrentChannelId();
   const { sendChannelMessage, sendChannelImageByS3Result } = useSendChannelMessage();
+
   return useMemo(
     () => ({
-      sendChannelMessage: (content: string, type?: MessageType) =>
-        sendChannelMessage(currentChannelId || '', content, type),
+      sendChannelMessage: ({
+        content,
+        type,
+        quoteMessage,
+      }: {
+        content: string;
+        type?: MessageType;
+        quoteMessage?: Message;
+      }) =>
+        sendChannelMessage({
+          channelId: currentChannelId || '',
+          content,
+          type,
+          quoteMessage,
+        }),
       sendChannelImage: async (file: { uri: string; width: number; height: number }) => {
         const fileBase64 = await readFile(file.uri, { encoding: 'base64' });
         const data = formatRNImage(file, fileBase64);
@@ -80,7 +94,10 @@ export function useSendCurrentChannelMessage() {
         });
         await bindUriToLocalImage(file.uri, s3Result.url);
 
-        return sendChannelImageByS3Result(currentChannelId || '', { ...s3Result, ...data });
+        return sendChannelImageByS3Result({
+          channelId: currentChannelId || '',
+          s3Result: { ...s3Result, ...data },
+        });
       },
     }),
     [currentChannelId, sendChannelImageByS3Result, sendChannelMessage],

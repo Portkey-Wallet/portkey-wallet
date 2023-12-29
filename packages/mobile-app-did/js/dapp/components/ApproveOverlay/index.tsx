@@ -180,7 +180,7 @@ const ApproveModal = (props: SignModalPropsType) => {
           }
         />
         <TextM style={[FontStyles.font3]}>
-          {`Please set a reasonable value as the allowance for this DApp. Then you can click "Authorize" to request guardian approval.`}
+          {`Transactions below the specified amount won't need your confirmation until the DApp exhausts its allowance.`}
         </TextM>
       </View>
       <OverlayBottomSection bottomButtonGroup={ButtonList} />

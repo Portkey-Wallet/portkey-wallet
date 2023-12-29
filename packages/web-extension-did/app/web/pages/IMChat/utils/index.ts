@@ -1,10 +1,23 @@
-import { Message, ParsedImage, ParsedRedPackage } from '@portkey-wallet/im';
-import { MessageType } from '@portkey-wallet/im-ui-web';
+import { Message, MessageType, MessageTypeEnum, ParsedImage } from '@portkey-wallet/im';
+import {
+  ExtraMessageTypeEnum,
+  IMessageShowPage,
+  MessageContentType,
+  SupportSysMsgType,
+} from '@portkey-wallet/im-ui-web';
 import { formatMessageTime } from '@portkey-wallet/utils/chat';
 import { isSameDay } from '@portkey-wallet/utils/time';
-import { MessageTypeWeb } from 'types/im';
 
-export const supportedMsgType = ['text', 'image', 'system', 'red-package-card'];
+export const supportedMsgType: MessageType[] = [
+  MessageTypeEnum.IMAGE,
+  MessageTypeEnum.PIN_SYS,
+  MessageTypeEnum.REDPACKAGE_CARD,
+  MessageTypeEnum.SYS,
+  MessageTypeEnum.TEXT,
+  MessageTypeEnum.TRANSFER_CARD,
+];
+
+export const supportSysMsgType: MessageType[] = [MessageTypeEnum.PIN_SYS, MessageTypeEnum.SYS];
 
 export const getPixel = async (url: string): Promise<{ width: number; height: number }> => {
   return new Promise((resolve, reject) => {
@@ -19,50 +32,46 @@ export const getPixel = async (url: string): Promise<{ width: number; height: nu
   });
 };
 
-export const formatMessageList = (list: Message[], ownerRelationId: string, isGroup = false) => {
-  const formatList: MessageType[] = [];
-  let transItem: MessageType;
+export interface IFormatMessageList {
+  list: Message[];
+  ownerRelationId: string;
+  isGroup?: boolean;
+  isAdmin?: boolean;
+  showPageType?: IMessageShowPage;
+}
+
+export const formatMessageList = ({
+  list,
+  ownerRelationId,
+  isGroup = false,
+  isAdmin = false,
+  showPageType,
+}: IFormatMessageList) => {
+  const formatList: MessageContentType[] = [];
+  let transItem: MessageContentType;
   list?.forEach((item, i) => {
-    const transType = MessageTypeWeb[item.type] || '';
-    if (supportedMsgType.includes(transType)) {
+    if (supportedMsgType.includes(item.type)) {
       transItem = {
-        id: `${item.id}`,
+        ...item,
         key: item.sendUuid,
-        title: item.fromName,
-        letter: item.fromName?.slice(0, 1)?.toUpperCase(),
-        from: item.from,
-        position: transType === MessageTypeWeb.SYS ? 'center' : item.from === ownerRelationId ? 'right' : 'left',
-        text: `${item.parsedContent}`,
-        imgData:
-          transType === MessageTypeWeb.IMAGE && typeof item.parsedContent === 'object'
-            ? {
-                ...item.parsedContent,
-                thumbImgUrl: decodeURIComponent(`${(item.parsedContent as ParsedImage).thumbImgUrl}`) || '',
-                imgUrl: decodeURIComponent(`${(item.parsedContent as ParsedImage).imgUrl}`) || '',
-                width: `${(item.parsedContent as ParsedImage).width}`,
-                height: `${(item.parsedContent as ParsedImage).height}`,
-              }
-            : {},
-        type: transType,
-        date: item.createAt,
-        showAvatar: item.from !== ownerRelationId && isGroup,
-        avatar: item.fromAvatar,
-        redPacket:
-          transType === MessageTypeWeb['REDPACKAGE-CARD'] ? (item.parsedContent as ParsedRedPackage) : undefined,
+        showAvatar: isGroup && !SupportSysMsgType.includes(item.type) && item.from !== ownerRelationId,
+        position: supportSysMsgType.includes(item.type) ? 'center' : item.from === ownerRelationId ? 'right' : 'left',
+        isGroup,
+        isAdmin,
+        showPageType,
       };
     } else {
       transItem = {
         key: `${item.createAt}`,
         id: `${item.createAt}`,
-        title: item.fromName,
-        letter: item.fromName?.slice(0, 1)?.toUpperCase(),
+        fromName: item.fromName,
         from: item.from,
         position: item.from === ownerRelationId ? 'right' : 'left',
         showAvatar: item.from !== ownerRelationId && isGroup,
-        date: item.createAt,
-        type: 'text',
-        subType: 'non-support-msg',
-        text: '',
+        createAt: item.createAt,
+        type: MessageTypeEnum.TEXT,
+        subType: ExtraMessageTypeEnum['NO-SUPPORT-MSG'],
+        parsedContent: '',
       };
     }
     if (i === 0) {
@@ -71,10 +80,10 @@ export const formatMessageList = (list: Message[], ownerRelationId: string, isGr
           key: `${item.createAt}`,
           id: `${item.createAt}`,
           position: 'center',
-          date: item.createAt,
-          type: 'system',
-          text: formatMessageTime(item.createAt),
-          subType: 'show-time',
+          createAt: item.createAt,
+          type: MessageTypeEnum.SYS,
+          parsedContent: formatMessageTime(item.createAt),
+          subType: ExtraMessageTypeEnum['DATE-SYS-MSG'],
         },
         transItem,
       );
@@ -87,10 +96,10 @@ export const formatMessageList = (list: Message[], ownerRelationId: string, isGr
             key: `${item.createAt}`,
             id: `${item.createAt}`,
             position: 'center',
-            date: item.createAt,
-            type: 'system',
-            text: formatMessageTime(item.createAt),
-            subType: 'show-time',
+            createAt: item.createAt,
+            type: MessageTypeEnum.SYS,
+            parsedContent: formatMessageTime(item.createAt),
+            subType: ExtraMessageTypeEnum['DATE-SYS-MSG'],
           },
           transItem,
         );
@@ -99,3 +108,10 @@ export const formatMessageList = (list: Message[], ownerRelationId: string, isGr
   });
   return formatList;
 };
+
+export const formatImageData = (parsedContent: ParsedImage) => ({
+  thumbImgUrl: decodeURIComponent(parsedContent?.thumbImgUrl || ''),
+  imgUrl: decodeURIComponent(parsedContent?.imgUrl || ''),
+  width: parsedContent?.width,
+  height: parsedContent?.height,
+});

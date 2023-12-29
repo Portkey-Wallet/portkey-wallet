@@ -1,17 +1,19 @@
+export type MessageType = 'TEXT' | 'IMAGE' | 'SYS' | 'REDPACKAGE-CARD' | 'TRANSFER-CARD' | 'PIN-SYS';
+export type ParsedContent = string | ParsedImage | ParsedRedPackage | ParsedTransfer | ParsedPinSys | undefined;
+import { PIN_OPERATION_TYPE_ENUM } from './pin';
 import { RedPackageStatusInfo } from './redPackage';
 
 export type ChainId = 'AELF' | 'tDVV' | 'tDVW';
-
-export type MessageType = 'TEXT' | 'IMAGE' | 'SYS' | 'REDPACKAGE-CARD';
 
 export enum MessageTypeEnum {
   TEXT = 'TEXT',
   IMAGE = 'IMAGE',
   SYS = 'SYS',
   REDPACKAGE_CARD = 'REDPACKAGE-CARD',
+  TRANSFER_CARD = 'TRANSFER-CARD',
+  PIN_SYS = 'PIN-SYS',
 }
 
-export type ParsedContent = string | ParsedImage | ParsedRedPackage | undefined;
 export type ParsedImage = {
   type: string;
   action: string;
@@ -32,6 +34,53 @@ export type ParsedRedPackage = {
   };
 };
 
+export type ParsedTransfer = {
+  image: string;
+  link: string;
+  data: {
+    id: string;
+    senderId: string;
+    senderName: string;
+    memo: string;
+    transactionId: string;
+    blockHash: string;
+    toUserId: string;
+    toUserName: string;
+  };
+  transferExtraData?: {
+    tokenInfo?: {
+      amount: string | number;
+      decimal: string;
+      symbol: string;
+    };
+    nftInfo?: {
+      nftId: string;
+      alias: string;
+    };
+  };
+};
+
+export type ParsedPinSys = {
+  userInfo: {
+    portkeyId: string;
+    name: string;
+  };
+  pinType: PIN_OPERATION_TYPE_ENUM;
+  messageType: MessageType;
+  content: string;
+  messageId: string;
+  sendUuid: string;
+
+  unpinnedCount?: number;
+  parsedContent?: ParsedContent;
+};
+
+export type PinInfoType = {
+  pinner: string;
+  pinnerName: string;
+  pinnedAt: string;
+};
+
 export type Message = {
   channelUuid: string;
   sendUuid: string;
@@ -46,7 +95,9 @@ export type Message = {
   quote?: Message;
   parsedContent?: ParsedContent;
   unidentified?: boolean | undefined;
+
   redPackage?: RedPackageStatusInfo;
+  pinInfo?: PinInfoType;
 };
 
 export type SocketMessage = Message & {
@@ -59,6 +110,12 @@ export type ChannelMemberInfo = {
   name: string;
   avatar: string;
   isAdmin: boolean;
+  userId?: string;
+  addresses?: {
+    chainId: ChainId;
+    chainName?: string;
+    address: string;
+  }[];
 };
 
 export enum ChannelTypeEnum {
@@ -147,3 +204,4 @@ export type RedPackageConfigType = {
 
 export * from './service';
 export * from './redPackage';
+export * from './transfer';

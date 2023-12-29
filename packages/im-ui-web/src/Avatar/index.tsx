@@ -1,17 +1,15 @@
 import clsx from 'clsx';
 import { useMemo, useState } from 'react';
 import { IAvatarProps } from '../type';
-import './index.less';
-import { ChannelTypeEnum } from '@portkey-wallet/im/types';
 import CustomSvg from '../components/CustomSvg';
+import './index.less';
 
 const Avatar: React.FC<IAvatarProps> = ({
   src,
-  showLetter = false,
-  letter,
+  isGroupAvatar = false,
+  letter = '',
   alt = 'img',
   className,
-  channelType,
   avatarSize = 'default',
   onClick,
 }) => {
@@ -41,9 +39,7 @@ const Avatar: React.FC<IAvatarProps> = ({
   const renderAvatar = useMemo(
     () => (
       <>
-        {showLetter ? (
-          <div className="avatar-letter flex-center">{letter || 'A'}</div>
-        ) : src && !isError ? (
+        {src && !isError ? (
           <img
             alt={alt}
             src={src}
@@ -52,16 +48,16 @@ const Avatar: React.FC<IAvatarProps> = ({
             onLoad={() => setIsError(false)}
           />
         ) : (
-          <div className="avatar-letter flex-center">{letter || 'A'}</div>
+          <div className="avatar-letter flex-center">{letter.substring(0, 1).toUpperCase() || 'A'}</div>
         )}
       </>
     ),
-    [alt, isError, letter, showLetter, src],
+    [alt, isError, letter, src],
   );
 
   return (
     <div className={clsx('portkey-avatar-container', className, `portkey-avatar-${avatarSize}`)} onClick={onClick}>
-      {channelType === ChannelTypeEnum.GROUP ? renderGroupAvatar : renderAvatar}
+      {isGroupAvatar ? renderGroupAvatar : renderAvatar}
     </div>
   );
 };

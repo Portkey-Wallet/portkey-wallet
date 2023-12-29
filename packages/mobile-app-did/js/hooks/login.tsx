@@ -453,6 +453,7 @@ export function useGoSelectVerifier(isLogin?: boolean) {
         switch (loginType) {
           case LoginType.Apple:
           case LoginType.Google:
+          case LoginType.Telegram:
             onConfirmAuth({
               ...confirmParams,
               selectedVerifier: allotVerifier,
@@ -597,8 +598,6 @@ export function useOnRequestOrSetPin() {
       guardiansApproved?: GuardiansApproved;
       autoLogin?: boolean;
     }) => {
-      console.log(guardiansApproved, showLoading, '====guardiansApproved');
-
       if (walletInfo?.address && pin) {
         onManagerAddressAndQueryResult({
           managerInfo,

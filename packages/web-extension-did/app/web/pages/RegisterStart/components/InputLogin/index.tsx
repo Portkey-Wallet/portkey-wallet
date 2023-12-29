@@ -32,9 +32,11 @@ export default function InputLogin({
   const renderTitle = useMemo(() => {
     if (isTestnet) {
       return (
-        <div className="flex testnet-flag">
-          {title}
-          <span className="flag-text flex-center">{t('TEST')}</span>
+        <div className="flex-center testnet-flag">
+          <span className="content">
+            {title}
+            <span className="flag-text flex-center">{t('TEST')}</span>
+          </span>
         </div>
       );
     }

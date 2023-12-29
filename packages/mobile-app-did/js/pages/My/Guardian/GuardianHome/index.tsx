@@ -77,7 +77,7 @@ export default function GuardianHome() {
       </ScrollView>
       {!isAddAllowed && (
         <View style={pageStyles.warnWrap}>
-          <Svg icon="warning2" size={pTd(16)} color={defaultColors.font9} />
+          <Svg icon="warning2" size={pTd(16)} color={defaultColors.icon1} />
           <TextM style={pageStyles.warnLabelWrap}>
             {'The number of guardians has reached the maximum limit. Please delete some before trying to add new ones.'}
           </TextM>

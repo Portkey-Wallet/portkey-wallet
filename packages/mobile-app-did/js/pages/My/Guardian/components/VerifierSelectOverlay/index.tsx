@@ -65,7 +65,7 @@ const SelectList = ({ callBack, id, editGuardian }: SelectListProps) => {
           );
         })}
         <View style={styles.warnWrap}>
-          <Svg icon="warning2" size={pTd(16)} color={defaultColors.font9} />
+          <Svg icon="warning2" size={pTd(16)} color={defaultColors.icon1} />
           <TextM style={styles.warnLabelWrap}>{'Used verifiers cannot be selected.'}</TextM>
         </View>
       </ScrollView>

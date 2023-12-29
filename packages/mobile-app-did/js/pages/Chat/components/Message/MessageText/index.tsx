@@ -54,6 +54,9 @@ function ReplyMessageText(props: MessageTextProps<ChatMessage>) {
 
 function ReplyMessageImage(props: MessageTextProps<ChatMessage>) {
   const { position, currentMessage } = props;
+
+  const isDeleted = useMemo(() => !currentMessage?.quote?.channelUuid, [currentMessage?.quote?.channelUuid]);
+
   if (!currentMessage?.quote) return null;
   if (!currentMessage?.quote.imageInfo) return null;
 
@@ -61,9 +64,9 @@ function ReplyMessageImage(props: MessageTextProps<ChatMessage>) {
     <View style={[replyMessageImageStyles.wrap, position === 'right' && replyMessageImageStyles.rightWrap]}>
       <View style={replyMessageImageStyles.blueBlank} />
       <Image style={replyMessageImageStyles.img} source={{ uri: currentMessage?.quote?.imageInfo?.imgUri }} />
-      <View style={replyMessageImageStyles.rightWrap}>
+      <View>
         <TextM style={replyMessageImageStyles.name}>{currentMessage?.quote?.fromName}</TextM>
-        <TextM style={replyMessageImageStyles.content} numberOfLines={1}>
+        <TextM style={[replyMessageImageStyles.content, isDeleted && FontStyles.font7]} numberOfLines={1}>
           {currentMessage?.quote?.messageType === 'NOT_SUPPORTED' ? UN_SUPPORTED_FORMAT : 'Photo'}
         </TextM>
       </View>

@@ -6,6 +6,7 @@ import { pTd } from 'utils/unit';
 import { ChatMessage } from 'pages/Chat/types';
 import isEqual from 'lodash/isEqual';
 import GStyles from 'assets/theme/GStyles';
+import { isSystemTypeMessage } from 'pages/Chat/utils';
 
 function ChatMessageContainer(
   props: MessageProps<ChatMessage> & {
@@ -15,8 +16,11 @@ function ChatMessageContainer(
   const { previousMessage, currentMessage } = props;
 
   const isMarginTop4 = useMemo(
-    () => previousMessage?.user && previousMessage?.user._id === currentMessage?.user._id,
-    [currentMessage?.user, previousMessage?.user],
+    () =>
+      previousMessage?.user &&
+      previousMessage?.user._id === currentMessage?.user._id &&
+      !isSystemTypeMessage(currentMessage?.messageType) === !isSystemTypeMessage(previousMessage?.messageType),
+    [currentMessage?.messageType, currentMessage?.user._id, previousMessage?.messageType, previousMessage?.user],
   );
 
   return (

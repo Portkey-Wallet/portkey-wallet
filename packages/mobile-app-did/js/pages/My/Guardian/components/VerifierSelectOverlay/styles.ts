@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
     borderRadius: pTd(6),
     padding: pTd(12),
     flexDirection: 'row',
+    alignItems: 'center',
     marginTop: pTd(16),
     marginHorizontal: pTd(20),
   },
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   disableWrap: {
-    opacity: 0.6,
+    opacity: 0.3,
   },
 });
 

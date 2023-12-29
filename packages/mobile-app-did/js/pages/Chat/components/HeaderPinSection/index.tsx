@@ -10,6 +10,8 @@ import Svg from 'components/Svg';
 import { showPinnedListOverlay } from '../PinnedListOverlay';
 import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
 import { ParsedImage } from '@portkey-wallet/im';
+import fonts from 'assets/theme/fonts';
+import { useGroupChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
 
 export type HeaderPinSection = {
   channelUUid: string;
@@ -18,6 +20,7 @@ export type HeaderPinSection = {
 export default function HeaderPinSection(props: HeaderPinSection) {
   const { channelUUid = '' } = props;
 
+  const { isAdmin } = useGroupChannelInfo(channelUUid || '');
   const { list, lastPinMessage } = useIMPin(channelUUid, true);
 
   const isImg = useMemo(() => {
@@ -33,14 +36,16 @@ export default function HeaderPinSection(props: HeaderPinSection) {
   if (!lastPinMessage) return null;
 
   return (
-    <Touchable style={[GStyles.flexRow, GStyles.itemCenter, styles.wrap]} onPress={() => showPinnedListOverlay()}>
+    <Touchable
+      style={[GStyles.flexRow, GStyles.itemCenter, styles.wrap]}
+      onPress={() => showPinnedListOverlay(isAdmin)}>
       <View style={styles.leftBlue} />
       {isImg && <Image style={styles.img} resizeMode="cover" source={{ uri: url }} />}
       <View style={GStyles.flex1}>
-        <TextM numberOfLines={1} style={[FontStyles.font5, GStyles.flex1]}>
+        <TextM numberOfLines={1} style={[fonts.mediumFont, FontStyles.font4, styles.title]}>
           {`Pinned Message ${list.length}`}
         </TextM>
-        <TextM numberOfLines={1} style={[FontStyles.font3, GStyles.flex1]}>
+        <TextM numberOfLines={1} style={[FontStyles.font5, styles.content]}>
           {isImg ? 'Photo' : lastPinMessage?.content}
         </TextM>
       </View>
@@ -51,12 +56,17 @@ export default function HeaderPinSection(props: HeaderPinSection) {
 
 const styles = StyleSheet.create({
   wrap: {
+    zIndex: 100,
     paddingLeft: pTd(12),
     paddingRight: pTd(16),
     paddingVertical: pTd(8),
     backgroundColor: defaultColors.bg1,
     borderBottomColor: defaultColors.border6,
     borderBottomWidth: StyleSheet.hairlineWidth,
+    shadowColor: defaultColors.shadow1,
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 2,
   },
   leftBlue: {
     width: pTd(3),
@@ -69,5 +79,13 @@ const styles = StyleSheet.create({
     height: pTd(40),
     borderRadius: pTd(4),
     marginRight: pTd(8),
+  },
+  title: {
+    lineHeight: pTd(20),
+    marginRight: pTd(8),
+  },
+  content: {
+    marginRight: pTd(8),
+    lineHeight: pTd(20),
   },
 });

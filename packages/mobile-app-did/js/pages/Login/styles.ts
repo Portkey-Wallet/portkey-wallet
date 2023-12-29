@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: screenWidth - 32,
     borderRadius: 16,
-    marginTop: 32,
+    marginTop: pTd(24),
     paddingHorizontal: 20,
     paddingVertical: 24,
     minHeight: Math.min(screenHeight * 0.58, 494),
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   },
   termsServiceTip: {
     position: 'absolute',
-    bottom: 24,
+    bottom: pTd(20),
     textAlign: 'center',
   },
   textWrap: {

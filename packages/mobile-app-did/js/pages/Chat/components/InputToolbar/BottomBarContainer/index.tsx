@@ -81,9 +81,9 @@ export function BottomBarContainer({
 
   useEffect(() => {
     if (replyMessageInfo?.message) {
-      textInputRef.current?.focus();
+      inputFocus(bottomBarStatus === ChatBottomBarStatus.tools);
     }
-  }, [replyMessageInfo?.message]);
+  }, [bottomBarStatus, dispatch, inputFocus, replyMessageInfo?.message]);
 
   const onSend = useCallback(async () => {
     dispatch(setChatText(''));

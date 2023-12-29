@@ -22,7 +22,7 @@ export class ChatInputRecorder {
     this.contentOffset = undefined;
   }
 }
-let chatInputRecorder: ChatInputRecorder | undefined;
+export let chatInputRecorder: ChatInputRecorder | undefined;
 
 export function initChatInputRecorder() {
   if (chatInputRecorder) return;

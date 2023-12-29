@@ -27,7 +27,7 @@ export function ReplyContent() {
       {messageType === 'img' && (
         <Image style={styles.img} resizeMode="cover" source={{ uri: message?.imageInfo?.imgUri }} />
       )}
-      <View style={GStyles.flex1}>
+      <View style={[GStyles.flex1, GStyles.marginRight(8)]}>
         <TextM numberOfLines={1} style={[fonts.mediumFont, FontStyles.font5, GStyles.flex1]}>
           {`Reply to ${replyMessageInfo.message?.fromName}`}
         </TextM>

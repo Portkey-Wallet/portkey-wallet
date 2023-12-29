@@ -1,4 +1,4 @@
-import { IToSendPreviewParamsType } from '@portkey-wallet/types/types-ca/routeParams';
+import { IToSendPreviewParamsType, ImTransferInfoType } from '@portkey-wallet/types/types-ca/routeParams';
 import { NavigateName } from 'utils/navigationService';
 
 export type NavigateMultiLevelOptions = {
@@ -21,4 +21,5 @@ export type NavigateMultiLevelParams = {
     successParams?: any;
     backParams?: any;
   };
+  imTransferInfo?: ImTransferInfoType;
 };

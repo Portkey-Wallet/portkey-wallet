@@ -24,17 +24,17 @@ export class ChatInputRecorder {
 }
 let chatInputRecorder: ChatInputRecorder | undefined;
 
-function initChatInputRecorder() {
+export function initChatInputRecorder() {
   if (chatInputRecorder) return;
   chatInputRecorder = new ChatInputRecorder();
 }
 
-function destroyChatInputRecorder() {
+export function destroyChatInputRecorder() {
   if (!chatInputRecorder) return;
   chatInputRecorder = undefined;
 }
 
-function handleInputText(code: string): string {
+export function handleInputText(code: string): string {
   let text = chatInputRecorder?.text || '';
   if (chatInputRecorder?.selection) {
     const { start, end } = chatInputRecorder?.selection;
@@ -70,7 +70,7 @@ export function isEmojiString(text: string) {
   );
 }
 
-function handleDeleteText(): string {
+export function handleDeleteText(): string {
   let text = chatInputRecorder?.text || '';
   if (chatInputRecorder?.selection) {
     const { start, end } = chatInputRecorder?.selection;
@@ -100,14 +100,19 @@ function handleDeleteText(): string {
   return text;
 }
 
-function getChatListSvgName(channelType?: ChannelTypeEnum): IconName | undefined {
+export function getChatListSvgName(channelType?: ChannelTypeEnum): IconName | undefined {
   if (channelType === ChannelTypeEnum.GROUP) return 'chat-group-avatar';
   if (channelType === ChannelTypeEnum.P2P) return undefined;
   return 'chat-unsupported-channel';
 }
 
-function isCommonView(type?: MessageType | 'NOT_SUPPORTED'): boolean {
+export function isCommonView(type?: MessageType | 'NOT_SUPPORTED'): boolean {
   if (type === 'REDPACKAGE-CARD' || type === 'TRANSFER-CARD') return true;
+  return false;
+}
+
+export function isSystemTypeMessage(type?: MessageType | 'NOT_SUPPORTED'): boolean {
+  if (type === 'PIN-SYS' || type === 'SYS') return true;
   return false;
 }
 
@@ -133,14 +138,4 @@ export const isTargetMember = (item: ChannelMemberInfo, keyword: string): boolea
     return true;
 
   return false;
-};
-
-export {
-  chatInputRecorder,
-  initChatInputRecorder,
-  destroyChatInputRecorder,
-  handleInputText,
-  handleDeleteText,
-  getChatListSvgName,
-  isCommonView,
 };

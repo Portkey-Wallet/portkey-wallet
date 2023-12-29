@@ -25,7 +25,6 @@ import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat
 import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
 import ActionSheet from 'components/ActionSheet';
 import OverlayModal from 'components/OverlayModal';
-import fonts from 'assets/theme/fonts';
 
 const PIN_UNICODE_SPACE = '\u00A0\u00A0\u00A0\u00A0';
 const TIME_UNICODE_SPACE = isIOS
@@ -44,7 +43,7 @@ function ReplyMessageText(props: MessageTextProps<ChatMessage>) {
     <View style={[replyMessageTextStyles.wrap, position === 'right' && replyMessageImageStyles.rightWrap]}>
       <View style={replyMessageTextStyles.blueBlank} />
       {currentMessage?.quote?.fromName && (
-        <TextM style={[fonts.mediumFont, replyMessageTextStyles.name]}>{currentMessage?.quote?.fromName}</TextM>
+        <TextM style={replyMessageTextStyles.name}>{currentMessage?.quote?.fromName}</TextM>
       )}
       <TextM style={[replyMessageTextStyles.content, isDeleted && FontStyles.font7]} numberOfLines={2}>
         {currentMessage?.quote?.messageType === 'NOT_SUPPORTED' ? UN_SUPPORTED_FORMAT : currentMessage?.quote?.content}
@@ -66,7 +65,7 @@ function ReplyMessageImage(props: MessageTextProps<ChatMessage>) {
       <View style={replyMessageImageStyles.blueBlank} />
       <Image style={replyMessageImageStyles.img} source={{ uri: currentMessage?.quote?.imageInfo?.imgUri }} />
       <View>
-        <TextM style={[fonts.mediumFont, replyMessageImageStyles.name]}>{currentMessage?.quote?.fromName}</TextM>
+        <TextM style={replyMessageImageStyles.name}>{currentMessage?.quote?.fromName}</TextM>
         <TextM style={[replyMessageImageStyles.content, isDeleted && FontStyles.font7]} numberOfLines={1}>
           {currentMessage?.quote?.messageType === 'NOT_SUPPORTED' ? UN_SUPPORTED_FORMAT : 'Photo'}
         </TextM>

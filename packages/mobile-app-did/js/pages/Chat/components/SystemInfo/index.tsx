@@ -8,12 +8,14 @@ import { ChatMessage } from 'pages/Chat/types';
 import GStyles from 'assets/theme/GStyles';
 import { ParsedPinSys } from '@portkey-wallet/im';
 import { formatPinSysMessageToStr } from '@portkey-wallet/utils/chat';
+import { isSystemTypeMessage } from 'pages/Chat/utils';
 
 function SystemInfo(props: SystemMessageProps<ChatMessage> & { previousMessage?: ChatMessage }) {
   const { previousMessage, currentMessage } = props;
 
   const isMarginTop4 = useMemo(() => {
-    if (previousMessage?.messageType === currentMessage?.messageType) return true;
+    if (isSystemTypeMessage(previousMessage?.messageType) === isSystemTypeMessage(currentMessage?.messageType))
+      return true;
 
     return false;
   }, [currentMessage, previousMessage]);

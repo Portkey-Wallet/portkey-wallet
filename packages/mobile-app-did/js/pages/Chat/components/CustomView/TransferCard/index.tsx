@@ -6,7 +6,7 @@ import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
 import { ChatMessage } from 'pages/Chat/types';
 import isEqual from 'lodash/isEqual';
-import { TextXL, TextS } from 'components/CommonText';
+import { TextS, TextL } from 'components/CommonText';
 import Svg from 'components/Svg';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
@@ -48,13 +48,13 @@ function TransferCard(props: MessageProps<ChatMessage>) {
   }, [transferInfo.transferExtraData]);
 
   return (
-    <Touchable underlayColor={defaultColors.bg24} style={styles.wrap} onPress={onPress}>
+    <Touchable highlight underlayColor={defaultColors.bg24} style={styles.wrap} onPress={onPress}>
       <View style={[GStyles.flexRow, GStyles.itemCenter]}>
         <Svg icon="transfer-preview" size={pTd(40)} />
         <View style={styles.rightSection}>
-          <TextXL numberOfLines={1} style={[fonts.mediumFont, styles.memo]}>
+          <TextL numberOfLines={1} style={[fonts.mediumFont, styles.memo]}>
             {transferInfoShow}
-          </TextXL>
+          </TextL>
           <TextS style={styles.blank} />
           <TextS style={styles.state} numberOfLines={1}>{`${isReceived ? 'Received from' : 'Transfer to'} ${
             isReceived ? transferInfo?.data?.senderName : transferInfo?.data?.toUserName

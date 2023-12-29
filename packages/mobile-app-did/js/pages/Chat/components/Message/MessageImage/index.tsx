@@ -205,6 +205,7 @@ export default memo(MessageImage, (prevProps, nextProps) => {
 const styles = StyleSheet.create({
   image: {
     borderRadius: pTd(18),
+    borderColor: 'transparent',
   },
   brokenImage: {
     width: pTd(32),
@@ -222,24 +223,27 @@ const styles = StyleSheet.create({
   },
   timeBoxStyle: {
     position: 'absolute',
+    bottom: pTd(8),
+    right: pTd(8),
     backgroundColor: defaultColors.bg20,
     paddingHorizontal: pTd(8),
     borderRadius: pTd(8),
     opacity: 0.8,
-    bottom: pTd(8),
-    right: pTd(8),
     height: pTd(16),
     display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
   },
   iconStyle: {
     marginRight: pTd(4),
   },
   timeInnerWrap: {
-    margin: 0,
     marginLeft: 0,
     marginRight: 0,
+    marginTop: 0,
+    marginBottom: 0,
+    height: pTd(16),
   },
   timeTextStyle: {
     color: defaultColors.font2,

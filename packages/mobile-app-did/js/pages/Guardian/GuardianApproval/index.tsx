@@ -58,8 +58,8 @@ import { useRefreshGuardianList } from 'hooks/guardian';
 import { SendResult } from '@portkey-wallet/contracts/types';
 import { useIsFocused } from '@react-navigation/native';
 import { NavigateMultiLevelParams } from 'types/navigate';
-import { useGetTransferFee } from '@portkey-wallet/hooks/hooks-ca/transfer';
 import { isCrossChain } from '@portkey-wallet/utils/aelf';
+import { useGetTransferFee } from 'hooks/transfer';
 
 export type RouterParams = {
   loginAccount?: string;

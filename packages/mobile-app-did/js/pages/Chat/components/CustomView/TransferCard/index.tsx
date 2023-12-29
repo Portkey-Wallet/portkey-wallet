@@ -14,12 +14,10 @@ import { divDecimalsToShow } from '@portkey-wallet/utils/converter';
 import { ParsedTransfer } from '@portkey-wallet/im';
 import navigationService from 'utils/navigationService';
 import { useUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useGetContactLabel } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { ActivityTypeEnum } from '@portkey-wallet/store/store-ca/activity/type';
 
 function TransferCard(props: MessageProps<ChatMessage>) {
   const { userId } = useUserInfo() || {};
-  const getContactLabel = useGetContactLabel();
 
   const { currentMessage } = props;
   const { parsedContent } = currentMessage || {};
@@ -59,9 +57,7 @@ function TransferCard(props: MessageProps<ChatMessage>) {
           </TextXL>
           <TextS style={styles.blank} />
           <TextS style={styles.state} numberOfLines={1}>{`${isReceived ? 'Received from' : 'Transfer to'} ${
-            isReceived
-              ? getContactLabel(transferInfo?.data?.senderId, transferInfo?.data?.senderName)
-              : getContactLabel(transferInfo?.data?.toUserId, transferInfo?.data?.toUserName)
+            isReceived ? transferInfo?.data?.senderName : transferInfo?.data?.toUserName
           }`}</TextS>
         </View>
       </View>

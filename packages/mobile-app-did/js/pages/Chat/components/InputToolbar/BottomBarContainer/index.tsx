@@ -81,7 +81,7 @@ export function BottomBarContainer({
 
   useEffect(() => {
     if (replyMessageInfo?.message) {
-      inputFocus(bottomBarStatus === ChatBottomBarStatus.tools);
+      inputFocus(true);
     }
   }, [bottomBarStatus, dispatch, inputFocus, replyMessageInfo?.message]);
 

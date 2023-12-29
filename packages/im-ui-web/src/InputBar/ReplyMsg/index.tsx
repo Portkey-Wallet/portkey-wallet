@@ -25,7 +25,7 @@ export default function ReplyMsg({
   const renderImage = useMemo(
     () => (
       <div className="reply-message-image flex-row-center">
-        <ImageShow src={thumbImgUrl || imgUrl} fallback={imgUrl} />
+        <ImageShow src={thumbImgUrl || imgUrl} fallback={imgUrl} preview={false} />
         <div>
           <div className="container-title">{`Reply to ${toName}`}</div>
           <div className="container-content">Photo</div>

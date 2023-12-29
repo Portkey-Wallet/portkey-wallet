@@ -15,6 +15,7 @@ export enum LoginType {
   Phone,
   Google,
   Apple,
+  Telegram,
 }
 
 export type LoginKeyType = string;

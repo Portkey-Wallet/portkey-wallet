@@ -5,32 +5,23 @@ import Avatar from '../Avatar';
 import UnreadTip from '../UnreadTip';
 import CustomSvg from '../components/CustomSvg';
 import { IChatItemProps } from '../type';
-import { formatChatListTime } from '../utils';
+import { formatChatListSubTitle, formatChatListTime } from '../utils';
 import PopoverMenuList from '../PopoverMenuList';
 import { ChannelTypeEnum, MessageTypeEnum, ParsedRedPackage, ParsedTransfer } from '@portkey-wallet/im/types';
 import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
 import { RedPacketSubtitle, TransferSubtitle } from '../constants';
 import './index.less';
 
-const ChatItem: React.FC<IChatItemProps> = ({
-  date = new Date().getTime(),
-  unread = 0,
-  alt = 'portkey',
-  showMute = true,
-  showLetter = false,
-  myPortkeyId,
-  onClickDelete,
-  onClickMute,
-  onClickPin,
-  ...props
-}) => {
-  const handleClick = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault();
-      props.onClick?.(e);
-    },
-    [props],
-  );
+const ChatItem: React.FC<IChatItemProps> = (props) => {
+  const {
+    lastPostAt = new Date().getTime(),
+    unreadMessageCount = 0,
+    myPortkeyId,
+    onClickDelete,
+    onClickMute,
+    onClickPin,
+    onClick,
+  } = props;
   const hidePop = useCallback(() => {
     setPopVisible(false);
   }, []);
@@ -48,8 +39,8 @@ const ChatItem: React.FC<IChatItemProps> = ({
       },
       {
         key: 'mute',
-        leftIcon: <CustomSvg type={props.muted ? 'UnMute' : 'Mute'} />,
-        children: props.muted ? 'Unmute' : 'Mute',
+        leftIcon: <CustomSvg type={props.mute ? 'UnMute' : 'Mute'} />,
+        children: props.mute ? 'Unmute' : 'Mute',
         onClick: (e: any) => {
           hidePop();
           onClickMute?.(e);
@@ -65,7 +56,7 @@ const ChatItem: React.FC<IChatItemProps> = ({
         },
       },
     ],
-    [hidePop, onClickDelete, onClickMute, onClickPin, props.muted, props.pin],
+    [hidePop, onClickDelete, onClickMute, onClickPin, props.mute, props.pin],
   );
   useEffect(() => {
     document.addEventListener('click', hidePop);
@@ -73,13 +64,14 @@ const ChatItem: React.FC<IChatItemProps> = ({
   }, [hidePop]);
 
   const renderSubtitle = useMemo(() => {
-    const { lastMessageType, subtitle } = props;
+    const subtitle = formatChatListSubTitle(props);
+    const { lastMessageType } = props;
     if (lastMessageType !== MessageTypeEnum.REDPACKAGE_CARD && lastMessageType !== MessageTypeEnum.TRANSFER_CARD) {
       return subtitle;
     }
-    const { muted, channelType, lastMessageContent } = props;
+    const { mute, channelType, lastMessageContent } = props;
     const isGroup = channelType === ChannelTypeEnum.GROUP;
-    let _showHighlight = !muted && unread > 0;
+    let _showHighlight = !mute && unreadMessageCount > 0;
     let _tag = '';
     if (lastMessageType === MessageTypeEnum.REDPACKAGE_CARD) {
       const senderId = (lastMessageContent as ParsedRedPackage).data?.senderId;
@@ -105,11 +97,11 @@ const ChatItem: React.FC<IChatItemProps> = ({
         <span className="transaction-subtitle">{subtitle || RED_PACKAGE_DEFAULT_MEMO}</span>
       </div>
     );
-  }, [myPortkeyId, props, unread]);
+  }, [myPortkeyId, props, unreadMessageCount]);
 
   return (
     <Popover
-      key={`pop-${props.id}`}
+      key={`pop-${props.channelUuid}`}
       overlayClassName="portkey-chat-item-popover"
       placement="bottom"
       trigger="contextMenu"
@@ -117,15 +109,17 @@ const ChatItem: React.FC<IChatItemProps> = ({
       onOpenChange={(visible: boolean) => setPopVisible(visible)}
       showArrow={false}
       content={<PopoverMenuList data={popList} />}>
-      <div key={props.id} className={clsx('portkey-chat-item flex-column', props.className)} onClick={handleClick}>
+      <div
+        key={props.channelUuid}
+        className={clsx('portkey-chat-item flex-column', props.className)}
+        onClick={() => onClick?.(props)}>
         <div className={clsx('chat-item', 'flex', props.pin && 'chat-item-pin')}>
           <div key={'avatar'} className="chat-item-avatar flex-center">
             {props.channelType && [ChannelTypeEnum.GROUP, ChannelTypeEnum.P2P].includes(props.channelType) ? (
               <Avatar
-                src={props.avatar}
-                alt={alt}
-                showLetter={showLetter}
-                letter={props.letter}
+                src={props.channelIcon}
+                alt="portkey"
+                letter={props.displayName}
                 isGroupAvatar={props.channelType === ChannelTypeEnum.GROUP}
               />
             ) : (
@@ -137,17 +131,17 @@ const ChatItem: React.FC<IChatItemProps> = ({
           <div key={'chat-item-body'} className="chat-item-body flex-column">
             <div className="body-top flex-row-center">
               <div className="body-top-title flex">
-                <span className="body-top-title-text">{props.title}</span>
-                {showMute && props.muted === true && <CustomSvg type="Mute" />}
+                <span className="body-top-title-text">{props.displayName}</span>
+                {props.mute === true && <CustomSvg type="Mute" />}
               </div>
-              <div className="body-top-time">{props.dateString || formatChatListTime(`${date}`)}</div>
+              <div className="body-top-time">{props.dateString || formatChatListTime(`${lastPostAt}`)}</div>
             </div>
 
             <div className="body-bottom flex">
               <div className="body-bottom-title">{renderSubtitle}</div>
               <div className="body-bottom-status">
-                {unread && unread > 0 ? (
-                  <UnreadTip unread={unread} muted={showMute && props.muted} />
+                {unreadMessageCount && unreadMessageCount > 0 ? (
+                  <UnreadTip unread={unreadMessageCount} muted={props.mute} />
                 ) : props.pin ? (
                   <CustomSvg type="Pin" />
                 ) : null}

@@ -1,5 +1,5 @@
 import Svg from 'components/Svg';
-import React, { ReactNode, memo, useCallback, useRef } from 'react';
+import React, { ReactNode, memo, useCallback, useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Actions } from 'react-native-gifted-chat';
 import { pTd } from 'utils/unit';
@@ -78,6 +78,13 @@ export function BottomBarContainer({
       timer.current && clearTimeout(timer.current);
     };
   });
+
+  useEffect(() => {
+    if (replyMessageInfo?.message) {
+      inputFocus(true);
+    }
+  }, [bottomBarStatus, dispatch, inputFocus, replyMessageInfo?.message]);
+
   const onSend = useCallback(async () => {
     dispatch(setChatText(''));
     dispatch(setReplyMessageInfo(undefined));
@@ -88,7 +95,7 @@ export function BottomBarContainer({
       typeof text === 'string' &&
         (await sendChannelMessage({
           content: text.trim(),
-          quoteMessage: replyMessageInfo?.message,
+          quoteMessage: replyMessageInfo?.message?.rawMessage,
         }));
     } catch (error: any) {
       if (error?.code === NO_LONGER_IN_GROUP) {

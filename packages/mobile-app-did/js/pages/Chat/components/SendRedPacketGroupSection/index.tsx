@@ -110,7 +110,6 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
 
       const reg = /^[1-9]\d*$/;
       if (!reg.test(value)) return;
-      if (Number(value) > 1000) return;
       if (type === RedPackageTypeEnum.RANDOM) {
         setCountError({ ...INIT_NONE_ERROR });
       }
@@ -119,14 +118,26 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
     [type],
   );
 
+  const isGTMax = useMemo(() => {
+    if (type === RedPackageTypeEnum.P2P) return false;
+    return ZERO.plus(values.packetNum ?? 0).gt(1000);
+  }, [type, values.packetNum]);
+
+  const packetNumTips = useMemo(() => {
+    if (isGTMax) return `The maximum quantity is limited to 1,000.`;
+    return groupMemberCount ? `${groupMemberCount} group members` : '';
+  }, [groupMemberCount, isGTMax]);
+
   const isAllowPrepare = useMemo(() => {
+    if (isGTMax) return false;
+
     if (!values.symbol || values.decimals === '' || values.count === '') return false;
 
     if (type !== RedPackageTypeEnum.P2P && !values.packetNum) {
       return false;
     }
     return true;
-  }, [type, values.count, values.decimals, values.packetNum, values.symbol]);
+  }, [isGTMax, type, values.count, values.decimals, values.packetNum, values.symbol]);
 
   const [countError, setCountError] = useState<ErrorType>(INIT_NONE_ERROR);
   const onPreparePress = useCallback(() => {
@@ -204,8 +215,10 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
             value={values.packetNum}
             onChangeText={onPacketNumChange}
             inputContainerStyle={styles.inputWrap}
-            errorMessage={groupMemberCount ? `${groupMemberCount} group members` : ''}
-            errorStyle={FontStyles.font7}
+            maxLength={5}
+            errorMessage={packetNumTips}
+            errorStyle={!isGTMax && FontStyles.font7}
+            inputStyle={isGTMax && FontStyles.error}
             containerStyle={styles.packetNumWrap}
           />
         </FormItem>

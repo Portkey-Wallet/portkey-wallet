@@ -33,7 +33,7 @@ const ChatBoxPinnedMsg = ({
   const renderImage = useMemo(
     () => (
       <div className="image-content flex">
-        <ImageShow src={thumbImgUrl || imgUrl} fallback={imgUrl} />
+        <ImageShow src={thumbImgUrl || imgUrl} fallback={imgUrl} preview={false} />
         <div>
           <div className="content-title">{`Pinned Message ${msgCount}`}</div>
           <div className="content-pin-msg">Photo</div>
@@ -43,10 +43,10 @@ const ChatBoxPinnedMsg = ({
     [imgUrl, msgCount, thumbImgUrl],
   );
   return (
-    <div className="chat-box-pinned-msg-container flex-between-center">
+    <div className="chat-box-pinned-msg-container flex-between-center" onClick={onViewMore}>
       <div className="container-content">{msgType === MessageTypeEnum.TEXT ? renderText : renderImage}</div>
       <div className="container-right-icon">
-        <CustomSvg type="TopPin" onClick={onViewMore} />
+        <CustomSvg type="TopPin" />
       </div>
     </div>
   );

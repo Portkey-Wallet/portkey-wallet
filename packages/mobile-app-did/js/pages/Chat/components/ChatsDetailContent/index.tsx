@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentStyle: {
-    paddingTop: pTd(24),
+    paddingTop: pTd(12),
   },
   loadingBox: { position: 'absolute', top: 5, alignSelf: 'center' },
 });

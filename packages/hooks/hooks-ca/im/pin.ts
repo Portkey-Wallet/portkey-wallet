@@ -281,15 +281,18 @@ export const useIMPin = (channelId: string, isRegister = false) => {
   );
 
   const pin = useCallback(
-    async (message: Message) => {
-      if (!message.id) throw new Error('message id is null');
+    async (_message: Message) => {
+      if (!_message.id) throw new Error('message id is null');
+      const message = { ..._message };
       delete message.parsedContent;
       delete message.unidentified;
       delete message.pinInfo;
       if (message.quote) {
-        delete message.quote.parsedContent;
-        delete message.quote.unidentified;
-        delete message.quote.pinInfo;
+        const quote = { ...message.quote };
+        delete quote.parsedContent;
+        delete quote.unidentified;
+        delete quote.pinInfo;
+        message.quote = quote;
       }
 
       await im.service.setPin(message);

@@ -39,8 +39,6 @@ function ReplyMessageText(props: MessageTextProps<ChatMessage>) {
   if (!currentMessage?.quote) return null;
   if (!(typeof currentMessage?.quote.parsedContent === 'string')) return null;
 
-  console.log('!currentMessage?.channelUuid', currentMessage?.channelUuid);
-
   return (
     <View style={[replyMessageTextStyles.wrap, position === 'right' && replyMessageImageStyles.rightWrap]}>
       <View style={replyMessageTextStyles.blueBlank} />
@@ -56,6 +54,9 @@ function ReplyMessageText(props: MessageTextProps<ChatMessage>) {
 
 function ReplyMessageImage(props: MessageTextProps<ChatMessage>) {
   const { position, currentMessage } = props;
+
+  const isDeleted = useMemo(() => !currentMessage?.quote?.channelUuid, [currentMessage?.quote?.channelUuid]);
+
   if (!currentMessage?.quote) return null;
   if (!currentMessage?.quote.imageInfo) return null;
 
@@ -63,9 +64,9 @@ function ReplyMessageImage(props: MessageTextProps<ChatMessage>) {
     <View style={[replyMessageImageStyles.wrap, position === 'right' && replyMessageImageStyles.rightWrap]}>
       <View style={replyMessageImageStyles.blueBlank} />
       <Image style={replyMessageImageStyles.img} source={{ uri: currentMessage?.quote?.imageInfo?.imgUri }} />
-      <View style={replyMessageImageStyles.rightWrap}>
+      <View>
         <TextM style={replyMessageImageStyles.name}>{currentMessage?.quote?.fromName}</TextM>
-        <TextM style={replyMessageImageStyles.content} numberOfLines={1}>
+        <TextM style={[replyMessageImageStyles.content, isDeleted && FontStyles.font7]} numberOfLines={1}>
           {currentMessage?.quote?.messageType === 'NOT_SUPPORTED' ? UN_SUPPORTED_FORMAT : 'Photo'}
         </TextM>
       </View>
@@ -136,7 +137,7 @@ function MessageText(
           title: currentMessage?.pinInfo ? 'Unpin' : 'Pin',
           iconName: currentMessage?.pinInfo ? 'chat-unpin' : 'chat-pin',
           onPress: async () => {
-            if (!currentMessage) return;
+            if (!currentMessage || !currentMessage.rawMessage) return;
 
             // unPin in messageList page
             if (currentMessage?.pinInfo && !isHidePinStyle)
@@ -152,7 +153,8 @@ function MessageText(
                     type: 'primary',
                     onPress: async () => {
                       try {
-                        await unPin(currentMessage);
+                        if (!currentMessage.rawMessage) return;
+                        await unPin(currentMessage.rawMessage);
                       } catch (error) {
                         CommonToast.failError(error);
                       }
@@ -166,9 +168,9 @@ function MessageText(
               if (currentMessage?.pinInfo) {
                 // in overlay and just 1 pin message
                 if (pinList?.length === 1 && isHidePinStyle) OverlayModal.hide();
-                await unPin(currentMessage);
+                await unPin(currentMessage.rawMessage);
               } else {
-                await pin(currentMessage);
+                await pin(currentMessage.rawMessage);
               }
             } catch (err) {
               CommonToast.failError(err);
@@ -344,7 +346,7 @@ const messageStyles = {
 const replyMessageTextStyles = StyleSheet.create({
   wrap: {
     position: 'relative',
-    backgroundColor: defaultColors.bg3,
+    backgroundColor: defaultColors.bg26,
     borderRadius: pTd(8),
     paddingVertical: pTd(4),
     paddingLeft: pTd(11),
@@ -380,7 +382,7 @@ const replyMessageTextStyles = StyleSheet.create({
 const replyMessageImageStyles = StyleSheet.create({
   wrap: {
     position: 'relative',
-    backgroundColor: defaultColors.bg3,
+    backgroundColor: defaultColors.bg26,
     borderRadius: pTd(8),
     paddingVertical: pTd(4),
     paddingLeft: pTd(11),

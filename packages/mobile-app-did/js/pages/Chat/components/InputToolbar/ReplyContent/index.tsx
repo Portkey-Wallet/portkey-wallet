@@ -9,6 +9,7 @@ import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
 import { useChatReplyMessageInfo, useChatsDispatch } from 'pages/Chat/context/hooks';
 import { setReplyMessageInfo } from '../../../context/chatsContext';
+import fonts from 'assets/theme/fonts';
 
 export function ReplyContent() {
   const replyMessageInfo = useChatReplyMessageInfo();
@@ -26,8 +27,8 @@ export function ReplyContent() {
       {messageType === 'img' && (
         <Image style={styles.img} resizeMode="cover" source={{ uri: message?.imageInfo?.imgUri }} />
       )}
-      <View style={GStyles.flex1}>
-        <TextM numberOfLines={1} style={[FontStyles.font5, GStyles.flex1]}>
+      <View style={[GStyles.flex1, GStyles.marginRight(8)]}>
+        <TextM numberOfLines={1} style={[fonts.mediumFont, FontStyles.font5, GStyles.flex1]}>
           {`Reply to ${replyMessageInfo.message?.fromName}`}
         </TextM>
         <TextM numberOfLines={1} style={[FontStyles.font3, GStyles.flex1]}>
@@ -47,8 +48,6 @@ const styles = StyleSheet.create({
     paddingRight: pTd(16),
     paddingTop: pTd(8),
     backgroundColor: defaultColors.bg6,
-    borderTopColor: defaultColors.border6,
-    borderTopWidth: StyleSheet.hairlineWidth,
   },
   leftBlue: {
     width: pTd(3),

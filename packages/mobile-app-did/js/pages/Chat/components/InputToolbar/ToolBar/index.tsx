@@ -148,10 +148,11 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
               const { data } = await im.service.getProfile({
                 relationId: toRelationId || '',
               });
+
               showAssetList({
                 imTransferInfo: {
                   addresses: data.addresses || [],
-                  toUserId: data.userId,
+                  toUserId: data?.caHolderInfo?.userId,
                   channelId: currentChannelId || '',
                   name: data.name || data.caHolderInfo?.walletName || data.imInfo?.name || '',
                 },

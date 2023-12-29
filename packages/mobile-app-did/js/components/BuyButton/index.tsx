@@ -35,7 +35,7 @@ const BuyButton = (props: SendButtonType) => {
         style={[commonButtonStyle.iconWrapStyle, GStyles.alignCenter]}
         onPress={async () => {
           if (!isMainnet) return;
-          navigationService.navigate('BuyHome');
+          navigationService.navigate('RampHome');
         }}>
         <Svg icon={themeType === 'dashBoard' ? 'buy' : 'buy1'} size={pTd(46)} />
       </Touchable>

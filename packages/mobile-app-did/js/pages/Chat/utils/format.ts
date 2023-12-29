@@ -1,9 +1,8 @@
-import { Message as IMMessage, ParsedImage, ParsedPinSys } from '@portkey-wallet/im/types';
+import { Message as IMMessage, ParsedImage } from '@portkey-wallet/im/types';
 import { ChatMessage } from '../types';
 import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
-import { PIN_OPERATION_TYPE_ENUM } from '@portkey-wallet/im/types/pin';
 dayjs.extend(utc);
 
 export const ONE_SECONDS = 1000;
@@ -45,6 +44,7 @@ export const formatMessageItem = (message: IMMessage): ChatMessage => {
     text: message.content,
     createdAt: Number(message.createAt),
     messageType: message.type,
+    rawMessage: message,
     user: {
       _id: message.from,
     },

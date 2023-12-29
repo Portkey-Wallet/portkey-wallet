@@ -95,7 +95,7 @@ export const formatPinSysMessageToStr = (pinInfo: ParsedPinSys): string => {
     return `${pinInfo.userInfo?.name} pinned ${isImg ? 'a photo' : getEllipsisPinSysMessage(pinInfo.content)}`;
 
   if (pinInfo?.pinType === PIN_OPERATION_TYPE_ENUM.UnPin)
-    return `${isImg ? 'a photo' : getEllipsisPinSysMessage(pinInfo.content)} unpinned`;
+    return `${isImg ? 'A photo' : getEllipsisPinSysMessage(pinInfo.content)} unpinned`;
 
   if (pinInfo?.pinType === PIN_OPERATION_TYPE_ENUM.RemoveAll)
     return `All ${pinInfo?.unpinnedCount || ''} messages unpinned`;

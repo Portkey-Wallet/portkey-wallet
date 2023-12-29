@@ -58,26 +58,26 @@ const TextMessage: React.FC<IMessage> = (props) => {
         key: 'reply',
         leftIcon: <CustomSvg type="Reply" />,
         children: 'Reply',
-        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onReplyMsg?.(e),
+        onClick: () => props?.onReplyMsg?.(props),
       },
       pinInfo
         ? {
             key: 'pin',
             leftIcon: <CustomSvg type="UnPin" />,
             children: 'Unpin',
-            onClick: (e: React.MouseEvent<HTMLElement>) => props?.onPinMsg?.(e),
+            onClick: () => props?.onPinMsg?.(props),
           }
         : {
             key: 'pin',
             leftIcon: <CustomSvg type="Pin" />,
             children: 'Pin',
-            onClick: (e: React.MouseEvent<HTMLElement>) => props?.onPinMsg?.(e),
+            onClick: () => props?.onPinMsg?.(props),
           },
       {
         key: 'delete',
         leftIcon: <CustomSvg type="Delete" />,
         children: 'Delete',
-        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(e),
+        onClick: () => props?.onDeleteMsg?.(props),
       },
     ],
     [parsedContent, pinInfo, props, setCopied],

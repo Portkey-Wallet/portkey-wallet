@@ -6,19 +6,18 @@ import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
 import { ChatMessage } from 'pages/Chat/types';
 import isEqual from 'lodash/isEqual';
-import { TextXL, TextS } from 'components/CommonText';
+import { TextS, TextL } from 'components/CommonText';
 import Svg from 'components/Svg';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimalsToShow } from '@portkey-wallet/utils/converter';
 import { ParsedTransfer } from '@portkey-wallet/im';
 import navigationService from 'utils/navigationService';
 import { useUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useGetContactLabel } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { ActivityTypeEnum } from '@portkey-wallet/store/store-ca/activity/type';
 
 function TransferCard(props: MessageProps<ChatMessage>) {
   const { userId } = useUserInfo() || {};
-  const getContactLabel = useGetContactLabel();
 
   const { currentMessage } = props;
   const { parsedContent } = currentMessage || {};
@@ -31,40 +30,34 @@ function TransferCard(props: MessageProps<ChatMessage>) {
     navigationService.navigate('ActivityDetail', {
       transactionId: transferInfo.data?.transactionId,
       blockHash: transferInfo.data?.blockHash,
+      activityType: ActivityTypeEnum.TRANSFER_CARD,
     });
   }, [transferInfo.data?.blockHash, transferInfo.data?.transactionId]);
 
   const transferInfoShow = useMemo(() => {
+    if (!transferInfo?.transferExtraData) return ' - ';
+
     if (transferInfo.transferExtraData?.tokenInfo) {
-      return `${formatAmountShow(
-        divDecimals(
-          transferInfo?.transferExtraData?.tokenInfo?.amount || '',
-          transferInfo?.transferExtraData?.tokenInfo?.decimal,
-        ),
+      return `${divDecimalsToShow(
+        transferInfo?.transferExtraData?.tokenInfo?.amount || '',
         transferInfo?.transferExtraData?.tokenInfo?.decimal,
       )} ${transferInfo?.transferExtraData?.tokenInfo?.symbol}`;
     } else {
       return `${transferInfo?.transferExtraData?.nftInfo?.alias} #${transferInfo?.transferExtraData?.nftInfo?.nftId}`;
     }
-  }, [
-    transferInfo.transferExtraData?.nftInfo?.alias,
-    transferInfo.transferExtraData?.nftInfo?.nftId,
-    transferInfo.transferExtraData?.tokenInfo,
-  ]);
+  }, [transferInfo.transferExtraData]);
 
   return (
-    <Touchable underlayColor={defaultColors.bg24} style={styles.wrap} onPress={onPress}>
+    <Touchable highlight underlayColor={defaultColors.bg24} style={styles.wrap} onPress={onPress}>
       <View style={[GStyles.flexRow, GStyles.itemCenter]}>
         <Svg icon="transfer-preview" size={pTd(40)} />
         <View style={styles.rightSection}>
-          <TextXL numberOfLines={1} style={[fonts.mediumFont, styles.memo]}>
+          <TextL numberOfLines={1} style={[fonts.mediumFont, styles.memo]}>
             {transferInfoShow}
-          </TextXL>
+          </TextL>
           <TextS style={styles.blank} />
           <TextS style={styles.state} numberOfLines={1}>{`${isReceived ? 'Received from' : 'Transfer to'} ${
-            isReceived
-              ? getContactLabel(transferInfo?.data?.senderId, transferInfo?.data?.senderName)
-              : getContactLabel(transferInfo?.data?.toUserId, transferInfo?.data?.toUserName)
+            isReceived ? transferInfo?.data?.senderName || '' : transferInfo?.data?.toUserName || ''
           }`}</TextS>
         </View>
       </View>

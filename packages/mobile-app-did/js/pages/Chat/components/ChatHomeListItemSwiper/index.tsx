@@ -64,7 +64,9 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
     }
     if (item.lastMessageType === 'TRANSFER-CARD') {
       const isHighLight: boolean =
-        !item.mute && (item.lastMessageContent as ParsedTransfer)?.data?.toUserId === userInfo?.userId;
+        item.unreadMessageCount > 0 &&
+        !item.mute &&
+        (item.lastMessageContent as ParsedTransfer)?.data?.toUserId === userInfo?.userId;
 
       const transferInfo = item?.lastMessageContent as ParsedTransfer;
 

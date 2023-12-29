@@ -67,6 +67,7 @@ export function useKeyboardAnim({ textInputRef }: { textInputRef: React.RefObjec
 export function useSendCurrentChannelMessage() {
   const currentChannelId = useCurrentChannelId();
   const { sendChannelMessage, sendChannelImageByS3Result } = useSendChannelMessage();
+
   return useMemo(
     () => ({
       sendChannelMessage: ({

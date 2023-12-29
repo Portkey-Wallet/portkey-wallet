@@ -28,18 +28,21 @@ import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
 import { useIsTokenHasPrice, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import CommonAvatar from 'components/CommonAvatar';
+import { IActivityApiParams } from '@portkey-wallet/store/store-ca/activity/type';
+import Lottie from 'lottie-react-native';
 
 const ActivityDetail = () => {
   const { t } = useLanguage();
   const defaultToken = useDefaultToken();
 
-  const activityItemFromRoute = useRouterParams<ActivityItemType>();
-  const { transactionId = '', blockHash = '', isReceived: isReceivedParams } = activityItemFromRoute;
+  const activityItemFromRoute = useRouterParams<ActivityItemType & IActivityApiParams>();
+  const { transactionId = '', blockHash = '', isReceived: isReceivedParams, activityType } = activityItemFromRoute;
   const caAddresses = useCaAddresses();
   const isTestnet = useIsTestnet();
   const isTokenHasPrice = useIsTokenHasPrice(activityItemFromRoute?.symbol);
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const { currentNetwork } = useCurrentWallet();
+  const [initializing, setInitializing] = useState(true);
 
   const [activityItem, setActivityItem] = useState<ActivityItemType>();
 
@@ -50,6 +53,7 @@ const ActivityDetail = () => {
       caAddresses,
       transactionId,
       blockHash,
+      activityType,
     };
     try {
       const res = await handleLoopFetch({
@@ -63,10 +67,11 @@ const ActivityDetail = () => {
         res.isReceived = isReceivedParams;
       }
       setActivityItem(res);
+      setInitializing(false);
     } catch (error) {
       CommonToast.fail('This transfer is being processed on the blockchain. Please check the details later.');
     }
-  }, [blockHash, caAddresses, isReceivedParams, transactionId]);
+  }, [activityType, blockHash, caAddresses, isReceivedParams, transactionId]);
 
   useEffectOnce(() => {
     getActivityDetail();
@@ -187,6 +192,23 @@ const ActivityDetail = () => {
   useEffectOnce(() => {
     getTokenPrice(activityItem?.symbol);
   });
+
+  if (initializing)
+    return (
+      <PageContainer
+        hideHeader
+        safeAreaColor={['white']}
+        containerStyles={styles.containerStyle}
+        scrollViewProps={{ disabled: true }}>
+        <StatusBar barStyle={'dark-content'} />
+        <TouchableOpacity style={styles.closeWrap} onPress={() => navigationService.goBack()}>
+          <Svg icon="close" size={pTd(16)} />
+        </TouchableOpacity>
+        <View style={[GStyles.marginTop(pTd(24)), GStyles.flexRow, GStyles.flexCenter]}>
+          <Lottie style={styles.loadingIcon} source={require('assets/lottieFiles/loading.json')} autoPlay loop />
+        </View>
+      </PageContainer>
+    );
 
   return (
     <PageContainer
@@ -482,5 +504,9 @@ export const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     // backgroundColor: 'red',
     paddingBottom: pTd(3),
+  },
+  loadingIcon: {
+    width: pTd(24),
+    height: pTd(24),
   },
 });

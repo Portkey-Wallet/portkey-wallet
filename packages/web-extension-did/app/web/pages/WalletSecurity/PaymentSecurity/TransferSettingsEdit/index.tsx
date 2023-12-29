@@ -18,6 +18,7 @@ import { LimitFormatTip, SingleExceedDaily } from 'constants/security';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import { useEffectOnce } from 'react-use';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
+import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
 
 export default function TransferSettingsEdit() {
   const { isPrompt, isNotLessThan768 } = useCommonState();
@@ -81,7 +82,14 @@ export default function TransferSettingsEdit() {
   }, [form]);
 
   const handleBack = useCallback(() => {
-    navigate('/setting/wallet-security/payment-security/transfer-settings', { state: state?.initStateBackUp || state });
+    const res = state?.initStateBackUp || state;
+    if (state.from === ICheckLimitBusiness.SEND) {
+      return navigate(`/send/token/${state.symbol}`, { state: { ...res, ...state.extra } });
+    }
+    if (state.from === ICheckLimitBusiness.RAMP_SELL) {
+      return navigate('/buy', { state: { ...res, ...state.extra } });
+    }
+    navigate('/setting/wallet-security/payment-security/transfer-settings', { state: { ...res, ...state.extra } });
   }, [navigate, state]);
 
   const handleRestrictedChange = useCallback(
@@ -129,6 +137,7 @@ export default function TransferSettingsEdit() {
         from: state.from,
         targetChainId: state.targetChainId || state.chainId,
         initStateBackUp: state,
+        extra: state.extra,
       };
       setLoading(false);
       isPrompt
@@ -136,7 +145,7 @@ export default function TransferSettingsEdit() {
             state: `setTransferLimit_${JSON.stringify(params)}`,
           })
         : InternalMessage.payload(
-            PortkeyMessageTypes.GUARDIANS_APPROVAL,
+            PortkeyMessageTypes.GUARDIANS_APPROVAL_PAYMENT_SECURITY,
             `setTransferLimit_${JSON.stringify(params)}`,
           ).send();
     } catch (error) {

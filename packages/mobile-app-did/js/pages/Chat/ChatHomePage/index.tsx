@@ -18,6 +18,7 @@ import { useLatestRef } from '@portkey-wallet/hooks';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import { measurePageY } from 'utils/measure';
 import useRequestNotifyPermission from 'hooks/usePermission';
+import { showUpgradeOverlay } from 'components/UpgradeOverlay';
 
 export default function DiscoverHome() {
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
@@ -91,6 +92,12 @@ export default function DiscoverHome() {
     useCallback(() => {
       requestNotifyPermission();
     }, [requestNotifyPermission]),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      showUpgradeOverlay({ type: 'chat' });
+    }, []),
   );
 
   return (

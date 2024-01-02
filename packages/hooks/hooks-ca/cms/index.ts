@@ -113,10 +113,7 @@ export function useServiceSuspension(isInit = false) {
   const { networkType } = useCurrentNetworkInfo();
   const networkList = useNetworkList();
 
-  const serviceSuspension = useMemo(
-    () => serviceSuspensionMap?.[networkType] || [],
-    [serviceSuspensionMap, networkType],
-  );
+  const serviceSuspension = useMemo(() => serviceSuspensionMap?.[networkType], [serviceSuspensionMap, networkType]);
 
   useEffect(() => {
     if (isInit) {
@@ -133,7 +130,7 @@ export function useServiceSuspension(isInit = false) {
     }
   }, [dispatch, isInit, networkType]);
 
-  return serviceSuspension || [];
+  return serviceSuspension;
 }
 
 export const useEntrance = (config: IEntranceMatchValueConfig, isInit = false) => {

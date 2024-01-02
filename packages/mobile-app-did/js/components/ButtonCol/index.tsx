@@ -25,12 +25,19 @@ export default function ButtonCol({
     <View style={[styles.buttonsBox, style]}>
       {Array.isArray(buttons) &&
         buttons.map((item, index) => {
+          const isLastItem = index === buttons.length - 1;
+
           const buttonStyle: StyleProp<ViewStyle> = [styles.buttonStyle];
           const containerStyle: StyleProp<ViewStyle> = [styles.containerStyle];
           const titleStyle: StyleProp<TextStyle> = [styles.titleStyle];
+
           if (item.type === 'outline') {
             buttonStyle.push(styles.outlineButtonStyle);
             titleStyle.push(styles.outlineTitleStyle);
+          }
+
+          if (isLastItem) {
+            containerStyle.push(GStyles.marginBottom(0));
           }
 
           return (
@@ -64,7 +71,7 @@ export const styles = StyleSheet.create({
   containerStyle: {
     // TODO: change margin
     width: '100%',
-    marginBottom: pTd(16),
+    marginBottom: pTd(8),
   },
   outlineTitleStyle: {
     color: defaultColors.font5,

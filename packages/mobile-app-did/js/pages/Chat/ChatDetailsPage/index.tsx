@@ -34,7 +34,8 @@ import type { ListItemType } from '../components/ChatOverlay/chatPopover';
 import myEvents from 'utils/deviceEvent';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import { measurePageY } from 'utils/measure';
-import { useIsFocused } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import { showUpgradeOverlay } from 'components/UpgradeOverlay';
 
 const ChatDetailsPage = () => {
   const dispatch = useAppCommonDispatch();
@@ -210,6 +211,12 @@ const ChatDetailsPage = () => {
       </View>
     ),
     [avatar, currentChannelInfo?.displayName, displayName, mute, onBack, toRelationId],
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      showUpgradeOverlay({ type: 'chat-detail' });
+    }, []),
   );
 
   return (

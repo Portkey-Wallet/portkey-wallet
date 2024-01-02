@@ -1,25 +1,62 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { TextTitle, TextM } from 'components/CommonText';
-import { View, Image } from 'react-native';
+import { View, Image, Linking } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import upGradeApp from 'assets/image/pngs/upGradeApp.png';
 import CommonButton from 'components/CommonButton';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
-
+import { isIOS, screenWidth } from '@portkey-wallet/utils/mobile/device';
+import navigationService from 'utils/navigationService';
+import myEvents from 'utils/deviceEvent';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { request } from '@portkey-wallet/api/api-did';
+import { useServiceSuspension } from '@portkey-wallet/hooks/hooks-ca/cms';
 export type ShowUpgradeOverlayPropsType = {
-  type?: 'dashBoard' | 'chat';
-  onDownLoad: () => void;
-  onNotNow: () => void;
+  type?: 'dashBoard' | 'chat' | 'chat-detail' | 'my';
 };
 
 function UpgradeOverlay(props: ShowUpgradeOverlayPropsType) {
-  const { type = 'dashBoard', onDownLoad, onNotNow } = props;
+  const { type = 'dashBoard' } = props;
+  const serviceSuspension = useServiceSuspension();
+
+  const commonAction = useLockCallback(async () => {
+    switch (type) {
+      case 'dashBoard' || 'my':
+        try {
+          await request.wallet.setSuspendV1Info({ params: { version: 'V1' } });
+        } catch (error) {
+          console.log('error', error);
+        }
+
+        break;
+
+      case 'chat-detail':
+        myEvents.navToBottomTab.emit({ tabName: 'Wallet' });
+        navigationService.navigate('Tab');
+        break;
+      case 'chat':
+        break;
+
+      default:
+        break;
+    }
+  }, [type]);
+
+  const onDownLoad = useLockCallback(async () => {
+    await commonAction();
+    Linking.openURL(isIOS ? serviceSuspension?.iOSUrl || '' : serviceSuspension?.androidUrl || '');
+    OverlayModal.hide();
+  }, [commonAction]);
+
+  const onNotNow = useCallback(async () => {
+    await commonAction();
+    OverlayModal.hide();
+  }, [commonAction]);
 
   const content = useMemo(() => {
-    if (type === 'dashBoard') {
+    if (type === 'dashBoard' || type === 'my') {
       return (
         <>
           <TextM style={styles.textStyle}>
@@ -61,9 +98,24 @@ function UpgradeOverlay(props: ShowUpgradeOverlayPropsType) {
   );
 }
 
-export const showUpgradeOverlay = (props: ShowUpgradeOverlayPropsType) => {
+export const showUpgradeOverlay = async (props: ShowUpgradeOverlayPropsType) => {
+  const { type } = props;
+  let shouldShow = true;
+
+  if (type === 'dashBoard') {
+    try {
+      const { isPopup } = await request.wallet.getSuspendV1Info();
+      shouldShow = !isPopup;
+    } catch (error) {
+      console.log('error', error);
+    }
+  }
+
+  if (!shouldShow) return;
+
   OverlayModal.show(<UpgradeOverlay {...props} />, {
     position: 'center',
+    animated: false,
   });
 };
 

@@ -102,7 +102,7 @@ export default function Referral({
         <Divider title="OR" inset={true} style={pageStyles.dividerStyle} />
         <CommonButton type="primary" onPress={() => setLoginType(PageLoginType.phone)} title={TitleMap[type].button} />
       </View>
-      {type === PageType.login && (
+      {/* {type === PageType.login && (
         <Touchable
           style={[GStyles.flexRowWrap, GStyles.itemCenter, styles.signUpTip]}
           onPress={() => navigationService.navigate('SignupPortkey')}>
@@ -111,7 +111,7 @@ export default function Referral({
           </TextL>
           <Svg size={pTd(20)} color={FontStyles.font4.color} icon="right-arrow2" />
         </Touchable>
-      )}
+      )} */}
       <TermsServiceButton />
     </View>
   );

@@ -5,7 +5,7 @@ import { pTd } from 'utils/unit';
 
 export type CommonButtonProps = {
   buttonType?: 'send' | 'receive';
-  type?: 'solid' | 'clear' | 'outline' | 'primary';
+  type?: 'solid' | 'clear' | 'outline' | 'primary' | 'text';
 } & Omit<ButtonProps, 'type'>;
 const stylesMap: any = {
   outline: {
@@ -28,6 +28,10 @@ const stylesMap: any = {
     disabledStyle: [styles.primaryButtonStyle, styles.disabledStyle, styles.disabledPrimaryStyle],
     disabledTitleStyle: styles.primaryTitleStyle,
   },
+  text: {
+    buttonStyle: styles.textButtonStyle,
+    titleStyle: styles.textTitleStyle,
+  },
 };
 const CommonButton: React.FC<CommonButtonProps> = props => {
   const { type, buttonStyle, titleStyle, disabledStyle, disabledTitleStyle, ...buttonProps } = props;
@@ -43,7 +47,7 @@ const CommonButton: React.FC<CommonButtonProps> = props => {
       disabledStyle={[styles.disabledStyle, mapStyles?.disabledStyle, disabledStyle]}
       disabledTitleStyle={[styles.disabledTitleStyle, mapStyles?.disabledTitleStyle, disabledTitleStyle]}
       {...buttonProps}
-      type={type === 'primary' ? undefined : type}
+      type={type === 'primary' || type === 'text' ? undefined : type}
     />
   );
 };

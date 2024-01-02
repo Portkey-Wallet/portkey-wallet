@@ -18,6 +18,7 @@ import { getChatListSvgName } from 'pages/Chat/utils';
 import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
 import GroupAvatarShow from 'pages/Chat/components/GroupAvatarShow';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { showUpgradeOverlay } from 'components/UpgradeOverlay';
 
 type ChatHomeListItemSwipedType<T> = {
   item: T;
@@ -32,6 +33,7 @@ const DELETE_TO_END = screenWidth;
 export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipedType<ChannelItem>) {
   const { item, onPress, onLongPress, onDelete } = props;
   const { userInfo } = useWallet();
+
   const [isEdit, setIsEdit] = useState(false);
   const swipeableRef = useRef<SwipeableItemImperativeRef>(null);
   const listenerCallBack = useCallback(
@@ -81,6 +83,9 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
   }, [item, userInfo?.userId]);
 
   const deleteItem = useCallback(() => {
+    // todo: delete func
+    return showUpgradeOverlay({ type: 'chat' });
+
     swipeableRef.current?.close();
     onDelete(item);
   }, [item, onDelete]);
@@ -95,12 +100,18 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
   );
 
   const onPressItem = useCallback(() => {
+    // todo: delete func
+    return showUpgradeOverlay({ type: 'chat' });
+
     if (isEdit) return;
     onPress(item);
   }, [isEdit, item, onPress]);
 
   const onLongPressItem = useCallback(
     (e: GestureResponderEvent) => {
+      // todo: delete func
+      return showUpgradeOverlay({ type: 'chat' });
+
       if (isEdit) return;
       onLongPress(e, item);
     },

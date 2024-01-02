@@ -53,12 +53,14 @@ import { resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
 import { request as globalRequest } from '@portkey-wallet/api/api-did';
 import { VerifierAuthParams, useVerifierAuth, useVerifyToken } from './authentication';
 import { verification } from 'utils/api';
-import { Text } from 'react-native';
+import { Text, Linking } from 'react-native';
 import { TextL } from 'components/CommonText';
 import fonts from 'assets/theme/fonts';
 import { CreateAddressLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 import { AuthTypes } from 'constants/guardian';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
+import { useServiceSuspension } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 export function useOnResultFail() {
   const dispatch = useAppDispatch();
@@ -358,6 +360,7 @@ export function useGoSelectVerifier(isLogin?: boolean) {
   const { address } = useCurrentWalletInfo();
   const verifyToken = useVerifyToken();
   const onRequestOrSetPin = useOnRequestOrSetPin();
+  const serviceSuspension = useServiceSuspension();
 
   const onConfirmAuth = useCallback(
     async ({ loginAccount, loginType, authenticationInfo, selectedVerifier, chainId }: LoginAuthParams) => {
@@ -501,22 +504,26 @@ export function useGoSelectVerifier(isLogin?: boolean) {
   return useCallback(
     async (params: LoginConfirmParams) => {
       if (isLogin) {
+        // TODO: change style
         ActionSheet.alert({
           title: 'Continue with this account?',
-          message: `This account has not been registered yet. Click "Confirm" to complete the registration.`,
+          message: `This account has not been registered yet. If you want to register with this account, please download Portkey V2 to get better user experience.`,
+          buttonGroupDirection: 'column',
           buttons: [
-            { title: 'Cancel', type: 'outline' },
             {
-              title: 'Confirm',
-              onPress: () => onConfirmRef.current(params),
+              title: 'Download Portkey V2',
+              onPress: () => {
+                Linking.openURL(isIOS ? serviceSuspension?.iOSUrl || '' : serviceSuspension?.androidUrl || '');
+              },
             },
+            { title: 'Cancel', type: 'text' },
           ],
         });
       } else {
         await onConfirmRef.current(params);
       }
     },
-    [isLogin],
+    [isLogin, serviceSuspension?.androidUrl, serviceSuspension?.iOSUrl],
   );
 }
 

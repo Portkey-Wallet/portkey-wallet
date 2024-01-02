@@ -1,60 +1,39 @@
-import React, { memo, useMemo } from 'react';
-import { Linking, StyleSheet, View } from 'react-native';
+import React, { memo } from 'react';
+import { ImageBackground, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
-import Svg, { IconName } from 'components/Svg';
+import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
-import { TextM, TextXXXL } from 'components/CommonText';
-import * as Application from 'expo-application';
-import Divider from 'components/Divider';
+import { TextXXXL } from 'components/CommonText';
+import inviteFriendButton from 'assets/image/pngs/inviteFriendButton.png';
+import { showReferralLinkOverlay } from '../components/ReferralLinkOverlay';
+import Touchable from 'components/Touchable';
 import navigationService from 'utils/navigationService';
-import { OfficialWebsite } from '@portkey-wallet/constants/constants-ca/network';
-import { useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import GStyles from 'assets/theme/GStyles';
 
 const UserReferral = () => {
   const { t } = useLanguage();
-  const socialMediaList = useSocialMediaList();
-  const { s3Url } = useCurrentNetworkInfo();
 
-  const officialList = useMemo(
-    (): { iconName: IconName; title: string; onPress: () => void }[] => [
-      {
-        iconName: 'terms',
-        title: 'Terms of Service',
-        onPress: () => {
-          navigationService.navigate('ViewOnWebView', {
-            title: 'Terms of Service',
-            url: `${OfficialWebsite}/terms-of-service`,
-          });
-        },
-      },
-      {
-        iconName: 'privacy-policy',
-        title: 'Privacy Policy',
-        onPress: () => {
-          navigationService.navigate('ViewOnWebView', {
-            title: 'Privacy Policy',
-            url: `${OfficialWebsite}/privacy-policy`,
-          });
-        },
-      },
-    ],
-    [],
-  );
+  Touchable;
 
   return (
     <PageContainer
+      hideHeader
       titleDom={t('About Us')}
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['transparent', 'transparent']}
       containerStyles={styles.pageContainer}
       scrollViewProps={{ disabled: false }}>
       <View style={styles.logoWrap}>
-        <Svg icon="app-blue-logo" oblongSize={[pTd(48.89), pTd(48.89)]} />
+        <Touchable onPress={navigationService.goBack}>
+          <Svg icon="app-blue-logo" oblongSize={[pTd(48.89), pTd(48.89)]} />
+        </Touchable>
+        <TextXXXL style={GStyles.flex1}>Portkey Referral</TextXXXL>
+        <View />
       </View>
-      <TextXXXL>Portkey</TextXXXL>
-      <TextM style={styles.version}>{`V${Application.nativeApplicationVersion}`}</TextM>
+      <Touchable onPress={() => showReferralLinkOverlay('linkUrl')}>
+        <ImageBackground source={inviteFriendButton} style={styles.btn} />
+      </Touchable>
     </PageContainer>
   );
 };
@@ -82,24 +61,8 @@ export const styles = StyleSheet.create({
     marginBottom: pTd(16),
     backgroundColor: defaultColors.bg1,
   },
-  version: {
-    marginTop: pTd(8),
-    fontSize: pTd(14),
-    lineHeight: pTd(20),
-    color: defaultColors.font3,
-    marginBottom: pTd(48),
-  },
-  btnContainer: {
-    backgroundColor: defaultColors.bg1,
-    width: '100%',
-    borderRadius: pTd(6),
-    marginBottom: pTd(24),
-  },
-  innerBtnWrap: {
-    marginBottom: 0,
-  },
-  dividerStyle: {
-    marginVertical: pTd(4),
-    marginHorizontal: pTd(16),
+  btn: {
+    width: pTd(335),
+    height: pTd(48),
   },
 });

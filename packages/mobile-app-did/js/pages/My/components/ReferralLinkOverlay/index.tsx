@@ -1,6 +1,6 @@
-import { StyleSheet, Keyboard, View, ImageBackground } from 'react-native';
+import { StyleSheet, Keyboard, View, Image, Share } from 'react-native';
 import OverlayModal from 'components/OverlayModal';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { pTd } from 'utils/unit';
 import { TextL, TextM } from 'components/CommonText';
 import Touchable from 'components/Touchable';
@@ -13,6 +13,16 @@ import { defaultColors } from 'assets/theme';
 import shareButton from 'assets/image/pngs/shareButton.png';
 
 function ReferralLinkOverlay({ linkUrl }: { linkUrl: string }) {
+  const onShare = useCallback(async () => {
+    await Share.share({
+      message: linkUrl,
+      url: linkUrl,
+      title: linkUrl,
+    }).catch(shareError => {
+      console.log(shareError);
+    });
+  }, [linkUrl]);
+
   return (
     <View style={styles.wrap}>
       <View style={styles.header}>
@@ -24,7 +34,9 @@ function ReferralLinkOverlay({ linkUrl }: { linkUrl: string }) {
           <Svg icon="copy3" size={pTd(16)} color={defaultColors.font5} />
         </Touchable>
       </View>
-      <ImageBackground source={shareButton} style={styles.btn} />
+      <Touchable onPress={onShare}>
+        <Image source={shareButton} style={styles.btn} />
+      </Touchable>
     </View>
   );
 }

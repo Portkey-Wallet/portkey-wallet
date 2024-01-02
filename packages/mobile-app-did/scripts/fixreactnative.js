@@ -11,6 +11,8 @@ const ExpoDevicesPath = path.resolve(
   '../node_modules/expo-device/android/src/main/java/expo/modules/device/DeviceModule.kt',
 );
 
+const BoostPath = path.resolve(__dirname, '../node_modules/react-native/third-party-podspecs/boost.podspec');
+
 function fixScaleY(str) {
   return str.replace(
     /verticallyInverted:[^{}]*{[^{}]*transform:[^{}]*{scaleY:\s-1}[^{}]*}/,
@@ -37,10 +39,17 @@ function fixDeviceName(str) {
   if (!str.includes(from)) return str;
   return str.replace(from, to);
 }
+function fixReactNativeBoost(str) {
+  const to = `spec.source = { :http => 'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2',`;
+  const from = `spec.source = { :http => 'https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.bz2',`;
+  if (!str.includes(from)) return str;
+  return str.replace(from, to);
+}
 
 const FIX_LIST = [
   { filePath: VirtualizedListPath, fun: data => fixScaleY(fixImport(data)) },
   { filePath: ExpoDevicesPath, fun: data => fixDeviceName(data) },
+  { filePath: BoostPath, fun: data => fixReactNativeBoost(data) },
 ];
 
 FIX_LIST.forEach(({ filePath, fun }) => {

@@ -5,14 +5,15 @@ import './index.less';
 
 export interface IGuardianProps {
   headerTitle: string;
-  renderAddBtn: ReactNode;
+  renderAddBtn?: ReactNode;
   renderGuardianList: ReactNode;
+  renderGuardianTip?: ReactNode;
 }
 
-const GuardiansPrompt = ({ headerTitle, renderAddBtn, renderGuardianList }: IGuardianProps) => {
+const GuardiansPrompt = ({ headerTitle, renderAddBtn, renderGuardianList, renderGuardianTip }: IGuardianProps) => {
   return (
     <div className="guardians-prompt flex">
-      <div className="guardians-body">
+      <div className="guardians-body flex-column">
         <SecondPageHeader
           className="guardians-header"
           paddingLeft={12}
@@ -20,7 +21,10 @@ const GuardiansPrompt = ({ headerTitle, renderAddBtn, renderGuardianList }: IGua
           leftElement={false}
           rightElement={renderAddBtn}
         />
-        <div className="guardians-content">{renderGuardianList}</div>
+        <div className="guardians-content flex-column-between flex-1">
+          <div className="content-guardian-list flex-1">{renderGuardianList}</div>
+          <div className="content-guardian-tip flex">{renderGuardianTip}</div>
+        </div>
       </div>
       <Outlet />
     </div>

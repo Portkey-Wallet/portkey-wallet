@@ -32,7 +32,12 @@ export default function ShowQRCode({
       )}
       <div className="show-qrcode-content flex-column-center">
         <div className="qrcode-content-icon"></div>
-        <Avatar avatarSize="large" src={icon} channelType={type} letter={showName.slice(0, 1)?.toUpperCase()} />
+        <Avatar
+          avatarSize="large"
+          src={icon}
+          isGroupAvatar={type === ChannelTypeEnum.GROUP}
+          letter={showName.slice(0, 1)?.toUpperCase()}
+        />
         <div className="qrcode-content-name">{showName}</div>
         <div className="qrcode-content-qrcode"></div>
         <QRCodeCommon value={`${qrCodeValue}`} />

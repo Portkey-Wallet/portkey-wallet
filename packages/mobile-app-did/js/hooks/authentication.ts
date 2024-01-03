@@ -8,7 +8,12 @@ import * as Application from 'expo-application';
 import { AccessTokenRequest, makeRedirectUri } from 'expo-auth-session';
 import { request } from '@portkey-wallet/api/api-did';
 import { ChainId } from '@portkey-wallet/types';
-import { AppleUserInfo, getGoogleUserInfo, parseAppleIdentityToken } from '@portkey-wallet/utils/authentication';
+import {
+  AppleUserInfo,
+  TelegramUserInfo,
+  getGoogleUserInfo,
+  parseAppleIdentityToken,
+} from '@portkey-wallet/utils/authentication';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { useInterface } from 'contexts/useInterface';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
@@ -18,6 +23,8 @@ import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authe
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { AuthenticationInfo, OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
+import TelegramOverlay from 'components/TelegramOverlay';
+import { parseTelegramToken } from '@portkey-wallet/utils/authentication';
 
 if (!isIOS) {
   GoogleSignin.configure({
@@ -50,6 +57,11 @@ export type AppleAuthentication = {
     givenName?: string;
     familyName?: string;
   };
+};
+
+export type TelegramAuthentication = {
+  user: TelegramUserInfo;
+  accessToken: string;
 };
 
 export type GoogleAuthResponse = GoogleAuthentication;
@@ -242,6 +254,45 @@ export function useAppleAuthentication() {
   );
 }
 
+export function useTelegramAuthentication() {
+  // todo: add Telegram authentication
+  return useMemo(
+    () => ({
+      appleResponse: '',
+      telegramSign: TelegramOverlay.sign,
+    }),
+    [],
+  );
+}
+
+interface IAuthenticationSign {
+  sign(type: LoginType.Google): Promise<GoogleAuthentication>;
+  sign(type: LoginType.Apple): Promise<AppleAuthentication>;
+  sign(type: LoginType.Telegram): Promise<TelegramAuthentication>;
+}
+export function useAuthenticationSign() {
+  const { appleSign } = useAppleAuthentication();
+  const { googleSign } = useGoogleAuthentication();
+  const { telegramSign } = useTelegramAuthentication();
+  return useCallback<IAuthenticationSign['sign']>(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    type => {
+      switch (type) {
+        case LoginType.Google:
+          return googleSign();
+        case LoginType.Apple:
+          return appleSign();
+        case LoginType.Telegram:
+          return telegramSign();
+        default:
+          throw new Error('Unsupported login type');
+      }
+    },
+    [appleSign, googleSign, telegramSign],
+  );
+}
+
 export type VerifyTokenParams = {
   accessToken?: string;
   verifierId?: string;
@@ -308,14 +359,49 @@ export function useVerifyAppleToken() {
     [appleSign],
   );
 }
+export function useVerifyTelegramToken() {
+  const { telegramSign } = useTelegramAuthentication();
+  return useCallback(
+    async (params: VerifyTokenParams) => {
+      let accessToken = params.accessToken;
+      const { isExpired: tokenIsExpired } = parseTelegramToken(accessToken) || {};
+      if (!accessToken || tokenIsExpired) {
+        const info = await telegramSign();
+        accessToken = info.accessToken || undefined;
+      }
+      const { userId } = parseTelegramToken(accessToken) || {};
+      if (userId !== params.id) throw new Error('Account does not match your guardian');
+
+      const rst = await request.verify.verifyTelegramToken({
+        params: { ...params, accessToken },
+      });
+
+      return {
+        ...rst,
+        accessToken,
+      };
+    },
+    [telegramSign],
+  );
+}
 export function useVerifyToken() {
   const verifyGoogleToken = useVerifyGoogleToken();
   const verifyAppleToken = useVerifyAppleToken();
+  const TelegramToken = useVerifyTelegramToken();
   return useCallback(
     (type: LoginType, params: VerifyTokenParams) => {
-      return (type === LoginType.Apple ? verifyAppleToken : verifyGoogleToken)(params);
+      switch (type) {
+        case LoginType.Google:
+          return verifyGoogleToken(params);
+        case LoginType.Apple:
+          return verifyAppleToken(params);
+        case LoginType.Telegram:
+          return TelegramToken(params);
+        default:
+          throw new Error('Unsupported login type');
+      }
     },
-    [verifyAppleToken, verifyGoogleToken],
+    [TelegramToken, verifyAppleToken, verifyGoogleToken],
   );
 }
 

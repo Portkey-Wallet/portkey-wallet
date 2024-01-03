@@ -15,7 +15,6 @@ import { ChannelTypeEnum } from '@portkey-wallet/im';
 import { useChangeNetwork } from './network';
 import { useLatestRef } from '@portkey-wallet/hooks';
 
-
 export const useNotifyAction = () => {
   const jumpToChatGroupDetails = useJumpToChatGroupDetails();
   const jumpToChatDetails = useJumpToChatDetails();

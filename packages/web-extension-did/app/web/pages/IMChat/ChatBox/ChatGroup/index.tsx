@@ -2,32 +2,64 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
 import { message } from 'antd';
-import { MessageList, InputBar, StyleProvider, MessageType, PopDataProps, Avatar } from '@portkey-wallet/im-ui-web';
+import {
+  MessageList,
+  InputBar,
+  StyleProvider,
+  MessageContentType,
+  PopDataProps,
+  Avatar,
+  IInputReplyMsgProps,
+} from '@portkey-wallet/im-ui-web';
 import { useGroupChannel, useHideChannel, useLeaveChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import BookmarkListDrawer from '../../components/BookmarkListDrawer';
-import { formatMessageList } from '../../utils';
+import { formatImageData, formatMessageList } from '../../utils';
 import { useTranslation } from 'react-i18next';
 import { MAX_INPUT_LENGTH } from '@portkey-wallet/constants/constants-ca/im';
 import ChatBoxTip from '../../components/ChatBoxTip';
 import CustomUpload from '../../components/CustomUpload';
 import { useEffectOnce } from 'react-use';
-import { useHandle } from '../useHandle';
+import { useHandle } from '../useHandleMsg';
 import ChatBoxHeader from '../components/ChatBoxHeader';
 import CustomModal from 'pages/components/CustomModal';
 import { useClickUrl } from 'hooks/im';
 import WarnTip from 'pages/IMChat/components/WarnTip';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 import { NO_LONGER_IN_GROUP } from '@portkey-wallet/constants/constants-ca/chat';
-import { ChannelTypeEnum } from '@portkey-wallet/im';
+import { Message, MessageTypeEnum, ParsedImage } from '@portkey-wallet/im';
+import ChatBoxPinnedMsg from 'pages/IMChat/components/ChatBoxPinnedMsg';
+import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
+import { useWalletInfo } from 'store/Provider/hooks';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
   const { t } = useTranslation();
+  const { userInfo } = useWalletInfo();
   const navigate = useNavigate();
   const [showBookmark, setShowBookmark] = useState(false);
   const messageRef = useRef<any>(null);
   const [popVisible, setPopVisible] = useState(false);
   const [showAddMemTip, setShowAddMemTip] = useState(true);
+  const [replyMsg, setReplyMsg] = useState<Message>();
+  const showReplyMsg: IInputReplyMsgProps | undefined = useMemo(() => {
+    if (replyMsg?.type === MessageTypeEnum.TEXT) {
+      return {
+        msgType: MessageTypeEnum.TEXT,
+        toName: `${replyMsg.fromName}`,
+        msgContent: `${replyMsg.content}`,
+      };
+    }
+    if (replyMsg?.type === MessageTypeEnum.IMAGE) {
+      const { thumbImgUrl, imgUrl } = formatImageData(replyMsg?.parsedContent as ParsedImage);
+      return {
+        msgType: MessageTypeEnum.IMAGE,
+        toName: `${replyMsg.fromName}`,
+        thumbImgUrl: thumbImgUrl || imgUrl,
+        imgUrl,
+      };
+    }
+    return undefined;
+  }, [replyMsg]);
   const {
     init,
     list,
@@ -44,15 +76,63 @@ export default function ChatBox() {
     groupInfo,
     info,
   } = useGroupChannel(`${channelUuid}`);
+  const {
+    list: pinList,
+    lastPinMessage,
+    refresh: refreshAllPinList,
+    pin: pinMsg,
+    unPin: unPinMsg,
+  } = useIMPin(`${channelUuid}`, true);
   const clickUrl = useClickUrl({ fromChannelUuid: channelUuid, isGroup: true });
   useEffectOnce(() => {
     init();
+    refreshAllPinList();
   });
+  const lastPinMsgShow = useMemo(() => {
+    if (lastPinMessage?.type === MessageTypeEnum.TEXT) {
+      setShowAddMemTip(false);
+      return {
+        msgType: MessageTypeEnum.TEXT,
+        msgContent: `${lastPinMessage.content}`,
+      };
+    }
+    if (lastPinMessage?.type === MessageTypeEnum.IMAGE) {
+      const { thumbImgUrl, imgUrl } = formatImageData(lastPinMessage?.parsedContent as ParsedImage);
+      setShowAddMemTip(false);
+      return {
+        msgType: MessageTypeEnum.IMAGE,
+        thumbImgUrl: thumbImgUrl || imgUrl,
+        imgUrl,
+      };
+    }
+    return undefined;
+  }, [lastPinMessage]);
   const hideChannel = useHideChannel();
   const { relationId } = useRelationId();
-  const messageList: MessageType[] = useMemo(() => formatMessageList(list, relationId!, true), [list, relationId]);
+  const messageList: MessageContentType[] = useMemo(
+    () => formatMessageList({ list, ownerRelationId: relationId!, isGroup: true, isAdmin }),
+    [isAdmin, list, relationId],
+  );
+  const handleCancelReply = useCallback(() => {
+    setReplyMsg(undefined);
+  }, []);
+  const handleClickReply = useCallback(
+    (item: MessageContentType) => {
+      const _msg = list.find((temp) => temp.id === item.id);
+      setReplyMsg(_msg);
+    },
+    [list],
+  );
   const leaveGroup = useLeaveChannel();
-  const { handleDeleteMsg, handlePin, handleMute } = useHandle({ info, mute, pin, deleteMessage });
+  const { handleDeleteMsg, handlePin, handleMute, handlePinMsg } = useHandle({
+    info,
+    mute,
+    pin,
+    deleteMessage,
+    list,
+    pinMsg,
+    unPinMsg,
+  });
   const handleDeleteBox = useCallback(() => {
     CustomModalConfirm({
       content: t('Delete chat?'),
@@ -179,16 +259,20 @@ export default function ChatBox() {
   const handleSendMessage = useCallback(
     async (v: string) => {
       try {
-        await sendMessage(v.trim() ?? '');
+        setReplyMsg(undefined);
+        await sendMessage({
+          content: v.trim() ?? '',
+          quoteMessage: replyMsg,
+        });
         messageRef.current.scrollTop = messageRef.current.scrollHeight;
       } catch (e: any) {
         handleSendMsgError(e);
       }
     },
-    [handleSendMsgError, sendMessage],
+    [handleSendMsgError, replyMsg, sendMessage],
   );
   const handleGoProfile = useCallback(
-    (item: MessageType) => {
+    (item: MessageContentType) => {
       navigate('/setting/contacts/view', {
         state: { relationId: item?.from, from: 'chat-box-group', channelUuid },
       });
@@ -199,13 +283,26 @@ export default function ChatBox() {
     () => (
       <div className="flex title-element">
         <div className="title-content flex-center" onClick={handleGoGroupInfo}>
-          <Avatar channelType={ChannelTypeEnum.GROUP} src={groupInfo?.icon} />
+          <Avatar isGroupAvatar={true} src={groupInfo?.icon} />
           <div className="title-name">{groupInfo?.name || info?.displayName || ''}</div>
         </div>
         <div>{info?.mute && <CustomSvg type="Mute" />}</div>
       </div>
     ),
     [handleGoGroupInfo, groupInfo?.icon, groupInfo?.name, info?.displayName, info?.mute],
+  );
+  const renderAddMember = useMemo(
+    () =>
+      isAdmin &&
+      showAddMemTip && (
+        <ChatBoxTip onConfirm={handleAddMember} onClose={() => setShowAddMemTip(false)}>
+          <div className="content flex-center">
+            <CustomSvg type="ChatAddContact" />
+            <span className="text">Add Members</span>
+          </div>
+        </ChatBoxTip>
+      ),
+    [handleAddMember, isAdmin, showAddMemTip],
   );
   useEffect(() => {
     document.addEventListener('click', hidePop);
@@ -220,13 +317,17 @@ export default function ChatBox() {
         popVisible={popVisible}
         setPopVisible={setPopVisible}
       />
-      {isAdmin && showAddMemTip && (
-        <ChatBoxTip onConfirm={handleAddMember} onClose={() => setShowAddMemTip(false)}>
-          <div className="content flex-center">
-            <CustomSvg type="ChatAddContact" />
-            <span className="text">Add Members</span>
-          </div>
-        </ChatBoxTip>
+      {lastPinMsgShow ? (
+        <ChatBoxPinnedMsg
+          msgCount={pinList?.length}
+          msgType={lastPinMsgShow.msgType}
+          msgContent={lastPinMsgShow.msgContent}
+          thumbImgUrl={lastPinMsgShow.thumbImgUrl}
+          imgUrl={lastPinMsgShow.imgUrl}
+          onViewMore={() => navigate(`/chat-box-group/${channelUuid}/pinned-msg`)}
+        />
+      ) : (
+        renderAddMember
       )}
       <div className="chat-box-content">
         <StyleProvider prefixCls="portkey">
@@ -236,17 +337,26 @@ export default function ChatBox() {
             hasNext={hasNext}
             next={next}
             lockable
+            myPortkeyId={userInfo?.userId}
             dataSource={messageList}
             onClickAvatar={handleGoProfile}
             onDeleteMsg={handleDeleteMsg}
+            onPinMsg={handlePinMsg}
             onClickUrl={clickUrl}
             onClickUnSupportMsg={WarnTip}
+            onReplyMsg={handleClickReply}
           />
         </StyleProvider>
       </div>
       <div className="chat-box-footer">
         <StyleProvider prefixCls="portkey">
-          <InputBar moreData={inputMorePopList} maxLength={MAX_INPUT_LENGTH} onSendMessage={handleSendMessage} />
+          <InputBar
+            moreData={inputMorePopList}
+            maxLength={MAX_INPUT_LENGTH}
+            replyMsg={showReplyMsg}
+            onCloseReply={handleCancelReply}
+            onSendMessage={handleSendMessage}
+          />
         </StyleProvider>
       </div>
       <BookmarkListDrawer

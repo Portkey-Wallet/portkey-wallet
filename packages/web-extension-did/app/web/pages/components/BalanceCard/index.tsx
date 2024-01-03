@@ -4,7 +4,7 @@ import CustomSvg from 'components/CustomSvg';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { useCommonState } from 'store/Provider/hooks';
-import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/payment';
+import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/wallet';
 import './index.less';
 
 export interface BalanceCardProps {

@@ -26,7 +26,6 @@ export type ActivityStateMapAttributes = {
 export interface IActivitiesApiParams {
   maxResultCount: number;
   skipCount: number;
-  caAddresses?: string[];
   caAddressInfos?: { chainId: ChainId; chainName: string; caAddress: string }[];
   managerAddresses?: string[];
   transactionTypes?: TransactionTypes[];
@@ -44,7 +43,7 @@ export interface IActivitiesApiResponse {
 export interface IActivityApiParams {
   transactionId: string;
   blockHash: string;
-  caAddresses?: string[];
+  caAddressInfos: ICaAddressInfoListItemType[];
 }
 
 export interface IActivityListWithAddressApiParams {

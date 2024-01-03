@@ -12,6 +12,7 @@ import {
   getSocialMediaAsync,
   getRememberMeBlackListAsync,
   getTabMenuAsync,
+  getServiceSuspensionAsync,
   setEntrance,
 } from '@portkey-wallet/store/store-ca/cms/actions';
 
@@ -104,6 +105,32 @@ export function useDiscoverGroupList(isInit = false) {
   }, [dispatch, isInit, networkType]);
 
   return discoverGroupList || [];
+}
+
+export function useServiceSuspension(isInit = false) {
+  const dispatch = useAppCommonDispatch();
+  const { serviceSuspensionMap } = useCMS();
+  const { networkType } = useCurrentNetworkInfo();
+  const networkList = useNetworkList();
+
+  const serviceSuspension = useMemo(() => serviceSuspensionMap?.[networkType], [serviceSuspensionMap, networkType]);
+
+  useEffect(() => {
+    if (isInit) {
+      networkList.forEach(item => {
+        dispatch(getServiceSuspensionAsync(item.networkType));
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!isInit) {
+      dispatch(getServiceSuspensionAsync(networkType));
+    }
+  }, [dispatch, isInit, networkType]);
+
+  return serviceSuspension;
 }
 
 export const useEntrance = (config: IEntranceMatchValueConfig, isInit = false) => {

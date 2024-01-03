@@ -6,6 +6,7 @@ import {
   getSocialMedia,
   getTabMenu,
   getRememberMeBlackListSites,
+  getServiceSuspension,
 } from '@portkey-wallet/graphql/cms/queries';
 import { IEntrance } from '@portkey-wallet/types/types-ca/cms';
 
@@ -111,6 +112,23 @@ export const getRememberMeBlackListAsync = createAsyncThunk<
     };
   } else {
     throw new Error('rememberMeBlackListMap error');
+  }
+});
+
+export const getServiceSuspensionAsync = createAsyncThunk<
+  Required<Pick<CMSState, 'serviceSuspensionMap'>>,
+  NetworkType
+>('cms/getServiceSuspensionAsync', async (network: NetworkType) => {
+  const result = await getServiceSuspension(network, {});
+
+  if (result.data.serviceSuspension) {
+    return {
+      serviceSuspensionMap: {
+        [network]: result.data.serviceSuspension,
+      },
+    };
+  } else {
+    throw new Error('serviceSuspensionMap error');
   }
 });
 

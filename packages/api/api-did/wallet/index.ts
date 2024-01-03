@@ -35,4 +35,7 @@ export default {
     config: { method: 'GET' },
   },
   deletionAccount: '/api/app/account/revoke/request',
+  // suspend v1
+  getSuspendV1Info: '/api/app/upgrade/info',
+  setSuspendV1Info: '/api/app/upgrade/close',
 } as const;

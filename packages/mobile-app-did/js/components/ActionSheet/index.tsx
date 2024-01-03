@@ -4,6 +4,7 @@ import { View, Text, TouchableOpacity, Keyboard } from 'react-native';
 import { styles } from './style/style';
 import { TextL, TextM, TextTitle } from 'components/CommonText';
 import ButtonRow, { ButtonRowProps } from 'components/ButtonRow';
+import ButtonCol from 'components/ButtonCol';
 
 const show = (
   items: {
@@ -53,9 +54,19 @@ type AlertBodyProps = {
   buttons?: ButtonRowProps['buttons'];
   autoClose?: boolean;
   messageList?: ReactNode[];
+  buttonGroupDirection?: 'row' | 'column';
 };
 
-function AlertBody({ title, message, buttons, message2, title2, autoClose = true, messageList }: AlertBodyProps) {
+function AlertBody({
+  title,
+  message,
+  buttons,
+  message2,
+  title2,
+  autoClose = true,
+  messageList,
+  buttonGroupDirection = 'row',
+}: AlertBodyProps) {
   return (
     <View style={styles.alertBox}>
       {title ? <TextTitle style={styles.alertTitle}>{title}</TextTitle> : null}
@@ -71,15 +82,28 @@ function AlertBody({ title, message, buttons, message2, title2, autoClose = true
           item
         );
       })}
-      <ButtonRow
-        buttons={buttons?.map(i => ({
-          ...i,
-          onPress: () => {
-            if (autoClose) OverlayModal.hide();
-            i.onPress?.();
-          },
-        }))}
-      />
+
+      {buttonGroupDirection === 'row' ? (
+        <ButtonRow
+          buttons={buttons?.map(i => ({
+            ...i,
+            onPress: () => {
+              if (autoClose) OverlayModal.hide();
+              i.onPress?.();
+            },
+          }))}
+        />
+      ) : (
+        <ButtonCol
+          buttons={buttons?.map(i => ({
+            ...i,
+            onPress: () => {
+              if (autoClose) OverlayModal.hide();
+              i.onPress?.();
+            },
+          }))}
+        />
+      )}
     </View>
   );
 }

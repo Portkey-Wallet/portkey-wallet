@@ -20,6 +20,7 @@ import {
   useSocialMediaList,
   useRememberMeBlackList,
   useTabMenuList,
+  useServiceSuspension,
 } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
@@ -45,7 +46,10 @@ export default function Updater() {
   const pin = usePin();
   const onLocking = useLocking();
   const checkManagerOnLogout = useCheckManagerOnLogout();
-  useRefreshTokenConfig(pin);
+  const refreshTokenConfig = useRefreshTokenConfig();
+  useMemo(async () => {
+    await refreshTokenConfig(pin);
+  }, [pin, refreshTokenConfig]);
 
   useCaInfoOnChain();
   useCheckManager(checkManagerOnLogout);
@@ -88,6 +92,7 @@ export default function Updater() {
   useSocialMediaList(true);
   useTabMenuList(true);
   useDiscoverGroupList(true);
+  useServiceSuspension(true);
   useAppEntrance(true);
   useRememberMeBlackList(true);
   useCheckContactMap();

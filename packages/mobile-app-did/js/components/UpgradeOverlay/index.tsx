@@ -13,6 +13,7 @@ import myEvents from 'utils/deviceEvent';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { request } from '@portkey-wallet/api/api-did';
 import { useServiceSuspension } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { handleLoopFetch } from '@portkey-wallet/utils';
 export type ShowUpgradeOverlayPropsType = {
   type?: 'dashBoard' | 'chat' | 'chat-detail' | 'my';
 };
@@ -104,10 +105,16 @@ export const showUpgradeOverlay = async (props: ShowUpgradeOverlayPropsType) => 
 
   if (type === 'dashBoard') {
     try {
-      const { isPopup } = await request.wallet.getSuspendV1Info();
+      const { isPopup } = await handleLoopFetch<{ isPopup: boolean }>({
+        fetch: () => request.wallet.getSuspendV1Info({ params: { version: 'V1' } }),
+        times: 5,
+        interval: 1500,
+      });
+
       shouldShow = !isPopup;
     } catch (error) {
       console.log('error', error);
+      shouldShow = true;
     }
   }
 

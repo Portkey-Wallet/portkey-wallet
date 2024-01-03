@@ -36,6 +36,9 @@ export default {
   },
   deletionAccount: '/api/app/account/revoke/request',
   // suspend v1
-  getSuspendV1Info: '/api/app/upgrade/info',
+  getSuspendV1Info: {
+    target: '/api/app/upgrade/info',
+    config: { method: 'GET' },
+  },
   setSuspendV1Info: '/api/app/upgrade/close',
 } as const;

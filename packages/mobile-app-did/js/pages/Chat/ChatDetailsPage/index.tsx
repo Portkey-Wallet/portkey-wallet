@@ -202,7 +202,14 @@ const ChatDetailsPage = () => {
           />
 
           <TextL
-            style={[FontStyles.font2, GStyles.marginRight(pTd(4)), GStyles.marginLeft(pTd(8)), FontStyles.weight500]}>
+            numberOfLines={1}
+            style={[
+              FontStyles.font2,
+              GStyles.marginRight(pTd(4)),
+              GStyles.marginLeft(pTd(8)),
+              FontStyles.weight500,
+              styles.name,
+            ]}>
             {displayName}
           </TextL>
         </Touchable>
@@ -246,5 +253,8 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg4,
     flex: 1,
     ...GStyles.paddingArg(0),
+  },
+  name: {
+    maxWidth: pTd(150),
   },
 });

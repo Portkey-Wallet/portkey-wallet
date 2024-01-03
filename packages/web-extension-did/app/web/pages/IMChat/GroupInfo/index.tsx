@@ -12,7 +12,7 @@ import { Avatar } from '@portkey-wallet/im-ui-web';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import { ChannelMemberInfo, ChannelTypeEnum } from '@portkey-wallet/im';
+import { ChannelMemberInfo } from '@portkey-wallet/im';
 import Copy from 'components/Copy';
 import ContactListDrawer from '../components/GroupShareDrawer';
 import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
@@ -103,7 +103,7 @@ const GroupInfo = () => {
         <div className="group-info-container">
           <div className="info-basic flex-center">
             <div className="flex-column-center">
-              <Avatar channelType={ChannelTypeEnum.GROUP} src={groupInfo?.icon} avatarSize="large" />
+              <Avatar isGroupAvatar={true} src={groupInfo?.icon} avatarSize="large" />
               <div className="group-name">{groupInfo?.name || ''}</div>
               <div className="group-members">
                 {memberLen}

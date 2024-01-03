@@ -45,7 +45,10 @@ export default function Updater() {
   const pin = usePin();
   const onLocking = useLocking();
   const checkManagerOnLogout = useCheckManagerOnLogout();
-  useRefreshTokenConfig(pin);
+  const refreshTokenConfig = useRefreshTokenConfig();
+  useMemo(async () => {
+    await refreshTokenConfig(pin);
+  }, [pin, refreshTokenConfig]);
 
   useCaInfoOnChain();
   useCheckManager(checkManagerOnLogout);

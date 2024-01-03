@@ -178,7 +178,7 @@ export const IOSChatInputBar = forwardRef(function InputBar(
 export const ChatInputBar = isIOS ? IOSChatInputBar : AndroidChatInputBar;
 
 const styles = StyleSheet.create({
-  inputStyle: { 
+  inputStyle: {
     paddingRight: pTd(40),
     fontSize: pTd(16),
     lineHeight: pTd(20),

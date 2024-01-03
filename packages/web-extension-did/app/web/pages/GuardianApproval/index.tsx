@@ -9,7 +9,7 @@ import clsx from 'clsx';
 import CommonTooltip from 'components/CommonTooltip';
 import { useTranslation } from 'react-i18next';
 import GuardianItems from './components/GuardianItems';
-import { useRecovery } from './hooks/useRecovery';
+import { useGuardianRecovery } from './hooks/useRecovery';
 import { useRemoveOtherManage } from './hooks/useRemoveOtherManage';
 import GuardianApprovalPrompt from './Prompt';
 import GuardianApprovalPopup from './Popup';
@@ -57,22 +57,18 @@ export default function GuardianApproval() {
   }, [query]);
   const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult(query);
 
-  const userVerifiedListLogic = useCallback(() => {
-    const tempVerifiedList = Object.values(userGuardianStatus ?? {});
-    let filterVerifiedList: UserGuardianStatus[] = tempVerifiedList;
+  const userVerifiedList = useMemo(() => {
+    const tempGuardianList = Object.values(userGuardianStatus ?? {});
+    let filterGuardianList: UserGuardianStatus[] = tempGuardianList;
     const _query = query?.split('_')[0];
 
     if (query === 'guardians/edit') {
-      filterVerifiedList = tempVerifiedList.filter((item) => item.key !== preGuardian?.key);
-    } else if (['guardians/del', 'guardians/add'].includes(_query)) {
-      filterVerifiedList = tempVerifiedList.filter((item) => item.key !== opGuardian?.key);
+      filterGuardianList = tempGuardianList.filter((item) => item.key !== preGuardian?.key);
+    } else if (['guardians/del', 'guardians/add', 'guardians/loginGuardian'].includes(_query)) {
+      filterGuardianList = tempGuardianList.filter((item) => item.key !== opGuardian?.key);
     }
-    return filterVerifiedList;
+    return filterGuardianList;
   }, [opGuardian?.key, preGuardian?.key, query, userGuardianStatus]);
-
-  const userVerifiedList = useMemo(() => {
-    return userVerifiedListLogic();
-  }, [userVerifiedListLogic]);
 
   const approvalLength = useMemo(() => {
     return getApprovalCount(userVerifiedList.length);
@@ -82,7 +78,7 @@ export default function GuardianApproval() {
     return userVerifiedList.filter((item) => item?.status === VerifyStatus.Verified).length;
   }, [userVerifiedList]);
 
-  const handleGuardianRecovery = useRecovery();
+  const handleGuardianRecovery = useGuardianRecovery();
 
   const handleRemoveOtherManage = useRemoveOtherManage();
   const handleSetTransferLimit = useSetTransferLimit(targetChainId);
@@ -144,6 +140,15 @@ export default function GuardianApproval() {
           return;
         } else if (query.indexOf('guardians/add') !== -1) {
           navigate('/setting/guardians/add', { state: 'back' });
+          return;
+        } else if (query.indexOf('guardians/loginGuardian') !== -1) {
+          const i = query.indexOf('_');
+          const _extra = query.substring(i + 1);
+          if (_extra === 'edit') {
+            navigate('/setting/guardians/edit');
+          } else {
+            navigate('/setting/guardians/view');
+          }
           return;
         }
       }

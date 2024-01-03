@@ -34,7 +34,7 @@ function ReferralLinkOverlay({ linkUrl }: { linkUrl: string }) {
           <Svg icon="copy3" size={pTd(16)} color={defaultColors.font5} />
         </Touchable>
       </View>
-      <Touchable onPress={onShare}>
+      <Touchable onPress={onShare} style={styles.btnWrap}>
         <Image source={shareButton} style={styles.btn} />
       </Touchable>
     </View>
@@ -71,9 +71,11 @@ const styles = StyleSheet.create({
     paddingRight: pTd(8),
     color: defaultColors.font3,
   },
-  btn: {
+  btnWrap: {
     marginTop: pTd(24),
     marginBottom: pTd(24),
+  },
+  btn: {
     width: pTd(335),
     height: pTd(48),
   },

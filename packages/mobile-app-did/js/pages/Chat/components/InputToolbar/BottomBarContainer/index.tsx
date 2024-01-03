@@ -20,7 +20,7 @@ import { defaultColors } from 'assets/theme';
 import ActionSheet from 'components/ActionSheet';
 import navigationService from 'utils/navigationService';
 import { NO_LONGER_IN_GROUP } from '@portkey-wallet/constants/constants-ca/chat';
-import { ReplyContent } from '../ReplyContent';
+import ReplyContent from '../ReplyContent';
 
 export const ActionsIcon = memo(function ActionsIcon({ onPress }: { onPress?: () => void }) {
   return (

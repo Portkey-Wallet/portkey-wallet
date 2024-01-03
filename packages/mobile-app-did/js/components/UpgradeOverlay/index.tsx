@@ -105,12 +105,7 @@ export const showUpgradeOverlay = async (props: ShowUpgradeOverlayPropsType) => 
 
   if (type === 'dashBoard') {
     try {
-      const { isPopup } = await handleLoopFetch<{ isPopup: boolean }>({
-        fetch: () => request.wallet.getSuspendV1Info({ params: { version: 'V1' } }),
-        times: 5,
-        interval: 1500,
-      });
-
+      const { isPopup } = await request.wallet.getSuspendV1Info({ params: { version: 'V1' } });
       shouldShow = !isPopup;
     } catch (error) {
       console.log('error', error);

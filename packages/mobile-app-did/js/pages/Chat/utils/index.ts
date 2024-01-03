@@ -107,13 +107,11 @@ export function getChatListSvgName(channelType?: ChannelTypeEnum): IconName | un
 }
 
 export function isCommonView(type?: MessageType | 'NOT_SUPPORTED'): boolean {
-  if (type === 'REDPACKAGE-CARD' || type === 'TRANSFER-CARD') return true;
-  return false;
+  return type === 'REDPACKAGE-CARD' || type === 'TRANSFER-CARD';
 }
 
 export function isSystemTypeMessage(type?: MessageType | 'NOT_SUPPORTED'): boolean {
-  if (type === 'PIN-SYS' || type === 'SYS') return true;
-  return false;
+  return type === 'PIN-SYS' || type === 'SYS';
 }
 
 export const isTargetMember = (item: ChannelMemberInfo, keyword: string): boolean => {

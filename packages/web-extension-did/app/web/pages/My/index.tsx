@@ -15,6 +15,7 @@ import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import svgsList from 'assets/svgs';
 import UnReadBadge from 'pages/components/UnReadBadge';
+import UpgradeTip from 'pages/components/UpgradeTip';
 
 interface MenuItemInfo {
   label: string;
@@ -93,6 +94,7 @@ export default function My() {
         }}
         rightElement={<Button onClick={handleLock}>{t('Lock')}</Button>}
       />
+      <UpgradeTip />
       <div className="flex my-content">
         <div className="menu-list">
           {MenuList.map((item) => (

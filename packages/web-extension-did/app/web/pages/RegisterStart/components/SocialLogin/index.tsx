@@ -54,14 +54,6 @@ export default function SocialLogin({
           <Button type="primary" className="login-by-input-btn" onClick={() => switchLogin?.()}>
             {`${isLogin ? t('Login') : t('Sign up')} with Phone / Email`}
           </Button>
-          {isLogin && (
-            <div className="go-sign-up">
-              <span>{t('No account?')}</span>
-              <span className="sign-text" onClick={() => navigate('/register/start/create')}>
-                {t('Sign up')}
-              </span>
-            </div>
-          )}
         </div>
       </div>
       <TermsOfServiceItem />

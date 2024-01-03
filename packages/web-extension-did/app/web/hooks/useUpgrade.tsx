@@ -3,7 +3,7 @@ import { useServiceSuspension } from '@portkey-wallet/hooks/hooks-ca/cms';
 import CustomSvg from 'components/CustomSvg';
 import { upgradeModalContent, upgradeModalTitle } from 'constants/upgrade';
 import CustomModal from 'pages/components/CustomModal';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export interface IUpgradeModalProps {
@@ -14,16 +14,17 @@ export function useUpgradeModal(props?: IUpgradeModalProps) {
   const { forceShow = false } = props || {};
   const { t } = useTranslation();
   const serviceSuspension = useServiceSuspension();
-  const [show, setShow] = useState(forceShow);
 
   const showUpgrade = useCallback(async () => {
+    if (forceShow) return true;
     try {
       const { isPopup } = await request.wallet.getSuspendV1Info({ params: { version: 'V1' } });
-      setShow(!isPopup);
+      return !isPopup;
     } catch (error) {
       console.log('===getSuspendV1Info error', error);
+      return false;
     }
-  }, []);
+  }, [forceShow]);
   const handleCancel = useCallback(async () => {
     request.wallet.setSuspendV1Info({ params: { version: 'V1' } });
   }, []);
@@ -40,14 +41,9 @@ export function useUpgradeModal(props?: IUpgradeModalProps) {
     }
   }, [handleCancel, serviceSuspension?.extensionUrl]);
 
-  useEffect(() => {
-    if (!forceShow) {
-      showUpgrade();
-    }
-  }, [forceShow, showUpgrade]);
-
-  return useCallback(() => {
-    if (show) {
+  return useCallback(async () => {
+    const showUpgradeTip = await showUpgrade();
+    if (showUpgradeTip) {
       CustomModal({
         className: 'upgrade-modal',
         type: 'confirm',
@@ -68,5 +64,5 @@ export function useUpgradeModal(props?: IUpgradeModalProps) {
         onCancel: handleCancel,
       });
     }
-  }, [handleCancel, show, t, toUpgrade]);
+  }, [handleCancel, showUpgrade, t, toUpgrade]);
 }

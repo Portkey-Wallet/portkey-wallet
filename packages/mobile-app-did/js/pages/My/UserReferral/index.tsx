@@ -1,19 +1,20 @@
 import React, { memo } from 'react';
-import { ImageBackground, StyleSheet, View, Image } from 'react-native';
-import Svg from 'components/Svg';
+import { StyleSheet, View, Image, ImageBackground } from 'react-native';
 import { pTd } from 'utils/unit';
 import { TextL, TextM } from 'components/CommonText';
 import inviteFriendButton from 'assets/image/pngs/inviteFriendButton.png';
-import referralTopBackground from 'assets/image/pngs/referralTopBackground.png';
-import referralTopText from 'assets/image/pngs/referralTopText.png';
 import { showReferralLinkOverlay } from '../components/ReferralLinkOverlay';
 import Touchable from 'components/Touchable';
-import navigationService from 'utils/navigationService';
 import GStyles from 'assets/theme/GStyles';
-import { screenWidth, statusBarHeight } from '@portkey-wallet/utils/mobile/device';
+import { bottomBarHeight, screenWidth, statusBarHeight } from '@portkey-wallet/utils/mobile/device';
 import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
 import { defaultColors } from 'assets/theme';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
+import LinearGradient from 'react-native-linear-gradient';
+import referralTopBackground from 'assets/image/pngs/referralTopBackground.png';
+import referralTopText from 'assets/image/pngs/referralTopText.png';
+import navigationService from 'utils/navigationService';
+import Svg from 'components/Svg';
 
 const UserReferral = () => {
   return (
@@ -29,16 +30,26 @@ const UserReferral = () => {
         <Image source={referralTopText} style={styles.referralTopText} />
       </ImageBackground>
 
-      <View style={[GStyles.flexCenter, styles.qrCodeSection]}>
-        <View style={styles.qrCodeWrap}>
-          <CommonQRCodeStyled qrData={'xxxxxxx'} width={pTd(103)} />
+      <View style={[GStyles.flexCol, GStyles.center, styles.bottomSectionWrap]}>
+        <View style={[GStyles.flexCenter, styles.qrCodeSection]}>
+          <LinearGradient
+            start={{ x: 0, y: 0.5 }}
+            end={{ x: 1, y: 0.5 }}
+            colors={['#2F31A1', '#707EFF', '#2F31A1']}
+            style={styles.gradient}
+          />
+          <View style={styles.qrBgSection} />
+          <View style={styles.qrCodeWrap}>
+            <CommonQRCodeStyled qrData={'xxxxxxx'} width={pTd(103)} />
+          </View>
+          <TextM style={[FontStyles.font7, GStyles.textAlignCenter, GStyles.marginTop(pTd(4))]}>Referral Code</TextM>
         </View>
-        <TextM style={[FontStyles.font7, GStyles.textAlignCenter]}>Referral Code</TextM>
+
+        {/* TODO: change url */}
+        <Touchable onPress={() => showReferralLinkOverlay('linkUrl')}>
+          <Image source={inviteFriendButton} style={styles.btn} />
+        </Touchable>
       </View>
-      {/* TODO: change url */}
-      <Touchable onPress={() => showReferralLinkOverlay('linkUrl')}>
-        <Image source={inviteFriendButton} style={styles.btn} />
-      </Touchable>
     </View>
   );
 };
@@ -51,7 +62,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     display: 'flex',
     alignItems: 'center',
-    backgroundColor: defaultColors.bg19,
+    backgroundColor: defaultColors.bg28,
   },
   backIcon: {
     position: 'absolute',
@@ -83,10 +94,12 @@ export const styles = StyleSheet.create({
     bottom: pTd(244),
   },
   qrCodeSection: {
+    position: 'relative',
+    width: pTd(152),
     paddingTop: pTd(16),
     paddingHorizontal: pTd(16),
     paddingBottom: pTd(8),
-    backgroundColor: '#111124',
+    marginBottom: pTd(42),
   },
   qrCodeWrap: {
     padding: pTd(8.5),
@@ -94,8 +107,31 @@ export const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg1,
     marginTop: pTd(4),
   },
+  qrBgSection: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: defaultColors.bg29,
+  },
   btn: {
     width: pTd(335),
     height: pTd(48),
+    marginBottom: bottomBarHeight + pTd(16),
+  },
+  gradient: {
+    position: 'absolute',
+    left: -pTd(2),
+    right: -pTd(2),
+    top: -pTd(2),
+    bottom: -pTd(2),
+    zIndex: -1,
+  },
+  bottomSectionWrap: {
+    position: 'absolute',
+    bottom: 0,
+    width: screenWidth,
+    paddingHorizontal: pTd(20),
   },
 });

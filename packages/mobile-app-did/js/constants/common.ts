@@ -19,8 +19,8 @@ export const DEVICE_TYPE: DeviceType = (() => {
 
 export const APP_SCHEMA = 'portkey.did';
 
-export const RAMP_BUY_URL = 'http://portkey';
+export const RAMP_BUY_URL = 'https://thirdparty.portkey.finance/buy?from=app';
 
-export const RAMP_SELL_URL = 'http://portkey_sell';
+export const RAMP_SELL_URL = 'https://thirdparty.portkey.finance/sell?from=app';
 
 export const DISCOVER_BOOKMARK_MAX_COUNT = 30;

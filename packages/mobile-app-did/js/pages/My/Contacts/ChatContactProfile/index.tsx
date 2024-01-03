@@ -42,6 +42,7 @@ const ContactProfile: React.FC = () => {
 
   const { t } = useLanguage();
   const addStranger = useAddStrangerContact();
+  const loadingTimer = useRef<any>();
 
   const [profileInfo, setProfileInfo] = useState<IContactProfile>();
 
@@ -95,7 +96,12 @@ const ContactProfile: React.FC = () => {
   const getProfile = useCallback(async () => {
     const isLoadingShow = !contactInfo;
     try {
-      isLoadingShow && Loading.show();
+      if (isLoadingShow) {
+        loadingTimer.current = setTimeout(() => {
+          Loading.show();
+        }, 500);
+      }
+
       const { data } = await im.service.getProfile({ relationId: relationId || contactInfo?.imInfo?.relationId || '' });
 
       setProfileInfo(data);
@@ -103,7 +109,10 @@ const ContactProfile: React.FC = () => {
       console.log(error);
       CommonToast.failError(error);
     } finally {
-      isLoadingShow && Loading.hide();
+      if (isLoadingShow) {
+        clearTimeout(loadingTimer.current);
+        Loading.hide();
+      }
     }
   }, [relationId, contactInfo]);
   const getProfileRef = useLatestRef(getProfile);
@@ -113,6 +122,13 @@ const ContactProfile: React.FC = () => {
       getProfileRef.current();
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []),
+  );
+
+  useEffect(
+    () => () => {
+      if (loadingTimer.current) clearTimeout(loadingTimer.current);
+    },
+    [],
   );
 
   const addContact = useLockCallback(async () => {

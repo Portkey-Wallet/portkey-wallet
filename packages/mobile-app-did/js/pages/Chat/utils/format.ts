@@ -10,58 +10,87 @@ export const ONE_MINUS = ONE_SECONDS * 60;
 export const ONE_HOUR = ONE_MINUS * 60;
 export const ONE_DAY = ONE_HOUR * 24;
 
-export const formatMessageList = (message: IMMessage[]): ChatMessage[] => {
-  // console.log('IMMessage', message);
-  return message
+const formatImage = (message: IMMessage) => {
+  const msg: {
+    text?: string;
+    image?: string;
+    imageInfo?: {
+      width: string;
+      height: string;
+      imgUri: string;
+      thumbUri: string;
+    };
+  } = {};
+
+  if (typeof message.parsedContent !== 'string') {
+    const parsedContent = message.parsedContent as ParsedImage;
+    msg.text = undefined; // overwrite text
+    msg.image = decodeURIComponent(parsedContent?.thumbImgUrl || parsedContent?.imgUrl || '');
+    msg.imageInfo = {
+      width: parsedContent?.width || '',
+      height: parsedContent?.height || '',
+      imgUri: decodeURIComponent(parsedContent?.imgUrl || ''),
+      thumbUri: decodeURIComponent(parsedContent?.thumbImgUrl || ''),
+    };
+  }
+
+  return msg;
+};
+
+export const formatMessageItem = (message: IMMessage): ChatMessage => {
+  const msg = {
+    ...message,
+    _id: message.sendUuid,
+    text: message.content,
+    createdAt: Number(message.createAt),
+    messageType: message.type,
+    rawMessage: message,
+    user: {
+      _id: message.from,
+    },
+  } as ChatMessage;
+  let imgObj = {};
+
+  switch (message.type) {
+    case 'IMAGE':
+      imgObj = formatImage(message);
+      break;
+    case 'TEXT':
+      break;
+    case 'SYS':
+      msg.system = true;
+      break;
+    case 'PIN-SYS':
+      msg.system = true;
+      msg.messageType = 'PIN-SYS';
+      break;
+    case 'REDPACKAGE-CARD':
+      msg.messageType = 'REDPACKAGE-CARD';
+      break;
+    case 'TRANSFER-CARD':
+      msg.messageType = 'TRANSFER-CARD';
+      break;
+    default: {
+      msg.messageType = 'NOT_SUPPORTED';
+      msg.text = UN_SUPPORTED_FORMAT;
+      break;
+    }
+  }
+
+  if (typeof message.content !== 'string') {
+    msg.messageType = 'NOT_SUPPORTED';
+    msg.text = UN_SUPPORTED_FORMAT;
+  }
+
+  return { ...msg, ...imgObj };
+};
+
+export const formatMessageList = (messageList: IMMessage[]): ChatMessage[] => {
+  return messageList
     .map(ele => {
-      const msg = {
-        _id: ele.sendUuid,
-        ...ele,
-        text: ele.content,
-        createdAt: Number(ele.createAt),
-        messageType: ele.type,
-        user: {
-          _id: ele.from,
-        },
-      } as ChatMessage;
-      switch (ele.type) {
-        case 'IMAGE': {
-          if (typeof ele.parsedContent !== 'string') {
-            delete (msg as any).text;
-            msg.image = decodeURIComponent(
-              (ele.parsedContent as ParsedImage)?.thumbImgUrl || (ele.parsedContent as ParsedImage)?.imgUrl || '',
-            );
-            msg.imageInfo = {
-              width: (ele.parsedContent as ParsedImage)?.width,
-              height: (ele.parsedContent as ParsedImage)?.height,
-              imgUri: decodeURIComponent((ele.parsedContent as ParsedImage)?.imgUrl || ''),
-              thumbUri: decodeURIComponent((ele.parsedContent as ParsedImage)?.thumbImgUrl || ''),
-            };
-          }
-          break;
-        }
-        case 'TEXT':
-          break;
+      if (ele.quote) return { ...formatMessageItem(ele), quote: formatMessageItem(ele.quote) };
 
-        case 'REDPACKAGE-CARD':
-          break;
-
-        case 'SYS':
-          msg.system = true;
-          break;
-
-        default: {
-          msg.messageType = 'NOT_SUPPORTED';
-          msg.text = UN_SUPPORTED_FORMAT;
-          break;
-        }
-      }
-
-      if (typeof ele.content !== 'string') {
-        msg.messageType = 'NOT_SUPPORTED';
-        msg.text = UN_SUPPORTED_FORMAT;
-      }
-      return msg;
+      return formatMessageItem(ele);
     })
     .reverse();
 };

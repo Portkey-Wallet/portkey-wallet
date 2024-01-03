@@ -18,7 +18,7 @@ import CustomBubble from '../CustomBubble';
 import { setBottomBarStatus, setChatText, setShowSoftInputOnFocus } from '../../context/chatsContext';
 import useEffectOnce from 'hooks/useEffectOnce';
 import MessageText from '../Message/MessageText';
-import { destroyChatInputRecorder, initChatInputRecorder } from 'pages/Chat/utils';
+import { destroyChatInputRecorder, initChatInputRecorder, isCommonView } from 'pages/Chat/utils';
 import MessageImage from '../Message/MessageImage';
 
 import { useThrottleCallback } from '@portkey-wallet/hooks';
@@ -85,7 +85,6 @@ export default function ChatsDetailContent() {
       dispatch(setChatText(''));
       dispatch(setBottomBarStatus(undefined));
       dispatch(setShowSoftInputOnFocus(true));
-      // dispatch(setCurrentChannelId());
       destroyChatInputRecorder();
     };
   });
@@ -102,7 +101,7 @@ export default function ChatsDetailContent() {
 
   const renderMessageText: GiftedChatProps['renderMessageText'] = useCallback(
     (props: MessageTextProps<ChatMessage>) => {
-      return props.currentMessage?.messageType === 'REDPACKAGE-CARD' ? null : <MessageText {...props} />;
+      return isCommonView(props.currentMessage?.messageType) ? null : <MessageText {...props} />;
     },
     [],
   );
@@ -221,7 +220,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentStyle: {
-    paddingTop: pTd(24),
+    paddingTop: pTd(12),
   },
   loadingBox: { position: 'absolute', top: 5, alignSelf: 'center' },
 });

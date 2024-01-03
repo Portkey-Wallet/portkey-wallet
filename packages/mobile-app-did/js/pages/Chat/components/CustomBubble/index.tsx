@@ -6,17 +6,22 @@ import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { ChatMessage } from 'pages/Chat/types';
 import { TextS } from 'components/CommonText';
+import { isCommonView } from 'pages/Chat/utils';
+import { isMemberMessage } from '@portkey-wallet/utils/chat';
 
 export default function CustomBubble(props: BubbleProps<ChatMessage> & { isGroupChat?: boolean }) {
   const { isGroupChat, currentMessage, previousMessage, user } = props || {};
   const { messageType } = currentMessage || {};
 
-  // not red packets
-  const isGeneralMessage = currentMessage?.messageType !== 'REDPACKAGE-CARD';
+  const isGeneralMessage = useMemo(() => !isCommonView(messageType), [messageType]);
 
   const isHideName = useMemo(
-    () => currentMessage?.user?._id === previousMessage?.user?._id || user?._id === currentMessage?.user?._id,
-    [currentMessage?.user?._id, previousMessage?.user?._id, user?._id],
+    () =>
+      (currentMessage?.user?._id === previousMessage?.user?._id &&
+        previousMessage?.messageType &&
+        isMemberMessage(previousMessage?.messageType)) ||
+      user?._id === currentMessage?.user?._id,
+    [currentMessage?.user?._id, previousMessage?.messageType, previousMessage?.user?._id, user?._id],
   );
 
   return (
@@ -61,7 +66,7 @@ export default function CustomBubble(props: BubbleProps<ChatMessage> & { isGroup
 
 const styles = StyleSheet.create({
   wrapperStyle: {
-    borderRadius: pTd(20),
+    borderRadius: pTd(16),
     color: defaultColors.font5,
   },
   redPacketWrapStyle: {
@@ -91,11 +96,11 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: pTd(12),
   },
   containerToNextRightStyle: {
-    borderBottomRightRadius: pTd(20),
+    borderBottomRightRadius: pTd(16),
   },
   containerToNextLeftStyle: {
     borderTopLeftRadius: pTd(2),
-    borderBottomLeftRadius: pTd(20),
+    borderBottomLeftRadius: pTd(16),
   },
   containerStyle: {
     marginHorizontal: pTd(4),
@@ -105,7 +110,7 @@ const styles = StyleSheet.create({
   },
   memberName: {
     color: defaultColors.font7,
-    marginBottom: pTd(4),
+    marginBottom: pTd(2),
     marginLeft: -pTd(4),
   },
 });

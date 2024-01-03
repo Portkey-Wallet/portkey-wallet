@@ -169,6 +169,7 @@ function GuardianItemButton({
     switch (guardianItem.guardianType) {
       case LoginType.Apple:
       case LoginType.Google:
+      case LoginType.Telegram:
         onVerifierAuth();
         break;
       default: {
@@ -247,7 +248,7 @@ export default function GuardianItem({
   const disabled = isSuccess && itemStatus?.status !== VerifyStatus.Verified;
 
   const guardianAccount = useMemo(() => {
-    if (![LoginType.Apple, LoginType.Google].includes(guardianItem.guardianType)) {
+    if (!AuthTypes.includes(guardianItem.guardianType)) {
       return guardianItem.guardianAccount;
     }
     if (guardianItem.isPrivate) return PRIVATE_GUARDIAN_ACCOUNT;
@@ -258,7 +259,7 @@ export default function GuardianItem({
     if (!guardianItem.firstName) {
       return (
         <TextM
-          numberOfLines={[LoginType.Apple, LoginType.Google].includes(guardianItem.guardianType) ? 1 : 2}
+          numberOfLines={AuthTypes.includes(guardianItem.guardianType) ? 1 : 2}
           style={[styles.nameStyle, GStyles.flex1]}>
           {guardianAccount}
         </TextM>

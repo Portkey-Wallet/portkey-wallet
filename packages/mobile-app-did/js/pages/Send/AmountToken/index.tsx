@@ -27,7 +27,6 @@ interface AmountTokenProps {
   setSendTokenNumber: any;
   selectedAccount: any;
   selectedToken: IToSendAssetParamsType;
-  setSelectedToken: any;
 }
 
 export default function AmountToken({
@@ -45,9 +44,7 @@ export default function AmountToken({
   const isTokenHasPrice = useIsTokenHasPrice(selectedToken?.symbol);
 
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
-
   const symbolImages = useSymbolImages();
-  const aelfIconName = useMemo(() => (isTestNet ? 'testnet' : 'mainnet'), [isTestNet]);
 
   const formattedTokenNameToSuffix = useMemo(() => {
     return selectedToken?.symbol?.length > 5 ? `${selectedToken?.symbol.slice(0, 5)}...` : selectedToken?.symbol;
@@ -73,7 +70,8 @@ export default function AmountToken({
             hasBorder
             shapeType="circular"
             title={selectedToken.symbol}
-            svgName={selectedToken.symbol === defaultToken.symbol ? aelfIconName : undefined}
+            // elf token icon is fixed , only use white background color
+            svgName={selectedToken.symbol === defaultToken.symbol ? 'testnet' : undefined}
             imageUrl={selectedToken.imageUrl || symbolImages[selectedToken.symbol]}
             avatarSize={28}
             style={styles.avatarStyle}

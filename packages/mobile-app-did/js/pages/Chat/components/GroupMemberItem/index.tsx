@@ -11,20 +11,22 @@ export type GroupMemberItemType = {
   title: string;
   relationId: string;
   avatar?: string;
+  userId?: string;
+  [key: string]: any;
 };
 
-type GroupMemberItemPropsType = {
+type GroupMemberItemPropsType<T> = {
   multiple?: boolean;
   selected?: boolean;
-  item: GroupMemberItemType;
+  item: T;
   wrapStyle?: StyleProp<ViewStyle>;
   innerWrapStyle?: StyleProp<ViewStyle>;
   disabled?: boolean;
-  onPress?: (id: string, item: GroupMemberItemType, selected?: boolean) => void;
+  onPress?: (id: string, item: T, selected?: boolean) => void;
 };
 
 export default memo(
-  function GroupMemberItem(props: GroupMemberItemPropsType) {
+  function GroupMemberItem(props: GroupMemberItemPropsType<GroupMemberItemType>) {
     const {
       multiple = true,
       disabled = false,

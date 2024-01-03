@@ -68,7 +68,7 @@ const GroupMembersPage = () => {
 
       <FlatList
         data={filterMemberList}
-        ListEmptyComponent={<NoData noPic message="No search result" style={BGStyles.bg4} />}
+        ListEmptyComponent={<NoData noPic message="No search result" style={BGStyles.bg1} />}
         keyExtractor={item => item.relationId}
         renderItem={({ item }) => (
           <GroupInfoMemberItem

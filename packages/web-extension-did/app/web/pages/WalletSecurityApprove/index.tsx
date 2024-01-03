@@ -9,7 +9,7 @@ import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
+import { handleGuardianByContract } from 'utils/sandboxUtil/handleGuardianByContract';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
 import aes from '@portkey-wallet/utils/aes';
@@ -50,7 +50,7 @@ export default function WalletSecurityApprove() {
         if (result.Status !== 'MINED') return message.error(SecurityAccelerateErrorTip);
         const params = JSON.parse(result.Transaction.Params);
 
-        await handleGuardian({
+        await handleGuardianByContract({
           rpcUrl: accelerateChainInfo?.endPoint as string,
           chainType: currentNetwork.walletType,
           address: accelerateChainInfo?.caContractAddress as string,

@@ -26,7 +26,8 @@ export const referralSlice = createSlice({
         [network]: value,
       };
     },
+    resetReferral: () => initialState,
   },
 });
 
-export const { setViewReferralStatusLocal, setReferralLinkLocal } = referralSlice.actions;
+export const { setViewReferralStatusLocal, setReferralLinkLocal, resetReferral } = referralSlice.actions;

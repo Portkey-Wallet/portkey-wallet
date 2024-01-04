@@ -108,7 +108,7 @@ export const showUpgradeOverlay = async (props: ShowUpgradeOverlayPropsType) => 
       shouldShow = !isPopup;
     } catch (error) {
       console.log('error', error);
-      shouldShow = true;
+      shouldShow = false;
     }
   }
 

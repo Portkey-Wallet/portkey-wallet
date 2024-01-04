@@ -15,8 +15,21 @@ import referralTopBackground from 'assets/image/pngs/referralTopBackground.png';
 import referralTopText from 'assets/image/pngs/referralTopText.png';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
+import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 
 const UserReferral = () => {
+  const { getReferralLink, referralLink = '', setViewReferralStatusStatus } = useReferral();
+
+  useEffectOnce(() => {
+    try {
+      setViewReferralStatusStatus();
+      getReferralLink();
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
   return (
     <View style={styles.pageWrap}>
       <ImageBackground source={referralTopBackground} style={styles.topSectionStyle}>
@@ -40,13 +53,13 @@ const UserReferral = () => {
           />
           <View style={styles.qrBgSection} />
           <View style={styles.qrCodeWrap}>
-            <CommonQRCodeStyled qrData={'xxxxxxx'} width={pTd(103)} />
+            {referralLink && <CommonQRCodeStyled qrData={referralLink} width={pTd(103)} />}
           </View>
           <TextM style={[FontStyles.font7, GStyles.textAlignCenter, GStyles.marginTop(pTd(4))]}>Referral Code</TextM>
         </View>
 
         {/* TODO: change url */}
-        <Touchable onPress={() => showReferralLinkOverlay('linkUrl')}>
+        <Touchable onPress={() => showReferralLinkOverlay(referralLink)}>
           <Image source={inviteFriendButton} style={styles.btn} />
         </Touchable>
       </View>

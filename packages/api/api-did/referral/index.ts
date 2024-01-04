@@ -1,10 +1,10 @@
 export default {
-  getRedDotsStatus: {
+  getReferralRedDotsStatus: {
     target: '/api/app/growth/red-dots',
     config: { method: 'GET' },
   },
-  setRedDotsStatus: '/api/app/growth/red-dot',
-  getShortLink: {
+  setReferralRedDotsStatus: '/api/app/growth/red-dot',
+  getReferralShortLink: {
     target: '/api/app/growth/short-link',
     config: { method: 'GET' },
   },

@@ -216,6 +216,8 @@ module.exports = (env, argv) => {
     'process.env.FCM_PROJECT_ID': JSON.stringify(envConfig.FCM_PROJECT_ID),
   });
 
+  console.log(definePlugin)
+
   config.plugins.push(
     definePlugin
   );

@@ -7,6 +7,7 @@ type BackEndNetworkType =
   | 'back-end-test2-ip'
   | 'back-end-test3'
   | 'back-end-test4'
+  | 'back-end-test4-v2'
   | 'back-end-testnet'
   | 'back-end-mainnet';
 
@@ -99,6 +100,22 @@ export const BackEndNetWorkMap: {
     connectUrl: 'http://192.168.67.179:8001',
     cmsUrl: 'http://192.168.66.62:8055/graphql',
     s3Url: 'https://portkey-cms-dev.s3.ap-northeast-1.amazonaws.com',
+    imS3Bucket: 'portkey-im-dev',
+    portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
+    eBridgeUrl: 'http://192.168.67.235:3000',
+  },
+  'back-end-test4-v2': {
+    name: 'aelf Mainnet',
+    walletType: 'aelf',
+    networkType: 'MAIN',
+    isActive: true,
+    apiUrl: 'http://192.168.66.117:5577',
+    graphqlUrl: 'http://192.168.67.214:8083/AElfIndexer_DApp/PortKeyIndexerCASchema/graphql',
+    connectUrl: 'http://192.168.66.117:8080',
+    cmsUrl: 'http://192.168.66.62:8055/graphql',
+    s3Url: 'https://portkey-cms-dev.s3.ap-northeast-1.amazonaws.com',
+    imApiUrl: 'http://192.168.66.117:9902',
+    imWsUrl: 'http://192.168.66.117:9903',
     imS3Bucket: 'portkey-im-dev',
     portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
     eBridgeUrl: 'http://192.168.67.235:3000',

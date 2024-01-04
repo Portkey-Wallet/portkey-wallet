@@ -18,14 +18,14 @@ import Receive from 'pages/Receive';
 import NFTDetail from 'pages/NFT/NFTDetail';
 import QrCodeNav from 'pages/QrCode';
 import MyNav from 'pages/My/router';
-import BuyNav from 'pages/Buy';
+import RampNav from 'pages/Ramp';
 import DiscoverNav from 'pages/Discover/index';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import Discover from 'Test/Discover';
 
 import TabsDrawer from 'components/TabsDrawer';
 import ChatNav from 'pages/Chat/routes';
-import EBridge from 'pages/EBridge';
+import ProviderWebPage from 'pages/ProviderWebPage';
 
 const Stack = createStackNavigator();
 export const productionNav = [
@@ -34,7 +34,7 @@ export const productionNav = [
   { name: 'SecurityLock', component: SecurityLock, options: { gestureEnabled: false } },
   { name: 'Receive', component: Receive },
   { name: 'NFTDetail', component: NFTDetail },
-  { name: 'EBridge', component: EBridge },
+  { name: 'ProviderWebPage', component: ProviderWebPage },
 
   ...QrCodeNav,
   ...GuardianNav,
@@ -44,7 +44,7 @@ export const productionNav = [
   ...SendNav,
   ...PinNav,
   ...MyNav,
-  ...BuyNav,
+  ...RampNav,
   ...ChatNav,
   ...DiscoverNav,
 ] as const;

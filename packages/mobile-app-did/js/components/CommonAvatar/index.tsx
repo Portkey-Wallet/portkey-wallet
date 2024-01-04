@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { Text } from 'react-native';
@@ -19,6 +19,9 @@ export interface CommonAvatarProps {
   style?: any;
   color?: string;
   resizeMode?: ResizeMode;
+  width?: number | string;
+  height?: number | string;
+  preserveAspectRatio?: string;
 }
 
 export default function CommonAvatar(props: CommonAvatarProps) {
@@ -32,23 +35,28 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     shapeType = 'circular',
     hasBorder,
     resizeMode = 'contain',
+    width,
+    height,
+    preserveAspectRatio,
   } = props;
+
+  const [loadError, setLoadError] = useState(false);
   const initialsTitle = String(title?.[0] || '').toUpperCase();
 
   const sizeStyle = useMemo(
     () => ({
-      width: Number(avatarSize),
-      height: Number(avatarSize),
+      width: width || Number(avatarSize),
+      height: height || Number(avatarSize),
       lineHeight: hasBorder ? Number(avatarSize) - pTd(2) : Number(avatarSize),
       borderRadius: shapeType === 'square' ? pTd(6) : Number(avatarSize) / 2,
     }),
-    [avatarSize, hasBorder, shapeType],
+    [avatarSize, hasBorder, height, shapeType, width],
   );
 
   if (svgName)
     return (
       <Svg
-        size={avatarSize}
+        oblongSize={[width || avatarSize, height || avatarSize]}
         icon={svgName}
         color={color}
         iconStyle={{
@@ -60,16 +68,20 @@ export default function CommonAvatar(props: CommonAvatarProps) {
       />
     );
 
-  if (imageUrl) {
+  if (imageUrl && !loadError) {
     return checkIsSvgUrl(imageUrl) ? (
       <SvgCssUri
         uri={imageUrl}
+        width={sizeStyle.width}
+        height={sizeStyle.height}
+        preserveAspectRatio={preserveAspectRatio}
         style={[styles.avatarWrap, shapeType === 'square' && styles.squareStyle, sizeStyle, style]}
       />
     ) : (
       <FastImage
         resizeMode={resizeMode}
         style={[styles.avatarWrap, shapeType === 'square' && styles.squareStyle, sizeStyle, style]}
+        onError={() => setLoadError(true)}
         source={{
           uri: imageUrl,
         }}

@@ -1,18 +1,5 @@
-import { ErrorType } from 'types/common';
 import { Platform } from 'react-native';
 import { DeviceType } from '@portkey-wallet/types/types-ca/device';
-
-export const INIT_ERROR: ErrorType = {
-  errorMsg: '',
-  isError: false,
-};
-
-export const INIT_NONE_ERROR: ErrorType = INIT_ERROR;
-
-export const INIT_HAS_ERROR: ErrorType = {
-  errorMsg: '',
-  isError: true,
-};
 
 export const DEVICE_TYPE: DeviceType = (() => {
   let deviceType: DeviceType;
@@ -32,8 +19,8 @@ export const DEVICE_TYPE: DeviceType = (() => {
 
 export const APP_SCHEMA = 'portkey.did';
 
-export const ACH_REDIRECT_URL = 'http://portkey';
+export const RAMP_BUY_URL = 'https://thirdparty.portkey.finance/buy?from=app';
 
-export const ACH_WITHDRAW_URL = 'http://portkey_sell';
+export const RAMP_SELL_URL = 'https://thirdparty.portkey.finance/sell?from=app';
 
 export const DISCOVER_BOOKMARK_MAX_COUNT = 30;

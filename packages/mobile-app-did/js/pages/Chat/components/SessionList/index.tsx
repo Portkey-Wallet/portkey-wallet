@@ -8,7 +8,6 @@ import NoData from 'components/NoData';
 import { useChannelList, useHideChannel, useMuteChannel, usePinChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import CommonToast from 'components/CommonToast';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import useEffectOnce from 'hooks/useEffectOnce';
 import { useJumpToChatDetails, useJumpToChatGroupDetails } from 'hooks/chat';
 import { useFocusEffect } from '@react-navigation/native';
 import { useLatestRef } from '@portkey-wallet/hooks';
@@ -168,10 +167,6 @@ export default function SessionList() {
     },
     [hideChannel, navToChatDetails, navToChatGroupDetails],
   );
-
-  useEffectOnce(() => {
-    initChannelList();
-  });
 
   return (
     <Touchable style={[GStyles.flex1, BGStyles.bg1]} activeOpacity={1} onPress={myEvents.chatHomeListCloseSwiped.emit}>

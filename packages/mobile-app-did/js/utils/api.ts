@@ -9,6 +9,9 @@ import { baseStore } from '@portkey-wallet/utils/mobile/storage';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
 import { getAppCheckToken } from './appCheck';
 
+const NoVerifierSessionIdMessage = 'no verifierSessionId';
+const GetAppCheckTokenFailMessage = 'get appCheckToken fail';
+
 class MobileVerification extends Verification {
   constructor(store: IStorage) {
     super(store);
@@ -34,14 +37,14 @@ class MobileVerification extends Verification {
           // app check
           try {
             const appCheckToken = await getAppCheckToken(true);
-            if (!appCheckToken) throw Error('get appCheckToken fail');
+            if (!appCheckToken) throw Error(GetAppCheckTokenFailMessage);
 
             config.headers = {
               acToken: appCheckToken || '',
             };
 
             const responseByAppCheck = await request.verify.sendVerificationRequest(config);
-            if (!responseByAppCheck?.verifierSessionId) throw Error('no verifierSessionId');
+            if (!responseByAppCheck?.verifierSessionId) throw Error(NoVerifierSessionIdMessage);
 
             await this.set(key, { ...responseByAppCheck, time: Date.now() });
             return responseByAppCheck;
@@ -57,11 +60,15 @@ class MobileVerification extends Verification {
           };
 
           const responseByCaptchaToken = await request.verify.sendVerificationRequest(config);
-          await this.set(key, { ...responseByCaptchaToken, time: Date.now() });
+          await this.set(key, {
+            ...responseByCaptchaToken,
+            time: Date.now(),
+          });
           return responseByCaptchaToken;
         }
 
         const req = await request.verify.sendVerificationRequest(config);
+        if (!req?.verifierSessionId) throw Error(NoVerifierSessionIdMessage);
         await this.set(key, { ...req, time: Date.now() });
         return req;
       }

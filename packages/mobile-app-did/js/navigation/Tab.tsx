@@ -16,9 +16,10 @@ import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { TextS } from 'components/CommonText';
-import { useTabMenuList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useIsChatShow, useTabMenuList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { setBadge } from 'utils/notifee';
 
 const Tab = createBottomTabNavigator();
 
@@ -79,6 +80,8 @@ export default function TabRoot() {
   const tabMenuListStore = useTabMenuList();
   const unreadCount = useUnreadCount();
   const isImputation = useIsImputation();
+  const isChatShow = useIsChatShow();
+
   const tabMenuList = useMemo(() => {
     const _tabMenuListStore = tabMenuListStore.reduce((acc: typeof tabMenuListStore, cur) => {
       if (!acc.find(item => item.type.value === cur.type.value)) {
@@ -108,6 +111,12 @@ export default function TabRoot() {
     if (!address) logOut();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address]);
+
+  useEffect(() => {
+    // TODO: need to adjust other message
+    if (!isChatShow) return;
+    setBadge(unreadCount);
+  }, [isChatShow, unreadCount]);
 
   return (
     <Tab.Navigator

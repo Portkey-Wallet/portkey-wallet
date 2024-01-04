@@ -15,6 +15,9 @@ export type RefreshTokenConfig = {
   connectUrl: string;
   chainId: ChainId;
 };
+
+const BEARER = 'Bearer';
+
 export const queryAuthorization = async (config: RefreshTokenConfig) => {
   const { connectUrl, ..._config } = config;
   const { access_token } = await customFetch(config.connectUrl + '/connect/token', {
@@ -22,7 +25,12 @@ export const queryAuthorization = async (config: RefreshTokenConfig) => {
     method: 'POST',
     body: stringify({ ..._config, chain_id: config.chainId }),
   });
-  return `Bearer ${access_token}`;
+  return `${BEARER} ${access_token}`;
+};
+
+export const formatTokenWithOutBear = (token: string) => {
+  if (token.startsWith(BEARER)) return token.replace(`${BEARER} `, '');
+  return token;
 };
 
 const DAY = 24 * 60 * 60 * 1000;
@@ -49,7 +57,7 @@ export function setRefreshTokenConfig({
   const pubkey = (account.keyPair as any).getPublic('hex');
   const ca_hash = caHash;
 
-  request.setRefreshTokenConfig({
+  return request.setRefreshTokenConfig({
     grant_type: 'signature',
     client_id: 'CAServer_App',
     scope: 'CAServer',

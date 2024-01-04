@@ -17,34 +17,34 @@ import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 import { useEffectOnce } from '@portkey-wallet/hooks';
-import CommonToast from 'components/CommonToast';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 const UserReferral = () => {
   const { getReferralLink, referralLink = '', setViewReferralStatusStatus } = useReferral();
 
   const onPressInvite = useCallback(() => {
-    if (!referralLink) return;
     showReferralLinkOverlay(referralLink);
   }, [referralLink]);
 
-  const getLink = useCallback(async () => {
+  const getLink = useLockCallback(async () => {
     try {
       await getReferralLink();
     } catch (error) {
-      CommonToast.failError(error);
+      console.log(error);
     }
   }, [getReferralLink]);
 
-  useEffectOnce(() => {
+  const setReferral = useLockCallback(async () => {
     try {
-      setViewReferralStatusStatus();
+      await setViewReferralStatusStatus();
     } catch (error) {
       console.log(error);
     }
-  });
+  }, [setViewReferralStatusStatus]);
 
   useEffectOnce(() => {
     getLink();
+    setReferral();
   });
 
   return (
@@ -79,7 +79,6 @@ const UserReferral = () => {
           <TextM style={[FontStyles.font7, GStyles.textAlignCenter, GStyles.marginTop(pTd(4))]}>Referral Code</TextM>
         </View>
 
-        {/* TODO: change url */}
         <Touchable onPress={onPressInvite}>
           <Image source={inviteFriendButton} style={styles.btn} />
         </Touchable>

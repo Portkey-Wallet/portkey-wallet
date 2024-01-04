@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { StyleSheet, View, Image, ImageBackground } from 'react-native';
 import { pTd } from 'utils/unit';
 import { TextL, TextM } from 'components/CommonText';
@@ -17,17 +17,34 @@ import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 import { useEffectOnce } from '@portkey-wallet/hooks';
+import CommonToast from 'components/CommonToast';
 
 const UserReferral = () => {
   const { getReferralLink, referralLink = '', setViewReferralStatusStatus } = useReferral();
 
+  const onPressInvite = useCallback(() => {
+    if (!referralLink) return;
+    showReferralLinkOverlay(referralLink);
+  }, [referralLink]);
+
+  const getLink = useCallback(async () => {
+    try {
+      await getReferralLink();
+    } catch (error) {
+      CommonToast.failError(error);
+    }
+  }, [getReferralLink]);
+
   useEffectOnce(() => {
     try {
       setViewReferralStatusStatus();
-      getReferralLink();
     } catch (error) {
       console.log(error);
     }
+  });
+
+  useEffectOnce(() => {
+    getLink();
   });
 
   return (
@@ -53,13 +70,17 @@ const UserReferral = () => {
           />
           <View style={styles.qrBgSection} />
           <View style={styles.qrCodeWrap}>
-            {referralLink && <CommonQRCodeStyled qrData={referralLink} width={pTd(103)} />}
+            <CommonQRCodeStyled
+              hasMask={!referralLink}
+              qrData={referralLink || 'https://porkey.finance'}
+              width={pTd(103)}
+            />
           </View>
           <TextM style={[FontStyles.font7, GStyles.textAlignCenter, GStyles.marginTop(pTd(4))]}>Referral Code</TextM>
         </View>
 
         {/* TODO: change url */}
-        <Touchable onPress={() => showReferralLinkOverlay(referralLink)}>
+        <Touchable onPress={onPressInvite}>
           <Image source={inviteFriendButton} style={styles.btn} />
         </Touchable>
       </View>

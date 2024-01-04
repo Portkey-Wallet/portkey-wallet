@@ -19,8 +19,11 @@ import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import { measurePageY } from 'utils/measure';
 import useRequestNotifyPermission from 'hooks/usePermission';
 import { showUpgradeOverlay } from 'components/UpgradeOverlay';
+import { useServiceSuspension } from '@portkey-wallet/hooks/hooks-ca/cms';
 
-export default function DiscoverHome() {
+export default function ChatHomePage() {
+  const { isSuspended } = useServiceSuspension() || {};
+
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const emitCloseSwiped = useCallback(() => myEvents.chatHomeListCloseSwiped.emit(''), []);
   const lastEmitCloseSwiped = useLatestRef(emitCloseSwiped);
@@ -96,8 +99,8 @@ export default function DiscoverHome() {
 
   useFocusEffect(
     useCallback(() => {
-      showUpgradeOverlay({ type: 'chat' });
-    }, []),
+      if (isSuspended) showUpgradeOverlay({ type: 'chat' });
+    }, [isSuspended]),
   );
 
   return (

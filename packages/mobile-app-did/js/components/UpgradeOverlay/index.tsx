@@ -13,7 +13,6 @@ import myEvents from 'utils/deviceEvent';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { request } from '@portkey-wallet/api/api-did';
 import { useServiceSuspension } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { handleLoopFetch } from '@portkey-wallet/utils';
 export type ShowUpgradeOverlayPropsType = {
   type?: 'dashBoard' | 'chat' | 'chat-detail' | 'my';
 };

@@ -36,11 +36,13 @@ import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import { measurePageY } from 'utils/measure';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { showUpgradeOverlay } from 'components/UpgradeOverlay';
+import { useServiceSuspension } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 const ChatDetailsPage = () => {
   const dispatch = useAppCommonDispatch();
   const isFocused = useIsFocused();
 
+  const { isSuspended } = useServiceSuspension() || {};
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
@@ -222,8 +224,8 @@ const ChatDetailsPage = () => {
 
   useFocusEffect(
     useCallback(() => {
-      showUpgradeOverlay({ type: 'chat-detail' });
-    }, []),
+      if (isSuspended) showUpgradeOverlay({ type: 'chat-detail' });
+    }, [isSuspended]),
   );
 
   return (

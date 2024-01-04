@@ -11,6 +11,7 @@ import { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import UpgradeItem from './components/UpgradeItem';
+import { useServiceSuspension } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 interface MenuItemType {
   name: RootStackName;
@@ -49,6 +50,7 @@ const MenuList: Array<MenuItemType> = [
 export default function MyMenu() {
   const { t } = useLanguage();
   const isImputation = useIsImputation();
+  const { isSuspended } = useServiceSuspension() || {};
 
   return (
     <PageContainer
@@ -57,7 +59,7 @@ export default function MyMenu() {
       safeAreaColor={['blue', 'white']}
       containerStyles={styles.container}>
       <>
-        <UpgradeItem />
+        {isSuspended && <UpgradeItem />}
         {MenuList.map(ele => {
           return (
             <MenuItem

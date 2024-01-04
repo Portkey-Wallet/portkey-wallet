@@ -510,23 +510,33 @@ export function useGoSelectVerifier(isLogin?: boolean) {
         // TODO: change style
         ActionSheet.alert({
           title: 'Continue with this account?',
-          message: `This account has not been registered yet. If you want to register with this account, please download Portkey V2 to get better user experience.`,
-          buttonGroupDirection: 'column',
-          buttons: [
-            {
-              title: 'Download Portkey V2',
-              onPress: () => {
-                Linking.openURL(isIOS ? serviceSuspension?.iOSUrl || '' : serviceSuspension?.androidUrl || '');
-              },
-            },
-            { title: 'Cancel', type: 'text' },
-          ],
+          message: serviceSuspension?.isSuspended
+            ? `This account has not been registered yet. If you want to register with this account, please download Portkey V2 to get better user experience.`
+            : `This account has not been registered yet. Click "Confirm" to complete the registration.`,
+          buttonGroupDirection: serviceSuspension?.isSuspended ? 'column' : 'row',
+          buttons: serviceSuspension?.isSuspended
+            ? [
+                {
+                  title: 'Download Portkey V2',
+                  onPress: () => {
+                    Linking.openURL(isIOS ? serviceSuspension?.iOSUrl || '' : serviceSuspension?.androidUrl || '');
+                  },
+                },
+                { title: 'Cancel', type: 'text' },
+              ]
+            : [
+                { title: 'Cancel', type: 'outline' },
+                {
+                  title: 'Confirm',
+                  onPress: () => onConfirmRef.current(params),
+                },
+              ],
         });
       } else {
         await onConfirmRef.current(params);
       }
     },
-    [isLogin, serviceSuspension?.androidUrl, serviceSuspension?.iOSUrl],
+    [isLogin, serviceSuspension?.androidUrl, serviceSuspension?.iOSUrl, serviceSuspension?.isSuspended],
   );
 }
 

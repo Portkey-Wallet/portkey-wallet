@@ -333,11 +333,13 @@ export default function RegisterStart() {
           return setOpen(true);
         } else return onLoginFinish(loginInfo);
       }
-      console.log('onSignFinish', onSignFinish);
-      setLoading(false);
-      return setOpen(true);
+      if (type === 'create' && !serviceSuspension?.isSuspended) return onSignFinish(loginInfo);
+      else {
+        setLoading(false);
+        return setOpen(true);
+      }
     },
-    [onLoginFinish, onSignFinish, setLoading, type],
+    [onLoginFinish, onSignFinish, serviceSuspension?.isSuspended, setLoading, type],
   );
 
   const onSocialFinish: SocialLoginFinishHandler = useCallback(
@@ -427,10 +429,14 @@ export default function RegisterStart() {
         onConfirm={() => {
           if (!loginInfoRef.current) return setOpen(false);
           if (isHasAccount?.current) return onLoginFinish(loginInfoRef.current);
-
-          const openWinder = window.open(serviceSuspension?.extensionUrl, '_blank');
-          if (openWinder) {
-            openWinder.opener = null;
+          // V2
+          if (serviceSuspension?.isSuspended) {
+            const openWinder = window.open(serviceSuspension?.extensionUrl, '_blank');
+            if (openWinder) {
+              openWinder.opener = null;
+            }
+          } else {
+            onSignFinish(loginInfoRef.current);
           }
           setOpen(false);
         }}

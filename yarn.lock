@@ -5540,7 +5540,7 @@
 
 "@portkey/chain@^1.1.1-alpha.1":
   version "1.1.1-alpha.1"
-  resolved "https://registry.npmjs.org/@portkey/chain/-/chain-1.1.1-alpha.1.tgz#389b4a6c5971e69043e6d79eaeaf54b70c100bb4"
+  resolved "https://registry.yarnpkg.com/@portkey/chain/-/chain-1.1.1-alpha.1.tgz#389b4a6c5971e69043e6d79eaeaf54b70c100bb4"
   integrity sha512-VKrPz7oHM8QyzwOcpFz5jacWaBq7b8a2nM79zD83yvwr1XFtTti1qaMlkxC3hlcvfpaye5ZNYeXJhBudFKRX5g==
   dependencies:
     "@portkey/contracts" "^1.4.3"
@@ -5616,7 +5616,7 @@
 
 "@portkey/extension-provider@1.1.1-alpha.1":
   version "1.1.1-alpha.1"
-  resolved "https://registry.npmjs.org/@portkey/extension-provider/-/extension-provider-1.1.1-alpha.1.tgz#eab0a8dee4b1d512b7b402ba754520bb0028d6b9"
+  resolved "https://registry.yarnpkg.com/@portkey/extension-provider/-/extension-provider-1.1.1-alpha.1.tgz#eab0a8dee4b1d512b7b402ba754520bb0028d6b9"
   integrity sha512-n/379umZgDdaNqG9aIH10tybHcPxo66KeokgGOAf5l2qolPL+Dh4KgIyn2eceOgE7qTVh6pbjOTnKKVRHLMCgg==
   dependencies:
     "@portkey/provider-types" "^1.1.1-alpha.1"
@@ -5670,7 +5670,7 @@
 
 "@portkey/provider-types@1.1.1-alpha.1", "@portkey/provider-types@^1.1.1-alpha.1":
   version "1.1.1-alpha.1"
-  resolved "https://registry.npmjs.org/@portkey/provider-types/-/provider-types-1.1.1-alpha.1.tgz#0dcfacf297129ce9692c0fcf4f4836b05877b164"
+  resolved "https://registry.yarnpkg.com/@portkey/provider-types/-/provider-types-1.1.1-alpha.1.tgz#0dcfacf297129ce9692c0fcf4f4836b05877b164"
   integrity sha512-9MMQSHU9Rq8iNJ4nkTvRgyZcZWoNZHrCQvcZY+2v9ZsZmjXC8Ua+csncKJzoApSKbhO9WIGZfkCKluF1V7TP5Q==
   dependencies:
     "@portkey/types" "^1.0.0-alpha.4"
@@ -5693,7 +5693,7 @@
 
 "@portkey/provider-utils@1.1.1-alpha.1", "@portkey/provider-utils@^1.1.1-alpha.1":
   version "1.1.1-alpha.1"
-  resolved "https://registry.npmjs.org/@portkey/provider-utils/-/provider-utils-1.1.1-alpha.1.tgz#60f19f6201bf5d87c8983dd9e9900ecd16399fb8"
+  resolved "https://registry.yarnpkg.com/@portkey/provider-utils/-/provider-utils-1.1.1-alpha.1.tgz#60f19f6201bf5d87c8983dd9e9900ecd16399fb8"
   integrity sha512-2T3SGYx8KF8K18NTdkuit5uNBqE/fpCy22MRqPUdcSv+/XUkpwz6maHAuy+PORmQNMBHNjdt/wZ09oA8iGtK9g==
   dependencies:
     "@portkey/provider-types" "^1.1.1-alpha.1"
@@ -5712,7 +5712,7 @@
 
 "@portkey/providers@1.1.1-alpha.1", "@portkey/providers@^1.1.1-alpha.1":
   version "1.1.1-alpha.1"
-  resolved "https://registry.npmjs.org/@portkey/providers/-/providers-1.1.1-alpha.1.tgz#6fcee25f95f938058b0becd184b2bc8270e1d971"
+  resolved "https://registry.yarnpkg.com/@portkey/providers/-/providers-1.1.1-alpha.1.tgz#6fcee25f95f938058b0becd184b2bc8270e1d971"
   integrity sha512-UohGOP08mU4udMjlzLeSxejZr6/G8zfPMVqPeMFfIjUKEyybv9Q8WSNtevjdNsBCJTW8jyAiEF6qxl31W+jSNg==
   dependencies:
     "@portkey/chain" "^1.1.1-alpha.1"
@@ -5784,9 +5784,9 @@
     "@types/elliptic" "^6.4.14"
 
 "@portkey/types@^1.0.0-alpha.4":
-  version "1.5.2"
-  resolved "https://registry.npmjs.org/@portkey/types/-/types-1.5.2.tgz#c0d14e28c5ce1c1aa0b23783cde11e15209ba373"
-  integrity sha512-ZSlxD/zS2vnkt+5RNbYzpVsuwJYs355n01EAZnSzkJXMzvyrpXexAvEH66PvC8pd/O31xn7BpqXr7CPFMObs4Q==
+  version "1.5.3"
+  resolved "https://registry.yarnpkg.com/@portkey/types/-/types-1.5.3.tgz#6a20d091efd5d9297d7cb6bb41f6ce5d445835c2"
+  integrity sha512-JiodJHJEykQCmvPzn0R+8A9AGoHWJF0ya4mcbMjE4A+AN2nwRotouJq3iKIL9Orf/pt7kU8kG925lrBFs5dToQ==
 
 "@portkey/types@^1.3.0-alpha.3":
   version "1.3.0-alpha.3"

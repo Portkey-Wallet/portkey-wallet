@@ -22,7 +22,7 @@ import crossChainTransfer, {
   intervalCrossChainTransfer,
 } from 'utils/transfer/crossChainTransfer';
 import { useCurrentNetworkInfo, useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useCaAddresses, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { formatAmountShow, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
 import sameChainTransfer from 'utils/transfer/sameChainTransfer';
 import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
@@ -62,7 +62,6 @@ const SendHome: React.FC = () => {
   const dispatch = useAppCommonDispatch();
   const pin = usePin();
   const chainInfo = useCurrentChain(assetInfo.chainId);
-  const caAddresses = useCaAddresses();
 
   const [isLoading] = useState(false);
   const currentNetwork = useCurrentNetworkInfo();
@@ -174,9 +173,9 @@ const SendHome: React.FC = () => {
 
     if (sendType === 'nft') {
       dispatch(clearNftCollection());
-      dispatch(fetchNFTCollectionsAsync({ caAddresses: caAddresses, caAddressInfos }));
+      dispatch(fetchNFTCollectionsAsync({ caAddressInfos }));
     } else {
-      dispatch(fetchTokenListAsync({ caAddresses: caAddresses, caAddressInfos }));
+      dispatch(fetchTokenListAsync({ caAddressInfos }));
     }
     if (successNavigateName) {
       navigationService.navigate(successNavigateName);
@@ -187,7 +186,6 @@ const SendHome: React.FC = () => {
   }, [
     assetInfo,
     caAddressInfos,
-    caAddresses,
     chainInfo,
     checkTransferLimitWithJump,
     crossDefaultFee,

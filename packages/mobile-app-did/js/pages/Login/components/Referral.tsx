@@ -20,6 +20,8 @@ import { useOnLogin } from 'hooks/login';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import Loading from 'components/Loading';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { useServiceSuspension } from '@portkey-wallet/hooks/hooks-ca/cms';
+import fonts from 'assets/theme/fonts';
 const TitleMap = {
   [PageType.login]: {
     apple: 'Login with Apple',
@@ -42,6 +44,8 @@ export default function Referral({
 }) {
   const { appleSign } = useAppleAuthentication();
   const { googleSign } = useGoogleAuthentication();
+
+  const { isSuspended } = useServiceSuspension() || {};
 
   const onLogin = useOnLogin(type === PageType.login);
 
@@ -102,7 +106,7 @@ export default function Referral({
         <Divider title="OR" inset={true} style={pageStyles.dividerStyle} />
         <CommonButton type="primary" onPress={() => setLoginType(PageLoginType.phone)} title={TitleMap[type].button} />
       </View>
-      {type === PageType.login && (
+      {!isSuspended && type === PageType.login && (
         <Touchable
           style={[GStyles.flexRowWrap, GStyles.itemCenter, styles.signUpTip]}
           onPress={() => navigationService.navigate('SignupPortkey')}>
@@ -125,6 +129,7 @@ const pageStyles = StyleSheet.create({
   },
   outlineTitleStyle: {
     marginLeft: 12,
+    ...fonts.mediumFont,
   },
   dividerStyle: {
     marginVertical: 16,

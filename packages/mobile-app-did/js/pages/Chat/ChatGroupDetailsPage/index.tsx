@@ -31,7 +31,8 @@ import FloatingActionButton from '../components/FloatingActionButton';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import { measurePageY } from 'utils/measure';
 import GroupAvatarShow from '../components/GroupAvatarShow';
-import { useIsFocused } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import { showUpgradeOverlay } from 'components/UpgradeOverlay';
 
 const ChatGroupDetailsPage = () => {
   const isFocused = useIsFocused();
@@ -197,6 +198,12 @@ const ChatGroupDetailsPage = () => {
       </View>
     ),
     [displayName, groupInfo?.icon, groupInfo?.name, mute, onBack],
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      showUpgradeOverlay({ type: 'chat-detail' });
+    }, []),
   );
 
   return (

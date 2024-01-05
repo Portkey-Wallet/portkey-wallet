@@ -19,7 +19,7 @@ import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import { measurePageY } from 'utils/measure';
 import useRequestNotifyPermission from 'hooks/usePermission';
 
-export default function DiscoverHome() {
+export default function ChatHomePage() {
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const emitCloseSwiped = useCallback(() => myEvents.chatHomeListCloseSwiped.emit(''), []);
   const lastEmitCloseSwiped = useLatestRef(emitCloseSwiped);

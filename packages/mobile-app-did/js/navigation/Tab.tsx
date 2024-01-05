@@ -23,7 +23,7 @@ import { setBadge } from 'utils/notifee';
 
 const Tab = createBottomTabNavigator();
 
-enum TabRouteNameEnum {
+export enum TabRouteNameEnum {
   WALLET = 'Wallet',
   DISCOVER = 'Discover',
   CHAT = ChatTabName,

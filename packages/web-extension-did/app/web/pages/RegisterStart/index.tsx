@@ -40,6 +40,7 @@ import { getStoreState } from 'store/utils/getStore';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { verification } from 'utils/api';
 import { setCurrentGuardianAction, setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
+import { useServiceSuspension } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export default function RegisterStart() {
   const { type } = useParams();
@@ -53,6 +54,7 @@ export default function RegisterStart() {
   const isMainnet = useIsMainnet();
   const [open, setOpen] = useState<boolean>();
   const { t } = useTranslation();
+  const serviceSuspension = useServiceSuspension();
 
   const networkList = useNetworkList();
 
@@ -330,11 +332,9 @@ export default function RegisterStart() {
           return setOpen(true);
         } else return onLoginFinish(loginInfo);
       }
-      if (type === 'create') return onSignFinish(loginInfo);
-      else {
-        setLoading(false);
-        return setOpen(true);
-      }
+      console.log('onSignFinish', onSignFinish);
+      setLoading(false);
+      return setOpen(true);
     },
     [onLoginFinish, onSignFinish, setLoading, type],
   );
@@ -426,7 +426,11 @@ export default function RegisterStart() {
         onConfirm={() => {
           if (!loginInfoRef.current) return setOpen(false);
           if (isHasAccount?.current) return onLoginFinish(loginInfoRef.current);
-          onSignFinish(loginInfoRef.current);
+
+          const openWinder = window.open(serviceSuspension?.extensionUrl, '_blank');
+          if (openWinder) {
+            openWinder.opener = null;
+          }
           setOpen(false);
         }}
       />

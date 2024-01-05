@@ -21,13 +21,15 @@ export default function LoginModal({
       title={'Continue with this account?'}
       onCancel={onCancel}>
       <p className="modal-content">
-        {type === 'login' && 'This account has not been registered yet. Click "Confirm" to complete the registration.'}
+        {type === 'login' &&
+          'This account has not been registered yet. If you want to register with this account, please download Portkey V2 to get better experience.'}
         {type === 'create' && 'This account already exists. Click "Confirm" to log in.'}
       </p>
       <div className="btn-wrapper">
         <Button onClick={onCancel}>Cancel</Button>
         <Button type="primary" onClick={onConfirm}>
-          Confirm
+          {type === 'login' && 'Download'}
+          {type === 'create' && 'Confirm'}
         </Button>
       </div>
     </CommonModal>

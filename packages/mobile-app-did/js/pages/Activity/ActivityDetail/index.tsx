@@ -1,6 +1,6 @@
 import { ELF_DECIMAL, TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useCaAddresses, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
@@ -35,11 +35,11 @@ const ActivityDetail = () => {
 
   const activityItemFromRoute = useRouterParams<ActivityItemType>();
   const { transactionId = '', blockHash = '', isReceived: isReceivedParams } = activityItemFromRoute;
-  const caAddresses = useCaAddresses();
   const isTestnet = useIsTestnet();
   const isTokenHasPrice = useIsTokenHasPrice(activityItemFromRoute?.symbol);
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const { currentNetwork } = useCurrentWallet();
+  const caAddressInfos = useCaAddressInfoList();
 
   const [activityItem, setActivityItem] = useState<ActivityItemType>();
 
@@ -47,9 +47,9 @@ const ActivityDetail = () => {
 
   useEffectOnce(() => {
     const params = {
-      caAddresses,
       transactionId,
       blockHash,
+      caAddressInfos,
     };
     fetchActivity(params)
       .then(res => {

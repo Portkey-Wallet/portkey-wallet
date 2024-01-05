@@ -123,8 +123,9 @@ export default function RegisterStart() {
           isLoginAccount = true;
         }
       } catch (error: any) {
-        const code = handleErrorCode(error);
-        if (code?.toString() === '3002') {
+        const code = `${handleErrorCode(error)}`;
+        // V2 upgrade: 3003
+        if (code === '3002' || code === '3003') {
           isLoginAccount = false;
         } else {
           throw handleErrorMessage(error || 'GetHolderInfo error');

@@ -43,7 +43,7 @@ export function useUpgradeModal(props?: IUpgradeModalProps) {
 
   return useCallback(async () => {
     const showUpgradeTip = await showUpgrade();
-    if (showUpgradeTip) {
+    if (showUpgradeTip && serviceSuspension?.isSuspended) {
       CustomModal({
         className: 'upgrade-modal',
         type: 'confirm',
@@ -64,5 +64,5 @@ export function useUpgradeModal(props?: IUpgradeModalProps) {
         onCancel: handleCancel,
       });
     }
-  }, [handleCancel, showUpgrade, t, toUpgrade]);
+  }, [handleCancel, serviceSuspension?.isSuspended, showUpgrade, t, toUpgrade]);
 }

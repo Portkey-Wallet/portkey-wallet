@@ -1,6 +1,4 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import InternalMessage from 'messages/InternalMessage';
-import InternalMessageTypes from 'messages/InternalMessageTypes';
 import aes from '@portkey-wallet/utils/aes';
 import { useHideChannel, useInitIM, useJoinGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -17,14 +15,14 @@ import { IChatItemProps } from '@portkey-wallet/im-ui-web';
 import CustomModal from 'pages/components/CustomModal';
 import WarnTip from 'pages/IMChat/components/WarnTip';
 import { ALREADY_JOINED_GROUP_CODE } from '@portkey-wallet/constants/constants-ca/chat';
+import getSeed from 'utils/getSeed';
 
 export default function useInit() {
   const isShowChat = useIsChatShow();
   const initIm = useInitIM();
   const { walletInfo } = useCurrentWallet();
   const init = useCallback(async () => {
-    const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
-    const pin = getSeedResult.data.privateKey;
+    const { pin } = await getSeed();
     if (!pin) return;
 
     const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);

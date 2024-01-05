@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next';
 import { getLoginAccount, getLoginCache } from 'utils/lib/SWGetReduxStore';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { useNavigate } from 'react-router';
+import { useLatestRef } from '@portkey-wallet/hooks';
 
 export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   const { setLoading } = useLoading();
@@ -33,6 +34,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   const navigate = useNavigate();
 
   const originChainId = useOriginChainId();
+  const latestOriginChainId = useLatestRef(originChainId);
 
   const getGuardiansApproved: () => GuardiansApproved[] = useCallback(() => {
     return Object.values(userGuardianStatus ?? {})
@@ -67,7 +69,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         loginGuardianIdentifier: loginAccount.guardianAccount.replaceAll(' ', ''),
         manager: managerAddress,
         extraData, //navigator.userAgent,
-        chainId: originChainId,
+        chainId: latestOriginChainId.current,
         verifierId: verifier.verifierId,
         verificationDoc: verifier.verificationDoc,
         signature: verifier.signature,
@@ -81,7 +83,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         sessionId: result.sessionId,
       };
     },
-    [originChainId],
+    [latestOriginChainId],
   );
 
   const requestRecoveryDIDWallet = useCallback(
@@ -109,7 +111,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         loginGuardianIdentifier: loginAccount.guardianAccount.replaceAll(' ', ''),
         manager: managerAddress,
         extraData, //navigator.userAgent,
-        chainId: originChainId,
+        chainId: latestOriginChainId.current,
         guardiansApproved,
         context: {
           clientId: managerAddress,
@@ -122,7 +124,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         sessionId: result.sessionId,
       };
     },
-    [getGuardiansApproved, originChainId],
+    [getGuardiansApproved, latestOriginChainId],
   );
 
   return useCallback(

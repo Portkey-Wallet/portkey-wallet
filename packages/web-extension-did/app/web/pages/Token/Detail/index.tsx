@@ -9,15 +9,16 @@ import clsx from 'clsx';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/payment';
+import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useExtensionBuyButtonShow, useExtensionETransShow } from 'hooks/cms';
+import { useExtensionETransShow } from 'hooks/cms';
 import { ETransType } from 'types/eTrans';
 import { useCheckSecurity } from 'hooks/useSecurity';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from 'pages/components/DisclaimerModal';
 import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import './index.less';
+import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 
 export enum TokenTransferStatus {
   CONFIRMED = 'Confirmed',
@@ -33,10 +34,10 @@ function TokenDetail() {
   const [disclaimerOpen, setDisclaimerOpen] = useState<boolean>(false);
   const { eTransferUrl = '' } = useCurrentNetworkInfo();
   const { isPrompt } = useCommonState();
-  const { isBuyButtonShow } = useExtensionBuyButtonShow();
-  const isShowBuyEntry = useMemo(
-    () => currentToken.symbol === 'ELF' && currentToken.chainId === 'AELF' && isBuyButtonShow,
-    [currentToken.chainId, currentToken.symbol, isBuyButtonShow],
+  const { isRampShow } = useRampEntryShow();
+  const isShowBuy = useMemo(
+    () => currentToken.symbol === 'ELF' && currentToken.chainId === 'AELF' && isRampShow,
+    [currentToken.chainId, currentToken.symbol, isRampShow],
   );
   const { isETransDepositShow, isETransWithdrawShow } = useExtensionETransShow();
   const isShowDepositUSDT = useMemo(
@@ -123,7 +124,7 @@ function TokenDetail() {
               onClickDepositUSDT={() => handleClickETrans(ETransType.Deposit)}
               onClickWithdrawUSDT={() => handleClickETrans(ETransType.Withdraw)}
               isShowWithdrawUSDT={isShowWithdrawUSDT}
-              isShowBuyEntry={isShowBuyEntry}
+              isShowBuyEntry={isShowBuy}
               onBuy={handleBuy}
               onSend={async () => {
                 navigate(`/send/token/${currentToken?.symbol}`, {
@@ -150,7 +151,7 @@ function TokenDetail() {
     amountInUsdShow,
     isShowDepositUSDT,
     isShowWithdrawUSDT,
-    isShowBuyEntry,
+    isShowBuy,
     handleBuy,
     navigate,
     handleClickETrans,

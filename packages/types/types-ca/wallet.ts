@@ -8,6 +8,7 @@ export type ManagerInfo = {
   type: LoginType;
   verificationType: VerificationType;
   requestId?: string;
+  clientId?: string;
 };
 
 export enum LoginType {

@@ -17,7 +17,7 @@ import { miscSlice } from '@portkey-wallet/store/store-ca/misc/slice';
 import { guardiansSlice } from '@portkey-wallet/store/store-ca/guardians/slice';
 import activitySlice from '@portkey-wallet/store/store-ca/activity/slice';
 import recentSlice from '@portkey-wallet/store/store-ca/recent/slice';
-import { paymentSlice } from '@portkey-wallet/store/store-ca/payment/slice';
+import { rampSlice } from '@portkey-wallet/store/store-ca/ramp/slice';
 import { cmsSlice } from '@portkey-wallet/store/store-ca/cms/slice';
 import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
 import { discoverSlice } from '@portkey-wallet/store/store-ca/discover/slice';
@@ -102,8 +102,8 @@ export const guardiansPersistConfig = {
   storage: localStorage,
 };
 
-export const paymentPersistConfig = {
-  key: paymentSlice.name,
+export const rampPersistConfig = {
+  key: rampSlice.name,
   storage: localStorage,
 };
 

@@ -197,7 +197,7 @@ const ActivityDetail = () => {
           <>
             <View style={styles.topWrap}>
               {activityItem?.nftInfo?.imageUrl ? (
-                <CommonAvatar imageUrl={activityItem?.nftInfo?.imageUrl} style={styles.img} />
+                <CommonAvatar avatarSize={pTd(64)} imageUrl={activityItem?.nftInfo?.imageUrl} style={styles.img} />
               ) : (
                 <Text style={styles.noImg}>{activityItem?.nftInfo?.alias?.slice(0, 1)}</Text>
               )}

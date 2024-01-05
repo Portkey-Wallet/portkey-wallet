@@ -11,6 +11,14 @@ const ExpoDevicesPath = path.resolve(
   '../node_modules/expo-device/android/src/main/java/expo/modules/device/DeviceModule.kt',
 );
 
+const BoostPath = path.resolve(__dirname, '../node_modules/react-native/third-party-podspecs/boost.podspec');
+const ExpoBoostPath = path.resolve(__dirname, '../node_modules/expo-modules-core/android/build.gradle');
+
+function fixStr(str, from, to) {
+  if (!str.includes(from)) return str;
+  return str.replace(from, to);
+}
+
 function fixScaleY(str) {
   return str.replace(
     /verticallyInverted:[^{}]*{[^{}]*transform:[^{}]*{scaleY:\s-1}[^{}]*}/,
@@ -34,13 +42,31 @@ function fixDeviceName(str) {
         Settings.Global.getString(mContext.contentResolver, Settings.Global.DEVICE_NAME)
       },`;
   const from = `"deviceName" to Settings.Secure.getString(mContext.contentResolver, "bluetooth_name")`;
-  if (!str.includes(from)) return str;
-  return str.replace(from, to);
+  return fixStr(str, from, to);
+}
+function fixReactNativeBoost(str) {
+  const to = `spec.source = { :http => 'https://sourceforge.net/projects/boost/files/boost/1.76.0/boost_1_76_0.tar.bz2',`;
+  const from = `spec.source = { :http => 'https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.bz2',`;
+  return fixStr(str, from, to);
+}
+
+function fixExpoBoost(str) {
+  return fixStr(
+    fixStr(
+      str,
+      'https://boostorg.jfrog.io/artifactory/main/release/',
+      'https://sourceforge.net/projects/boost/files/boost/',
+    ),
+    '/source/boost_',
+    '/boost_',
+  );
 }
 
 const FIX_LIST = [
   { filePath: VirtualizedListPath, fun: data => fixScaleY(fixImport(data)) },
   { filePath: ExpoDevicesPath, fun: data => fixDeviceName(data) },
+  { filePath: BoostPath, fun: data => fixReactNativeBoost(data) },
+  { filePath: ExpoBoostPath, fun: data => fixExpoBoost(data) },
 ];
 
 FIX_LIST.forEach(({ filePath, fun }) => {

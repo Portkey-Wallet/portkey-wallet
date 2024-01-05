@@ -1,11 +1,14 @@
 import { Button } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import { useUpgradeModal } from 'hooks/useUpgrade';
+import { useServiceSuspension } from '@portkey-wallet/hooks/hooks-ca/cms';
 import './index.less';
 
 export default function UpgradeTip() {
   const showUpgradeModal = useUpgradeModal({ forceShow: true });
-  return (
+  const serviceSuspension = useServiceSuspension();
+
+  return serviceSuspension?.isSuspended ? (
     <div className="my-wallet-upgrade-tip flex-between-center">
       <div className="upgrade-container flex-center">
         <CustomSvg type="UpgradeIcon" />
@@ -18,5 +21,5 @@ export default function UpgradeTip() {
         Upgrade
       </Button>
     </div>
-  );
+  ) : null;
 }

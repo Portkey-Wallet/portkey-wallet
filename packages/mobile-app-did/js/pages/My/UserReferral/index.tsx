@@ -18,6 +18,7 @@ import Svg from 'components/Svg';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import LottieLoading from 'components/LottieLoading';
 
 const UserReferral = () => {
   const { getReferralLink, referralLink = '', setViewReferralStatusStatus } = useReferral();
@@ -70,11 +71,10 @@ const UserReferral = () => {
           />
           <View style={styles.qrBgSection} />
           <View style={styles.qrCodeWrap}>
-            <CommonQRCodeStyled
-              hasMask={!referralLink}
-              qrData={referralLink || 'https://porkey.finance'}
-              width={pTd(103)}
-            />
+            <View style={[GStyles.flexRow, GStyles.center, styles.maskStyle]}>
+              <LottieLoading style={GStyles.marginTop(0)} />
+            </View>
+            <CommonQRCodeStyled qrData={referralLink || 'https://porkey.finance'} width={pTd(103)} />
           </View>
           <TextM style={[FontStyles.font7, GStyles.textAlignCenter, GStyles.marginTop(pTd(4))]}>Referral Code</TextM>
         </View>
@@ -147,6 +147,16 @@ export const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     backgroundColor: defaultColors.bg29,
+  },
+  maskStyle: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    zIndex: 1000,
+    backgroundColor: '#000000',
+    opacity: 0.4,
   },
   btn: {
     width: pTd(335),

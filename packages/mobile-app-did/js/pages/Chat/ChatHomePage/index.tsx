@@ -18,12 +18,8 @@ import { useLatestRef } from '@portkey-wallet/hooks';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import { measurePageY } from 'utils/measure';
 import useRequestNotifyPermission from 'hooks/usePermission';
-import { showUpgradeOverlay } from 'components/UpgradeOverlay';
-import { useServiceSuspension } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export default function ChatHomePage() {
-  const { isSuspended } = useServiceSuspension() || {};
-
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const emitCloseSwiped = useCallback(() => myEvents.chatHomeListCloseSwiped.emit(''), []);
   const lastEmitCloseSwiped = useLatestRef(emitCloseSwiped);
@@ -95,12 +91,6 @@ export default function ChatHomePage() {
     useCallback(() => {
       requestNotifyPermission();
     }, [requestNotifyPermission]),
-  );
-
-  useFocusEffect(
-    useCallback(() => {
-      if (isSuspended) showUpgradeOverlay({ type: 'chat' });
-    }, [isSuspended]),
   );
 
   return (

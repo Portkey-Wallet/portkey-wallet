@@ -34,15 +34,12 @@ import type { ListItemType } from '../components/ChatOverlay/chatPopover';
 import myEvents from 'utils/deviceEvent';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import { measurePageY } from 'utils/measure';
-import { useFocusEffect, useIsFocused } from '@react-navigation/native';
-import { showUpgradeOverlay } from 'components/UpgradeOverlay';
-import { useServiceSuspension } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useIsFocused } from '@react-navigation/native';
 
 const ChatDetailsPage = () => {
   const dispatch = useAppCommonDispatch();
   const isFocused = useIsFocused();
 
-  const { isSuspended } = useServiceSuspension() || {};
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
@@ -220,12 +217,6 @@ const ChatDetailsPage = () => {
       </View>
     ),
     [avatar, currentChannelInfo?.displayName, displayName, mute, onBack, toRelationId],
-  );
-
-  useFocusEffect(
-    useCallback(() => {
-      if (isSuspended) showUpgradeOverlay({ type: 'chat-detail' });
-    }, [isSuspended]),
   );
 
   return (

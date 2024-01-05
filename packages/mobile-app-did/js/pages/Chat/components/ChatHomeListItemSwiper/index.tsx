@@ -18,8 +18,6 @@ import { getChatListSvgName } from 'pages/Chat/utils';
 import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
 import GroupAvatarShow from 'pages/Chat/components/GroupAvatarShow';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { showUpgradeOverlay } from 'components/UpgradeOverlay';
-import { useServiceSuspension } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 type ChatHomeListItemSwipedType<T> = {
   item: T;
@@ -34,7 +32,6 @@ const DELETE_TO_END = screenWidth;
 export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipedType<ChannelItem>) {
   const { item, onPress, onLongPress, onDelete } = props;
   const { userInfo } = useWallet();
-  const { isSuspended } = useServiceSuspension() || {};
 
   const [isEdit, setIsEdit] = useState(false);
   const swipeableRef = useRef<SwipeableItemImperativeRef>(null);
@@ -99,36 +96,27 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
   );
 
   const onPressItem = useCallback(() => {
-    // todo: delete func
-    if (isSuspended) return showUpgradeOverlay({ type: 'chat' });
-
     if (isEdit) return;
     onPress(item);
-  }, [isEdit, isSuspended, item, onPress]);
+  }, [isEdit, item, onPress]);
 
   const onLongPressItem = useCallback(
     (e: GestureResponderEvent) => {
-      // todo: delete func
-      if (isSuspended) return showUpgradeOverlay({ type: 'chat' });
-
       if (isEdit) return;
       onLongPress(e, item);
     },
-    [isEdit, isSuspended, item, onLongPress],
+    [isEdit, item, onLongPress],
   );
 
   const onDrag = useCallback(
     (params: { openDirection: OpenDirection; snapPoint: number }) => {
-      // todo: delete func
-      if (isSuspended) return showUpgradeOverlay({ type: 'chat' });
-
       setIsEdit(params.snapPoint !== 0);
       if (params.snapPoint === DELETE_TO_END) {
         swipeableRef.current?.close();
         onDelete(item);
       }
     },
-    [isSuspended, item, onDelete],
+    [item, onDelete],
   );
 
   const RightBottomSection = useMemo(() => {

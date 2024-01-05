@@ -86,7 +86,13 @@ export default function NFTItem(props: NFTItemPropsType) {
           color={defaultColors.font3}
           iconStyle={styles.touchIcon}
         />
-        <CommonAvatar imageUrl={imageUrl} title={collectionName} shapeType={'square'} style={styles.avatarStyle} />
+        <CommonAvatar
+          avatarSize={pTd(36)}
+          imageUrl={imageUrl}
+          title={collectionName}
+          shapeType={'square'}
+          style={styles.avatarStyle}
+        />
         <View style={styles.topSeriesCenter}>
           <TextL style={styles.nftSeriesName} ellipsizeMode="tail">
             {collectionName}

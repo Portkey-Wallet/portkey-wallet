@@ -75,7 +75,7 @@ export default function AmountToken({
             title={selectedToken.symbol}
             svgName={selectedToken.symbol === defaultToken.symbol ? aelfIconName : undefined}
             imageUrl={selectedToken.imageUrl || symbolImages[selectedToken.symbol]}
-            avatarSize={28}
+            avatarSize={pTd(28)}
             style={styles.avatarStyle}
           />
           <Text style={styles.symbolName}>{formattedTokenNameToSuffix}</Text>

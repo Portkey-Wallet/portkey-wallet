@@ -22,7 +22,7 @@ export default function LoginModal({
     }
     if (type === 'login') {
       if (serviceSuspension?.isSuspended) {
-        return 'This account has not been registered yet. If you want to register with this account, please download Portkey V2 to get better experience.';
+        return `This account is not registered yet. If you wish to create a Portkey account, we recommend using the fully upgraded Portkey for an enhanced experience.`;
       }
       return 'This account has not been registered yet. Click "Confirm" to complete the registration.';
     }

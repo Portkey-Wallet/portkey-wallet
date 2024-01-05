@@ -19,6 +19,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { ScreenWidth } from '@rneui/base';
 import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
 import { copyText } from 'utils';
+import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 export interface TokenDetailProps {
   route?: any;
@@ -44,6 +45,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
   const { t } = useLanguage();
 
   const nftItem = useRouterParams<NftItemType>();
+  const { currentNetwork } = useWallet();
 
   const {
     alias,
@@ -95,7 +97,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
           <View style={[GStyles.flexRow, styles.rowWrap]}>
             <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('BlockChain')}</TextM>
             <View style={GStyles.flex1} />
-            <TextM style={[styles.leftTitle, FontStyles.font5]}>{formatChainInfoToShow(chainId)}</TextM>
+            <TextM style={[styles.leftTitle, FontStyles.font5]}>{formatChainInfoToShow(chainId, currentNetwork)}</TextM>
           </View>
           <View style={[GStyles.flexRow, styles.rowWrap]}>
             <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Token symbol')}</TextM>

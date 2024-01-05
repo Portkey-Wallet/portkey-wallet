@@ -20,7 +20,7 @@ const UpgradeItem: React.FC = () => {
       <View style={GStyles.flex1}>
         <TextM style={FontStyles.font5}>Portkey Upgraded</TextM>
         <TextM style={styles.blank} />
-        <TextS style={FontStyles.font3}>With enhanced user experience! </TextS>
+        <TextS style={FontStyles.font3}>With enhanced user experience!</TextS>
       </View>
       <Touchable
         onPress={() => showUpgradeOverlay({ type: 'my' })}

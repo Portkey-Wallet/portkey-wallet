@@ -580,7 +580,8 @@ export function useOnLogin(isLogin?: boolean) {
           });
         }
       } catch (error) {
-        if (handleErrorCode(error) === '3002') {
+        const code = handleErrorCode(error);
+        if (code === '3002' || code === '3003') {
           await goSelectVerifier({
             showLoginAccount: showLoginAccount || loginAccount,
             loginAccount,

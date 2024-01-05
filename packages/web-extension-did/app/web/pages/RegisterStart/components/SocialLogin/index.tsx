@@ -8,6 +8,7 @@ import { RegisterType, SocialLoginFinishHandler } from 'types/wallet';
 import DividerCenter from '../DividerCenter';
 import SocialContent from '../SocialContent';
 import TermsOfServiceItem from '../TermsOfServiceItem';
+import { useServiceSuspension } from '@portkey-wallet/hooks/hooks-ca/cms';
 import './index.less';
 
 export default function SocialLogin({
@@ -24,6 +25,7 @@ export default function SocialLogin({
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isTestnet = useIsTestnet();
+  const serviceSuspension = useServiceSuspension();
 
   const isLogin = useMemo(() => type === 'Login', [type]);
 
@@ -54,6 +56,14 @@ export default function SocialLogin({
           <Button type="primary" className="login-by-input-btn" onClick={() => switchLogin?.()}>
             {`${isLogin ? t('Login') : t('Sign up')} with Phone / Email`}
           </Button>
+          {isLogin && !serviceSuspension?.isSuspended && (
+            <div className="go-sign-up">
+              <span>{t('No account?')}</span>
+              <span className="sign-text" onClick={() => navigate('/register/start/create')}>
+                {t('Sign up')}
+              </span>
+            </div>
+          )}
         </div>
       </div>
       <TermsOfServiceItem />

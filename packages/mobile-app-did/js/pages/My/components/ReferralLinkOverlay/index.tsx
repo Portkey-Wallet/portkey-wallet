@@ -1,8 +1,8 @@
-import { StyleSheet, Keyboard, View, Image, Share } from 'react-native';
+import { StyleSheet, Keyboard, View, ImageBackground, Share } from 'react-native';
 import OverlayModal from 'components/OverlayModal';
 import React, { useCallback } from 'react';
 import { pTd } from 'utils/unit';
-import { TextL, TextM } from 'components/CommonText';
+import { TextL, TextM, TextXL } from 'components/CommonText';
 import Touchable from 'components/Touchable';
 import { copyText } from 'utils';
 import Svg from 'components/Svg';
@@ -10,7 +10,8 @@ import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
-import shareButton from 'assets/image/pngs/shareButton.png';
+import button from 'assets/image/pngs/button.png';
+import { FontStyles } from 'assets/theme/styles';
 
 function ReferralLinkOverlay({ linkUrl }: { linkUrl: string }) {
   const onShare = useCallback(async () => {
@@ -35,7 +36,9 @@ function ReferralLinkOverlay({ linkUrl }: { linkUrl: string }) {
         </Touchable>
       </View>
       <Touchable onPress={onShare} style={styles.btnWrap}>
-        <Image source={shareButton} style={styles.btn} />
+        <ImageBackground source={button} style={[GStyles.flexRow, GStyles.center, styles.btn]}>
+          <TextXL style={[fonts.mediumFont, FontStyles.font11]}>Share</TextXL>
+        </ImageBackground>
       </Touchable>
     </View>
   );

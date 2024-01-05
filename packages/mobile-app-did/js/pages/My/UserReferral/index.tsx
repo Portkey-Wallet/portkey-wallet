@@ -1,8 +1,8 @@
 import React, { memo, useCallback } from 'react';
 import { StyleSheet, View, Image, ImageBackground } from 'react-native';
 import { pTd } from 'utils/unit';
-import { TextL, TextM } from 'components/CommonText';
-import inviteFriendButton from 'assets/image/pngs/inviteFriendButton.png';
+import { TextL, TextM, TextXL } from 'components/CommonText';
+import button from 'assets/image/pngs/button.png';
 import { showReferralLinkOverlay } from '../components/ReferralLinkOverlay';
 import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
@@ -19,11 +19,13 @@ import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import LottieLoading from 'components/LottieLoading';
+import fonts from 'assets/theme/fonts';
 
 const UserReferral = () => {
   const { getReferralLink, referralLink = '', setViewReferralStatusStatus } = useReferral();
 
   const onPressInvite = useCallback(() => {
+    if (!referralLink) return;
     showReferralLinkOverlay(referralLink);
   }, [referralLink]);
 
@@ -71,16 +73,21 @@ const UserReferral = () => {
           />
           <View style={styles.qrBgSection} />
           <View style={styles.qrCodeWrap}>
-            <View style={[GStyles.flexRow, GStyles.center, styles.maskStyle]}>
-              <LottieLoading style={GStyles.marginTop(0)} />
-            </View>
+            {!referralLink && (
+              <View style={[GStyles.flexRow, GStyles.center, styles.maskStyle]}>
+                <LottieLoading type="custom" color="white" />
+              </View>
+            )}
             <CommonQRCodeStyled qrData={referralLink || 'https://porkey.finance'} width={pTd(103)} />
           </View>
           <TextM style={[FontStyles.font7, GStyles.textAlignCenter, GStyles.marginTop(pTd(4))]}>Referral Code</TextM>
         </View>
 
         <Touchable onPress={onPressInvite}>
-          <Image source={inviteFriendButton} style={styles.btn} />
+          <ImageBackground source={button} style={[GStyles.flexRow, GStyles.center, styles.btn]}>
+            <TextXL style={[fonts.mediumFont, FontStyles.font11]}>Invite Friends</TextXL>
+            {!referralLink && <LottieLoading type="custom" color="white" lottieStyle={styles.lottieLoading} />}
+          </ImageBackground>
         </Touchable>
       </View>
     </View>
@@ -176,5 +183,8 @@ export const styles = StyleSheet.create({
     bottom: 0,
     width: screenWidth,
     paddingHorizontal: pTd(20),
+  },
+  lottieLoading: {
+    marginLeft: pTd(8),
   },
 });

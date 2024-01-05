@@ -117,6 +117,7 @@ export const showUpgradeOverlay = async (props: ShowUpgradeOverlayPropsType) => 
   OverlayModal.show(<UpgradeOverlay {...props} />, {
     position: 'center',
     animated: false,
+    modal: true,
   });
 };
 

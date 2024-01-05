@@ -1,4 +1,4 @@
-import { useCurrentCaHash, useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentCaHash, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import usePromptSearch from 'hooks/usePromptSearch';
 import { message } from 'antd';
 import { handleErrorMessage } from '@portkey-wallet/utils';
@@ -6,9 +6,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { closeTabPrompt } from 'utils/lib/serviceWorkerAction';
 import errorHandler from 'utils/errorHandler';
 import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
-import aes from '@portkey-wallet/utils/aes';
-import InternalMessage from 'messages/InternalMessage';
-import InternalMessageTypes from 'messages/InternalMessageTypes';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ResponseCode } from '@portkey/provider-types';
 import { ApproveMethod } from '@portkey-wallet/constants/constants-ca/dapp';
@@ -17,6 +14,7 @@ import { useCheckManagerSyncState } from 'hooks/wallet';
 import { ChainId } from '@portkey-wallet/types';
 import { IGuardiansApproved } from '@portkey/did-ui-react';
 import ManagerApproveInner from './ManagerApproveInner';
+import getSeed from 'utils/getSeed';
 import './index.less';
 
 export default function AllowanceApprove() {
@@ -28,7 +26,6 @@ export default function AllowanceApprove() {
     chainId: ChainId;
   }>();
   const caHash = useCurrentCaHash();
-  const { walletInfo } = useCurrentWallet();
   const originChainId = useOriginChainId();
   const chainInfo = useCurrentChain(chainId);
 
@@ -39,12 +36,10 @@ export default function AllowanceApprove() {
   const privateKeyRef = useRef<string>('');
 
   const getInitState = useCallback(async () => {
-    const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
-    const pin = getSeedResult.data.privateKey;
-    const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);
+    const { privateKey } = await getSeed();
     if (!privateKey) return;
     privateKeyRef.current = privateKey;
-  }, [walletInfo.AESEncryptPrivateKey]);
+  }, []);
 
   useEffect(() => {
     getInitState();

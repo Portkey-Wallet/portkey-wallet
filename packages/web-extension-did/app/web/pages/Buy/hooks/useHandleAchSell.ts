@@ -6,9 +6,6 @@ import { message } from 'antd';
 import { useCallback, useMemo } from 'react';
 import { useLoading } from 'store/Provider/hooks';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import aes from '@portkey-wallet/utils/aes';
-import InternalMessage from 'messages/InternalMessage';
-import InternalMessageTypes from 'messages/InternalMessageTypes';
 import getTransactionRaw from 'utils/sandboxUtil/getTransactionRaw';
 import AElf from 'aelf-sdk';
 import { getWallet } from '@portkey-wallet/utils/aelf';
@@ -16,6 +13,7 @@ import SparkMD5 from 'spark-md5';
 import ramp, { IOrderInfo } from '@portkey-wallet/ramp';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
+import getSeed from 'utils/getSeed';
 
 export const useHandleAchSell = () => {
   const { setLoading } = useLoading();
@@ -33,9 +31,7 @@ export const useHandleAchSell = () => {
     async (params: IOrderInfo) => {
       if (!chainInfo) throw new Error('Sell Transfer: No ChainInfo');
 
-      const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
-      const pin = getSeedResult.data.privateKey;
-      const privateKey = await aes.decrypt(wallet.AESEncryptPrivateKey, pin);
+      const { privateKey } = await getSeed();
       if (!privateKey) throw new Error('Sell Transfer: No PrivateKey');
 
       if (!aelfToken) throw new Error('Sell Transfer: No Token');

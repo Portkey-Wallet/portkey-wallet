@@ -31,11 +31,6 @@ export function useVerifierList() {
   return useMemo(() => (verifierMap ? Object.values(verifierMap) : []), [verifierMap]);
 }
 
-export function useIsTestnet() {
-  const currentNetwork = useCurrentNetwork();
-  return useMemo(() => currentNetwork === 'TESTNET', [currentNetwork]);
-}
-
 export function useIsMainnet() {
   const currentNetwork = useCurrentNetwork();
   return useMemo(() => currentNetwork === 'MAIN', [currentNetwork]);

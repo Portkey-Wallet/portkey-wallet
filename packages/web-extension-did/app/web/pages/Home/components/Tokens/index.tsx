@@ -2,17 +2,17 @@ import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import CustomSvg from 'components/CustomSvg';
-import { useIsTestnet } from 'hooks/useNetwork';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export default function TokenList({ tokenList }: { tokenList: TokenItemShowType[] }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const isTestNet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const amountInUsdShow = useAmountInUsdShow();
   const onNavigate = useCallback(
     (tokenInfo: TokenItemShowType) => {
@@ -38,8 +38,8 @@ export default function TokenList({ tokenList }: { tokenList: TokenItemShowType[
                 <span>{formatAmountShow(divDecimals(item.balance, item.decimals))}</span>
               </div>
               <div className="amount">
-                <p>{transNetworkText(item.chainId, isTestNet)}</p>
-                {!isTestNet && (
+                <p>{transNetworkText(item.chainId, !isMainnet)}</p>
+                {isMainnet && (
                   <p className="convert">{amountInUsdShow(item.balance || '', item.decimals, item.symbol)}</p>
                 )}
               </div>

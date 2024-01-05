@@ -1,6 +1,6 @@
 import { useCurrentWallet } from './wallet';
 import { NetworkList } from '@portkey-wallet/constants/constants-ca/network';
-import { useCurrentNetworkInfo, useCurrentApiUrl, useVerifierList, useIsTestnet, useIsMainnet } from './network';
+import { useCurrentNetworkInfo, useCurrentApiUrl, useVerifierList, useIsMainnet } from './network';
 import { renderHook } from '@testing-library/react';
 import { renderHookWithProvider } from '../../../test/utils/render';
 import { setupStore } from '../../../test/utils/setup';
@@ -67,19 +67,6 @@ describe('useVerifierList', () => {
     const { result } = renderHookWithProvider(useVerifierList, setupStore(state));
 
     expect(result.current).toEqual([verifierMapItem]);
-  });
-});
-
-describe('useIsTestnet', () => {
-  it('currentNetwork is TESTNET, and return true', () => {
-    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('TESTNET'));
-    const { result } = renderHook(() => useIsTestnet());
-    expect(result.current).toEqual(true);
-  });
-  it('currentNetwork is MAIN, and return false', () => {
-    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('MAIN'));
-    const { result } = renderHook(() => useIsTestnet());
-    expect(result.current).toEqual(false);
   });
 });
 

@@ -22,6 +22,7 @@ export type ITransferLimitRouteState = ITransferLimitItem & {
   from: ICheckLimitBusiness;
   targetChainId?: ChainId;
   extra: ICheckRampLimitExtraParams | ICheckSendLimitExtraParams;
+  initStateBackUp?: ITransferLimitRouteState;
 };
 
 export interface ITransferLimitListResponse {

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { memo, useCallback } from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
@@ -11,7 +11,7 @@ import { useChatReplyMessageInfo, useChatsDispatch } from 'pages/Chat/context/ho
 import { setReplyMessageInfo } from '../../../context/chatsContext';
 import fonts from 'assets/theme/fonts';
 
-export function ReplyContent() {
+function ReplyContent() {
   const replyMessageInfo = useChatReplyMessageInfo();
   const dispatch = useChatsDispatch();
   const { messageType, message } = replyMessageInfo || {};
@@ -41,6 +41,8 @@ export function ReplyContent() {
     </View>
   );
 }
+
+export default memo(ReplyContent);
 
 const styles = StyleSheet.create({
   wrap: {

@@ -44,6 +44,7 @@ import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import CustomModal from 'pages/components/CustomModal';
 import { SideChainTipContent, SideChainTipTitle } from '@portkey-wallet/constants/constants-ca/send';
+import { useDebounceCallback } from '@portkey-wallet/hooks';
 
 export type ToAccount = { address: string; name?: string };
 
@@ -418,44 +419,48 @@ export default function Send() {
     crossChainFee,
   ]);
 
-  const sendHandler = useCallback(async (): Promise<string | void> => {
-    if (!oneTimeApprovalList.current || oneTimeApprovalList.current.length === 0) {
-      if (!tokenInfo) throw 'No Symbol info';
-      setLoading(true);
-      try {
-        // transfer limit check
-        const limitRes = await checkLimit({
-          chainId: tokenInfo.chainId,
-          symbol: tokenInfo.symbol,
-          amount: amount,
-          decimals: tokenInfo.decimals,
-          from: ICheckLimitBusiness.SEND,
-          balance,
-          extra: {
-            stage,
+  const sendHandler = useDebounceCallback(
+    async (): Promise<string | void> => {
+      if (!oneTimeApprovalList.current || oneTimeApprovalList.current.length === 0) {
+        if (!tokenInfo) throw 'No Symbol info';
+        setLoading(true);
+        try {
+          // transfer limit check
+          const limitRes = await checkLimit({
+            chainId: tokenInfo.chainId,
+            symbol: tokenInfo.symbol,
             amount: amount,
-            address: tokenInfo.address,
-            imageUrl: tokenInfo.imageUrl,
-            alias: tokenInfo.alias,
-            tokenId: tokenInfo.tokenId,
-            toAccount,
-          },
-          onOneTimeApproval: handleOneTimeApproval,
-        });
-        if (!limitRes) {
+            decimals: tokenInfo.decimals,
+            from: ICheckLimitBusiness.SEND,
+            balance,
+            extra: {
+              stage,
+              amount: amount,
+              address: tokenInfo.address,
+              imageUrl: tokenInfo.imageUrl,
+              alias: tokenInfo.alias,
+              tokenId: tokenInfo.tokenId,
+              toAccount,
+            },
+            onOneTimeApproval: handleOneTimeApproval,
+          });
+          if (!limitRes) {
+            setLoading(false);
+            return ExceedLimit;
+          }
+        } catch (error) {
           setLoading(false);
-          return ExceedLimit;
-        }
-      } catch (error) {
-        setLoading(false);
 
-        const msg = handleErrorMessage(error);
-        message.error(msg);
-        return;
+          const msg = handleErrorMessage(error);
+          message.error(msg);
+          return;
+        }
       }
-    }
-    await sendTransfer();
-  }, [amount, balance, checkLimit, handleOneTimeApproval, sendTransfer, setLoading, stage, toAccount, tokenInfo]);
+      await sendTransfer();
+    },
+    [amount, balance, checkLimit, handleOneTimeApproval, sendTransfer, setLoading, stage, toAccount, tokenInfo],
+    500,
+  );
 
   const StageObj: TypeStageObj = useMemo(
     () => ({

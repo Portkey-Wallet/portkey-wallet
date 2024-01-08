@@ -31,7 +31,7 @@ const NFTAvatar: React.FC<NoDataPropsType> = props => {
 
   return (
     <TouchableOpacity style={[styles.wrap, ...outStyles]} onPress={onPress}>
-      {imageUrl && <CommonAvatar shapeType="square" imageUrl={imageUrl} style={styles.img} />}
+      {imageUrl && <CommonAvatar avatarSize={pTd(98)} shapeType="square" imageUrl={imageUrl} style={styles.img} />}
       <TextM
         numberOfLines={imageUrl ? 1 : 2}
         ellipsizeMode="tail"

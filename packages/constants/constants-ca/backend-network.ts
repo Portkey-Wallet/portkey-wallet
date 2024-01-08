@@ -115,7 +115,7 @@ export const BackEndNetWorkMap: {
     cmsUrl: 'http://192.168.66.62:8055/graphql',
     s3Url: 'https://portkey-cms-dev.s3.ap-northeast-1.amazonaws.com',
     imApiUrl: 'http://192.168.66.117:5007',
-    imWsUrl: 'http://192.168.66.117:9903',
+    imWsUrl: 'ws://192.168.66.117:19903/ws',
     imS3Bucket: 'portkey-im-dev',
     portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
     eBridgeUrl: 'http://192.168.67.235:3000',

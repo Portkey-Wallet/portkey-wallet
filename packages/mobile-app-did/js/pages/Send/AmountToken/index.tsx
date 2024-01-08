@@ -73,7 +73,7 @@ export default function AmountToken({
             // elf token icon is fixed , only use white background color
             svgName={selectedToken.symbol === defaultToken.symbol ? 'testnet' : undefined}
             imageUrl={selectedToken.imageUrl || symbolImages[selectedToken.symbol]}
-            avatarSize={28}
+            avatarSize={pTd(28)}
             style={styles.avatarStyle}
           />
           <Text style={styles.symbolName}>{formattedTokenNameToSuffix}</Text>

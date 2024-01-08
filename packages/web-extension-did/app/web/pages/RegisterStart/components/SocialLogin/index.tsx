@@ -15,10 +15,10 @@ import { handleErrorMessage } from '@portkey-wallet/utils';
 import './index.less';
 
 const guardianList = [
-  {
-    icon: <CustomSvg type="Apple-Login" />,
-    type: 'Apple',
-  },
+  // {
+  //   icon: <CustomSvg type="Apple-Login" />,
+  //   type: 'Apple',
+  // },
   {
     icon: <CustomSvg type="Phone-Login" />,
     type: 'Phone',
@@ -99,10 +99,10 @@ export default function SocialLogin({
               <div
                 key={item.type}
                 onClick={() => {
-                  if (item.type === 'Apple') {
-                    onSocialChange('Apple');
-                    return;
-                  }
+                  // if (item.type === 'Apple') {
+                  //   onSocialChange('Apple');
+                  //   return;
+                  // }
                   switchLogin?.(item.type);
                 }}>
                 {item.icon}

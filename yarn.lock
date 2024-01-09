@@ -7017,10 +7017,10 @@
     "@types/node" "*"
     "@types/responselike" "*"
 
-"@types/chrome@^0.0.197":
-  version "0.0.197"
-  resolved "https://registry.npmmirror.com/@types/chrome/-/chrome-0.0.197.tgz#c1b50cdb72ee40f9bc1411506031a9f8a925ab35"
-  integrity sha512-m1NfS5bOjaypyqQfaX6CxmJodZVcvj5+Mt/K94EBHkflYjPNmXHAzbxfifdLMa0YM3PDyOxohoTS5ug/e6p5jA==
+"@types/chrome@^0.0.254":
+  version "0.0.254"
+  resolved "https://registry.npmjs.org/@types/chrome/-/chrome-0.0.254.tgz#f1caadc129134f71bfaa29f9f0295939048da173"
+  integrity sha512-svkOGKwA+6ZZuk9xtrYun8MYpNY/9hD17rgZ19v3KunhsK1ZOKaMESw12/1AXLh1u3UPA8jQIRi2370DXv9wgw==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"

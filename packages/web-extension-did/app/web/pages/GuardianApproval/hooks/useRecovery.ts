@@ -14,21 +14,16 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import { resetLoginInfoAction } from 'store/reducers/loginCache/actions';
 import { GuardianMth } from 'types/guardians';
-import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
+import { handleGuardianByContract } from 'utils/sandboxUtil/handleGuardianByContract';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { formatAddGuardianValue } from '../utils/formatAddGuardianValue';
 import { formatDelGuardianValue } from '../utils/formatDelGuardianValue';
 import { formatEditGuardianValue } from '../utils/formatEditGuardianValue';
 import { ChainId } from '@portkey-wallet/types';
 import getSeed from 'utils/getSeed';
+import { formatSetUnsetGuardianValue } from '../utils/formatSetUnsetLoginGuardianValue';
 
-enum MethodType {
-  'guardians/add' = GuardianMth.addGuardian,
-  'guardians/edit' = GuardianMth.UpdateGuardian,
-  'guardians/del' = GuardianMth.RemoveGuardian,
-}
-
-export const useRecovery = () => {
+export const useGuardianRecovery = () => {
   const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
   const getGuardianList = useGuardianList();
@@ -59,29 +54,42 @@ export const useRecovery = () => {
       }
 
       let value;
+      let methodName = '';
       const _query = state?.split('_')[0];
       switch (_query) {
         case 'guardians/add':
           value = formatAddGuardianValue({ userGuardianStatus, opGuardian });
+          methodName = GuardianMth.addGuardian;
           break;
         case 'guardians/edit':
           value = formatEditGuardianValue({ userGuardianStatus, opGuardian, preGuardian });
+          methodName = GuardianMth.UpdateGuardian;
           break;
         case 'guardians/del':
           value = formatDelGuardianValue({ userGuardianStatus, opGuardian });
+          methodName = GuardianMth.RemoveGuardian;
+          break;
+        case 'guardians/loginGuardian':
+          value = formatSetUnsetGuardianValue({ userGuardianStatus, opGuardian });
+          methodName = opGuardian?.isLoginAccount
+            ? GuardianMth.UnsetGuardianTypeForLogin
+            : GuardianMth.SetGuardianTypeForLogin;
           break;
         default:
           value = {};
       }
-      if (value?.guardiansApproved?.length === 0) return;
-
-      await handleGuardian({
+      if (value?.guardiansApproved?.length === 0) {
+        setLoading(false);
+        return;
+      }
+      console.log('handleGuardianByContract', methodName, value);
+      await handleGuardianByContract({
         rpcUrl: currentChain.endPoint,
         chainType: currentNetwork.walletType,
         address: currentChain.caContractAddress,
         privateKey,
         paramsOption: {
-          method: `${MethodType[_query as keyof typeof MethodType]}`,
+          method: methodName,
           params: {
             caHash: walletInfo?.caHash,
             ...value,
@@ -91,7 +99,7 @@ export const useRecovery = () => {
       try {
         if (state && state.indexOf('guardians/add') !== -1 && accelerateChainId !== originChainId) {
           if (!accelerateChainInfo?.endPoint) return;
-          const res = await handleGuardian({
+          const res = await handleGuardianByContract({
             rpcUrl: accelerateChainInfo?.endPoint,
             chainType: currentNetwork.walletType,
             address: accelerateChainInfo?.caContractAddress,
@@ -111,24 +119,37 @@ export const useRecovery = () => {
       }
       dispatch(resetLoginInfoAction());
       dispatch(resetUserGuardianStatus());
-      dispatch(setPreGuardianAction());
-      dispatch(setOpGuardianAction());
       getGuardianList({ caHash: walletInfo.caHash });
       setLoading(false);
-      state === 'guardians/add' && message.success('Guardians Added');
+      _query === 'guardians/add' && message.success('Guardians Added');
       ModalTip({
         content: 'Requested successfully',
         onClose: () => {
+          setLoading(false);
+          console.log('transfer error', _query, state);
+          if (_query === 'guardians/loginGuardian') {
+            const i = state.indexOf('_');
+            const _extra = state.substring(i + 1);
+            console.log('transfer error extra', _extra);
+            if (_extra === 'edit') {
+              navigate('/setting/guardians/edit');
+            } else {
+              dispatch(setPreGuardianAction());
+              navigate('/setting/guardians/view');
+            }
+            return;
+          }
+
+          dispatch(setPreGuardianAction());
+          dispatch(setOpGuardianAction());
           navigate('/setting/guardians');
         },
       });
     } catch (error: any) {
       setLoading(false);
-      console.log('---op-guardian-error', error);
-      const _error = handleErrorMessage(error, 'Something error');
+      console.log('===handleGuardianByContract error', error);
+      const _error = handleErrorMessage(error, 'handleGuardianByContract error');
       message.error(_error);
-    } finally {
-      setLoading(false);
     }
   }, [
     accelerateChainId,

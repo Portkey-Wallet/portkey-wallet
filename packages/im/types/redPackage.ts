@@ -4,6 +4,12 @@ export type RedPackageStatusInfo = {
   viewStatus: RedPackageStatusEnum;
 };
 
+export enum RedPackageCreationStatusEnum {
+  PENDING = 0,
+  SUCCESS = 1,
+  FAIL = 2,
+}
+
 export enum RedPackageTypeEnum {
   P2P = 1,
   RANDOM = 2,

@@ -1,5 +1,4 @@
 import { defaultColors } from 'assets/theme';
-import GStyles from 'assets/theme/GStyles';
 import CommonButton, { CommonButtonProps } from 'components/CommonButton';
 import React from 'react';
 import { StyleProp, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
@@ -25,19 +24,15 @@ export default function ButtonCol({
     <View style={[styles.buttonsBox, style]}>
       {Array.isArray(buttons) &&
         buttons.map((item, index) => {
-          const isLastItem = index === buttons.length - 1;
-
           const buttonStyle: StyleProp<ViewStyle> = [styles.buttonStyle];
-          const containerStyle: StyleProp<ViewStyle> = [styles.containerStyle];
+          const containerStyle: StyleProp<ViewStyle> = [
+            styles.containerStyle,
+            index === buttons.length - 1 && styles.lastContainerStyle,
+          ];
           const titleStyle: StyleProp<TextStyle> = [styles.titleStyle];
-
           if (item.type === 'outline') {
             buttonStyle.push(styles.outlineButtonStyle);
             titleStyle.push(styles.outlineTitleStyle);
-          }
-
-          if (isLastItem) {
-            containerStyle.push(GStyles.marginBottom(0));
           }
 
           return (
@@ -72,6 +67,9 @@ export const styles = StyleSheet.create({
     // TODO: change margin
     width: '100%',
     marginBottom: pTd(8),
+  },
+  lastContainerStyle: {
+    marginBottom: 0,
   },
   outlineTitleStyle: {
     color: defaultColors.font5,

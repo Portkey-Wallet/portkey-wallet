@@ -13,10 +13,11 @@ import {
   SecurityAccelerateTitle,
   SecurityAccelerateContent,
   SecurityAccelerateErrorTip,
+  LimitType,
 } from 'constants/security';
 import {
-  useDailyTransferLimitModal,
-  useSingleTransferLimitModal,
+  useTransferLimitApprovalModal,
+  useTransferLimitModal,
 } from 'pages/WalletSecurity/PaymentSecurity/hooks/useLimitModal';
 import CustomModal from 'pages/components/CustomModal';
 import { useCallback } from 'react';
@@ -25,17 +26,25 @@ import { useNavigate } from 'react-router';
 import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
 import aes from '@portkey-wallet/utils/aes';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useLoading, useUserInfo } from 'store/Provider/hooks';
+import { useLoading } from 'store/Provider/hooks';
 import { ChainId } from '@portkey/provider-types';
 import { ICheckLimitBusiness, ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
-import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
+import { handleGuardianByContract } from 'utils/sandboxUtil/handleGuardianByContract';
 import { getAelfTxResult } from '@portkey-wallet/utils/aelf';
 import { CheckSecurityResult, getAccelerateGuardianTxId } from '@portkey-wallet/utils/securityTest';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { getCurrentChainInfo } from 'utils/lib/SWGetReduxStore';
 import CustomSvg from 'components/CustomSvg';
+import { ZERO } from '@portkey-wallet/constants/misc';
+import { divDecimals } from '@portkey-wallet/utils/converter';
+import { MAX_TRANSACTION_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
+import { SendStage, ToAccount } from 'pages/Send';
+import { BaseToken } from '@portkey-wallet/types/types-ca/token';
+import { getBalance } from 'utils/sandboxUtil/getBalance';
+import { RampType } from '@portkey-wallet/ramp';
+import getSeed from 'utils/getSeed';
 
 export const useCheckSecurity = () => {
   const wallet = useCurrentWalletInfo();
@@ -112,7 +121,7 @@ export function useSynchronizingModal() {
         const result = await getAelfTxResult(originChainInfo?.endPoint, accelerateGuardiansTxId);
         if (result.Status !== 'MINED') return message.error(SecurityAccelerateErrorTip);
         const params = JSON.parse(result.Transaction.Params);
-        const res = await handleGuardian({
+        const res = await handleGuardianByContract({
           rpcUrl: accelerateChainInfo?.endPoint as string,
           chainType: currentNetwork.walletType,
           address: accelerateChainInfo?.caContractAddress as string,
@@ -127,9 +136,9 @@ export function useSynchronizingModal() {
           },
         });
         message.success('Guardian added');
-        console.log('===handleGuardian accelerate res', res);
+        console.log('===handleGuardianByContract accelerate res', res);
       } catch (error: any) {
-        console.log('===handleGuardian accelerate error', error);
+        console.log('===handleGuardianByContract accelerate error', error);
         message.error(SecurityAccelerateErrorTip);
       }
     },
@@ -246,19 +255,46 @@ export interface ICheckLimitParams {
   decimals: number | string;
   amount: string;
   from: ICheckLimitBusiness;
+  balance: string;
+  extra: ICheckRampLimitExtraParams | ICheckSendLimitExtraParams;
+  onOneTimeApproval: () => void;
+}
+
+export interface ICheckRampLimitExtraParams {
+  side: RampType;
+  country: string;
+  fiat: string;
+  crypto: string;
+  network: string;
+  amount: string;
+}
+
+export interface ICheckSendLimitExtraParams extends Pick<BaseToken, 'address' | 'imageUrl' | 'alias' | 'tokenId'> {
+  stage: SendStage;
+  amount: string;
+  toAccount: ToAccount;
 }
 
 export const useCheckLimit = (targetChainId: ChainId) => {
   const currentChain = useCurrentChain(targetChainId);
+  const currentNetwork = useCurrentNetworkInfo();
   const { walletInfo } = useCurrentWallet();
-  const { passwordSeed } = useUserInfo();
   const checkTransferLimit = useCheckTransferLimit();
-  const dailyTransferLimitModal = useDailyTransferLimitModal();
-  const singleTransferLimitModal = useSingleTransferLimitModal();
+  const transferLimitApprovalModal = useTransferLimitApprovalModal();
+  const transferLimitModal = useTransferLimitModal();
 
   return useCallback(
-    async ({ chainId, symbol, decimals, amount, from }: ICheckLimitParams): Promise<boolean | object> => {
-      const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
+    async ({
+      chainId,
+      symbol,
+      decimals,
+      amount,
+      from,
+      balance,
+      extra,
+      onOneTimeApproval,
+    }: ICheckLimitParams): Promise<boolean> => {
+      const { privateKey } = await getSeed();
       if (!currentChain?.endPoint || !privateKey) return message.error('Invalid user information, please check');
 
       const caContract = new ExtensionContractBasic({
@@ -274,44 +310,70 @@ export const useCheckLimit = (targetChainId: ChainId) => {
         amount,
       });
 
-      const settingParams: ITransferLimitRouteState = {
-        chainId: chainId,
-        symbol,
-        singleLimit: limitRes?.singleBalance.toFixed() || '',
-        dailyLimit: limitRes?.dailyLimit.toFixed() || '',
-        restricted: !limitRes?.dailyLimit.eq(-1),
-        decimals,
-        from,
-      };
-      if (limitRes?.isSingleLimited) {
-        return singleTransferLimitModal(settingParams);
-      }
-      if (limitRes?.isDailyLimited) {
-        return dailyTransferLimitModal(settingParams);
+      if (limitRes?.isSingleLimited || limitRes?.isDailyLimited) {
+        const settingParams: ITransferLimitRouteState = {
+          chainId: chainId,
+          symbol,
+          singleLimit: limitRes?.singleBalance.toFixed() || '',
+          dailyLimit: limitRes?.dailyLimit.toFixed() || '',
+          restricted: !limitRes?.dailyLimit.eq(-1),
+          decimals,
+          from,
+          extra,
+        };
+
+        // get balance
+        if (!balance) {
+          if (!currentChain) return false;
+          const result = await getBalance({
+            rpcUrl: currentChain.endPoint,
+            address: currentChain.defaultToken.address,
+            chainType: currentNetwork.walletType,
+            paramsOption: {
+              owner: walletInfo[targetChainId]?.caAddress || '',
+              symbol: symbol,
+            },
+          });
+          balance = result.result.balance;
+        }
+
+        // check limit type and show modal
+        if (
+          ZERO.plus(amount)
+            .plus(MAX_TRANSACTION_FEE)
+            .gte(ZERO.plus(divDecimals(balance, decimals)))
+        ) {
+          transferLimitModal(settingParams, limitRes?.isSingleLimited ? LimitType.Single : LimitType.Daily);
+        } else {
+          transferLimitApprovalModal(
+            settingParams,
+            limitRes?.isSingleLimited ? LimitType.Single : LimitType.Daily,
+            onOneTimeApproval,
+          );
+        }
+        return false;
       }
       return true;
     },
     [
       checkTransferLimit,
-      currentChain?.caContractAddress,
-      currentChain?.endPoint,
-      dailyTransferLimitModal,
-      passwordSeed,
-      singleTransferLimitModal,
-      walletInfo.AESEncryptPrivateKey,
+      currentChain,
+      currentNetwork.walletType,
+      targetChainId,
+      transferLimitApprovalModal,
+      transferLimitModal,
+      walletInfo,
     ],
   );
 };
 
 export const useGetTransferLimitWithContract = (targetChainId: ChainId) => {
   const currentChain = useCurrentChain(targetChainId);
-  const { walletInfo } = useCurrentWallet();
-  const { passwordSeed } = useUserInfo();
   const getTransferLimit = useGetTransferLimit();
 
   return useCallback(
     async ({ symbol }: { symbol: string }): Promise<GetTransferLimitResult | undefined> => {
-      const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
+      const { privateKey } = await getSeed();
       if (!currentChain?.endPoint || !privateKey) return;
 
       const caContract = new ExtensionContractBasic({
@@ -322,12 +384,6 @@ export const useGetTransferLimitWithContract = (targetChainId: ChainId) => {
 
       return await getTransferLimit({ caContract, symbol });
     },
-    [
-      currentChain?.caContractAddress,
-      currentChain?.endPoint,
-      getTransferLimit,
-      passwordSeed,
-      walletInfo.AESEncryptPrivateKey,
-    ],
+    [currentChain?.caContractAddress, currentChain?.endPoint, getTransferLimit],
   );
 };

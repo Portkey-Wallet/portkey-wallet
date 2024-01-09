@@ -4,7 +4,7 @@ import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/acti
 import { useCallback, useEffect, useRef } from 'react';
 import { useAppDispatch } from 'store/hooks';
 import { useGetCurrentCAViewContract } from './contract';
-import { useGetGuardiansInfoWriteStore, useGetVerifierServers, useRegisterRefreshGuardianList } from './guardian';
+import { useRefreshGuardianList } from './guardian';
 import useEffectOnce from './useEffectOnce';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
 import { reportUserCurrentNetwork } from 'utils/analysisiReport';
@@ -23,10 +23,8 @@ export default function useInitData() {
   const pin = usePin();
   const getCurrentCAViewContract = useGetCurrentCAViewContract();
   const wallet = useCurrentWalletInfo();
-  const getVerifierServers = useGetVerifierServers();
   const { netWorkType } = useCurrentNetwork();
 
-  const getGuardiansInfoWriteStore = useGetGuardiansInfoWriteStore();
   useCheckAndInitNetworkDiscoverMap();
   useGetRedPackageConfig(true, true);
 
@@ -35,7 +33,7 @@ export default function useInitData() {
   const initRamp = useInitRamp({
     clientType: isIOS ? 'iOS' : 'Android',
   });
-  const initGuardianList = useRegisterRefreshGuardianList();
+  const { init: initGuardianList } = useRefreshGuardianList(true);
 
   const loadIM = useCallback(async () => {
     if (!pin) return;
@@ -62,23 +60,14 @@ export default function useInitData() {
       loadBookmarkList();
       initRamp();
       // getGuardiansInfoWriteStore after getVerifierServers
-      await getVerifierServers();
-      getGuardiansInfoWriteStore({
-        caHash: wallet.caHash,
-      });
+      // await getVerifierServers();
+      // getGuardiansInfoWriteStore({
+      //   caHash: wallet.caHash,
+      // });
     } catch (error) {
       console.log(error, '====error');
     }
-  }, [
-    dispatch,
-    getCurrentCAViewContract,
-    getGuardiansInfoWriteStore,
-    getVerifierServers,
-    initRamp,
-    initGuardianList,
-    loadBookmarkList,
-    wallet.caHash,
-  ]);
+  }, [dispatch, getCurrentCAViewContract, initGuardianList, initRamp, loadBookmarkList]);
 
   const isChat = useIsChatShow();
   useEffect(() => {

@@ -1,0 +1,34 @@
+@import '../assets/theme/color.less';
+
+.portkey-message-transfer {
+  font-size: 16px;
+  line-height: 22px;
+  color: @font-5;
+  .transfer-body {
+    position: relative;
+    flex-direction: column;
+    padding: 5px 12px;
+    border-radius: 2px 20px 20px;
+    background: @bg-6;
+    &.right {
+      border-radius: 20px 2px 20px 20px;
+      background: @bg-9;
+    }
+    .text-transfer {
+      display: inline-block;
+      font-size: 15px;
+      white-space: pre-wrap;
+      .transfer-date-hidden {
+        visibility: hidden;
+      }
+    }
+    .transfer-date {
+      position: absolute;
+      bottom: 8px;
+      right: 12px;
+      font-size: 10px;
+      line-height: 16px;
+      color: @font-6;
+    }
+  }
+}

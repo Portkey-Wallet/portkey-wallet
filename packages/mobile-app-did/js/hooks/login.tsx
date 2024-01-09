@@ -22,7 +22,7 @@ import {
   VerifierItem,
   VerifyStatus,
 } from '@portkey-wallet/types/verifier';
-import { handleErrorCode, sleep } from '@portkey-wallet/utils';
+import { handleErrorCode, randomId, sleep } from '@portkey-wallet/utils';
 import Loading from 'components/Loading';
 import AElf from 'aelf-sdk';
 import { request } from 'api';
@@ -133,6 +133,7 @@ export function useOnManagerAddressAndQueryResult() {
         });
 
       await sleep(500);
+      const requestId = randomId();
       try {
         const tmpWalletInfo = walletInfo?.address ? walletInfo : AElf.wallet.createNewWallet();
         const extraData = await extraDataEncode(getDeviceInfo());
@@ -142,7 +143,7 @@ export function useOnManagerAddressAndQueryResult() {
           extraData,
           context: {
             clientId: tmpWalletInfo.address,
-            requestId: tmpWalletInfo.address,
+            requestId,
           },
           chainId: latestOriginChainId.current,
         };
@@ -164,7 +165,8 @@ export function useOnManagerAddressAndQueryResult() {
         const _managerInfo = {
           ...managerInfo,
           managerUniqueId: req.sessionId,
-          requestId: tmpWalletInfo.address,
+          requestId,
+          clientId: tmpWalletInfo.address,
         } as ManagerInfo;
 
         if (walletInfo?.address) {
@@ -456,6 +458,7 @@ export function useGoSelectVerifier(isLogin?: boolean) {
         switch (loginType) {
           case LoginType.Apple:
           case LoginType.Google:
+          case LoginType.Telegram:
             onConfirmAuth({
               ...confirmParams,
               selectedVerifier: allotVerifier,
@@ -523,7 +526,7 @@ export function useGoSelectVerifier(isLogin?: boolean) {
                     Linking.openURL(isIOS ? serviceSuspension?.iOSUrl || '' : serviceSuspension?.androidUrl || '');
                   },
                 },
-                { title: 'Cancel', type: 'text' },
+                { title: 'Cancel', type: 'transparent' },
               ]
             : [
                 { title: 'Cancel', type: 'outline' },
@@ -616,8 +619,6 @@ export function useOnRequestOrSetPin() {
       guardiansApproved?: GuardiansApproved;
       autoLogin?: boolean;
     }) => {
-      console.log(guardiansApproved, showLoading, '====guardiansApproved');
-
       if (walletInfo?.address && pin) {
         onManagerAddressAndQueryResult({
           managerInfo,

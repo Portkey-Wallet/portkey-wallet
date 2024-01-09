@@ -23,9 +23,17 @@ export function useReportingSignalR() {
   const lastAppStatus = useLatestRef(appStatus);
   const lastUnreadCount = useLatestRef(unreadCount);
 
+  const reportStatus = useCallback(async () => {
+    try {
+      await signalrFCM.reportAppStatus(lastAppStatus.current, lastUnreadCount.current);
+    } catch (error) {
+      console.log('reportStatus error', error);
+    }
+  }, [lastAppStatus, lastUnreadCount]);
+
   useEffect(() => {
     timerRef.current = setInterval(() => {
-      signalrFCM.reportAppStatus(lastAppStatus.current, lastUnreadCount.current);
+      reportStatus();
     }, 3000);
 
     return () => {

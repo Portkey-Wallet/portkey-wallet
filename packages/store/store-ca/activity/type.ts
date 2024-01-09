@@ -40,10 +40,15 @@ export interface IActivitiesApiResponse {
   totalRecordCount: number;
 }
 
+export enum ActivityTypeEnum {
+  TRANSFER_CARD = 'transfer-card',
+}
+
 export interface IActivityApiParams {
   transactionId: string;
   blockHash: string;
   caAddressInfos: ICaAddressInfoListItemType[];
+  activityType?: ActivityTypeEnum;
 }
 
 export interface IActivityListWithAddressApiParams {

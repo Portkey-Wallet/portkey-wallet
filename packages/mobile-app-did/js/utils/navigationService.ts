@@ -2,10 +2,13 @@ import { randomId } from '@portkey-wallet/utils';
 import { CommonActions, NavigationContainerRef, StackActions } from '@react-navigation/native';
 import { RootStackParamList, TabParamList } from 'navigation';
 import merge from 'lodash/merge';
+import { NavigateMultiLevelOptions } from 'types/navigate';
+
 type MultiLevelParamsIds = string[];
 let TempMultiLevelParams: {
   [id: string]: { multiLevelParamsIds: MultiLevelParamsIds; originMultiLevelRouterKey: string } & any;
 } = {};
+
 export type NavigateName = keyof (RootStackParamList & TabParamList);
 
 export let _navigator: NavigationContainerRef<any>;
@@ -59,14 +62,9 @@ function navigate(name: NavigateName, params?: any) {
   );
 }
 
-type MultiLevelOptions = {
-  params?: any;
-  multiLevelParams: any;
-};
-
 function navigateByMultiLevelParams(
   name: keyof (RootStackParamList & TabParamList),
-  multiLevelOptions: MultiLevelOptions,
+  multiLevelOptions: NavigateMultiLevelOptions,
 ) {
   const { multiLevelParams: mParams, params } = multiLevelOptions;
   const { currentRoute } = getCurrentRouteAndRoutes();

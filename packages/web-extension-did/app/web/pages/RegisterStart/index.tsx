@@ -20,7 +20,7 @@ import { handleErrorCode, handleErrorMessage, sleep } from '@portkey-wallet/util
 import { Button, message } from 'antd';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
 import { SocialLoginFinishHandler } from 'types/wallet';
-import { getGoogleUserInfo, parseAppleIdentityToken } from '@portkey-wallet/utils/authentication';
+import { getGoogleUserInfo, parseAppleIdentityToken, parseTelegramToken } from '@portkey-wallet/utils/authentication';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { useGetRegisterInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
@@ -163,6 +163,7 @@ export default function RegisterStart() {
       switch (data?.loginType) {
         case LoginType.Apple:
         case LoginType.Google:
+        case LoginType.Telegram:
           checkAuth(verifierItem, data);
           break;
         default:
@@ -278,7 +279,7 @@ export default function RegisterStart() {
             (guardian) =>
               guardian.isLoginAccount &&
               guardian.guardianAccount === loginInfo.guardianAccount &&
-              [LoginType.Google, LoginType.Apple].includes(guardian.guardianType),
+              [LoginType.Google, LoginType.Apple, LoginType.Telegram].includes(guardian.guardianType),
           )
           .map((item) =>
             socialVerify({
@@ -333,11 +334,13 @@ export default function RegisterStart() {
           return setOpen(true);
         } else return onLoginFinish(loginInfo);
       }
-      console.log('onSignFinish', onSignFinish);
-      setLoading(false);
-      return setOpen(true);
+      if (type === 'create' && !serviceSuspension?.isSuspended) return onSignFinish(loginInfo);
+      else {
+        setLoading(false);
+        return setOpen(true);
+      }
     },
-    [onLoginFinish, onSignFinish, setLoading, type],
+    [onLoginFinish, onSignFinish, serviceSuspension?.isSuspended, setLoading, type],
   );
 
   const onSocialFinish: SocialLoginFinishHandler = useCallback(
@@ -345,33 +348,30 @@ export default function RegisterStart() {
       try {
         if (!data) throw 'Action error';
         setLoading(true);
+        let userId = '';
         if (type === 'Google') {
           const userInfo = await getGoogleUserInfo(data?.access_token);
-          if (!userInfo?.id) throw userInfo;
-          await validateIdentifier(userInfo.id);
-          onInputFinish?.({
-            guardianAccount: userInfo.id, // account
-            loginType: LoginType[type],
-            authenticationInfo: { [userInfo.id]: data?.access_token },
-            createType: isHasAccount.current ? 'login' : 'register',
-          });
+          userId = userInfo.id;
         } else if (type === 'Apple') {
           const userInfo = parseAppleIdentityToken(data?.access_token);
-          console.log(userInfo, data, 'onSocialSignFinish');
-          if (userInfo) {
-            await validateIdentifier(userInfo.userId);
-            onInputFinish({
-              guardianAccount: userInfo.userId, // account
-              loginType: LoginType.Apple,
-              authenticationInfo: { [userInfo.userId]: data?.access_token },
-              createType: isHasAccount.current ? 'login' : 'register',
-            });
-          } else {
-            throw 'Authorization failed';
-          }
+          userId = userInfo?.userId || '';
+        } else if (type === 'Telegram') {
+          const userInfo = parseTelegramToken(data?.access_token);
+          if (!userInfo) throw 'Telegram auth error';
+          userId = userInfo?.userId;
         } else {
-          message.error(`LoginType:${type} is not support`);
+          throw `LoginType:${type} is not support`;
         }
+        if (!userId) throw 'Authorization failed';
+
+        await validateIdentifier(userId);
+
+        onInputFinish?.({
+          guardianAccount: userId, // account
+          loginType: LoginType[type],
+          authenticationInfo: { [userId]: data?.access_token },
+          createType: isHasAccount.current ? 'login' : 'register',
+        });
       } catch (error) {
         setLoading(false);
         console.log(error, 'error===onSocialSignFinish');
@@ -427,10 +427,14 @@ export default function RegisterStart() {
         onConfirm={() => {
           if (!loginInfoRef.current) return setOpen(false);
           if (isHasAccount?.current) return onLoginFinish(loginInfoRef.current);
-
-          const openWinder = window.open(serviceSuspension?.extensionUrl, '_blank');
-          if (openWinder) {
-            openWinder.opener = null;
+          // V2
+          if (serviceSuspension?.isSuspended) {
+            const openWinder = window.open(serviceSuspension?.extensionUrl, '_blank');
+            if (openWinder) {
+              openWinder.opener = null;
+            }
+          } else {
+            onSignFinish(loginInfoRef.current);
           }
           setOpen(false);
         }}

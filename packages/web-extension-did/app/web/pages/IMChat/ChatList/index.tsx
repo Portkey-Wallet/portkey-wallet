@@ -13,17 +13,13 @@ import {
   useUnreadCount,
 } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
-import { formatChatListTime } from '@portkey-wallet/utils/chat';
-import { MessageTypeWeb } from 'types/im';
-import { ChannelItem, ParsedRedPackage } from '@portkey-wallet/im';
-import './index.less';
 import { useHandleClickChatItem } from 'hooks/im';
-import { PIN_LIMIT_EXCEED, UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
+import { PIN_LIMIT_EXCEED } from '@portkey-wallet/constants/constants-ca/chat';
 import { useWalletInfo } from 'store/Provider/hooks';
-import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
 import { setBadge } from 'utils/FCM';
 import { AppStatusUnit } from '@portkey-wallet/socket/socket-fcm/types';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
+import './index.less';
 
 export default function ChatList() {
   const navigate = useNavigate();
@@ -39,33 +35,8 @@ export default function ChatList() {
   } = useChannelList();
   const unreadCount = useUnreadCount();
   const { userInfo } = useWalletInfo();
-  const formatSubTitle = useCallback((item: ChannelItem) => {
-    const _type = MessageTypeWeb[item.lastMessageType ?? ''];
-    let subTitle = UN_SUPPORTED_FORMAT;
-    if (_type === MessageTypeWeb.IMAGE) {
-      subTitle = '[Image]';
-    } else if (_type === MessageTypeWeb.TEXT) {
-      subTitle = `${item.lastMessageContent}`;
-    } else if (_type === MessageTypeWeb.SYS) {
-      subTitle = `${item.lastMessageContent}`;
-    } else if (_type === MessageTypeWeb['REDPACKAGE-CARD']) {
-      const redPackage = (item.lastMessageContent as ParsedRedPackage).data;
-      subTitle = `${redPackage?.memo || RED_PACKAGE_DEFAULT_MEMO}`;
-    }
-    return subTitle;
-  }, []);
-  const formatIsOwner = useCallback(
-    (item: ChannelItem) => {
-      const _type = MessageTypeWeb[item.lastMessageType ?? ''];
-      let isOwner = false;
-      if (_type === MessageTypeWeb['REDPACKAGE-CARD']) {
-        const senderId = (item.lastMessageContent as ParsedRedPackage).data?.senderId;
-        isOwner = senderId === userInfo?.userId;
-      }
-      return isOwner;
-    },
-    [userInfo?.userId],
-  );
+  const handleClickChatItem = useHandleClickChatItem();
+
   const popList = useMemo(
     () => [
       {
@@ -112,32 +83,11 @@ export default function ChatList() {
     ),
     [popList, navigate],
   );
-  const transChatList: IChatItemProps[] = useMemo(() => {
-    return chatList.map((item) => {
-      return {
-        id: item.channelUuid,
-        letter: item.displayName.substring(0, 1).toUpperCase(),
-        title: item.displayName,
-        subtitle: formatSubTitle(item),
-        dateString: formatChatListTime(item.lastPostAt),
-        muted: item.mute,
-        pin: item.pin,
-        unread: item.unreadMessageCount,
-        channelType: item?.channelType,
-        status: item.status,
-        avatar: item.channelIcon,
-        isOwner: formatIsOwner(item),
-        lastMessageType: MessageTypeWeb[item.lastMessageType ?? ''],
-      };
-    });
-  }, [chatList, formatSubTitle, formatIsOwner]);
-
-  const handleClickChatItem = useHandleClickChatItem();
 
   const handlePin = useCallback(
     async (chatItem: IChatItemProps) => {
       try {
-        await pinChannel(`${chatItem.id}`, !chatItem.pin);
+        await pinChannel(`${chatItem.channelUuid}`, !chatItem.pin);
       } catch (e: any) {
         if (`${e?.code}` === PIN_LIMIT_EXCEED) {
           message.error('Pin limit exceeded');
@@ -152,9 +102,9 @@ export default function ChatList() {
   const handleMute = useCallback(
     async (chatItem: IChatItemProps) => {
       try {
-        await muteChannel(`${chatItem.id}`, !chatItem.muted);
+        await muteChannel(`${chatItem.channelUuid}`, !chatItem.mute);
       } catch (e) {
-        message.error(`Failed to ${chatItem.muted ? 'unmute' : 'mute'} chat`);
+        message.error(`Failed to ${chatItem.mute ? 'unmute' : 'mute'} chat`);
         console.log('===handle mute error', e);
       }
     },
@@ -163,7 +113,7 @@ export default function ChatList() {
   const handleDelete = useCallback(
     async (chatItem: IChatItemProps) => {
       try {
-        await hideChannel(`${chatItem.id}`);
+        await hideChannel(`${chatItem.channelUuid}`);
       } catch (e) {
         message.error('Failed to delete chat');
         console.log('===handle delete error', e);
@@ -195,7 +145,8 @@ export default function ChatList() {
           <StyleProvider prefixCls="portkey">
             <ChannelList
               id="channel-list"
-              dataSource={transChatList}
+              dataSource={chatList}
+              myPortkeyId={userInfo?.userId}
               onClickPin={handlePin}
               onClickMute={handleMute}
               onClickDelete={handleDelete}

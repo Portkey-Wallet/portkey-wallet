@@ -5,6 +5,9 @@ import { styles } from './style/style';
 import { TextL, TextM, TextTitle } from 'components/CommonText';
 import ButtonRow, { ButtonRowProps } from 'components/ButtonRow';
 import ButtonCol from 'components/ButtonCol';
+import { pTd } from 'utils/unit';
+import Svg from 'components/Svg';
+import { defaultColors } from 'assets/theme';
 
 const show = (
   items: {
@@ -55,6 +58,7 @@ type AlertBodyProps = {
   autoClose?: boolean;
   messageList?: ReactNode[];
   buttonGroupDirection?: 'row' | 'column';
+  isCloseShow?: boolean;
 };
 
 function AlertBody({
@@ -66,9 +70,19 @@ function AlertBody({
   autoClose = true,
   messageList,
   buttonGroupDirection = 'row',
+  isCloseShow = false,
 }: AlertBodyProps) {
   return (
-    <View style={styles.alertBox}>
+    <View style={[styles.alertBox, isCloseShow && styles.alertBoxWithClose]}>
+      {isCloseShow && (
+        <View
+          onTouchEnd={() => {
+            OverlayModal.hide();
+          }}
+          style={styles.closeWrap}>
+          <Svg icon={'close'} size={pTd(12.5)} color={defaultColors.font7} />
+        </View>
+      )}
       {title ? <TextTitle style={styles.alertTitle}>{title}</TextTitle> : null}
       {typeof title2 === 'string' ? <TextL style={styles.alertTitle2}>{title2}</TextL> : title2}
       {typeof message === 'string' ? <TextM style={styles.alertMessage}>{message}</TextM> : message}

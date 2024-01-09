@@ -3,13 +3,13 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
 import Svg from 'components/Svg';
 import { LoginGuardianTypeIcon } from 'constants/misc';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
+import { AuthTypes } from 'constants/guardian';
 
 type GuardianAccountItemProps = {
   guardian?: UserGuardianItem;
@@ -18,7 +18,7 @@ type GuardianAccountItemProps = {
 const GuardianAccountItem = ({ guardian }: GuardianAccountItemProps) => {
   const guardianAccount = useMemo(() => {
     if (!guardian) return '';
-    if (![LoginType.Apple, LoginType.Google].includes(guardian.guardianType)) {
+    if (!AuthTypes.includes(guardian.guardianType)) {
       return guardian.guardianAccount;
     }
     if (guardian.isPrivate) return PRIVATE_GUARDIAN_ACCOUNT;
@@ -29,9 +29,7 @@ const GuardianAccountItem = ({ guardian }: GuardianAccountItemProps) => {
     if (!guardian) return <></>;
     if (!guardian.firstName) {
       return (
-        <TextM
-          numberOfLines={[LoginType.Apple, LoginType.Google].includes(guardian.guardianType) ? 1 : 2}
-          style={GStyles.flex1}>
+        <TextM numberOfLines={AuthTypes.includes(guardian.guardianType) ? 1 : 2} style={GStyles.flex1}>
           {guardianAccount}
         </TextM>
       );

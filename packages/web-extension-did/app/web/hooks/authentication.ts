@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { VerifyTokenParams } from '@portkey-wallet/types/types-ca/authentication';
-import { getGoogleUserInfo, parseAppleIdentityToken } from '@portkey-wallet/utils/authentication';
+import { getGoogleUserInfo, parseAppleIdentityToken, parseTelegramToken } from '@portkey-wallet/utils/authentication';
 import { request } from '@portkey-wallet/api/api-did';
 import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
@@ -56,13 +56,43 @@ export function useVerifyAppleToken() {
   );
 }
 
+export function useVerifyTelegram() {
+  const { currentNetwork } = useWalletInfo();
+  return useCallback(
+    async (params: VerifyTokenParams) => {
+      let accessToken = params.accessToken;
+      const { isExpired: tokenIsExpired } = parseTelegramToken(accessToken) || {};
+      if (!accessToken || tokenIsExpired) {
+        const info = await socialLoginAction('Telegram', currentNetwork);
+        accessToken = info?.data?.access_token || undefined;
+      }
+      const { userId } = parseTelegramToken(accessToken) || {};
+      if (userId !== params.id) throw new Error('Account does not match your guardian');
+      delete (params as any).id;
+      return request.verify.verifyTelegramToken({
+        params: { ...params, accessToken },
+      });
+    },
+    [currentNetwork],
+  );
+}
+
 export function useVerifyToken() {
   const verifyGoogleToken = useVerifyGoogleToken();
   const verifyAppleToken = useVerifyAppleToken();
+  const verifyTelegram = useVerifyTelegram();
   return useCallback(
     (type: LoginType, params: VerifyTokenParams) => {
-      return (type === LoginType.Apple ? verifyAppleToken : verifyGoogleToken)(params);
+      let func = verifyAppleToken;
+      if (type === LoginType.Apple) {
+        func = verifyAppleToken;
+      } else if (type === LoginType.Google) {
+        func = verifyGoogleToken;
+      } else if (type === LoginType.Telegram) {
+        func = verifyTelegram;
+      }
+      return func(params);
     },
-    [verifyAppleToken, verifyGoogleToken],
+    [verifyAppleToken, verifyGoogleToken, verifyTelegram],
   );
 }

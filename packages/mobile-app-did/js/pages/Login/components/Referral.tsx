@@ -153,7 +153,7 @@ export default function Referral({
             </Fragment>
           ))}
         </View>
-        {type === PageType.login && (
+        {!isSuspended && type === PageType.login && (
           <Touchable
             style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flexCenter, styles.signUpTip]}
             onPress={() => navigationService.navigate('SignupPortkey')}>
@@ -164,16 +164,6 @@ export default function Referral({
           </Touchable>
         )}
       </View>
-      {!isSuspended && type === PageType.login && (
-        <Touchable
-          style={[GStyles.flexRowWrap, GStyles.itemCenter, styles.signUpTip]}
-          onPress={() => navigationService.navigate('SignupPortkey')}>
-          <TextL style={FontStyles.font3}>
-            No account? <Text style={FontStyles.font4}>Sign up </Text>
-          </TextL>
-          <Svg size={pTd(20)} color={FontStyles.font4.color} icon="right-arrow2" />
-        </Touchable>
-      )}
       <TermsServiceButton />
     </View>
   );

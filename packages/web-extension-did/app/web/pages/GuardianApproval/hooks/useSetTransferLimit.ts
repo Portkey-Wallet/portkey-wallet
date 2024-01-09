@@ -87,6 +87,7 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
         onClose: async () => {
           await sleep(1000);
           checkBackPath({
+            ...transQuery.initStateBackUp,
             ...transQuery,
             dailyLimit: dailyLimit,
             singleLimit: singleLimit,

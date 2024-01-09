@@ -23,10 +23,7 @@ export default function HeaderPinSection(props: HeaderPinSection) {
   const { isAdmin } = useGroupChannelInfo(channelUUid || '');
   const { list, lastPinMessage } = useIMPin(channelUUid, true);
 
-  const isImg = useMemo(() => {
-    if (!lastPinMessage) return false;
-    return lastPinMessage.type === 'IMAGE';
-  }, [lastPinMessage]);
+  const isImg = useMemo(() => lastPinMessage?.type === 'IMAGE', [lastPinMessage]);
 
   const url = useMemo(
     () => decodeURIComponent((lastPinMessage?.parsedContent as ParsedImage).thumbImgUrl || ''),

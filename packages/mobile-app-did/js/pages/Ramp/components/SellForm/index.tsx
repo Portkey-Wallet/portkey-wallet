@@ -372,6 +372,7 @@ export default function SellForm() {
                   title={crypto?.symbol || ''}
                   style={styles.unitIconStyle}
                   imageUrl={crypto?.icon}
+                  avatarSize={pTd(24)}
                 />
               )}
               <TextL style={[GStyles.flex1, fonts.mediumFont]}>{crypto?.symbol || ''}</TextL>

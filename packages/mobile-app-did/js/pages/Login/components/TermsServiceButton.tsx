@@ -18,7 +18,7 @@ export default function TermsServiceButton() {
   return (
     <View style={[GStyles.flexRowWrap, GStyles.itemCenter, styles.termsServiceTip]}>
       <TextS style={[FontStyles.font7, styles.textWrap]}>By proceeding, you agree to the</TextS>
-      <Text style={[FontStyles.font7, styles.textWrap]}>
+      <TextS style={[FontStyles.font7, styles.textWrap]}>
         <TextS onPress={() => onJump('Terms of Service')} style={FontStyles.font4} suppressHighlighting>
           Terms of Service
         </TextS>
@@ -26,7 +26,7 @@ export default function TermsServiceButton() {
         <TextS style={FontStyles.font4} suppressHighlighting onPress={() => onJump('Privacy Policy')}>
           Privacy Policy
         </TextS>
-      </Text>
+      </TextS>
     </View>
   );
 }

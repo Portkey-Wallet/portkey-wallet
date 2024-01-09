@@ -9,6 +9,7 @@ import upGrade from 'assets/image/pngs/upGrade.png';
 import { pTd } from 'utils/unit';
 import { FontStyles } from 'assets/theme/styles';
 import { showUpgradeOverlay } from 'components/UpgradeOverlay';
+import fonts from 'assets/theme/fonts';
 
 const UpgradeItem: React.FC = () => {
   return (
@@ -18,13 +19,13 @@ const UpgradeItem: React.FC = () => {
       style={[GStyles.flexRow, GStyles.center, styles.itemWrap]}>
       <Image source={upGrade} style={styles.img} />
       <View style={GStyles.flex1}>
-        <TextM style={FontStyles.font5}>Portkey Upgraded</TextM>
+        <TextM style={[FontStyles.font5, fonts.mediumFont]}>Portkey Upgraded</TextM>
         <TextM style={styles.blank} />
         <TextS style={FontStyles.font3}>With enhanced user experience!</TextS>
       </View>
       <Touchable
         onPress={() => showUpgradeOverlay({ type: 'my' })}
-        style={[GStyles.flexCenter, GStyles.itemCenter, styles.btn]}>
+        style={[GStyles.flexCenter, GStyles.itemCenter, fonts.mediumFont, styles.btn]}>
         <TextS style={FontStyles.font11}>Upgrade</TextS>
       </Touchable>
     </ImageBackground>
@@ -35,7 +36,7 @@ export default memo(UpgradeItem);
 
 const styles = StyleSheet.create({
   itemWrap: {
-    marginHorizontal: pTd(20),
+    marginHorizontal: pTd(16),
     marginBottom: pTd(8),
     paddingHorizontal: pTd(12),
     paddingVertical: pTd(10),
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
     height: pTd(4),
   },
   btn: {
-    width: pTd(70),
+    width: pTd(60),
     height: pTd(24),
     backgroundColor: defaultColors.bg5,
     borderRadius: pTd(6),

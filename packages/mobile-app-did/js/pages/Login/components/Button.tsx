@@ -24,7 +24,13 @@ export default function Button({
       disabled={isActive}
       onPress={onPress}
       style={[styles.container, isActive ? BGStyles.bg6 : undefined, style]}>
-      <TextM style={[FontStyles.font7, isActive ? [FontStyles.font5, FontStyles.weight500] : undefined, titleText]}>
+      <TextM
+        style={[
+          FontStyles.font7,
+          isActive ? [FontStyles.font5, FontStyles.weight500] : undefined,
+          styles.titleStyle,
+          titleText,
+        ]}>
         {title}
       </TextM>
     </Touchable>
@@ -37,5 +43,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: pTd(12),
     borderRadius: 6,
     minHeight: 32,
+  },
+  titleStyle: {
+    lineHeight: pTd(18),
   },
 });

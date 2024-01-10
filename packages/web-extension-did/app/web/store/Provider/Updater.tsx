@@ -61,7 +61,6 @@ export default function Updater() {
     });
   }, [imS3Bucket, isMainnet]);
 
-  useFCM();
   initIm();
   useVerifierList();
   useUpdateRedux();
@@ -77,6 +76,7 @@ export default function Updater() {
   }, [initRamp, refreshToken]);
 
   const checkUpdate = useCheckUpdate();
+  useFCM();
 
   useCheckManager(checkManagerOnLogout);
   useFetchTxFee();

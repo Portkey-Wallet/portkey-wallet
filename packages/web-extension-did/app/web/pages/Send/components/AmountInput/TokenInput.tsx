@@ -47,7 +47,7 @@ export default function TokenInput({
   const { max: maxFee } = useGetTxFee(token.chainId);
   const defaultToken = useDefaultToken(token.chainId);
   const amountInUsd = useMemo(
-    () => amountInUsdShow(value || amount, 0, token.symbol),
+    () => amountInUsdShow(value || amount, 0, token.symbol) || '$ 0',
     [amount, amountInUsdShow, token.symbol, value],
   );
 

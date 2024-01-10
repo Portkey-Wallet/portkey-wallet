@@ -1,7 +1,7 @@
 import { Button, message, Switch } from 'antd';
 import { useNavigate } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
-import { useAppDispatch, useGuardiansInfo, useLoading, useUserInfo, useWalletInfo } from 'store/Provider/hooks';
+import { useAppDispatch, useGuardiansInfo, useLoading, useWalletInfo } from 'store/Provider/hooks';
 import { useMemo, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
@@ -23,7 +23,6 @@ import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type'
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import useGuardianList from 'hooks/useGuardianList';
 import { verification } from 'utils/api';
-import aes from '@portkey-wallet/utils/aes';
 import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
 import { getGoogleUserInfo, parseAppleIdentityToken } from '@portkey-wallet/utils/authentication';
 import { request } from '@portkey-wallet/api/api-did';
@@ -35,6 +34,7 @@ import AccountShow from '../components/AccountShow';
 import { guardianIconMap } from '../utils';
 import './index.less';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
+import getSeed from 'utils/getSeed';
 
 export default function GuardiansView() {
   const { t } = useTranslation();
@@ -48,7 +48,6 @@ export default function GuardiansView() {
   const dispatch = useAppDispatch();
   const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
-  const { passwordSeed } = useUserInfo();
   const editable = useMemo(() => Object.keys(userGuardiansList ?? {}).length > 1, [userGuardiansList]);
   const isPhoneType = useMemo(() => opGuardian?.guardianType === LoginType.Phone, [opGuardian?.guardianType]);
   const { currentNetwork: curNet } = useWalletInfo();
@@ -96,7 +95,7 @@ export default function GuardiansView() {
         });
       }
 
-      const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
+      const { privateKey } = await getSeed();
       if (!currentChain?.endPoint || !privateKey) return message.error('unset login account error');
       const curRes = await handleGuardian({
         rpcUrl: currentChain.endPoint,
@@ -122,13 +121,9 @@ export default function GuardiansView() {
     [
       curNet,
       opGuardian?.verifier?.id,
-      currentChain?.chainId,
-      currentChain?.endPoint,
-      currentChain?.caContractAddress,
+      currentChain,
       originChainId,
-      walletInfo.AESEncryptPrivateKey,
       walletInfo.caHash,
-      passwordSeed,
       currentNetwork.walletType,
       currentGuardian?.guardianType,
       currentGuardian?.verifier?.id,
@@ -141,7 +136,7 @@ export default function GuardiansView() {
   const verifyHandler = useCallback(async () => {
     try {
       if (opGuardian?.isLoginAccount) {
-        const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
+        const { privateKey } = await getSeed();
         if (!currentChain?.endPoint || !privateKey) return message.error('unset login account error');
         setLoading(true);
         const result = await handleGuardian({
@@ -220,7 +215,6 @@ export default function GuardiansView() {
     navigate,
     originChainId,
     opGuardian,
-    passwordSeed,
     setLoading,
     walletInfo,
   ]);

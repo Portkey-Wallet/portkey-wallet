@@ -23,9 +23,8 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
-import aes from '@portkey-wallet/utils/aes';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useLoading, useUserInfo } from 'store/Provider/hooks';
+import { useLoading } from 'store/Provider/hooks';
 import { ChainId } from '@portkey/provider-types';
 import { ICheckLimitBusiness, ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
@@ -247,15 +246,13 @@ export interface ICheckLimitParams {
 
 export const useCheckLimit = (targetChainId: ChainId) => {
   const currentChain = useCurrentChain(targetChainId);
-  const { walletInfo } = useCurrentWallet();
-  const { passwordSeed } = useUserInfo();
   const checkTransferLimit = useCheckTransferLimit();
   const dailyTransferLimitModal = useDailyTransferLimitModal();
   const singleTransferLimitModal = useSingleTransferLimitModal();
 
   return useCallback(
     async ({ chainId, symbol, decimals, amount, from }: ICheckLimitParams): Promise<boolean | object> => {
-      const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
+      const { privateKey } = await getSeed();
       if (!currentChain?.endPoint || !privateKey) return message.error('Invalid user information, please check');
 
       const caContract = new ExtensionContractBasic({
@@ -293,22 +290,18 @@ export const useCheckLimit = (targetChainId: ChainId) => {
       currentChain?.caContractAddress,
       currentChain?.endPoint,
       dailyTransferLimitModal,
-      passwordSeed,
       singleTransferLimitModal,
-      walletInfo.AESEncryptPrivateKey,
     ],
   );
 };
 
 export const useGetTransferLimitWithContract = (targetChainId: ChainId) => {
   const currentChain = useCurrentChain(targetChainId);
-  const { walletInfo } = useCurrentWallet();
-  const { passwordSeed } = useUserInfo();
   const getTransferLimit = useGetTransferLimit();
 
   return useCallback(
     async ({ symbol }: { symbol: string }): Promise<GetTransferLimitResult | undefined> => {
-      const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
+      const { privateKey } = await getSeed();
       if (!currentChain?.endPoint || !privateKey) return;
 
       const caContract = new ExtensionContractBasic({
@@ -319,12 +312,6 @@ export const useGetTransferLimitWithContract = (targetChainId: ChainId) => {
 
       return await getTransferLimit({ caContract, symbol });
     },
-    [
-      currentChain?.caContractAddress,
-      currentChain?.endPoint,
-      getTransferLimit,
-      passwordSeed,
-      walletInfo.AESEncryptPrivateKey,
-    ],
+    [currentChain?.caContractAddress, currentChain?.endPoint, getTransferLimit],
   );
 };

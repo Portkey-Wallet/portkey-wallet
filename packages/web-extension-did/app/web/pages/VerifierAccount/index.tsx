@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router';
-import { useAppDispatch, useLoginInfo, useGuardiansInfo, useUserInfo, useLoading } from 'store/Provider/hooks';
+import { useAppDispatch, useLoginInfo, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import { useCallback, useMemo } from 'react';
 import { message } from 'antd';
 import { setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
@@ -12,7 +12,6 @@ import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { setRegisterVerifierAction } from 'store/reducers/loginCache/actions';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import aes from '@portkey-wallet/utils/aes';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
 import useGuardianList from 'hooks/useGuardianList';
 import VerifierAccountPrompt from './Prompt';
@@ -24,6 +23,7 @@ import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import VerifierPage from 'pages/components/VerifierPage';
 import { ChainId } from '@portkey-wallet/types';
+import getSeed from 'utils/getSeed';
 
 export default function VerifierAccount() {
   const { loginAccount } = useLoginInfo();
@@ -46,7 +46,6 @@ export default function VerifierAccount() {
   const originChainId = useOriginChainId();
   const currentChain = useCurrentChain(originChainId);
   const { setLoading } = useLoading();
-  const { passwordSeed } = useUserInfo();
   const getGuardianList = useGuardianList();
   const { address: managerAddress } = useCurrentWalletInfo();
   const isBigScreenPrompt = useMemo(
@@ -72,7 +71,7 @@ export default function VerifierAccount() {
       if (state === 'guardians/setLoginAccount') {
         try {
           setLoading(true);
-          const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
+          const { privateKey } = await getSeed();
           if (!currentChain?.endPoint || !privateKey) return message.error('set login account error');
           const result = await handleGuardian({
             rpcUrl: currentChain.endPoint,
@@ -122,7 +121,6 @@ export default function VerifierAccount() {
       dispatch,
       getGuardianList,
       navigate,
-      passwordSeed,
       setLoading,
       state,
       walletInfo,

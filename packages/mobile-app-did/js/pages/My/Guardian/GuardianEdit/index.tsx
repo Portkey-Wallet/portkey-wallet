@@ -523,6 +523,7 @@ const GuardianEdit: React.FC = () => {
           <GuardianThirdAccount
             account={account}
             firstName={firstName}
+            clearAccount={() => setAccount(undefined)}
             guardianAccountError={guardianAccountError}
             onPress={onGoogleSign}
             type={LoginType.Google}
@@ -534,6 +535,7 @@ const GuardianEdit: React.FC = () => {
           <GuardianThirdAccount
             account={account}
             firstName={firstName}
+            clearAccount={() => setAccount(undefined)}
             guardianAccountError={guardianAccountError}
             onPress={onAppleSign}
             type={LoginType.Apple}
@@ -544,6 +546,7 @@ const GuardianEdit: React.FC = () => {
           <GuardianThirdAccount
             account={account}
             firstName={firstName}
+            clearAccount={() => setAccount(undefined)}
             guardianAccountError={guardianAccountError}
             onPress={onTelegramSign}
             type={LoginType.Telegram}

@@ -58,7 +58,7 @@ export default function RegisterStart() {
 
   const netWorkIcon: Record<NetworkType, IconType> = useMemo(
     () => ({
-      MAIN: 'Aelf',
+      MAINNET: 'Aelf',
       TESTNET: 'elf-icon',
     }),
     [],

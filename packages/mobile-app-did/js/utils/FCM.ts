@@ -67,7 +67,7 @@ export const checkMessageIsFromMainnet = (message: FCMMessageData) => {
 };
 
 export const getFcmMessageNetwork = (message?: FCMMessageData): NetworkType => {
-  if (message?.network?.toLocaleLowerCase()?.includes('main')) return 'MAIN';
+  if (message?.network?.toLocaleLowerCase()?.includes('main')) return 'MAINNET';
   if (message?.network?.toLocaleLowerCase()?.includes('test')) return 'TESTNET';
-  return 'MAIN';
+  return 'MAINNET';
 };

@@ -247,7 +247,7 @@ export default function SellFrom() {
       });
       setLoading(false);
       const balance = result.result.balance;
-      const achFee = getOneTxFee(chainId, 'MAIN');
+      const achFee = getOneTxFee(chainId, 'MAINNET');
       if (
         ZERO.plus(divDecimals(balance, currentChain.defaultToken.decimals)).isLessThanOrEqualTo(
           ZERO.plus(achFee.ach).plus(cryptoAmountRef.current),

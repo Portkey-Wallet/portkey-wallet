@@ -49,7 +49,7 @@ export default function useFCM() {
 
   useEffect(() => {
     if (!isFCMEnabled()) return;
-    timerRef.current = setInterval(async () => {
+    timerRef.current = setInterval(() => {
       reportFCMStatus();
       signalrFCM.signalr && setBadge({ value: lastUnreadCount.current });
     }, 5000);

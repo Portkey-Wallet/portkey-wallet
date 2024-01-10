@@ -1,0 +1,23 @@
+@import '../../../../assets/theme/color.less';
+
+.guardian-select-option-tip {
+  &.@{app-prefix}-select-item-option-disabled {
+    color: @font-13;
+    cursor: auto;
+  }
+
+  font-size: 12px;
+  line-height: 16px;
+  color: @font-13;
+  .@{app-prefix}-select-item-option-content {
+    .custom-option-tip {
+      gap: 8px;
+      margin: 12px 4px;
+      line-height: 16px;
+      white-space: wrap;
+      .warning-icon {
+        flex-shrink: 0;
+      }
+    }
+  }
+}

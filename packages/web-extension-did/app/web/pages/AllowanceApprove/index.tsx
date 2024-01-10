@@ -15,6 +15,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { IGuardiansApproved } from '@portkey/did-ui-react';
 import ManagerApproveInner from './ManagerApproveInner';
 import getSeed from 'utils/getSeed';
+import { useDebounceCallback } from '@portkey-wallet/hooks';
 import './index.less';
 
 export default function AllowanceApprove() {
@@ -45,7 +46,7 @@ export default function AllowanceApprove() {
     getInitState();
   }, [getInitState]);
 
-  const onFinish = useCallback(
+  const onFinish = useDebounceCallback(
     async ({ amount, guardiansApproved }: { amount: string; guardiansApproved: IGuardiansApproved[] }) => {
       try {
         if (!txParams) throw Error('invalid params(txParams)');
@@ -93,6 +94,7 @@ export default function AllowanceApprove() {
       }
     },
     [caHash, chainInfo, method, txParams],
+    500,
   );
 
   const checkManagerSyncState = useCheckManagerSyncState();

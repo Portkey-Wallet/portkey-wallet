@@ -2,26 +2,38 @@
 
 .portkey-message-text {
   font-size: 16px;
-  line-height: 24px;
+  line-height: 22px;
   color: @font-5;
   .text-body {
     position: relative;
     flex-direction: column;
-    padding: 8px 12px;
-    border-radius: 2px 20px 20px;
+    padding: 5px;
+    border-radius: 2px 16px 16px;
     background: @bg-6;
-    // max-width: calc(100% - 30px);
     &.right {
-      border-radius: 20px 2px 20px 20px;
+      border-radius: 16px 2px 16px 16px;
       background: @bg-9;
     }
+    .msgpin-icon {
+      width: 12px;
+      height: 12px;
+      margin-right: 4px;
+    }
+    .text-container {
+      gap: 8px;
+    }
     .text-text {
-      display: inline-block;
-      font-size: 15px;
+      padding: 0 7px;
       word-break: break-all;
       white-space: pre-wrap;
       .text-date-hidden {
         visibility: hidden;
+        margin-left: 8px;
+        font-size: 10px;
+        line-height: 16px;
+        &.pin-icon {
+          margin-left: 24px;
+        }
       }
       .text-link,
       .non-support-msg {
@@ -31,7 +43,7 @@
     }
     .text-date {
       position: absolute;
-      bottom: 8px;
+      bottom: 5px;
       right: 12px;
       font-size: 10px;
       line-height: 16px;

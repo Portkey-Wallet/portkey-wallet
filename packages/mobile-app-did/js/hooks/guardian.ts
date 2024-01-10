@@ -1,7 +1,11 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useAppDispatch } from 'store/hooks';
 import { useGetCurrentCAViewContract } from './contract';
-import { setGuardiansAction, setVerifierListAction } from '@portkey-wallet/store/store-ca/guardians/actions';
+import {
+  setGuardianListAction,
+  setGuardiansAction,
+  setVerifierListAction,
+} from '@portkey-wallet/store/store-ca/guardians/actions';
 import { LoginInfo } from 'types/wallet';
 import { checkHolderError } from '@portkey-wallet/utils/check';
 import { VerifierItem } from '@portkey-wallet/types/verifier';
@@ -10,6 +14,10 @@ import { request } from '@portkey-wallet/api/api-did';
 import { handleErrorMessage, handleErrorCode } from '@portkey-wallet/utils';
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import myEvents from 'utils/deviceEvent';
+import { GuardiansInfo } from '@portkey-wallet/types/types-ca/guardian';
+import { useGuardiansInfo } from './store';
+import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 
 export const useGetHolderInfoByViewContract = () => {
   const getCurrentCAViewContract = useGetCurrentCAViewContract();
@@ -60,11 +68,28 @@ export const useGetGuardiansInfo = () => {
 export const useGetGuardiansInfoWriteStore = () => {
   const dispatch = useAppDispatch();
   const getGetGuardiansInfo = useGetGuardiansInfo();
+  const { verifierMap } = useGuardiansInfo();
+  const verifierMapRef = useRef(verifierMap);
+  verifierMapRef.current = verifierMap;
   return useCallback(
     async (loginInfo: LoginInfo, chainInfo?: ChainItemType) => {
-      const guardiansInfo = await getGetGuardiansInfo(loginInfo, chainInfo);
-      dispatch(setGuardiansAction(guardiansInfo));
-      return guardiansInfo;
+      const guardiansInfo: GuardiansInfo = await getGetGuardiansInfo(loginInfo, chainInfo);
+
+      const _verifierMap = verifierMapRef.current;
+      const _guardianList: UserGuardianItem[] = guardiansInfo.guardianList.guardians.map(item => {
+        const key = `${item.guardianIdentifier}&${item.verifierId}`;
+        return {
+          ...item,
+          guardianAccount: item.guardianIdentifier || item.identifierHash,
+          guardianType: LoginType[item.type as any] as unknown as LoginType,
+          key,
+          verifier: _verifierMap?.[item.verifierId],
+          isLoginAccount: item.isLoginGuardian,
+        };
+      });
+
+      dispatch(setGuardianListAction(_guardianList));
+      return _guardianList;
     },
     [dispatch, getGetGuardiansInfo],
   );
@@ -93,18 +118,19 @@ export const useRefreshGuardiansList = () => {
   const getGuardiansInfoWriteStore = useGetGuardiansInfoWriteStore();
   const refreshGuardiansList = useCallback(async () => {
     try {
-      await getGuardiansInfoWriteStore({
+      return await getGuardiansInfoWriteStore({
         caHash,
       });
     } catch (error) {
       console.log(error);
     }
+    return undefined;
   }, [caHash, getGuardiansInfoWriteStore]);
 
   return refreshGuardiansList;
 };
 
-export const useRegisterRefreshGuardianList = () => {
+export const useRefreshGuardianList = (isInit = false) => {
   const refreshGuardiansList = useRefreshGuardiansList();
   const getVerifierServers = useGetVerifierServers();
   const init = useCallback(async () => {
@@ -113,18 +139,23 @@ export const useRegisterRefreshGuardianList = () => {
       await refreshGuardiansList();
       console.log('GuardianList init: success');
     } catch (error) {
-      console.log(error, '===useRegisterRefreshGuardianList init: error');
+      console.log(error, '===useRefreshGuardianList init: error');
     }
   }, [getVerifierServers, refreshGuardiansList]);
 
   useEffect(() => {
+    if (!isInit) return;
     const listener = myEvents.refreshGuardiansList.addListener(() => {
       refreshGuardiansList();
     });
     return () => {
       listener.remove();
     };
-  }, [refreshGuardiansList]);
+  }, [isInit, refreshGuardiansList]);
 
-  return init;
+  return {
+    init,
+    refreshGuardiansList,
+    getVerifierServers,
+  };
 };

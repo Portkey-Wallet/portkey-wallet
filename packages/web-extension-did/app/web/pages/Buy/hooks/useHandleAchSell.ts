@@ -14,6 +14,7 @@ import ramp, { IOrderInfo } from '@portkey-wallet/ramp';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import getSeed from 'utils/getSeed';
+import { chromeStorage } from 'store/utils';
 
 export const useHandleAchSell = () => {
   const { setLoading } = useLoading();
@@ -37,7 +38,7 @@ export const useHandleAchSell = () => {
       if (!aelfToken) throw new Error('Sell Transfer: No Token');
       const manager = getWallet(privateKey);
       if (!manager?.keyPair) throw new Error('Sell Transfer: No keyPair');
-
+      const guardiansApprovedStr = await chromeStorage.getItem('portkeyOffRampGuardiansApproveList');
       const rawResult = await getTransactionRaw({
         contractAddress: chainInfo.caContractAddress,
         rpcUrl: chainInfo?.endPoint || '',
@@ -53,11 +54,13 @@ export const useHandleAchSell = () => {
             to: `ELF_${params.address}_AELF`,
             amount: timesDecimals(params.cryptoAmount, aelfToken.decimals).toNumber(),
           },
+          guardiansApproved: JSON.parse(guardiansApprovedStr || ''),
         },
       });
       if (!rawResult || !rawResult.result) {
         throw new Error('Failed to get raw transaction.');
       }
+      await chromeStorage.removeItem('portkeyOffRampGuardiansApproveList');
       const publicKey = manager.keyPair.getPublic('hex');
       const message = SparkMD5.hash(`${params.orderId}${rawResult.result.data}`);
       const signature = AElf.wallet.sign(Buffer.from(message).toString('hex'), manager.keyPair).toString('hex');

@@ -110,7 +110,7 @@ export default function SendPacketP2PPage() {
           count: 1,
           channelId: currentChannelId || '',
         });
-        reportAnalyticsEvent({ view: 'SendPacketP2PPage', time: timeRecorder.endBySecond() }, 'RecordMessage');
+        reportAnalyticsEvent({ page: 'SendPacketP2PPage', time: timeRecorder.endBySecond() }, 'RecordMessage');
         CommonToast.success('Sent successfully!');
         navigationService.goBack();
       } catch (error) {
@@ -123,7 +123,7 @@ export default function SendPacketP2PPage() {
           CommonToast.failError('Crypto box failed to be sent. Please try again.');
         }
         reportAnalyticsEvent(
-          { view: 'SendPacketP2PPage', time: timeRecorder.endBySecond(), errorMessage },
+          { page: 'SendPacketP2PPage', time: timeRecorder.endBySecond(), errorMessage },
           'RecordMessage',
         );
       } finally {

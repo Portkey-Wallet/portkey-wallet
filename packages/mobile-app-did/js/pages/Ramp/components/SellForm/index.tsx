@@ -259,7 +259,6 @@ export default function SellForm() {
     }
 
     try {
-      Loading.show();
       const _isManagerSynced = await checkManagerSyncState(chainId);
       if (!_isManagerSynced) {
         setAmountLocalError({
@@ -275,22 +274,6 @@ export default function SellForm() {
         throw new Error('Insufficient funds');
       }
       const isRefreshReceiveValidValue = isRefreshReceiveValid.current;
-
-      const caContract = await getCurrentCAContract();
-      const checkTransferLimitResult = await checkTransferLimitWithJump(
-        {
-          caContract,
-          symbol,
-          decimals,
-          amount,
-        },
-        chainId,
-      );
-
-      if (!checkTransferLimitResult) {
-        Loading.hide();
-        return;
-      }
 
       const account = getManagerAccount(pin);
       if (!account) return;
@@ -312,21 +295,42 @@ export default function SellForm() {
         if (!rst) return;
         _rate = rst.rate;
       }
+
+      const navigateParams = {
+        type: RampType.SELL,
+        crypto,
+        fiat,
+        amount,
+        rate: _rate,
+      };
+
+      const caContract = await getCurrentCAContract();
+      const checkTransferLimitResult = await checkTransferLimitWithJump({
+        caContract,
+        symbol,
+        decimals,
+        amount,
+        chainId,
+        balance,
+        approveMultiLevelParams: {
+          successNavigate: {
+            name: 'RampPreview',
+            params: navigateParams,
+          },
+        },
+      });
+      if (!checkTransferLimitResult) {
+        Loading.hide();
+        return;
+      }
+
+      navigationService.navigate('RampPreview', navigateParams);
     } catch (error) {
       setAmountLocalError({ ...INIT_HAS_ERROR, errorMsg: 'Insufficient funds' });
       console.log('error', error);
-      return;
     } finally {
       Loading.hide();
     }
-
-    navigationService.navigate('RampPreview', {
-      amount,
-      fiat,
-      crypto,
-      type: RampType.SELL,
-      rate: _rate,
-    });
   }, [
     amount,
     rate,
@@ -368,6 +372,7 @@ export default function SellForm() {
                   title={crypto?.symbol || ''}
                   style={styles.unitIconStyle}
                   imageUrl={crypto?.icon}
+                  avatarSize={pTd(24)}
                 />
               )}
               <TextL style={[GStyles.flex1, fonts.mediumFont]}>{crypto?.symbol || ''}</TextL>

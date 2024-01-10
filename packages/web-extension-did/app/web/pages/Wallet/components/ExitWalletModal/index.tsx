@@ -3,15 +3,15 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import CommonModal from 'components/CommonModal';
 import './index.less';
-import { useCurrentWallet, useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useLoading, useUserInfo } from 'store/Provider/hooks';
+import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useLoading } from 'store/Provider/hooks';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { removeManager } from 'utils/sandboxUtil/removeManager';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import useLogOut from 'hooks/useLogout';
 import { DEVICE_TYPE } from 'constants/index';
-import aes from '@portkey-wallet/utils/aes';
+import getSeed from 'utils/getSeed';
 
 interface ExitWalletModalProps {
   open: boolean;
@@ -20,9 +20,7 @@ interface ExitWalletModalProps {
 
 export default function ExitWalletModal({ open, onCancel }: ExitWalletModalProps) {
   const { t } = useTranslation();
-  const { walletInfo } = useCurrentWallet();
   const wallet = useCurrentWalletInfo();
-  const { passwordSeed } = useUserInfo();
   const originChainId = useOriginChainId();
 
   const currentChain = useCurrentChain(originChainId);
@@ -32,8 +30,7 @@ export default function ExitWalletModal({ open, onCancel }: ExitWalletModalProps
 
   const onConfirm = useCallback(async () => {
     try {
-      if (!passwordSeed) throw 'Missing pin';
-      const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
+      const { privateKey } = await getSeed();
       if (!currentChain?.endPoint || !privateKey) return message.error('error');
       setLoading(true, 'Signing out of Portkey...');
       const result = await removeManager({
@@ -60,16 +57,7 @@ export default function ExitWalletModal({ open, onCancel }: ExitWalletModalProps
       const _error = handleErrorMessage(error, 'Something error');
       message.error(_error);
     }
-  }, [
-    currentChain,
-    currentNetwork.walletType,
-    logout,
-    passwordSeed,
-    setLoading,
-    wallet.address,
-    wallet?.caHash,
-    walletInfo.AESEncryptPrivateKey,
-  ]);
+  }, [currentChain, currentNetwork.walletType, logout, setLoading, wallet.address, wallet?.caHash]);
 
   return (
     <CommonModal

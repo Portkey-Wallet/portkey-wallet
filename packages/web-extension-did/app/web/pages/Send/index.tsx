@@ -6,7 +6,6 @@ import { IClickAddressProps } from '@portkey-wallet/types/types-ca/contact';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { getAddressChainId, handleErrorMessage, isDIDAddress } from '@portkey-wallet/utils';
 import { getAelfAddress, getEntireDIDAelfAddress, isCrossChain, isEqAddress } from '@portkey-wallet/utils/aelf';
-import aes from '@portkey-wallet/utils/aes';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { Button, message, Modal } from 'antd';
 import CustomSvg from 'components/CustomSvg';
@@ -14,7 +13,7 @@ import TitleWrapper from 'components/TitleWrapper';
 import { ReactElement, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useParams } from 'react-router';
-import { useAppDispatch, useCommonState, useLoading, useUserInfo, useWalletInfo } from 'store/Provider/hooks';
+import { useAppDispatch, useCommonState, useLoading, useWalletInfo } from 'store/Provider/hooks';
 import crossChainTransfer, { intervalCrossChainTransfer } from 'utils/sandboxUtil/crossChainTransfer';
 import sameChainTransfer from 'utils/sandboxUtil/sameChainTransfer';
 import AddressSelector from './components/AddressSelector';
@@ -40,6 +39,7 @@ import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecur
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import CustomModal from 'pages/components/CustomModal';
 import { SideChainTipContent, SideChainTipTitle } from '@portkey-wallet/constants/constants-ca/send';
+import getSeed from 'utils/getSeed';
 
 export type Account = { address: string; name?: string };
 
@@ -62,8 +62,6 @@ export default function Send() {
   const chainInfo = useCurrentChain(state.chainId);
   const wallet = useCurrentWalletInfo();
   const currentNetwork = useCurrentNetworkInfo();
-  const { passwordSeed } = useUserInfo();
-  console.log(wallet, 'wallet===');
   const { setLoading } = useLoading();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
@@ -122,7 +120,7 @@ export default function Send() {
     async ({ transactionId, params }: the2ThFailedActivityItemType) => {
       try {
         if (!chainInfo) return;
-        const privateKey = aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed);
+        const { privateKey } = await getSeed();
         if (!privateKey) return;
         setLoading(true);
         await intervalCrossChainTransfer({ ...params, chainInfo, privateKey });
@@ -165,7 +163,7 @@ export default function Send() {
     async (num = ''): Promise<string | void> => {
       try {
         if (!toAccount?.address) throw 'No toAccount';
-        const privateKey = await aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed);
+        const { privateKey } = await getSeed();
         if (!privateKey) throw t(WalletError.invalidPrivateKey);
         if (!currentChain) throw 'No ChainInfo';
         const _caAddress = wallet?.[(state.chainId as ChainId) || defaultToken.symbol]?.caAddress;
@@ -182,8 +180,7 @@ export default function Send() {
         });
         return feeRes;
       } catch (error) {
-        const _error = handleErrorMessage(error);
-        console.log('getFee===error', _error);
+        console.log('getFee===error', error);
       }
     },
     [
@@ -191,7 +188,6 @@ export default function Send() {
       currentChain,
       currentNetwork.walletType,
       defaultToken.symbol,
-      passwordSeed,
       state.chainId,
       t,
       toAccount?.address,
@@ -281,9 +277,8 @@ export default function Send() {
 
   const sendHandler = useCallback(async () => {
     try {
-      if (!chainInfo || !passwordSeed) return;
-      const privateKey = aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed);
-      if (!privateKey) return;
+      const { privateKey } = await getSeed();
+      if (!chainInfo || !privateKey) return;
       if (!tokenInfo) throw 'No Symbol info';
       setLoading(true);
       try {
@@ -357,13 +352,11 @@ export default function Send() {
     defaultToken.decimals,
     dispatch,
     navigate,
-    passwordSeed,
     setLoading,
     showErrorModal,
     toAccount.address,
     tokenInfo,
     txFee,
-    wallet.AESEncryptPrivateKey,
     wallet.address,
     wallet?.caHash,
   ]);

@@ -13,16 +13,15 @@ import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { dateFormatTransTo13 } from 'utils';
 import { useTranslation } from 'react-i18next';
 import { intervalCrossChainTransfer } from 'utils/sandboxUtil/crossChainTransfer';
-import { useAppDispatch, useLoading, useUserInfo } from 'store/Provider/hooks';
+import { useAppDispatch, useLoading } from 'store/Provider/hooks';
 import { removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
 import { useCurrentChainList, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import aes from '@portkey-wallet/utils/aes';
 import { addressFormat } from '@portkey-wallet/utils';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ChainId } from '@portkey/provider-types';
+import getSeed from 'utils/getSeed';
 
 export interface IActivityListProps {
   data?: ActivityItemType[];
@@ -37,8 +36,6 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   const { t } = useTranslation();
   const { setLoading } = useLoading();
   const dispatch = useAppDispatch();
-  const { passwordSeed } = useUserInfo();
-  const wallet = useCurrentWalletInfo();
   const chainList = useCurrentChainList();
   useFreshTokenPrice();
   const amountInUsdShow = useAmountInUsdShow();
@@ -140,7 +137,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         const chainId = params.tokenInfo.chainId;
         const chainInfo = chainList?.filter((chain) => chain.chainId === chainId)?.[0];
         if (!chainInfo) return;
-        const privateKey = aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed);
+        const { privateKey } = await getSeed();
         if (!privateKey) return;
         setLoading(true);
         await intervalCrossChainTransfer({ ...params, chainInfo, privateKey });
@@ -152,7 +149,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         setLoading(false);
       }
     },
-    [chainList, dispatch, passwordSeed, setLoading, showErrorModal, wallet.AESEncryptPrivateKey],
+    [chainList, dispatch, setLoading, showErrorModal],
   );
 
   const handleResend = useCallback(

@@ -8,6 +8,7 @@ type BackEndNetworkType =
   | 'back-end-test3'
   | 'back-end-test4'
   | 'back-end-test4-v2'
+  | 'back-end-testnet-v2'
   | 'back-end-testnet'
   | 'back-end-mainnet';
 
@@ -117,8 +118,24 @@ export const BackEndNetWorkMap: {
     imApiUrl: 'http://192.168.66.117:5007',
     imWsUrl: 'ws://192.168.66.117:19903/ws',
     imS3Bucket: 'portkey-im-dev',
-    portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
+    portkeyFinanceUrl: 'https://portkey-website-seven.vercel.app/',
     eBridgeUrl: 'http://192.168.67.235:3000',
+  },
+  'back-end-testnet-v2': {
+    name: 'aelf Testnet',
+    walletType: 'aelf',
+    networkType: 'TESTNET',
+    isActive: true,
+    apiUrl: 'https://aa-portkey-test.portkey.finance',
+    graphqlUrl: 'https://dapp-aa-portkey-test.portkey.finance/Portkey_V2_DID/PortKeyIndexerCASchema/graphql',
+    connectUrl: 'https://auth-aa-portkey-test.portkey.finance',
+    tokenClaimContractAddress: '233wFn5JbyD4i8R5Me4cW4z6edfFGRn5bpWnGuY8fjR7b2kRsD',
+    cmsUrl: 'https://cms-test-aa.portkey.finance/graphql',
+    s3Url: 'https://portkey-cms-testnet.s3.ap-northeast-1.amazonaws.com',
+    imS3Bucket: 'portkey-im-testnet',
+    portkeyFinanceUrl: 'https://test.portkey.finance',
+    eBridgeUrl: 'https://test.ebridge.exchange',
+    eTransferUrl: 'https://test.etransfer.exchange',
   },
   'back-end-testnet': {
     name: 'aelf Testnet',

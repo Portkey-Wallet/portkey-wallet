@@ -54,7 +54,7 @@ export const setPinAction = (pin: string) => InternalMessage.payload(PortkeyMess
 export const socialLoginAction = async (type: ISocialLogin, network: NetworkType): Promise<SendResponseParams> => {
   const { JOIN_AUTH_URL } = getPortkeyFinanceUrl(network);
   return await InternalMessage.payload(PortkeyMessageTypes.SOCIAL_LOGIN, {
-    externalLink: `${JOIN_AUTH_URL}/${network}/${type}`,
+    externalLink: `${JOIN_AUTH_URL}/${network}/${type}?version=v2`,
   }).send();
 };
 
@@ -62,6 +62,6 @@ export const reCAPTCHAAction = async (): Promise<ReCaptchaResponseParams> => {
   const wallet = await getWalletState();
   const { RECAPTCHA_URL } = getPortkeyFinanceUrl(wallet.currentNetwork);
   return await InternalMessage.payload(PortkeyMessageTypes.OPEN_RECAPTCHA_PAGE, {
-    externalLink: `${RECAPTCHA_URL}`,
+    externalLink: `${RECAPTCHA_URL}?version=v2`,
   }).send();
 };

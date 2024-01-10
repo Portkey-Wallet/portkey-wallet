@@ -277,6 +277,11 @@ export default function AddGuardian() {
     [currentNetwork, setLoading],
   );
 
+  const handleClearSocialAccount = useCallback(() => {
+    setSocialVale(socialInit);
+    setAccountErr('');
+  }, []);
+
   const renderSocialGuardianAccount = useCallback(
     (v: ISocialLogin) => (
       <div className="social">
@@ -284,6 +289,7 @@ export default function AddGuardian() {
           <div className="flex-column social-input detail">
             <span className="name">{socialValue.name}</span>
             <span className="email">{socialValue.isPrivate ? '******' : socialValue.value}</span>
+            <CustomSvg type="Close4" onClick={handleClearSocialAccount} />
           </div>
         ) : (
           <div className="flex social-input click" onClick={() => handleSocialAuth(v)}>
@@ -292,7 +298,7 @@ export default function AddGuardian() {
         )}
       </div>
     ),
-    [handleSocialAuth, socialValue],
+    [handleClearSocialAccount, handleSocialAuth, socialValue],
   );
 
   const renderGuardianAccount = useMemo(

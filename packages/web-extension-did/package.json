@@ -21,7 +21,7 @@
     "@portkey/provider-utils": "2.0.0-alpha.0",
     "@portkey/provider-types": "2.0.0-alpha.0",
     "@portkey/providers": "2.0.0-alpha.0",
-    "@portkey/did-ui-react": "1.5.0-alpha.22",
+    "@portkey/did-ui-react": "2.0.0-alpha.0",
     "@reduxjs/toolkit": "^1.8.5",
     "@sentry/browser": "^7.37.1",
     "@sentry/core": "^7.37.1",

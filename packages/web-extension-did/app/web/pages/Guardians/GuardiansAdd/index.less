@@ -49,8 +49,18 @@
         color: @font-9;
         cursor: pointer;
       }
-      .detail {
+      &.detail {
+        position: relative;
         height: 56px;
+        .close4-icon {
+          position: absolute;
+          right: 16px;
+          top: 20px;
+          cursor: pointer;
+          path {
+            fill: @svg-4;
+          }
+        }
       }
     }
     .control {

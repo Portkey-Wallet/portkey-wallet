@@ -7,6 +7,7 @@ import { FontStyles } from 'assets/theme/styles';
 import Touchable from 'components/Touchable';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { ErrorType } from '@portkey-wallet/constants/constants-ca/common';
+import Svg from 'components/Svg';
 
 type GuardianThirdAccountProps = {
   account?: string;
@@ -14,6 +15,7 @@ type GuardianThirdAccountProps = {
   guardianAccountError: ErrorType;
   onPress?: () => void;
   type: LoginType;
+  clearAccount: () => void;
 };
 
 const LABEL_MAP: Record<any, string> = {
@@ -34,6 +36,7 @@ const GuardianThirdAccount = ({
   firstName,
   guardianAccountError,
   onPress,
+  clearAccount,
 }: GuardianThirdAccountProps) => {
   return (
     <>
@@ -45,6 +48,9 @@ const GuardianThirdAccount = ({
             <TextS style={[!!firstName && FontStyles.font3]} numberOfLines={1}>
               {account}
             </TextS>
+            <Touchable style={styles.iconWrap} onPress={clearAccount}>
+              <Svg icon="clear2" size={pTd(16)} />
+            </Touchable>
           </View>
           {guardianAccountError.isError && (
             <TextS style={styles.thirdPartAccountError}>{guardianAccountError.errorMsg}</TextS>
@@ -95,5 +101,10 @@ const styles = StyleSheet.create({
     marginTop: pTd(4),
     marginLeft: pTd(8),
     color: defaultColors.error,
+  },
+  iconWrap: {
+    zIndex: 100,
+    position: 'absolute',
+    right: pTd(16),
   },
 });

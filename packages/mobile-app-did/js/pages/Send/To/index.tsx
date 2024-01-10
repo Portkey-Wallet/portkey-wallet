@@ -5,10 +5,10 @@ import Svg from 'components/Svg';
 import { useLanguage } from 'i18n/hooks';
 import React, { useCallback } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
-import { TouchableOpacity } from 'react-native';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 
 import { pTd } from 'utils/unit';
+import Touchable from 'components/Touchable';
 
 interface ToProps {
   selectedToContact: { name: string; address: string };
@@ -53,9 +53,9 @@ export default function To({
           />
 
           {!!selectedToContact?.address && !isFixedToContact && (
-            <TouchableOpacity style={styles.iconWrap} onPress={() => clearInput()}>
+            <Touchable style={styles.iconWrap} onPress={() => clearInput()}>
               <Svg icon="clear2" size={pTd(16)} />
-            </TouchableOpacity>
+            </Touchable>
           )}
         </View>
       ) : (
@@ -63,9 +63,9 @@ export default function To({
           <TextM style={styles.middleTitle}>{selectedToContact?.name || ''}</TextM>
           <TextM style={styles.middleAddress}>{formatStr2EllipsisStr(selectedToContact?.address, 15)}</TextM>
           {!isFixedToContact && (
-            <TouchableOpacity style={styles.iconWrap} onPress={() => clearInput()}>
+            <Touchable style={styles.iconWrap} onPress={() => clearInput()}>
               <Svg icon="clear2" size={pTd(16)} />
-            </TouchableOpacity>
+            </Touchable>
           )}
         </View>
       )}

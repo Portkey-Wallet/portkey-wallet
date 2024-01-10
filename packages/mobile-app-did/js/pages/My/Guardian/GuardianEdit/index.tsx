@@ -392,13 +392,19 @@ const GuardianEdit: React.FC = () => {
     [editGuardian, selectedVerifier],
   );
 
-  const onChooseType = useCallback((_type: TypeItemType) => {
-    setSelectedType(_type);
+  const clearAccount = useCallback(() => {
     setAccount(undefined);
     setFirstName(undefined);
     thirdPartyInfoRef.current = undefined;
     setGuardianAccountError({ ...INIT_NONE_ERROR });
   }, []);
+  const onChooseType = useCallback(
+    (_type: TypeItemType) => {
+      setSelectedType(_type);
+      clearAccount();
+    },
+    [clearAccount],
+  );
 
   const onAppleSign = useCallback(async () => {
     Loading.show();
@@ -523,6 +529,7 @@ const GuardianEdit: React.FC = () => {
           <GuardianThirdAccount
             account={account}
             firstName={firstName}
+            clearAccount={clearAccount}
             guardianAccountError={guardianAccountError}
             onPress={onGoogleSign}
             type={LoginType.Google}
@@ -534,6 +541,7 @@ const GuardianEdit: React.FC = () => {
           <GuardianThirdAccount
             account={account}
             firstName={firstName}
+            clearAccount={clearAccount}
             guardianAccountError={guardianAccountError}
             onPress={onAppleSign}
             type={LoginType.Apple}
@@ -544,6 +552,7 @@ const GuardianEdit: React.FC = () => {
           <GuardianThirdAccount
             account={account}
             firstName={firstName}
+            clearAccount={clearAccount}
             guardianAccountError={guardianAccountError}
             onPress={onTelegramSign}
             type={LoginType.Telegram}
@@ -555,6 +564,7 @@ const GuardianEdit: React.FC = () => {
     return <></>;
   }, [
     account,
+    clearAccount,
     country,
     editGuardian,
     firstName,

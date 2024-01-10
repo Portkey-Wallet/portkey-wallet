@@ -17,8 +17,8 @@ import { useHandleClickChatItem } from 'hooks/im';
 import { PIN_LIMIT_EXCEED } from '@portkey-wallet/constants/constants-ca/chat';
 import { useWalletInfo } from 'store/Provider/hooks';
 import { setBadge } from 'utils/FCM';
-import { AppStatusUnit } from '@portkey-wallet/socket/socket-fcm/types';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
+import { useReportFCMStatus } from 'hooks/useFCM';
 import './index.less';
 
 export default function ChatList() {
@@ -34,6 +34,7 @@ export default function ChatList() {
     hasNext: hasNextChannelList,
   } = useChannelList();
   const unreadCount = useUnreadCount();
+  const reportFCMStatus = useReportFCMStatus();
   const { userInfo } = useWalletInfo();
   const handleClickChatItem = useHandleClickChatItem();
 
@@ -126,9 +127,9 @@ export default function ChatList() {
   });
 
   useEffect(() => {
-    signalrFCM.reportAppStatus(AppStatusUnit.FOREGROUND, unreadCount);
+    reportFCMStatus();
     signalrFCM.signalr && setBadge({ value: unreadCount });
-  }, [unreadCount]);
+  }, [reportFCMStatus, unreadCount]);
 
   return (
     <div className="chat-list-page">

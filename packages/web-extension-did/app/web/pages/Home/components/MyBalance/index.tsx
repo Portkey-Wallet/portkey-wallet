@@ -44,8 +44,7 @@ import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import './index.less';
 import { useInitRamp, useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { setBadge } from 'utils/FCM';
-import { useFCMEnable } from 'hooks/useFCM';
-import { AppStatusUnit } from '@portkey-wallet/socket/socket-fcm/types';
+import { useFCMEnable, useReportFCMStatus } from 'hooks/useFCM';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 
 export interface TransactionResult {
@@ -111,6 +110,7 @@ export default function MyBalance() {
   const { checkDappIsConfirmed } = useDisclaimer();
   const { isBridgeShow } = useExtensionBridgeButtonShow();
   const { isETransShow } = useExtensionETransShow();
+  const reportFCMStatus = useReportFCMStatus();
   useEffect(() => {
     if (state?.key) {
       setActiveKey(state.key);
@@ -212,9 +212,10 @@ export default function MyBalance() {
 
   useEffect(() => {
     if (!isFCMEnable()) return;
-    signalrFCM.reportAppStatus(AppStatusUnit.FOREGROUND, unreadCount);
+    reportFCMStatus();
     signalrFCM.signalr && setBadge({ value: unreadCount });
-  }, [isFCMEnable, unreadCount]);
+  }, [isFCMEnable, reportFCMStatus, unreadCount]);
+
   const handleClickETrans = useCallback(
     async (eTransType: ETransType) => {
       const isSafe = await checkSecurity(originChainId);

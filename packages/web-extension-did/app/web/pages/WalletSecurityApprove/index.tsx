@@ -10,15 +10,13 @@ import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
-import InternalMessage from 'messages/InternalMessage';
-import InternalMessageTypes from 'messages/InternalMessageTypes';
-import aes from '@portkey-wallet/utils/aes';
 import { getAelfTxResult } from '@portkey-wallet/utils/aelf';
 import { useLoading } from 'store/Provider/hooks';
 import { getAccelerateGuardianTxId } from '@portkey-wallet/utils/securityTest';
 import { SecurityAccelerateErrorTip } from 'constants/security';
 import SecurityAccelerate from './SecurityAccelerate';
 import { sleep } from '@portkey-wallet/utils';
+import getSeed from 'utils/getSeed';
 import './index.less';
 
 export default function WalletSecurityApprove() {
@@ -39,9 +37,7 @@ export default function WalletSecurityApprove() {
   const handleSyncGuardian = useCallback(
     async (accelerateTxId: string) => {
       try {
-        const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
-        const pin = getSeedResult.data.privateKey;
-        const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);
+        const { privateKey } = await getSeed();
 
         if (!accelerateChainInfo?.endPoint || !originChainInfo?.endPoint || !privateKey)
           return message.error(SecurityAccelerateErrorTip);
@@ -78,7 +74,6 @@ export default function WalletSecurityApprove() {
       accelerateChainInfo?.caContractAddress,
       accelerateChainInfo?.endPoint,
       originChainInfo?.endPoint,
-      walletInfo.AESEncryptPrivateKey,
       walletInfo?.caHash,
       setLoading,
     ],

@@ -40,6 +40,8 @@ PODS:
     - ExpoModulesCore
   - EXNetwork (4.3.0):
     - ExpoModulesCore
+  - EXNotifications (0.17.0):
+    - ExpoModulesCore
   - Expo (46.0.15):
     - ExpoModulesCore
   - ExpoAdapterGoogleSignIn (8.2.2):
@@ -663,6 +665,8 @@ PODS:
     - React-Core
   - RNCAsyncStorage (1.17.10):
     - React-Core
+  - RNDeviceInfo (10.11.0):
+    - React-Core
   - RNFastImage (8.6.3):
     - React-Core
     - SDWebImage (~> 5.11.1)
@@ -782,6 +786,7 @@ DEPENDENCIES:
   - EXImageLoader (from `../node_modules/expo-image-loader/ios`)
   - EXLocalAuthentication (from `../node_modules/expo-local-authentication/ios`)
   - EXNetwork (from `../node_modules/expo-network/ios`)
+  - EXNotifications (from `../node_modules/expo-notifications/ios`)
   - Expo (from `../node_modules/expo`)
   - "ExpoAdapterGoogleSignIn (from `../node_modules/@react-native-google-signin/google-signin/expo/ios`)"
   - ExpoClipboard (from `../node_modules/expo-clipboard/ios`)
@@ -877,6 +882,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNAppleAuthentication (from `../node_modules/@invertase/react-native-apple-authentication`)"
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
+  - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - "RNFBAnalytics (from `../node_modules/@react-native-firebase/analytics`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
@@ -978,6 +984,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-local-authentication/ios"
   EXNetwork:
     :path: "../node_modules/expo-network/ios"
+  EXNotifications:
+    :path: "../node_modules/expo-notifications/ios"
   Expo:
     :path: "../node_modules/expo"
   ExpoAdapterGoogleSignIn:
@@ -1094,6 +1102,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@invertase/react-native-apple-authentication"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
+  RNDeviceInfo:
+    :path: "../node_modules/react-native-device-info"
   RNFastImage:
     :path: "../node_modules/react-native-fast-image"
   RNFBAnalytics:
@@ -1155,6 +1165,7 @@ SPEC CHECKSUMS:
   EXImageLoader: b88e053d760f85a82405b1db2de4abf11978fc9f
   EXLocalAuthentication: a714f4e7370c4efba4ed4345a55110f22ac3d85f
   EXNetwork: cba9570f90f4f27ce938afd57810b484febf1fab
+  EXNotifications: babce2a87b7922051354fcfe7a74dd279b7e272a
   Expo: 7e821e708a35d2720ef6baa658e224dd91c4821e
   ExpoAdapterGoogleSignIn: b7792934ab1b5d559a3eee31334d752a73f0366e
   ExpoClipboard: 7a5a26a3119bd1d0337ee065db3bf5d8a40e23a1
@@ -1250,6 +1261,7 @@ SPEC CHECKSUMS:
   ReactCommon: 1e783348b9aa73ae68236271df972ba898560a95
   RNAppleAuthentication: 0571c08da8c327ae2afc0261b48b4a515b0286a6
   RNCAsyncStorage: 0c357f3156fcb16c8589ede67cc036330b6698ca
+  RNDeviceInfo: bf8a32acbcb875f568217285d1793b0e8588c974
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
   RNFBAnalytics: 468af995e05d72cd13dae34262514b2b41ea48ba
   RNFBApp: 5e457a31687a849c91ca96af024ec90e2cdb9e6c
@@ -1281,4 +1293,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: c2b36de418bec62be55285f4da56e83dd207df3f
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.13.0

@@ -25,16 +25,6 @@ export function useCurrentChain(_chainId?: ChainId) {
   return useMemo(() => currentChainList?.find(chain => chain.chainId === chainId), [currentChainList, chainId]);
 }
 
-export function useGetChain() {
-  const currentChainList = useCurrentChainList();
-  return useCallback(
-    (chainId?: ChainId) => {
-      return currentChainList?.find(chain => chain.chainId === chainId);
-    },
-    [currentChainList],
-  );
-}
-
 export function useDefaultToken(_chainId?: ChainId) {
   const chainInfo = useCurrentChain(_chainId);
   return chainInfo?.defaultToken || DEFAULT_TOKEN;
@@ -69,5 +59,15 @@ export function useGetChainInfo() {
       return _chainInfo;
     },
     [currentChainList, dispatch],
+  );
+}
+
+export function useGetChain() {
+  const currentChainList = useCurrentChainList();
+  return useCallback(
+    (chainId?: ChainId) => {
+      return currentChainList?.find(chain => chain.chainId === chainId);
+    },
+    [currentChainList],
   );
 }

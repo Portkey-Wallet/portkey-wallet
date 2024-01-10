@@ -9,22 +9,27 @@ import React, { memo } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
-import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { ChainId } from '@portkey-wallet/types';
+import Svg from 'components/Svg';
+import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 interface TokenListItemType {
+  currentSymbol?: string;
+  currentChainId?: ChainId;
   noBalanceShow?: boolean;
-  item?: any;
-  onPress?: (item: any) => void;
+  item: TokenItemShowType;
+  onPress?: (item: TokenItemShowType) => void;
 }
 
 const TokenListItem: React.FC<TokenListItemType> = props => {
-  const { noBalanceShow = false, onPress, item } = props;
+  const { noBalanceShow = false, onPress, item, currentSymbol, currentChainId } = props;
   const { currentNetwork } = useWallet();
   const defaultToken = useDefaultToken();
 
   const isTokenHasPrice = useIsTokenHasPrice(item?.symbol);
-  const isTestnet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const symbolImages = useSymbolImages();
 
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
@@ -38,7 +43,7 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
         avatarSize={pTd(48)}
         // elf token icon is fixed , only use white background color
         svgName={item?.symbol === defaultToken.symbol ? 'testnet' : undefined}
-        imageUrl={symbolImages[item?.symbol]}
+        imageUrl={item?.imageUrl || symbolImages[item?.symbol]}
       />
       <View style={itemStyle.right}>
         <View style={itemStyle.infoWrap}>
@@ -56,7 +61,7 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
               {formatAmountShow(divDecimals(item?.balance, item.decimals))}
             </TextL>
             <TextS numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.dollar}>
-              {!isTestnet &&
+              {isMainnet &&
                 isTokenHasPrice &&
                 `$ ${formatAmountShow(
                   divDecimals(item?.balance, item.decimals).multipliedBy(tokenPriceObject[item?.symbol]),
@@ -64,6 +69,9 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
                 )}`}
             </TextS>
           </View>
+        )}
+        {noBalanceShow && currentSymbol === item?.symbol && currentChainId === item?.chainId && (
+          <Svg icon="selected" size={pTd(24)} />
         )}
       </View>
     </TouchableOpacity>

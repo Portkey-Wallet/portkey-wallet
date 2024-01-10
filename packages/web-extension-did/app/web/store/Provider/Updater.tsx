@@ -6,7 +6,6 @@ import { useChainListFetch } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCaInfoOnChain } from 'hooks/useCaInfoOnChain';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useRefreshTokenConfig } from '@portkey-wallet/hooks/hooks-ca/api';
-import { useUserInfo } from './hooks';
 import { request } from '@portkey-wallet/api/api-did';
 import useLocking from 'hooks/useLocking';
 import { useActiveLockStatus } from 'hooks/useActiveLockStatus';
@@ -25,8 +24,11 @@ import s3Instance from '@portkey-wallet/utils/s3';
 import initIm from 'hooks/im';
 import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useExtensionEntrance } from 'hooks/cms';
+import { useInitRamp } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { useEffectOnce } from '@portkey-wallet/hooks';
-import { initConfig } from './initConfig';
+import { initConfig, initRequest } from './initConfig';
+import useFCM from 'hooks/useFCM';
+import { getPin } from 'utils/getSeed';
 
 keepAliveOnPages({});
 request.setExceptionManager(exceptionManager);
@@ -34,12 +36,12 @@ request.setExceptionManager(exceptionManager);
 export default function Updater() {
   const onLocking = useLocking();
   const { pathname } = useLocation();
-  const { passwordSeed } = useUserInfo();
   const checkManagerOnLogout = useCheckManagerOnLogout();
+
   const isMainnet = useIsMainnet();
 
   const { apiUrl, imApiUrl, imWsUrl, imS3Bucket } = useCurrentNetworkInfo();
-  useMemo(() => {
+  useMemo(async () => {
     request.set('baseURL', apiUrl);
     if (request.defaultConfig.baseURL !== apiUrl) {
       request.defaultConfig.baseURL = apiUrl;
@@ -58,12 +60,22 @@ export default function Updater() {
       key: s3_key || '',
     });
   }, [imS3Bucket, isMainnet]);
+
+  useFCM();
   initIm();
   useVerifierList();
   useUpdateRedux();
   useLocationChange();
   useChainListFetch();
-  useRefreshTokenConfig(passwordSeed);
+
+  const initRamp = useInitRamp({ clientType: 'Extension' });
+  const refreshToken = useRefreshTokenConfig();
+  useMemo(async () => {
+    const pin = await getPin();
+    await refreshToken(pin);
+    await initRamp();
+  }, [initRamp, refreshToken]);
+
   const checkUpdate = useCheckUpdate();
 
   useCheckManager(checkManagerOnLogout);
@@ -93,6 +105,7 @@ export default function Updater() {
 
   useEffectOnce(() => {
     initConfig();
+    initRequest();
   });
   return null;
 }

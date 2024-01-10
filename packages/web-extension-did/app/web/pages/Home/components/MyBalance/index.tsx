@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Tabs } from 'antd';
 import { useLocation, useNavigate } from 'react-router';
 import BalanceCard from 'pages/components/BalanceCard';
@@ -21,12 +21,10 @@ import { fetchAllTokenListAsync, getSymbolImagesAsync } from '@portkey-wallet/st
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import CustomTokenModal from 'pages/components/CustomTokenModal';
 import { AccountAssetItem } from '@portkey-wallet/types/types-ca/token';
-import { fetchBuyFiatListAsync, fetchSellFiatListAsync } from '@portkey-wallet/store/store-ca/payment/actions';
 import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import useVerifierList from 'hooks/useVerifierList';
 import useGuardianList from 'hooks/useGuardianList';
-import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/payment';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -37,9 +35,18 @@ import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useCheckSecurity } from 'hooks/useSecurity';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
-import BridgeModal from '../BridgeModal';
+import DepositModal from '../DepositModal';
+import DepositDrawer from '../DepositDrawer';
+import { useExtensionBridgeButtonShow, useExtensionETransShow } from 'hooks/cms';
+import { ETransType } from 'types/eTrans';
+import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from '../../../components/DisclaimerModal';
+import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import './index.less';
-import { useExtensionBridgeButtonShow, useExtensionBuyButtonShow } from 'hooks/cms';
+import { useInitRamp, useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { setBadge } from 'utils/FCM';
+import { useFCMEnable } from 'hooks/useFCM';
+import { AppStatusUnit } from '@portkey-wallet/socket/socket-fcm/types';
+import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 
 export interface TransactionResult {
   total: number;
@@ -52,6 +59,7 @@ export default function MyBalance() {
   const [activeKey, setActiveKey] = useState<string>(BalanceTab.TOKEN);
   const [navTarget, setNavTarget] = useState<'send' | 'receive'>('send');
   const [tokenOpen, setTokenOpen] = useState(false);
+  const [depositOpen, setDepositOpen] = useState(false);
   const {
     accountToken: { accountTokenList },
     accountBalance,
@@ -65,7 +73,9 @@ export default function MyBalance() {
   const isMainNet = useIsMainnet();
   const { walletInfo } = useCurrentWallet();
   const caAddressInfos = useCaAddressInfoList();
-  const { eBridgeUrl = '' } = useCurrentNetworkInfo();
+  const { eBridgeUrl = '', eTransferUrl = '' } = useCurrentNetworkInfo();
+  const isFCMEnable = useFCMEnable();
+
   const renderTabsData = useMemo(
     () => [
       {
@@ -90,16 +100,17 @@ export default function MyBalance() {
   const getGuardianList = useGuardianList();
   useFreshTokenPrice();
   useVerifierList();
-
-  const { isBridgeShow } = useExtensionBridgeButtonShow();
-  const { isBuyButtonShow } = useExtensionBuyButtonShow();
+  const initRamp = useInitRamp({ clientType: 'Extension' });
+  const { isRampShow } = useRampEntryShow();
+  const [disclaimerOpen, setDisclaimerOpen] = useState<boolean>(false);
+  const disclaimerData = useRef<IDisclaimerProps>(initDisclaimerData);
   const isShowChat = useIsChatShow();
   const unreadCount = useUnreadCount();
   const checkSecurity = useCheckSecurity();
   const originChainId = useOriginChainId();
   const { checkDappIsConfirmed } = useDisclaimer();
-  const [bridgeShow, setBridgeShow] = useState<boolean>(false);
-
+  const { isBridgeShow } = useExtensionBridgeButtonShow();
+  const { isETransShow } = useExtensionETransShow();
   useEffect(() => {
     if (state?.key) {
       setActiveKey(state.key);
@@ -109,12 +120,11 @@ export default function MyBalance() {
     appDispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray }));
     appDispatch(getCaHolderInfoAsync());
     appDispatch(getSymbolImagesAsync());
-  }, [passwordSeed, appDispatch, caAddresses, chainIdArray, caAddressInfos, isMainNet, state?.key]);
+  }, [passwordSeed, appDispatch, caAddresses, chainIdArray, caAddressInfos, isMainNet, state?.key, isRampShow]);
 
   useEffect(() => {
     getGuardianList({ caHash: walletInfo?.caHash });
-    isMainNet && appDispatch(fetchBuyFiatListAsync());
-    isMainNet && appDispatch(fetchSellFiatListAsync());
+    initRamp();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMainNet]);
 
@@ -133,7 +143,7 @@ export default function MyBalance() {
         address: isNFT ? v?.nftInfo?.tokenContractAddress : v?.tokenInfo?.tokenContractAddress,
         symbol: v.symbol,
         name: v.symbol,
-        imageUrl: isNFT ? v.nftInfo?.imageUrl : '',
+        imageUrl: isNFT ? v.nftInfo?.imageUrl : v.tokenInfo?.imageUrl,
         alias: isNFT ? v.nftInfo?.alias : '',
         tokenId: isNFT ? v.nftInfo?.tokenId : '',
       };
@@ -179,17 +189,6 @@ export default function MyBalance() {
     setActiveKey(key);
   }, []);
 
-  const handleBuy = useCallback(() => {
-    if (isMainNet) {
-      navigate('/buy');
-    } else {
-      const openWinder = window.open(FAUCET_URL, '_blank');
-      if (openWinder) {
-        openWinder.opener = null;
-      }
-    }
-  }, [isMainNet, navigate]);
-
   const handleBridge = useCallback(async () => {
     const isSafe = await checkSecurity(originChainId);
     if (!isSafe) return;
@@ -198,10 +197,72 @@ export default function MyBalance() {
       if (openWinder) {
         openWinder.opener = null;
       }
+      setDepositOpen(false);
     } else {
-      setBridgeShow(true);
+      disclaimerData.current = {
+        targetUrl: eBridgeUrl,
+        originUrl: eBridgeUrl,
+        dappIcon: 'BridgeFavicon',
+        originTitle: 'eBridge',
+        titleText: 'You will be directed to a third-party DApp: eBridge',
+      };
+      setDisclaimerOpen(true);
     }
   }, [checkDappIsConfirmed, checkSecurity, eBridgeUrl, originChainId]);
+
+  useEffect(() => {
+    if (!isFCMEnable()) return;
+    signalrFCM.reportAppStatus(AppStatusUnit.FOREGROUND, unreadCount);
+    signalrFCM.signalr && setBadge({ value: unreadCount });
+  }, [isFCMEnable, unreadCount]);
+  const handleClickETrans = useCallback(
+    async (eTransType: ETransType) => {
+      const isSafe = await checkSecurity(originChainId);
+      if (!isSafe) return;
+      const targetUrl = stringifyETrans({
+        url: eTransferUrl,
+        query: {
+          tokenSymbol: 'USDT',
+          type: eTransType,
+        },
+      });
+      if (checkDappIsConfirmed(eTransferUrl)) {
+        const openWinder = window.open(targetUrl, '_blank');
+        if (openWinder) {
+          openWinder.opener = null;
+        }
+        setDepositOpen(false);
+      } else {
+        disclaimerData.current = {
+          targetUrl,
+          originUrl: eTransferUrl,
+          dappIcon: 'ETransFavicon',
+          originTitle: 'ETransfer',
+          titleText: 'You will be directed to a third-party DApp: ETransfer',
+        };
+        setDisclaimerOpen(true);
+      }
+    },
+    [checkDappIsConfirmed, checkSecurity, eTransferUrl, originChainId],
+  );
+
+  const isShowDepositEntry = useMemo(
+    () => isBridgeShow || isRampShow || isETransShow,
+    [isBridgeShow, isRampShow, isETransShow],
+  );
+
+  const renderDeposit = useMemo(() => {
+    if (!isShowDepositEntry) {
+      return <></>;
+    }
+    const props = {
+      open: depositOpen,
+      onClose: () => setDepositOpen(false),
+      onClickBridge: handleBridge,
+      onClickETrans: handleClickETrans,
+    };
+    return isNotLessThan768 ? <DepositModal {...props} /> : <DepositDrawer {...props} />;
+  }, [depositOpen, handleBridge, handleClickETrans, isNotLessThan768, isShowDepositEntry]);
 
   return (
     <div className="balance">
@@ -223,10 +284,8 @@ export default function MyBalance() {
       </div>
       <BalanceCard
         amount={accountBalance}
-        isShowBuy={isBuyButtonShow}
-        isShowBridge={isBridgeShow}
-        onClickBridge={handleBridge}
-        onBuy={handleBuy}
+        isShowDeposit={isShowDepositEntry}
+        onClickDeposit={() => setDepositOpen(true)}
         onSend={async () => {
           setNavTarget('send');
           return setTokenOpen(true);
@@ -235,11 +294,18 @@ export default function MyBalance() {
           setNavTarget('receive');
           return setTokenOpen(true);
         }}
+        isShowFaucet={!isMainNet}
       />
       {SelectTokenELe}
       <Tabs activeKey={activeKey} onChange={onChange} centered items={renderTabsData} className="balance-tab" />
       {isPrompt && <PromptEmptyElement className="empty-element" />}
-      <BridgeModal open={bridgeShow} onClose={() => setBridgeShow(false)} />
+      <DisclaimerModal
+        open={disclaimerOpen}
+        onClose={() => setDisclaimerOpen(false)}
+        onCloseDepositModal={() => setDepositOpen(false)}
+        {...disclaimerData.current}
+      />
+      {renderDeposit}
     </div>
   );
 }

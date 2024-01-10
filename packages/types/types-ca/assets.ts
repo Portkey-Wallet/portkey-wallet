@@ -14,7 +14,7 @@ export interface NFTCollectionItemShowType extends NFTCollectionItemBaseType {
   isFetching: boolean;
   skipCount: number;
   maxResultCount: number;
-  totalRecordCount: string | number;
+  totalRecordCount: number;
   children: NFTItemBaseType[];
 }
 

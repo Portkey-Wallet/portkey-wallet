@@ -1,0 +1,8 @@
+query serviceSuspensionCustom {
+  serviceSuspension {
+    androidUrl
+    extensionUrl
+    iOSUrl
+    isSuspended
+  }
+}

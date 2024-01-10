@@ -10,7 +10,6 @@ import { Transaction } from '@portkey-wallet/types/types-ca/trade';
 import NFT from '../NFT/NFT';
 import { useAppDispatch, useUserInfo, useWalletInfo, useAssetInfo, useCommonState } from 'store/Provider/hooks';
 import {
-  useCaAddresses,
   useCaAddressInfoList,
   useChainIdList,
   useCurrentWallet,
@@ -67,7 +66,6 @@ export default function MyBalance() {
   const { state } = useLocation();
   const { passwordSeed } = useUserInfo();
   const appDispatch = useAppDispatch();
-  const caAddresses = useCaAddresses();
   const chainIdArray = useChainIdList();
   const isMainNet = useIsMainnet();
   const { walletInfo } = useCurrentWallet();
@@ -116,11 +114,11 @@ export default function MyBalance() {
       setActiveKey(state.key);
     }
     if (!passwordSeed) return;
-    appDispatch(fetchTokenListAsync({ caAddresses, caAddressInfos }));
+    appDispatch(fetchTokenListAsync({ caAddressInfos }));
     appDispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray }));
     appDispatch(getCaHolderInfoAsync());
     appDispatch(getSymbolImagesAsync());
-  }, [passwordSeed, appDispatch, caAddresses, chainIdArray, caAddressInfos, isMainNet, state?.key, isRampShow]);
+  }, [passwordSeed, appDispatch, chainIdArray, caAddressInfos, isMainNet, state?.key, isRampShow]);
 
   useEffect(() => {
     getGuardianList({ caHash: walletInfo?.caHash });

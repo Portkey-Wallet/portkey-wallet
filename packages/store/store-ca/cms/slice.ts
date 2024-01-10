@@ -4,6 +4,7 @@ import {
   getSocialMediaAsync,
   getTabMenuAsync,
   getRememberMeBlackListAsync,
+  getServiceSuspensionAsync,
   setEntrance,
 } from './actions';
 import { CMSState, CmsWebsiteMapItem } from './types';
@@ -14,6 +15,7 @@ const initialState: CMSState = {
   discoverGroupListNetMap: {},
   rememberMeBlackListMap: {},
   entranceNetMap: {},
+  serviceSuspensionMap: {},
 };
 export const cmsSlice = createSlice({
   name: 'cms',
@@ -60,6 +62,12 @@ export const cmsSlice = createSlice({
         state.rememberMeBlackListMap = {
           ...state.rememberMeBlackListMap,
           ...action.payload.rememberMeBlackListMap,
+        };
+      })
+      .addCase(getServiceSuspensionAsync.fulfilled, (state, action) => {
+        state.serviceSuspensionMap = {
+          ...state.serviceSuspensionMap,
+          ...action.payload.serviceSuspensionMap,
         };
       })
       .addCase(setEntrance, (state, action) => {

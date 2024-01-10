@@ -27,6 +27,11 @@ import {
   RememberMeBlackListSitesCustomQuery,
   RememberMeBlackListSitesCustomQueryVariables,
 } from './__generated__/hooks/rememberMeBlackListSitesCustom';
+import {
+  ServiceSuspensionCustomQuery,
+  ServiceSuspensionCustomDocument,
+  ServiceSuspensionCustomQueryVariables,
+} from './__generated__/hooks/serviceSuspensionCustom';
 
 // SocialMedia
 const getSocialMedia = async (network: NetworkType, params: SocialMediaCustomQueryVariables) => {
@@ -71,6 +76,16 @@ const getRememberMeBlackListSites = async (
   return result;
 };
 
+// service suspension
+const getServiceSuspension = async (network: NetworkType, params: ServiceSuspensionCustomQueryVariables) => {
+  const apolloClient = getApolloClient(network);
+  const result = await apolloClient.query<ServiceSuspensionCustomQuery>({
+    query: ServiceSuspensionCustomDocument,
+    variables: params,
+  });
+  return result;
+};
+
 // entrance
 const getEntrance = async (network: NetworkType, params: EntranceCustomQueryVariables) => {
   const apolloClient = getApolloClient(network);
@@ -81,4 +96,4 @@ const getEntrance = async (network: NetworkType, params: EntranceCustomQueryVari
   return result;
 };
 
-export { getSocialMedia, getTabMenu, getDiscoverGroup, getRememberMeBlackListSites, getEntrance };
+export { getSocialMedia, getTabMenu, getDiscoverGroup, getRememberMeBlackListSites, getEntrance, getServiceSuspension };

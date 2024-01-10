@@ -32,6 +32,12 @@ export const styles = StyleSheet.create({
   primaryTitleStyle: {
     color: font2,
   },
+  textButtonStyle: {
+    backgroundColor: 'transparent',
+  },
+  textTitleStyle: {
+    color: primaryColor,
+  },
   disabledStyle: {
     opacity: 0.4,
   },

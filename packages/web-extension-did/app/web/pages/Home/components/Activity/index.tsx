@@ -63,7 +63,6 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
       const params: IActivitiesApiParams = {
         maxResultCount: MAX_RESULT_COUNT,
         skipCount: SKIP_COUNT,
-        caAddresses: chainId ? [walletInfo?.[chainId]?.caAddress || ''] : caAddressList,
         caAddressInfos: chainId ? caAddressInfos.filter((item) => item.chainId === chainId) : caAddressInfos,
         chainId: chainId,
         symbol: symbol,
@@ -78,14 +77,13 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
       const params = {
         maxResultCount: MAX_RESULT_COUNT,
         skipCount: skipCount + maxResultCount,
-        caAddresses: chainId ? [walletInfo?.[chainId]?.caAddress || ''] : caAddressList,
         caAddressInfos: chainId ? caAddressInfos.filter((item) => item.chainId === chainId) : caAddressInfos,
         chainId: chainId,
         symbol: symbol,
       };
       return dispatch(getActivityListAsync(params));
     }
-  }, [currentActivity, chainId, walletInfo, caAddressList, caAddressInfos, symbol, dispatch]);
+  }, [currentActivity, chainId, caAddressInfos, symbol, dispatch]);
 
   return (
     <div className="activity-wrapper">

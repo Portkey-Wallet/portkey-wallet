@@ -9,7 +9,6 @@ import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
 import { useAddContact, useCheckContactName, useEditContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { useIsTestnet } from 'hooks/useNetwork';
 import { IAddContactFormProps } from '../components/AddContactForm';
 import AddContactPrompt from './Prompt';
 import AddContactPopup from './Popup';
@@ -20,6 +19,7 @@ import { useGoProfile } from 'hooks/useProfile';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { ExtraType, ExtraTypeEnum } from 'types/Profile';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export enum ContactInfoError {
   invalidAddress = 'Invalid address',
@@ -62,8 +62,7 @@ export default function AddContact() {
   const editContactApi = useEditContact();
   const checkExistNameApi = useCheckContactName();
   const { setLoading } = useLoading();
-
-  const isTestNet = useIsTestnet();
+  const isMainnet = useIsMainnet();
 
   const handleSelectNetwork = useCallback((i: number) => {
     setNetOpen(true);
@@ -183,12 +182,12 @@ export default function AddContact() {
     const { addresses } = state;
     const cusAddresses = addresses.map((ads: AddressItem) => ({
       ...ads,
-      networkName: transNetworkText(ads.chainId, isTestNet),
+      networkName: transNetworkText(ads.chainId, !isMainnet),
       validData: { validateStatus: '', errorMsg: '' },
     }));
     form.setFieldValue('addresses', cusAddresses);
     setAddressArr(cusAddresses);
-  }, [form, isTestNet, state]);
+  }, [form, isMainnet, state]);
 
   const handleView = useGoProfile();
   const requestAddContact = useCallback(

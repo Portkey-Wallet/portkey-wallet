@@ -6,7 +6,7 @@ import { useCallback, useMemo, useState } from 'react';
 import PromptFrame from 'pages/components/PromptFrame';
 import Copy from 'components/Copy';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
-import { useCurrentNetworkInfo, useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { addressFormat, getExploreLink } from '@portkey-wallet/utils';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
@@ -44,7 +44,7 @@ export default function RecentDetail() {
   const [lastPageSize, setLastPageSize] = useState<number>(0);
   const { passwordSeed } = useUserInfo();
   const { isPrompt } = useCommonState();
-  const isTestNet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const [loading, setLoading] = useState<boolean>(false);
   const nav = useNavigate();
   const onClose = useCallback(() => {
@@ -154,7 +154,7 @@ export default function RecentDetail() {
 
             <div className="recent-detail-address-row">
               <span className="address">{transTargetAddress}</span>
-              <span className="network">{transNetworkText(targetChainId, isTestNet)}</span>
+              <span className="network">{transNetworkText(targetChainId, !isMainnet)}</span>
             </div>
 
             <div className="recent-detail-action-row">

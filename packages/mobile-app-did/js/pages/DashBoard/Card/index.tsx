@@ -10,7 +10,7 @@ import ActivityButton from 'pages/DashBoard/ActivityButton';
 import { TextM } from 'components/CommonText';
 import navigationService from 'utils/navigationService';
 import { defaultColors } from 'assets/theme';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
@@ -21,7 +21,7 @@ import { DepositItem, useDepositList } from 'hooks/deposit';
 
 const Card: React.FC = () => {
   const isMainnet = useIsMainnet();
-  const { userInfo } = useWallet();
+  const userInfo = useUserInfo();
   const accountBalanceUSD = useAccountBalanceUSD();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const depositList = useDepositList();

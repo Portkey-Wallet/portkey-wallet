@@ -28,14 +28,13 @@ import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useLoading, useUserInfo } from 'store/Provider/hooks';
 import { ChainId } from '@portkey/provider-types';
 import { ICheckLimitBusiness, ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
-import InternalMessage from 'messages/InternalMessage';
-import InternalMessageTypes from 'messages/InternalMessageTypes';
 import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
 import { getAelfTxResult } from '@portkey-wallet/utils/aelf';
 import { CheckSecurityResult, getAccelerateGuardianTxId } from '@portkey-wallet/utils/securityTest';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { getCurrentChainInfo } from 'utils/lib/SWGetReduxStore';
 import CustomSvg from 'components/CustomSvg';
+import getSeed from 'utils/getSeed';
 
 export const useCheckSecurity = () => {
   const wallet = useCurrentWalletInfo();
@@ -44,7 +43,7 @@ export const useCheckSecurity = () => {
   const synchronizingModal = useSynchronizingModal();
 
   return useCallback(
-    async (targetChainId: ChainId): Promise<boolean> => {
+    async (targetChainId: ChainId, onCancel?: () => void): Promise<boolean> => {
       try {
         setLoading(true);
         const res: CheckSecurityResult = await request.security.balanceCheck({
@@ -56,7 +55,7 @@ export const useCheckSecurity = () => {
 
         if (wallet.originChainId === targetChainId) {
           if (res.isOriginChainSafe) return true;
-          addGuardiansModal(targetChainId);
+          addGuardiansModal(targetChainId, onCancel);
           return false;
         } else {
           if (res.isSynchronizing && res.isOriginChainSafe) {
@@ -73,7 +72,7 @@ export const useCheckSecurity = () => {
             });
             return false;
           }
-          addGuardiansModal(targetChainId);
+          addGuardiansModal(targetChainId, onCancel);
           return false;
         }
       } catch (error) {
@@ -103,9 +102,7 @@ export function useSynchronizingModal() {
       accelerateChainId: ChainId;
     }) => {
       try {
-        const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
-        const pin = getSeedResult.data.privateKey;
-        const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);
+        const { privateKey } = await getSeed();
         const accelerateChainInfo = await getCurrentChainInfo(accelerateChainId);
         if (!accelerateChainInfo?.endPoint || !originChainInfo?.endPoint || !privateKey)
           return message.error(SecurityAccelerateErrorTip);
@@ -133,7 +130,7 @@ export function useSynchronizingModal() {
         message.error(SecurityAccelerateErrorTip);
       }
     },
-    [currentNetwork.walletType, originChainInfo?.endPoint, walletInfo.AESEncryptPrivateKey, walletInfo?.caHash],
+    [currentNetwork.walletType, originChainInfo?.endPoint, walletInfo?.caHash],
   );
 
   const checkAccelerateIsReady = useCallback(
@@ -211,8 +208,8 @@ export function useAddGuardiansModal() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   return useCallback(
-    (accelerateChainId: ChainId) => {
-      CustomModal({
+    (accelerateChainId: ChainId, onCancel?: () => void) => {
+      const modal = CustomModal({
         type: 'confirm',
         content: (
           <div className="security-modal">
@@ -229,6 +226,10 @@ export function useAddGuardiansModal() {
         ),
         cancelText: t('Not Now'),
         okText: t('Add Guardians'),
+        onCancel: () => {
+          onCancel?.();
+          modal.destroy();
+        },
         onOk: () => navigate('/setting/guardians', { state: { accelerateChainId } }),
       });
     },

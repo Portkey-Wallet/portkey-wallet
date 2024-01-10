@@ -1,42 +1,37 @@
-import { ACH_MERCHANT_NAME } from '@portkey-wallet/constants/constants-ca/payment';
 import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useSellTransfer } from '@portkey-wallet/hooks/hooks-ca/payment';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { AchTxAddressReceivedType } from '@portkey-wallet/types/types-ca/payment';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { message } from 'antd';
 import { useCallback, useMemo } from 'react';
 import { useLoading } from 'store/Provider/hooks';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import aes from '@portkey-wallet/utils/aes';
-import InternalMessage from 'messages/InternalMessage';
-import InternalMessageTypes from 'messages/InternalMessageTypes';
 import getTransactionRaw from 'utils/sandboxUtil/getTransactionRaw';
 import AElf from 'aelf-sdk';
 import { getWallet } from '@portkey-wallet/utils/aelf';
 import SparkMD5 from 'spark-md5';
+import ramp, { IOrderInfo } from '@portkey-wallet/ramp';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
+import getSeed from 'utils/getSeed';
 
 export const useHandleAchSell = () => {
   const { setLoading } = useLoading();
-  const sellTransfer = useSellTransfer();
 
   const { accountToken } = useAssets();
   const aelfToken = useMemo(
-    () => accountToken.accountTokenList.find((item) => item.symbol === 'ELF' && item.chainId === 'AELF'),
+    () => accountToken.accountTokenList.find((item) => item.symbol === ELF_SYMBOL && item.chainId === MAIN_CHAIN_ID),
     [accountToken],
   );
-  const chainInfo = useCurrentChain('AELF');
+  const chainInfo = useCurrentChain(MAIN_CHAIN_ID);
   const wallet = useCurrentWalletInfo();
   const currentNetwork = useCurrentNetworkInfo();
 
   const paymentSellTransfer = useCallback(
-    async (params: AchTxAddressReceivedType) => {
+    async (params: IOrderInfo) => {
       if (!chainInfo) throw new Error('Sell Transfer: No ChainInfo');
 
-      const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
-      const pin = getSeedResult.data.privateKey;
-      const privateKey = await aes.decrypt(wallet.AESEncryptPrivateKey, pin);
+      const { privateKey } = await getSeed();
       if (!privateKey) throw new Error('Sell Transfer: No PrivateKey');
 
       if (!aelfToken) throw new Error('Sell Transfer: No Token');
@@ -79,11 +74,7 @@ export const useHandleAchSell = () => {
     async (orderId: string) => {
       try {
         setLoading(true, 'Payment is being processed and may take around 10 seconds to complete.');
-        await sellTransfer({
-          merchantName: ACH_MERCHANT_NAME,
-          orderId,
-          paymentSellTransfer,
-        });
+        await ramp.transferCrypto(orderId, paymentSellTransfer);
         message.success('Transaction completed.');
       } catch (error: any) {
         if (error?.code === 'TIMEOUT') {
@@ -95,6 +86,6 @@ export const useHandleAchSell = () => {
         setLoading(false);
       }
     },
-    [paymentSellTransfer, sellTransfer, setLoading],
+    [paymentSellTransfer, setLoading],
   );
 };

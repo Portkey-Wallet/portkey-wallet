@@ -20,12 +20,10 @@ import { DEFAULT_DECIMAL, DEFAULT_NFT_DECIMAL } from '@portkey-wallet/constants/
 import { LANG_MAX } from '@portkey-wallet/constants/misc';
 import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import InternalMessage from 'messages/InternalMessage';
-import InternalMessageTypes from 'messages/InternalMessageTypes';
-import aes from '@portkey-wallet/utils/aes';
 import { request } from '@portkey-wallet/api/api-did';
 import { isNFT } from 'utils';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
+import getSeed from 'utils/getSeed';
 
 export enum ManagerApproveStep {
   SetAllowance = 'SetAllowance',
@@ -141,9 +139,7 @@ export default function ManagerApproveInner({
   const getTokenInfo = useDebounceCallback(async () => {
     try {
       if (!targetChainInfo) throw Error('Missing verifier, please check params');
-      const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
-      const pin = getSeedResult.data.privateKey;
-      const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);
+      const { privateKey } = await getSeed();
       if (!privateKey) throw 'Invalid user information, please check';
       const contract = await new ExtensionContractBasic({
         privateKey,

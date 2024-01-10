@@ -7,7 +7,6 @@ import { useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import './index.less';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
-import { useIsTestnet } from 'hooks/useNetwork';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { Button, Modal } from 'antd';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
@@ -22,7 +21,7 @@ import aes from '@portkey-wallet/utils/aes';
 import { addressFormat } from '@portkey-wallet/utils';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ChainId } from '@portkey/provider-types';
 
 export interface IActivityListProps {
@@ -34,7 +33,7 @@ export interface IActivityListProps {
 
 export default function ActivityList({ data, chainId, hasMore, loadMore }: IActivityListProps) {
   const activity = useAppCASelector((state) => state.activity);
-  const isTestNet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const { t } = useTranslation();
   const { setLoading } = useLoading();
   const dispatch = useAppDispatch();
@@ -90,24 +89,24 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         <p className="row-2">
           <span>{`From: ${formatStr2EllipsisStr(transFromAddress, [7, 4])}`}</span>
           {nftInfo?.nftId && <span className="nft-name">{formatStr2EllipsisStr(nftInfo.alias)}</span>}
-          {!isTestNet && !nftInfo?.nftId && (
+          {isMainnet && !nftInfo?.nftId && (
             <span>{amountInUsdShow(amount, decimals || defaultToken.decimals, symbol)}</span>
           )}
         </p>
       );
     },
-    [amountInUsdShow, currentNetwork.walletType, defaultToken.decimals, isTestNet],
+    [amountInUsdShow, currentNetwork.walletType, defaultToken.decimals, isMainnet],
   );
 
   const networkUI = useCallback(
     (item: ActivityItemType) => {
       const { fromChainId, toChainId } = item;
-      const from = transNetworkText(fromChainId, isTestNet);
-      const to = transNetworkText(toChainId, isTestNet);
+      const from = transNetworkText(fromChainId, !isMainnet);
+      const to = transNetworkText(toChainId, !isMainnet);
 
       return <p className="row-3">{`${from}->${to}`}</p>;
     },
-    [isTestNet],
+    [isMainnet],
   );
 
   const showErrorModal = useCallback(
@@ -189,14 +188,14 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
           <span>{item?.transactionName}</span>
           <div className="right-not-from-amount">
             <div>{`${formatWithCommas({ sign, amount, decimals, digits: 4 })} ${symbol ?? ''}`}</div>
-            {!isTestNet && (
+            {isMainnet && (
               <div className="usd">{amountInUsdShow(amount, decimals || defaultToken.decimals, symbol)}</div>
             )}
           </div>
         </div>
       );
     },
-    [amountInUsdShow, defaultToken.decimals, isTestNet],
+    [amountInUsdShow, defaultToken.decimals, isMainnet],
   );
 
   return (

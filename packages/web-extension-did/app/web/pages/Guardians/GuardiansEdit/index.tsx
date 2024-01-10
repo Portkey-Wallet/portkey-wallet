@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
 import { useCallback, useMemo, useState } from 'react';
-import { useAppDispatch, useGuardiansInfo, useLoading, useUserInfo } from 'store/Provider/hooks';
+import { useAppDispatch, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import CustomSelect from 'pages/components/CustomSelect';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import {
@@ -24,11 +24,11 @@ import { useCommonState } from 'store/Provider/hooks';
 import AccountShow from '../components/AccountShow';
 import { guardianIconMap } from '../utils';
 import './index.less';
-import aes from '@portkey-wallet/utils/aes';
 import { GuardianMth } from 'types/guardians';
 import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import getSeed from 'utils/getSeed';
 
 export default function GuardiansEdit() {
   const { t } = useTranslation();
@@ -132,14 +132,13 @@ export default function GuardiansEdit() {
     navigate('/setting/guardians/guardian-approval', { state: 'guardians/del' }); // status
   }, [opGuardian, dispatch, navigate, userGuardianList, walletInfo.caHash]);
 
-  const { passwordSeed } = useUserInfo();
   const originChainId = useOriginChainId();
   const currentChain = useCurrentChain(originChainId);
   const currentNetwork = useCurrentNetworkInfo();
 
   // unset guardians, then remove
   const removeLoginGuardians = useCallback(async () => {
-    const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
+    const { privateKey } = await getSeed();
     if (!currentChain?.endPoint || !privateKey) return message.error('unset login account error');
     setLoading(true);
     await handleGuardian({
@@ -163,17 +162,14 @@ export default function GuardiansEdit() {
     await removeHandler();
     setLoading(false);
   }, [
-    currentChain?.caContractAddress,
-    currentChain?.endPoint,
+    currentChain,
     currentGuardian?.guardianType,
     currentGuardian?.identifierHash,
     currentGuardian?.verifier?.id,
     currentNetwork.walletType,
-    passwordSeed,
     removeHandler,
     setLoading,
     userGuardianList,
-    walletInfo.AESEncryptPrivateKey,
     walletInfo.caHash,
   ]);
 

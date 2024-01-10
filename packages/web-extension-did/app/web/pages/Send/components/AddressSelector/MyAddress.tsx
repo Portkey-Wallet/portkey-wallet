@@ -28,14 +28,15 @@ export default function MyAddress({
     <div className="my-address">
       {addressList.length === 0 && <p className="no-data">{t('There is no address')}</p>}
       {addressList?.map((item, idx) => {
+        const _address = `ELF_${formatStr2EllipsisStr(item.caAddress, [6, 6])}_${item.chainId}`;
         return (
           <div
             className="my-address-item"
-            key={idx + item.caAddress}
+            key={idx + _address}
             onClick={() => {
               onClick({ chainId: item.chainId, address: item.caAddress, chainName: item.chainName });
             }}>
-            <p className="address">{`ELF_${formatStr2EllipsisStr(item.caAddress, [6, 6])}_${item.chainId}`}</p>
+            <p className="address">{_address}</p>
             <p className="network">{transNetworkText(item.chainId, !isMainnet)}</p>
           </div>
         );

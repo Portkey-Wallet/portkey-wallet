@@ -1,22 +1,21 @@
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import aes from '@portkey-wallet/utils/aes';
 import { message } from 'antd';
 import { DEVICE_TYPE } from 'constants/index';
 import { useCallback, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useGuardiansInfo, useLoading, useUserInfo } from 'store/Provider/hooks';
+import { useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import { removeOtherManager } from 'utils/sandboxUtil/removeOtherManager';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { formatGuardianValue } from '../utils/formatGuardianValue';
 import qs from 'query-string';
 import ModalTip from 'pages/components/ModalTip';
+import getSeed from 'utils/getSeed';
 
 export const useRemoveOtherManage = () => {
   const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
-  const { passwordSeed } = useUserInfo();
 
   const originChainId = useOriginChainId();
   const currentChain = useCurrentChain(originChainId);
@@ -37,7 +36,7 @@ export const useRemoveOtherManage = () => {
     try {
       setLoading(true);
       const manageAddress = query?.split('_')[1];
-      const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
+      const { privateKey } = await getSeed();
       if (!currentChain?.endPoint || !privateKey) return message.error('remove manage error');
       const { guardiansApproved } = formatGuardianValue(userGuardianStatus);
       await removeOtherManager({
@@ -68,16 +67,5 @@ export const useRemoveOtherManage = () => {
       const _error = handleErrorMessage(error, 'Try again later');
       message.error(_error);
     }
-  }, [
-    currentChain?.caContractAddress,
-    currentChain?.endPoint,
-    currentNetwork.walletType,
-    navigate,
-    passwordSeed,
-    query,
-    setLoading,
-    userGuardianStatus,
-    walletInfo.AESEncryptPrivateKey,
-    walletInfo?.caHash,
-  ]);
+  }, [currentChain, currentNetwork.walletType, navigate, query, setLoading, userGuardianStatus, walletInfo?.caHash]);
 };

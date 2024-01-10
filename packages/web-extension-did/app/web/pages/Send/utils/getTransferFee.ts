@@ -37,14 +37,18 @@ const getTransferFee = async ({
       contractAddress: chainInfo.caContractAddress,
       rpcUrl: chainInfo?.endPoint || '',
       chainType,
-      methodName: 'ManagerTransfer',
+      methodName: 'ManagerForwardCall',
       privateKey,
       paramsOption: {
         caHash,
-        symbol: token.symbol,
-        to: managerAddress,
-        amount,
-        memo,
+        contractAddress: token.address,
+        methodName: 'Transfer',
+        args: {
+          symbol: token.symbol,
+          to: managerAddress,
+          amount,
+          memo,
+        },
       },
     });
     const { TransactionFees, TransactionFee } = firstTxResult.result;

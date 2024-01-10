@@ -5,7 +5,7 @@ import AElf from 'aelf-sdk';
 import { useEffectOnce } from 'react-use';
 import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useAppDispatch, useUserInfo } from 'store/Provider/hooks';
+import { useAppDispatch } from 'store/Provider/hooks';
 import { useIntervalQueryCAInfoByAddress } from '@portkey-wallet/hooks/hooks-ca/graphql';
 import { setWalletInfoAction } from 'store/reducers/loginCache/actions';
 import { getDeviceInfo } from 'utils/device';
@@ -30,7 +30,6 @@ export default function ScanCard() {
   const { walletInfo, currentNetwork } = useCurrentWallet();
   const deviceInfo = useMemo(() => getDeviceInfo(DEVICE_TYPE), []);
   const checkManager = useCheckManager();
-  const { passwordSeed: pin } = useUserInfo();
   const caWallet = useIntervalQueryCAInfoByAddress(currentNetwork, newWallet?.address, checkManager);
   // const [isWaitingAuth, setIsWaitingAuth] = useState<boolean>();
   // const networkItem = useCurrentNetworkInfo();
@@ -113,7 +112,7 @@ export default function ScanCard() {
           }
         }
       });
-  }, [caWallet, dispatch, navigate, newWallet, pin]);
+  }, [caWallet, dispatch, navigate, newWallet]);
 
   return (
     <div className="scan-card">

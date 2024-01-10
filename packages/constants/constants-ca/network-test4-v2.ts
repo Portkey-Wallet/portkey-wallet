@@ -2,7 +2,10 @@ import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
 import { BackEndNetWorkMap } from './backend-network';
 import { LINK_PATH_ENUM } from './link';
 
-export const NetworkList: NetworkItem[] = [BackEndNetWorkMap['back-end-test4-v2'], BackEndNetWorkMap['back-end-test1']];
+export const NetworkList: NetworkItem[] = [
+  BackEndNetWorkMap['back-end-test4-v2'],
+  BackEndNetWorkMap['back-end-testnet-v2'],
+];
 
 export const DefaultChainId = 'AELF';
 

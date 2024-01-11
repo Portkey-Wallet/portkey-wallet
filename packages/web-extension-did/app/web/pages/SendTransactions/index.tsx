@@ -27,6 +27,7 @@ import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import './index.less';
 import getManager from 'utils/getManager';
 import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useDebounceCallback } from '@portkey-wallet/hooks';
 import getSeed from 'utils/getSeed';
 
 export default function SendTransactions() {
@@ -299,74 +300,80 @@ export default function SendTransactions() {
     setExp(extTime);
   }, []);
 
-  const sendHandler = useCallback(async () => {
-    try {
-      if (!chainInfo?.endPoint || !wallet?.caHash) {
-        closePrompt({ ...errorHandler(400001), data: { code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid chain id' } });
-        return;
-      }
-      if (chainInfo?.endPoint !== payload?.rpcUrl) {
-        closePrompt({ ...errorHandler(400001), data: { code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid rpcUrl' } });
-        return;
-      }
+  const sendHandler = useDebounceCallback(
+    async () => {
+      try {
+        if (!chainInfo?.endPoint || !wallet?.caHash) {
+          closePrompt({
+            ...errorHandler(400001),
+            data: { code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid chain id' },
+          });
+          return;
+        }
+        if (chainInfo?.endPoint !== payload?.rpcUrl) {
+          closePrompt({ ...errorHandler(400001), data: { code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid rpcUrl' } });
+          return;
+        }
 
-      let paramsOption = txParams.paramsOption;
+        let paramsOption = txParams.paramsOption;
 
-      const functionName = isCAContract ? payload?.method : 'ManagerForwardCall';
+        const functionName = isCAContract ? payload?.method : 'ManagerForwardCall';
 
-      paramsOption = isCAContract
-        ? paramsOption
-        : {
-            caHash: wallet.caHash,
-            methodName: payload?.method,
-            contractAddress: payload?.contractAddress,
-            args: paramsOption,
-          };
-
-      const { privateKey } = await getSeed();
-      if (!privateKey) throw 'Invalid user information, please check';
-      const result = await callSendMethod({
-        rpcUrl: chainInfo.endPoint,
-        chainType: 'aelf',
-        methodName: functionName,
-        paramsOption,
-        privateKey,
-        address: chainInfo.caContractAddress,
-        sendOptions: { onMethod: 'transactionHash' },
-      });
-      if (open) {
-        const manager = await getManager();
-        updateSessionInfo({
-          networkType: currentNetwork,
-          origin,
-          expiredPlan: exp,
-          manager,
+        paramsOption = isCAContract
+          ? paramsOption
+          : {
+              caHash: wallet.caHash,
+              methodName: payload?.method,
+              contractAddress: payload?.contractAddress,
+              args: paramsOption,
+            };
+        const { privateKey } = await getSeed();
+        if (!privateKey) throw 'Invalid user information, please check';
+        const result = await callSendMethod({
+          rpcUrl: chainInfo.endPoint,
+          chainType: 'aelf',
+          methodName: functionName,
+          paramsOption,
+          privateKey,
+          address: chainInfo.caContractAddress,
+          sendOptions: { onMethod: 'transactionHash' },
         });
-      } else {
-        updateSessionInfo({ origin });
+        if (open) {
+          const manager = await getManager();
+          updateSessionInfo({
+            networkType: currentNetwork,
+            origin,
+            expiredPlan: exp,
+            manager,
+          });
+        } else {
+          updateSessionInfo({ origin });
+        }
+        closePrompt({
+          ...errorHandler(0),
+          data: result.result,
+        });
+      } catch (error) {
+        console.error(error, 'error===detail');
+        message.error(handleErrorMessage(error));
       }
-      closePrompt({
-        ...errorHandler(0),
-        data: result.result,
-      });
-    } catch (error) {
-      console.error(error, 'error===detail');
-      message.error(handleErrorMessage(error));
-    }
-  }, [
-    chainInfo,
-    wallet.caHash,
-    payload?.rpcUrl,
-    payload?.method,
-    payload?.contractAddress,
-    txParams.paramsOption,
-    isCAContract,
-    open,
-    updateSessionInfo,
-    currentNetwork,
-    origin,
-    exp,
-  ]);
+    },
+    [
+      chainInfo,
+      wallet.caHash,
+      payload?.rpcUrl,
+      payload?.method,
+      payload?.contractAddress,
+      txParams.paramsOption,
+      isCAContract,
+      open,
+      updateSessionInfo,
+      currentNetwork,
+      origin,
+      exp,
+    ],
+    500,
+  );
 
   return (
     <div className="send-transaction flex">

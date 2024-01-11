@@ -8,7 +8,7 @@ export type BasicContracts = {
 
 export interface BaseChainType {
   chainId: string | number; // ELF: string; ethereum: number;
-  netWorkType?: NetworkType; // Optional differentiated mainnet testnet
+  networkType?: NetworkType; // Optional differentiated mainnet testnet
   chainType: ChainType;
   rpcUrl: string;
   blockExplorerURL?: string;

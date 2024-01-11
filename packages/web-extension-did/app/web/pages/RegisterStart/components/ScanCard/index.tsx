@@ -57,7 +57,7 @@ export default function ScanCard() {
     const data: LoginQRData = {
       type: 'login',
       address: newWallet.address,
-      netWorkType: currentNetwork,
+      networkType: currentNetwork,
       id: randomId(),
       chainType: 'aelf',
       extraData: {

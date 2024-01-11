@@ -10,7 +10,7 @@ import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
 const Unlock = () => {
   const navigate = useNavigate();
   const { isPrompt } = useCommonState();
-  const { netWorkType } = useCurrentNetwork();
+  const { networkType } = useCurrentNetwork();
   const { walletInfo, currentNetwork } = useWalletInfo();
   const locked = useStorage('locked');
   console.log(locked, 'locked==');
@@ -21,8 +21,8 @@ const Unlock = () => {
   }, [locked, navigate]);
 
   useEffect(() => {
-    reportUserCurrentNetwork(netWorkType);
-  }, [netWorkType]);
+    reportUserCurrentNetwork(networkType);
+  }, [networkType]);
 
   const handleNavigate = useCallback(() => {
     const caInfo = walletInfo?.caInfo?.[currentNetwork];

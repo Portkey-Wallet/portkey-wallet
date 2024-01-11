@@ -78,7 +78,6 @@ const getTransferFee = async ({
       return fee;
     }
   } else {
-    //
     const transactionRes = await getTransactionFee({
       contractAddress: chainInfo.caContractAddress,
       rpcUrl: chainInfo?.endPoint || '',

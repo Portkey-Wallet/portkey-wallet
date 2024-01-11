@@ -5,7 +5,7 @@ import qs from 'query-string';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useAssetInfo, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
+import { useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import { formatGuardianValue } from '../utils/formatGuardianValue';
 import { setTransferLimit } from 'utils/sandboxUtil/setTransferLimit';
 import ModalTip from 'pages/components/ModalTip';
@@ -17,10 +17,6 @@ import getSeed from 'utils/getSeed';
 export const useSetTransferLimit = (targetChainId?: ChainId) => {
   const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
-  const {
-    accountToken: { accountTokenList },
-    accountAllAssets,
-  } = useAssetInfo();
 
   const currentChain = useCurrentChain(targetChainId);
   const { state, search } = useLocation();
@@ -38,29 +34,13 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
 
   const checkBackPath = useCallback(
     (state: ITransferLimitRouteState) => {
-      const chainId = state.targetChainId || state.chainId;
-      const allAssetList = accountAllAssets?.accountAssetsList?.filter((item) => {
-        return item.chainId === chainId && item.symbol === state.symbol;
-      });
-      const tokenList = accountTokenList?.filter((item) => {
-        return item.chainId === chainId && item.symbol === state.symbol;
-      });
-      const sendState = {
-        chainId: chainId,
-        decimals: state.decimals,
-        address:
-          allAssetList[0]?.tokenInfo?.tokenContractAddress || tokenList[0].tokenContractAddress || tokenList[0].address,
-        symbol: state.symbol,
-        name: state.symbol,
-      };
-
       switch (state.from) {
         case ICheckLimitBusiness.RAMP_SELL:
-          navigate('/buy');
+          navigate('/buy', { state: { ...state, ...state.extra } });
           break;
 
         case ICheckLimitBusiness.SEND:
-          navigate(`/send/token/${state.symbol}`, { state: sendState });
+          navigate(`/send/token/${state.symbol}`, { state: { ...state, ...state.extra } });
           break;
 
         default:
@@ -69,7 +49,7 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
       }
       return;
     },
-    [accountAllAssets?.accountAssetsList, accountTokenList, navigate],
+    [navigate],
   );
 
   return useCallback(async () => {
@@ -106,7 +86,12 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
         content: 'Requested successfully',
         onClose: async () => {
           await sleep(1000);
-          checkBackPath({ ...transQuery, dailyLimit: dailyLimit, singleLimit: singleLimit });
+          checkBackPath({
+            ...transQuery.initStateBackUp,
+            ...transQuery,
+            dailyLimit: dailyLimit,
+            singleLimit: singleLimit,
+          });
         },
       });
     } catch (error) {

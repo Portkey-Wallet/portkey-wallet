@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { ChatMessage } from 'pages/Chat/types';
 import { TextInputSelectionChangeEventData } from 'react-native';
 
 export enum ChatBottomBarStatus {
@@ -7,6 +8,10 @@ export enum ChatBottomBarStatus {
   emoji,
 }
 
+export type ReplyMessageInfoType = {
+  messageType: 'text' | 'img';
+  message?: ChatMessage;
+};
 export interface ChatsState {
   currentChannel?: {
     currentChannelId: string;
@@ -15,6 +20,7 @@ export interface ChatsState {
   showTools?: boolean;
   bottomBarStatus?: ChatBottomBarStatus;
   text: string;
+  replyMessageInfo?: ReplyMessageInfoType;
   selection?: TextInputSelectionChangeEventData['selection'];
   showSoftInputOnFocus?: boolean;
 }
@@ -29,6 +35,9 @@ export const chatSlice = createSlice({
     },
     setCurrentChannel: (state, action: PayloadAction<ChatsState['currentChannel']>) => {
       state.currentChannel = action.payload;
+    },
+    setReplyMessageInfo: (state, action: PayloadAction<ChatsState['replyMessageInfo']>) => {
+      state.replyMessageInfo = action.payload;
     },
     setChatSelection: (state, action: PayloadAction<ChatsState['selection']>) => {
       state.selection = action.payload;

@@ -83,7 +83,7 @@ export const useNotify = () => {
             {
               title: t('Confirm'),
               onPress: async () => {
-                await changeNetwork({ networkType: isMainnet ? 'TESTNET' : 'MAIN' }, false);
+                await changeNetwork({ networkType: isMainnet ? 'TESTNET' : 'MAINNET' }, false);
               },
             },
           ],

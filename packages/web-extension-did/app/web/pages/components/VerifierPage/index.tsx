@@ -12,7 +12,7 @@ import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCommonState } from 'store/Provider/hooks';
 import { useLocation } from 'react-router';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
-import { CodeVerifyUI } from '@portkey/did-ui-react';
+import { CodeVerifyUI, PortkeyStyleProvider } from '@portkey/did-ui-react';
 import { AccountType } from '@portkey/services';
 import { ChainId } from '@portkey-wallet/types';
 
@@ -141,20 +141,22 @@ export default function VerifierPage({
   }, [currentGuardian, guardianType, originChainId, dispatch, setLoading, operationType, targetChainId]);
 
   return currentGuardian?.verifier ? (
-    <CodeVerifyUI
-      ref={uiRef}
-      className={isNotLessThan768 ? '' : 'popup-page'}
-      verifier={currentGuardian.verifier as any}
-      guardianIdentifier={currentGuardian?.guardianAccount || ''}
-      isCountdownNow={isInitStatus}
-      isLoginGuardian={currentGuardian?.isLoginAccount}
-      accountType={LoginType[currentGuardian?.guardianType as LoginType] as AccountType}
-      code={pinVal}
-      tipExtra={!isFromLoginOrRegister && 'Please contact your guardians, and enter '}
-      onReSend={resendCode}
-      onCodeFinish={onFinish}
-      onCodeChange={setPinVal}
-    />
+    <PortkeyStyleProvider>
+      <CodeVerifyUI
+        ref={uiRef}
+        className={isNotLessThan768 ? '' : 'popup-page'}
+        verifier={currentGuardian.verifier as any}
+        guardianIdentifier={currentGuardian?.guardianAccount || ''}
+        isCountdownNow={isInitStatus}
+        isLoginGuardian={currentGuardian?.isLoginAccount}
+        accountType={LoginType[currentGuardian?.guardianType as LoginType] as AccountType}
+        code={pinVal}
+        tipExtra={!isFromLoginOrRegister && 'Please contact your guardians, and enter '}
+        onReSend={resendCode}
+        onCodeFinish={onFinish}
+        onCodeChange={setPinVal}
+      />
+    </PortkeyStyleProvider>
   ) : (
     <div></div>
   );

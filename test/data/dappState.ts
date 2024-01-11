@@ -3,7 +3,7 @@ import { IDappStoreState } from '@portkey-wallet/store/store-ca/dapp/type';
 export const DappState: { dapp: IDappStoreState } = {
   dapp: {
     dappMap: {
-      MAIN: [
+      MAINNET: [
         {
           origin: 'href',
           name: 'browser1',

@@ -9,9 +9,9 @@ import im, {
   RedPackageTypeEnum,
 } from '@portkey-wallet/im';
 import { ChainId } from '@portkey-wallet/types';
-import { handleLoopFetch, randomId } from '@portkey-wallet/utils';
+import { handleLoopFetch } from '@portkey-wallet/utils';
 import { useRedPackageConfigMapState, useRelationId } from '.';
-import { RedPackageCreationStatusEnum } from '@portkey-wallet/im/types/service';
+import { RedPackageCreationStatusEnum } from '@portkey-wallet/im/types';
 import { messageParser } from '@portkey-wallet/im/utils';
 import { useCurrentWalletInfo, useUserInfo, useWallet } from '../wallet';
 import { useAppCommonDispatch, useEffectOnce } from '../../index';
@@ -24,7 +24,7 @@ import {
 } from '@portkey-wallet/store/store-ca/im/actions';
 import { useCurrentNetworkInfo } from '../network';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
-import { generateRedPackageRawTransaction } from '@portkey-wallet/utils/chat';
+import { generateRedPackageRawTransaction, getSendUuid } from '@portkey-wallet/utils/chat';
 import useLockCallback from '../../useLockCallback';
 
 export interface ICreateRedPacketParams {
@@ -106,12 +106,11 @@ export const useSendRedPackage = () => {
           memo,
         },
       };
-      const uuid = randomId();
       const message = {
         channelUuid: channelId,
         type: MessageTypeEnum.REDPACKAGE_CARD,
         content: JSON.stringify(redPackageContent),
-        sendUuid: `${_relationId}-${channelId}-${Date.now()}-${uuid}`,
+        sendUuid: getSendUuid(_relationId, channelId),
       };
 
       const {

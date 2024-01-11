@@ -17,7 +17,7 @@ import { fetchAssetList } from '@portkey-wallet/store/store-ca/assets/api';
 import { IAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
 import navigationService from 'utils/navigationService';
 import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
-import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { addressFormat, formatChainInfoToShow } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
 import { useGStyles } from 'assets/theme/useGStyles';
 import myEvents from 'utils/deviceEvent';
@@ -25,6 +25,18 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import CommonAvatar from 'components/CommonAvatar';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
+
+export type ImTransferInfoType = {
+  isGroupChat?: boolean;
+  channelId?: string;
+  toUserId?: string;
+  name?: string;
+  addresses?: { address: string; chainId: ChainId; chainName?: string }[];
+};
+
+export type ShowAssetListParamsType = {
+  imTransferInfo?: ImTransferInfoType;
+};
 
 const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: IAssetItemType }) => {
   const { symbol, onPress, item } = props;
@@ -34,7 +46,7 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
   if (item.tokenInfo)
     return (
       <TokenListItem
-        item={{ ...item, ...item?.tokenInfo, tokenContractAddress: item.address }}
+        item={{ name: '', ...item, ...item?.tokenInfo, tokenContractAddress: item.address }}
         onPress={() => onPress(item)}
       />
     );
@@ -46,7 +58,7 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
     return (
       <TouchableOpacity style={itemStyle.wrap} onPress={() => onPress?.(item)}>
         {item.nftInfo.imageUrl ? (
-          <CommonAvatar style={[itemStyle.left]} imageUrl={item?.nftInfo?.imageUrl} />
+          <CommonAvatar avatarSize={pTd(48)} style={[itemStyle.left]} imageUrl={item?.nftInfo?.imageUrl} />
         ) : (
           <Text style={[itemStyle.left, itemStyle.noPic]}>{item.symbol[0]}</Text>
         )}
@@ -78,12 +90,16 @@ const INIT_PAGE_INFO = {
   isLoading: false,
 };
 
-const AssetList = ({ toAddress }: { toAddress: string }) => {
+const AssetList = ({ imTransferInfo }: ShowAssetListParamsType) => {
+  const { addresses = [], isGroupChat, toUserId } = imTransferInfo || {};
+  console.log('addresses', addresses);
   const { t } = useLanguage();
   const caAddresses = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
   const [keyword, setKeyword] = useState('');
   const gStyles = useGStyles();
+
+  const chainIds = useMemo(() => addresses?.map(item => item.chainId), [addresses]);
 
   const debounceKeyword = useDebounce(keyword, 800);
 
@@ -92,6 +108,14 @@ const AssetList = ({ toAddress }: { toAddress: string }) => {
   const pageInfoRef = useRef({
     ...INIT_PAGE_INFO,
   });
+
+  const filterList = useCallback(
+    (list: IAssetItemType[]) => {
+      if (!chainIds || chainIds?.length === 0) return list;
+      return list.filter(item => chainIds?.includes(item?.chainId as ChainId));
+    },
+    [chainIds],
+  );
 
   const getList = useCallback(
     async (_keyword = '', isInit = false) => {
@@ -112,16 +136,16 @@ const AssetList = ({ toAddress }: { toAddress: string }) => {
         console.log('fetchAccountAssetsByKeywords:', response);
 
         if (isInit) {
-          setListShow(response.data);
+          setListShow(filterList(response.data));
         } else {
-          setListShow(pre => pre.concat(response.data));
+          setListShow(pre => filterList(pre.concat(response.data)));
         }
       } catch (err) {
         console.log('fetchAccountAssetsByKeywords err:', err);
       }
       pageInfoRef.current.isLoading = false;
     },
-    [caAddressInfos, caAddresses, listShow.length],
+    [caAddressInfos, caAddresses, filterList, listShow.length],
   );
 
   const onKeywordChange = useCallback(() => {
@@ -142,6 +166,8 @@ const AssetList = ({ toAddress }: { toAddress: string }) => {
 
   const renderItem = useCallback(
     ({ item }: { item: IAssetItemType }) => {
+      const addressItem = addresses?.find(ele => ele?.chainId === item.chainId);
+
       return (
         <AssetItem
           symbol={item.symbol || ''}
@@ -155,16 +181,30 @@ const AssetList = ({ toAddress }: { toAddress: string }) => {
                 ? { ...item?.nftInfo, chainId: item.chainId, symbol: item.symbol }
                 : { ...item?.tokenInfo, chainId: item.chainId, symbol: item.symbol },
               toInfo: {
-                address: toAddress || '',
-                name: '',
+                address: addressItem ? addressFormat(addressItem.address, addressItem.chainId) : '',
+                name: imTransferInfo?.name || '',
               },
             };
-            navigationService.navigate('SendHome', routeParams as unknown as IToSendHomeParamsType);
+
+            if (imTransferInfo?.channelId) {
+              navigationService.navigateByMultiLevelParams('SendHome', {
+                params: routeParams as unknown as IToSendHomeParamsType,
+                multiLevelParams: {
+                  imTransferInfo: {
+                    isGroupChat,
+                    channelId: imTransferInfo?.channelId,
+                    toUserId,
+                  },
+                },
+              });
+            } else {
+              navigationService.navigate('SendHome', routeParams as unknown as IToSendHomeParamsType);
+            }
           }}
         />
       );
     },
-    [toAddress],
+    [addresses, imTransferInfo?.channelId, imTransferInfo?.name, isGroupChat, toUserId],
   );
 
   const noData = useMemo(() => {
@@ -214,9 +254,8 @@ const AssetList = ({ toAddress }: { toAddress: string }) => {
   );
 };
 
-export const showAssetList = (params?: { toAddress: string }) => {
-  const { toAddress = '' } = params || {};
-  OverlayModal.show(<AssetList toAddress={toAddress} />, {
+export const showAssetList = (params?: ShowAssetListParamsType) => {
+  OverlayModal.show(<AssetList {...params} />, {
     position: 'bottom',
     autoKeyboardInsets: false,
     enabledNestScrollView: true,

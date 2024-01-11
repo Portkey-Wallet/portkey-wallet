@@ -33,6 +33,11 @@ import { RampRouteState } from 'pages/Buy/types';
 import { useCheckLimit, useCheckSecurity } from 'hooks/useSecurity';
 import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { GuardianItem } from 'types/guardians';
+import GuardianApproveModal from 'pages/components/GuardianApprovalModal';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
+import { chromeStorage } from 'store/utils';
+import { ChainId } from '@portkey-wallet/types';
 
 export default function SellFrom() {
   const { t } = useTranslation();
@@ -163,6 +168,43 @@ export default function SellFrom() {
 
   const showRateText = generateRateText(cryptoSelected.symbol, exchange, fiatSelected.symbol);
 
+  const [openGuardiansApprove, setOpenGuardiansApprove] = useState<boolean>(false);
+  const handleOneTimeApproval = useCallback(() => {
+    setOpenGuardiansApprove(true);
+  }, []);
+  const onCloseGuardianApprove = useCallback(() => {
+    setOpenGuardiansApprove(false);
+  }, []);
+  const goPreview = useCallback(() => {
+    navigate('/buy/preview', {
+      state: {
+        crypto: cryptoSelectedRef.current.symbol,
+        network: cryptoSelectedRef.current.network,
+        fiat: fiatSelectedRef.current.symbol,
+        country: fiatSelectedRef.current.country,
+        amount: cryptoAmountRef.current,
+        side: RampType.SELL,
+        tokenInfo: state ? state.tokenInfo : null,
+      },
+    });
+  }, [navigate, state]);
+  const getApproveRes = useCallback(
+    async (approveList: GuardianItem[]) => {
+      try {
+        if (Array.isArray(approveList) && approveList.length > 0) {
+          chromeStorage.setItem('portkeyOffRampGuardiansApproveList', JSON.stringify(approveList));
+          setOpenGuardiansApprove(false);
+          goPreview();
+        } else {
+          console.log('getApprove error: approveList empty');
+        }
+      } catch (error) {
+        console.log('getApprove error: set list error');
+      }
+    },
+    [goPreview],
+  );
+
   const {
     accountToken: { accountTokenList },
   } = useAssets();
@@ -199,13 +241,13 @@ export default function SellFrom() {
         address: accountTokenList[0].tokenContractAddress || '',
         chainType: currentNetwork.walletType,
         paramsOption: {
-          owner: wallet[chainId]?.caAddress || '', // TODO
+          owner: wallet[chainId as ChainId]?.caAddress || '', // TODO
           symbol: currentChain.defaultToken.symbol,
         },
       });
       setLoading(false);
       const balance = result.result.balance;
-      const achFee = getOneTxFee(chainId, 'MAIN');
+      const achFee = getOneTxFee(chainId, 'MAINNET');
       if (
         ZERO.plus(divDecimals(balance, currentChain.defaultToken.decimals)).isLessThanOrEqualTo(
           ZERO.plus(achFee.ach).plus(cryptoAmountRef.current),
@@ -226,20 +268,20 @@ export default function SellFrom() {
         amount: cryptoAmount,
         decimals: cryptoSelectedRef.current.decimals,
         from: ICheckLimitBusiness.RAMP_SELL,
+        balance,
+        extra: {
+          side: RampType.SELL,
+          country: fiatSelectedRef.current.country,
+          fiat: fiatSelectedRef.current.symbol,
+          crypto: cryptoSelectedRef.current.symbol,
+          network: cryptoSelectedRef.current.network,
+          amount: cryptoAmountRef.current,
+        },
+        onOneTimeApproval: handleOneTimeApproval,
       });
       if (typeof limitRes !== 'boolean') return setLoading(false);
 
-      navigate('/buy/preview', {
-        state: {
-          crypto: cryptoSelectedRef.current.symbol,
-          network: cryptoSelectedRef.current.network,
-          fiat: fiatSelectedRef.current.symbol,
-          country: fiatSelectedRef.current.country,
-          amount: cryptoAmountRef.current,
-          side: RampType.SELL,
-          tokenInfo: state ? state.tokenInfo : null,
-        },
-      });
+      goPreview();
     } catch (error) {
       console.log('handleCryptoSelect error:', error);
     } finally {
@@ -254,11 +296,12 @@ export default function SellFrom() {
     currentNetwork.walletType,
     getCurrentChain,
     getOneTxFee,
+    goPreview,
+    handleOneTimeApproval,
     navigate,
     refreshRampShow,
     setInsufficientFundsMsg,
     setLoading,
-    state,
     wallet,
   ]);
 
@@ -304,6 +347,14 @@ export default function SellFrom() {
           {t('Next')}
         </Button>
       </div>
+
+      <GuardianApproveModal
+        open={openGuardiansApprove}
+        targetChainId="AELF"
+        operationType={OperationTypeEnum.transferApprove}
+        onClose={onCloseGuardianApprove}
+        getApproveRes={getApproveRes}
+      />
     </>
   );
 }

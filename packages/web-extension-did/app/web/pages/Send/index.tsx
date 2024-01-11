@@ -249,7 +249,7 @@ export default function Send() {
       setLoading(false);
       if (!error?.type) return message.error(error);
       if (error.type === 'managerTransfer') {
-        return message.error(error);
+        return message.error(handleErrorMessage(error));
       } else if (error.type === 'crossChainTransfer') {
         dispatch(addFailedActivity(error.data));
         console.log('addFailedActivity', error);

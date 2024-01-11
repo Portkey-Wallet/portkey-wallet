@@ -6,7 +6,7 @@ import Activity from 'pages/Home/components/Activity';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
-import { useCommonState } from 'store/Provider/hooks';
+import { useCommonState, useLoading } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/wallet';
@@ -35,6 +35,7 @@ function TokenDetail() {
   const { eTransferUrl = '' } = useCurrentNetworkInfo();
   const { isPrompt } = useCommonState();
   const { isRampShow } = useRampEntryShow();
+  const { setLoading } = useLoading();
   const isShowBuy = useMemo(
     () => currentToken.symbol === 'ELF' && currentToken.chainId === 'AELF' && isRampShow,
     [currentToken.chainId, currentToken.symbol, isRampShow],
@@ -64,8 +65,16 @@ function TokenDetail() {
 
   const handleClickETrans = useCallback(
     async (eTransType: ETransType) => {
-      const isSafe = await checkSecurity(currentToken.chainId);
-      if (!isSafe) return;
+      try {
+        setLoading(true);
+        const isSafe = await checkSecurity(currentToken.chainId);
+        setLoading(false);
+        if (!isSafe) return;
+      } catch (error) {
+        setLoading(false);
+        console.log('===handleClickETrans error', error);
+        return;
+      }
       const targetUrl = stringifyETrans({
         url: eTransferUrl || '',
         query: {
@@ -90,7 +99,7 @@ function TokenDetail() {
         setDisclaimerOpen(true);
       }
     },
-    [checkDappIsConfirmed, checkSecurity, currentToken.chainId, currentToken.symbol, eTransferUrl],
+    [checkDappIsConfirmed, checkSecurity, currentToken.chainId, currentToken.symbol, eTransferUrl, setLoading],
   );
   const mainContent = useCallback(() => {
     return (

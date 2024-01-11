@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import aes from '@portkey-wallet/utils/aes';
 import { useHideChannel, useInitIM, useJoinGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getWallet } from '@portkey-wallet/utils/aelf';
@@ -22,10 +21,8 @@ export default function useInit() {
   const initIm = useInitIM();
   const { walletInfo } = useCurrentWallet();
   const init = useCallback(async () => {
-    const { pin } = await getSeed();
-    if (!pin) return;
+    const { privateKey } = await getSeed();
 
-    const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);
     const account = getWallet(privateKey || '');
     if (!account || !walletInfo.caHash) return;
 
@@ -34,7 +31,7 @@ export default function useInit() {
     } catch (error) {
       console.log('im init error', error);
     }
-  }, [initIm, walletInfo.AESEncryptPrivateKey, walletInfo.caHash]);
+  }, [initIm, walletInfo.caHash]);
 
   useEffect(() => {
     isShowChat ? init() : im.destroy();

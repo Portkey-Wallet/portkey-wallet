@@ -53,12 +53,12 @@ export const setPinAction = (pin: string) => InternalMessage.payload(PortkeyMess
 
 export const socialLoginAction = async (type: ISocialLogin, network: NetworkType): Promise<SendResponseParams> => {
   const { JOIN_AUTH_URL, JOIN_TELEGRAM_URL } = getPortkeyFinanceUrl(network);
-  let externalLink = `${JOIN_AUTH_URL}/${network}/${type}`;
+  let externalLink = `${JOIN_AUTH_URL}/${network}/${type}?version=v2`;
   if (type === 'Telegram') {
     externalLink = JOIN_TELEGRAM_URL;
   }
   return await InternalMessage.payload(PortkeyMessageTypes.SOCIAL_LOGIN, {
-    externalLink: `${JOIN_AUTH_URL}/${network}/${type}?version=v2`,
+    externalLink,
   }).send();
 };
 

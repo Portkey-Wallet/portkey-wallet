@@ -45,18 +45,15 @@ import getSeed from 'utils/getSeed';
 
 export const useCheckSecurity = () => {
   const wallet = useCurrentWalletInfo();
-  const { setLoading } = useLoading();
   const addGuardiansModal = useAddGuardiansModal();
   const synchronizingModal = useSynchronizingModal();
 
   return useCallback(
     async (targetChainId: ChainId, onCancel?: () => void): Promise<boolean> => {
       try {
-        setLoading(true);
         const res: CheckSecurityResult = await request.security.balanceCheck({
           params: { caHash: wallet?.caHash || '', checkTransferSafeChainId: targetChainId },
         });
-        setLoading(false);
 
         if (res.isTransferSafe) return true;
 
@@ -83,12 +80,11 @@ export const useCheckSecurity = () => {
           return false;
         }
       } catch (error) {
-        setLoading(false);
         const msg = handleErrorMessage(error, 'Balance Check Error');
         throw message.error(msg);
       }
     },
-    [addGuardiansModal, setLoading, synchronizingModal, wallet?.caHash, wallet.originChainId],
+    [addGuardiansModal, synchronizingModal, wallet?.caHash, wallet.originChainId],
   );
 };
 

@@ -14,7 +14,6 @@ export default function ViewContactPrompt({
   handleEdit,
   handleChat,
   handleAdd,
-  handleCopy,
 }: IProfileDetailProps) {
   return (
     <div className="view-contact-prompt">
@@ -28,7 +27,6 @@ export default function ViewContactPrompt({
         handleEdit={handleEdit}
         handleChat={handleChat}
         handleAdd={handleAdd}
-        handleCopy={handleCopy}
       />
     </div>
   );

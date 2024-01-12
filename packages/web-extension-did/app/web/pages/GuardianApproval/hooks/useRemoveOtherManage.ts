@@ -1,7 +1,7 @@
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { message } from 'antd';
+import singleMessage from 'utils/singleMessage';
 import { DEVICE_TYPE } from 'constants/index';
 import { useCallback, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -37,7 +37,7 @@ export const useRemoveOtherManage = () => {
       setLoading(true);
       const manageAddress = query?.split('_')[1];
       const { privateKey } = await getSeed();
-      if (!currentChain?.endPoint || !privateKey) return message.error('remove manage error');
+      if (!currentChain?.endPoint || !privateKey) return singleMessage.error('remove manage error');
       const { guardiansApproved } = formatGuardianValue(userGuardianStatus);
       await removeOtherManager({
         rpcUrl: currentChain.endPoint,
@@ -65,7 +65,7 @@ export const useRemoveOtherManage = () => {
       setLoading(false);
       console.log('---remove-other-manage-error', error);
       const _error = handleErrorMessage(error, 'Try again later');
-      message.error(_error);
+      singleMessage.error(_error);
     }
   }, [currentChain, currentNetwork.walletType, navigate, query, setLoading, userGuardianStatus, walletInfo?.caHash]);
 };

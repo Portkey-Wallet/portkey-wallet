@@ -5,7 +5,6 @@ import WalletNamePrompt from './Prompt';
 import { useLocation, useNavigate } from 'react-router';
 import { useCommonState } from 'store/Provider/hooks';
 import { IProfileDetailDataProps, MyProfilePageType } from 'types/Profile';
-import { useProfileCopy } from 'hooks/useProfile';
 import { useTranslation } from 'react-i18next';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
@@ -67,7 +66,6 @@ export default function WalletName() {
     }
   }, [locationState, navigate, title, type]);
 
-  const handleCopy = useProfileCopy();
   // const goBack = useCallback(() => navigate('/setting/wallet'), [navigate]);
   const saveCallback = useCallback(() => {
     setType(MyProfilePageType.VIEW);
@@ -82,7 +80,6 @@ export default function WalletName() {
       editText={editText}
       goBack={showView}
       handleEdit={showEdit}
-      handleCopy={handleCopy}
       saveCallback={saveCallback}
     />
   ) : (
@@ -94,7 +91,6 @@ export default function WalletName() {
       editText={editText}
       goBack={showView}
       handleEdit={showEdit}
-      handleCopy={handleCopy}
       saveCallback={saveCallback}
     />
   );

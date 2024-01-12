@@ -28,7 +28,6 @@ export interface IProfileDetailBodyProps {
   addContactText?: string;
   isShowRemark?: boolean;
   handleEdit: () => void;
-  handleCopy: (v: string) => void;
   handleChat?: () => void;
   handleAdd?: () => void;
 }

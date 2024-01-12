@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
@@ -18,6 +18,7 @@ import { useDebounceCallback } from '@portkey-wallet/hooks';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import './index.less';
+import singleMessage from 'utils/singleMessage';
 
 export default function AddToken() {
   const { t } = useTranslation();
@@ -107,10 +108,10 @@ export default function AddToken() {
         } else {
           await handleSearch(filterWord);
         }
-        message.success('success');
+        singleMessage.success('success');
       } catch (error: any) {
         const err = handleErrorMessage(error, 'handle display error');
-        message.error(err);
+        singleMessage.error(err);
         console.log('=== userToken display', error);
       } finally {
         setLoading(false);

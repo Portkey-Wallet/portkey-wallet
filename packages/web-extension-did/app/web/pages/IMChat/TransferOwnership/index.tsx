@@ -5,11 +5,12 @@ import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
 import DropdownSearch from 'components/DropdownSearch';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import { useGroupChannelInfo, useTransferChannelOwner } from '@portkey-wallet/hooks/hooks-ca/im';
 import ContactListSelect, { IContactItemSelectProps } from '../components/ContactListSelect';
 import { ISelectItemType } from '../components/ContactItemSelect';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
+import singleMessage from 'utils/singleMessage';
 import './index.less';
 
 export default function TransferOwnership() {
@@ -62,9 +63,9 @@ export default function TransferOwnership() {
         try {
           await transferOwnershipApi(selected);
           navigate(-1);
-          message.success('Owner changed');
+          singleMessage.success('Owner changed');
         } catch (e) {
-          message.error('Failed to transfer ownership');
+          singleMessage.error('Failed to transfer ownership');
           console.log('===transfer ownership error', e);
         }
       },

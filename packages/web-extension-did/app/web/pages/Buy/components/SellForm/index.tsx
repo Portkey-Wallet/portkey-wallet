@@ -16,7 +16,7 @@ import ExchangeRate from '../ExchangeRate';
 import { useUpdateReceiveAndInterval } from 'pages/Buy/hooks';
 import { useLoading } from 'store/Provider/hooks';
 import { useEffectOnce } from 'react-use';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import { SERVICE_UNAVAILABLE_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useNavigate } from 'react-router';
 import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
@@ -38,6 +38,7 @@ import GuardianApproveModal from 'pages/components/GuardianApprovalModal';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { chromeStorage } from 'store/utils';
 import { ChainId } from '@portkey-wallet/types';
+import singleMessage from 'utils/singleMessage';
 
 export default function SellFrom() {
   const { t } = useTranslation();
@@ -223,7 +224,7 @@ export default function SellFrom() {
       const { isSellSectionShow } = await refreshRampShow();
       if (!isSellSectionShow) {
         setLoading(false);
-        message.error(SERVICE_UNAVAILABLE_TEXT);
+        singleMessage.error(SERVICE_UNAVAILABLE_TEXT);
         return navigate('/');
       }
 

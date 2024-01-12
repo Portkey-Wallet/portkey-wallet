@@ -14,7 +14,7 @@ import { handleKeyDown } from 'utils/keyDown';
 import ExchangeRate from '../ExchangeRate';
 import { useUpdateReceiveAndInterval } from 'pages/Buy/hooks';
 import { useLoading } from 'store/Provider/hooks';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import { SERVICE_UNAVAILABLE_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useNavigate } from 'react-router';
 import { generateRateText } from 'pages/Buy/utils';
@@ -22,6 +22,7 @@ import { useEffectOnce } from '@portkey-wallet/hooks';
 import { getBuyCrypto } from '@portkey-wallet/utils/ramp';
 import { RampRouteState } from 'pages/Buy/types';
 import useLocationState from 'hooks/useLocationState';
+import singleMessage from 'utils/singleMessage';
 
 export default function BuyForm() {
   const { t } = useTranslation();
@@ -136,7 +137,7 @@ export default function BuyForm() {
       const { isBuySectionShow } = await refreshRampShow();
       setLoading(false);
       if (!isBuySectionShow) {
-        message.error(SERVICE_UNAVAILABLE_TEXT);
+        singleMessage.error(SERVICE_UNAVAILABLE_TEXT);
         return navigate('/');
       }
 

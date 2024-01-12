@@ -7,7 +7,6 @@ import im, { ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
 import { LinkPortkeyType } from 'types/im';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { parseLinkPortkeyUrl } from 'utils/imChat';
-import { message } from 'antd';
 import { useNavigate } from 'react-router';
 import { useLoading, useWalletInfo } from 'store/Provider/hooks';
 import { IChatItemProps } from '@portkey-wallet/im-ui-web';
@@ -15,6 +14,7 @@ import CustomModal from 'pages/components/CustomModal';
 import WarnTip from 'pages/IMChat/components/WarnTip';
 import { ALREADY_JOINED_GROUP_CODE } from '@portkey-wallet/constants/constants-ca/chat';
 import getSeed from 'utils/getSeed';
+import singleMessage from 'utils/singleMessage';
 
 export default function useInit() {
   const isShowChat = useIsChatShow();
@@ -79,7 +79,7 @@ export function useClickChatUrl({ fromChannelUuid = '', isGroup = false }: IClic
   return useCallback(
     async ({ id, type }: IClickChatUrlProps) => {
       if (!isShowChat) {
-        message.error('Failed to chat');
+        singleMessage.error('Failed to chat');
         return;
       }
       if (type === 'addContact') {
@@ -102,7 +102,9 @@ export function useClickChatUrl({ fromChannelUuid = '', isGroup = false }: IClic
           if (`${error?.code}` === ALREADY_JOINED_GROUP_CODE) {
             navigate(`/chat-box-group/${id}`);
           } else {
-            message.error(`This group doesn't exist. Please check the Portkey group ID/QR code before you try again.`);
+            singleMessage.error(
+              `This group doesn't exist. Please check the Portkey group ID/QR code before you try again.`,
+            );
             console.log('Failed to join error', error);
           }
         } finally {

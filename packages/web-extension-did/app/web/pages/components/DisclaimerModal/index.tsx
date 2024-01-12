@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import clsx from 'clsx';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
-import { Button, ModalProps, message } from 'antd';
+import { Button, ModalProps } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
 import CustomPromptModal from 'pages/components/CustomPromptModal';
@@ -10,6 +10,7 @@ import {
   EBRIDGE_DISCLAIMER_TEXT_SHARE256_POLICY_ID,
 } from '@portkey-wallet/constants/constants-ca/ebridge';
 import { SvgType } from 'components/CustomSvg';
+import singleMessage from 'utils/singleMessage';
 import './index.less';
 
 export interface IDisclaimerProps {
@@ -68,7 +69,7 @@ const DisclaimerModal = ({
       }
       setConfirm(false);
     } catch (error) {
-      message.error('Failed sign');
+      singleMessage.error('Failed sign');
       console.log('===signPrivacyPolicy error', error);
     } finally {
       setLoading(false);

@@ -1,4 +1,3 @@
-import { message } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +11,7 @@ import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
 import { useLoading, useWalletInfo } from 'store/Provider/hooks';
 import { ISocialLogin } from '@portkey-wallet/types/types-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import singleMessage from 'utils/singleMessage';
 import './index.less';
 
 const guardianList = [
@@ -77,7 +77,7 @@ export default function SocialLogin({
       } catch (error) {
         setLoading(false);
         const msg = handleErrorMessage(error);
-        message.error(msg);
+        singleMessage.error(msg);
       }
     },
     [currentNetwork, onFinish, setLoading],

@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { OperationTypeEnum as OperationTypeEnumSDK } from '@portkey/services';
-import { message } from 'antd';
+import singleMessage from 'utils/singleMessage';
 import { GuardiansApproved } from '@portkey/services';
 import { useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import { ChainId } from '@portkey-wallet/types';
@@ -116,7 +116,7 @@ export default function GuardianApproveModal({
         targetChainId={targetChainId}
         guardianList={guardianList}
         onConfirm={onApproveSuccess}
-        onError={(error) => message.error(handleErrorMessage(error.error))}
+        onError={(error) => singleMessage.error(handleErrorMessage(error.error))}
         operationType={operationType as OperationTypeEnumSDK}
       />
     </CustomPromptModal>

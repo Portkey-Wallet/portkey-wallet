@@ -47,7 +47,7 @@ export default function TokenInput({
   const { max: maxFee } = useGetTxFee(token.chainId);
   const defaultToken = useDefaultToken(token.chainId);
   const amountInUsd = useMemo(
-    () => amountInUsdShow(value || amount, 0, token.symbol) || '$ 0',
+    () => amountInUsdShow(value || amount, 0, token.symbol),
     [amount, amountInUsdShow, token.symbol, value],
   );
 
@@ -168,7 +168,7 @@ export default function TokenInput({
             <Input
               type="text"
               placeholder={`0`}
-              className={clsx(isMainnet && 'need-convert')}
+              className={clsx(isMainnet && token.symbol === defaultToken.symbol && 'need-convert')}
               value={amount}
               maxLength={18}
               onKeyDown={handleKeyDown}

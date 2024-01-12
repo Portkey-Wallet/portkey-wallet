@@ -279,7 +279,7 @@ export default function SellFrom() {
         },
         onOneTimeApproval: handleOneTimeApproval,
       });
-      if (typeof limitRes !== 'boolean') return setLoading(false);
+      if (!limitRes) return setLoading(false);
 
       goPreview();
     } catch (error) {

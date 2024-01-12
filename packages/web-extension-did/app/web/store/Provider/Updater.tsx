@@ -26,7 +26,7 @@ import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useExtensionEntrance } from 'hooks/cms';
 import { useInitRamp } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { useEffectOnce } from '@portkey-wallet/hooks';
-import { initConfig, initRequest } from './initConfig';
+import { initConfig, initDidReactSDKToken, initRequest } from './initConfig';
 import useFCM from 'hooks/useFCM';
 import { getPin } from 'utils/getSeed';
 
@@ -71,8 +71,9 @@ export default function Updater() {
   const refreshToken = useRefreshTokenConfig();
   useMemo(async () => {
     const pin = await getPin();
-    await refreshToken(pin);
-    await initRamp();
+    const token = await refreshToken(pin);
+    initDidReactSDKToken(token);
+    initRamp();
   }, [initRamp, refreshToken]);
 
   const checkUpdate = useCheckUpdate();

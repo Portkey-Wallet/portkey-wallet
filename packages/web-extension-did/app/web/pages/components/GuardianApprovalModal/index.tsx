@@ -15,6 +15,7 @@ import { AccountType } from '@portkey-wallet/types/wallet';
 import './index.less';
 import { GuardianItem } from 'types/guardians';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { getAuthToken } from 'store/Provider/initConfig';
 
 interface GuardianApprovalModalProps {
   open: boolean;
@@ -70,6 +71,7 @@ export default function GuardianApproveModal({
     try {
       setLoading(true);
       await getGuardianList();
+      await getAuthToken();
     } catch (error) {
       setLoading(false);
       console.log('getData error', error);

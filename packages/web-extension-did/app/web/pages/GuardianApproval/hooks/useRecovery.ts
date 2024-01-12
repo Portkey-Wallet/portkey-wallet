@@ -6,7 +6,6 @@ import {
   setOpGuardianAction,
   setPreGuardianAction,
 } from '@portkey-wallet/store/store-ca/guardians/actions';
-import { message } from 'antd';
 import useGuardianList from 'hooks/useGuardianList';
 import ModalTip from 'pages/components/ModalTip';
 import { useCallback, useMemo } from 'react';
@@ -22,6 +21,7 @@ import { formatEditGuardianValue } from '../utils/formatEditGuardianValue';
 import { ChainId } from '@portkey-wallet/types';
 import getSeed from 'utils/getSeed';
 import { formatSetUnsetGuardianValue } from '../utils/formatSetUnsetLoginGuardianValue';
+import singleMessage from 'utils/singleMessage';
 
 export const useGuardianRecovery = () => {
   const { setLoading } = useLoading();
@@ -50,7 +50,7 @@ export const useGuardianRecovery = () => {
 
       if (!currentChain?.endPoint || !privateKey) {
         console.log('handle guardian error===', currentChain, privateKey);
-        return message.error('handle guardian error');
+        return singleMessage.error('handle guardian error');
       }
 
       let value;
@@ -121,7 +121,7 @@ export const useGuardianRecovery = () => {
       dispatch(resetUserGuardianStatus());
       getGuardianList({ caHash: walletInfo.caHash });
       setLoading(false);
-      _query === 'guardians/add' && message.success('Guardians Added');
+      _query === 'guardians/add' && singleMessage.success('Guardians Added');
       ModalTip({
         content: 'Requested successfully',
         onClose: () => {
@@ -149,7 +149,7 @@ export const useGuardianRecovery = () => {
       setLoading(false);
       console.log('===handleGuardianByContract error', error);
       const _error = handleErrorMessage(error, 'handleGuardianByContract error');
-      message.error(_error);
+      singleMessage.error(_error);
     }
   }, [
     accelerateChainId,

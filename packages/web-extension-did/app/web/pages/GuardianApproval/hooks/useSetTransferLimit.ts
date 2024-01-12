@@ -1,4 +1,3 @@
-import { message } from 'antd';
 import { useCallback, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import qs from 'query-string';
@@ -13,6 +12,7 @@ import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { ICheckLimitBusiness, ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { ChainId } from '@portkey-wallet/types';
 import getSeed from 'utils/getSeed';
+import singleMessage from 'utils/singleMessage';
 
 export const useSetTransferLimit = (targetChainId?: ChainId) => {
   const { setLoading } = useLoading();
@@ -58,7 +58,7 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
 
       setLoading(true);
       const { privateKey } = await getSeed();
-      if (!currentChain?.endPoint || !privateKey) return message.error('set TransferLimit error');
+      if (!currentChain?.endPoint || !privateKey) return singleMessage.error('set TransferLimit error');
       const { guardiansApproved } = formatGuardianValue(userGuardianStatus);
       const i = query.indexOf('_');
       const _query = query.substring(i + 1);
@@ -98,7 +98,7 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
       setLoading(false);
 
       const _error = handleErrorMessage(error, 'Try again later');
-      message.error(_error);
+      singleMessage.error(_error);
     }
   }, [
     checkBackPath,

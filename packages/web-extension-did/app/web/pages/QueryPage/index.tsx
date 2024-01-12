@@ -3,7 +3,6 @@
  * Query registration and login data
  */
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { message } from 'antd';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
 import LockPage from 'pages/components/LockPage';
@@ -13,6 +12,7 @@ import { useEffectOnce } from 'react-use';
 import { useLoading } from 'store/Provider/hooks';
 import useFetchDidWallet from 'hooks/useFetchDidWallet';
 import { useNavigate } from 'react-router';
+import singleMessage from 'utils/singleMessage';
 
 export default function QueryPage() {
   const { setLoading } = useLoading();
@@ -35,7 +35,7 @@ export default function QueryPage() {
       } catch (error: any) {
         setLoading(false);
         console.log(error, 'fetch error===');
-        message.error(error);
+        singleMessage.error(error);
         navigate('/register/start');
       }
       setLoading(false);

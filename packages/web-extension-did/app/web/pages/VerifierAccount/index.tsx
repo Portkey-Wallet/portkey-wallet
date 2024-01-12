@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router';
 import { useAppDispatch, useLoginInfo, useGuardiansInfo } from 'store/Provider/hooks';
 import { useCallback, useMemo } from 'react';
-import { message } from 'antd';
 import { setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { OperationTypeEnum, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
 import useLocationState from 'hooks/useLocationState';
@@ -17,6 +16,7 @@ import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import VerifierPage from 'pages/components/VerifierPage';
 import { ChainId } from '@portkey-wallet/types';
+import singleMessage from 'utils/singleMessage';
 
 export default function VerifierAccount() {
   const { loginAccount } = useLoginInfo();
@@ -147,13 +147,13 @@ export default function VerifierAccount() {
         }
       } else if (state?.indexOf('guardians') !== -1) {
         onSuccessInGuardian(res);
-        message.success('Verified Successful');
+        singleMessage.success('Verified Successful');
       } else if (state?.indexOf('removeManage') !== -1) {
         onSuccessInRemoveOtherManage(res);
       } else if (state?.indexOf('setTransferLimit') !== -1) {
         onSuccessInSetTransferLimit(res);
       } else {
-        message.error('Router state error');
+        singleMessage.error('Router state error');
       }
     },
     [

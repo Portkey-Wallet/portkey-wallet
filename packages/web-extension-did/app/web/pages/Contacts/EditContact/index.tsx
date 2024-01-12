@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Form, message } from 'antd';
+import { Form } from 'antd';
 import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
@@ -9,12 +9,12 @@ import EditContactPrompt from './Prompt';
 import EditContactPopup from './Popup';
 import { BaseHeaderProps } from 'types/UI';
 import { useCommonState } from 'store/Provider/hooks';
-import { useProfileCopy } from 'hooks/useProfile';
 import { IEditContactFormProps } from '../components/EditContactForm';
 import { ValidData } from '../AddContact';
 import CustomModal from 'pages/components/CustomModal';
 import { useEditIMContact } from '@portkey-wallet/hooks/hooks-ca/im';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import singleMessage from 'utils/singleMessage';
 
 export type IEditContactProps = IEditContactFormProps & BaseHeaderProps;
 
@@ -95,20 +95,18 @@ export default function EditContact() {
         } else {
           // CANT CHAT
           handleView();
-          message.success('Edit Contact Successful');
+          singleMessage.success('Edit Contact Successful');
         }
       } catch (e: any) {
         console.log('onFinish==contact error', e);
         const msg = handleErrorMessage(e, 'handle contact error');
-        message.error(msg);
+        singleMessage.error(msg);
       } finally {
         setLoading(false);
       }
     },
     [appDispatch, editContactApi, handleView, setLoading, state],
   );
-
-  const handleCopy = useProfileCopy();
 
   const headerTitle = useMemo(() => t('Edit Contact'), [t]);
 
@@ -124,7 +122,6 @@ export default function EditContact() {
       cantSave={cantSave}
       onFinish={onFinish}
       handleInputRemarkChange={handleInputRemarkChange}
-      handleCopy={handleCopy}
     />
   ) : (
     <EditContactPopup
@@ -138,7 +135,6 @@ export default function EditContact() {
       cantSave={cantSave}
       onFinish={onFinish}
       handleInputRemarkChange={handleInputRemarkChange}
-      handleCopy={handleCopy}
     />
   );
 }

@@ -2,7 +2,6 @@ import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
-import { message } from 'antd';
 import { useCallback, useMemo } from 'react';
 import { useLoading } from 'store/Provider/hooks';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -15,6 +14,7 @@ import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import getSeed from 'utils/getSeed';
 import { chromeStorage } from 'store/utils';
+import singleMessage from 'utils/singleMessage';
 
 export const useHandleAchSell = () => {
   const { setLoading } = useLoading();
@@ -70,7 +70,7 @@ export const useHandleAchSell = () => {
         signature,
       };
     },
-    [aelfToken, chainInfo, currentNetwork.walletType, wallet.AESEncryptPrivateKey, wallet?.caHash],
+    [aelfToken, chainInfo, currentNetwork.walletType, wallet?.caHash],
   );
 
   return useCallback(
@@ -78,12 +78,14 @@ export const useHandleAchSell = () => {
       try {
         setLoading(true, 'Payment is being processed and may take around 10 seconds to complete.');
         await ramp.transferCrypto(orderId, paymentSellTransfer);
-        message.success('Transaction completed.');
+        singleMessage.success('Transaction completed.');
       } catch (error: any) {
         if (error?.code === 'TIMEOUT') {
-          message.warn(error?.message || 'The waiting time is too long, it will be put on hold in the background.');
+          singleMessage.warning(
+            error?.message || 'The waiting time is too long, it will be put on hold in the background.',
+          );
         } else {
-          message.error(error.message);
+          singleMessage.error(error.message);
         }
       } finally {
         setLoading(false);

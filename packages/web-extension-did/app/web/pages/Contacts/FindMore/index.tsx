@@ -8,7 +8,7 @@ import FindMorePopup from './Popup';
 import { BaseHeaderProps } from 'types/UI';
 import im from '@portkey-wallet/im';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
-import { message } from 'antd';
+import singleMessage from 'utils/singleMessage';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { useContactRelationIdMap } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
@@ -80,7 +80,7 @@ export default function FindMore() {
       setContacts(resTrans);
     } catch (error) {
       const err = handleErrorMessage(error, 'handle display error');
-      message.error(err);
+      singleMessage.error(err);
       setContacts([]);
     }
   }, []);
@@ -107,7 +107,7 @@ export default function FindMore() {
           navigate(`/chat-box/${res.channelUuid}`);
         } catch (e) {
           console.log('===createChannel error', e);
-          message.error('cannot chat');
+          singleMessage.error('cannot chat');
         }
       }
     },

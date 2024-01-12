@@ -1,10 +1,10 @@
 import { useGroupChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
-import { message } from 'antd';
 import { useNavigate, useParams } from 'react-router';
 import { useCallback, useEffect, useMemo } from 'react';
 import ShowQRCode from 'pages/components/ShowQRCode';
 import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
 import { ChannelTypeEnum } from '@portkey-wallet/im';
+import singleMessage from 'utils/singleMessage';
 
 const GroupQRCode = () => {
   const { channelUuid } = useParams();
@@ -17,7 +17,7 @@ const GroupQRCode = () => {
       await refresh();
     } catch (error) {
       console.log('===Failed to refresh error', error);
-      message.error('Failed to fetch data');
+      singleMessage.error('Failed to fetch data');
     }
   }, [refresh]);
   useEffect(() => {

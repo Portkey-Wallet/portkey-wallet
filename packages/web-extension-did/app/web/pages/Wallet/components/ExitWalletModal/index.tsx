@@ -1,4 +1,4 @@
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import CommonModal from 'components/CommonModal';
@@ -12,6 +12,7 @@ import { handleErrorMessage } from '@portkey-wallet/utils';
 import useLogOut from 'hooks/useLogout';
 import { DEVICE_TYPE } from 'constants/index';
 import getSeed from 'utils/getSeed';
+import singleMessage from 'utils/singleMessage';
 
 interface ExitWalletModalProps {
   open: boolean;
@@ -31,7 +32,7 @@ export default function ExitWalletModal({ open, onCancel }: ExitWalletModalProps
   const onConfirm = useCallback(async () => {
     try {
       const { privateKey } = await getSeed();
-      if (!currentChain?.endPoint || !privateKey) return message.error('error');
+      if (!currentChain?.endPoint || !privateKey) return singleMessage.error('error');
       setLoading(true, 'Signing out of Portkey...');
       const result = await removeManager({
         rpcUrl: currentChain.endPoint,
@@ -55,7 +56,7 @@ export default function ExitWalletModal({ open, onCancel }: ExitWalletModalProps
     } catch (error: any) {
       setLoading(false);
       const _error = handleErrorMessage(error, 'Something error');
-      message.error(_error);
+      singleMessage.error(_error);
     }
   }, [currentChain, currentNetwork.walletType, logout, setLoading, wallet.address, wallet?.caHash]);
 

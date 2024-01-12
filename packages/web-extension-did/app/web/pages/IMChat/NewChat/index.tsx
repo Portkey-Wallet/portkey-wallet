@@ -11,7 +11,7 @@ import { useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
-import { message } from 'antd';
+import singleMessage from 'utils/singleMessage';
 import './index.less';
 
 export default function NewChat() {
@@ -54,7 +54,7 @@ export default function NewChat() {
         navigate(`/chat-box/${res.channelUuid}`);
       } catch (e) {
         console.log('===create channel error', e);
-        message.error('create channel error');
+        singleMessage.error('create channel error');
       }
     },
     [createChannel, navigate],

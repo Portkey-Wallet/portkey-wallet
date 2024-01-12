@@ -1,6 +1,6 @@
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useChainIdList, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { Button, Input, message } from 'antd';
+import { Button, Input } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import TitleWrapper from 'components/TitleWrapper';
 import { useCallback, useMemo, useState } from 'react';
@@ -16,6 +16,7 @@ import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { ChainId } from '@portkey-wallet/types';
 import { request } from '@portkey-wallet/api/api-did';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import singleMessage from 'utils/singleMessage';
 import './index.less';
 
 export default function CustomToken() {
@@ -110,7 +111,7 @@ export default function CustomToken() {
         navigate('/add-token');
       } catch (error: any) {
         const err = handleErrorMessage(error, 'add custom token error');
-        message.error(err);
+        singleMessage.error(err);
         console.log('add custom token error', error);
       } finally {
         setLoading(false);

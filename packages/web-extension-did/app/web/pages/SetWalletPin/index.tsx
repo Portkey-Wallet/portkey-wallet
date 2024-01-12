@@ -1,4 +1,4 @@
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import PortKeyTitle from 'pages/components/PortKeyTitle';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
@@ -33,6 +33,7 @@ import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
 import CommonModal from 'components/CommonModal';
 import useDistributeLoginFail from 'hooks/useDistributeLoginFail';
 import { NetworkType } from '@portkey-wallet/types';
+import singleMessage from 'utils/singleMessage';
 
 export default function SetWalletPin() {
   const { t } = useTranslation();
@@ -54,7 +55,7 @@ export default function SetWalletPin() {
 
   useEffect(() => {
     if (state === 'scan' && (!scanWalletInfo || !scanCaWalletInfo)) {
-      message.error('Wallet information is wrong, please go back to scan the code and try again');
+      singleMessage.error('Wallet information is wrong, please go back to scan the code and try again');
       navigate('/register/start/scan');
     }
   }, [navigate, scanCaWalletInfo, scanWalletInfo, state]);
@@ -85,7 +86,7 @@ export default function SetWalletPin() {
       const scanWallet = scanWalletInfo;
       if (!scanWallet?.address || !scanCaWalletInfo) {
         navigate('/register/start/scan');
-        message.error('Wallet information is wrong, please go back to scan the code and try again');
+        singleMessage.error('Wallet information is wrong, please go back to scan the code and try again');
         return;
       }
       dispatch(
@@ -138,8 +139,8 @@ export default function SetWalletPin() {
         setLoading(false);
 
         const walletError = isWalletError(error);
-        if (walletError) return message.error(walletError);
-        message.error(handleErrorMessage(error, 'Create wallet failed'));
+        if (walletError) return singleMessage.error(walletError);
+        singleMessage.error(handleErrorMessage(error, 'Create wallet failed'));
       } finally {
         setLoading(false);
       }
@@ -235,8 +236,8 @@ export default function SetWalletPin() {
           dispatch(resetWallet());
         }
         const walletError = isWalletError(error);
-        if (walletError) return message.error(walletError);
-        message.error(handleErrorMessage(error, 'Create wallet failed'));
+        if (walletError) return singleMessage.error(walletError);
+        singleMessage.error(handleErrorMessage(error, 'Create wallet failed'));
         navigate('/register/start');
       }
     },

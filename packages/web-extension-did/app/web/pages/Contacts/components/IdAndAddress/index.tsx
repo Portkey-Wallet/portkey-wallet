@@ -6,20 +6,19 @@ import clsx from 'clsx';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useWalletInfo } from 'store/Provider/hooks';
 import { useNavigate } from 'react-router';
+import Copy from 'components/Copy';
 
 interface IIdAndAddressProps {
   portkeyId?: string;
   relationId?: string;
   addresses: AddressItem[];
   addressSectionLabel?: string;
-  handleCopy: (val: string) => void;
 }
 
 export default function IdAndAddress({
   portkeyId,
   relationId,
   addresses,
-  handleCopy,
   addressSectionLabel = 'Address',
 }: IIdAndAddressProps) {
   const showChat = useIsChatShow();
@@ -35,7 +34,7 @@ export default function IdAndAddress({
           <div className="flex-row-between info-content">
             <div className="info-desc-my-wallet">{portkeyId}</div>
             <div className="info-icon flex">
-              <CustomSvg onClick={() => handleCopy(portkeyId)} type="Copy4" />
+              <Copy toCopy={portkeyId} iconType="Copy4" />
               <CustomSvg type="QRCode2" onClick={() => navigate('/setting/wallet/qrcode')} />
             </div>
           </div>
@@ -48,7 +47,7 @@ export default function IdAndAddress({
           <div className="info-title">Portkey ID</div>
           <div className="flex-row-between info-content">
             <div className="info-desc">{portkeyId}</div>
-            <CustomSvg onClick={() => handleCopy(portkeyId)} type="Copy4" className="id-copy-icon" />
+            <Copy toCopy={portkeyId} iconType="Copy4" iconClassName="id-copy-icon" />
           </div>
         </div>
       )}
@@ -58,7 +57,7 @@ export default function IdAndAddress({
           <div className="info-title">{`ID`}</div>
           <div className="flex-row-between info-content">
             <div className="info-desc">{relationId}</div>
-            <CustomSvg onClick={() => handleCopy(relationId)} type="Copy4" className="id-copy-icon" />
+            <Copy toCopy={relationId} iconClassName="id-copy-icon" iconType="Copy4" />
           </div>
         </div>
       )}

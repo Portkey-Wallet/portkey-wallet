@@ -18,7 +18,6 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ManagerInfo } from '@portkey-wallet/graphql/contract/__generated__/types';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
-import { message } from 'antd';
 import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes, { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
@@ -33,6 +32,7 @@ import { resetSecurity } from '@portkey-wallet/store/store-ca/security/actions';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 import { unRegisterFCM } from 'utils/FCM';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import singleMessage from 'utils/singleMessage';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
@@ -122,7 +122,7 @@ export function useCheckManagerOnLogout() {
     } catch (error) {
       console.log(error, '======error');
       const msg = handleErrorMessage(error);
-      message.error(msg);
+      singleMessage.error(msg);
     }
   }, [address, caHash, logout]);
 }

@@ -14,7 +14,6 @@ import { setManagerInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import useFetchDidWallet from './useFetchDidWallet';
 import { isWalletError } from '@portkey-wallet/store/wallet/utils';
-import { message } from 'antd';
 import ModalTip from 'pages/components/ModalTip';
 import { CreateAddressLoading, InitLoginLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +21,7 @@ import { getLoginAccount, getLoginCache } from 'utils/lib/SWGetReduxStore';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { useNavigate } from 'react-router';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import singleMessage from 'utils/singleMessage';
 
 export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   const { setLoading } = useLoading();
@@ -142,7 +142,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
       try {
         const loginAccount = await getLoginAccount();
         if (!loginAccount?.guardianAccount || !LoginType[loginAccount.loginType]) {
-          return message.error('Missing account!!! Please login/register again');
+          return singleMessage.error('Missing account!!! Please login/register again');
         }
 
         if (loginAccount.createType === 'register') {
@@ -212,8 +212,8 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
       } catch (error: any) {
         console.log(error, 'onCreate==error');
         const walletError = isWalletError(error);
-        if (walletError) return message.error(walletError);
-        message.error(handleErrorMessage(error, 'Create Wallet Failed'));
+        if (walletError) return singleMessage.error(walletError);
+        singleMessage.error(handleErrorMessage(error, 'Create Wallet Failed'));
         navigate('/register/start');
       } finally {
         setLoading(false);

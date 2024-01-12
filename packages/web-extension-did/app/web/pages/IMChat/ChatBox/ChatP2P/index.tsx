@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
-import { message } from 'antd';
 import { MessageList, InputBar, StyleProvider, MessageContentType, PopDataProps } from '@portkey-wallet/im-ui-web';
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { useChannel, useIsStranger, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
@@ -20,6 +19,7 @@ import ChatBoxHeader from '../components/ChatBoxHeader';
 import { useClickUrl } from 'hooks/im';
 import WarnTip from 'pages/IMChat/components/WarnTip';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
+import singleMessage from 'utils/singleMessage';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
@@ -54,7 +54,7 @@ export default function ChatBox() {
           await exit();
           navigate('/chat-list');
         } catch (e) {
-          message.error('Failed to delete chat');
+          singleMessage.error('Failed to delete chat');
           console.log('===handle delete chat error', e);
         }
       },
@@ -65,9 +65,9 @@ export default function ChatBox() {
       setLoading(true);
       const res = await addContactApi(info?.toRelationId || '');
       console.log('===add stranger res', res, 'info', info);
-      message.success('Contact added');
+      singleMessage.success('Contact added');
     } catch (e) {
-      message.error('Add contact error');
+      singleMessage.error('Add contact error');
       console.log('===add stranger error', e);
     } finally {
       setLoading(false);
@@ -114,7 +114,7 @@ export default function ChatBox() {
     [handleAddContact, handleDelete, handleGoProfile, handleMute, handlePin, info?.mute, info?.pin],
   );
   const handleSendMsgError = useCallback((e: any) => {
-    message.error('Failed to send message');
+    singleMessage.error('Failed to send message');
     console.log('===Failed to send message', e);
   }, []);
   const inputMorePopList: PopDataProps[] = useMemo(

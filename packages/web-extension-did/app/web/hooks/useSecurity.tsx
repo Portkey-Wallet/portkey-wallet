@@ -6,7 +6,7 @@ import {
 } from '@portkey-wallet/hooks/hooks-ca/security';
 import { useCurrentWallet, useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import { Image, message } from 'antd';
+import { Image } from 'antd';
 import {
   SecurityVulnerabilityTip,
   SecurityVulnerabilityTitle,
@@ -42,6 +42,7 @@ import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { getBalance } from 'utils/sandboxUtil/getBalance';
 import { RampType } from '@portkey-wallet/ramp';
 import getSeed from 'utils/getSeed';
+import singleMessage from 'utils/singleMessage';
 
 export const useCheckSecurity = () => {
   const wallet = useCurrentWalletInfo();
@@ -81,7 +82,7 @@ export const useCheckSecurity = () => {
         }
       } catch (error) {
         const msg = handleErrorMessage(error, 'Balance Check Error');
-        throw message.error(msg);
+        throw singleMessage.error(msg);
       }
     },
     [addGuardiansModal, synchronizingModal, wallet?.caHash, wallet.originChainId],
@@ -108,9 +109,9 @@ export function useSynchronizingModal() {
         const { privateKey } = await getSeed();
         const accelerateChainInfo = await getCurrentChainInfo(accelerateChainId);
         if (!accelerateChainInfo?.endPoint || !originChainInfo?.endPoint || !privateKey)
-          return message.error(SecurityAccelerateErrorTip);
+          return singleMessage.error(SecurityAccelerateErrorTip);
         const result = await getAelfTxResult(originChainInfo?.endPoint, accelerateGuardiansTxId);
-        if (result.Status !== 'MINED') return message.error(SecurityAccelerateErrorTip);
+        if (result.Status !== 'MINED') return singleMessage.error(SecurityAccelerateErrorTip);
         const params = JSON.parse(result.Transaction.Params);
         const res = await handleGuardianByContract({
           rpcUrl: accelerateChainInfo?.endPoint as string,
@@ -126,11 +127,11 @@ export function useSynchronizingModal() {
             },
           },
         });
-        message.success('Guardian added');
+        singleMessage.success('Guardian added');
         console.log('===handleGuardianByContract accelerate res', res);
       } catch (error: any) {
         console.log('===handleGuardianByContract accelerate error', error);
-        message.error(SecurityAccelerateErrorTip);
+        singleMessage.error(SecurityAccelerateErrorTip);
       }
     },
     [currentNetwork.walletType, originChainInfo?.endPoint, walletInfo?.caHash],
@@ -149,21 +150,21 @@ export function useSynchronizingModal() {
         if (accelerateGuardiansTxId) {
           await handleSyncGuardian({ accelerateChainId, accelerateGuardiansTxId });
         } else {
-          if (!walletInfo?.caHash) return message.error(SecurityAccelerateErrorTip);
+          if (!walletInfo?.caHash) return singleMessage.error(SecurityAccelerateErrorTip);
           const res = await getAccelerateGuardianTxId(walletInfo?.caHash, accelerateChainId, originChainId);
           if (res.isSafe) {
-            message.success('Guardian added');
+            singleMessage.success('Guardian added');
           } else if (res.accelerateGuardian?.transactionId) {
             await handleSyncGuardian({
               accelerateChainId,
               accelerateGuardiansTxId: res.accelerateGuardian.transactionId,
             });
           } else {
-            message.error(SecurityAccelerateErrorTip);
+            singleMessage.error(SecurityAccelerateErrorTip);
           }
         }
       } catch (error: any) {
-        message.error(SecurityAccelerateErrorTip);
+        singleMessage.error(SecurityAccelerateErrorTip);
         console.log('===checkAccelerateIsReady error', error);
       } finally {
         setLoading(false);
@@ -286,7 +287,10 @@ export const useCheckLimit = (targetChainId: ChainId) => {
       onOneTimeApproval,
     }: ICheckLimitParams): Promise<boolean> => {
       const { privateKey } = await getSeed();
-      if (!currentChain?.endPoint || !privateKey) return message.error('Invalid user information, please check');
+      if (!currentChain?.endPoint || !privateKey) {
+        singleMessage.error('Invalid user information, please check');
+        return false;
+      }
 
       const caContract = new ExtensionContractBasic({
         rpcUrl: currentChain?.endPoint,

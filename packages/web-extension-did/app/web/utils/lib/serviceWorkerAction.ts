@@ -1,7 +1,6 @@
 import { NetworkType } from '@portkey-wallet/types';
 import { ISocialLogin } from '@portkey-wallet/types/types-ca/wallet';
 import { sleep } from '@portkey-wallet/utils';
-import { message } from 'antd';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useCallback } from 'react';
@@ -10,6 +9,7 @@ import { CreatePromptType, ReCaptchaResponseParams, SendResponseParams } from 't
 import { getPortkeyFinanceUrl } from 'utils';
 import { getWalletState } from './SWGetReduxStore';
 import { apis } from 'utils/BrowserApis';
+import singleMessage from 'utils/singleMessage';
 
 export const closeTabPrompt = async (closeParams: CloseParams) => {
   if (!closeParams?.windowId) {
@@ -34,7 +34,7 @@ export const useLockWallet = () => {
     try {
       await InternalMessage.payload(PortkeyMessageTypes.LOCK_WALLET).send();
     } catch (error) {
-      message.error('Lock error');
+      singleMessage.error('Lock error');
     }
   }, []);
 };
@@ -44,7 +44,7 @@ export const useActiveLockStatusAction = () => {
     try {
       await InternalMessage.payload(PortkeyMessageTypes.ACTIVE_LOCK_STATUS).send();
     } catch (error) {
-      message.error('Active lock error');
+      singleMessage.error('Active lock error');
     }
   }, []);
 };

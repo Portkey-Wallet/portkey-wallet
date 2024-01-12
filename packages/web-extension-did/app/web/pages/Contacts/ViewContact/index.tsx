@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCommonState } from 'store/Provider/hooks';
-import { useProfileChat, useProfileCopy, useGoProfileEdit } from 'hooks/useProfile';
+import { useProfileChat, useGoProfileEdit } from 'hooks/useProfile';
 import CustomModal from 'pages/components/CustomModal';
 import {
   REFRESH_DELAY_TIME,
@@ -15,7 +15,7 @@ import {
   useReadImputation,
 } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import { message } from 'antd';
+import singleMessage from 'utils/singleMessage';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import im from '@portkey-wallet/im';
@@ -135,7 +135,6 @@ export default function ViewContact() {
 
   const handleEdit = useGoProfileEdit();
   const handleChat = useProfileChat();
-  const handleCopy = useProfileCopy();
 
   const addStrangerApi = useAddStrangerContact();
 
@@ -149,7 +148,7 @@ export default function ViewContact() {
       }, REFRESH_DELAY_TIME);
     } catch (error) {
       const err = handleErrorMessage(error, 'add stranger error');
-      message.error(err);
+      singleMessage.error(err);
     }
   }, [addStrangerApi, dispatch, relationId, state]);
 
@@ -185,7 +184,6 @@ export default function ViewContact() {
       handleEdit={() => handleEdit(showChat && relationId ? ExtraTypeEnum.CAN_CHAT : ExtraTypeEnum.CANT_CHAT, data)}
       handleAdd={handleAdd}
       handleChat={() => handleChat(data?.imInfo?.relationId || '')}
-      handleCopy={handleCopy}
     />
   ) : (
     <ViewContactPopup
@@ -199,7 +197,6 @@ export default function ViewContact() {
       handleEdit={() => handleEdit(showChat && relationId ? ExtraTypeEnum.CAN_CHAT : ExtraTypeEnum.CANT_CHAT, data)}
       handleAdd={handleAdd}
       handleChat={() => handleChat(data?.imInfo?.relationId || '')}
-      handleCopy={handleCopy}
     />
   );
 }

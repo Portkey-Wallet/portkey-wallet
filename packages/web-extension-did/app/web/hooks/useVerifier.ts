@@ -10,11 +10,11 @@ import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQ
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
 import { useCallback } from 'react';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { message } from 'antd';
 import { useNavigate } from 'react-router';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import { setRegisterVerifierAction } from 'store/reducers/loginCache/actions';
 import { LoginInfo } from 'store/reducers/loginCache/type';
+import singleMessage from 'utils/singleMessage';
 
 /**
  * Provides two verification processes
@@ -35,10 +35,10 @@ const useCheckVerifier = () => {
     async (verifierItem: VerifierItem, loginAccount?: LoginInfo) => {
       try {
         if (!loginAccount || !LoginType[loginAccount?.loginType] || !loginAccount?.guardianAccount)
-          return message.error(
+          return singleMessage.error(
             'User registration information is invalid, please fill in the registration method again',
           );
-        if (!verifierItem?.id || !verifierItem?.name) return message.error('Can not get verification');
+        if (!verifierItem?.id || !verifierItem?.name) return singleMessage.error('Can not get verification');
 
         setLoading(true);
 
@@ -75,7 +75,7 @@ const useCheckVerifier = () => {
         setLoading(false);
         console.log(error, 'verifyHandler');
         const _error = verifyErrorHandler(error);
-        message.error(_error);
+        singleMessage.error(_error);
       }
     },
     [dispatch, navigate, setLoading],
@@ -88,7 +88,7 @@ const useCheckVerifier = () => {
       try {
         setLoading(true);
         if (!loginAccount?.loginType) throw 'loginType is invalid';
-        if (!verifierItem?.id || !verifierItem?.name) return message.error('Can not get verification');
+        if (!verifierItem?.id || !verifierItem?.name) return singleMessage.error('Can not get verification');
 
         const rst = await verifyToken(loginAccount.loginType, {
           accessToken: loginAccount.authenticationInfo?.[loginAccount.guardianAccount || ''],
@@ -120,7 +120,7 @@ const useCheckVerifier = () => {
         }
       } catch (error) {
         const msg = handleError(error);
-        message.error(msg);
+        singleMessage.error(msg);
         setLoading(false);
       }
     },

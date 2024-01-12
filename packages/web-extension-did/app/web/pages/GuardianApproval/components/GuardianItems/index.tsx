@@ -1,7 +1,7 @@
 import { setCurrentGuardianAction, setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { UserGuardianItem, UserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/type';
 import { OperationTypeEnum, VerifyStatus } from '@portkey-wallet/types/verifier';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import clsx from 'clsx';
 import VerifierPair from 'components/VerifierPair';
 import { useCallback, useMemo } from 'react';
@@ -19,6 +19,7 @@ import qs from 'query-string';
 import { ChainId } from '@portkey-wallet/types';
 import './index.less';
 import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
+import singleMessage from 'utils/singleMessage';
 
 interface GuardianItemProps {
   disabled?: boolean;
@@ -117,7 +118,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
       } catch (error: any) {
         console.log('---guardian-sendCode-error', error);
         setLoading(false);
-        message.error(verifyErrorHandler(error));
+        singleMessage.error(verifyErrorHandler(error));
       }
     },
     [dispatch, originChainId, operationType, setLoading, navigate, query],
@@ -176,7 +177,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
         console.log(error, 'error===');
         setLoading(false);
         const _error = handleErrorMessage(error);
-        message.error(_error);
+        singleMessage.error(_error);
       }
     },
     [

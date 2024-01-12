@@ -10,7 +10,7 @@ import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import PromptFrame from 'pages/components/PromptFrame';
 import QRCodeCommon from 'pages/components/QRCodeCommon';
 import { useCallback, useMemo } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import './index.less';
@@ -22,16 +22,27 @@ import {
   MainChainTipContent,
 } from '@portkey-wallet/constants/constants-ca/send';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import useLocationState from 'hooks/useLocationState';
+
+export type TReceiveLocationState = {
+  chainId: ChainId;
+  symbol: string;
+  balance: string;
+  imageUrl: string;
+  address: string;
+  balanceInUsd: string;
+  decimals: string | number;
+};
 
 export default function Receive() {
   const navigate = useNavigate();
   const { symbol } = useParams();
-  const { state } = useLocation();
+  const { state } = useLocationState<TReceiveLocationState>();
   const wallet = useCurrentWalletInfo();
   const { currentNetwork } = useWalletInfo();
   const isMainnet = useIsMainnet();
   const caAddress = useMemo(
-    () => `ELF_${wallet?.[(state.chainId as ChainId) || 'AELF']?.caAddress}_${state.chainId}`,
+    () => `ELF_${wallet?.[state.chainId || 'AELF']?.caAddress}_${state.chainId}`,
     [state, wallet],
   );
   const tipTitle = useMemo(

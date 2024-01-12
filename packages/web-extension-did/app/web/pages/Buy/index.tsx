@@ -21,6 +21,12 @@ import { useCheckSecurity } from 'hooks/useSecurity';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import singleMessage from 'utils/singleMessage';
+import { TTokenDetailLocationState } from 'pages/Token/Detail';
+
+export type TRampLocationState = {
+  side?: RampType;
+  tokenInfo?: TTokenDetailLocationState;
+};
 
 export default function Buy() {
   const { t } = useTranslation();

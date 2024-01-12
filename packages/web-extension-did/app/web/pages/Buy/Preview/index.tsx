@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
 import BackHeader from 'components/BackHeader';
 import CustomSvg from 'components/CustomSvg';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { InitProviderSelected, MAX_UPDATE_TIME } from '../const';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useCommonState, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
@@ -22,11 +22,23 @@ import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { sleep } from '@portkey-wallet/utils';
 import singleMessage from 'utils/singleMessage';
+import { TTokenDetailLocationState } from 'pages/Token/Detail';
+import useLocationState from 'hooks/useLocationState';
+
+export type IRampPreviewLocationState = {
+  crypto: string;
+  network: string;
+  fiat: string;
+  country: string;
+  amount: string;
+  side: RampType;
+  tokenInfo?: TTokenDetailLocationState;
+};
 
 export default function Preview() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const { state } = useLocationState<IRampPreviewLocationState>();
   const { isPrompt } = useCommonState();
   const updateRef = useRef(MAX_UPDATE_TIME);
   const [receive, setReceive] = useState('1');

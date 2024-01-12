@@ -7,13 +7,18 @@ import { useCallback, useEffect } from 'react';
 import { Form } from 'antd';
 import { setPinAction } from 'utils/lib/serviceWorkerAction';
 import { changePin } from '@portkey-wallet/store/store-ca/wallet/actions';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { setPasswordSeed } from 'store/reducers/user/slice';
 import { BaseHeaderProps } from 'types/UI';
 import { useCommonState } from 'store/Provider/hooks';
 import singleMessage from 'utils/singleMessage';
+import useLocationState from 'hooks/useLocationState';
 
 export type ISetNewPinProps = ISetNewPinFormProps & BaseHeaderProps;
+
+export type TSetNewPinLocationState = {
+  pin: string;
+};
 
 export default function SetNewPin() {
   const { isNotLessThan768 } = useCommonState();
@@ -22,7 +27,7 @@ export default function SetNewPin() {
   const navigate = useNavigate();
   const {
     state: { pin },
-  } = useLocation();
+  } = useLocationState<TSetNewPinLocationState>();
   const { t } = useTranslation();
   const title = t('Change Pin');
   const setPinLabel = 'Please enter a new pin';

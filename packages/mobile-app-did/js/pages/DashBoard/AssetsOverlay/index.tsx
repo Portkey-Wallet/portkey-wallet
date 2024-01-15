@@ -36,6 +36,7 @@ export type ImTransferInfoType = {
 
 export type ShowAssetListParamsType = {
   imTransferInfo?: ImTransferInfoType;
+  toAddress?: string;
 };
 
 const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: IAssetItemType }) => {
@@ -90,7 +91,7 @@ const INIT_PAGE_INFO = {
   isLoading: false,
 };
 
-const AssetList = ({ imTransferInfo }: ShowAssetListParamsType) => {
+const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) => {
   const { addresses = [], isGroupChat, toUserId } = imTransferInfo || {};
   console.log('addresses', addresses);
   const { t } = useLanguage();
@@ -181,7 +182,7 @@ const AssetList = ({ imTransferInfo }: ShowAssetListParamsType) => {
                 ? { ...item?.nftInfo, chainId: item.chainId, symbol: item.symbol }
                 : { ...item?.tokenInfo, chainId: item.chainId, symbol: item.symbol },
               toInfo: {
-                address: addressItem ? addressFormat(addressItem.address, addressItem.chainId) : '',
+                address: addressItem ? addressFormat(addressItem.address, addressItem.chainId) : toAddress,
                 name: imTransferInfo?.name || '',
               },
             };
@@ -204,7 +205,7 @@ const AssetList = ({ imTransferInfo }: ShowAssetListParamsType) => {
         />
       );
     },
-    [addresses, imTransferInfo?.channelId, imTransferInfo?.name, isGroupChat, toUserId],
+    [addresses, imTransferInfo?.channelId, imTransferInfo?.name, isGroupChat, toAddress, toUserId],
   );
 
   const noData = useMemo(() => {

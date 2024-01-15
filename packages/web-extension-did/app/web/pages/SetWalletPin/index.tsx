@@ -1,7 +1,7 @@
 import { Button } from 'antd';
 import PortKeyTitle from 'pages/components/PortKeyTitle';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useAppDispatch, useGuardiansInfo, useLoading, useLoginInfo } from 'store/Provider/hooks';
 import { setPinAction } from 'utils/lib/serviceWorkerAction';
 import {
@@ -34,12 +34,13 @@ import CommonModal from 'components/CommonModal';
 import useDistributeLoginFail from 'hooks/useDistributeLoginFail';
 import { NetworkType } from '@portkey-wallet/types';
 import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
 
 export default function SetWalletPin() {
   const { t } = useTranslation();
   const { type: state } = useParams<{ type: 'login' | 'scan' | 'register' }>();
   const loginType: AddManagerType = useMemo(() => (state === 'register' ? 'register' : 'recovery'), [state]);
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const dispatch = useAppDispatch();
   const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();

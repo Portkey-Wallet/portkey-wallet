@@ -9,7 +9,6 @@ import {
 import useGuardianList from 'hooks/useGuardianList';
 import ModalTip from 'pages/components/ModalTip';
 import { useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router';
 import { useAppDispatch, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import { resetLoginInfoAction } from 'store/reducers/loginCache/actions';
 import { GuardianMth } from 'types/guardians';
@@ -22,7 +21,7 @@ import { ChainId } from '@portkey-wallet/types';
 import getSeed from 'utils/getSeed';
 import { formatSetUnsetGuardianValue } from '../utils/formatSetUnsetLoginGuardianValue';
 import singleMessage from 'utils/singleMessage';
-import { useLocationState } from 'hooks/router';
+import { useLocationState, useNavigateState } from 'hooks/router';
 import { FromPageEnum, TGuardianRecoveryLocationState } from 'types/router';
 
 export const useGuardianRecovery = () => {
@@ -33,7 +32,7 @@ export const useGuardianRecovery = () => {
   const currentChain = useCurrentChain(originChainId);
   const { state } = useLocationState<TGuardianRecoveryLocationState>();
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const currentNetwork = useCurrentNetworkInfo();
   const { userGuardianStatus, opGuardian, preGuardian } = useGuardiansInfo();
   const accelerateChainId: ChainId = useMemo(() => state.accelerateChainId || originChainId, [state, originChainId]);

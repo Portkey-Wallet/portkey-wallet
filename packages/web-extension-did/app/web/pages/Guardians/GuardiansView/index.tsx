@@ -1,5 +1,4 @@
 import { Button, Switch } from 'antd';
-import { useNavigate } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
 import { useAppDispatch, useGuardiansInfo, useLoading, useLoginInfo } from 'store/Provider/hooks';
 import { useMemo, useCallback, useEffect, useState } from 'react';
@@ -31,10 +30,12 @@ import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import singleMessage from 'utils/singleMessage';
 import './index.less';
+import { useNavigateState } from 'hooks/router';
+import { FromPageEnum, TGuardianApprovalLocationState, TVerifierAccountLocationState } from 'types/router';
 
 export default function GuardiansView() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TVerifierAccountLocationState | TGuardianApprovalLocationState>();
   const getGuardianList = useGuardianList();
   const { currentGuardian, opGuardian, userGuardiansList } = useGuardiansInfo();
   const originChainId = useOriginChainId();
@@ -86,7 +87,11 @@ export default function GuardiansView() {
       verifiedInfo && dispatch(setUserGuardianItemStatus(verifiedInfo));
 
       setLoading(false);
-      navigate('/setting/guardians/guardian-approval', { state: 'guardians/loginGuardian' });
+      navigate('/setting/guardians/guardian-approval', {
+        state: {
+          from: FromPageEnum.guardiansLoginGuardian,
+        },
+      });
     } catch (error) {
       setLoading(false);
       const _error = handleErrorMessage(error);
@@ -120,7 +125,11 @@ export default function GuardiansView() {
             isInitStatus: true,
           }),
         );
-        navigate('/setting/guardians/verifier-account', { state: 'guardians/loginGuardian' });
+        navigate('/setting/guardians/verifier-account', {
+          state: {
+            from: FromPageEnum.guardiansLoginGuardian,
+          },
+        });
       } else {
         const _error = handleErrorMessage(result, 'send code error');
         singleMessage.error(_error);

@@ -2,7 +2,6 @@ import { Button } from 'antd';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLoginInfo, useGuardiansInfo, useCommonState } from 'store/Provider/hooks';
 import { VerifyStatus } from '@portkey-wallet/types/verifier';
-import { useNavigate } from 'react-router';
 import { UserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/type';
 import { getApprovalCount } from '@portkey-wallet/utils/guardian';
 import clsx from 'clsx';
@@ -18,8 +17,14 @@ import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQ
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { ChainId } from '@portkey-wallet/types';
-import { useLocationParams } from 'hooks/router';
-import { FromPageEnum, TGuardianApprovalLocationSearch, TGuardianApprovalLocationState } from 'types/router';
+import { useLocationParams, useNavigateState } from 'hooks/router';
+import {
+  FromPageEnum,
+  TAddGuardianLocationState,
+  TGuardianApprovalLocationSearch,
+  TGuardianApprovalLocationState,
+  TTransferSettingEditLocationState,
+} from 'types/router';
 import './index.less';
 import { useSetTransferLimit } from './hooks/useSetTransferLimit';
 
@@ -35,12 +40,12 @@ export default function GuardianApproval() {
   const { address: managerAddress } = useCurrentWalletInfo();
   const { loginAccount } = useLoginInfo();
   const [isExpired, setIsExpired] = useState<boolean>(false);
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TAddGuardianLocationState | TTransferSettingEditLocationState>();
   const { locationParams } = useLocationParams<TGuardianApprovalLocationState, TGuardianApprovalLocationSearch>();
   const { isPrompt, isNotLessThan768 } = useCommonState();
   const { t } = useTranslation();
   const isBigScreenPrompt: boolean = useMemo(() => {
-    const from = locationParams.from;
+    const from = locationParams.previousPage;
     const isNotFromLoginAndRegister = !!(
       from &&
       (AllowedGuardianPageArr.includes(from) ||
@@ -48,17 +53,17 @@ export default function GuardianApproval() {
         from === FromPageEnum.setTransferLimit)
     );
     return isNotLessThan768 ? isNotFromLoginAndRegister : false;
-  }, [isNotLessThan768, locationParams.from]);
+  }, [isNotLessThan768, locationParams.previousPage]);
   const targetChainId: ChainId | undefined = useMemo(
     () => locationParams.targetChainId || undefined,
     [locationParams.targetChainId],
   );
-  const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult(`${locationParams.from}`);
+  const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult(`${locationParams.previousPage}`);
 
   const userVerifiedList = useMemo(() => {
     const tempGuardianList = Object.values(userGuardianStatus ?? {});
     let filterGuardianList: UserGuardianStatus[] = tempGuardianList;
-    const from = locationParams.from;
+    const from = locationParams.previousPage;
     if (from === FromPageEnum.guardiansEdit) {
       filterGuardianList = tempGuardianList.filter((item) => item.key !== preGuardian?.key);
     } else if (
@@ -67,7 +72,7 @@ export default function GuardianApproval() {
       filterGuardianList = tempGuardianList.filter((item) => item.key !== opGuardian?.key);
     }
     return filterGuardianList;
-  }, [locationParams.from, opGuardian?.key, preGuardian?.key, userGuardianStatus]);
+  }, [locationParams.previousPage, opGuardian?.key, preGuardian?.key, userGuardianStatus]);
 
   const approvalLength = useMemo(() => {
     return getApprovalCount(userVerifiedList.length);
@@ -83,7 +88,7 @@ export default function GuardianApproval() {
   const handleSetTransferLimit = useSetTransferLimit(targetChainId);
 
   const recoveryWallet = useCallback(async () => {
-    const from = locationParams.from;
+    const from = locationParams.previousPage;
     if (AllowedGuardianPageArr.includes(from)) {
       console.log('recoveryWallet guardians', '');
       handleGuardianRecovery();
@@ -103,7 +108,7 @@ export default function GuardianApproval() {
     handleGuardianRecovery,
     handleRemoveOtherManage,
     handleSetTransferLimit,
-    locationParams.from,
+    locationParams.previousPage,
     managerAddress,
     navigate,
     onManagerAddressAndQueryResult,
@@ -133,14 +138,14 @@ export default function GuardianApproval() {
   }, [alreadyApprovalLength, approvalLength, isExpired]);
 
   const handleBack = useCallback(() => {
-    const from = locationParams.from;
+    const from = locationParams.previousPage;
     if (from) {
       if (AllowedGuardianPageArr.includes(from)) {
         if ([FromPageEnum.guardiansDel, FromPageEnum.guardiansEdit].includes(from)) {
           navigate(`/setting/guardians/edit`);
           return;
         } else if (from === FromPageEnum.guardiansAdd) {
-          navigate('/setting/guardians/add', { state: 'back' });
+          navigate('/setting/guardians/add', { state: { from: 'back' } });
           return;
         } else if (from === FromPageEnum.guardiansLoginGuardian) {
           if (locationParams.extra === 'edit') {
@@ -156,7 +161,6 @@ export default function GuardianApproval() {
         return;
       }
       if (from === FromPageEnum.setTransferLimit) {
-        // TODO state
         navigate(`/setting/wallet-security/payment-security/transfer-settings-edit`, {
           state: locationParams,
         });

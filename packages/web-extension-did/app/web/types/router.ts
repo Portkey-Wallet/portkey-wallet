@@ -41,8 +41,9 @@ export type TGuardianApprovalFromPage =
   | FromPageEnum.setTransferLimit;
 
 export type TGuardianApprovalLocationState = {
-  from: TGuardianApprovalFromPage;
+  previousPage: TGuardianApprovalFromPage;
   targetChainId?: ChainId;
+  accelerateChainId?: ChainId;
   extra?: string;
   manageAddress?: string;
 };
@@ -91,6 +92,7 @@ export type TVerifierAccountFromPage =
 export type TVerifierAccountLocationState = {
   from: TVerifierAccountFromPage;
   targetChainId?: ChainId;
+  accelerateChainId?: ChainId;
   extra?: string;
 };
 

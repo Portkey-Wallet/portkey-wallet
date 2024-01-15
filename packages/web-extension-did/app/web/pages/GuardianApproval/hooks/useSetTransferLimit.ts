@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -12,8 +11,12 @@ import { ICheckLimitBusiness, ITransferLimitRouteState } from '@portkey-wallet/t
 import { ChainId } from '@portkey-wallet/types';
 import getSeed from 'utils/getSeed';
 import singleMessage from 'utils/singleMessage';
-import { useLocationParams } from 'hooks/router';
-import { TSetTransferLimitLocationSearch, TSetTransferLimitLocationState } from 'types/router';
+import { useLocationParams, useNavigateState } from 'hooks/router';
+import {
+  TSetTransferLimitLocationSearch,
+  TSetTransferLimitLocationState,
+  TTransferSettingLocationState,
+} from 'types/router';
 
 export const useSetTransferLimit = (targetChainId?: ChainId) => {
   const { setLoading } = useLoading();
@@ -21,17 +24,18 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
 
   const currentChain = useCurrentChain(targetChainId);
   const { locationParams } = useLocationParams<TSetTransferLimitLocationState, TSetTransferLimitLocationSearch>();
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TTransferSettingLocationState>();
   const currentNetwork = useCurrentNetworkInfo();
   const { userGuardianStatus } = useGuardiansInfo();
 
   const checkBackPath = useCallback(
     (state: ITransferLimitRouteState) => {
       switch (state.from) {
+        // TODO navigate
         case ICheckLimitBusiness.RAMP_SELL:
           navigate('/buy', { state: { ...state, ...state.extra } });
           break;
-
+        // TODO navigate
         case ICheckLimitBusiness.SEND:
           navigate(`/send/token/${state.symbol}`, { state: { ...state, ...state.extra } });
           break;

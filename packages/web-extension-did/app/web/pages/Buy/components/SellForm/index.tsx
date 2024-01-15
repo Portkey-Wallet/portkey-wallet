@@ -242,7 +242,7 @@ export default function SellFrom() {
         address: accountTokenList[0].tokenContractAddress || '',
         chainType: currentNetwork.walletType,
         paramsOption: {
-          owner: wallet[chainId as ChainId]?.caAddress || '', // TODO
+          owner: wallet[chainId as ChainId]?.caAddress || '',
           symbol: currentChain.defaultToken.symbol,
         },
       });

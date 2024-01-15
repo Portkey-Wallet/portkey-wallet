@@ -12,6 +12,7 @@ import { Outlet } from 'react-router-dom';
 import clsx from 'clsx';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import UnReadBadge from 'pages/components/UnReadBadge';
+import UpgradeTip from 'pages/components/UpgradeTip';
 
 interface MyMenuItemInfo {
   label: string;
@@ -90,6 +91,7 @@ export default function PromptMy() {
 
       <div className="prompt-my-frame">
         <SettingHeader title={t('My')} leftCallBack={backCb} />
+        <UpgradeTip />
         <div className="prompt-my-body">
           <div className="prompt-my-menu-list">
             {settingList.map((item) => (

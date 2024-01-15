@@ -12,7 +12,6 @@ import { defaultColors } from 'assets/theme';
 import { useCaAddressInfoList, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import TokenListItem from 'components/TokenListItem';
 import { FontStyles } from 'assets/theme/styles';
-import { useCaAddresses } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchAssetList } from '@portkey-wallet/store/store-ca/assets/api';
 import { IAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
 import navigationService from 'utils/navigationService';
@@ -36,6 +35,7 @@ export type ImTransferInfoType = {
 
 export type ShowAssetListParamsType = {
   imTransferInfo?: ImTransferInfoType;
+  toAddress?: string;
 };
 
 const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: IAssetItemType }) => {
@@ -90,11 +90,10 @@ const INIT_PAGE_INFO = {
   isLoading: false,
 };
 
-const AssetList = ({ imTransferInfo }: ShowAssetListParamsType) => {
+const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) => {
   const { addresses = [], isGroupChat, toUserId } = imTransferInfo || {};
   console.log('addresses', addresses);
   const { t } = useLanguage();
-  const caAddresses = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
   const [keyword, setKeyword] = useState('');
   const gStyles = useGStyles();
@@ -125,7 +124,6 @@ const AssetList = ({ imTransferInfo }: ShowAssetListParamsType) => {
       try {
         const response = await fetchAssetList({
           caAddressInfos,
-          caAddresses,
           maxResultCount: MAX_RESULT_COUNT,
           skipCount: pageInfoRef.current.curPage * MAX_RESULT_COUNT,
           keyword: _keyword,
@@ -145,7 +143,7 @@ const AssetList = ({ imTransferInfo }: ShowAssetListParamsType) => {
       }
       pageInfoRef.current.isLoading = false;
     },
-    [caAddressInfos, caAddresses, filterList, listShow.length],
+    [caAddressInfos, filterList, listShow.length],
   );
 
   const onKeywordChange = useCallback(() => {
@@ -181,7 +179,7 @@ const AssetList = ({ imTransferInfo }: ShowAssetListParamsType) => {
                 ? { ...item?.nftInfo, chainId: item.chainId, symbol: item.symbol }
                 : { ...item?.tokenInfo, chainId: item.chainId, symbol: item.symbol },
               toInfo: {
-                address: addressItem ? addressFormat(addressItem.address, addressItem.chainId) : '',
+                address: addressItem ? addressFormat(addressItem.address, addressItem.chainId) : toAddress,
                 name: imTransferInfo?.name || '',
               },
             };
@@ -204,7 +202,7 @@ const AssetList = ({ imTransferInfo }: ShowAssetListParamsType) => {
         />
       );
     },
-    [addresses, imTransferInfo?.channelId, imTransferInfo?.name, isGroupChat, toUserId],
+    [addresses, imTransferInfo?.channelId, imTransferInfo?.name, isGroupChat, toAddress, toUserId],
   );
 
   const noData = useMemo(() => {

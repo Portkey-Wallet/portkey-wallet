@@ -13,4 +13,5 @@ export type SettingsState = {
   autoLockingTime: LockingTimeType;
   leaveTime: number;
   closeNotificationsModalTime: number;
+  hasShowUploadV2WaringModal?: boolean;
 };

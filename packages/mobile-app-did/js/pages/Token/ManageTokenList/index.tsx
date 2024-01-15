@@ -81,7 +81,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
           },
         });
         timerRef.current = setTimeout(async () => {
-          dispatch(fetchTokenListAsync({ caAddresses: caAddressArray, caAddressInfos }));
+          dispatch(fetchTokenListAsync({ caAddressInfos }));
           if (debounceWord) {
             await fetchSearchedTokenList();
           } else {
@@ -95,7 +95,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
         CommonToast.failError(err);
       }
     },
-    [caAddressArray, caAddressInfos, chainIdList, debounceWord, dispatch, fetchSearchedTokenList],
+    [caAddressInfos, chainIdList, debounceWord, dispatch, fetchSearchedTokenList],
   );
 
   useFocusEffect(

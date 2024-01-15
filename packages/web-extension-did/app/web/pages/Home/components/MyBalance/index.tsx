@@ -8,9 +8,15 @@ import TokenList from '../Tokens';
 import Activity from '../Activity/index';
 import { Transaction } from '@portkey-wallet/types/types-ca/trade';
 import NFT from '../NFT/NFT';
-import { useAppDispatch, useUserInfo, useWalletInfo, useAssetInfo, useCommonState } from 'store/Provider/hooks';
 import {
-  useCaAddresses,
+  useAppDispatch,
+  useUserInfo,
+  useWalletInfo,
+  useAssetInfo,
+  useCommonState,
+  useLoading,
+} from 'store/Provider/hooks';
+import {
   useCaAddressInfoList,
   useChainIdList,
   useCurrentWallet,
@@ -67,13 +73,13 @@ export default function MyBalance() {
   const { state } = useLocation();
   const { passwordSeed } = useUserInfo();
   const appDispatch = useAppDispatch();
-  const caAddresses = useCaAddresses();
   const chainIdArray = useChainIdList();
   const isMainNet = useIsMainnet();
   const { walletInfo } = useCurrentWallet();
   const caAddressInfos = useCaAddressInfoList();
   const { eBridgeUrl = '', eTransferUrl = '' } = useCurrentNetworkInfo();
   const isFCMEnable = useFCMEnable();
+  const { setLoading } = useLoading();
 
   const renderTabsData = useMemo(
     () => [
@@ -116,11 +122,11 @@ export default function MyBalance() {
       setActiveKey(state.key);
     }
     if (!passwordSeed) return;
-    appDispatch(fetchTokenListAsync({ caAddresses, caAddressInfos }));
+    appDispatch(fetchTokenListAsync({ caAddressInfos }));
     appDispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray }));
     appDispatch(getCaHolderInfoAsync());
     appDispatch(getSymbolImagesAsync());
-  }, [passwordSeed, appDispatch, caAddresses, chainIdArray, caAddressInfos, isMainNet, state?.key, isRampShow]);
+  }, [passwordSeed, appDispatch, chainIdArray, caAddressInfos, isMainNet, state?.key, isRampShow]);
 
   useEffect(() => {
     getGuardianList({ caHash: walletInfo?.caHash });
@@ -190,8 +196,16 @@ export default function MyBalance() {
   }, []);
 
   const handleBridge = useCallback(async () => {
-    const isSafe = await checkSecurity(originChainId);
-    if (!isSafe) return;
+    try {
+      setLoading(true);
+      const isSafe = await checkSecurity(originChainId);
+      setLoading(false);
+      if (!isSafe) return;
+    } catch (error) {
+      setLoading(false);
+      console.log('===handleBridge error', error);
+      return;
+    }
     if (checkDappIsConfirmed(eBridgeUrl)) {
       const openWinder = window.open(eBridgeUrl, '_blank');
       if (openWinder) {
@@ -208,7 +222,7 @@ export default function MyBalance() {
       };
       setDisclaimerOpen(true);
     }
-  }, [checkDappIsConfirmed, checkSecurity, eBridgeUrl, originChainId]);
+  }, [checkDappIsConfirmed, checkSecurity, eBridgeUrl, originChainId, setLoading]);
 
   useEffect(() => {
     if (!isFCMEnable()) return;
@@ -218,8 +232,16 @@ export default function MyBalance() {
 
   const handleClickETrans = useCallback(
     async (eTransType: ETransType) => {
-      const isSafe = await checkSecurity(originChainId);
-      if (!isSafe) return;
+      try {
+        setLoading(true);
+        const isSafe = await checkSecurity(originChainId);
+        setLoading(false);
+        if (!isSafe) return;
+      } catch (error) {
+        setLoading(false);
+        console.log('===handleClickETrans error', error);
+        return;
+      }
       const targetUrl = stringifyETrans({
         url: eTransferUrl,
         query: {
@@ -244,7 +266,7 @@ export default function MyBalance() {
         setDisclaimerOpen(true);
       }
     },
-    [checkDappIsConfirmed, checkSecurity, eTransferUrl, originChainId],
+    [checkDappIsConfirmed, checkSecurity, eTransferUrl, originChainId, setLoading],
   );
 
   const isShowDepositEntry = useMemo(

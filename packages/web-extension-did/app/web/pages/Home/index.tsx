@@ -16,7 +16,8 @@ import initIm from 'hooks/im';
 import { sleep } from '@portkey-wallet/utils';
 import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { fetchAssetAsync } from '@portkey-wallet/store/store-ca/assets/slice';
-import { useCaAddressInfoList, useCaAddresses } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useUpgradeModal } from 'hooks/useUpgrade';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -30,8 +31,8 @@ export default function Home() {
   }, [isNotLessThan768, navigate]);
   useDiscoverGroupList();
   const appDispatch = useAppDispatch();
-  const caAddresses = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
+  const upgradeTip = useUpgradeModal();
 
   const { search } = useLocation();
   const isSell = useRef(0); // guaranteed to make only one transfer
@@ -39,8 +40,8 @@ export default function Home() {
   const locked = useStorage('locked');
 
   const getAccountAllAssets = useCallback(() => {
-    appDispatch(fetchAssetAsync({ caAddresses, keyword: '', caAddressInfos }));
-  }, [appDispatch, caAddressInfos, caAddresses]);
+    appDispatch(fetchAssetAsync({ keyword: '', caAddressInfos }));
+  }, [appDispatch, caAddressInfos]);
 
   const checkAchSell = useCallback(async () => {
     if (search) {
@@ -60,6 +61,7 @@ export default function Home() {
   useEffectOnce(() => {
     checkAchSell();
     getAccountAllAssets();
+    upgradeTip();
   });
   initIm();
 

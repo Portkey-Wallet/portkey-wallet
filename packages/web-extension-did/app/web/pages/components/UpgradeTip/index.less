@@ -1,0 +1,56 @@
+@import '../../../assets/theme/color.less';
+
+.my-wallet-upgrade-tip {
+  margin: 8px 24px;
+  padding: 12px 16px;
+  border-radius: 6px;
+  background-color: @bg-26;
+  background-image: url('../../../assets/svgIcon/UpgradeBg.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  .upgrade-container {
+    gap: 4px;
+    .upgradeicon-icon {
+      width: 48px;
+      height: 48px;
+    }
+    .upgrade-content {
+      gap: 12px;
+      .upgrade-content-title {
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 500;
+        color: @font-11;
+      }
+      .upgrade-content-subtitle {
+        font-size: 12px;
+        line-height: 16px;
+        font-weight: 400;
+        color: @font-13;
+      }
+    }
+    @media screen and (max-width: 768px) {
+      .upgrade-content {
+        gap: 0;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  }
+  .upgrade-btn {
+    width: 70px;
+    height: 24px;
+    padding: 4px 12px;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 500;
+    border-radius: 6px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .my-wallet-upgrade-tip {
+    margin: 16px 16px 8px;
+    padding: 12px;
+  }
+}

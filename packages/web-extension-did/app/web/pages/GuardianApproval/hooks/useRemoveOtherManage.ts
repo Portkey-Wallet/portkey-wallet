@@ -4,14 +4,13 @@ import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-
 import singleMessage from 'utils/singleMessage';
 import { DEVICE_TYPE } from 'constants/index';
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import { removeOtherManager } from 'utils/sandboxUtil/removeOtherManager';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { formatGuardianValue } from '../utils/formatGuardianValue';
 import ModalTip from 'pages/components/ModalTip';
 import getSeed from 'utils/getSeed';
-import { useLocationParams } from 'hooks/router';
+import { useLocationParams, useNavigateState } from 'hooks/router';
 import { TRemoveOtherManageLocationSearch, TRemoveOtherManageLocationState } from 'types/router';
 
 export const useRemoveOtherManage = () => {
@@ -21,7 +20,7 @@ export const useRemoveOtherManage = () => {
   const originChainId = useOriginChainId();
   const currentChain = useCurrentChain(originChainId);
   const { locationParams } = useLocationParams<TRemoveOtherManageLocationState, TRemoveOtherManageLocationSearch>();
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const currentNetwork = useCurrentNetworkInfo();
   const { userGuardianStatus } = useGuardiansInfo();
 

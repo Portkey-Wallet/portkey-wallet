@@ -1,6 +1,5 @@
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useGuardiansInfo, useLoading, useLoginInfo } from 'store/Provider/hooks';
@@ -32,11 +31,13 @@ import clsx from 'clsx';
 import OptionTip from '../components/SelectOptionTip';
 import { verifierExistTip } from '@portkey-wallet/constants/constants-ca/guardian';
 import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
+import { FromPageEnum, TGuardianApprovalLocationState, TVerifierAccountLocationState } from 'types/router';
 import './index.less';
 
 export default function GuardiansEdit() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TGuardianApprovalLocationState | TVerifierAccountLocationState>();
   const { verifierMap, currentGuardian, userGuardiansList, preGuardian, opGuardian } = useGuardiansInfo();
   const verifierStatusMap = useMemo(
     () => getVerifierStatusMap(verifierMap, userGuardiansList, preGuardian),
@@ -143,7 +144,11 @@ export default function GuardiansEdit() {
         }),
       );
       setLoading(false);
-      navigate('/setting/guardians/guardian-approval', { state: 'guardians/edit' });
+      navigate('/setting/guardians/guardian-approval', {
+        state: {
+          from: FromPageEnum.guardiansEdit,
+        },
+      });
     } catch (error: any) {
       setLoading(false);
       console.log('---edit-guardian-error', error);
@@ -177,7 +182,11 @@ export default function GuardiansEdit() {
         ...opGuardian!,
       }),
     );
-    navigate('/setting/guardians/guardian-approval', { state: 'guardians/del' }); // status
+    navigate('/setting/guardians/guardian-approval', {
+      state: {
+        from: FromPageEnum.guardiansDel,
+      },
+    });
   }, [opGuardian, dispatch, navigate, userGuardianList, walletInfo.caHash]);
 
   const handleSocialVerify = useCallback(async () => {
@@ -194,7 +203,12 @@ export default function GuardiansEdit() {
       verifiedInfo && dispatch(setUserGuardianItemStatus(verifiedInfo));
 
       setLoading(false);
-      navigate('/setting/guardians/guardian-approval', { state: 'guardians/loginGuardian_edit' });
+      navigate('/setting/guardians/guardian-approval', {
+        state: {
+          from: FromPageEnum.guardiansLoginGuardian,
+          extra: 'edit',
+        },
+      });
     } catch (error) {
       setLoading(false);
       const _error = handleErrorMessage(error);
@@ -228,7 +242,12 @@ export default function GuardiansEdit() {
             isInitStatus: true,
           }),
         );
-        navigate('/setting/guardians/verifier-account', { state: 'guardians/loginGuardian_edit' });
+        navigate('/setting/guardians/verifier-account', {
+          state: {
+            from: FromPageEnum.guardiansLoginGuardian,
+            extra: 'edit',
+          },
+        });
       } else {
         const _error = handleErrorMessage(result, 'send code error');
         singleMessage.error(_error);

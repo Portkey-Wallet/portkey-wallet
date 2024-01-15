@@ -5,7 +5,6 @@ import {
   setUserGuardianItemStatus,
 } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { Input, Button } from 'antd';
-import { useNavigate } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useGuardiansInfo, useLoading, useWalletInfo } from 'store/Provider/hooks';
@@ -41,12 +40,17 @@ import { getVerifierStatusMap, guardianAccountIsExist } from '../utils';
 import OptionTip from '../components/SelectOptionTip';
 import { guardianExistTip, verifierExistTip } from '@portkey-wallet/constants/constants-ca/guardian';
 import singleMessage from 'utils/singleMessage';
-import { useLocationParams } from 'hooks/router';
-import { TAddGuardianLocationSearch, TAddGuardianLocationState } from 'types/router';
+import { useLocationParams, useNavigateState } from 'hooks/router';
+import {
+  FromPageEnum,
+  TAddGuardianLocationSearch,
+  TAddGuardianLocationState,
+  TVerifierAccountLocationState,
+} from 'types/router';
 import './index.less';
 
 export default function AddGuardian() {
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TVerifierAccountLocationState>();
   const { t } = useTranslation();
   const { locationParams } = useLocationParams<TAddGuardianLocationState, TAddGuardianLocationSearch>();
   const { verifierMap, userGuardiansList, opGuardian } = useGuardiansInfo();
@@ -386,7 +390,10 @@ export default function AddGuardian() {
           dispatch(setCurrentGuardianAction(newGuardian));
           dispatch(setOpGuardianAction(newGuardian));
           navigate('/setting/guardians/verifier-account', {
-            state: `guardians/add_accelerateChainId=${accelerateChainId}`,
+            state: {
+              from: FromPageEnum.guardiansAdd,
+              accelerateChainId: accelerateChainId,
+            },
           });
         }
       } catch (error) {
@@ -471,7 +478,10 @@ export default function AddGuardian() {
         }),
       );
       navigate('/setting/guardians/guardian-approval', {
-        state: `guardians/add_accelerateChainId=${accelerateChainId}`,
+        state: {
+          from: FromPageEnum.guardiansAdd,
+          accelerateChainId,
+        },
       });
     } catch (error) {
       const msg = handleErrorMessage(error);

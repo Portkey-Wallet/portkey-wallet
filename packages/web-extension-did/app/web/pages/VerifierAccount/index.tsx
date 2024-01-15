@@ -1,9 +1,8 @@
-import { useNavigate } from 'react-router';
 import { useAppDispatch, useLoginInfo, useGuardiansInfo } from 'store/Provider/hooks';
 import { useCallback, useMemo } from 'react';
 import { setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { OperationTypeEnum, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
-import { useLocationState } from 'hooks/router';
+import { useLocationState, useNavigateState } from 'hooks/router';
 import { useCurrentWallet, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { setRegisterVerifierAction } from 'store/reducers/loginCache/actions';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
@@ -17,7 +16,12 @@ import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import VerifierPage from 'pages/components/VerifierPage';
 import { ChainId } from '@portkey-wallet/types';
 import singleMessage from 'utils/singleMessage';
-import { TVerifierAccountLocationState, FromPageEnum } from 'types/router';
+import {
+  TVerifierAccountLocationState,
+  FromPageEnum,
+  TGuardianApprovalLocationState,
+  TAddGuardianLocationState,
+} from 'types/router';
 
 const AllowedGuardianPageArr = [
   FromPageEnum.guardiansAdd,
@@ -28,7 +32,7 @@ const AllowedGuardianPageArr = [
 export default function VerifierAccount() {
   const { loginAccount } = useLoginInfo();
   const { userGuardianStatus, currentGuardian, opGuardian, userGuardiansList } = useGuardiansInfo();
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TGuardianApprovalLocationState | TAddGuardianLocationState>();
   const dispatch = useAppDispatch();
   const { state } = useLocationState<TVerifierAccountLocationState>();
   const { isNotLessThan768 } = useCommonState();
@@ -61,7 +65,7 @@ export default function VerifierAccount() {
           identifierHash: guardianIdentifier,
         }),
       );
-      navigate('/setting/guardians/guardian-approval', { state: state });
+      navigate('/setting/guardians/guardian-approval', { state });
     },
     [currentGuardian, dispatch, navigate, state],
   );
@@ -79,7 +83,7 @@ export default function VerifierAccount() {
           identifierHash: guardianIdentifier,
         }),
       );
-      navigate('/setting/wallet-security/payment-security/guardian-approval', { state: state });
+      navigate('/setting/wallet-security/payment-security/guardian-approval', { state });
     },
     [currentGuardian, dispatch, navigate, state],
   );
@@ -97,7 +101,7 @@ export default function VerifierAccount() {
           identifierHash: guardianIdentifier,
         }),
       );
-      navigate('/setting/wallet-security/manage-devices/guardian-approval', { state: state });
+      navigate('/setting/wallet-security/manage-devices/guardian-approval', { state });
     },
     [currentGuardian, dispatch, navigate, state],
   );
@@ -183,7 +187,11 @@ export default function VerifierAccount() {
       return navigate('/login/guardian-approval');
     }
     if (fromPage === FromPageEnum.guardiansAdd && !userGuardianStatus?.[opGuardian?.key || '']?.signature) {
-      return navigate('/setting/guardians/add', { state: 'back' });
+      return navigate('/setting/guardians/add', {
+        state: {
+          from: 'back',
+        },
+      });
     }
     if (fromPage === FromPageEnum.guardiansLoginGuardian && !userGuardianStatus?.[opGuardian?.key || '']?.signature) {
       if (state.extra === 'edit') {
@@ -194,10 +202,10 @@ export default function VerifierAccount() {
       return;
     }
     if (AllowedGuardianPageArr.includes(fromPage)) {
-      return navigate('/setting/guardians/guardian-approval', { state: state });
+      return navigate('/setting/guardians/guardian-approval', { state });
     }
     if (fromPage === FromPageEnum.setTransferLimit) {
-      return navigate(`/setting/wallet-security/payment-security/guardian-approval`, { state: state });
+      return navigate(`/setting/wallet-security/payment-security/guardian-approval`, { state });
     }
     navigate(-1);
   }, [navigate, opGuardian?.key, state, userGuardianStatus]);

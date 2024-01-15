@@ -1,5 +1,5 @@
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback, useEffectOnce } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
@@ -8,8 +8,13 @@ import DropdownSearch from 'components/DropdownSearch';
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { useGroupChannelInfo, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ChannelMemberInfo } from '@portkey-wallet/im';
-import { useLocationState } from 'hooks/router';
-import { TMemberListLocationState } from 'types/router';
+import { useLocationState, useNavigateState } from 'hooks/router';
+import {
+  FromPageEnum,
+  TMemberListLocationState,
+  TViewContactLocationState,
+  TWalletNameLocationState,
+} from 'types/router';
 import './index.less';
 
 export default function MemberList() {
@@ -20,7 +25,7 @@ export default function MemberList() {
   const { state } = useLocationState<TMemberListLocationState>();
   const [filterWord, setFilterWord] = useState<string>('');
   const [inputValue, setInputValue] = useState<string>('');
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TWalletNameLocationState | TViewContactLocationState>();
   const [showMemberList, setShowMemberList] = useState<ChannelMemberInfo[]>(groupInfo?.members || []);
 
   const handleSearch = useCallback(
@@ -47,11 +52,11 @@ export default function MemberList() {
     (item: ChannelMemberInfo) => {
       if (item.relationId === myRelationId) {
         navigate('/setting/wallet/wallet-name', {
-          state: { from: 'chat-member-list', channelUuid, search: filterWord },
+          state: { from: FromPageEnum.chatMemberList, channelUuid, search: filterWord },
         });
       } else {
         navigate('/setting/contacts/view', {
-          state: { relationId: item.relationId, from: 'chat-member-list', channelUuid, search: filterWord },
+          state: { relationId: item.relationId, from: FromPageEnum.chatMemberList, channelUuid, search: filterWord },
         });
       }
     },

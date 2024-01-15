@@ -8,6 +8,7 @@ import { CaHolderInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { CustomAddressItem } from 'pages/Contacts/AddContact';
 import { IProfileDetailDataProps } from './Profile';
 import { ToAccount, SendStage } from 'pages/Send';
+import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 
 export enum FromPageEnum {
   register = 'register',
@@ -179,6 +180,7 @@ export type TSetNewPinLocationState = {
   pin: string;
 };
 
+// RampPreview
 export type TRampPreviewLocationState = {
   crypto: string;
   network: string;
@@ -189,6 +191,7 @@ export type TRampPreviewLocationState = {
   tokenInfo?: TTokenDetailLocationState;
 };
 
+// AddContact
 export type TAddContactLocationState = {
   id?: string;
   addresses?: CustomAddressItem[];
@@ -196,6 +199,7 @@ export type TAddContactLocationState = {
   imInfo?: Partial<IImInfo>;
 };
 
+// EditContact
 export type TEditContactLocationState = {
   id: string;
   name?: string;
@@ -206,18 +210,23 @@ export type TEditContactLocationState = {
 
 export type TFindMoreFromPage = FromPageEnum.chatSearch | FromPageEnum.chatList;
 
+// FindMore
 export type TFindMoreLocationState = {
   search?: string;
   from?: TFindMoreFromPage;
 };
 
+// ViewContact
 export type TViewContactLocationState = IProfileDetailDataProps & {
-  id: string;
-  name: string;
+  id?: string;
+  name?: string;
   portkeyId?: string;
   channelUuid?: string;
+  isStranger?: boolean;
+  search?: string;
 };
 
+// Receive
 export type TReceiveLocationState = {
   chainId: ChainId;
   symbol: string;
@@ -228,6 +237,7 @@ export type TReceiveLocationState = {
   decimals: string | number;
 };
 
+// Send
 export type TSendLocationState = BaseToken & {
   chainId: ChainId;
   targetChainId?: ChainId;
@@ -237,6 +247,7 @@ export type TSendLocationState = BaseToken & {
   balance?: string;
 };
 
+// RecentDetail
 export type TRecentDetailLocationState = {
   chainId: ChainId;
   targetChainId: ChainId;
@@ -246,6 +257,7 @@ export type TRecentDetailLocationState = {
   avatar?: string;
 };
 
+// TokenDetail
 export type TTokenDetailLocationState = {
   symbol: string;
   chainId: ChainId;
@@ -261,8 +273,14 @@ export type TWalletNameFromPage =
   | FromPageEnum.chatGroupInfo
   | FromPageEnum.chatMemberList;
 
+// WalletName
 export type TWalletNameLocationState = {
   from?: TWalletNameFromPage;
   channelUuid?: string;
   search?: string;
+};
+
+// HomePage
+export type THomePageLocationState = {
+  key: BalanceTab;
 };

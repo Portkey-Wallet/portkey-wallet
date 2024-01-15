@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
@@ -11,14 +10,14 @@ import './index.less';
 import SearchList from '../components/SearchList';
 import { ISearchItem } from '../components/SearchItem';
 import { useHandleClickChatItem } from 'hooks/im';
-import { useLocationState } from 'hooks/router';
-import { TChatListSearchLocationState } from 'types/router';
+import { useLocationState, useNavigateState } from 'hooks/router';
+import { FromPageEnum, TChatListSearchLocationState, TFindMoreLocationState } from 'types/router';
 
 export default function ChatListSearch() {
   const { t } = useTranslation();
   const { state } = useLocationState<TChatListSearchLocationState>();
   const [filterWord, setFilterWord] = useState<string>('');
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TFindMoreLocationState>();
   const { setLoading } = useLoading();
   const [chatList, setChatList] = useState<ISearchItem[]>([]);
   const searchChannel = useSearchChannel();
@@ -96,7 +95,7 @@ export default function ChatListSearch() {
         <div
           className="find-more flex"
           onClick={() =>
-            navigate(`/setting/contacts/find-more`, { state: { search: filterWord, from: 'chat-search' } })
+            navigate(`/setting/contacts/find-more`, { state: { search: filterWord, from: FromPageEnum.chatSearch } })
           }>
           <CustomSvg type="AddMorePeople" />
           Find People

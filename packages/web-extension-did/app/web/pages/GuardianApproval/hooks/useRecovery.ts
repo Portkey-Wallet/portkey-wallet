@@ -23,7 +23,7 @@ import getSeed from 'utils/getSeed';
 import { formatSetUnsetGuardianValue } from '../utils/formatSetUnsetLoginGuardianValue';
 import singleMessage from 'utils/singleMessage';
 import { useLocationState } from 'hooks/router';
-import { GuardianRecoveryFromPageEnum, TGuardianRecoveryLocationState } from 'types/router';
+import { FromPageEnum, TGuardianRecoveryLocationState } from 'types/router';
 
 export const useGuardianRecovery = () => {
   const { setLoading } = useLoading();
@@ -53,19 +53,19 @@ export const useGuardianRecovery = () => {
       let methodName = '';
       const from = state.from;
       switch (from) {
-        case GuardianRecoveryFromPageEnum.guardiansAdd:
+        case FromPageEnum.guardiansAdd:
           value = formatAddGuardianValue({ userGuardianStatus, opGuardian });
           methodName = GuardianMth.addGuardian;
           break;
-        case GuardianRecoveryFromPageEnum.guardiansEdit:
+        case FromPageEnum.guardiansEdit:
           value = formatEditGuardianValue({ userGuardianStatus, opGuardian, preGuardian });
           methodName = GuardianMth.UpdateGuardian;
           break;
-        case GuardianRecoveryFromPageEnum.guardiansDel:
+        case FromPageEnum.guardiansDel:
           value = formatDelGuardianValue({ userGuardianStatus, opGuardian });
           methodName = GuardianMth.RemoveGuardian;
           break;
-        case GuardianRecoveryFromPageEnum.guardiansLoginGuardian:
+        case FromPageEnum.guardiansLoginGuardian:
           value = formatSetUnsetGuardianValue({ userGuardianStatus, opGuardian });
           methodName = opGuardian?.isLoginAccount
             ? GuardianMth.UnsetGuardianTypeForLogin
@@ -93,7 +93,7 @@ export const useGuardianRecovery = () => {
         },
       });
       try {
-        if (from === GuardianRecoveryFromPageEnum.guardiansAdd && accelerateChainId !== originChainId) {
+        if (from === FromPageEnum.guardiansAdd && accelerateChainId !== originChainId) {
           if (!accelerateChainInfo?.endPoint) return;
           const res = await handleGuardianByContract({
             rpcUrl: accelerateChainInfo?.endPoint,
@@ -117,13 +117,13 @@ export const useGuardianRecovery = () => {
       dispatch(resetUserGuardianStatus());
       getGuardianList({ caHash: walletInfo.caHash });
       setLoading(false);
-      from === GuardianRecoveryFromPageEnum.guardiansAdd && singleMessage.success('Guardians Added');
+      from === FromPageEnum.guardiansAdd && singleMessage.success('Guardians Added');
       ModalTip({
         content: 'Requested successfully',
         onClose: () => {
           setLoading(false);
           console.log('transfer error', from, state);
-          if (from === GuardianRecoveryFromPageEnum.guardiansLoginGuardian) {
+          if (from === FromPageEnum.guardiansLoginGuardian) {
             if (state.extra === 'edit') {
               navigate('/setting/guardians/edit');
             } else {

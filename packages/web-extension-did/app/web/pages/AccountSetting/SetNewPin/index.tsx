@@ -12,7 +12,7 @@ import { setPasswordSeed } from 'store/reducers/user/slice';
 import { BaseHeaderProps } from 'types/UI';
 import { useCommonState } from 'store/Provider/hooks';
 import singleMessage from 'utils/singleMessage';
-import useLocationState from 'hooks/useLocationState';
+import { useLocationState } from 'hooks/router';
 
 export type ISetNewPinProps = ISetNewPinFormProps & BaseHeaderProps;
 

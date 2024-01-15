@@ -1,6 +1,6 @@
 import ViewContactPrompt from './Prompt';
 import ViewContactPopup from './Popup';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCommonState } from 'store/Provider/hooks';
@@ -25,11 +25,19 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { ILoginAccountListProps } from '../components/LoginAccountList';
 import { IContactProfileLoginAccount } from '@portkey-wallet/types/types-ca/contact';
+import { useLocationState } from 'hooks/router';
+
+export type ViewContactLocationState = IProfileDetailDataProps & {
+  id: string;
+  name: string;
+  portkeyId?: string;
+  channelUuid?: string;
+};
 
 export default function ViewContact() {
   const { isNotLessThan768 } = useCommonState();
   const dispatch = useAppCommonDispatch();
-  const { state } = useLocation();
+  const { state } = useLocationState<ViewContactLocationState>();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const showChat = useIsChatShow();
@@ -96,8 +104,8 @@ export default function ViewContact() {
   useEffect(() => {
     im.service
       .getProfile({
-        id: state.id || undefined,
-        portkeyId: data.imInfo?.portkeyId || undefined,
+        id: state.id || '',
+        portkeyId: data?.imInfo?.portkeyId || undefined,
         relationId: relationId || undefined,
       })
       .then((res) => {
@@ -140,7 +148,7 @@ export default function ViewContact() {
 
   const handleAdd = useLockCallback(async () => {
     try {
-      const res = await addStrangerApi(relationId);
+      const res = await addStrangerApi(relationId || '');
       setData({ ...state, ...res?.data });
 
       setTimeout(() => {

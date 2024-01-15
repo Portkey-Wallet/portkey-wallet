@@ -3,7 +3,7 @@ import { useAppDispatch, useLoginInfo, useGuardiansInfo } from 'store/Provider/h
 import { useCallback, useMemo } from 'react';
 import { setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { OperationTypeEnum, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
-import useLocationState from 'hooks/useLocationState';
+import { useLocationState } from 'hooks/router';
 import { useCurrentWallet, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { setRegisterVerifierAction } from 'store/reducers/loginCache/actions';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';

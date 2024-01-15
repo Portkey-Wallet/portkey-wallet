@@ -16,7 +16,7 @@ export interface IValidValueCheckParams {
   max: string | number;
 }
 
-export type RampRouteState = {
+export type TRampLocationState = {
   crypto: string;
   network: string;
   fiat: string;

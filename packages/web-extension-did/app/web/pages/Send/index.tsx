@@ -12,7 +12,7 @@ import CustomSvg from 'components/CustomSvg';
 import TitleWrapper from 'components/TitleWrapper';
 import { ReactElement, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useAppDispatch, useCommonState, useLoading, useWalletInfo } from 'store/Provider/hooks';
 import crossChainTransfer, { intervalCrossChainTransfer } from 'utils/sandboxUtil/crossChainTransfer';
 import sameChainTransfer from 'utils/sandboxUtil/sameChainTransfer';
@@ -46,6 +46,7 @@ import { SideChainTipContent, SideChainTipTitle } from '@portkey-wallet/constant
 import getSeed from 'utils/getSeed';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import singleMessage from 'utils/singleMessage';
+import { useLocationState } from 'hooks/router';
 
 export type ToAccount = { address: string; name?: string };
 
@@ -59,12 +60,21 @@ type TypeStageObj = {
   [key in SendStage]: { btnText: string; handler: () => void; backFun: () => void; element: ReactElement };
 };
 
+export type TSendLocationState = BaseToken & {
+  chainId: ChainId;
+  targetChainId?: ChainId;
+  toAccount?: ToAccount;
+  stage?: SendStage;
+  amount?: string;
+  balance?: string;
+};
+
 export default function Send() {
   const navigate = useNavigate();
   const { userInfo } = useWalletInfo();
   // TODO need get data from state and wait for BE data structure
   const { type, symbol } = useParams();
-  const { state } = useLocation();
+  const { state } = useLocationState<TSendLocationState>();
   const chainId: ChainId = useMemo(() => state.targetChainId || state.chainId, [state.chainId, state.targetChainId]);
   const chainInfo = useCurrentChain(chainId);
   const wallet = useCurrentWalletInfo();

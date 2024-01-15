@@ -2,17 +2,31 @@ import { useCallback, useMemo, useState } from 'react';
 import { useWalletInfo } from 'store/Provider/hooks';
 import WalletNamePopup from './Popup';
 import WalletNamePrompt from './Prompt';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useCommonState } from 'store/Provider/hooks';
 import { IProfileDetailDataProps, MyProfilePageType } from 'types/Profile';
 import { useTranslation } from 'react-i18next';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useLocationState } from 'hooks/router';
+
+export enum WalletNameFrom {
+  chatBox = 'chat-box',
+  chatBoxGroup = 'chat-box-group',
+  chatGroupInfo = 'chat-group-info',
+  chatMemberList = 'chat-member-list',
+}
+
+export type TWalletNameLocationState = {
+  from?: WalletNameFrom;
+  channelUuid?: string;
+  search?: string;
+};
 
 export default function WalletName() {
   const { isNotLessThan768 } = useCommonState();
   const navigate = useNavigate();
-  const { state: locationState } = useLocation();
+  const { state: locationState } = useLocationState<TWalletNameLocationState>();
   const showChat = useIsChatShow();
   const { userInfo } = useWalletInfo();
   const caAddressInfos = useCaAddressInfoList();
@@ -51,12 +65,13 @@ export default function WalletName() {
 
   const showView = useCallback(() => {
     if (type === MyProfilePageType.VIEW) {
-      if (locationState?.from === 'chat-group-info') return navigate(`/chat-group-info/${locationState?.channelUuid}`);
+      if (locationState?.from === WalletNameFrom.chatGroupInfo)
+        return navigate(`/chat-group-info/${locationState?.channelUuid}`);
 
-      if (locationState?.from === 'chat-member-list')
+      if (locationState?.from === WalletNameFrom.chatMemberList)
         return navigate(`/chat-group-info/${locationState?.channelUuid}/member-list`, { state: locationState });
 
-      if (['chat-box', 'chat-box-group'].includes(locationState?.from))
+      if (locationState?.from && [WalletNameFrom.chatBox, WalletNameFrom.chatBoxGroup].includes(locationState?.from))
         return navigate(`/${locationState.from}/${locationState?.channelUuid}`);
       return navigate('/setting/wallet');
     }

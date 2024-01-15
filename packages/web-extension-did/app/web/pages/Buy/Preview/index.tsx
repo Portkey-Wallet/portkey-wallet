@@ -23,7 +23,7 @@ import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { sleep } from '@portkey-wallet/utils';
 import singleMessage from 'utils/singleMessage';
 import { TTokenDetailLocationState } from 'pages/Token/Detail';
-import useLocationState from 'hooks/useLocationState';
+import { useLocationState } from 'hooks/router';
 
 export type IRampPreviewLocationState = {
   crypto: string;

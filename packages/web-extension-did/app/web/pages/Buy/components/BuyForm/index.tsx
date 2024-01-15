@@ -20,15 +20,15 @@ import { useNavigate } from 'react-router';
 import { generateRateText } from 'pages/Buy/utils';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { getBuyCrypto } from '@portkey-wallet/utils/ramp';
-import { RampRouteState } from 'pages/Buy/types';
-import useLocationState from 'hooks/useLocationState';
+import { TRampLocationState } from 'pages/Buy/types';
+import { useLocationState } from 'hooks/router';
 import singleMessage from 'utils/singleMessage';
 
 export default function BuyForm() {
   const { t } = useTranslation();
   const { setLoading } = useLoading();
   const navigate = useNavigate();
-  const { state } = useLocationState<RampRouteState>();
+  const { state } = useLocationState<TRampLocationState>();
   // get data
   const { refreshRampShow } = useRampEntryShow();
   const { symbol: defaultFiat, amount: defaultFiatAmount, country: defaultCountry } = useBuyDefaultFiatState();

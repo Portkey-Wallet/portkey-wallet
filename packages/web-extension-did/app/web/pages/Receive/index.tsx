@@ -22,7 +22,7 @@ import {
   MainChainTipContent,
 } from '@portkey-wallet/constants/constants-ca/send';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import useLocationState from 'hooks/useLocationState';
+import { useLocationState } from 'hooks/router';
 
 export type TReceiveLocationState = {
   chainId: ChainId;

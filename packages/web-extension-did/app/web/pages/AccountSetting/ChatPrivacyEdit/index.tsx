@@ -11,7 +11,7 @@ import { useContactPrivacyList } from '@portkey-wallet/hooks/hooks-ca/security';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import singleMessage from 'utils/singleMessage';
 import { CONTACT_PERMISSION_LABEL_MAP } from '@portkey-wallet/constants/constants-ca/contact';
-import useLocationState from 'hooks/useLocationState';
+import { useLocationState } from 'hooks/router';
 
 export interface IChatPrivacyEditProps extends BaseHeaderProps {
   state: IContactPrivacy;

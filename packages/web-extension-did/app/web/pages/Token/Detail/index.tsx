@@ -20,7 +20,7 @@ import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import './index.less';
 import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { ChainId } from '@portkey-wallet/types';
-import useLocationState from 'hooks/useLocationState';
+import { useLocationState } from 'hooks/router';
 
 export enum TokenTransferStatus {
   CONFIRMED = 'Confirmed',

@@ -3,6 +3,7 @@ import { useAppDispatch, useLoginInfo, useGuardiansInfo } from 'store/Provider/h
 import { useCallback, useMemo } from 'react';
 import { setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { OperationTypeEnum, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { useLocationState } from 'hooks/router';
 import { useCurrentWallet, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { setRegisterVerifierAction } from 'store/reducers/loginCache/actions';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
@@ -16,7 +17,6 @@ import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import VerifierPage from 'pages/components/VerifierPage';
 import { ChainId } from '@portkey-wallet/types';
 import singleMessage from 'utils/singleMessage';
-import { useLocationState } from 'hooks/router';
 import { TVerifierAccountLocationState, FromPageEnum } from 'types/router';
 
 const AllowedGuardianPageArr = [

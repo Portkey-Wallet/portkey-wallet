@@ -14,7 +14,6 @@ import { DEVICE_INFO_VERSION } from '@portkey-wallet/constants/constants-ca/devi
 import { ScanBase } from '@portkey/did-ui-react';
 import { setCAInfoType, setOriginChainId } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useCheckManager } from 'hooks/useLogout';
-import { message } from 'antd';
 import './index.less';
 // import didSignalr from '@portkey-wallet/socket/socket-did';
 // import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -22,6 +21,7 @@ import { handleErrorMessage, randomId } from '@portkey-wallet/utils';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
 import CustomSvg from 'components/CustomSvg';
+import singleMessage from 'utils/singleMessage';
 
 export default function ScanCard() {
   const navigate = useNavigate();
@@ -98,7 +98,7 @@ export default function ScanCard() {
               dispatch(setCAInfoType({ caInfo, pin }));
               navigate('/success-page/login');
             } catch (error: any) {
-              message.error(handleErrorMessage(error));
+              singleMessage.error(handleErrorMessage(error));
             }
           } else {
             dispatch(setOriginChainId(originChainId));

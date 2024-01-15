@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router';
 import { closeTabPrompt } from 'utils/lib/serviceWorkerAction';
 import errorHandler from 'utils/errorHandler';
 import usePromptSearch from 'hooks/usePromptSearch';
-import { message } from 'antd';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
@@ -17,6 +16,7 @@ import { SecurityAccelerateErrorTip } from 'constants/security';
 import SecurityAccelerate from './SecurityAccelerate';
 import { sleep } from '@portkey-wallet/utils';
 import getSeed from 'utils/getSeed';
+import singleMessage from 'utils/singleMessage';
 import './index.less';
 
 export default function WalletSecurityApprove() {
@@ -40,10 +40,10 @@ export default function WalletSecurityApprove() {
         const { privateKey } = await getSeed();
 
         if (!accelerateChainInfo?.endPoint || !originChainInfo?.endPoint || !privateKey)
-          return message.error(SecurityAccelerateErrorTip);
+          return singleMessage.error(SecurityAccelerateErrorTip);
 
         const result = await getAelfTxResult(originChainInfo?.endPoint, accelerateTxId);
-        if (result.Status !== 'MINED') return message.error(SecurityAccelerateErrorTip);
+        if (result.Status !== 'MINED') return singleMessage.error(SecurityAccelerateErrorTip);
         const params = JSON.parse(result.Transaction.Params);
 
         await handleGuardianByContract({
@@ -61,12 +61,12 @@ export default function WalletSecurityApprove() {
           },
         });
         setLoading(false);
-        message.success('Guardian added');
+        singleMessage.success('Guardian added');
         await sleep(1000);
         closeTabPrompt(errorHandler(0, 'Guardian added'));
       } catch (error: any) {
         console.log('===add guardian accelerate error', error);
-        message.error(SecurityAccelerateErrorTip);
+        singleMessage.error(SecurityAccelerateErrorTip);
       }
     },
     [
@@ -85,17 +85,17 @@ export default function WalletSecurityApprove() {
       if (accelerateGuardianTxId) {
         await handleSyncGuardian(accelerateGuardianTxId);
       } else {
-        if (!walletInfo?.caHash) message.error(SecurityAccelerateErrorTip);
+        if (!walletInfo?.caHash) singleMessage.error(SecurityAccelerateErrorTip);
         const res = await getAccelerateGuardianTxId(walletInfo?.caHash as string, accelerateChainId, originChainId);
         if (res.isSafe) {
           setLoading(false);
-          message.success('Guardian added');
+          singleMessage.success('Guardian added');
           await sleep(1000);
           closeTabPrompt(errorHandler(0, 'Guardian added'));
         } else if (res.accelerateGuardian?.transactionId) {
           await handleSyncGuardian(res.accelerateGuardian.transactionId);
         } else {
-          message.error(SecurityAccelerateErrorTip);
+          singleMessage.error(SecurityAccelerateErrorTip);
         }
       }
     } catch (error: any) {

@@ -7,9 +7,9 @@ import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecuri
 import { useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import { message } from 'antd';
 import { useTransferLimitList } from '@portkey-wallet/hooks/hooks-ca/security';
 import { useEffectOnce } from 'react-use';
+import singleMessage from 'utils/singleMessage';
 
 export interface IPaymentSecurityProps extends BaseHeaderProps {
   list: ITransferLimitItem[];
@@ -38,7 +38,7 @@ export default function PaymentSecurity() {
       loadingFlag.current = false;
     } catch (error) {
       const msg = handleErrorMessage(error, 'get security error');
-      message.error(msg);
+      singleMessage.error(msg);
 
       loadingFlag.current = false;
     }
@@ -68,7 +68,7 @@ export default function PaymentSecurity() {
       }
     } catch (error) {
       const msg = handleErrorMessage(error, 'get security error');
-      message.error(msg);
+      singleMessage.error(msg);
       loadingFlag.current = false;
     }
   }, [isNext, next, pagination?.total, securityList]);

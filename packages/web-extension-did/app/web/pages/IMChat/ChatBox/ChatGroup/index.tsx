@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
-import { message } from 'antd';
 import {
   MessageList,
   InputBar,
@@ -30,6 +29,7 @@ import { Message, MessageTypeEnum, ParsedImage } from '@portkey-wallet/im';
 import ChatBoxPinnedMsg from 'pages/IMChat/components/ChatBoxPinnedMsg';
 import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
 import { useWalletInfo } from 'store/Provider/hooks';
+import singleMessage from 'utils/singleMessage';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
@@ -143,7 +143,7 @@ export default function ChatBox() {
           await exit();
           navigate('/chat-list');
         } catch (e) {
-          message.error('Failed to delete chat');
+          singleMessage.error('Failed to delete chat');
           console.log('===handle delete chat error', e);
         }
       },
@@ -162,7 +162,7 @@ export default function ChatBox() {
           await leaveGroup(`${channelUuid}`);
           navigate('/chat-list');
         } catch (e) {
-          message.error('Failed to leave the group');
+          singleMessage.error('Failed to leave the group');
           console.log('===Failed to leave the group error', e);
         }
       },
@@ -217,7 +217,7 @@ export default function ChatBox() {
           },
         });
       } else {
-        message.error('Failed to send message');
+        singleMessage.error('Failed to send message');
         console.log('===Failed to send message', e);
       }
     },

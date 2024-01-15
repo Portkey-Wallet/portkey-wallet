@@ -9,7 +9,7 @@ import { useCallback, useState } from 'react';
 import CustomModal from 'pages/components/CustomModal';
 import { useContactPrivacyList } from '@portkey-wallet/hooks/hooks-ca/security';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
-import { message } from 'antd';
+import singleMessage from 'utils/singleMessage';
 import { CONTACT_PERMISSION_LABEL_MAP } from '@portkey-wallet/constants/constants-ca/contact';
 
 export interface IChatPrivacyEditProps extends BaseHeaderProps {
@@ -54,7 +54,7 @@ export default function ChatPrivacyEdit() {
           } catch (error) {
             setLoading(false);
             const msg = handleErrorMessage(error);
-            message.error(msg);
+            singleMessage.error(msg);
           }
         },
         okText: 'Confirm',

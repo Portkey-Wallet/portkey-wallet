@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Radio, RadioChangeEvent, message } from 'antd';
+import { Radio, RadioChangeEvent } from 'antd';
 import BackHeader from 'components/BackHeader';
 import CustomSvg from 'components/CustomSvg';
 import { useLocation, useNavigate } from 'react-router';
@@ -20,6 +20,7 @@ import { BUY_SOON_TEXT, SELL_SOON_TEXT } from '@portkey-wallet/constants/constan
 import { useCheckSecurity } from 'hooks/useSecurity';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import singleMessage from 'utils/singleMessage';
 
 export default function Buy() {
   const { t } = useTranslation();
@@ -70,7 +71,7 @@ export default function Buy() {
           if (!securityRes) return;
         } catch (error) {
           setLoading(false);
-          message.error(handleErrorMessage(error));
+          singleMessage.error(handleErrorMessage(error));
         }
       }
 

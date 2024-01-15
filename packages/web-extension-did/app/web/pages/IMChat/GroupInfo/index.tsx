@@ -4,7 +4,7 @@ import {
   useRelationId,
   useSendChannelMessage,
 } from '@portkey-wallet/hooks/hooks-ca/im';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
 import { useNavigate, useParams } from 'react-router';
@@ -18,6 +18,7 @@ import ContactListDrawer from '../components/GroupShareDrawer';
 import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
 import { useLoading } from 'store/Provider/hooks';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
+import singleMessage from 'utils/singleMessage';
 import './index.less';
 
 const GroupInfo = () => {
@@ -45,7 +46,7 @@ const GroupInfo = () => {
           await leaveGroup(`${channelUuid}`);
           navigate('/chat-list');
         } catch (e) {
-          message.error('Failed to leave the group');
+          singleMessage.error('Failed to leave the group');
           console.log('===Failed to leave the group error', e);
         }
       },
@@ -83,7 +84,7 @@ const GroupInfo = () => {
       await refresh();
     } catch (error) {
       console.log('===Failed to refresh error', error);
-      message.error('Failed to fetch data');
+      singleMessage.error('Failed to fetch data');
     }
   }, [refresh]);
   useEffect(() => {

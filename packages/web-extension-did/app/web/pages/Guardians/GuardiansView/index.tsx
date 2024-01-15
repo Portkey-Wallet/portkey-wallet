@@ -1,4 +1,4 @@
-import { Button, message, Switch } from 'antd';
+import { Button, Switch } from 'antd';
 import { useNavigate } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
 import { useAppDispatch, useGuardiansInfo, useLoading, useLoginInfo } from 'store/Provider/hooks';
@@ -29,6 +29,7 @@ import { guardianIconMap } from '../utils';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
+import singleMessage from 'utils/singleMessage';
 import './index.less';
 
 export default function GuardiansView() {
@@ -89,7 +90,7 @@ export default function GuardiansView() {
     } catch (error) {
       setLoading(false);
       const _error = handleErrorMessage(error);
-      message.error(_error);
+      singleMessage.error(_error);
       console.log('===handleSocialVerify error', error);
     }
   }, [setLoading, socialVerify, opGuardian, operationType, originChainId, loginAccount, dispatch, navigate]);
@@ -122,13 +123,13 @@ export default function GuardiansView() {
         navigate('/setting/guardians/verifier-account', { state: 'guardians/loginGuardian' });
       } else {
         const _error = handleErrorMessage(result, 'send code error');
-        message.error(_error);
+        singleMessage.error(_error);
         console.log('===handleCommonVerify error', result);
       }
     } catch (error) {
       setLoading(false);
       const _error = handleErrorMessage(error);
-      message.error(_error);
+      singleMessage.error(_error);
       console.log('===handleCommonVerify error', error);
     }
   }, [dispatch, navigate, opGuardian, operationType, originChainId, setLoading]);
@@ -199,7 +200,7 @@ export default function GuardiansView() {
           } else {
             const _err = handleErrorMessage(error, 'GetHolderInfo error');
             console.log('===set/unset login guardian getHolderInfo error', error);
-            message.error(_err);
+            singleMessage.error(_err);
           }
         } finally {
           setBtnLoading(false);

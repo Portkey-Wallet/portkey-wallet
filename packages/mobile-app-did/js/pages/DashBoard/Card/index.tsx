@@ -59,7 +59,8 @@ const Card: React.FC = () => {
       <Text style={styles.usdtBalance}>{isMainnet ? `$${accountBalanceUSD}` : 'Dev Mode'}</Text>
       <TextM style={styles.accountName}>{userInfo?.nickName}</TextM>
       <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.buttonGroupWrap, buttonGroupWrapStyle]}>
-        {isDepositShow && <DepositButton wrapStyle={buttonWrapStyle} list={depositList as DepositItem[]} />}
+        {/* {isBuyButtonShow && <BuyButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />} */}
+        {/* {isBridgeShow && <BridgeButton wrapStyle={buttonWrapStyle} />} */}
         <SendButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
         <ReceiveButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
         {!isMainnet && <FaucetButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}

@@ -7,7 +7,7 @@ import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { getAddressChainId, handleErrorMessage, isDIDAddress } from '@portkey-wallet/utils';
 import { getAelfAddress, getEntireDIDAelfAddress, isCrossChain, isEqAddress } from '@portkey-wallet/utils/aelf';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
-import { Button, message, Modal } from 'antd';
+import { Button, Modal } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import TitleWrapper from 'components/TitleWrapper';
 import { ReactElement, useCallback, useMemo, useRef, useState } from 'react';
@@ -45,6 +45,7 @@ import CustomModal from 'pages/components/CustomModal';
 import { SideChainTipContent, SideChainTipTitle } from '@portkey-wallet/constants/constants-ca/send';
 import getSeed from 'utils/getSeed';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
+import singleMessage from 'utils/singleMessage';
 
 export type ToAccount = { address: string; name?: string };
 
@@ -206,11 +207,11 @@ export default function Send() {
 
   const sendTransfer = useCallback(async () => {
     try {
+      setLoading(true);
+
       const { privateKey } = await getSeed();
       if (!chainInfo || !privateKey) return;
       if (!tokenInfo) throw 'No Symbol info';
-
-      setLoading(true);
 
       if (isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF')) {
         await crossChainTransfer({
@@ -226,7 +227,6 @@ export default function Send() {
           guardiansApproved: oneTimeApprovalList.current,
         });
       } else {
-        console.log('sameChainTransfers==sendHandler');
         await sameChainTransfer({
           chainInfo,
           chainType: currentNetwork.walletType,
@@ -238,13 +238,13 @@ export default function Send() {
           guardiansApproved: oneTimeApprovalList.current,
         });
       }
-      message.success('success');
+      singleMessage.success('success');
       navigate('/');
     } catch (error: any) {
       setLoading(false);
-      if (!error?.type) return message.error(error);
+      if (!error?.type) return singleMessage.error(error);
       if (error.type === 'managerTransfer') {
-        return message.error(error);
+        return singleMessage.error(error);
       } else if (error.type === 'crossChainTransfer') {
         dispatch(addFailedActivity(error.data));
         console.log('addFailedActivity', error);
@@ -252,7 +252,7 @@ export default function Send() {
         showErrorModal(error.data);
         return;
       } else {
-        message.error(handleErrorMessage(error));
+        singleMessage.error(handleErrorMessage(error));
       }
     } finally {
       setLoading(false);
@@ -307,7 +307,7 @@ export default function Send() {
     try {
       setLoading(true);
       if (!ZERO.plus(amount).toNumber()) return 'Please input amount';
-      if (!currentChain) return;
+      if (!currentChain) return 'currentChain is not exist';
       const result = await getBalance({
         rpcUrl: currentChain.endPoint,
         address: tokenInfo.address,
@@ -445,7 +445,7 @@ export default function Send() {
           setLoading(false);
 
           const msg = handleErrorMessage(error);
-          message.error(msg);
+          singleMessage.error(msg);
           return;
         }
       }

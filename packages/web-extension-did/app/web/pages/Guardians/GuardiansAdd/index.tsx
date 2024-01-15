@@ -4,7 +4,7 @@ import {
   setOpGuardianAction,
   setUserGuardianItemStatus,
 } from '@portkey-wallet/store/store-ca/guardians/actions';
-import { Input, Button, message } from 'antd';
+import { Input, Button } from 'antd';
 import { useNavigate, useLocation } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -41,6 +41,7 @@ import clsx from 'clsx';
 import { getVerifierStatusMap, guardianAccountIsExist } from '../utils';
 import OptionTip from '../components/SelectOptionTip';
 import { guardianExistTip, verifierExistTip } from '@portkey-wallet/constants/constants-ca/guardian';
+import singleMessage from 'utils/singleMessage';
 import './index.less';
 
 export default function AddGuardian() {
@@ -264,13 +265,13 @@ export default function AddGuardian() {
             isPrivate: true,
           });
         } else {
-          message.error(`type:${v} is not support`);
+          singleMessage.error(`type:${v} is not support`);
         }
         if (result.error) throw result.message ?? result.Error;
       } catch (error) {
         setLoading(false);
         const msg = handleErrorMessage(error);
-        message.error(msg);
+        singleMessage.error(msg);
       }
       setLoading(false);
     },
@@ -396,7 +397,7 @@ export default function AddGuardian() {
         setLoading(false);
         console.log('---add-guardian-send-code', error);
         const _error = handleErrorMessage(error);
-        message.error(_error);
+        singleMessage.error(_error);
       }
     },
     [
@@ -478,7 +479,7 @@ export default function AddGuardian() {
       });
     } catch (error) {
       const msg = handleErrorMessage(error);
-      message.error(msg);
+      singleMessage.error(msg);
     } finally {
       setLoading(false);
     }
@@ -505,7 +506,7 @@ export default function AddGuardian() {
     } else if (guardianType === LoginType.Phone) {
       handleCommonVerify(`+${phoneValue?.code}${phoneValue?.phoneNumber}`);
     } else {
-      message.info('router error');
+      singleMessage.info('router error');
     }
   }, [emailVal, guardianType, handleCommonVerify, phoneValue]);
 
@@ -542,7 +543,7 @@ export default function AddGuardian() {
       }
     }
     // 2、check verifier
-    if (!selectVerifierItem) return message.error('Can not get the current verifier message');
+    if (!selectVerifierItem) return singleMessage.error('Can not get the current verifier message');
 
     // 3、check account is exist
     if (checkAccountIsExist()) {

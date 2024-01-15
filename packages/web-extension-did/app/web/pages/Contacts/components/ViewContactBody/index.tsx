@@ -20,7 +20,6 @@ export default function ViewContactBody({
   handleEdit,
   handleChat,
   handleAdd,
-  handleCopy,
 }: IProfileDetailBodyProps) {
   const isMyContactFn = useIsMyContact();
   const showChat = useIsChatShow();
@@ -93,7 +92,6 @@ export default function ViewContactBody({
           portkeyId={data?.caHolderInfo?.userId}
           relationId={relationId}
           addresses={data?.addresses || []}
-          handleCopy={handleCopy}
           addressSectionLabel="Address"
         />
 

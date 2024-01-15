@@ -1,4 +1,4 @@
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
@@ -31,6 +31,7 @@ import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
 import clsx from 'clsx';
 import OptionTip from '../components/SelectOptionTip';
 import { verifierExistTip } from '@portkey-wallet/constants/constants-ca/guardian';
+import singleMessage from 'utils/singleMessage';
 import './index.less';
 
 export default function GuardiansEdit() {
@@ -146,7 +147,7 @@ export default function GuardiansEdit() {
     } catch (error: any) {
       setLoading(false);
       console.log('---edit-guardian-error', error);
-      message.error(handleErrorMessage(error));
+      singleMessage.error(handleErrorMessage(error));
     }
   }, [
     checkVerifierIsExist,
@@ -197,7 +198,7 @@ export default function GuardiansEdit() {
     } catch (error) {
       setLoading(false);
       const _error = handleErrorMessage(error);
-      message.error(_error);
+      singleMessage.error(_error);
       console.log('===handleSocialVerify error', error);
     }
   }, [setLoading, socialVerify, preGuardian, originChainId, loginAccount, dispatch, navigate]);
@@ -230,13 +231,13 @@ export default function GuardiansEdit() {
         navigate('/setting/guardians/verifier-account', { state: 'guardians/loginGuardian_edit' });
       } else {
         const _error = handleErrorMessage(result, 'send code error');
-        message.error(_error);
+        singleMessage.error(_error);
         console.log('===handleCommonVerify error', result);
       }
     } catch (error) {
       setLoading(false);
       const _error = handleErrorMessage(error);
-      message.error(_error);
+      singleMessage.error(_error);
       console.log('===handleCommonVerify error', error);
     }
   }, [dispatch, navigate, opGuardian?.guardianType, originChainId, preGuardian, setLoading]);

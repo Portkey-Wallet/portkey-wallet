@@ -1,5 +1,5 @@
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import usePromptSearch from 'hooks/usePromptSearch';
 import { useCallback, useMemo } from 'react';
@@ -11,6 +11,7 @@ import { getWallet } from '@portkey-wallet/utils/aelf';
 import ImageDisplay from 'pages/components/ImageDisplay';
 import { showValueToStr } from '@portkey-wallet/utils/byteConversion';
 import getSeed from 'utils/getSeed';
+import singleMessage from 'utils/singleMessage';
 import './index.less';
 
 export default function GetSignature() {
@@ -57,7 +58,7 @@ export default function GetSignature() {
       });
     } catch (error) {
       console.error(error, 'error===detail');
-      message.error(handleErrorMessage(error));
+      singleMessage.error(handleErrorMessage(error));
     }
   }, [payload]);
 

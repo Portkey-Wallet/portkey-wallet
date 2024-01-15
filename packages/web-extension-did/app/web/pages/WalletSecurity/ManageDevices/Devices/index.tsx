@@ -7,13 +7,13 @@ import { useLoading } from 'store/Provider/hooks';
 import DevicesPopup from './Popup';
 import DevicesPrompt from './Prompt';
 import { useCommonState } from 'store/Provider/hooks';
-import { message } from 'antd';
+import singleMessage from 'utils/singleMessage';
 
 export default function Devices() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const onError = useCallback(() => {
-    message.error(`Loading failed. Please retry.`);
+    singleMessage.error(`Loading failed. Please retry.`);
   }, []);
   const { deviceList, refresh, loading } = useDeviceList({
     isInit: false,

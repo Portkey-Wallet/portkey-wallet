@@ -1,4 +1,3 @@
-import { message } from 'antd';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
 import { LoginInfo } from 'store/reducers/loginCache/type';
@@ -15,6 +14,7 @@ import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { CodeVerifyUI, PortkeyStyleProvider } from '@portkey/did-ui-react';
 import { AccountType } from '@portkey/services';
 import { ChainId } from '@portkey-wallet/types';
+import singleMessage from 'utils/singleMessage';
 
 const MAX_TIMER = 60;
 
@@ -65,7 +65,7 @@ export default function VerifierPage({
       try {
         console.log(code);
         if (code && code.length === 6) {
-          if (!guardianType && guardianType !== 0) return message.error('Missing guardiansType');
+          if (!guardianType && guardianType !== 0) return singleMessage.error('Missing guardiansType');
           if (!currentGuardian?.verifierInfo) throw 'Missing verifierInfo!!!';
           setLoading(true);
 
@@ -86,9 +86,9 @@ export default function VerifierPage({
           if (res.signature) return onSuccess?.({ ...res, verifierId: currentGuardian.verifier?.id || '' });
 
           if (res?.error?.message) {
-            message.error(t(res.error.message));
+            singleMessage.error(t(res.error.message));
           } else {
-            message.error(t(VerificationError.InvalidCode));
+            singleMessage.error(t(VerificationError.InvalidCode));
           }
           setPinVal('');
         }
@@ -97,7 +97,7 @@ export default function VerifierPage({
         setLoading(false);
         setPinVal('');
         const _error = verifyErrorHandler(error);
-        message.error(_error);
+        singleMessage.error(_error);
       }
     },
     [guardianType, originChainId, currentGuardian, setLoading, targetChainId, onSuccess, t, operationType],
@@ -136,7 +136,7 @@ export default function VerifierPage({
       console.log(error, 'error===');
       setLoading(false);
       const _error = verifyErrorHandler(error);
-      message.error(_error);
+      singleMessage.error(_error);
     }
   }, [currentGuardian, guardianType, originChainId, dispatch, setLoading, operationType, targetChainId]);
 

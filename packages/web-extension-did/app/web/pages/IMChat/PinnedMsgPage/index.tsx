@@ -1,5 +1,4 @@
 import { useDeleteMessage, useGroupChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
-import { message } from 'antd';
 import SettingHeader from 'pages/components/SettingHeader';
 import { useNavigate, useParams } from 'react-router';
 import { MessageList, MessageContentType, StyleProvider, MessageShowPageEnum } from '@portkey-wallet/im-ui-web';
@@ -11,6 +10,7 @@ import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
 import { Message } from '@portkey-wallet/im';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import './index.less';
+import singleMessage from 'utils/singleMessage';
 
 const PinnedMsg = () => {
   const { channelUuid } = useParams();
@@ -57,7 +57,7 @@ const PinnedMsg = () => {
         try {
           unPinAllMsg();
         } catch (e) {
-          message.error('Failed to unpin all message');
+          singleMessage.error('Failed to unpin all message');
           console.log('===Failed to unpin all message error', e);
         }
       },
@@ -67,7 +67,7 @@ const PinnedMsg = () => {
     async (item: MessageContentType) => {
       const _msg = pinList.find((temp) => temp.id === item.id);
       if (!_msg) {
-        message.error('cannot find message');
+        singleMessage.error('cannot find message');
         return;
       }
       CustomModalConfirm({
@@ -82,7 +82,7 @@ const PinnedMsg = () => {
           try {
             unPinMsg(_msg);
           } catch (e) {
-            message.error('Failed to unpin all message');
+            singleMessage.error('Failed to unpin all message');
             console.log('===Failed to unpin all message error', e);
           }
         },
@@ -97,7 +97,7 @@ const PinnedMsg = () => {
         await deleteMsg(msg as Message);
         refreshPinList();
       } catch (e) {
-        message.error('Failed to delete message');
+        singleMessage.error('Failed to delete message');
         console.log('===handle delete message error', e);
       }
     },

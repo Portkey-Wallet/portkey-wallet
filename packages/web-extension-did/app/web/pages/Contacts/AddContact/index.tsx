@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useEffect, useState } from 'react';
-import { Form, message } from 'antd';
+import { Form } from 'antd';
 import { useNavigate, useLocation, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ContactItemType, AddressItem } from '@portkey-wallet/types/types-ca/contact';
@@ -20,6 +20,7 @@ import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { ExtraType, ExtraTypeEnum } from 'types/Profile';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import singleMessage from 'utils/singleMessage';
 
 export enum ContactInfoError {
   invalidAddress = 'Invalid address',
@@ -224,9 +225,9 @@ export default function AddContact() {
         // CANT CHAT
         handleView(contactDetail);
         if (extra === ExtraTypeEnum.CANT_CHAT) {
-          message.success('Edit Contact Successful');
+          singleMessage.success('Edit Contact Successful');
         } else {
-          message.success('Add Contact Successful');
+          singleMessage.success('Add Contact Successful');
         }
       }
     },
@@ -255,7 +256,7 @@ export default function AddContact() {
       } catch (e: any) {
         console.log('onFinish==contact error', e);
         const msg = handleErrorMessage(e, 'handle contact error');
-        message.error(msg);
+        singleMessage.error(msg);
       } finally {
         setLoading(false);
       }

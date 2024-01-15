@@ -14,7 +14,7 @@ const useVerifierList = () => {
   const currentNetwork = useCurrentNetworkInfo();
   useEffect(() => {
     console.log(currentChain, 'currentChain===');
-    // message.error('Could not find chain information')
+    // singleMessage.error('Could not find chain information')
     if (!currentChain) return;
     getVerifierList({
       rpcUrl: currentChain.endPoint,

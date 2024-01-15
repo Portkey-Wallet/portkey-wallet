@@ -22,23 +22,13 @@ import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { sleep } from '@portkey-wallet/utils';
 import singleMessage from 'utils/singleMessage';
-import { TTokenDetailLocationState } from 'pages/Token/Detail';
 import { useLocationState } from 'hooks/router';
-
-export type IRampPreviewLocationState = {
-  crypto: string;
-  network: string;
-  fiat: string;
-  country: string;
-  amount: string;
-  side: RampType;
-  tokenInfo?: TTokenDetailLocationState;
-};
+import { TRampPreviewLocationState } from 'types/router';
 
 export default function Preview() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { state } = useLocationState<IRampPreviewLocationState>();
+  const { state } = useLocationState<TRampPreviewLocationState>();
   const { isPrompt } = useCommonState();
   const updateRef = useRef(MAX_UPDATE_TIME);
   const [receive, setReceive] = useState('1');

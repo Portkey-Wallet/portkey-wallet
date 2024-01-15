@@ -1,8 +1,13 @@
 import { RampType } from '@portkey-wallet/ramp';
 import { ChainId } from '@portkey-wallet/types';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
+import { IImInfo } from '@portkey-wallet/types/types-ca/contact';
 import { ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { BaseToken, TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { CaHolderInfo } from '@portkey-wallet/types/types-ca/wallet';
+import { CustomAddressItem } from 'pages/Contacts/AddContact';
+import { IProfileDetailDataProps } from './Profile';
+import { ToAccount, SendStage } from 'pages/Send';
 
 export enum FromPageEnum {
   register = 'register',
@@ -13,6 +18,12 @@ export enum FromPageEnum {
   guardiansLoginGuardian = 'guardiansLoginGuardian',
   removeManage = 'removeManage',
   setTransferLimit = 'setTransferLimit',
+  chatSearch = 'chat-search',
+  chatList = 'chat-list',
+  chatBox = 'chat-box',
+  chatBoxGroup = 'chat-box-group',
+  chatGroupInfo = 'chat-group-info',
+  chatMemberList = 'chat-member-list',
 }
 
 // Guardians
@@ -159,4 +170,97 @@ export type TNFTLocationState = {
   imageUrl?: string;
   balance: string;
   alias?: string;
+};
+
+// SetPin
+export type TSetNewPinLocationState = {
+  pin: string;
+};
+
+export type TRampPreviewLocationState = {
+  crypto: string;
+  network: string;
+  fiat: string;
+  country: string;
+  amount: string;
+  side: RampType;
+  tokenInfo?: TTokenDetailLocationState;
+};
+
+export type TAddContactLocationState = {
+  id?: string;
+  addresses?: CustomAddressItem[];
+  name?: string;
+  imInfo?: Partial<IImInfo>;
+};
+
+export type TEditContactLocationState = {
+  id: string;
+  name?: string;
+  caHolderInfo?: Partial<CaHolderInfo>;
+  isShowRemark?: boolean;
+  imInfo?: Partial<IImInfo>;
+};
+
+export type TFindMoreFromPage = FromPageEnum.chatSearch | FromPageEnum.chatList;
+
+export type TFindMoreLocationState = {
+  search?: string;
+  from?: TFindMoreFromPage;
+};
+
+export type TViewContactLocationState = IProfileDetailDataProps & {
+  id: string;
+  name: string;
+  portkeyId?: string;
+  channelUuid?: string;
+};
+
+export type TReceiveLocationState = {
+  chainId: ChainId;
+  symbol: string;
+  balance: string;
+  imageUrl: string;
+  address: string;
+  balanceInUsd: string;
+  decimals: string | number;
+};
+
+export type TSendLocationState = BaseToken & {
+  chainId: ChainId;
+  targetChainId?: ChainId;
+  toAccount?: ToAccount;
+  stage?: SendStage;
+  amount?: string;
+  balance?: string;
+};
+
+export type TRecentDetailLocationState = {
+  chainId: ChainId;
+  targetChainId: ChainId;
+  targetAddress?: string;
+  index?: string;
+  name?: string;
+  avatar?: string;
+};
+
+export type TTokenDetailLocationState = {
+  symbol: string;
+  chainId: ChainId;
+  balance: string;
+  decimals: number;
+  tokenContractAddress: string;
+  balanceInUsd?: string;
+};
+
+export type TWalletNameFromPage =
+  | FromPageEnum.chatBox
+  | FromPageEnum.chatBoxGroup
+  | FromPageEnum.chatGroupInfo
+  | FromPageEnum.chatMemberList;
+
+export type TWalletNameLocationState = {
+  from?: TWalletNameFromPage;
+  channelUuid?: string;
+  search?: string;
 };

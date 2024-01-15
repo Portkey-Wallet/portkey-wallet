@@ -13,12 +13,9 @@ import { BaseHeaderProps } from 'types/UI';
 import { useCommonState } from 'store/Provider/hooks';
 import singleMessage from 'utils/singleMessage';
 import { useLocationState } from 'hooks/router';
+import { TSetNewPinLocationState } from 'types/router';
 
 export type ISetNewPinProps = ISetNewPinFormProps & BaseHeaderProps;
-
-export type TSetNewPinLocationState = {
-  pin: string;
-};
 
 export default function SetNewPin() {
   const { isNotLessThan768 } = useCommonState();

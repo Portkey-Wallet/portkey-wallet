@@ -15,7 +15,7 @@ import CustomSvg from 'components/CustomSvg';
 import { useNavigateState } from 'hooks/router';
 import Avatar from 'pages/components/Avatar';
 import { useCallback, useMemo } from 'react';
-import { TRecentDetailLocationState } from '../RecentDetail';
+import { TRecentDetailLocationState } from 'types/router';
 
 export interface IContactCardProps {
   chainId: ChainId;

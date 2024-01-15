@@ -15,6 +15,7 @@ import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { getAddressInfo } from '@portkey-wallet/utils/aelf';
 import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useLocationState } from 'hooks/router';
+import { FromPageEnum, TFindMoreLocationState } from 'types/router';
 
 export interface IContactItemRes extends Partial<ContactItemType> {
   isAdded?: boolean;
@@ -31,16 +32,6 @@ export interface IFindMoreProps extends BaseHeaderProps {
   clickChat: (e: any, item: IContactItemRes) => void;
   clickQRCode: () => void;
 }
-
-enum PageKey {
-  chatSearch = 'chat-search',
-  chatList = 'chat-list',
-}
-
-export type TFindMoreLocationState = {
-  search?: string;
-  from?: PageKey;
-};
 
 export default function FindMore() {
   const navigate = useNavigate();
@@ -97,8 +88,8 @@ export default function FindMore() {
   }, []);
 
   const goBack = () => {
-    if (state?.from === PageKey.chatSearch) return navigate('/chat-list-search', { state });
-    if (state?.from === PageKey.chatList) return navigate('/chat-list', { state });
+    if (state?.from === FromPageEnum.chatSearch) return navigate('/chat-list-search', { state });
+    if (state?.from === FromPageEnum.chatList) return navigate('/chat-list', { state });
     return navigate('/setting/contacts');
   };
 

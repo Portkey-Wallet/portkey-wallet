@@ -174,7 +174,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
           if (from === FromPageEnum.setTransferLimit) {
             return navigate('/setting/wallet-security/payment-security/verifier-account', { state: locationParams });
           }
-          return navigate('/login/verifier-account', { state: { from: FromPageEnum.login as FromPageEnum } });
+          return navigate('/login/verifier-account', { state: { from: FromPageEnum.login } });
         }
       } catch (error: any) {
         console.log(error, 'error===');

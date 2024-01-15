@@ -25,18 +25,10 @@ import { useGoAddNewContact } from 'hooks/useProfile';
 import { ExtraTypeEnum } from 'types/Profile';
 import Avatar from 'pages/components/Avatar';
 import { useLocationState } from 'hooks/router';
+import { TRecentDetailLocationState } from 'types/router';
 
 const MAX_RESULT_COUNT = 10;
 const SKIP_COUNT = 0;
-
-export type TRecentDetailLocationState = {
-  chainId: ChainId;
-  targetChainId: ChainId;
-  targetAddress?: string;
-  index?: string;
-  name?: string;
-  avatar?: string;
-};
 
 export default function RecentDetail() {
   const { state } = useLocationState<TRecentDetailLocationState>();

@@ -629,6 +629,7 @@ export function useOnRequestOrSetPin() {
           showLoading,
         });
       } else {
+        Loading.hide();
         navigationService.navigate('SetPin', {
           managerInfo,
           guardiansApproved,

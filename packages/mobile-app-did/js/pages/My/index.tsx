@@ -10,6 +10,8 @@ import { RootStackName } from 'navigation';
 import { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
+import UpgradeItem from './components/UpgradeItem';
+import { useServiceSuspension } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 interface MenuItemType {
   name: RootStackName;
@@ -48,6 +50,7 @@ const MenuList: Array<MenuItemType> = [
 export default function MyMenu() {
   const { t } = useLanguage();
   const isImputation = useIsImputation();
+  const { isSuspended } = useServiceSuspension() || {};
 
   return (
     <PageContainer
@@ -55,19 +58,22 @@ export default function MyMenu() {
       titleDom={t('My')}
       safeAreaColor={['blue', 'white']}
       containerStyles={styles.container}>
-      {MenuList.map(ele => {
-        return (
-          <MenuItem
-            showWarningCycle={ele.name === 'ContactsHome' && isImputation}
-            style={styles.menuItemWrap}
-            icon={ele?.icon || 'setting'}
-            title={t(ele.label)}
-            key={ele.name}
-            iconStyle={styles.MenuItemIconStyle}
-            onPress={() => navigationService.navigate(ele.name)}
-          />
-        );
-      })}
+      <>
+        {isSuspended && <UpgradeItem />}
+        {MenuList.map(ele => {
+          return (
+            <MenuItem
+              showWarningCycle={ele.name === 'ContactsHome' && isImputation}
+              style={styles.menuItemWrap}
+              icon={ele?.icon || 'setting'}
+              title={t(ele.label)}
+              key={ele.name}
+              iconStyle={styles.MenuItemIconStyle}
+              onPress={() => navigationService.navigate(ele.name)}
+            />
+          );
+        })}
+      </>
     </PageContainer>
   );
 }
@@ -76,7 +82,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: defaultColors.bg1,
-    paddingTop: pTd(9),
+    paddingTop: pTd(16),
     paddingHorizontal: 0,
   },
   menuItemWrap: {

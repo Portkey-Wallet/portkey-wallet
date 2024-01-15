@@ -20,6 +20,7 @@ import {
   useSocialMediaList,
   useRememberMeBlackList,
   useTabMenuList,
+  useServiceSuspension,
 } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
@@ -91,6 +92,7 @@ export default function Updater() {
   useSocialMediaList(true);
   useTabMenuList(true);
   useDiscoverGroupList(true);
+  useServiceSuspension(true);
   useAppEntrance(true);
   useRememberMeBlackList(true);
   useCheckContactMap();

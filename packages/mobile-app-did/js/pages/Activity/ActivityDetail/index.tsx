@@ -1,6 +1,6 @@
 import { ELF_DECIMAL, TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useCaAddresses, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
@@ -37,11 +37,11 @@ const ActivityDetail = () => {
 
   const activityItemFromRoute = useRouterParams<ActivityItemType & IActivityApiParams>();
   const { transactionId = '', blockHash = '', isReceived: isReceivedParams, activityType } = activityItemFromRoute;
-  const caAddresses = useCaAddresses();
   const isTestnet = useIsTestnet();
   const isTokenHasPrice = useIsTokenHasPrice(activityItemFromRoute?.symbol);
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const { currentNetwork } = useCurrentWallet();
+  const caAddressInfos = useCaAddressInfoList();
   const [initializing, setInitializing] = useState(true);
 
   const [activityItem, setActivityItem] = useState<ActivityItemType>();
@@ -50,9 +50,9 @@ const ActivityDetail = () => {
 
   const getActivityDetail = useCallback(async () => {
     const params = {
-      caAddresses,
       transactionId,
       blockHash,
+      caAddressInfos,
       activityType,
     };
     try {
@@ -71,7 +71,7 @@ const ActivityDetail = () => {
     } catch (error) {
       CommonToast.fail('This transfer is being processed on the blockchain. Please check the details later.');
     }
-  }, [activityType, blockHash, caAddresses, isReceivedParams, transactionId]);
+  }, [activityType, blockHash, caAddressInfos, isReceivedParams, transactionId]);
 
   useEffectOnce(() => {
     getActivityDetail();

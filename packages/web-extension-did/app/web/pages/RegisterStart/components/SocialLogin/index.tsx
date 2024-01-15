@@ -8,6 +8,7 @@ import { RegisterType, SocialLoginFinishHandler } from 'types/wallet';
 import DividerCenter from '../DividerCenter';
 import SocialContent from '../SocialContent';
 import TermsOfServiceItem from '../TermsOfServiceItem';
+import { useServiceSuspension } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
 import { useLoading, useWalletInfo } from 'store/Provider/hooks';
 import { ISocialLogin } from '@portkey-wallet/types/types-ca/wallet';
@@ -43,6 +44,7 @@ export default function SocialLogin({
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isTestnet = useIsTestnet();
+  const serviceSuspension = useServiceSuspension();
   const { currentNetwork } = useWalletInfo();
   const { setLoading } = useLoading();
 
@@ -110,7 +112,7 @@ export default function SocialLogin({
             ))}
           </div>
 
-          {isLogin && (
+          {isLogin && !serviceSuspension?.isSuspended && (
             <div className="go-sign-up">
               <span>{t('No account?')}</span>
               <span className="sign-text" onClick={() => navigate('/register/start/create')}>

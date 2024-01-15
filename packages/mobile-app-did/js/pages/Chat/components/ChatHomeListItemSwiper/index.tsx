@@ -33,6 +33,7 @@ const DELETE_TO_END = screenWidth;
 export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipedType<ChannelItem>) {
   const { item, onPress, onLongPress, onDelete } = props;
   const { userInfo } = useWallet();
+
   const [isEdit, setIsEdit] = useState(false);
   const swipeableRef = useRef<SwipeableItemImperativeRef>(null);
   const listenerCallBack = useCallback(

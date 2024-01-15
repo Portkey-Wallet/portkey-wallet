@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { getBalance } from 'utils/sandboxUtil/getBalance';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
-import { useCurrentNetworkInfo, useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useCheckManagerSyncState } from 'hooks/wallet';
@@ -35,7 +35,7 @@ export default function TokenInput({
 }) {
   const currentNetwork = useCurrentNetworkInfo();
   const currentChain = useCurrentChain(token.chainId as ChainId);
-  const isTestNet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const { t } = useTranslation();
   const [amount, setAmount] = useState<string>(value ? `${value} ${token.symbol}` : '');
   const [balance, setBalance] = useState<string>('');
@@ -168,7 +168,7 @@ export default function TokenInput({
             <Input
               type="text"
               placeholder={`0`}
-              className={clsx(!isTestNet && 'need-convert')}
+              className={clsx(isMainnet && token.symbol === defaultToken.symbol && 'need-convert')}
               value={amount}
               maxLength={18}
               onKeyDown={handleKeyDown}
@@ -181,7 +181,7 @@ export default function TokenInput({
                 onChange({ amount: e.target.value, balance });
               }}
             />
-            {!isTestNet && <span className="convert">{amountInUsd}</span>}
+            {isMainnet && <span className="convert">{amountInUsd}</span>}
           </div>
         </div>
       </div>

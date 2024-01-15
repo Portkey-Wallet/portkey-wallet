@@ -5,7 +5,7 @@ import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import NFTCollectionItem from './NFTCollectionItem';
-import { useCaAddresses, useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchNFTAsync, fetchNFTCollectionsAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { useAppCASelector } from '@portkey-wallet/hooks';
@@ -49,7 +49,6 @@ const NFTCollection: React.FC<NFTCollectionProps> = memo(function NFTCollection(
 
 export default function NFTSection() {
   const { t } = useLanguage();
-  const caAddresses = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
   const { currentNetwork, walletInfo } = useWallet();
   const dispatch = useAppCommonDispatch();
@@ -63,9 +62,9 @@ export default function NFTSection() {
   const { clearType } = useRoute<any>();
 
   const fetchNFTList = useCallback(() => {
-    if (caAddresses.length === 0) return;
-    dispatch(fetchNFTCollectionsAsync({ caAddresses, caAddressInfos }));
-  }, [caAddressInfos, caAddresses, dispatch]);
+    if (caAddressInfos.length === 0) return;
+    dispatch(fetchNFTCollectionsAsync({ caAddressInfos }));
+  }, [caAddressInfos, dispatch]);
 
   useEffect(() => {
     fetchNFTList();
@@ -87,15 +86,12 @@ export default function NFTSection() {
 
   const openItem = useLockCallback(
     async (symbol: string, chainId: ChainId, itemCount: number) => {
-      const currentCaAddress = walletInfo?.caInfo?.[currentNetwork]?.[chainId]?.caAddress;
-
       const key = `${symbol}${chainId}`;
 
       await dispatch(
         fetchNFTAsync({
           symbol,
           chainId,
-          caAddresses: [currentCaAddress || ''],
           caAddressInfos: caAddressInfos.filter(item => item.chainId === chainId),
           pageNum: 0,
         }),
@@ -115,8 +111,6 @@ export default function NFTSection() {
 
   const loadMoreItem = useCallback(
     async (symbol: string, chainId: ChainId, pageNum = 0) => {
-      const currentCaAddress = walletInfo?.caInfo?.[currentNetwork]?.[chainId]?.caAddress;
-
       const key = `${symbol}${chainId}`;
       const currentOpenObj = openCollectionObj?.[key];
       const currentCollectionObj = accountNFTList.find(item => item.symbol === symbol && item.chainId === chainId);
@@ -127,7 +121,6 @@ export default function NFTSection() {
           symbol,
           chainId,
           caAddressInfos: caAddressInfos.filter(item => item.chainId === chainId),
-          caAddresses: [currentCaAddress || ''],
           pageNum: pageNum,
         }),
       );
@@ -140,7 +133,7 @@ export default function NFTSection() {
         },
       }));
     },
-    [accountNFTList, caAddressInfos, currentNetwork, dispatch, openCollectionObj, walletInfo?.caInfo],
+    [accountNFTList, caAddressInfos, dispatch, openCollectionObj],
   );
 
   return (

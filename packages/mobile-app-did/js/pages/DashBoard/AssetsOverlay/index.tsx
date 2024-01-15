@@ -65,7 +65,7 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
         <View style={itemStyle.right}>
           <View>
             <TextL numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font5]}>
-              {`${symbol} #${tokenId}`}
+              {`${item?.nftInfo?.alias} #${tokenId}`}
             </TextL>
 
             <TextS numberOfLines={1} style={[FontStyles.font3, itemStyle.nftItemInfo]}>

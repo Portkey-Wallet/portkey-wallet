@@ -2,7 +2,7 @@ import { Button } from 'antd';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLoginInfo, useGuardiansInfo, useCommonState } from 'store/Provider/hooks';
 import { VerifyStatus } from '@portkey-wallet/types/verifier';
-import { useNavigate, useLocation } from 'react-router';
+import { useNavigate } from 'react-router';
 import { UserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/type';
 import { getApprovalCount } from '@portkey-wallet/utils/guardian';
 import clsx from 'clsx';
@@ -17,10 +17,22 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQueryResult';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
-import qs from 'query-string';
+import { ChainId } from '@portkey-wallet/types';
+import { useLocationParams } from 'hooks/router';
+import {
+  GuardianApprovalFromPageEnum,
+  TGuardianApprovalLocationSearch,
+  TGuardianApprovalLocationState,
+} from 'types/router';
 import './index.less';
 import { useSetTransferLimit } from './hooks/useSetTransferLimit';
-import { ChainId } from '@portkey-wallet/types';
+
+const AllowedGuardianPageArr = [
+  GuardianApprovalFromPageEnum.guardiansAdd,
+  GuardianApprovalFromPageEnum.guardiansDel,
+  GuardianApprovalFromPageEnum.guardiansEdit,
+  GuardianApprovalFromPageEnum.guardiansLoginGuardian,
+];
 
 export default function GuardianApproval() {
   const { userGuardianStatus, guardianExpiredTime, opGuardian, preGuardian } = useGuardiansInfo();
@@ -28,47 +40,42 @@ export default function GuardianApproval() {
   const { loginAccount } = useLoginInfo();
   const [isExpired, setIsExpired] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { state, search } = useLocation();
-  const query = useMemo(() => {
-    if (search) {
-      const { detail } = qs.parse(search);
-      return detail;
-    } else {
-      return state;
-    }
-  }, [search, state]);
+  const { locationParams } = useLocationParams<TGuardianApprovalLocationState, TGuardianApprovalLocationSearch>();
   const { isPrompt, isNotLessThan768 } = useCommonState();
   const { t } = useTranslation();
   const isBigScreenPrompt: boolean = useMemo(() => {
+    const from = locationParams.from;
     const isNotFromLoginAndRegister = !!(
-      query &&
-      (query.includes('guardian') || query.includes('removeManage') || query.includes('setTransferLimit'))
+      from &&
+      (AllowedGuardianPageArr.includes(from) ||
+        from === GuardianApprovalFromPageEnum.removeManage ||
+        from === GuardianApprovalFromPageEnum.setTransferLimit)
     );
     return isNotLessThan768 ? isNotFromLoginAndRegister : false;
-  }, [isNotLessThan768, query]);
-  const targetChainId: ChainId | undefined = useMemo(() => {
-    if (query && query.indexOf('setTransferLimit') !== -1) {
-      const i = query.indexOf('_');
-      const state = query.substring(i + 1);
-      const _params = JSON.parse(state || '{}');
-      return _params.targetChainId;
-    }
-    return undefined;
-  }, [query]);
-  const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult(query);
+  }, [isNotLessThan768, locationParams.from]);
+  const targetChainId: ChainId | undefined = useMemo(
+    () => locationParams.targetChainId || undefined,
+    [locationParams.targetChainId],
+  );
+  const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult(`${locationParams.from}`);
 
   const userVerifiedList = useMemo(() => {
     const tempGuardianList = Object.values(userGuardianStatus ?? {});
     let filterGuardianList: UserGuardianStatus[] = tempGuardianList;
-    const _query = query?.split('_')[0];
-
-    if (query === 'guardians/edit') {
+    const from = locationParams.from;
+    if (from === GuardianApprovalFromPageEnum.guardiansEdit) {
       filterGuardianList = tempGuardianList.filter((item) => item.key !== preGuardian?.key);
-    } else if (['guardians/del', 'guardians/add', 'guardians/loginGuardian'].includes(_query)) {
+    } else if (
+      [
+        GuardianApprovalFromPageEnum.guardiansAdd,
+        GuardianApprovalFromPageEnum.guardiansDel,
+        GuardianApprovalFromPageEnum.guardiansLoginGuardian,
+      ].includes(from)
+    ) {
       filterGuardianList = tempGuardianList.filter((item) => item.key !== opGuardian?.key);
     }
     return filterGuardianList;
-  }, [opGuardian?.key, preGuardian?.key, query, userGuardianStatus]);
+  }, [locationParams.from, opGuardian?.key, preGuardian?.key, userGuardianStatus]);
 
   const approvalLength = useMemo(() => {
     return getApprovalCount(userVerifiedList.length);
@@ -84,12 +91,13 @@ export default function GuardianApproval() {
   const handleSetTransferLimit = useSetTransferLimit(targetChainId);
 
   const recoveryWallet = useCallback(async () => {
-    if (query && query?.indexOf('guardians') !== -1) {
+    const from = locationParams.from;
+    if (AllowedGuardianPageArr.includes(from)) {
       console.log('recoveryWallet guardians', '');
       handleGuardianRecovery();
-    } else if (query && query?.indexOf('removeManage') !== -1) {
+    } else if (from === GuardianApprovalFromPageEnum.removeManage) {
       handleRemoveOtherManage();
-    } else if (query && query.indexOf('setTransferLimit') !== -1) {
+    } else if (from === GuardianApprovalFromPageEnum.setTransferLimit) {
       handleSetTransferLimit();
     } else {
       const res = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();
@@ -103,10 +111,10 @@ export default function GuardianApproval() {
     handleGuardianRecovery,
     handleRemoveOtherManage,
     handleSetTransferLimit,
+    locationParams.from,
     managerAddress,
     navigate,
     onManagerAddressAndQueryResult,
-    query,
   ]);
 
   const isExpiredLogic = useCallback(() => {
@@ -133,18 +141,17 @@ export default function GuardianApproval() {
   }, [alreadyApprovalLength, approvalLength, isExpired]);
 
   const handleBack = useCallback(() => {
-    if (query) {
-      if (query.indexOf('guardians') !== -1) {
-        if (['guardians/del', 'guardians/edit'].includes(query)) {
+    const from = locationParams.from;
+    if (from) {
+      if (AllowedGuardianPageArr.includes(from)) {
+        if ([GuardianApprovalFromPageEnum.guardiansDel, GuardianApprovalFromPageEnum.guardiansEdit].includes(from)) {
           navigate(`/setting/guardians/edit`);
           return;
-        } else if (query.indexOf('guardians/add') !== -1) {
+        } else if (from === GuardianApprovalFromPageEnum.guardiansAdd) {
           navigate('/setting/guardians/add', { state: 'back' });
           return;
-        } else if (query.indexOf('guardians/loginGuardian') !== -1) {
-          const i = query.indexOf('_');
-          const _extra = query.substring(i + 1);
-          if (_extra === 'edit') {
+        } else if (from === GuardianApprovalFromPageEnum.guardiansLoginGuardian) {
+          if (locationParams.extra === 'edit') {
             navigate('/setting/guardians/edit');
           } else {
             navigate('/setting/guardians/view');
@@ -152,25 +159,24 @@ export default function GuardianApproval() {
           return;
         }
       }
-      if (query.indexOf('removeManage') !== -1) {
-        const i = query.indexOf('_');
-        const manageAddress = query.substring(i + 1);
-        navigate(`/setting/wallet-security/manage-devices/${manageAddress}`);
+      if (from === GuardianApprovalFromPageEnum.removeManage) {
+        navigate(`/setting/wallet-security/manage-devices/${locationParams.manageAddress}`);
         return;
       }
-      if (query.indexOf('setTransferLimit') !== -1) {
-        const i = query.indexOf('_');
-        const state = query.substring(i + 1);
-        navigate(`/setting/wallet-security/payment-security/transfer-settings-edit`, { state: JSON.parse(state) });
+      if (from === GuardianApprovalFromPageEnum.setTransferLimit) {
+        // TODO state
+        navigate(`/setting/wallet-security/payment-security/transfer-settings-edit`, {
+          state: locationParams,
+        });
         return;
       }
-      console.log('===guardian approval back error', query);
+      console.log('===guardian approval back error', locationParams);
       return;
     }
 
     // default back
     navigate('/register/start');
-  }, [navigate, query]);
+  }, [locationParams, navigate]);
 
   const renderContent = useMemo(
     () => (

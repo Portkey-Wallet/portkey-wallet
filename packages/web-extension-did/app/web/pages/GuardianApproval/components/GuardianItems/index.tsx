@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import VerifierPair from 'components/VerifierPair';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useAppDispatch, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import { LoginInfo } from 'store/reducers/loginCache/type';
@@ -15,11 +15,12 @@ import { verification } from 'utils/api';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import qs from 'query-string';
 import { ChainId } from '@portkey-wallet/types';
 import './index.less';
 import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
 import singleMessage from 'utils/singleMessage';
+import { useLocationParams } from 'hooks/router';
+import { GuardianItemFromPageEnum, TGuardianItemLocationSearch, TGuardianItemLocationState } from 'types/router';
 
 interface GuardianItemProps {
   disabled?: boolean;
@@ -28,20 +29,19 @@ interface GuardianItemProps {
   loginAccount?: LoginInfo;
   targetChainId?: ChainId;
 }
+
+const AllowedGuardianPageArr = [
+  GuardianItemFromPageEnum.guardiansAdd,
+  GuardianItemFromPageEnum.guardiansEdit,
+  GuardianItemFromPageEnum.guardiansDel,
+  GuardianItemFromPageEnum.guardiansLoginGuardian,
+];
+
 export default function GuardianItems({ disabled, item, isExpired, loginAccount, targetChainId }: GuardianItemProps) {
   const { t } = useTranslation();
   const { opGuardian } = useGuardiansInfo();
   const { setLoading } = useLoading();
-  const { state, search } = useLocation();
-  const query = useMemo(() => {
-    if (search) {
-      const { detail } = qs.parse(search);
-      return detail;
-    } else {
-      return state;
-    }
-  }, [search, state]);
-
+  const { locationParams } = useLocationParams<TGuardianItemLocationState, TGuardianItemLocationSearch>();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const originChainId = useOriginChainId();
@@ -55,26 +55,24 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
   );
 
   const operationType: OperationTypeEnum = useMemo(() => {
-    switch (query) {
-      case 'guardians/edit':
+    const from = locationParams.from;
+    switch (from) {
+      case GuardianItemFromPageEnum.guardiansEdit:
         return OperationTypeEnum.editGuardian;
-      case 'guardians/del':
+      case GuardianItemFromPageEnum.guardiansDel:
         return OperationTypeEnum.deleteGuardian;
+      case GuardianItemFromPageEnum.guardiansAdd:
+        return OperationTypeEnum.addGuardian;
+      case GuardianItemFromPageEnum.guardiansLoginGuardian:
+        return opGuardian?.isLoginAccount ? OperationTypeEnum.unsetLoginAccount : OperationTypeEnum.setLoginAccount;
+      case GuardianItemFromPageEnum.removeManage:
+        return OperationTypeEnum.removeOtherManager;
+      case GuardianItemFromPageEnum.setTransferLimit:
+        return OperationTypeEnum.modifyTransferLimit;
       default:
-        if (query && query.indexOf('guardians/add') !== -1) {
-          return OperationTypeEnum.addGuardian;
-        }
-        if (query && query?.indexOf('removeManage') !== -1) {
-          return OperationTypeEnum.removeOtherManager;
-        } else if (query && query?.indexOf('setTransferLimit') !== -1) {
-          return OperationTypeEnum.modifyTransferLimit;
-        }
-        if (query && query?.indexOf('guardians/loginGuardian') !== -1) {
-          return opGuardian?.isLoginAccount ? OperationTypeEnum.unsetLoginAccount : OperationTypeEnum.setLoginAccount;
-        }
         return OperationTypeEnum.communityRecovery;
     }
-  }, [opGuardian?.isLoginAccount, query]);
+  }, [locationParams.from, opGuardian?.isLoginAccount]);
   console.log('operationType====', operationType);
 
   const guardianSendCode = useCallback(
@@ -113,7 +111,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
               status: VerifyStatus.Verifying,
             }),
           );
-          navigate('/setting/guardians/verifier-account', { state: query });
+          navigate('/setting/guardians/verifier-account', { state: locationParams });
         }
       } catch (error: any) {
         console.log('---guardian-sendCode-error', error);
@@ -121,15 +119,16 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
         singleMessage.error(verifyErrorHandler(error));
       }
     },
-    [dispatch, originChainId, operationType, setLoading, navigate, query],
+    [dispatch, originChainId, operationType, setLoading, navigate, locationParams],
   );
 
   const SendCode = useCallback(
     async (item: UserGuardianItem) => {
+      const from = locationParams.from;
       try {
         setLoading(true);
 
-        if (query && query.indexOf('guardians') !== -1) {
+        if (AllowedGuardianPageArr.includes(from)) {
           guardianSendCode(item);
           return;
         }
@@ -165,11 +164,11 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
               status: VerifyStatus.Verifying,
             }),
           );
-          if (query && query.indexOf('removeManage') !== -1) {
-            return navigate('/setting/wallet-security/manage-devices/verifier-account', { state: query });
+          if (from === GuardianItemFromPageEnum.removeManage) {
+            return navigate('/setting/wallet-security/manage-devices/verifier-account', { state: locationParams });
           }
-          if (query && query.indexOf('setTransferLimit') !== -1) {
-            return navigate('/setting/wallet-security/payment-security/verifier-account', { state: query });
+          if (from === GuardianItemFromPageEnum.setTransferLimit) {
+            return navigate('/setting/wallet-security/payment-security/verifier-account', { state: locationParams });
           }
           return navigate('/login/verifier-account', { state: 'login' });
         }
@@ -181,8 +180,8 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
       }
     },
     [
+      locationParams,
       setLoading,
-      query,
       loginAccount,
       originChainId,
       operationType,
@@ -207,19 +206,29 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
         verifiedInfo && dispatch(setUserGuardianItemStatus(verifiedInfo));
         return;
       }
-
+      const from = locationParams.from;
       dispatch(setCurrentGuardianAction({ ...item, isInitStatus: false }));
-      if (query?.includes('guardians')) {
-        navigate('/setting/guardians/verifier-account', { state: query });
-      } else if (query?.includes('removeManage')) {
-        navigate('/setting/wallet-security/manage-devices/verifier-account', { state: query });
-      } else if (query?.includes('setTransferLimit')) {
-        navigate('/setting/wallet-security/payment-security/verifier-account', { state: query });
+      if (AllowedGuardianPageArr.includes(from)) {
+        navigate('/setting/guardians/verifier-account', { state: locationParams });
+      } else if (from === GuardianItemFromPageEnum.removeManage) {
+        navigate('/setting/wallet-security/manage-devices/verifier-account', { state: locationParams });
+      } else if (from === GuardianItemFromPageEnum.setTransferLimit) {
+        navigate('/setting/wallet-security/payment-security/verifier-account', { state: locationParams });
       } else {
         navigate('/login/verifier-account', { state: 'login' });
       }
     },
-    [isSocialLogin, socialVerify, operationType, originChainId, loginAccount, dispatch, query, navigate, targetChainId],
+    [
+      isSocialLogin,
+      socialVerify,
+      operationType,
+      originChainId,
+      loginAccount,
+      dispatch,
+      locationParams,
+      navigate,
+      targetChainId,
+    ],
   );
 
   const accountShow = useCallback((guardian: UserGuardianItem) => {

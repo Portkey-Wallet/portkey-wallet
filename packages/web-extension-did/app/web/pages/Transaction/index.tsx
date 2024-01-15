@@ -11,7 +11,7 @@ import Copy from 'components/Copy';
 import CustomSvg from 'components/CustomSvg';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useEffectOnce } from 'react-use';
 import './index.less';
 import { dateFormatTransTo13 } from 'utils';
@@ -24,16 +24,12 @@ import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ChainId } from '@portkey-wallet/types';
-
-export interface ITransactionQuery {
-  item: ActivityItemType;
-  chainId?: string;
-  from?: string;
-}
+import { useLocationState } from 'hooks/router';
+import { ITransactionLocationState } from 'types/router';
 
 export default function Transaction() {
   const { t } = useTranslation();
-  const { state }: { state: ITransactionQuery } = useLocation();
+  const { state } = useLocationState<ITransactionLocationState>();
   const chainId = state.chainId;
   const from = state?.from;
   const currentWallet = useCurrentWallet();

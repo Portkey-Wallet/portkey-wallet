@@ -278,7 +278,6 @@ export default function Send() {
   const checkLimit = useCheckLimit(tokenInfo.chainId);
   const handleOneTimeApproval = useCallback(() => {
     setOpenGuardiansApprove(true);
-    console.log('🌈 🌈 🌈 🌈 🌈 🌈 handleOneTimeApproval', '');
   }, []);
   const onCloseGuardianApprove = useCallback(() => {
     setOpenGuardiansApprove(false);
@@ -295,10 +294,10 @@ export default function Send() {
             await sendTransfer();
           }
         } else {
-          // TODO guardians throw error
+          throw Error('approve failed, please try again');
         }
       } catch (error) {
-        // TODO guardians throw error
+        throw Error('approve failed, please try again');
       }
     },
     [sendTransfer, stage],

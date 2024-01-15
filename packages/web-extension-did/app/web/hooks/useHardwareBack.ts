@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useEffectOnce } from 'react-use';
-import useLocationState from './useLocationState';
+import { useLocationState } from './router';
 
 export function useHardwareBack(callback?: () => void) {
   const savedCallback = useRef<any>();

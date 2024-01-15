@@ -20,9 +20,9 @@ import { useNavigate } from 'react-router';
 import { generateRateText } from 'pages/Buy/utils';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { getBuyCrypto } from '@portkey-wallet/utils/ramp';
-import { TRampLocationState } from 'pages/Buy/types';
-import { useLocationState } from 'hooks/router';
 import singleMessage from 'utils/singleMessage';
+import { useLocationState } from 'hooks/router';
+import { TRampLocationState } from 'types/router';
 
 export default function BuyForm() {
   const { t } = useTranslation();

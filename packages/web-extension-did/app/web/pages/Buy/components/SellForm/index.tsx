@@ -29,7 +29,7 @@ import { generateRateText } from 'pages/Buy/utils';
 import { getSellFiat } from '@portkey-wallet/utils/ramp';
 import { useGetChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useLocationState } from 'hooks/router';
-import { TRampLocationState } from 'pages/Buy/types';
+import { TRampLocationState } from 'types/router';
 import { useCheckLimit, useCheckSecurity } from 'hooks/useSecurity';
 import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';

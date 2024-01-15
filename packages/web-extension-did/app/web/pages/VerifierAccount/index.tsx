@@ -17,42 +17,36 @@ import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import VerifierPage from 'pages/components/VerifierPage';
 import { ChainId } from '@portkey-wallet/types';
 import singleMessage from 'utils/singleMessage';
+import { TVerifierAccountLocationState, FromPageEnum } from 'types/router';
 
+const AllowedGuardianPageArr = [
+  FromPageEnum.guardiansAdd,
+  FromPageEnum.guardiansDel,
+  FromPageEnum.guardiansEdit,
+  FromPageEnum.guardiansLoginGuardian,
+];
 export default function VerifierAccount() {
   const { loginAccount } = useLoginInfo();
   const { userGuardianStatus, currentGuardian, opGuardian, userGuardiansList } = useGuardiansInfo();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { state } = useLocationState<
-    | 'register'
-    | 'login'
-    | 'guardians/add'
-    | 'guardians/edit'
-    | 'guardians/del'
-    | 'guardians/loginGuardian'
-    | 'removeManage'
-    | 'setTransferLimit'
-  >();
+  const { state } = useLocationState<TVerifierAccountLocationState>();
   const { isNotLessThan768 } = useCommonState();
   const { walletInfo } = useCurrentWallet();
   const { address: managerAddress } = useCurrentWalletInfo();
-  const isBigScreenPrompt = useMemo(
-    () =>
-      isNotLessThan768
-        ? state.includes('guardian') || state.includes('removeManage') || state.includes('setTransferLimit')
-        : false,
-    [isNotLessThan768, state],
-  );
-  const targetChainId: ChainId | undefined = useMemo(() => {
-    if (state && state.indexOf('setTransferLimit') !== -1) {
-      const i = state.indexOf('_');
-      const params = state.substring(i + 1);
-      const _params = JSON.parse(params || '{}');
-      return _params.targetChainId;
-    }
-    return undefined;
-  }, [state]);
-  const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult(state);
+  const isBigScreenPrompt = useMemo(() => {
+    const bigScreenAllowedArr = [
+      FromPageEnum.guardiansAdd,
+      FromPageEnum.guardiansDel,
+      FromPageEnum.guardiansEdit,
+      FromPageEnum.guardiansLoginGuardian,
+      FromPageEnum.removeManage,
+      FromPageEnum.setTransferLimit,
+    ];
+    return isNotLessThan768 ? bigScreenAllowedArr.includes(state.from) : false;
+  }, [isNotLessThan768, state]);
+  const targetChainId: ChainId | undefined = useMemo(() => state.targetChainId, [state]);
+  const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult(`${state.from}`);
 
   const onSuccessInGuardian = useCallback(
     async (res: VerifierInfo) => {
@@ -110,7 +104,8 @@ export default function VerifierAccount() {
 
   const onSuccess = useCallback(
     async (res: VerifierInfo) => {
-      if (state === 'register') {
+      const from = state.from;
+      if (from === FromPageEnum.register) {
         dispatch(setRegisterVerifierAction(res));
         const result = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();
         if (walletInfo.address && result.data.privateKey) {
@@ -121,7 +116,9 @@ export default function VerifierAccount() {
         } else {
           navigate('/login/set-pin/register');
         }
-      } else if (state == 'login') {
+        return;
+      }
+      if (from == FromPageEnum.login) {
         if (!currentGuardian) return;
         dispatch(
           setUserGuardianItemStatus({
@@ -145,16 +142,22 @@ export default function VerifierAccount() {
         } else {
           navigate('/login/guardian-approval');
         }
-      } else if (state?.indexOf('guardians') !== -1) {
+        return;
+      }
+      if (AllowedGuardianPageArr.includes(from)) {
         onSuccessInGuardian(res);
         singleMessage.success('Verified Successful');
-      } else if (state?.indexOf('removeManage') !== -1) {
-        onSuccessInRemoveOtherManage(res);
-      } else if (state?.indexOf('setTransferLimit') !== -1) {
-        onSuccessInSetTransferLimit(res);
-      } else {
-        singleMessage.error('Router state error');
+        return;
       }
+      if (from === FromPageEnum.removeManage) {
+        onSuccessInRemoveOtherManage(res);
+        return;
+      }
+      if (from === FromPageEnum.setTransferLimit) {
+        onSuccessInSetTransferLimit(res);
+        return;
+      }
+      singleMessage.error('Router state error');
     },
     [
       state,
@@ -172,59 +175,59 @@ export default function VerifierAccount() {
   );
 
   const handleBack = useCallback(() => {
-    if (state === 'register') {
-      navigate('/register/start/create');
-    } else if (state === 'login') {
-      navigate('/login/guardian-approval');
-    } else if (state.indexOf('guardians/add') !== -1 && !userGuardianStatus?.[opGuardian?.key || '']?.signature) {
-      navigate('/setting/guardians/add', { state: 'back' });
-    } else if (
-      state.indexOf('guardians/loginGuardian') !== -1 &&
-      !userGuardianStatus?.[opGuardian?.key || '']?.signature
-    ) {
-      const i = state.indexOf('_');
-      const _extra = state.substring(i + 1);
-      if (_extra === 'edit') {
+    const fromPage = state.from;
+    if (fromPage === FromPageEnum.register) {
+      return navigate('/register/start/create');
+    }
+    if (fromPage === FromPageEnum.login) {
+      return navigate('/login/guardian-approval');
+    }
+    if (fromPage === FromPageEnum.guardiansAdd && !userGuardianStatus?.[opGuardian?.key || '']?.signature) {
+      return navigate('/setting/guardians/add', { state: 'back' });
+    }
+    if (fromPage === FromPageEnum.guardiansLoginGuardian && !userGuardianStatus?.[opGuardian?.key || '']?.signature) {
+      if (state.extra === 'edit') {
         navigate('/setting/guardians/edit');
       } else {
         navigate('/setting/guardians/view');
       }
-    } else if (state.indexOf('guardians') !== -1) {
-      navigate('/setting/guardians/guardian-approval', { state: state });
-    } else if (state.indexOf('setTransferLimit') !== -1) {
-      navigate(`/setting/wallet-security/payment-security/guardian-approval`, { state: state });
-    } else {
-      navigate(-1);
+      return;
     }
+    if (AllowedGuardianPageArr.includes(fromPage)) {
+      return navigate('/setting/guardians/guardian-approval', { state: state });
+    }
+    if (fromPage === FromPageEnum.setTransferLimit) {
+      return navigate(`/setting/wallet-security/payment-security/guardian-approval`, { state: state });
+    }
+    navigate(-1);
   }, [navigate, opGuardian?.key, state, userGuardianStatus]);
 
   const isInitStatus = useMemo(() => {
-    if (state === 'register') return true;
+    if (state.from === FromPageEnum.register) return true;
     return !!currentGuardian?.isInitStatus;
   }, [currentGuardian, state]);
 
   const operationType: OperationTypeEnum = useMemo(() => {
-    switch (state) {
-      case 'register':
+    const fromPage = state.from;
+    switch (fromPage) {
+      case FromPageEnum.register:
         return OperationTypeEnum.register;
-      case 'login':
+      case FromPageEnum.login:
         return OperationTypeEnum.communityRecovery;
-      case 'guardians/edit':
+      case FromPageEnum.guardiansEdit:
         return OperationTypeEnum.editGuardian;
-      case 'guardians/del':
+      case FromPageEnum.guardiansDel:
         return OperationTypeEnum.deleteGuardian;
+      case FromPageEnum.guardiansAdd:
+        return OperationTypeEnum.addGuardian;
+      case FromPageEnum.guardiansLoginGuardian:
+        return opGuardian?.isLoginAccount ? OperationTypeEnum.unsetLoginAccount : OperationTypeEnum.setLoginAccount;
+      case FromPageEnum.removeManage:
+        return OperationTypeEnum.removeOtherManager;
+      case FromPageEnum.setTransferLimit:
+        return OperationTypeEnum.modifyTransferLimit;
       default:
-        if (state && state?.indexOf('removeManage') !== -1) {
-          return OperationTypeEnum.removeOtherManager;
-        } else if (state && state?.indexOf('setTransferLimit') !== -1) {
-          return OperationTypeEnum.modifyTransferLimit;
-        } else if (state && state?.indexOf('guardians/add') !== -1) {
-          return OperationTypeEnum.addGuardian;
-        } else if (state && state?.indexOf('guardians/loginGuardian') !== -1) {
-          return opGuardian?.isLoginAccount ? OperationTypeEnum.unsetLoginAccount : OperationTypeEnum.setLoginAccount;
-        } else {
-          return OperationTypeEnum.unknown;
-        }
+        return OperationTypeEnum.unknown;
     }
   }, [opGuardian?.isLoginAccount, state]);
 

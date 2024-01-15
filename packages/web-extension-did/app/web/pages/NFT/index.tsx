@@ -1,7 +1,7 @@
 import { Button } from 'antd';
 import PromptFrame from 'pages/components/PromptFrame';
 import SettingHeader from 'pages/components/SettingHeader';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useCommonState } from 'store/Provider/hooks';
 import clsx from 'clsx';
 import { useCallback, useMemo } from 'react';
@@ -12,11 +12,13 @@ import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useLocationState } from 'hooks/router';
+import { TNFTLocationState } from 'types/router';
 import './index.less';
 
 export default function NFT() {
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const { state } = useLocationState<TNFTLocationState>();
   const { isPrompt } = useCommonState();
   const isMainNet = useIsMainnet();
   const currentNetwork = useCurrentNetworkInfo();

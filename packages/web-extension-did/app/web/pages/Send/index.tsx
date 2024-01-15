@@ -215,8 +215,6 @@ export default function Send() {
       if (!privateKey) return;
       if (!tokenInfo) throw 'No Symbol info';
 
-      setLoading(true);
-
       if (isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF')) {
         await crossChainTransfer({
           chainInfo,
@@ -231,7 +229,6 @@ export default function Send() {
           guardiansApproved: oneTimeApprovalList.current,
         });
       } else {
-        console.log('sameChainTransfers==sendHandler');
         await sameChainTransfer({
           chainInfo,
           chainType: currentNetwork.walletType,
@@ -314,7 +311,7 @@ export default function Send() {
     try {
       setLoading(true);
       if (!ZERO.plus(amount).toNumber()) return 'Please input amount';
-      if (!currentChain) return;
+      if (!currentChain) return 'currentChain is not exist';
       const result = await getBalance({
         rpcUrl: currentChain.endPoint,
         address: tokenInfo.address,

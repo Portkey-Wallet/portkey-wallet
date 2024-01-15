@@ -5,7 +5,7 @@ import {
   setUserGuardianItemStatus,
 } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { Input, Button } from 'antd';
-import { useNavigate, useLocation } from 'react-router';
+import { useNavigate } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useGuardiansInfo, useLoading, useWalletInfo } from 'store/Provider/hooks';
@@ -36,18 +36,19 @@ import GuardianAddPopup from './Popup';
 import CustomModal from '../../components/CustomModal';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useCommonState } from 'store/Provider/hooks';
-import qs from 'query-string';
 import clsx from 'clsx';
 import { getVerifierStatusMap, guardianAccountIsExist } from '../utils';
 import OptionTip from '../components/SelectOptionTip';
 import { guardianExistTip, verifierExistTip } from '@portkey-wallet/constants/constants-ca/guardian';
 import singleMessage from 'utils/singleMessage';
+import { useLocationParams } from 'hooks/router';
+import { TAddGuardianLocationSearch, TAddGuardianLocationState } from 'types/router';
 import './index.less';
 
 export default function AddGuardian() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { state, search } = useLocation();
+  const { locationParams } = useLocationParams<TAddGuardianLocationState, TAddGuardianLocationSearch>();
   const { verifierMap, userGuardiansList, opGuardian } = useGuardiansInfo();
   const verifierStatusMap = useMemo(
     () => getVerifierStatusMap(verifierMap, userGuardiansList),
@@ -73,15 +74,10 @@ export default function AddGuardian() {
   const originChainId = useOriginChainId();
   const currentChain = useCurrentChain(originChainId);
   const { currentNetwork } = useWalletInfo();
-  const accelerateChainId = useMemo(() => {
-    if (search) {
-      const { detail } = qs.parse(search);
-      if (detail && detail.indexOf('accelerateChainId') !== -1) {
-        return detail.split('_')[1];
-      }
-    }
-    return state?.accelerateChainId || originChainId;
-  }, [originChainId, search, state]);
+  const accelerateChainId = useMemo(
+    () => locationParams?.accelerateChainId || originChainId,
+    [locationParams?.accelerateChainId, originChainId],
+  );
 
   const disabled = useMemo(() => {
     let check = true;
@@ -177,7 +173,7 @@ export default function AddGuardian() {
   }, [emailVal, guardianType, phoneValue, socialValue, verifierVal]);
 
   useEffectOnce(() => {
-    if (state === 'back' && opGuardian) {
+    if (locationParams?.from && opGuardian) {
       setGuardianType(opGuardian.guardianType);
       setVerifierVal(opGuardian.verifier?.id);
       setVerifierName(opGuardian.verifier?.name);

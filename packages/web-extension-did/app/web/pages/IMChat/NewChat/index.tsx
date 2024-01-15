@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
@@ -12,11 +12,13 @@ import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import singleMessage from 'utils/singleMessage';
+import { useLocationState } from 'hooks/router';
+import { TNewChatLocationState } from 'types/router';
 import './index.less';
 
 export default function NewChat() {
   const { t } = useTranslation();
-  const { state } = useLocation();
+  const { state } = useLocationState<TNewChatLocationState>();
   const [filterWord, setFilterWord] = useState<string>('');
   const navigate = useNavigate();
   const { setLoading } = useLoading();
@@ -60,9 +62,12 @@ export default function NewChat() {
     [createChannel, navigate],
   );
   useEffect(() => {
-    setFilterWord(state?.search ?? '');
-    handleSearch(state?.search ?? '');
-  }, [handleSearch, state?.search]);
+    const _v = state?.search;
+    if (_v) {
+      setFilterWord(state?.search ?? '');
+      handleSearch(state?.search ?? '');
+    }
+  }, [handleSearch, state]);
 
   return (
     <div className="new-chat-page flex-column">

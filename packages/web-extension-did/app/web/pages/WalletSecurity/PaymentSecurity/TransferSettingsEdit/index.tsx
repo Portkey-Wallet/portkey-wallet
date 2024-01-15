@@ -2,7 +2,7 @@ import { useAppDispatch, useCommonState, useLoading } from 'store/Provider/hooks
 import TransferSettingsEditPopup from './Popup';
 import TransferSettingsEditPrompt from './Prompt';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useCallback, useRef, useState } from 'react';
 import { ValidData } from 'pages/Contacts/AddContact';
 import { Form } from 'antd';
@@ -19,6 +19,8 @@ import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import { useEffectOnce } from 'react-use';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { useLocationState } from 'hooks/router';
+import { TTransferSettingEditLocationState } from 'types/router';
 
 export default function TransferSettingsEdit() {
   const { isPrompt, isNotLessThan768 } = useCommonState();
@@ -26,7 +28,7 @@ export default function TransferSettingsEdit() {
   const userGuardianList = useGuardianList();
   const { walletInfo } = useCurrentWallet();
   const { t } = useTranslation();
-  const { state } = useLocation();
+  const { state } = useLocationState<TTransferSettingEditLocationState>();
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const headerTitle = t('Transfer Settings');

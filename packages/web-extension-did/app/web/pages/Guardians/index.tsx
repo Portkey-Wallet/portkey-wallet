@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import CustomSvg from 'components/CustomSvg';
 import { useTranslation } from 'react-i18next';
 import useGuardianList from 'hooks/useGuardianList';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useAppDispatch, useCommonState, useGuardiansInfo } from 'store/Provider/hooks';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { setCurrentGuardianAction, setOpGuardianAction } from '@portkey-wallet/store/store-ca/guardians/actions';
@@ -16,12 +16,14 @@ import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import AccountShow from './components/AccountShow';
 import { getVerifierStatusMap } from './utils';
 import { guardiansExceedTip } from '@portkey-wallet/constants/constants-ca/guardian';
+import { useLocationState } from 'hooks/router';
+import { TGuardiansLocationState } from 'types/router';
 import './index.less';
 
 export default function Guardians() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { state } = useLocation();
+  const { state } = useLocationState<TGuardiansLocationState>();
   const navigate = useNavigate();
   const { verifierMap, userGuardiansList } = useGuardiansInfo();
   const verifierEnableNum = useMemo(() => {

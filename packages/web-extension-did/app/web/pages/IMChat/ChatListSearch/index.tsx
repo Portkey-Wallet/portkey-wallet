@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
@@ -11,10 +11,12 @@ import './index.less';
 import SearchList from '../components/SearchList';
 import { ISearchItem } from '../components/SearchItem';
 import { useHandleClickChatItem } from 'hooks/im';
+import { useLocationState } from 'hooks/router';
+import { TChatListSearchLocationState } from 'types/router';
 
 export default function ChatListSearch() {
   const { t } = useTranslation();
-  const { state } = useLocation();
+  const { state } = useLocationState<TChatListSearchLocationState>();
   const [filterWord, setFilterWord] = useState<string>('');
   const navigate = useNavigate();
   const { setLoading } = useLoading();
@@ -50,9 +52,12 @@ export default function ChatListSearch() {
   );
 
   useEffect(() => {
-    setFilterWord(state?.search || '');
-    handleSearch(state?.search || '');
-  }, [handleSearch, state?.search]);
+    const _search = state?.search;
+    if (_search) {
+      setFilterWord(_search);
+      handleSearch(_search);
+    }
+  }, [handleSearch, state]);
 
   const searchDebounce = useDebounceCallback(
     async (params) => {

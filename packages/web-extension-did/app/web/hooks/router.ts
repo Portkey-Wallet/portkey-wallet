@@ -28,7 +28,7 @@ export function useLocationState<T>(): CustomLocationState<T> {
 interface LocationParams<T, K> {
   state: T;
   search: K;
-  mergeData: T & K;
+  locationParams: T & K;
 }
 
 export function useLocationParams<T, K>(): LocationParams<T, K> {
@@ -39,6 +39,6 @@ export function useLocationParams<T, K>(): LocationParams<T, K> {
   return {
     state,
     search: searchObj,
-    mergeData: { ...state, ...searchObj },
+    locationParams: { ...state, ...searchObj },
   };
 }

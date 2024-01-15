@@ -1,13 +1,15 @@
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { useDebounceCallback } from '@portkey-wallet/hooks';
+import { useDebounceCallback, useEffectOnce } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
 import DropdownSearch from 'components/DropdownSearch';
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { useGroupChannelInfo, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ChannelMemberInfo } from '@portkey-wallet/im';
+import { useLocationState } from 'hooks/router';
+import { TMemberListLocationState } from 'types/router';
 import './index.less';
 
 export default function MemberList() {
@@ -15,7 +17,7 @@ export default function MemberList() {
   const { relationId: myRelationId } = useRelationId();
   const { groupInfo, refresh } = useGroupChannelInfo(`${channelUuid}`);
   const { t } = useTranslation();
-  const { state } = useLocation();
+  const { state } = useLocationState<TMemberListLocationState>();
   const [filterWord, setFilterWord] = useState<string>('');
   const [inputValue, setInputValue] = useState<string>('');
   const navigate = useNavigate();
@@ -80,15 +82,16 @@ export default function MemberList() {
     [searchDebounce],
   );
   useEffect(() => {
-    const _v = state?.search ?? '';
-    setFilterWord(_v);
-    setInputValue(_v);
-    handleSearch(_v);
+    const _v = state?.search;
+    if (_v) {
+      setFilterWord(_v);
+      setInputValue(_v);
+      handleSearch(_v);
+    }
   }, [handleSearch, state?.search]);
-  useEffect(() => {
+  useEffectOnce(() => {
     refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   return (
     <div className="member-list-page flex-column-between">

@@ -56,7 +56,7 @@ export default function Guardians() {
   const onAdd = useCallback(() => {
     isPrompt
       ? navigate('/setting/guardians/add', { state: { accelerateChainId } })
-      : InternalMessage.payload(PortkeyMessageTypes.ADD_GUARDIANS, `accelerateChainId_${accelerateChainId}`).send();
+      : InternalMessage.payload(PortkeyMessageTypes.ADD_GUARDIANS, JSON.stringify({ accelerateChainId })).send();
   }, [isPrompt, navigate, accelerateChainId]);
 
   const headerTitle = useMemo(() => 'Guardians', []);

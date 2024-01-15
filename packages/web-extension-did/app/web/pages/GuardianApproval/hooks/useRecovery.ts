@@ -35,7 +35,7 @@ export const useGuardianRecovery = () => {
   const navigate = useNavigateState();
   const currentNetwork = useCurrentNetworkInfo();
   const { userGuardianStatus, opGuardian, preGuardian } = useGuardiansInfo();
-  const accelerateChainId: ChainId = useMemo(() => state.accelerateChainId || originChainId, [state, originChainId]);
+  const accelerateChainId: ChainId = useMemo(() => state?.accelerateChainId || originChainId, [state, originChainId]);
   const accelerateChainInfo = useCurrentChain(accelerateChainId);
 
   return useCallback(async () => {

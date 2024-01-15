@@ -55,7 +55,10 @@ export default function DeviceDetail() {
             manageAddress: `${device.managerAddress}`,
           },
         })
-      : InternalMessage.payload(PortkeyMessageTypes.GUARDIANS_APPROVAL, `removeManage_${device.managerAddress}`).send();
+      : InternalMessage.payload(
+          PortkeyMessageTypes.GUARDIANS_APPROVAL,
+          JSON.stringify({ previousPage: FromPageEnum.removeManage, managerAddress: device.managerAddress }),
+        ).send();
   }, [
     dispatch,
     walletInfo.managerInfo?.loginAccount,

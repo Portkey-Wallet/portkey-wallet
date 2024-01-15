@@ -150,7 +150,10 @@ export default function TransferSettingsEdit() {
           })
         : InternalMessage.payload(
             PortkeyMessageTypes.GUARDIANS_APPROVAL_PAYMENT_SECURITY,
-            `setTransferLimit_${JSON.stringify(params)}`,
+            JSON.stringify({
+              previousPage: FromPageEnum.setTransferLimit,
+              ...params,
+            }),
           ).send();
     } catch (error) {
       console.log('set limit error: ', error);

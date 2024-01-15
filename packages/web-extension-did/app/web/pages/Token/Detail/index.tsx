@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router';
 import SettingHeader from 'pages/components/SettingHeader';
 import BalanceCard from 'pages/components/BalanceCard';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
@@ -20,7 +19,8 @@ import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import './index.less';
 import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { ChainId } from '@portkey-wallet/types';
-import { useLocationState } from 'hooks/router';
+import { useLocationState, useNavigateState } from 'hooks/router';
+import { TSendLocationState } from 'pages/Send';
 
 export enum TokenTransferStatus {
   CONFIRMED = 'Confirmed',
@@ -31,13 +31,17 @@ export type TTokenDetailLocationState = {
   symbol: string;
   chainId: ChainId;
   balance: string;
-  decimals: string | number;
+  decimals: number;
+  tokenContractAddress: string;
   balanceInUsd?: string;
-  tokenContractAddress?: string;
+};
+
+export type TTokenDetailNavigateState = {
+  tokenInfo: TTokenDetailLocationState;
 };
 
 function TokenDetail() {
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TTokenDetailNavigateState | Partial<TSendLocationState>>();
   const { state: currentToken } = useLocationState<TTokenDetailLocationState>();
   const isMainNet = useIsMainnet();
   const { checkDappIsConfirmed } = useDisclaimer();

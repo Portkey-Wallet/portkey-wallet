@@ -22,7 +22,7 @@ import { handleErrorMessage } from '@portkey-wallet/utils';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import singleMessage from 'utils/singleMessage';
 import { useLocationState } from 'hooks/router';
-import { TRampLocationState } from './types';
+import { TRampLocationState } from 'types/router';
 
 export default function Buy() {
   const { t } = useTranslation();

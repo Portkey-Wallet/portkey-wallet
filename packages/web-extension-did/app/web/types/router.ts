@@ -32,17 +32,16 @@ export type TAddGuardianLocationSearch = {
 };
 
 // GuardianApproval
-export enum GuardianApprovalFromPageEnum {
-  guardiansAdd = FromPageEnum.guardiansAdd,
-  guardiansEdit = FromPageEnum.guardiansEdit,
-  guardiansDel = FromPageEnum.guardiansDel,
-  guardiansLoginGuardian = FromPageEnum.guardiansLoginGuardian,
-  removeManage = FromPageEnum.removeManage,
-  setTransferLimit = FromPageEnum.setTransferLimit,
-}
+export type TGuardianApprovalFromPage =
+  | FromPageEnum.guardiansAdd
+  | FromPageEnum.guardiansEdit
+  | FromPageEnum.guardiansDel
+  | FromPageEnum.guardiansLoginGuardian
+  | FromPageEnum.removeManage
+  | FromPageEnum.setTransferLimit;
 
 export type TGuardianApprovalLocationState = {
-  from: GuardianApprovalFromPageEnum;
+  from: TGuardianApprovalFromPage;
   targetChainId?: ChainId;
   extra?: string;
   manageAddress?: string;
@@ -51,50 +50,46 @@ export type TGuardianApprovalLocationState = {
 export type TGuardianApprovalLocationSearch = TGuardianApprovalLocationState;
 
 // GuardianRecovery
-export enum GuardianRecoveryFromPageEnum {
-  guardiansAdd = FromPageEnum.guardiansAdd,
-  guardiansEdit = FromPageEnum.guardiansEdit,
-  guardiansDel = FromPageEnum.guardiansDel,
-  guardiansLoginGuardian = FromPageEnum.guardiansLoginGuardian,
-}
+export type TGuardianRecoveryFromPage =
+  | FromPageEnum.guardiansAdd
+  | FromPageEnum.guardiansEdit
+  | FromPageEnum.guardiansDel
+  | FromPageEnum.guardiansLoginGuardian;
 
 export type TGuardianRecoveryLocationState = {
-  from: GuardianRecoveryFromPageEnum;
+  from: TGuardianRecoveryFromPage;
   accelerateChainId?: ChainId;
   extra?: string;
 };
 
 // GuardianItem
-export enum GuardianItemFromPageEnum {
-  guardiansAdd = FromPageEnum.guardiansAdd,
-  guardiansEdit = FromPageEnum.guardiansEdit,
-  guardiansDel = FromPageEnum.guardiansDel,
-  guardiansLoginGuardian = FromPageEnum.guardiansLoginGuardian,
-  removeManage = FromPageEnum.removeManage,
-  setTransferLimit = FromPageEnum.setTransferLimit,
-}
+export type TGuardianItemFromPage =
+  | FromPageEnum.guardiansAdd
+  | FromPageEnum.guardiansEdit
+  | FromPageEnum.guardiansDel
+  | FromPageEnum.guardiansLoginGuardian
+  | FromPageEnum.removeManage
+  | FromPageEnum.setTransferLimit;
 
 export type TGuardianItemLocationState = {
-  from: GuardianItemFromPageEnum;
+  from: TGuardianItemFromPage;
 };
 
 export type TGuardianItemLocationSearch = TGuardianItemLocationState;
 
 // VerifierAccount
-
-export enum VerifierAccountFromPageEnum {
-  register = FromPageEnum.register,
-  login = FromPageEnum.login,
-  guardiansAdd = FromPageEnum.guardiansAdd,
-  guardiansEdit = FromPageEnum.guardiansEdit,
-  guardiansDel = FromPageEnum.guardiansDel,
-  guardiansLoginGuardian = FromPageEnum.guardiansLoginGuardian,
-  removeManage = FromPageEnum.removeManage,
-  setTransferLimit = FromPageEnum.setTransferLimit,
-}
+export type TVerifierAccountFromPage =
+  | FromPageEnum.register
+  | FromPageEnum.login
+  | FromPageEnum.guardiansAdd
+  | FromPageEnum.guardiansEdit
+  | FromPageEnum.guardiansDel
+  | FromPageEnum.guardiansLoginGuardian
+  | FromPageEnum.removeManage
+  | FromPageEnum.setTransferLimit;
 
 export type TVerifierAccountLocationState = {
-  from: VerifierAccountFromPageEnum;
+  from: TVerifierAccountFromPage;
   targetChainId?: ChainId;
   extra?: string;
 };

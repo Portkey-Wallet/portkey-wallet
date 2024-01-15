@@ -17,13 +17,13 @@ import VerifierPage from 'pages/components/VerifierPage';
 import { ChainId } from '@portkey-wallet/types';
 import singleMessage from 'utils/singleMessage';
 import { useLocationState } from 'hooks/router';
-import { TVerifierAccountLocationState, VerifierAccountFromPageEnum } from 'types/router';
+import { TVerifierAccountLocationState, FromPageEnum } from 'types/router';
 
 const AllowedGuardianPageArr = [
-  VerifierAccountFromPageEnum.guardiansAdd,
-  VerifierAccountFromPageEnum.guardiansDel,
-  VerifierAccountFromPageEnum.guardiansEdit,
-  VerifierAccountFromPageEnum.guardiansLoginGuardian,
+  FromPageEnum.guardiansAdd,
+  FromPageEnum.guardiansDel,
+  FromPageEnum.guardiansEdit,
+  FromPageEnum.guardiansLoginGuardian,
 ];
 export default function VerifierAccount() {
   const { loginAccount } = useLoginInfo();
@@ -36,12 +36,12 @@ export default function VerifierAccount() {
   const { address: managerAddress } = useCurrentWalletInfo();
   const isBigScreenPrompt = useMemo(() => {
     const bigScreenAllowedArr = [
-      VerifierAccountFromPageEnum.guardiansAdd,
-      VerifierAccountFromPageEnum.guardiansDel,
-      VerifierAccountFromPageEnum.guardiansEdit,
-      VerifierAccountFromPageEnum.guardiansLoginGuardian,
-      VerifierAccountFromPageEnum.removeManage,
-      VerifierAccountFromPageEnum.setTransferLimit,
+      FromPageEnum.guardiansAdd,
+      FromPageEnum.guardiansDel,
+      FromPageEnum.guardiansEdit,
+      FromPageEnum.guardiansLoginGuardian,
+      FromPageEnum.removeManage,
+      FromPageEnum.setTransferLimit,
     ];
     return isNotLessThan768 ? bigScreenAllowedArr.includes(state.from) : false;
   }, [isNotLessThan768, state]);
@@ -105,7 +105,7 @@ export default function VerifierAccount() {
   const onSuccess = useCallback(
     async (res: VerifierInfo) => {
       const from = state.from;
-      if (from === VerifierAccountFromPageEnum.register) {
+      if (from === FromPageEnum.register) {
         dispatch(setRegisterVerifierAction(res));
         const result = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();
         if (walletInfo.address && result.data.privateKey) {
@@ -118,7 +118,7 @@ export default function VerifierAccount() {
         }
         return;
       }
-      if (from == VerifierAccountFromPageEnum.login) {
+      if (from == FromPageEnum.login) {
         if (!currentGuardian) return;
         dispatch(
           setUserGuardianItemStatus({
@@ -149,11 +149,11 @@ export default function VerifierAccount() {
         singleMessage.success('Verified Successful');
         return;
       }
-      if (from === VerifierAccountFromPageEnum.removeManage) {
+      if (from === FromPageEnum.removeManage) {
         onSuccessInRemoveOtherManage(res);
         return;
       }
-      if (from === VerifierAccountFromPageEnum.setTransferLimit) {
+      if (from === FromPageEnum.setTransferLimit) {
         onSuccessInSetTransferLimit(res);
         return;
       }
@@ -176,22 +176,16 @@ export default function VerifierAccount() {
 
   const handleBack = useCallback(() => {
     const fromPage = state.from;
-    if (fromPage === VerifierAccountFromPageEnum.register) {
+    if (fromPage === FromPageEnum.register) {
       return navigate('/register/start/create');
     }
-    if (fromPage === VerifierAccountFromPageEnum.login) {
+    if (fromPage === FromPageEnum.login) {
       return navigate('/login/guardian-approval');
     }
-    if (
-      fromPage === VerifierAccountFromPageEnum.guardiansAdd &&
-      !userGuardianStatus?.[opGuardian?.key || '']?.signature
-    ) {
+    if (fromPage === FromPageEnum.guardiansAdd && !userGuardianStatus?.[opGuardian?.key || '']?.signature) {
       return navigate('/setting/guardians/add', { state: 'back' });
     }
-    if (
-      fromPage === VerifierAccountFromPageEnum.guardiansLoginGuardian &&
-      !userGuardianStatus?.[opGuardian?.key || '']?.signature
-    ) {
+    if (fromPage === FromPageEnum.guardiansLoginGuardian && !userGuardianStatus?.[opGuardian?.key || '']?.signature) {
       if (state.extra === 'edit') {
         navigate('/setting/guardians/edit');
       } else {
@@ -202,35 +196,35 @@ export default function VerifierAccount() {
     if (AllowedGuardianPageArr.includes(fromPage)) {
       return navigate('/setting/guardians/guardian-approval', { state: state });
     }
-    if (fromPage === VerifierAccountFromPageEnum.setTransferLimit) {
+    if (fromPage === FromPageEnum.setTransferLimit) {
       return navigate(`/setting/wallet-security/payment-security/guardian-approval`, { state: state });
     }
     navigate(-1);
   }, [navigate, opGuardian?.key, state, userGuardianStatus]);
 
   const isInitStatus = useMemo(() => {
-    if (state.from === VerifierAccountFromPageEnum.register) return true;
+    if (state.from === FromPageEnum.register) return true;
     return !!currentGuardian?.isInitStatus;
   }, [currentGuardian, state]);
 
   const operationType: OperationTypeEnum = useMemo(() => {
     const fromPage = state.from;
     switch (fromPage) {
-      case VerifierAccountFromPageEnum.register:
+      case FromPageEnum.register:
         return OperationTypeEnum.register;
-      case VerifierAccountFromPageEnum.login:
+      case FromPageEnum.login:
         return OperationTypeEnum.communityRecovery;
-      case VerifierAccountFromPageEnum.guardiansEdit:
+      case FromPageEnum.guardiansEdit:
         return OperationTypeEnum.editGuardian;
-      case VerifierAccountFromPageEnum.guardiansDel:
+      case FromPageEnum.guardiansDel:
         return OperationTypeEnum.deleteGuardian;
-      case VerifierAccountFromPageEnum.guardiansAdd:
+      case FromPageEnum.guardiansAdd:
         return OperationTypeEnum.addGuardian;
-      case VerifierAccountFromPageEnum.guardiansLoginGuardian:
+      case FromPageEnum.guardiansLoginGuardian:
         return opGuardian?.isLoginAccount ? OperationTypeEnum.unsetLoginAccount : OperationTypeEnum.setLoginAccount;
-      case VerifierAccountFromPageEnum.removeManage:
+      case FromPageEnum.removeManage:
         return OperationTypeEnum.removeOtherManager;
-      case VerifierAccountFromPageEnum.setTransferLimit:
+      case FromPageEnum.setTransferLimit:
         return OperationTypeEnum.modifyTransferLimit;
       default:
         return OperationTypeEnum.unknown;

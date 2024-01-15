@@ -19,19 +19,15 @@ import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { ChainId } from '@portkey-wallet/types';
 import { useLocationParams } from 'hooks/router';
-import {
-  GuardianApprovalFromPageEnum,
-  TGuardianApprovalLocationSearch,
-  TGuardianApprovalLocationState,
-} from 'types/router';
+import { FromPageEnum, TGuardianApprovalLocationSearch, TGuardianApprovalLocationState } from 'types/router';
 import './index.less';
 import { useSetTransferLimit } from './hooks/useSetTransferLimit';
 
 const AllowedGuardianPageArr = [
-  GuardianApprovalFromPageEnum.guardiansAdd,
-  GuardianApprovalFromPageEnum.guardiansDel,
-  GuardianApprovalFromPageEnum.guardiansEdit,
-  GuardianApprovalFromPageEnum.guardiansLoginGuardian,
+  FromPageEnum.guardiansAdd,
+  FromPageEnum.guardiansDel,
+  FromPageEnum.guardiansEdit,
+  FromPageEnum.guardiansLoginGuardian,
 ];
 
 export default function GuardianApproval() {
@@ -48,8 +44,8 @@ export default function GuardianApproval() {
     const isNotFromLoginAndRegister = !!(
       from &&
       (AllowedGuardianPageArr.includes(from) ||
-        from === GuardianApprovalFromPageEnum.removeManage ||
-        from === GuardianApprovalFromPageEnum.setTransferLimit)
+        from === FromPageEnum.removeManage ||
+        from === FromPageEnum.setTransferLimit)
     );
     return isNotLessThan768 ? isNotFromLoginAndRegister : false;
   }, [isNotLessThan768, locationParams.from]);
@@ -63,14 +59,10 @@ export default function GuardianApproval() {
     const tempGuardianList = Object.values(userGuardianStatus ?? {});
     let filterGuardianList: UserGuardianStatus[] = tempGuardianList;
     const from = locationParams.from;
-    if (from === GuardianApprovalFromPageEnum.guardiansEdit) {
+    if (from === FromPageEnum.guardiansEdit) {
       filterGuardianList = tempGuardianList.filter((item) => item.key !== preGuardian?.key);
     } else if (
-      [
-        GuardianApprovalFromPageEnum.guardiansAdd,
-        GuardianApprovalFromPageEnum.guardiansDel,
-        GuardianApprovalFromPageEnum.guardiansLoginGuardian,
-      ].includes(from)
+      [FromPageEnum.guardiansAdd, FromPageEnum.guardiansDel, FromPageEnum.guardiansLoginGuardian].includes(from)
     ) {
       filterGuardianList = tempGuardianList.filter((item) => item.key !== opGuardian?.key);
     }
@@ -95,9 +87,9 @@ export default function GuardianApproval() {
     if (AllowedGuardianPageArr.includes(from)) {
       console.log('recoveryWallet guardians', '');
       handleGuardianRecovery();
-    } else if (from === GuardianApprovalFromPageEnum.removeManage) {
+    } else if (from === FromPageEnum.removeManage) {
       handleRemoveOtherManage();
-    } else if (from === GuardianApprovalFromPageEnum.setTransferLimit) {
+    } else if (from === FromPageEnum.setTransferLimit) {
       handleSetTransferLimit();
     } else {
       const res = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();
@@ -144,13 +136,13 @@ export default function GuardianApproval() {
     const from = locationParams.from;
     if (from) {
       if (AllowedGuardianPageArr.includes(from)) {
-        if ([GuardianApprovalFromPageEnum.guardiansDel, GuardianApprovalFromPageEnum.guardiansEdit].includes(from)) {
+        if ([FromPageEnum.guardiansDel, FromPageEnum.guardiansEdit].includes(from)) {
           navigate(`/setting/guardians/edit`);
           return;
-        } else if (from === GuardianApprovalFromPageEnum.guardiansAdd) {
+        } else if (from === FromPageEnum.guardiansAdd) {
           navigate('/setting/guardians/add', { state: 'back' });
           return;
-        } else if (from === GuardianApprovalFromPageEnum.guardiansLoginGuardian) {
+        } else if (from === FromPageEnum.guardiansLoginGuardian) {
           if (locationParams.extra === 'edit') {
             navigate('/setting/guardians/edit');
           } else {
@@ -159,11 +151,11 @@ export default function GuardianApproval() {
           return;
         }
       }
-      if (from === GuardianApprovalFromPageEnum.removeManage) {
+      if (from === FromPageEnum.removeManage) {
         navigate(`/setting/wallet-security/manage-devices/${locationParams.manageAddress}`);
         return;
       }
-      if (from === GuardianApprovalFromPageEnum.setTransferLimit) {
+      if (from === FromPageEnum.setTransferLimit) {
         // TODO state
         navigate(`/setting/wallet-security/payment-security/transfer-settings-edit`, {
           state: locationParams,

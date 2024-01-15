@@ -37,7 +37,7 @@ export default function SendPreview({
   isCross: boolean;
   tokenId: string;
 }) {
-  const { walletName } = useWalletInfo();
+  const { userInfo } = useWalletInfo();
   const wallet = useCurrentWalletInfo();
   const isMainnet = useIsMainnet();
   const amountInUsdShow = useAmountInUsdShow();
@@ -103,7 +103,7 @@ export default function SendPreview({
         <div className="item">
           <span className="label">From</span>
           <div className="value">
-            <p className="name">{walletName}</p>
+            <p className="name">{userInfo?.nickName}</p>
             <p className="address">{entireFromAddressShow.replace(/(?<=^\w{9})\w+(?=\w{10})/, '...')}</p>
           </div>
         </div>

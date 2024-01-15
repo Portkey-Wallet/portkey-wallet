@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Tabs } from 'antd';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import BalanceCard from 'pages/components/BalanceCard';
 import CustomTokenDrawer from 'pages/components/CustomTokenDrawer';
 import { useTranslation } from 'react-i18next';
@@ -53,14 +53,19 @@ import { useInitRamp, useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ra
 import { setBadge } from 'utils/FCM';
 import { useFCMEnable, useReportFCMStatus } from 'hooks/useFCM';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
+import { useLocationState } from 'hooks/router';
 
 export interface TransactionResult {
   total: number;
   items: Transaction[];
 }
 
+export type TMyBalanceState = {
+  key?: string;
+};
+
 export default function MyBalance() {
-  const { walletName } = useWalletInfo();
+  const { userInfo } = useWalletInfo();
   const { t } = useTranslation();
   const [activeKey, setActiveKey] = useState<string>(BalanceTab.TOKEN);
   const [navTarget, setNavTarget] = useState<'send' | 'receive'>('send');
@@ -71,7 +76,7 @@ export default function MyBalance() {
     accountBalance,
   } = useAssetInfo();
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const { state } = useLocationState<TMyBalanceState>();
   const { passwordSeed } = useUserInfo();
   const appDispatch = useAppDispatch();
   const caAddresses = useCaAddresses();
@@ -299,7 +304,7 @@ export default function MyBalance() {
       )}
       <div className="wallet-name">
         {!isPrompt && <AccountConnect />}
-        {walletName}
+        {userInfo?.nickName}
       </div>
       <div className="balance-amount">
         {isMainNet ? (

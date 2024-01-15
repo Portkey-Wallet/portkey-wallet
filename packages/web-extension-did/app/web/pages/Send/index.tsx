@@ -61,7 +61,7 @@ type TypeStageObj = {
 
 export default function Send() {
   const navigate = useNavigate();
-  const { walletName } = useWalletInfo();
+  const { userInfo } = useWalletInfo();
   // TODO need get data from state and wait for BE data structure
   const { type, symbol } = useParams();
   const { state } = useLocation();
@@ -631,7 +631,7 @@ export default function Send() {
               <div className="item from">
                 <span className="label">{t('From_with_colon')}</span>
                 <div className={'from-wallet control'}>
-                  <div className="name">{walletName}</div>
+                  <div className="name">{userInfo?.nickName}</div>
                 </div>
               </div>
               <div className="item to">
@@ -689,7 +689,7 @@ export default function Send() {
     toAccount,
     tokenInfo.chainId,
     type,
-    walletName,
+    userInfo?.nickName,
   ]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;

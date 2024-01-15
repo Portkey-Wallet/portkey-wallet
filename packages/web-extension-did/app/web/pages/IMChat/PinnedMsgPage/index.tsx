@@ -1,6 +1,6 @@
 import { useDeleteMessage, useGroupChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import SettingHeader from 'pages/components/SettingHeader';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { MessageList, MessageContentType, StyleProvider, MessageShowPageEnum } from '@portkey-wallet/im-ui-web';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ import { Message } from '@portkey-wallet/im';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import './index.less';
 import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
 
 const PinnedMsg = () => {
   const { channelUuid } = useParams();
@@ -23,7 +24,7 @@ const PinnedMsg = () => {
   } = useIMPin(`${channelUuid}`, true);
   const deleteMsg = useDeleteMessage(channelUuid || '');
   const { isAdmin } = useGroupChannel(`${channelUuid}`);
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const { t } = useTranslation();
   const messageRef = useRef<any>(null);
   const { relationId } = useRelationId();

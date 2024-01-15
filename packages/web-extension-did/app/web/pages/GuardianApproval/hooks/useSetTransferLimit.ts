@@ -13,6 +13,8 @@ import getSeed from 'utils/getSeed';
 import singleMessage from 'utils/singleMessage';
 import { useLocationParams, useNavigateState } from 'hooks/router';
 import {
+  TRampLocationState,
+  TSendLocationState,
   TSetTransferLimitLocationSearch,
   TSetTransferLimitLocationState,
   TTransferSettingLocationState,
@@ -24,18 +26,16 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
 
   const currentChain = useCurrentChain(targetChainId);
   const { locationParams } = useLocationParams<TSetTransferLimitLocationState, TSetTransferLimitLocationSearch>();
-  const navigate = useNavigateState<TTransferSettingLocationState>();
+  const navigate = useNavigateState<TTransferSettingLocationState | TSendLocationState | TRampLocationState>();
   const currentNetwork = useCurrentNetworkInfo();
   const { userGuardianStatus } = useGuardiansInfo();
 
   const checkBackPath = useCallback(
     (state: ITransferLimitRouteState) => {
       switch (state.from) {
-        // TODO navigate
         case ICheckLimitBusiness.RAMP_SELL:
           navigate('/buy', { state: { ...state, ...state.extra } });
           break;
-        // TODO navigate
         case ICheckLimitBusiness.SEND:
           navigate(`/send/token/${state.symbol}`, { state: { ...state, ...state.extra } });
           break;

@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
@@ -12,15 +11,15 @@ import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import singleMessage from 'utils/singleMessage';
-import { useLocationState } from 'hooks/router';
-import { TNewChatLocationState } from 'types/router';
+import { useLocationState, useNavigateState } from 'hooks/router';
+import { TNewChatLocationState, TViewContactLocationState } from 'types/router';
 import './index.less';
 
 export default function NewChat() {
   const { t } = useTranslation();
   const { state } = useLocationState<TNewChatLocationState>();
   const [filterWord, setFilterWord] = useState<string>('');
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TViewContactLocationState>();
   const { setLoading } = useLoading();
   const [chatList, setChatList] = useState<ContactItemType[]>([]);
   const localSearch = useLocalContactSearch();

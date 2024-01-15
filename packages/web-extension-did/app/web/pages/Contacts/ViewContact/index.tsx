@@ -24,7 +24,7 @@ import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { ILoginAccountListProps } from '../components/LoginAccountList';
-import { IContactProfileLoginAccount } from '@portkey-wallet/types/types-ca/contact';
+import { EditContactItemApiType, IContactProfileLoginAccount } from '@portkey-wallet/types/types-ca/contact';
 import { useLocationState } from 'hooks/router';
 import { TViewContactLocationState } from 'types/router';
 
@@ -158,7 +158,7 @@ export default function ViewContact() {
   useEffect(() => {
     if (state?.isImputation && state?.from === 'contact-list') {
       // imputation from unread to read
-      readImputationApi(state);
+      readImputationApi(state as EditContactItemApiType);
 
       CustomModal({
         content: (

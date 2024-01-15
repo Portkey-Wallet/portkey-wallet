@@ -47,6 +47,7 @@ import getSeed from 'utils/getSeed';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import singleMessage from 'utils/singleMessage';
 import { useLocationState } from 'hooks/router';
+import { TSendLocationState } from 'types/router';
 
 export type ToAccount = { address: string; name?: string };
 
@@ -58,15 +59,6 @@ export enum SendStage {
 
 type TypeStageObj = {
   [key in SendStage]: { btnText: string; handler: () => void; backFun: () => void; element: ReactElement };
-};
-
-export type TSendLocationState = BaseToken & {
-  chainId: ChainId;
-  targetChainId?: ChainId;
-  toAccount?: ToAccount;
-  stage?: SendStage;
-  amount?: string;
-  balance?: string;
 };
 
 export default function Send() {

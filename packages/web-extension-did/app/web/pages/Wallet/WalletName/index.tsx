@@ -9,19 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useLocationState } from 'hooks/router';
-
-export enum WalletNameFrom {
-  chatBox = 'chat-box',
-  chatBoxGroup = 'chat-box-group',
-  chatGroupInfo = 'chat-group-info',
-  chatMemberList = 'chat-member-list',
-}
-
-export type TWalletNameLocationState = {
-  from?: WalletNameFrom;
-  channelUuid?: string;
-  search?: string;
-};
+import { FromPageEnum, TWalletNameLocationState } from 'types/router';
 
 export default function WalletName() {
   const { isNotLessThan768 } = useCommonState();
@@ -65,13 +53,13 @@ export default function WalletName() {
 
   const showView = useCallback(() => {
     if (type === MyProfilePageType.VIEW) {
-      if (locationState?.from === WalletNameFrom.chatGroupInfo)
+      if (locationState?.from === FromPageEnum.chatGroupInfo)
         return navigate(`/chat-group-info/${locationState?.channelUuid}`);
 
-      if (locationState?.from === WalletNameFrom.chatMemberList)
+      if (locationState?.from === FromPageEnum.chatMemberList)
         return navigate(`/chat-group-info/${locationState?.channelUuid}/member-list`, { state: locationState });
 
-      if (locationState?.from && [WalletNameFrom.chatBox, WalletNameFrom.chatBoxGroup].includes(locationState?.from))
+      if (locationState?.from && [FromPageEnum.chatBox, FromPageEnum.chatBoxGroup].includes(locationState?.from))
         return navigate(`/${locationState.from}/${locationState?.channelUuid}`);
       return navigate('/setting/wallet');
     }

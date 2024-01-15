@@ -2,7 +2,7 @@ import { useCallback, useMemo, useEffect, useState } from 'react';
 import { Form } from 'antd';
 import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { ContactItemType, AddressItem, IImInfo } from '@portkey-wallet/types/types-ca/contact';
+import { ContactItemType, AddressItem } from '@portkey-wallet/types/types-ca/contact';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
 import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
@@ -22,6 +22,7 @@ import { handleErrorMessage } from '@portkey-wallet/utils';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import singleMessage from 'utils/singleMessage';
 import { useLocationState } from 'hooks/router';
+import { TAddContactLocationState } from 'types/router';
 
 export enum ContactInfoError {
   invalidAddress = 'Invalid address',
@@ -46,13 +47,6 @@ export interface IAddContactProps extends IAddContactFormProps, BaseHeaderProps 
   closeDrawer: () => void;
   handleNetworkChange: (v: any) => void;
 }
-
-export type TAddContactLocationState = {
-  id?: string;
-  addresses?: CustomAddressItem[];
-  name?: string;
-  imInfo?: Partial<IImInfo>;
-};
 
 export default function AddContact() {
   const [form] = Form.useForm();

@@ -26,18 +26,12 @@ import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { ILoginAccountListProps } from '../components/LoginAccountList';
 import { IContactProfileLoginAccount } from '@portkey-wallet/types/types-ca/contact';
 import { useLocationState } from 'hooks/router';
-
-export type ViewContactLocationState = IProfileDetailDataProps & {
-  id: string;
-  name: string;
-  portkeyId?: string;
-  channelUuid?: string;
-};
+import { TViewContactLocationState } from 'types/router';
 
 export default function ViewContact() {
   const { isNotLessThan768 } = useCommonState();
   const dispatch = useAppCommonDispatch();
-  const { state } = useLocationState<ViewContactLocationState>();
+  const { state } = useLocationState<TViewContactLocationState>();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const showChat = useIsChatShow();

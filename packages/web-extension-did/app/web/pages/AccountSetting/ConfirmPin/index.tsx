@@ -7,7 +7,7 @@ import ConfirmPinPrompt from './Prompt';
 import { BaseHeaderProps } from 'types/UI';
 import { useCommonState } from 'store/Provider/hooks';
 import { useNavigateState } from 'hooks/router';
-import { TSetNewPinLocationState } from '../SetNewPin';
+import { TSetNewPinLocationState } from 'types/router';
 
 export interface IConfirmPinProps extends BaseHeaderProps {
   pinLabel: string;

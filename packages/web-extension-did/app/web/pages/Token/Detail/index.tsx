@@ -18,23 +18,13 @@ import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from 'pages/com
 import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import './index.less';
 import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
-import { ChainId } from '@portkey-wallet/types';
 import { useLocationState, useNavigateState } from 'hooks/router';
-import { TSendLocationState } from 'pages/Send';
+import { TSendLocationState, TTokenDetailLocationState } from 'types/router';
 
 export enum TokenTransferStatus {
   CONFIRMED = 'Confirmed',
   SENDING = 'Sending',
 }
-
-export type TTokenDetailLocationState = {
-  symbol: string;
-  chainId: ChainId;
-  balance: string;
-  decimals: number;
-  tokenContractAddress: string;
-  balanceInUsd?: string;
-};
 
 export type TTokenDetailNavigateState = {
   tokenInfo: TTokenDetailLocationState;

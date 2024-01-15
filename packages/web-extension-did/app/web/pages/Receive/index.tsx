@@ -23,16 +23,7 @@ import {
 } from '@portkey-wallet/constants/constants-ca/send';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useLocationState } from 'hooks/router';
-
-export type TReceiveLocationState = {
-  chainId: ChainId;
-  symbol: string;
-  balance: string;
-  imageUrl: string;
-  address: string;
-  balanceInUsd: string;
-  decimals: string | number;
-};
+import { TReceiveLocationState } from 'types/router';
 
 export default function Receive() {
   const navigate = useNavigate();

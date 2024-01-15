@@ -8,6 +8,7 @@ import { resetActivity } from '@portkey-wallet/store/store-ca/activity/slice';
 import { resetContact } from '@portkey-wallet/store/store-ca/contact/actions';
 import { resetGuardiansState } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { resetTokenManagement } from '@portkey-wallet/store/store-ca/tokenManagement/slice';
+import { resetHasShowUploadV2WaringModal } from '@portkey-wallet/store/settings/slice';
 
 export const useAppCASelector: TypedUseSelectorHook<CACommonState> = useSelector;
 
@@ -20,5 +21,6 @@ export function useResetStore() {
     dispatch(resetActivity());
     dispatch(resetGuardiansState());
     dispatch(resetContact());
+    dispatch(resetHasShowUploadV2WaringModal());
   }, [dispatch]);
 }

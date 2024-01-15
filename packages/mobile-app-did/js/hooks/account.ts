@@ -32,11 +32,9 @@ export function useGetAccountTokenList() {
   return useThrottleCallback(
     () => {
       if (caAddressList?.length === 0) return;
-      return dispatch(
-        fetchTokenListAsync({ caAddresses: caAddressList || [], caAddressInfos: caAddressInfoList || [] }),
-      );
+      return dispatch(fetchTokenListAsync({ caAddressInfos: caAddressInfoList || [] }));
     },
-    [caAddressInfoList, caAddressList, dispatch],
+    [caAddressInfoList, dispatch],
     1000,
   );
 }

@@ -1,4 +1,4 @@
-import { useCaAddresses, useCaAddressInfoList, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchNFTAsync, fetchNFTCollectionsAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { ChainId } from '@portkey-wallet/types';
 import { NFTCollectionItemShowType, NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
@@ -24,8 +24,6 @@ export default function NFT() {
     accountNFT: { accountNFTList },
   } = useAssetInfo();
   const dispatch = useAppDispatch();
-  const caAddresses = useCaAddresses();
-  const wallet = useCurrentWalletInfo();
   const { isPrompt } = useCommonState();
   const caAddressInfos = useCaAddressInfoList();
   const [getMoreFlag, setGetMoreFlag] = useState(false);
@@ -41,7 +39,6 @@ export default function NFT() {
         fetchNFTAsync({
           symbol,
           chainId: chainId as ChainId,
-          caAddresses: [wallet?.[chainId]?.caAddress || ''],
           pageNum: curNftNum,
           caAddressInfos: caAddressInfos.filter((item) => item.chainId === chainId),
         }),
@@ -49,7 +46,7 @@ export default function NFT() {
       setNftNum({ ...nftNum, [nftColKey]: curNftNum + 1 });
       setGetMoreFlag(false);
     },
-    [caAddressInfos, dispatch, nftNum, wallet, getMoreFlag],
+    [caAddressInfos, dispatch, nftNum, getMoreFlag],
   );
 
   const handleChange = useCallback(
@@ -67,7 +64,6 @@ export default function NFT() {
             fetchNFTAsync({
               symbol: curTmp[0],
               chainId: curTmp[1] as ChainId,
-              caAddresses: [wallet?.[curTmp[1] as ChainId]?.caAddress || ''],
               pageNum: 0,
               caAddressInfos: caAddressInfos.filter((item) => item.chainId === curTmp[1]),
             }),
@@ -77,12 +73,12 @@ export default function NFT() {
       });
       setOpenPanel(openArr);
     },
-    [caAddressInfos, dispatch, nftNum, openPanel, wallet],
+    [caAddressInfos, dispatch, nftNum, openPanel],
   );
 
   useEffect(() => {
-    dispatch(fetchNFTCollectionsAsync({ caAddresses, maxNFTCount: maxNftNum, caAddressInfos }));
-  }, [caAddressInfos, caAddresses, dispatch, maxNftNum]);
+    dispatch(fetchNFTCollectionsAsync({ maxNFTCount: maxNftNum, caAddressInfos }));
+  }, [caAddressInfos, dispatch, maxNftNum]);
 
   const renderItem = useCallback(
     (nft: NFTCollectionItemShowType) => {
@@ -133,7 +129,7 @@ export default function NFT() {
                   )
                 );
               })}
-            {!!nftNum[nftColKey] && nft.totalRecordCount > nftNum[nftColKey] * maxNftNum && (
+            {!!nftNum[nftColKey] && nft?.totalRecordCount > nftNum[nftColKey] * maxNftNum && (
               <div
                 className="load-more"
                 onClick={() => {

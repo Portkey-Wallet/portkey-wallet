@@ -40,6 +40,7 @@ import { getStoreState } from 'store/utils/getStore';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { verification } from 'utils/api';
 import { setCurrentGuardianAction, setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
+import { useServiceSuspension } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export default function RegisterStart() {
   const { type } = useParams();
@@ -53,6 +54,7 @@ export default function RegisterStart() {
   const isMainnet = useIsMainnet();
   const [open, setOpen] = useState<boolean>();
   const { t } = useTranslation();
+  const serviceSuspension = useServiceSuspension();
 
   const networkList = useNetworkList();
 
@@ -121,8 +123,9 @@ export default function RegisterStart() {
           isLoginAccount = true;
         }
       } catch (error: any) {
-        const code = handleErrorCode(error);
-        if (code?.toString() === '3002') {
+        const code = `${handleErrorCode(error)}`;
+        // V2 upgrade: 3003
+        if (code === '3002' || code === '3003') {
           isLoginAccount = false;
         } else {
           throw handleErrorMessage(error || 'GetHolderInfo error');
@@ -331,13 +334,13 @@ export default function RegisterStart() {
           return setOpen(true);
         } else return onLoginFinish(loginInfo);
       }
-      if (type === 'create') return onSignFinish(loginInfo);
+      if (type === 'create' && !serviceSuspension?.isSuspended) return onSignFinish(loginInfo);
       else {
         setLoading(false);
         return setOpen(true);
       }
     },
-    [onLoginFinish, onSignFinish, setLoading, type],
+    [onLoginFinish, onSignFinish, serviceSuspension?.isSuspended, setLoading, type],
   );
 
   const onSocialFinish: SocialLoginFinishHandler = useCallback(
@@ -424,7 +427,15 @@ export default function RegisterStart() {
         onConfirm={() => {
           if (!loginInfoRef.current) return setOpen(false);
           if (isHasAccount?.current) return onLoginFinish(loginInfoRef.current);
-          onSignFinish(loginInfoRef.current);
+          // V2
+          if (serviceSuspension?.isSuspended) {
+            const openWinder = window.open(serviceSuspension?.extensionUrl, '_blank');
+            if (openWinder) {
+              openWinder.opener = null;
+            }
+          } else {
+            onSignFinish(loginInfoRef.current);
+          }
           setOpen(false);
         }}
       />

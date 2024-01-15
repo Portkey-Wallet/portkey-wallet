@@ -16,7 +16,12 @@ import { useCheckUpdate } from 'hooks/useCheckUpdate';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { useLocation } from 'react-router';
-import { useRememberMeBlackList, useSocialMediaList, useTabMenuList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import {
+  useRememberMeBlackList,
+  useServiceSuspension,
+  useSocialMediaList,
+  useTabMenuList,
+} from '@portkey-wallet/hooks/hooks-ca/cms';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import usePortkeyUIConfig from 'hooks/usePortkeyUIConfig';
 import im from '@portkey-wallet/im';
@@ -27,7 +32,7 @@ import { useExtensionEntrance } from 'hooks/cms';
 import { useInitRamp } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { getPin } from 'utils/lib/serviceWorkerAction';
 import { useEffectOnce } from '@portkey-wallet/hooks';
-import { initConfig, initRequest } from './initConfig';
+import { initConfig, initDidReactSDKToken, initRequest } from './initConfig';
 import useFCM from 'hooks/useFCM';
 
 keepAliveOnPages({});
@@ -72,8 +77,9 @@ export default function Updater() {
   const refreshToken = useRefreshTokenConfig();
   useMemo(async () => {
     const pin = await getPin();
-    await refreshToken(pin);
-    await initRamp();
+    const token = await refreshToken(pin);
+    initDidReactSDKToken(token);
+    initRamp();
   }, [initRamp, refreshToken]);
 
   const checkUpdate = useCheckUpdate();
@@ -100,6 +106,7 @@ export default function Updater() {
   useSocialMediaList(true);
   useExtensionEntrance(true);
   useRememberMeBlackList(true);
+  useServiceSuspension(true);
   useTabMenuList(true);
   useCheckContactMap();
 

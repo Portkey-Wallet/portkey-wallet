@@ -5,7 +5,7 @@ import navigationService from 'utils/navigationService';
 import styles from '../styles';
 import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
-import { TextM } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import qrCode from 'assets/image/pngs/QR-code.png';
@@ -20,6 +20,7 @@ import { useOnLogin } from 'hooks/login';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import Loading from 'components/Loading';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { useServiceSuspension } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import RoundButton from './RoundButton';
 import fonts from 'assets/theme/fonts';
@@ -44,6 +45,8 @@ export default function Referral({
   type?: PageType;
 }) {
   const authenticationSign = useAuthenticationSign();
+
+  const { isSuspended } = useServiceSuspension() || {};
 
   const onLogin = useOnLogin(type === PageType.login);
 
@@ -150,7 +153,7 @@ export default function Referral({
             </Fragment>
           ))}
         </View>
-        {type === PageType.login && (
+        {!isSuspended && type === PageType.login && (
           <Touchable
             style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flexCenter, styles.signUpTip]}
             onPress={() => navigationService.navigate('SignupPortkey')}>
@@ -161,7 +164,6 @@ export default function Referral({
           </Touchable>
         )}
       </View>
-
       <TermsServiceButton />
     </View>
   );
@@ -175,6 +177,7 @@ const pageStyles = StyleSheet.create({
   },
   outlineTitleStyle: {
     marginLeft: 12,
+    ...fonts.mediumFont,
   },
   dividerStyle: {
     marginVertical: 16,

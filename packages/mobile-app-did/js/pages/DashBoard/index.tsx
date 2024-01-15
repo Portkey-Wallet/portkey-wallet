@@ -8,9 +8,12 @@ import myEvents from 'utils/deviceEvent';
 import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useReportingSignalR } from 'hooks/FCM';
+import { showUpgradeOverlay } from 'components/UpgradeOverlay';
+import { useServiceSuspension } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 const DashBoard: React.FC<any> = ({ navigation }) => {
   const reportAnalyticsEvent = useReportAnalyticsEvent();
+  const { isSuspended } = useServiceSuspension() || {};
   useReportingSignalR();
 
   const navToChat = useCallback(
@@ -24,6 +27,7 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
 
   useEffectOnce(() => {
     reportAnalyticsEvent({ message: 'DashBoard' });
+    if (isSuspended) showUpgradeOverlay({ type: 'dashBoard' });
   });
 
   // nav's to chat tab

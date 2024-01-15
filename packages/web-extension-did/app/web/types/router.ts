@@ -3,7 +3,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { IImInfo } from '@portkey-wallet/types/types-ca/contact';
 import { ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
-import { BaseToken, TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { CaHolderInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { CustomAddressItem } from 'pages/Contacts/AddContact';
 import { IProfileDetailDataProps } from './Profile';
@@ -135,17 +135,6 @@ export type ITransactionLocationState = {
   from?: string;
 };
 
-// Ramp
-export type TRampLocationState = {
-  crypto: string;
-  network: string;
-  fiat: string;
-  country: string;
-  amount: string;
-  side: RampType;
-  tokenInfo?: TokenItemShowType;
-};
-
 // ChatListSearch
 export type TChatListSearchLocationState = {
   search?: string;
@@ -180,7 +169,9 @@ export type TSetNewPinLocationState = {
   pin: string;
 };
 
-// RampPreview
+// Ramp
+export type TRampLocationState = Partial<TRampPreviewLocationState>;
+
 export type TRampPreviewLocationState = {
   crypto: string;
   network: string;

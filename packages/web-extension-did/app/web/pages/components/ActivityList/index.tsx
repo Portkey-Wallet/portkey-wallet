@@ -4,7 +4,7 @@ import { AmountSign, formatWithCommas, formatStr2EllipsisStr } from '@portkey-wa
 import { List } from 'antd-mobile';
 import CustomSvg from 'components/CustomSvg';
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigateState } from 'hooks/router';
 import './index.less';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
@@ -22,6 +22,7 @@ import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ChainId } from '@portkey/provider-types';
 import getSeed from 'utils/getSeed';
+import { ITransactionLocationState } from 'types/router';
 
 export interface IActivityListProps {
   data?: ActivityItemType[];
@@ -45,8 +46,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
     return SHOW_FROM_TRANSACTION_TYPES.includes(type) ? 'Transfer' : 'socialRecovery';
   };
 
-  const nav = useNavigate();
-
+  const nav = useNavigateState<ITransactionLocationState>();
   const navToDetail = useCallback(
     (item: ActivityItemType) => {
       nav('/transaction', { state: { item, chainId, from: chainId ? '' : BalanceTab.ACTIVITY } });

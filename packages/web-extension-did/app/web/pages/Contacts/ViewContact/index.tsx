@@ -1,6 +1,6 @@
 import ViewContactPrompt from './Prompt';
 import ViewContactPopup from './Popup';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCommonState } from 'store/Provider/hooks';
@@ -25,13 +25,11 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { ILoginAccountListProps } from '../components/LoginAccountList';
 import { EditContactItemApiType, IContactProfileLoginAccount } from '@portkey-wallet/types/types-ca/contact';
-import { useLocationState } from 'hooks/router';
-import { TViewContactLocationState } from 'types/router';
 
 export default function ViewContact() {
   const { isNotLessThan768 } = useCommonState();
   const dispatch = useAppCommonDispatch();
-  const { state } = useLocationState<TViewContactLocationState>();
+  const { state } = useLocation(); // TViewContactLocationState
   const navigate = useNavigate();
   const { t } = useTranslation();
   const showChat = useIsChatShow();
@@ -98,7 +96,7 @@ export default function ViewContact() {
   useEffect(() => {
     im.service
       .getProfile({
-        id: state.id || '',
+        id: state?.id || undefined,
         portkeyId: data?.imInfo?.portkeyId || undefined,
         relationId: relationId || undefined,
       })

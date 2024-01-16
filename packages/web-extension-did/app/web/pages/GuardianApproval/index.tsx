@@ -17,7 +17,7 @@ import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQ
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { ChainId } from '@portkey-wallet/types';
-import { useLocationParams, useNavigateState } from 'hooks/router';
+import { usePromptLocationParams, useNavigateState } from 'hooks/router';
 import {
   FromPageEnum,
   TAddGuardianLocationState,
@@ -41,7 +41,7 @@ export default function GuardianApproval() {
   const { loginAccount } = useLoginInfo();
   const [isExpired, setIsExpired] = useState<boolean>(false);
   const navigate = useNavigateState<TAddGuardianLocationState | TTransferSettingEditLocationState>();
-  const { locationParams } = useLocationParams<TGuardianApprovalLocationState, TGuardianApprovalLocationSearch>();
+  const { locationParams } = usePromptLocationParams<TGuardianApprovalLocationState, TGuardianApprovalLocationSearch>();
   const { isPrompt, isNotLessThan768 } = useCommonState();
   const { t } = useTranslation();
   const isBigScreenPrompt: boolean = useMemo(() => {

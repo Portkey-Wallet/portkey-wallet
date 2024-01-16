@@ -10,7 +10,7 @@ import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { formatGuardianValue } from '../utils/formatGuardianValue';
 import ModalTip from 'pages/components/ModalTip';
 import getSeed from 'utils/getSeed';
-import { useLocationParams, useNavigateState } from 'hooks/router';
+import { usePromptLocationParams, useNavigateState } from 'hooks/router';
 import { TRemoveOtherManageLocationSearch, TRemoveOtherManageLocationState } from 'types/router';
 
 export const useRemoveOtherManage = () => {
@@ -19,7 +19,10 @@ export const useRemoveOtherManage = () => {
 
   const originChainId = useOriginChainId();
   const currentChain = useCurrentChain(originChainId);
-  const { locationParams } = useLocationParams<TRemoveOtherManageLocationState, TRemoveOtherManageLocationSearch>();
+  const { locationParams } = usePromptLocationParams<
+    TRemoveOtherManageLocationState,
+    TRemoveOtherManageLocationSearch
+  >();
   const navigate = useNavigateState();
   const currentNetwork = useCurrentNetworkInfo();
   const { userGuardianStatus } = useGuardiansInfo();

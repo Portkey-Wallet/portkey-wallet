@@ -1,5 +1,6 @@
 import { NavigateOptions, useNavigate, To, useLocation, Path } from 'react-router';
 import qs from 'query-string';
+import usePromptSearch from './usePromptSearch';
 
 export interface CustomNavigateOptions<T> extends NavigateOptions {
   state?: T;
@@ -40,5 +41,16 @@ export function useLocationParams<T, K>(): LocationParams<T, K> {
     state,
     search: searchObj,
     locationParams: { ...state, ...searchObj },
+  };
+}
+
+export function usePromptLocationParams<T, K>(): LocationParams<T, K> {
+  const { state } = useLocationState<T>();
+  const search = usePromptSearch();
+
+  return {
+    state,
+    search: search,
+    locationParams: { ...state, ...search },
   };
 }

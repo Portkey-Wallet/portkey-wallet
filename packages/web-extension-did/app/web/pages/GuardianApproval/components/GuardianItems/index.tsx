@@ -18,7 +18,7 @@ import { ChainId } from '@portkey-wallet/types';
 import './index.less';
 import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
 import singleMessage from 'utils/singleMessage';
-import { useLocationParams, useNavigateState } from 'hooks/router';
+import { usePromptLocationParams, useNavigateState } from 'hooks/router';
 import {
   FromPageEnum,
   TGuardianItemLocationSearch,
@@ -45,7 +45,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
   const { t } = useTranslation();
   const { opGuardian } = useGuardiansInfo();
   const { setLoading } = useLoading();
-  const { locationParams } = useLocationParams<TGuardianItemLocationState, TGuardianItemLocationSearch>();
+  const { locationParams } = usePromptLocationParams<TGuardianItemLocationState, TGuardianItemLocationSearch>();
   const dispatch = useAppDispatch();
   const navigate = useNavigateState<TVerifierAccountLocationState>();
   const originChainId = useOriginChainId();

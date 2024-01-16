@@ -11,7 +11,7 @@ import { ICheckLimitBusiness, ITransferLimitRouteState } from '@portkey-wallet/t
 import { ChainId } from '@portkey-wallet/types';
 import getSeed from 'utils/getSeed';
 import singleMessage from 'utils/singleMessage';
-import { useLocationParams, useNavigateState } from 'hooks/router';
+import { usePromptLocationParams, useNavigateState } from 'hooks/router';
 import {
   TRampLocationState,
   TSendLocationState,
@@ -25,7 +25,7 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
   const { walletInfo } = useCurrentWallet();
 
   const currentChain = useCurrentChain(targetChainId);
-  const { locationParams } = useLocationParams<TSetTransferLimitLocationState, TSetTransferLimitLocationSearch>();
+  const { locationParams } = usePromptLocationParams<TSetTransferLimitLocationState, TSetTransferLimitLocationSearch>();
   const navigate = useNavigateState<TTransferSettingLocationState | TSendLocationState | TRampLocationState>();
   const currentNetwork = useCurrentNetworkInfo();
   const { userGuardianStatus } = useGuardiansInfo();

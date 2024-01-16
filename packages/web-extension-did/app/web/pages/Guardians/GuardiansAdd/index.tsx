@@ -40,7 +40,7 @@ import { getVerifierStatusMap, guardianAccountIsExist } from '../utils';
 import OptionTip from '../components/SelectOptionTip';
 import { guardianExistTip, verifierExistTip } from '@portkey-wallet/constants/constants-ca/guardian';
 import singleMessage from 'utils/singleMessage';
-import { useLocationParams, useNavigateState } from 'hooks/router';
+import { usePromptLocationParams, useNavigateState } from 'hooks/router';
 import {
   FromPageEnum,
   TAddGuardianLocationSearch,
@@ -53,7 +53,7 @@ import './index.less';
 export default function AddGuardian() {
   const navigate = useNavigateState<TVerifierAccountLocationState | TGuardianApprovalLocationState>();
   const { t } = useTranslation();
-  const { locationParams } = useLocationParams<TAddGuardianLocationState, TAddGuardianLocationSearch>();
+  const { locationParams } = usePromptLocationParams<TAddGuardianLocationState, TAddGuardianLocationSearch>();
   const { verifierMap, userGuardiansList, opGuardian } = useGuardiansInfo();
   const verifierStatusMap = useMemo(
     () => getVerifierStatusMap(verifierMap, userGuardiansList),

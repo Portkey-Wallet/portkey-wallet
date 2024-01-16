@@ -77,7 +77,7 @@ export default function ChatBox() {
   }, [addContactApi, info, setLoading]);
   const handleGoProfile = useCallback(() => {
     navigate('/setting/contacts/view', {
-      state: { relationId: info?.toRelationId, from: 'chat-box', isStranger, channelUuid },
+      state: { relationId: info?.toRelationId, previousPage: 'chat-box', isStranger, channelUuid },
     });
   }, [info?.toRelationId, isStranger, navigate, channelUuid]);
   const p2pPopList = useMemo(

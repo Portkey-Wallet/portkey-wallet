@@ -57,7 +57,7 @@ export default function DeviceDetail() {
         })
       : InternalMessage.payload(
           PortkeyMessageTypes.GUARDIANS_APPROVAL,
-          JSON.stringify({ previousPage: FromPageEnum.removeManage, managerAddress: device.managerAddress }),
+          JSON.stringify({ previousPage: FromPageEnum.removeManage, manageAddress: device.managerAddress }),
         ).send();
   }, [
     dispatch,

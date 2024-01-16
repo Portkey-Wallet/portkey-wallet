@@ -57,10 +57,10 @@ const GroupInfo = () => {
   const handleGoProfile = useCallback(
     (item: ChannelMemberInfo) => {
       if (item.relationId === myRelationId) {
-        navigate('/setting/wallet/wallet-name', { state: { from: FromPageEnum.chatGroupInfo, channelUuid } });
+        navigate('/setting/wallet/wallet-name', { state: { previousPage: FromPageEnum.chatGroupInfo, channelUuid } });
       } else {
         navigate('/setting/contacts/view', {
-          state: { relationId: item.relationId, from: FromPageEnum.chatGroupInfo, channelUuid },
+          state: { relationId: item.relationId, previousPage: FromPageEnum.chatGroupInfo, channelUuid },
         });
       }
     },

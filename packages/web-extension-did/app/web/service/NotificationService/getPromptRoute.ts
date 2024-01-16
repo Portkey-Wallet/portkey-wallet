@@ -33,14 +33,17 @@ const routMap: { [x in keyof typeof PromptRouteTypes]?: string } = {
   [PromptRouteTypes.WALLET_SECURITY_APPROVE]: '#/approve-wallet-security',
   [PromptRouteTypes.GUARDIANS_APPROVAL_PAYMENT_SECURITY]:
     '#/setting/wallet-security/payment-security/guardian-approval',
+  [PromptRouteTypes.SEND]: '#/send',
+  [PromptRouteTypes.RAMP]: '#/buy',
 };
 
 export interface PromptMessage {
   method: keyof typeof routMap;
+  query?: string;
   search?: string;
 }
 
-export default function getPromptRoute({ method, search = '' }: PromptMessage) {
+export default function getPromptRoute({ method, query, search = '' }: PromptMessage) {
   if (!routMap[method]) throw Error('Can not get router');
-  return `${routMap[method]}${search ? '?detail=' + search : ''}`;
+  return `${routMap[method]}${query ? '/' + query : ''}${search ? '?detail=' + search : ''}`;
 }

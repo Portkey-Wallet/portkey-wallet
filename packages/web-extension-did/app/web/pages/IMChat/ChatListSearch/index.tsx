@@ -95,7 +95,9 @@ export default function ChatListSearch() {
         <div
           className="find-more flex"
           onClick={() =>
-            navigate(`/setting/contacts/find-more`, { state: { search: filterWord, from: FromPageEnum.chatSearch } })
+            navigate(`/setting/contacts/find-more`, {
+              state: { search: filterWord, previousPage: FromPageEnum.chatSearch },
+            })
           }>
           <CustomSvg type="AddMorePeople" />
           Find People

@@ -89,7 +89,7 @@ export default function GuardiansView() {
       setLoading(false);
       navigate('/setting/guardians/guardian-approval', {
         state: {
-          from: FromPageEnum.guardiansLoginGuardian,
+          previousPage: FromPageEnum.guardiansLoginGuardian,
         },
       });
     } catch (error) {
@@ -127,7 +127,7 @@ export default function GuardiansView() {
         );
         navigate('/setting/guardians/verifier-account', {
           state: {
-            from: FromPageEnum.guardiansLoginGuardian,
+            previousPage: FromPageEnum.guardiansLoginGuardian,
           },
         });
       } else {

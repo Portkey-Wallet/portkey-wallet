@@ -145,7 +145,7 @@ export default function GuardianApproval() {
           navigate(`/setting/guardians/edit`);
           return;
         } else if (from === FromPageEnum.guardiansAdd) {
-          navigate('/setting/guardians/add', { state: { from: 'back' } });
+          navigate('/setting/guardians/add', { state: { previousPage: 'back' } });
           return;
         } else if (from === FromPageEnum.guardiansLoginGuardian) {
           if (locationParams.extra === 'edit') {

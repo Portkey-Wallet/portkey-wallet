@@ -146,7 +146,7 @@ export default function GuardiansEdit() {
       setLoading(false);
       navigate('/setting/guardians/guardian-approval', {
         state: {
-          from: FromPageEnum.guardiansEdit,
+          previousPage: FromPageEnum.guardiansEdit,
         },
       });
     } catch (error: any) {
@@ -184,7 +184,7 @@ export default function GuardiansEdit() {
     );
     navigate('/setting/guardians/guardian-approval', {
       state: {
-        from: FromPageEnum.guardiansDel,
+        previousPage: FromPageEnum.guardiansDel,
       },
     });
   }, [opGuardian, dispatch, navigate, userGuardianList, walletInfo.caHash]);
@@ -205,7 +205,7 @@ export default function GuardiansEdit() {
       setLoading(false);
       navigate('/setting/guardians/guardian-approval', {
         state: {
-          from: FromPageEnum.guardiansLoginGuardian,
+          previousPage: FromPageEnum.guardiansLoginGuardian,
           extra: 'edit',
         },
       });
@@ -244,7 +244,7 @@ export default function GuardiansEdit() {
         );
         navigate('/setting/guardians/verifier-account', {
           state: {
-            from: FromPageEnum.guardiansLoginGuardian,
+            previousPage: FromPageEnum.guardiansLoginGuardian,
             extra: 'edit',
           },
         });

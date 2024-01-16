@@ -88,8 +88,8 @@ export default function FindMore() {
   }, []);
 
   const goBack = () => {
-    if (state?.from === FromPageEnum.chatSearch) return navigate('/chat-list-search', { state });
-    if (state?.from === FromPageEnum.chatList) return navigate('/chat-list', { state });
+    if (state?.previousPage === FromPageEnum.chatSearch) return navigate('/chat-list-search', { state });
+    if (state?.previousPage === FromPageEnum.chatList) return navigate('/chat-list', { state });
     return navigate('/setting/contacts');
   };
 

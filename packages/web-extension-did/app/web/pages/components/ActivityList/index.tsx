@@ -49,7 +49,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   const nav = useNavigateState<ITransactionLocationState>();
   const navToDetail = useCallback(
     (item: ActivityItemType) => {
-      nav('/transaction', { state: { item, chainId, from: chainId ? '' : BalanceTab.ACTIVITY } });
+      nav('/transaction', { state: { item, chainId, previousPage: chainId ? '' : BalanceTab.ACTIVITY } });
     },
     [chainId, nav],
   );

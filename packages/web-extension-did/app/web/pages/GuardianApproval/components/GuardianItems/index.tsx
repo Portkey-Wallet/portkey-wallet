@@ -59,7 +59,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
   );
 
   const operationType: OperationTypeEnum = useMemo(() => {
-    const from = locationParams.from;
+    const from = locationParams.previousPage;
     switch (from) {
       case FromPageEnum.guardiansEdit:
         return OperationTypeEnum.editGuardian;
@@ -76,7 +76,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
       default:
         return OperationTypeEnum.communityRecovery;
     }
-  }, [locationParams.from, opGuardian?.isLoginAccount]);
+  }, [locationParams.previousPage, opGuardian?.isLoginAccount]);
   console.log('operationType====', operationType);
 
   const guardianSendCode = useCallback(
@@ -128,7 +128,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
 
   const SendCode = useCallback(
     async (item: UserGuardianItem) => {
-      const from = locationParams.from;
+      const from = locationParams.previousPage;
       try {
         setLoading(true);
 
@@ -174,7 +174,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
           if (from === FromPageEnum.setTransferLimit) {
             return navigate('/setting/wallet-security/payment-security/verifier-account', { state: locationParams });
           }
-          return navigate('/login/verifier-account', { state: { from: FromPageEnum.login } });
+          return navigate('/login/verifier-account', { state: { previousPage: FromPageEnum.login } });
         }
       } catch (error: any) {
         console.log(error, 'error===');
@@ -210,7 +210,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
         verifiedInfo && dispatch(setUserGuardianItemStatus(verifiedInfo));
         return;
       }
-      const from = locationParams.from;
+      const from = locationParams.previousPage;
       dispatch(setCurrentGuardianAction({ ...item, isInitStatus: false }));
       if (AllowedGuardianPageArr.includes(from)) {
         navigate('/setting/guardians/verifier-account', { state: locationParams });
@@ -219,7 +219,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
       } else if (from === FromPageEnum.setTransferLimit) {
         navigate('/setting/wallet-security/payment-security/verifier-account', { state: locationParams });
       } else {
-        navigate('/login/verifier-account', { state: { from: FromPageEnum.login } });
+        navigate('/login/verifier-account', { state: { previousPage: FromPageEnum.login } });
       }
     },
     [

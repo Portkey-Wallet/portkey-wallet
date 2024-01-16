@@ -45,12 +45,13 @@ import {
   FromPageEnum,
   TAddGuardianLocationSearch,
   TAddGuardianLocationState,
+  TGuardianApprovalLocationState,
   TVerifierAccountLocationState,
 } from 'types/router';
 import './index.less';
 
 export default function AddGuardian() {
-  const navigate = useNavigateState<TVerifierAccountLocationState>();
+  const navigate = useNavigateState<TVerifierAccountLocationState | TGuardianApprovalLocationState>();
   const { t } = useTranslation();
   const { locationParams } = useLocationParams<TAddGuardianLocationState, TAddGuardianLocationSearch>();
   const { verifierMap, userGuardiansList, opGuardian } = useGuardiansInfo();
@@ -177,7 +178,7 @@ export default function AddGuardian() {
   }, [emailVal, guardianType, phoneValue, socialValue, verifierVal]);
 
   useEffectOnce(() => {
-    if (locationParams?.from && opGuardian) {
+    if (locationParams?.previousPage && opGuardian) {
       setGuardianType(opGuardian.guardianType);
       setVerifierVal(opGuardian.verifier?.id);
       setVerifierName(opGuardian.verifier?.name);
@@ -391,7 +392,7 @@ export default function AddGuardian() {
           dispatch(setOpGuardianAction(newGuardian));
           navigate('/setting/guardians/verifier-account', {
             state: {
-              from: FromPageEnum.guardiansAdd,
+              previousPage: FromPageEnum.guardiansAdd,
               accelerateChainId: accelerateChainId,
             },
           });
@@ -479,7 +480,7 @@ export default function AddGuardian() {
       );
       navigate('/setting/guardians/guardian-approval', {
         state: {
-          from: FromPageEnum.guardiansAdd,
+          previousPage: FromPageEnum.guardiansAdd,
           accelerateChainId,
         },
       });

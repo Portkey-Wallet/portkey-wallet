@@ -35,12 +35,12 @@ export type TGuardiansLocationState = {
 // AddGuardian
 export type TAddGuardianLocationState = {
   accelerateChainId?: ChainId;
-  from?: string;
+  previousPage?: string;
 };
 
 export type TAddGuardianLocationSearch = {
   accelerateChainId?: ChainId;
-  from?: string;
+  previousPage?: string;
 };
 
 // GuardianApproval
@@ -70,7 +70,7 @@ export type TGuardianRecoveryFromPage =
   | FromPageEnum.guardiansLoginGuardian;
 
 export type TGuardianRecoveryLocationState = {
-  from: TGuardianRecoveryFromPage;
+  previousPage: TGuardianRecoveryFromPage;
   accelerateChainId?: ChainId;
   extra?: string;
 };
@@ -85,7 +85,7 @@ export type TGuardianItemFromPage =
   | FromPageEnum.setTransferLimit;
 
 export type TGuardianItemLocationState = {
-  from: TGuardianItemFromPage;
+  previousPage: TGuardianItemFromPage;
 };
 
 export type TGuardianItemLocationSearch = TGuardianItemLocationState;
@@ -102,7 +102,7 @@ export type TVerifierAccountFromPage =
   | FromPageEnum.setTransferLimit;
 
 export type TVerifierAccountLocationState = {
-  from: TVerifierAccountFromPage;
+  previousPage: TVerifierAccountFromPage;
   targetChainId?: ChainId;
   accelerateChainId?: ChainId;
   extra?: string;
@@ -132,7 +132,7 @@ export type TTransferSettingLocationState = ITransferLimitRouteState;
 export type ITransactionLocationState = {
   item: ActivityItemType;
   chainId?: string;
-  from?: string;
+  previousPage?: string;
 };
 
 // ChatListSearch
@@ -204,7 +204,7 @@ export type TFindMoreFromPage = FromPageEnum.chatSearch | FromPageEnum.chatList;
 // FindMore
 export type TFindMoreLocationState = {
   search?: string;
-  from?: TFindMoreFromPage;
+  previousPage?: TFindMoreFromPage;
 };
 
 // ViewContact
@@ -266,7 +266,7 @@ export type TWalletNameFromPage =
 
 // WalletName
 export type TWalletNameLocationState = {
-  from?: TWalletNameFromPage;
+  previousPage?: TWalletNameFromPage;
   channelUuid?: string;
   search?: string;
 };

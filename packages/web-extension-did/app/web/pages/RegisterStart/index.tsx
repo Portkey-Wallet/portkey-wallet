@@ -248,7 +248,7 @@ export default function RegisterStart() {
 
           navigate('/login/verifier-account', {
             state: {
-              from: FromPageEnum.login,
+              previousPage: FromPageEnum.login,
             },
           });
         }

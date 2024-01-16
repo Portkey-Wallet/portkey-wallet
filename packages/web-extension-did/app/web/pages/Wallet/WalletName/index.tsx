@@ -53,14 +53,17 @@ export default function WalletName() {
 
   const showView = useCallback(() => {
     if (type === MyProfilePageType.VIEW) {
-      if (locationState?.from === FromPageEnum.chatGroupInfo)
+      if (locationState?.previousPage === FromPageEnum.chatGroupInfo)
         return navigate(`/chat-group-info/${locationState?.channelUuid}`);
 
-      if (locationState?.from === FromPageEnum.chatMemberList)
+      if (locationState?.previousPage === FromPageEnum.chatMemberList)
         return navigate(`/chat-group-info/${locationState?.channelUuid}/member-list`, { state: locationState });
 
-      if (locationState?.from && [FromPageEnum.chatBox, FromPageEnum.chatBoxGroup].includes(locationState?.from))
-        return navigate(`/${locationState.from}/${locationState?.channelUuid}`);
+      if (
+        locationState?.previousPage &&
+        [FromPageEnum.chatBox, FromPageEnum.chatBoxGroup].includes(locationState?.previousPage)
+      )
+        return navigate(`/${locationState.previousPage}/${locationState?.channelUuid}`);
       return navigate('/setting/wallet');
     }
     if (type === MyProfilePageType.EDIT) {

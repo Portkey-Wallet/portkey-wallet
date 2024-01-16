@@ -63,7 +63,7 @@ export default function ChatList() {
         leftIcon: <CustomSvg type="AddMorePeople" />,
         children: 'Find People',
         onClick: () => {
-          navigate(`/setting/contacts/find-more`, { state: { from: FromPageEnum.chatList } });
+          navigate(`/setting/contacts/find-more`, { state: { previousPage: FromPageEnum.chatList } });
         },
       },
     ],

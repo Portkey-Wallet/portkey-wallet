@@ -30,7 +30,7 @@ export default function Transaction() {
   const { t } = useTranslation();
   const { state } = useLocationState<ITransactionLocationState>();
   const chainId = state.chainId;
-  const from = state?.from;
+  const from = state?.previousPage;
   const currentWallet = useCurrentWallet();
   const { walletInfo } = currentWallet;
   const caAddresses = useCaAddresses();

@@ -50,7 +50,7 @@ export const useGuardianRecovery = () => {
 
       let value;
       let methodName = '';
-      const from = state.from;
+      const from = state.previousPage;
       switch (from) {
         case FromPageEnum.guardiansAdd:
           value = formatAddGuardianValue({ userGuardianStatus, opGuardian });

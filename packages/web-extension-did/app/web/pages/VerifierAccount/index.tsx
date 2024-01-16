@@ -47,10 +47,10 @@ export default function VerifierAccount() {
       FromPageEnum.removeManage,
       FromPageEnum.setTransferLimit,
     ];
-    return isNotLessThan768 ? bigScreenAllowedArr.includes(state.from) : false;
+    return isNotLessThan768 ? bigScreenAllowedArr.includes(state.previousPage) : false;
   }, [isNotLessThan768, state]);
   const targetChainId: ChainId | undefined = useMemo(() => state.targetChainId, [state]);
-  const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult(`${state.from}`);
+  const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult(`${state.previousPage}`);
 
   const onSuccessInGuardian = useCallback(
     async (res: VerifierInfo) => {
@@ -108,7 +108,7 @@ export default function VerifierAccount() {
 
   const onSuccess = useCallback(
     async (res: VerifierInfo) => {
-      const from = state.from;
+      const from = state.previousPage;
       if (from === FromPageEnum.register) {
         dispatch(setRegisterVerifierAction(res));
         const result = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();
@@ -179,7 +179,7 @@ export default function VerifierAccount() {
   );
 
   const handleBack = useCallback(() => {
-    const fromPage = state.from;
+    const fromPage = state.previousPage;
     if (fromPage === FromPageEnum.register) {
       return navigate('/register/start/create');
     }
@@ -189,7 +189,7 @@ export default function VerifierAccount() {
     if (fromPage === FromPageEnum.guardiansAdd && !userGuardianStatus?.[opGuardian?.key || '']?.signature) {
       return navigate('/setting/guardians/add', {
         state: {
-          from: 'back',
+          previousPage: 'back',
         },
       });
     }
@@ -211,12 +211,12 @@ export default function VerifierAccount() {
   }, [navigate, opGuardian?.key, state, userGuardianStatus]);
 
   const isInitStatus = useMemo(() => {
-    if (state.from === FromPageEnum.register) return true;
+    if (state.previousPage === FromPageEnum.register) return true;
     return !!currentGuardian?.isInitStatus;
   }, [currentGuardian, state]);
 
   const operationType: OperationTypeEnum = useMemo(() => {
-    const fromPage = state.from;
+    const fromPage = state.previousPage;
     switch (fromPage) {
       case FromPageEnum.register:
         return OperationTypeEnum.register;

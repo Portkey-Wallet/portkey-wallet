@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
 import {
   MessageList,
@@ -30,12 +30,14 @@ import ChatBoxPinnedMsg from 'pages/IMChat/components/ChatBoxPinnedMsg';
 import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
 import { useWalletInfo } from 'store/Provider/hooks';
 import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
+import { TViewContactLocationState } from 'types/router';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
   const { t } = useTranslation();
   const { userInfo } = useWalletInfo();
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TViewContactLocationState>();
   const [showBookmark, setShowBookmark] = useState(false);
   const messageRef = useRef<any>(null);
   const [popVisible, setPopVisible] = useState(false);
@@ -274,7 +276,7 @@ export default function ChatBox() {
   const handleGoProfile = useCallback(
     (item: MessageContentType) => {
       navigate('/setting/contacts/view', {
-        state: { relationId: item?.from, from: 'chat-box-group', channelUuid },
+        state: { relationId: item?.from, previousPage: 'chat-box-group', channelUuid },
       });
     },
     [navigate, channelUuid],

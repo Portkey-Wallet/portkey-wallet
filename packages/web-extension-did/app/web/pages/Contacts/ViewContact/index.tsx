@@ -24,12 +24,12 @@ import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { ILoginAccountListProps } from '../components/LoginAccountList';
-import { IContactProfileLoginAccount } from '@portkey-wallet/types/types-ca/contact';
+import { EditContactItemApiType, IContactProfileLoginAccount } from '@portkey-wallet/types/types-ca/contact';
 
 export default function ViewContact() {
   const { isNotLessThan768 } = useCommonState();
   const dispatch = useAppCommonDispatch();
-  const { state } = useLocation();
+  const { state } = useLocation(); // TViewContactLocationState
   const navigate = useNavigate();
   const { t } = useTranslation();
   const showChat = useIsChatShow();
@@ -96,8 +96,8 @@ export default function ViewContact() {
   useEffect(() => {
     im.service
       .getProfile({
-        id: state.id || undefined,
-        portkeyId: data.imInfo?.portkeyId || undefined,
+        id: state?.id || undefined,
+        portkeyId: data?.imInfo?.portkeyId || undefined,
         relationId: relationId || undefined,
       })
       .then((res) => {
@@ -107,7 +107,7 @@ export default function ViewContact() {
   }, [contactInfo, data.imInfo?.portkeyId, genLoginAccountMap, isMyContactFn, relationId, state, state.id]);
 
   const goBack = useCallback(() => {
-    switch (state?.from) {
+    switch (state?.previousPage) {
       case 'new-chat':
         navigate('/new-chat', { state });
         break;
@@ -140,7 +140,7 @@ export default function ViewContact() {
 
   const handleAdd = useLockCallback(async () => {
     try {
-      const res = await addStrangerApi(relationId);
+      const res = await addStrangerApi(relationId || '');
       setData({ ...state, ...res?.data });
 
       setTimeout(() => {
@@ -154,9 +154,9 @@ export default function ViewContact() {
 
   const readImputationApi = useReadImputation();
   useEffect(() => {
-    if (state?.isImputation && state?.from === 'contact-list') {
+    if (state?.isImputation && state?.previousPage === 'contact-list') {
       // imputation from unread to read
-      readImputationApi(state);
+      readImputationApi(state as EditContactItemApiType);
 
       CustomModal({
         content: (

@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Form } from 'antd';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
@@ -15,6 +15,8 @@ import CustomModal from 'pages/components/CustomModal';
 import { useEditIMContact } from '@portkey-wallet/hooks/hooks-ca/im';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import singleMessage from 'utils/singleMessage';
+import { useLocationState } from 'hooks/router';
+import { TEditContactLocationState } from 'types/router';
 
 export type IEditContactProps = IEditContactFormProps & BaseHeaderProps;
 
@@ -22,7 +24,7 @@ export default function EditContact() {
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const { state } = useLocationState<TEditContactLocationState>();
   const transState = useMemo(() => {
     return {
       ...state,

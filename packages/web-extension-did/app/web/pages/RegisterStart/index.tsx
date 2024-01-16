@@ -1,6 +1,6 @@
 import CustomSvg from 'components/CustomSvg';
 import RegisterHeader from 'pages/components/RegisterHeader';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import LoginCard from './components/LoginCard';
 import ScanCard from './components/ScanCard';
 import SignCard from './components/SignCard';
@@ -41,13 +41,15 @@ import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type'
 import { verification } from 'utils/api';
 import { setCurrentGuardianAction, setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
+import { FromPageEnum, TVerifierAccountLocationState } from 'types/router';
 
 export default function RegisterStart() {
   const { type } = useParams();
   const currentNetwork = useCurrentNetworkInfo();
   const dispatch = useAppDispatch();
   const changeNetwork = useChangeNetwork();
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TVerifierAccountLocationState>();
   const { setLoading } = useLoading();
   const fetchUserVerifier = useGuardianList();
   const changeNetworkModalText = useChangeNetworkText();
@@ -244,7 +246,11 @@ export default function RegisterStart() {
             }),
           );
 
-          navigate('/login/verifier-account', { state: 'login' });
+          navigate('/login/verifier-account', {
+            state: {
+              previousPage: FromPageEnum.login,
+            },
+          });
         }
       } catch (error: any) {
         console.log(error, 'error===');

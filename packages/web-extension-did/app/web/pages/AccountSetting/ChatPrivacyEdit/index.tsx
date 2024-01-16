@@ -3,7 +3,7 @@ import ChatPrivacyEditPrompt from './Prompt';
 import ChatPrivacyEditPopup from './Popup';
 import { BaseHeaderProps } from 'types/UI';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { ContactPermissionEnum, IContactPrivacy } from '@portkey-wallet/types/types-ca/contact';
 import { useCallback, useState } from 'react';
 import CustomModal from 'pages/components/CustomModal';
@@ -11,6 +11,7 @@ import { useContactPrivacyList } from '@portkey-wallet/hooks/hooks-ca/security';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import singleMessage from 'utils/singleMessage';
 import { CONTACT_PERMISSION_LABEL_MAP } from '@portkey-wallet/constants/constants-ca/contact';
+import { useLocationState } from 'hooks/router';
 
 export interface IChatPrivacyEditProps extends BaseHeaderProps {
   state: IContactPrivacy;
@@ -21,7 +22,7 @@ export interface IChatPrivacyEditProps extends BaseHeaderProps {
 export default function ChatPrivacyEdit() {
   const { isNotLessThan768 } = useCommonState();
   const { t } = useTranslation();
-  const { state } = useLocation();
+  const { state } = useLocationState<IContactPrivacy>();
   const navigate = useNavigate();
   const { update } = useContactPrivacyList();
   const { setLoading } = useLoading();

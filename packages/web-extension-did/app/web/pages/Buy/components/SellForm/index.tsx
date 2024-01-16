@@ -28,8 +28,8 @@ import { useFetchTxFee, useGetOneTxFee } from '@portkey-wallet/hooks/hooks-ca/us
 import { generateRateText } from 'pages/Buy/utils';
 import { getSellFiat } from '@portkey-wallet/utils/ramp';
 import { useGetChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import useLocationState from 'hooks/useLocationState';
-import { RampRouteState } from 'pages/Buy/types';
+import { useLocationState } from 'hooks/router';
+import { TRampLocationState } from 'types/router';
 import { useCheckLimit, useCheckSecurity } from 'hooks/useSecurity';
 import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
@@ -44,7 +44,7 @@ export default function SellFrom() {
   const { t } = useTranslation();
   const { setLoading } = useLoading();
   const navigate = useNavigate();
-  const { state } = useLocationState<RampRouteState>();
+  const { state } = useLocationState<TRampLocationState>();
 
   // get data
   const { refreshRampShow } = useRampEntryShow();
@@ -242,7 +242,7 @@ export default function SellFrom() {
         address: accountTokenList[0].tokenContractAddress || '',
         chainType: currentNetwork.walletType,
         paramsOption: {
-          owner: wallet[chainId as ChainId]?.caAddress || '', // TODO
+          owner: wallet[chainId as ChainId]?.caAddress || '',
           symbol: currentChain.defaultToken.symbol,
         },
       });

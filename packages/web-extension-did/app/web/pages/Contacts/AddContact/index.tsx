@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useEffect, useState } from 'react';
 import { Form } from 'antd';
-import { useNavigate, useLocation, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ContactItemType, AddressItem } from '@portkey-wallet/types/types-ca/contact';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
@@ -21,6 +21,8 @@ import { ExtraType, ExtraTypeEnum } from 'types/Profile';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import singleMessage from 'utils/singleMessage';
+import { useLocationState } from 'hooks/router';
+import { TAddContactLocationState } from 'types/router';
 
 export enum ContactInfoError {
   invalidAddress = 'Invalid address',
@@ -50,7 +52,7 @@ export default function AddContact() {
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const { state } = useLocationState<TAddContactLocationState>();
   const { extra }: { extra?: ExtraType } = useParams();
   const appDispatch = useAppDispatch();
   const showChat = useIsChatShow();
@@ -58,7 +60,7 @@ export default function AddContact() {
   const [netOpen, setNetOpen] = useState<boolean>(false);
   const [index, setIndex] = useState<number>(-1);
   const [validName, setValidName] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
-  const [addressArr, setAddressArr] = useState<CustomAddressItem[]>(state?.addresses);
+  const [addressArr, setAddressArr] = useState<CustomAddressItem[]>(state?.addresses || []);
   const addContactApi = useAddContact();
   const editContactApi = useEditContact();
   const checkExistNameApi = useCheckContactName();
@@ -181,13 +183,13 @@ export default function AddContact() {
 
   useEffect(() => {
     const { addresses } = state;
-    const cusAddresses = addresses.map((ads: AddressItem) => ({
+    const cusAddresses = addresses?.map((ads: AddressItem) => ({
       ...ads,
       networkName: transNetworkText(ads.chainId, !isMainnet),
-      validData: { validateStatus: '', errorMsg: '' },
+      validData: { validateStatus: '', errorMsg: '' } as ValidData,
     }));
     form.setFieldValue('addresses', cusAddresses);
-    setAddressArr(cusAddresses);
+    setAddressArr(cusAddresses || []);
   }, [form, isMainnet, state]);
 
   const handleView = useGoProfile();

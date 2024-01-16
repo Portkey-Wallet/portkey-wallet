@@ -33,7 +33,7 @@ export function useChangeNetwork() {
         } else {
           await OpenNewTabController.closeOpenTabs(true);
 
-          navigate('/');
+          navigate('/', { state: { reload: true } });
         }
       } else {
         if (!isPrompt) {

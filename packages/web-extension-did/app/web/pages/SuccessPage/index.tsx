@@ -25,7 +25,7 @@ export default function SuccessPage() {
     }
   }, [state]);
 
-  const onConfirm = useCallback(() => navigate('/'), [navigate]);
+  const onConfirm = useCallback(() => navigate('/', { state: { reload: true } }), [navigate]);
 
   usePreventHardwareBack();
 

@@ -15,6 +15,8 @@ import WarnTip from 'pages/IMChat/components/WarnTip';
 import { ALREADY_JOINED_GROUP_CODE } from '@portkey-wallet/constants/constants-ca/chat';
 import getSeed from 'utils/getSeed';
 import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from './router';
+import { TViewContactLocationState, TWalletNameLocationState } from 'types/router';
 
 export default function useInit() {
   const isShowChat = useIsChatShow();
@@ -71,7 +73,7 @@ export interface IClickChatUrlProps {
 export function useClickChatUrl({ fromChannelUuid = '', isGroup = false }: IClickUrlProps) {
   const isShowChat = useIsChatShow();
   const { userId: myPortkeyId } = useWalletInfo();
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TViewContactLocationState | TWalletNameLocationState>();
   const joinGroupChannel = useJoinGroupChannel();
   const fromType = useMemo(() => (isGroup ? 'chat-box-group' : 'chat-box'), [isGroup]);
   const { setLoading } = useLoading();
@@ -84,10 +86,10 @@ export function useClickChatUrl({ fromChannelUuid = '', isGroup = false }: IClic
       }
       if (type === 'addContact') {
         if (id === myPortkeyId) {
-          navigate('/setting/wallet/wallet-name', { state: { from: fromType, channelUuid: fromChannelUuid } });
+          navigate('/setting/wallet/wallet-name', { state: { previousPage: fromType, channelUuid: fromChannelUuid } });
         } else {
           navigate('/setting/contacts/view', {
-            state: { portkeyId: id, from: fromType, channelUuid: fromChannelUuid },
+            state: { portkeyId: id, previousPage: fromType, channelUuid: fromChannelUuid },
           });
         }
         return;

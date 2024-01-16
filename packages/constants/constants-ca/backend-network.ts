@@ -6,6 +6,7 @@ type BackEndNetworkType =
   | 'back-end-test1-ip'
   | 'back-end-test2-ip'
   | 'back-end-test3'
+  | 'back-end-test3-v2'
   | 'back-end-test4'
   | 'back-end-test4-v2'
   | 'back-end-testnet-v2'
@@ -101,6 +102,19 @@ export const BackEndNetWorkMap: {
         baseUrl: 'https://ramptest.alchemypay.org',
       },
     },
+  },
+  'back-end-test3-v2': {
+    name: 'aelf Testnet',
+    walletType: 'aelf',
+    networkType: 'TESTNET',
+    isActive: true,
+    apiUrl: 'http://192.168.64.201:5001',
+    graphqlUrl: 'http://192.168.64.202:8083/AElfIndexer_DApp/PortKeyIndexerCASchema/graphql',
+    connectUrl: 'http://192.168.64.201:8080',
+    cmsUrl: 'http://192.168.66.62:3005/graphql',
+    s3Url: 'https://portkey-cms-dev.s3.ap-northeast-1.amazonaws.com',
+    imS3Bucket: 'portkey-im-dev',
+    portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
   },
   'back-end-test4': {
     name: 'aelf Mainnet',

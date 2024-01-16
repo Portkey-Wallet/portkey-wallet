@@ -28,7 +28,7 @@ const Unlock = () => {
     const caInfo = walletInfo?.caInfo?.[currentNetwork];
     const caHash = caInfo?.[caInfo?.originChainId || 'AELF']?.caHash;
     if (caHash) {
-      navigate('/');
+      navigate('/', { state: { reload: true } });
     } else {
       navigate('/register/start');
     }

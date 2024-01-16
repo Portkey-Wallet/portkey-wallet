@@ -12,7 +12,7 @@ import CustomSvg from 'components/CustomSvg';
 import TitleWrapper from 'components/TitleWrapper';
 import { ReactElement, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useAppDispatch, useCommonState, useLoading, useWalletInfo } from 'store/Provider/hooks';
 import crossChainTransfer, { intervalCrossChainTransfer } from 'utils/sandboxUtil/crossChainTransfer';
 import sameChainTransfer from 'utils/sandboxUtil/sameChainTransfer';
@@ -46,6 +46,8 @@ import { SideChainTipContent, SideChainTipTitle } from '@portkey-wallet/constant
 import getSeed from 'utils/getSeed';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import singleMessage from 'utils/singleMessage';
+import { useLocationState } from 'hooks/router';
+import { TSendLocationState } from 'types/router';
 
 export type ToAccount = { address: string; name?: string };
 
@@ -61,10 +63,10 @@ type TypeStageObj = {
 
 export default function Send() {
   const navigate = useNavigate();
-  const { walletName } = useWalletInfo();
+  const { userInfo } = useWalletInfo();
   // TODO need get data from state and wait for BE data structure
   const { type, symbol } = useParams();
-  const { state } = useLocation();
+  const { state } = useLocationState<TSendLocationState>();
   const chainId: ChainId = useMemo(() => state.targetChainId || state.chainId, [state.chainId, state.targetChainId]);
   const chainInfo = useCurrentChain(chainId);
   const wallet = useCurrentWalletInfo();
@@ -276,7 +278,6 @@ export default function Send() {
   const checkLimit = useCheckLimit(tokenInfo.chainId);
   const handleOneTimeApproval = useCallback(() => {
     setOpenGuardiansApprove(true);
-    console.log('🌈 🌈 🌈 🌈 🌈 🌈 handleOneTimeApproval', '');
   }, []);
   const onCloseGuardianApprove = useCallback(() => {
     setOpenGuardiansApprove(false);
@@ -293,10 +294,10 @@ export default function Send() {
             await sendTransfer();
           }
         } else {
-          // TODO guardians throw error
+          throw Error('approve failed, please try again');
         }
       } catch (error) {
-        // TODO guardians throw error
+        throw Error('approve failed, please try again');
       }
     },
     [sendTransfer, stage],
@@ -631,7 +632,7 @@ export default function Send() {
               <div className="item from">
                 <span className="label">{t('From_with_colon')}</span>
                 <div className={'from-wallet control'}>
-                  <div className="name">{walletName}</div>
+                  <div className="name">{userInfo?.nickName}</div>
                 </div>
               </div>
               <div className="item to">
@@ -689,7 +690,7 @@ export default function Send() {
     toAccount,
     tokenInfo.chainId,
     type,
-    walletName,
+    userInfo?.nickName,
   ]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;

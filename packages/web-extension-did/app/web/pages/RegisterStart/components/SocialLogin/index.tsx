@@ -1,7 +1,6 @@
 import CustomSvg from 'components/CustomSvg';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
 import { RegisterType, SocialLoginFinishHandler } from 'types/wallet';
 import DividerCenter from '../DividerCenter';
 import SocialContent from '../SocialContent';
@@ -12,6 +11,7 @@ import { useLoading, useWalletInfo } from 'store/Provider/hooks';
 import { ISocialLogin } from '@portkey-wallet/types/types-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
 import './index.less';
 
 const guardianList = [
@@ -40,7 +40,7 @@ export default function SocialLogin({
   onFinish: SocialLoginFinishHandler;
   switchLogin?: (type: 'Email' | 'Phone') => void;
 }) {
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const { t } = useTranslation();
   const isMainnet = useIsMainnet();
   const { currentNetwork } = useWalletInfo();

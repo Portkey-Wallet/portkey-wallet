@@ -12,9 +12,10 @@ import { formatStr2EllipsisStr } from '@portkey-wallet/utils/converter';
 import { Collapse } from 'antd';
 import clsx from 'clsx';
 import CustomSvg from 'components/CustomSvg';
+import { useNavigateState } from 'hooks/router';
 import Avatar from 'pages/components/Avatar';
 import { useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router';
+import { TRecentDetailLocationState } from 'types/router';
 
 export interface IContactCardProps {
   chainId: ChainId;
@@ -42,7 +43,7 @@ export default function ContactCard({ user, className, fromRecents = true, chain
     [transIndex, transName, user.avatar],
   );
 
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TRecentDetailLocationState>();
   const goRecentDetail = (targetAddress: string, targetChainId: ChainId) => {
     navigate('/recent-detail', {
       state: {

@@ -1,5 +1,5 @@
 import { ChangeEvent, useCallback, useMemo, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
@@ -11,6 +11,7 @@ import ContactListSelect, { IContactItemSelectProps } from '../components/Contac
 import { ISelectItemType } from '../components/ContactItemSelect';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
 import './index.less';
 
 export default function TransferOwnership() {
@@ -19,7 +20,7 @@ export default function TransferOwnership() {
   const { groupInfo } = useGroupChannelInfo(`${channelUuid}`);
   const { t } = useTranslation();
   const [filterWord, setFilterWord] = useState<string>('');
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const formatAllMember: IContactItemSelectProps[] = useMemo(
     () =>
       groupInfo?.members

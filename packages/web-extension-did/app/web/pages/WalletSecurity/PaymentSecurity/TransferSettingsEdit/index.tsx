@@ -2,7 +2,6 @@ import { useAppDispatch, useCommonState, useLoading } from 'store/Provider/hooks
 import TransferSettingsEditPopup from './Popup';
 import TransferSettingsEditPrompt from './Prompt';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router';
 import { useCallback, useRef, useState } from 'react';
 import { ValidData } from 'pages/Contacts/AddContact';
 import { Form } from 'antd';
@@ -19,6 +18,8 @@ import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import { useEffectOnce } from 'react-use';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { useLocationState, useNavigateState } from 'hooks/router';
+import { FromPageEnum, TTransferSettingEditLocationState } from 'types/router';
 
 export default function TransferSettingsEdit() {
   const { isPrompt, isNotLessThan768 } = useCommonState();
@@ -26,8 +27,8 @@ export default function TransferSettingsEdit() {
   const userGuardianList = useGuardianList();
   const { walletInfo } = useCurrentWallet();
   const { t } = useTranslation();
-  const { state } = useLocation();
-  const navigate = useNavigate();
+  const { state } = useLocationState<TTransferSettingEditLocationState>();
+  const navigate = useNavigateState();
   const [form] = Form.useForm();
   const headerTitle = t('Transfer Settings');
   const [restrictedText, setRestrictedText] = useState(!!state?.restricted);
@@ -142,11 +143,17 @@ export default function TransferSettingsEdit() {
       setLoading(false);
       isPrompt
         ? navigate('/setting/wallet-security/payment-security/guardian-approval', {
-            state: `setTransferLimit_${JSON.stringify(params)}`,
+            state: {
+              previousPage: FromPageEnum.setTransferLimit,
+              ...params,
+            },
           })
         : InternalMessage.payload(
             PortkeyMessageTypes.GUARDIANS_APPROVAL_PAYMENT_SECURITY,
-            `setTransferLimit_${JSON.stringify(params)}`,
+            JSON.stringify({
+              previousPage: FromPageEnum.setTransferLimit,
+              ...params,
+            }),
           ).send();
     } catch (error) {
       console.log('set limit error: ', error);

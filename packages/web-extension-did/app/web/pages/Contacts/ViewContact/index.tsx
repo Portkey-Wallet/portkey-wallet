@@ -39,20 +39,31 @@ export default function ViewContact() {
     () => state?.relationId || state?.imInfo?.relationId,
     [state?.imInfo?.relationId, state?.relationId],
   );
+  const portkeyId = useMemo(
+    () => state?.portkeyId || state?.imInfo?.portkeyId,
+    [state?.imInfo?.portkeyId, state?.portkeyId],
+  );
+  const contactInfo = useContactInfo({ contactId: state?.id, relationId: relationId });
 
   const { name, index } = useIndexAndName(state);
 
-  const [data, setData] = useState<IProfileDetailDataProps>({
-    ...state,
-    id: state?.id,
-    index: index,
-    name: name,
-    imInfo: {
-      portkeyId: state?.portkeyId || state?.imInfo?.portkeyId,
-      relationId: state?.relationId || state?.imInfo?.relationId,
-    },
-  });
-  const contactInfo = useContactInfo({ contactId: state?.id, relationId: relationId });
+  // bind: api response
+  const [profileData, setProfileData] = useState<IProfileDetailDataProps>();
+  // bind: location state
+  const stateTransform = useMemo(
+    () => ({
+      ...contactInfo,
+      id: contactInfo?.id,
+      index: index,
+      name: name,
+      imInfo: {
+        portkeyId: contactInfo?.imInfo?.portkeyId,
+        relationId: contactInfo?.imInfo?.relationId,
+      },
+    }),
+    [contactInfo, index, name],
+  );
+  const mergeData = useMemo(() => ({ ...profileData, ...stateTransform }), [profileData, stateTransform]);
 
   const title = t('Details');
   const editText = t('Edit');
@@ -97,14 +108,14 @@ export default function ViewContact() {
     im.service
       .getProfile({
         id: state.id || undefined,
-        portkeyId: data.imInfo?.portkeyId || undefined,
+        portkeyId: portkeyId || undefined,
         relationId: relationId || undefined,
       })
       .then((res) => {
         const loginAccountMap = genLoginAccountMap(res.data.loginAccounts || []);
-        setData({ ...state, ...res?.data, loginAccountMap });
+        setProfileData((v) => ({ ...v, ...res?.data, loginAccountMap }));
       });
-  }, [contactInfo, data.imInfo?.portkeyId, genLoginAccountMap, isMyContactFn, relationId, state, state.id]);
+  }, [genLoginAccountMap, isMyContactFn, portkeyId, relationId, state.id]);
 
   const goBack = useCallback(() => {
     switch (state?.from) {
@@ -142,7 +153,7 @@ export default function ViewContact() {
   const handleAdd = useLockCallback(async () => {
     try {
       const res = await addStrangerApi(relationId);
-      setData({ ...state, ...res?.data });
+      setProfileData({ ...state, ...res?.data });
 
       setTimeout(() => {
         dispatch(fetchContactListAsync());
@@ -180,11 +191,13 @@ export default function ViewContact() {
       chatText={chatText}
       addedText={addedText}
       addContactText={addContactText}
-      data={data}
+      data={mergeData}
       goBack={goBack}
-      handleEdit={() => handleEdit(showChat && relationId ? ExtraTypeEnum.CAN_CHAT : ExtraTypeEnum.CANT_CHAT, data)}
+      handleEdit={() =>
+        handleEdit(showChat && relationId ? ExtraTypeEnum.CAN_CHAT : ExtraTypeEnum.CANT_CHAT, mergeData)
+      }
       handleAdd={handleAdd}
-      handleChat={() => handleChat(data?.imInfo?.relationId || '')}
+      handleChat={() => handleChat(relationId)}
       handleCopy={handleCopy}
     />
   ) : (
@@ -194,11 +207,13 @@ export default function ViewContact() {
       chatText={chatText}
       addedText={addedText}
       addContactText={addContactText}
-      data={data}
+      data={mergeData}
       goBack={goBack}
-      handleEdit={() => handleEdit(showChat && relationId ? ExtraTypeEnum.CAN_CHAT : ExtraTypeEnum.CANT_CHAT, data)}
+      handleEdit={() =>
+        handleEdit(showChat && relationId ? ExtraTypeEnum.CAN_CHAT : ExtraTypeEnum.CANT_CHAT, mergeData)
+      }
       handleAdd={handleAdd}
-      handleChat={() => handleChat(data?.imInfo?.relationId || '')}
+      handleChat={() => handleChat(relationId)}
       handleCopy={handleCopy}
     />
   );

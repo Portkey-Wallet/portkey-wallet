@@ -105,6 +105,8 @@ export default function ViewContact() {
   }, []);
 
   useEffect(() => {
+    if (!showChat) return;
+
     im.service
       .getProfile({
         id: state.id || undefined,
@@ -115,7 +117,7 @@ export default function ViewContact() {
         const loginAccountMap = genLoginAccountMap(res.data.loginAccounts || []);
         setProfileData((v) => ({ ...v, ...res?.data, loginAccountMap }));
       });
-  }, [genLoginAccountMap, isMyContactFn, portkeyId, relationId, state.id]);
+  }, [genLoginAccountMap, isMyContactFn, portkeyId, relationId, showChat, state.id]);
 
   const goBack = useCallback(() => {
     switch (state?.from) {

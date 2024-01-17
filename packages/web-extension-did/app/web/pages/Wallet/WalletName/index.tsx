@@ -41,7 +41,7 @@ export default function WalletName() {
       addresses: transAddresses, // TODO fetch profile for chain image
       caHolderInfo: { userId: userInfo?.userId, walletName: userInfo?.nickName },
       isShowRemark: false,
-      from: 'my-did',
+      previousPage: 'my-did',
     }),
     [transAddresses, userInfo?.avatar, userInfo?.nickName, userInfo?.userId],
   );

@@ -52,7 +52,7 @@ export const getCurrentCaHash = async () => {
   const wallet = await getWalletState();
   const { walletInfo, currentNetwork } = wallet || {};
   const caInfo = walletInfo?.caInfo?.[currentNetwork];
-  const originChainId = wallet.originChainId || caInfo?.originChainId;
+  const originChainId = caInfo?.originChainId;
   return caInfo?.[originChainId || DefaultChainId]?.caHash;
 };
 

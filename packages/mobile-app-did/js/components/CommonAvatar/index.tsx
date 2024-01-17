@@ -19,6 +19,9 @@ export interface CommonAvatarProps {
   style?: any;
   color?: string;
   resizeMode?: ResizeMode;
+  width?: number | string;
+  height?: number | string;
+  preserveAspectRatio?: string;
 }
 
 export default function CommonAvatar(props: CommonAvatarProps) {
@@ -32,6 +35,9 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     shapeType = 'circular',
     hasBorder,
     resizeMode = 'contain',
+    width,
+    height,
+    preserveAspectRatio,
   } = props;
 
   const [loadError, setLoadError] = useState(false);
@@ -39,18 +45,18 @@ export default function CommonAvatar(props: CommonAvatarProps) {
 
   const sizeStyle = useMemo(
     () => ({
-      width: Number(avatarSize),
-      height: Number(avatarSize),
+      width: width || Number(avatarSize),
+      height: height || Number(avatarSize),
       lineHeight: hasBorder ? Number(avatarSize) - pTd(2) : Number(avatarSize),
       borderRadius: shapeType === 'square' ? pTd(6) : Number(avatarSize) / 2,
     }),
-    [avatarSize, hasBorder, shapeType],
+    [avatarSize, hasBorder, height, shapeType, width],
   );
 
   if (svgName)
     return (
       <Svg
-        size={avatarSize}
+        oblongSize={[width || avatarSize, height || avatarSize]}
         icon={svgName}
         color={color}
         iconStyle={{
@@ -66,6 +72,9 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     return checkIsSvgUrl(imageUrl) ? (
       <SvgCssUri
         uri={imageUrl}
+        width={sizeStyle.width}
+        height={sizeStyle.height}
+        preserveAspectRatio={preserveAspectRatio}
         style={[styles.avatarWrap, shapeType === 'square' && styles.squareStyle, sizeStyle, style]}
       />
     ) : (

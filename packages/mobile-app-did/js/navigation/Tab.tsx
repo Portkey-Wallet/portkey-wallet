@@ -17,9 +17,11 @@ import { pTd } from 'utils/unit';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { TextS } from 'components/CommonText';
 import { useIsChatShow, useTabMenuList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { setBadge } from 'utils/notifee';
+import { ReferralStatusEnum } from '@portkey-wallet/store/store-ca/referral/type';
 
 const Tab = createBottomTabNavigator();
 
@@ -81,6 +83,7 @@ export default function TabRoot() {
   const unreadCount = useUnreadCount();
   const isImputation = useIsImputation();
   const isChatShow = useIsChatShow();
+  const { viewReferralStatus } = useReferral();
 
   const tabMenuList = useMemo(() => {
     const _tabMenuListStore = tabMenuListStore.reduce((acc: typeof tabMenuListStore, cur) => {
@@ -141,7 +144,9 @@ export default function TabRoot() {
           } else if (tabMenu?.name === TabRouteNameEnum.SETTINGS) {
             return (
               <View style={styles.chatWrap}>
-                {isImputation && <TextS style={styles.warningCycle} />}
+                {(isImputation || viewReferralStatus === ReferralStatusEnum.UN_VIEWED) && (
+                  <TextS style={styles.warningCycle} />
+                )}
                 <Svg
                   icon={tabMenu?.icon || 'my'}
                   size={pTd(22)}

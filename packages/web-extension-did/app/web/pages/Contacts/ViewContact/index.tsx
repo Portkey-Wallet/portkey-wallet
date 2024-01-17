@@ -11,7 +11,6 @@ import {
   useAddStrangerContact,
   useContactInfo,
   useIndexAndName,
-  useIsMyContact,
   useReadImputation,
 } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { handleErrorMessage } from '@portkey-wallet/utils';
@@ -104,6 +103,7 @@ export default function ViewContact() {
   }, []);
 
   useEffect(() => {
+    if (!showChat) return;
     im.service
       .getProfile({
         id: state?.id || undefined,
@@ -114,10 +114,10 @@ export default function ViewContact() {
         const loginAccountMap = genLoginAccountMap(res.data.loginAccounts || []);
         setProfileData((v) => ({ ...v, ...res?.data, loginAccountMap }));
       });
-  }, [genLoginAccountMap, portkeyId, relationId, state?.id]);
+  }, [genLoginAccountMap, portkeyId, relationId, showChat, state?.id]);
 
   const goBack = useCallback(() => {
-    switch (state?.from) {
+    switch (state?.previousPage) {
       case 'new-chat':
         navigate('/new-chat', { state });
         break;
@@ -164,7 +164,7 @@ export default function ViewContact() {
 
   const readImputationApi = useReadImputation();
   useEffect(() => {
-    if (state?.isImputation && state?.from === 'contact-list') {
+    if (state?.isImputation && state?.previousPage === 'contact-list') {
       // imputation from unread to read
       readImputationApi(state as EditContactItemApiType);
 

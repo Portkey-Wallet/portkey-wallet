@@ -98,7 +98,7 @@ export default function NewChat() {
               hasChatEntry={true}
               list={chatList}
               clickItem={(item: ContactItemType) =>
-                navigate('/setting/contacts/view', { state: { ...item, search: filterWord, from: 'new-chat' } })
+                navigate('/setting/contacts/view', { state: { ...item, search: filterWord, previousPage: 'new-chat' } })
               }
               clickChat={handleClickChat}
             />

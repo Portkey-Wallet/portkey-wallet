@@ -10,11 +10,12 @@ import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQ
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
 import { useCallback } from 'react';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { useNavigate } from 'react-router';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import { setRegisterVerifierAction } from 'store/reducers/loginCache/actions';
 import { LoginInfo } from 'store/reducers/loginCache/type';
 import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from './router';
+import { FromPageEnum, TVerifierAccountLocationState } from 'types/router';
 
 /**
  * Provides two verification processes
@@ -24,7 +25,7 @@ import singleMessage from 'utils/singleMessage';
  */
 const useCheckVerifier = () => {
   const { setLoading } = useLoading();
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TVerifierAccountLocationState>();
   const dispatch = useAppDispatch();
   const originChainId = useOriginChainId();
   const { address: managerAddress } = useCurrentWalletInfo();
@@ -69,7 +70,11 @@ const useCheckVerifier = () => {
               salt: '',
             }),
           );
-          navigate('/register/verifier-account', { state: 'register' });
+          navigate('/register/verifier-account', {
+            state: {
+              previousPage: FromPageEnum.register,
+            },
+          });
         }
       } catch (error: any) {
         setLoading(false);

@@ -22,7 +22,6 @@ import {
 import CustomModal from 'pages/components/CustomModal';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
 import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useLoading } from 'store/Provider/hooks';
@@ -43,6 +42,8 @@ import { getBalance } from 'utils/sandboxUtil/getBalance';
 import { RampType } from '@portkey-wallet/ramp';
 import getSeed from 'utils/getSeed';
 import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from './router';
+import { TGuardiansLocationState } from 'types/router';
 
 export const useCheckSecurity = () => {
   const wallet = useCurrentWalletInfo();
@@ -210,7 +211,7 @@ export function useSynchronizingModal() {
 
 export function useAddGuardiansModal() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TGuardiansLocationState>();
   return useCallback(
     (accelerateChainId: ChainId, onCancel?: () => void) => {
       const modal = CustomModal({

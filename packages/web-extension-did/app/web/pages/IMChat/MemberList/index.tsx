@@ -52,11 +52,16 @@ export default function MemberList() {
     (item: ChannelMemberInfo) => {
       if (item.relationId === myRelationId) {
         navigate('/setting/wallet/wallet-name', {
-          state: { from: FromPageEnum.chatMemberList, channelUuid, search: filterWord },
+          state: { previousPage: FromPageEnum.chatMemberList, channelUuid, search: filterWord },
         });
       } else {
         navigate('/setting/contacts/view', {
-          state: { relationId: item.relationId, from: FromPageEnum.chatMemberList, channelUuid, search: filterWord },
+          state: {
+            relationId: item.relationId,
+            previousPage: FromPageEnum.chatMemberList,
+            channelUuid,
+            search: filterWord,
+          },
         });
       }
     },

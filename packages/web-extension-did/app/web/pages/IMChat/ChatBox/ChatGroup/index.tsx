@@ -276,7 +276,7 @@ export default function ChatBox() {
   const handleGoProfile = useCallback(
     (item: MessageContentType) => {
       navigate('/setting/contacts/view', {
-        state: { relationId: item?.from, from: 'chat-box-group', channelUuid },
+        state: { relationId: item?.from, previousPage: 'chat-box-group', channelUuid },
       });
     },
     [navigate, channelUuid],

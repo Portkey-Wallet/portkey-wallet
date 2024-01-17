@@ -1,6 +1,6 @@
 import CustomSvg from 'components/CustomSvg';
 import RegisterHeader from 'pages/components/RegisterHeader';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import LoginCard from './components/LoginCard';
 import ScanCard from './components/ScanCard';
 import SignCard from './components/SignCard';
@@ -17,10 +17,10 @@ import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import { resetGuardians, setUserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import useGuardianList from 'hooks/useGuardianList';
 import { handleErrorCode, handleErrorMessage, sleep } from '@portkey-wallet/utils';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
 import { SocialLoginFinishHandler } from 'types/wallet';
-import { getGoogleUserInfo, parseAppleIdentityToken } from '@portkey-wallet/utils/authentication';
+import { getGoogleUserInfo, parseAppleIdentityToken, parseTelegramToken } from '@portkey-wallet/utils/authentication';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { useGetRegisterInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
@@ -40,13 +40,16 @@ import { getStoreState } from 'store/utils/getStore';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { verification } from 'utils/api';
 import { setCurrentGuardianAction, setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
+import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
+import { FromPageEnum, TVerifierAccountLocationState } from 'types/router';
 
 export default function RegisterStart() {
   const { type } = useParams();
   const currentNetwork = useCurrentNetworkInfo();
   const dispatch = useAppDispatch();
   const changeNetwork = useChangeNetwork();
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TVerifierAccountLocationState>();
   const { setLoading } = useLoading();
   const fetchUserVerifier = useGuardianList();
   const changeNetworkModalText = useChangeNetworkText();
@@ -58,7 +61,7 @@ export default function RegisterStart() {
 
   const netWorkIcon: Record<NetworkType, IconType> = useMemo(
     () => ({
-      MAIN: 'Aelf',
+      MAINNET: 'Aelf',
       TESTNET: 'elf-icon',
     }),
     [],
@@ -160,6 +163,7 @@ export default function RegisterStart() {
       switch (data?.loginType) {
         case LoginType.Apple:
         case LoginType.Google:
+        case LoginType.Telegram:
           checkAuth(verifierItem, data);
           break;
         default:
@@ -193,7 +197,7 @@ export default function RegisterStart() {
         confirmRegisterOrLogin(data, verifierReq);
       } catch (error) {
         setLoading(false);
-        message.error(handleErrorMessage(error, 'Get verifier failed'));
+        singleMessage.error(handleErrorMessage(error, 'Get verifier failed'));
         throw handleErrorMessage(error, 'Get verifier failed');
       }
     },
@@ -242,13 +246,17 @@ export default function RegisterStart() {
             }),
           );
 
-          navigate('/login/verifier-account', { state: 'login' });
+          navigate('/login/verifier-account', {
+            state: {
+              previousPage: FromPageEnum.login,
+            },
+          });
         }
       } catch (error: any) {
         console.log(error, 'error===');
         setLoading(false);
         const _error = handleErrorMessage(error);
-        message.error(_error);
+        singleMessage.error(_error);
       }
     },
     [dispatch, navigate, setLoading],
@@ -275,7 +283,7 @@ export default function RegisterStart() {
             (guardian) =>
               guardian.isLoginAccount &&
               guardian.guardianAccount === loginInfo.guardianAccount &&
-              [LoginType.Google, LoginType.Apple].includes(guardian.guardianType),
+              [LoginType.Google, LoginType.Apple, LoginType.Telegram].includes(guardian.guardianType),
           )
           .map((item) =>
             socialVerify({
@@ -313,7 +321,7 @@ export default function RegisterStart() {
       } catch (error) {
         console.log(error, 'onLoginFinish====error');
         const errMsg = handleErrorMessage(error, 'login error');
-        message.error(errMsg);
+        singleMessage.error(errMsg);
       } finally {
         setLoading(false);
       }
@@ -344,38 +352,35 @@ export default function RegisterStart() {
       try {
         if (!data) throw 'Action error';
         setLoading(true);
+        let userId = '';
         if (type === 'Google') {
           const userInfo = await getGoogleUserInfo(data?.access_token);
-          if (!userInfo?.id) throw userInfo;
-          await validateIdentifier(userInfo.id);
-          onInputFinish?.({
-            guardianAccount: userInfo.id, // account
-            loginType: LoginType[type],
-            authenticationInfo: { [userInfo.id]: data?.access_token },
-            createType: isHasAccount.current ? 'login' : 'register',
-          });
+          userId = userInfo.id;
         } else if (type === 'Apple') {
           const userInfo = parseAppleIdentityToken(data?.access_token);
-          console.log(userInfo, data, 'onSocialSignFinish');
-          if (userInfo) {
-            await validateIdentifier(userInfo.userId);
-            onInputFinish({
-              guardianAccount: userInfo.userId, // account
-              loginType: LoginType.Apple,
-              authenticationInfo: { [userInfo.userId]: data?.access_token },
-              createType: isHasAccount.current ? 'login' : 'register',
-            });
-          } else {
-            throw 'Authorization failed';
-          }
+          userId = userInfo?.userId || '';
+        } else if (type === 'Telegram') {
+          const userInfo = parseTelegramToken(data?.access_token);
+          if (!userInfo) throw 'Telegram auth error';
+          userId = userInfo?.userId;
         } else {
-          message.error(`LoginType:${type} is not support`);
+          throw `LoginType:${type} is not support`;
         }
+        if (!userId) throw 'Authorization failed';
+
+        await validateIdentifier(userId);
+
+        onInputFinish?.({
+          guardianAccount: userId, // account
+          loginType: LoginType[type],
+          authenticationInfo: { [userId]: data?.access_token },
+          createType: isHasAccount.current ? 'login' : 'register',
+        });
       } catch (error) {
         setLoading(false);
         console.log(error, 'error===onSocialSignFinish');
         const msg = handleErrorMessage(error);
-        message.error(msg);
+        singleMessage.error(msg);
       }
     },
     [onInputFinish, setLoading, validateIdentifier],

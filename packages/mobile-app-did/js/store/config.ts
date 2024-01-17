@@ -19,6 +19,7 @@ import txFeeSlice from '@portkey-wallet/store/store-ca/txFee/slice';
 import tokenManagementSlice from '@portkey-wallet/store/store-ca/tokenManagement/slice';
 import securitySlice from '@portkey-wallet/store/store-ca/security/slice';
 import { rampSlice } from '@portkey-wallet/store/store-ca/ramp/slice';
+import { guardiansSlice } from '@portkey-wallet/store/store-ca/guardians/slice';
 import { referralSlice } from '@portkey-wallet/store/store-ca/referral/slice';
 
 interface ThunkOptions<E = any> {
@@ -55,6 +56,7 @@ const reduxPersistConfig = {
     txFeeSlice.name,
     securitySlice.name,
     rampSlice.name,
+    guardiansSlice.name,
     referralSlice.name,
   ],
 

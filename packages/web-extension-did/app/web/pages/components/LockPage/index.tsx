@@ -1,5 +1,5 @@
 import { WalletError } from '@portkey-wallet/store/wallet/type';
-import { Button, Form, FormProps, message } from 'antd';
+import { Button, Form, FormProps } from 'antd';
 import { FormItem } from 'components/BaseAntd';
 import CustomPassword from 'components/CustomPassword';
 import CustomSvg from 'components/CustomSvg';
@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import aes from '@portkey-wallet/utils/aes';
 import { sleep } from '@portkey-wallet/utils';
 import { getWalletState } from 'utils/lib/SWGetReduxStore';
+import singleMessage from 'utils/singleMessage';
 
 interface LockPageProps extends FormProps {
   onUnLockHandler?: (pwd: string) => void;
@@ -31,7 +32,7 @@ export default function LockPage({ header, onUnLockHandler, ...props }: LockPage
       setIsPassword(-1);
       const wallet = await getWalletState();
 
-      if (!wallet.walletInfo) return message.error(WalletError.noCreateWallet);
+      if (!wallet.walletInfo) return singleMessage.error(WalletError.noCreateWallet);
 
       const privateKey = aes.decrypt(wallet.walletInfo.AESEncryptPrivateKey, password);
       if (privateKey) {

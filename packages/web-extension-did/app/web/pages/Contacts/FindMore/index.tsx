@@ -1,5 +1,5 @@
 import { ChangeEvent, ChangeEventHandler, useCallback, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import CustomModal from 'pages/components/CustomModal';
 import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
@@ -8,12 +8,14 @@ import FindMorePopup from './Popup';
 import { BaseHeaderProps } from 'types/UI';
 import im from '@portkey-wallet/im';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
-import { message } from 'antd';
+import singleMessage from 'utils/singleMessage';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { useContactRelationIdMap } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { getAddressInfo } from '@portkey-wallet/utils/aelf';
 import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useLocationState } from 'hooks/router';
+import { FromPageEnum, TFindMoreLocationState } from 'types/router';
 
 export interface IContactItemRes extends Partial<ContactItemType> {
   isAdded?: boolean;
@@ -34,9 +36,9 @@ export interface IFindMoreProps extends BaseHeaderProps {
 export default function FindMore() {
   const navigate = useNavigate();
   const { isPrompt, isNotLessThan768 } = useCommonState();
-  const { state } = useLocation();
+  const { state } = useLocationState<TFindMoreLocationState>();
   const showChat = useIsChatShow();
-  const { userId } = useWalletInfo();
+  const { userInfo } = useWalletInfo();
   const contactRelationIdMap = useContactRelationIdMap();
   const [isSearch, setIsSearch] = useState(false);
   const createChannel = useCreateP2pChannel();
@@ -80,14 +82,14 @@ export default function FindMore() {
       setContacts(resTrans);
     } catch (error) {
       const err = handleErrorMessage(error, 'handle display error');
-      message.error(err);
+      singleMessage.error(err);
       setContacts([]);
     }
   }, []);
 
   const goBack = () => {
-    if (state?.from === 'chat-search') return navigate('/chat-list-search', { state });
-    if (state?.from === 'chat-list') return navigate('/chat-list', { state });
+    if (state?.previousPage === FromPageEnum.chatSearch) return navigate('/chat-list-search', { state });
+    if (state?.previousPage === FromPageEnum.chatList) return navigate('/chat-list', { state });
     return navigate('/setting/contacts');
   };
 
@@ -107,7 +109,7 @@ export default function FindMore() {
           navigate(`/chat-box/${res.channelUuid}`);
         } catch (e) {
           console.log('===createChannel error', e);
-          message.error('cannot chat');
+          singleMessage.error('cannot chat');
         }
       }
     },
@@ -117,7 +119,7 @@ export default function FindMore() {
   return isNotLessThan768 ? (
     <FindMorePrompt
       headerTitle={headerTitle}
-      myPortkeyId={userId || ''}
+      myPortkeyId={userInfo?.userId || ''}
       contacts={contacts}
       showChat={showChat}
       isSearch={isSearch}
@@ -132,7 +134,7 @@ export default function FindMore() {
   ) : (
     <FindMorePopup
       headerTitle={headerTitle}
-      myPortkeyId={userId || ''}
+      myPortkeyId={userInfo?.userId || ''}
       contacts={contacts}
       showChat={showChat}
       isSearch={isSearch}

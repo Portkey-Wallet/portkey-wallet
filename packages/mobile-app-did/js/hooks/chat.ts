@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
-import { setCurrentChannel } from 'pages/Chat/context/chatsContext';
+import { setCurrentChannel, setReplyMessageInfo } from 'pages/Chat/context/chatsContext';
 import { useChatsDispatch } from 'pages/Chat/context/hooks';
 import navigationService from 'utils/navigationService';
 import CommonToast from 'components/CommonToast';
@@ -12,7 +12,7 @@ import { parseLinkPortkeyUrl } from 'utils/scheme';
 import { useDiscoverJumpWithNetWork } from './discover';
 import { useHandlePortkeyId, useHandleGroupId } from './useQrScan';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-const WWW_URL_PATTERN = /^www\./i;
+import { prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
 
 export function useJumpToChatDetails() {
   const chatDispatch = useChatsDispatch();
@@ -37,6 +37,7 @@ export function useJumpToChatDetails() {
             }),
           );
         }
+        chatDispatch(setReplyMessageInfo());
 
         const routesArr = navigationService.getState()?.routes;
 
@@ -88,6 +89,7 @@ export function useJumpToChatGroupDetails() {
           navigationService.reset([{ name: 'Tab' }, { name: 'ChatGroupDetailsPage' }]);
         }
 
+        chatDispatch(setReplyMessageInfo());
         await sleep(1000);
         myEvents.navToBottomTab.emit({ tabName: ChatTabName });
       } catch (error) {
@@ -107,7 +109,7 @@ export function useOnUrlPress() {
 
   return useThrottleCallback(
     (url: string) => {
-      if (WWW_URL_PATTERN.test(url)) url = `https://${url}`;
+      url = prefixUrlWithProtocol(url);
       const { id, type } = parseLinkPortkeyUrl(url);
 
       if (type === 'addContact' && isChatShow)

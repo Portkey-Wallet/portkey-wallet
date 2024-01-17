@@ -1,9 +1,5 @@
 import { NetworkType } from '@portkey-wallet/types';
 
-export enum RedDotsType {
-  'REFERRAL' = 0,
-}
-
 export enum ReferralStatusEnum {
   'UN_VIEWED' = 0,
   'VIEWED' = 1,

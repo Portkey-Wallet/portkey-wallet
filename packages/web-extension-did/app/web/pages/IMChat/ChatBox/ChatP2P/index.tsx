@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
-import { message } from 'antd';
-import { MessageList, InputBar, StyleProvider, MessageType, PopDataProps } from '@portkey-wallet/im-ui-web';
+import { MessageList, InputBar, StyleProvider, MessageContentType, PopDataProps } from '@portkey-wallet/im-ui-web';
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { useChannel, useIsStranger, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
@@ -15,16 +14,19 @@ import { MAX_INPUT_LENGTH } from '@portkey-wallet/constants/constants-ca/im';
 import CustomUpload from 'pages/IMChat/components/CustomUpload';
 import ChatBoxTip from 'pages/IMChat/components/ChatBoxTip';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { useHandle } from '../useHandle';
+import { useHandle } from '../useHandleMsg';
 import ChatBoxHeader from '../components/ChatBoxHeader';
 import { useClickUrl } from 'hooks/im';
 import WarnTip from 'pages/IMChat/components/WarnTip';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
+import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
+import { TViewContactLocationState } from 'types/router';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TViewContactLocationState>();
   const [showBookmark, setShowBookmark] = useState(false);
   const messageRef = useRef<any>(null);
   const addContactApi = useAddStrangerContact();
@@ -33,14 +35,17 @@ export default function ChatBox() {
   const { list, init, sendMessage, pin, mute, exit, info, sendImage, deleteMessage, hasNext, next, loading } =
     useChannel(`${channelUuid}`);
   const isStranger = useIsStranger(info?.toRelationId || '');
-  const { handleDeleteMsg, handlePin, handleMute } = useHandle({ info, mute, pin, deleteMessage });
+  const { handleDeleteMsg, handlePin, handleMute } = useHandle({ info, mute, pin, deleteMessage, list });
   const { setLoading } = useLoading();
   const clickUrl = useClickUrl({ fromChannelUuid: channelUuid, isGroup: false });
   useEffectOnce(() => {
     init();
   });
   const { relationId } = useRelationId();
-  const messageList: MessageType[] = useMemo(() => formatMessageList(list, relationId!), [list, relationId]);
+  const messageList: MessageContentType[] = useMemo(
+    () => formatMessageList({ list, ownerRelationId: relationId! }),
+    [list, relationId],
+  );
   const handleDelete = useCallback(() => {
     CustomModalConfirm({
       content: t('Delete chat?'),
@@ -51,7 +56,7 @@ export default function ChatBox() {
           await exit();
           navigate('/chat-list');
         } catch (e) {
-          message.error('Failed to delete chat');
+          singleMessage.error('Failed to delete chat');
           console.log('===handle delete chat error', e);
         }
       },
@@ -62,9 +67,9 @@ export default function ChatBox() {
       setLoading(true);
       const res = await addContactApi(info?.toRelationId || '');
       console.log('===add stranger res', res, 'info', info);
-      message.success('Contact added');
+      singleMessage.success('Contact added');
     } catch (e) {
-      message.error('Add contact error');
+      singleMessage.error('Add contact error');
       console.log('===add stranger error', e);
     } finally {
       setLoading(false);
@@ -72,7 +77,7 @@ export default function ChatBox() {
   }, [addContactApi, info, setLoading]);
   const handleGoProfile = useCallback(() => {
     navigate('/setting/contacts/view', {
-      state: { relationId: info?.toRelationId, from: 'chat-box', isStranger, channelUuid },
+      state: { relationId: info?.toRelationId, previousPage: 'chat-box', isStranger, channelUuid },
     });
   }, [info?.toRelationId, isStranger, navigate, channelUuid]);
   const p2pPopList = useMemo(
@@ -111,7 +116,7 @@ export default function ChatBox() {
     [handleAddContact, handleDelete, handleGoProfile, handleMute, handlePin, info?.mute, info?.pin],
   );
   const handleSendMsgError = useCallback((e: any) => {
-    message.error('Failed to send message');
+    singleMessage.error('Failed to send message');
     console.log('===Failed to send message', e);
   }, []);
   const inputMorePopList: PopDataProps[] = useMemo(
@@ -150,7 +155,9 @@ export default function ChatBox() {
   const handleSendMessage = useCallback(
     async (v: string) => {
       try {
-        await sendMessage(v.trim() ?? '');
+        await sendMessage({
+          content: v.trim() ?? '',
+        });
         messageRef.current.scrollTop = messageRef.current.scrollHeight;
       } catch (e) {
         handleSendMsgError(e);

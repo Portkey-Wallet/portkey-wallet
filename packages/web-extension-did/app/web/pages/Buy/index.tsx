@@ -1,9 +1,9 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Radio, RadioChangeEvent, message } from 'antd';
+import { Radio, RadioChangeEvent } from 'antd';
 import BackHeader from 'components/BackHeader';
 import CustomSvg from 'components/CustomSvg';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
@@ -20,11 +20,14 @@ import { BUY_SOON_TEXT, SELL_SOON_TEXT } from '@portkey-wallet/constants/constan
 import { useCheckSecurity } from 'hooks/useSecurity';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import singleMessage from 'utils/singleMessage';
+import { useLocationState } from 'hooks/router';
+import { TRampLocationState } from 'types/router';
 
 export default function Buy() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const { state } = useLocationState<TRampLocationState>();
   const { isPrompt } = useCommonState();
   const { setLoading } = useLoading();
   const checkSecurity = useCheckSecurity();
@@ -70,7 +73,7 @@ export default function Buy() {
           if (!securityRes) return;
         } catch (error) {
           setLoading(false);
-          message.error(handleErrorMessage(error));
+          singleMessage.error(handleErrorMessage(error));
         }
       }
 

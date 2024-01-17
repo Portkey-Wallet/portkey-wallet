@@ -2,6 +2,7 @@ import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { ChainType } from '@portkey-wallet/types';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { managerForwardCall } from './managerForwardCall';
+import { GuardianItem } from 'types/guardians';
 
 const sameChainTransfer = async ({
   chainInfo,
@@ -12,6 +13,7 @@ const sameChainTransfer = async ({
   tokenInfo,
   memo = '',
   toAddress: to,
+  guardiansApproved,
 }: {
   chainInfo: ChainItemType;
   chainType: ChainType;
@@ -21,8 +23,9 @@ const sameChainTransfer = async ({
   amount: number | string;
   toAddress: string;
   memo?: string;
+  guardiansApproved?: GuardianItem[];
 }) => {
-  return await managerForwardCall({
+  return managerForwardCall({
     rpcUrl: chainInfo.endPoint,
     chainType,
     address: chainInfo.caContractAddress,
@@ -37,6 +40,7 @@ const sameChainTransfer = async ({
         amount,
         memo,
       },
+      guardiansApproved,
     },
   });
 };

@@ -1,15 +1,17 @@
 import { ChangeEvent, useCallback, useMemo, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
 import DropdownSearch from 'components/DropdownSearch';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import { useGroupChannelInfo, useTransferChannelOwner } from '@portkey-wallet/hooks/hooks-ca/im';
 import ContactListSelect, { IContactItemSelectProps } from '../components/ContactListSelect';
 import { ISelectItemType } from '../components/ContactItemSelect';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
+import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
 import './index.less';
 
 export default function TransferOwnership() {
@@ -18,7 +20,7 @@ export default function TransferOwnership() {
   const { groupInfo } = useGroupChannelInfo(`${channelUuid}`);
   const { t } = useTranslation();
   const [filterWord, setFilterWord] = useState<string>('');
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const formatAllMember: IContactItemSelectProps[] = useMemo(
     () =>
       groupInfo?.members
@@ -62,9 +64,9 @@ export default function TransferOwnership() {
         try {
           await transferOwnershipApi(selected);
           navigate(-1);
-          message.success('Owner changed');
+          singleMessage.success('Owner changed');
         } catch (e) {
-          message.error('Failed to transfer ownership');
+          singleMessage.error('Failed to transfer ownership');
           console.log('===transfer ownership error', e);
         }
       },

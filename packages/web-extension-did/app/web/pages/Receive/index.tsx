@@ -6,12 +6,11 @@ import clsx from 'clsx';
 import Copy from 'components/Copy';
 import CustomSvg from 'components/CustomSvg';
 import TitleWrapper from 'components/TitleWrapper';
-import { useIsTestnet } from 'hooks/useNetwork';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import PromptFrame from 'pages/components/PromptFrame';
 import QRCodeCommon from 'pages/components/QRCodeCommon';
 import { useCallback, useMemo } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import './index.less';
@@ -22,16 +21,19 @@ import {
   MainChainTipTitle,
   MainChainTipContent,
 } from '@portkey-wallet/constants/constants-ca/send';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useLocationState } from 'hooks/router';
+import { TReceiveLocationState } from 'types/router';
 
 export default function Receive() {
   const navigate = useNavigate();
   const { symbol } = useParams();
-  const { state } = useLocation();
+  const { state } = useLocationState<TReceiveLocationState>();
   const wallet = useCurrentWalletInfo();
   const { currentNetwork } = useWalletInfo();
-  const isTestNet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const caAddress = useMemo(
-    () => `ELF_${wallet?.[(state.chainId as ChainId) || 'AELF']?.caAddress}_${state.chainId}`,
+    () => `ELF_${wallet?.[state.chainId || 'AELF']?.caAddress}_${state.chainId}`,
     [state, wallet],
   );
   const tipTitle = useMemo(
@@ -55,7 +57,7 @@ export default function Receive() {
     () => ({
       type: 'send',
       sendType: 'token',
-      netWorkType: currentNetwork,
+      networkType: currentNetwork,
       chainType: 'aelf',
       toInfo: {
         address: caAddress,
@@ -87,7 +89,7 @@ export default function Receive() {
           <div className="token-info">
             <TokenImageDisplay width={24} className="icon" symbol={symbol} src={state?.imageUrl} />
             <p className="symbol">{symbol}</p>
-            <p className="network">{transNetworkText(state.chainId, isTestNet)}</p>
+            <p className="network">{transNetworkText(state.chainId, !isMainnet)}</p>
           </div>
           <QRCodeCommon value={JSON.stringify(shrinkSendQrData(value))} />
           <div className="receive-address">
@@ -108,7 +110,7 @@ export default function Receive() {
   }, [
     caAddress,
     isPrompt,
-    isTestNet,
+    isMainnet,
     rightElement,
     state.chainId,
     state?.imageUrl,

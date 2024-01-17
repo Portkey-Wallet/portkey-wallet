@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Tabs } from 'antd';
-import { useLocation, useNavigate } from 'react-router';
 import BalanceCard from 'pages/components/BalanceCard';
 import CustomTokenDrawer from 'pages/components/CustomTokenDrawer';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +7,14 @@ import TokenList from '../Tokens';
 import Activity from '../Activity/index';
 import { Transaction } from '@portkey-wallet/types/types-ca/trade';
 import NFT from '../NFT/NFT';
-import { useAppDispatch, useUserInfo, useWalletInfo, useAssetInfo, useCommonState } from 'store/Provider/hooks';
+import {
+  useAppDispatch,
+  useUserInfo,
+  useWalletInfo,
+  useAssetInfo,
+  useCommonState,
+  useLoading,
+} from 'store/Provider/hooks';
 import {
   useCaAddresses,
   useCaAddressInfoList,
@@ -44,17 +50,22 @@ import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import './index.less';
 import { useInitRamp, useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { setBadge } from 'utils/FCM';
-import { useFCMEnable } from 'hooks/useFCM';
-import { AppStatusUnit } from '@portkey-wallet/socket/socket-fcm/types';
+import { useFCMEnable, useReportFCMStatus } from 'hooks/useFCM';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
+import { useLocationState, useNavigateState } from 'hooks/router';
+import { TSendLocationState } from 'types/router';
 
 export interface TransactionResult {
   total: number;
   items: Transaction[];
 }
 
+export type TMyBalanceState = {
+  key?: string;
+};
+
 export default function MyBalance() {
-  const { walletName } = useWalletInfo();
+  const { userInfo } = useWalletInfo();
   const { t } = useTranslation();
   const [activeKey, setActiveKey] = useState<string>(BalanceTab.TOKEN);
   const [navTarget, setNavTarget] = useState<'send' | 'receive'>('send');
@@ -64,8 +75,8 @@ export default function MyBalance() {
     accountToken: { accountTokenList },
     accountBalance,
   } = useAssetInfo();
-  const navigate = useNavigate();
-  const { state } = useLocation();
+  const navigate = useNavigateState<TSendLocationState>();
+  const { state } = useLocationState<TMyBalanceState>();
   const { passwordSeed } = useUserInfo();
   const appDispatch = useAppDispatch();
   const caAddresses = useCaAddresses();
@@ -75,6 +86,7 @@ export default function MyBalance() {
   const caAddressInfos = useCaAddressInfoList();
   const { eBridgeUrl = '', eTransferUrl = '' } = useCurrentNetworkInfo();
   const isFCMEnable = useFCMEnable();
+  const { setLoading } = useLoading();
 
   const renderTabsData = useMemo(
     () => [
@@ -111,6 +123,8 @@ export default function MyBalance() {
   const { checkDappIsConfirmed } = useDisclaimer();
   const { isBridgeShow } = useExtensionBridgeButtonShow();
   const { isETransShow } = useExtensionETransShow();
+  const reportFCMStatus = useReportFCMStatus();
+
   useEffect(() => {
     if (state?.key) {
       setActiveKey(state.key);
@@ -139,8 +153,8 @@ export default function MyBalance() {
       const isNFT = type === 'nft';
       const state = {
         chainId: v.chainId,
-        decimals: isNFT ? 0 : v.tokenInfo?.decimals,
-        address: isNFT ? v?.nftInfo?.tokenContractAddress : v?.tokenInfo?.tokenContractAddress,
+        decimals: isNFT ? 0 : Number(v.tokenInfo?.decimals || 8),
+        address: isNFT ? `${v?.nftInfo?.tokenContractAddress}` : `${v?.tokenInfo?.tokenContractAddress}`,
         symbol: v.symbol,
         name: v.symbol,
         imageUrl: isNFT ? v.nftInfo?.imageUrl : v.tokenInfo?.imageUrl,
@@ -190,8 +204,16 @@ export default function MyBalance() {
   }, []);
 
   const handleBridge = useCallback(async () => {
-    const isSafe = await checkSecurity(originChainId);
-    if (!isSafe) return;
+    try {
+      setLoading(true);
+      const isSafe = await checkSecurity(originChainId);
+      setLoading(false);
+      if (!isSafe) return;
+    } catch (error) {
+      setLoading(false);
+      console.log('===handleBridge error', error);
+      return;
+    }
     if (checkDappIsConfirmed(eBridgeUrl)) {
       const openWinder = window.open(eBridgeUrl, '_blank');
       if (openWinder) {
@@ -208,17 +230,26 @@ export default function MyBalance() {
       };
       setDisclaimerOpen(true);
     }
-  }, [checkDappIsConfirmed, checkSecurity, eBridgeUrl, originChainId]);
+  }, [checkDappIsConfirmed, checkSecurity, eBridgeUrl, originChainId, setLoading]);
 
   useEffect(() => {
     if (!isFCMEnable()) return;
-    signalrFCM.reportAppStatus(AppStatusUnit.FOREGROUND, unreadCount);
+    reportFCMStatus();
     signalrFCM.signalr && setBadge({ value: unreadCount });
-  }, [isFCMEnable, unreadCount]);
+  }, [isFCMEnable, reportFCMStatus, unreadCount]);
+
   const handleClickETrans = useCallback(
     async (eTransType: ETransType) => {
-      const isSafe = await checkSecurity(originChainId);
-      if (!isSafe) return;
+      try {
+        setLoading(true);
+        const isSafe = await checkSecurity(originChainId);
+        setLoading(false);
+        if (!isSafe) return;
+      } catch (error) {
+        setLoading(false);
+        console.log('===handleClickETrans error', error);
+        return;
+      }
       const targetUrl = stringifyETrans({
         url: eTransferUrl,
         query: {
@@ -243,7 +274,7 @@ export default function MyBalance() {
         setDisclaimerOpen(true);
       }
     },
-    [checkDappIsConfirmed, checkSecurity, eTransferUrl, originChainId],
+    [checkDappIsConfirmed, checkSecurity, eTransferUrl, originChainId, setLoading],
   );
 
   const isShowDepositEntry = useMemo(
@@ -273,7 +304,7 @@ export default function MyBalance() {
       )}
       <div className="wallet-name">
         {!isPrompt && <AccountConnect />}
-        {walletName}
+        {userInfo?.nickName}
       </div>
       <div className="balance-amount">
         {isMainNet ? (

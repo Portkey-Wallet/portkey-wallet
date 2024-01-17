@@ -1,13 +1,12 @@
 import { setCurrentGuardianAction, setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { UserGuardianItem, UserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/type';
 import { OperationTypeEnum, VerifyStatus } from '@portkey-wallet/types/verifier';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import clsx from 'clsx';
 import VerifierPair from 'components/VerifierPair';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router';
-import { useAppDispatch, useLoading } from 'store/Provider/hooks';
+import { useAppDispatch, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import { LoginInfo } from 'store/reducers/loginCache/type';
 import { verifyErrorHandler } from 'utils/tryErrorHandler';
@@ -15,10 +14,17 @@ import { verification } from 'utils/api';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import qs from 'query-string';
 import { ChainId } from '@portkey-wallet/types';
 import './index.less';
 import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
+import singleMessage from 'utils/singleMessage';
+import { usePromptLocationParams, useNavigateState } from 'hooks/router';
+import {
+  FromPageEnum,
+  TGuardianItemLocationSearch,
+  TGuardianItemLocationState,
+  TVerifierAccountLocationState,
+} from 'types/router';
 
 interface GuardianItemProps {
   disabled?: boolean;
@@ -27,46 +33,50 @@ interface GuardianItemProps {
   loginAccount?: LoginInfo;
   targetChainId?: ChainId;
 }
+
+const AllowedGuardianPageArr = [
+  FromPageEnum.guardiansAdd,
+  FromPageEnum.guardiansEdit,
+  FromPageEnum.guardiansDel,
+  FromPageEnum.guardiansLoginGuardian,
+];
+
 export default function GuardianItems({ disabled, item, isExpired, loginAccount, targetChainId }: GuardianItemProps) {
   const { t } = useTranslation();
+  const { opGuardian } = useGuardiansInfo();
   const { setLoading } = useLoading();
-  const { state, search } = useLocation();
-  const query = useMemo(() => {
-    if (search) {
-      const { detail } = qs.parse(search);
-      return detail;
-    } else {
-      return state;
-    }
-  }, [search, state]);
-
+  const { locationParams } = usePromptLocationParams<TGuardianItemLocationState, TGuardianItemLocationSearch>();
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TVerifierAccountLocationState>();
   const originChainId = useOriginChainId();
 
   const isSocialLogin = useMemo(
-    () => item.guardianType === LoginType.Google || item.guardianType === LoginType.Apple,
+    () =>
+      item.guardianType === LoginType.Google ||
+      item.guardianType === LoginType.Apple ||
+      item.guardianType === LoginType.Telegram,
     [item.guardianType],
   );
 
   const operationType: OperationTypeEnum = useMemo(() => {
-    switch (query) {
-      case 'guardians/edit':
+    const from = locationParams.previousPage;
+    switch (from) {
+      case FromPageEnum.guardiansEdit:
         return OperationTypeEnum.editGuardian;
-      case 'guardians/del':
+      case FromPageEnum.guardiansDel:
         return OperationTypeEnum.deleteGuardian;
+      case FromPageEnum.guardiansAdd:
+        return OperationTypeEnum.addGuardian;
+      case FromPageEnum.guardiansLoginGuardian:
+        return opGuardian?.isLoginAccount ? OperationTypeEnum.unsetLoginAccount : OperationTypeEnum.setLoginAccount;
+      case FromPageEnum.removeManage:
+        return OperationTypeEnum.removeOtherManager;
+      case FromPageEnum.setTransferLimit:
+        return OperationTypeEnum.modifyTransferLimit;
       default:
-        if (query && query.indexOf('guardians/add') !== -1) {
-          return OperationTypeEnum.addGuardian;
-        }
-        if (query && query?.indexOf('removeManage') !== -1) {
-          return OperationTypeEnum.removeOtherManager;
-        } else if (query && query?.indexOf('setTransferLimit') !== -1) {
-          return OperationTypeEnum.modifyTransferLimit;
-        }
         return OperationTypeEnum.communityRecovery;
     }
-  }, [query]);
+  }, [locationParams.previousPage, opGuardian?.isLoginAccount]);
   console.log('operationType====', operationType);
 
   const guardianSendCode = useCallback(
@@ -105,23 +115,24 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
               status: VerifyStatus.Verifying,
             }),
           );
-          navigate('/setting/guardians/verifier-account', { state: query });
+          navigate('/setting/guardians/verifier-account', { state: locationParams });
         }
       } catch (error: any) {
         console.log('---guardian-sendCode-error', error);
         setLoading(false);
-        message.error(verifyErrorHandler(error));
+        singleMessage.error(verifyErrorHandler(error));
       }
     },
-    [dispatch, originChainId, operationType, setLoading, navigate, query],
+    [dispatch, originChainId, operationType, setLoading, navigate, locationParams],
   );
 
   const SendCode = useCallback(
     async (item: UserGuardianItem) => {
+      const from = locationParams.previousPage;
       try {
         setLoading(true);
 
-        if (query && query.indexOf('guardians') !== -1) {
+        if (AllowedGuardianPageArr.includes(from)) {
           guardianSendCode(item);
           return;
         }
@@ -157,24 +168,24 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
               status: VerifyStatus.Verifying,
             }),
           );
-          if (query && query.indexOf('removeManage') !== -1) {
-            return navigate('/setting/wallet-security/manage-devices/verifier-account', { state: query });
+          if (from === FromPageEnum.removeManage) {
+            return navigate('/setting/wallet-security/manage-devices/verifier-account', { state: locationParams });
           }
-          if (query && query.indexOf('setTransferLimit') !== -1) {
-            return navigate('/setting/wallet-security/payment-security/verifier-account', { state: query });
+          if (from === FromPageEnum.setTransferLimit) {
+            return navigate('/setting/wallet-security/payment-security/verifier-account', { state: locationParams });
           }
-          return navigate('/login/verifier-account', { state: 'login' });
+          return navigate('/login/verifier-account', { state: { previousPage: FromPageEnum.login } });
         }
       } catch (error: any) {
         console.log(error, 'error===');
         setLoading(false);
         const _error = handleErrorMessage(error);
-        message.error(_error);
+        singleMessage.error(_error);
       }
     },
     [
+      locationParams,
       setLoading,
-      query,
       loginAccount,
       originChainId,
       operationType,
@@ -199,19 +210,29 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
         verifiedInfo && dispatch(setUserGuardianItemStatus(verifiedInfo));
         return;
       }
-
+      const from = locationParams.previousPage;
       dispatch(setCurrentGuardianAction({ ...item, isInitStatus: false }));
-      if (query?.includes('guardians')) {
-        navigate('/setting/guardians/verifier-account', { state: query });
-      } else if (query?.includes('removeManage')) {
-        navigate('/setting/wallet-security/manage-devices/verifier-account', { state: query });
-      } else if (query?.includes('setTransferLimit')) {
-        navigate('/setting/wallet-security/payment-security/verifier-account', { state: query });
+      if (AllowedGuardianPageArr.includes(from)) {
+        navigate('/setting/guardians/verifier-account', { state: locationParams });
+      } else if (from === FromPageEnum.removeManage) {
+        navigate('/setting/wallet-security/manage-devices/verifier-account', { state: locationParams });
+      } else if (from === FromPageEnum.setTransferLimit) {
+        navigate('/setting/wallet-security/payment-security/verifier-account', { state: locationParams });
       } else {
-        navigate('/login/verifier-account', { state: 'login' });
+        navigate('/login/verifier-account', { state: { previousPage: FromPageEnum.login } });
       }
     },
-    [isSocialLogin, socialVerify, operationType, originChainId, loginAccount, dispatch, query, navigate, targetChainId],
+    [
+      isSocialLogin,
+      socialVerify,
+      operationType,
+      originChainId,
+      loginAccount,
+      dispatch,
+      locationParams,
+      navigate,
+      targetChainId,
+    ],
   );
 
   const accountShow = useCallback((guardian: UserGuardianItem) => {
@@ -231,6 +252,13 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
           <div className="account-text account-text-two-row">
             <div className="name">{guardian.firstName}</div>
             <div className="detail">{guardian.isPrivate ? '******' : guardian.thirdPartyEmail}</div>
+          </div>
+        );
+      case LoginType.Telegram:
+        return (
+          <div className="account-text account-text-two-row">
+            <div className="name">{guardian.firstName}</div>
+            <div className="detail">{'******'}</div>
           </div>
         );
     }

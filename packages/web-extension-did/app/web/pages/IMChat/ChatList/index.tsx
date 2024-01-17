@@ -1,6 +1,5 @@
-import { Popover, message } from 'antd';
+import { Popover } from 'antd';
 import { useCallback, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ChatList as ChannelList, IChatItemProps, PopoverMenuList, StyleProvider } from '@portkey-wallet/im-ui-web';
 import CustomSvg from 'components/CustomSvg';
@@ -13,20 +12,19 @@ import {
   useUnreadCount,
 } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
-import { formatChatListTime } from '@portkey-wallet/utils/chat';
-import { MessageTypeWeb } from 'types/im';
-import { ChannelItem, ParsedRedPackage } from '@portkey-wallet/im';
-import './index.less';
 import { useHandleClickChatItem } from 'hooks/im';
-import { PIN_LIMIT_EXCEED, UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
+import { PIN_LIMIT_EXCEED } from '@portkey-wallet/constants/constants-ca/chat';
 import { useWalletInfo } from 'store/Provider/hooks';
-import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
 import { setBadge } from 'utils/FCM';
-import { AppStatusUnit } from '@portkey-wallet/socket/socket-fcm/types';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
+import { useReportFCMStatus } from 'hooks/useFCM';
+import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
+import { FromPageEnum, TFindMoreLocationState } from 'types/router';
+import './index.less';
 
 export default function ChatList() {
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TFindMoreLocationState>();
   const { t } = useTranslation();
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
@@ -38,34 +36,10 @@ export default function ChatList() {
     hasNext: hasNextChannelList,
   } = useChannelList();
   const unreadCount = useUnreadCount();
+  const reportFCMStatus = useReportFCMStatus();
   const { userInfo } = useWalletInfo();
-  const formatSubTitle = useCallback((item: ChannelItem) => {
-    const _type = MessageTypeWeb[item.lastMessageType ?? ''];
-    let subTitle = UN_SUPPORTED_FORMAT;
-    if (_type === MessageTypeWeb.IMAGE) {
-      subTitle = '[Image]';
-    } else if (_type === MessageTypeWeb.TEXT) {
-      subTitle = `${item.lastMessageContent}`;
-    } else if (_type === MessageTypeWeb.SYS) {
-      subTitle = `${item.lastMessageContent}`;
-    } else if (_type === MessageTypeWeb['REDPACKAGE-CARD']) {
-      const redPackage = (item.lastMessageContent as ParsedRedPackage).data;
-      subTitle = `${redPackage?.memo || RED_PACKAGE_DEFAULT_MEMO}`;
-    }
-    return subTitle;
-  }, []);
-  const formatIsOwner = useCallback(
-    (item: ChannelItem) => {
-      const _type = MessageTypeWeb[item.lastMessageType ?? ''];
-      let isOwner = false;
-      if (_type === MessageTypeWeb['REDPACKAGE-CARD']) {
-        const senderId = (item.lastMessageContent as ParsedRedPackage).data?.senderId;
-        isOwner = senderId === userInfo?.userId;
-      }
-      return isOwner;
-    },
-    [userInfo?.userId],
-  );
+  const handleClickChatItem = useHandleClickChatItem();
+
   const popList = useMemo(
     () => [
       {
@@ -89,7 +63,7 @@ export default function ChatList() {
         leftIcon: <CustomSvg type="AddMorePeople" />,
         children: 'Find People',
         onClick: () => {
-          navigate(`/setting/contacts/find-more`, { state: { from: 'chat-list' } });
+          navigate(`/setting/contacts/find-more`, { state: { previousPage: FromPageEnum.chatList } });
         },
       },
     ],
@@ -112,37 +86,16 @@ export default function ChatList() {
     ),
     [popList, navigate],
   );
-  const transChatList: IChatItemProps[] = useMemo(() => {
-    return chatList.map((item) => {
-      return {
-        id: item.channelUuid,
-        letter: item.displayName.substring(0, 1).toUpperCase(),
-        title: item.displayName,
-        subtitle: formatSubTitle(item),
-        dateString: formatChatListTime(item.lastPostAt),
-        muted: item.mute,
-        pin: item.pin,
-        unread: item.unreadMessageCount,
-        channelType: item?.channelType,
-        status: item.status,
-        avatar: item.channelIcon,
-        isOwner: formatIsOwner(item),
-        lastMessageType: MessageTypeWeb[item.lastMessageType ?? ''],
-      };
-    });
-  }, [chatList, formatSubTitle, formatIsOwner]);
-
-  const handleClickChatItem = useHandleClickChatItem();
 
   const handlePin = useCallback(
     async (chatItem: IChatItemProps) => {
       try {
-        await pinChannel(`${chatItem.id}`, !chatItem.pin);
+        await pinChannel(`${chatItem.channelUuid}`, !chatItem.pin);
       } catch (e: any) {
         if (`${e?.code}` === PIN_LIMIT_EXCEED) {
-          message.error('Pin limit exceeded');
+          singleMessage.error('Pin limit exceeded');
         } else {
-          message.error(`Failed to ${chatItem?.pin ? 'unpin' : 'pin'} chat`);
+          singleMessage.error(`Failed to ${chatItem?.pin ? 'unpin' : 'pin'} chat`);
         }
         console.log('===handle pin error', e);
       }
@@ -152,9 +105,9 @@ export default function ChatList() {
   const handleMute = useCallback(
     async (chatItem: IChatItemProps) => {
       try {
-        await muteChannel(`${chatItem.id}`, !chatItem.muted);
+        await muteChannel(`${chatItem.channelUuid}`, !chatItem.mute);
       } catch (e) {
-        message.error(`Failed to ${chatItem.muted ? 'unmute' : 'mute'} chat`);
+        singleMessage.error(`Failed to ${chatItem.mute ? 'unmute' : 'mute'} chat`);
         console.log('===handle mute error', e);
       }
     },
@@ -163,9 +116,9 @@ export default function ChatList() {
   const handleDelete = useCallback(
     async (chatItem: IChatItemProps) => {
       try {
-        await hideChannel(`${chatItem.id}`);
+        await hideChannel(`${chatItem.channelUuid}`);
       } catch (e) {
-        message.error('Failed to delete chat');
+        singleMessage.error('Failed to delete chat');
         console.log('===handle delete error', e);
       }
     },
@@ -176,9 +129,9 @@ export default function ChatList() {
   });
 
   useEffect(() => {
-    signalrFCM.reportAppStatus(AppStatusUnit.FOREGROUND, unreadCount);
+    reportFCMStatus();
     signalrFCM.signalr && setBadge({ value: unreadCount });
-  }, [unreadCount]);
+  }, [reportFCMStatus, unreadCount]);
 
   return (
     <div className="chat-list-page">
@@ -195,7 +148,8 @@ export default function ChatList() {
           <StyleProvider prefixCls="portkey">
             <ChannelList
               id="channel-list"
-              dataSource={transChatList}
+              dataSource={chatList}
+              myPortkeyId={userInfo?.userId}
               onClickPin={handlePin}
               onClickMute={handleMute}
               onClickDelete={handleDelete}

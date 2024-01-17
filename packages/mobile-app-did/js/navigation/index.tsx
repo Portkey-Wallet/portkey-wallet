@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp, CardStyleInterpolators } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import Tab, { IRenderTabMenuItem } from './Tab';
 import navigationService from 'utils/navigationService';
@@ -27,7 +28,7 @@ import TabsDrawer from 'components/TabsDrawer';
 import ChatNav from 'pages/Chat/routes';
 import ProviderWebPage from 'pages/ProviderWebPage';
 
-const Stack = createStackNavigator();
+const Stack = isIOS ? createNativeStackNavigator() : createStackNavigator();
 export const productionNav = [
   { name: 'Referral', component: Referral },
   { name: 'Tab', component: Tab },
@@ -53,7 +54,7 @@ export const productionNav = [
 export const devNav = [
   ...productionNav,
   { name: 'Home', component: Home },
-  { name: 'Discover', component: Discover },
+  // { name: 'Discover', component: Discover },
 ] as const;
 
 const stackNav = __DEV__ ? devNav : productionNav;
@@ -73,13 +74,17 @@ export default function NavigationRoot() {
       <TabsDrawer>
         <Stack.Navigator
           initialRouteName="Referral"
-          screenOptions={{
-            headerShown: false,
-            gestureVelocityImpact: 1,
-            headerBackAllowFontScaling: false,
-            headerTitleAllowFontScaling: false,
-            cardStyleInterpolator: !isIOS ? CardStyleInterpolators.forHorizontalIOS : undefined,
-          }}>
+          screenOptions={
+            isIOS
+              ? { headerShown: false }
+              : {
+                  headerShown: false,
+                  gestureVelocityImpact: 1,
+                  headerBackAllowFontScaling: false,
+                  headerTitleAllowFontScaling: false,
+                  cardStyleInterpolator: !isIOS ? CardStyleInterpolators.forHorizontalIOS : undefined,
+                }
+          }>
           {stackNav.map((item, index) => (
             <Stack.Screen options={(item as any).options} key={index} {...(item as any)} />
           ))}

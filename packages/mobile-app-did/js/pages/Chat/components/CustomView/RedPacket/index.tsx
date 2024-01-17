@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
   state: {
     color: defaultColors.font2,
     lineHeight: pTd(16),
+    opacity: 0.8,
   },
   notFreshSvgStyle: {
     opacity: 0.6,

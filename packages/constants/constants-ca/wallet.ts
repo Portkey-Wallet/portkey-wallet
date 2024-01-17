@@ -27,3 +27,5 @@ export const InitialTxFee = {
 export const VERIFY_INVALID_TIME = 2 * 1000;
 
 export const FAUCET_URL = 'https://testnet-faucet.aelf.io/';
+export const MAX_TRANSACTION_FEE = '0.1';
+export const PORTKEY_PROJECT_CODE = '10000';

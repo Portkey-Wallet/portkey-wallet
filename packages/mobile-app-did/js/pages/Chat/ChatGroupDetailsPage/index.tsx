@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { GestureResponderEvent, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -32,6 +32,9 @@ import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import { measurePageY } from 'utils/measure';
 import GroupAvatarShow from '../components/GroupAvatarShow';
 import { useIsFocused } from '@react-navigation/native';
+import HeaderPinSection from '../components/HeaderPinSection';
+import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 
 const ChatGroupDetailsPage = () => {
   const isFocused = useIsFocused();
@@ -39,9 +42,12 @@ const ChatGroupDetailsPage = () => {
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
+
+  const [hasPinWhenInit, setHasPinWhenInit] = useState(false);
   const currentChannelId = useCurrentChannelId();
   const { isAdmin, groupInfo } = useGroupChannelInfo(currentChannelId || '', true);
   const { pin, mute, displayName } = useChannelItemInfo(currentChannelId || '') || {};
+  const { lastPinMessage, refreshLastPin, refresh } = useIMPin(currentChannelId || '', true);
 
   const leaveGroup = useLeaveChannel();
 
@@ -199,6 +205,24 @@ const ChatGroupDetailsPage = () => {
     [displayName, groupInfo?.icon, groupInfo?.name, mute, onBack],
   );
 
+  const headerDom = useMemo(() => {
+    if (lastPinMessage) return <HeaderPinSection channelUUid={currentChannelId || ''} />;
+
+    return hasPinWhenInit ? null : (
+      <FloatingActionButton title="Add Members" shouldShowFirstTime={isAdmin} onPressButton={addMembers} />
+    );
+  }, [addMembers, currentChannelId, hasPinWhenInit, isAdmin, lastPinMessage]);
+
+  useEffectOnce(() => {
+    refreshLastPin();
+    refresh();
+  });
+
+  useEffect(() => {
+    if (!lastPinMessage) return;
+    setHasPinWhenInit(!!lastPinMessage);
+  }, [lastPinMessage]);
+
   return (
     <PageContainer
       noCenterDom
@@ -212,7 +236,7 @@ const ChatGroupDetailsPage = () => {
           <Svg size={pTd(20)} icon="more" color={defaultColors.bg1} />
         </Touchable>
       }>
-      <FloatingActionButton title="Add Members" shouldShowFirstTime={isAdmin} onPressButton={addMembers} />
+      {headerDom}
       <ChatsGroupDetailContent />
     </PageContainer>
   );

@@ -40,7 +40,7 @@ const discoverPersistConfig = {
 const imPersistConfig = {
   key: imSlice.name,
   storage: AsyncStorage,
-  blacklist: ['channelMessageListNetMap', 'groupInfoMapNetMap'],
+  blacklist: ['channelMessageListNetMap', 'groupInfoMapNetMap', 'pinListNetMap', 'lastPinNetMap'],
 };
 
 export const userReducer = persistReducer(userPersistConfig, userSlice.reducer);

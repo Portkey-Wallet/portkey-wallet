@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import BackHeader from 'components/BackHeader';
 import CustomSvg from 'components/CustomSvg';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { InitProviderSelected, MAX_UPDATE_TIME } from '../const';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useCommonState, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
@@ -21,11 +21,14 @@ import { IGetBuyDetail, IGetSellDetail, getBuyDetail, getSellDetail } from '@por
 import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { sleep } from '@portkey-wallet/utils';
+import singleMessage from 'utils/singleMessage';
+import { useLocationState } from 'hooks/router';
+import { TRampPreviewLocationState } from 'types/router';
 
 export default function Preview() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const { state } = useLocationState<TRampPreviewLocationState>();
   const { isPrompt } = useCommonState();
   const updateRef = useRef(MAX_UPDATE_TIME);
   const [receive, setReceive] = useState('1');
@@ -115,7 +118,7 @@ export default function Preview() {
     // Compatible with the situation where the function is turned off when the user is on the page.
     if ((side === RampType.BUY && !isBuySectionShow) || (side === RampType.SELL && !isSellSectionShow)) {
       setLoading(false);
-      message.error(SERVICE_UNAVAILABLE_TEXT);
+      singleMessage.error(SERVICE_UNAVAILABLE_TEXT);
       return navigate('/');
     }
 
@@ -151,7 +154,7 @@ export default function Preview() {
       await sleep(500);
       navigate('/');
     } catch (error) {
-      message.error('There is a network error, please try again.');
+      singleMessage.error('There is a network error, please try again.');
     } finally {
       setLoading(false);
     }

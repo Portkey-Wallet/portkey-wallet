@@ -8,6 +8,8 @@ import Touchable from 'components/Touchable';
 import { pTd } from 'utils/unit';
 import FastImage from 'react-native-fast-image';
 import Loading from 'components/Loading';
+import { isValidAvatarFile } from '@portkey-wallet/utils/reg';
+import CommonToast from 'components/CommonToast';
 
 type UploadImageType = {
   title: string;
@@ -44,7 +46,7 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
       });
       if (result.cancelled || !result.uri) return;
 
-      if (result.uri.endsWith('.gif')) return;
+      if (!isValidAvatarFile(result.uri)) return CommonToast.fail('Unsupported format. Please use jpeg, jpg, or png.');
 
       if (!result?.fileSize) {
         const info = await getInfo(result.uri);

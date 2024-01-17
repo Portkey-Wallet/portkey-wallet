@@ -7,13 +7,7 @@ import DigitInput, { DigitInputInterface } from 'components/DigitInput';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import {
-  ApprovalType,
-  VerificationType,
-  OperationTypeEnum,
-  VerifierInfo,
-  VerifyStatus,
-} from '@portkey-wallet/types/verifier';
+import { VerificationType, OperationTypeEnum, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
 import GuardianItem from '../components/GuardianItem';
 import { FontStyles } from 'assets/theme/styles';
 import Loading from 'components/Loading';
@@ -24,14 +18,16 @@ import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type'
 import myEvents from 'utils/deviceEvent';
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useGetCurrentCAContract } from 'hooks/contract';
-import { setLoginAccount } from 'utils/guardian';
 import { LoginType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { GuardiansApproved, GuardiansStatusItem } from '../types';
 import { verification } from 'utils/api';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useOnRequestOrSetPin } from 'hooks/login';
 import { usePin } from 'hooks/store';
-import { VERIFICATION_TO_OPERATION_MAP } from '@portkey-wallet/constants/constants-ca/verifier';
+import {
+  VERIFICATION_TO_APPROVAL_MAP,
+  VERIFICATION_TO_OPERATION_MAP,
+} from '@portkey-wallet/constants/constants-ca/verifier';
 import { ChainId } from '@portkey-wallet/types';
 import { CreateAddressLoading, VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
 import { handleGuardiansApproved } from 'utils/login';
@@ -84,7 +80,7 @@ export default function VerifierDetails() {
   const [requestCodeResult, setRequestCodeResult] =
     useState<RouterParams['requestCodeResult']>(paramsRequestCodeResult);
   const digitInput = useRef<DigitInputInterface>();
-  const { caHash, address: managerAddress } = useCurrentWalletInfo();
+  const { address: managerAddress } = useCurrentWalletInfo();
   const pin = usePin();
   const onRequestOrSetPin = useOnRequestOrSetPin();
   const getCurrentCAContract = useGetCurrentCAContract();
@@ -98,24 +94,6 @@ export default function VerifierDetails() {
     },
     [guardianItem?.key],
   );
-  const onSetLoginAccount = useCallback(async () => {
-    if (!managerAddress || !caHash || !guardianItem) return;
-
-    try {
-      const caContract = await getCurrentCAContract();
-      const req = await setLoginAccount(caContract, managerAddress, caHash, guardianItem);
-      if (req && !req.error) {
-        myEvents.refreshGuardiansList.emit();
-        navigationService.navigate('GuardianDetail', {
-          guardian: { ...guardianItem, isLoginAccount: true },
-        });
-      } else {
-        CommonToast.fail(req?.error?.message || '');
-      }
-    } catch (error) {
-      CommonToast.failError(error);
-    }
-  }, [caHash, getCurrentCAContract, guardianItem, managerAddress]);
 
   const operationType: OperationTypeEnum = useMemo(
     () => VERIFICATION_TO_OPERATION_MAP[verificationType as VerificationType] || OperationTypeEnum.unknown,
@@ -191,19 +169,18 @@ export default function VerifierDetails() {
             });
             break;
 
+          case VerificationType.setLoginAccount:
+          case VerificationType.unsetLoginAccount:
           case VerificationType.addGuardian:
             if (verifierInfo.signature && verifierInfo.verificationDoc) {
               navigationService.navigate('GuardianApproval', {
-                approvalType: ApprovalType.addGuardian,
+                approvalType: VERIFICATION_TO_APPROVAL_MAP[verificationType],
                 guardianItem,
                 verifierInfo,
                 verifiedTime: Date.now(),
                 accelerateChainId,
               });
             }
-            break;
-          case VerificationType.setLoginAccount:
-            await onSetLoginAccount();
             break;
 
           case VerificationType.communityRecovery: {
@@ -246,7 +223,6 @@ export default function VerifierDetails() {
       operationType,
       targetChainId,
       onRequestOrSetPin,
-      onSetLoginAccount,
       setGuardianStatus,
       accelerateChainId,
       autoLogin,

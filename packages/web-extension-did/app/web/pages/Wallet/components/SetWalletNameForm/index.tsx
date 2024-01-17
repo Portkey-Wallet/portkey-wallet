@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Form, Input, message } from 'antd';
+import { Button, Form, Input } from 'antd';
 import { FormItem } from 'components/BaseAntd';
 import { useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
@@ -12,16 +12,16 @@ import { IProfileDetailDataProps } from 'types/Profile';
 import UploadAvatar from 'pages/components/UploadAvatar';
 import uploadImageToS3 from 'utils/compressAndUploadToS3';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import singleMessage from 'utils/singleMessage';
 
 type ValidateStatus = Parameters<typeof Form.Item>[0]['validateStatus'];
 
 export interface ISetWalletNameFormProps {
   data: IProfileDetailDataProps;
-  handleCopy: (v: string) => void;
   saveCallback?: () => void;
 }
 
-export default function SetWalletNameForm({ data, handleCopy, saveCallback }: ISetWalletNameFormProps) {
+export default function SetWalletNameForm({ data, saveCallback }: ISetWalletNameFormProps) {
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const showChat = useIsChatShow();
@@ -63,9 +63,9 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: IS
 
         await setUserInfo({ nickName: walletName, avatar: s3Url || userInfo?.avatar });
         saveCallback?.();
-        message.success(t('Saved Successful'));
+        singleMessage.success(t('Saved Successful'));
       } catch (error) {
-        message.error(handleErrorMessage(error, 'set wallet name error'));
+        singleMessage.error(handleErrorMessage(error, 'set wallet name error'));
         console.log('setWalletName: error', error);
       } finally {
         setLoading(false);
@@ -102,7 +102,7 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: IS
 
   const onFinishFailed = useCallback((errorInfo: any) => {
     console.error(errorInfo, 'onFinishFailed==');
-    message.error('Something error');
+    singleMessage.error('Something error');
   }, []);
 
   return (
@@ -146,7 +146,6 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: IS
             portkeyId={data?.caHolderInfo?.userId}
             relationId={data?.relationId}
             addresses={data?.addresses || []}
-            handleCopy={handleCopy}
           />
         )}
       </div>

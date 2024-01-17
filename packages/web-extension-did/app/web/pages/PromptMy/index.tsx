@@ -12,6 +12,8 @@ import { Outlet } from 'react-router-dom';
 import clsx from 'clsx';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import UnReadBadge from 'pages/components/UnReadBadge';
+import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
+import { useClickReferral } from 'hooks/referral';
 
 interface MyMenuItemInfo {
   label: string;
@@ -24,9 +26,8 @@ export default function PromptMy() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isImputation = useIsImputation();
-  // TODO
-  // const {} = useIsShowNew();
-
+  const { viewReferralStatus } = useReferral();
+  const clickReferral = useClickReferral();
   const { pathname } = useLocation();
 
   const settingList: MyMenuItemInfo[] = useMemo(
@@ -88,7 +89,7 @@ export default function PromptMy() {
 
   return (
     <div className="prompt-my-page flex-column">
-      <PortKeyHeader unReadShow={isImputation} onUserClick={backCb} />
+      <PortKeyHeader unReadShow={isImputation || !viewReferralStatus} onUserClick={backCb} />
 
       <div className="prompt-my-frame">
         <SettingHeader title={t('My')} leftCallBack={backCb} />
@@ -114,15 +115,7 @@ export default function PromptMy() {
               key="referral"
               height={56}
               icon={<CustomSvg type="Referral" />}
-              onClick={() => {
-                // TODO
-                // 1. adjust status show
-                // 2.
-                // const openWinder = window.open(url, '_blank');
-                // if (openWinder) {
-                //   openWinder.opener = null;
-                // }
-              }}
+              onClick={clickReferral}
               showEnterIcon={false}>
               <div className="flex">
                 <div>Referral</div>

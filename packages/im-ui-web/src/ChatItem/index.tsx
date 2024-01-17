@@ -32,31 +32,31 @@ const ChatItem: React.FC<IChatItemProps> = (props) => {
         key: 'pin',
         leftIcon: <CustomSvg type={props.pin ? 'UnPin' : 'Pin'} />,
         children: props.pin ? 'Unpin' : 'Pin',
-        onClick: (e: any) => {
+        onClick: () => {
           hidePop();
-          onClickPin?.(e);
+          onClickPin?.(props);
         },
       },
       {
         key: 'mute',
         leftIcon: <CustomSvg type={props.mute ? 'UnMute' : 'Mute'} />,
         children: props.mute ? 'Unmute' : 'Mute',
-        onClick: (e: any) => {
+        onClick: () => {
           hidePop();
-          onClickMute?.(e);
+          onClickMute?.(props);
         },
       },
       {
         key: 'delete',
         leftIcon: <CustomSvg type="Delete" />,
         children: 'Delete',
-        onClick: (e: any) => {
+        onClick: () => {
           hidePop();
-          onClickDelete?.(e);
+          onClickDelete?.(props);
         },
       },
     ],
-    [hidePop, onClickDelete, onClickMute, onClickPin, props.mute, props.pin],
+    [hidePop, onClickDelete, onClickMute, onClickPin, props],
   );
   useEffect(() => {
     document.addEventListener('click', hidePop);

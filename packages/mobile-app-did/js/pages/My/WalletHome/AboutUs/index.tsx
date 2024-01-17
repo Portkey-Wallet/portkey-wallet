@@ -13,6 +13,8 @@ import navigationService from 'utils/navigationService';
 import { OfficialWebsite } from '@portkey-wallet/constants/constants-ca/network';
 import { useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { codePushOperator, parseLabel } from 'utils/update';
+import { parseVersion } from 'utils';
 
 const AboutUs = () => {
   const { t } = useLanguage();
@@ -55,7 +57,13 @@ const AboutUs = () => {
         <Svg icon="app-blue-logo" oblongSize={[pTd(48.89), pTd(48.89)]} />
       </View>
       <TextXXXL>Portkey</TextXXXL>
-      <TextM style={styles.version}>{`V${Application.nativeApplicationVersion}`}</TextM>
+      <TextM style={styles.version}>
+        {parseVersion([
+          `V${Application.nativeApplicationVersion}`,
+          Application.nativeBuildVersion,
+          parseLabel(codePushOperator.localPackage?.label),
+        ])}
+      </TextM>
       <View style={styles.btnContainer}>
         {socialMediaList.map((item, index) => (
           <View key={index}>

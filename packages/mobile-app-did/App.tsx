@@ -33,7 +33,7 @@ import { initNotifications } from 'utils/notifee';
 
 const codePushOptions = {
   updateDialog: false,
-  deploymentKey: (isIOS ? Config.CODE_PUSH_IOS_DEPLOYMENT_KEY : Config.CODE_PUSH_ANDROID_DEPLOYMENT_KEY) || '',
+  deploymentKey: 'IQcprlvYIWyYbUKD_qd8cSyy5gPUhjOnL9O_k',
   installMode: CodePush.InstallMode.ON_NEXT_RESTART,
   checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME,
 };

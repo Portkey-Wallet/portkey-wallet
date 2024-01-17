@@ -19,6 +19,8 @@ import GStyles from 'assets/theme/GStyles';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import fonts from 'assets/theme/fonts';
 import { defaultColors } from 'assets/theme';
+import CommonButton from 'components/CommonButton';
+import { codePushOperator } from 'utils/update';
 
 const scrollViewProps = { extraHeight: 120 };
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['transparent', 'transparent'];
@@ -54,6 +56,16 @@ export default function LoginPortkey() {
         scrollViewProps={scrollViewProps}
         leftCallback={BackType[loginType] ? () => setLoginType(PageLoginType.referral) : undefined}>
         <Svg icon="logo-icon" size={pTd(60)} iconStyle={styles.logoIconStyle} color={defaultColors.bg1} />
+        <CommonButton
+          onPress={async () => {
+            try {
+              codePushOperator.checkToUpdate();
+            } catch (error) {
+              console.log(error, '=====error');
+            }
+          }}>
+          check update
+        </CommonButton>
         <View style={GStyles.center}>
           {!isMainnet && (
             <View style={styles.labelBox}>

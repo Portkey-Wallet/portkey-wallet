@@ -8,6 +8,8 @@ import myEvents from 'utils/deviceEvent';
 import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useReportingSignalR } from 'hooks/FCM';
+import CommonButton from 'components/CommonButton';
+import { codePushOperator } from 'utils/update';
 
 const DashBoard: React.FC<any> = ({ navigation }) => {
   const reportAnalyticsEvent = useReportAnalyticsEvent();
@@ -37,6 +39,12 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.bg5]}>
       <Card />
       <DashBoardTab />
+      <CommonButton
+        onPress={() => {
+          codePushOperator.checkToUpdate();
+        }}>
+        check update
+      </CommonButton>
     </SafeAreaBox>
   );
 };

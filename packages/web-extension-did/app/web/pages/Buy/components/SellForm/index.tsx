@@ -244,11 +244,15 @@ export default function SellFrom() {
         return navigate('/');
       }
 
-      // CHECK 2: account security
+      // CHECK 2: manager sync
+      const _isManagerSynced = await checkManagerSynced();
+      if (!_isManagerSynced) return setLoading(false);
+
+      // CHECK 3: account security
       const securityRes = await checkSecurity(cryptoSelectedRef.current.chainId);
       if (!securityRes) return setLoading(false);
 
-      // CHECK 3: balance and tx fee
+      // CHECK 4: balance and tx fee
       const chainId = cryptoSelectedRef.current.chainId;
       const currentChain = getCurrentChain(chainId);
       if (!currentChain) return setLoading(false);
@@ -273,10 +277,6 @@ export default function SellFrom() {
         setInsufficientFundsMsg();
         return;
       }
-
-      // CHECK 4: manager sync
-      const _isManagerSynced = await checkManagerSynced();
-      if (!_isManagerSynced) return setLoading(false);
 
       // CHECK 5: transfer limit
       const limitRes = await checkLimit({

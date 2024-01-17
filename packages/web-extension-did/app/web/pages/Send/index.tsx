@@ -325,6 +325,18 @@ export default function Send() {
       setLoading(true);
       if (!ZERO.plus(amount).toNumber()) return 'Please input amount';
       if (!currentChain) return 'currentChain is not exist';
+
+      // CHECK 1: manager sync
+      const _isManagerSynced = await checkManagerSyncState(chainId);
+      if (!_isManagerSynced) {
+        return 'Synchronizing on-chain account information...';
+      }
+
+      // CHECK 2: wallet security
+      const securityRes = await checkSecurity(tokenInfo.chainId);
+      if (!securityRes) return WalletIsNotSecure;
+
+      // CHECK 3: balance
       const result = await getBalance({
         rpcUrl: currentChain.endPoint,
         address: tokenInfo.address,
@@ -356,16 +368,7 @@ export default function Send() {
         return 'input error';
       }
 
-      const _isManagerSynced = await checkManagerSyncState(chainId);
-      if (!_isManagerSynced) {
-        return 'Synchronizing on-chain account information...';
-      }
-
-      // wallet security check
-      const securityRes = await checkSecurity(tokenInfo.chainId);
-      if (!securityRes) return WalletIsNotSecure;
-
-      // transfer limit check
+      // CHECK 4: transfer limit
       const limitRes = await checkLimit({
         chainId: tokenInfo.chainId,
         symbol: tokenInfo.symbol,
@@ -386,6 +389,7 @@ export default function Send() {
       });
       if (!limitRes) return ExceedLimit;
 
+      // CHECK 5: tx fee
       const fee = await getTranslationInfo();
       console.log('---getTranslationInfo', fee);
       if (fee) {

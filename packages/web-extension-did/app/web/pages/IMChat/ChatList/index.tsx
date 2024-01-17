@@ -1,6 +1,5 @@
 import { Popover } from 'antd';
 import { useCallback, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ChatList as ChannelList, IChatItemProps, PopoverMenuList, StyleProvider } from '@portkey-wallet/im-ui-web';
 import CustomSvg from 'components/CustomSvg';
@@ -20,10 +19,12 @@ import { setBadge } from 'utils/FCM';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 import { useReportFCMStatus } from 'hooks/useFCM';
 import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
+import { FromPageEnum, TFindMoreLocationState } from 'types/router';
 import './index.less';
 
 export default function ChatList() {
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TFindMoreLocationState>();
   const { t } = useTranslation();
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
@@ -62,7 +63,7 @@ export default function ChatList() {
         leftIcon: <CustomSvg type="AddMorePeople" />,
         children: 'Find People',
         onClick: () => {
-          navigate(`/setting/contacts/find-more`, { state: { from: 'chat-list' } });
+          navigate(`/setting/contacts/find-more`, { state: { previousPage: FromPageEnum.chatList } });
         },
       },
     ],

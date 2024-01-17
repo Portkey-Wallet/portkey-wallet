@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
@@ -11,12 +10,14 @@ import './index.less';
 import SearchList from '../components/SearchList';
 import { ISearchItem } from '../components/SearchItem';
 import { useHandleClickChatItem } from 'hooks/im';
+import { useLocationState, useNavigateState } from 'hooks/router';
+import { FromPageEnum, TChatListSearchLocationState, TFindMoreLocationState } from 'types/router';
 
 export default function ChatListSearch() {
   const { t } = useTranslation();
-  const { state } = useLocation();
+  const { state } = useLocationState<TChatListSearchLocationState>();
   const [filterWord, setFilterWord] = useState<string>('');
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TFindMoreLocationState>();
   const { setLoading } = useLoading();
   const [chatList, setChatList] = useState<ISearchItem[]>([]);
   const searchChannel = useSearchChannel();
@@ -50,9 +51,12 @@ export default function ChatListSearch() {
   );
 
   useEffect(() => {
-    setFilterWord(state?.search || '');
-    handleSearch(state?.search || '');
-  }, [handleSearch, state?.search]);
+    const _search = state?.search;
+    if (_search) {
+      setFilterWord(_search);
+      handleSearch(_search);
+    }
+  }, [handleSearch, state]);
 
   const searchDebounce = useDebounceCallback(
     async (params) => {
@@ -91,7 +95,9 @@ export default function ChatListSearch() {
         <div
           className="find-more flex"
           onClick={() =>
-            navigate(`/setting/contacts/find-more`, { state: { search: filterWord, from: 'chat-search' } })
+            navigate(`/setting/contacts/find-more`, {
+              state: { search: filterWord, previousPage: FromPageEnum.chatSearch },
+            })
           }>
           <CustomSvg type="AddMorePeople" />
           Find People

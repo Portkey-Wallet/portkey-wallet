@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
 import InputLogin from '../InputLogin';
 import SocialLogin from '../SocialLogin';
 import { LoginInfo } from 'store/reducers/loginCache/type';
 import { SocialLoginFinishHandler, ValidateHandler } from 'types/wallet';
 import { LoginKey } from '@portkey-wallet/types/types-ca/wallet';
+import { useNavigateState } from 'hooks/router';
 
 enum STEP {
   socialLogin,
@@ -23,7 +23,7 @@ export default function SignCard({
 }) {
   const [step, setStep] = useState<STEP>(STEP.socialLogin);
 
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
 
   const [defaultKey, setDefaultKey] = useState<LoginKey>();
 

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
 import { MessageList, InputBar, StyleProvider, MessageContentType, PopDataProps } from '@portkey-wallet/im-ui-web';
 import { Avatar } from '@portkey-wallet/im-ui-web';
@@ -20,11 +20,13 @@ import { useClickUrl } from 'hooks/im';
 import WarnTip from 'pages/IMChat/components/WarnTip';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
+import { TViewContactLocationState } from 'types/router';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TViewContactLocationState>();
   const [showBookmark, setShowBookmark] = useState(false);
   const messageRef = useRef<any>(null);
   const addContactApi = useAddStrangerContact();
@@ -75,7 +77,7 @@ export default function ChatBox() {
   }, [addContactApi, info, setLoading]);
   const handleGoProfile = useCallback(() => {
     navigate('/setting/contacts/view', {
-      state: { relationId: info?.toRelationId, from: 'chat-box', isStranger, channelUuid },
+      state: { relationId: info?.toRelationId, previousPage: 'chat-box', isStranger, channelUuid },
     });
   }, [info?.toRelationId, isStranger, navigate, channelUuid]);
   const p2pPopList = useMemo(

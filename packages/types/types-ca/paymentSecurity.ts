@@ -19,9 +19,9 @@ export enum ICheckLimitBusiness {
 }
 
 export type ITransferLimitRouteState = ITransferLimitItem & {
-  from: ICheckLimitBusiness;
+  from?: ICheckLimitBusiness;
   targetChainId?: ChainId;
-  extra: ICheckRampLimitExtraParams | ICheckSendLimitExtraParams;
+  extra?: ICheckRampLimitExtraParams | ICheckSendLimitExtraParams;
   initStateBackUp?: ITransferLimitRouteState;
 };
 

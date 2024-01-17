@@ -2,7 +2,7 @@ import { useDisbandChannel, useGroupChannelInfo, useUpdateChannelInfo } from '@p
 import { Button, Form, Input } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
@@ -12,6 +12,7 @@ import { useLoading } from 'store/Provider/hooks';
 import './index.less';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
 
 const { Item: FormItem } = Form;
 type ValidateStatus = Parameters<typeof Form.Item>[0]['validateStatus'];
@@ -30,7 +31,7 @@ export default function EditGroupInfo() {
   const [validName, setValidName] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
   const [name, setName] = useState<string>(groupInfo?.name || '');
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const [disabled, setDisabled] = useState(false);
   const updateChannelInfo = useUpdateChannelInfo();
   const [file, setFile] = useState<File>();

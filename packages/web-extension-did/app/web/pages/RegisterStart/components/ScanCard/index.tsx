@@ -1,6 +1,5 @@
 import { WalletInfoType } from '@portkey-wallet/types/wallet';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
 import AElf from 'aelf-sdk';
 import { useEffectOnce } from 'react-use';
 import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
@@ -22,9 +21,10 @@ import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
 import CustomSvg from 'components/CustomSvg';
 import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
 
 export default function ScanCard() {
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const dispatch = useAppDispatch();
   const [newWallet, setNewWallet] = useState<WalletInfoType>();
   const { walletInfo, currentNetwork } = useCurrentWallet();

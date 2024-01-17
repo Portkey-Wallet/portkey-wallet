@@ -141,7 +141,7 @@ export default function SendPreview({
           <span className="label">Estimated CrossChain Transfer</span>
           <p className="value">
             <span className="symbol">
-              <span className="usd">{isMainnet && amountInUsdShow(crossChainFee, 0, symbol)}</span>
+              <span className="usd">{isMainnet && amountInUsdShow(crossChainFee, 0, defaultToken.symbol)}</span>
               {` ${formatAmountShow(crossChainFee, Number(defaultToken.decimals))} ${defaultToken.symbol}`}
             </span>
           </p>

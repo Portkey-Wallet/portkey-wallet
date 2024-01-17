@@ -50,8 +50,8 @@ function UpgradeOverlay(props: ShowUpgradeOverlayPropsType) {
     OverlayModal.hide();
   }, [commonAction]);
 
-  const onNotNow = useCallback(async () => {
-    await commonAction();
+  const onNotNow = useCallback(() => {
+    commonAction();
     OverlayModal.hide();
   }, [commonAction]);
 

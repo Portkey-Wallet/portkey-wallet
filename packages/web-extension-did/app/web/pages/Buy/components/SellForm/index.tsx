@@ -14,7 +14,7 @@ import { handleKeyDown } from 'utils/keyDown';
 import { divDecimals } from '@portkey-wallet/utils/converter';
 import ExchangeRate from '../ExchangeRate';
 import { useUpdateReceiveAndInterval } from 'pages/Buy/hooks';
-import { useLoading } from 'store/Provider/hooks';
+import { useCommonState, useLoading } from 'store/Provider/hooks';
 import { useEffectOnce } from 'react-use';
 import { Button, message } from 'antd';
 import { SERVICE_UNAVAILABLE_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
@@ -28,8 +28,6 @@ import { useFetchTxFee, useGetOneTxFee } from '@portkey-wallet/hooks/hooks-ca/us
 import { generateRateText } from 'pages/Buy/utils';
 import { getSellFiat } from '@portkey-wallet/utils/ramp';
 import { useGetChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import useLocationState from 'hooks/useLocationState';
-import { RampRouteState } from 'pages/Buy/types';
 import { useCheckLimit, useCheckSecurity } from 'hooks/useSecurity';
 import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
@@ -38,12 +36,17 @@ import GuardianApproveModal from 'pages/components/GuardianApprovalModal';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { chromeStorage } from 'store/utils';
 import { ChainId } from '@portkey-wallet/types';
+import { usePromptLocationParams } from 'hooks/route';
+import { TRampLocationState } from 'types/router';
+import InternalMessage from 'messages/InternalMessage';
+import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 
 export default function SellFrom() {
   const { t } = useTranslation();
   const { setLoading } = useLoading();
   const navigate = useNavigate();
-  const { state } = useLocationState<RampRouteState>();
+  const { locationParams: state } = usePromptLocationParams<TRampLocationState, TRampLocationState>();
+  const { isPrompt } = useCommonState();
 
   // get data
   const { refreshRampShow } = useRampEntryShow();
@@ -168,10 +171,23 @@ export default function SellFrom() {
 
   const showRateText = generateRateText(cryptoSelected.symbol, exchange, fiatSelected.symbol);
 
-  const [openGuardiansApprove, setOpenGuardiansApprove] = useState<boolean>(false);
+  const [openGuardiansApprove, setOpenGuardiansApprove] = useState<boolean>(!!state.openGuardiansApprove);
   const handleOneTimeApproval = useCallback(() => {
-    setOpenGuardiansApprove(true);
-  }, []);
+    if (isPrompt) return setOpenGuardiansApprove(true);
+
+    const params: TRampLocationState = {
+      crypto: cryptoSelectedRef.current.symbol,
+      network: cryptoSelectedRef.current.network,
+      fiat: fiatSelectedRef.current.symbol,
+      country: fiatSelectedRef.current.country,
+      amount: cryptoAmountRef.current,
+      side: RampType.SELL,
+      tokenInfo: state ? state.tokenInfo : undefined,
+      openGuardiansApprove: true,
+    };
+    InternalMessage.payload(PortkeyMessageTypes.RAMP, JSON.stringify(params)).send();
+  }, [isPrompt, state]);
+
   const onCloseGuardianApprove = useCallback(() => {
     setOpenGuardiansApprove(false);
   }, []);

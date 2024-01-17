@@ -13,7 +13,7 @@ import CustomSvg from 'components/CustomSvg';
 import TitleWrapper from 'components/TitleWrapper';
 import { ReactElement, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useAppDispatch, useCommonState, useLoading, useUserInfo, useWalletInfo } from 'store/Provider/hooks';
 import crossChainTransfer, { intervalCrossChainTransfer } from 'utils/sandboxUtil/crossChainTransfer';
 import sameChainTransfer from 'utils/sandboxUtil/sameChainTransfer';
@@ -45,6 +45,10 @@ import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import CustomModal from 'pages/components/CustomModal';
 import { SideChainTipContent, SideChainTipTitle } from '@portkey-wallet/constants/constants-ca/send';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
+import { usePromptLocationParams } from 'hooks/route';
+import { TSendLocationState, TSendPageType } from 'types/router';
+import InternalMessage from 'messages/InternalMessage';
+import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 
 export type ToAccount = { address: string; name?: string };
 
@@ -63,7 +67,8 @@ export default function Send() {
   const { walletName } = useWalletInfo();
   // TODO need get data from state and wait for BE data structure
   const { type, symbol } = useParams();
-  const { state } = useLocation();
+  const { locationParams: state } = usePromptLocationParams<TSendLocationState, TSendLocationState>();
+  const { isPrompt } = useCommonState();
   const chainId: ChainId = useMemo(() => state.targetChainId || state.chainId, [state.chainId, state.targetChainId]);
   const chainInfo = useCurrentChain(chainId);
   const wallet = useCurrentWalletInfo();
@@ -73,7 +78,7 @@ export default function Send() {
   const { setLoading } = useLoading();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
-  const [openGuardiansApprove, setOpenGuardiansApprove] = useState<boolean>(false);
+  const [openGuardiansApprove, setOpenGuardiansApprove] = useState<boolean>(!!state?.openGuardiansApprove);
   const oneTimeApprovalList = useRef<GuardianItem[]>([]);
   const [errorMsg, setErrorMsg] = useState('');
   const [tipMsg, setTipMsg] = useState('');
@@ -279,9 +284,21 @@ export default function Send() {
 
   const checkLimit = useCheckLimit(tokenInfo.chainId);
   const handleOneTimeApproval = useCallback(() => {
-    setOpenGuardiansApprove(true);
-    console.log('🌈 🌈 🌈 🌈 🌈 🌈 handleOneTimeApproval', '');
-  }, []);
+    if (isPrompt) return setOpenGuardiansApprove(true);
+
+    const params: TSendLocationState = {
+      ...tokenInfo,
+      targetChainId: chainId,
+      toAccount,
+      stage,
+      amount,
+      balance,
+      type: type as TSendPageType,
+      openGuardiansApprove: true,
+    };
+    InternalMessage.payload(PortkeyMessageTypes.SEND, JSON.stringify(params)).send();
+  }, [amount, balance, chainId, isPrompt, stage, toAccount, tokenInfo, type]);
+
   const onCloseGuardianApprove = useCallback(() => {
     setOpenGuardiansApprove(false);
   }, []);
@@ -617,7 +634,6 @@ export default function Send() {
     );
   }, [showSideChainModal, state.chainId]);
 
-  const { isPrompt } = useCommonState();
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['page-send', isPrompt && 'detail-page-prompt'])}>

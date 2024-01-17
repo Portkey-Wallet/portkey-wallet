@@ -104,6 +104,9 @@ export default function ViewContact() {
   useEffect(() => {
     if (!showChat) return;
 
+    // clear api data
+    setProfileData({});
+
     im.service
       .getProfile({
         id: state.id || undefined,

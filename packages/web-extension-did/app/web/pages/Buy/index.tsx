@@ -21,13 +21,13 @@ import { useCheckSecurity } from 'hooks/useSecurity';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import singleMessage from 'utils/singleMessage';
-import { useLocationState } from 'hooks/router';
+import { usePromptLocationParams } from 'hooks/router';
 import { TRampLocationState } from 'types/router';
 
 export default function Buy() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { state } = useLocationState<TRampLocationState>();
+  const { locationParams: state } = usePromptLocationParams<TRampLocationState, TRampLocationState>();
   const { isPrompt } = useCommonState();
   const { setLoading } = useLoading();
   const checkSecurity = useCheckSecurity();

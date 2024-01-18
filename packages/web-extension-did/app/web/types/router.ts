@@ -180,6 +180,7 @@ export type TRampPreviewLocationState = {
   amount: string;
   side: RampType;
   tokenInfo?: TTokenDetailLocationState;
+  openGuardiansApprove?: boolean;
 };
 
 // AddContact
@@ -229,6 +230,7 @@ export type TReceiveLocationState = {
 };
 
 // Send
+export type TSendPageType = 'token' | 'nft';
 export type TSendLocationState = BaseToken & {
   chainId: ChainId;
   targetChainId?: ChainId;
@@ -236,6 +238,8 @@ export type TSendLocationState = BaseToken & {
   stage?: SendStage;
   amount?: string;
   balance?: string;
+  type?: TSendPageType;
+  openGuardiansApprove?: boolean;
 };
 
 // RecentDetail

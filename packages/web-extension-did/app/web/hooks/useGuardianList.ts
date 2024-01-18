@@ -7,7 +7,7 @@ import { getVerifierList } from 'utils/sandboxUtil/getVerifierList';
 import { useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 
-const useGuardiansList = () => {
+const useGuardianList = () => {
   const dispatch = useAppDispatch();
   const getRegisterInfo = useGetRegisterInfo();
   const getChainInfo = useGetChainInfo();
@@ -47,4 +47,4 @@ const useGuardiansList = () => {
   return fetch;
 };
 
-export default useGuardiansList;
+export default useGuardianList;

@@ -46,8 +46,10 @@ import { SideChainTipContent, SideChainTipTitle } from '@portkey-wallet/constant
 import getSeed from 'utils/getSeed';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import singleMessage from 'utils/singleMessage';
-import { useLocationState } from 'hooks/router';
-import { TSendLocationState } from 'types/router';
+import { usePromptLocationParams } from 'hooks/router';
+import { TSendLocationState, TSendPageType } from 'types/router';
+import InternalMessage from 'messages/InternalMessage';
+import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 
 export type ToAccount = { address: string; name?: string };
 
@@ -66,7 +68,8 @@ export default function Send() {
   const { userInfo } = useWalletInfo();
   // TODO need get data from state and wait for BE data structure
   const { type, symbol } = useParams();
-  const { state } = useLocationState<TSendLocationState>();
+  const { locationParams: state } = usePromptLocationParams<TSendLocationState, TSendLocationState>();
+  const { isPrompt } = useCommonState();
   const chainId: ChainId = useMemo(() => state.targetChainId || state.chainId, [state.chainId, state.targetChainId]);
   const chainInfo = useCurrentChain(chainId);
   const wallet = useCurrentWalletInfo();
@@ -74,7 +77,7 @@ export default function Send() {
   const { setLoading } = useLoading();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
-  const [openGuardiansApprove, setOpenGuardiansApprove] = useState<boolean>(false);
+  const [openGuardiansApprove, setOpenGuardiansApprove] = useState<boolean>(!!state?.openGuardiansApprove);
   const oneTimeApprovalList = useRef<GuardianItem[]>([]);
   const [errorMsg, setErrorMsg] = useState('');
   const [tipMsg, setTipMsg] = useState('');
@@ -277,8 +280,21 @@ export default function Send() {
 
   const checkLimit = useCheckLimit(tokenInfo.chainId);
   const handleOneTimeApproval = useCallback(() => {
-    setOpenGuardiansApprove(true);
-  }, []);
+    if (isPrompt) return setOpenGuardiansApprove(true);
+
+    const params: TSendLocationState = {
+      ...tokenInfo,
+      targetChainId: chainId,
+      toAccount,
+      stage,
+      amount,
+      balance,
+      type: type as TSendPageType,
+      openGuardiansApprove: true,
+    };
+    InternalMessage.payload(PortkeyMessageTypes.SEND, JSON.stringify(params)).send();
+  }, [amount, balance, chainId, isPrompt, stage, toAccount, tokenInfo, type]);
+
   const onCloseGuardianApprove = useCallback(() => {
     setOpenGuardiansApprove(false);
   }, []);
@@ -309,6 +325,18 @@ export default function Send() {
       setLoading(true);
       if (!ZERO.plus(amount).toNumber()) return 'Please input amount';
       if (!currentChain) return 'currentChain is not exist';
+
+      // CHECK 1: manager sync
+      const _isManagerSynced = await checkManagerSyncState(chainId);
+      if (!_isManagerSynced) {
+        return 'Synchronizing on-chain account information...';
+      }
+
+      // CHECK 2: wallet security
+      const securityRes = await checkSecurity(tokenInfo.chainId);
+      if (!securityRes) return WalletIsNotSecure;
+
+      // CHECK 3: balance
       const result = await getBalance({
         rpcUrl: currentChain.endPoint,
         address: tokenInfo.address,
@@ -340,16 +368,7 @@ export default function Send() {
         return 'input error';
       }
 
-      const _isManagerSynced = await checkManagerSyncState(chainId);
-      if (!_isManagerSynced) {
-        return 'Synchronizing on-chain account information...';
-      }
-
-      // wallet security check
-      const securityRes = await checkSecurity(tokenInfo.chainId);
-      if (!securityRes) return WalletIsNotSecure;
-
-      // transfer limit check
+      // CHECK 4: transfer limit
       const limitRes = await checkLimit({
         chainId: tokenInfo.chainId,
         symbol: tokenInfo.symbol,
@@ -370,6 +389,7 @@ export default function Send() {
       });
       if (!limitRes) return ExceedLimit;
 
+      // CHECK 5: tx fee
       const fee = await getTranslationInfo();
       console.log('---getTranslationInfo', fee);
       if (fee) {
@@ -614,7 +634,6 @@ export default function Send() {
     );
   }, [showSideChainModal, state.chainId]);
 
-  const { isPrompt } = useCommonState();
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['page-send', isPrompt && 'detail-page-prompt'])}>

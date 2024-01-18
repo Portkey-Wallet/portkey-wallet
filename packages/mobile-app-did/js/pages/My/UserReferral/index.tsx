@@ -57,7 +57,9 @@ const UserReferral = () => {
           <Touchable onPress={navigationService.goBack} style={GStyles.flex1}>
             <Svg icon="left-arrow" color={defaultColors.bg1} size={pTd(20)} />
           </Touchable>
-          <TextL style={[GStyles.textAlignCenter, FontStyles.font11, styles.title]}>Portkey Referral</TextL>
+          <TextL style={[GStyles.textAlignCenter, fonts.mediumFont, FontStyles.font11, styles.title]}>
+            Portkey Referral Program
+          </TextL>
           <View style={GStyles.flex1} />
         </View>
         <Image source={referralTopText} style={styles.referralTopText} />
@@ -163,7 +165,7 @@ export const styles = StyleSheet.create({
     bottom: 0,
     zIndex: 1000,
     backgroundColor: '#000000',
-    opacity: 0.4,
+    opacity: 0.95,
   },
   btn: {
     width: pTd(335),
@@ -185,6 +187,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: pTd(20),
   },
   lottieLoading: {
-    marginLeft: pTd(8),
+    marginLeft: pTd(4),
+    width: pTd(16),
   },
 });

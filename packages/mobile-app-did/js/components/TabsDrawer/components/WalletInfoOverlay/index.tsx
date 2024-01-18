@@ -23,6 +23,9 @@ import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
 import { useAppDispatch } from 'store/hooks';
 import { useIsInCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import CommonButton from 'components/CommonButton';
+import Svg from 'components/Svg';
+import { copyText } from 'utils';
+import Touchable from 'components/Touchable';
 
 type MyWalletModalType = {
   tabInfo: ITabItem;
@@ -80,6 +83,15 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
                   {formatChainInfoToShow(item?.chainId as ChainId, currentNetwork)}
                 </TextS>
               </View>
+              <View>
+                <TextS>
+                  {`${formatAmountShow(divDecimals(item?.balance, item?.decimals))} ${item?.symbol || '0'}`}
+                </TextS>
+                <TextS style={styles.itemChainInfo} />
+              </View>
+              <Touchable onPress={() => copyText(addressFormat(item?.caAddress, item?.chainId as ChainId))}>
+                <Svg icon="copy" size={pTd(16)} />
+              </Touchable>
               <View>
                 <TextS>
                   {`${formatAmountShow(divDecimals(item?.balance, item?.decimals))} ${item?.symbol || '0'}`}

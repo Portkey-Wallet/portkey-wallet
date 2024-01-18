@@ -8,7 +8,7 @@ export const useClickReferral = () => {
   const currentNetworkInfo = useCurrentNetworkInfo();
   return useCallback(() => {
     if (!referralLink) {
-      singleMessage.info('loading...');
+      singleMessage.info('Please check your internet connection and try again.');
       return;
     }
     setViewReferralStatusStatus();

@@ -2,6 +2,7 @@ import { RampType } from '@portkey-wallet/ramp';
 import { ChainId } from '@portkey-wallet/types';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { ToAccount, SendStage } from 'pages/Send';
+import { GuardianItem } from './guardians';
 
 // TokenDetail
 export type TTokenDetailLocationState = {
@@ -38,4 +39,5 @@ export type TRampPreviewLocationState = {
   side: RampType;
   tokenInfo?: TTokenDetailLocationState;
   openGuardiansApprove?: boolean;
+  approveList?: GuardianItem[];
 };

@@ -92,7 +92,7 @@ const WalletName: React.FC = () => {
       setAvatar(s3Url || userInfo?.avatar || '');
       await setUserInfo({ nickName: _nameValue, avatar: s3Url || userInfo?.avatar || '' });
       navigationService.goBack();
-      CommonToast.success(t('Saved Successful'), undefined, 'bottom');
+      CommonToast.success(t('Saved Successful'));
     } catch (error: any) {
       console.log('setWalletName: error', error);
       CommonToast.failError(error);

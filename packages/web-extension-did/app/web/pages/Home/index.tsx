@@ -22,7 +22,7 @@ export default function Home() {
   const navigate = useNavigate();
   const { isPrompt, isNotLessThan768 } = useCommonState();
   const isImputation = useIsImputation();
-  const { getViewReferralStatusStatus, getReferralLink } = useReferral();
+  const { getViewReferralStatusStatus, getReferralLink, viewReferralStatus } = useReferral();
   const onUserClick = useCallback(() => {
     const url = isNotLessThan768 ? `/setting/wallet` : `/setting`;
     navigate(url);
@@ -66,7 +66,7 @@ export default function Home() {
 
   return (
     <div className={clsx(['portkey-home', isPrompt && 'portkey-prompt'])}>
-      <PortKeyHeader unReadShow={isImputation} onUserClick={onUserClick} />
+      <PortKeyHeader unReadShow={isImputation || !viewReferralStatus} onUserClick={onUserClick} />
       <div className="portkey-body">
         <MyBalance />
       </div>

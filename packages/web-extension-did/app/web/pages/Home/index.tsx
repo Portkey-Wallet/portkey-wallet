@@ -33,7 +33,7 @@ export default function Home() {
   const caAddresses = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
 
-  const { search, state } = useLocation();
+  const { search } = useLocation();
   const isSell = useRef(0); // guaranteed to make only one transfer
   const handleAchSell = useHandleAchSell();
   const locked = useStorage('locked');
@@ -58,11 +58,6 @@ export default function Home() {
   }, [handleAchSell, locked, search]);
 
   useEffectOnce(() => {
-    if (state?.reload) {
-      // fix: navigate don't trigger the updater logic, and not being able to get the token.
-      history.replaceState({ reload: false }, '/');
-      window.location.reload();
-    }
     checkAchSell();
     getAccountAllAssets();
   });

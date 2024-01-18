@@ -75,15 +75,23 @@ class SignalrFCM extends BaseSignalr {
   };
 
   public exitWallet = () => {
-    this.signalr?.invoke('exitWallet');
-    this.signalr?.stop();
-    this.resetSignalrFCM();
+    try {
+      this.signalr?.invoke('exitWallet');
+      this.signalr?.stop();
+      this.resetSignalrFCM();
+    } catch (error) {
+      console.log('exitWallet error', error);
+    }
   };
 
   public switchNetwork = () => {
-    this.signalr?.invoke('switchNetwork');
-    this.signalr?.stop();
-    this.resetSignalrFCM();
+    try {
+      this.signalr?.invoke('switchNetwork');
+      this.signalr?.stop();
+      this.resetSignalrFCM();
+    } catch (error) {
+      console.log('switchNetwork error', error);
+    }
   };
   public getRefreshTime = () => {
     console.log(this.fcmRefreshTokenTime);
@@ -132,8 +140,11 @@ class SignalrFCM extends BaseSignalr {
   };
 
   async onReconnected(signalr: HubConnection, connectionId?: string) {
-    console.log('onReconnected: signalr, connectionId, deviceId', signalr, connectionId, this.deviceId);
-    signalr.invoke('Connect', this.deviceId || '');
+    try {
+      signalr.invoke('Connect', this.deviceId || '');
+    } catch (error) {
+      console.log('onReconnected error', error);
+    }
   }
 }
 

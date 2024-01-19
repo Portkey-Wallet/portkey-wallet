@@ -34,7 +34,6 @@ import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { GuardianItem } from 'types/guardians';
 import GuardianApproveModal from 'pages/components/GuardianApprovalModal';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
-import { chromeStorage } from 'store/utils';
 import { ChainId } from '@portkey-wallet/types';
 import { usePromptLocationParams } from 'hooks/route';
 import { TRampLocationState } from 'types/router';
@@ -191,26 +190,29 @@ export default function SellFrom() {
   const onCloseGuardianApprove = useCallback(() => {
     setOpenGuardiansApprove(false);
   }, []);
-  const goPreview = useCallback(() => {
-    navigate('/buy/preview', {
-      state: {
-        crypto: cryptoSelectedRef.current.symbol,
-        network: cryptoSelectedRef.current.network,
-        fiat: fiatSelectedRef.current.symbol,
-        country: fiatSelectedRef.current.country,
-        amount: cryptoAmountRef.current,
-        side: RampType.SELL,
-        tokenInfo: state ? state.tokenInfo : null,
-      },
-    });
-  }, [navigate, state]);
+  const goPreview = useCallback(
+    (approveList?: GuardianItem[]) => {
+      navigate('/buy/preview', {
+        state: {
+          crypto: cryptoSelectedRef.current.symbol,
+          network: cryptoSelectedRef.current.network,
+          fiat: fiatSelectedRef.current.symbol,
+          country: fiatSelectedRef.current.country,
+          amount: cryptoAmountRef.current,
+          side: RampType.SELL,
+          tokenInfo: state ? state.tokenInfo : null,
+          approveList,
+        },
+      });
+    },
+    [navigate, state],
+  );
   const getApproveRes = useCallback(
     async (approveList: GuardianItem[]) => {
       try {
         if (Array.isArray(approveList) && approveList.length > 0) {
-          chromeStorage.setItem('portkeyOffRampGuardiansApproveList', JSON.stringify(approveList));
           setOpenGuardiansApprove(false);
-          goPreview();
+          goPreview(approveList);
         } else {
           console.log('getApprove error: approveList empty');
         }

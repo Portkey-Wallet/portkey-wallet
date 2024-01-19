@@ -114,7 +114,9 @@ export const BackEndNetWorkMap: {
     cmsUrl: 'http://192.168.66.62:3005/graphql',
     s3Url: 'https://portkey-cms-dev.s3.ap-northeast-1.amazonaws.com',
     imS3Bucket: 'portkey-im-dev',
+    referralUrl: 'http://192.168.67.51:3100',
     portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
+    portkeyOpenLoginUrl: 'https://openlogin-test.portkey.finance/',
   },
   'back-end-test4': {
     name: 'aelf Mainnet',
@@ -150,8 +152,10 @@ export const BackEndNetWorkMap: {
     imApiUrl: 'http://192.168.66.117:5007',
     imWsUrl: 'ws://192.168.66.117:19903/ws',
     imS3Bucket: 'portkey-im-dev',
+    referralUrl: 'http://192.168.67.51:3100',
     portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
     eBridgeUrl: 'http://192.168.67.235:3000',
+    portkeyOpenLoginUrl: 'https://openlogin-test.portkey.finance/',
   },
   'back-end-testnet-v2': {
     name: 'aelf Testnet',
@@ -165,6 +169,7 @@ export const BackEndNetWorkMap: {
     cmsUrl: 'https://cms-test-aa.portkey.finance/graphql',
     s3Url: 'https://portkey-cms-testnet.s3.ap-northeast-1.amazonaws.com',
     imS3Bucket: 'portkey-im-testnet',
+    referralUrl: 'https://test.portkey.finance',
     portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
     eBridgeUrl: 'https://test.ebridge.exchange',
     eTransferUrl: 'https://test.etransfer.exchange',

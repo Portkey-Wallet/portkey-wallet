@@ -10,7 +10,7 @@ export const guardianTypeList: IGuardianType[] = [
 ];
 
 export const phoneInit: IPhoneInput = {
-  code: '+65',
+  code: '',
   phoneNumber: '',
 };
 

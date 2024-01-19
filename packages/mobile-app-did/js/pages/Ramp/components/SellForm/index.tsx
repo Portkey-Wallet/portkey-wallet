@@ -412,6 +412,8 @@ export default function SellForm() {
                   hasBorder
                   title={fiat?.symbol || ''}
                   style={styles.unitIconStyle}
+                  // elf token icon is fixed , only use white background color
+                  svgName={fiat?.symbol === defaultToken.symbol ? 'testnet' : undefined}
                   imageUrl={fiat?.icon}
                 />
               )}

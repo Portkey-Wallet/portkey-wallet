@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     // display: 'flex',
     // justifyContent: 'center',
     // alignItems: 'center',
-    backgroundColor: defaultColors.bg4,
+    backgroundColor: defaultColors.bg6,
   },
   img: {
     position: 'absolute',

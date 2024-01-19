@@ -139,7 +139,7 @@ class SignalrFCM extends BaseSignalr {
     }
   };
 
-  async onReconnected(signalr: HubConnection, connectionId?: string) {
+  async onReconnected(signalr: HubConnection, _connectionId?: string) {
     try {
       signalr.invoke('Connect', this.deviceId || '');
     } catch (error) {

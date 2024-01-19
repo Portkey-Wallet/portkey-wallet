@@ -371,6 +371,8 @@ export default function SellForm() {
                   hasBorder
                   title={crypto?.symbol || ''}
                   style={styles.unitIconStyle}
+                  // elf token icon is fixed , only use white background color
+                  svgName={crypto?.symbol === defaultToken.symbol ? 'testnet' : undefined}
                   imageUrl={crypto?.icon}
                   avatarSize={pTd(24)}
                 />

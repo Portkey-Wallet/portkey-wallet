@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     height: pTd(40),
     bottom: 0,
     backgroundColor: 'black',
-    opacity: 0.25,
+    opacity: 0.4,
     shadowOffset: {
       width: pTd(10),
       height: -pTd(10),

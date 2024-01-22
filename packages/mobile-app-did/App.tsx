@@ -30,6 +30,7 @@ import 'utils/initExceptionManager';
 import 'utils/initRequest';
 import { initFCMSignalR } from 'utils/FCM';
 import { initNotifications } from 'utils/notifee';
+import { logBoxTextColorSaver } from 'utils/textColor';
 
 const codePushOptions = {
   updateDialog: false,
@@ -37,6 +38,10 @@ const codePushOptions = {
   installMode: CodePush.InstallMode.ON_NEXT_RESTART,
   checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME,
 };
+
+if (__DEV__) {
+  logBoxTextColorSaver();
+}
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();

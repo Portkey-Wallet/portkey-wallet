@@ -110,7 +110,7 @@ export const BackEndNetWorkMap: {
     isActive: true,
     apiUrl: 'http://192.168.67.127:5001',
     graphqlUrl: 'http://192.168.67.99:8083/AElfIndexer_DApp/PortKeyIndexerCASchema/graphql',
-    connectUrl: 'http://192.168.64.201:8080',
+    connectUrl: 'http://192.168.67.127:8080',
     cmsUrl: 'http://192.168.66.62:3005/graphql',
     s3Url: 'https://portkey-cms-dev.s3.ap-northeast-1.amazonaws.com',
     imS3Bucket: 'portkey-im-dev',

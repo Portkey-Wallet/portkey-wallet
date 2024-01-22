@@ -9,6 +9,7 @@ import { CustomAddressItem } from 'pages/Contacts/AddContact';
 import { IProfileDetailDataProps } from './Profile';
 import { ToAccount, SendStage } from 'pages/Send';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
+import { GuardianItem } from './guardians';
 
 export enum FromPageEnum {
   register = 'register',
@@ -181,6 +182,7 @@ export type TRampPreviewLocationState = {
   side: RampType;
   tokenInfo?: TTokenDetailLocationState;
   openGuardiansApprove?: boolean;
+  approveList?: GuardianItem[];
 };
 
 // AddContact

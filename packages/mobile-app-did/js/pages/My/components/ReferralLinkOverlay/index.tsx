@@ -18,7 +18,6 @@ function ReferralLinkOverlay({ linkUrl }: { linkUrl: string }) {
     await Share.share({
       message: linkUrl,
       url: linkUrl,
-      title: linkUrl,
     }).catch(shareError => {
       console.log(shareError);
     });

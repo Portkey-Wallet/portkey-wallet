@@ -11,6 +11,7 @@ import {
   setWalletNameAction,
   setUserInfoAction,
   getCaHolderInfoAsync,
+  setCheckManagerExceed,
 } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { DeviceInfoType } from '@portkey-wallet/types/types-ca/device';
 import { extraDataListDecode } from '@portkey-wallet/utils/device';
@@ -288,3 +289,30 @@ export const useOtherNetworkLogged = () => {
     [caInfo, currentNetwork],
   );
 };
+
+export function useCheckManagerExceed() {
+  const dispatch = useAppCommonDispatch();
+  const currentNetworkInfo = useCurrentNetworkInfo();
+  const { checkManagerExceedMap } = useWallet();
+  const caHash = useCurrentCaHash();
+
+  const checkManagerExceed = useMemo(
+    () => checkManagerExceedMap?.[currentNetworkInfo.networkType],
+    [checkManagerExceedMap, currentNetworkInfo.networkType],
+  );
+
+  return useCallback(async () => {
+    if (checkManagerExceed) return false;
+    const { managersTooMany } = await request.manager.checkManagerCount({
+      params: {
+        caHash,
+      },
+    });
+    dispatch(
+      setCheckManagerExceed({
+        network: currentNetworkInfo.networkType,
+      }),
+    );
+    return managersTooMany;
+  }, [checkManagerExceed, caHash, dispatch, currentNetworkInfo.networkType]);
+}

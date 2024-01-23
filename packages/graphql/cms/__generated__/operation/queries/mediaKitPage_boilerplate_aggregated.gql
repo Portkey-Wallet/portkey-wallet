@@ -1,0 +1,46 @@
+query mediaKitPage_boilerplate_aggregated($groupBy: [String], $filter: mediaKitPage_boilerplate_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
+    mediaKitPage_boilerplate_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
+        group
+        countAll
+        count{
+            boilerplate_id
+            id
+            mediaKitPage_id
+        }
+        countDistinct{
+            boilerplate_id
+            id
+            mediaKitPage_id
+        }
+        avg{
+            boilerplate_id
+            id
+            mediaKitPage_id
+        }
+        sum{
+            boilerplate_id
+            id
+            mediaKitPage_id
+        }
+        avgDistinct{
+            boilerplate_id
+            id
+            mediaKitPage_id
+        }
+        sumDistinct{
+            boilerplate_id
+            id
+            mediaKitPage_id
+        }
+        min{
+            boilerplate_id
+            id
+            mediaKitPage_id
+        }
+        max{
+            boilerplate_id
+            id
+            mediaKitPage_id
+        }
+    }
+}

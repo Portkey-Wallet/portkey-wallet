@@ -1,58 +1,54 @@
-query deviceType_aggregated($groupBy: [String], $filter: deviceType_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
-    deviceType_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
+query dApp_aggregated($groupBy: [String], $filter: dApp_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
+    dApp_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
         group
         countAll
         count{
             date_created
             date_updated
             id
-            label
-            sort
+            index
+            logo
+            name
             status
+            url
             user_created
             user_updated
-            value
         }
         countDistinct{
             date_created
             date_updated
             id
-            label
-            sort
+            index
+            logo
+            name
             status
+            url
             user_created
             user_updated
-            value
         }
         avg{
             id
-            sort
-            value
+            index
         }
         sum{
             id
-            sort
-            value
+            index
         }
         avgDistinct{
             id
-            sort
-            value
+            index
         }
         sumDistinct{
             id
-            sort
-            value
+            index
         }
         min{
             id
-            sort
-            value
+            index
         }
         max{
             id
-            sort
-            value
+            index
         }
     }
 }

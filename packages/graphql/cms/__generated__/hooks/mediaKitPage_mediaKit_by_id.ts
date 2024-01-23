@@ -34,7 +34,7 @@ export type MediaKitPage_MediaKit_By_IdQueryVariables = Types.Exact<{
   offset3?: Types.InputMaybe<Types.Scalars['Int']>;
   page3?: Types.InputMaybe<Types.Scalars['Int']>;
   search3?: Types.InputMaybe<Types.Scalars['String']>;
-  filter4?: Types.InputMaybe<Types.MediaKit_Filter>;
+  filter4?: Types.InputMaybe<Types.Boilerplate_Filter>;
   sort4?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -42,7 +42,7 @@ export type MediaKitPage_MediaKit_By_IdQueryVariables = Types.Exact<{
   offset4?: Types.InputMaybe<Types.Scalars['Int']>;
   page4?: Types.InputMaybe<Types.Scalars['Int']>;
   search4?: Types.InputMaybe<Types.Scalars['String']>;
-  filter5?: Types.InputMaybe<Types.MediaKitPage_Filter>;
+  filter5?: Types.InputMaybe<Types.MediaKit_Filter>;
   sort5?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -50,7 +50,7 @@ export type MediaKitPage_MediaKit_By_IdQueryVariables = Types.Exact<{
   offset5?: Types.InputMaybe<Types.Scalars['Int']>;
   page5?: Types.InputMaybe<Types.Scalars['Int']>;
   search5?: Types.InputMaybe<Types.Scalars['String']>;
-  filter6?: Types.InputMaybe<Types.MediaKitPage_MediaKit_Filter>;
+  filter6?: Types.InputMaybe<Types.MediaKitPage_Filter>;
   sort6?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -58,7 +58,7 @@ export type MediaKitPage_MediaKit_By_IdQueryVariables = Types.Exact<{
   offset6?: Types.InputMaybe<Types.Scalars['Int']>;
   page6?: Types.InputMaybe<Types.Scalars['Int']>;
   search6?: Types.InputMaybe<Types.Scalars['String']>;
-  filter7?: Types.InputMaybe<Types.MediaKitPage_Filter>;
+  filter7?: Types.InputMaybe<Types.MediaKitPage_MediaKit_Filter>;
   sort7?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -66,6 +66,30 @@ export type MediaKitPage_MediaKit_By_IdQueryVariables = Types.Exact<{
   offset7?: Types.InputMaybe<Types.Scalars['Int']>;
   page7?: Types.InputMaybe<Types.Scalars['Int']>;
   search7?: Types.InputMaybe<Types.Scalars['String']>;
+  filter8?: Types.InputMaybe<Types.MediaKitPage_Filter>;
+  sort8?: Types.InputMaybe<
+    Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
+  >;
+  limit8?: Types.InputMaybe<Types.Scalars['Int']>;
+  offset8?: Types.InputMaybe<Types.Scalars['Int']>;
+  page8?: Types.InputMaybe<Types.Scalars['Int']>;
+  search8?: Types.InputMaybe<Types.Scalars['String']>;
+  filter9?: Types.InputMaybe<Types.MediaKitPage_Boilerplate_Filter>;
+  sort9?: Types.InputMaybe<
+    Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
+  >;
+  limit9?: Types.InputMaybe<Types.Scalars['Int']>;
+  offset9?: Types.InputMaybe<Types.Scalars['Int']>;
+  page9?: Types.InputMaybe<Types.Scalars['Int']>;
+  search9?: Types.InputMaybe<Types.Scalars['String']>;
+  filter10?: Types.InputMaybe<Types.MediaKitPage_Filter>;
+  sort10?: Types.InputMaybe<
+    Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
+  >;
+  limit10?: Types.InputMaybe<Types.Scalars['Int']>;
+  offset10?: Types.InputMaybe<Types.Scalars['Int']>;
+  page10?: Types.InputMaybe<Types.Scalars['Int']>;
+  search10?: Types.InputMaybe<Types.Scalars['String']>;
   id: Types.Scalars['ID'];
 }>;
 
@@ -207,10 +231,13 @@ export type MediaKitPage_MediaKit_By_IdQuery = {
     } | null;
     mediaKitPage_id?: {
       __typename?: 'mediaKitPage';
+      boilerplateContent?: string | null;
+      boilerplateTitle?: string | null;
       content: string;
       date_created?: any | null;
       date_updated?: any | null;
       id: string;
+      mediaKitDescription?: string | null;
       status?: string | null;
       title: string;
       user_created?: string | null;
@@ -285,33 +312,88 @@ export type MediaKitPage_MediaKit_By_IdQuery = {
         minute?: number | null;
         second?: number | null;
       } | null;
-      mediaKitList?: Array<{
-        __typename?: 'mediaKitPage_mediaKit';
+      boilerplateList?: Array<{
+        __typename?: 'mediaKitPage_boilerplate';
         id: string;
-        mediaKit_id?: {
-          __typename?: 'mediaKit';
-          backgroundColor?: string | null;
+        boilerplate_id?: {
+          __typename?: 'boilerplate';
           date_created?: any | null;
           date_updated?: any | null;
           id: string;
           index?: number | null;
-          name: string;
-          sort?: number | null;
-          status?: string | null;
+          name?: string | null;
+          url?: string | null;
           user_created?: string | null;
           user_updated?: string | null;
+          date_created_func?: {
+            __typename?: 'datetime_functions';
+            year?: number | null;
+            month?: number | null;
+            week?: number | null;
+            day?: number | null;
+            weekday?: number | null;
+            hour?: number | null;
+            minute?: number | null;
+            second?: number | null;
+          } | null;
+          date_updated_func?: {
+            __typename?: 'datetime_functions';
+            year?: number | null;
+            month?: number | null;
+            week?: number | null;
+            day?: number | null;
+            weekday?: number | null;
+            hour?: number | null;
+            minute?: number | null;
+            second?: number | null;
+          } | null;
         } | null;
         mediaKitPage_id?: {
           __typename?: 'mediaKitPage';
+          boilerplateContent?: string | null;
+          boilerplateTitle?: string | null;
           content: string;
           date_created?: any | null;
           date_updated?: any | null;
           id: string;
+          mediaKitDescription?: string | null;
           status?: string | null;
           title: string;
           user_created?: string | null;
           user_updated?: string | null;
-          mediaKitList_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+          boilerplateList_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+          mediaKitList?: Array<{
+            __typename?: 'mediaKitPage_mediaKit';
+            id: string;
+            mediaKit_id?: {
+              __typename?: 'mediaKit';
+              backgroundColor?: string | null;
+              date_created?: any | null;
+              date_updated?: any | null;
+              id: string;
+              index?: number | null;
+              name: string;
+              sort?: number | null;
+              status?: string | null;
+              user_created?: string | null;
+              user_updated?: string | null;
+            } | null;
+            mediaKitPage_id?: {
+              __typename?: 'mediaKitPage';
+              boilerplateContent?: string | null;
+              boilerplateTitle?: string | null;
+              content: string;
+              date_created?: any | null;
+              date_updated?: any | null;
+              id: string;
+              mediaKitDescription?: string | null;
+              status?: string | null;
+              title: string;
+              user_created?: string | null;
+              user_updated?: string | null;
+              mediaKitList_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+            } | null;
+          } | null> | null;
         } | null;
       } | null> | null;
     } | null;
@@ -344,30 +426,48 @@ export const MediaKitPage_MediaKit_By_IdDocument = gql`
     $offset3: Int
     $page3: Int
     $search3: String
-    $filter4: mediaKit_filter
+    $filter4: boilerplate_filter
     $sort4: [String]
     $limit4: Int
     $offset4: Int
     $page4: Int
     $search4: String
-    $filter5: mediaKitPage_filter
+    $filter5: mediaKit_filter
     $sort5: [String]
     $limit5: Int
     $offset5: Int
     $page5: Int
     $search5: String
-    $filter6: mediaKitPage_mediaKit_filter
+    $filter6: mediaKitPage_filter
     $sort6: [String]
     $limit6: Int
     $offset6: Int
     $page6: Int
     $search6: String
-    $filter7: mediaKitPage_filter
+    $filter7: mediaKitPage_mediaKit_filter
     $sort7: [String]
     $limit7: Int
     $offset7: Int
     $page7: Int
     $search7: String
+    $filter8: mediaKitPage_filter
+    $sort8: [String]
+    $limit8: Int
+    $offset8: Int
+    $page8: Int
+    $search8: String
+    $filter9: mediaKitPage_boilerplate_filter
+    $sort9: [String]
+    $limit9: Int
+    $offset9: Int
+    $page9: Int
+    $search9: String
+    $filter10: mediaKitPage_filter
+    $sort10: [String]
+    $limit10: Int
+    $offset10: Int
+    $page10: Int
+    $search10: String
     $id: ID!
   ) {
     mediaKitPage_mediaKit_by_id(id: $id) {
@@ -503,12 +603,12 @@ export const MediaKitPage_MediaKit_By_IdDocument = gql`
         user_updated
       }
       mediaKitPage_id(
-        filter: $filter7
-        sort: $sort7
-        limit: $limit7
-        offset: $offset7
-        page: $page7
-        search: $search7
+        filter: $filter10
+        sort: $sort10
+        limit: $limit10
+        offset: $offset10
+        page: $page10
+        search: $search10
       ) {
         allMediaKitZip(
           filter: $filter3
@@ -566,6 +666,8 @@ export const MediaKitPage_MediaKit_By_IdDocument = gql`
           }
           width
         }
+        boilerplateContent
+        boilerplateTitle
         content
         date_created
         date_created_func {
@@ -590,13 +692,20 @@ export const MediaKitPage_MediaKit_By_IdDocument = gql`
           second
         }
         id
+        mediaKitDescription
         status
         title
         user_created
         user_updated
-        mediaKitList(filter: $filter6, sort: $sort6, limit: $limit6, offset: $offset6, page: $page6, search: $search6) {
-          id
-          mediaKit_id(
+        boilerplateList(
+          filter: $filter9
+          sort: $sort9
+          limit: $limit9
+          offset: $offset9
+          page: $page9
+          search: $search9
+        ) {
+          boilerplate_id(
             filter: $filter4
             sort: $sort4
             limit: $limit4
@@ -604,35 +713,109 @@ export const MediaKitPage_MediaKit_By_IdDocument = gql`
             page: $page4
             search: $search4
           ) {
-            backgroundColor
             date_created
+            date_created_func {
+              year
+              month
+              week
+              day
+              weekday
+              hour
+              minute
+              second
+            }
             date_updated
+            date_updated_func {
+              year
+              month
+              week
+              day
+              weekday
+              hour
+              minute
+              second
+            }
             id
             index
             name
-            sort
-            status
+            url
             user_created
             user_updated
           }
+          id
           mediaKitPage_id(
-            filter: $filter5
-            sort: $sort5
-            limit: $limit5
-            offset: $offset5
-            page: $page5
-            search: $search5
+            filter: $filter8
+            sort: $sort8
+            limit: $limit8
+            offset: $offset8
+            page: $page8
+            search: $search8
           ) {
+            boilerplateContent
+            boilerplateTitle
             content
             date_created
             date_updated
             id
+            mediaKitDescription
             status
             title
             user_created
             user_updated
-            mediaKitList_func {
+            boilerplateList_func {
               count
+            }
+            mediaKitList(
+              filter: $filter7
+              sort: $sort7
+              limit: $limit7
+              offset: $offset7
+              page: $page7
+              search: $search7
+            ) {
+              id
+              mediaKit_id(
+                filter: $filter5
+                sort: $sort5
+                limit: $limit5
+                offset: $offset5
+                page: $page5
+                search: $search5
+              ) {
+                backgroundColor
+                date_created
+                date_updated
+                id
+                index
+                name
+                sort
+                status
+                user_created
+                user_updated
+              }
+              mediaKitPage_id(
+                filter: $filter6
+                sort: $sort6
+                limit: $limit6
+                offset: $offset6
+                page: $page6
+                search: $search6
+              ) {
+                boilerplateContent
+                boilerplateTitle
+                content
+                date_created
+                date_updated
+                id
+                mediaKitDescription
+                status
+                title
+                user_created
+                user_updated
+                mediaKitList_func {
+                  count
+                }
+              }
             }
           }
         }
@@ -701,6 +884,24 @@ export const MediaKitPage_MediaKit_By_IdDocument = gql`
  *      offset7: // value for 'offset7'
  *      page7: // value for 'page7'
  *      search7: // value for 'search7'
+ *      filter8: // value for 'filter8'
+ *      sort8: // value for 'sort8'
+ *      limit8: // value for 'limit8'
+ *      offset8: // value for 'offset8'
+ *      page8: // value for 'page8'
+ *      search8: // value for 'search8'
+ *      filter9: // value for 'filter9'
+ *      sort9: // value for 'sort9'
+ *      limit9: // value for 'limit9'
+ *      offset9: // value for 'offset9'
+ *      page9: // value for 'page9'
+ *      search9: // value for 'search9'
+ *      filter10: // value for 'filter10'
+ *      sort10: // value for 'sort10'
+ *      limit10: // value for 'limit10'
+ *      offset10: // value for 'offset10'
+ *      page10: // value for 'page10'
+ *      search10: // value for 'search10'
  *      id: // value for 'id'
  *   },
  * });

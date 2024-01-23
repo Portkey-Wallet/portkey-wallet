@@ -1,5 +1,6 @@
-query deviceBrand($filter: deviceBrand_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String){
-    deviceBrand(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
+query codePushControl_by_id($id: ID!){
+    codePushControl_by_id(id: $id){
+        content
         date_created
         date_created_func{
             year
@@ -23,11 +24,15 @@ query deviceBrand($filter: deviceBrand_filter, $sort: [String], $limit: Int, $of
             second
         }
         id
+        isForceUpdate
         label
         sort
         status
+        title
+        updatedContent
+        updatedTitle
         user_created
         user_updated
-        value
+        version
     }
 }

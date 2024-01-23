@@ -3,8 +3,8 @@ import * as Types from '../types';
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
-export type DeviceTypeQueryVariables = Types.Exact<{
-  filter?: Types.InputMaybe<Types.DeviceType_Filter>;
+export type BoilerplateQueryVariables = Types.Exact<{
+  filter?: Types.InputMaybe<Types.Boilerplate_Filter>;
   sort?: Types.InputMaybe<Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>>;
   limit?: Types.InputMaybe<Types.Scalars['Int']>;
   offset?: Types.InputMaybe<Types.Scalars['Int']>;
@@ -12,19 +12,18 @@ export type DeviceTypeQueryVariables = Types.Exact<{
   search?: Types.InputMaybe<Types.Scalars['String']>;
 }>;
 
-export type DeviceTypeQuery = {
+export type BoilerplateQuery = {
   __typename?: 'Query';
-  deviceType: Array<{
-    __typename?: 'deviceType';
+  boilerplate: Array<{
+    __typename?: 'boilerplate';
     date_created?: any | null;
     date_updated?: any | null;
     id: string;
-    label?: string | null;
-    sort?: number | null;
-    status?: string | null;
+    index?: number | null;
+    name?: string | null;
+    url?: string | null;
     user_created?: string | null;
     user_updated?: string | null;
-    value?: number | null;
     date_created_func?: {
       __typename?: 'datetime_functions';
       year?: number | null;
@@ -50,16 +49,16 @@ export type DeviceTypeQuery = {
   }>;
 };
 
-export const DeviceTypeDocument = gql`
-  query deviceType(
-    $filter: deviceType_filter
+export const BoilerplateDocument = gql`
+  query boilerplate(
+    $filter: boilerplate_filter
     $sort: [String]
     $limit: Int
     $offset: Int
     $page: Int
     $search: String
   ) {
-    deviceType(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
+    boilerplate(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
       date_created
       date_created_func {
         year
@@ -83,27 +82,26 @@ export const DeviceTypeDocument = gql`
         second
       }
       id
-      label
-      sort
-      status
+      index
+      name
+      url
       user_created
       user_updated
-      value
     }
   }
 `;
 
 /**
- * __useDeviceTypeQuery__
+ * __useBoilerplateQuery__
  *
- * To run a query within a React component, call `useDeviceTypeQuery` and pass it any options that fit your needs.
- * When your component renders, `useDeviceTypeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useBoilerplateQuery` and pass it any options that fit your needs.
+ * When your component renders, `useBoilerplateQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useDeviceTypeQuery({
+ * const { data, loading, error } = useBoilerplateQuery({
  *   variables: {
  *      filter: // value for 'filter'
  *      sort: // value for 'sort'
@@ -114,16 +112,18 @@ export const DeviceTypeDocument = gql`
  *   },
  * });
  */
-export function useDeviceTypeQuery(baseOptions?: Apollo.QueryHookOptions<DeviceTypeQuery, DeviceTypeQueryVariables>) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<DeviceTypeQuery, DeviceTypeQueryVariables>(DeviceTypeDocument, options);
-}
-export function useDeviceTypeLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<DeviceTypeQuery, DeviceTypeQueryVariables>,
+export function useBoilerplateQuery(
+  baseOptions?: Apollo.QueryHookOptions<BoilerplateQuery, BoilerplateQueryVariables>,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<DeviceTypeQuery, DeviceTypeQueryVariables>(DeviceTypeDocument, options);
+  return Apollo.useQuery<BoilerplateQuery, BoilerplateQueryVariables>(BoilerplateDocument, options);
 }
-export type DeviceTypeQueryHookResult = ReturnType<typeof useDeviceTypeQuery>;
-export type DeviceTypeLazyQueryHookResult = ReturnType<typeof useDeviceTypeLazyQuery>;
-export type DeviceTypeQueryResult = Apollo.QueryResult<DeviceTypeQuery, DeviceTypeQueryVariables>;
+export function useBoilerplateLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<BoilerplateQuery, BoilerplateQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<BoilerplateQuery, BoilerplateQueryVariables>(BoilerplateDocument, options);
+}
+export type BoilerplateQueryHookResult = ReturnType<typeof useBoilerplateQuery>;
+export type BoilerplateLazyQueryHookResult = ReturnType<typeof useBoilerplateLazyQuery>;
+export type BoilerplateQueryResult = Apollo.QueryResult<BoilerplateQuery, BoilerplateQueryVariables>;

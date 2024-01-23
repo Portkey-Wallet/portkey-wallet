@@ -1,5 +1,6 @@
-query deviceType($filter: deviceType_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String){
-    deviceType(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
+query codePushControl($filter: codePushControl_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String){
+    codePushControl(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
+        content
         date_created
         date_created_func{
             year
@@ -23,11 +24,15 @@ query deviceType($filter: deviceType_filter, $sort: [String], $limit: Int, $offs
             second
         }
         id
+        isForceUpdate
         label
         sort
         status
+        title
+        updatedContent
+        updatedTitle
         user_created
         user_updated
-        value
+        version
     }
 }

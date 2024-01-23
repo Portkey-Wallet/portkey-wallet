@@ -27,6 +27,7 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
 ) {
   const viewRef = useRef<any>(null);
   const webViewRef = useRef<IWebView | null>(null);
+
   const progressbarRef = useRef<IProgressbar>(null);
   const { setTabRef } = useBrowser();
   const isApproved = useRef<boolean>(false);
@@ -34,8 +35,16 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
     () => ({
       capture: () => captureRef(viewRef?.current, Options),
       reload: () => webViewRef.current?.reload(),
+      goBack: () => webViewRef.current?.goBack(),
+      goForward: () => webViewRef.current?.goForward(),
+      goBackHome: () => {
+        const INJECT_CODE = `(function () {
+          window.location = '${uri}';
+        })();`;
+        webViewRef.current?.injectJavaScript(INJECT_CODE);
+      },
     }),
-    [],
+    [uri],
   );
   useImperativeHandle(forward, () => options, [options]);
   const fetchCurrentRememberMeBlackList = useFetchCurrentRememberMeBlackList();

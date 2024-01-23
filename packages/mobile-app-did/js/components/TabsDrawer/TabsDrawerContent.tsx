@@ -38,6 +38,7 @@ import navigationService from 'utils/navigationService';
 import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import Touchable from 'components/Touchable';
 
 const TabsDrawerContent: React.FC = () => {
   const { t } = useLanguage();
@@ -162,6 +163,35 @@ const TabsDrawerContent: React.FC = () => {
       const initialized = initializedList?.has(ele.id);
       if (isHidden && !initialized) return;
       const autoApprove = autoApproveMap?.[ele.id];
+
+      const clickBtn = (type: 'back' | 'forward' | 'showTab' | 'home' | 'more') => {
+        switch (type) {
+          case 'back':
+            break;
+
+          case 'forward':
+            break;
+
+          case 'showTab':
+            break;
+
+          case 'home':
+            break;
+
+          case 'more':
+            showBrowserModal({
+              browserInfo: activeItem,
+              activeWebViewRef: tabRef,
+              activeWebviewScreenShot,
+              setPreActiveTabId,
+            });
+            break;
+
+          default:
+            break;
+        }
+      };
+
       return (
         <>
           <BrowserTab
@@ -177,25 +207,19 @@ const TabsDrawerContent: React.FC = () => {
             }}
           />
           <View style={handleButtonStyle.container}>
-            <TouchableOpacity style={rightDomStyle.iconWrap}>
-              <Svg icon="left-arrow" size={20} />
+            <TouchableOpacity onPress={() => clickBtn('forward')} style={rightDomStyle.iconWrap}>
+              <Svg icon="left-arrow" size={pTd(20)} />
             </TouchableOpacity>
-            <TouchableOpacity style={rightDomStyle.iconWrap}>
-              <Svg icon="right-arrow" size={20} />
+            <TouchableOpacity onPress={() => clickBtn('forward')} style={rightDomStyle.iconWrap}>
+              <Svg icon="right-arrow" size={pTd(24)} />
             </TouchableOpacity>
-            <TouchableOpacity style={rightDomStyle.iconWrap}>
-              <Svg icon="right-arrow" size={20} />
+            <TouchableOpacity onPress={() => clickBtn('showTab')} style={rightDomStyle.iconWrap}>
+              <TextM style={styles.switchButton}>2</TextM>
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() =>
-                showBrowserModal({
-                  browserInfo: activeItem,
-                  activeWebViewRef: tabRef,
-                  activeWebviewScreenShot,
-                  setPreActiveTabId,
-                })
-              }
-              style={rightDomStyle.iconWrap}>
+            <TouchableOpacity onPress={() => clickBtn('home')} style={rightDomStyle.iconWrap}>
+              <Svg icon="homepage" size={pTd(24)} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => clickBtn('more')} style={rightDomStyle.iconWrap}>
               <Svg icon="more" size={20} color={defaultColors.icon1} />
             </TouchableOpacity>
           </View>
@@ -250,15 +274,17 @@ const TabsDrawerContent: React.FC = () => {
         noCenterDom={!!activeTabId}
         noLeftDom={!activeTabId}
         leftDom={
-          <TouchableOpacity style={styles.leftWrap} onPress={backToSearchPage}>
-            <Svg icon="left-arrow" size={pTd(16)} color={defaultColors.bg1} iconStyle={styles.backIcon} />
+          <View style={styles.leftWrap}>
+            <Touchable onPress={backToSearchPage} style={styles.backIcon}>
+              <Svg icon="left-arrow" size={pTd(16)} color={defaultColors.bg1} />
+            </Touchable>
             <TextWithProtocolIcon
               type="iconLeft"
               location="header"
               title={getCmsWebsiteInfoName(activeItem?.url || '') || activeItem?.name}
               url={activeItem?.url || ''}
             />
-          </TouchableOpacity>
+          </View>
         }
         rightDom={rightDom}
         notHandleHardwareBackPress
@@ -324,6 +350,16 @@ const styles = StyleSheet.create({
     paddingRight: pTd(20),
     paddingBottom: pTd(50),
   },
+  switchButton: {
+    width: pTd(21),
+    height: pTd(21),
+    borderRadius: pTd(4),
+    borderWidth: pTd(1.5),
+    borderColor: defaultColors.font5,
+    display: 'flex',
+    textAlign: 'center',
+    alignItems: 'center',
+  },
 });
 
 const handleButtonStyle = StyleSheet.create({
@@ -368,6 +404,6 @@ const rightDomStyle = StyleSheet.create({
   },
   iconWrap: {
     ...GStyles.paddingArg(pTd(4)),
-    marginRight: pTd(16),
+    marginHorizontal: pTd(20),
   },
 });

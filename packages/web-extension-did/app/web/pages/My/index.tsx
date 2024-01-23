@@ -15,6 +15,8 @@ import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import svgsList from 'assets/svgs';
 import UnReadBadge from 'pages/components/UnReadBadge';
+import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
+import { useClickReferral } from 'hooks/referral';
 
 interface MenuItemInfo {
   label: string;
@@ -28,7 +30,8 @@ export default function My() {
   const lockWallet = useLockWallet();
   const { isPrompt } = useCommonState();
   const isImputation = useIsImputation();
-
+  const { viewReferralStatus } = useReferral();
+  const clickReferral = useClickReferral();
   const MenuList: MenuItemInfo[] = useMemo(
     () => [
       {
@@ -81,7 +84,7 @@ export default function My() {
   return (
     <div className="flex-column my-frame">
       <PortKeyHeader
-        unReadShow={isImputation}
+        unReadShow={isImputation || !viewReferralStatus}
         onUserClick={() => {
           navigate('/');
         }}
@@ -106,6 +109,12 @@ export default function My() {
               {t(item.label)}
             </MenuItem>
           ))}
+          <MenuItem key="referral" height={56} icon={<CustomSvg type="Referral" />} onClick={clickReferral}>
+            <div className="flex-between-center">
+              <div>Referral</div>
+              <div className="referral-tag flex-center">New</div>
+            </div>
+          </MenuItem>
         </div>
         {!isPrompt && (
           <div className="btn flex-center">

@@ -3,7 +3,7 @@ import { TextL, TextM } from 'components/CommonText';
 import Svg, { IconName } from 'components/Svg';
 import SvgUri from 'components/Svg/SvgUri';
 
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { TouchableOpacity, StyleSheet, StyleProp, ViewStyle, TextProps, View } from 'react-native';
 import { pTd } from 'utils/unit';
 
@@ -15,7 +15,7 @@ interface MenuItemProps {
   size?: number;
   TextComponent?: React.FC<TextProps>;
   arrowSize?: number;
-  suffix?: string | number;
+  suffix?: string | number | React.ReactNode;
   iconStyle?: StyleProp<ViewStyle>;
   svgUrl?: string;
   showWarningCycle?: boolean;
@@ -33,6 +33,14 @@ const MenuItem: React.FC<MenuItemProps> = ({
   svgUrl,
   showWarningCycle = false,
 }) => {
+  const SuffixDom = useMemo((): React.ReactNode => {
+    if (!suffix) return null;
+    if (typeof suffix === 'number' || typeof suffix === 'string')
+      return <TextM style={styles.suffixWrap}>{suffix}</TextM>;
+
+    return suffix;
+  }, [suffix]);
+
   return (
     <TouchableOpacity style={[styles.itemWrap, style]} onPress={() => onPress?.()}>
       {svgUrl !== undefined &&
@@ -47,9 +55,8 @@ const MenuItem: React.FC<MenuItemProps> = ({
           <Svg icon={icon} size={size} iconStyle={[styles.menuIcon, iconStyle]} />
         </View>
       )}
-
       <TextL style={styles.titleWrap}>{title}</TextL>
-      {suffix !== undefined && <TextM style={styles.suffixWrap}>{suffix}</TextM>}
+      {SuffixDom}
       <Svg icon="right-arrow" size={arrowSize} color={defaultColors.icon1} />
     </TouchableOpacity>
   );

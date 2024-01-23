@@ -83,15 +83,12 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
                   {formatChainInfoToShow(item?.chainId as ChainId, currentNetwork)}
                 </TextS>
               </View>
-              <View>
-                <TextS>
-                  {`${formatAmountShow(divDecimals(item?.balance, item?.decimals))} ${item?.symbol || '0'}`}
-                </TextS>
-                <TextS style={styles.itemChainInfo} />
+              <View style={styles.copyBtnWrap}>
+                <Touchable onPress={() => copyText(addressFormat(item?.caAddress, item?.chainId as ChainId))}>
+                  <Svg icon="copy" size={pTd(16)} />
+                </Touchable>
               </View>
-              <Touchable onPress={() => copyText(addressFormat(item?.caAddress, item?.chainId as ChainId))}>
-                <Svg icon="copy" size={pTd(16)} />
-              </Touchable>
+
               <View>
                 <TextS>
                   {`${formatAmountShow(divDecimals(item?.balance, item?.decimals))} ${item?.symbol || '0'}`}
@@ -167,5 +164,11 @@ const styles = StyleSheet.create({
     width: screenWidth,
     position: 'absolute',
     bottom: 0,
+  },
+  copyBtnWrap: {
+    flex: 1,
+    height: '100%',
+    paddingTop: pTd(2),
+    paddingLeft: pTd(8),
   },
 });

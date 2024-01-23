@@ -28,6 +28,7 @@ import { getBuyCrypto, getBuyLimit } from '@portkey-wallet/utils/ramp';
 import CommonAvatar from 'components/CommonAvatar';
 import { ErrorType, INIT_HAS_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/constants/constants-ca/common';
 import { isPotentialNumber } from '@portkey-wallet/utils/reg';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 export default function BuyForm() {
   const {
@@ -37,6 +38,8 @@ export default function BuyForm() {
     buyDefaultCrypto: defaultCrypto,
     refreshBuyFiat,
   } = useBuyFiat();
+
+  const defaultToken = useDefaultToken();
 
   const { refreshRampShow } = useRampEntryShow();
 
@@ -292,6 +295,8 @@ export default function BuyForm() {
                   hasBorder
                   title={crypto?.symbol || ''}
                   style={styles.unitIconStyle}
+                  // elf token icon is fixed , only use white background color
+                  svgName={crypto?.symbol === defaultToken.symbol ? 'testnet' : undefined}
                   imageUrl={crypto?.icon}
                   avatarSize={pTd(24)}
                 />

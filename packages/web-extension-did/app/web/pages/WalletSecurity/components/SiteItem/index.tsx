@@ -5,7 +5,6 @@ import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useWalletInfo } from 'store/Provider/hooks';
 import { removeDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
-import { useNavigate } from 'react-router';
 import CustomSelect from 'pages/components/CustomSelect';
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
@@ -16,6 +15,7 @@ import ImageDisplay from 'pages/components/ImageDisplay';
 import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { isSafeOrigin } from 'pages/WalletSecurity/utils';
 import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
 import './index.less';
 
 export interface ISiteItemProps {
@@ -26,7 +26,7 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { currentNetwork } = useWalletInfo();
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const { sessionInfo } = siteItem;
   const [open, setOpen] = useState(!!sessionInfo?.expiredPlan);
   const updateSessionInfo = useUpdateSessionInfo();

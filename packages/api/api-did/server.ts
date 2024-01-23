@@ -37,12 +37,12 @@ export class DidService extends ServiceInit {
       this.set('headers', { Authorization: authorization });
       this.emitConnectTokenChange(authorization);
 
-      this.locked = false;
       return authorization;
     } catch (error) {
-      this.locked = false;
       console.log(error, '====error-getConnectToken');
       return;
+    } finally {
+      this.locked = false;
     }
   };
 

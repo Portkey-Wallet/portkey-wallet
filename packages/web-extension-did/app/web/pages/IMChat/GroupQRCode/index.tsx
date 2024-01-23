@@ -1,16 +1,17 @@
 import { useGroupChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useCallback, useEffect, useMemo } from 'react';
 import ShowQRCode from 'pages/components/ShowQRCode';
 import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
 import { ChannelTypeEnum } from '@portkey-wallet/im';
 import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
 
 const GroupQRCode = () => {
   const { channelUuid } = useParams();
   const { groupInfo, refresh } = useGroupChannelInfo(`${channelUuid}`);
   const shareLink = useMemo(() => LinkPortkeyPath.addGroup + channelUuid, [channelUuid]);
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
 
   const handleRefresh = useCallback(async () => {
     try {

@@ -1,7 +1,6 @@
 import SettingHeader from 'pages/components/SettingHeader';
 import './index.less';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
 import { Button, Form, Input } from 'antd';
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import ContactsSearchInput from 'pages/Contacts/components/ContactsSearchInput';
@@ -15,11 +14,12 @@ import UploadAvatar from 'pages/components/UploadAvatar';
 import { useLoading } from 'store/Provider/hooks';
 import uploadImageToS3 from 'utils/compressAndUploadToS3';
 import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
 
 const { Item: FormItem } = Form;
 
 export default function CreateChatGroup() {
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const localSearch = useLocalContactSearch();

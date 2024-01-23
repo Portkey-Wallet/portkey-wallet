@@ -1,14 +1,14 @@
 import RegisterHeader from 'pages/components/RegisterHeader';
 import { useCallback, useEffect } from 'react';
-import { useNavigate } from 'react-router';
 import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
 import LockPage from '../components/LockPage';
 import { useStorage } from 'hooks/useStorage';
 import { reportUserCurrentNetwork } from 'utils/analysisReport';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
+import { useNavigateState } from 'hooks/router';
 
 const Unlock = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const { isPrompt } = useCommonState();
   const { networkType } = useCurrentNetwork();
   const { walletInfo, currentNetwork } = useWalletInfo();

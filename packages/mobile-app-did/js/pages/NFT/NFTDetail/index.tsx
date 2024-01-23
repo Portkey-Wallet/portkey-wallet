@@ -213,9 +213,9 @@ export const styles = StyleSheet.create({
     width: '100%',
     textAlign: 'center',
     marginTop: pTd(10),
+    marginBottom: pTd(16),
   },
   sendBtn: {
-    marginTop: pTd(16),
     marginBottom: pTd(16),
   },
   infoWrap: {

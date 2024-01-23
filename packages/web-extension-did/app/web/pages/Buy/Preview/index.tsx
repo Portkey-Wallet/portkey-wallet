@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
 import BackHeader from 'components/BackHeader';
 import CustomSvg from 'components/CustomSvg';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { InitProviderSelected, MAX_UPDATE_TIME } from '../const';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useCommonState, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
@@ -22,11 +22,14 @@ import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { sleep } from '@portkey-wallet/utils';
 import singleMessage from 'utils/singleMessage';
+import { useLocationState } from 'hooks/router';
+import { TRampPreviewLocationState } from 'types/router';
+import { chromeStorage } from 'store/utils';
 
 export default function Preview() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const { state } = useLocationState<TRampPreviewLocationState>();
   const { isPrompt } = useCommonState();
   const updateRef = useRef(MAX_UPDATE_TIME);
   const [receive, setReceive] = useState('1');
@@ -132,7 +135,7 @@ export default function Preview() {
       );
 
       const { country, fiat, amount, crypto } = data;
-      const { url } = await provider.createOrder({
+      const { url, orderId } = await provider.createOrder({
         type: side,
         address: wallet?.AELF?.caAddress || '',
         email: emailGuardian?.guardianAccount,
@@ -143,6 +146,9 @@ export default function Preview() {
         amount: amount,
         withdrawUrl: ACH_WITHDRAW_URL,
       });
+      if (Array.isArray(state?.approveList) && state?.approveList.length > 0) {
+        chromeStorage.setItem(`RampSellApproveList_${orderId}`, JSON.stringify(state.approveList));
+      }
 
       console.log('go to pay url: ', url);
       const openWinder = window.open(url, '_blank');
@@ -163,6 +169,7 @@ export default function Preview() {
     providerSelected.providerNetwork,
     refreshRampShow,
     setLoading,
+    state.approveList,
     userGuardiansList,
     wallet?.AELF?.caAddress,
   ]);

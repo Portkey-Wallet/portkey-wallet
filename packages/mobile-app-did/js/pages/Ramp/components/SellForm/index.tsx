@@ -205,7 +205,7 @@ export default function SellForm() {
     setAmount(text);
   }, []);
 
-  const defaultToken = useDefaultToken();
+  const defaultToken = useDefaultToken(MAIN_CHAIN_ID);
   const getCurrentCAContract = useGetCurrentCAContract(MAIN_CHAIN_ID);
   const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
   const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
@@ -371,6 +371,8 @@ export default function SellForm() {
                   hasBorder
                   title={crypto?.symbol || ''}
                   style={styles.unitIconStyle}
+                  // elf token icon is fixed , only use white background color
+                  svgName={crypto?.symbol === defaultToken.symbol ? 'testnet' : undefined}
                   imageUrl={crypto?.icon}
                   avatarSize={pTd(24)}
                 />
@@ -412,6 +414,8 @@ export default function SellForm() {
                   hasBorder
                   title={fiat?.symbol || ''}
                   style={styles.unitIconStyle}
+                  // elf token icon is fixed , only use white background color
+                  svgName={fiat?.symbol === defaultToken.symbol ? 'testnet' : undefined}
                   imageUrl={fiat?.icon}
                 />
               )}

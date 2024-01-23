@@ -133,7 +133,7 @@ export default function NFT() {
                   )
                 );
               })}
-            {!!nftNum[nftColKey] && nft.totalRecordCount > nftNum[nftColKey] * maxNftNum && (
+            {!!nftNum[nftColKey] && Number(nft.totalRecordCount) > nftNum[nftColKey] * maxNftNum && (
               <div
                 className="load-more"
                 onClick={() => {

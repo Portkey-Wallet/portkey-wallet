@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo } from 'react';
 import CustomSvg from 'components/CustomSvg';
 import { useTranslation } from 'react-i18next';
 import useGuardianList from 'hooks/useGuardianList';
-import { useLocation, useNavigate } from 'react-router';
 import { useAppDispatch, useCommonState, useGuardiansInfo } from 'store/Provider/hooks';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { setCurrentGuardianAction, setOpGuardianAction } from '@portkey-wallet/store/store-ca/guardians/actions';
@@ -16,13 +15,15 @@ import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import AccountShow from './components/AccountShow';
 import { getVerifierStatusMap } from './utils';
 import { guardiansExceedTip } from '@portkey-wallet/constants/constants-ca/guardian';
+import { useLocationState, useNavigateState } from 'hooks/router';
+import { TAddGuardianLocationState, TGuardiansLocationState } from 'types/router';
 import './index.less';
 
 export default function Guardians() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { state } = useLocation();
-  const navigate = useNavigate();
+  const { state } = useLocationState<TGuardiansLocationState>();
+  const navigate = useNavigateState<TAddGuardianLocationState>();
   const { verifierMap, userGuardiansList } = useGuardiansInfo();
   const verifierEnableNum = useMemo(() => {
     const verifierStatusMap = getVerifierStatusMap(verifierMap, userGuardiansList);
@@ -55,7 +56,7 @@ export default function Guardians() {
   const onAdd = useCallback(() => {
     isPrompt
       ? navigate('/setting/guardians/add', { state: { accelerateChainId } })
-      : InternalMessage.payload(PortkeyMessageTypes.ADD_GUARDIANS, `accelerateChainId_${accelerateChainId}`).send();
+      : InternalMessage.payload(PortkeyMessageTypes.ADD_GUARDIANS, JSON.stringify({ accelerateChainId })).send();
   }, [isPrompt, navigate, accelerateChainId]);
 
   const headerTitle = useMemo(() => 'Guardians', []);

@@ -11,14 +11,14 @@ import { useCallback } from 'react';
 import { useEffectOnce } from 'react-use';
 import { useLoading } from 'store/Provider/hooks';
 import useFetchDidWallet from 'hooks/useFetchDidWallet';
-import { useNavigate } from 'react-router';
 import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
 
 export default function QueryPage() {
   const { setLoading } = useLoading();
   const fetchWalletResult = useFetchDidWallet();
   const currentWalletInfo = useCurrentWalletInfo();
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
 
   const fetchCreateWalletResult = useCallback(
     async (pwd: string) => {

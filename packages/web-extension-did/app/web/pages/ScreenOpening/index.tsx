@@ -1,10 +1,10 @@
 import { Button } from 'antd';
 import CustomSvg from 'components/CustomSvg';
-import { useNavigate } from 'react-router';
+import { useNavigateState } from 'hooks/router';
 import './index.less';
 
 export default function ScreenOpeningPage() {
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const version = process.env.SDK_VERSION?.replace('v', '');
   // return <ScreenOpening className="fix-max-content" onFinish={() => navigate('/register/start')} />;
   return (

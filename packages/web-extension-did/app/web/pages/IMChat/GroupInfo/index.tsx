@@ -7,7 +7,7 @@ import {
 import { Button } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +19,8 @@ import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network'
 import { useLoading } from 'store/Provider/hooks';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
+import { FromPageEnum, TViewContactLocationState, TWalletNameLocationState } from 'types/router';
 import './index.less';
 
 const GroupInfo = () => {
@@ -33,7 +35,7 @@ const GroupInfo = () => {
     () => (typeof groupInfo?.members.length === 'number' ? groupInfo?.members.length : 0),
     [groupInfo?.members.length],
   );
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TWalletNameLocationState | TViewContactLocationState>();
   const { t } = useTranslation();
   const { setLoading } = useLoading();
   const handleLeaveGroup = useCallback(() => {
@@ -55,10 +57,10 @@ const GroupInfo = () => {
   const handleGoProfile = useCallback(
     (item: ChannelMemberInfo) => {
       if (item.relationId === myRelationId) {
-        navigate('/setting/wallet/wallet-name', { state: { from: 'chat-group-info', channelUuid } });
+        navigate('/setting/wallet/wallet-name', { state: { previousPage: FromPageEnum.chatGroupInfo, channelUuid } });
       } else {
         navigate('/setting/contacts/view', {
-          state: { relationId: item.relationId, from: 'chat-group-info', channelUuid },
+          state: { relationId: item.relationId, previousPage: FromPageEnum.chatGroupInfo, channelUuid },
         });
       }
     },

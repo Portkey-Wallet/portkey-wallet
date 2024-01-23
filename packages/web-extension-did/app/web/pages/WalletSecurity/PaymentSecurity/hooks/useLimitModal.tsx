@@ -8,16 +8,15 @@ import {
   ExceedSingleLimit,
   LimitType,
 } from 'constants/security';
-// import { useGuardiansNavigate } from 'hooks/guardians'; // TODO guardians
+import { useNavigateState } from 'hooks/router';
 import CustomModal from 'pages/components/CustomModal';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
+import { TTransferSettingEditLocationState } from 'types/router';
 
 export function useTransferLimitApprovalModal() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  // const guardiansNavigate = useGuardiansNavigate();
+  const navigate = useNavigateState<TTransferSettingEditLocationState>();
 
   return useCallback(
     (state: ITransferLimitRouteState, type: LimitType, onOneTimeApproval: () => void) => {
@@ -52,7 +51,7 @@ export function useTransferLimitApprovalModal() {
 
 export function useTransferLimitModal() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TTransferSettingEditLocationState>();
 
   return useCallback(
     (state: ITransferLimitRouteState, type: LimitType) => {

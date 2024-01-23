@@ -1,6 +1,4 @@
-import { useCallback, useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import qs from 'query-string';
+import { useCallback } from 'react';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -13,24 +11,24 @@ import { ICheckLimitBusiness, ITransferLimitRouteState } from '@portkey-wallet/t
 import { ChainId } from '@portkey-wallet/types';
 import getSeed from 'utils/getSeed';
 import singleMessage from 'utils/singleMessage';
+import { usePromptLocationParams, useNavigateState } from 'hooks/router';
+import {
+  TRampLocationState,
+  TSendLocationState,
+  TSetTransferLimitLocationSearch,
+  TSetTransferLimitLocationState,
+  TTransferSettingLocationState,
+} from 'types/router';
 
 export const useSetTransferLimit = (targetChainId?: ChainId) => {
   const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
 
   const currentChain = useCurrentChain(targetChainId);
-  const { state, search } = useLocation();
-  const navigate = useNavigate();
+  const { locationParams } = usePromptLocationParams<TSetTransferLimitLocationState, TSetTransferLimitLocationSearch>();
+  const navigate = useNavigateState<TTransferSettingLocationState | TSendLocationState | TRampLocationState>();
   const currentNetwork = useCurrentNetworkInfo();
   const { userGuardianStatus } = useGuardiansInfo();
-  const query = useMemo(() => {
-    if (search) {
-      const { detail } = qs.parse(search);
-      return detail;
-    } else {
-      return state;
-    }
-  }, [search, state]);
 
   const checkBackPath = useCallback(
     (state: ITransferLimitRouteState) => {
@@ -38,7 +36,6 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
         case ICheckLimitBusiness.RAMP_SELL:
           navigate('/buy', { state: { ...state, ...state.extra } });
           break;
-
         case ICheckLimitBusiness.SEND:
           navigate(`/send/token/${state.symbol}`, { state: { ...state, ...state.extra } });
           break;
@@ -60,12 +57,9 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
       const { privateKey } = await getSeed();
       if (!currentChain?.endPoint || !privateKey) return singleMessage.error('set TransferLimit error');
       const { guardiansApproved } = formatGuardianValue(userGuardianStatus);
-      const i = query.indexOf('_');
-      const _query = query.substring(i + 1);
-      const transQuery: ITransferLimitRouteState = JSON.parse(_query);
-      const symbol = transQuery?.symbol;
-      const dailyLimit = transQuery?.restricted ? transQuery.dailyLimit : '-1';
-      const singleLimit = transQuery?.restricted ? transQuery.singleLimit : '-1';
+      const symbol = locationParams?.symbol;
+      const dailyLimit = locationParams?.restricted ? locationParams.dailyLimit : '-1';
+      const singleLimit = locationParams?.restricted ? locationParams.singleLimit : '-1';
 
       await setTransferLimit({
         rpcUrl: currentChain.endPoint,
@@ -87,8 +81,8 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
         onClose: async () => {
           await sleep(1000);
           checkBackPath({
-            ...transQuery.initStateBackUp,
-            ...transQuery,
+            ...locationParams.initStateBackUp,
+            ...locationParams,
             dailyLimit: dailyLimit,
             singleLimit: singleLimit,
           });
@@ -102,10 +96,9 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
     }
   }, [
     checkBackPath,
-    currentChain?.caContractAddress,
-    currentChain?.endPoint,
+    currentChain,
     currentNetwork.walletType,
-    query,
+    locationParams,
     setLoading,
     targetChainId,
     userGuardianStatus,

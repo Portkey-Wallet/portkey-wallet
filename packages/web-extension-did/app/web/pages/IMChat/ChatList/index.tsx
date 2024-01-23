@@ -21,6 +21,7 @@ import { useReportFCMStatus } from 'hooks/useFCM';
 import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
 import { FromPageEnum, TFindMoreLocationState } from 'types/router';
+import { useJoinOfficialGroupTipModal } from 'hooks/useJoinOfficialGroupTip';
 import './index.less';
 
 export default function ChatList() {
@@ -39,7 +40,7 @@ export default function ChatList() {
   const reportFCMStatus = useReportFCMStatus();
   const { userInfo } = useWalletInfo();
   const handleClickChatItem = useHandleClickChatItem();
-
+  const JoinOfficialGroupTip = useJoinOfficialGroupTipModal();
   const popList = useMemo(
     () => [
       {
@@ -126,6 +127,7 @@ export default function ChatList() {
   );
   useEffectOnce(() => {
     initChannelList();
+    JoinOfficialGroupTip();
   });
 
   useEffect(() => {

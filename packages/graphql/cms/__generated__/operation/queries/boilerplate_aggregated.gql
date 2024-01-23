@@ -1,52 +1,50 @@
-query deviceBrand_aggregated($groupBy: [String], $filter: deviceBrand_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
-    deviceBrand_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
+query boilerplate_aggregated($groupBy: [String], $filter: boilerplate_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
+    boilerplate_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
         group
         countAll
         count{
             date_created
             date_updated
             id
-            label
-            sort
-            status
+            index
+            name
+            url
             user_created
             user_updated
-            value
         }
         countDistinct{
             date_created
             date_updated
             id
-            label
-            sort
-            status
+            index
+            name
+            url
             user_created
             user_updated
-            value
         }
         avg{
             id
-            sort
+            index
         }
         sum{
             id
-            sort
+            index
         }
         avgDistinct{
             id
-            sort
+            index
         }
         sumDistinct{
             id
-            sort
+            index
         }
         min{
             id
-            sort
+            index
         }
         max{
             id
-            sort
+            index
         }
     }
 }

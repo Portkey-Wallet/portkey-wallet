@@ -24,4 +24,5 @@ export type NetworkItem = {
   imS3Bucket?: string;
   eBridgeUrl?: string;
   eTransferUrl?: string;
+  referralUrl?: string;
 };

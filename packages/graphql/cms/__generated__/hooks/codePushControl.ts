@@ -3,8 +3,8 @@ import * as Types from '../types';
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
-export type DeviceBrandQueryVariables = Types.Exact<{
-  filter?: Types.InputMaybe<Types.DeviceBrand_Filter>;
+export type CodePushControlQueryVariables = Types.Exact<{
+  filter?: Types.InputMaybe<Types.CodePushControl_Filter>;
   sort?: Types.InputMaybe<Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>>;
   limit?: Types.InputMaybe<Types.Scalars['Int']>;
   offset?: Types.InputMaybe<Types.Scalars['Int']>;
@@ -12,19 +12,24 @@ export type DeviceBrandQueryVariables = Types.Exact<{
   search?: Types.InputMaybe<Types.Scalars['String']>;
 }>;
 
-export type DeviceBrandQuery = {
+export type CodePushControlQuery = {
   __typename?: 'Query';
-  deviceBrand: Array<{
-    __typename?: 'deviceBrand';
+  codePushControl: Array<{
+    __typename?: 'codePushControl';
+    content?: string | null;
     date_created?: any | null;
     date_updated?: any | null;
     id: string;
+    isForceUpdate?: boolean | null;
     label?: string | null;
     sort?: number | null;
     status?: string | null;
+    title?: string | null;
+    updatedContent?: string | null;
+    updatedTitle?: string | null;
     user_created?: string | null;
     user_updated?: string | null;
-    value?: string | null;
+    version?: string | null;
     date_created_func?: {
       __typename?: 'datetime_functions';
       year?: number | null;
@@ -50,16 +55,17 @@ export type DeviceBrandQuery = {
   }>;
 };
 
-export const DeviceBrandDocument = gql`
-  query deviceBrand(
-    $filter: deviceBrand_filter
+export const CodePushControlDocument = gql`
+  query codePushControl(
+    $filter: codePushControl_filter
     $sort: [String]
     $limit: Int
     $offset: Int
     $page: Int
     $search: String
   ) {
-    deviceBrand(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
+    codePushControl(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
+      content
       date_created
       date_created_func {
         year
@@ -83,27 +89,31 @@ export const DeviceBrandDocument = gql`
         second
       }
       id
+      isForceUpdate
       label
       sort
       status
+      title
+      updatedContent
+      updatedTitle
       user_created
       user_updated
-      value
+      version
     }
   }
 `;
 
 /**
- * __useDeviceBrandQuery__
+ * __useCodePushControlQuery__
  *
- * To run a query within a React component, call `useDeviceBrandQuery` and pass it any options that fit your needs.
- * When your component renders, `useDeviceBrandQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useCodePushControlQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCodePushControlQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useDeviceBrandQuery({
+ * const { data, loading, error } = useCodePushControlQuery({
  *   variables: {
  *      filter: // value for 'filter'
  *      sort: // value for 'sort'
@@ -114,18 +124,18 @@ export const DeviceBrandDocument = gql`
  *   },
  * });
  */
-export function useDeviceBrandQuery(
-  baseOptions?: Apollo.QueryHookOptions<DeviceBrandQuery, DeviceBrandQueryVariables>,
+export function useCodePushControlQuery(
+  baseOptions?: Apollo.QueryHookOptions<CodePushControlQuery, CodePushControlQueryVariables>,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<DeviceBrandQuery, DeviceBrandQueryVariables>(DeviceBrandDocument, options);
+  return Apollo.useQuery<CodePushControlQuery, CodePushControlQueryVariables>(CodePushControlDocument, options);
 }
-export function useDeviceBrandLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<DeviceBrandQuery, DeviceBrandQueryVariables>,
+export function useCodePushControlLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<CodePushControlQuery, CodePushControlQueryVariables>,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<DeviceBrandQuery, DeviceBrandQueryVariables>(DeviceBrandDocument, options);
+  return Apollo.useLazyQuery<CodePushControlQuery, CodePushControlQueryVariables>(CodePushControlDocument, options);
 }
-export type DeviceBrandQueryHookResult = ReturnType<typeof useDeviceBrandQuery>;
-export type DeviceBrandLazyQueryHookResult = ReturnType<typeof useDeviceBrandLazyQuery>;
-export type DeviceBrandQueryResult = Apollo.QueryResult<DeviceBrandQuery, DeviceBrandQueryVariables>;
+export type CodePushControlQueryHookResult = ReturnType<typeof useCodePushControlQuery>;
+export type CodePushControlLazyQueryHookResult = ReturnType<typeof useCodePushControlLazyQuery>;
+export type CodePushControlQueryResult = Apollo.QueryResult<CodePushControlQuery, CodePushControlQueryVariables>;

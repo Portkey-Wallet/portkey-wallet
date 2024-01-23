@@ -66,6 +66,10 @@ export const setCAInfoType = createAction<{
 }>('wallet/setCAInfoType');
 
 export const resetWallet = createAction('wallet/resetWallet');
+export const setCheckManagerExceed = createAction<{ network: NetworkType }>('wallet/setCheckManagerExceed');
+export const reSetCheckManagerExceed = createAction<{ network: NetworkType | undefined }>(
+  'wallet/reSetCheckManagerExceed',
+);
 export const resetUserInfo = createAction('wallet/resetUserInfo');
 export const resetCaInfo = createAction<NetworkType>('wallet/resetCaInfo');
 export const changePin = createAction<{ pin: string; newPin: string }>('wallet/changePin');

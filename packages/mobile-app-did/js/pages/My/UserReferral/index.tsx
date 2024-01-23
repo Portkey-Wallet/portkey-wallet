@@ -112,7 +112,7 @@ export const styles = StyleSheet.create({
     top: pTd(16),
   },
   title: {
-    flex: 3,
+    flex: 5,
   },
   topSectionStyle: {
     width: screenWidth,

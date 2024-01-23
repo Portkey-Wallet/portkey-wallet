@@ -87,7 +87,7 @@ const UserReferral = () => {
 
         <Touchable onPress={onPressInvite}>
           <ImageBackground source={button} style={[GStyles.flexRow, GStyles.center, styles.btn]}>
-            <TextXL style={[fonts.mediumFont, FontStyles.font11]}>Invite Friends</TextXL>
+            <TextL style={[fonts.mediumFont, FontStyles.font11]}>Invite Friends</TextL>
             {!referralLink && <LottieLoading type="custom" color="white" lottieStyle={styles.lottieLoading} />}
           </ImageBackground>
         </Touchable>

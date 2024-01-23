@@ -1,7 +1,6 @@
 import { Button } from 'antd';
 import PromptFrame from 'pages/components/PromptFrame';
 import SettingHeader from 'pages/components/SettingHeader';
-import { useLocation, useNavigate } from 'react-router';
 import { useCommonState } from 'store/Provider/hooks';
 import clsx from 'clsx';
 import { useCallback, useMemo } from 'react';
@@ -12,11 +11,13 @@ import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useLocationState, useNavigateState } from 'hooks/router';
+import { THomePageLocationState, TNFTLocationState, TSendLocationState } from 'types/router';
 import './index.less';
 
 export default function NFT() {
-  const navigate = useNavigate();
-  const { state } = useLocation();
+  const navigate = useNavigateState<TSendLocationState | THomePageLocationState>();
+  const { state } = useLocationState<TNFTLocationState>();
   const { isPrompt } = useCommonState();
   const isMainNet = useIsMainnet();
   const currentNetwork = useCurrentNetworkInfo();
@@ -79,7 +80,17 @@ export default function NFT() {
         <div>
           <div className="btn-wrap flex-column-center">
             <div className="balance">{`You have: ${formatAmountShow(balance, 0)}`}</div>
-            <Button type="primary" onClick={() => navigate(`/send/nft/${symbol}`, { state })}>
+            <Button
+              type="primary"
+              onClick={() =>
+                navigate(`/send/nft/${symbol}`, {
+                  state: {
+                    ...state,
+                    decimals: 0,
+                    name: state.symbol,
+                  },
+                })
+              }>
               Send
             </Button>
           </div>

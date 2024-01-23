@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
 import { SecurityCheck } from '@portkey/did-ui-react';
-import { useNavigate } from 'react-router';
 import { closeTabPrompt } from 'utils/lib/serviceWorkerAction';
 import errorHandler from 'utils/errorHandler';
 import usePromptSearch from 'hooks/usePromptSearch';
@@ -17,6 +16,8 @@ import SecurityAccelerate from './SecurityAccelerate';
 import { sleep } from '@portkey-wallet/utils';
 import getSeed from 'utils/getSeed';
 import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
+import { TGuardiansLocationState } from 'types/router';
 import './index.less';
 
 export default function WalletSecurityApprove() {
@@ -26,7 +27,7 @@ export default function WalletSecurityApprove() {
     accelerateChainId: ChainId;
     accelerateGuardianTxId?: string;
   }>();
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TGuardiansLocationState>();
   const originChainId = useOriginChainId();
   const originChainInfo = useCurrentChain(originChainId);
   const accelerateChainInfo = useCurrentChain(accelerateChainId);

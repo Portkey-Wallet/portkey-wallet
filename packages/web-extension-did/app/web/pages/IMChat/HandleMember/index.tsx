@@ -1,5 +1,5 @@
 import { ChangeEvent, useCallback, useMemo, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
@@ -13,13 +13,14 @@ import { ChannelMemberInfo } from '@portkey-wallet/im';
 import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
 import './index.less';
 
 export default function HandleMember() {
   const { channelUuid, operate } = useParams();
   const { t } = useTranslation();
   const [filterWord, setFilterWord] = useState<string>('');
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const [disabled, setDisabled] = useState(true);
   const allChatContact = useChatContactFlatList();
   const { groupInfo } = useGroupChannelInfo(`${channelUuid}`);

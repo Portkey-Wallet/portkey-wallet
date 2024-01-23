@@ -14,7 +14,7 @@ import { handleKeyDown } from 'utils/keyDown';
 import { divDecimals } from '@portkey-wallet/utils/converter';
 import ExchangeRate from '../ExchangeRate';
 import { useUpdateReceiveAndInterval } from 'pages/Buy/hooks';
-import { useLoading } from 'store/Provider/hooks';
+import { useCommonState, useLoading } from 'store/Provider/hooks';
 import { useEffectOnce } from 'react-use';
 import { Button } from 'antd';
 import { SERVICE_UNAVAILABLE_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
@@ -28,23 +28,25 @@ import { useFetchTxFee, useGetOneTxFee } from '@portkey-wallet/hooks/hooks-ca/us
 import { generateRateText } from 'pages/Buy/utils';
 import { getSellFiat } from '@portkey-wallet/utils/ramp';
 import { useGetChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import useLocationState from 'hooks/useLocationState';
-import { RampRouteState } from 'pages/Buy/types';
+import { usePromptLocationParams } from 'hooks/router';
+import { TRampLocationState } from 'types/router';
 import { useCheckLimit, useCheckSecurity } from 'hooks/useSecurity';
 import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { GuardianItem } from 'types/guardians';
 import GuardianApproveModal from 'pages/components/GuardianApprovalModal';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
-import { chromeStorage } from 'store/utils';
 import { ChainId } from '@portkey-wallet/types';
 import singleMessage from 'utils/singleMessage';
+import InternalMessage from 'messages/InternalMessage';
+import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 
 export default function SellFrom() {
   const { t } = useTranslation();
   const { setLoading } = useLoading();
   const navigate = useNavigate();
-  const { state } = useLocationState<RampRouteState>();
+  const { locationParams: state } = usePromptLocationParams<TRampLocationState, TRampLocationState>();
+  const { isPrompt } = useCommonState();
 
   // get data
   const { refreshRampShow } = useRampEntryShow();
@@ -169,33 +171,49 @@ export default function SellFrom() {
 
   const showRateText = generateRateText(cryptoSelected.symbol, exchange, fiatSelected.symbol);
 
-  const [openGuardiansApprove, setOpenGuardiansApprove] = useState<boolean>(false);
+  const [openGuardiansApprove, setOpenGuardiansApprove] = useState<boolean>(!!state.openGuardiansApprove);
   const handleOneTimeApproval = useCallback(() => {
-    setOpenGuardiansApprove(true);
-  }, []);
+    if (isPrompt) return setOpenGuardiansApprove(true);
+
+    const params: TRampLocationState = {
+      crypto: cryptoSelectedRef.current.symbol,
+      network: cryptoSelectedRef.current.network,
+      fiat: fiatSelectedRef.current.symbol,
+      country: fiatSelectedRef.current.country,
+      amount: cryptoAmountRef.current,
+      side: RampType.SELL,
+      tokenInfo: state ? state.tokenInfo : undefined,
+      openGuardiansApprove: true,
+    };
+    InternalMessage.payload(PortkeyMessageTypes.RAMP, JSON.stringify(params)).send();
+  }, [isPrompt, state]);
+
   const onCloseGuardianApprove = useCallback(() => {
     setOpenGuardiansApprove(false);
   }, []);
-  const goPreview = useCallback(() => {
-    navigate('/buy/preview', {
-      state: {
-        crypto: cryptoSelectedRef.current.symbol,
-        network: cryptoSelectedRef.current.network,
-        fiat: fiatSelectedRef.current.symbol,
-        country: fiatSelectedRef.current.country,
-        amount: cryptoAmountRef.current,
-        side: RampType.SELL,
-        tokenInfo: state ? state.tokenInfo : null,
-      },
-    });
-  }, [navigate, state]);
+  const goPreview = useCallback(
+    (approveList?: GuardianItem[]) => {
+      navigate('/buy/preview', {
+        state: {
+          crypto: cryptoSelectedRef.current.symbol,
+          network: cryptoSelectedRef.current.network,
+          fiat: fiatSelectedRef.current.symbol,
+          country: fiatSelectedRef.current.country,
+          amount: cryptoAmountRef.current,
+          side: RampType.SELL,
+          tokenInfo: state ? state.tokenInfo : null,
+          approveList,
+        },
+      });
+    },
+    [navigate, state],
+  );
   const getApproveRes = useCallback(
     async (approveList: GuardianItem[]) => {
       try {
         if (Array.isArray(approveList) && approveList.length > 0) {
-          chromeStorage.setItem('portkeyOffRampGuardiansApproveList', JSON.stringify(approveList));
           setOpenGuardiansApprove(false);
-          goPreview();
+          goPreview(approveList);
         } else {
           console.log('getApprove error: approveList empty');
         }
@@ -228,11 +246,15 @@ export default function SellFrom() {
         return navigate('/');
       }
 
-      // CHECK 2: account security
+      // CHECK 2: manager sync
+      const _isManagerSynced = await checkManagerSynced();
+      if (!_isManagerSynced) return setLoading(false);
+
+      // CHECK 3: account security
       const securityRes = await checkSecurity(cryptoSelectedRef.current.chainId);
       if (!securityRes) return setLoading(false);
 
-      // CHECK 3: balance and tx fee
+      // CHECK 4: balance and tx fee
       const chainId = cryptoSelectedRef.current.chainId;
       const currentChain = getCurrentChain(chainId);
       if (!currentChain) return setLoading(false);
@@ -242,7 +264,7 @@ export default function SellFrom() {
         address: accountTokenList[0].tokenContractAddress || '',
         chainType: currentNetwork.walletType,
         paramsOption: {
-          owner: wallet[chainId as ChainId]?.caAddress || '', // TODO
+          owner: wallet[chainId as ChainId]?.caAddress || '',
           symbol: currentChain.defaultToken.symbol,
         },
       });
@@ -257,10 +279,6 @@ export default function SellFrom() {
         setInsufficientFundsMsg();
         return;
       }
-
-      // CHECK 4: manager sync
-      const _isManagerSynced = await checkManagerSynced();
-      if (!_isManagerSynced) return setLoading(false);
 
       // CHECK 5: transfer limit
       const limitRes = await checkLimit({

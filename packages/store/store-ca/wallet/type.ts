@@ -50,4 +50,5 @@ export interface WalletState {
   /**  @deprecated will be removed, userInfo instead */
   userId?: string;
   userInfo?: UserInfoType;
+  checkManagerExceedMap?: { [key in NetworkType]?: boolean };
 }

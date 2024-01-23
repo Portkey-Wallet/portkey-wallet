@@ -114,7 +114,6 @@ export const BackEndNetWorkMap: {
     cmsUrl: 'http://192.168.66.62:3005/graphql',
     s3Url: 'https://portkey-cms-dev.s3.ap-northeast-1.amazonaws.com',
     imS3Bucket: 'portkey-im-dev',
-    referralUrl: 'http://192.168.67.51:3100',
     portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
     portkeyOpenLoginUrl: 'https://openlogin-test.portkey.finance/',
   },

@@ -1,12 +1,13 @@
 import { ChangeEventHandler, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import aes from '@portkey-wallet/utils/aes';
 import ConfirmPinPopup from './Popup';
 import ConfirmPinPrompt from './Prompt';
 import { BaseHeaderProps } from 'types/UI';
 import { useCommonState } from 'store/Provider/hooks';
+import { useNavigateState } from 'hooks/router';
+import { TSetNewPinLocationState } from 'types/router';
 
 export interface IConfirmPinProps extends BaseHeaderProps {
   pinLabel: string;
@@ -21,7 +22,7 @@ export interface IConfirmPinProps extends BaseHeaderProps {
 
 export default function ConfirmPin() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TSetNewPinLocationState>();
   const [disable, setDisable] = useState<boolean>(true);
   const [pin, setPin] = useState('');
   const [errMsg, setErrMsg] = useState('');
@@ -33,7 +34,7 @@ export default function ConfirmPin() {
     if (privateKey) {
       setErrMsg('');
       setDisable(false);
-      navigate('/setting/account-setting/set-new-pin', { state: { pin: pin } }); //
+      navigate('/setting/account-setting/set-new-pin', { state: { pin: pin } });
     } else {
       setPin('');
       setErrMsg('Incorrect Pin');

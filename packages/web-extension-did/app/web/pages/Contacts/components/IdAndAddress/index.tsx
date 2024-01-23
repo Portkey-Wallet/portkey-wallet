@@ -22,13 +22,13 @@ export default function IdAndAddress({
   addressSectionLabel = 'Address',
 }: IIdAndAddressProps) {
   const showChat = useIsChatShow();
-  const { userId } = useWalletInfo();
+  const { userInfo } = useWalletInfo();
   const navigate = useNavigate();
 
   return (
     <div className="id-and-address">
       {/* Section - ID - my - wallet */}
-      {showChat && portkeyId && portkeyId === userId && (
+      {portkeyId && portkeyId === userInfo?.userId && (
         <div className="info-section section-border-bottom">
           <div className="info-title">Portkey ID</div>
           <div className="flex-row-between info-content">
@@ -42,7 +42,7 @@ export default function IdAndAddress({
       )}
 
       {/* Section - ID - contact */}
-      {showChat && portkeyId && portkeyId !== userId && (
+      {showChat && portkeyId && portkeyId !== userInfo?.userId && (
         <div className="info-section section-border-bottom">
           <div className="info-title">Portkey ID</div>
           <div className="flex-row-between info-content">

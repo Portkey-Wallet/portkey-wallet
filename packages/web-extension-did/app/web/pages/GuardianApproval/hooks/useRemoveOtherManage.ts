@@ -3,15 +3,15 @@ import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import singleMessage from 'utils/singleMessage';
 import { DEVICE_TYPE } from 'constants/index';
-import { useCallback, useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useCallback } from 'react';
 import { useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import { removeOtherManager } from 'utils/sandboxUtil/removeOtherManager';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { formatGuardianValue } from '../utils/formatGuardianValue';
-import qs from 'query-string';
 import ModalTip from 'pages/components/ModalTip';
 import getSeed from 'utils/getSeed';
+import { usePromptLocationParams, useNavigateState } from 'hooks/router';
+import { TRemoveOtherManageLocationSearch, TRemoveOtherManageLocationState } from 'types/router';
 
 export const useRemoveOtherManage = () => {
   const { setLoading } = useLoading();
@@ -19,23 +19,17 @@ export const useRemoveOtherManage = () => {
 
   const originChainId = useOriginChainId();
   const currentChain = useCurrentChain(originChainId);
-  const { state, search } = useLocation();
-  const navigate = useNavigate();
+  const { locationParams } = usePromptLocationParams<
+    TRemoveOtherManageLocationState,
+    TRemoveOtherManageLocationSearch
+  >();
+  const navigate = useNavigateState();
   const currentNetwork = useCurrentNetworkInfo();
   const { userGuardianStatus } = useGuardiansInfo();
-  const query = useMemo(() => {
-    if (search) {
-      const { detail } = qs.parse(search);
-      return detail;
-    } else {
-      return state;
-    }
-  }, [search, state]);
 
   return useCallback(async () => {
     try {
       setLoading(true);
-      const manageAddress = query?.split('_')[1];
       const { privateKey } = await getSeed();
       if (!currentChain?.endPoint || !privateKey) return singleMessage.error('remove manage error');
       const { guardiansApproved } = formatGuardianValue(userGuardianStatus);
@@ -47,7 +41,7 @@ export const useRemoveOtherManage = () => {
         paramsOption: {
           caHash: walletInfo?.caHash as string,
           managerInfo: {
-            address: manageAddress,
+            address: locationParams.manageAddress,
             extraData: `${DEVICE_TYPE},${Date.now()}`,
           },
           guardiansApproved,
@@ -67,5 +61,13 @@ export const useRemoveOtherManage = () => {
       const _error = handleErrorMessage(error, 'Try again later');
       singleMessage.error(_error);
     }
-  }, [currentChain, currentNetwork.walletType, navigate, query, setLoading, userGuardianStatus, walletInfo?.caHash]);
+  }, [
+    currentChain,
+    currentNetwork.walletType,
+    locationParams.manageAddress,
+    navigate,
+    setLoading,
+    userGuardianStatus,
+    walletInfo?.caHash,
+  ]);
 };

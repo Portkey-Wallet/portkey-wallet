@@ -28,15 +28,19 @@ export default function FindMorePopup({
         />
         <ContactsSearchInput placeholder="Address/Portkey ID/phone number/email" handleChange={handleSearch} />
         {!isSearch && (
-          <div className="find-more-id flex-between">
-            <div className="my-portkey-id">
-              <div className="portkey-id-label">My Portkey ID:</div>
-              <div className="portkey-id-show">{myPortkeyId}</div>
+          <div className="flex-column">
+            <div className="find-more-id flex-between">
+              <div className="my-portkey-id">
+                <div className="portkey-id-label">My Portkey ID:</div>
+                <div className="portkey-id-show">{myPortkeyId}</div>
+              </div>
+              <div className="show-icon flex">
+                <Copy iconType="Copy4" toCopy={myPortkeyId} />
+                <CustomSvg type="QRCode2" onClick={clickQRCode} />
+              </div>
             </div>
-            <div className="show-icon flex">
-              <Copy iconType="Copy4" toCopy={myPortkeyId} />
-              <CustomSvg type="QRCode2" onClick={clickQRCode} />
-            </div>
+            <div className="invite-friends">invite your friends</div>
+            <div className="invite-official-group">invite official group</div>
           </div>
         )}
       </div>

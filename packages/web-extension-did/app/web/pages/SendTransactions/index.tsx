@@ -44,8 +44,7 @@ export default function SendTransactions() {
   }>();
   const chainInfo = useCurrentChain(payload?.chainId);
   const wallet = useCurrentWalletInfo();
-  const { walletName } = useWalletInfo();
-  const { currentNetwork } = useWalletInfo();
+  const { currentNetwork, userInfo } = useWalletInfo();
   const isMainnet = useIsMainnet();
   const { t } = useTranslation();
   const amountInUsdShow = useAmountInUsdShow();
@@ -166,7 +165,7 @@ export default function SendTransactions() {
     if (payload?.contractAddress || typeof payload?.contractAddress !== 'string') return <></>;
     return (
       <div className="account flex">
-        <div className="name">{walletName}</div>
+        <div className="name">{userInfo?.nickName}</div>
         <CustomSvg type="Oval" />
         <div className="address">{`${payload.contractAddress.slice(0, 10)}...${payload.contractAddress.slice(
           -4,
@@ -174,7 +173,7 @@ export default function SendTransactions() {
         <div className="line" />
       </div>
     );
-  }, [payload, walletName]);
+  }, [payload.contractAddress, userInfo?.nickName]);
 
   const renderTransfer = useMemo(() => {
     const { symbol, amount } = txParams.paramsOption || {};

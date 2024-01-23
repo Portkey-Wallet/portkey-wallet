@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
   newStyle: {
     width: pTd(40),
     height: pTd(20),
+    marginRight: pTd(4),
     textAlign: 'center',
     lineHeight: pTd(20),
     borderRadius: pTd(4),

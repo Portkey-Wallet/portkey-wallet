@@ -14,6 +14,7 @@ import CommonAvatar from 'components/CommonAvatar';
 import { chainShowText } from '@portkey-wallet/utils';
 import { FontStyles } from 'assets/theme/styles';
 import { IRampCryptoItem } from '@portkey-wallet/ramp';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 type ItemType = IRampCryptoItem;
 
@@ -27,6 +28,8 @@ const SelectList = ({ list, callBack, value }: SelectListProps) => {
   const { t } = useLanguage();
   const gStyle = useGStyles();
   const [keyWord, setKeyWord] = useState<string>('');
+
+  const defaultToken = useDefaultToken();
 
   const _list = useMemo(() => {
     const _keyWord = keyWord?.trim();
@@ -57,7 +60,14 @@ const SelectList = ({ list, callBack, value }: SelectListProps) => {
                   callBack(item);
                 }}>
                 <View style={styles.itemRow}>
-                  <CommonAvatar hasBorder title={item.symbol} avatarSize={pTd(32)} imageUrl={item.icon || ' '} />
+                  <CommonAvatar
+                    hasBorder
+                    title={item.symbol}
+                    // elf token icon is fixed , only use white background color
+                    svgName={item?.symbol === defaultToken.symbol ? 'testnet' : undefined}
+                    avatarSize={pTd(32)}
+                    imageUrl={item.icon || ' '}
+                  />
                   <View style={styles.itemContent}>
                     <View>
                       <TextL>{item.symbol}</TextL>

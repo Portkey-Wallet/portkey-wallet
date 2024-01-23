@@ -36,7 +36,7 @@ function ReferralLinkOverlay({ linkUrl }: { linkUrl: string }) {
       </View>
       <Touchable onPress={onShare} style={styles.btnWrap}>
         <ImageBackground source={button} style={[GStyles.flexRow, GStyles.center, styles.btn]}>
-          <TextXL style={[fonts.mediumFont, FontStyles.font11]}>Share</TextXL>
+          <TextL style={[fonts.mediumFont, FontStyles.font11]}>Share</TextL>
         </ImageBackground>
       </Touchable>
     </View>

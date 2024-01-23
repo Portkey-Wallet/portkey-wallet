@@ -199,7 +199,7 @@ const PaymentModal = ({
     if (!buttonTitle) return;
     return (
       <Touchable onPress={onPress} style={styles.getButtonRow}>
-        <TextS style={[FontStyles.weight500, FontStyles.font11]}>{buttonTitle}</TextS>
+        <TextS style={FontStyles.font11}>{buttonTitle}</TextS>
       </Touchable>
     );
   }, [chainId, crossSufficientItem, currentCaAddress, currentChannelType, fee.error, isCanBuy]);

@@ -16,7 +16,7 @@
   },
   "action": {
     "default_icon": "assets/images/extension_logo.png",
-    "default_title": "Portkey Wallet: Crypto & Games",
+    "default_title": "Portkey(Early Access)",
     "default_popup": "popup.html"
   },
   "sandbox": {

@@ -6,10 +6,12 @@ import {
   createWalletAction,
   getCaHolderInfoAsync,
   resetCaInfo,
+  reSetCheckManagerExceed,
   resetWallet,
   setCAInfo,
   setCAInfoType,
   setChainListAction,
+  setCheckManagerExceed,
   setManagerInfo,
   setOriginChainId,
   setUserInfoAction,
@@ -129,6 +131,23 @@ export const walletSlice = createSlice({
         const caInfo = state.walletInfo.caInfo;
         if (caInfo?.[action.payload]) delete caInfo[action.payload];
         state.walletInfo.caInfo = caInfo;
+      })
+      .addCase(setCheckManagerExceed, (state, { payload }) => {
+        const { network } = payload;
+        state.checkManagerExceedMap = {
+          ...state.checkManagerExceedMap,
+          [network]: true,
+        };
+      })
+      .addCase(reSetCheckManagerExceed, (state, { payload }) => {
+        const { network } = payload;
+        if (network) {
+          const _checkManagerExceedMap = state.checkManagerExceedMap;
+          if (_checkManagerExceedMap && _checkManagerExceedMap[network]) delete _checkManagerExceedMap[network];
+          state.checkManagerExceedMap = _checkManagerExceedMap;
+        } else {
+          state.checkManagerExceedMap = {};
+        }
       });
   },
 });

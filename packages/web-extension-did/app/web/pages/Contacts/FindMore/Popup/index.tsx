@@ -5,6 +5,8 @@ import CustomSvg from 'components/CustomSvg';
 import './index.less';
 import FindMoreItem from 'pages/Contacts/components/FindMoreItem';
 import Copy from 'components/Copy';
+import InviteGuideList from 'pages/components/InviteGuideList';
+import OfficialGroupGuide from 'pages/components/OfficialGroupGuide';
 
 export default function FindMorePopup({
   headerTitle,
@@ -39,14 +41,18 @@ export default function FindMorePopup({
                 <CustomSvg type="QRCode2" onClick={clickQRCode} />
               </div>
             </div>
-            <div className="invite-friends">invite your friends</div>
-            <div className="invite-official-group">invite official group</div>
           </div>
         )}
       </div>
       <div className="find-more-body">
         {(!contacts || !Array.isArray(contacts) || contacts?.length === 0) && isSearch && (
           <div className="flex-center no-search-result">No Search Result</div>
+        )}
+        {(!contacts || !Array.isArray(contacts) || contacts?.length === 0) && !isSearch && (
+          <div className="flex-column">
+            <InviteGuideList />
+            <OfficialGroupGuide />
+          </div>
         )}
         {Array.isArray(contacts) &&
           contacts?.length > 0 &&

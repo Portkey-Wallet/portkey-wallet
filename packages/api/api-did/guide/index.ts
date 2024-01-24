@@ -7,8 +7,5 @@ export default {
     target: '/api/app/user/guide/query',
     config: { method: 'GET' },
   },
-  finishGuideItem: {
-    target: '/api/app/user/guide/finish',
-    config: { method: 'GET' },
-  },
+  finishGuideItem: '/api/app/user/guide/finish',
 } as const;

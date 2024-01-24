@@ -2,19 +2,25 @@ import { useCallback } from 'react';
 import { request } from '@portkey-wallet/api/api-did';
 import { GuideTypeEnum } from '@portkey-wallet/constants/constants-ca/guide';
 
+export type TGuideInfoRes = {
+  status: 1 | 0;
+  guideType: GuideTypeEnum;
+  externalMap: Record<string, any>;
+};
+
 export default function useGuide() {
   const getGuideList = useCallback(async () => {
-    const { guildList } = await request.guide.getGuideList();
-    return guildList;
+    const { userGuideInfos }: { userGuideInfos: TGuideInfoRes[] } = await request.guide.getGuideList();
+    return userGuideInfos;
   }, []);
 
   const getGuideItem = useCallback(async (guideTypes: GuideTypeEnum[]) => {
-    const { guildList } = await request.guide.getGuideItem({
+    const { userGuideInfos }: { userGuideInfos: TGuideInfoRes[] } = await request.guide.getGuideItem({
       params: {
         guideTypes,
       },
     });
-    return guildList;
+    return userGuideInfos;
   }, []);
 
   const finishGuideItem = useCallback(async (guideType: GuideTypeEnum) => {

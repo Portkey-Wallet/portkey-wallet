@@ -22,6 +22,8 @@ import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
 import { FromPageEnum, TFindMoreLocationState } from 'types/router';
 import { useJoinOfficialGroupTipModal } from 'hooks/useJoinOfficialGroupTip';
+import InviteGuideList from 'pages/components/InviteGuideList';
+import OfficialGroupGuide from 'pages/components/OfficialGroupGuide';
 import './index.less';
 
 export default function ChatList() {
@@ -40,7 +42,7 @@ export default function ChatList() {
   const reportFCMStatus = useReportFCMStatus();
   const { userInfo } = useWalletInfo();
   const handleClickChatItem = useHandleClickChatItem();
-  const JoinOfficialGroupTip = useJoinOfficialGroupTipModal();
+  const joinOfficialGroupTip = useJoinOfficialGroupTipModal();
   const popList = useMemo(
     () => [
       {
@@ -127,7 +129,7 @@ export default function ChatList() {
   );
   useEffectOnce(() => {
     initChannelList();
-    JoinOfficialGroupTip();
+    joinOfficialGroupTip();
   });
 
   useEffect(() => {
@@ -142,11 +144,15 @@ export default function ChatList() {
       </div>
       <div className="chat-list-content">
         {chatList.length === 0 ? (
-          <div className="no-message flex-column-center">
-            <CustomSvg type="Message" />
-            <div>No message</div>
+          <div className="flex-column">
+            <InviteGuideList />
+            <OfficialGroupGuide />
           </div>
         ) : (
+          // <div className="no-message flex-column-center">
+          //   <CustomSvg type="Message" />
+          //   <div>No message</div>
+          // </div>
           <StyleProvider prefixCls="portkey">
             <ChannelList
               id="channel-list"

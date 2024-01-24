@@ -5,6 +5,7 @@ import './index.less';
 import FindMoreItem from 'pages/Contacts/components/FindMoreItem';
 import Copy from 'components/Copy';
 import CustomSvg from 'components/CustomSvg';
+import InviteGuideList from 'pages/components/InviteGuideList';
 
 export default function FindMorePrompt({
   headerTitle,
@@ -39,7 +40,7 @@ export default function FindMorePrompt({
                 <CustomSvg type="QRCode2" onClick={clickQRCode} />
               </div>
             </div>
-            <div className="invite-friends">invite your friends</div>
+            <InviteGuideList />
           </div>
         )}
       </div>

@@ -5700,22 +5700,15 @@
     "@portkey/types" "^2.0.0-alpha.11"
     query-string "^7.1.1"
 
-"@portkey/services@2.0.0-alpha.0":
-  version "2.0.0-alpha.0"
-  resolved "https://registry.yarnpkg.com/@portkey/services/-/services-2.0.0-alpha.0.tgz#c3b0bc7dd6acf2ea28018eca93ada6f701434f9c"
-  integrity sha512-bv8oBYi5PLTP/rJtGyCCICGg/LbQM1godmP1CGPkkAc572MPIb2Arax2li07KkiomYB1UJeT3TR6ZA/sBOrdIQ==
+"@portkey/services@2.0.0-alpha.10":
+  version "2.0.0-alpha.10"
+  resolved "https://registry.yarnpkg.com/@portkey/services/-/services-2.0.0-alpha.10.tgz#5959e089076a893ba989a243c85b4e62f9b3c340"
+  integrity sha512-9Nq3c2Mf9DV0etZ9s/oV7kesnkbBCO1Cof+6H82zbV597bjzs/vXZu4HETzI4s1RH6YpUv12mLL7UATw5QxoPA==
 
 "@portkey/services@^2.0.0-alpha.10", "@portkey/services@^2.0.0-alpha.11":
   version "2.0.0-alpha.11"
   resolved "https://registry.yarnpkg.com/@portkey/services/-/services-2.0.0-alpha.11.tgz#89edc80d4fbd5f46c44568e91d7c88c241e79f29"
   integrity sha512-zn5IZe5tZ0hhCfJqdVMkH7Q/M0IIk6PUjmeb1oLABupGwTEbX7Hq+zsqjd3ru/XFDwRXopJh0ELf0wHXvIJeXA==
-
-"@portkey/socket@2.0.0-alpha.0":
-  version "2.0.0-alpha.0"
-  resolved "https://registry.yarnpkg.com/@portkey/socket/-/socket-2.0.0-alpha.0.tgz#f561169272b4c772b7a45a185f52ef69962d3d03"
-  integrity sha512-Kzes2l74Up7bU3H+pxq7eD4jCHPhLytAoXplSHyPpPQ4pYnIUTeUTjPyJApFIJcksiYYIRCQcg6lwWxeDLn0Iw==
-  dependencies:
-    "@abp/signalr" "^7.0.0"
 
 "@portkey/socket@2.0.0-alpha.10":
   version "2.0.0-alpha.10"

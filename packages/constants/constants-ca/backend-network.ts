@@ -11,6 +11,7 @@ type BackEndNetworkType =
   | 'back-end-test4-v2'
   | 'back-end-testnet-v2'
   | 'back-end-testnet'
+  | 'back-end-mainnet-v2'
   | 'back-end-mainnet';
 
 export const BackEndNetWorkMap: {
@@ -200,6 +201,30 @@ export const BackEndNetWorkMap: {
     graphqlUrl: 'https://dapp-portkey.portkey.finance/Portkey_DID/PortKeyIndexerCASchema/graphql',
     connectUrl: 'https://auth-portkey.portkey.finance',
     cmsUrl: 'https://cms.portkey.finance/graphql',
+    s3Url: 'https://portkey-cms-mainnet.s3.ap-northeast-1.amazonaws.com',
+    portkeyFinanceUrl: 'https://portkey.finance',
+    portkeyOpenLoginUrl: 'https://openlogin.portkey.finance/',
+    buyConfig: {
+      ach: {
+        appId: 'P0e0l39jipsNYT46',
+        baseUrl: 'https://ramp.alchemypay.org',
+      },
+    },
+    imApiUrl: 'https://im.portkey.finance',
+    imWsUrl: 'wss://diok8uqxgvc3.cloudfront.net/ws/',
+    imS3Bucket: 'portkey-im',
+    eBridgeUrl: 'https://ebridge.exchange',
+    eTransferUrl: 'https://etransfer.exchange',
+  },
+  'back-end-mainnet-v2': {
+    name: 'aelf Mainnet',
+    walletType: 'aelf',
+    networkType: 'MAINNET',
+    isActive: true,
+    apiUrl: 'https://aa-portkey.portkey.finance',
+    graphqlUrl: 'https://dapp-aa-portkey.portkey.finance/Portkey_V2_DID/PortKeyIndexerCASchema/graphql',
+    connectUrl: 'https://auth-aa-portkey.portkey.finance',
+    cmsUrl: 'https://cms-aa-portkey.finance/graphql',
     s3Url: 'https://portkey-cms-mainnet.s3.ap-northeast-1.amazonaws.com',
     portkeyFinanceUrl: 'https://portkey.finance',
     portkeyOpenLoginUrl: 'https://openlogin.portkey.finance/',

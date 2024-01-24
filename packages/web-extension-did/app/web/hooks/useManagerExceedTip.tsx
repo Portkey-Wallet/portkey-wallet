@@ -1,4 +1,4 @@
-import { managerExceedTipModalTitle, managerExceedTipModalContent } from 'constants/managerExceed';
+import { MANAGER_EXCEED_TIP_MODAL_TITLE, MANAGER_EXCEED_TIP_MODAL_CONTENT } from 'constants/managerExceed';
 import CustomModal from 'pages/components/CustomModal';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,8 +32,8 @@ export function useManagerExceedTipModal() {
         type: 'confirm',
         content: (
           <div className="manager-exceed-tip-modal-container">
-            <div className="modal-title">{managerExceedTipModalTitle}</div>
-            <div className="modal-content flex-column">{managerExceedTipModalContent}</div>
+            <div className="modal-title">{MANAGER_EXCEED_TIP_MODAL_TITLE}</div>
+            <div className="modal-content flex-column">{MANAGER_EXCEED_TIP_MODAL_CONTENT}</div>
           </div>
         ),
         cancelText: t('Not Now'),

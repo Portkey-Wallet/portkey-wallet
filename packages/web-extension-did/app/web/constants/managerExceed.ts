@@ -1,3 +1,2 @@
-export const managerExceedTipModalTitle = 'Notice';
-export const managerExceedTipModalContent =
-  'The number of managers is almost at its limit. Please delete some device information that you are no longer logged in to ensure that you can log in properly afterwards.';
+export const MANAGER_EXCEED_TIP_MODAL_TITLE = 'Notice';
+export const MANAGER_EXCEED_TIP_MODAL_CONTENT = `The number of your login devices is reaching the maximum limit. To ensure a smooth experience, it is recommended to remove devices you no longer use.`;

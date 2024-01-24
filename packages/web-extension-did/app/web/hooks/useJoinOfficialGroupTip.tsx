@@ -6,9 +6,10 @@ import { useNavigateState } from './router';
 import singleMessage from 'utils/singleMessage';
 import {
   GuideTypeEnum,
-  JoinOfficialGroupContent,
-  JoinOfficialGroupErrorTip,
-  JoinOfficialGroupTitle,
+  JOIN_OFFICIAL_GROUP_TITLE,
+  JOIN_OFFICIAL_GROUP_CONTENT,
+  JOIN_OFFICIAL_GROUP_ERROR_TIP,
+  JOIN_OFFICIAL_GROUP_BUTTON_TITTLE,
 } from '@portkey-wallet/constants/constants-ca/guide';
 import useGuide, { TGuideInfoRes } from '@portkey-wallet/hooks/hooks-ca/guide';
 import { useJoinGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
@@ -48,7 +49,7 @@ export function useJoinOfficialGroupTipModal() {
 
   const toJoinOfficialGroup = useCallback(async () => {
     if (!officialGroupRef.current) {
-      return singleMessage.error(JoinOfficialGroupErrorTip);
+      return singleMessage.error(JOIN_OFFICIAL_GROUP_ERROR_TIP);
     }
     try {
       await finishGuideItem(GuideTypeEnum.JoinOfficialGroup);
@@ -63,7 +64,7 @@ export function useJoinOfficialGroupTipModal() {
       if (`${error?.code}` === ALREADY_JOINED_GROUP_CODE) {
         navigate(`/chat-box-group/${officialGroupRef.current}`);
       } else {
-        singleMessage.error(JoinOfficialGroupErrorTip);
+        singleMessage.error(JOIN_OFFICIAL_GROUP_ERROR_TIP);
         console.log('===Failed to join error', error);
       }
     }
@@ -88,11 +89,11 @@ export function useJoinOfficialGroupTipModal() {
             <div className="flex-center join-official-group-icon">
               <CustomSvg type="JoinOfficialGroup" />
             </div>
-            <div className="modal-title">{JoinOfficialGroupTitle}</div>
-            <div className="modal-content flex-column">{JoinOfficialGroupContent}</div>
+            <div className="modal-title">{t(JOIN_OFFICIAL_GROUP_TITLE)}</div>
+            <div className="modal-content flex-column">{t(JOIN_OFFICIAL_GROUP_CONTENT)}</div>
           </div>
         ),
-        okText: t('Join'),
+        okText: t(JOIN_OFFICIAL_GROUP_BUTTON_TITTLE),
         onOk: toJoinOfficialGroup,
       });
     }

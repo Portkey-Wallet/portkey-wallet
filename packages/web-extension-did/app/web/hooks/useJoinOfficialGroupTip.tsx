@@ -23,8 +23,10 @@ export function useJoinOfficialGroupTipModal() {
 
   const showJoinOfficialGroupTip = useCallback(async () => {
     try {
-      const res = await getGuideItem([GuideTypeEnum.JoinOfficialGroup]);
-      const targetGuide = res?.find((_guide: TGuideInfoRes) => _guide.guideType === GuideTypeEnum.JoinOfficialGroup);
+      const res = await getGuideItem([GuideTypeEnum.CloseJoinOfficialGroup]);
+      const targetGuide = res?.find(
+        (_guide: TGuideInfoRes) => _guide.guideType === GuideTypeEnum.CloseJoinOfficialGroup,
+      );
       if (targetGuide) {
         officialGroupRef.current = targetGuide?.externalMap?.officialGroupId;
         return !!targetGuide.status;
@@ -90,7 +92,7 @@ export function useJoinOfficialGroupTipModal() {
             <div className="modal-content flex-column">{JoinOfficialGroupContent}</div>
           </div>
         ),
-        okText: t('Join Portkey Official'),
+        okText: t('Join'),
         onOk: toJoinOfficialGroup,
       });
     }

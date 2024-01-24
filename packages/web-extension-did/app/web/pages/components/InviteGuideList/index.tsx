@@ -19,7 +19,7 @@ export default function InviteGuideList(props: IInviteGuideList) {
     () => [
       {
         icon: 'Invite',
-        title: 'Invite Your Friends',
+        title: 'Invite Friends',
         desc: 'Chat with your friends in Portkey',
         onClick: () => {
           // TODO

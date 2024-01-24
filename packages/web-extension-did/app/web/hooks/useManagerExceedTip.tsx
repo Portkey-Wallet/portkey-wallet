@@ -36,8 +36,8 @@ export function useManagerExceedTipModal() {
             <div className="modal-content flex-column">{managerExceedTipModalContent}</div>
           </div>
         ),
-        cancelText: t('Cancel'),
-        okText: t('Go to Delete'),
+        cancelText: t('Not Now'),
+        okText: t('Go to Remove'),
         onOk: toDelete,
       });
     }

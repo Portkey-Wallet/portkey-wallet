@@ -32,7 +32,7 @@ export default function OfficialGroupGuide(props: IOfficialGroupGuide) {
     () => [
       {
         icon: 'PortkeyGroup',
-        title: 'Portkey Official',
+        title: 'Portkey Official Group',
         show: !isPrompt && !isOfficialGroupMember,
         onClick: async () => {
           if (!officialGroupIdRef.current) {

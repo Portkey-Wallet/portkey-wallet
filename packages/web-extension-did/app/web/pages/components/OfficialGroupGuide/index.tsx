@@ -2,7 +2,7 @@ import { Avatar } from '@portkey-wallet/im-ui-web';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useJoinGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import useGuide, { TGuideInfoRes } from '@portkey-wallet/hooks/hooks-ca/guide';
-import { GuideTypeEnum, JoinOfficialGroupErrorTip } from '@portkey-wallet/constants/constants-ca/guide';
+import { GuideTypeEnum, JOIN_OFFICIAL_GROUP_ERROR_TIP } from '@portkey-wallet/constants/constants-ca/guide';
 import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
 import { ALREADY_JOINED_GROUP_CODE } from '@portkey-wallet/constants/constants-ca/chat';
@@ -32,11 +32,11 @@ export default function OfficialGroupGuide(props: IOfficialGroupGuide) {
     () => [
       {
         icon: 'PortkeyGroup',
-        title: 'Portkey Official',
+        title: 'Portkey Official Group',
         show: !isPrompt && !isOfficialGroupMember,
         onClick: async () => {
           if (!officialGroupIdRef.current) {
-            return singleMessage.error(JoinOfficialGroupErrorTip);
+            return singleMessage.error(JOIN_OFFICIAL_GROUP_ERROR_TIP);
           }
           try {
             await finishGuideItem(GuideTypeEnum.JoinOfficialGroup);
@@ -51,7 +51,7 @@ export default function OfficialGroupGuide(props: IOfficialGroupGuide) {
             if (`${error?.code}` === ALREADY_JOINED_GROUP_CODE) {
               navigate(`/chat-box-group/${officialGroupIdRef.current}`);
             } else {
-              singleMessage.error(JoinOfficialGroupErrorTip);
+              singleMessage.error(JOIN_OFFICIAL_GROUP_ERROR_TIP);
               console.log('===Failed to join official group error', error);
             }
           }

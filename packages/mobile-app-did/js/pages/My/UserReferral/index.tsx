@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { StyleSheet, View, Image, ImageBackground } from 'react-native';
 import { pTd } from 'utils/unit';
-import { TextL, TextM, TextXL } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import button from 'assets/image/pngs/button.png';
 import { showReferralLinkOverlay } from '../components/ReferralLinkOverlay';
 import Touchable from 'components/Touchable';
@@ -22,9 +22,12 @@ import LottieLoading from 'components/LottieLoading';
 import fonts from 'assets/theme/fonts';
 
 const UserReferral = () => {
+  const [hasClicked, setHasClicked] = React.useState(false);
+
   const { getReferralLink, referralLink = '', setViewReferralStatusStatus } = useReferral();
 
   const onPressInvite = useCallback(() => {
+    setHasClicked(true);
     if (!referralLink) return;
     showReferralLinkOverlay(referralLink);
   }, [referralLink]);
@@ -85,10 +88,12 @@ const UserReferral = () => {
           <TextM style={[FontStyles.font7, GStyles.textAlignCenter, GStyles.marginTop(pTd(4))]}>Referral Code</TextM>
         </View>
 
-        <Touchable onPress={onPressInvite}>
+        <Touchable onPress={onPressInvite} disabled={!referralLink && hasClicked}>
           <ImageBackground source={button} style={[GStyles.flexRow, GStyles.center, styles.btn]}>
             <TextL style={[fonts.mediumFont, FontStyles.font11]}>Invite Friends</TextL>
-            {!referralLink && <LottieLoading type="custom" color="white" lottieStyle={styles.lottieLoading} />}
+            {!referralLink && hasClicked && (
+              <LottieLoading type="custom" color="white" lottieStyle={styles.lottieLoading} />
+            )}
           </ImageBackground>
         </Touchable>
       </View>

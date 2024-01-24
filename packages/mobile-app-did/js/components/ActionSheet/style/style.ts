@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 
 export const styles = StyleSheet.create({
   sheetBox: {
@@ -69,5 +69,14 @@ export const styles = StyleSheet.create({
     position: 'absolute',
     right: pTd(12),
     top: pTd(12),
+  },
+  scrollViewContainerStyle: {
+    minHeight: 0,
+  },
+  scrollViewStyle: {
+    maxHeight: screenHeight * 0.45,
+  },
+  buttonBox: {
+    marginTop: pTd(20),
   },
 });

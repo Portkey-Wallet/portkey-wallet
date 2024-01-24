@@ -20,7 +20,7 @@ export default function OfficialChatGroup() {
         </View>
         <View style={styles.itemNameWrap}>
           <TextL numberOfLines={1} style={[fonts.mediumFont, FontStyles.font5]}>
-            Portkey Official
+            Portkey Official Group
           </TextL>
         </View>
         <Touchable style={styles.chatButton} onPress={() => console.log('hi')}>

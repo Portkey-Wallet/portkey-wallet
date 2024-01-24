@@ -5,13 +5,13 @@ import OverlayModal from 'components/OverlayModal';
 export const guardianCountAlert = () => {
   // TODO: check if should show
   ActionSheet.alert({
-    title: 'Notice',
+    title: 'Remove Login Devices',
     message:
-      'The number of managers is almost at its limit. Please delete some device information that you are no longer logged in to ensure that you can log in properly afterwards.',
+      'The number of your login devices is reaching the maximum limit. To ensure a smooth experience, it is recommended to remove devices you no longer use.',
     buttons: [
-      { title: 'Cancel', type: 'outline' },
+      { title: 'Not Now', type: 'outline' },
       {
-        title: 'Go to Delete',
+        title: 'Go to Remove',
         type: 'primary',
         onPress: () => {
           OverlayModal.hide();

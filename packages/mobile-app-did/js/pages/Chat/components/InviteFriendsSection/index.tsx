@@ -18,7 +18,7 @@ export default function InviteFriendsSection() {
       <Touchable style={styles.itemWrap} underlayColor="red">
         <Image source={InviteFriends} style={styles.image} />
         <View style={styles.itemContent}>
-          <TextM style={[fonts.mediumFont, FontStyles.font5]}>Invite Your Friends</TextM>
+          <TextM style={[fonts.mediumFont, FontStyles.font5]}>Invite Friends</TextM>
           <View style={styles.blank} />
           <TextS numberOfLines={1} style={FontStyles.font3}>
             Chat with your friends in Portkey

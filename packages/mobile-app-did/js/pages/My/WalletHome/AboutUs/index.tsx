@@ -45,6 +45,20 @@ const AboutUs = () => {
     [],
   );
 
+  // todo: change style
+  const bottomList = useMemo(
+    (): { iconName: IconName; title: string; onPress: () => void }[] => [
+      {
+        iconName: 'terms',
+        title: 'Check for Updates',
+        onPress: () => {
+          console.log('onPress');
+        },
+      },
+    ],
+    [],
+  );
+
   return (
     <PageContainer
       titleDom={t('About Us')}
@@ -70,11 +84,21 @@ const AboutUs = () => {
           </View>
         ))}
       </View>
+
       <View style={styles.btnContainer}>
         {officialList.map((item, index) => (
           <View key={index}>
             <MenuItem icon={item.iconName} title={item.title} onPress={item.onPress} />
             {index !== officialList.length - 1 && <Divider style={styles.dividerStyle} />}
+          </View>
+        ))}
+      </View>
+
+      <View style={styles.btnContainer}>
+        {bottomList.map((item, index) => (
+          <View key={index}>
+            <MenuItem icon={item.iconName} title={item.title} onPress={item.onPress} />
+            {index !== bottomList.length - 1 && <Divider style={styles.dividerStyle} />}
           </View>
         ))}
       </View>
@@ -101,22 +125,22 @@ export const styles = StyleSheet.create({
     borderRadius: pTd(16),
     borderWidth: 1,
     borderColor: defaultColors.border6,
-    marginTop: pTd(48),
+    marginTop: pTd(52),
     marginBottom: pTd(16),
     backgroundColor: defaultColors.bg1,
   },
   version: {
-    marginTop: pTd(8),
+    marginTop: pTd(4),
     fontSize: pTd(14),
     lineHeight: pTd(20),
     color: defaultColors.font3,
-    marginBottom: pTd(48),
+    marginBottom: pTd(40),
   },
   btnContainer: {
     backgroundColor: defaultColors.bg1,
     width: '100%',
     borderRadius: pTd(6),
-    marginBottom: pTd(24),
+    marginBottom: pTd(16),
   },
   innerBtnWrap: {
     marginBottom: 0,

@@ -24,6 +24,8 @@ import Touchable from 'components/Touchable';
 import { copyText } from 'utils';
 import { useInputFocus } from 'hooks/useInputFocus';
 import CommonToast from 'components/CommonToast';
+import InviteFriendsSection from '../components/InviteFriendsSection';
+import OfficialChatGroup from '../components/OfficialChatGroup';
 
 const FindMorePeople = () => {
   const iptRef = useRef<TextInput>(null);
@@ -130,6 +132,8 @@ const FindMorePeople = () => {
           </Touchable>
         </View>
       )}
+      <InviteFriendsSection />
+      <OfficialChatGroup />
       <FlatList
         data={list}
         keyExtractor={item => item.relationId}

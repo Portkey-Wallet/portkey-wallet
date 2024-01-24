@@ -81,6 +81,8 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
             title={t('Switch Networks')}
           />
           <MenuItem
+            // change to components
+            suffix={'New Version Available'}
             style={pageStyles.menuItem}
             onPress={() => navigationService.navigate('AboutUs')}
             title={t('About Us')}

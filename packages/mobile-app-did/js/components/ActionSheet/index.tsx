@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import OverlayModal from '../OverlayModal';
-import { View, Text, TouchableOpacity, Keyboard } from 'react-native';
+import { View, Text, TouchableOpacity, Keyboard, ImageBackground, ImageSourcePropType } from 'react-native';
 import { styles } from './style/style';
 import { TextL, TextM, TextTitle } from 'components/CommonText';
 import ButtonRow, { ButtonRowProps } from 'components/ButtonRow';
@@ -59,6 +59,7 @@ type AlertBodyProps = {
   messageList?: ReactNode[];
   buttonGroupDirection?: 'row' | 'column';
   isCloseShow?: boolean;
+  bgImage?: ImageSourcePropType;
 };
 
 function AlertBody({
@@ -71,9 +72,11 @@ function AlertBody({
   messageList,
   buttonGroupDirection = 'row',
   isCloseShow = false,
+  bgImage,
 }: AlertBodyProps) {
   return (
-    <View style={[styles.alertBox, isCloseShow && styles.alertBoxWithClose]}>
+    <View style={[styles.alertBox, styles.wrapStyle, !bgImage && isCloseShow && styles.alertBoxWithClose]}>
+      {!!bgImage && <ImageBackground source={bgImage} style={styles.headerBackgroundBg} />}
       {isCloseShow && (
         <View
           onTouchEnd={() => {
@@ -83,41 +86,43 @@ function AlertBody({
           <Svg icon={'close'} size={pTd(12.5)} color={defaultColors.font7} />
         </View>
       )}
-      {title ? <TextTitle style={styles.alertTitle}>{title}</TextTitle> : null}
-      {typeof title2 === 'string' ? <TextL style={styles.alertTitle2}>{title2}</TextL> : title2}
-      {typeof message === 'string' ? <TextM style={styles.alertMessage}>{message}</TextM> : message}
-      {typeof message2 === 'string' ? <TextM style={styles.alertMessage}>{message2}</TextM> : message2}
-      {messageList?.map((item, index) => {
-        return typeof item === 'string' ? (
-          <TextM key={index} style={styles.alertMessage}>
-            {item}
-          </TextM>
-        ) : (
-          item
-        );
-      })}
+      <View style={styles.contentSection}>
+        {title ? <TextTitle style={styles.alertTitle}>{title}</TextTitle> : null}
+        {typeof title2 === 'string' ? <TextL style={styles.alertTitle2}>{title2}</TextL> : title2}
+        {typeof message === 'string' ? <TextM style={styles.alertMessage}>{message}</TextM> : message}
+        {typeof message2 === 'string' ? <TextM style={styles.alertMessage}>{message2}</TextM> : message2}
+        {messageList?.map((item, index) => {
+          return typeof item === 'string' ? (
+            <TextM key={index} style={styles.alertMessage}>
+              {item}
+            </TextM>
+          ) : (
+            item
+          );
+        })}
 
-      {buttonGroupDirection === 'row' ? (
-        <ButtonRow
-          buttons={buttons?.map(i => ({
-            ...i,
-            onPress: () => {
-              if (autoClose) OverlayModal.hide();
-              i.onPress?.();
-            },
-          }))}
-        />
-      ) : (
-        <ButtonCol
-          buttons={buttons?.map(i => ({
-            ...i,
-            onPress: () => {
-              if (autoClose) OverlayModal.hide();
-              i.onPress?.();
-            },
-          }))}
-        />
-      )}
+        {buttonGroupDirection === 'row' ? (
+          <ButtonRow
+            buttons={buttons?.map(i => ({
+              ...i,
+              onPress: () => {
+                if (autoClose) OverlayModal.hide();
+                i.onPress?.();
+              },
+            }))}
+          />
+        ) : (
+          <ButtonCol
+            buttons={buttons?.map(i => ({
+              ...i,
+              onPress: () => {
+                if (autoClose) OverlayModal.hide();
+                i.onPress?.();
+              },
+            }))}
+          />
+        )}
+      </View>
     </View>
   );
 }

@@ -78,7 +78,7 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
           {caInfoList?.map((item, index) => (
             <View key={item?.chainId} style={[styles.itemWrap, !!index && styles.itemBorderTop]}>
               <View>
-                <TextM>{formatStr2EllipsisStr(addressFormat(item?.caAddress, item?.chainId as ChainId), 10)}</TextM>
+                <TextM>{formatStr2EllipsisStr(addressFormat(item?.caAddress, item?.chainId as ChainId), 8)}</TextM>
                 <TextS style={[styles.itemChainInfo, FontStyles.font3]}>
                   {formatChainInfoToShow(item?.chainId as ChainId, currentNetwork)}
                 </TextS>

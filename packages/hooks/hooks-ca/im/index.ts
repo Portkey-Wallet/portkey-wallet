@@ -28,6 +28,8 @@ export const useIMRelationIdNetMapNetMapState = () => useAppCASelector(state => 
 export const useIMRelationTokenNetMapNetMapState = () => useAppCASelector(state => state.im.relationTokenNetMap);
 export const useIMGroupInfoMapNetMapState = () => useAppCASelector(state => state.im.groupInfoMapNetMap);
 export const useRedPackageConfigMapState = () => useAppCASelector(state => state.im.redPackageConfigMap);
+export const useIMPinListNetMapState = () => useAppCASelector(state => state.im.pinListNetMap);
+export const useIMLastPinNetMapState = () => useAppCASelector(state => state.im.lastPinNetMap);
 
 export const useUnreadCount = () => {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -73,12 +75,11 @@ export const useRelationId = () => {
     getRelationId,
   };
 };
-
+let observersList: { remove: () => void }[] = [];
 export const useInitIM = () => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
   const { getRelationId } = useRelationId();
-
   const channelListNetMap = useIMChannelListNetMapState();
   const list = useMemo(() => channelListNetMap?.[networkType]?.list || [], [channelListNetMap, networkType]);
   const listRef = useRef(list);
@@ -170,7 +171,6 @@ export const useInitIM = () => {
           console.log('UnreadMsg addChannel error:', error);
         }
       } else {
-        console.log('updateUnreadChannel');
         dispatch(
           updateChannelAttribute({
             network: networkType,
@@ -207,14 +207,25 @@ export const useInitIM = () => {
 
   const initIm = useLockCallback(
     async (account: AElfWallet, caHash: string) => {
-      if (![IMStatusEnum.INIT, IMStatusEnum.DESTROY].includes(im.status)) return;
+      if (observersList.length) {
+        observersList.forEach(item => {
+          item.remove();
+        });
+        observersList = [];
+      }
 
-      im.registerUnreadMsgObservers(async (e: any) => {
-        unreadMessageUpdateRef.current(e);
-      });
-      im.registerTokenObserver(async (e: string) => {
-        setTokenUpdateRef.current(e);
-      });
+      observersList.push(
+        im.registerUnreadMsgObservers(async (e: any) => {
+          unreadMessageUpdateRef.current(e);
+        }),
+      );
+      observersList.push(
+        im.registerTokenObserver(async (e: string) => {
+          setTokenUpdateRef.current(e);
+        }),
+      );
+
+      if (![IMStatusEnum.INIT, IMStatusEnum.DESTROY].includes(im.status)) return;
 
       await im.init(account, caHash, relationToken);
       dispatch(fetchContactListAsync());

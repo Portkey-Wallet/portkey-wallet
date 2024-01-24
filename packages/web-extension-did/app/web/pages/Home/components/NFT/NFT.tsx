@@ -11,15 +11,15 @@ import clsx from 'clsx';
 import { useAppDispatch, useAssetInfo, useCommonState } from 'store/Provider/hooks';
 import './index.less';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { useIsTestnet } from 'hooks/useNetwork';
 import { PAGE_SIZE_IN_NFT_ITEM } from '@portkey-wallet/constants/constants-ca/assets';
 import { PAGE_SIZE_IN_NFT_ITEM_PROMPT } from 'constants/index';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export default function NFT() {
   const nav = useNavigate();
   const [openPanel, setOpenPanel] = useState<string[]>([]);
   const [nftNum, setNftNum] = useState<Record<string, number>>({});
-  const isTestNet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const {
     accountNFT: { accountNFTList },
   } = useAssetInfo();
@@ -97,7 +97,7 @@ export default function NFT() {
               </div>
               <div className="info">
                 <p className="alias">{nft.collectionName}</p>
-                <p className="network">{transNetworkText(nft.chainId, isTestNet)}</p>
+                <p className="network">{transNetworkText(nft.chainId, !isMainnet)}</p>
               </div>
               <div className="amount">{nft.itemCount}</div>
             </div>
@@ -133,7 +133,7 @@ export default function NFT() {
                   )
                 );
               })}
-            {!!nftNum[nftColKey] && nft.totalRecordCount > nftNum[nftColKey] * maxNftNum && (
+            {!!nftNum[nftColKey] && Number(nft.totalRecordCount) > nftNum[nftColKey] * maxNftNum && (
               <div
                 className="load-more"
                 onClick={() => {
@@ -146,7 +146,7 @@ export default function NFT() {
         </Collapse.Panel>
       );
     },
-    [getMore, isTestNet, maxNftNum, nav, nftNum],
+    [getMore, isMainnet, maxNftNum, nav, nftNum],
   );
 
   return (

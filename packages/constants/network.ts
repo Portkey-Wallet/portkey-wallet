@@ -4,7 +4,7 @@ import { ChainItemType } from '@portkey-wallet/types/chain';
 export const DefaultChain: ChainItemType = {
   chainId: 'AELF',
   networkName: 'MainChain AELF',
-  netWorkType: 'MAIN',
+  networkType: 'MAINNET',
   rpcUrl: 'https://explorer.aelf.io/chain',
   chainType: 'aelf',
   blockExplorerURL: 'https://explorer.aelf.io/',

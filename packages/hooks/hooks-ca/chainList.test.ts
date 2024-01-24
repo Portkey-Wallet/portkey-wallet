@@ -46,8 +46,8 @@ describe('useCurrentChainList', () => {
     const { result } = renderHook(() => useCurrentChainList());
     expect(result.current).toBeUndefined();
   });
-  test('have chainInfo.MAIN, and return []', () => {
-    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('MAIN'));
+  test('have chainInfo.MAINNET, and return []', () => {
+    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('MAINNET'));
     const { result } = renderHook(() => useCurrentChainList());
     expect(result.current).toHaveLength(1);
   });
@@ -61,7 +61,7 @@ describe('useCurrentChain', () => {
   });
   test('chainInfo not have tDVV info, and return undefined', () => {
     jest.mocked(useOriginChainId).mockReturnValue('tDVV');
-    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('MAIN'));
+    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('MAINNET'));
     const { result } = renderHook(() => useCurrentChain());
     expect(result.current).toBeUndefined();
   });
@@ -82,8 +82,8 @@ describe('useIsValidSuffix', () => {
     const res = result.current('AELF');
     expect(res).toBeFalsy();
   });
-  test('in MAIN, chainInfo have AELF info, can get suffix', () => {
-    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('MAIN'));
+  test('in MAINNET, chainInfo have AELF info, can get suffix', () => {
+    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('MAINNET'));
     const { result } = renderHook(() => useIsValidSuffix());
     const res = result.current('AELF');
     expect(res).toBeTruthy();
@@ -91,8 +91,8 @@ describe('useIsValidSuffix', () => {
 });
 
 describe('useGetChainInfo', () => {
-  test('get AELF MAIN ChainInfo, and return successfully', async () => {
-    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('MAIN'));
+  test('get AELF MAINNET ChainInfo, and return successfully', async () => {
+    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('MAINNET'));
     const { result } = renderHook(() => useGetChainInfo());
     const res = await result.current('AELF');
     expect(res).toHaveProperty('chainId', 'AELF');

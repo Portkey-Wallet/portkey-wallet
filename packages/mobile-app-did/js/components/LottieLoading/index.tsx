@@ -46,11 +46,11 @@ const LottieLoading = (props: LottieLoadingPropsType) => {
   return (
     <View style={[GStyles.flex1, GStyles.itemCenter, styles.wrapStyle, lottieWrapStyle]}>
       <Lottie
-        style={[styles.loadingStyle, lottieStyle]}
         autoPlay
         loop
         source={source}
         colorFilters={color === 'white' ? whiteColorFilters : undefined}
+        style={[styles.loadingStyle, lottieStyle]}
         {...LottieProps}
       />
     </View>

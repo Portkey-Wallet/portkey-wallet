@@ -76,7 +76,7 @@ describe('usePhoneCountryCode', () => {
   test('not localPhoneCountryCode, and return correct values', () => {
     const dispatchMock = jest.fn();
     const useAppCASelectorMock = jest.fn().mockReturnValue({
-      phoneCountryCodeListChainMap: [MiscState.misc.phoneCountryCodeListChainMap?.MAIN],
+      phoneCountryCodeListChainMap: [MiscState.misc.phoneCountryCodeListChainMap?.MAINNET],
       defaultPhoneCountryCode: MiscState.misc.defaultPhoneCountryCode,
     });
 
@@ -96,7 +96,7 @@ describe('usePhoneCountryCode', () => {
   test('not localPhoneCountryCode and defaultPhoneCountryCode, and return correct values', () => {
     const dispatchMock = jest.fn();
     const useAppCASelectorMock = jest.fn().mockReturnValue({
-      phoneCountryCodeListChainMap: [MiscState.misc.phoneCountryCodeListChainMap?.MAIN],
+      phoneCountryCodeListChainMap: [MiscState.misc.phoneCountryCodeListChainMap?.MAINNET],
     });
 
     jest.spyOn(indexHook, 'useAppCASelector').mockImplementation(useAppCASelectorMock);

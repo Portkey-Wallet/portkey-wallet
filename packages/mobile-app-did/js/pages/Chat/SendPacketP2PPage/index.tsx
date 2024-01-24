@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -25,6 +25,9 @@ import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { checkIsUserCancel, handleErrorMessage } from '@portkey-wallet/utils';
 import myEvents from 'utils/deviceEvent';
 import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
+import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
+import { createTimeRecorder } from '@portkey-wallet/utils/timeRecorder';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 export default function SendPacketP2PPage() {
   const currentChannelId = useCurrentChannelId();
@@ -36,8 +39,9 @@ export default function SendPacketP2PPage() {
   const checkManagerSyncState = useCheckManagerSyncState();
   const { getContractAddress } = useGetRedPackageConfig(true);
   const [, resetOverlayCount] = useState(0);
+  const reportAnalyticsEvent = useReportAnalyticsEvent();
 
-  const onPressBtn = useCallback(
+  const onPressBtn = useLockCallback(
     async (values: ValuesType) => {
       Loading.show();
       try {
@@ -93,6 +97,7 @@ export default function SendPacketP2PPage() {
       }
 
       Loading.showOnce();
+      const timeRecorder = createTimeRecorder();
       try {
         await sendRedPackage({
           chainId: values.chainId,
@@ -105,17 +110,22 @@ export default function SendPacketP2PPage() {
           count: 1,
           channelId: currentChannelId || '',
         });
+        reportAnalyticsEvent({ page: 'SendPacketP2PPage', time: timeRecorder.endBySecond() }, 'RecordMessage');
         CommonToast.success('Sent successfully!');
         navigationService.goBack();
       } catch (error) {
-        console.log(error, 'sendRedPackage ====error');
-        if (handleErrorMessage(error) === 'fetch exceed limit') {
+        const errorMessage = handleErrorMessage(error);
+        if (errorMessage === 'fetch exceed limit') {
           CommonToast.warn('You can view the crypto box you sent later in the chat window.');
           navigationService.navigate('Tab');
           myEvents.navToBottomTab.emit({ tabName: ChatTabName });
         } else {
           CommonToast.failError('Crypto box failed to be sent. Please try again.');
         }
+        reportAnalyticsEvent(
+          { page: 'SendPacketP2PPage', time: timeRecorder.endBySecond(), errorMessage },
+          'RecordMessage',
+        );
       } finally {
         Loading.hide();
       }
@@ -127,6 +137,7 @@ export default function SendPacketP2PPage() {
       currentChannelId,
       getCAContract,
       getContractAddress,
+      reportAnalyticsEvent,
       securitySafeCheckAndToast,
       sendRedPackage,
     ],

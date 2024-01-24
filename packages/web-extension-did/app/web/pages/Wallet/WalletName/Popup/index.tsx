@@ -14,7 +14,6 @@ export default function WalletNamePopup({
   editText,
   isShowRemark = false,
   handleEdit,
-  handleCopy,
   saveCallback,
 }: IProfileDetailProps) {
   return (
@@ -27,18 +26,10 @@ export default function WalletNamePopup({
         />
       </div>
       {showChat && type === MyProfilePageType.VIEW && (
-        <ViewContactBody
-          data={data}
-          editText={editText}
-          isShowRemark={isShowRemark}
-          handleEdit={handleEdit}
-          handleCopy={handleCopy}
-        />
+        <ViewContactBody data={data} editText={editText} isShowRemark={isShowRemark} handleEdit={handleEdit} />
       )}
-      {showChat && type === MyProfilePageType.EDIT && (
-        <SetWalletNameForm data={data} handleCopy={handleCopy} saveCallback={saveCallback} />
-      )}
-      {!showChat && <SetWalletNameForm data={data} handleCopy={handleCopy} saveCallback={saveCallback} />}
+      {showChat && type === MyProfilePageType.EDIT && <SetWalletNameForm data={data} saveCallback={saveCallback} />}
+      {!showChat && <SetWalletNameForm data={data} saveCallback={saveCallback} />}
     </div>
   );
 }

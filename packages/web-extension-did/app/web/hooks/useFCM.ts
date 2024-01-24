@@ -1,3 +1,4 @@
+import { useLatestRef } from '@portkey-wallet/hooks';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
@@ -16,10 +17,24 @@ export function useFCMEnable() {
   }, [isPrompt, isShowChat]);
 }
 
+export function useReportFCMStatus() {
+  const unreadCount = useUnreadCount();
+
+  return useCallback(async () => {
+    try {
+      await signalrFCM.reportAppStatus(AppStatusUnit.FOREGROUND, unreadCount);
+    } catch (error) {
+      console.log('===signalrFCM.reportAppStatus error', error);
+    }
+  }, [unreadCount]);
+}
+
 export default function useFCM() {
   const unreadCount = useUnreadCount();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const isFCMEnabled = useFCMEnable();
+  const lastUnreadCount = useLatestRef(unreadCount);
+  const reportFCMStatus = useReportFCMStatus();
 
   const initFCM = useCallback(async () => {
     if (!isFCMEnabled()) return;
@@ -35,12 +50,13 @@ export default function useFCM() {
   useEffect(() => {
     if (!isFCMEnabled()) return;
     timerRef.current = setInterval(() => {
-      signalrFCM.reportAppStatus(AppStatusUnit.FOREGROUND, unreadCount);
-      setBadge({ value: unreadCount });
+      reportFCMStatus();
+      signalrFCM.signalr && setBadge({ value: lastUnreadCount.current });
     }, 5000);
 
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isFCMEnabled, unreadCount]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFCMEnabled]);
 }

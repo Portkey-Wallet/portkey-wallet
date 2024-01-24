@@ -1,12 +1,12 @@
 import { IClickAddressProps, RecentContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils/converter';
-import { useIsTestnet } from 'hooks/useNetwork';
 import ContactCard from './ContactCard';
 import CustomSvg from 'components/CustomSvg';
 import { useNavigate } from 'react-router';
 import clsx from 'clsx';
 import { ChainId } from '@portkey-wallet/types';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export default function RecentItem({
   item,
@@ -15,7 +15,7 @@ export default function RecentItem({
   item: RecentContactItemType;
   onClick: (account: IClickAddressProps) => void;
 }) {
-  const isTestNet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const navigate = useNavigate();
 
   const goRecentDetail = (
@@ -39,7 +39,7 @@ export default function RecentItem({
           onClick({ ...item });
         }}>
         <p className="address">{`ELF_${formatStr2EllipsisStr(item.address, [6, 6])}_${item.addressChainId}`}</p>
-        <p className="network">{transNetworkText(item.addressChainId, isTestNet)}</p>
+        <p className="network">{transNetworkText(item.addressChainId, !isMainnet)}</p>
       </div>
 
       <div

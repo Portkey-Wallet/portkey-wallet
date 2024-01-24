@@ -18,7 +18,7 @@ import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { TextS } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';
 import CommonAvatar from 'components/CommonAvatar';
-import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { formatChainInfoToShow, handleErrorMessage } from '@portkey-wallet/utils';
 import { useCurrentCaInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Touchable from 'components/Touchable';
 import { BGStyles } from 'assets/theme/styles';
@@ -26,12 +26,13 @@ import { FontStyles } from 'assets/theme/styles';
 import { defaultColors } from 'assets/theme';
 import navigationService, { NavigateName } from 'utils/navigationService';
 import { addressFormat } from '@portkey-wallet/utils';
-import { useAppBuyButtonShow } from 'hooks/cms';
 import RedPacketAmountShow from 'pages/Chat/components/RedPacketAmountShow';
 import { useDefaultTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useCurrentChannel } from 'pages/Chat/context/hooks';
 import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { InsufficientTransactionFee } from 'hooks/useCalculateRedPacketFee';
 
 export type PaymentTokenInfo = {
   symbol: string;
@@ -92,7 +93,7 @@ const PaymentModal = ({
     return tokenInfoList.find(ele => ele.symbol === tokenInfo.symbol);
   }, [chainId, tokenInfo.symbol, tokenInfoList, tokenMap]);
 
-  const { isBuySectionShow } = useAppBuyButtonShow();
+  const { isBuySectionShow } = useRampEntryShow();
   const isCanBuy = useMemo(
     () => tokenInfo.symbol === defaultToken.symbol && isBuySectionShow,
     [isBuySectionShow, defaultToken.symbol, tokenInfo.symbol],
@@ -108,45 +109,63 @@ const PaymentModal = ({
     return calculateTransactionFee();
   }, [calculateTransactionFee]);
 
-  const feeComponent = useMemo(() => {
-    if (fee?.error) return;
+  const isInsufficientTransactionFee = useMemo(
+    () => fee?.error && handleErrorMessage(fee?.error) === InsufficientTransactionFee,
+    [fee?.error],
+  );
 
+  const calcFeeError = useMemo(
+    () => fee?.error && handleErrorMessage(fee?.error) !== InsufficientTransactionFee,
+    [fee?.error],
+  );
+
+  const feeComponent = useMemo(() => {
+    if (isInsufficientTransactionFee) return;
     return (
       <View style={[GStyles.width100, GStyles.marginTop(pTd(16))]}>
-        <View style={[GStyles.flexRow, GStyles.spaceBetween]}>
-          <TextM>Estimated Transaction Fee</TextM>
-          <View>
-            <View style={[GStyles.flexRow, GStyles.itemCenter]}>
-              {fee?.loading ? (
-                <LottieLoading lottieWrapStyle={styles.lottieWrapStyle} lottieStyle={styles.lottieStyle} />
-              ) : (
-                <TextM>{formatAmountShow(divDecimals(fee.value, defaultToken.decimals), defaultToken.decimals)}</TextM>
-              )}
-              <TextM>{defaultToken.symbol}</TextM>
+        {calcFeeError ? (
+          <TextS style={FontStyles.font12}>Failed to send crypto box. Please try again.</TextS>
+        ) : (
+          <>
+            <View style={[GStyles.flexRow, GStyles.spaceBetween]}>
+              <TextM>Estimated Transaction Fee</TextM>
+              <View>
+                <View style={[GStyles.flexRow, GStyles.itemCenter]}>
+                  {fee?.loading ? (
+                    <LottieLoading lottieWrapStyle={styles.lottieWrapStyle} lottieStyle={styles.lottieStyle} />
+                  ) : (
+                    <TextM>
+                      {formatAmountShow(divDecimals(fee.value, defaultToken.decimals), defaultToken.decimals)}
+                    </TextM>
+                  )}
+                  <TextM>{` ${defaultToken.symbol}`}</TextM>
+                </View>
+              </View>
             </View>
-          </View>
-        </View>
-        <View style={GStyles.alignEnd}>
-          {!!currentTokenInfo?.price && (
-            <TextS style={FontStyles.font3}>
-              {convertAmountUSDShow(divDecimals(fee.value, defaultToken.decimals), defaultTokenPrice)}
-            </TextS>
-          )}
-        </View>
+            <View style={GStyles.alignEnd}>
+              {!!defaultTokenPrice && (
+                <TextS style={FontStyles.font3}>
+                  {convertAmountUSDShow(divDecimals(fee.value, defaultToken.decimals), defaultTokenPrice)}
+                </TextS>
+              )}
+            </View>
+          </>
+        )}
       </View>
     );
   }, [
-    currentTokenInfo?.price,
+    calcFeeError,
     defaultToken.decimals,
     defaultToken.symbol,
     defaultTokenPrice,
-    fee?.error,
     fee?.loading,
     fee.value,
+    isInsufficientTransactionFee,
   ]);
 
   const getButtonComponent = useMemo(() => {
     if (!fee.error) return;
+
     let buttonTitle = '',
       onPress;
     const successNavigateName: NavigateName = currentChannelType === 'P2P' ? 'ChatDetailsPage' : 'ChatGroupDetailsPage';
@@ -170,7 +189,7 @@ const PaymentModal = ({
       buttonTitle = 'Buy ELF';
       onPress = () => {
         OverlayModal.hide(false);
-        navigationService.navigateByMultiLevelParams('BuyHome', {
+        navigationService.navigateByMultiLevelParams('RampHome', {
           multiLevelParams: {
             successNavigateName,
           },
@@ -180,12 +199,12 @@ const PaymentModal = ({
     if (!buttonTitle) return;
     return (
       <Touchable onPress={onPress} style={styles.getButtonRow}>
-        <TextS style={[FontStyles.weight500, FontStyles.font11]}>{buttonTitle}</TextS>
+        <TextS style={FontStyles.font11}>{buttonTitle}</TextS>
       </Touchable>
     );
   }, [chainId, crossSufficientItem, currentCaAddress, currentChannelType, fee.error, isCanBuy]);
 
-  const disableStyle = useMemo(() => !!fee.error && styles.opacity, [fee.error]);
+  const disableStyle = useMemo(() => !!isInsufficientTransactionFee && styles.opacity, [isInsufficientTransactionFee]);
   const tokenRowComponent = useMemo(() => {
     return (
       <View style={[GStyles.flex1, GStyles.flexRow, styles.rowCenter, disableStyle]}>
@@ -204,7 +223,7 @@ const PaymentModal = ({
   }, [chainId, currentNetwork, currentTokenInfo?.imageUrl, currentTokenInfo?.symbol, disableStyle, tokenInfo.symbol]);
 
   const tokenBalanceComponent = useMemo(() => {
-    if (fee.error) return;
+    if (isInsufficientTransactionFee) return;
     return (
       <Text style={styles.marginTop4}>
         <TextS style={FontStyles.font3}>
@@ -229,7 +248,7 @@ const PaymentModal = ({
     currentTokenInfo?.decimals,
     currentTokenInfo?.price,
     currentTokenInfo?.symbol,
-    fee.error,
+    isInsufficientTransactionFee,
   ]);
 
   useEffectOnce(() => {
@@ -261,7 +280,9 @@ const PaymentModal = ({
 
               <View style={[GStyles.paddingLeft(pTd(30))]}>
                 {tokenBalanceComponent}
-                {!!fee.error && <TextS style={[styles.marginTop4, disableStyle]}>Insufficient balance</TextS>}
+                {!!isInsufficientTransactionFee && (
+                  <TextS style={[styles.marginTop4, disableStyle]}>Insufficient balance</TextS>
+                )}
                 {!!(crossSufficientItem && fee.error) && (
                   <TextS style={[FontStyles.font6, styles.marginTop4]}>
                     {`You can transfer some ${tokenInfo.symbol} from your ${formatChainInfoToShow(
@@ -275,6 +296,7 @@ const PaymentModal = ({
           </View>
           {feeComponent}
         </View>
+
         <CommonButton
           onPress={() => {
             onConfirm(true);

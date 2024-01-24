@@ -188,12 +188,12 @@ export const useHandleObjectData = () => {
   return useCallback(
     (data: string) => {
       const qrCodeData = expandQrData(JSON.parse(data));
-      if (!qrCodeData?.netWorkType || !qrCodeData?.address || !qrCodeData?.type) throw data;
+      if (!qrCodeData?.networkType || !qrCodeData?.address || !qrCodeData?.type) throw data;
 
       // check network
-      if (currentNetwork !== qrCodeData.netWorkType)
+      if (currentNetwork !== qrCodeData.networkType)
         return invalidQRCode(
-          currentNetwork === 'MAIN' ? InvalidQRCodeText.SWITCH_TO_TESTNET : InvalidQRCodeText.SWITCH_TO_MAINNET,
+          currentNetwork === 'MAINNET' ? InvalidQRCodeText.SWITCH_TO_TESTNET : InvalidQRCodeText.SWITCH_TO_MAINNET,
         );
       handlePortkeyQRCodeData(qrCodeData, previousRouteInfo);
     },

@@ -1,11 +1,13 @@
 import CustomSvg from 'components/CustomSvg';
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router';
-import { useExtensionBridgeButtonShow, useExtensionBuyButtonShow, useExtensionETransShow } from 'hooks/cms';
-import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
+import { useExtensionBridgeButtonShow, useExtensionETransShow } from 'hooks/cms';
+import { RampType } from '@portkey-wallet/ramp';
 import { ETransType } from 'types/eTrans';
 import { DepositType, IDepositItem, depositList } from './constant';
 import './index.less';
+import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { useNavigateState } from 'hooks/router';
+import { TRampLocationState } from 'types/router';
 
 export interface IDepositListProps {
   onClose: () => void;
@@ -14,9 +16,9 @@ export interface IDepositListProps {
 }
 
 export default function DepositList({ onClose, onClickBridge, onClickETrans }: IDepositListProps) {
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TRampLocationState>();
   const { isBridgeShow } = useExtensionBridgeButtonShow();
-  const { isBuySectionShow, isSellSectionShow } = useExtensionBuyButtonShow();
+  const { isBuySectionShow, isSellSectionShow } = useRampEntryShow();
   const { isETransDepositShow, isETransWithdrawShow } = useExtensionETransShow();
 
   const handleBuy = useCallback(() => {
@@ -26,7 +28,7 @@ export default function DepositList({ onClose, onClickBridge, onClickETrans }: I
 
   const handleSell = useCallback(() => {
     onClose();
-    navigate('/buy', { state: { side: PaymentTypeEnum.SELL } });
+    navigate('/buy', { state: { side: RampType.SELL } });
   }, [navigate, onClose]);
 
   const formatDepositList = depositList.filter((item) => {

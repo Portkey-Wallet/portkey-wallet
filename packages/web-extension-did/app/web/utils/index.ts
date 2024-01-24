@@ -1,5 +1,5 @@
 import { NetworkList } from '@portkey-wallet/constants/constants-ca/network';
-import { NetworkType } from '@portkey/provider-types';
+import { NetworkType } from '@portkey-wallet/types';
 import {
   ENVIRONMENT_TYPE_POPUP,
   ENVIRONMENT_TYPE_PROMPT,
@@ -58,9 +58,15 @@ export const getEnvironmentType = (url: string) => {
 };
 
 export const getPortkeyFinanceUrl = (currentNetwork: NetworkType) => {
-  const host = NetworkList.find((item) => item.networkType === currentNetwork)?.portkeyFinanceUrl || '';
+  const {
+    portkeyFinanceUrl: host = '',
+    portkeyOpenLoginUrl: webPageUrl = '',
+    networkType = '',
+  } = NetworkList.find((item) => item.networkType === currentNetwork) || {};
+
   return {
     JOIN_AUTH_URL: `${host}/join`,
+    JOIN_TELEGRAM_URL: `${webPageUrl}/social-login/Telegram?from=portkey&network=${networkType}`,
     AUTH_APPLE_URL: `${host}/apple-auth`,
     RECAPTCHA_URL: `${host}/recaptcha-check`,
   };

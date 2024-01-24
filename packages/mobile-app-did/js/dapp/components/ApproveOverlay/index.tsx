@@ -26,7 +26,7 @@ import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { isIOS } from '@rneui/base';
 import { isValidNumber } from '@portkey-wallet/utils/reg';
-import Svg from 'components/Svg';
+import Svg, { IconName } from 'components/Svg';
 
 type SignModalPropsType = {
   dappInfo: DappStoreItem;
@@ -140,7 +140,7 @@ const ApproveModal = (props: SignModalPropsType) => {
         }}>
         <View style={[GStyles.center, styles.headerSection]}>
           {dappInfo.svgIcon ? (
-            <Svg icon={dappInfo.svgIcon} size={pTd(48)} />
+            <Svg icon={dappInfo.svgIcon as IconName} size={pTd(48)} />
           ) : (
             <DiscoverWebsiteImage size={pTd(48)} imageUrl={getFaviconUrl(dappInfo.origin)} />
           )}

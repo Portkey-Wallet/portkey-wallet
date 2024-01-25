@@ -1,5 +1,6 @@
 import CustomSvg, { SvgType } from 'components/CustomSvg';
 import { useMemo } from 'react';
+import { useClickReferral } from 'hooks/referral';
 import './index.less';
 
 export type TInviteGuideMap = {
@@ -15,18 +16,17 @@ export interface IInviteGuideList {
 
 export default function InviteGuideList(props: IInviteGuideList) {
   const { inviteGuideMap } = props;
+  const clickReferral = useClickReferral();
   const defaultGuideMap: TInviteGuideMap[] = useMemo(
     () => [
       {
         icon: 'Invite',
         title: 'Invite Friends',
         desc: 'Chat with your friends in Portkey',
-        onClick: () => {
-          // TODO
-        },
+        onClick: clickReferral,
       },
     ],
-    [],
+    [clickReferral],
   );
   return (
     <div className="invite-guide-component">

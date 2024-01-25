@@ -27,7 +27,7 @@ import TelegramOverlay from 'components/TelegramOverlay';
 import { parseTelegramToken } from '@portkey-wallet/utils/authentication';
 import { useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useLatestRef } from '@portkey-wallet/hooks';
-
+import { VerifyTokenParams } from '@portkey-wallet/types/types-ca/authentication';
 if (!isIOS) {
   GoogleSignin.configure({
     offlineAccess: true,
@@ -295,16 +295,6 @@ export function useAuthenticationSign() {
   );
 }
 
-export type VerifyTokenParams = {
-  accessToken?: string;
-  verifierId?: string;
-  chainId: ChainId;
-  id: string;
-  operationType: OperationTypeEnum;
-  targetChainId?: ChainId;
-  operationDetails?: string;
-};
-
 export function useVerifyGoogleToken() {
   const { googleSign } = useGoogleAuthentication();
   return useCallback(
@@ -390,32 +380,31 @@ export function useVerifyTelegramToken() {
 export function useVerifyToken() {
   const verifyGoogleToken = useVerifyGoogleToken();
   const verifyAppleToken = useVerifyAppleToken();
-  const TelegramToken = useVerifyTelegramToken();
+  const verifyTelegramToken = useVerifyTelegramToken();
   const verifyManagerAddress = useVerifyManagerAddress();
   const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
   return useCallback(
     (type: LoginType, params: VerifyTokenParams) => {
+      let fun = verifyGoogleToken;
       switch (type) {
         case LoginType.Google:
-          return verifyGoogleToken({
-            operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
-            ...params,
-          });
+          fun = verifyGoogleToken;
+          break;
         case LoginType.Apple:
-          return verifyAppleToken({
-            operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
-            ...params,
-          });
+          fun = verifyAppleToken;
+          break;
         case LoginType.Telegram:
-          return TelegramToken({
-            operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
-            ...params,
-          });
+          fun = verifyTelegramToken;
+          break;
         default:
           throw new Error('Unsupported login type');
       }
+      return fun({
+        operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
+        ...params,
+      });
     },
-    [TelegramToken, verifyAppleToken, verifyGoogleToken],
+    [verifyTelegramToken, verifyAppleToken, verifyGoogleToken],
   );
 }
 

@@ -109,6 +109,14 @@ export function useOnManagerAddressAndQueryResult() {
   const latestOriginChainId = useLatestRef(originChainId);
   const onIntervalGetResult = useIntervalGetResult();
   const storeTmpWalletInfo = useTmpWalletInfo();
+  const latestStoreTmpWalletInfo = useLatestRef(storeTmpWalletInfo);
+
+  const createTmpWalletInfo = useCallback((walletInfo?: CurrentWalletType) => {
+    if (walletInfo?.address) return walletInfo;
+    if (latestStoreTmpWalletInfo.current?.address) return latestStoreTmpWalletInfo.current;
+    return AElf.wallet.createNewWallet();
+  }, []);
+
   return useCallback(
     async ({
       showLoading = true,
@@ -136,14 +144,7 @@ export function useOnManagerAddressAndQueryResult() {
       await sleep(500);
       const requestId = randomId();
       try {
-        console.log(walletInfo, storeTmpWalletInfo, '=======walletInfo');
-
-        const tmpWalletInfo = walletInfo?.address
-          ? walletInfo
-          : storeTmpWalletInfo?.address
-          ? storeTmpWalletInfo
-          : AElf.wallet.createNewWallet();
-        console.log(tmpWalletInfo, '=========tmpWalletInfo');
+        const tmpWalletInfo = createTmpWalletInfo(walletInfo);
 
         const extraData = await extraDataEncode(getDeviceInfo());
         let data: any = {
@@ -233,7 +234,7 @@ export function useOnManagerAddressAndQueryResult() {
       onIntervalGetResult,
       onResultFail,
       t,
-      storeTmpWalletInfo,
+      createTmpWalletInfo,
     ],
   );
 }

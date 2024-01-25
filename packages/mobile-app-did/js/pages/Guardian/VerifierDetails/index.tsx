@@ -34,6 +34,7 @@ import { handleGuardiansApproved } from 'utils/login';
 import { checkVerifierIsInvalidCode } from '@portkey-wallet/utils/guardian';
 import { pTd } from 'utils/unit';
 import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { useLatestRef } from '@portkey-wallet/hooks';
 
 type RouterParams = {
   guardianItem?: UserGuardianItem;
@@ -131,6 +132,7 @@ export default function VerifierDetails() {
 
   const { error: codeError, setError: setCodeError } = useErrorMessage();
   const verifyManagerAddress = useVerifyManagerAddress();
+  const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
 
   const onFinish = useLockCallback(
     async (code: string) => {
@@ -149,7 +151,7 @@ export default function VerifierDetails() {
             chainId: originChainId,
             operationType,
             targetChainId,
-            operationDetails: JSON.stringify({ manager: verifyManagerAddress }),
+            operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
           },
         });
         !isRequestResult && CommonToast.success('Verified Successfully');
@@ -231,7 +233,6 @@ export default function VerifierDetails() {
       autoLogin,
       registerAccount,
       setCodeError,
-      verifyManagerAddress,
     ],
   );
 

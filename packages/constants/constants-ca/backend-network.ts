@@ -171,7 +171,8 @@ export const BackEndNetWorkMap: {
     s3Url: 'https://portkey-cms-testnet.s3.ap-northeast-1.amazonaws.com',
     imS3Bucket: 'portkey-im-testnet',
     referralUrl: 'https://test.portkey.finance',
-    portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
+    portkeyFinanceUrl: 'https://portkey.finance/',
+    portkeyOpenLoginUrl: 'https://openlogin.portkey.finance/',
     eBridgeUrl: 'https://test.ebridge.exchange',
     eTransferUrl: 'https://test.etransfer.exchange',
   },
@@ -226,6 +227,7 @@ export const BackEndNetWorkMap: {
     connectUrl: 'https://auth-aa-portkey.portkey.finance',
     cmsUrl: 'https://cms-aa-portkey.finance/graphql',
     s3Url: 'https://portkey-cms-mainnet.s3.ap-northeast-1.amazonaws.com',
+    referralUrl: 'https://portkey.finance',
     portkeyFinanceUrl: 'https://portkey.finance',
     portkeyOpenLoginUrl: 'https://openlogin.portkey.finance/',
     buyConfig: {

@@ -18,7 +18,7 @@ type TransactionDataSectionType = {
 export const TransactionDataSection = (props: TransactionDataSectionType) => {
   const { dataInfo, style = {} } = props;
 
-  const [collapsed, setCollapsed] = useState<boolean>(true);
+  const [collapsed, setCollapsed] = useState<boolean>(false);
 
   const TopSection = useMemo(
     () => (

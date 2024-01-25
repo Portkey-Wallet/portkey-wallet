@@ -4,6 +4,9 @@ import { pTd } from 'utils/unit';
 import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 
 export const styles = StyleSheet.create({
+  wrapStyle: {
+    padding: 0,
+  },
   sheetBox: {
     overflow: 'hidden',
     borderRadius: 5,
@@ -12,6 +15,10 @@ export const styles = StyleSheet.create({
   itemText: {
     color: defaultColors.primaryColor,
     fontSize: 16,
+  },
+  headerBackgroundBg: {
+    width: '100%',
+    height: pTd(160),
   },
   itemBox: {
     width: '100%',
@@ -24,6 +31,10 @@ export const styles = StyleSheet.create({
   },
   cancelText: {
     fontSize: 16,
+  },
+  contentSection: {
+    alignItems: 'center',
+    padding: pTd(24),
   },
   cancelBox: {
     width: '100%',
@@ -44,8 +55,8 @@ export const styles = StyleSheet.create({
     padding: pTd(24),
   },
   alertBoxWithClose: {
-    paddingTop: pTd(32),
-    paddingBottom: pTd(16),
+    // paddingTop: pTd(30),
+    // paddingBottom: pTd(16),
   },
   alertTitle: {
     textAlign: 'center',

@@ -5,6 +5,8 @@ import CustomSvg from 'components/CustomSvg';
 import './index.less';
 import FindMoreItem from 'pages/Contacts/components/FindMoreItem';
 import Copy from 'components/Copy';
+import InviteGuideList from 'pages/components/InviteGuideList';
+import OfficialGroupGuide from 'pages/components/OfficialGroupGuide';
 
 export default function FindMorePopup({
   headerTitle,
@@ -28,14 +30,16 @@ export default function FindMorePopup({
         />
         <ContactsSearchInput placeholder="Address/Portkey ID/phone number/email" handleChange={handleSearch} />
         {!isSearch && (
-          <div className="find-more-id flex-between">
-            <div className="my-portkey-id">
-              <div className="portkey-id-label">My Portkey ID:</div>
-              <div className="portkey-id-show">{myPortkeyId}</div>
-            </div>
-            <div className="show-icon flex">
-              <Copy iconType="Copy4" toCopy={myPortkeyId} />
-              <CustomSvg type="QRCode2" onClick={clickQRCode} />
+          <div className="flex-column">
+            <div className="find-more-id flex-between">
+              <div className="my-portkey-id">
+                <div className="portkey-id-label">My Portkey ID:</div>
+                <div className="portkey-id-show">{myPortkeyId}</div>
+              </div>
+              <div className="show-icon flex">
+                <Copy iconType="Copy4" toCopy={myPortkeyId} />
+                <CustomSvg type="QRCode2" onClick={clickQRCode} />
+              </div>
             </div>
           </div>
         )}
@@ -43,6 +47,12 @@ export default function FindMorePopup({
       <div className="find-more-body">
         {(!contacts || !Array.isArray(contacts) || contacts?.length === 0) && isSearch && (
           <div className="flex-center no-search-result">No Search Result</div>
+        )}
+        {(!contacts || !Array.isArray(contacts) || contacts?.length === 0) && !isSearch && (
+          <div className="flex-column">
+            <InviteGuideList />
+            <OfficialGroupGuide />
+          </div>
         )}
         {Array.isArray(contacts) &&
           contacts?.length > 0 &&

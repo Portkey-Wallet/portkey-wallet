@@ -8,7 +8,6 @@ export default function WalletNamePrompt({
   headerTitle,
   goBack,
   data,
-  showChat = false,
   type,
   editText,
   isShowRemark = false,
@@ -19,11 +18,10 @@ export default function WalletNamePrompt({
     <div className="wallet-name-prompt">
       <SecondPageHeader title={headerTitle} leftCallBack={goBack} />
 
-      {showChat && type === MyProfilePageType.VIEW && (
+      {type === MyProfilePageType.VIEW && (
         <ViewContactBody data={data} editText={editText} isShowRemark={isShowRemark} handleEdit={handleEdit} />
       )}
-      {showChat && type === MyProfilePageType.EDIT && <SetWalletNameForm data={data} saveCallback={saveCallback} />}
-      {!showChat && <SetWalletNameForm data={data} saveCallback={saveCallback} />}
+      {type === MyProfilePageType.EDIT && <SetWalletNameForm data={data} saveCallback={saveCallback} />}
     </div>
   );
 }

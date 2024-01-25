@@ -23,6 +23,7 @@ import imSlice from '@portkey-wallet/store/store-ca/im/slice';
 import { chatSlice } from './chat/slice';
 import securitySlice from '@portkey-wallet/store/store-ca/security/slice';
 import { rampSlice } from '@portkey-wallet/store/store-ca/ramp/slice';
+import { referralSlice } from '@portkey-wallet/store/store-ca/referral/slice';
 
 const userPersistConfig = {
   key: userSlice.name,
@@ -66,6 +67,7 @@ const rootReducer = combineReducers({
   [securitySlice.name]: securitySlice.reducer,
   [chatSlice.name]: chatSlice.reducer,
   [rampSlice.name]: rampSlice.reducer,
+  [referralSlice.name]: referralSlice.reducer,
 });
 
 export default rootReducer;

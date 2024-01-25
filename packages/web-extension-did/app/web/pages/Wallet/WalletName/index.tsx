@@ -41,7 +41,7 @@ export default function WalletName() {
       addresses: transAddresses, // TODO fetch profile for chain image
       caHolderInfo: { userId: userInfo?.userId, walletName: userInfo?.nickName },
       isShowRemark: false,
-      from: 'my-did',
+      previousPage: 'my-did',
     }),
     [transAddresses, userInfo?.avatar, userInfo?.nickName, userInfo?.userId],
   );
@@ -81,7 +81,6 @@ export default function WalletName() {
     <WalletNamePrompt
       headerTitle={headerTitle}
       data={state}
-      showChat={showChat}
       type={type}
       editText={editText}
       goBack={showView}
@@ -92,7 +91,6 @@ export default function WalletName() {
     <WalletNamePopup
       headerTitle={headerTitle}
       data={state}
-      showChat={showChat}
       type={type}
       editText={editText}
       goBack={showView}

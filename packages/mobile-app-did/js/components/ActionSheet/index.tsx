@@ -1,6 +1,6 @@
-import React, { ReactNode, useMemo } from 'react';
+import React, { ReactNode } from 'react';
 import OverlayModal from '../OverlayModal';
-import { View, Text, TouchableOpacity, Keyboard, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Keyboard, ImageBackground, ImageSourcePropType, ScrollView } from 'react-native';
 import { styles } from './style/style';
 import { TextL, TextM, TextTitle } from 'components/CommonText';
 import ButtonRow, { ButtonRowProps } from 'components/ButtonRow';
@@ -62,6 +62,7 @@ type AlertBodyProps = {
   isCloseShow?: boolean;
   messageStyle?: TextStyleType;
   titleStyle?: TextStyleType;
+  bgImage?: ImageSourcePropType;
 };
 
 function AlertBody({
@@ -76,9 +77,11 @@ function AlertBody({
   isCloseShow = false,
   messageStyle,
   titleStyle,
+  bgImage,
 }: AlertBodyProps) {
   return (
-    <View style={[styles.alertBox, isCloseShow && styles.alertBoxWithClose]}>
+    <View style={[styles.alertBox, styles.wrapStyle, !bgImage && isCloseShow && styles.alertBoxWithClose]}>
+      {!!bgImage && <ImageBackground source={bgImage} style={styles.headerBackgroundBg} />}
       {isCloseShow && (
         <View
           onTouchEnd={() => {

@@ -37,6 +37,7 @@ import { checkIsSvgUrl } from 'utils';
 import { Image } from 'react-native';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 
 interface RouterParams {
   type?: RampType;
@@ -114,7 +115,7 @@ export default function RampPreview() {
     guardiansApproved,
   } = useRouterParams<RouterParams>();
 
-  const defaultToken = useDefaultToken();
+  const defaultToken = useDefaultToken(MAIN_CHAIN_ID);
   const { providerPriceList, refreshReceive } = useReceive({
     type,
     amount: amount || '',

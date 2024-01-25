@@ -98,7 +98,14 @@ const ChatContactProfileEdit: React.FC = () => {
             {contact?.caHolderInfo?.walletName || ''}
           </TextM>
         </FormItem>
-        <ProfileRemarkSection errorMessage={error} value={remark} onChangeText={v => setRemark(v)} />
+        <ProfileRemarkSection
+          errorMessage={error}
+          value={remark}
+          onChangeText={v => {
+            setError('');
+            setRemark(v);
+          }}
+        />
         <ProfilePortkeyIDSection
           disable
           title={isShowPortkeyId ? 'Portkey ID' : 'ID'}

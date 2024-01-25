@@ -5,6 +5,7 @@ import './index.less';
 import FindMoreItem from 'pages/Contacts/components/FindMoreItem';
 import Copy from 'components/Copy';
 import CustomSvg from 'components/CustomSvg';
+import InviteGuideList from 'pages/components/InviteGuideList';
 
 export default function FindMorePrompt({
   headerTitle,
@@ -28,15 +29,18 @@ export default function FindMorePrompt({
           handleChange={handleSearch}
         />
         {!isSearch && (
-          <div className="find-more-id flex-between">
-            <div className="my-portkey-id">
-              <div className="portkey-id-label">My Portkey ID:</div>
-              <div className="portkey-id-show">{myPortkeyId}</div>
+          <div className="flex-column">
+            <div className="find-more-id flex-between">
+              <div className="my-portkey-id">
+                <div className="portkey-id-label">My Portkey ID:</div>
+                <div className="portkey-id-show">{myPortkeyId}</div>
+              </div>
+              <div className="show-icon flex">
+                <Copy iconType="Copy4" toCopy={myPortkeyId} />
+                <CustomSvg type="QRCode2" onClick={clickQRCode} />
+              </div>
             </div>
-            <div className="show-icon flex">
-              <Copy iconType="Copy4" toCopy={myPortkeyId} />
-              <CustomSvg type="QRCode2" onClick={clickQRCode} />
-            </div>
+            <InviteGuideList />
           </div>
         )}
       </div>

@@ -8,9 +8,11 @@ import myEvents from 'utils/deviceEvent';
 import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useReportingSignalR } from 'hooks/FCM';
+import { useManagerExceedTipModal } from 'hooks/managerCheck';
 
 const DashBoard: React.FC<any> = ({ navigation }) => {
   const reportAnalyticsEvent = useReportAnalyticsEvent();
+  const managerExceedTipModalCheck = useManagerExceedTipModal();
   useReportingSignalR();
 
   const navToChat = useCallback(
@@ -24,6 +26,7 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
 
   useEffectOnce(() => {
     reportAnalyticsEvent({ message: 'DashBoard' });
+    managerExceedTipModalCheck();
   });
 
   // nav's to chat tab

@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { View, StyleSheet, GestureResponderEvent, ScrollView } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { View, StyleSheet, GestureResponderEvent } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
 import navigationService from 'utils/navigationService';
@@ -20,9 +20,6 @@ import { measurePageY } from 'utils/measure';
 import useRequestNotifyPermission from 'hooks/usePermission';
 import InviteFriendsSection from '../components/InviteFriendsSection';
 import OfficialChatGroup from '../components/OfficialChatGroup';
-import ActionSheet from 'components/ActionSheet';
-import joinGroupBgImage from 'assets/image/pngs/joinGroupBgImage.png';
-import { TextM } from 'components/CommonText';
 
 export default function DiscoverHome() {
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();

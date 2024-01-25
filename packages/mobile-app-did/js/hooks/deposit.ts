@@ -11,7 +11,7 @@ import CommonToast from 'components/CommonToast';
 import { getUrlObj } from '@portkey-wallet/utils/dapp/browser';
 import { IconName } from 'components/Svg';
 import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
-import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { useAppRampEntryShow } from './ramp';
 
 export type DepositItem = {
   title: string;
@@ -111,7 +111,7 @@ export function useOnDisclaimerModalPress() {
 }
 
 export function useDepositList() {
-  const { isBuySectionShow, isSellSectionShow } = useRampEntryShow();
+  const { isBuySectionShow, isSellSectionShow } = useAppRampEntryShow();
   const { isBridgeShow } = useAppBridgeButtonShow();
   const { isETransDepositShow, isETransWithdrawShow } = useAppETransShow();
 

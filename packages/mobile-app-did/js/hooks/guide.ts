@@ -1,9 +1,5 @@
-import CustomSvg from 'components/CustomSvg';
-import CustomModal from 'pages/components/CustomModal';
 import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigateState } from './router';
-import singleMessage from 'utils/singleMessage';
 import {
   GuideTypeEnum,
   JOIN_OFFICIAL_GROUP_TITLE,
@@ -14,13 +10,17 @@ import {
 import useGuide, { TGuideInfoRes } from '@portkey-wallet/hooks/hooks-ca/guide';
 import { useJoinGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ALREADY_JOINED_GROUP_CODE } from '@portkey-wallet/constants/constants-ca/chat';
+import CommonToast from 'components/CommonToast';
+import ActionSheet from 'components/ActionSheet';
+import joinGroupBgImage from 'assets/image/pngs/joinGroupBgImage.png';
+import { useJumpToChatGroupDetails } from './chat';
 
 export function useJoinOfficialGroupTipModal() {
   const { t } = useTranslation();
-  const navigate = useNavigateState();
   const { getGuideItem, finishGuideItem } = useGuide();
   const officialGroupRef = useRef<string>('');
   const joinGroupChannel = useJoinGroupChannel();
+  const jumpToChatGroupDetails = useJumpToChatGroupDetails();
 
   const hasShownJoinOfficialGroupTip = useCallback(async () => {
     try {
@@ -49,7 +49,7 @@ export function useJoinOfficialGroupTipModal() {
 
   const toJoinOfficialGroup = useCallback(async () => {
     if (!officialGroupRef.current) {
-      return singleMessage.error(JOIN_OFFICIAL_GROUP_ERROR_TIP);
+      return CommonToast.fail(JOIN_OFFICIAL_GROUP_ERROR_TIP);
     }
     try {
       await finishGuideItem(GuideTypeEnum.JoinOfficialGroup);
@@ -58,44 +58,33 @@ export function useJoinOfficialGroupTipModal() {
     }
     try {
       await joinGroupChannel(officialGroupRef.current);
-      navigate(`/chat-box-group/${officialGroupRef.current}`);
     } catch (error: any) {
       // already joined
       if (`${error?.code}` === ALREADY_JOINED_GROUP_CODE) {
-        navigate(`/chat-box-group/${officialGroupRef.current}`);
+        jumpToChatGroupDetails({ channelUuid: officialGroupRef.current });
       } else {
-        singleMessage.error(JOIN_OFFICIAL_GROUP_ERROR_TIP);
+        CommonToast.fail(JOIN_OFFICIAL_GROUP_ERROR_TIP);
         console.log('===Failed to join error', error);
       }
     }
-  }, [finishGuideItem, joinGroupChannel, navigate]);
+  }, [finishGuideItem, joinGroupChannel, jumpToChatGroupDetails]);
 
   return useCallback(async () => {
     const status = await hasShownJoinOfficialGroupTip();
+    console.log('===showJoinOfficialGroupTip', status);
     if (!status) {
       handleCancel();
-      const modal = CustomModal({
-        className: 'join-official-group-tip-modal',
-        type: 'info',
-        content: (
-          <div className="join-official-group-tip-modal-container">
-            <CustomSvg
-              type="CloseNew"
-              onClick={() => {
-                modal.destroy();
-                handleCancel();
-              }}
-            />
-            <div className="flex-center join-official-group-icon">
-              <CustomSvg type="JoinOfficialGroup" />
-            </div>
-            <div className="modal-title">{t(JOIN_OFFICIAL_GROUP_TITLE)}</div>
-            <div className="modal-content flex-column">{t(JOIN_OFFICIAL_GROUP_CONTENT)}</div>
-          </div>
-        ),
-        okText: t(JOIN_OFFICIAL_GROUP_BUTTON_TITTLE),
-        onOk: toJoinOfficialGroup,
+      ActionSheet.alert({
+        bgImage: joinGroupBgImage,
+        title: JOIN_OFFICIAL_GROUP_TITLE,
+        message: JOIN_OFFICIAL_GROUP_CONTENT,
+        buttons: [
+          {
+            title: JOIN_OFFICIAL_GROUP_BUTTON_TITTLE,
+            onPress: toJoinOfficialGroup,
+          },
+        ],
       });
     }
-  }, [handleCancel, hasShownJoinOfficialGroupTip, t, toJoinOfficialGroup]);
+  }, [handleCancel, hasShownJoinOfficialGroupTip, toJoinOfficialGroup]);
 }

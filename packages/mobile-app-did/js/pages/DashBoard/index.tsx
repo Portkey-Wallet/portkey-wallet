@@ -12,10 +12,10 @@ import { useManagerExceedTipModal } from 'hooks/managerCheck';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 
 const DashBoard: React.FC<any> = ({ navigation }) => {
-  useReportingSignalR();
   const reportAnalyticsEvent = useReportAnalyticsEvent();
   const { getViewReferralStatusStatus, getReferralLink } = useReferral();
   const managerExceedTipModalCheck = useManagerExceedTipModal();
+  useReportingSignalR();
 
   const navToChat = useCallback(
     (tabName: RootStackName) => {

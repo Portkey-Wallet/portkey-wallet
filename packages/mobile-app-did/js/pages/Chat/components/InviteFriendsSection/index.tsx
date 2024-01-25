@@ -10,12 +10,12 @@ import { BGStyles, FontStyles } from 'assets/theme/styles';
 import fonts from 'assets/theme/fonts';
 
 import InviteFriends from 'assets/image/pngs/invite-friends.png';
+import navigationService from 'utils/navigationService';
 
 export default function InviteFriendsSection() {
-  // TODO: nav to referral
   return (
     <View style={BGStyles.bg6}>
-      <Touchable style={styles.itemWrap} underlayColor="red">
+      <Touchable style={styles.itemWrap} onPress={() => navigationService.navigate('')}>
         <Image source={InviteFriends} style={styles.image} />
         <View style={styles.itemContent}>
           <TextM style={[fonts.mediumFont, FontStyles.font5]}>Invite Friends</TextM>

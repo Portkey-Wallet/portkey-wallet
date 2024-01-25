@@ -20,12 +20,17 @@ import { measurePageY } from 'utils/measure';
 import useRequestNotifyPermission from 'hooks/usePermission';
 import InviteFriendsSection from '../components/InviteFriendsSection';
 import OfficialChatGroup from '../components/OfficialChatGroup';
+import useGuide from '@portkey-wallet/hooks/hooks-ca/guide';
+import { GuideTypeEnum } from '@portkey-wallet/constants/constants-ca/guide';
+import { useJoinOfficialGroupTipModal } from 'hooks/guide';
 
 export default function DiscoverHome() {
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const emitCloseSwiped = useCallback(() => myEvents.chatHomeListCloseSwiped.emit(''), []);
   const lastEmitCloseSwiped = useLatestRef(emitCloseSwiped);
   const requestNotifyPermission = useRequestNotifyPermission();
+  const { getGuideItem, finishGuideItem } = useGuide();
+  const joinOfficialGroupModal = useJoinOfficialGroupTipModal();
 
   const onRightPress = useCallback(
     async (event: GestureResponderEvent) => {
@@ -93,6 +98,12 @@ export default function DiscoverHome() {
     useCallback(() => {
       requestNotifyPermission();
     }, [requestNotifyPermission]),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      joinOfficialGroupModal();
+    }, [joinOfficialGroupModal]),
   );
 
   return (

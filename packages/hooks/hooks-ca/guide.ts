@@ -8,7 +8,7 @@ export type TGuideInfoRes = {
   externalMap: Record<string, any>;
 };
 
-export default function useGuide() {
+export const useGuide = () => {
   const getGuideList = useCallback(async () => {
     const { userGuideInfos }: { userGuideInfos: TGuideInfoRes[] } = await request.guide.getGuideList();
     return userGuideInfos;
@@ -32,4 +32,6 @@ export default function useGuide() {
   }, []);
 
   return { getGuideList, getGuideItem, finishGuideItem };
-}
+};
+
+export default useGuide;

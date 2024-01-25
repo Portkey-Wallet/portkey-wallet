@@ -227,7 +227,7 @@ export const BackEndNetWorkMap: {
     connectUrl: 'https://auth-aa-portkey.portkey.finance',
     cmsUrl: 'https://cms-aa-portkey.finance/graphql',
     s3Url: 'https://portkey-cms-mainnet.s3.ap-northeast-1.amazonaws.com',
-    referralUrl: 'https://portkey.finance',
+    referralUrl: 'https://referral.portkey.finance',
     portkeyFinanceUrl: 'https://portkey.finance',
     portkeyOpenLoginUrl: 'https://openlogin.portkey.finance/',
     buyConfig: {

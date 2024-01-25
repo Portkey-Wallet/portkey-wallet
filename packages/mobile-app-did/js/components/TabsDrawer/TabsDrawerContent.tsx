@@ -39,13 +39,13 @@ import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
 import Touchable from 'components/Touchable';
+import { set } from 'lodash';
 
 const TabsDrawerContent: React.FC = () => {
   const { t } = useLanguage();
   const { networkType } = useCurrentNetworkInfo();
   const nav = useNavigation();
   const dappList = useCurrentDappList();
-
   const dispatch = useAppCommonDispatch();
   const {
     isDrawerOpen,
@@ -56,6 +56,9 @@ const TabsDrawerContent: React.FC = () => {
   } = useAppCASelector(state => state.discover);
   const { tabs } = discoverMap[networkType] ?? {};
   const activeItem = useMemo(() => tabs?.find(ele => ele.id === activeTabId) as ITabItem, [activeTabId, tabs]);
+
+  const [canBack, setCanBack] = useState(false);
+  const [canForward, setCanForward] = useState(false);
 
   const checkAndUpDateRecordItemName = useCheckAndUpDateRecordItemName();
   const checkAndUpDateTabItemName = useCheckAndUpDateTabItemName();
@@ -157,39 +160,52 @@ const TabsDrawerContent: React.FC = () => {
     }, [backToSearchPage, isDrawerOpen]),
   );
 
+  const clickBottomActionBtn = useCallback(
+    (type: 'back' | 'forward' | 'showTab' | 'home' | 'more') => {
+      switch (type) {
+        case 'back':
+          tabRef.current?.goBack?.();
+          break;
+
+        case 'forward':
+          tabRef.current?.goForward?.();
+          break;
+
+        case 'showTab':
+          if (!activeTabId) return;
+          activeWebviewScreenShot();
+          setPreActiveTabId(Number(activeItem?.id));
+          break;
+
+        case 'home':
+          tabRef.current?.goBackHome?.();
+          break;
+
+        case 'more':
+          showBrowserModal({
+            browserInfo: activeItem,
+            activeWebViewRef: tabRef,
+            activeWebviewScreenShot,
+            setPreActiveTabId,
+          });
+          break;
+
+        default:
+          break;
+      }
+    },
+    [activeItem, activeTabId, activeWebviewScreenShot],
+  );
+
   const TabsDom = useMemo(() => {
     return tabs?.map(ele => {
       const isHidden = activeTabId !== ele.id;
       const initialized = initializedList?.has(ele.id);
       if (isHidden && !initialized) return;
       const autoApprove = autoApproveMap?.[ele.id];
-
-      const clickBtn = (type: 'back' | 'forward' | 'showTab' | 'home' | 'more') => {
-        switch (type) {
-          case 'back':
-            break;
-
-          case 'forward':
-            break;
-
-          case 'showTab':
-            break;
-
-          case 'home':
-            break;
-
-          case 'more':
-            showBrowserModal({
-              browserInfo: activeItem,
-              activeWebViewRef: tabRef,
-              activeWebviewScreenShot,
-              setPreActiveTabId,
-            });
-            break;
-
-          default:
-            break;
-        }
+      const onNavigationStateChange = (navState: any) => {
+        setCanBack(navState.canGoBack);
+        setCanForward(navState.canGoForward);
       };
 
       return (
@@ -205,31 +221,13 @@ const TabsDrawerContent: React.FC = () => {
               checkAndUpDateRecordItemName({ id: ele.id, name: nativeEvent.title });
               checkAndUpDateTabItemName({ id: ele.id, name: nativeEvent.title });
             }}
+            onNavigationStateChange={onNavigationStateChange}
           />
-          <View style={handleButtonStyle.container}>
-            <TouchableOpacity onPress={() => clickBtn('forward')} style={rightDomStyle.iconWrap}>
-              <Svg icon="left-arrow" size={pTd(20)} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => clickBtn('forward')} style={rightDomStyle.iconWrap}>
-              <Svg icon="right-arrow" size={pTd(24)} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => clickBtn('showTab')} style={rightDomStyle.iconWrap}>
-              <TextM style={styles.switchButton}>2</TextM>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => clickBtn('home')} style={rightDomStyle.iconWrap}>
-              <Svg icon="homepage" size={pTd(24)} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => clickBtn('more')} style={rightDomStyle.iconWrap}>
-              <Svg icon="more" size={20} color={defaultColors.icon1} />
-            </TouchableOpacity>
-          </View>
         </>
       );
     });
   }, [
-    activeItem,
     activeTabId,
-    activeWebviewScreenShot,
     autoApproveMap,
     checkAndUpDateRecordItemName,
     checkAndUpDateTabItemName,
@@ -267,6 +265,34 @@ const TabsDrawerContent: React.FC = () => {
     );
   }, [closeAll, dispatch, onDone, t, tabs]);
 
+  const BottomActionTab = useMemo(() => {
+    return (
+      <View style={handleButtonStyle.container}>
+        <TouchableOpacity
+          disabled={!canBack}
+          onPress={() => clickBottomActionBtn('back')}
+          style={rightDomStyle.iconWrap}>
+          <Svg icon="left-arrow" size={pTd(20)} color={canBack ? defaultColors.font5 : defaultColors.bg16} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          disabled={!canForward}
+          onPress={() => clickBottomActionBtn('forward')}
+          style={rightDomStyle.iconWrap}>
+          <Svg icon="right-arrow" size={pTd(24)} color={canForward ? defaultColors.font5 : defaultColors.bg16} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => clickBottomActionBtn('showTab')} style={rightDomStyle.iconWrap}>
+          <TextM style={styles.switchButton}>{tabs?.length || 0}</TextM>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => clickBottomActionBtn('home')} style={rightDomStyle.iconWrap}>
+          <Svg icon="homepage" size={pTd(24)} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => clickBottomActionBtn('more')} style={rightDomStyle.iconWrap}>
+          <Svg icon="more" size={20} color={defaultColors.icon1} />
+        </TouchableOpacity>
+      </View>
+    );
+  }, [canBack, canForward, clickBottomActionBtn, tabs?.length]);
+
   return (
     <BrowserContext.Provider value={value}>
       <PageContainer
@@ -294,6 +320,7 @@ const TabsDrawerContent: React.FC = () => {
         titleDom={activeTabId ? '' : `${tabs?.length} Tabs`}>
         {TabsDom}
         {!activeTabId && isDrawerOpen && CardGroupDom}
+        {activeTabId && isDrawerOpen && BottomActionTab}
       </PageContainer>
     </BrowserContext.Provider>
   );

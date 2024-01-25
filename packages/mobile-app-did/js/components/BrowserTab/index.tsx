@@ -10,6 +10,7 @@ import { WebViewErrorEvent, WebViewNavigationEvent } from 'react-native-webview/
 import { useFetchCurrentRememberMeBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import useEffectOnce from 'hooks/useEffectOnce';
 import OverlayModal from 'components/OverlayModal';
+import { WebViewProps } from 'react-native-webview';
 
 type BrowserTabProps = {
   isHidden: boolean;
@@ -17,12 +18,13 @@ type BrowserTabProps = {
   uri: string;
   autoApprove?: boolean;
   onLoadEnd?: (nativeEvent: any) => void;
+  onNavigationStateChange?: WebViewProps['onNavigationStateChange'];
 };
 
 const Options: CaptureOptions = { quality: 0.2, format: 'jpg' };
 
 const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
-  { isHidden, uri, onLoadEnd, autoApprove },
+  { isHidden, uri, onLoadEnd, autoApprove, onNavigationStateChange },
   forward,
 ) {
   const viewRef = useRef<any>(null);
@@ -78,11 +80,12 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
       style={[styles.webViewContainer, isHidden && styles.webViewContainerHidden]}>
       <Progressbar ref={progressbarRef} />
       <ProviderWebview
+        isDiscover
         ref={webViewRef}
         source={{ uri }}
         isHidden={isHidden}
         onLoadEnd={onPageLoadEnd}
-        isDiscover
+        onNavigationStateChange={onNavigationStateChange}
         onLoadProgress={({ nativeEvent }) => progressbarRef.current?.changeInnerBarWidth(nativeEvent.progress)}
       />
       <HttpModal uri={uri} />

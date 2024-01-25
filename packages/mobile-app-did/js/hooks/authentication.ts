@@ -25,6 +25,8 @@ import { AuthenticationInfo, OperationTypeEnum } from '@portkey-wallet/types/ver
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import TelegramOverlay from 'components/TelegramOverlay';
 import { parseTelegramToken } from '@portkey-wallet/utils/authentication';
+import { useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useLatestRef } from '@portkey-wallet/hooks';
 
 if (!isIOS) {
   GoogleSignin.configure({
@@ -300,6 +302,7 @@ export type VerifyTokenParams = {
   id: string;
   operationType: OperationTypeEnum;
   targetChainId?: ChainId;
+  operationDetails?: string;
 };
 
 export function useVerifyGoogleToken() {
@@ -388,15 +391,26 @@ export function useVerifyToken() {
   const verifyGoogleToken = useVerifyGoogleToken();
   const verifyAppleToken = useVerifyAppleToken();
   const TelegramToken = useVerifyTelegramToken();
+  const verifyManagerAddress = useVerifyManagerAddress();
+  const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
   return useCallback(
     (type: LoginType, params: VerifyTokenParams) => {
       switch (type) {
         case LoginType.Google:
-          return verifyGoogleToken(params);
+          return verifyGoogleToken({
+            operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
+            ...params,
+          });
         case LoginType.Apple:
-          return verifyAppleToken(params);
+          return verifyAppleToken({
+            operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
+            ...params,
+          });
         case LoginType.Telegram:
-          return TelegramToken(params);
+          return TelegramToken({
+            operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
+            ...params,
+          });
         default:
           throw new Error('Unsupported login type');
       }
@@ -410,6 +424,7 @@ export type VerifierAuthParams = {
   originChainId: ChainId;
   operationType?: OperationTypeEnum;
   authenticationInfo?: AuthenticationInfo;
+  operationDetails?: string;
 };
 export function useVerifierAuth() {
   const verifyToken = useVerifyToken();

@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { checkPassword } from './utils';
 import {
   changePin,
+  createNewTmpWalletAction,
   createWalletAction,
   getCaHolderInfoAsync,
   resetCaInfo,
@@ -51,6 +52,11 @@ export const walletSlice = createSlice({
         state.walletInfo = {
           ...action.payload.walletInfo,
           caInfo: { [currentNetwork]: caInfo } as any,
+        };
+      })
+      .addCase(createNewTmpWalletAction, (state, action) => {
+        state.tmpWalletInfo = {
+          ...action.payload.walletInfo,
         };
       })
       .addCase(setCAInfo, (state, action) => {

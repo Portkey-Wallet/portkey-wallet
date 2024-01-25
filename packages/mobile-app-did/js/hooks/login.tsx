@@ -3,9 +3,11 @@ import {
   useCurrentWalletInfo,
   useOriginChainId,
   useOtherNetworkLogged,
+  useTmpWalletInfo,
   useWallet,
 } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import {
+  createNewTmpWallet,
   createWallet,
   resetCaInfo,
   resetWallet,
@@ -106,6 +108,7 @@ export function useOnManagerAddressAndQueryResult() {
   const originChainId = useOriginChainId();
   const latestOriginChainId = useLatestRef(originChainId);
   const onIntervalGetResult = useIntervalGetResult();
+  const storeTmpWalletInfo = useTmpWalletInfo();
   return useCallback(
     async ({
       showLoading = true,
@@ -133,7 +136,15 @@ export function useOnManagerAddressAndQueryResult() {
       await sleep(500);
       const requestId = randomId();
       try {
-        const tmpWalletInfo = walletInfo?.address ? walletInfo : AElf.wallet.createNewWallet();
+        console.log(walletInfo, storeTmpWalletInfo, '=======walletInfo');
+
+        const tmpWalletInfo = walletInfo?.address
+          ? walletInfo
+          : storeTmpWalletInfo?.address
+          ? storeTmpWalletInfo
+          : AElf.wallet.createNewWallet();
+        console.log(tmpWalletInfo, '=========tmpWalletInfo');
+
         const extraData = await extraDataEncode(getDeviceInfo());
         let data: any = {
           loginGuardianIdentifier: managerInfo.loginAccount,
@@ -178,6 +189,8 @@ export function useOnManagerAddressAndQueryResult() {
             }),
           );
         }
+        console.log(_managerInfo, '=======_managerInfo');
+
         dispatch(setCredentials({ pin: confirmPin }));
 
         if (biometricsReady && biometrics === undefined) {
@@ -189,14 +202,18 @@ export function useOnManagerAddressAndQueryResult() {
             onPass: (caInfo: CAInfo) => {
               if (isRecovery) CommonToast.success('Wallet Recovered Successfully!');
               Loading.hide();
-              dispatch(
-                setCAInfo({
-                  caInfo,
-                  pin: confirmPin,
-                  chainId: latestOriginChainId.current,
-                }),
-              );
-              navigationService.reset('Tab');
+              try {
+                dispatch(
+                  setCAInfo({
+                    caInfo,
+                    pin: confirmPin,
+                    chainId: latestOriginChainId.current,
+                  }),
+                );
+                navigationService.reset('Tab');
+              } catch (error) {
+                console.log(error, '=======error');
+              }
             },
             onFail: (message: string) => onResultFail(message, isRecovery, true),
           });
@@ -207,7 +224,17 @@ export function useOnManagerAddressAndQueryResult() {
         pinRef?.current?.reset();
       }
     },
-    [biometrics, biometricsReady, dispatch, getDeviceInfo, latestOriginChainId, onIntervalGetResult, onResultFail, t],
+    [
+      biometrics,
+      biometricsReady,
+      dispatch,
+      getDeviceInfo,
+      latestOriginChainId,
+      onIntervalGetResult,
+      onResultFail,
+      t,
+      storeTmpWalletInfo,
+    ],
   );
 }
 
@@ -363,7 +390,6 @@ export function useGoSelectVerifier(isLogin?: boolean) {
   const { address } = useCurrentWalletInfo();
   const verifyToken = useVerifyToken();
   const onRequestOrSetPin = useOnRequestOrSetPin();
-
   const onConfirmAuth = useCallback(
     async ({ loginAccount, loginType, authenticationInfo, selectedVerifier, chainId }: LoginAuthParams) => {
       const isRequestResult = !!(pin && address);
@@ -533,11 +559,14 @@ export function useOnLogin(isLogin?: boolean) {
   const getChainInfo = useGetChainInfo();
   const goGuardianApproval = useGoGuardianApproval(isLogin);
   const goSelectVerifier = useGoSelectVerifier(isLogin);
+  const dispatch = useAppDispatch();
 
   return useCallback(
     async (params: LoginParams) => {
       const { loginAccount, loginType = LoginType.Email, authenticationInfo, showLoginAccount } = params;
       try {
+        await sleep(500);
+        dispatch(createNewTmpWallet());
         let chainInfo = await getChainInfo(DefaultChainId);
         let verifierServers = await getVerifierServers(chainInfo);
 

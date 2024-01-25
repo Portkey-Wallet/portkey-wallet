@@ -16,7 +16,7 @@ import CommonToast from 'components/CommonToast';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import myEvents from 'utils/deviceEvent';
-import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo, useOriginChainId, useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import { LoginType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { GuardiansApproved, GuardiansStatusItem } from '../types';
@@ -130,6 +130,8 @@ export default function VerifierDetails() {
   );
 
   const { error: codeError, setError: setCodeError } = useErrorMessage();
+  const verifyManagerAddress = useVerifyManagerAddress();
+
   const onFinish = useLockCallback(
     async (code: string) => {
       if (!requestCodeResult || !guardianItem || !code) return;
@@ -147,6 +149,7 @@ export default function VerifierDetails() {
             chainId: originChainId,
             operationType,
             targetChainId,
+            operationDetails: JSON.stringify({ manager: verifyManagerAddress }),
           },
         });
         !isRequestResult && CommonToast.success('Verified Successfully');
@@ -228,6 +231,7 @@ export default function VerifierDetails() {
       autoLogin,
       registerAccount,
       setCodeError,
+      verifyManagerAddress,
     ],
   );
 

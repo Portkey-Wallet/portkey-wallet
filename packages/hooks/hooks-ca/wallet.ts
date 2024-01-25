@@ -288,3 +288,12 @@ export const useOtherNetworkLogged = () => {
     [caInfo, currentNetwork],
   );
 };
+
+export const useVerifyManagerAddress = () => {
+  const { walletInfo, tmpWalletInfo } = useWallet();
+  return useMemo(() => walletInfo?.address || tmpWalletInfo?.address, [walletInfo, tmpWalletInfo]);
+};
+
+export const useTmpWalletInfo = () => {
+  return useAppCASelector(state => state.wallet.tmpWalletInfo);
+};

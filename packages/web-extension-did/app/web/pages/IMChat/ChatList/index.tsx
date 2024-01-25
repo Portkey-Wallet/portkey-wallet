@@ -1,5 +1,5 @@
 import { Popover } from 'antd';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChatList as ChannelList, IChatItemProps, PopoverMenuList, StyleProvider } from '@portkey-wallet/im-ui-web';
 import CustomSvg from 'components/CustomSvg';
@@ -32,17 +32,13 @@ export default function ChatList() {
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
-  const {
-    list: chatList,
-    init: initChannelList,
-    next: nextChannelList,
-    hasNext: hasNextChannelList,
-  } = useChannelList();
+  const { list: chatList, init, next: nextChannelList, hasNext: hasNextChannelList } = useChannelList();
   const unreadCount = useUnreadCount();
   const reportFCMStatus = useReportFCMStatus();
   const { userInfo } = useWalletInfo();
   const handleClickChatItem = useHandleClickChatItem();
   const joinOfficialGroupTip = useJoinOfficialGroupTipModal();
+  const [showGuide, setShowGuide] = useState<boolean>(false);
   const popList = useMemo(
     () => [
       {
@@ -127,6 +123,11 @@ export default function ChatList() {
     },
     [hideChannel],
   );
+  const initChannelList = useCallback(async () => {
+    await init();
+    setShowGuide(!chatList.length);
+  }, [chatList.length, init]);
+
   useEffectOnce(() => {
     initChannelList();
     joinOfficialGroupTip();
@@ -137,22 +138,23 @@ export default function ChatList() {
     signalrFCM.signalr && setBadge({ value: unreadCount });
   }, [reportFCMStatus, unreadCount]);
 
+  useEffect(() => {
+    setShowGuide(!chatList.length);
+  }, [chatList.length]);
+
   return (
     <div className="chat-list-page">
       <div className="chat-list-top">
         <SettingHeader title={t('Chats')} leftCallBack={() => navigate('/')} rightElement={headerRightEle} />
       </div>
       <div className="chat-list-content">
-        {chatList.length === 0 ? (
+        {showGuide && (
           <div className="flex-column">
             <InviteGuideList />
             <OfficialGroupGuide />
           </div>
-        ) : (
-          // <div className="no-message flex-column-center">
-          //   <CustomSvg type="Message" />
-          //   <div>No message</div>
-          // </div>
+        )}
+        {chatList.length !== 0 && (
           <StyleProvider prefixCls="portkey">
             <ChannelList
               id="channel-list"

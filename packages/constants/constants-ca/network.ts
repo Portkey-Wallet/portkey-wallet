@@ -1,1 +1,1 @@
-export * from './network-testnet';
+export * from './network-mainnet-v2';

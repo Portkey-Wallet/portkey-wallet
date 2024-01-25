@@ -24,6 +24,7 @@ import { request } from '@portkey-wallet/api/api-did';
 import { isNFT } from 'utils';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import getSeed from 'utils/getSeed';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export enum ManagerApproveStep {
   SetAllowance = 'SetAllowance',
@@ -57,7 +58,7 @@ export default function ManagerApproveInner({
   }>();
   const [guardianList, setGuardianList] = useState<BaseGuardianItem[]>();
   const { setLoading } = useLoading();
-
+  const currentNetwork = useCurrentNetwork();
   const DEFAULT_SYMBOL_DECIMAL = useMemo(() => (isNFT(symbol) ? DEFAULT_NFT_DECIMAL : DEFAULT_DECIMAL), [symbol]);
   const [allowance, setAllowance] = useState<string>(divDecimals(amount, DEFAULT_SYMBOL_DECIMAL).toFixed());
 
@@ -183,6 +184,7 @@ export default function ManagerApproveInner({
 
       {step === ManagerApproveStep.GuardianApproval && guardianList && (
         <GuardianApproval
+          networkType={currentNetwork}
           className={`${PrefixCls}-guardian-approve`}
           header={<BackHeader leftCallBack={() => setStep(ManagerApproveStep.SetAllowance)} />}
           originChainId={originChainId}

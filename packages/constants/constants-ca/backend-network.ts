@@ -11,6 +11,7 @@ type BackEndNetworkType =
   | 'back-end-test4-v2'
   | 'back-end-testnet-v2'
   | 'back-end-testnet'
+  | 'back-end-mainnet-v2'
   | 'back-end-mainnet';
 
 export const BackEndNetWorkMap: {
@@ -114,6 +115,7 @@ export const BackEndNetWorkMap: {
     cmsUrl: 'http://192.168.66.62:3005/graphql',
     s3Url: 'https://portkey-cms-dev.s3.ap-northeast-1.amazonaws.com',
     imS3Bucket: 'portkey-im-dev',
+    referralUrl: 'http://192.168.67.51:3100',
     portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
     portkeyOpenLoginUrl: 'https://openlogin-test.portkey.finance/',
   },
@@ -151,8 +153,10 @@ export const BackEndNetWorkMap: {
     imApiUrl: 'http://192.168.66.117:5007',
     imWsUrl: 'ws://192.168.66.117:19903/ws',
     imS3Bucket: 'portkey-im-dev',
+    referralUrl: 'http://192.168.67.51:3100',
     portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
     eBridgeUrl: 'http://192.168.67.235:3000',
+    portkeyOpenLoginUrl: 'https://openlogin-test.portkey.finance/',
   },
   'back-end-testnet-v2': {
     name: 'aelf Testnet',
@@ -166,7 +170,9 @@ export const BackEndNetWorkMap: {
     cmsUrl: 'https://cms-test-aa.portkey.finance/graphql',
     s3Url: 'https://portkey-cms-testnet.s3.ap-northeast-1.amazonaws.com',
     imS3Bucket: 'portkey-im-testnet',
-    portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
+    referralUrl: 'https://test.portkey.finance',
+    portkeyFinanceUrl: 'https://portkey.finance/',
+    portkeyOpenLoginUrl: 'https://openlogin.portkey.finance/',
     eBridgeUrl: 'https://test.ebridge.exchange',
     eTransferUrl: 'https://test.etransfer.exchange',
   },
@@ -197,6 +203,31 @@ export const BackEndNetWorkMap: {
     connectUrl: 'https://auth-portkey.portkey.finance',
     cmsUrl: 'https://cms.portkey.finance/graphql',
     s3Url: 'https://portkey-cms-mainnet.s3.ap-northeast-1.amazonaws.com',
+    portkeyFinanceUrl: 'https://portkey.finance',
+    portkeyOpenLoginUrl: 'https://openlogin.portkey.finance/',
+    buyConfig: {
+      ach: {
+        appId: 'P0e0l39jipsNYT46',
+        baseUrl: 'https://ramp.alchemypay.org',
+      },
+    },
+    imApiUrl: 'https://im.portkey.finance',
+    imWsUrl: 'wss://diok8uqxgvc3.cloudfront.net/ws/',
+    imS3Bucket: 'portkey-im',
+    eBridgeUrl: 'https://ebridge.exchange',
+    eTransferUrl: 'https://etransfer.exchange',
+  },
+  'back-end-mainnet-v2': {
+    name: 'aelf Mainnet',
+    walletType: 'aelf',
+    networkType: 'MAINNET',
+    isActive: true,
+    apiUrl: 'https://aa-portkey.portkey.finance',
+    graphqlUrl: 'https://dapp-aa-portkey.portkey.finance/Portkey_V2_DID/PortKeyIndexerCASchema/graphql',
+    connectUrl: 'https://auth-aa-portkey.portkey.finance',
+    cmsUrl: 'https://cms-aa-portkey.finance/graphql',
+    s3Url: 'https://portkey-cms-mainnet.s3.ap-northeast-1.amazonaws.com',
+    referralUrl: 'https://portkey.finance',
     portkeyFinanceUrl: 'https://portkey.finance',
     portkeyOpenLoginUrl: 'https://openlogin.portkey.finance/',
     buyConfig: {

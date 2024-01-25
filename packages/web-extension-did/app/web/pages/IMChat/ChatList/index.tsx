@@ -127,6 +127,7 @@ export default function ChatList() {
     },
     [hideChannel],
   );
+
   useEffectOnce(() => {
     initChannelList();
     joinOfficialGroupTip();
@@ -149,10 +150,6 @@ export default function ChatList() {
             <OfficialGroupGuide />
           </div>
         ) : (
-          // <div className="no-message flex-column-center">
-          //   <CustomSvg type="Message" />
-          //   <div>No message</div>
-          // </div>
           <StyleProvider prefixCls="portkey">
             <ChannelList
               id="channel-list"

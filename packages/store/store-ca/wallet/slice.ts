@@ -140,10 +140,9 @@ export const walletSlice = createSlice({
         };
       })
       .addCase(reSetCheckManagerExceed, (state, { payload }) => {
-        const { network } = payload;
-        if (network) {
+        if (payload) {
           const _checkManagerExceedMap = state.checkManagerExceedMap;
-          if (_checkManagerExceedMap && _checkManagerExceedMap[network]) delete _checkManagerExceedMap[network];
+          if (_checkManagerExceedMap && _checkManagerExceedMap[payload]) delete _checkManagerExceedMap[payload];
           state.checkManagerExceedMap = _checkManagerExceedMap;
         } else {
           state.checkManagerExceedMap = {};

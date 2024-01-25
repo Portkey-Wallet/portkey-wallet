@@ -23,6 +23,7 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import RoundButton from './RoundButton';
 import fonts from 'assets/theme/fonts';
+import { checkIsUserCancel } from '@portkey-wallet/utils';
 const TitleMap = {
   [PageType.login]: {
     apple: 'Login with Apple',
@@ -77,27 +78,27 @@ export default function Referral({
     Loading.hide(loadingKey);
   }, [authenticationSign, onLogin]);
 
-  // const onTelegramSign = useLockCallback(async () => {
-  //   const loadingKey = Loading.show();
-  //   try {
-  //     const userInfo = await authenticationSign(LoginType.Telegram);
-  //     await onLogin({
-  //       loginAccount: userInfo.user.id,
-  //       loginType: LoginType.Telegram,
-  //       authenticationInfo: { [userInfo.user.id]: userInfo.accessToken },
-  //     });
-  //   } catch (error) {
-  //     if (!checkIsUserCancel(error)) CommonToast.failError(error);
-  //   }
-  //   Loading.hide(loadingKey);
-  // }, [authenticationSign, onLogin]);
+  const onTelegramSign = useLockCallback(async () => {
+    const loadingKey = Loading.show();
+    try {
+      const userInfo = await authenticationSign(LoginType.Telegram);
+      await onLogin({
+        loginAccount: userInfo.user.id,
+        loginType: LoginType.Telegram,
+        authenticationInfo: { [userInfo.user.id]: userInfo.accessToken },
+      });
+    } catch (error) {
+      if (!checkIsUserCancel(error)) CommonToast.failError(error);
+    }
+    Loading.hide(loadingKey);
+  }, [authenticationSign, onLogin]);
 
   const otherLoginTypeList = useMemo<{ icon: IconName; onPress: () => any }[]>(() => {
     return [
-      // {
-      //   icon: isIOS ? 'google' : 'apple',
-      //   onPress: isIOS ? onGoogleSign : onAppleSign,
-      // },
+      {
+        icon: isIOS ? 'google' : 'apple',
+        onPress: isIOS ? onGoogleSign : onAppleSign,
+      },
       {
         icon: 'phone-login',
         onPress: () => setLoginType(PageLoginType.phone),
@@ -107,7 +108,7 @@ export default function Referral({
         onPress: () => setLoginType(PageLoginType.email),
       },
     ];
-  }, [setLoginType]);
+  }, [onAppleSign, onGoogleSign, setLoginType]);
 
   return (
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter, GStyles.spaceBetween]}>
@@ -127,20 +128,12 @@ export default function Referral({
         />
         <CommonButton
           type="outline"
-          onPress={!isIOS ? onAppleSign : onGoogleSign}
-          title={TitleMap[type][!isIOS ? 'apple' : 'google']}
-          icon={<Svg icon={!isIOS ? 'apple' : 'google'} size={pTd(20)} />}
-          containerStyle={pageStyles.outlineContainerStyle}
-          titleStyle={[FontStyles.font3, fonts.mediumFont, pageStyles.outlineTitleStyle]}
-        />
-        {/* <CommonButton
-          type="outline"
           onPress={onTelegramSign}
           title={TitleMap[type].telegram}
           icon={<Svg icon="telegram-blue" size={pTd(20)} />}
           containerStyle={pageStyles.outlineContainerStyle}
           titleStyle={[FontStyles.font3, fonts.mediumFont, pageStyles.outlineTitleStyle]}
-        /> */}
+        />
         <Divider title="OR" inset={true} style={pageStyles.dividerStyle} />
         <View style={[GStyles.flexRow, GStyles.flexCenter]}>
           {otherLoginTypeList.map((ele, index) => (

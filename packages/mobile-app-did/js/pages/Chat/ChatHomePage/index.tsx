@@ -20,17 +20,17 @@ import { measurePageY } from 'utils/measure';
 import useRequestNotifyPermission from 'hooks/usePermission';
 import InviteFriendsSection from '../components/InviteFriendsSection';
 import OfficialChatGroup from '../components/OfficialChatGroup';
-import useGuide from '@portkey-wallet/hooks/hooks-ca/guide';
-import { GuideTypeEnum } from '@portkey-wallet/constants/constants-ca/guide';
+
 import { useJoinOfficialGroupTipModal } from 'hooks/guide';
+import { useChannelList } from '@portkey-wallet/hooks/hooks-ca/im';
 
 export default function DiscoverHome() {
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const emitCloseSwiped = useCallback(() => myEvents.chatHomeListCloseSwiped.emit(''), []);
   const lastEmitCloseSwiped = useLatestRef(emitCloseSwiped);
   const requestNotifyPermission = useRequestNotifyPermission();
-  const { getGuideItem, finishGuideItem } = useGuide();
   const joinOfficialGroupModal = useJoinOfficialGroupTipModal();
+  const { list: channelList } = useChannelList();
 
   const onRightPress = useCallback(
     async (event: GestureResponderEvent) => {
@@ -111,9 +111,16 @@ export default function DiscoverHome() {
       <Touchable activeOpacity={1} onPressIn={emitCloseSwiped}>
         <CustomHeader noLeftDom themeType="blue" titleDom="Chats" rightDom={RightDom} />
       </Touchable>
-      <InviteFriendsSection />
-      <OfficialChatGroup />
-      <SessionList />
+      <View style={[BGStyles.bg1, GStyles.flex1]}>
+        {channelList?.length === 0 ? (
+          <>
+            <InviteFriendsSection />
+            <OfficialChatGroup />
+          </>
+        ) : (
+          <SessionList />
+        )}
+      </View>
     </SafeAreaBox>
   );
 }

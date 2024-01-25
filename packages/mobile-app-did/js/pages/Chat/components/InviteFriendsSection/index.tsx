@@ -15,7 +15,7 @@ import navigationService from 'utils/navigationService';
 export default function InviteFriendsSection() {
   return (
     <View style={BGStyles.bg6}>
-      <Touchable style={styles.itemWrap} onPress={() => navigationService.navigate('')}>
+      <Touchable style={styles.itemWrap} onPress={() => navigationService.navigate('UserReferral')}>
         <Image source={InviteFriends} style={styles.image} />
         <View style={styles.itemContent}>
           <TextM style={[fonts.mediumFont, FontStyles.font5]}>Invite Friends</TextM>

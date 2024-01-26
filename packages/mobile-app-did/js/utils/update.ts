@@ -13,6 +13,9 @@ import OverlayModal from 'components/OverlayModal';
 import { ButtonRowProps } from 'components/ButtonRow';
 import { IStorage } from '@portkey-wallet/types/storage';
 import { baseStore } from '@portkey-wallet/utils/mobile/storage';
+import { getDispatch } from './redux';
+import { setUpdateInfo } from 'store/user/actions';
+import { sleep } from '@portkey-wallet/utils';
 
 export type TUpdateInfo = {
   version: string;
@@ -199,7 +202,9 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
     }
     buttons.push({
       title: 'Update',
-      onPress: () => {
+      onPress: async () => {
+        getDispatch()(setUpdateInfo(undefined));
+        await sleep(200);
         CodePush.restartApp();
       },
     });

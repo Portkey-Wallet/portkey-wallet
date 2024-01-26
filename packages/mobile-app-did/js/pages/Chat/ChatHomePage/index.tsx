@@ -88,6 +88,11 @@ export default function DiscoverHome() {
     );
   }, [onRightPress]);
 
+  const checkModal = useCallback(async () => {
+    const isShowNotice = await requestNotifyPermission();
+    if (!isShowNotice) joinOfficialGroupModal();
+  }, [joinOfficialGroupModal, requestNotifyPermission]);
+
   useFocusEffect(
     useCallback(() => {
       lastEmitCloseSwiped.current();
@@ -96,14 +101,8 @@ export default function DiscoverHome() {
 
   useFocusEffect(
     useCallback(() => {
-      requestNotifyPermission();
-    }, [requestNotifyPermission]),
-  );
-
-  useFocusEffect(
-    useCallback(() => {
-      joinOfficialGroupModal();
-    }, [joinOfficialGroupModal]),
+      checkModal();
+    }, [checkModal]),
   );
 
   return (

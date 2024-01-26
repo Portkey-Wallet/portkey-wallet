@@ -19,7 +19,7 @@ import Loading from 'components/Loading';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useReceive } from '../../hooks';
 import CommonToast from 'components/CommonToast';
-import { useBuyFiat, useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { useBuyFiat } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { IRampCryptoItem, IRampFiatItem, RampType } from '@portkey-wallet/ramp';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { IRampLimit } from '@portkey-wallet/types/types-ca/ramp';
@@ -29,6 +29,7 @@ import CommonAvatar from 'components/CommonAvatar';
 import { ErrorType, INIT_HAS_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/constants/constants-ca/common';
 import { isPotentialNumber } from '@portkey-wallet/utils/reg';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useAppRampEntryShow } from 'hooks/ramp';
 
 export default function BuyForm() {
   const {
@@ -41,7 +42,7 @@ export default function BuyForm() {
 
   const defaultToken = useDefaultToken();
 
-  const { refreshRampShow } = useRampEntryShow();
+  const { refreshRampShow } = useAppRampEntryShow();
 
   const [fiatList, setFiatList] = useState<IRampFiatItem[]>(fiatListState);
   const [cryptoList, setCryptoList] = useState<IRampCryptoItem[]>(defaultCryptoList);

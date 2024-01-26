@@ -8,7 +8,7 @@ import {
   IEntrance,
 } from '@portkey-wallet/types/types-ca/cms';
 import BigNumber from 'bignumber.js';
-import { getEntrance as getEntranceGraphQL } from '@portkey-wallet/graphql/cms/queries';
+import { getEntrance as getEntranceGraphQL, getCodePushControl } from '@portkey-wallet/graphql/cms/queries';
 import { NetworkType } from '@portkey-wallet/types';
 
 const createEntranceMatchRule = (type: IEntranceMatchRuleType, params: string): any => {
@@ -113,4 +113,14 @@ export const getEntrance = async (networkType: NetworkType) => {
     return result.data.entrance;
   }
   throw new Error('getEntrance error');
+};
+
+export const getCmsCodePoshControl = async (version: string, label: string, networkType: NetworkType) => {
+  const result = await getCodePushControl(networkType, {
+    filter: { version: { _eq: version }, status: { _eq: 'published' }, label: { _eq: label } },
+  });
+
+  if (!result?.data?.codePushControl?.[0]) throw new Error('getCmsCodePoshControl error');
+
+  return result?.data?.codePushControl?.[0];
 };

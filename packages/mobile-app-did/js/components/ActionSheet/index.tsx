@@ -80,7 +80,7 @@ function AlertBody({
   bgImage,
 }: AlertBodyProps) {
   return (
-    <View style={[styles.alertBox, styles.wrapStyle, !bgImage && isCloseShow && styles.alertBoxWithClose]}>
+    <View style={[styles.alertBox, styles.wrapStyle]}>
       {!!bgImage && <ImageBackground source={bgImage} style={styles.headerBackgroundBg} />}
       {isCloseShow && (
         <View
@@ -91,59 +91,61 @@ function AlertBody({
           <Svg icon={'close'} size={pTd(12.5)} color={defaultColors.font7} />
         </View>
       )}
-      {title ? <TextTitle style={[styles.alertTitle, titleStyle]}>{title}</TextTitle> : null}
-      {typeof title2 === 'string' ? <TextL style={styles.alertTitle2}>{title2}</TextL> : title2}
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        style={styles.scrollViewStyle}
-        contentContainerStyle={styles.scrollViewContainerStyle}>
-        {typeof message === 'string' ? (
-          message ? (
-            <TextM style={[styles.alertMessage, messageStyle]}>{message}</TextM>
-          ) : null
-        ) : (
-          message
-        )}
-        {typeof message2 === 'string' ? (
-          message2 ? (
-            <TextM style={[styles.alertMessage, messageStyle]}>{message2}</TextM>
-          ) : null
-        ) : (
-          message2
-        )}
-        {messageList?.map((item, index) => {
-          return typeof item === 'string' ? (
-            item ? (
-              <TextM key={index} style={[styles.alertMessage, messageStyle]}>
-                {item}
-              </TextM>
+      <View style={styles.alertBox}>
+        {title ? <TextTitle style={[styles.alertTitle, titleStyle]}>{title}</TextTitle> : null}
+        {typeof title2 === 'string' ? <TextL style={styles.alertTitle2}>{title2}</TextL> : title2}
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={styles.scrollViewStyle}
+          contentContainerStyle={styles.scrollViewContainerStyle}>
+          {typeof message === 'string' ? (
+            message ? (
+              <TextM style={[styles.alertMessage, messageStyle]}>{message}</TextM>
             ) : null
           ) : (
-            item
-          );
-        })}
-      </ScrollView>
-      {buttonGroupDirection === 'row' ? (
-        <ButtonRow
-          buttons={buttons?.map(i => ({
-            ...i,
-            onPress: () => {
-              if (autoClose) OverlayModal.hide();
-              i.onPress?.();
-            },
-          }))}
-        />
-      ) : (
-        <ButtonCol
-          buttons={buttons?.map(i => ({
-            ...i,
-            onPress: () => {
-              if (autoClose) OverlayModal.hide();
-              i.onPress?.();
-            },
-          }))}
-        />
-      )}
+            message
+          )}
+          {typeof message2 === 'string' ? (
+            message2 ? (
+              <TextM style={[styles.alertMessage, messageStyle]}>{message2}</TextM>
+            ) : null
+          ) : (
+            message2
+          )}
+          {messageList?.map((item, index) => {
+            return typeof item === 'string' ? (
+              item ? (
+                <TextM key={index} style={[styles.alertMessage, messageStyle]}>
+                  {item}
+                </TextM>
+              ) : null
+            ) : (
+              item
+            );
+          })}
+        </ScrollView>
+        {buttonGroupDirection === 'row' ? (
+          <ButtonRow
+            buttons={buttons?.map(i => ({
+              ...i,
+              onPress: () => {
+                if (autoClose) OverlayModal.hide();
+                i.onPress?.();
+              },
+            }))}
+          />
+        ) : (
+          <ButtonCol
+            buttons={buttons?.map(i => ({
+              ...i,
+              onPress: () => {
+                if (autoClose) OverlayModal.hide();
+                i.onPress?.();
+              },
+            }))}
+          />
+        )}
+      </View>
     </View>
   );
 }

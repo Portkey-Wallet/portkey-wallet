@@ -8,11 +8,8 @@ import myEvents from 'utils/deviceEvent';
 import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useReportingSignalR } from 'hooks/FCM';
-import CommonButton from 'components/CommonButton';
-import { codePushOperator } from 'utils/update';
 import { useManagerExceedTipModal } from 'hooks/managerCheck';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
-import { useUpdateInfo } from 'store/user/hooks';
 
 const DashBoard: React.FC<any> = ({ navigation }) => {
   const reportAnalyticsEvent = useReportAnalyticsEvent();
@@ -42,21 +39,11 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
     return () => listener.remove();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const updateInfo = useUpdateInfo();
-  console.log(updateInfo, '=====updateInfo');
 
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.bg5]}>
       <Card />
       <DashBoardTab />
-      {!!updateInfo && (
-        <CommonButton
-          onPress={() => {
-            codePushOperator.checkToUpdate();
-          }}>
-          check update
-        </CommonButton>
-      )}
     </SafeAreaBox>
   );
 };

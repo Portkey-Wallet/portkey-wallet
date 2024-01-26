@@ -15,11 +15,14 @@ import { useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { codePushOperator, parseLabel } from 'utils/update';
 import { parseVersion } from 'utils';
+import { useUpdateInfo } from 'store/user/hooks';
+import UpdateOverlay from 'components/UpdateOverlay';
 
 const AboutUs = () => {
   const { t } = useLanguage();
   const socialMediaList = useSocialMediaList();
   const { s3Url } = useCurrentNetworkInfo();
+  const updateInfo = useUpdateInfo();
 
   const officialList = useMemo(
     (): IMenuItemProps[] => [
@@ -54,7 +57,7 @@ const AboutUs = () => {
         icon: 'checkUpdate',
         title: 'Check for Updates',
         onPress: () => {
-          // todo: check for updates
+          codePushOperator.checkToUpdate();
         },
       },
     ],
@@ -102,19 +105,21 @@ const AboutUs = () => {
         ))}
       </View>
 
-      <View style={styles.btnContainer}>
-        {bottomList.map((item, index) => (
-          <View key={index}>
-            <MenuItem
-              showWarningCycle={item.showWarningCycle}
-              icon={item.icon}
-              title={item.title}
-              onPress={item.onPress}
-            />
-            {index !== bottomList.length - 1 && <Divider style={styles.dividerStyle} />}
-          </View>
-        ))}
-      </View>
+      {!!updateInfo && (
+        <View style={styles.btnContainer}>
+          {bottomList.map((item, index) => (
+            <View key={index}>
+              <MenuItem
+                showWarningCycle={item.showWarningCycle}
+                icon={item.icon}
+                title={item.title}
+                onPress={item.onPress}
+              />
+              {index !== bottomList.length - 1 && <Divider style={styles.dividerStyle} />}
+            </View>
+          ))}
+        </View>
+      )}
     </PageContainer>
   );
 };

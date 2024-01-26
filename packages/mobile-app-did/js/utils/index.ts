@@ -86,10 +86,5 @@ export const isNumberInInterval = (
  */
 export const isExpired = (timestamp: Timestamp): boolean => dayjs().isAfter(timestamp);
 
-export function parseVersion(list: (string | undefined | null)[]) {
-  return list.reduce((pre, cv) => {
-    if (cv) {
-      return pre + '.' + cv;
-    }
-  });
-}
+export const parseVersion = (list: (string | undefined | null)[]) =>
+  list.reduce((pre, cv) => (cv ? pre + '.' + cv : pre));

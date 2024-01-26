@@ -13,15 +13,17 @@ import OverlayModal from 'components/OverlayModal';
 import { ButtonRowProps } from 'components/ButtonRow';
 import { IStorage } from '@portkey-wallet/types/storage';
 import { baseStore } from '@portkey-wallet/utils/mobile/storage';
+import { getWallet } from 'utils/redux';
+import { getCmsCodePoshControl } from '@portkey-wallet/hooks/hooks-ca/cms/util';
 
 export type TUpdateInfo = {
-  version: string;
-  label: string;
-  title?: string;
-  content?: string;
-  isForceUpdate?: boolean;
-  updatedTitle?: string;
-  updatedContent?: string;
+  version?: string | null;
+  label?: string | null;
+  title?: string | null;
+  content?: string | null;
+  isForceUpdate?: boolean | null;
+  updatedTitle?: string | null;
+  updatedContent?: string | null;
 };
 
 export interface ICodePushOperator {
@@ -99,16 +101,11 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
   }
   public async getUpdateInfo(label: string): Promise<TUpdateInfo> {
     const version = this.version;
-    console.log(label);
-    return {
-      version: '1.5.0',
-      label: 'v1',
-      title: 'title',
-      content: 'content',
-      isForceUpdate: false,
-      updatedTitle: 'updatedTitle',
-      updatedContent: 'updatedContent',
-    };
+    const { currentNetwork } = getWallet();
+
+    const result = await getCmsCodePoshControl(version, label, currentNetwork);
+
+    return result;
   }
   public isValidRemotePackageInfo(remotePackageInfo?: TRemotePackageInfo): remotePackageInfo is TRemotePackageInfo {
     return !!(
@@ -145,7 +142,7 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
       ActionSheet.alert({
         messageStyle: { textAlign: 'left' },
         titleStyle: { marginBottom: 0 },
-        title: info.updatedTitle,
+        title: info.updatedTitle || '',
         message: info.updatedContent,
         buttons: [{ title: 'I Know' }],
       });

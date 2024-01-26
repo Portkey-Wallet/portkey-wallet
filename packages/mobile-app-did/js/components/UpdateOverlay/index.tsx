@@ -4,10 +4,12 @@ import { View, Keyboard, StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
-import fonts from 'assets/theme/fonts';
 import { sleep } from '@portkey-wallet/utils';
 import * as Progress from 'react-native-progress';
 import { codePushOperator } from 'utils/update';
+import { TextM, TextXL } from 'components/CommonText';
+import Svg from 'components/Svg';
+import { FontStyles } from 'assets/theme/styles';
 
 function UpdateBody() {
   const [progress, setProgress] = useState(0);
@@ -19,17 +21,26 @@ function UpdateBody() {
       listener.remove();
     };
   }, []);
+
   return (
     <View style={styles.alertBox}>
+      <View onTouchEnd={() => OverlayModal.hide()} style={styles.closeWrap}>
+        <Svg icon={'close'} size={pTd(12.5)} color={defaultColors.font7} />
+      </View>
       <Progress.Circle
-        thickness={4}
-        endAngle={0.5}
         showsText
+        size={pTd(60)}
+        strokeCap="round"
+        thickness={pTd(6)}
+        endAngle={0.5}
         progress={progress}
-        size={pTd(100)}
         borderWidth={0}
-        unfilledColor="#F0F1F4"
+        unfilledColor={defaultColors.bg18}
+        color={defaultColors.bg5}
+        textStyle={styles.textStyle}
       />
+      <TextXL style={{ marginTop: pTd(8) }}>Downloading...</TextXL>
+      <TextM style={styles.tips}>You can close the pop-up window and the new version will continue to download.</TextM>
     </View>
   );
 }
@@ -49,13 +60,6 @@ export default {
 };
 
 export const styles = StyleSheet.create({
-  itemText: {
-    color: defaultColors.primaryColor,
-    fontSize: 16,
-  },
-  cancelText: {
-    fontSize: pTd(16),
-  },
   alertBox: {
     overflow: 'hidden',
     borderRadius: 8,
@@ -64,19 +68,21 @@ export const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: pTd(24),
   },
-  alertTitle: {
-    textAlign: 'center',
-    marginBottom: pTd(16),
-    ...fonts.mediumFont,
+  textStyle: {
+    fontSize: pTd(14),
   },
-  alertMessage: {
+  tips: {
+    textAlign: 'center',
     color: defaultColors.font3,
-    marginBottom: pTd(12),
-    textAlign: 'center',
+    marginTop: pTd(16),
   },
-  img: {
-    width: pTd(180),
-    height: pTd(108),
-    marginBottom: pTd(16),
+  closeWrap: {
+    width: pTd(20),
+    height: pTd(20),
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    right: pTd(12),
+    top: pTd(12),
   },
 });

@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { View, StyleSheet, GestureResponderEvent, ScrollView } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { View, StyleSheet, GestureResponderEvent } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
 import navigationService from 'utils/navigationService';
@@ -20,15 +20,17 @@ import { measurePageY } from 'utils/measure';
 import useRequestNotifyPermission from 'hooks/usePermission';
 import InviteFriendsSection from '../components/InviteFriendsSection';
 import OfficialChatGroup from '../components/OfficialChatGroup';
-import ActionSheet from 'components/ActionSheet';
-import joinGroupBgImage from 'assets/image/pngs/joinGroupBgImage.png';
-import { TextM } from 'components/CommonText';
+
+import { useJoinOfficialGroupTipModal } from 'hooks/guide';
+import { useChannelList } from '@portkey-wallet/hooks/hooks-ca/im';
 
 export default function DiscoverHome() {
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const emitCloseSwiped = useCallback(() => myEvents.chatHomeListCloseSwiped.emit(''), []);
   const lastEmitCloseSwiped = useLatestRef(emitCloseSwiped);
   const requestNotifyPermission = useRequestNotifyPermission();
+  const joinOfficialGroupModal = useJoinOfficialGroupTipModal();
+  const { list: channelList } = useChannelList();
 
   const onRightPress = useCallback(
     async (event: GestureResponderEvent) => {
@@ -86,6 +88,11 @@ export default function DiscoverHome() {
     );
   }, [onRightPress]);
 
+  const checkModal = useCallback(async () => {
+    const isShowNotice = await requestNotifyPermission();
+    if (!isShowNotice) joinOfficialGroupModal();
+  }, [joinOfficialGroupModal, requestNotifyPermission]);
+
   useFocusEffect(
     useCallback(() => {
       lastEmitCloseSwiped.current();
@@ -94,8 +101,8 @@ export default function DiscoverHome() {
 
   useFocusEffect(
     useCallback(() => {
-      requestNotifyPermission();
-    }, [requestNotifyPermission]),
+      checkModal();
+    }, [checkModal]),
   );
 
   return (
@@ -103,9 +110,16 @@ export default function DiscoverHome() {
       <Touchable activeOpacity={1} onPressIn={emitCloseSwiped}>
         <CustomHeader noLeftDom themeType="blue" titleDom="Chats" rightDom={RightDom} />
       </Touchable>
-      <InviteFriendsSection />
-      <OfficialChatGroup />
-      <SessionList />
+      <View style={[BGStyles.bg1, GStyles.flex1]}>
+        {channelList?.length === 0 ? (
+          <>
+            <InviteFriendsSection />
+            <OfficialChatGroup />
+          </>
+        ) : (
+          <SessionList />
+        )}
+      </View>
     </SafeAreaBox>
   );
 }

@@ -23,7 +23,7 @@ export const TransactionDataSection = (props: TransactionDataSectionType) => {
   const TopSection = useMemo(
     () => (
       <Touchable style={styles.topSection} onPress={() => setCollapsed(pre => !pre)}>
-        <TextM style={[FontStyles.font5, fonts.mediumFont]}>Data</TextM>
+        <TextM style={[FontStyles.font5, fonts.mediumFont]}>Message</TextM>
         <Svg size={pTd(20)} icon={collapsed ? 'down-arrow' : 'up-arrow'} />
       </Touchable>
     ),

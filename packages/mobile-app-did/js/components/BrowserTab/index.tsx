@@ -41,13 +41,14 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
       goForward: () => webViewRef.current?.goForward(),
       goBackHome: () => {
         const INJECT_CODE = `(function () {
-          window.location = '${uri}';
-        })();`;
+          window.location.href = '${uri}'
+          })();`;
         webViewRef.current?.injectJavaScript(INJECT_CODE);
       },
     }),
     [uri],
   );
+
   useImperativeHandle(forward, () => options, [options]);
   const fetchCurrentRememberMeBlackList = useFetchCurrentRememberMeBlackList();
 

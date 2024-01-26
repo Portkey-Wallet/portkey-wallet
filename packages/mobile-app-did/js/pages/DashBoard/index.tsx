@@ -10,13 +10,15 @@ import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useReportingSignalR } from 'hooks/FCM';
 import CommonButton from 'components/CommonButton';
 import { codePushOperator } from 'utils/update';
+import { useManagerExceedTipModal } from 'hooks/managerCheck';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 import { useUpdateInfo } from 'store/user/hooks';
 
 const DashBoard: React.FC<any> = ({ navigation }) => {
-  useReportingSignalR();
   const reportAnalyticsEvent = useReportAnalyticsEvent();
   const { getViewReferralStatusStatus, getReferralLink } = useReferral();
+  const managerExceedTipModalCheck = useManagerExceedTipModal();
+  useReportingSignalR();
 
   const navToChat = useCallback(
     (tabName: RootStackName) => {
@@ -29,6 +31,7 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
 
   useEffectOnce(() => {
     reportAnalyticsEvent({ message: 'DashBoard' });
+    managerExceedTipModalCheck();
     getViewReferralStatusStatus();
     getReferralLink();
   });

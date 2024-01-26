@@ -1,4 +1,7 @@
-import { MANAGER_EXCEED_TIP_MODAL_TITLE, MANAGER_EXCEED_TIP_MODAL_CONTENT } from 'constants/managerExceed';
+import {
+  MANAGER_EXCEED_TIP_MODAL_TITLE,
+  MANAGER_EXCEED_TIP_MODAL_CONTENT,
+} from '@portkey-wallet/constants/constants-ca/managerExceed';
 import CustomModal from 'pages/components/CustomModal';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';

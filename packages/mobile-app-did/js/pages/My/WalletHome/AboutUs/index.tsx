@@ -1,13 +1,13 @@
 import React, { memo, useMemo } from 'react';
 import { Linking, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
-import Svg, { IconName } from 'components/Svg';
+import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
 import { TextM, TextXXXL } from 'components/CommonText';
 import * as Application from 'expo-application';
-import MenuItem from '../../components/MenuItem';
+import MenuItem, { IMenuItemProps } from '../../components/MenuItem';
 import Divider from 'components/Divider';
 import navigationService from 'utils/navigationService';
 import { OfficialWebsite } from '@portkey-wallet/constants/constants-ca/network';
@@ -22,9 +22,9 @@ const AboutUs = () => {
   const { s3Url } = useCurrentNetworkInfo();
 
   const officialList = useMemo(
-    (): { iconName: IconName; title: string; onPress: () => void }[] => [
+    (): IMenuItemProps[] => [
       {
-        iconName: 'terms',
+        icon: 'terms',
         title: 'Terms of Service',
         onPress: () => {
           navigationService.navigate('ViewOnWebView', {
@@ -34,7 +34,7 @@ const AboutUs = () => {
         },
       },
       {
-        iconName: 'privacy-policy',
+        icon: 'privacy-policy',
         title: 'Privacy Policy',
         onPress: () => {
           navigationService.navigate('ViewOnWebView', {
@@ -47,14 +47,14 @@ const AboutUs = () => {
     [],
   );
 
-  // todo: change style
   const bottomList = useMemo(
-    (): { iconName: IconName; title: string; onPress: () => void }[] => [
+    (): IMenuItemProps[] => [
       {
-        iconName: 'terms',
+        showWarningCycle: true,
+        icon: 'checkUpdate',
         title: 'Check for Updates',
         onPress: () => {
-          console.log('onPress');
+          // todo: check for updates
         },
       },
     ],
@@ -96,7 +96,7 @@ const AboutUs = () => {
       <View style={styles.btnContainer}>
         {officialList.map((item, index) => (
           <View key={index}>
-            <MenuItem icon={item.iconName} title={item.title} onPress={item.onPress} />
+            <MenuItem icon={item.icon} title={item.title} onPress={item.onPress} />
             {index !== officialList.length - 1 && <Divider style={styles.dividerStyle} />}
           </View>
         ))}
@@ -105,7 +105,12 @@ const AboutUs = () => {
       <View style={styles.btnContainer}>
         {bottomList.map((item, index) => (
           <View key={index}>
-            <MenuItem icon={item.iconName} title={item.title} onPress={item.onPress} />
+            <MenuItem
+              showWarningCycle={item.showWarningCycle}
+              icon={item.icon}
+              title={item.title}
+              onPress={item.onPress}
+            />
             {index !== bottomList.length - 1 && <Divider style={styles.dividerStyle} />}
           </View>
         ))}

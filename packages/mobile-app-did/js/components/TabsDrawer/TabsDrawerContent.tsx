@@ -39,7 +39,6 @@ import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
 import Touchable from 'components/Touchable';
-import { set } from 'lodash';
 
 const TabsDrawerContent: React.FC = () => {
   const { t } = useLanguage();
@@ -57,15 +56,20 @@ const TabsDrawerContent: React.FC = () => {
   const { tabs } = discoverMap[networkType] ?? {};
   const activeItem = useMemo(() => tabs?.find(ele => ele.id === activeTabId) as ITabItem, [activeTabId, tabs]);
 
-  const [canBack, setCanBack] = useState(false);
-  const [canForward, setCanForward] = useState(false);
-
   const checkAndUpDateRecordItemName = useCheckAndUpDateRecordItemName();
   const checkAndUpDateTabItemName = useCheckAndUpDateTabItemName();
   const { getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
 
   const tabRef = useRef<IBrowserTab | null>(null);
   const [preActiveTabId, setPreActiveTabId] = useState<number | undefined>(activeTabId);
+
+  const [tabStateMap, setTabStateMap] = useState<{
+    canGoBack: Record<string, boolean>;
+    canGoForward: Record<string, boolean>;
+  }>({
+    canGoBack: {},
+    canGoForward: {},
+  });
 
   const activeWebviewScreenShot = useCallback(async () => {
     if (!activeTabId) return;
@@ -203,9 +207,23 @@ const TabsDrawerContent: React.FC = () => {
       const initialized = initializedList?.has(ele.id);
       if (isHidden && !initialized) return;
       const autoApprove = autoApproveMap?.[ele.id];
+
+      const canGoBack: boolean = tabStateMap?.canGoBack?.[ele.id];
+      const canGoForward: boolean = tabStateMap?.canGoForward?.[String(ele?.id)];
+
       const onNavigationStateChange = (navState: any) => {
-        setCanBack(navState.canGoBack);
-        setCanForward(navState.canGoForward);
+        if (ele.id === activeTabId) {
+          setTabStateMap(pre => ({
+            canGoBack: {
+              ...pre.canGoBack,
+              [ele.id]: navState?.canGoBack,
+            },
+            canGoForward: {
+              ...pre.canGoForward,
+              [ele.id]: navState?.canGoForward,
+            },
+          }));
+        }
       };
 
       return (
@@ -223,6 +241,35 @@ const TabsDrawerContent: React.FC = () => {
             }}
             onNavigationStateChange={onNavigationStateChange}
           />
+          {!isHidden && (
+            <View style={handleButtonStyle.container}>
+              <TouchableOpacity
+                disabled={!canGoBack}
+                onPress={() => clickBottomActionBtn('back')}
+                style={rightDomStyle.iconWrap}>
+                <Svg icon="left-arrow" size={pTd(20)} color={canGoBack ? defaultColors.font5 : defaultColors.bg16} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                disabled={!canGoForward}
+                onPress={() => clickBottomActionBtn('forward')}
+                style={rightDomStyle.iconWrap}>
+                <Svg
+                  icon="right-arrow"
+                  size={pTd(24)}
+                  color={canGoForward ? defaultColors.font5 : defaultColors.bg16}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => clickBottomActionBtn('showTab')} style={rightDomStyle.iconWrap}>
+                <TextM style={styles.switchButton}>{tabs?.length || 0}</TextM>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => clickBottomActionBtn('home')} style={rightDomStyle.iconWrap}>
+                <Svg icon="homepage" size={pTd(24)} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => clickBottomActionBtn('more')} style={rightDomStyle.iconWrap}>
+                <Svg icon="more" size={20} color={defaultColors.icon1} />
+              </TouchableOpacity>
+            </View>
+          )}
         </>
       );
     });
@@ -231,8 +278,11 @@ const TabsDrawerContent: React.FC = () => {
     autoApproveMap,
     checkAndUpDateRecordItemName,
     checkAndUpDateTabItemName,
+    clickBottomActionBtn,
     dispatch,
     initializedList,
+    tabStateMap?.canGoBack,
+    tabStateMap?.canGoForward,
     tabs,
   ]);
 
@@ -265,34 +315,6 @@ const TabsDrawerContent: React.FC = () => {
     );
   }, [closeAll, dispatch, onDone, t, tabs]);
 
-  const BottomActionTab = useMemo(() => {
-    return (
-      <View style={handleButtonStyle.container}>
-        <TouchableOpacity
-          disabled={!canBack}
-          onPress={() => clickBottomActionBtn('back')}
-          style={rightDomStyle.iconWrap}>
-          <Svg icon="left-arrow" size={pTd(20)} color={canBack ? defaultColors.font5 : defaultColors.bg16} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          disabled={!canForward}
-          onPress={() => clickBottomActionBtn('forward')}
-          style={rightDomStyle.iconWrap}>
-          <Svg icon="right-arrow" size={pTd(24)} color={canForward ? defaultColors.font5 : defaultColors.bg16} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => clickBottomActionBtn('showTab')} style={rightDomStyle.iconWrap}>
-          <TextM style={styles.switchButton}>{tabs?.length || 0}</TextM>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => clickBottomActionBtn('home')} style={rightDomStyle.iconWrap}>
-          <Svg icon="homepage" size={pTd(24)} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => clickBottomActionBtn('more')} style={rightDomStyle.iconWrap}>
-          <Svg icon="more" size={20} color={defaultColors.icon1} />
-        </TouchableOpacity>
-      </View>
-    );
-  }, [canBack, canForward, clickBottomActionBtn, tabs?.length]);
-
   return (
     <BrowserContext.Provider value={value}>
       <PageContainer
@@ -320,7 +342,6 @@ const TabsDrawerContent: React.FC = () => {
         titleDom={activeTabId ? '' : `${tabs?.length} Tabs`}>
         {TabsDom}
         {!activeTabId && isDrawerOpen && CardGroupDom}
-        {activeTabId && isDrawerOpen && BottomActionTab}
       </PageContainer>
     </BrowserContext.Provider>
   );

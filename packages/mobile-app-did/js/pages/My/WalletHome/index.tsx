@@ -20,6 +20,7 @@ import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/acti
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import WalletMenuItem from '../components/WalletMenuItem';
+import { TextS } from 'components/CommonText';
 
 interface WalletHomeProps {
   name?: string;
@@ -82,7 +83,7 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
           />
           <MenuItem
             // change to components
-            suffix={'New Version Available'}
+            suffix={<TextS style={pageStyles.newVersion}>New Version</TextS>}
             style={pageStyles.menuItem}
             onPress={() => navigationService.navigate('AboutUs')}
             title={t('About Us')}
@@ -120,5 +121,16 @@ const pageStyles = StyleSheet.create({
   },
   menuItem: {
     marginBottom: pTd(24),
+  },
+  newVersion: {
+    height: pTd(20),
+    marginRight: pTd(4),
+    paddingHorizontal: pTd(8),
+    textAlign: 'center',
+    lineHeight: pTd(20),
+    borderRadius: pTd(4),
+    overflow: 'hidden',
+    backgroundColor: defaultColors.bg27,
+    color: defaultColors.font13,
   },
 });

@@ -38,7 +38,7 @@ import { ETransTokenList } from '@portkey-wallet/constants/constants-ca/dapp';
 import CommonToolButton from 'components/CommonToolButton';
 import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
 import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
-import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { useAppRampEntryShow } from 'hooks/ramp';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -66,7 +66,7 @@ const TokenDetail: React.FC = () => {
   const { accountToken } = useAppCASelector(state => state.assets);
   const isTokenHasPrice = useIsTokenHasPrice(tokenInfo.symbol);
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
-  const { isRampShow } = useRampEntryShow();
+  const { isRampShow } = useAppRampEntryShow();
 
   const [reFreshing, setFreshing] = useState(false);
 

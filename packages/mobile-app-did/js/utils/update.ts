@@ -11,6 +11,8 @@ import EventEmitter from 'events';
 import UpdateOverlay from 'components/UpdateOverlay';
 import OverlayModal from 'components/OverlayModal';
 import { ButtonRowProps } from 'components/ButtonRow';
+import { IStorage } from '@portkey-wallet/types/storage';
+import { baseStore } from '@portkey-wallet/utils/mobile/storage';
 
 export type TUpdateInfo = {
   version: string;
@@ -35,6 +37,7 @@ export interface ICodePushOperator {
 
 export type TCodePushOperatorOptions = {
   deploymentKey: string;
+  storage: IStorage;
 };
 export type TRemotePackageInfo = { remotePackage: RemotePackage | null; time: number };
 
@@ -49,12 +52,44 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
   public progress?: DownloadProgress;
   protected _progressEventName = Symbol();
   public remotePackageInfo?: TRemotePackageInfo;
-  constructor({ deploymentKey }: TCodePushOperatorOptions) {
+  public storage: IStorage;
+  public storageUpdateInfo: { [key: string]: boolean };
+  public version: string;
+  protected _storageKey = 'CodePushOperator';
+  constructor({ deploymentKey, storage }: TCodePushOperatorOptions) {
     super();
+    this.storage = storage;
     this.deploymentKey = deploymentKey;
     this.getUpdateMetadata = CodePush.getUpdateMetadata;
     this.sync = CodePush.sync;
+    this.storageUpdateInfo = {};
+    this.version = Application.nativeApplicationVersion || '';
+    this.initUpdateInfo();
   }
+
+  public async setStorageUpdateInfo(hash: string) {
+    try {
+      this.storageUpdateInfo[hash] = true;
+      await this.storage.setItem(this._storageKey + this.version, JSON.stringify(this.storageUpdateInfo));
+    } catch (error) {
+      console.log(error, '=======error');
+    }
+  }
+
+  public getStorageUpdateInfo(hash: string) {
+    return this.storageUpdateInfo[hash];
+  }
+
+  public async initUpdateInfo() {
+    try {
+      const data = await this.storage.getItem(this._storageKey + this.version);
+      if (!data) throw new Error('No update info');
+      this.storageUpdateInfo = JSON.parse(data);
+    } catch (error) {
+      this.storageUpdateInfo = {};
+    }
+  }
+
   public addProgressListener(listener: (p: DownloadProgress) => void) {
     this.addListener(this._progressEventName, listener);
     const remove = () => {
@@ -63,7 +98,7 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
     return { remove };
   }
   public async getUpdateInfo(label: string): Promise<TUpdateInfo> {
-    const version = Application.nativeApplicationVersion || '';
+    const version = this.version;
     console.log(label);
     return {
       version: '1.5.0',
@@ -71,6 +106,8 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
       title: 'title',
       content: 'content',
       isForceUpdate: false,
+      updatedTitle: 'updatedTitle',
+      updatedContent: 'updatedContent',
     };
   }
   public isValidRemotePackageInfo(remotePackageInfo?: TRemotePackageInfo): remotePackageInfo is TRemotePackageInfo {
@@ -93,11 +130,38 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
     return remotePackage;
   }
 
+  public async showUpdatedAlert() {
+    const [currentData, latestData] = await Promise.all([
+      this.getUpdateMetadata(CodePush.UpdateState.RUNNING),
+      this.getUpdateMetadata(CodePush.UpdateState.LATEST),
+    ]);
+    console.log(currentData, latestData, '=======currentData');
+    if (!currentData) return;
+    if (this.getStorageUpdateInfo(currentData.packageHash)) return;
+    const info = await this.getUpdateInfo(currentData.label);
+    console.log(info, currentData, '=======info');
+    if (info.updatedContent || info.updatedTitle) {
+      this.setStorageUpdateInfo(currentData.packageHash);
+      ActionSheet.alert({
+        messageStyle: { textAlign: 'left' },
+        titleStyle: { marginBottom: 0 },
+        title: info.updatedTitle,
+        message: info.updatedContent,
+        buttons: [{ title: 'I Know' }],
+      });
+    }
+  }
+
   public async showCheckUpdate() {
     try {
       const updateInfo = await this.checkForUpdate();
       console.log(updateInfo, '=======showCheckUpdate');
 
+      const [currentData, pendingData] = await Promise.all([
+        this.getUpdateMetadata(CodePush.UpdateState.RUNNING),
+        this.getUpdateMetadata(CodePush.UpdateState.PENDING),
+      ]);
+      if (updateInfo?.packageHash === currentData?.packageHash) return;
       if (!updateInfo) return;
       const info = await this.getUpdateInfo(updateInfo.label);
       console.log(info, '=========info');
@@ -228,7 +292,10 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
   }
 }
 
-export const codePushOperator = new CodePushOperator({ deploymentKey: 'IQcprlvYIWyYbUKD_qd8cSyy5gPUhjOnL9O_k' });
+export const codePushOperator = new CodePushOperator({
+  deploymentKey: 'IQcprlvYIWyYbUKD_qd8cSyy5gPUhjOnL9O_k',
+  storage: baseStore,
+});
 
 export function parseLabel(label?: string) {
   return label?.replace('v', '');

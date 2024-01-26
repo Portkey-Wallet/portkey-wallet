@@ -223,6 +223,7 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
           if (status === CodePush.SyncStatus.INSTALLING_UPDATE) this.restartApp(isForceUpdate);
         },
         progress => {
+          if (isForceUpdate) return;
           if (!start) UpdateOverlay.show();
           start = true;
           this.emit(this._progressEventName, progress);
@@ -235,7 +236,7 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
       if (updateInfo && syncStatus === CodePush.SyncStatus.UP_TO_DATE) {
         // CodePush.clearUpdates
         await CodePush.clearUpdates();
-        this.syncData(updateInfo);
+        this.syncData(updateInfo, isForceUpdate);
       }
       console.log(syncStatus, '======syncStatus');
     } catch (error) {
@@ -286,7 +287,7 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
           {
             title: 'Download',
             onPress: () => {
-              this.syncData(updateInfo);
+              this.syncData(updateInfo, !!info.isForceUpdate);
             },
           },
         ],

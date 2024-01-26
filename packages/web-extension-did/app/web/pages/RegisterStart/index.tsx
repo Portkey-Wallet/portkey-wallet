@@ -7,7 +7,7 @@ import SignCard from './components/SignCard';
 import { useCurrentNetworkInfo, useIsMainnet, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
-import { setOriginChainId } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { createNewTmpWallet, setOriginChainId } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
 import CommonSelect from 'components/CommonSelect1';
 import { useChangeNetwork } from 'hooks/useChangeNetwork';
@@ -184,6 +184,8 @@ export default function RegisterStart() {
 
       await sleep(2000);
 
+      dispatch(createNewTmpWallet);
+
       // Get the assigned verifier data from the backend api and guaranteed loading display 2s
       try {
         const verifierReq = await request.verify.getVerifierServer({
@@ -267,6 +269,7 @@ export default function RegisterStart() {
     async (loginInfo: LoginInfo) => {
       try {
         setLoading(true);
+        dispatch(createNewTmpWallet());
         const { originChainId } = await getRegisterInfo({
           loginGuardianIdentifier: loginInfo.guardianAccount,
         });

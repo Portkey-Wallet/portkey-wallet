@@ -73,6 +73,8 @@ export default function ViewContact() {
       Google: [],
       Apple: [],
       Telegram: [],
+      Twitter: [],
+      Facebook: [],
     };
 
     loginAccounts?.forEach((element) => {
@@ -91,6 +93,12 @@ export default function ViewContact() {
           break;
         case LoginType.Telegram:
           loginAccountMap.Telegram.push(element);
+          break;
+        case LoginType.Twitter:
+          loginAccountMap.Twitter.push(element);
+          break;
+        case LoginType.Facebook:
+          loginAccountMap.Facebook.push(element);
           break;
         default:
           break;

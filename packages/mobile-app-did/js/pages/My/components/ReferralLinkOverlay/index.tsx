@@ -6,7 +6,7 @@ import { TextL, TextM, TextXL } from 'components/CommonText';
 import Touchable from 'components/Touchable';
 import { copyText } from 'utils';
 import Svg from 'components/Svg';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { isIOS, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
@@ -15,10 +15,7 @@ import { FontStyles } from 'assets/theme/styles';
 
 function ReferralLinkOverlay({ linkUrl }: { linkUrl: string }) {
   const onShare = useCallback(async () => {
-    await Share.share({
-      message: linkUrl,
-      url: linkUrl,
-    }).catch(shareError => {
+    await Share.share(isIOS ? { url: linkUrl } : { message: linkUrl }).catch(shareError => {
       console.log(shareError);
     });
   }, [linkUrl]);

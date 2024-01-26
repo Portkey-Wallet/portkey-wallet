@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
@@ -10,6 +10,8 @@ import { RootStackName } from 'navigation';
 import { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCheckUpdate } from 'store/user/hooks';
 
 interface MenuItemType {
   name: RootStackName;
@@ -21,7 +23,12 @@ interface MenuItemType {
 export default function MyMenu() {
   const { t } = useLanguage();
   const isImputation = useIsImputation();
-
+  const checkUpdate = useCheckUpdate();
+  useFocusEffect(
+    useCallback(() => {
+      checkUpdate();
+    }, []),
+  );
   const MenuList: Array<MenuItemType> = useMemo(
     () => [
       {

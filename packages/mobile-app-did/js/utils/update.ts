@@ -10,6 +10,7 @@ import CommonToast from 'components/CommonToast';
 import EventEmitter from 'events';
 import UpdateOverlay from 'components/UpdateOverlay';
 import OverlayModal from 'components/OverlayModal';
+import { ButtonRowProps } from 'components/ButtonRow';
 
 export type TUpdateInfo = {
   version: string;
@@ -35,8 +36,10 @@ export interface ICodePushOperator {
 export type TCodePushOperatorOptions = {
   deploymentKey: string;
 };
-type TRemotePackageInfo = { remotePackage: RemotePackage | null; time: number };
+export type TRemotePackageInfo = { remotePackage: RemotePackage | null; time: number };
+
 export const RemotePackageExpiration = 1000 * 60 * 5;
+
 export class CodePushOperator extends EventEmitter implements ICodePushOperator {
   public localPackage: ICodePushOperator['localPackage'];
   public getUpdateMetadata: typeof CodePush.getUpdateMetadata;
@@ -67,6 +70,7 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
       label: 'v1',
       title: 'title',
       content: 'content',
+      isForceUpdate: false,
     };
   }
   public isValidRemotePackageInfo(remotePackageInfo?: TRemotePackageInfo): remotePackageInfo is TRemotePackageInfo {
@@ -90,10 +94,19 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
   }
 
   public async showCheckUpdate() {
-    const updateInfo = await this.checkForUpdate();
-    if (!updateInfo) return;
-    const info = await this.getUpdateInfo(updateInfo.label);
-    return info.label && info.version;
+    try {
+      const updateInfo = await this.checkForUpdate();
+      console.log(updateInfo, '=======showCheckUpdate');
+
+      if (!updateInfo) return;
+      const info = await this.getUpdateInfo(updateInfo.label);
+      console.log(info, '=========info');
+
+      if (info.isForceUpdate) return this.syncData(updateInfo, true);
+      if (info.label && info.version) return info;
+    } catch (error) {
+      console.log(error, '======error');
+    }
   }
   public async initLocalPackage() {
     try {
@@ -108,25 +121,27 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
     return (await this.initLocalPackage())?.label;
   }
 
-  public restartApp() {
+  public restartApp(isForceUpdate?: boolean) {
     OverlayModal.hide();
+    const buttons: ButtonRowProps['buttons'] = [];
+    if (!isForceUpdate) {
+      buttons.push({
+        title: 'Not Now',
+        type: 'outline',
+      });
+    }
+    buttons.push({
+      title: 'Update',
+      onPress: () => {
+        CodePush.restartApp();
+      },
+    });
     ActionSheet.alert({
       title: 'The download is complete. Is the update immediate?',
-      buttons: [
-        {
-          title: 'Not Now',
-          type: 'outline',
-        },
-        {
-          title: 'Update',
-          onPress: () => {
-            CodePush.restartApp();
-          },
-        },
-      ],
+      buttons,
     });
   }
-  public async syncData(updateInfo: RemotePackage | null) {
+  public async syncData(updateInfo: RemotePackage | null, isForceUpdate?: boolean) {
     try {
       let start = false;
       const syncStatus = await this.sync(
@@ -136,7 +151,7 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
         },
         status => {
           this.syncStatus = status;
-          if (status === CodePush.SyncStatus.INSTALLING_UPDATE) this.restartApp();
+          if (status === CodePush.SyncStatus.INSTALLING_UPDATE) this.restartApp(isForceUpdate);
         },
         progress => {
           if (!start) UpdateOverlay.show();

@@ -10,7 +10,6 @@ export const NetworkList: NetworkItem[] = [
 export const DefaultChainId = 'AELF';
 
 export const OfficialWebsite = 'https://portkey.finance';
-export const BingoGame = 'https://portkey-bingo-game.vercel.app';
 
 export const ThirdParty = `https://thirdparty.portkey.finance`;
 

@@ -154,7 +154,7 @@ export default function MyBalance() {
       const isNFT = type === 'nft';
       const state = {
         chainId: v.chainId,
-        decimals: isNFT ? 0 : Number(v.tokenInfo?.decimals || 8),
+        decimals: isNFT ? 0 : Number(v.tokenInfo?.decimals ?? 8),
         address: isNFT ? `${v?.nftInfo?.tokenContractAddress}` : `${v?.tokenInfo?.tokenContractAddress}`,
         symbol: v.symbol,
         name: v.symbol,

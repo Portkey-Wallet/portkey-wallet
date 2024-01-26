@@ -14,7 +14,6 @@ import BuyForm from './components/BuyForm';
 import SellForm from './components/SellForm';
 import { useEffectOnce } from 'react-use';
 import CustomTipModal from 'pages/components/CustomModal';
-import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { RampType } from '@portkey-wallet/ramp';
 import { BUY_SOON_TEXT, SELL_SOON_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useCheckSecurity } from 'hooks/useSecurity';
@@ -23,6 +22,7 @@ import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import singleMessage from 'utils/singleMessage';
 import { usePromptLocationParams } from 'hooks/router';
 import { TRampLocationState } from 'types/router';
+import { useExtensionRampEntryShow } from 'hooks/ramp';
 
 export default function Buy() {
   const { t } = useTranslation();
@@ -34,7 +34,7 @@ export default function Buy() {
 
   const [page, setPage] = useState<RampType>(state?.side || RampType.BUY);
 
-  const { isBuySectionShow, isSellSectionShow, refreshRampShow } = useRampEntryShow();
+  const { isBuySectionShow, isSellSectionShow, refreshRampShow } = useExtensionRampEntryShow();
 
   useFetchTxFee();
 

@@ -166,7 +166,10 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
       const info = await this.getUpdateInfo(updateInfo.label);
       console.log(info, '=========info');
 
-      if (info.isForceUpdate) return this.syncData(updateInfo, true);
+      if (info.isForceUpdate) {
+        this.syncData(updateInfo, true);
+        return;
+      }
       if (info.label && info.version) return info;
     } catch (error) {
       console.log(error, '======error');

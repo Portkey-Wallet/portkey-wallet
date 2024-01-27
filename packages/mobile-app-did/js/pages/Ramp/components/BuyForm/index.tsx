@@ -30,6 +30,7 @@ import { ErrorType, INIT_HAS_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/cons
 import { isPotentialNumber } from '@portkey-wallet/utils/reg';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useAppRampEntryShow } from 'hooks/ramp';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 
 export default function BuyForm() {
   const {
@@ -40,7 +41,7 @@ export default function BuyForm() {
     refreshBuyFiat,
   } = useBuyFiat();
 
-  const defaultToken = useDefaultToken();
+  const defaultToken = useDefaultToken(MAIN_CHAIN_ID);
 
   const { refreshRampShow } = useAppRampEntryShow();
 

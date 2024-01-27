@@ -213,7 +213,7 @@ export default function RampPreview() {
         type,
         address: wallet?.AELF?.caAddress || '',
         email: emailGuardian?.guardianAccount,
-        crypto: crypto.symbol || '',
+        crypto: currentProvider?.providerSymbol || crypto.symbol || '',
         network: currentProvider?.providerNetwork || '',
         country: fiat.country || '',
         fiat: fiat.symbol || '',

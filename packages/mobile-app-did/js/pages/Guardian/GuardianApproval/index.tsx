@@ -116,12 +116,14 @@ export default function GuardianApproval() {
 
   const onEmitDapp = useCallback(
     (guardiansApproved?: GuardiansApproved) => {
-      if (approvalType !== ApprovalType.managerApprove || !approveParams) return;
+      if ((approvalType !== ApprovalType.managerApprove && approvalType !== ApprovalType.addGuardian) || !approveParams)
+        return;
       approveParams.isDiscover && dispatch(changeDrawerOpenStatus(true));
-      DeviceEventEmitter.emit(
-        approveParams.eventName,
-        guardiansApproved ? { approveInfo: approveParams.approveInfo, success: true, guardiansApproved } : undefined,
-      );
+      approveParams.eventName &&
+        DeviceEventEmitter.emit(
+          approveParams.eventName,
+          guardiansApproved ? { approveInfo: approveParams.approveInfo, success: true, guardiansApproved } : undefined,
+        );
     },
     [approvalType, approveParams, dispatch],
   );

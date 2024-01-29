@@ -16,7 +16,7 @@ export interface IInviteGuideList {
 
 export default function InviteGuideList(props: IInviteGuideList) {
   const { inviteGuideMap } = props;
-  const clickReferral = useClickReferral();
+  const clickReferral = useClickReferral(false);
   const defaultGuideMap: TInviteGuideMap[] = useMemo(
     () => [
       {

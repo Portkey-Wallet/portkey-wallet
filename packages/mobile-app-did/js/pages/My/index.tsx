@@ -10,8 +10,6 @@ import { RootStackName } from 'navigation';
 import { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
-import { useFocusEffect } from '@react-navigation/native';
-import { useCheckUpdate } from 'store/user/hooks';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 
 interface MenuItemType {
@@ -25,14 +23,9 @@ interface MenuItemType {
 export default function MyMenu() {
   const { t } = useLanguage();
   const isImputation = useIsImputation();
-  const checkUpdate = useCheckUpdate();
+
   const { setViewReferralStatusStatus } = useReferral();
 
-  useFocusEffect(
-    useCallback(() => {
-      checkUpdate();
-    }, [checkUpdate]),
-  );
   const MenuList: Array<MenuItemType> = useMemo(
     () => [
       {

@@ -31,8 +31,14 @@ import Config from 'react-native-config';
 import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useAppEntrance } from 'hooks/cms';
 import { codePushOperator } from 'utils/update';
+import { useCheckCodePushUpdate } from 'store/user/hooks';
+import useInterval from '@portkey-wallet/hooks/useInterval';
+import { useLatestRef } from '@portkey-wallet/hooks';
 
 request.setExceptionManager(exceptionManager);
+
+const CHECK_CODE_PUSH_TIME = 5 * 60 * 1000;
+
 export default function Updater() {
   const isMainnet = useIsMainnet();
 
@@ -47,6 +53,9 @@ export default function Updater() {
   const onLocking = useLocking();
   const checkManagerOnLogout = useCheckManagerOnLogout();
   const refreshTokenConfig = useRefreshTokenConfig();
+  const checkCodePushUpdate = useCheckCodePushUpdate();
+
+  const latestCheckCodePushUpdate = useLatestRef(checkCodePushUpdate);
   useMemo(async () => {
     await refreshTokenConfig(pin);
   }, [pin, refreshTokenConfig]);
@@ -87,6 +96,10 @@ export default function Updater() {
       CommonToast.success(data.body);
     });
   });
+  useInterval(() => {
+    latestCheckCodePushUpdate.current();
+  }, CHECK_CODE_PUSH_TIME);
+
   useEffect(() => {
     if (!pin) return;
     const timer = setTimeout(() => {

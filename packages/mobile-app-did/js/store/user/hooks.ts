@@ -7,7 +7,7 @@ export const useUpdateInfo = () => {
   return useAppSelector(state => state.user.updateInfo);
 };
 
-export const useCheckUpdate = () => {
+export const useCheckCodePushUpdate = () => {
   const dispatch = useAppDispatch();
   return useCallback(async () => {
     try {

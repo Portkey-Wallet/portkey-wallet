@@ -16,7 +16,6 @@ import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { codePushOperator, parseLabel } from 'utils/update';
 import { parseVersion } from 'utils';
 import { useUpdateInfo } from 'store/user/hooks';
-import UpdateOverlay from 'components/UpdateOverlay';
 
 const AboutUs = () => {
   const { t } = useLanguage();
@@ -75,11 +74,7 @@ const AboutUs = () => {
       </View>
       <TextXXXL>Portkey</TextXXXL>
       <TextM style={styles.version}>
-        {parseVersion([
-          `V${Application.nativeApplicationVersion}`,
-          Application.nativeBuildVersion,
-          parseLabel(codePushOperator.localPackage?.label),
-        ])}
+        {parseVersion([`V${Application.nativeApplicationVersion}`, parseLabel(codePushOperator.localPackage?.label)])}
       </TextM>
       <View style={styles.btnContainer}>
         {socialMediaList.map((item, index) => (

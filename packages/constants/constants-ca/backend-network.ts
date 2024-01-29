@@ -219,7 +219,7 @@ export const BackEndNetWorkMap: {
     apiUrl: 'https://aa-portkey.portkey.finance',
     graphqlUrl: 'https://dapp-aa-portkey.portkey.finance/Portkey_V2_DID/PortKeyIndexerCASchema/graphql',
     connectUrl: 'https://auth-aa-portkey.portkey.finance',
-    cmsUrl: 'https://cms-aa-portkey.finance/graphql',
+    cmsUrl: 'https://cms-aa.portkey.finance/graphql',
     s3Url: 'https://portkey-cms-mainnet.s3.ap-northeast-1.amazonaws.com',
     portkeyFinanceUrl: 'https://portkey.finance',
     portkeyOpenLoginUrl: 'https://openlogin.portkey.finance/',

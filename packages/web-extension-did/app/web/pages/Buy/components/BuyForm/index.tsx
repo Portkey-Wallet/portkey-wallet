@@ -6,6 +6,7 @@ import {
   useBuyDefaultCryptoListState,
   useBuyDefaultCryptoState,
   useBuyDefaultFiatState,
+  useBuyFiat,
   useBuyFiatListState,
 } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { useCallback, useMemo, useRef, useState } from 'react';
@@ -125,7 +126,27 @@ export default function BuyForm() {
     [updateBuyReceive],
   );
 
+  const { getSpecifiedFiat } = useBuyFiat();
+  const fetchSpecifiedFiat = useCallback(async () => {
+    if (state?.crypto && state?.tokenInfo?.symbol) return;
+    try {
+      setLoading(true);
+      const fiatResult = await getSpecifiedFiat({ crypto: state?.crypto || state?.tokenInfo?.symbol });
+      if (fiatResult?.defaultFiat) {
+        await handleFiatSelect({ ...fiatResult?.defaultFiat, icon: '' });
+        if (fiatResult?.defaultCrypto) {
+          await handleCryptoSelect(fiatResult?.defaultCrypto);
+        }
+      }
+    } catch (error) {
+      console.log('fetchSpecifiedFiat error', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [getSpecifiedFiat, handleCryptoSelect, handleFiatSelect, setLoading, state?.crypto, state?.tokenInfo?.symbol]);
+
   useEffectOnce(() => {
+    fetchSpecifiedFiat();
     updateBuyReceive();
   });
 

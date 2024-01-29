@@ -67,7 +67,15 @@ export default function SelectCryptoList({
               onChange?.(crypto);
               onClose?.();
             }}>
-            <CustomSvg type="elf-icon" />
+            {!!crypto.icon && (
+              <div
+                className="token-item-image"
+                style={{
+                  backgroundImage: `url(${crypto.icon})`,
+                }}
+              />
+            )}
+            {!crypto.icon && <CustomSvg type="elf-icon" />}
             <div className="flex-column text">
               <div>{crypto.symbol}</div>
               <div className="chain">{transNetworkText(crypto.chainId, !isMainNet)}</div>

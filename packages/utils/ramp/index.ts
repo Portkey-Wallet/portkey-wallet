@@ -28,7 +28,7 @@ export const getBuyFiat = async (params?: IGetFiatDataRequest) => {
   return { fiatList, defaultFiat };
 };
 
-export const getBuyCrypto = async (params: Required<IGetCryptoDataRequest>) => {
+export const getBuyCrypto = async (params: IGetCryptoDataRequest) => {
   const {
     data: { cryptoList, defaultCrypto },
     code,

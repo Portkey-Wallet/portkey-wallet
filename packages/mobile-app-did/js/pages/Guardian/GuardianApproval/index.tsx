@@ -116,12 +116,14 @@ export default function GuardianApproval() {
 
   const onEmitDapp = useCallback(
     (guardiansApproved?: GuardiansApproved) => {
-      if (approvalType !== ApprovalType.managerApprove || !approveParams) return;
+      if ((approvalType !== ApprovalType.managerApprove && approvalType !== ApprovalType.addGuardian) || !approveParams)
+        return;
       approveParams.isDiscover && dispatch(changeDrawerOpenStatus(true));
-      DeviceEventEmitter.emit(
-        approveParams.eventName,
-        guardiansApproved ? { approveInfo: approveParams.approveInfo, success: true, guardiansApproved } : undefined,
-      );
+      approveParams.eventName &&
+        DeviceEventEmitter.emit(
+          approveParams.eventName,
+          guardiansApproved ? { approveInfo: approveParams.approveInfo, success: true, guardiansApproved } : undefined,
+        );
     },
     [approvalType, approveParams, dispatch],
   );
@@ -215,7 +217,11 @@ export default function GuardianApproval() {
     lastOnEmitDapp.current();
     switch (approvalType) {
       case ApprovalType.addGuardian:
-        navigationService.navigate('GuardianEdit');
+        if (approveParams?.isDiscover) {
+          navigationService.navigate('Tab');
+        } else {
+          navigationService.navigate('GuardianEdit');
+        }
         break;
       case ApprovalType.setLoginAccount:
       case ApprovalType.unsetLoginAccount:
@@ -231,7 +237,7 @@ export default function GuardianApproval() {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [approvalType, guardianItem]);
+  }, [approvalType, guardianItem, approveParams]);
   const onRequestOrSetPin = useOnRequestOrSetPin();
 
   const dappApprove = useCallback(() => {

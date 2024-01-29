@@ -19,6 +19,7 @@ import { setUpdateInfo } from 'store/user/actions';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import CommonToast from 'components/CommonToast';
 import { CODE_PUSH_OPTIONS } from 'constants/codePush';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 export type TUpdateInfo = {
   version?: string | null;
@@ -111,9 +112,9 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
   }
   public async getUpdateInfo(label: string): Promise<TUpdateInfo> {
     const version = this.version;
-    const { currentNetwork } = getWallet();
+    const { currentNetwork: networkType } = getWallet();
 
-    const result = await getCmsCodePoshControl(version, label, currentNetwork);
+    const result = await getCmsCodePoshControl({ version, label, networkType, isIOS });
 
     return result;
   }

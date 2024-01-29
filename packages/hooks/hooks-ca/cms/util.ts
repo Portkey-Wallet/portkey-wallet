@@ -10,7 +10,6 @@ import {
 import BigNumber from 'bignumber.js';
 import { getEntrance as getEntranceGraphQL, getCodePushControl } from '@portkey-wallet/graphql/cms/queries';
 import { NetworkType } from '@portkey-wallet/types';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 const createEntranceMatchRule = (type: IEntranceMatchRuleType, params: string): any => {
   switch (type) {
@@ -116,7 +115,17 @@ export const getEntrance = async (networkType: NetworkType) => {
   throw new Error('getEntrance error');
 };
 
-export const getCmsCodePoshControl = async (version: string, label: string, networkType: NetworkType) => {
+export const getCmsCodePoshControl = async ({
+  version,
+  label,
+  networkType,
+  isIOS,
+}: {
+  version: string;
+  label: string;
+  networkType: NetworkType;
+  isIOS: boolean;
+}) => {
   const result = await getCodePushControl(networkType, {
     filter: {
       _and: [{ label: { _icontains: label } }, { label: { _icontains: isIOS ? 'iOS' : 'android' } }],

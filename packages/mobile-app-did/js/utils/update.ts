@@ -4,6 +4,7 @@ import CodePush, {
   LocalPackage,
   RemotePackage,
 } from 'react-native-code-push';
+import { BackHandler } from 'react-native';
 import * as Application from 'expo-application';
 import ActionSheet from 'components/ActionSheet';
 import EventEmitter from 'events';
@@ -191,7 +192,7 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
     return (await this.initLocalPackage())?.label;
   }
 
-  public restartApp(isForceUpdate?: boolean) {
+  public async restartApp(isForceUpdate?: boolean) {
     OverlayModal.hide();
     const buttons: ButtonRowProps['buttons'] = [];
     if (!isForceUpdate) {
@@ -205,7 +206,12 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
       onPress: async () => {
         getDispatch()(setUpdateInfo(undefined));
         await sleep(200);
-        CodePush.restartApp();
+
+        if (isIOS) {
+          CodePush.restartApp();
+        } else {
+          BackHandler.exitApp();
+        }
       },
     });
     ActionSheet.alert({

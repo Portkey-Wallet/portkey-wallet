@@ -34,7 +34,7 @@ import { logBoxTextColorSaver } from 'utils/textColor';
 
 const codePushOptions = {
   updateDialog: false,
-  deploymentKey: 'IQcprlvYIWyYbUKD_qd8cSyy5gPUhjOnL9O_k',
+  deploymentKey: (isIOS ? Config.CODE_PUSH_IOS_DEPLOYMENT_KEY : Config.CODE_PUSH_ANDROID_DEPLOYMENT_KEY) || '',
   installMode: CodePush.InstallMode.ON_NEXT_RESTART,
   checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME,
 };

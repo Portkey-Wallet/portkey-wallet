@@ -21,5 +21,5 @@ export const useCheckUpdate = () => {
     } catch (error) {
       dispatch(setUpdateInfo(undefined));
     }
-  }, []);
+  }, [dispatch]);
 };

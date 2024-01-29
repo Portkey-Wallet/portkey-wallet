@@ -6,7 +6,6 @@ import CodePush, {
 } from 'react-native-code-push';
 import * as Application from 'expo-application';
 import ActionSheet from 'components/ActionSheet';
-import CommonToast from 'components/CommonToast';
 import EventEmitter from 'events';
 import UpdateOverlay from 'components/UpdateOverlay';
 import OverlayModal from 'components/OverlayModal';
@@ -17,7 +16,9 @@ import { getWallet } from 'utils/redux';
 import { getCmsCodePoshControl } from '@portkey-wallet/hooks/hooks-ca/cms/util';
 import { getDispatch } from './redux';
 import { setUpdateInfo } from 'store/user/actions';
-import { sleep } from '@portkey-wallet/utils';
+import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
+import CommonToast from 'components/CommonToast';
+import { CODE_PUSH_OPTIONS } from 'constants/codePush';
 
 export type TUpdateInfo = {
   version?: string | null;
@@ -47,6 +48,12 @@ export type TCodePushOperatorOptions = {
 export type TRemotePackageInfo = { remotePackage: RemotePackage | null; time: number };
 
 export const RemotePackageExpiration = 1000 * 60 * 5;
+
+enum CODE_PUSH_ERROR {
+  Downloading = 'Downloading updates',
+  Installed = 'Installed',
+  ReCheck = 'Too many requests. Please try again later.',
+}
 
 export class CodePushOperator extends EventEmitter implements ICodePushOperator {
   public localPackage: ICodePushOperator['localPackage'];
@@ -157,15 +164,10 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
       const updateInfo = await this.checkForUpdate();
       console.log(updateInfo, '=======showCheckUpdate');
 
-      const [currentData, pendingData] = await Promise.all([
-        this.getUpdateMetadata(CodePush.UpdateState.RUNNING),
-        this.getUpdateMetadata(CodePush.UpdateState.PENDING),
-      ]);
+      const [currentData] = await Promise.all([this.getUpdateMetadata(CodePush.UpdateState.RUNNING)]);
       if (updateInfo?.packageHash === currentData?.packageHash) return;
       if (!updateInfo) return;
       const info = await this.getUpdateInfo(updateInfo.label);
-      console.log(info, '=========info');
-
       if (info.isForceUpdate) {
         this.syncData(updateInfo, true);
         return;
@@ -230,9 +232,8 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
           this.progress = progress;
         },
       );
-      if (syncStatus === CodePush.SyncStatus.SYNC_IN_PROGRESS) {
-        return CommonToast.info('Downloading updates');
-      }
+      if (syncStatus === CodePush.SyncStatus.SYNC_IN_PROGRESS) throw Error(CODE_PUSH_ERROR.Downloading);
+
       if (updateInfo && syncStatus === CodePush.SyncStatus.UP_TO_DATE) {
         // CodePush.clearUpdates
         await CodePush.clearUpdates();
@@ -240,16 +241,16 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
       }
       console.log(syncStatus, '======syncStatus');
     } catch (error) {
-      CommonToast.fail('Please try again later.');
-      console.log(error, '======error');
+      const message = handleErrorMessage(error);
+      if (message === CODE_PUSH_ERROR.Downloading) throw error;
+      throw Error(CODE_PUSH_ERROR.ReCheck);
     }
   }
   public async checkToUpdate() {
     console.log(this.syncStatus, '=====this.syncStatus');
 
-    if (this.syncStatus === CodePush.SyncStatus.DOWNLOADING_PACKAGE) {
-      return CommonToast.info('Downloading updates');
-    }
+    if (this.syncStatus === CodePush.SyncStatus.DOWNLOADING_PACKAGE) throw Error(CODE_PUSH_ERROR.Downloading);
+
     if (this.syncStatus === CodePush.SyncStatus.UPDATE_INSTALLED) {
       this.restartApp();
       return;
@@ -270,9 +271,8 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
         return;
       }
 
-      if (updateInfo.packageHash === currentData?.packageHash) {
-        return CommonToast.info('Installed');
-      }
+      if (updateInfo.packageHash === currentData?.packageHash) throw Error(CODE_PUSH_ERROR.Installed);
+
       if (updateInfo.packageHash === pendingData?.packageHash) {
         return this.restartApp();
       }
@@ -286,8 +286,12 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
           { title: 'Later', type: 'outline' },
           {
             title: 'Download',
-            onPress: () => {
-              this.syncData(updateInfo, !!info.isForceUpdate);
+            onPress: async () => {
+              try {
+                await this.syncData(updateInfo, !!info.isForceUpdate);
+              } catch (error) {
+                CommonToast.failError(error);
+              }
             },
           },
         ],
@@ -299,7 +303,7 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
 }
 
 export const codePushOperator = new CodePushOperator({
-  deploymentKey: 'IQcprlvYIWyYbUKD_qd8cSyy5gPUhjOnL9O_k',
+  deploymentKey: CODE_PUSH_OPTIONS.deploymentKey,
   storage: baseStore,
 });
 

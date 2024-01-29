@@ -75,6 +75,7 @@ export function useJoinOfficialGroupTipModal() {
     if (!status) {
       handleCancel();
       ActionSheet.alert({
+        isCloseShow: true,
         bgImage: joinGroupBgImage,
         title: JOIN_OFFICIAL_GROUP_TITLE,
         message: JOIN_OFFICIAL_GROUP_CONTENT,

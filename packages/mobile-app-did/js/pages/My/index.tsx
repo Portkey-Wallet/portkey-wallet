@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
@@ -10,18 +10,29 @@ import { RootStackName } from 'navigation';
 import { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCheckUpdate } from 'store/user/hooks';
+import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 
 interface MenuItemType {
   name: RootStackName;
   label: string;
   icon: IconName;
   suffixDom?: React.ReactNode;
+  onPress?: () => void;
 }
 
 export default function MyMenu() {
   const { t } = useLanguage();
   const isImputation = useIsImputation();
+  const checkUpdate = useCheckUpdate();
+  const { setViewReferralStatusStatus } = useReferral();
 
+  useFocusEffect(
+    useCallback(() => {
+      checkUpdate();
+    }, [checkUpdate]),
+  );
   const MenuList: Array<MenuItemType> = useMemo(
     () => [
       {
@@ -54,9 +65,13 @@ export default function MyMenu() {
         label: 'Referral',
         icon: 'referral',
         suffixDom: <TextS style={styles.newStyle}>New</TextS>,
+        onPress: () => {
+          setViewReferralStatusStatus();
+          navigationService.navigate('UserReferral');
+        },
       },
     ],
-    [],
+    [setViewReferralStatusStatus],
   );
 
   return (
@@ -74,7 +89,7 @@ export default function MyMenu() {
             title={t(ele.label)}
             key={ele.name}
             iconStyle={styles.menuItemIconStyle}
-            onPress={() => navigationService.navigate(ele.name)}
+            onPress={ele.onPress ? ele.onPress : () => navigationService.navigate(ele.name)}
             suffix={ele.suffixDom}
           />
         );

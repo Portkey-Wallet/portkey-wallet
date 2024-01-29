@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 
 export const styles = StyleSheet.create({
   wrapStyle: {
@@ -33,7 +33,9 @@ export const styles = StyleSheet.create({
     fontSize: 16,
   },
   contentSection: {
+    overflow: 'hidden',
     alignItems: 'center',
+    justifyContent: 'center',
     padding: pTd(24),
   },
   cancelBox: {
@@ -53,10 +55,6 @@ export const styles = StyleSheet.create({
     width: screenWidth - 48,
     backgroundColor: 'white',
     padding: pTd(24),
-  },
-  alertBoxWithClose: {
-    // paddingTop: pTd(30),
-    // paddingBottom: pTd(16),
   },
   alertTitle: {
     textAlign: 'center',
@@ -80,5 +78,14 @@ export const styles = StyleSheet.create({
     position: 'absolute',
     right: pTd(12),
     top: pTd(12),
+  },
+  scrollViewStyle: {
+    maxHeight: screenHeight * 0.45,
+  },
+  scrollViewContainerStyle: {
+    minHeight: 0,
+  },
+  buttonBox: {
+    marginTop: pTd(20),
   },
 });

@@ -21,6 +21,7 @@ import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import WalletMenuItem from '../components/WalletMenuItem';
 import { TextS } from 'components/CommonText';
+import { useUpdateInfo } from 'store/user/hooks';
 
 interface WalletHomeProps {
   name?: string;
@@ -34,6 +35,7 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
   } = useCurrentWallet();
   const getCurrentCAContract = useGetCurrentCAContract();
   const logout = useLogOut();
+  const updateInfo = useUpdateInfo();
 
   useEffect(() => {
     appDispatch(getCaHolderInfoAsync());
@@ -83,7 +85,7 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
           />
           <MenuItem
             // change to components
-            suffix={<TextS style={pageStyles.newVersion}>New Version</TextS>}
+            suffix={!!updateInfo && <TextS style={pageStyles.newVersion}>New Version</TextS>}
             style={pageStyles.menuItem}
             onPress={() => navigationService.navigate('AboutUs')}
             title={t('About Us')}

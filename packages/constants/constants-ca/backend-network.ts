@@ -237,7 +237,7 @@ export const BackEndNetWorkMap: {
       },
     },
     imApiUrl: 'https://im.portkey.finance',
-    imWsUrl: 'wss://diok8uqxgvc3.cloudfront.net/ws/',
+    imWsUrl: 'wss://im-socket.portkey.finance/ws/',
     imS3Bucket: 'portkey-im',
     eBridgeUrl: 'https://ebridge.exchange',
     eTransferUrl: 'https://etransfer.exchange',

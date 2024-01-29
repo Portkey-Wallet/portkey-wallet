@@ -20,7 +20,7 @@ export default function InviteGuideList(props: IInviteGuideList) {
   const defaultGuideMap: TInviteGuideMap[] = useMemo(
     () => [
       {
-        icon: 'Invite',
+        icon: 'InviteFriends',
         title: 'Invite Friends',
         desc: 'Chat with your friends in Portkey',
         onClick: clickReferral,

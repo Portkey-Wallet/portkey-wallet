@@ -30,7 +30,8 @@ export default function DiscoverHome() {
   const lastEmitCloseSwiped = useLatestRef(emitCloseSwiped);
   const requestNotifyPermission = useRequestNotifyPermission();
   const joinOfficialGroupModal = useJoinOfficialGroupTipModal();
-  const { list: channelList } = useChannelList();
+  const { list: channelList, init: initChannelList } = useChannelList();
+  const lastInitChannelList = useLatestRef(initChannelList);
 
   const onRightPress = useCallback(
     async (event: GestureResponderEvent) => {
@@ -92,6 +93,13 @@ export default function DiscoverHome() {
     const isShowNotice = await requestNotifyPermission();
     if (!isShowNotice) joinOfficialGroupModal();
   }, [joinOfficialGroupModal, requestNotifyPermission]);
+
+  useFocusEffect(
+    useCallback(() => {
+      lastInitChannelList.current();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []),
+  );
 
   useFocusEffect(
     useCallback(() => {

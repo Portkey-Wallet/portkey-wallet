@@ -18,6 +18,7 @@ import { getDispatch } from './redux';
 import { setUpdateInfo } from 'store/user/actions';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import CommonToast from 'components/CommonToast';
+import { CODE_PUSH_OPTIONS } from 'constants/codePush';
 
 export type TUpdateInfo = {
   version?: string | null;
@@ -302,7 +303,7 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
 }
 
 export const codePushOperator = new CodePushOperator({
-  deploymentKey: 'lwTl-YDcIhsTBXEiB16rYEcv9scR8nISBtMEA',
+  deploymentKey: CODE_PUSH_OPTIONS.deploymentKey,
   storage: baseStore,
 });
 

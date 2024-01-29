@@ -54,7 +54,7 @@ export const productionNav = [
 export const devNav = [
   ...productionNav,
   { name: 'Home', component: Home },
-  { name: 'Discover', component: Discover },
+  // { name: 'Discover', component: Discover },
 ] as const;
 
 const stackNav = __DEV__ ? devNav : productionNav;

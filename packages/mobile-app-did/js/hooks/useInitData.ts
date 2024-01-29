@@ -23,7 +23,7 @@ export default function useInitData() {
   const pin = usePin();
   const getCurrentCAViewContract = useGetCurrentCAViewContract();
   const wallet = useCurrentWalletInfo();
-  const { netWorkType } = useCurrentNetwork();
+  const { networkType } = useCurrentNetwork();
 
   useCheckAndInitNetworkDiscoverMap();
   useGetRedPackageConfig(true, true);
@@ -89,6 +89,6 @@ export default function useInitData() {
 
   useEffect(() => {
     // report user`s current environment of network
-    reportUserCurrentNetwork(netWorkType);
-  }, [netWorkType]);
+    reportUserCurrentNetwork(networkType);
+  }, [networkType]);
 }

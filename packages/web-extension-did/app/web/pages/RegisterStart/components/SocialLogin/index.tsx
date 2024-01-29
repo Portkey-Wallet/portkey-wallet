@@ -1,17 +1,17 @@
-import { message } from 'antd';
 import CustomSvg from 'components/CustomSvg';
-import { useIsTestnet } from 'hooks/useNetwork';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
 import { RegisterType, SocialLoginFinishHandler } from 'types/wallet';
 import DividerCenter from '../DividerCenter';
 import SocialContent from '../SocialContent';
 import TermsOfServiceItem from '../TermsOfServiceItem';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
 import { useLoading, useWalletInfo } from 'store/Provider/hooks';
 import { ISocialLogin } from '@portkey-wallet/types/types-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
 import './index.less';
 
 const guardianList = [
@@ -40,9 +40,9 @@ export default function SocialLogin({
   onFinish: SocialLoginFinishHandler;
   switchLogin?: (type: 'Email' | 'Phone') => void;
 }) {
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const { t } = useTranslation();
-  const isTestnet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const { currentNetwork } = useWalletInfo();
   const { setLoading } = useLoading();
 
@@ -50,7 +50,7 @@ export default function SocialLogin({
 
   const renderTitle = useMemo(() => {
     const title = isLogin ? t('Login') : t('Sign up');
-    if (isTestnet) {
+    if (!isMainnet) {
       return (
         <div className="flex-center testnet-flag">
           <span className="content">
@@ -61,7 +61,7 @@ export default function SocialLogin({
       );
     }
     return title;
-  }, [isLogin, isTestnet, t]);
+  }, [isLogin, isMainnet, t]);
 
   const onSocialChange = useCallback(
     async (v: ISocialLogin) => {
@@ -77,7 +77,7 @@ export default function SocialLogin({
       } catch (error) {
         setLoading(false);
         const msg = handleErrorMessage(error);
-        message.error(msg);
+        singleMessage.error(msg);
       }
     },
     [currentNetwork, onFinish, setLoading],

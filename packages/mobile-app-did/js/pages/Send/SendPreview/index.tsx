@@ -21,7 +21,7 @@ import crossChainTransfer, {
   CrossChainTransferIntervalParams,
   intervalCrossChainTransfer,
 } from 'utils/transfer/crossChainTransfer';
-import { useCurrentNetworkInfo, useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCaAddresses, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { formatAmountShow, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
 import sameChainTransfer from 'utils/transfer/sameChainTransfer';
@@ -54,7 +54,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 const SendHome: React.FC = () => {
   const { t } = useLanguage();
-  const isTestnet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const defaultToken = useDefaultToken();
 
   const routerParams = useRouterEffectParams<IToSendPreviewParamsType>();
@@ -416,7 +416,7 @@ const SendHome: React.FC = () => {
           <Text style={[styles.tokenCount, FontStyles.font5, fonts.mediumFont]}>
             {`- ${formatAmountShow(sendNumber)} ${assetInfo?.symbol}`}
           </Text>
-          {!isTestnet && isTokenHasPrice && (
+          {isMainnet && isTokenHasPrice && (
             <TextM style={styles.tokenUSD}>{`-$ ${formatAmountShow(
               ZERO.plus(sendNumber).multipliedBy(tokenPriceObject[assetInfo.symbol]),
               2,
@@ -473,7 +473,7 @@ const SendHome: React.FC = () => {
               <TextM
                 style={[styles.blackFontColor, styles.fontBold]}>{`${transactionFee} ${defaultToken.symbol}`}</TextM>
             </View>
-            {!isTestnet && (
+            {isMainnet && (
               <View>
                 <TextM />
                 <TextS style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`$ ${unitConverter(
@@ -495,7 +495,7 @@ const SendHome: React.FC = () => {
                     <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>{`${unitConverter(
                       crossDefaultFee,
                     )} ${defaultToken.symbol}`}</TextM>
-                    {!isTestnet ? (
+                    {isMainnet ? (
                       <TextS
                         style={[
                           styles.blackFontColor,
@@ -526,7 +526,7 @@ const SendHome: React.FC = () => {
                       : formatAmountShow(ZERO.plus(sendNumber).minus(ZERO.plus(crossDefaultFee)))}{' '}
                     {defaultToken.symbol}
                   </TextM>
-                  {!isTestnet ? (
+                  {isMainnet ? (
                     <TextS style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`$ ${
                       ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(crossDefaultFee))
                         ? '0'

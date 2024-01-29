@@ -25,10 +25,10 @@ import initIm from 'hooks/im';
 import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useExtensionEntrance } from 'hooks/cms';
 import { useInitRamp } from '@portkey-wallet/hooks/hooks-ca/ramp';
-import { getPin } from 'utils/lib/serviceWorkerAction';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { initConfig, initDidReactSDKToken, initRequest } from './initConfig';
 import useFCM from 'hooks/useFCM';
+import { getPin } from 'utils/getSeed';
 
 keepAliveOnPages({});
 request.setExceptionManager(exceptionManager);
@@ -61,7 +61,6 @@ export default function Updater() {
     });
   }, [imS3Bucket, isMainnet]);
 
-  useFCM();
   initIm();
   useVerifierList();
   useUpdateRedux();
@@ -78,6 +77,7 @@ export default function Updater() {
   }, [initRamp, refreshToken]);
 
   const checkUpdate = useCheckUpdate();
+  useFCM();
 
   useCheckManager(checkManagerOnLogout);
   useFetchTxFee();

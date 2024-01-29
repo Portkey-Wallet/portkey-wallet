@@ -6,15 +6,14 @@ import { IClickAddressProps } from '@portkey-wallet/types/types-ca/contact';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { getAddressChainId, handleErrorMessage, isDIDAddress } from '@portkey-wallet/utils';
 import { getAelfAddress, getEntireDIDAelfAddress, isCrossChain, isEqAddress } from '@portkey-wallet/utils/aelf';
-import aes from '@portkey-wallet/utils/aes';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
-import { Button, message, Modal } from 'antd';
+import { Button, Modal } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import TitleWrapper from 'components/TitleWrapper';
 import { ReactElement, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate, useParams } from 'react-router';
-import { useAppDispatch, useCommonState, useLoading, useUserInfo, useWalletInfo } from 'store/Provider/hooks';
+import { useNavigate, useParams } from 'react-router';
+import { useAppDispatch, useCommonState, useLoading, useWalletInfo } from 'store/Provider/hooks';
 import crossChainTransfer, { intervalCrossChainTransfer } from 'utils/sandboxUtil/crossChainTransfer';
 import sameChainTransfer from 'utils/sandboxUtil/sameChainTransfer';
 import AddressSelector from './components/AddressSelector';
@@ -44,7 +43,13 @@ import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import CustomModal from 'pages/components/CustomModal';
 import { SideChainTipContent, SideChainTipTitle } from '@portkey-wallet/constants/constants-ca/send';
+import getSeed from 'utils/getSeed';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
+import singleMessage from 'utils/singleMessage';
+import { usePromptLocationParams } from 'hooks/router';
+import { TSendLocationState, TSendPageType } from 'types/router';
+import InternalMessage from 'messages/InternalMessage';
+import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 
 export type ToAccount = { address: string; name?: string };
 
@@ -60,20 +65,19 @@ type TypeStageObj = {
 
 export default function Send() {
   const navigate = useNavigate();
-  const { walletName } = useWalletInfo();
+  const { userInfo } = useWalletInfo();
   // TODO need get data from state and wait for BE data structure
   const { type, symbol } = useParams();
-  const { state } = useLocation();
+  const { locationParams: state } = usePromptLocationParams<TSendLocationState, TSendLocationState>();
+  const { isPrompt } = useCommonState();
   const chainId: ChainId = useMemo(() => state.targetChainId || state.chainId, [state.chainId, state.targetChainId]);
   const chainInfo = useCurrentChain(chainId);
   const wallet = useCurrentWalletInfo();
   const currentNetwork = useCurrentNetworkInfo();
-  const { passwordSeed } = useUserInfo();
-  console.log(wallet, 'wallet===');
   const { setLoading } = useLoading();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
-  const [openGuardiansApprove, setOpenGuardiansApprove] = useState<boolean>(false);
+  const [openGuardiansApprove, setOpenGuardiansApprove] = useState<boolean>(!!state?.openGuardiansApprove);
   const oneTimeApprovalList = useRef<GuardianItem[]>([]);
   const [errorMsg, setErrorMsg] = useState('');
   const [tipMsg, setTipMsg] = useState('');
@@ -130,7 +134,7 @@ export default function Send() {
     async ({ transactionId, params }: the2ThFailedActivityItemType) => {
       try {
         if (!chainInfo) return;
-        const privateKey = aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed);
+        const { privateKey } = await getSeed();
         if (!privateKey) return;
         setLoading(true);
         await intervalCrossChainTransfer({ ...params, chainInfo, privateKey });
@@ -173,7 +177,7 @@ export default function Send() {
     async (num = ''): Promise<string | void> => {
       try {
         if (!toAccount?.address) throw 'No toAccount';
-        const privateKey = await aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed);
+        const { privateKey } = await getSeed();
         if (!privateKey) throw t(WalletError.invalidPrivateKey);
         if (!currentChain) throw 'No ChainInfo';
         const _caAddress = wallet?.[(state.chainId as ChainId) || defaultToken.symbol]?.caAddress;
@@ -190,8 +194,7 @@ export default function Send() {
         });
         return feeRes;
       } catch (error) {
-        const _error = handleErrorMessage(error);
-        console.log('getFee===error', _error);
+        console.log('getFee===error', error);
       }
     },
     [
@@ -199,7 +202,6 @@ export default function Send() {
       currentChain,
       currentNetwork.walletType,
       defaultToken.symbol,
-      passwordSeed,
       state.chainId,
       t,
       toAccount?.address,
@@ -210,9 +212,10 @@ export default function Send() {
 
   const sendTransfer = useCallback(async () => {
     try {
-      if (!chainInfo || !passwordSeed) return;
-      const privateKey = aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed);
-      if (!privateKey) return;
+      setLoading(true);
+
+      const { privateKey } = await getSeed();
+      if (!chainInfo || !privateKey) return;
       if (!tokenInfo) throw 'No Symbol info';
 
       if (isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF')) {
@@ -240,13 +243,13 @@ export default function Send() {
           guardiansApproved: oneTimeApprovalList.current,
         });
       }
-      message.success('success');
+      singleMessage.success('success');
       navigate('/');
     } catch (error: any) {
       setLoading(false);
-      if (!error?.type) return message.error(error);
+      if (!error?.type) return singleMessage.error(error);
       if (error.type === 'managerTransfer') {
-        return message.error(error);
+        return singleMessage.error(error);
       } else if (error.type === 'crossChainTransfer') {
         dispatch(addFailedActivity(error.data));
         console.log('addFailedActivity', error);
@@ -254,7 +257,7 @@ export default function Send() {
         showErrorModal(error.data);
         return;
       } else {
-        message.error(handleErrorMessage(error));
+        singleMessage.error(handleErrorMessage(error));
       }
     } finally {
       setLoading(false);
@@ -266,22 +269,32 @@ export default function Send() {
     defaultToken.decimals,
     dispatch,
     navigate,
-    passwordSeed,
     setLoading,
     showErrorModal,
     toAccount.address,
     tokenInfo,
     txFee,
-    wallet.AESEncryptPrivateKey,
     wallet.address,
     wallet?.caHash,
   ]);
 
   const checkLimit = useCheckLimit(tokenInfo.chainId);
   const handleOneTimeApproval = useCallback(() => {
-    setOpenGuardiansApprove(true);
-    console.log('🌈 🌈 🌈 🌈 🌈 🌈 handleOneTimeApproval', '');
-  }, []);
+    if (isPrompt) return setOpenGuardiansApprove(true);
+
+    const params: TSendLocationState = {
+      ...tokenInfo,
+      targetChainId: chainId,
+      toAccount,
+      stage,
+      amount,
+      balance,
+      type: type as TSendPageType,
+      openGuardiansApprove: true,
+    };
+    InternalMessage.payload(PortkeyMessageTypes.SEND, JSON.stringify(params)).send();
+  }, [amount, balance, chainId, isPrompt, stage, toAccount, tokenInfo, type]);
+
   const onCloseGuardianApprove = useCallback(() => {
     setOpenGuardiansApprove(false);
   }, []);
@@ -297,10 +310,10 @@ export default function Send() {
             await sendTransfer();
           }
         } else {
-          // TODO guardians throw error
+          throw Error('approve failed, please try again');
         }
       } catch (error) {
-        // TODO guardians throw error
+        throw Error('approve failed, please try again');
       }
     },
     [sendTransfer, stage],
@@ -312,6 +325,18 @@ export default function Send() {
       setLoading(true);
       if (!ZERO.plus(amount).toNumber()) return 'Please input amount';
       if (!currentChain) return 'currentChain is not exist';
+
+      // CHECK 1: manager sync
+      const _isManagerSynced = await checkManagerSyncState(chainId);
+      if (!_isManagerSynced) {
+        return 'Synchronizing on-chain account information...';
+      }
+
+      // CHECK 2: wallet security
+      const securityRes = await checkSecurity(tokenInfo.chainId);
+      if (!securityRes) return WalletIsNotSecure;
+
+      // CHECK 3: balance
       const result = await getBalance({
         rpcUrl: currentChain.endPoint,
         address: tokenInfo.address,
@@ -343,16 +368,7 @@ export default function Send() {
         return 'input error';
       }
 
-      const _isManagerSynced = await checkManagerSyncState(chainId);
-      if (!_isManagerSynced) {
-        return 'Synchronizing on-chain account information...';
-      }
-
-      // wallet security check
-      const securityRes = await checkSecurity(tokenInfo.chainId);
-      if (!securityRes) return WalletIsNotSecure;
-
-      // transfer limit check
+      // CHECK 4: transfer limit
       const limitRes = await checkLimit({
         chainId: tokenInfo.chainId,
         symbol: tokenInfo.symbol,
@@ -373,6 +389,7 @@ export default function Send() {
       });
       if (!limitRes) return ExceedLimit;
 
+      // CHECK 5: tx fee
       const fee = await getTranslationInfo();
       console.log('---getTranslationInfo', fee);
       if (fee) {
@@ -449,7 +466,7 @@ export default function Send() {
           setLoading(false);
 
           const msg = handleErrorMessage(error);
-          message.error(msg);
+          singleMessage.error(msg);
           return;
         }
       }
@@ -617,7 +634,6 @@ export default function Send() {
     );
   }, [showSideChainModal, state.chainId]);
 
-  const { isPrompt } = useCommonState();
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['page-send', isPrompt && 'detail-page-prompt'])}>
@@ -635,7 +651,7 @@ export default function Send() {
               <div className="item from">
                 <span className="label">{t('From_with_colon')}</span>
                 <div className={'from-wallet control'}>
-                  <div className="name">{walletName}</div>
+                  <div className="name">{userInfo?.nickName}</div>
                 </div>
               </div>
               <div className="item to">
@@ -693,7 +709,7 @@ export default function Send() {
     toAccount,
     tokenInfo.chainId,
     type,
-    walletName,
+    userInfo?.nickName,
   ]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;

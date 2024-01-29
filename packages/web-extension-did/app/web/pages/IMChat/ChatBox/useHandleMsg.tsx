@@ -2,9 +2,9 @@ import { PIN_LIMIT_EXCEED } from '@portkey-wallet/constants/constants-ca/chat';
 import { ChannelItem, Message } from '@portkey-wallet/im';
 import { MessageContentType } from '@portkey-wallet/im-ui-web';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
-import { message } from 'antd';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 import { useCallback } from 'react';
+import singleMessage from 'utils/singleMessage';
 
 export interface HandleProps {
   info?: ChannelItem;
@@ -34,7 +34,7 @@ export const useHandle = ({
         await sleep(200);
         refreshAllPinList?.();
       } catch (e) {
-        message.error('Failed to delete message');
+        singleMessage.error('Failed to delete message');
         console.log('===handle delete message error', e);
       }
     },
@@ -45,9 +45,9 @@ export const useHandle = ({
       await pin(!info?.pin);
     } catch (e: any) {
       if (`${e?.code}` === PIN_LIMIT_EXCEED) {
-        message.error('Pin limit exceeded');
+        singleMessage.error('Pin limit exceeded');
       } else {
-        message.error(`Failed to ${info?.pin ? 'unpin' : 'pin'} chat`);
+        singleMessage.error(`Failed to ${info?.pin ? 'unpin' : 'pin'} chat`);
       }
       console.log('===handle pin error', e);
     }
@@ -56,7 +56,7 @@ export const useHandle = ({
     try {
       await mute(!info?.mute);
     } catch (e) {
-      message.error(`Failed to ${info?.mute ? 'unmute' : 'mute'} chat`);
+      singleMessage.error(`Failed to ${info?.mute ? 'unmute' : 'mute'} chat`);
       console.log('===handle mute error', e);
     }
   }, [info?.mute, mute]);
@@ -78,7 +78,7 @@ export const useHandle = ({
               unPinMsg?.(msg);
             } catch (e) {
               const _err = handleErrorMessage(e, 'Failed to unpin message');
-              message.error(_err);
+              singleMessage.error(_err);
               console.log('===handle unpin message error', e);
             }
           },
@@ -88,7 +88,7 @@ export const useHandle = ({
           await pinMsg?.({ ...msg });
         } catch (e) {
           const _err = handleErrorMessage(e, 'Failed to pin message');
-          message.error(_err);
+          singleMessage.error(_err);
           console.log('===handle pin message error', e);
         }
       }

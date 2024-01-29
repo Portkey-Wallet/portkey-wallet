@@ -1,5 +1,5 @@
 import { NetworkList } from '@portkey-wallet/constants/constants-ca/network';
-import { NetworkType } from '@portkey/provider-types';
+import { NetworkType } from '@portkey-wallet/types';
 import {
   ENVIRONMENT_TYPE_POPUP,
   ENVIRONMENT_TYPE_PROMPT,

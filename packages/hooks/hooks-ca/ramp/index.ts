@@ -6,6 +6,8 @@ import { setRampEntry } from '@portkey-wallet/store/store-ca/ramp/actions';
 import { useBuyFiat } from './buy';
 import { useSellCrypto } from './sell';
 import { useCurrentNetworkInfo, useIsMainnet } from '../network';
+import { IEntranceMatchValueConfig } from '@portkey-wallet/types/types-ca/cms';
+import { useBuyButtonShow } from '../cms/index';
 
 export const useRampState = () => useAppCASelector(state => state.ramp);
 
@@ -92,6 +94,60 @@ export const useRampEntryShow = () => {
       };
     },
     [dispatch, isMainnet],
+  );
+
+  return {
+    isRampShow,
+    isBuySectionShow,
+    isSellSectionShow,
+    refreshRampShow,
+  };
+};
+
+export const useMixRampEntryShow = (config: IEntranceMatchValueConfig) => {
+  const {
+    isBuyButtonShow: isCMSRampShow,
+    isBuySectionShow: isCMSBuySectionShow,
+    isSellSectionShow: isCMSSellSectionShow,
+    refreshBuyButton: refreshCMSRampShow,
+  } = useBuyButtonShow(config);
+
+  const {
+    isRampShow: isSDKRampShow,
+    isBuySectionShow: isSDKBuySectionShow,
+    isSellSectionShow: isSDKSellSectionShow,
+    refreshRampShow: refreshSDKRampShow,
+  } = useRampEntryShow();
+
+  const isRampShow = useMemo(() => isCMSRampShow && isSDKRampShow, [isCMSRampShow, isSDKRampShow]);
+
+  const isBuySectionShow = useMemo(
+    () => isCMSBuySectionShow && isSDKBuySectionShow,
+    [isCMSBuySectionShow, isSDKBuySectionShow],
+  );
+
+  const isSellSectionShow = useMemo(
+    () => isCMSSellSectionShow && isSDKSellSectionShow,
+    [isCMSSellSectionShow, isSDKSellSectionShow],
+  );
+
+  const refreshRampShow = useCallback(
+    async (isFetch = true) => {
+      const { isBuySectionShow: isCMSBuySectionShow, isSellSectionShow: isCMSSellSectionShow } =
+        await refreshCMSRampShow();
+
+      const isCMSRampShow = isCMSBuySectionShow || isCMSSellSectionShow;
+
+      const { isBuySectionShow: isSDKBuySectionShow, isSellSectionShow: isSDKSellSectionShow } =
+        await refreshSDKRampShow(isFetch);
+
+      return {
+        isRampShow: isCMSRampShow && isSDKRampShow,
+        isBuySectionShow: isCMSBuySectionShow && isSDKBuySectionShow,
+        isSellSectionShow: isCMSSellSectionShow && isSDKSellSectionShow,
+      };
+    },
+    [isSDKRampShow, refreshCMSRampShow, refreshSDKRampShow],
   );
 
   return {

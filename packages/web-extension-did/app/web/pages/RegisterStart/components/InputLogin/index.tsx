@@ -1,4 +1,4 @@
-import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import CustomSvg from 'components/CustomSvg';
 import { MutableRefObject, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,12 +25,12 @@ export default function InputLogin({
   validatePhone?: ValidateHandler;
 }) {
   const { t } = useTranslation();
-  const isTestnet = useIsTestnet();
+  const isMainnet = useIsMainnet();
 
   const title = useMemo(() => (type === 'Login' ? t('Login') : t('Sign up')), [t, type]);
 
   const renderTitle = useMemo(() => {
-    if (isTestnet) {
+    if (!isMainnet) {
       return (
         <div className="flex-center testnet-flag">
           <span className="content">
@@ -41,7 +41,7 @@ export default function InputLogin({
       );
     }
     return <span>{title}</span>;
-  }, [isTestnet, t, title]);
+  }, [isMainnet, t, title]);
 
   return (
     <div>

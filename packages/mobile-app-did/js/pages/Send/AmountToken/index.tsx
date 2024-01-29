@@ -14,7 +14,7 @@ import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { FontStyles } from 'assets/theme/styles';
 import { TextM, TextS } from 'components/CommonText';
 
-import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
@@ -40,12 +40,11 @@ export default function AmountToken({
   const defaultToken = useDefaultToken();
   const iptRef = useRef<TextInput>(null);
   useInputFocus(iptRef);
-  const isTestNet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const isTokenHasPrice = useIsTokenHasPrice(selectedToken?.symbol);
 
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const symbolImages = useSymbolImages();
-
   const formattedTokenNameToSuffix = useMemo(() => {
     return selectedToken?.symbol?.length > 5 ? `${selectedToken?.symbol.slice(0, 5)}...` : selectedToken?.symbol;
   }, [selectedToken?.symbol]);
@@ -101,7 +100,7 @@ export default function AmountToken({
           </TouchableOpacity>
         </View>
       </View>
-      {!isTestNet && isTokenHasPrice && (
+      {isMainnet && isTokenHasPrice && (
         <View style={styles.bottom}>
           <TextS style={styles.topBalance}>
             {`$ ${formatAmountShow(

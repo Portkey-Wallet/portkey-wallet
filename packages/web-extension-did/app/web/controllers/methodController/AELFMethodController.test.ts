@@ -274,7 +274,7 @@ describe('AELFMethodController', () => {
         isActive: jest.fn().mockResolvedValue(true),
         accounts: jest.fn().mockResolvedValue({}),
         chainId: jest.fn().mockResolvedValue({}),
-        getWallet: jest.fn().mockResolvedValue({ currentNetwork: 'MAIN' }),
+        getWallet: jest.fn().mockResolvedValue({ currentNetwork: 'MAINNET' }),
       };
       (aelfMethodController as any).dappManager = mockDappManager;
       aelfMethodController.isUnlocked = jest.fn().mockReturnValue(true);
@@ -286,7 +286,7 @@ describe('AELFMethodController', () => {
           isConnected: true,
           accounts: {},
           chainIds: {},
-          networkType: 'MAIN',
+          networkType: 'MAINNET',
         },
       };
       expect(sendResponse).toHaveBeenCalledWith(expect.objectContaining(expectParams));
@@ -315,7 +315,7 @@ describe('AELFMethodController', () => {
         isActive: jest.fn().mockResolvedValue(true),
         accounts: jest.fn().mockRejectedValue(errorMsg),
         chainId: jest.fn().mockResolvedValue({}),
-        getWallet: jest.fn().mockResolvedValue({ currentNetwork: 'MAIN' }),
+        getWallet: jest.fn().mockResolvedValue({ currentNetwork: 'MAINNET' }),
       };
       (aelfMethodController as any).dappManager = mockDappManager;
       aelfMethodController.isUnlocked = jest.fn().mockReturnValue(true);
@@ -594,7 +594,7 @@ describe('AELFMethodController', () => {
         isActive: jest.fn().mockResolvedValue(true),
         accounts: jest.fn().mockResolvedValue({}),
         chainIds: jest.fn().mockResolvedValue(['AELF', 'tDVW']),
-        getWallet: jest.fn().mockResolvedValue({ currentNetwork: 'MAIN' }),
+        getWallet: jest.fn().mockResolvedValue({ currentNetwork: 'MAINNET' }),
       };
       (aelfMethodController as any).dappManager = mockDappManager;
       await aelfMethodController.requestAccounts(sendResponse, message as any);
@@ -1252,19 +1252,19 @@ describe('AELFMethodController', () => {
     });
     test('getNetwork successful', async () => {
       const mockDappManager = {
-        networkType: jest.fn().mockResolvedValue('MAIN'),
+        networkType: jest.fn().mockResolvedValue('MAINNET'),
       };
       (aelfMethodController as any).dappManager = mockDappManager;
       await aelfMethodController.getNetwork(sendResponse, message as any);
       const expectParams = {
         ...errorHandler(0),
-        data: 'MAIN',
+        data: 'MAINNET',
       };
       expect(sendResponse).toHaveBeenCalledWith(expect.objectContaining(expectParams));
     });
     test('getNetwork error', async () => {
       const mockDappManager = {
-        networkType: jest.fn().mockRejectedValue('MAIN'),
+        networkType: jest.fn().mockRejectedValue('MAINNET'),
       };
       (aelfMethodController as any).dappManager = mockDappManager;
       await aelfMethodController.getNetwork(sendResponse, message as any);

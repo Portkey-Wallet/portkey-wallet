@@ -1,8 +1,7 @@
 import SettingHeader from 'pages/components/SettingHeader';
 import './index.less';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
-import { Button, Form, Input, message } from 'antd';
+import { Button, Form, Input } from 'antd';
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import ContactsSearchInput from 'pages/Contacts/components/ContactsSearchInput';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
@@ -14,11 +13,13 @@ import CustomSvg from 'components/CustomSvg';
 import UploadAvatar from 'pages/components/UploadAvatar';
 import { useLoading } from 'store/Provider/hooks';
 import uploadImageToS3 from 'utils/compressAndUploadToS3';
+import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
 
 const { Item: FormItem } = Form;
 
 export default function CreateChatGroup() {
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const localSearch = useLocalContactSearch();
@@ -110,12 +111,12 @@ export default function CreateChatGroup() {
       const res = await createGroupChannel(name.trim(), selectedContacts, s3Url);
 
       setLoading(false);
-      message.success('Group Created');
+      singleMessage.success('Group Created');
 
       navigate(`/chat-box-group/${res?.channelUuid}`);
     } catch (error) {
       const msg = handleErrorMessage(error, 'Error Creating Group');
-      message.error(msg);
+      singleMessage.error(msg);
       setLoading(false);
     }
   }, [createGroupChannel, file, form, navigate, selectedContacts, setLoading]);

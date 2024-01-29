@@ -36,7 +36,7 @@ describe('useCurrentDappList', () => {
   });
   test('failed to get assets data', () => {
     jest.spyOn(walletHook, 'useWallet').mockReturnValue({
-      currentNetwork: 'MAIN',
+      currentNetwork: 'MAINNET',
       walletAvatar: '',
       walletType: 'aelf',
       walletName: '',
@@ -44,6 +44,6 @@ describe('useCurrentDappList', () => {
     });
     const { result } = renderHookWithProvider(useCurrentDappList, setupStore(DappState));
 
-    expect(result.current).toEqual(DappState.dapp.dappMap.MAIN);
+    expect(result.current).toEqual(DappState.dapp.dappMap.MAINNET);
   });
 });

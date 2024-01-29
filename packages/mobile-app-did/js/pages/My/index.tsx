@@ -11,7 +11,7 @@ import { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useFocusEffect } from '@react-navigation/native';
-import { useCheckUpdate } from 'store/user/hooks';
+import { useCheckCodePushUpdate } from 'store/user/hooks';
 
 interface MenuItemType {
   name: RootStackName;
@@ -23,12 +23,6 @@ interface MenuItemType {
 export default function MyMenu() {
   const { t } = useLanguage();
   const isImputation = useIsImputation();
-  const checkUpdate = useCheckUpdate();
-  useFocusEffect(
-    useCallback(() => {
-      checkUpdate();
-    }, []),
-  );
   const MenuList: Array<MenuItemType> = useMemo(
     () => [
       {

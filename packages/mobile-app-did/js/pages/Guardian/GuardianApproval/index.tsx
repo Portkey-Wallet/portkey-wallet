@@ -217,7 +217,11 @@ export default function GuardianApproval() {
     lastOnEmitDapp.current();
     switch (approvalType) {
       case ApprovalType.addGuardian:
-        navigationService.navigate('GuardianEdit');
+        if (approveParams?.isDiscover) {
+          navigationService.navigate('Tab');
+        } else {
+          navigationService.navigate('GuardianEdit');
+        }
         break;
       case ApprovalType.setLoginAccount:
       case ApprovalType.unsetLoginAccount:
@@ -233,7 +237,7 @@ export default function GuardianApproval() {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [approvalType, guardianItem]);
+  }, [approvalType, guardianItem, approveParams]);
   const onRequestOrSetPin = useOnRequestOrSetPin();
 
   const dappApprove = useCallback(() => {

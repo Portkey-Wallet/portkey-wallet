@@ -42,7 +42,9 @@ function AlertBody({ accelerateChainId }: { accelerateChainId: ChainId }) {
               accelerateChainId,
             },
             multiLevelParams: {
-              isDiscover: true,
+              approveParams: {
+                isDiscover: true,
+              },
             },
           });
           OverlayModal.hide();

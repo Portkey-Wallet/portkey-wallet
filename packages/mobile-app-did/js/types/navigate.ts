@@ -22,6 +22,8 @@ export type NavigateMultiLevelParams = {
     backParams?: any;
   };
   imTransferInfo?: ImTransferInfoType;
-  isDiscover?: boolean;
-  eventName?: string;
+  approveParams?: {
+    isDiscover?: boolean;
+    eventName?: string;
+  };
 };

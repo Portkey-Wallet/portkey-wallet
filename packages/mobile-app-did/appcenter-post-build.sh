@@ -156,7 +156,7 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
                                 },
                                 {   
                                     "tag": "img",
-                                    "image_key": "img_v2_4fe5ee4e-d195-47b8-a783-33a7201118bg"
+                                    "image_key": "img_v3_027i_3b2cc2f9-0269-4803-8e9f-3886ff78770g"
                                 }
                             ]
                         ]
@@ -197,7 +197,7 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
                                 },
                                 {   
                                     "tag": "img",
-                                    "image_key": "img_v2_4dceff8d-f98a-4774-9319-ac019165206g"
+                                    "image_key": "img_v3_027i_ab9a9d00-8fb0-4a80-a616-aee3ed7f747g"
                                 }
                             ]
                         ]
@@ -262,7 +262,5 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
 
 
 fi
-
-
 
 

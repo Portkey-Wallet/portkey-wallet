@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';

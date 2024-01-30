@@ -12,3 +12,7 @@ export const DISCLAIMER_TEXT =
 export const INSUFFICIENT_FUNDS_TEXT = 'Insufficient funds';
 
 export const SYNCHRONIZING_CHAIN_TEXT = 'Synchronizing on-chain account information...';
+
+export const SHOW_RAMP_SYMBOL_LIST = ['ELF', 'USDT'];
+
+export const SHOW_RAMP_CHAIN_ID_LIST = ['AELF'];

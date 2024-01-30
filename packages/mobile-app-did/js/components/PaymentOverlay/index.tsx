@@ -31,8 +31,8 @@ import { useDefaultTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPr
 import { useCurrentChannel } from 'pages/Chat/context/hooks';
 import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { InsufficientTransactionFee } from 'hooks/useCalculateRedPacketFee';
+import { useAppRampEntryShow } from 'hooks/ramp';
 
 export type PaymentTokenInfo = {
   symbol: string;
@@ -93,7 +93,7 @@ const PaymentModal = ({
     return tokenInfoList.find(ele => ele.symbol === tokenInfo.symbol);
   }, [chainId, tokenInfo.symbol, tokenInfoList, tokenMap]);
 
-  const { isBuySectionShow } = useRampEntryShow();
+  const { isBuySectionShow } = useAppRampEntryShow();
   const isCanBuy = useMemo(
     () => tokenInfo.symbol === defaultToken.symbol && isBuySectionShow,
     [isBuySectionShow, defaultToken.symbol, tokenInfo.symbol],
@@ -190,6 +190,9 @@ const PaymentModal = ({
       onPress = () => {
         OverlayModal.hide(false);
         navigationService.navigateByMultiLevelParams('RampHome', {
+          params: {
+            symbol: tokenInfo.symbol,
+          },
           multiLevelParams: {
             successNavigateName,
           },
@@ -202,7 +205,7 @@ const PaymentModal = ({
         <TextS style={FontStyles.font11}>{buttonTitle}</TextS>
       </Touchable>
     );
-  }, [chainId, crossSufficientItem, currentCaAddress, currentChannelType, fee.error, isCanBuy]);
+  }, [chainId, crossSufficientItem, currentCaAddress, currentChannelType, fee.error, isCanBuy, tokenInfo.symbol]);
 
   const disableStyle = useMemo(() => !!isInsufficientTransactionFee && styles.opacity, [isInsufficientTransactionFee]);
   const tokenRowComponent = useMemo(() => {

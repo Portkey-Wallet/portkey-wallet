@@ -118,6 +118,7 @@ export type IProviderDetail = {
   exchange: string;
   feeInfo: IFeeInfo;
   providerNetwork: string;
+  providerSymbol: string;
 };
 
 export type IBuyProviderDetail = Omit<IProviderDetail, 'fiatAmount'>;

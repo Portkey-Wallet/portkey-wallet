@@ -18,13 +18,13 @@ import { ACH_WITHDRAW_URL } from 'constants/index';
 import { generateRateText, generateReceiveText } from '../utils';
 import ramp, { IRampProviderType, RampType } from '@portkey-wallet/ramp';
 import { IGetBuyDetail, IGetSellDetail, getBuyDetail, getSellDetail } from '@portkey-wallet/utils/ramp';
-import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { sleep } from '@portkey-wallet/utils';
 import singleMessage from 'utils/singleMessage';
 import { useLocationState } from 'hooks/router';
 import { TRampPreviewLocationState } from 'types/router';
 import { chromeStorage } from 'store/utils';
+import { useExtensionRampEntryShow } from 'hooks/ramp';
 
 export default function Preview() {
   const { t } = useTranslation();
@@ -35,7 +35,7 @@ export default function Preview() {
   const [receive, setReceive] = useState('1');
   const { setLoading } = useLoading();
   const wallet = useCurrentWalletInfo();
-  const { refreshRampShow } = useRampEntryShow();
+  const { refreshRampShow } = useExtensionRampEntryShow();
 
   const [providerList, setProviderList] = useState<Array<IGetBuyDetail | IGetSellDetail>>([]);
   const [providerSelected, setProviderSelected] = useState<IGetBuyDetail | IGetSellDetail>(InitProviderSelected);
@@ -139,7 +139,7 @@ export default function Preview() {
         type: side,
         address: wallet?.AELF?.caAddress || '',
         email: emailGuardian?.guardianAccount,
-        crypto: crypto,
+        crypto: providerSelected.providerSymbol || crypto,
         network: providerSelected.providerNetwork,
         country: country,
         fiat: fiat,

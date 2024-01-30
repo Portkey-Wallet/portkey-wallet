@@ -19,7 +19,7 @@ import Loading from 'components/Loading';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useReceive } from '../../hooks';
 import CommonToast from 'components/CommonToast';
-import { useBuyFiat, useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { useBuyFiat } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { IRampCryptoItem, IRampFiatItem, RampType } from '@portkey-wallet/ramp';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { IRampLimit } from '@portkey-wallet/types/types-ca/ramp';
@@ -29,19 +29,24 @@ import CommonAvatar from 'components/CommonAvatar';
 import { ErrorType, INIT_HAS_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/constants/constants-ca/common';
 import { isPotentialNumber } from '@portkey-wallet/utils/reg';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useAppRampEntryShow } from 'hooks/ramp';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 
 export default function BuyForm() {
+  const { symbol } = useRouterParams<{ symbol?: string }>();
   const {
     buyFiatList: fiatListState,
     buyDefaultFiat: defaultFiat,
     buyDefaultCryptoList: defaultCryptoList,
     buyDefaultCrypto: defaultCrypto,
     refreshBuyFiat,
+    getSpecifiedFiat,
   } = useBuyFiat();
 
-  const defaultToken = useDefaultToken();
+  const defaultToken = useDefaultToken(MAIN_CHAIN_ID);
 
-  const { refreshRampShow } = useRampEntryShow();
+  const { refreshRampShow } = useAppRampEntryShow();
 
   const [fiatList, setFiatList] = useState<IRampFiatItem[]>(fiatListState);
   const [cryptoList, setCryptoList] = useState<IRampCryptoItem[]>(defaultCryptoList);
@@ -62,16 +67,51 @@ export default function BuyForm() {
   const refreshList = useCallback(async () => {
     Loading.show();
     try {
-      const { buyDefaultFiat, buyFiatList, buyDefaultCryptoList, buyDefaultCrypto } = await refreshBuyFiat();
+      let buyFiatList = fiatListState;
+      let buyDefaultFiat = defaultFiat;
+      let buyDefaultCryptoList = defaultCryptoList;
+      let buyDefaultCrypto = defaultCrypto;
+
+      if (!buyFiatList.length || buyDefaultCryptoList.length) {
+        const allResult = await refreshBuyFiat();
+        buyFiatList = allResult.buyFiatList;
+        buyDefaultFiat = allResult.buyDefaultFiat;
+        buyDefaultCryptoList = allResult.buyDefaultCryptoList;
+        buyDefaultCrypto = allResult.buyDefaultCrypto;
+      }
+
+      if (symbol) {
+        const specifiedFiatResult = await getSpecifiedFiat({
+          crypto: symbol,
+          network: 'AELF',
+        });
+
+        if (!specifiedFiatResult) throw new Error('getSpecifiedFiat error');
+        // const { buyCryptoList: buyDefaultCryptoList, buyDefaultCrypto: buyDefaultCrypto }
+        const specifiedCryptoResult = await getBuyCrypto({
+          fiat: specifiedFiatResult.defaultFiat?.symbol,
+          country: specifiedFiatResult.defaultFiat?.country,
+        });
+        buyDefaultFiat = specifiedFiatResult.defaultFiat;
+        buyDefaultCryptoList = specifiedCryptoResult.buyCryptoList;
+      }
+
       Loading.hide();
       setFiatList(buyFiatList);
       setCryptoList(buyDefaultCryptoList);
+
       const _fiat = buyFiatList.find(
         item => item.symbol === buyDefaultFiat.symbol && item.country === buyDefaultFiat.country,
       );
-      const _crypto = buyDefaultCryptoList.find(
-        item => item.symbol === buyDefaultCrypto.symbol && item.network === buyDefaultCrypto.network,
-      );
+      let _crypto: IRampCryptoItem | undefined;
+      if (symbol) {
+        _crypto = buyDefaultCryptoList.find(item => item.symbol === symbol && item.network === 'AELF');
+      } else {
+        _crypto = buyDefaultCryptoList.find(
+          item => item.symbol === buyDefaultCrypto.symbol && item.network === buyDefaultCrypto.network,
+        );
+      }
+
       setAmount(buyDefaultFiat.amount);
       setCurrency({
         crypto: _crypto,
@@ -81,11 +121,9 @@ export default function BuyForm() {
       Loading.hide();
       console.log('error', error);
     }
-  }, [refreshBuyFiat]);
+  }, [defaultCrypto, defaultCryptoList, defaultFiat, fiatListState, getSpecifiedFiat, refreshBuyFiat, symbol]);
   useEffectOnce(() => {
-    if (fiatListState.length === 0 || defaultCryptoList.length === 0) {
-      refreshList();
-    }
+    refreshList();
   });
 
   const limitAmountRef = useRef<IRampLimit>();

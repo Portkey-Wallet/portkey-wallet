@@ -5,9 +5,9 @@ import { RampType } from '@portkey-wallet/ramp';
 import { ETransType } from 'types/eTrans';
 import { DepositType, IDepositItem, depositList } from './constant';
 import './index.less';
-import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { useNavigateState } from 'hooks/router';
 import { TRampLocationState } from 'types/router';
+import { useExtensionRampEntryShow } from 'hooks/ramp';
 
 export interface IDepositListProps {
   onClose: () => void;
@@ -18,7 +18,7 @@ export interface IDepositListProps {
 export default function DepositList({ onClose, onClickBridge, onClickETrans }: IDepositListProps) {
   const navigate = useNavigateState<TRampLocationState>();
   const { isBridgeShow } = useExtensionBridgeButtonShow();
-  const { isBuySectionShow, isSellSectionShow } = useRampEntryShow();
+  const { isBuySectionShow, isSellSectionShow } = useExtensionRampEntryShow();
   const { isETransDepositShow, isETransWithdrawShow } = useExtensionETransShow();
 
   const handleBuy = useCallback(() => {

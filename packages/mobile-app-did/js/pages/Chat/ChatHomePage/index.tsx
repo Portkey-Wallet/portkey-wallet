@@ -131,9 +131,9 @@ export default function DiscoverHome() {
       <Touchable activeOpacity={1} onPressIn={emitCloseSwiped}>
         <CustomHeader noLeftDom themeType="blue" titleDom="Chats" rightDom={RightDom} />
       </Touchable>
-      {hasFinishInit && (
+      {
         <View style={[BGStyles.bg1, GStyles.flex1]}>
-          {channelList?.length === 0 ? (
+          {hasFinishInit && channelList?.length === 0 ? (
             <>
               <InviteFriendsSection />
               <OfficialChatGroup />
@@ -142,7 +142,7 @@ export default function DiscoverHome() {
             <SessionList />
           )}
         </View>
-      )}
+      }
     </SafeAreaBox>
   );
 }

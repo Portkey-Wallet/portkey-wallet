@@ -193,63 +193,54 @@ export default function useLoginWallet(props: ILoginWalletProps) {
 
   const createWallet = useCallback(
     async ({ pin, type, chainId, accountType, guardianIdentifier, guardianApprovedList }: CreateWalletParams) => {
-      try {
-        if (!guardianIdentifier) throw 'Missing account!!!';
-        // did.reset();
-        const loadingText =
-          type === 'recovery' ? 'Initiating social recovery...' : 'Creating a wallet address on the blockchain';
+      if (!guardianIdentifier) throw 'Missing account!!!';
+      // did.reset();
+      const loadingText =
+        type === 'recovery' ? 'Initiating social recovery...' : 'Creating a wallet address on the blockchain';
 
-        setLoading(true, loadingText);
+      setLoading(true, loadingText);
 
-        let walletResult: RegisterResult | LoginResult;
-        const walletParams = {
-          pin,
-          chainId,
-          accountType,
-          guardianIdentifier,
-          guardianApprovedList,
-        };
-        if (type === 'register') {
-          walletResult = await requestRegisterWallet(walletParams);
-        } else if (type === 'recovery') {
-          walletResult = await requestRecoveryWallet(walletParams);
-        } else {
-          throw 'Param "type" error';
-        }
-
-        if (walletResult.error) {
-          console.log('===createWallet error', walletResult.error);
-          singleMessage.error(handleErrorMessage(walletResult.error));
-          throw walletResult;
-        }
-
-        if (!walletResult.status?.caAddress || !walletResult.status?.caHash) {
-          singleMessage.error('Missing "caAddress" or "caHash"');
-          throw walletResult;
-        }
-        const wallet = createTmpWalletInfo(walletInfo);
-        // setLoading(false);
-        return {
-          caInfo: {
-            caAddress: walletResult.status.caAddress,
-            caHash: walletResult.status.caHash,
-          },
-          accountInfo: {
-            managerUniqueId: walletResult.sessionId,
-            guardianIdentifier,
-            accountType,
-            type,
-          },
-          chainId,
-          pin,
-          walletInfo: wallet,
-        };
-      } catch (error: any) {
-        // setLoading(false);
-        console.log('===SetPinAndAddManager error', error);
-        singleMessage.error(handleErrorMessage(error));
-        return;
+      let walletResult: RegisterResult | LoginResult;
+      const walletParams = {
+        pin,
+        chainId,
+        accountType,
+        guardianIdentifier,
+        guardianApprovedList,
+      };
+      if (type === 'register') {
+        walletResult = await requestRegisterWallet(walletParams);
+      } else if (type === 'recovery') {
+        walletResult = await requestRecoveryWallet(walletParams);
+      } else {
+        throw 'Param "type" error';
       }
+
+      if (walletResult.error) {
+        singleMessage.error(handleErrorMessage(walletResult.error));
+        throw walletResult;
+      }
+
+      if (!walletResult.status?.caAddress || !walletResult.status?.caHash) {
+        singleMessage.error('Missing "caAddress" or "caHash"');
+        throw walletResult;
+      }
+      const wallet = createTmpWalletInfo(walletInfo);
+      return {
+        caInfo: {
+          caAddress: walletResult.status.caAddress,
+          caHash: walletResult.status.caHash,
+        },
+        accountInfo: {
+          managerUniqueId: walletResult.sessionId,
+          guardianIdentifier,
+          accountType,
+          type,
+        },
+        chainId,
+        pin,
+        walletInfo: wallet,
+      };
     },
     [setLoading, createTmpWalletInfo, walletInfo, requestRegisterWallet, requestRecoveryWallet],
   );

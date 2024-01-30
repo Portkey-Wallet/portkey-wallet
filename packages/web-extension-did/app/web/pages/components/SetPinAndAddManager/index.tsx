@@ -1,10 +1,18 @@
-import { SetPinBase, CreatePendingInfo, DIDWalletInfo, AddManagerType, OnErrorFunc } from '@portkey/did-ui-react';
+import {
+  SetPinBase,
+  CreatePendingInfo,
+  DIDWalletInfo,
+  AddManagerType,
+  OnErrorFunc,
+  setLoading,
+} from '@portkey/did-ui-react';
 import { useCallback, useEffect, useRef } from 'react';
 import singleMessage from 'utils/singleMessage';
 import clsx from 'clsx';
 import { ChainId } from '@portkey-wallet/types';
 import type { AccountType, GuardiansApproved } from '@portkey/services';
 import useLoginWallet from 'hooks/useLoginWallet';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 
 export interface ISetPinAndAddManagerProps {
   type: AddManagerType;
@@ -60,8 +68,14 @@ export default function SetPinAndAddManager(props: ISetPinAndAddManagerProps) {
         guardianIdentifier,
         guardianApprovedList,
       };
-      const createResult = await createWallet(params);
-      createResult && onFinishRef.current(createResult);
+      try {
+        const createResult = await createWallet(params);
+        createResult && onFinishRef.current(createResult);
+      } catch (error) {
+        setLoading(false);
+        console.log('===SetPinAndAddManager error', error);
+        singleMessage.error(handleErrorMessage(error));
+      }
     },
     [accountType, chainId, createWallet, guardianApprovedList, guardianIdentifier, onError, onlyGetPin, type],
   );

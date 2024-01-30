@@ -133,7 +133,7 @@ export default function BuyForm() {
       setLoading(true);
       const fiatResult = await getSpecifiedFiat({ crypto: state?.crypto || state?.tokenInfo?.symbol });
       if (fiatResult?.defaultFiat) {
-        await handleFiatSelect({ ...fiatResult?.defaultFiat, icon: '' });
+        await handleFiatSelect(fiatResult?.defaultFiat);
         if (fiatResult?.defaultCrypto) {
           await handleCryptoSelect(fiatResult?.defaultCrypto);
         }

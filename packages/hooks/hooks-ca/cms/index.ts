@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { useAppCASelector } from '../.';
 import { useAppCommonDispatch, useEffectOnce } from '../../index';
-import { useCurrentNetworkInfo, useIsIMServiceExist, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
+import {
+  useCurrentNetworkInfo,
+  useIsIMServiceExist,
+  useIsMainnet,
+  useNetworkList,
+} from '@portkey-wallet/hooks/hooks-ca/network';
 import {
   getDiscoverGroupAsync,
   getSocialMediaAsync,
@@ -147,6 +152,44 @@ export const useEntrance = (config: IEntranceMatchValueConfig, isInit = false) =
   return {
     entrance,
     refresh,
+  };
+};
+
+export const useBuyButtonShow = (config: IEntranceMatchValueConfig) => {
+  const { entrance, refresh } = useEntrance(config);
+  const isMainnet = useIsMainnet();
+
+  const isBuySectionShow = useMemo(() => isMainnet && entrance.buy, [entrance.buy, isMainnet]);
+
+  const isSellSectionShow = useMemo(() => isMainnet && entrance.sell, [entrance.sell, isMainnet]);
+
+  const isBuyButtonShow = useMemo(
+    () => isMainnet && (isBuySectionShow || isSellSectionShow || false),
+    [isBuySectionShow, isMainnet, isSellSectionShow],
+  );
+
+  const refreshBuyButton = useCallback(async () => {
+    let isBuySectionShow = false;
+    let isSellSectionShow = false;
+    try {
+      const result = await refresh();
+      isBuySectionShow = result.buy;
+      isSellSectionShow = result.sell;
+    } catch (error) {
+      console.log('refreshBuyButton error');
+    }
+
+    return {
+      isBuySectionShow: isMainnet && isBuySectionShow,
+      isSellSectionShow: isMainnet && isSellSectionShow,
+    };
+  }, [isMainnet, refresh]);
+
+  return {
+    isBuyButtonShow,
+    isBuySectionShow,
+    isSellSectionShow,
+    refreshBuyButton,
   };
 };
 

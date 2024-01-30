@@ -6,8 +6,8 @@ import {
   useBuyDefaultCryptoListState,
   useBuyDefaultCryptoState,
   useBuyDefaultFiatState,
+  useBuyFiat,
   useBuyFiatListState,
-  useRampEntryShow,
 } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { handleKeyDown } from 'utils/keyDown';
@@ -23,6 +23,7 @@ import { getBuyCrypto } from '@portkey-wallet/utils/ramp';
 import singleMessage from 'utils/singleMessage';
 import { useLocationState } from 'hooks/router';
 import { TRampLocationState } from 'types/router';
+import { useExtensionRampEntryShow } from 'hooks/ramp';
 
 export default function BuyForm() {
   const { t } = useTranslation();
@@ -30,7 +31,7 @@ export default function BuyForm() {
   const navigate = useNavigate();
   const { state } = useLocationState<TRampLocationState>();
   // get data
-  const { refreshRampShow } = useRampEntryShow();
+  const { refreshRampShow } = useExtensionRampEntryShow();
   const { symbol: defaultFiat, amount: defaultFiatAmount, country: defaultCountry } = useBuyDefaultFiatState();
   const { symbol: defaultCrypto, network: defaultNetwork } = useBuyDefaultCryptoState();
   const fiatList = useBuyFiatListState();
@@ -125,7 +126,27 @@ export default function BuyForm() {
     [updateBuyReceive],
   );
 
+  const { getSpecifiedFiat } = useBuyFiat();
+  const fetchSpecifiedFiat = useCallback(async () => {
+    if (state?.crypto && state?.tokenInfo?.symbol) return;
+    try {
+      setLoading(true);
+      const fiatResult = await getSpecifiedFiat({ crypto: state?.crypto || state?.tokenInfo?.symbol });
+      if (fiatResult?.defaultFiat) {
+        await handleFiatSelect({ ...fiatResult?.defaultFiat, icon: '' });
+        if (fiatResult?.defaultCrypto) {
+          await handleCryptoSelect(fiatResult?.defaultCrypto);
+        }
+      }
+    } catch (error) {
+      console.log('fetchSpecifiedFiat error', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [getSpecifiedFiat, handleCryptoSelect, handleFiatSelect, setLoading, state?.crypto, state?.tokenInfo?.symbol]);
+
   useEffectOnce(() => {
+    fetchSpecifiedFiat();
     updateBuyReceive();
   });
 

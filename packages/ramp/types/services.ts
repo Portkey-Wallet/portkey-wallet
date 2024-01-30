@@ -35,6 +35,7 @@ export type IRampCryptoDefault = {
   amount: string;
   network: string;
   chainId: ChainId;
+  icon: string;
 };
 
 export type IRampFiatItem = {
@@ -44,11 +45,8 @@ export type IRampFiatItem = {
   icon: string;
 };
 
-export type IRampFiatDefault = {
-  symbol: string;
+export type IRampFiatDefault = IRampFiatItem & {
   amount: string;
-  country: string;
-  countryName: string;
 };
 
 export type IRampCryptoResult = {

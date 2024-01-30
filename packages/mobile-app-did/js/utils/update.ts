@@ -221,7 +221,7 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
   }
   public async syncData(updateInfo: RemotePackage | null, isForceUpdate?: boolean) {
     try {
-      let start = false;
+      if (!isForceUpdate) UpdateOverlay.show();
       const syncStatus = await this.sync(
         {
           deploymentKey: this.deploymentKey,
@@ -233,8 +233,6 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
         },
         progress => {
           if (isForceUpdate) return;
-          if (!start) UpdateOverlay.show();
-          start = true;
           this.emit(this._progressEventName, progress);
           this.progress = progress;
         },

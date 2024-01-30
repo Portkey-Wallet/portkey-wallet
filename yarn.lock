@@ -15245,15 +15245,15 @@ expo-asset@~8.6.1:
     path-browserify "^1.0.0"
     url-parse "^1.5.9"
 
-expo-auth-session@^3.7.0:
-  version "3.8.0"
-  resolved "https://registry.npmjs.org/expo-auth-session/-/expo-auth-session-3.8.0.tgz#ad929f1bcc2e1dc9d0b265f9555d3f967bda6bcc"
-  integrity sha512-pQ8GryTTZL/JKHvifUGD4GGlZWo7RrcoQlvQ0O5m5edYfoa7fMHCg20MBX4Da4P3eVgJlqWZWCHfBC2fZxcRfA==
+expo-auth-session@3.7.0:
+  version "3.7.0"
+  resolved "https://registry.npmjs.org/expo-auth-session/-/expo-auth-session-3.7.0.tgz#9ac61410b85e6d459cbb44439b929c65d621d183"
+  integrity sha512-70qEuB8QQAc/L0nhgkhFQYZqFm7V6m6n26YCh873XWRN4BqsX/YWBnC8Q/+Dw0gQUJLJbIIuQYeM9NOYsCuEHA==
   dependencies:
-    expo-constants "~14.0.0"
-    expo-crypto "~12.0.0"
-    expo-linking "~3.3.0"
-    expo-web-browser "~12.0.0"
+    expo-constants "~13.2.0"
+    expo-crypto "~11.0.0"
+    expo-linking "~3.2.0"
+    expo-web-browser "~11.0.0"
     invariant "^2.2.4"
     qs "6.9.1"
 
@@ -15284,7 +15284,7 @@ expo-clipboard@^3.1.0:
   resolved "https://registry.npmmirror.com/expo-clipboard/-/expo-clipboard-3.1.0.tgz#ff4b7a2a796488d3784ca8a40229a37bbcb7b65e"
   integrity sha512-0cnmySP43VnpSWONn+1yIvPT0dwJWzCaPZcOZVxuH5mLhNi4p3UDLJFZt94tu4+bnyvDKjWxCK2/LoCM0XdwwQ==
 
-expo-constants@~13.2.2, expo-constants@~13.2.3, expo-constants@~13.2.4:
+expo-constants@~13.2.0, expo-constants@~13.2.2, expo-constants@~13.2.3, expo-constants@~13.2.4:
   version "13.2.4"
   resolved "https://registry.npmmirror.com/expo-constants/-/expo-constants-13.2.4.tgz#eab4a553f074b2c60ad7a158d3b82e3484a94606"
   integrity sha512-Zobau8EuTk2GgafwkfGnWM6CmSLB7X8qnQXVuXe0nd3v92hfQUmRWGhJwH88uxXj3LrfqctM6PaJ8taG1vxfBw==
@@ -15300,15 +15300,10 @@ expo-constants@~14.0.0:
     "@expo/config" "~7.0.2"
     uuid "^3.3.2"
 
-expo-crypto@^11.0.0:
+expo-crypto@11.0.0, expo-crypto@~11.0.0:
   version "11.0.0"
   resolved "https://registry.npmjs.org/expo-crypto/-/expo-crypto-11.0.0.tgz#e434ebede6bae20f5a5cf7d7ea99d41e7b67690e"
   integrity sha512-EH1Ikcy/HxfLJpo+zVRic4Igl6AovZEksAheKfeM2u+2TfL3FEBiQo+cGkuIa8NQ9ui3xYqQcyMk+IIZ6AO0Xg==
-
-expo-crypto@~12.0.0:
-  version "12.0.0"
-  resolved "https://registry.npmjs.org/expo-crypto/-/expo-crypto-12.0.0.tgz#015e47fec27b07098fcef3676c6bf8b20767860a"
-  integrity sha512-2KC52eLYsXndDZOVFyr+K3Zs9wDgpqZ7F7fwAiUg+yNbE21CJrHKDFvo/Br0FAaDf/w9pUks5/qi1azB5sDzvg==
 
 expo-device@^4.3.0:
   version "4.3.0"
@@ -15356,13 +15351,13 @@ expo-keep-awake@~10.2.0:
   resolved "https://registry.npmmirror.com/expo-keep-awake/-/expo-keep-awake-10.2.0.tgz#46f04740bccd321732bbbed93491e2076d5dbbd7"
   integrity sha512-kIRtO4Hmrvxh4E45IPWG/NiUZsuRe1AQwBT09pq+kx8nm6tUS4B9TeL6+1NFy+qVBLbGKDqoQD5Ez7XYTFtBeQ==
 
-expo-linking@~3.3.0:
-  version "3.3.1"
-  resolved "https://registry.npmjs.org/expo-linking/-/expo-linking-3.3.1.tgz#253b183321e54cb6fa1a667a53d4594aa88a3357"
-  integrity sha512-T3VIZMyZhkBOpHIyfT514rweGZZMbdg1vwavsfAkm6BFJ8G0iNVGbYMTpoUiQ9xdA0ARCcZbXFFb+WhqEUITgQ==
+expo-linking@~3.2.0:
+  version "3.2.4"
+  resolved "https://registry.npmjs.org/expo-linking/-/expo-linking-3.2.4.tgz#94d65ee957f45e2d2e12a25df7ad063a17807eee"
+  integrity sha512-yVH72hqridgxiknuqeVs5ZClxIaEft2xyDfC9+x8pSelGb1oMnaOYY4muE9ytph6VCXbmMI9VNf0etrfFoDLqQ==
   dependencies:
     "@types/qs" "^6.5.3"
-    expo-constants "~14.0.0"
+    expo-constants "~13.2.0"
     invariant "^2.2.4"
     qs "^6.9.1"
     url-parse "^1.5.9"
@@ -15446,17 +15441,10 @@ expo-splash-screen@^0.16.2:
     "@expo/configure-splash-screen" "^0.6.0"
     "@expo/prebuild-config" "~5.0.0"
 
-expo-web-browser@^11.0.0:
+expo-web-browser@^11.0.0, expo-web-browser@~11.0.0:
   version "11.0.0"
   resolved "https://registry.npmjs.org/expo-web-browser/-/expo-web-browser-11.0.0.tgz#5116a99a32f8b98fc47a6aff026b4d608ffe18ec"
   integrity sha512-LKakUgsDIFLCYWh+RrjB8ANzgD6TTpi0fe00Gu5GrGuEs0cQmEynltq2OVPYOXiaNdcaaora7VFqC47A9rDE+A==
-  dependencies:
-    compare-urls "^2.0.0"
-
-expo-web-browser@~12.0.0:
-  version "12.0.0"
-  resolved "https://registry.npmjs.org/expo-web-browser/-/expo-web-browser-12.0.0.tgz#c8e117bfd6357df05ae3cf85acb423b44c4f6304"
-  integrity sha512-7/RUuE0sv5kf+mTw5/SOnks0Am1ctoxvT1Xi53Nom2EuXTKBV+b2Kf5xAw3ItoW5W4MHJUX3FdNI6qc9sS9+Pw==
   dependencies:
     compare-urls "^2.0.0"
 

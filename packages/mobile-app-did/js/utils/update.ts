@@ -4,7 +4,6 @@ import CodePush, {
   LocalPackage,
   RemotePackage,
 } from 'react-native-code-push';
-import { BackHandler } from 'react-native';
 import * as Application from 'expo-application';
 import ActionSheet from 'components/ActionSheet';
 import EventEmitter from 'events';
@@ -21,7 +20,7 @@ import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import CommonToast from 'components/CommonToast';
 import { CODE_PUSH_OPTIONS } from 'constants/codePush';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
-
+import { AppLifeCycleModule } from 'utils/nativeModules';
 export type TUpdateInfo = {
   version?: string | null;
   label?: string | null;
@@ -210,7 +209,7 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
         if (isIOS) {
           CodePush.restartApp();
         } else {
-          BackHandler.exitApp();
+          AppLifeCycleModule?.restartApp?.();
         }
       },
     });
@@ -252,15 +251,13 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
     }
   }
   public async checkToUpdate() {
-    console.log(this.syncStatus, '=====this.syncStatus');
-
-    if (this.syncStatus === CodePush.SyncStatus.DOWNLOADING_PACKAGE) throw Error(CODE_PUSH_ERROR.Downloading);
-
-    if (this.syncStatus === CodePush.SyncStatus.UPDATE_INSTALLED) {
-      this.restartApp();
-      return;
-    }
     try {
+      if (this.syncStatus === CodePush.SyncStatus.DOWNLOADING_PACKAGE) throw Error(CODE_PUSH_ERROR.Downloading);
+
+      if (this.syncStatus === CodePush.SyncStatus.UPDATE_INSTALLED) {
+        this.restartApp();
+        return;
+      }
       const updateInfo = await this.checkForUpdate();
       console.log(updateInfo, '====updateInfo');
       const [currentData, pendingData] = await Promise.all([
@@ -302,7 +299,12 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
         ],
       });
     } catch (error) {
-      console.log(error, '====error');
+      const message = handleErrorMessage(error);
+      if (message === CODE_PUSH_ERROR.Installed || message === CODE_PUSH_ERROR.Installed) {
+        CommonToast.fail(message);
+      } else {
+        CommonToast.fail(CODE_PUSH_ERROR.ReCheck);
+      }
     }
   }
 }

@@ -190,6 +190,9 @@ const PaymentModal = ({
       onPress = () => {
         OverlayModal.hide(false);
         navigationService.navigateByMultiLevelParams('RampHome', {
+          params: {
+            symbol: tokenInfo.symbol,
+          },
           multiLevelParams: {
             successNavigateName,
           },
@@ -202,7 +205,7 @@ const PaymentModal = ({
         <TextS style={FontStyles.font11}>{buttonTitle}</TextS>
       </Touchable>
     );
-  }, [chainId, crossSufficientItem, currentCaAddress, currentChannelType, fee.error, isCanBuy]);
+  }, [chainId, crossSufficientItem, currentCaAddress, currentChannelType, fee.error, isCanBuy, tokenInfo.symbol]);
 
   const disableStyle = useMemo(() => !!isInsufficientTransactionFee && styles.opacity, [isInsufficientTransactionFee]);
   const tokenRowComponent = useMemo(() => {

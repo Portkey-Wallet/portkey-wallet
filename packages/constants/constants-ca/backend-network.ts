@@ -229,7 +229,7 @@ export const BackEndNetWorkMap: {
         baseUrl: 'https://ramp.alchemypay.org',
       },
     },
-    imApiUrl: 'https://im.portkey.finance',
+    imApiUrl: 'https://im-api.portkey.finance',
     imWsUrl: 'wss://im-socket.portkey.finance/ws/',
     imS3Bucket: 'portkey-im',
     eBridgeUrl: 'https://ebridge.exchange',

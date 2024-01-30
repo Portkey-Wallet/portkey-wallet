@@ -243,6 +243,7 @@ export default function RampPreview() {
     amount,
     crypto,
     currentProvider?.providerNetwork,
+    currentProvider?.providerSymbol,
     fiat,
     guardiansApproved,
     providerKey,

@@ -176,6 +176,7 @@ export default function RegisterStart() {
 
   const onSignFinish = useCallback(
     async (data: LoginInfo) => {
+      dispatch(createNewTmpWallet());
       dispatch(setOriginChainId(DefaultChainId));
       saveState(data);
       dispatch(resetGuardians());

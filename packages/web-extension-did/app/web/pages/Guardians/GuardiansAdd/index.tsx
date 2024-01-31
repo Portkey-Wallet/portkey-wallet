@@ -23,7 +23,13 @@ import { EmailError } from '@portkey-wallet/utils/check';
 import { guardianTypeList, phoneInit, socialInit } from 'constants/guardians';
 import { IPhoneInput, ISocialInput } from 'types/guardians';
 import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
-import { getGoogleUserInfo, parseAppleIdentityToken, parseTelegramToken } from '@portkey-wallet/utils/authentication';
+import {
+  getGoogleUserInfo,
+  parseAppleIdentityToken,
+  parseFacebookToken,
+  parseTelegramToken,
+  parseTwitterToken,
+} from '@portkey-wallet/utils/authentication';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { request } from '@portkey-wallet/api/api-did';
 import { handleErrorMessage } from '@portkey-wallet/utils';
@@ -270,6 +276,28 @@ export default function AddGuardian() {
             value: '',
             id: userId,
             accessToken: data?.access_token,
+            isPrivate: true,
+          });
+        } else if (v === 'Twitter') {
+          const userInfo = parseTwitterToken(data?.access_token);
+          if (!userInfo) throw 'Twitter auth error';
+          const { firstName, userId, accessToken } = userInfo;
+          setSocialVale({
+            name: firstName,
+            value: '',
+            id: userId,
+            accessToken,
+            isPrivate: true,
+          });
+        } else if (v === 'Facebook') {
+          const userInfo = await parseFacebookToken(data?.access_token);
+          if (!userInfo) throw 'Telegram auth error';
+          const { firstName, userId, accessToken } = userInfo;
+          setSocialVale({
+            name: firstName,
+            value: '',
+            id: userId,
+            accessToken,
             isPrivate: true,
           });
         } else {

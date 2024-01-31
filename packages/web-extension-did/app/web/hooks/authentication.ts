@@ -1,6 +1,12 @@
 import { useCallback } from 'react';
 import { VerifyTokenParams } from '@portkey-wallet/types/types-ca/authentication';
-import { getGoogleUserInfo, parseAppleIdentityToken, parseTelegramToken } from '@portkey-wallet/utils/authentication';
+import {
+  getGoogleUserInfo,
+  parseAppleIdentityToken,
+  parseFacebookToken,
+  parseTelegramToken,
+  parseTwitterToken,
+} from '@portkey-wallet/utils/authentication';
 import { request } from '@portkey-wallet/api/api-did';
 import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
@@ -81,15 +87,15 @@ export function useVerifyTwitter() {
   const { currentNetwork } = useWalletInfo();
   return useCallback(
     async (params: VerifyTokenParams) => {
-      let accessToken = params.accessToken;
-      // TODO update Twitter
-      const { isExpired: tokenIsExpired } = parseTelegramToken(accessToken) || {};
-      if (!accessToken || tokenIsExpired) {
+      let tokenInfo = params.accessToken;
+
+      const { isExpired: tokenIsExpired, accessToken: token } = parseTwitterToken(tokenInfo) || {};
+      if (!token || tokenIsExpired) {
         const info = await socialLoginAction('Twitter', currentNetwork);
-        accessToken = info?.data?.access_token || undefined;
+        tokenInfo = info?.data?.access_token;
       }
-      // TODO update Twitter
-      const { userId } = parseTelegramToken(accessToken) || {};
+
+      const { userId, accessToken } = parseTwitterToken(tokenInfo) || {};
       if (userId !== params.id) throw new Error('Account does not match your guardian');
       delete (params as any).id;
       return request.verify.verifyTwitterToken({
@@ -104,15 +110,14 @@ export function useVerifyFacebook() {
   const { currentNetwork } = useWalletInfo();
   return useCallback(
     async (params: VerifyTokenParams) => {
-      let accessToken = params.accessToken;
-      // TODO update Facebook
-      const { isExpired: tokenIsExpired } = parseTelegramToken(accessToken) || {};
-      if (!accessToken || tokenIsExpired) {
+      let tokenInfo = params.accessToken;
+
+      const { isExpired: tokenIsExpired, accessToken: token } = (await parseFacebookToken(tokenInfo)) || {};
+      if (!token || tokenIsExpired) {
         const info = await socialLoginAction('Facebook', currentNetwork);
-        accessToken = info?.data?.access_token || undefined;
+        tokenInfo = info?.data?.access_token || undefined;
       }
-      // TODO update Facebook
-      const { userId } = parseTelegramToken(accessToken) || {};
+      const { userId, accessToken } = (await parseFacebookToken(tokenInfo)) || {};
       if (userId !== params.id) throw new Error('Account does not match your guardian');
       delete (params as any).id;
       return request.verify.verifyFacebookToken({

@@ -52,4 +52,5 @@ export interface WalletState {
   userId?: string;
   userInfo?: UserInfoType;
   tmpWalletInfo?: TWalletInfo;
+  checkManagerExceedMap?: { [key in NetworkType]?: boolean };
 }

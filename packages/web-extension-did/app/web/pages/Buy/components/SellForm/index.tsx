@@ -3,7 +3,6 @@ import FiatInput from '../FiatInput';
 import CryptoInput from '../CryptoInput';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import {
-  useRampEntryShow,
   useSellCryptoListState,
   useSellDefaultCryptoState,
   useSellDefaultFiatListState,
@@ -40,6 +39,7 @@ import { ChainId } from '@portkey-wallet/types';
 import singleMessage from 'utils/singleMessage';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
+import { useExtensionRampEntryShow } from 'hooks/ramp';
 
 export default function SellFrom() {
   const { t } = useTranslation();
@@ -49,7 +49,7 @@ export default function SellFrom() {
   const { isPrompt } = useCommonState();
 
   // get data
-  const { refreshRampShow } = useRampEntryShow();
+  const { refreshRampShow } = useExtensionRampEntryShow();
   const { symbol: defaultCrypto, network: defaultNetwork, amount: defaultCryptoAmount } = useSellDefaultCryptoState();
   const { symbol: defaultFiat, country: defaultCountry } = useSellDefaultFiatState();
   const cryptoList = useSellCryptoListState();

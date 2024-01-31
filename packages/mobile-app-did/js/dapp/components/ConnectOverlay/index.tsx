@@ -27,6 +27,9 @@ import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import { usePin } from 'hooks/store';
 import { getManagerAccount } from 'utils/redux';
 import { isIOS } from '@rneui/base';
+import Touchable from 'components/Touchable';
+import { copyText } from 'utils';
+import Svg from 'components/Svg';
 
 type ConnectModalType = {
   dappInfo: DappStoreItem;
@@ -110,11 +113,17 @@ const ConnectModal = (props: ConnectModalType) => {
           {caInfoList?.map((item, index) => (
             <View key={item?.chaiId} style={[styles.itemWrap, !!index && styles.itemBorderTop]}>
               <View>
-                <TextM>{formatStr2EllipsisStr(addressFormat(item?.caAddress, item?.chaiId as ChainId), 10)}</TextM>
+                <TextM>{formatStr2EllipsisStr(addressFormat(item?.caAddress, item?.chaiId as ChainId), 8)}</TextM>
                 <TextS style={styles.itemChainInfo}>
                   {formatChainInfoToShow(item?.chaiId as ChainId, currentNetwork)}
                 </TextS>
               </View>
+              <View style={styles.copyBtnWrap}>
+                <Touchable onPress={() => copyText(addressFormat(item?.caAddress, item?.chainId as ChainId))}>
+                  <Svg icon="copy" size={pTd(16)} />
+                </Touchable>
+              </View>
+
               <View>
                 <TextS>{`${formatAmountShow(divDecimals(item?.balance, item?.decimals))} ${item?.symbol}`}</TextS>
                 <TextS style={styles.itemChainInfo} />
@@ -202,5 +211,11 @@ const styles = StyleSheet.create({
   },
   buttonTitleStyle: {
     fontSize: pTd(16),
+  },
+  copyBtnWrap: {
+    flex: 1,
+    height: '100%',
+    paddingTop: pTd(2),
+    paddingLeft: pTd(8),
   },
 });

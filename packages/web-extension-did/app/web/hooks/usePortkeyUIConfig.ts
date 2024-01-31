@@ -52,6 +52,9 @@ const usePortkeyUIConfig = () => {
           clientId: '',
           customLoginHandler: () => socialLoginHandler('Apple'),
         },
+        Telegram: {
+          customLoginHandler: () => socialLoginHandler('Telegram'),
+        },
       },
       requestDefaults: {
         baseURL: currentNetwork.apiUrl,

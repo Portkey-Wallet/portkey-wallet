@@ -38,7 +38,8 @@ import { ETransTokenList } from '@portkey-wallet/constants/constants-ca/dapp';
 import CommonToolButton from 'components/CommonToolButton';
 import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
 import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
-import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { useAppRampEntryShow } from 'hooks/ramp';
+import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -66,7 +67,7 @@ const TokenDetail: React.FC = () => {
   const { accountToken } = useAppCASelector(state => state.assets);
   const isTokenHasPrice = useIsTokenHasPrice(tokenInfo.symbol);
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
-  const { isRampShow } = useRampEntryShow();
+  const { isRampShow } = useAppRampEntryShow();
 
   const [reFreshing, setFreshing] = useState(false);
 
@@ -136,8 +137,8 @@ const TokenDetail: React.FC = () => {
   });
 
   const isBuyButtonShow = useMemo(
-    () => tokenInfo.symbol === defaultToken.symbol && tokenInfo.chainId === 'AELF' && isRampShow,
-    [defaultToken.symbol, isRampShow, tokenInfo.chainId, tokenInfo.symbol],
+    () => SHOW_RAMP_SYMBOL_LIST.includes(tokenInfo.symbol) && tokenInfo.chainId === 'AELF' && isRampShow,
+    [isRampShow, tokenInfo.chainId, tokenInfo.symbol],
   );
 
   const isFaucetButtonShow = useMemo(
@@ -212,7 +213,7 @@ const TokenDetail: React.FC = () => {
           )}`}</Text>
         )}
         <View style={[styles.buttonGroupWrap, buttonGroupWrapStyle]}>
-          {isBuyButtonShow && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}
+          {isBuyButtonShow && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
           <SendButton themeType="innerPage" sentToken={currentToken} wrapStyle={buttonWrapStyle} />
           <ReceiveButton currentTokenInfo={currentToken} themeType="innerPage" wrapStyle={buttonWrapStyle} />
           {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}

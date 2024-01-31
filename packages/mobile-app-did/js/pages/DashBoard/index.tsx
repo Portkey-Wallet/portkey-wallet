@@ -8,9 +8,13 @@ import myEvents from 'utils/deviceEvent';
 import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useReportingSignalR } from 'hooks/FCM';
+import { useManagerExceedTipModal } from 'hooks/managerCheck';
+import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 
 const DashBoard: React.FC<any> = ({ navigation }) => {
   const reportAnalyticsEvent = useReportAnalyticsEvent();
+  const { getViewReferralStatusStatus, getReferralLink } = useReferral();
+  const managerExceedTipModalCheck = useManagerExceedTipModal();
   useReportingSignalR();
 
   const navToChat = useCallback(
@@ -24,6 +28,9 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
 
   useEffectOnce(() => {
     reportAnalyticsEvent({ message: 'DashBoard' });
+    managerExceedTipModalCheck();
+    getViewReferralStatusStatus();
+    getReferralLink();
   });
 
   // nav's to chat tab

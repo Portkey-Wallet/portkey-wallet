@@ -14,4 +14,7 @@ export function useBrowser(): BrowserState {
 export interface IBrowserTab {
   reload: IWebView['reload'];
   capture?: ViewShot['capture'];
+  goBack?: IWebView['goBack'];
+  goForward?: IWebView['goForward'];
+  goBackHome?: () => void;
 }

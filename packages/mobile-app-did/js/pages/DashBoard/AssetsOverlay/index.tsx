@@ -25,6 +25,9 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import CommonAvatar from 'components/CommonAvatar';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
+import { useAppDispatch } from 'store/hooks';
+import { fetchAssetAsync } from '@portkey-wallet/store/store-ca/assets/slice';
+import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
 
 export type ImTransferInfoType = {
   isGroupChat?: boolean;
@@ -40,7 +43,7 @@ export type ShowAssetListParamsType = {
 };
 
 const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: IAssetItemType }) => {
-  const { symbol, onPress, item } = props;
+  const { onPress, item } = props;
 
   const { currentNetwork } = useWallet();
 
@@ -93,12 +96,14 @@ const INIT_PAGE_INFO = {
 
 const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) => {
   const { addresses = [], isGroupChat, toUserId } = imTransferInfo || {};
-  console.log('addresses', addresses);
+
   const { t } = useLanguage();
   const caAddresses = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
   const [keyword, setKeyword] = useState('');
   const gStyles = useGStyles();
+  const dispatch = useAppDispatch();
+  const { accountAllAssets } = useAssets();
 
   const chainIds = useMemo(() => addresses?.map(item => item.chainId), [addresses]);
 
@@ -106,6 +111,15 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
 
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const [listShow, setListShow] = useState<IAssetItemType[]>([]);
+
+  const assetListShow = useMemo(() => {
+    if (debounceKeyword) {
+      return listShow;
+    } else {
+      return accountAllAssets.accountAssetsList;
+    }
+  }, [accountAllAssets.accountAssetsList, debounceKeyword, listShow]);
+
   const pageInfoRef = useRef({
     ...INIT_PAGE_INFO,
   });
@@ -163,6 +177,7 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
 
   useEffectOnce(() => {
     getTokenPrice();
+    dispatch(fetchAssetAsync({ caAddresses, keyword: '', caAddressInfos }));
   });
 
   const renderItem = useCallback(
@@ -242,7 +257,7 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
           }
         }}
         style={styles.flatList}
-        data={listShow || []}
+        data={(assetListShow as IAssetItemType[]) || []}
         renderItem={renderItem}
         keyExtractor={(_item, index) => `${index}`}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}

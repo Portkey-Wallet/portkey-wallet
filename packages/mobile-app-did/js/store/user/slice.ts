@@ -12,6 +12,9 @@ const userSlice = createSlice({
     setBiometrics: (state, action: PayloadAction<UserStoreState['biometrics']>) => {
       state.biometrics = action.payload;
     },
+    setUpdateInfo: (state, action: PayloadAction<UserStoreState['updateInfo']>) => {
+      state.updateInfo = action.payload;
+    },
     resetUser: () => initialState,
   },
 });

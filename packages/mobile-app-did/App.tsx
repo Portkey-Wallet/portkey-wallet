@@ -30,13 +30,12 @@ import 'utils/initExceptionManager';
 import 'utils/initRequest';
 import { initFCMSignalR } from 'utils/FCM';
 import { initNotifications } from 'utils/notifee';
+import { logBoxTextColorSaver } from 'utils/textColor';
+import { CODE_PUSH_OPTIONS } from 'constants/codePush';
 
-const codePushOptions = {
-  updateDialog: false,
-  deploymentKey: (isIOS ? Config.CODE_PUSH_IOS_DEPLOYMENT_KEY : Config.CODE_PUSH_ANDROID_DEPLOYMENT_KEY) || '',
-  installMode: CodePush.InstallMode.ON_NEXT_RESTART,
-  checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME,
-};
+if (__DEV__) {
+  logBoxTextColorSaver();
+}
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -88,4 +87,4 @@ const App = () => {
   );
 };
 
-export default Sentry.wrap(CodePush(codePushOptions)(App));
+export default Sentry.wrap(CodePush(CODE_PUSH_OPTIONS)(App));

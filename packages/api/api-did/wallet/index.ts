@@ -35,4 +35,9 @@ export default {
     config: { method: 'GET' },
   },
   deletionAccount: '/api/app/account/revoke/request',
+
+  getTwitterUserInfo: {
+    target: '/api/app/twitterAuth/userInfo',
+    config: { method: 'GET' },
+  },
 } as const;

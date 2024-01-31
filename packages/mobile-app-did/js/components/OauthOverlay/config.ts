@@ -8,6 +8,11 @@ export enum TG_FUN {
   Error = 'tg_error',
   Open = 'tg_open',
 }
+
+export enum FB_FUN {
+  Login_Success = 'Login_Success',
+  Error = 'fb_error',
+}
 export const InjectTelegramLoginJavaScript = `(()=>{
   try {
     const tmpConfirmRequest = window.confirmRequest;
@@ -43,14 +48,27 @@ export const InjectTelegramOpenJavaScript = `(()=>{
   }
 })()`;
 
+export const InjectFacebookOpenJavaScript = `(()=>{
+  try {
+    if(!window.Portkey) window.Portkey = {};
+    window.Portkey.request = ({method,payload})=>{
+      window.ReactNativeWebView.postMessage(JSON.stringify({payload,type:'${FB_FUN.Login_Success}'}));
+    }
+  } catch (error) {
+    window.ReactNativeWebView.postMessage(JSON.stringify({type:'${FB_FUN.Error}'}));
+  }
+})()`;
+
 export enum PATHS {
   CallPortkey = '/api/app/telegramAuth/receive/portkey',
   Load = '/social-login/Telegram?from=portkey',
+  LoadFB = '/social-login/Facebook',
 }
 
 export const TGAuthResult = '#tgAuthResult=';
 export const TGAuthPush = 'oauth.telegram.org/auth/push';
 
+export const FBAuthPush = '/api/app/facebookAuth/receive';
 export const TGAuthCallBack = 'auth-callback';
 
 export function parseTGAuthResult(url: string) {

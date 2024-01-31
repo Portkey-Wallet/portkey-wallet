@@ -23,11 +23,13 @@ import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authe
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { AuthenticationInfo, OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
-import TelegramOverlay from 'components/TelegramOverlay';
+import TelegramOverlay from 'components/OauthOverlay/telegram';
+import FacebookOverlay from 'components/OauthOverlay/facebook';
 import { parseTelegramToken } from '@portkey-wallet/utils/authentication';
 import { useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { VerifyTokenParams } from '@portkey-wallet/types/types-ca/authentication';
+import { parse } from 'query-string';
 if (!isIOS) {
   GoogleSignin.configure({
     offlineAccess: true,
@@ -59,6 +61,11 @@ export type AppleAuthentication = {
     givenName?: string;
     familyName?: string;
   };
+};
+
+export type TFacebookAuthentication = {
+  user: { userId: string; expiresTime: string };
+  accessToken: string;
 };
 
 export type TelegramAuthentication = {
@@ -267,19 +274,74 @@ export function useTelegramAuthentication() {
   );
 }
 
+export function useFacebookAuthentication() {
+  // todo: add Telegram authentication
+  return useMemo(
+    () => ({
+      appleResponse: '',
+      facebookSign: FacebookOverlay.sign,
+    }),
+    [],
+  );
+}
+export function useTwitterAuthentication() {
+  // todo: add Telegram authentication
+  return useMemo(
+    () => ({
+      appleResponse: '',
+      twitterSign: async () => {
+        const info = await WebBrowser.openAuthSessionAsync(
+          'https://twitter.com/i/oauth2/authorize?response_type=code&client_id=VE5DRUl1bHdoeHN0cW9POEpEYlY6MTpjaQ&redirect_uri=portkey.did%3A%2F%2F&scope=tweet.read%20users.read%20follows.read&state=state&code_challenge=challenge&code_challenge_method=plain',
+        );
+        if (info.type === 'success') {
+          const userInfo = await request.wallet.getTwitterUserInfo({
+            params: {
+              redirectUrl: 'portkey.did://',
+              state: 'state',
+              code: parse(info.url).code,
+            },
+            stringifyOptions: { encode: false },
+          });
+          return { ...userInfo, user: userInfo.userInfo };
+        } else {
+          throw new Error('Twitter authentication failed');
+        }
+      },
+    }),
+    [],
+  );
+}
+
+export type TTwitterAuthentication = {
+  accessToken: string;
+  authType: 'Twitter';
+  user: {
+    id: string;
+    name: string;
+    userName: string;
+  };
+};
+
 interface IAuthenticationSign {
   sign(type: LoginType.Google): Promise<GoogleAuthentication>;
   sign(type: LoginType.Apple): Promise<AppleAuthentication>;
   sign(type: LoginType.Telegram): Promise<TelegramAuthentication>;
+  sign(type: LoginType.Twitter): Promise<TTwitterAuthentication>;
+  sign(type: LoginType.Facebook): Promise<TFacebookAuthentication>;
 }
+
 export function useAuthenticationSign() {
   const { appleSign } = useAppleAuthentication();
   const { googleSign } = useGoogleAuthentication();
   const { telegramSign } = useTelegramAuthentication();
+  const { twitterSign } = useTwitterAuthentication();
+  const { facebookSign } = useFacebookAuthentication();
   return useCallback<IAuthenticationSign['sign']>(
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     type => {
+      console.log(type, '====type');
+
       switch (type) {
         case LoginType.Google:
           return googleSign();
@@ -287,11 +349,15 @@ export function useAuthenticationSign() {
           return appleSign();
         case LoginType.Telegram:
           return telegramSign();
+        case LoginType.Twitter:
+          return twitterSign();
+        case LoginType.Facebook:
+          return facebookSign();
         default:
           throw new Error('Unsupported login type');
       }
     },
-    [appleSign, googleSign, telegramSign],
+    [appleSign, googleSign, telegramSign, twitterSign, facebookSign],
   );
 }
 

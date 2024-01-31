@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   image: {
-    width: pTd(80),
+    width: pTd(60),
     height: pTd(60),
     marginRight: pTd(10),
   },

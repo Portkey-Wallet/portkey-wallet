@@ -16,7 +16,6 @@ import './index.less';
 import { GuardianItem } from 'types/guardians';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { getAuthToken } from 'store/Provider/initConfig';
-import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 
 interface GuardianApprovalModalProps {
   open: boolean;
@@ -39,7 +38,6 @@ export default function GuardianApproveModal({
   const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
   const { verifierMap } = useGuardiansInfo();
-  const currentNetwork = useCurrentNetwork();
 
   const [guardianList, setGuardianList] = useState<UserGuardianStatus[]>();
 
@@ -109,7 +107,6 @@ export default function GuardianApproveModal({
   return (
     <CustomPromptModal open={open} wrapClassName={`${PrefixCls}-wrapper`} destroyOnClose onClose={onClose}>
       <GuardianApproval
-        networkType={currentNetwork}
         className={`${PrefixCls}-content`}
         originChainId={originChainId}
         targetChainId={targetChainId}

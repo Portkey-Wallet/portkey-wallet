@@ -164,6 +164,8 @@ export default function RegisterStart() {
         case LoginType.Apple:
         case LoginType.Google:
         case LoginType.Telegram:
+        case LoginType.Twitter:
+        case LoginType.Facebook:
           checkAuth(verifierItem, data);
           break;
         default:
@@ -283,7 +285,9 @@ export default function RegisterStart() {
             (guardian) =>
               guardian.isLoginAccount &&
               guardian.guardianAccount === loginInfo.guardianAccount &&
-              [LoginType.Google, LoginType.Apple, LoginType.Telegram].includes(guardian.guardianType),
+              [LoginType.Google, LoginType.Apple, LoginType.Telegram, LoginType.Twitter, LoginType.Facebook].includes(
+                guardian.guardianType,
+              ),
           )
           .map((item) =>
             socialVerify({

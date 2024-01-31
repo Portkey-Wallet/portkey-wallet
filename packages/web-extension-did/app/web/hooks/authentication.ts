@@ -77,10 +77,58 @@ export function useVerifyTelegram() {
   );
 }
 
+export function useVerifyTwitter() {
+  const { currentNetwork } = useWalletInfo();
+  return useCallback(
+    async (params: VerifyTokenParams) => {
+      let accessToken = params.accessToken;
+      // TODO update Twitter
+      const { isExpired: tokenIsExpired } = parseTelegramToken(accessToken) || {};
+      if (!accessToken || tokenIsExpired) {
+        const info = await socialLoginAction('Twitter', currentNetwork);
+        accessToken = info?.data?.access_token || undefined;
+      }
+      // TODO update Twitter
+      const { userId } = parseTelegramToken(accessToken) || {};
+      if (userId !== params.id) throw new Error('Account does not match your guardian');
+      delete (params as any).id;
+      return request.verify.verifyTwitterToken({
+        params: { ...params, accessToken },
+      });
+    },
+    [currentNetwork],
+  );
+}
+
+export function useVerifyFacebook() {
+  const { currentNetwork } = useWalletInfo();
+  return useCallback(
+    async (params: VerifyTokenParams) => {
+      let accessToken = params.accessToken;
+      // TODO update Facebook
+      const { isExpired: tokenIsExpired } = parseTelegramToken(accessToken) || {};
+      if (!accessToken || tokenIsExpired) {
+        const info = await socialLoginAction('Facebook', currentNetwork);
+        accessToken = info?.data?.access_token || undefined;
+      }
+      // TODO update Facebook
+      const { userId } = parseTelegramToken(accessToken) || {};
+      if (userId !== params.id) throw new Error('Account does not match your guardian');
+      delete (params as any).id;
+      return request.verify.verifyFacebookToken({
+        params: { ...params, accessToken },
+      });
+    },
+    [currentNetwork],
+  );
+}
+
 export function useVerifyToken() {
   const verifyGoogleToken = useVerifyGoogleToken();
   const verifyAppleToken = useVerifyAppleToken();
   const verifyTelegram = useVerifyTelegram();
+  const verifyTwitter = useVerifyTwitter();
+  const verifyFacebook = useVerifyFacebook();
   return useCallback(
     (type: LoginType, params: VerifyTokenParams) => {
       let func = verifyAppleToken;
@@ -90,9 +138,13 @@ export function useVerifyToken() {
         func = verifyGoogleToken;
       } else if (type === LoginType.Telegram) {
         func = verifyTelegram;
+      } else if (type === LoginType.Twitter) {
+        func = verifyTwitter;
+      } else if (type === LoginType.Facebook) {
+        func = verifyFacebook;
       }
       return func(params);
     },
-    [verifyAppleToken, verifyGoogleToken, verifyTelegram],
+    [verifyAppleToken, verifyFacebook, verifyGoogleToken, verifyTelegram, verifyTwitter],
   );
 }

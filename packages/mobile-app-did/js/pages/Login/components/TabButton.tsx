@@ -6,7 +6,7 @@ import { StyleSheet, TouchableOpacityProps } from 'react-native';
 import { TextStyleType, ViewStyleType } from 'types/styles';
 import { pTd } from 'utils/unit';
 
-export default function Button({
+export default function TabButton({
   onPress,
   title,
   isActive,

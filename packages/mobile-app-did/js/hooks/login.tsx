@@ -483,6 +483,8 @@ export function useGoSelectVerifier(isLogin?: boolean) {
           case LoginType.Apple:
           case LoginType.Google:
           case LoginType.Telegram:
+          case LoginType.Twitter:
+          case LoginType.Facebook:
             onConfirmAuth({
               ...confirmParams,
               selectedVerifier: allotVerifier,

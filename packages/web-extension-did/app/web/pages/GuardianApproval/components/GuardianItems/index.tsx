@@ -54,6 +54,8 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
     () =>
       item.guardianType === LoginType.Google ||
       item.guardianType === LoginType.Apple ||
+      item.guardianType === LoginType.Twitter ||
+      item.guardianType === LoginType.Facebook ||
       item.guardianType === LoginType.Telegram,
     [item.guardianType],
   );
@@ -255,12 +257,16 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
           </div>
         );
       case LoginType.Telegram:
+      case LoginType.Facebook:
+      case LoginType.Twitter:
         return (
           <div className="account-text account-text-two-row">
             <div className="name">{guardian.firstName}</div>
             <div className="detail">{'******'}</div>
           </div>
         );
+      default:
+        return <div className="account-text account-text-one-row">{guardian.guardianAccount}</div>;
     }
   }, []);
 

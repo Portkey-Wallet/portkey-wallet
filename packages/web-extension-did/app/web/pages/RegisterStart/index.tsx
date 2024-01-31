@@ -20,7 +20,13 @@ import { handleErrorCode, handleErrorMessage, sleep } from '@portkey-wallet/util
 import { Button } from 'antd';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
 import { SocialLoginFinishHandler } from 'types/wallet';
-import { getGoogleUserInfo, parseAppleIdentityToken, parseTelegramToken } from '@portkey-wallet/utils/authentication';
+import {
+  getGoogleUserInfo,
+  parseAppleIdentityToken,
+  parseFacebookToken,
+  parseTelegramToken,
+  parseTwitterToken,
+} from '@portkey-wallet/utils/authentication';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { useGetRegisterInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
@@ -367,6 +373,16 @@ export default function RegisterStart() {
           const userInfo = parseTelegramToken(data?.access_token);
           if (!userInfo) throw 'Telegram auth error';
           userId = userInfo?.userId;
+        } else if (type === 'Twitter') {
+          const userInfo = parseTwitterToken(data?.access_token);
+          if (!userInfo) throw 'Twitter auth error';
+          const { userId: _userId } = userInfo;
+          userId = _userId;
+        } else if (type === 'Facebook') {
+          const userInfo = await parseFacebookToken(data?.access_token);
+          if (!userInfo) throw 'Telegram auth error';
+          const { userId: _userId } = userInfo;
+          userId = _userId;
         } else {
           throw `LoginType:${type} is not support`;
         }

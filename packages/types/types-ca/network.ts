@@ -5,6 +5,7 @@ export type NetworkItem = {
   networkType: NetworkType;
   isActive?: boolean;
   apiUrl: string;
+  domain?: string;
   graphqlUrl: string;
   networkIconUrl?: string;
   connectUrl: string;

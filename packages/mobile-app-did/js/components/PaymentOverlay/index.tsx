@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { StyleSheet, View, Text } from 'react-native';
 import { ModalBody } from 'components/ModalBody';

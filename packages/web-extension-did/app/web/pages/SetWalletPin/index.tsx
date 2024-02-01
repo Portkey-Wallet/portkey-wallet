@@ -21,7 +21,6 @@ import { sendScanLoginSuccess } from '@portkey-wallet/api/api-did/message/utils'
 import ModalTip from 'pages/components/ModalTip';
 import './index.less';
 import {
-  SetPinAndAddManager,
   AddManagerType,
   DIDWalletInfo,
   CreatePendingInfo,
@@ -36,6 +35,7 @@ import { NetworkType } from '@portkey-wallet/types';
 import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
+import SetPinAndAddManager from 'pages/components/SetPinAndAddManager';
 
 export default function SetWalletPin() {
   const { t } = useTranslation();

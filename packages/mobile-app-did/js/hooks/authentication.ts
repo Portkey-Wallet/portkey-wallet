@@ -10,15 +10,18 @@ import { request } from '@portkey-wallet/api/api-did';
 import { ChainId } from '@portkey-wallet/types';
 import {
   AppleUserInfo,
+  TFacebookUserInfo,
   TelegramUserInfo,
   getGoogleUserInfo,
   parseAppleIdentityToken,
+  parseFacebookToken,
+  parseTwitterToken,
 } from '@portkey-wallet/utils/authentication';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { useInterface } from 'contexts/useInterface';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { changeCanLock } from 'utils/LockManager';
-import { AppState } from 'react-native';
+import { AppState, EmitterSubscription, Linking } from 'react-native';
 import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { AuthenticationInfo, OperationTypeEnum } from '@portkey-wallet/types/verifier';
@@ -30,6 +33,9 @@ import { useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { VerifyTokenParams } from '@portkey-wallet/types/types-ca/authentication';
 import { parse } from 'query-string';
+import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
+import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
+
 if (!isIOS) {
   GoogleSignin.configure({
     offlineAccess: true,
@@ -38,6 +44,10 @@ if (!isIOS) {
 } else {
   WebBrowser.maybeCompleteAuthSession();
 }
+
+const SCHEME = 'portkey.finance://';
+
+const CLIENT_ID = 'VE5DRUl1bHdoeHN0cW9POEpEYlY6MTpjaQ';
 
 export type GoogleAuthentication = {
   accessToken: string;
@@ -64,7 +74,7 @@ export type AppleAuthentication = {
 };
 
 export type TFacebookAuthentication = {
-  user: { userId: string; expiresTime: string };
+  user: TFacebookUserInfo;
   accessToken: string;
 };
 
@@ -279,10 +289,81 @@ export function useFacebookAuthentication() {
   return useMemo(
     () => ({
       appleResponse: '',
-      facebookSign: FacebookOverlay.sign,
+      // facebookSign: ,
+      facebookSign: isIOS
+        ? FacebookOverlay.sign
+        : () => {
+            return new Promise<TFacebookAuthentication>((resolve, reject) => {
+              LoginManager.logInWithPermissions(['public_profile']).then(
+                function (result) {
+                  if (result.isCancelled) {
+                    reject(Error(USER_CANCELED));
+                  } else {
+                    AccessToken.getCurrentAccessToken()
+                      .then(async data => {
+                        if (data) {
+                          const expiredTime = Math.ceil(data.expirationTime / 1000);
+                          const token = data.accessToken;
+                          const userId = data.userID;
+                          data.accessToken = JSON.stringify({ expiredTime, token, userId });
+                          const fbInfo = await parseFacebookToken(data.accessToken);
+
+                          const info = { accessToken: data?.accessToken, user: fbInfo } as TFacebookAuthentication;
+                          resolve(info);
+                        } else {
+                          reject(Error(USER_CANCELED));
+                        }
+                      })
+                      .catch(error => {
+                        reject(error);
+                      });
+                  }
+                },
+                function (error) {
+                  reject(error);
+                  console.log('Login fail with error: ' + error);
+                },
+              );
+            });
+          },
     }),
     [],
   );
+}
+
+function onTwitterLogin() {
+  const login = async (
+    resolve: (
+      value: WebBrowser.WebBrowserAuthSessionResult | PromiseLike<WebBrowser.WebBrowserAuthSessionResult>,
+    ) => void,
+    reject: (reason?: any) => void,
+  ) => {
+    let linkingListener: EmitterSubscription | undefined;
+    if (!isIOS) {
+      linkingListener = Linking.addEventListener('url', ({ url }) => {
+        if (url.includes('code')) {
+          linkingListener?.remove();
+          resolve({ type: 'success', url } as WebBrowser.WebBrowserAuthSessionResult);
+        }
+      });
+    }
+
+    const info = await WebBrowser.openAuthSessionAsync(
+      `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(
+        SCHEME,
+      )}&scope=tweet.read%20users.read%20follows.read&state=state&code_challenge=challenge&code_challenge_method=plain`,
+    );
+    if (info.type === 'success') {
+      linkingListener?.remove();
+      resolve(info);
+    } else {
+      await sleep(1000);
+      linkingListener?.remove();
+      resolve(info);
+    }
+  };
+
+  return new Promise<WebBrowser.WebBrowserAuthSessionResult>((resolve, reject) => login(resolve, reject));
 }
 export function useTwitterAuthentication() {
   // todo: add Telegram authentication
@@ -290,19 +371,27 @@ export function useTwitterAuthentication() {
     () => ({
       appleResponse: '',
       twitterSign: async () => {
-        const info = await WebBrowser.openAuthSessionAsync(
-          'https://twitter.com/i/oauth2/authorize?response_type=code&client_id=VE5DRUl1bHdoeHN0cW9POEpEYlY6MTpjaQ&redirect_uri=portkey.did%3A%2F%2F&scope=tweet.read%20users.read%20follows.read&state=state&code_challenge=challenge&code_challenge_method=plain',
-        );
+        const info = await onTwitterLogin();
+        console.log(info, '=====info');
+
         if (info.type === 'success') {
-          const userInfo = await request.wallet.getTwitterUserInfo({
-            params: {
-              redirectUrl: 'portkey.did://',
-              state: 'state',
-              code: parse(info.url).code,
-            },
-            stringifyOptions: { encode: false },
-          });
-          return { ...userInfo, user: userInfo.userInfo };
+          if (info.url.includes('access_denied')) {
+            throw new Error(USER_CANCELED);
+          } else {
+            const userInfo = await request.wallet.getTwitterUserInfo({
+              params: {
+                redirectUrl: SCHEME,
+                state: 'state',
+                code: parse(info.url).code,
+              },
+              stringifyOptions: { encode: false },
+            });
+            return {
+              ...userInfo,
+              user: userInfo.userInfo,
+              accessToken: JSON.stringify({ ...userInfo.userInfo, token: userInfo.accessToken }),
+            } as TTwitterAuthentication;
+          }
         } else {
           throw new Error('Twitter authentication failed');
         }
@@ -443,10 +532,66 @@ export function useVerifyTelegramToken() {
     [telegramSign],
   );
 }
+
+export function useVerifyTwitterToken() {
+  const { twitterSign } = useTwitterAuthentication();
+  return useCallback(
+    async (params: VerifyTokenParams) => {
+      let accessToken = params.accessToken;
+      const { isExpired: tokenIsExpired } = parseTwitterToken(accessToken) || {};
+      if (!accessToken || tokenIsExpired) {
+        const info = await twitterSign();
+        accessToken = info.accessToken || undefined;
+      }
+      const { userId, accessToken: accessTwitterToken } = parseTwitterToken(accessToken) || {};
+
+      if (userId !== params.id) throw new Error('Account does not match your guardian');
+
+      const rst = await request.verify.verifyTwitterToken({
+        params: { ...params, accessToken: accessTwitterToken },
+      });
+
+      return {
+        ...rst,
+        accessToken,
+      };
+    },
+    [twitterSign],
+  );
+}
+
+export function useVerifyFacebookToken() {
+  const { facebookSign } = useFacebookAuthentication();
+  return useCallback(
+    async (params: VerifyTokenParams) => {
+      let accessToken = params.accessToken;
+      const { isExpired: tokenIsExpired } = (await parseFacebookToken(accessToken)) || {};
+      if (!accessToken || tokenIsExpired) {
+        const info = await facebookSign();
+        accessToken = info.accessToken || undefined;
+      }
+      const { userId, accessToken: accessFacebookToken } = (await parseFacebookToken(accessToken)) || {};
+
+      if (userId !== params.id) throw new Error('Account does not match your guardian');
+
+      const rst = await request.verify.verifyFacebookToken({
+        params: { ...params, accessToken: accessFacebookToken },
+      });
+
+      return {
+        ...rst,
+        accessToken,
+      };
+    },
+    [facebookSign],
+  );
+}
 export function useVerifyToken() {
   const verifyGoogleToken = useVerifyGoogleToken();
   const verifyAppleToken = useVerifyAppleToken();
   const verifyTelegramToken = useVerifyTelegramToken();
+  const verifyTwitterToken = useVerifyTwitterToken();
+  const verifyFacebookToken = useVerifyFacebookToken();
   const verifyManagerAddress = useVerifyManagerAddress();
   const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
   return useCallback(
@@ -462,6 +607,12 @@ export function useVerifyToken() {
         case LoginType.Telegram:
           fun = verifyTelegramToken;
           break;
+        case LoginType.Twitter:
+          fun = verifyTwitterToken;
+          break;
+        case LoginType.Facebook:
+          fun = verifyFacebookToken;
+          break;
         default:
           throw new Error('Unsupported login type');
       }
@@ -470,7 +621,7 @@ export function useVerifyToken() {
         ...params,
       });
     },
-    [verifyTelegramToken, verifyAppleToken, verifyGoogleToken],
+    [verifyTelegramToken, verifyAppleToken, verifyGoogleToken, verifyTwitterToken, verifyFacebookToken],
   );
 }
 

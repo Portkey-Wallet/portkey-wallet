@@ -17,6 +17,7 @@ import { InjectFacebookOpenJavaScript, FBAuthPush, FB_FUN, PATHS } from './confi
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { OpenLogin } from '@portkey-wallet/constants/constants-ca/network-test4-v2';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import { parseFacebookToken } from '@portkey-wallet/utils/authentication';
 
 type FacebookProps = {
   onConfirm: (userInfo: TFacebookAuthentication) => void;
@@ -32,14 +33,16 @@ function FacebookSign({ onConfirm, onReject }: FacebookProps) {
     }
   }, []);
   const onMessage = useCallback(
-    ({ nativeEvent }: WebViewMessageEvent) => {
+    async ({ nativeEvent }: WebViewMessageEvent) => {
       const { data } = nativeEvent;
       try {
         const obj = JSON.parse(data);
         const { type, payload } = obj;
         const info = JSON.parse(payload.response.access_token);
         if (type === FB_FUN.Login_Success && info.token) {
-          onConfirm({ accessToken: info.token, user: info });
+          const fbInfo = await parseFacebookToken(payload.response.access_token);
+          if (!fbInfo) throw new Error('Failed to parse Facebook token');
+          onConfirm({ accessToken: payload.response.access_token, user: fbInfo });
           OverlayModal.hide();
         } else {
           onReject(USER_CANCELED);

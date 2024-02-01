@@ -110,12 +110,15 @@ export default function Referral({
     const loadingKey = Loading.show();
     try {
       const userInfo = await authenticationSign(LoginType.Facebook);
+      console.log(userInfo, '======userInfo-onFacebookSign');
+
       await onLogin({
         loginAccount: userInfo.user.userId,
         loginType: LoginType.Facebook,
         authenticationInfo: { [userInfo.user.userId]: userInfo.accessToken },
       });
     } catch (error) {
+      console.log(error, checkIsUserCancel(error), '======error-onFacebookSign');
       if (!checkIsUserCancel(error)) CommonToast.failError(error);
     }
     Loading.hide(loadingKey);

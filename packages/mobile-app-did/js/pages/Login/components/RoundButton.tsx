@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     width: pTd(48),
     height: pTd(48),
     borderRadius: pTd(24),
-    borderWidth: pTd(0.5),
+    borderWidth: Math.max(StyleSheet.hairlineWidth, pTd(0.5)),
     borderColor: defaultColors.border1,
   },
 });

@@ -289,6 +289,14 @@ export const useOtherNetworkLogged = () => {
   );
 };
 
+export const useVerifyManagerAddress = () => {
+  const { walletInfo, tmpWalletInfo } = useWallet();
+  return useMemo(() => walletInfo?.address || tmpWalletInfo?.address, [walletInfo, tmpWalletInfo]);
+};
+
+export const useTmpWalletInfo = () => {
+  return useAppCASelector(state => state.wallet.tmpWalletInfo);
+};
 export function useCheckManagerExceed() {
   const dispatch = useAppCommonDispatch();
   const currentNetworkInfo = useCurrentNetworkInfo();

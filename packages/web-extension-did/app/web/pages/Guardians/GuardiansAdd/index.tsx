@@ -23,7 +23,13 @@ import { EmailError } from '@portkey-wallet/utils/check';
 import { guardianTypeList, phoneInit, socialInit } from 'constants/guardians';
 import { IPhoneInput, ISocialInput } from 'types/guardians';
 import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
-import { getGoogleUserInfo, parseAppleIdentityToken, parseTelegramToken } from '@portkey-wallet/utils/authentication';
+import {
+  getGoogleUserInfo,
+  parseAppleIdentityToken,
+  parseFacebookToken,
+  parseTelegramToken,
+  parseTwitterToken,
+} from '@portkey-wallet/utils/authentication';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { request } from '@portkey-wallet/api/api-did';
 import { handleErrorMessage } from '@portkey-wallet/utils';
@@ -48,6 +54,7 @@ import {
   TGuardianApprovalLocationState,
   TVerifierAccountLocationState,
 } from 'types/router';
+import BaseGuardianTypeIcon from 'components/BaseGuardianTypeIcon';
 import './index.less';
 
 export default function AddGuardian() {
@@ -98,6 +105,8 @@ export default function AddGuardian() {
         }
         case LoginType.Apple:
         case LoginType.Telegram:
+        case LoginType.Twitter:
+        case LoginType.Facebook:
         case LoginType.Google: {
           check = !(socialValue?.id || socialValue?.value);
           break;
@@ -141,7 +150,7 @@ export default function AddGuardian() {
         value: item.value,
         children: (
           <div className="flex select-option">
-            <CustomSvg type={item.icon} />
+            <BaseGuardianTypeIcon type={item.icon} />
             <span className="title">{item.label}</span>
           </div>
         ),
@@ -167,6 +176,8 @@ export default function AddGuardian() {
       }
       case LoginType.Apple:
       case LoginType.Telegram:
+      case LoginType.Twitter:
+      case LoginType.Facebook:
       case LoginType.Google: {
         key = `${socialValue?.id}&${verifierVal}`;
         tempAccount = `${socialValue?.value}`;
@@ -193,6 +204,8 @@ export default function AddGuardian() {
         case LoginType.Google:
         case LoginType.Apple:
         case LoginType.Telegram:
+        case LoginType.Twitter:
+        case LoginType.Facebook:
           setSocialVale(opGuardian.social);
           break;
       }
@@ -265,6 +278,28 @@ export default function AddGuardian() {
             accessToken: data?.access_token,
             isPrivate: true,
           });
+        } else if (v === 'Twitter') {
+          const userInfo = parseTwitterToken(data?.access_token);
+          if (!userInfo) throw 'Twitter auth error';
+          const { firstName, userId, accessToken } = userInfo;
+          setSocialVale({
+            name: firstName,
+            value: '',
+            id: userId,
+            accessToken,
+            isPrivate: true,
+          });
+        } else if (v === 'Facebook') {
+          const userInfo = await parseFacebookToken(data?.access_token);
+          if (!userInfo) throw 'Telegram auth error';
+          const { firstName, userId, accessToken } = userInfo;
+          setSocialVale({
+            name: firstName,
+            value: '',
+            id: userId,
+            accessToken,
+            isPrivate: true,
+          });
         } else {
           singleMessage.error(`type:${v} is not support`);
         }
@@ -335,6 +370,14 @@ export default function AddGuardian() {
       [LoginType.Telegram]: {
         element: renderSocialGuardianAccount('Telegram'),
         label: t('Guardian Telegram'),
+      },
+      [LoginType.Twitter]: {
+        element: renderSocialGuardianAccount('Twitter'),
+        label: t('Guardian Twitter'),
+      },
+      [LoginType.Facebook]: {
+        element: renderSocialGuardianAccount('Facebook'),
+        label: t('Guardian Facebook'),
       },
     }),
     [
@@ -467,6 +510,14 @@ export default function AddGuardian() {
         res = await request.verify.verifyTelegramToken({
           params,
         });
+      } else if (guardianType === LoginType.Twitter) {
+        res = await request.verify.verifyTwitterToken({
+          params,
+        });
+      } else if (guardianType === LoginType.Facebook) {
+        res = await request.verify.verifyFacebookToken({
+          params,
+        });
       }
       const { guardianIdentifier } = handleVerificationDoc(res.verificationDoc);
       dispatch(
@@ -532,7 +583,11 @@ export default function AddGuardian() {
         userGuardiansList,
       );
 
-    if ([LoginType.Apple, LoginType.Google, LoginType.Telegram].includes(guardianType as LoginType))
+    if (
+      [LoginType.Apple, LoginType.Google, LoginType.Telegram, LoginType.Twitter, LoginType.Facebook].includes(
+        guardianType as LoginType,
+      )
+    )
       return guardianAccountIsExist(
         { guardianType: guardianType as LoginType, guardianAccount: socialValue?.id || '' },
         userGuardiansList,
@@ -574,7 +629,11 @@ export default function AddGuardian() {
     setVerifierExist(_verifierIsExist);
     if (_verifierIsExist) return;
 
-    if ([LoginType.Google, LoginType.Apple, LoginType.Telegram].includes(guardianType as LoginType)) {
+    if (
+      [LoginType.Google, LoginType.Apple, LoginType.Telegram, LoginType.Twitter, LoginType.Facebook].includes(
+        guardianType as LoginType,
+      )
+    ) {
       handleSocialVerify();
     } else {
       CustomModal({

@@ -1,10 +1,11 @@
 import { timeoutPromise } from '@portkey-wallet/im/request';
-import { stringify } from 'query-string';
+import { StringifyOptions, stringify } from 'query-string';
 
 export interface CustomFetchConfig extends RequestInit {
   timeout?: number;
   params?: Record<string, any>;
   resourceUrl?: string;
+  stringifyOptions?: StringifyOptions;
 }
 
 export type CustomFetchFun = (
@@ -28,14 +29,19 @@ function formatResponse(response: string) {
 }
 
 const fetchFormat = (
-  requestConfig: RequestInit & { url: string; params?: any; resourceUrl?: CustomFetchConfig['resourceUrl'] },
+  requestConfig: RequestInit & {
+    url: string;
+    params?: any;
+    resourceUrl?: CustomFetchConfig['resourceUrl'];
+    stringifyOptions?: StringifyOptions;
+  },
 ) => {
-  const { url, signal, params = {}, method = 'GET', headers, resourceUrl } = requestConfig;
+  const { url, signal, params = {}, method = 'GET', headers, resourceUrl, stringifyOptions } = requestConfig;
   let body: RequestInit['body'] = JSON.stringify(params);
   let uri = url;
   const _method = method.toUpperCase();
   if (_method === 'GET' || _method === 'DELETE') {
-    uri = Object.keys(params).length > 0 ? `${uri}?${stringify(params)}` : uri;
+    uri = Object.keys(params).length > 0 ? `${uri}?${stringify(params, stringifyOptions)}` : uri;
     body = undefined;
   } else {
     if (requestConfig.body) body = requestConfig.body;

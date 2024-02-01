@@ -20,7 +20,13 @@ import { handleErrorCode, handleErrorMessage, sleep } from '@portkey-wallet/util
 import { Button } from 'antd';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
 import { SocialLoginFinishHandler } from 'types/wallet';
-import { getGoogleUserInfo, parseAppleIdentityToken, parseTelegramToken } from '@portkey-wallet/utils/authentication';
+import {
+  getGoogleUserInfo,
+  parseAppleIdentityToken,
+  parseFacebookToken,
+  parseTelegramToken,
+  parseTwitterToken,
+} from '@portkey-wallet/utils/authentication';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { useGetRegisterInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
@@ -164,6 +170,8 @@ export default function RegisterStart() {
         case LoginType.Apple:
         case LoginType.Google:
         case LoginType.Telegram:
+        case LoginType.Twitter:
+        case LoginType.Facebook:
           checkAuth(verifierItem, data);
           break;
         default:
@@ -283,7 +291,9 @@ export default function RegisterStart() {
             (guardian) =>
               guardian.isLoginAccount &&
               guardian.guardianAccount === loginInfo.guardianAccount &&
-              [LoginType.Google, LoginType.Apple, LoginType.Telegram].includes(guardian.guardianType),
+              [LoginType.Google, LoginType.Apple, LoginType.Telegram, LoginType.Twitter, LoginType.Facebook].includes(
+                guardian.guardianType,
+              ),
           )
           .map((item) =>
             socialVerify({
@@ -363,6 +373,16 @@ export default function RegisterStart() {
           const userInfo = parseTelegramToken(data?.access_token);
           if (!userInfo) throw 'Telegram auth error';
           userId = userInfo?.userId;
+        } else if (type === 'Twitter') {
+          const userInfo = parseTwitterToken(data?.access_token);
+          if (!userInfo) throw 'Twitter auth error';
+          const { userId: _userId } = userInfo;
+          userId = _userId;
+        } else if (type === 'Facebook') {
+          const userInfo = await parseFacebookToken(data?.access_token);
+          if (!userInfo) throw 'Telegram auth error';
+          const { userId: _userId } = userInfo;
+          userId = _userId;
         } else {
           throw `LoginType:${type} is not support`;
         }

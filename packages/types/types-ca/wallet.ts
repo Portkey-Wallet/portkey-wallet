@@ -17,13 +17,25 @@ export enum LoginType {
   Google,
   Apple,
   Telegram,
+  Facebook,
+  Twitter,
+}
+
+export enum SocialLoginEnum {
+  Google = 'Google',
+  Apple = 'Apple',
+  Telegram = 'Telegram',
+  Twitter = 'Twitter',
+  Facebook = 'Facebook',
 }
 
 export type LoginKeyType = string;
 
 export type LoginKey = keyof typeof LoginType;
 
-export type ISocialLogin = LoginKey;
+export type SocialLoginKey = keyof typeof SocialLoginEnum;
+
+export type ISocialLogin = SocialLoginKey;
 
 export interface CAInfo {
   caAddress: string;

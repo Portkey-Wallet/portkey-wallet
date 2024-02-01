@@ -4,11 +4,13 @@ import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type'
 import { VerifierItem } from '@portkey-wallet/types/verifier';
 
 export const guardianIconMap: Record<LoginType, IconType> = {
-  [LoginType.Email]: 'email',
-  [LoginType.Phone]: 'GuardianPhone',
-  [LoginType.Apple]: 'GuardianApple',
-  [LoginType.Google]: 'GuardianGoogle',
-  [LoginType.Telegram]: 'GuardianTelegram',
+  [LoginType.Email]: 'Email',
+  [LoginType.Phone]: 'Phone',
+  [LoginType.Apple]: 'Apple',
+  [LoginType.Google]: 'Google',
+  [LoginType.Telegram]: 'Telegram',
+  [LoginType.Facebook]: 'Facebook',
+  [LoginType.Twitter]: 'Twitter',
 };
 
 export interface IGuardianTypeAccount {

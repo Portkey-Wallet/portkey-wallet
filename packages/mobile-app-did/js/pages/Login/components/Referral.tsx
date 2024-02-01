@@ -91,14 +91,37 @@ export default function Referral({
     Loading.hide(loadingKey);
   }, [authenticationSign, onLogin]);
 
-  // TODO: onTwitterSign
   const onTwitterSign = useLockCallback(async () => {
-    console.log('onTwitterSign');
+    const loadingKey = Loading.show();
+    try {
+      const userInfo = await authenticationSign(LoginType.Twitter);
+      await onLogin({
+        loginAccount: userInfo.user.id,
+        loginType: LoginType.Twitter,
+        authenticationInfo: { [userInfo.user.id]: userInfo.accessToken },
+      });
+    } catch (error) {
+      if (!checkIsUserCancel(error)) CommonToast.failError(error);
+    }
+    Loading.hide(loadingKey);
   }, [authenticationSign, onLogin]);
 
-  // TODO: onFacebookSign
   const onFacebookSign = useLockCallback(async () => {
-    console.log('onFacebookSign');
+    const loadingKey = Loading.show();
+    try {
+      const userInfo = await authenticationSign(LoginType.Facebook);
+      console.log(userInfo, '======userInfo-onFacebookSign');
+
+      await onLogin({
+        loginAccount: userInfo.user.userId,
+        loginType: LoginType.Facebook,
+        authenticationInfo: { [userInfo.user.userId]: userInfo.accessToken },
+      });
+    } catch (error) {
+      console.log(error, checkIsUserCancel(error), '======error-onFacebookSign');
+      if (!checkIsUserCancel(error)) CommonToast.failError(error);
+    }
+    Loading.hide(loadingKey);
   }, [authenticationSign, onLogin]);
 
   const otherLoginTypeList = useMemo<{ icon: IconName; onPress: () => any }[]>(
@@ -147,7 +170,6 @@ export default function Referral({
           onPress={onTelegramSign}
           style={GStyles.marginTop(16)}
         />
-
         <Divider title="OR" inset={true} style={pageStyles.dividerStyle} />
         <View style={[GStyles.flexRow, GStyles.flexCenter]}>
           {otherLoginTypeList.map((ele, index) => (

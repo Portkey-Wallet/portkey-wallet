@@ -79,7 +79,7 @@ export function parseTelegramToken(token?: string | null): TelegramUserInfo | un
   return { isExpired, userId, expirationTime, firstName, picture, lastName, id: userId, givenName };
 }
 
-interface FacebookUserInfo {
+export type TFacebookUserInfo = {
   isExpired: boolean;
   userId: string;
   id: string;
@@ -91,11 +91,11 @@ interface FacebookUserInfo {
   isPrivate: boolean;
   name: string;
   accessToken: string;
-}
+};
 
-const fbUserInfo: { [key: string]: FacebookUserInfo } = {};
+const fbUserInfo: { [key: string]: TFacebookUserInfo } = {};
 
-export async function parseFacebookToken(tokenStr?: string | null): Promise<FacebookUserInfo | undefined> {
+export async function parseFacebookToken(tokenStr?: string | null): Promise<TFacebookUserInfo | undefined> {
   if (!tokenStr) return;
   try {
     const { userId, token: accessToken, expiredTime } = JSON.parse(tokenStr);
@@ -132,7 +132,7 @@ export async function parseFacebookToken(tokenStr?: string | null): Promise<Face
   }
 }
 
-interface TwitterUserInfo {
+export interface TwitterUserInfo {
   isExpired: boolean;
   userId: string;
   id: string;

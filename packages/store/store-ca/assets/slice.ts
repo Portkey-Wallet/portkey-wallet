@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { NFTCollectionItemShowType } from '@portkey-wallet/types/types-ca/assets';
 import { fetchAssetList, fetchNFTSeriesList, fetchNFTList, fetchTokenList, fetchTokenPrices } from './api';
-import { AccountAssets, TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { AccountAssetItem, AccountAssets, TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { ChainId } from '@portkey-wallet/types';
 import { NEW_CLIENT_MOCK_ELF_LIST, PAGE_SIZE_IN_NFT_ITEM } from '@portkey-wallet/constants/constants-ca/assets';
 import { ZERO } from '@portkey-wallet/constants/misc';
@@ -40,7 +40,7 @@ export type AssetsStateType = {
     isFetching: boolean;
     skipCount: number;
     maxResultCount: number;
-    accountAssetsList: AccountAssets;
+    accountAssetsList: AccountAssetItem[];
     totalRecordCount: number;
   };
   accountBalance: number | string;

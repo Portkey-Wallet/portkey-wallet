@@ -33,8 +33,10 @@ import PhoneInput from 'components/PhoneInput';
 import {
   AppleAuthentication,
   useAppleAuthentication,
+  useFacebookAuthentication,
   useGoogleAuthentication,
   useTelegramAuthentication,
+  useTwitterAuthentication,
   useVerifyToken,
 } from 'hooks/authentication';
 import GuardianAccountItem from '../components/GuardianAccountItem';
@@ -85,6 +87,8 @@ const GuardianEdit: React.FC = () => {
   const { appleSign } = useAppleAuthentication();
   const { googleSign } = useGoogleAuthentication();
   const { telegramSign } = useTelegramAuthentication();
+  const { twitterSign } = useTwitterAuthentication();
+  const { facebookSign } = useFacebookAuthentication();
 
   const verifyToken = useVerifyToken();
   const [firstName, setFirstName] = useState<string>();
@@ -485,6 +489,39 @@ const GuardianEdit: React.FC = () => {
     Loading.hide();
   }, [telegramSign]);
 
+  const onTwitterSign = useCallback(async () => {
+    Loading.show();
+    try {
+      const userInfo = await twitterSign();
+      setAccount(PRIVATE_GUARDIAN_ACCOUNT);
+      setFirstName(userInfo.user.name || undefined);
+      thirdPartyInfoRef.current = {
+        id: userInfo.user.id,
+        accessToken: userInfo.accessToken,
+      };
+    } catch (error) {
+      CommonToast.failError(error);
+    }
+    Loading.hide();
+  }, [twitterSign]);
+  const onFacebookSign = useCallback(async () => {
+    Loading.show();
+    try {
+      const userInfo = await facebookSign();
+      console.log(userInfo, '======userInfo');
+
+      setAccount(PRIVATE_GUARDIAN_ACCOUNT);
+      setFirstName(userInfo.user.firstName || undefined);
+      thirdPartyInfoRef.current = {
+        id: userInfo.user.id,
+        accessToken: userInfo.accessToken,
+      };
+    } catch (error) {
+      CommonToast.failError(error);
+    }
+    Loading.hide();
+  }, [facebookSign]);
+
   const renderGuardianAccount = useCallback(() => {
     if (isEdit) {
       return (
@@ -558,6 +595,28 @@ const GuardianEdit: React.FC = () => {
             type={LoginType.Telegram}
           />
         );
+      case LoginType.Twitter:
+        return (
+          <GuardianThirdAccount
+            account={account}
+            firstName={firstName}
+            clearAccount={clearAccount}
+            guardianAccountError={guardianAccountError}
+            onPress={onTwitterSign}
+            type={LoginType.Twitter}
+          />
+        );
+      case LoginType.Facebook:
+        return (
+          <GuardianThirdAccount
+            account={account}
+            firstName={firstName}
+            clearAccount={clearAccount}
+            guardianAccountError={guardianAccountError}
+            onPress={onFacebookSign}
+            type={LoginType.Facebook}
+          />
+        );
       default:
         break;
     }
@@ -574,6 +633,8 @@ const GuardianEdit: React.FC = () => {
     onAppleSign,
     onGoogleSign,
     onTelegramSign,
+    onFacebookSign,
+    onTwitterSign,
     selectedType,
   ]);
 

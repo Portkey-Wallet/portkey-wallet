@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: pTd(48),
     borderRadius: pTd(6),
-    borderWidth: Math.max(StyleSheet.hairlineWidth, pTd(0.5)),
+    borderWidth: Math.max(pTd(0.5), StyleSheet.hairlineWidth),
     borderColor: defaultColors.border1,
     display: 'flex',
     justifyContent: 'center',

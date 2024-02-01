@@ -17,6 +17,7 @@ import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import im from '@portkey-wallet/im';
 import { useInitRamp } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { codePushOperator } from 'utils/update';
 
 export default function useInitData() {
   const dispatch = useAppDispatch();
@@ -59,6 +60,7 @@ export default function useInitData() {
 
       loadBookmarkList();
       initRamp();
+      codePushOperator.initLocalPackage();
       // getGuardiansInfoWriteStore after getVerifierServers
       // await getVerifierServers();
       // getGuardiansInfoWriteStore({

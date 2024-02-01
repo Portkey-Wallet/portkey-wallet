@@ -3,13 +3,16 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { checkPassword } from './utils';
 import {
   changePin,
+  createNewTmpWalletAction,
   createWalletAction,
   getCaHolderInfoAsync,
   resetCaInfo,
+  reSetCheckManagerExceed,
   resetWallet,
   setCAInfo,
   setCAInfoType,
   setChainListAction,
+  setCheckManagerExceed,
   setManagerInfo,
   setOriginChainId,
   setUserInfoAction,
@@ -51,6 +54,11 @@ export const walletSlice = createSlice({
         state.walletInfo = {
           ...action.payload.walletInfo,
           caInfo: { [currentNetwork]: caInfo } as any,
+        };
+      })
+      .addCase(createNewTmpWalletAction, (state, action) => {
+        state.tmpWalletInfo = {
+          ...action.payload.walletInfo,
         };
       })
       .addCase(setCAInfo, (state, action) => {
@@ -129,6 +137,22 @@ export const walletSlice = createSlice({
         const caInfo = state.walletInfo.caInfo;
         if (caInfo?.[action.payload]) delete caInfo[action.payload];
         state.walletInfo.caInfo = caInfo;
+      })
+      .addCase(setCheckManagerExceed, (state, { payload }) => {
+        const { network } = payload;
+        state.checkManagerExceedMap = {
+          ...state.checkManagerExceedMap,
+          [network]: true,
+        };
+      })
+      .addCase(reSetCheckManagerExceed, (state, { payload }) => {
+        if (payload) {
+          const _checkManagerExceedMap = state.checkManagerExceedMap;
+          if (_checkManagerExceedMap && _checkManagerExceedMap[payload]) delete _checkManagerExceedMap[payload];
+          state.checkManagerExceedMap = _checkManagerExceedMap;
+        } else {
+          state.checkManagerExceedMap = {};
+        }
       });
   },
 });

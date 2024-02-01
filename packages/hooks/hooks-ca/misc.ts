@@ -124,7 +124,7 @@ export const useIsScanQRCode = (clientId: string | undefined) => {
 };
 
 export const useTimer = () => {
-  const timerRef = useRef<NodeJS.Timeout>();
+  const timerRef = useRef<NodeJS.Timeout | number>();
 
   useEffect(() => {
     return () => {

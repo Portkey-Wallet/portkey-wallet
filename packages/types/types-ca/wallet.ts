@@ -17,8 +17,8 @@ export enum LoginType {
   Google,
   Apple,
   Telegram,
-  Twitter,
   Facebook,
+  Twitter,
 }
 
 export enum SocialLoginEnum {

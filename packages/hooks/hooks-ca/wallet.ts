@@ -11,6 +11,7 @@ import {
   setWalletNameAction,
   setUserInfoAction,
   getCaHolderInfoAsync,
+  setCheckManagerExceed,
 } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { DeviceInfoType } from '@portkey-wallet/types/types-ca/device';
 import { extraDataListDecode } from '@portkey-wallet/utils/device';
@@ -58,15 +59,14 @@ export function getCurrentWalletInfo(
 
 export const useWallet = () => useAppCASelector(state => state.wallet);
 
-export const useUserInfo = () => {
+export const useUserInfo = (forceUpdate?: boolean) => {
   const { userInfo } = useWallet();
   const dispatch = useAppCommonDispatch();
 
   useEffect(() => {
-    if (!userInfo?.userId) {
-      dispatch(getCaHolderInfoAsync());
-    }
-  }, [dispatch, userInfo]);
+    if (!userInfo?.userId) dispatch(getCaHolderInfoAsync());
+    if (forceUpdate) dispatch(getCaHolderInfoAsync());
+  }, [dispatch, forceUpdate, userInfo]);
 
   return userInfo;
 };
@@ -288,3 +288,38 @@ export const useOtherNetworkLogged = () => {
     [caInfo, currentNetwork],
   );
 };
+
+export const useVerifyManagerAddress = () => {
+  const { walletInfo, tmpWalletInfo } = useWallet();
+  return useMemo(() => walletInfo?.address || tmpWalletInfo?.address, [walletInfo, tmpWalletInfo]);
+};
+
+export const useTmpWalletInfo = () => {
+  return useAppCASelector(state => state.wallet.tmpWalletInfo);
+};
+export function useCheckManagerExceed() {
+  const dispatch = useAppCommonDispatch();
+  const currentNetworkInfo = useCurrentNetworkInfo();
+  const { checkManagerExceedMap } = useWallet();
+  const caHash = useCurrentCaHash();
+
+  const checkManagerExceed = useMemo(
+    () => checkManagerExceedMap?.[currentNetworkInfo.networkType],
+    [checkManagerExceedMap, currentNetworkInfo.networkType],
+  );
+
+  return useCallback(async () => {
+    if (checkManagerExceed) return false;
+    const { managersTooMany } = await request.manager.checkManagerCount({
+      params: {
+        caHash,
+      },
+    });
+    dispatch(
+      setCheckManagerExceed({
+        network: currentNetworkInfo.networkType,
+      }),
+    );
+    return managersTooMany;
+  }, [checkManagerExceed, caHash, dispatch, currentNetworkInfo.networkType]);
+}

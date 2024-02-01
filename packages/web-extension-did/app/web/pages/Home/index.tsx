@@ -16,6 +16,7 @@ import { sleep } from '@portkey-wallet/utils';
 import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { fetchAssetAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { useCaAddressInfoList, useCaAddresses } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useManagerExceedTipModal } from 'hooks/useManagerExceedTip';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 
 export default function Home() {
@@ -31,7 +32,7 @@ export default function Home() {
   const appDispatch = useAppDispatch();
   const caAddresses = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
-
+  const managerExceedTip = useManagerExceedTipModal();
   const { search } = useLocation();
   const isSell = useRef(0); // guaranteed to make only one transfer
   const handleAchSell = useHandleAchSell();
@@ -59,6 +60,7 @@ export default function Home() {
   useEffectOnce(() => {
     checkAchSell();
     getAccountAllAssets();
+    managerExceedTip();
     getViewReferralStatusStatus();
     getReferralLink();
   });

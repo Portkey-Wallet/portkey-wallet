@@ -102,11 +102,6 @@ function AlertBody({
             CommonToast.failError('Guardian failed to be added. Please wait a while for the addition to complete');
           }
           Loading.hide();
-
-          if (isDrawerOpen) {
-            await sleep(250);
-            dispatch(changeDrawerOpenStatus(false));
-          }
         },
       },
     ];

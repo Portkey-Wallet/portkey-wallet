@@ -131,11 +131,11 @@ export default function Referral({
         onPress: isIOS ? onGoogleSign : onAppleSign,
       },
       {
-        icon: 'twitter-icon',
+        icon: 'twitter',
         onPress: onTwitterSign,
       },
       {
-        icon: 'facebook-icon',
+        icon: 'facebook',
         onPress: onFacebookSign,
       },
       {

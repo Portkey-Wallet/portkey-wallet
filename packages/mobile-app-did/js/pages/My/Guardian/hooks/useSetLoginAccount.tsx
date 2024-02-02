@@ -114,18 +114,11 @@ export const useSetLoginAccount = (isEdit = false) => {
             accessToken = userInfo.identityToken;
             break;
           case LoginType.Google:
-            userInfo = await authenticationSign(LoginType.Google);
-            accessToken = userInfo.accessToken;
-            break;
           case LoginType.Telegram:
-            userInfo = await authenticationSign(LoginType.Telegram);
-            accessToken = userInfo.accessToken;
-            break;
           case LoginType.Twitter:
-            // TODO: change it
-            break;
           case LoginType.Facebook:
-            // TODO: change it
+            userInfo = await authenticationSign(currentGuardian.guardianType as any);
+            accessToken = userInfo.accessToken;
             break;
         }
         const guardianAccount = userInfo?.user.id;

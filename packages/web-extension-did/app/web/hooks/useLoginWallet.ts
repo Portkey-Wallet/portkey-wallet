@@ -126,6 +126,7 @@ export default function useLoginWallet(props: ILoginWalletProps) {
         clientId,
         pin,
         walletInfo: wallet,
+        createType: 'register',
       });
 
       return getRequestStatus({
@@ -181,6 +182,7 @@ export default function useLoginWallet(props: ILoginWalletProps) {
         clientId,
         pin,
         walletInfo: wallet,
+        createType: 'recovery',
       });
       return getRequestStatus({
         chainId,
@@ -237,6 +239,7 @@ export default function useLoginWallet(props: ILoginWalletProps) {
           accountType,
           type,
         },
+        createType: type,
         chainId,
         pin,
         walletInfo: wallet,

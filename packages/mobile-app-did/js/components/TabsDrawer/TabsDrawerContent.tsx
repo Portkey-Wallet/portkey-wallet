@@ -242,7 +242,7 @@ const TabsDrawerContent: React.FC = () => {
             onNavigationStateChange={onNavigationStateChange}
           />
           {!isHidden && (
-            <View style={handleButtonStyle.container}>
+            <View style={handleButtonStyle.wrap}>
               <TouchableOpacity
                 disabled={!canGoBack}
                 onPress={() => clickBottomActionBtn('back')}
@@ -441,6 +441,15 @@ const handleButtonStyle = StyleSheet.create({
   },
   noTap: {
     opacity: 0.3,
+  },
+  wrap: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: screenWidth,
+    height: pTd(44),
+    backgroundColor: defaultColors.bg1,
   },
 });
 

@@ -470,6 +470,7 @@ const styles = StyleSheet.create({
     borderLeftColor: defaultColors.border6,
     borderLeftWidth: StyleSheet.hairlineWidth,
     paddingLeft: pTd(12),
+    overflow: 'hidden',
   },
   unitIconStyle: {
     width: pTd(24),

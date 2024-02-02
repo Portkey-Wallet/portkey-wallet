@@ -7,7 +7,6 @@ import {
   useBuyDefaultCryptoState,
   useBuyDefaultFiatState,
   useBuyFiatListState,
-  useRampEntryShow,
 } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { handleKeyDown } from 'utils/keyDown';
@@ -23,6 +22,7 @@ import { getBuyCrypto } from '@portkey-wallet/utils/ramp';
 import singleMessage from 'utils/singleMessage';
 import { useLocationState } from 'hooks/router';
 import { TRampLocationState } from 'types/router';
+import { useExtensionRampEntryShow } from 'hooks/ramp';
 
 export default function BuyForm() {
   const { t } = useTranslation();
@@ -30,7 +30,7 @@ export default function BuyForm() {
   const navigate = useNavigate();
   const { state } = useLocationState<TRampLocationState>();
   // get data
-  const { refreshRampShow } = useRampEntryShow();
+  const { refreshRampShow } = useExtensionRampEntryShow();
   const { symbol: defaultFiat, amount: defaultFiatAmount, country: defaultCountry } = useBuyDefaultFiatState();
   const { symbol: defaultCrypto, network: defaultNetwork } = useBuyDefaultCryptoState();
   const fiatList = useBuyFiatListState();

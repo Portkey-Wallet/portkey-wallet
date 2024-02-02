@@ -135,7 +135,7 @@ export default function CustomToken() {
             )}
           </div>
           <div>
-            <p className="label">{t('Verifier')}</p>
+            <p className="label">{t('Network')}</p>
             <CustomSelect
               className="select value"
               value={curChainId}

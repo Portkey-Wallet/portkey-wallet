@@ -17,9 +17,9 @@ import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from 'pages/components/DisclaimerModal';
 import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import './index.less';
-import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { TSendLocationState, TTokenDetailLocationState } from 'types/router';
+import { useExtensionRampEntryShow } from 'hooks/ramp';
 
 export enum TokenTransferStatus {
   CONFIRMED = 'Confirmed',
@@ -39,7 +39,7 @@ function TokenDetail() {
   const [disclaimerOpen, setDisclaimerOpen] = useState<boolean>(false);
   const { eTransferUrl = '' } = useCurrentNetworkInfo();
   const { isPrompt } = useCommonState();
-  const { isRampShow } = useRampEntryShow();
+  const { isRampShow } = useExtensionRampEntryShow();
   const { setLoading } = useLoading();
   const isShowBuy = useMemo(
     () => currentToken.symbol === 'ELF' && currentToken.chainId === 'AELF' && isRampShow,

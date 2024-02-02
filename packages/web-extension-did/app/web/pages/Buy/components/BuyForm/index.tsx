@@ -36,6 +36,7 @@ export default function BuyForm() {
   const { symbol: defaultCrypto, network: defaultNetwork } = useBuyDefaultCryptoState();
   const fiatList = useBuyFiatListState();
   const defaultCryptoList = useBuyDefaultCryptoListState();
+  const [supportCryptoList, setSupportCryptoList] = useState<IRampCryptoItem[]>(defaultCryptoList);
   const filterFiatSelected = useMemo(() => {
     return fiatList.filter(
       (item) => item.symbol === (state?.fiat || defaultFiat) && item.country === (state?.country || defaultCountry),
@@ -101,6 +102,8 @@ export default function BuyForm() {
             setCryptoSelected({ ...newDefaultCrypto[0] });
             cryptoSelectedRef.current = { ...newDefaultCrypto[0] };
           }
+
+          setSupportCryptoList(buyCryptoList);
 
           await updateBuyReceive();
         }
@@ -203,7 +206,7 @@ export default function BuyForm() {
             curCrypto={cryptoSelected}
             readOnly={true}
             defaultFiat={defaultFiat}
-            country={defaultCountry}
+            supportList={supportCryptoList}
             onSelect={handleCryptoSelect}
             onKeyDown={handleKeyDown}
           />

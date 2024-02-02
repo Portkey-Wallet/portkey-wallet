@@ -339,6 +339,7 @@ export default function SellFrom() {
             value={cryptoAmount}
             readOnly={false}
             curCrypto={cryptoSelected}
+            supportList={cryptoList}
             onChange={onCryptoChange}
             onSelect={handleCryptoSelect}
             onKeyDown={handleKeyDown}

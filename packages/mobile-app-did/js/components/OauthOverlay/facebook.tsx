@@ -38,14 +38,18 @@ function FacebookSign({ onConfirm, onReject }: FacebookProps) {
       try {
         const obj = JSON.parse(data);
         const { type, payload } = obj;
-        const info = JSON.parse(payload.response.access_token);
-        if (type === FB_FUN.Login_Success && info.token) {
-          const fbInfo = await parseFacebookToken(payload.response.access_token);
-          if (!fbInfo) throw new Error('Failed to parse Facebook token');
-          onConfirm({ accessToken: payload.response.access_token, user: fbInfo });
-          OverlayModal.hide();
-        } else {
+        if (payload.error) {
           onReject(USER_CANCELED);
+        } else {
+          const info = JSON.parse(payload.response.access_token);
+          if (type === FB_FUN.Login_Success && info.token) {
+            const fbInfo = await parseFacebookToken(payload.response.access_token);
+            if (!fbInfo) throw new Error('Failed to parse Facebook token');
+            onConfirm({ accessToken: payload.response.access_token, user: fbInfo });
+            OverlayModal.hide();
+          } else {
+            onReject(USER_CANCELED);
+          }
         }
       } catch (error) {
         onReject(handleErrorMessage(error));

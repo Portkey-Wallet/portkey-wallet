@@ -136,3 +136,9 @@ export const isMyPayTransactionFee = (address: string, chainId?: ChainId) => {
 
   return addressList.some(i => isEqAddress(i, address));
 };
+
+export const getOriginChainId = () => {
+  const wallet = getWallet();
+  const caInfo = getCurrentCaInfo();
+  return wallet?.originChainId || caInfo?.originChainId;
+};

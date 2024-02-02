@@ -102,9 +102,9 @@ export default function DiscoverHome() {
     );
   }, [onRightPress]);
 
-  const checkModal = useCallback(async () => {
+  const checkModal = useLockCallback(async () => {
     const isShowNotice = await requestNotifyPermission();
-    if (!isShowNotice) joinOfficialGroupModal();
+    if (!isShowNotice) await joinOfficialGroupModal();
   }, [joinOfficialGroupModal, requestNotifyPermission]);
 
   useFocusEffect(

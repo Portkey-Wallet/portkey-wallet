@@ -10,9 +10,12 @@ import { request } from '@portkey-wallet/api/api-did';
 import { ChainId } from '@portkey-wallet/types';
 import {
   AppleUserInfo,
+  TFacebookUserInfo,
   TelegramUserInfo,
   getGoogleUserInfo,
   parseAppleIdentityToken,
+  parseFacebookToken,
+  parseTwitterToken,
 } from '@portkey-wallet/utils/authentication';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { useInterface } from 'contexts/useInterface';
@@ -23,8 +26,17 @@ import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authe
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { AuthenticationInfo, OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
-import TelegramOverlay from 'components/TelegramOverlay';
+import TelegramOverlay from 'components/OauthOverlay/telegram';
+import FacebookOverlay from 'components/OauthOverlay/facebook';
 import { parseTelegramToken } from '@portkey-wallet/utils/authentication';
+import { useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useLatestRef } from '@portkey-wallet/hooks';
+import { VerifyTokenParams } from '@portkey-wallet/types/types-ca/authentication';
+import { parse } from 'query-string';
+import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
+import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
+import { SCHEME } from 'constants/authentication';
+import { onTwitterLogin } from 'utils/authentication';
 
 if (!isIOS) {
   GoogleSignin.configure({
@@ -57,6 +69,11 @@ export type AppleAuthentication = {
     givenName?: string;
     familyName?: string;
   };
+};
+
+export type TFacebookAuthentication = {
+  user: TFacebookUserInfo;
+  accessToken: string;
 };
 
 export type TelegramAuthentication = {
@@ -265,19 +282,118 @@ export function useTelegramAuthentication() {
   );
 }
 
+export function useFacebookAuthentication() {
+  // todo: add Telegram authentication
+  return useMemo(
+    () => ({
+      appleResponse: '',
+      // facebookSign: ,
+      facebookSign: isIOS
+        ? FacebookOverlay.sign
+        : () => {
+            return new Promise<TFacebookAuthentication>((resolve, reject) => {
+              LoginManager.logInWithPermissions(['public_profile']).then(
+                function (result) {
+                  if (result.isCancelled) {
+                    reject(Error(USER_CANCELED));
+                  } else {
+                    AccessToken.getCurrentAccessToken()
+                      .then(async data => {
+                        if (data) {
+                          const expiredTime = Math.ceil(data.expirationTime / 1000);
+                          const token = data.accessToken;
+                          const userId = data.userID;
+                          data.accessToken = JSON.stringify({ expiredTime, token, userId });
+                          const fbInfo = await parseFacebookToken(data.accessToken);
+
+                          const info = { accessToken: data?.accessToken, user: fbInfo } as TFacebookAuthentication;
+                          resolve(info);
+                        } else {
+                          reject(Error(USER_CANCELED));
+                        }
+                      })
+                      .catch(error => {
+                        reject(error);
+                      });
+                  }
+                },
+                function (error) {
+                  reject(error);
+                  console.log('Login fail with error: ' + error);
+                },
+              );
+            });
+          },
+    }),
+    [],
+  );
+}
+
+export function useTwitterAuthentication() {
+  return useMemo(
+    () => ({
+      appleResponse: '',
+      twitterSign: async () => {
+        const info = await onTwitterLogin();
+        console.log(info, '=====info-useTwitterAuthentication');
+
+        if (info.type === 'success') {
+          if (info.url.includes('access_denied')) {
+            throw new Error(USER_CANCELED);
+          } else {
+            const userInfo = await request.wallet.getTwitterUserInfo({
+              params: {
+                redirectUrl: SCHEME,
+                state: 'state',
+                code: parse(info.url).code,
+              },
+              stringifyOptions: { encode: false },
+            });
+            return {
+              ...userInfo,
+              user: userInfo.userInfo,
+              accessToken: JSON.stringify({ ...userInfo.userInfo, token: userInfo.accessToken }),
+            } as TTwitterAuthentication;
+          }
+        } else {
+          throw new Error('Twitter authentication failed');
+        }
+      },
+    }),
+    [],
+  );
+}
+
+export type TTwitterAuthentication = {
+  accessToken: string;
+  authType: 'Twitter';
+  user: {
+    id: string;
+    name: string;
+    userName: string;
+  };
+};
+
 interface IAuthenticationSign {
   sign(type: LoginType.Google): Promise<GoogleAuthentication>;
   sign(type: LoginType.Apple): Promise<AppleAuthentication>;
   sign(type: LoginType.Telegram): Promise<TelegramAuthentication>;
+  sign(type: LoginType.Twitter): Promise<TTwitterAuthentication>;
+  sign(type: LoginType.Facebook): Promise<TFacebookAuthentication>;
 }
+
 export function useAuthenticationSign() {
   const { appleSign } = useAppleAuthentication();
   const { googleSign } = useGoogleAuthentication();
   const { telegramSign } = useTelegramAuthentication();
+  const { twitterSign } = useTwitterAuthentication();
+  const { facebookSign } = useFacebookAuthentication();
   return useCallback<IAuthenticationSign['sign']>(
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     type => {
+      console.log(type, '====type');
+
       switch (type) {
         case LoginType.Google:
           return googleSign();
@@ -285,22 +401,17 @@ export function useAuthenticationSign() {
           return appleSign();
         case LoginType.Telegram:
           return telegramSign();
+        case LoginType.Twitter:
+          return twitterSign();
+        case LoginType.Facebook:
+          return facebookSign();
         default:
           throw new Error('Unsupported login type');
       }
     },
-    [appleSign, googleSign, telegramSign],
+    [appleSign, googleSign, telegramSign, twitterSign, facebookSign],
   );
 }
-
-export type VerifyTokenParams = {
-  accessToken?: string;
-  verifierId?: string;
-  chainId: ChainId;
-  id: string;
-  operationType: OperationTypeEnum;
-  targetChainId?: ChainId;
-};
 
 export function useVerifyGoogleToken() {
   const { googleSign } = useGoogleAuthentication();
@@ -384,24 +495,96 @@ export function useVerifyTelegramToken() {
     [telegramSign],
   );
 }
+
+export function useVerifyTwitterToken() {
+  const { twitterSign } = useTwitterAuthentication();
+  return useCallback(
+    async (params: VerifyTokenParams) => {
+      let accessToken = params.accessToken;
+      const { isExpired: tokenIsExpired } = parseTwitterToken(accessToken) || {};
+      if (!accessToken || tokenIsExpired) {
+        const info = await twitterSign();
+        accessToken = info.accessToken || undefined;
+      }
+      const { userId, accessToken: accessTwitterToken } = parseTwitterToken(accessToken) || {};
+
+      if (userId !== params.id) throw new Error('Account does not match your guardian');
+
+      const rst = await request.verify.verifyTwitterToken({
+        params: { ...params, accessToken: accessTwitterToken },
+      });
+
+      return {
+        ...rst,
+        accessToken,
+      };
+    },
+    [twitterSign],
+  );
+}
+
+export function useVerifyFacebookToken() {
+  const { facebookSign } = useFacebookAuthentication();
+  return useCallback(
+    async (params: VerifyTokenParams) => {
+      let accessToken = params.accessToken;
+      const { isExpired: tokenIsExpired } = (await parseFacebookToken(accessToken)) || {};
+      if (!accessToken || tokenIsExpired) {
+        const info = await facebookSign();
+        accessToken = info.accessToken || undefined;
+      }
+      const { userId, accessToken: accessFacebookToken } = (await parseFacebookToken(accessToken)) || {};
+
+      if (userId !== params.id) throw new Error('Account does not match your guardian');
+
+      const rst = await request.verify.verifyFacebookToken({
+        params: { ...params, accessToken: accessFacebookToken },
+      });
+
+      return {
+        ...rst,
+        accessToken,
+      };
+    },
+    [facebookSign],
+  );
+}
 export function useVerifyToken() {
   const verifyGoogleToken = useVerifyGoogleToken();
   const verifyAppleToken = useVerifyAppleToken();
-  const TelegramToken = useVerifyTelegramToken();
+  const verifyTelegramToken = useVerifyTelegramToken();
+  const verifyTwitterToken = useVerifyTwitterToken();
+  const verifyFacebookToken = useVerifyFacebookToken();
+  const verifyManagerAddress = useVerifyManagerAddress();
+  const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
   return useCallback(
     (type: LoginType, params: VerifyTokenParams) => {
+      let fun = verifyGoogleToken;
       switch (type) {
         case LoginType.Google:
-          return verifyGoogleToken(params);
+          fun = verifyGoogleToken;
+          break;
         case LoginType.Apple:
-          return verifyAppleToken(params);
+          fun = verifyAppleToken;
+          break;
         case LoginType.Telegram:
-          return TelegramToken(params);
+          fun = verifyTelegramToken;
+          break;
+        case LoginType.Twitter:
+          fun = verifyTwitterToken;
+          break;
+        case LoginType.Facebook:
+          fun = verifyFacebookToken;
+          break;
         default:
           throw new Error('Unsupported login type');
       }
+      return fun({
+        operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
+        ...params,
+      });
     },
-    [TelegramToken, verifyAppleToken, verifyGoogleToken],
+    [verifyTelegramToken, verifyAppleToken, verifyGoogleToken, verifyTwitterToken, verifyFacebookToken],
   );
 }
 
@@ -410,6 +593,7 @@ export type VerifierAuthParams = {
   originChainId: ChainId;
   operationType?: OperationTypeEnum;
   authenticationInfo?: AuthenticationInfo;
+  operationDetails?: string;
 };
 export function useVerifierAuth() {
   const verifyToken = useVerifyToken();

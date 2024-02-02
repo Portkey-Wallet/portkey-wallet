@@ -1,0 +1,23 @@
+query codePushControlCustom(
+  $filter: codePushControl_filter
+  $sort: [String]
+  $limit: Int
+  $offset: Int
+  $page: Int
+  $search: String
+) {
+  codePushControl(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
+    content
+    id
+    isForceUpdate
+    label
+    sort
+    status
+    title
+    updatedContent
+    updatedTitle
+    user_created
+    user_updated
+    version
+  }
+}

@@ -8,7 +8,7 @@ import TermsOfServiceItem from '../TermsOfServiceItem';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
 import { useLoading, useWalletInfo } from 'store/Provider/hooks';
-import { ISocialLogin } from '@portkey-wallet/types/types-ca/wallet';
+import { ISocialLogin, SocialLoginEnum } from '@portkey-wallet/types/types-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
@@ -16,15 +16,23 @@ import './index.less';
 
 const guardianList = [
   {
-    icon: <CustomSvg type="Apple-Login" />,
+    icon: <CustomSvg type="Apple" />,
     type: 'Apple',
   },
   {
-    icon: <CustomSvg type="Phone-Login" />,
+    icon: <CustomSvg type="Twitter" />,
+    type: 'Twitter',
+  },
+  {
+    icon: <CustomSvg type="Facebook" />,
+    type: 'Facebook',
+  },
+  {
+    icon: <CustomSvg type="Phone" />,
     type: 'Phone',
   },
   {
-    icon: <CustomSvg type="Email-Login" />,
+    icon: <CustomSvg type="Email" />,
     type: 'Email',
   },
 ] as const;
@@ -98,9 +106,18 @@ export default function SocialLogin({
             {guardianList.map((item) => (
               <div
                 key={item.type}
+                className="guardian-type-icon flex-center"
                 onClick={() => {
-                  if (item.type === 'Apple') {
-                    onSocialChange('Apple');
+                  if (item.type === SocialLoginEnum.Apple) {
+                    onSocialChange(SocialLoginEnum.Apple);
+                    return;
+                  }
+                  if (item.type === SocialLoginEnum.Facebook) {
+                    onSocialChange(SocialLoginEnum.Facebook);
+                    return;
+                  }
+                  if (item.type === SocialLoginEnum.Twitter) {
+                    onSocialChange(SocialLoginEnum.Twitter);
                     return;
                   }
                   switchLogin?.(item.type);

@@ -5,16 +5,19 @@ import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import PageContainer from 'components/PageContainer';
 import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import CommonAvatar from 'components/CommonAvatar';
 import { TextL, TextM, TextXXXL } from 'components/CommonText';
 import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
 import { ScreenWidth } from '@rneui/base';
 import Touchable from 'components/Touchable';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 const ChatQrCodePage: React.FC = () => {
-  const { userInfo, walletName } = useWallet();
-  const qrCodeData = useMemo(() => `${LinkPortkeyPath.addContact}${userInfo?.userId}`, [userInfo?.userId]);
+  const isMainnet = useIsMainnet();
+  const { avatar = '', userId = '', nickName = '' } = useUserInfo() || {};
+
+  const qrCodeData = useMemo(() => `${LinkPortkeyPath.addContact}${userId}`, [userId]);
 
   return (
     <PageContainer
@@ -26,18 +29,18 @@ const ChatQrCodePage: React.FC = () => {
       <CommonAvatar
         hasBorder
         resizeMode="cover"
-        title={walletName}
+        title={nickName}
         avatarSize={pTd(80)}
         style={PageStyle.avatar}
-        imageUrl={userInfo?.avatar}
+        imageUrl={avatar}
       />
       <TextXXXL numberOfLines={1} style={GStyles.marginTop(pTd(8))}>
-        {userInfo?.nickName || walletName || ''}
+        {nickName || ''}
       </TextXXXL>
       <View style={PageStyle.qrCodeWrap}>
         <CommonQRCodeStyled qrData={qrCodeData || ''} width={pTd(236)} />
       </View>
-      <TextM style={GStyles.marginTop(pTd(20))}>Scan the QR code to chat with me in Portkey</TextM>
+      {isMainnet && <TextM style={GStyles.marginTop(pTd(20))}>Scan the QR code to chat with me in Portkey</TextM>}
       <Touchable
         style={PageStyle.buttonWrap}
         onPress={async () => {

@@ -170,6 +170,8 @@ function GuardianItemButton({
       case LoginType.Apple:
       case LoginType.Google:
       case LoginType.Telegram:
+      case LoginType.Twitter:
+      case LoginType.Facebook:
         onVerifierAuth();
         break;
       default: {

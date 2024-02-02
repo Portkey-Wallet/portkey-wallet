@@ -51,7 +51,7 @@ export const formatWalletInfo = (
     }
     delete walletInfo.privateKey;
     delete walletInfo.mnemonic;
-    delete walletInfo.xPrivateKey;
+    walletInfo.xPrivateKey && delete walletInfo.xPrivateKey;
     walletInfo.keyPair && delete walletInfo.keyPair;
     walletInfo.childWallet && delete walletInfo.childWallet;
 

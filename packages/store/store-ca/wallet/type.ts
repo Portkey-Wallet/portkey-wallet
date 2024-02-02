@@ -1,5 +1,6 @@
 import { ChainId, ChainType, NetworkType } from '@portkey-wallet/types';
 import { CAWalletInfoType } from '@portkey-wallet/types/types-ca/wallet';
+import { TWalletInfo } from '@portkey-wallet/types/wallet';
 import { PinErrorMessage } from '@portkey-wallet/utils/wallet/types';
 
 export type WalletType = ChainType;
@@ -50,4 +51,6 @@ export interface WalletState {
   /**  @deprecated will be removed, userInfo instead */
   userId?: string;
   userInfo?: UserInfoType;
+  tmpWalletInfo?: TWalletInfo;
+  checkManagerExceedMap?: { [key in NetworkType]?: boolean };
 }

@@ -7,7 +7,7 @@ import React, { memo, useMemo } from 'react';
 import { TouchableOpacity, StyleSheet, StyleProp, ViewStyle, TextProps, View } from 'react-native';
 import { pTd } from 'utils/unit';
 
-interface MenuItemProps {
+export interface IMenuItemProps {
   title: string;
   icon?: IconName;
   onPress?: () => void;
@@ -21,7 +21,7 @@ interface MenuItemProps {
   showWarningCycle?: boolean;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({
+const MenuItem: React.FC<IMenuItemProps> = ({
   title,
   icon,
   onPress,

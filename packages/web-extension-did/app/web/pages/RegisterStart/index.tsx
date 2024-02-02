@@ -7,7 +7,7 @@ import SignCard from './components/SignCard';
 import { useCurrentNetworkInfo, useIsMainnet, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
-import { setOriginChainId } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { createNewTmpWallet, setOriginChainId } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
 import CommonSelect from 'components/CommonSelect1';
 import { useChangeNetwork } from 'hooks/useChangeNetwork';
@@ -20,7 +20,13 @@ import { handleErrorCode, handleErrorMessage, sleep } from '@portkey-wallet/util
 import { Button } from 'antd';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
 import { SocialLoginFinishHandler } from 'types/wallet';
-import { getGoogleUserInfo, parseAppleIdentityToken, parseTelegramToken } from '@portkey-wallet/utils/authentication';
+import {
+  getGoogleUserInfo,
+  parseAppleIdentityToken,
+  parseFacebookToken,
+  parseTelegramToken,
+  parseTwitterToken,
+} from '@portkey-wallet/utils/authentication';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { useGetRegisterInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
@@ -164,6 +170,8 @@ export default function RegisterStart() {
         case LoginType.Apple:
         case LoginType.Google:
         case LoginType.Telegram:
+        case LoginType.Twitter:
+        case LoginType.Facebook:
           checkAuth(verifierItem, data);
           break;
         default:
@@ -176,6 +184,7 @@ export default function RegisterStart() {
 
   const onSignFinish = useCallback(
     async (data: LoginInfo) => {
+      dispatch(createNewTmpWallet());
       dispatch(setOriginChainId(DefaultChainId));
       saveState(data);
       dispatch(resetGuardians());
@@ -183,6 +192,8 @@ export default function RegisterStart() {
       setLoading(true, AssignVerifierLoading);
 
       await sleep(2000);
+
+      dispatch(createNewTmpWallet);
 
       // Get the assigned verifier data from the backend api and guaranteed loading display 2s
       try {
@@ -267,6 +278,7 @@ export default function RegisterStart() {
     async (loginInfo: LoginInfo) => {
       try {
         setLoading(true);
+        dispatch(createNewTmpWallet());
         const { originChainId } = await getRegisterInfo({
           loginGuardianIdentifier: loginInfo.guardianAccount,
         });
@@ -283,7 +295,9 @@ export default function RegisterStart() {
             (guardian) =>
               guardian.isLoginAccount &&
               guardian.guardianAccount === loginInfo.guardianAccount &&
-              [LoginType.Google, LoginType.Apple, LoginType.Telegram].includes(guardian.guardianType),
+              [LoginType.Google, LoginType.Apple, LoginType.Telegram, LoginType.Twitter, LoginType.Facebook].includes(
+                guardian.guardianType,
+              ),
           )
           .map((item) =>
             socialVerify({
@@ -363,6 +377,16 @@ export default function RegisterStart() {
           const userInfo = parseTelegramToken(data?.access_token);
           if (!userInfo) throw 'Telegram auth error';
           userId = userInfo?.userId;
+        } else if (type === 'Twitter') {
+          const userInfo = parseTwitterToken(data?.access_token);
+          if (!userInfo) throw 'Twitter auth error';
+          const { userId: _userId } = userInfo;
+          userId = _userId;
+        } else if (type === 'Facebook') {
+          const userInfo = await parseFacebookToken(data?.access_token);
+          if (!userInfo) throw 'Telegram auth error';
+          const { userId: _userId } = userInfo;
+          userId = _userId;
         } else {
           throw `LoginType:${type} is not support`;
         }

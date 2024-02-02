@@ -5,7 +5,6 @@ import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
 import { TextL, TextM } from 'components/CommonText';
 import { pTd } from 'utils/unit';
-import { useLanguage } from 'i18n/hooks';
 import CommonInput from 'components/CommonInput';
 import { useGStyles } from 'assets/theme/useGStyles';
 import { ModalBody } from 'components/ModalBody';
@@ -15,6 +14,7 @@ import { chainShowText } from '@portkey-wallet/utils';
 import { FontStyles } from 'assets/theme/styles';
 import { IRampCryptoItem } from '@portkey-wallet/ramp';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 
 type ItemType = IRampCryptoItem;
 
@@ -25,11 +25,10 @@ type SelectListProps = {
 };
 
 const SelectList = ({ list, callBack, value }: SelectListProps) => {
-  const { t } = useLanguage();
   const gStyle = useGStyles();
   const [keyWord, setKeyWord] = useState<string>('');
 
-  const defaultToken = useDefaultToken();
+  const defaultToken = useDefaultToken(MAIN_CHAIN_ID);
 
   const _list = useMemo(() => {
     const _keyWord = keyWord?.trim();
@@ -37,7 +36,7 @@ const SelectList = ({ list, callBack, value }: SelectListProps) => {
   }, [keyWord, list]);
 
   return (
-    <ModalBody style={gStyle.overlayStyle} title={t('Select Crypto')} modalBodyType="bottom">
+    <ModalBody style={gStyle.overlayStyle} title={'Select Crypto'} modalBodyType="bottom">
       <View style={styles.titleWrap}>
         <CommonInput
           containerStyle={styles.titleInputWrap}
@@ -45,7 +44,7 @@ const SelectList = ({ list, callBack, value }: SelectListProps) => {
           inputStyle={styles.titleInput}
           leftIconContainerStyle={styles.titleIcon}
           value={keyWord}
-          placeholder={t('Search crypto')}
+          placeholder={'Search crypto'}
           onChangeText={setKeyWord}
         />
       </View>
@@ -84,7 +83,7 @@ const SelectList = ({ list, callBack, value }: SelectListProps) => {
           })}
         </ScrollView>
       ) : (
-        <TextL style={styles.noResult}>{t('No results found')}</TextL>
+        <TextL style={styles.noResult}>{'No results found'}</TextL>
       )}
     </ModalBody>
   );

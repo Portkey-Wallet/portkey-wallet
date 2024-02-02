@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { View, StyleSheet, GestureResponderEvent } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
@@ -18,12 +18,33 @@ import { useLatestRef } from '@portkey-wallet/hooks';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import { measurePageY } from 'utils/measure';
 import useRequestNotifyPermission from 'hooks/usePermission';
+import InviteFriendsSection from '../components/InviteFriendsSection';
+import OfficialChatGroup from '../components/OfficialChatGroup';
+
+import { useJoinOfficialGroupTipModal } from 'hooks/guide';
+import { useChannelList } from '@portkey-wallet/hooks/hooks-ca/im';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 export default function DiscoverHome() {
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const emitCloseSwiped = useCallback(() => myEvents.chatHomeListCloseSwiped.emit(''), []);
   const lastEmitCloseSwiped = useLatestRef(emitCloseSwiped);
   const requestNotifyPermission = useRequestNotifyPermission();
+  const joinOfficialGroupModal = useJoinOfficialGroupTipModal();
+  const { list: channelList, init: initChannelList } = useChannelList();
+  const [hasFinishInit, setHasFinishInit] = useState(false);
+
+  const lastInitChannelList = useLatestRef(initChannelList);
+
+  const initList = useLockCallback(async () => {
+    try {
+      await lastInitChannelList.current();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setHasFinishInit(true);
+    }
+  }, [lastInitChannelList]);
 
   const onRightPress = useCallback(
     async (event: GestureResponderEvent) => {
@@ -81,6 +102,18 @@ export default function DiscoverHome() {
     );
   }, [onRightPress]);
 
+  const checkModal = useLockCallback(async () => {
+    const isShowNotice = await requestNotifyPermission();
+    if (!isShowNotice) await joinOfficialGroupModal();
+  }, [joinOfficialGroupModal, requestNotifyPermission]);
+
+  useFocusEffect(
+    useCallback(() => {
+      initList();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []),
+  );
+
   useFocusEffect(
     useCallback(() => {
       lastEmitCloseSwiped.current();
@@ -89,8 +122,8 @@ export default function DiscoverHome() {
 
   useFocusEffect(
     useCallback(() => {
-      requestNotifyPermission();
-    }, [requestNotifyPermission]),
+      checkModal();
+    }, [checkModal]),
   );
 
   return (
@@ -98,7 +131,18 @@ export default function DiscoverHome() {
       <Touchable activeOpacity={1} onPressIn={emitCloseSwiped}>
         <CustomHeader noLeftDom themeType="blue" titleDom="Chats" rightDom={RightDom} />
       </Touchable>
-      <SessionList />
+      {
+        <View style={[BGStyles.bg1, GStyles.flex1]}>
+          {hasFinishInit && channelList?.length === 0 ? (
+            <>
+              <InviteFriendsSection />
+              <OfficialChatGroup />
+            </>
+          ) : (
+            <SessionList />
+          )}
+        </View>
+      }
     </SafeAreaBox>
   );
 }

@@ -5,7 +5,7 @@ import { resetSettings } from '@portkey-wallet/store/settings/slice';
 import navigationService from 'utils/navigationService';
 import { resetNetwork } from '@portkey-wallet/store/network/actions';
 
-import { resetCaInfo, resetWallet } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { reSetCheckManagerExceed, resetCaInfo, resetWallet } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { resetUser } from 'store/user/actions';
 
 import { resetGuardians } from '@portkey-wallet/store/store-ca/guardians/actions';
@@ -56,6 +56,7 @@ export default function useLogOut() {
 
       dispatch(resetIm(currentNetwork));
       dispatch(resetSecurity(currentNetwork));
+      dispatch(reSetCheckManagerExceed(currentNetwork));
 
       if (otherNetworkLogged) {
         dispatch(resetCaInfo(currentNetwork));

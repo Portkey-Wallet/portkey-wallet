@@ -21,7 +21,7 @@ import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { useInterface } from 'contexts/useInterface';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { changeCanLock } from 'utils/LockManager';
-import { AppState, EmitterSubscription, Linking } from 'react-native';
+import { AppState } from 'react-native';
 import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { AuthenticationInfo, OperationTypeEnum } from '@portkey-wallet/types/verifier';
@@ -35,6 +35,8 @@ import { VerifyTokenParams } from '@portkey-wallet/types/types-ca/authentication
 import { parse } from 'query-string';
 import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
 import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
+import { SCHEME } from 'constants/authentication';
+import { onTwitterLogin } from 'utils/authentication';
 
 if (!isIOS) {
   GoogleSignin.configure({
@@ -44,10 +46,6 @@ if (!isIOS) {
 } else {
   WebBrowser.maybeCompleteAuthSession();
 }
-
-const SCHEME = 'portkey.finance://';
-
-const CLIENT_ID = 'VE5DRUl1bHdoeHN0cW9POEpEYlY6MTpjaQ';
 
 export type GoogleAuthentication = {
   accessToken: string;
@@ -331,48 +329,13 @@ export function useFacebookAuthentication() {
   );
 }
 
-function onTwitterLogin() {
-  const login = async (
-    resolve: (
-      value: WebBrowser.WebBrowserAuthSessionResult | PromiseLike<WebBrowser.WebBrowserAuthSessionResult>,
-    ) => void,
-    reject: (reason?: any) => void,
-  ) => {
-    let linkingListener: EmitterSubscription | undefined;
-    if (!isIOS) {
-      linkingListener = Linking.addEventListener('url', ({ url }) => {
-        if (url.includes('code')) {
-          linkingListener?.remove();
-          resolve({ type: 'success', url } as WebBrowser.WebBrowserAuthSessionResult);
-        }
-      });
-    }
-
-    const info = await WebBrowser.openAuthSessionAsync(
-      `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(
-        SCHEME,
-      )}&scope=tweet.read%20users.read%20follows.read&state=state&code_challenge=challenge&code_challenge_method=plain`,
-    );
-    if (info.type === 'success') {
-      linkingListener?.remove();
-      resolve(info);
-    } else {
-      await sleep(1000);
-      linkingListener?.remove();
-      resolve(info);
-    }
-  };
-
-  return new Promise<WebBrowser.WebBrowserAuthSessionResult>((resolve, reject) => login(resolve, reject));
-}
 export function useTwitterAuthentication() {
-  // todo: add Telegram authentication
   return useMemo(
     () => ({
       appleResponse: '',
       twitterSign: async () => {
         const info = await onTwitterLogin();
-        console.log(info, '=====info');
+        console.log(info, '=====info-useTwitterAuthentication');
 
         if (info.type === 'success') {
           if (info.url.includes('access_denied')) {

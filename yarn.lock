@@ -24511,7 +24511,7 @@ react-native-fast-image@^8.6.3:
 
 react-native-fbsdk-next@^12.1.3:
   version "12.1.3"
-  resolved "https://registry.yarnpkg.com/react-native-fbsdk-next/-/react-native-fbsdk-next-12.1.3.tgz#097690ca737030b8c33db7bdd462ba373c549cea"
+  resolved "https://registry.npmjs.org/react-native-fbsdk-next/-/react-native-fbsdk-next-12.1.3.tgz#097690ca737030b8c33db7bdd462ba373c549cea"
   integrity sha512-4E+s7Nq51JAhBxWPGiqevIGpxC0SJB6qW1sFcbG2uOEyURpdaKpEHUwbtQt5yehRleFHZcYihGVAVYNpIWldJg==
 
 react-native-flipper@^0.161.0:

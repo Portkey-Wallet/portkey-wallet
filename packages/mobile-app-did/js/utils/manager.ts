@@ -24,7 +24,7 @@ export async function managerSpeed({
     await Promise.all(
       speedChainList.map(async chain => {
         const contract = await getContractBasic({
-          contractAddress: chain?.defaultToken.address || '',
+          contractAddress: chain?.caContractAddress || '',
           rpcUrl: chain?.endPoint,
           account: managerAccount,
         });

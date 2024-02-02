@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
-import { message } from 'antd';
 import {
   MessageList,
   InputBar,
@@ -30,12 +29,15 @@ import { Message, MessageTypeEnum, ParsedImage } from '@portkey-wallet/im';
 import ChatBoxPinnedMsg from 'pages/IMChat/components/ChatBoxPinnedMsg';
 import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
 import { useWalletInfo } from 'store/Provider/hooks';
+import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
+import { TViewContactLocationState } from 'types/router';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
   const { t } = useTranslation();
   const { userInfo } = useWalletInfo();
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TViewContactLocationState>();
   const [showBookmark, setShowBookmark] = useState(false);
   const messageRef = useRef<any>(null);
   const [popVisible, setPopVisible] = useState(false);
@@ -143,7 +145,7 @@ export default function ChatBox() {
           await exit();
           navigate('/chat-list');
         } catch (e) {
-          message.error('Failed to delete chat');
+          singleMessage.error('Failed to delete chat');
           console.log('===handle delete chat error', e);
         }
       },
@@ -162,7 +164,7 @@ export default function ChatBox() {
           await leaveGroup(`${channelUuid}`);
           navigate('/chat-list');
         } catch (e) {
-          message.error('Failed to leave the group');
+          singleMessage.error('Failed to leave the group');
           console.log('===Failed to leave the group error', e);
         }
       },
@@ -217,7 +219,7 @@ export default function ChatBox() {
           },
         });
       } else {
-        message.error('Failed to send message');
+        singleMessage.error('Failed to send message');
         console.log('===Failed to send message', e);
       }
     },
@@ -274,7 +276,7 @@ export default function ChatBox() {
   const handleGoProfile = useCallback(
     (item: MessageContentType) => {
       navigate('/setting/contacts/view', {
-        state: { relationId: item?.from, from: 'chat-box-group', channelUuid },
+        state: { relationId: item?.from, previousPage: 'chat-box-group', channelUuid },
       });
     },
     [navigate, channelUuid],

@@ -2,7 +2,6 @@ import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
-import { message } from 'antd';
 import { useCallback, useMemo } from 'react';
 import { useLoading } from 'store/Provider/hooks';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -15,6 +14,8 @@ import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import getSeed from 'utils/getSeed';
 import { chromeStorage } from 'store/utils';
+import singleMessage from 'utils/singleMessage';
+import { StorageKeyType } from 'utils/storage/storage';
 
 export const useHandleAchSell = () => {
   const { setLoading } = useLoading();
@@ -38,7 +39,20 @@ export const useHandleAchSell = () => {
       if (!aelfToken) throw new Error('Sell Transfer: No Token');
       const manager = getWallet(privateKey);
       if (!manager?.keyPair) throw new Error('Sell Transfer: No keyPair');
-      const guardiansApprovedStr = await chromeStorage.getItem('portkeyOffRampGuardiansApproveList');
+      const guardiansApprovedStr = await chromeStorage.getItem(
+        `RampSellApproveList_${params.orderId}` as StorageKeyType,
+      );
+      let guardiansApprovedParse;
+      try {
+        guardiansApprovedParse =
+          typeof guardiansApprovedStr === 'string' && guardiansApprovedStr.length > 0
+            ? JSON.parse(guardiansApprovedStr)
+            : undefined;
+      } catch (error) {
+        console.log('json parse error');
+        guardiansApprovedParse = undefined;
+      }
+
       const rawResult = await getTransactionRaw({
         contractAddress: chainInfo.caContractAddress,
         rpcUrl: chainInfo?.endPoint || '',
@@ -54,13 +68,13 @@ export const useHandleAchSell = () => {
             to: `ELF_${params.address}_AELF`,
             amount: timesDecimals(params.cryptoAmount, aelfToken.decimals).toNumber(),
           },
-          guardiansApproved: JSON.parse(guardiansApprovedStr || ''),
+          guardiansApproved: guardiansApprovedParse,
         },
       });
       if (!rawResult || !rawResult.result) {
         throw new Error('Failed to get raw transaction.');
       }
-      await chromeStorage.removeItem('portkeyOffRampGuardiansApproveList');
+      await chromeStorage.removeItem(`RampSellApproveList_${params.orderId}`);
       const publicKey = manager.keyPair.getPublic('hex');
       const message = SparkMD5.hash(`${params.orderId}${rawResult.result.data}`);
       const signature = AElf.wallet.sign(Buffer.from(message).toString('hex'), manager.keyPair).toString('hex');
@@ -70,7 +84,7 @@ export const useHandleAchSell = () => {
         signature,
       };
     },
-    [aelfToken, chainInfo, currentNetwork.walletType, wallet.AESEncryptPrivateKey, wallet?.caHash],
+    [aelfToken, chainInfo, currentNetwork.walletType, wallet?.caHash],
   );
 
   return useCallback(
@@ -78,12 +92,14 @@ export const useHandleAchSell = () => {
       try {
         setLoading(true, 'Payment is being processed and may take around 10 seconds to complete.');
         await ramp.transferCrypto(orderId, paymentSellTransfer);
-        message.success('Transaction completed.');
+        singleMessage.success('Transaction completed.');
       } catch (error: any) {
         if (error?.code === 'TIMEOUT') {
-          message.warn(error?.message || 'The waiting time is too long, it will be put on hold in the background.');
+          singleMessage.warning(
+            error?.message || 'The waiting time is too long, it will be put on hold in the background.',
+          );
         } else {
-          message.error(error.message);
+          singleMessage.error(error.message);
         }
       } finally {
         setLoading(false);

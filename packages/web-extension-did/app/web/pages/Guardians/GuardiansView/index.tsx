@@ -1,5 +1,4 @@
-import { Button, message, Switch } from 'antd';
-import { useNavigate } from 'react-router';
+import { Button, Switch } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import { useAppDispatch, useGuardiansInfo, useLoading, useLoginInfo } from 'store/Provider/hooks';
 import { useMemo, useCallback, useEffect, useState } from 'react';
@@ -29,11 +28,14 @@ import { guardianIconMap } from '../utils';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
+import singleMessage from 'utils/singleMessage';
 import './index.less';
+import { useNavigateState } from 'hooks/router';
+import { FromPageEnum, TGuardianApprovalLocationState, TVerifierAccountLocationState } from 'types/router';
 
 export default function GuardiansView() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TVerifierAccountLocationState | TGuardianApprovalLocationState>();
   const getGuardianList = useGuardianList();
   const { currentGuardian, opGuardian, userGuardiansList } = useGuardiansInfo();
   const originChainId = useOriginChainId();
@@ -85,11 +87,15 @@ export default function GuardiansView() {
       verifiedInfo && dispatch(setUserGuardianItemStatus(verifiedInfo));
 
       setLoading(false);
-      navigate('/setting/guardians/guardian-approval', { state: 'guardians/loginGuardian' });
+      navigate('/setting/guardians/guardian-approval', {
+        state: {
+          previousPage: FromPageEnum.guardiansLoginGuardian,
+        },
+      });
     } catch (error) {
       setLoading(false);
       const _error = handleErrorMessage(error);
-      message.error(_error);
+      singleMessage.error(_error);
       console.log('===handleSocialVerify error', error);
     }
   }, [setLoading, socialVerify, opGuardian, operationType, originChainId, loginAccount, dispatch, navigate]);
@@ -119,16 +125,20 @@ export default function GuardiansView() {
             isInitStatus: true,
           }),
         );
-        navigate('/setting/guardians/verifier-account', { state: 'guardians/loginGuardian' });
+        navigate('/setting/guardians/verifier-account', {
+          state: {
+            previousPage: FromPageEnum.guardiansLoginGuardian,
+          },
+        });
       } else {
         const _error = handleErrorMessage(result, 'send code error');
-        message.error(_error);
+        singleMessage.error(_error);
         console.log('===handleCommonVerify error', result);
       }
     } catch (error) {
       setLoading(false);
       const _error = handleErrorMessage(error);
-      message.error(_error);
+      singleMessage.error(_error);
       console.log('===handleCommonVerify error', error);
     }
   }, [dispatch, navigate, opGuardian, operationType, originChainId, setLoading]);
@@ -199,7 +209,7 @@ export default function GuardiansView() {
           } else {
             const _err = handleErrorMessage(error, 'GetHolderInfo error');
             console.log('===set/unset login guardian getHolderInfo error', error);
-            message.error(_err);
+            singleMessage.error(_err);
           }
         } finally {
           setBtnLoading(false);

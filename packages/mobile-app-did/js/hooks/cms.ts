@@ -24,6 +24,7 @@ export const useAppETransShow = () => {
   const config = useEntranceConfig();
   return useETransShow(config);
 };
+
 export const useAppBridgeButtonShow = () => {
   const config = useEntranceConfig();
   return useBridgeButtonShow(config);

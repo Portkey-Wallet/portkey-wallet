@@ -1,9 +1,9 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Radio, RadioChangeEvent, message } from 'antd';
+import { Radio, RadioChangeEvent } from 'antd';
 import BackHeader from 'components/BackHeader';
 import CustomSvg from 'components/CustomSvg';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
@@ -14,24 +14,27 @@ import BuyForm from './components/BuyForm';
 import SellForm from './components/SellForm';
 import { useEffectOnce } from 'react-use';
 import CustomTipModal from 'pages/components/CustomModal';
-import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { RampType } from '@portkey-wallet/ramp';
 import { BUY_SOON_TEXT, SELL_SOON_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useCheckSecurity } from 'hooks/useSecurity';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import singleMessage from 'utils/singleMessage';
+import { usePromptLocationParams } from 'hooks/router';
+import { TRampLocationState } from 'types/router';
+import { useExtensionRampEntryShow } from 'hooks/ramp';
 
 export default function Buy() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const { locationParams: state } = usePromptLocationParams<TRampLocationState, TRampLocationState>();
   const { isPrompt } = useCommonState();
   const { setLoading } = useLoading();
   const checkSecurity = useCheckSecurity();
 
   const [page, setPage] = useState<RampType>(state?.side || RampType.BUY);
 
-  const { isBuySectionShow, isSellSectionShow, refreshRampShow } = useRampEntryShow();
+  const { isBuySectionShow, isSellSectionShow, refreshRampShow } = useExtensionRampEntryShow();
 
   useFetchTxFee();
 
@@ -70,7 +73,7 @@ export default function Buy() {
           if (!securityRes) return;
         } catch (error) {
           setLoading(false);
-          message.error(handleErrorMessage(error));
+          singleMessage.error(handleErrorMessage(error));
         }
       }
 

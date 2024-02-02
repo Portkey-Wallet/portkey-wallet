@@ -1,6 +1,6 @@
 import CustomSvg from 'components/CustomSvg';
 import RegisterHeader from 'pages/components/RegisterHeader';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import LoginCard from './components/LoginCard';
 import ScanCard from './components/ScanCard';
 import SignCard from './components/SignCard';
@@ -17,7 +17,7 @@ import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import { resetGuardians, setUserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import useGuardianList from 'hooks/useGuardianList';
 import { handleErrorCode, handleErrorMessage, sleep } from '@portkey-wallet/utils';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
 import { SocialLoginFinishHandler } from 'types/wallet';
 import { getGoogleUserInfo, parseAppleIdentityToken, parseTelegramToken } from '@portkey-wallet/utils/authentication';
@@ -40,13 +40,16 @@ import { getStoreState } from 'store/utils/getStore';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { verification } from 'utils/api';
 import { setCurrentGuardianAction, setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
+import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
+import { FromPageEnum, TVerifierAccountLocationState } from 'types/router';
 
 export default function RegisterStart() {
   const { type } = useParams();
   const currentNetwork = useCurrentNetworkInfo();
   const dispatch = useAppDispatch();
   const changeNetwork = useChangeNetwork();
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TVerifierAccountLocationState>();
   const { setLoading } = useLoading();
   const fetchUserVerifier = useGuardianList();
   const changeNetworkModalText = useChangeNetworkText();
@@ -194,7 +197,7 @@ export default function RegisterStart() {
         confirmRegisterOrLogin(data, verifierReq);
       } catch (error) {
         setLoading(false);
-        message.error(handleErrorMessage(error, 'Get verifier failed'));
+        singleMessage.error(handleErrorMessage(error, 'Get verifier failed'));
         throw handleErrorMessage(error, 'Get verifier failed');
       }
     },
@@ -243,13 +246,17 @@ export default function RegisterStart() {
             }),
           );
 
-          navigate('/login/verifier-account', { state: 'login' });
+          navigate('/login/verifier-account', {
+            state: {
+              previousPage: FromPageEnum.login,
+            },
+          });
         }
       } catch (error: any) {
         console.log(error, 'error===');
         setLoading(false);
         const _error = handleErrorMessage(error);
-        message.error(_error);
+        singleMessage.error(_error);
       }
     },
     [dispatch, navigate, setLoading],
@@ -314,7 +321,7 @@ export default function RegisterStart() {
       } catch (error) {
         console.log(error, 'onLoginFinish====error');
         const errMsg = handleErrorMessage(error, 'login error');
-        message.error(errMsg);
+        singleMessage.error(errMsg);
       } finally {
         setLoading(false);
       }
@@ -373,7 +380,7 @@ export default function RegisterStart() {
         setLoading(false);
         console.log(error, 'error===onSocialSignFinish');
         const msg = handleErrorMessage(error);
-        message.error(msg);
+        singleMessage.error(msg);
       }
     },
     [onInputFinish, setLoading, validateIdentifier],

@@ -4,7 +4,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { formatChainInfoToShow, handleErrorMessage } from '@portkey-wallet/utils';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import { useTranslation } from 'react-i18next';
 import usePromptSearch from 'hooks/usePromptSearch';
@@ -29,6 +29,7 @@ import getManager from 'utils/getManager';
 import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import getSeed from 'utils/getSeed';
+import singleMessage from 'utils/singleMessage';
 
 export default function SendTransactions() {
   const { payload, transactionInfoId, origin } = usePromptSearch<{
@@ -43,8 +44,7 @@ export default function SendTransactions() {
   }>();
   const chainInfo = useCurrentChain(payload?.chainId);
   const wallet = useCurrentWalletInfo();
-  const { walletName } = useWalletInfo();
-  const { currentNetwork } = useWalletInfo();
+  const { currentNetwork, userInfo } = useWalletInfo();
   const isMainnet = useIsMainnet();
   const { t } = useTranslation();
   const amountInUsdShow = useAmountInUsdShow();
@@ -165,7 +165,7 @@ export default function SendTransactions() {
     if (payload?.contractAddress || typeof payload?.contractAddress !== 'string') return <></>;
     return (
       <div className="account flex">
-        <div className="name">{walletName}</div>
+        <div className="name">{userInfo?.nickName}</div>
         <CustomSvg type="Oval" />
         <div className="address">{`${payload.contractAddress.slice(0, 10)}...${payload.contractAddress.slice(
           -4,
@@ -173,7 +173,7 @@ export default function SendTransactions() {
         <div className="line" />
       </div>
     );
-  }, [payload, walletName]);
+  }, [payload.contractAddress, userInfo?.nickName]);
 
   const renderTransfer = useMemo(() => {
     const { symbol, amount } = txParams.paramsOption || {};
@@ -355,7 +355,7 @@ export default function SendTransactions() {
         });
       } catch (error) {
         console.error(error, 'error===detail');
-        message.error(handleErrorMessage(error));
+        singleMessage.error(handleErrorMessage(error));
       }
     },
     [

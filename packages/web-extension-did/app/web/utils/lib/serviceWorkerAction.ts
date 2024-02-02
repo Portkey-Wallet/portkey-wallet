@@ -64,9 +64,11 @@ export const socialLoginAction = async (type: ISocialLogin, network: NetworkType
       type === 'Facebook' ? facebookAuthPath : twitterAuthPath
     }`;
   }
-  return await InternalMessage.payload(PortkeyMessageTypes.SOCIAL_LOGIN, {
+  const result = await InternalMessage.payload(PortkeyMessageTypes.SOCIAL_LOGIN, {
     externalLink,
   }).send();
+  if (result.error) throw result.message || 'auth error';
+  return result;
 };
 
 export const reCAPTCHAAction = async (): Promise<ReCaptchaResponseParams> => {

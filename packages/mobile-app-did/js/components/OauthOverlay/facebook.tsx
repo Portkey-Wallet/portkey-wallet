@@ -18,6 +18,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { OpenLogin } from '@portkey-wallet/constants/constants-ca/network-test4-v2';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { parseFacebookToken } from '@portkey-wallet/utils/authentication';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
 type FacebookProps = {
   onConfirm: (userInfo: TFacebookAuthentication) => void;
@@ -27,6 +28,8 @@ type FacebookProps = {
 function FacebookSign({ onConfirm, onReject }: FacebookProps) {
   const [loading, setLoading] = useState(true);
   const ref = useRef<WebView>();
+  const { domain, apiUrl } = useCurrentNetworkInfo();
+
   const onLoadStart = useCallback(({ nativeEvent }: WebViewNavigationEvent) => {
     if (nativeEvent.url.includes(FBAuthPush)) {
       setLoading(false);
@@ -72,7 +75,7 @@ function FacebookSign({ onConfirm, onReject }: FacebookProps) {
         )}
         <WebView
           ref={ref as any}
-          source={{ uri: `${OpenLogin}${PATHS.LoadFB}` }}
+          source={{ uri: `${OpenLogin}${PATHS.LoadFB}?redirectURI=${domain || apiUrl}${FBAuthPush}` }}
           originWhitelist={['*']}
           injectedJavaScript={InjectFacebookOpenJavaScript}
           javaScriptCanOpenWindowsAutomatically={true}

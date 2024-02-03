@@ -335,8 +335,6 @@ export function useTwitterAuthentication() {
       appleResponse: '',
       twitterSign: async () => {
         const info = await onTwitterLogin();
-        console.log(info, '=====info-useTwitterAuthentication');
-
         if (info.type === 'success') {
           if (info.url.includes('access_denied')) {
             throw new Error(USER_CANCELED);
@@ -355,6 +353,8 @@ export function useTwitterAuthentication() {
               accessToken: JSON.stringify({ ...userInfo.userInfo, token: userInfo.accessToken }),
             } as TTwitterAuthentication;
           }
+        } else if (info.type === 'cancel') {
+          throw new Error(USER_CANCELED);
         } else {
           throw new Error('Twitter authentication failed');
         }

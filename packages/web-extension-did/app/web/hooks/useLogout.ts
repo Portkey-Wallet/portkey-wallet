@@ -13,7 +13,7 @@ import {
   useWallet,
 } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getHolderInfoByContract } from 'utils/sandboxUtil/getHolderInfo';
-import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChain, useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ManagerInfo } from '@portkey-wallet/graphql/contract/__generated__/types';
@@ -33,6 +33,8 @@ import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 import { unRegisterFCM } from 'utils/FCM';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import singleMessage from 'utils/singleMessage';
+import { ChainId } from '@portkey/provider-types';
+import { useLatestRef } from '@portkey-wallet/hooks';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
@@ -85,15 +87,18 @@ export default function useLogOut() {
 
 export function useCheckManager() {
   const originChainId = useOriginChainId();
-  const chain = useCurrentChain(originChainId);
+  const originChainInfo = useCurrentChain(originChainId);
   const network = useCurrentNetworkInfo();
+  const getChainInfo = useGetChainInfo();
   return useCallback(
-    async ({ caHash, address }: { caHash: string; address: string }) => {
-      if (!chain) throw 'Can not get chain info';
+    async ({ chainId, caHash, address }: { caHash: string; address: string; chainId?: ChainId }) => {
+      let chainInfo = originChainInfo;
+      if (chainId) chainInfo = await getChainInfo(chainId);
+      if (!chainInfo) throw 'Can not get chain info';
       const info = await getHolderInfoByContract({
-        rpcUrl: chain.endPoint,
+        rpcUrl: chainInfo.endPoint,
         chainType: network.walletType,
-        address: chain.caContractAddress,
+        address: chainInfo.caContractAddress,
         paramsOption: {
           caHash,
         },
@@ -104,19 +109,20 @@ export function useCheckManager() {
       }
       throw new Error('caHash does not exist');
     },
-    [chain, network.walletType],
+    [originChainInfo, network.walletType, getChainInfo],
   );
 }
 
 export function useCheckManagerOnLogout() {
   const { caHash, address } = useCurrentWalletInfo();
-
+  const originChainId = useOriginChainId();
+  const latestOriginChainId = useLatestRef(originChainId);
   const checkManager = useCheckManager();
   const logout = useLogOut();
   return useLockCallback(async () => {
     if (!caHash) return;
     try {
-      const isManager = await checkManager({ caHash, address });
+      const isManager = await checkManager({ caHash, address, chainId: latestOriginChainId.current });
       const walletInfo = getWalletInfo();
       if (!isManager && walletInfo?.address === address && isCurrentCaHash(caHash)) logout();
     } catch (error) {
@@ -124,5 +130,5 @@ export function useCheckManagerOnLogout() {
       const msg = handleErrorMessage(error);
       singleMessage.error(msg);
     }
-  }, [address, caHash, logout]);
+  }, [address, caHash, logout, originChainId]);
 }

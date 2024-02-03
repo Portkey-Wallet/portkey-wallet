@@ -75,7 +75,7 @@ function FacebookSign({ onConfirm, onReject }: FacebookProps) {
         )}
         <WebView
           ref={ref as any}
-          source={{ uri: `${OpenLogin}${PATHS.LoadFB}&redirectURI=${domain || apiUrl}` }}
+          source={{ uri: `${OpenLogin}${PATHS.LoadFB}?redirectURI=${domain || apiUrl}${FBAuthPush}` }}
           originWhitelist={['*']}
           injectedJavaScript={InjectFacebookOpenJavaScript}
           javaScriptCanOpenWindowsAutomatically={true}

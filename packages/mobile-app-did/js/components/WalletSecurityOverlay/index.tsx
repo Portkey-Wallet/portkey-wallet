@@ -43,7 +43,7 @@ function AlertBody({ accelerateChainId }: { accelerateChainId: ChainId }) {
             },
             multiLevelParams: {
               approveParams: {
-                isDiscover: true,
+                isDiscover: isDrawerOpen,
               },
             },
           });

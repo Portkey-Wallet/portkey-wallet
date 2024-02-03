@@ -19,7 +19,7 @@ import {
 } from '@portkey-wallet/utils/authentication';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { useInterface } from 'contexts/useInterface';
-import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
+import { checkIsUserCancel, handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { changeCanLock } from 'utils/LockManager';
 import { AppState } from 'react-native';
 import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
@@ -282,83 +282,90 @@ export function useTelegramAuthentication() {
   );
 }
 
+function onAndroidFacebookAuthentication() {
+  return new Promise<TFacebookAuthentication>((resolve, reject) => {
+    LoginManager.logInWithPermissions(['public_profile']).then(function (result) {
+      if (result.isCancelled) {
+        reject(Error(USER_CANCELED));
+      } else {
+        AccessToken.getCurrentAccessToken()
+          .then(async data => {
+            if (data) {
+              const expiredTime = Math.ceil(data.expirationTime / 1000);
+              const token = data.accessToken;
+              const userId = data.userID;
+              data.accessToken = JSON.stringify({ expiredTime, token, userId });
+              const fbInfo = await parseFacebookToken(data.accessToken);
+
+              const info = { accessToken: data?.accessToken, user: fbInfo } as TFacebookAuthentication;
+              resolve(info);
+            } else {
+              reject(Error(USER_CANCELED));
+            }
+          })
+          .catch(reject);
+      }
+    }, reject);
+  });
+}
+
+const onFacebookAuthentication = async () => {
+  try {
+    return await (isIOS ? FacebookOverlay.sign : onAndroidFacebookAuthentication)();
+  } catch (error) {
+    if (checkIsUserCancel(error)) throw new Error('');
+    throw error;
+  }
+};
+
 export function useFacebookAuthentication() {
-  // todo: add Telegram authentication
   return useMemo(
     () => ({
       appleResponse: '',
       // facebookSign: ,
-      facebookSign: isIOS
-        ? FacebookOverlay.sign
-        : () => {
-            return new Promise<TFacebookAuthentication>((resolve, reject) => {
-              LoginManager.logInWithPermissions(['public_profile']).then(
-                function (result) {
-                  if (result.isCancelled) {
-                    reject(Error(USER_CANCELED));
-                  } else {
-                    AccessToken.getCurrentAccessToken()
-                      .then(async data => {
-                        if (data) {
-                          const expiredTime = Math.ceil(data.expirationTime / 1000);
-                          const token = data.accessToken;
-                          const userId = data.userID;
-                          data.accessToken = JSON.stringify({ expiredTime, token, userId });
-                          const fbInfo = await parseFacebookToken(data.accessToken);
-
-                          const info = { accessToken: data?.accessToken, user: fbInfo } as TFacebookAuthentication;
-                          resolve(info);
-                        } else {
-                          reject(Error(USER_CANCELED));
-                        }
-                      })
-                      .catch(error => {
-                        reject(error);
-                      });
-                  }
-                },
-                function (error) {
-                  reject(error);
-                  console.log('Login fail with error: ' + error);
-                },
-              );
-            });
-          },
+      facebookSign: onFacebookAuthentication,
     }),
     [],
   );
 }
 
+const onTwitterAuthentication = async () => {
+  try {
+    const info = await onTwitterLogin();
+    if (info.type === 'success') {
+      if (info.url.includes('access_denied')) {
+        throw new Error(USER_CANCELED);
+      } else {
+        const userInfo = await request.wallet.getTwitterUserInfo({
+          params: {
+            redirectUrl: SCHEME,
+            state: 'state',
+            code: parse(info.url).code,
+          },
+          stringifyOptions: { encode: false },
+        });
+        return {
+          ...userInfo,
+          user: userInfo.userInfo,
+          accessToken: JSON.stringify({ ...userInfo.userInfo, token: userInfo.accessToken }),
+        } as TTwitterAuthentication;
+      }
+    } else if (info.type === 'cancel') {
+      throw new Error(USER_CANCELED);
+    } else {
+      throw new Error(USER_CANCELED);
+    }
+  } catch (error) {
+    if (checkIsUserCancel(error)) throw new Error('');
+    throw error;
+  }
+};
+
 export function useTwitterAuthentication() {
   return useMemo(
     () => ({
       appleResponse: '',
-      twitterSign: async () => {
-        const info = await onTwitterLogin();
-        if (info.type === 'success') {
-          if (info.url.includes('access_denied')) {
-            throw new Error(USER_CANCELED);
-          } else {
-            const userInfo = await request.wallet.getTwitterUserInfo({
-              params: {
-                redirectUrl: SCHEME,
-                state: 'state',
-                code: parse(info.url).code,
-              },
-              stringifyOptions: { encode: false },
-            });
-            return {
-              ...userInfo,
-              user: userInfo.userInfo,
-              accessToken: JSON.stringify({ ...userInfo.userInfo, token: userInfo.accessToken }),
-            } as TTwitterAuthentication;
-          }
-        } else if (info.type === 'cancel') {
-          throw new Error(USER_CANCELED);
-        } else {
-          throw new Error('Twitter authentication failed');
-        }
-      },
+      twitterSign: onTwitterAuthentication,
     }),
     [],
   );

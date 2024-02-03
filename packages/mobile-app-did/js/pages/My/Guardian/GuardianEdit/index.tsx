@@ -23,7 +23,7 @@ import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type'
 import { FontStyles } from 'assets/theme/styles';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
-import { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
+import useRouterParams, { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { useAppDispatch } from 'store/hooks';
 import { setPreGuardianAction } from '@portkey-wallet/store/store-ca/guardians/actions';
@@ -50,6 +50,10 @@ import { useRefreshGuardiansList } from 'hooks/guardian';
 import GuardianThirdAccount from '../components/GuardianThirdAccount';
 import { useSetLoginAccount } from '../hooks/useSetLoginAccount';
 import { AuthTypes } from 'constants/guardian';
+import { useEffectOnce, useLatestRef } from '@portkey-wallet/hooks';
+import { NavigateMultiLevelParams } from 'types/navigate';
+import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
+import { useIsFocused } from '@react-navigation/native';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
@@ -94,6 +98,19 @@ const GuardianEdit: React.FC = () => {
   const [firstName, setFirstName] = useState<string>();
 
   const thirdPartyInfoRef = useRef<thirdPartyInfoType>();
+  const { approveParams } = useRouterParams<NavigateMultiLevelParams>();
+  const isFocused = useIsFocused();
+  const onEmitDapp = useCallback(() => {
+    if (!isFocused) return;
+    approveParams?.isDiscover && dispatch(changeDrawerOpenStatus(true));
+  }, [approveParams, dispatch]);
+  const lastOnEmitDapp = useLatestRef(onEmitDapp);
+
+  useEffectOnce(() => {
+    return () => {
+      lastOnEmitDapp.current();
+    };
+  });
 
   useEffect(() => {
     if (editGuardian) {

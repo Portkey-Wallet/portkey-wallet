@@ -24,6 +24,7 @@ import { discoverSlice } from '@portkey-wallet/store/store-ca/discover/slice';
 import { txFeeSlice } from '@portkey-wallet/store/store-ca/txFee/slice';
 import imSlice from '@portkey-wallet/store/store-ca/im/slice';
 import securitySlice from '@portkey-wallet/store/store-ca/security/slice';
+import { referralSlice } from '@portkey-wallet/store/store-ca/referral/slice';
 
 interface ThunkOptions<E = any> {
   extraArgument: E;
@@ -118,6 +119,12 @@ export const imPersistConfig = {
   blacklist: ['channelMessageListNetMap', 'groupInfoMapNetMap', 'pinListNetMap', 'lastPinNetMap'],
 };
 
+export const referralPersistConfig = {
+  key: referralSlice.name,
+  storage: localStorage,
+  blacklist: [],
+};
+
 const reduxPersistConfig = {
   key: reduxStorageRoot,
   storage: localStorage,
@@ -143,6 +150,7 @@ const reduxPersistConfig = {
     txFeeSlice.name,
     // imSlice.name,
     securitySlice.name,
+    referralSlice.name,
   ],
   // More info here:  https://shift.infinite.red/shipping-persistant-reducers-7341691232b1
   // transforms: [SetTokenTransform],

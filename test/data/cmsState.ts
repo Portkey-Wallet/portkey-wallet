@@ -17,7 +17,7 @@ export const CmsState: { cms: CMSState } = {
           title: 'Join us on Telegram test',
         },
       ],
-      MAIN: [
+      MAINNET: [
         {
           index: 1,
           link: 'https://twitter.com',
@@ -84,7 +84,7 @@ export const CmsState: { cms: CMSState } = {
           },
         },
       ],
-      MAIN: [
+      MAINNET: [
         {
           index: 1,
           title: 'Wallet',
@@ -96,7 +96,7 @@ export const CmsState: { cms: CMSState } = {
     },
     rememberMeBlackListMap: {
       TESTNET: [{ name: 'bingoGame', url: 'https://portkey-bingo-game.vercel.app' }],
-      MAIN: [{ name: 'bingoGame', url: 'https://portkey-bingo-game.vercel.app' }],
+      MAINNET: [{ name: 'bingoGame', url: 'https://portkey-bingo-game.vercel.app' }],
     },
   },
 };

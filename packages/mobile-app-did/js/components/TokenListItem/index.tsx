@@ -9,7 +9,7 @@ import React, { memo } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
-import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
@@ -29,7 +29,7 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
   const defaultToken = useDefaultToken();
 
   const isTokenHasPrice = useIsTokenHasPrice(item?.symbol);
-  const isTestnet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const symbolImages = useSymbolImages();
 
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
@@ -61,7 +61,7 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
               {formatAmountShow(divDecimals(item?.balance, item.decimals))}
             </TextL>
             <TextS numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.dollar}>
-              {!isTestnet &&
+              {isMainnet &&
                 isTokenHasPrice &&
                 `$ ${formatAmountShow(
                   divDecimals(item?.balance, item.decimals).multipliedBy(tokenPriceObject[item?.symbol]),

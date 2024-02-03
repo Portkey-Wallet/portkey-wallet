@@ -11,6 +11,7 @@ export type NetworkItem = {
   tokenClaimContractAddress?: string;
   cmsUrl?: string;
   s3Url?: string;
+  referralUrl?: string;
   portkeyFinanceUrl?: string; // portkey website url
   portkeyOpenLoginUrl?: string; // web page
   buyConfig?: {

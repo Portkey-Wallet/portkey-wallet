@@ -1,16 +1,16 @@
 import RegisterHeader from 'pages/components/RegisterHeader';
 import { useCallback, useEffect } from 'react';
-import { useNavigate } from 'react-router';
 import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
 import LockPage from '../components/LockPage';
 import { useStorage } from 'hooks/useStorage';
 import { reportUserCurrentNetwork } from 'utils/analysisReport';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
+import { useNavigateState } from 'hooks/router';
 
 const Unlock = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const { isPrompt } = useCommonState();
-  const { netWorkType } = useCurrentNetwork();
+  const { networkType } = useCurrentNetwork();
   const { walletInfo, currentNetwork } = useWalletInfo();
   const locked = useStorage('locked');
   console.log(locked, 'locked==');
@@ -21,8 +21,8 @@ const Unlock = () => {
   }, [locked, navigate]);
 
   useEffect(() => {
-    reportUserCurrentNetwork(netWorkType);
-  }, [netWorkType]);
+    reportUserCurrentNetwork(networkType);
+  }, [networkType]);
 
   const handleNavigate = useCallback(() => {
     const caInfo = walletInfo?.caInfo?.[currentNetwork];

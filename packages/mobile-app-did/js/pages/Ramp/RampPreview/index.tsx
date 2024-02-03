@@ -28,7 +28,6 @@ import ramp, {
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import CommonAvatar from 'components/CommonAvatar';
 import Svg from 'components/Svg';
-import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import Touchable from 'components/Touchable';
 import { useGuardiansInfo } from 'hooks/store';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
@@ -37,6 +36,8 @@ import { checkIsSvgUrl } from 'utils';
 import { Image } from 'react-native';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { useAppRampEntryShow } from 'hooks/ramp';
 
 interface RouterParams {
   type?: RampType;
@@ -114,7 +115,7 @@ export default function RampPreview() {
     guardiansApproved,
   } = useRouterParams<RouterParams>();
 
-  const defaultToken = useDefaultToken();
+  const defaultToken = useDefaultToken(MAIN_CHAIN_ID);
   const { providerPriceList, refreshReceive } = useReceive({
     type,
     amount: amount || '',
@@ -126,7 +127,7 @@ export default function RampPreview() {
   const isBuy = useMemo(() => type === RampType.BUY, [type]);
   const wallet = useCurrentWalletInfo();
   const [providerKey, setProviderKey] = useState<string>();
-  const { refreshRampShow } = useRampEntryShow();
+  const { refreshRampShow } = useAppRampEntryShow();
   const { userGuardiansList } = useGuardiansInfo();
 
   useEffectOnce(() => {

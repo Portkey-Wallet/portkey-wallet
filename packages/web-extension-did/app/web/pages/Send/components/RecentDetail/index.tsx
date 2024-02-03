@@ -1,19 +1,22 @@
 import CustomSvg from 'components/CustomSvg';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import clsx from 'clsx';
 import { useCommonState, useUserInfo } from 'store/Provider/hooks';
 import { useCallback, useMemo, useState } from 'react';
 import PromptFrame from 'pages/components/PromptFrame';
 import Copy from 'components/Copy';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
-import { useCurrentNetworkInfo, useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { addressFormat, getExploreLink } from '@portkey-wallet/utils';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import TitleWrapper from 'components/TitleWrapper';
 import './index.less';
 import ActivityList from 'pages/components/ActivityList';
-import { IActivitiesApiResponse } from '@portkey-wallet/store/store-ca/activity/type';
+import {
+  IActivitiesApiResponse,
+  IActivityListWithAddressApiParams,
+} from '@portkey-wallet/store/store-ca/activity/type';
 import { fetchRecentContactActivities } from '@portkey-wallet/store/store-ca/activity/api';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useEffectOnce } from 'react-use';
@@ -21,13 +24,15 @@ import { ChainId } from '@portkey-wallet/types';
 import { useGoAddNewContact } from 'hooks/useProfile';
 import { ExtraTypeEnum } from 'types/Profile';
 import Avatar from 'pages/components/Avatar';
+import { useLocationState } from 'hooks/router';
+import { TRecentDetailLocationState } from 'types/router';
 
 const MAX_RESULT_COUNT = 10;
 const SKIP_COUNT = 0;
 
 export default function RecentDetail() {
-  const { state } = useLocation();
-  const targetAddress = state?.targetAddress; // get contact address from url state
+  const { state } = useLocationState<TRecentDetailLocationState>();
+  const targetAddress = state?.targetAddress || ''; // get contact address from url state
   const targetChainId = state?.targetChainId; // get contact chainId from url state
   const myChainId = state?.chainId; // get my chainId from url state
   const currentWallet = useCurrentWallet();
@@ -44,7 +49,7 @@ export default function RecentDetail() {
   const [lastPageSize, setLastPageSize] = useState<number>(0);
   const { passwordSeed } = useUserInfo();
   const { isPrompt } = useCommonState();
-  const isTestNet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const [loading, setLoading] = useState<boolean>(false);
   const nav = useNavigate();
   const onClose = useCallback(() => {
@@ -113,7 +118,7 @@ export default function RecentDetail() {
     const { data, totalRecordCount } = activityInfo;
 
     if (data.length < totalRecordCount) {
-      const params = {
+      const params: IActivityListWithAddressApiParams = {
         ...fetchParams,
         skipCount: data.length,
       };
@@ -147,14 +152,14 @@ export default function RecentDetail() {
           <div className="recent-detail-address-wrap">
             {state?.name && (
               <div className="recent-detail-contact flex-row-center">
-                <Avatar avatarUrl={state?.avatar} nameIndex={state?.index} size="large" />
+                <Avatar avatarUrl={state?.avatar || ''} nameIndex={state?.index} size="large" />
                 <div className="name">{state?.name}</div>
               </div>
             )}
 
             <div className="recent-detail-address-row">
               <span className="address">{transTargetAddress}</span>
-              <span className="network">{transNetworkText(targetChainId, isTestNet)}</span>
+              <span className="network">{transNetworkText(targetChainId, !isMainnet)}</span>
             </div>
 
             <div className="recent-detail-action-row">

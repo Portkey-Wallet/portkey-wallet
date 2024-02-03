@@ -3,7 +3,7 @@ import { IEntranceMatchValueConfig } from '@portkey-wallet/types/types-ca/cms';
 
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 
-const useEntranceConfig = (): IEntranceMatchValueConfig => {
+export const useEntranceConfig = (): IEntranceMatchValueConfig => {
   return {
     deviceType: String(VersionDeviceType.Extension),
     version: async () => {

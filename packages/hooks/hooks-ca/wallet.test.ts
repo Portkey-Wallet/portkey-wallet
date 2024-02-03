@@ -80,7 +80,7 @@ const COMPLETE_WALLET_STATE = {
             caHash: '2cd...ec7',
           },
         },
-        MAIN: undefined,
+        MAINNET: undefined,
       },
       publicKey: {
         x: 'abc...bca',
@@ -96,11 +96,11 @@ const COMPLETE_WALLET_STATE = {
 
 const INCOMPLETE_WALLET_STATE = {
   wallet: {
-    currentNetwork: 'MAIN' as NetworkType,
+    currentNetwork: 'MAINNET' as NetworkType,
     walletInfo: {
       caInfo: {
         TESTNET: undefined,
-        MAIN: undefined,
+        MAINNET: undefined,
       },
     },
   },
@@ -108,7 +108,7 @@ const INCOMPLETE_WALLET_STATE = {
 
 const NO_WALLET_INFO_STATE = {
   wallet: {
-    currentNetwork: 'MAIN' as NetworkType,
+    currentNetwork: 'MAINNET' as NetworkType,
     walletInfo: undefined,
   },
 };

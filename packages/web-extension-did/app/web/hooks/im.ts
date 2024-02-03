@@ -1,7 +1,4 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import InternalMessage from 'messages/InternalMessage';
-import InternalMessageTypes from 'messages/InternalMessageTypes';
-import aes from '@portkey-wallet/utils/aes';
 import { useHideChannel, useInitIM, useJoinGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getWallet } from '@portkey-wallet/utils/aelf';
@@ -10,24 +7,24 @@ import im, { ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
 import { LinkPortkeyType } from 'types/im';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { parseLinkPortkeyUrl } from 'utils/imChat';
-import { message } from 'antd';
 import { useNavigate } from 'react-router';
 import { useLoading, useWalletInfo } from 'store/Provider/hooks';
 import { IChatItemProps } from '@portkey-wallet/im-ui-web';
 import CustomModal from 'pages/components/CustomModal';
 import WarnTip from 'pages/IMChat/components/WarnTip';
 import { ALREADY_JOINED_GROUP_CODE } from '@portkey-wallet/constants/constants-ca/chat';
+import getSeed from 'utils/getSeed';
+import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from './router';
+import { TViewContactLocationState, TWalletNameLocationState } from 'types/router';
 
 export default function useInit() {
   const isShowChat = useIsChatShow();
   const initIm = useInitIM();
   const { walletInfo } = useCurrentWallet();
   const init = useCallback(async () => {
-    const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
-    const pin = getSeedResult.data.privateKey;
-    if (!pin) return;
+    const { privateKey } = await getSeed();
 
-    const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);
     const account = getWallet(privateKey || '');
     if (!account || !walletInfo.caHash) return;
 
@@ -36,7 +33,7 @@ export default function useInit() {
     } catch (error) {
       console.log('im init error', error);
     }
-  }, [initIm, walletInfo.AESEncryptPrivateKey, walletInfo.caHash]);
+  }, [initIm, walletInfo.caHash]);
 
   useEffect(() => {
     isShowChat ? init() : im.destroy();
@@ -76,7 +73,7 @@ export interface IClickChatUrlProps {
 export function useClickChatUrl({ fromChannelUuid = '', isGroup = false }: IClickUrlProps) {
   const isShowChat = useIsChatShow();
   const { userId: myPortkeyId } = useWalletInfo();
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TViewContactLocationState | TWalletNameLocationState>();
   const joinGroupChannel = useJoinGroupChannel();
   const fromType = useMemo(() => (isGroup ? 'chat-box-group' : 'chat-box'), [isGroup]);
   const { setLoading } = useLoading();
@@ -84,15 +81,15 @@ export function useClickChatUrl({ fromChannelUuid = '', isGroup = false }: IClic
   return useCallback(
     async ({ id, type }: IClickChatUrlProps) => {
       if (!isShowChat) {
-        message.error('Failed to chat');
+        singleMessage.error('Failed to chat');
         return;
       }
       if (type === 'addContact') {
         if (id === myPortkeyId) {
-          navigate('/setting/wallet/wallet-name', { state: { from: fromType, channelUuid: fromChannelUuid } });
+          navigate('/setting/wallet/wallet-name', { state: { previousPage: fromType, channelUuid: fromChannelUuid } });
         } else {
           navigate('/setting/contacts/view', {
-            state: { portkeyId: id, from: fromType, channelUuid: fromChannelUuid },
+            state: { portkeyId: id, previousPage: fromType, channelUuid: fromChannelUuid },
           });
         }
         return;
@@ -107,7 +104,9 @@ export function useClickChatUrl({ fromChannelUuid = '', isGroup = false }: IClic
           if (`${error?.code}` === ALREADY_JOINED_GROUP_CODE) {
             navigate(`/chat-box-group/${id}`);
           } else {
-            message.error(`This group doesn't exist. Please check the Portkey group ID/QR code before you try again.`);
+            singleMessage.error(
+              `This group doesn't exist. Please check the Portkey group ID/QR code before you try again.`,
+            );
             console.log('Failed to join error', error);
           }
         } finally {

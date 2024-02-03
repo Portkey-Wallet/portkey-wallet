@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { OperationTypeEnum as OperationTypeEnumSDK } from '@portkey/services';
-import { message } from 'antd';
+import singleMessage from 'utils/singleMessage';
 import { GuardiansApproved } from '@portkey/services';
 import { useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import { ChainId } from '@portkey-wallet/types';
@@ -16,6 +16,7 @@ import './index.less';
 import { GuardianItem } from 'types/guardians';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { getAuthToken } from 'store/Provider/initConfig';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 
 interface GuardianApprovalModalProps {
   open: boolean;
@@ -38,7 +39,7 @@ export default function GuardianApproveModal({
   const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
   const { verifierMap } = useGuardiansInfo();
-
+  const currentNetwork = useCurrentNetwork();
   const [guardianList, setGuardianList] = useState<UserGuardianStatus[]>();
 
   const getGuardianList = useCallback(async () => {
@@ -60,11 +61,7 @@ export default function GuardianApproveModal({
       };
       return _guardian;
     });
-    _guardianList.reverse();
     setGuardianList(_guardianList);
-
-    // TODO guardians store
-    // dispatch(setGuardiansAction(res));
   }, [originChainId, verifierMap, walletInfo.caHash]);
 
   const getData = useCallback(async () => {
@@ -84,10 +81,9 @@ export default function GuardianApproveModal({
     async (approvalInfo: GuardiansApproved[]) => {
       try {
         setLoading(true);
-        console.log('🌈 🌈 🌈 🌈 🌈 🌈 approvalInfo', approvalInfo);
         const guardiansApproved: GuardianItem[] =
           approvalInfo?.map((item) => ({
-            type: item?.type ? LoginType[item.type] : LoginType.Email, // TODO
+            type: item?.type ? LoginType[item.type] : LoginType.Email,
             identifierHash: item?.identifierHash,
             verificationInfo: {
               id: item.verifierId,
@@ -111,14 +107,14 @@ export default function GuardianApproveModal({
 
   return (
     <CustomPromptModal open={open} wrapClassName={`${PrefixCls}-wrapper`} destroyOnClose onClose={onClose}>
-      {/* TODO guardians close */}
       <GuardianApproval
+        networkType={currentNetwork}
         className={`${PrefixCls}-content`}
         originChainId={originChainId}
         targetChainId={targetChainId}
         guardianList={guardianList}
         onConfirm={onApproveSuccess}
-        onError={(error) => message.error(handleErrorMessage(error.error))}
+        onError={(error) => singleMessage.error(handleErrorMessage(error.error))}
         operationType={operationType as OperationTypeEnumSDK}
       />
     </CustomPromptModal>

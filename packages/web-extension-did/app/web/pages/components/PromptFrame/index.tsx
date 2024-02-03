@@ -3,10 +3,12 @@ import { ReactNode, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import PortKeyHeader from '../PortKeyHeader';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 
 export default function PromptFrame({ content, className }: { content: ReactNode; className?: string }) {
   const navigate = useNavigate();
   const isImputation = useIsImputation();
+  const { viewReferralStatus } = useReferral();
 
   const onUserClick = useCallback(() => {
     navigate(`/setting`);
@@ -14,7 +16,7 @@ export default function PromptFrame({ content, className }: { content: ReactNode
 
   return (
     <div className={clsx(['portkey-prompt', className])}>
-      <PortKeyHeader unReadShow={isImputation} onUserClick={onUserClick} />
+      <PortKeyHeader unReadShow={isImputation || !viewReferralStatus} onUserClick={onUserClick} />
       {content}
     </div>
   );

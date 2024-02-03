@@ -15,7 +15,6 @@ export default function EditContactPopup({
   goBack,
   onFinish,
   handleInputRemarkChange,
-  handleCopy,
 }: IEditContactProps) {
   return (
     <div className="edit-contact-popup min-width-max-height">
@@ -35,7 +34,6 @@ export default function EditContactPopup({
         state={state}
         onFinish={onFinish}
         handleInputRemarkChange={handleInputRemarkChange}
-        handleCopy={handleCopy}
       />
     </div>
   );

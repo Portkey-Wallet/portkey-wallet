@@ -28,7 +28,7 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import CommonToast from 'components/CommonToast';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
-import { useRampEntryShow, useSellCrypto } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { useSellCrypto } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { IRampCryptoItem, IRampFiatItem, RampType } from '@portkey-wallet/ramp';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { IRampLimit } from '@portkey-wallet/types/types-ca/ramp';
@@ -39,6 +39,7 @@ import { useCheckTransferLimitWithJump, useSecuritySafeCheckAndToast } from 'hoo
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import { isPotentialNumber } from '@portkey-wallet/utils/reg';
+import { useAppRampEntryShow } from 'hooks/ramp';
 
 export default function SellForm() {
   const {
@@ -49,7 +50,7 @@ export default function SellForm() {
     refreshSellCrypto,
   } = useSellCrypto();
 
-  const { refreshRampShow } = useRampEntryShow();
+  const { refreshRampShow } = useAppRampEntryShow();
 
   const [cryptoList, setCryptoList] = useState<IRampCryptoItem[]>(cryptoListState);
   const [fiatList, setFiatList] = useState<IRampFiatItem[]>(defaultFiatList);
@@ -205,7 +206,7 @@ export default function SellForm() {
     setAmount(text);
   }, []);
 
-  const defaultToken = useDefaultToken();
+  const defaultToken = useDefaultToken(MAIN_CHAIN_ID);
   const getCurrentCAContract = useGetCurrentCAContract(MAIN_CHAIN_ID);
   const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
   const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
@@ -371,6 +372,8 @@ export default function SellForm() {
                   hasBorder
                   title={crypto?.symbol || ''}
                   style={styles.unitIconStyle}
+                  // elf token icon is fixed , only use white background color
+                  svgName={crypto?.symbol === defaultToken.symbol ? 'testnet' : undefined}
                   imageUrl={crypto?.icon}
                   avatarSize={pTd(24)}
                 />
@@ -412,6 +415,8 @@ export default function SellForm() {
                   hasBorder
                   title={fiat?.symbol || ''}
                   style={styles.unitIconStyle}
+                  // elf token icon is fixed , only use white background color
+                  svgName={fiat?.symbol === defaultToken.symbol ? 'testnet' : undefined}
                   imageUrl={fiat?.icon}
                 />
               )}

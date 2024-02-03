@@ -4,13 +4,16 @@ import { ISetNewPinFormProps } from '../components/SetNewPinForm';
 import SetNewPinPopup from './Popup';
 import SetNewPinPrompt from './Prompt';
 import { useCallback, useEffect } from 'react';
-import { Form, message } from 'antd';
+import { Form } from 'antd';
 import { setPinAction } from 'utils/lib/serviceWorkerAction';
 import { changePin } from '@portkey-wallet/store/store-ca/wallet/actions';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { setPasswordSeed } from 'store/reducers/user/slice';
 import { BaseHeaderProps } from 'types/UI';
 import { useCommonState } from 'store/Provider/hooks';
+import singleMessage from 'utils/singleMessage';
+import { useLocationState } from 'hooks/router';
+import { TSetNewPinLocationState } from 'types/router';
 
 export type ISetNewPinProps = ISetNewPinFormProps & BaseHeaderProps;
 
@@ -21,7 +24,7 @@ export default function SetNewPin() {
   const navigate = useNavigate();
   const {
     state: { pin },
-  } = useLocation();
+  } = useLocationState<TSetNewPinLocationState>();
   const { t } = useTranslation();
   const title = t('Change Pin');
   const setPinLabel = 'Please enter a new pin';
@@ -42,12 +45,12 @@ export default function SetNewPin() {
       }),
     );
     await setPinAction(newPin);
-    message.success(t('Modified Successfully'));
+    singleMessage.success(t('Modified Successfully'));
     navigate('/setting/account-setting');
   }, [dispatch, form, navigate, pin, t]);
 
   const onFinishFailed = useCallback(() => {
-    message.error('Something error');
+    singleMessage.error('Something error');
   }, []);
 
   const handleBack = useCallback(() => {

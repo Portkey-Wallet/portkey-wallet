@@ -3,7 +3,7 @@ import { MiscState as IMiscState } from '@portkey-wallet/store/store-ca/misc/typ
 export const MiscState: { misc: IMiscState } = {
   misc: {
     phoneCountryCodeListChainMap: {
-      MAIN: [
+      MAINNET: [
         { country: 'China', code: '86', iso: 'CN' },
         { country: 'Denmark', code: '45', iso: 'DK' },
         { country: 'France', code: '33', iso: 'FR' },

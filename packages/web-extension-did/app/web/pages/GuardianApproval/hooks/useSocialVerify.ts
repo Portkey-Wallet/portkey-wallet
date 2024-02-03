@@ -3,11 +3,11 @@ import { ChainId } from '@portkey-wallet/types';
 import { OperationTypeEnum, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
-import { message } from 'antd';
 import { useVerifyToken } from 'hooks/authentication';
 import { useCallback } from 'react';
 import { useLoading } from 'store/Provider/hooks';
 import { LoginInfo } from 'store/reducers/loginCache/type';
+import singleMessage from 'utils/singleMessage';
 
 export const useSocialVerify = () => {
   const { setLoading } = useLoading();
@@ -48,7 +48,7 @@ export const useSocialVerify = () => {
         };
       } catch (error) {
         const msg = handleErrorMessage(error);
-        message.error(msg);
+        singleMessage.error(msg);
       } finally {
         setLoading(false);
       }

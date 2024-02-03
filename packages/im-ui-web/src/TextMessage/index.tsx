@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
-import { Popover, message } from 'antd';
+import { Popover } from 'antd';
 import { useCopyToClipboard } from 'react-use';
 import { ParsedText, ParseShape } from 'react-parsed-text';
 import clsx from 'clsx';
@@ -11,6 +11,7 @@ import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat
 import RepliedMsg from '../components/RepliedMsg';
 import { MessageTypeEnum, ParsedImage } from '@portkey-wallet/im/types';
 import { websiteRE } from '@portkey-wallet/utils/reg';
+import singleMessage from '../utils/singleMessage';
 import './index.less';
 
 const TextMessage: React.FC<IMessage> = (props) => {
@@ -51,7 +52,7 @@ const TextMessage: React.FC<IMessage> = (props) => {
         children: 'Copy',
         onClick: () => {
           setCopied(parsedContent as string);
-          message.success('Copy Success');
+          singleMessage.success('Copy Success');
         },
       },
       {

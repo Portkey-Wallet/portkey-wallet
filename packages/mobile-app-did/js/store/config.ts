@@ -20,6 +20,7 @@ import tokenManagementSlice from '@portkey-wallet/store/store-ca/tokenManagement
 import securitySlice from '@portkey-wallet/store/store-ca/security/slice';
 import { rampSlice } from '@portkey-wallet/store/store-ca/ramp/slice';
 import { guardiansSlice } from '@portkey-wallet/store/store-ca/guardians/slice';
+import { referralSlice } from '@portkey-wallet/store/store-ca/referral/slice';
 
 interface ThunkOptions<E = any> {
   extraArgument: E;
@@ -56,6 +57,7 @@ const reduxPersistConfig = {
     securitySlice.name,
     rampSlice.name,
     guardiansSlice.name,
+    referralSlice.name,
   ],
 
   // More info here:  https://shift.infinite.red/shipping-persistant-reducers-7341691232b1

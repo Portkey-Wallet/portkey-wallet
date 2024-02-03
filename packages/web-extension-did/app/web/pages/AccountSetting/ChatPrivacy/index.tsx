@@ -15,7 +15,7 @@ import './index.less';
 import { GuardianTypeIcon } from 'components/VerifierPair';
 import { useContactPrivacyList } from '@portkey-wallet/hooks/hooks-ca/security';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import { message } from 'antd';
+import singleMessage from 'utils/singleMessage';
 
 export interface IChatPrivacyProps extends BaseHeaderProps {
   menuList: MenuItemInfo[];
@@ -58,7 +58,7 @@ export default function ChatPrivacy() {
   useEffect(() => {
     refresh().catch((error) => {
       const msg = handleErrorMessage(error);
-      message.error(msg);
+      singleMessage.error(msg);
     });
   }, [refresh]);
 

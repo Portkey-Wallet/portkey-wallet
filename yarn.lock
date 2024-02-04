@@ -24475,10 +24475,10 @@ react-native-draggable-flatlist@^4.0.1:
   dependencies:
     "@babel/preset-typescript" "^7.17.12"
 
-react-native-drawer-layout@^3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/react-native-drawer-layout/-/react-native-drawer-layout-3.2.0.tgz#1ab05d0bed6bb684353c17c96e1d3e6c1a4e225d"
-  integrity sha512-d/kvzeBhXjqcRGlfkTSB96ZRKH6g6YxJK+gPtUOCOCH5piHpsupgX+tLAHdM8r8NUzN6Tl9656xfJTuVb8Zrgw==
+react-native-drawer-layout@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.npmjs.org/react-native-drawer-layout/-/react-native-drawer-layout-3.2.2.tgz#ceee2f1fe362522b1391435e2c0d095c18d5d1f2"
+  integrity sha512-t28FVAhtrEJluIOpDpVNBWG74ij9ZguBC+FLmv/+lewhWTgZQ6rTw5GgQ9sUxmHx+ertcWG/uH0Jye7gbbm9jg==
   dependencies:
     use-latest-callback "^0.1.5"
 

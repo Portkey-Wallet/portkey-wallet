@@ -123,7 +123,7 @@
     "react-native-crypto": "^2.2.0",
     "react-native-device-info": "^10.11.0",
     "react-native-draggable-flatlist": "^4.0.1",
-    "react-native-drawer-layout": "^3.2.0",
+    "react-native-drawer-layout": "^3.2.2",
     "react-native-echarts-pro": "^1.8.5",
     "react-native-fast-image": "^8.6.3",
     "react-native-flipper": "^0.161.0",

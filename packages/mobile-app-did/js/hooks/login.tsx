@@ -53,7 +53,7 @@ import { ChainId } from '@portkey-wallet/types';
 import ActionSheet from 'components/ActionSheet';
 import { resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
 import { request as globalRequest } from '@portkey-wallet/api/api-did';
-import { VerifierAuthParams, useVerifierAuth, useVerifyToken } from './authentication';
+import { useVerifierAuth, useVerifyToken } from './authentication';
 import { verification } from 'utils/api';
 import { Text } from 'react-native';
 import { TextL } from 'components/CommonText';
@@ -62,6 +62,7 @@ import { CreateAddressLoading } from '@portkey-wallet/constants/constants-ca/wal
 import { AuthTypes } from 'constants/guardian';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import { TVerifierAuthParams } from 'types/authentication';
 
 export function useOnResultFail() {
   const dispatch = useAppDispatch();
@@ -256,7 +257,7 @@ export function useGoGuardianApproval(isLogin?: boolean) {
   const onVerifierAuth = useVerifierAuth();
 
   const requestOrSetPin = useCallback(
-    async ({ guardianItem, originChainId, authenticationInfo }: VerifierAuthParams) => {
+    async ({ guardianItem, originChainId, authenticationInfo }: TVerifierAuthParams) => {
       const req = await onVerifierAuth({ guardianItem, originChainId, authenticationInfo });
       const verifierInfo: VerifierInfo = { ...req, verifierId: guardianItem?.verifier?.id };
       const key = guardianItem.key as string;
@@ -278,7 +279,7 @@ export function useGoGuardianApproval(isLogin?: boolean) {
   );
 
   const goVerifierDetails = useCallback(
-    async ({ guardianItem, originChainId }: VerifierAuthParams) => {
+    async ({ guardianItem, originChainId }: TVerifierAuthParams) => {
       const req = await verification.sendVerificationCode({
         params: {
           type: LoginType[guardianItem.guardianType],

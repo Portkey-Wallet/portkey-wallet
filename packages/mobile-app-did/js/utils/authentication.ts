@@ -1,8 +1,15 @@
 import * as WebBrowser from 'expo-web-browser';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
-import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
+import { checkIsUserCancel, handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { AppState, EmitterSubscription, Linking, NativeEventSubscription } from 'react-native';
-import { LINK_TWITTER_URL } from 'constants/authentication';
+import { LINK_TWITTER_URL, SCHEME } from 'constants/authentication';
+import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
+import { request } from '@portkey-wallet/api/api-did';
+import { parse } from 'query-string';
+import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
+import { parseAppleIdentityToken, parseFacebookToken } from '@portkey-wallet/utils/authentication';
+import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
+import { TAppleAuthentication, TFacebookAuthentication, TTwitterAuthentication } from 'types/authentication';
 
 const OPEN_FAIL = 'No matching browser activity found';
 
@@ -76,4 +83,134 @@ export function onTwitterLogin(isLinkingLogin?: boolean) {
   };
 
   return new Promise<WebBrowser.WebBrowserAuthSessionResult>((resolve, reject) => login(resolve, reject));
+}
+
+export async function onTwitterAuthentication() {
+  try {
+    const info = await onTwitterLogin();
+    if (info.type === 'success') {
+      if (info.url.includes('access_denied')) {
+        throw new Error(USER_CANCELED);
+      } else {
+        const userInfo = await request.wallet.getTwitterUserInfo({
+          params: {
+            redirectUrl: SCHEME,
+            state: 'state',
+            code: parse(info.url).code,
+          },
+          stringifyOptions: { encode: false },
+        });
+        return {
+          ...userInfo,
+          user: userInfo.userInfo,
+          accessToken: JSON.stringify({ ...userInfo.userInfo, token: userInfo.accessToken }),
+        } as TTwitterAuthentication;
+      }
+    } else if (info.type === 'cancel') {
+      throw new Error(USER_CANCELED);
+    } else {
+      throw new Error(USER_CANCELED);
+    }
+  } catch (error) {
+    if (checkIsUserCancel(error)) throw new Error('');
+    throw error;
+  }
+}
+
+export function onAndroidFacebookAuthentication() {
+  return new Promise<TFacebookAuthentication>((resolve, reject) => {
+    LoginManager.logInWithPermissions(['public_profile']).then(function (result) {
+      if (result.isCancelled) {
+        reject(Error(USER_CANCELED));
+      } else {
+        AccessToken.getCurrentAccessToken()
+          .then(async data => {
+            if (data) {
+              const expiredTime = Math.ceil(data.expirationTime / 1000);
+              const token = data.accessToken;
+              const userId = data.userID;
+              data.accessToken = JSON.stringify({ expiredTime, token, userId });
+              const fbInfo = await parseFacebookToken(data.accessToken);
+
+              const info = { accessToken: data?.accessToken, user: fbInfo } as TFacebookAuthentication;
+              resolve(info);
+            } else {
+              reject(Error(USER_CANCELED));
+            }
+          })
+          .catch(reject);
+      }
+    }, reject);
+  });
+}
+
+export async function oniOSAppleAuthentication() {
+  const appleInfo = await appleAuth.performRequest({
+    requestedOperation: appleAuth.Operation.LOGIN,
+    requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+  });
+
+  const user = parseAppleIdentityToken(appleInfo.identityToken);
+  if (appleInfo.fullName?.familyName) {
+    try {
+      await request.verify.sendAppleUserExtraInfo({
+        params: {
+          identityToken: appleInfo.identityToken,
+          userInfo: {
+            name: {
+              firstName: appleInfo.fullName?.givenName,
+              lastName: appleInfo.fullName?.familyName,
+            },
+            email: user?.email || appleInfo.email,
+          },
+        },
+      });
+    } catch (error) {
+      console.log(error, '======error');
+    }
+  }
+  const userInfo = { ...appleInfo, user: { ...user, id: user?.userId } } as TAppleAuthentication;
+  return userInfo;
+}
+
+export async function onAndroidAppleAuthentication() {
+  const appleInfo = await appleAuthAndroid.signIn();
+  const user = parseAppleIdentityToken(appleInfo.id_token);
+  if (appleInfo.user?.name?.lastName) {
+    try {
+      await request.verify.sendAppleUserExtraInfo({
+        params: {
+          identityToken: appleInfo.id_token,
+          userInfo: {
+            name: {
+              firstName: appleInfo.user.name.firstName,
+              lastName: appleInfo.user.name.lastName,
+            },
+            email: user?.email || appleInfo.user.email,
+          },
+        },
+      });
+    } catch (error) {
+      console.log(error, '======error');
+    }
+  }
+  const userInfo = {
+    identityToken: appleInfo.id_token,
+    fullName: {
+      givenName: appleInfo.user?.name?.firstName,
+      familyName: appleInfo.user?.name?.lastName,
+    },
+    user: { ...user, id: user?.userId },
+  } as TAppleAuthentication;
+  return userInfo;
+}
+
+export async function onAppleAuthentication() {
+  try {
+    return (isIOS ? oniOSAppleAuthentication : onAndroidAppleAuthentication)();
+  } catch (error: any) {
+    const message = error?.message === appleAuthAndroid.Error.SIGNIN_CANCELLED ? '' : handleErrorMessage(error);
+    // : 'It seems that the authorization with your Apple ID has failed.';
+    throw { ...error, message };
+  }
 }

@@ -10,7 +10,6 @@ import GStyles from 'assets/theme/GStyles';
 import { BGStyles } from 'assets/theme/styles';
 import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
 
-import { TFacebookAuthentication } from 'hooks/authentication';
 import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
 import { WebViewMessageEvent } from 'react-native-webview';
 import { InjectFacebookOpenJavaScript, FBAuthPush, FB_FUN, PATHS } from './config';
@@ -19,6 +18,7 @@ import { OpenLogin } from '@portkey-wallet/constants/constants-ca/network-test4-
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { parseFacebookToken } from '@portkey-wallet/utils/authentication';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { TFacebookAuthentication } from 'types/authentication';
 
 type FacebookProps = {
   onConfirm: (userInfo: TFacebookAuthentication) => void;

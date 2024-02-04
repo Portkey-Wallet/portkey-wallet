@@ -15,7 +15,6 @@ import { ChannelTypeEnum } from '@portkey-wallet/im';
 import { useChangeNetwork } from './network';
 import { useLatestRef } from '@portkey-wallet/hooks';
 
-
 export const useNotifyAction = () => {
   const jumpToChatGroupDetails = useJumpToChatGroupDetails();
   const jumpToChatDetails = useJumpToChatDetails();
@@ -84,7 +83,7 @@ export const useNotify = () => {
             {
               title: t('Confirm'),
               onPress: async () => {
-                await changeNetwork({ networkType: isMainnet ? 'TESTNET' : 'MAIN' }, false);
+                await changeNetwork({ networkType: isMainnet ? 'TESTNET' : 'MAINNET' }, false);
               },
             },
           ],

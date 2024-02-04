@@ -18,7 +18,7 @@ import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { TextS } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';
 import CommonAvatar from 'components/CommonAvatar';
-import { formatChainInfoToShow, handleError, handleErrorMessage } from '@portkey-wallet/utils';
+import { formatChainInfoToShow, handleErrorMessage } from '@portkey-wallet/utils';
 import { useCurrentCaInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Touchable from 'components/Touchable';
 import { BGStyles } from 'assets/theme/styles';
@@ -26,13 +26,13 @@ import { FontStyles } from 'assets/theme/styles';
 import { defaultColors } from 'assets/theme';
 import navigationService, { NavigateName } from 'utils/navigationService';
 import { addressFormat } from '@portkey-wallet/utils';
-import { useAppBuyButtonShow } from 'hooks/cms';
 import RedPacketAmountShow from 'pages/Chat/components/RedPacketAmountShow';
 import { useDefaultTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useCurrentChannel } from 'pages/Chat/context/hooks';
 import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { InsufficientTransactionFee } from 'hooks/useCalculateRedPacketFee';
+import { useAppRampEntryShow } from 'hooks/ramp';
 
 export type PaymentTokenInfo = {
   symbol: string;
@@ -93,7 +93,7 @@ const PaymentModal = ({
     return tokenInfoList.find(ele => ele.symbol === tokenInfo.symbol);
   }, [chainId, tokenInfo.symbol, tokenInfoList, tokenMap]);
 
-  const { isBuySectionShow } = useAppBuyButtonShow();
+  const { isBuySectionShow } = useAppRampEntryShow();
   const isCanBuy = useMemo(
     () => tokenInfo.symbol === defaultToken.symbol && isBuySectionShow,
     [isBuySectionShow, defaultToken.symbol, tokenInfo.symbol],
@@ -189,7 +189,7 @@ const PaymentModal = ({
       buttonTitle = 'Buy ELF';
       onPress = () => {
         OverlayModal.hide(false);
-        navigationService.navigateByMultiLevelParams('BuyHome', {
+        navigationService.navigateByMultiLevelParams('RampHome', {
           multiLevelParams: {
             successNavigateName,
           },
@@ -199,7 +199,7 @@ const PaymentModal = ({
     if (!buttonTitle) return;
     return (
       <Touchable onPress={onPress} style={styles.getButtonRow}>
-        <TextS style={[FontStyles.weight500, FontStyles.font11]}>{buttonTitle}</TextS>
+        <TextS style={FontStyles.font11}>{buttonTitle}</TextS>
       </Touchable>
     );
   }, [chainId, crossSufficientItem, currentCaAddress, currentChannelType, fee.error, isCanBuy]);

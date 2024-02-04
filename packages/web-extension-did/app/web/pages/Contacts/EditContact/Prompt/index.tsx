@@ -14,7 +14,6 @@ export default function EditContactPrompt({
   goBack,
   onFinish,
   handleInputRemarkChange,
-  handleCopy,
 }: IEditContactProps) {
   return (
     <div className="edit-contact-prompt">
@@ -28,7 +27,6 @@ export default function EditContactPrompt({
         state={state}
         onFinish={onFinish}
         handleInputRemarkChange={handleInputRemarkChange}
-        handleCopy={handleCopy}
       />
     </div>
   );

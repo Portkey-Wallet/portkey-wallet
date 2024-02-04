@@ -22,7 +22,7 @@ import {
   VerifierItem,
   VerifyStatus,
 } from '@portkey-wallet/types/verifier';
-import { handleErrorCode, sleep } from '@portkey-wallet/utils';
+import { handleErrorCode, randomId, sleep } from '@portkey-wallet/utils';
 import Loading from 'components/Loading';
 import AElf from 'aelf-sdk';
 import { request } from 'api';
@@ -59,6 +59,7 @@ import fonts from 'assets/theme/fonts';
 import { CreateAddressLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 import { AuthTypes } from 'constants/guardian';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
+import { useLatestRef } from '@portkey-wallet/hooks';
 
 export function useOnResultFail() {
   const dispatch = useAppDispatch();
@@ -103,6 +104,7 @@ export function useOnManagerAddressAndQueryResult() {
     };
   });
   const originChainId = useOriginChainId();
+  const latestOriginChainId = useLatestRef(originChainId);
   const onIntervalGetResult = useIntervalGetResult();
   return useCallback(
     async ({
@@ -129,6 +131,7 @@ export function useOnManagerAddressAndQueryResult() {
         });
 
       await sleep(500);
+      const requestId = randomId();
       try {
         const tmpWalletInfo = walletInfo?.address ? walletInfo : AElf.wallet.createNewWallet();
         const extraData = await extraDataEncode(getDeviceInfo());
@@ -138,9 +141,9 @@ export function useOnManagerAddressAndQueryResult() {
           extraData,
           context: {
             clientId: tmpWalletInfo.address,
-            requestId: tmpWalletInfo.address,
+            requestId,
           },
-          chainId: originChainId,
+          chainId: latestOriginChainId.current,
         };
 
         let fetch = request.verify.registerRequest;
@@ -160,7 +163,8 @@ export function useOnManagerAddressAndQueryResult() {
         const _managerInfo = {
           ...managerInfo,
           managerUniqueId: req.sessionId,
-          requestId: tmpWalletInfo.address,
+          requestId,
+          clientId: tmpWalletInfo.address,
         } as ManagerInfo;
 
         if (walletInfo?.address) {
@@ -169,7 +173,7 @@ export function useOnManagerAddressAndQueryResult() {
           dispatch(
             createWallet({
               walletInfo: tmpWalletInfo,
-              caInfo: { managerInfo: _managerInfo, originChainId },
+              caInfo: { managerInfo: _managerInfo, originChainId: latestOriginChainId.current },
               pin: confirmPin,
             }),
           );
@@ -189,7 +193,7 @@ export function useOnManagerAddressAndQueryResult() {
                 setCAInfo({
                   caInfo,
                   pin: confirmPin,
-                  chainId: originChainId,
+                  chainId: latestOriginChainId.current,
                 }),
               );
               navigationService.reset('Tab');
@@ -203,7 +207,7 @@ export function useOnManagerAddressAndQueryResult() {
         pinRef?.current?.reset();
       }
     },
-    [biometrics, biometricsReady, dispatch, getDeviceInfo, onIntervalGetResult, onResultFail, originChainId, t],
+    [biometrics, biometricsReady, dispatch, getDeviceInfo, latestOriginChainId, onIntervalGetResult, onResultFail, t],
   );
 }
 
@@ -451,6 +455,7 @@ export function useGoSelectVerifier(isLogin?: boolean) {
         switch (loginType) {
           case LoginType.Apple:
           case LoginType.Google:
+          case LoginType.Telegram:
             onConfirmAuth({
               ...confirmParams,
               selectedVerifier: allotVerifier,
@@ -595,8 +600,6 @@ export function useOnRequestOrSetPin() {
       guardiansApproved?: GuardiansApproved;
       autoLogin?: boolean;
     }) => {
-      console.log(guardiansApproved, showLoading, '====guardiansApproved');
-
       if (walletInfo?.address && pin) {
         onManagerAddressAndQueryResult({
           managerInfo,
@@ -607,6 +610,7 @@ export function useOnRequestOrSetPin() {
           showLoading,
         });
       } else {
+        Loading.hide();
         navigationService.navigate('SetPin', {
           managerInfo,
           guardiansApproved,

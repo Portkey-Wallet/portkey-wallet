@@ -20,7 +20,6 @@ export default function ViewContactBody({
   handleEdit,
   handleChat,
   handleAdd,
-  handleCopy,
 }: IProfileDetailBodyProps) {
   const isMyContactFn = useIsMyContact();
   const showChat = useIsChatShow();
@@ -60,12 +59,12 @@ export default function ViewContactBody({
 
           {/* empty-placeholder */}
           {!data.id && !(!data.id && !isMyContact) && <div className="empty-placeholder-8"></div>}
-          {((isShowRemark && (data.id || (!data.id && !isMyContact))) || data?.from === 'my-did') && (
+          {((isShowRemark && (data.id || (!data.id && !isMyContact))) || data?.previousPage === 'my-did') && (
             <div className="empty-placeholder-24"></div>
           )}
 
           {/* Section - Action: Added | Add Contact | Chat */}
-          {showChat && data?.from !== 'my-did' && relationId && (
+          {showChat && data?.previousPage !== 'my-did' && relationId && (
             <div className="flex-center action">
               {data.id && isMyContact && (
                 <div className="flex-column-center action-item added-contact">
@@ -93,7 +92,6 @@ export default function ViewContactBody({
           portkeyId={data?.caHolderInfo?.userId}
           relationId={relationId}
           addresses={data?.addresses || []}
-          handleCopy={handleCopy}
           addressSectionLabel="Address"
         />
 
@@ -107,7 +105,7 @@ export default function ViewContactBody({
       </div>
 
       {/* stranger cant edit */}
-      {(data.id || isMyContact || data?.from === 'my-did') && (
+      {(data.id || isMyContact || data?.previousPage === 'my-did') && (
         <div className="footer">
           <Button type="primary" htmlType="submit" className="edit-btn" onClick={handleEdit}>
             {editText}

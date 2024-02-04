@@ -42,7 +42,7 @@ export function useChangeNetwork(route: RouteProp<ParamListBase>) {
       const tmpCaInfo = caInfo?.[network.networkType];
       const tmpChainId = tmpCaInfo?.originChainId || originChainId || DefaultChainId;
       const logged = tmpCaInfo?.managerInfo && tmpCaInfo[tmpChainId]?.caAddress;
-      const networkName = network.networkType === 'MAIN' ? 'Mainnet' : 'Testnet';
+      const networkName = network.networkType === 'MAINNET' ? 'Mainnet' : 'Testnet';
 
       if (!isShowAlert) return onConfirm(network, logged);
 

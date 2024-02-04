@@ -18,9 +18,9 @@ const qrCodeDesc = 'Scan my QR code to start Portkey chat';
 const MyQRCode = () => {
   const navigate = useNavigate();
   const { pathname, state } = useLocation();
-  const { userId, userInfo } = useWalletInfo();
+  const { userInfo } = useWalletInfo();
   const { isNotLessThan768 } = useCommonState();
-  const shareLink = useMemo(() => LinkPortkeyPath.addContact + userId, [userId]);
+  const shareLink = useMemo(() => LinkPortkeyPath.addContact + userInfo?.userId, [userInfo?.userId]);
   const handleBack = useCallback(() => {
     const _path = pathname.toLowerCase();
     if (_path.includes('contacts')) return navigate('/setting/contacts/find-more', { state });

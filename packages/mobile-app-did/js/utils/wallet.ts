@@ -74,7 +74,7 @@ export function intervalGetResult({ managerInfo, onPass, onFail }: IntervalGetRe
         break;
     }
   };
-  const clientId = managerInfo.requestId || '';
+  const clientId = managerInfo.clientId || '';
   const requestId = managerInfo.requestId || '';
   socket.doOpen({
     url: `${request.defaultConfig.baseURL}/ca`,

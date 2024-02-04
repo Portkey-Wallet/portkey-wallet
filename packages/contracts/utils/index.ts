@@ -35,6 +35,15 @@ export async function getContractBasic({
   return contractMap[key];
 }
 
+class TXError extends Error {
+  public TransactionId?: string;
+  public transactionId?: string;
+  constructor(message: string, id?: string) {
+    super(message);
+    this.TransactionId = id;
+    this.transactionId = id;
+  }
+}
 export async function getTxResult(
   instance: any,
   TransactionId: string,
@@ -43,38 +52,27 @@ export async function getTxResult(
 ): Promise<any> {
   const txFun = instance.chain.getTxResult;
   const txResult = await txFun(TransactionId);
-  console.log(txResult, reGetCount, '====txResult');
-
   if (txResult.error && txResult.errorMessage) {
     throw Error(txResult.errorMessage.message || txResult.errorMessage.Message);
   }
   const result = txResult?.result || txResult;
-
-  if (!result) {
-    throw Error('Can not get transaction result.');
-  }
+  if (!result) throw Error('Can not get transaction result.');
   const lowerCaseStatus = result.Status.toLowerCase();
-
   if (lowerCaseStatus === 'notexisted') {
-    if (notExistedReGetCount > 5) return result;
+    if (notExistedReGetCount > 5) throw new TXError(result.Error || `Transaction: ${result.Status}`, TransactionId);
     await sleep(1000);
     notExistedReGetCount++;
     reGetCount++;
     return getTxResult(instance, TransactionId, reGetCount, notExistedReGetCount);
   }
-
   if (lowerCaseStatus === 'pending' || lowerCaseStatus === 'pending_validation') {
-    if (reGetCount > 20) return result;
+    if (reGetCount > 20) throw new TXError(result.Error || `Transaction: ${result.Status}`, TransactionId);
     await sleep(1000);
     reGetCount++;
     return getTxResult(instance, TransactionId, reGetCount, notExistedReGetCount);
   }
-
-  if (lowerCaseStatus === 'mined') {
-    return result;
-  }
-
-  throw Error(result.Error || `Transaction: ${result.Status}`);
+  if (lowerCaseStatus === 'mined') return result;
+  throw new TXError(result.Error || `Transaction: ${result.Status}`, TransactionId);
 }
 
 export function handleContractError(error?: any, req?: any) {

@@ -1,4 +1,4 @@
-import { Upload, message } from 'antd';
+import { Upload } from 'antd';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { RcFile } from 'antd/lib/upload/interface';
 import CustomSvg from 'components/CustomSvg';
@@ -9,6 +9,7 @@ import { formatImageSize } from '@portkey-wallet/utils/img';
 import { ImageMessageFileType } from '@portkey-wallet/hooks/hooks-ca/im';
 import { UploadFileType } from '@portkey-wallet/utils/s3';
 import PhotoSendModal, { IPreviewImage } from 'pages/IMChat/components/ImageSendModal';
+import singleMessage from 'utils/singleMessage';
 
 export interface ICustomUploadProps {
   sendImage: (file: ImageMessageFileType) => Promise<UploadFileType>;
@@ -38,7 +39,7 @@ export default function CustomUpload({ sendImage, onSuccess, handleSendMsgError 
       beforeUpload: async (paramFile: RcFile) => {
         const sizeOk = ZERO.plus(paramFile.size / 1024 / 1024).isLessThanOrEqualTo(MAX_FILE_SIZE);
         if (!sizeOk) {
-          message.info('File too large');
+          singleMessage.info('File too large');
           return false;
         }
         try {
@@ -58,7 +59,7 @@ export default function CustomUpload({ sendImage, onSuccess, handleSendMsgError 
           setFile({ body: paramFile, width, height });
         } catch (e) {
           console.log('===image beforeUpload error', e);
-          message.error('Failed to send message');
+          singleMessage.error('Failed to send message');
         }
         return false;
       },

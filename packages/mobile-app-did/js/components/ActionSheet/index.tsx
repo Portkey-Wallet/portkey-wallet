@@ -4,6 +4,10 @@ import { View, Text, TouchableOpacity, Keyboard } from 'react-native';
 import { styles } from './style/style';
 import { TextL, TextM, TextTitle } from 'components/CommonText';
 import ButtonRow, { ButtonRowProps } from 'components/ButtonRow';
+import ButtonCol from 'components/ButtonCol';
+import { pTd } from 'utils/unit';
+import Svg from 'components/Svg';
+import { defaultColors } from 'assets/theme';
 
 const show = (
   items: {
@@ -53,11 +57,32 @@ type AlertBodyProps = {
   buttons?: ButtonRowProps['buttons'];
   autoClose?: boolean;
   messageList?: ReactNode[];
+  buttonGroupDirection?: 'row' | 'column';
+  isCloseShow?: boolean;
 };
 
-function AlertBody({ title, message, buttons, message2, title2, autoClose = true, messageList }: AlertBodyProps) {
+function AlertBody({
+  title,
+  message,
+  buttons,
+  message2,
+  title2,
+  autoClose = true,
+  messageList,
+  buttonGroupDirection = 'row',
+  isCloseShow = false,
+}: AlertBodyProps) {
   return (
-    <View style={styles.alertBox}>
+    <View style={[styles.alertBox, isCloseShow && styles.alertBoxWithClose]}>
+      {isCloseShow && (
+        <View
+          onTouchEnd={() => {
+            OverlayModal.hide();
+          }}
+          style={styles.closeWrap}>
+          <Svg icon={'close'} size={pTd(12.5)} color={defaultColors.font7} />
+        </View>
+      )}
       {title ? <TextTitle style={styles.alertTitle}>{title}</TextTitle> : null}
       {typeof title2 === 'string' ? <TextL style={styles.alertTitle2}>{title2}</TextL> : title2}
       {typeof message === 'string' ? <TextM style={styles.alertMessage}>{message}</TextM> : message}
@@ -71,15 +96,28 @@ function AlertBody({ title, message, buttons, message2, title2, autoClose = true
           item
         );
       })}
-      <ButtonRow
-        buttons={buttons?.map(i => ({
-          ...i,
-          onPress: () => {
-            if (autoClose) OverlayModal.hide();
-            i.onPress?.();
-          },
-        }))}
-      />
+
+      {buttonGroupDirection === 'row' ? (
+        <ButtonRow
+          buttons={buttons?.map(i => ({
+            ...i,
+            onPress: () => {
+              if (autoClose) OverlayModal.hide();
+              i.onPress?.();
+            },
+          }))}
+        />
+      ) : (
+        <ButtonCol
+          buttons={buttons?.map(i => ({
+            ...i,
+            onPress: () => {
+              if (autoClose) OverlayModal.hide();
+              i.onPress?.();
+            },
+          }))}
+        />
+      )}
     </View>
   );
 }

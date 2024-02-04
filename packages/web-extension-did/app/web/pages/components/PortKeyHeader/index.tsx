@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
+import { useCommonState } from 'store/Provider/hooks';
 import CustomSvg from 'components/CustomSvg';
 import './index.less';
 import UnReadBadge from 'pages/components/UnReadBadge';
@@ -15,7 +15,6 @@ interface PortKeyHeaderProps {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PortKeyHeader = forwardRef(({ onUserClick, customLogoShow = true, unReadShow = false }: PortKeyHeaderProps) => {
   const { isPrompt } = useCommonState();
-  const { walletName } = useWalletInfo();
   const { userInfo } = useWallet();
 
   return (
@@ -35,7 +34,7 @@ const PortKeyHeader = forwardRef(({ onUserClick, customLogoShow = true, unReadSh
             <Avatar
               wrapperClass="custom-logo"
               avatarUrl={userInfo?.avatar}
-              nameIndex={walletName.substring(0, 1).toLocaleUpperCase()}
+              nameIndex={userInfo?.nickName.substring(0, 1).toLocaleUpperCase() || ''}
               onClick={onUserClick}
             />
             {unReadShow && <UnReadBadge />}

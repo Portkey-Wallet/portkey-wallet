@@ -1,11 +1,10 @@
-import { Button, Switch, message } from 'antd';
+import { Button, Switch } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import { useTranslation } from 'react-i18next';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useWalletInfo } from 'store/Provider/hooks';
 import { removeDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
-import { useNavigate } from 'react-router';
 import CustomSelect from 'pages/components/CustomSelect';
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
@@ -15,6 +14,8 @@ import { SessionKeyArray } from '@portkey-wallet/constants/constants-ca/dapp';
 import ImageDisplay from 'pages/components/ImageDisplay';
 import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { isSafeOrigin } from 'pages/WalletSecurity/utils';
+import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
 import './index.less';
 
 export interface ISiteItemProps {
@@ -25,7 +26,7 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { currentNetwork } = useWalletInfo();
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const { sessionInfo } = siteItem;
   const [open, setOpen] = useState(!!sessionInfo?.expiredPlan);
   const updateSessionInfo = useUpdateSessionInfo();
@@ -58,10 +59,10 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
             manager,
           });
         }
-        message.success('Session Key enabled');
+        singleMessage.success('Session Key enabled');
       } else {
         updateSessionInfo({ origin: siteItem.origin });
-        message.success('Session Key disabled');
+        singleMessage.success('Session Key disabled');
       }
     },
     [currentNetwork, siteItem.origin, updateSessionInfo],
@@ -82,7 +83,7 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
           expiredPlan: value,
           manager,
         });
-        message.success('Session key updated');
+        singleMessage.success('Session key updated');
       }
     },
     [currentNetwork, siteItem.origin, updateSessionInfo],

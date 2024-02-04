@@ -11,14 +11,14 @@ import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
 
 export default function Permission() {
   const detail = usePromptSearch<{ type: string }>();
-  const { netWorkType } = useCurrentNetwork();
+  const { networkType } = useCurrentNetwork();
   const onUnLockHandler = useCallback(async () => {
     InternalMessage.payload(InternalMessageTypes.CLOSE_PROMPT, {
       closeParams: { ...errorHandler(0), data: detail },
     }).send();
   }, [detail]);
   useEffect(() => {
-    reportUserCurrentNetwork(netWorkType);
-  }, [netWorkType]);
+    reportUserCurrentNetwork(networkType);
+  }, [networkType]);
   return <LockPage header={<RegisterHeader />} onUnLockHandler={onUnLockHandler} />;
 }

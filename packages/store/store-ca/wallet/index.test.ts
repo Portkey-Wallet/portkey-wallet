@@ -34,13 +34,13 @@ describe('changeNetworkType', () => {
     walletAvatar: 'master6',
     walletType: 'aelf' as WalletType,
     walletName: 'Wallet 01',
-    currentNetwork: 'MAIN' as NetworkType,
+    currentNetwork: 'MAINNET' as NetworkType,
     chainList: [],
   };
-  test('Pre network is MAIN. set current network MAIN', () => {
-    expect(reducer(state, changeNetworkType('MAIN'))).toEqual(state);
+  test('Pre network is MAINNET. set current network MAINNET', () => {
+    expect(reducer(state, changeNetworkType('MAINNET'))).toEqual(state);
   });
-  test('Pre network is MAIN. set current network TESTNET', () => {
+  test('Pre network is MAINNET. set current network TESTNET', () => {
     expect(reducer(state, changeNetworkType('TESTNET'))).toEqual({ ...state, currentNetwork: 'TESTNET' });
   });
 });
@@ -59,7 +59,7 @@ describe('resetWallet', () => {
   test('WalletInfo will be reset', () => {
     const res = reducer(curState, resetWallet());
     expect(res.walletName).toEqual('Wallet 01');
-    expect(res.currentNetwork).toEqual('MAIN');
+    expect(res.currentNetwork).toEqual('MAINNET');
   });
 });
 
@@ -97,11 +97,11 @@ describe('setCAInfo', () => {
         AESEncryptMnemonic: 'AESEncryptMnemonic',
         caInfo: {
           TESTNET: {},
-          MAIN: {},
+          MAINNET: {},
         },
       },
     };
-    expect(reducer(mockState as any, setCAInfo(payload)).walletInfo?.caInfo.MAIN.AELF).toEqual({
+    expect(reducer(mockState as any, setCAInfo(payload)).walletInfo?.caInfo.MAINNET.AELF).toEqual({
       caAddress: 'caAddress',
       caHash: 'caHash',
     });
@@ -121,7 +121,7 @@ describe('setCAInfo', () => {
         AESEncryptMnemonic: 'AESEncryptMnemonic',
         caInfo: {
           TESTNET: {},
-          MAIN: {},
+          MAINNET: {},
         },
       },
     };
@@ -177,7 +177,7 @@ describe('setManageInfo', () => {
               verificationType: 0,
             },
           },
-          MAIN: {},
+          MAINNET: {},
         },
       },
     };
@@ -222,7 +222,7 @@ describe('setManageInfo', () => {
       pin: 'pin',
       chainId: 'AELF' as ChainId,
     };
-    expect(reducer(mockState as any, setManagerInfo(payload))?.walletInfo?.caInfo.MAIN).toEqual({
+    expect(reducer(mockState as any, setManagerInfo(payload))?.walletInfo?.caInfo.MAINNET).toEqual({
       originChainId: 'AELF',
       managerInfo: {
         managerUniqueId: 'managerUniqueId',
@@ -248,7 +248,7 @@ describe('setManageInfo', () => {
         AESEncryptMnemonic: 'AESEncryptMnemonic',
         caInfo: {
           // TESTNET: {},
-          MAIN: {},
+          MAINNET: {},
         },
       },
     };
@@ -293,7 +293,7 @@ describe('changePin', () => {
       AESEncryptMnemonic: '222222',
       caInfo: {
         TESTNET: {},
-        MAIN: {},
+        MAINNET: {},
       },
     },
   };
@@ -339,7 +339,7 @@ describe('setCAInfoType', () => {
     };
     expect(() => reducer(mockState, setCAInfoType(payload))).toThrowError(WalletError.noCreateWallet);
   });
-  test('Current network does not exist, will update MAIN caInfo', () => {
+  test('Current network does not exist, will update MAINNET caInfo', () => {
     const mockState = {
       walletAvatar: 'master1',
       walletType: 'aelf' as WalletType,
@@ -352,7 +352,7 @@ describe('setCAInfoType', () => {
         AESEncryptMnemonic: 'AESEncryptMnemonic',
         caInfo: {
           TESTNET: {},
-          MAIN: {},
+          MAINNET: {},
         },
       },
     };
@@ -365,7 +365,7 @@ describe('setCAInfoType', () => {
       },
       pin: 'pin',
     };
-    expect(reducer(mockState as any, setCAInfoType(payload)).walletInfo?.caInfo.MAIN).toEqual({
+    expect(reducer(mockState as any, setCAInfoType(payload)).walletInfo?.caInfo.MAINNET).toEqual({
       AELF: {
         caAddress: 'caAddress',
         caHash: 'caHash',
@@ -386,7 +386,7 @@ describe('setCAInfoType', () => {
         AESEncryptMnemonic: 'AESEncryptMnemonic',
         caInfo: {
           TESTNET: {},
-          MAIN: {},
+          MAINNET: {},
         },
       },
     };
@@ -419,7 +419,7 @@ describe('getCaHolderInfoAsync', () => {
               caHash: 'caHash',
             },
           },
-          MAIN: {},
+          MAINNET: {},
         },
       },
     },
@@ -485,7 +485,7 @@ describe('resetCaInfo', () => {
       currentNetwork: 'TESTNET' as NetworkType,
       chainList: [],
     };
-    const payload = 'MAIN';
+    const payload = 'MAINNET';
     expect(() => reducer(mockState, resetCaInfo(payload))).toThrow(WalletError.noCreateWallet);
   });
 
@@ -503,7 +503,7 @@ describe('resetCaInfo', () => {
         AESEncryptMnemonic: 'AESEncryptMnemonic',
         caInfo: {
           TESTNET: {},
-          MAIN: {},
+          MAINNET: {},
         },
       },
     };
@@ -670,7 +670,7 @@ describe('createWalletAsync', () => {
       },
     };
     const res = reducer(state as any, createWalletAction(payload));
-    expect(res.walletInfo?.caInfo.MAIN).toEqual(payload.caInfo);
+    expect(res.walletInfo?.caInfo.MAINNET).toEqual(payload.caInfo);
   });
   test('caInfo is not empty, will be update', async () => {
     const res = reducer(mockState as any, createWalletAction(payload));

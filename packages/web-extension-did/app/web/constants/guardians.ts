@@ -6,10 +6,11 @@ export const guardianTypeList: IGuardianType[] = [
   { label: 'Email', value: LoginType.Email, icon: 'email' },
   { label: 'Google', value: LoginType.Google, icon: 'GuardianGoogle' },
   { label: 'Apple', value: LoginType.Apple, icon: 'GuardianApple' },
+  { label: 'Telegram', value: LoginType.Telegram, icon: 'GuardianTelegram' },
 ];
 
 export const phoneInit: IPhoneInput = {
-  code: '+65',
+  code: '',
   phoneNumber: '',
 };
 

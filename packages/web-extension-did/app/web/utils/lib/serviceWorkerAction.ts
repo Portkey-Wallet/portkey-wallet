@@ -1,7 +1,6 @@
 import { NetworkType } from '@portkey-wallet/types';
 import { ISocialLogin } from '@portkey-wallet/types/types-ca/wallet';
 import { sleep } from '@portkey-wallet/utils';
-import { message } from 'antd';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useCallback } from 'react';
@@ -10,6 +9,12 @@ import { CreatePromptType, ReCaptchaResponseParams, SendResponseParams } from 't
 import { getPortkeyFinanceUrl } from 'utils';
 import { getWalletState } from './SWGetReduxStore';
 import { apis } from 'utils/BrowserApis';
+import singleMessage from 'utils/singleMessage';
+
+export const timeout = async (timer = 2000) => {
+  await sleep(timer);
+  return 'Chrome service worker is not working';
+};
 
 export const closeTabPrompt = async (closeParams: CloseParams) => {
   if (!closeParams?.windowId) {
@@ -34,27 +39,27 @@ export const useLockWallet = () => {
     try {
       await InternalMessage.payload(PortkeyMessageTypes.LOCK_WALLET).send();
     } catch (error) {
-      message.error('Lock error');
+      singleMessage.error('Lock error');
     }
   }, []);
 };
 
-export const useActiveLockStatusAction = () => {
-  return useCallback(async () => {
-    try {
-      await InternalMessage.payload(PortkeyMessageTypes.ACTIVE_LOCK_STATUS).send();
-    } catch (error) {
-      message.error('Active lock error');
-    }
-  }, []);
+export const activeLockStatusAction = async () => {
+  const res = await Promise.race([InternalMessage.payload(PortkeyMessageTypes.ACTIVE_LOCK_STATUS).send(), timeout()]);
+  console.log(res, 'Check ACTIVE_LOCK_STATUS');
+  if (typeof res === 'string') return chrome.runtime.reload();
 };
 
 export const setPinAction = (pin: string) => InternalMessage.payload(PortkeyMessageTypes.SET_SEED, pin).send();
 
 export const socialLoginAction = async (type: ISocialLogin, network: NetworkType): Promise<SendResponseParams> => {
-  const { JOIN_AUTH_URL } = getPortkeyFinanceUrl(network);
+  const { JOIN_AUTH_URL, JOIN_TELEGRAM_URL } = getPortkeyFinanceUrl(network);
+  let externalLink = `${JOIN_AUTH_URL}/${network}/${type}?version=v2`;
+  if (type === 'Telegram') {
+    externalLink = JOIN_TELEGRAM_URL;
+  }
   return await InternalMessage.payload(PortkeyMessageTypes.SOCIAL_LOGIN, {
-    externalLink: `${JOIN_AUTH_URL}/${network}/${type}`,
+    externalLink,
   }).send();
 };
 
@@ -62,6 +67,6 @@ export const reCAPTCHAAction = async (): Promise<ReCaptchaResponseParams> => {
   const wallet = await getWalletState();
   const { RECAPTCHA_URL } = getPortkeyFinanceUrl(wallet.currentNetwork);
   return await InternalMessage.payload(PortkeyMessageTypes.OPEN_RECAPTCHA_PAGE, {
-    externalLink: `${RECAPTCHA_URL}`,
+    externalLink: `${RECAPTCHA_URL}?version=v2`,
   }).send();
 };

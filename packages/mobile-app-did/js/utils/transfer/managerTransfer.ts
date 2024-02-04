@@ -1,14 +1,32 @@
 import { SendOptions } from '@portkey-wallet/contracts/types';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import { managerForwardCall } from './managerForwardCall';
+import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
 
 export const managerTransfer = ({
-  contract,
-  paramsOption,
+  caContract,
+  tokenContractAddress,
+  caHash,
+  paramsArgs,
   sendOptions,
+  guardiansApproved,
 }: {
-  contract: ContractBasic;
+  caContract: ContractBasic;
+  tokenContractAddress: string;
+  caHash: string;
+  paramsArgs: { symbol: string; to: string; amount: number | string; memo?: string };
   sendOptions?: SendOptions;
-  paramsOption: { caHash: string; symbol: string; to: string; amount: number | string; memo?: string };
+  guardiansApproved?: GuardiansApprovedType[];
 }) => {
-  return contract.callSendMethod('ManagerTransfer', '', paramsOption, sendOptions);
+  return managerForwardCall({
+    contract: caContract,
+    paramsOption: {
+      caHash: caHash,
+      contractAddress: tokenContractAddress,
+      methodName: 'Transfer',
+      args: paramsArgs,
+      guardiansApproved,
+    },
+    sendOptions,
+  });
 };

@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useRef } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
@@ -32,12 +32,13 @@ import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import FaucetButton from 'components/FaucetButton';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useAppBuyButtonShow, useAppETransShow } from 'hooks/cms';
+import { useAppETransShow } from 'hooks/cms';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 import { ETransTokenList } from '@portkey-wallet/constants/constants-ca/dapp';
 import CommonToolButton from 'components/CommonToolButton';
 import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
 import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
+import { useAppRampEntryShow } from 'hooks/ramp';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -65,8 +66,7 @@ const TokenDetail: React.FC = () => {
   const { accountToken } = useAppCASelector(state => state.assets);
   const isTokenHasPrice = useIsTokenHasPrice(tokenInfo.symbol);
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
-
-  const { isBuyButtonShow: isBuyButtonShowStore } = useAppBuyButtonShow();
+  const { isRampShow } = useAppRampEntryShow();
 
   const [reFreshing, setFreshing] = useState(false);
 
@@ -136,8 +136,8 @@ const TokenDetail: React.FC = () => {
   });
 
   const isBuyButtonShow = useMemo(
-    () => tokenInfo.symbol === defaultToken.symbol && tokenInfo.chainId === 'AELF' && isBuyButtonShowStore,
-    [defaultToken.symbol, isBuyButtonShowStore, tokenInfo.chainId, tokenInfo.symbol],
+    () => tokenInfo.symbol === defaultToken.symbol && tokenInfo.chainId === 'AELF' && isRampShow,
+    [defaultToken.symbol, isRampShow, tokenInfo.chainId, tokenInfo.symbol],
   );
 
   const isFaucetButtonShow = useMemo(

@@ -37,7 +37,7 @@ export default function SendPreview({
   isCross: boolean;
   tokenId: string;
 }) {
-  const { walletName } = useWalletInfo();
+  const { userInfo } = useWalletInfo();
   const wallet = useCurrentWalletInfo();
   const isMainnet = useIsMainnet();
   const amountInUsdShow = useAmountInUsdShow();
@@ -103,7 +103,7 @@ export default function SendPreview({
         <div className="item">
           <span className="label">From</span>
           <div className="value">
-            <p className="name">{walletName}</p>
+            <p className="name">{userInfo?.nickName}</p>
             <p className="address">{entireFromAddressShow.replace(/(?<=^\w{9})\w+(?=\w{10})/, '...')}</p>
           </div>
         </div>
@@ -141,7 +141,7 @@ export default function SendPreview({
           <span className="label">Estimated CrossChain Transfer</span>
           <p className="value">
             <span className="symbol">
-              <span className="usd">{isMainnet && amountInUsdShow(crossChainFee, 0, symbol)}</span>
+              <span className="usd">{isMainnet && amountInUsdShow(crossChainFee, 0, defaultToken.symbol)}</span>
               {` ${formatAmountShow(crossChainFee, Number(defaultToken.decimals))} ${defaultToken.symbol}`}
             </span>
           </p>

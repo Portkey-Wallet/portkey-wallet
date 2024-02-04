@@ -183,6 +183,15 @@ export default class ServiceWorkerInstantiate {
       case PortkeyMessageTypes.GUARDIANS_APPROVAL:
         ServiceWorkerInstantiate.expandGuardiansApproval(message.payload);
         break;
+      case PortkeyMessageTypes.GUARDIANS_APPROVAL_PAYMENT_SECURITY:
+        ServiceWorkerInstantiate.expandPaymentSecurityGuardiansApproval(message.payload);
+        break;
+      case PortkeyMessageTypes.SEND:
+        ServiceWorkerInstantiate.expandSend(message.payload);
+        break;
+      case PortkeyMessageTypes.RAMP:
+        ServiceWorkerInstantiate.expandRamp(message.payload);
+        break;
       case PortkeyMessageTypes.OPEN_RECAPTCHA_PAGE:
         this.openRecaptchaPage(sendResponse, message.payload);
         break;
@@ -348,6 +357,41 @@ export default class ServiceWorkerInstantiate {
     notificationService.openPrompt(
       {
         method: PromptRouteTypes.GUARDIANS_APPROVAL,
+        search: payload,
+      },
+      'tabs',
+    );
+  }
+
+  static expandPaymentSecurityGuardiansApproval(payload: any) {
+    notificationService.openPrompt(
+      {
+        method: PromptRouteTypes.GUARDIANS_APPROVAL_PAYMENT_SECURITY,
+        search: payload,
+      },
+      'tabs',
+    );
+  }
+
+  static expandSend(payload: string) {
+    const payloadObj = JSON.parse(payload);
+    if (!payloadObj?.type) throw Error('missing type');
+    if (!payloadObj?.symbol) throw Error('missing symbol');
+
+    notificationService.openPrompt(
+      {
+        method: PromptRouteTypes.SEND,
+        query: `${payloadObj?.type}/${payloadObj?.symbol}`,
+        search: payload,
+      },
+      'tabs',
+    );
+  }
+
+  static expandRamp(payload: any) {
+    notificationService.openPrompt(
+      {
+        method: PromptRouteTypes.RAMP,
         search: payload,
       },
       'tabs',

@@ -168,7 +168,7 @@ export default function TokenInput({
             <Input
               type="text"
               placeholder={`0`}
-              className={clsx(isMainnet && 'need-convert')}
+              className={clsx(isMainnet && token.symbol === defaultToken.symbol && 'need-convert')}
               value={amount}
               maxLength={18}
               onKeyDown={handleKeyDown}

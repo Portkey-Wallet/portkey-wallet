@@ -18,7 +18,7 @@ import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { TextS } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';
 import CommonAvatar from 'components/CommonAvatar';
-import { formatChainInfoToShow, handleError, handleErrorMessage } from '@portkey-wallet/utils';
+import { formatChainInfoToShow, handleErrorMessage } from '@portkey-wallet/utils';
 import { useCurrentCaInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Touchable from 'components/Touchable';
 import { BGStyles } from 'assets/theme/styles';
@@ -31,8 +31,8 @@ import { useDefaultTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPr
 import { useCurrentChannel } from 'pages/Chat/context/hooks';
 import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { InsufficientTransactionFee } from 'hooks/useCalculateRedPacketFee';
+import { useAppRampEntryShow } from 'hooks/ramp';
 
 export type PaymentTokenInfo = {
   symbol: string;
@@ -93,7 +93,7 @@ const PaymentModal = ({
     return tokenInfoList.find(ele => ele.symbol === tokenInfo.symbol);
   }, [chainId, tokenInfo.symbol, tokenInfoList, tokenMap]);
 
-  const { isBuySectionShow } = useRampEntryShow();
+  const { isBuySectionShow } = useAppRampEntryShow();
   const isCanBuy = useMemo(
     () => tokenInfo.symbol === defaultToken.symbol && isBuySectionShow,
     [isBuySectionShow, defaultToken.symbol, tokenInfo.symbol],
@@ -199,7 +199,7 @@ const PaymentModal = ({
     if (!buttonTitle) return;
     return (
       <Touchable onPress={onPress} style={styles.getButtonRow}>
-        <TextS style={[FontStyles.weight500, FontStyles.font11]}>{buttonTitle}</TextS>
+        <TextS style={FontStyles.font11}>{buttonTitle}</TextS>
       </Touchable>
     );
   }, [chainId, crossSufficientItem, currentCaAddress, currentChannelType, fee.error, isCanBuy]);

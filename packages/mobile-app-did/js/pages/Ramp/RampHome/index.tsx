@@ -8,7 +8,6 @@ import BuyForm from '../components/BuyForm';
 import SellForm from '../components/SellForm';
 import ActionSheet from 'components/ActionSheet';
 import { RampType } from '@portkey-wallet/ramp';
-import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useSecuritySafeCheckAndToast } from 'hooks/security';
@@ -17,6 +16,7 @@ import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import CommonTouchableTabs from 'components/CommonTouchableTabs';
+import { useAppRampEntryShow } from 'hooks/ramp';
 
 type TabItemType = {
   name: string;
@@ -38,7 +38,7 @@ const tabList: TabItemType[] = [
 ];
 
 export default function RampHome() {
-  const { isBuySectionShow, isSellSectionShow, refreshRampShow } = useRampEntryShow();
+  const { isBuySectionShow, isSellSectionShow, refreshRampShow } = useAppRampEntryShow();
   const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
 
   const { toTab } = useRouterParams<{ toTab: RampType }>();

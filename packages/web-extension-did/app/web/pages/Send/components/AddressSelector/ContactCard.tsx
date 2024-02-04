@@ -12,9 +12,10 @@ import { formatStr2EllipsisStr } from '@portkey-wallet/utils/converter';
 import { Collapse } from 'antd';
 import clsx from 'clsx';
 import CustomSvg from 'components/CustomSvg';
+import { useNavigateState } from 'hooks/router';
 import Avatar from 'pages/components/Avatar';
 import { useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router';
+import { TRecentDetailLocationState } from 'types/router';
 
 export interface IContactCardProps {
   chainId: ChainId;
@@ -42,7 +43,7 @@ export default function ContactCard({ user, className, fromRecents = true, chain
     [transIndex, transName, user.avatar],
   );
 
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TRecentDetailLocationState>();
   const goRecentDetail = (targetAddress: string, targetChainId: ChainId) => {
     navigate('/recent-detail', {
       state: {
@@ -56,20 +57,25 @@ export default function ContactCard({ user, className, fromRecents = true, chain
     });
   };
 
+  const formatAddressShow = useCallback(
+    (address: string, chainId: string) => `ELF_${formatStr2EllipsisStr(address, [6, 6])}_${chainId}`,
+    [],
+  );
+
   return (
     <Collapse key={user.id} className={clsx('contact-card', className)}>
       <Collapse.Panel header={header} key={user.id}>
         <div className="content">
           {user?.addresses?.map((address: RecentAddressItem) => (
-            <div key={address.address} className={clsx(['flex-between-center', 'content-item'])}>
+            <div
+              key={formatAddressShow(address.address, address.chainId)}
+              className={clsx(['flex-between-center', 'content-item'])}>
               <div
                 className={clsx(['main-info', isDisabled(address?.transactionTime) && 'disabled'])}
                 onClick={() =>
                   onChange({ ...address, name: transName, isDisable: isDisabled(address?.transactionTime) })
                 }>
-                <span className={'address'}>
-                  {`ELF_${formatStr2EllipsisStr(address.address, [6, 6])}_${address.chainId}`}
-                </span>
+                <span className={'address'}>{formatAddressShow(address.address, address.chainId)}</span>
                 <span className={clsx(['network', isDisabled(address?.transactionTime) ? 'disabled' : ''])}>
                   {transNetworkText(address.chainId, !isMainnet)}
                 </span>

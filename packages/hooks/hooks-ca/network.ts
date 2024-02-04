@@ -33,7 +33,7 @@ export function useVerifierList() {
 
 export function useIsMainnet() {
   const currentNetwork = useCurrentNetwork();
-  return useMemo(() => currentNetwork === 'MAIN', [currentNetwork]);
+  return useMemo(() => currentNetwork === 'MAINNET', [currentNetwork]);
 }
 
 export function useIsIMServiceExist() {

@@ -16,6 +16,7 @@ export const CONTACT_PRIVACY_TYPE_LABEL_MAP: { [key in LoginType]: string } = {
   [LoginType.Phone]: 'Phone Number',
   [LoginType.Apple]: 'Apple ID',
   [LoginType.Google]: 'Google Account',
+  [LoginType.Telegram]: 'Telegram Account',
 };
 
 export const CONTACT_PRIVACY_TYPE_LOWER_LABEL_MAP: { [key in LoginType]: string } = {
@@ -23,6 +24,7 @@ export const CONTACT_PRIVACY_TYPE_LOWER_LABEL_MAP: { [key in LoginType]: string 
   [LoginType.Phone]: 'phone number',
   [LoginType.Apple]: 'Apple ID',
   [LoginType.Google]: 'Google Account',
+  [LoginType.Telegram]: 'Telegram Account',
 };
 
 export const CONTACT_PERMISSION_LIST = [

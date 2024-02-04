@@ -1,6 +1,6 @@
 import { useCurrentCaHash, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import usePromptSearch from 'hooks/usePromptSearch';
-import { message } from 'antd';
+import singleMessage from 'utils/singleMessage';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { closeTabPrompt } from 'utils/lib/serviceWorkerAction';
@@ -15,6 +15,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { IGuardiansApproved } from '@portkey/did-ui-react';
 import ManagerApproveInner from './ManagerApproveInner';
 import getSeed from 'utils/getSeed';
+import { useDebounceCallback } from '@portkey-wallet/hooks';
 import './index.less';
 
 export default function AllowanceApprove() {
@@ -45,7 +46,7 @@ export default function AllowanceApprove() {
     getInitState();
   }, [getInitState]);
 
-  const onFinish = useCallback(
+  const onFinish = useDebounceCallback(
     async ({ amount, guardiansApproved }: { amount: string; guardiansApproved: IGuardiansApproved[] }) => {
       try {
         if (!txParams) throw Error('invalid params(txParams)');
@@ -93,6 +94,7 @@ export default function AllowanceApprove() {
       }
     },
     [caHash, chainInfo, method, txParams],
+    500,
   );
 
   const checkManagerSyncState = useCheckManagerSyncState();
@@ -117,7 +119,7 @@ export default function AllowanceApprove() {
       // getFee(params);
       // setErrMsg('');
     } else {
-      message.error('Synchronizing on-chain account information...', 10000);
+      singleMessage.error('Synchronizing on-chain account information...', 10000);
     }
   }, [checkManagerSyncState, chainId, transactionInfoId]);
 
@@ -144,7 +146,7 @@ export default function AllowanceApprove() {
           }}
           onFinish={onFinish}
           onError={(error) => {
-            message.error(handleErrorMessage(error));
+            singleMessage.error(handleErrorMessage(error));
           }}
         />
       )}

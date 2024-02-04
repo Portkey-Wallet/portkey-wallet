@@ -26,7 +26,7 @@ export default function AccountCard({
 
   const info: QRCodeDataObjType = {
     address: toCaAddress,
-    netWorkType: currentNetWork.networkType,
+    networkType: currentNetWork.networkType,
     chainType,
     type: 'send',
     toInfo: {

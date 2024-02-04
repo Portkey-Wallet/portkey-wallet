@@ -5,10 +5,10 @@ import Svg from 'components/Svg';
 import { useLanguage } from 'i18n/hooks';
 import React, { useCallback } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
-import { TouchableOpacity } from 'react-native';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 
 import { pTd } from 'utils/unit';
+import Touchable from 'components/Touchable';
 
 interface ToProps {
   selectedToContact: { name: string; address: string };
@@ -16,9 +16,17 @@ interface ToProps {
   step: 1 | 2;
   setStep: (step: 1 | 2) => void;
   setErrorMessage: any;
+  isFixedToContact?: boolean;
 }
 
-export default function To({ setErrorMessage, selectedToContact, setSelectedToContact, step, setStep }: ToProps) {
+export default function To({
+  setErrorMessage,
+  selectedToContact,
+  setSelectedToContact,
+  step,
+  setStep,
+  isFixedToContact,
+}: ToProps) {
   const { t } = useLanguage();
 
   const clearInput = useCallback(() => {
@@ -26,6 +34,8 @@ export default function To({ setErrorMessage, selectedToContact, setSelectedToCo
     setSelectedToContact({ address: '', name: '' });
     setErrorMessage?.([]);
   }, [setErrorMessage, setSelectedToContact, setStep]);
+
+  console.log('isFixedToContact', isFixedToContact);
 
   return (
     <View style={styles.toWrap}>
@@ -42,19 +52,21 @@ export default function To({ setErrorMessage, selectedToContact, setSelectedToCo
             onChangeText={v => setSelectedToContact({ name: '', address: v.trim() })}
           />
 
-          {!!selectedToContact?.address && (
-            <TouchableOpacity style={styles.iconWrap} onPress={() => clearInput()}>
+          {!!selectedToContact?.address && !isFixedToContact && (
+            <Touchable style={styles.iconWrap} onPress={() => clearInput()}>
               <Svg icon="clear2" size={pTd(16)} />
-            </TouchableOpacity>
+            </Touchable>
           )}
         </View>
       ) : (
         <View style={styles.middle}>
           <TextM style={styles.middleTitle}>{selectedToContact?.name || ''}</TextM>
           <TextM style={styles.middleAddress}>{formatStr2EllipsisStr(selectedToContact?.address, 15)}</TextM>
-          <TouchableOpacity style={styles.iconWrap} onPress={() => clearInput()}>
-            <Svg icon="clear2" size={pTd(16)} />
-          </TouchableOpacity>
+          {!isFixedToContact && (
+            <Touchable style={styles.iconWrap} onPress={() => clearInput()}>
+              <Svg icon="clear2" size={pTd(16)} />
+            </Touchable>
+          )}
         </View>
       )}
     </View>

@@ -19,10 +19,10 @@ export function handleScheme(str: string): SchemeParsedUrl | undefined {
 }
 
 export function checkAuthLoginData(extraData: any, data: any) {
-  const { type, address, netWorkType, chainType } = data;
+  const { type, address, networkType, chainType } = data;
 
   if (type !== 'login') return;
-  if (typeof netWorkType !== 'string') return;
+  if (typeof networkType !== 'string') return;
   if (!isAddress(address, chainType)) return;
   if (typeof extraData?.websiteName !== 'string') return;
 

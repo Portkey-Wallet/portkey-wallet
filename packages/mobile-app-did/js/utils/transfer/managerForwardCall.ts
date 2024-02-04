@@ -10,6 +10,7 @@
 
 import { SendOptions } from '@portkey-wallet/contracts/types';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
 
 type ParamsOptionArgs = any;
 
@@ -18,13 +19,7 @@ interface ParamsOption {
   contractAddress: string; // Contract address that needs to be traded
   methodName: string; // 'Transfer',
   args: ParamsOptionArgs;
-}
-
-interface ParamsOption {
-  caHash: string;
-  contractAddress: string; // Contract address that needs to be traded
-  methodName: string; // 'Transfer',
-  args: ParamsOptionArgs;
+  guardiansApproved?: GuardiansApprovedType[];
 }
 
 export interface ManagerForwardCallParams {

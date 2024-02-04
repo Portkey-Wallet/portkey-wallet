@@ -20,7 +20,7 @@ import { copyText } from 'utils';
 import Touchable from 'components/Touchable';
 import { FontStyles } from 'assets/theme/styles';
 import fonts from 'assets/theme/fonts';
-import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-mainnet';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 
 export default function Receive() {
   const { t } = useLanguage();

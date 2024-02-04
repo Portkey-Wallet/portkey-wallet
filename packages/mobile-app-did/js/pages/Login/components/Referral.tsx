@@ -137,11 +137,11 @@ export default function Referral({
         onPress: onFacebookSign,
       },
       {
-        icon: 'phone-login',
+        icon: 'phone',
         onPress: () => setLoginType(PageLoginType.phone),
       },
       {
-        icon: 'email-login',
+        icon: 'email',
         onPress: () => setLoginType(PageLoginType.email),
       },
     ],
@@ -163,7 +163,7 @@ export default function Referral({
           style={GStyles.marginTop(40)}
         />
         <OblongButton
-          icon="telegram-blue"
+          icon="telegram"
           title={TitleMap[type].telegram}
           onPress={onTelegramSign}
           style={GStyles.marginTop(16)}

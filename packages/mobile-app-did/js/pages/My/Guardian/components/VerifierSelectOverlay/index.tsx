@@ -48,12 +48,7 @@ const SelectList = ({ callBack, id, editGuardian }: SelectListProps) => {
                 callBack(item);
               }}>
               <View style={styles.itemRow}>
-                <VerifierImage
-                  label={item.name}
-                  style={styles.verifierImageStyle}
-                  size={pTd(35.5)}
-                  uri={item.imageUrl}
-                />
+                <VerifierImage label={item.name} style={styles.verifierImageStyle} size={pTd(32)} uri={item.imageUrl} />
                 <View style={styles.itemContent}>
                   <TextL>{item.name}</TextL>
                   {id !== undefined && id === item.id && (

@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     ...GStyles.paddingArg(14, 16),
     backgroundColor: defaultColors.bg1,
-    borderColor: defaultColors.border1,
+    borderColor: defaultColors.border6,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   itemImage: {

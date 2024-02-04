@@ -107,6 +107,7 @@ const AboutUs = () => {
               <MenuItem
                 showWarningCycle={item.showWarningCycle}
                 icon={item.icon}
+                iconColor={defaultColors.icon3}
                 title={item.title}
                 onPress={item.onPress}
               />
@@ -138,7 +139,7 @@ export const styles = StyleSheet.create({
     borderRadius: pTd(16),
     borderWidth: 1,
     borderColor: defaultColors.border6,
-    marginTop: pTd(52),
+    marginTop: pTd(40),
     marginBottom: pTd(16),
     backgroundColor: defaultColors.bg1,
   },

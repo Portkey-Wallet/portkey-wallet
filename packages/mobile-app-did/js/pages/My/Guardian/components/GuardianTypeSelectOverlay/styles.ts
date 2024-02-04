@@ -16,18 +16,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  itemIconWrap: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: defaultColors.border6,
+    backgroundColor: defaultColors.bg6,
+    width: pTd(32),
+    height: pTd(32),
+    borderRadius: pTd(16),
+    marginRight: pTd(16),
+  },
   itemIcon: {
     position: 'absolute',
-    right: 26,
   },
   typeOverlayTitleLabel: {
     marginTop: pTd(16),
     marginBottom: pTd(8),
     textAlign: 'center',
-  },
-  leftIcon: {
-    borderRadius: pTd(14),
-    marginRight: pTd(16),
   },
 });
 

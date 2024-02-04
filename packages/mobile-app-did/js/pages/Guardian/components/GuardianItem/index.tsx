@@ -287,7 +287,10 @@ export default function GuardianItem({
         </View>
       )}
       <View style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flex1]}>
-        <Svg iconStyle={styles.loginTypeIcon} icon={LoginGuardianTypeIcon[guardianItem.guardianType]} size={pTd(32)} />
+        <View style={[GStyles.center, styles.loginTypeIconWrap]}>
+          <Svg icon={LoginGuardianTypeIcon[guardianItem.guardianType]} size={pTd(18)} />
+        </View>
+
         <VerifierImage
           size={pTd(32)}
           label={guardianItem?.verifier?.name}
@@ -377,7 +380,12 @@ const styles = StyleSheet.create({
   disabledItemStyle: {
     opacity: 1,
   },
-  loginTypeIcon: {
+  loginTypeIconWrap: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: defaultColors.border6,
+    backgroundColor: defaultColors.bg6,
+    width: pTd(32),
+    height: pTd(32),
     borderRadius: pTd(16),
   },
 });

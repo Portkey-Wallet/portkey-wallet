@@ -16,6 +16,7 @@ export interface IMenuItemProps {
   TextComponent?: React.FC<TextProps>;
   arrowSize?: number;
   suffix?: string | number | React.ReactNode;
+  iconColor?: string;
   iconStyle?: StyleProp<ViewStyle>;
   svgUrl?: string;
   showWarningCycle?: boolean;
@@ -29,6 +30,7 @@ const MenuItem: React.FC<IMenuItemProps> = ({
   size = pTd(28),
   arrowSize = pTd(20),
   suffix,
+  iconColor,
   iconStyle,
   svgUrl,
   showWarningCycle = false,
@@ -52,7 +54,12 @@ const MenuItem: React.FC<IMenuItemProps> = ({
       {icon && (
         <View style={styles.svgWrap}>
           {showWarningCycle && <View style={styles.warningCycle} />}
-          <Svg icon={icon} size={size} iconStyle={[styles.menuIcon, iconStyle]} />
+          <Svg
+            icon={icon}
+            size={size}
+            color={iconColor ? iconColor : undefined}
+            iconStyle={[styles.menuIcon, iconStyle]}
+          />
         </View>
       )}
       <TextL style={styles.titleWrap}>{title}</TextL>

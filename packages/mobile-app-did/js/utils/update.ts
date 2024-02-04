@@ -147,7 +147,6 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
       this.setStorageUpdateInfo(currentData.packageHash);
       ActionSheet.alert({
         messageStyle: { textAlign: 'left' },
-        titleStyle: { marginBottom: 0 },
         title: info.updatedTitle || '',
         message: info.updatedContent,
         buttons: [{ title: 'I Know' }],
@@ -270,7 +269,6 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
       const info = await this.getUpdateInfo(updateInfo.label);
       ActionSheet.alert({
         messageStyle: { textAlign: 'left' },
-        titleStyle: { marginBottom: 0 },
         title: info.title || 'New version found. Is an update made?',
         message: info.content,
         buttons: [

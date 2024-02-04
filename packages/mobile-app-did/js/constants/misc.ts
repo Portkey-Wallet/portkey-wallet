@@ -4,11 +4,11 @@ import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 export const LoginGuardianTypeIcon: any = {
   [LoginType.Email]: 'email',
   [LoginType.Phone]: 'phone',
-  [LoginType.Google]: 'google-icon',
-  [LoginType.Apple]: 'apple-icon',
-  [LoginType.Telegram]: 'telegram-icon',
-  [LoginType.Twitter]: 'twitter-icon',
-  [LoginType.Facebook]: 'facebook-icon',
+  [LoginType.Google]: 'google',
+  [LoginType.Apple]: 'apple',
+  [LoginType.Telegram]: 'telegram',
+  [LoginType.Twitter]: 'twitter',
+  [LoginType.Facebook]: 'facebook',
 };
 
 export const LOGIN_TYPE_LIST = [

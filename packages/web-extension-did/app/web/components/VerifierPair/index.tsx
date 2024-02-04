@@ -32,7 +32,7 @@ export default function VerifierPair({
 }: VerifierPairProps) {
   return (
     <div className={clsx('flex-row-center icon-pair', wrapperClassName)}>
-      <div className="guardian-type-icon flex-center" style={{ width: size, height: size, fontSize: size }}>
+      <div className="guardian-icon flex-center" style={{ width: size, height: size, fontSize: size }}>
         <CustomSvg className="flex" type={GuardianTypeIcon[guardianType]} />
       </div>
       <div className="verifier-icon-border">

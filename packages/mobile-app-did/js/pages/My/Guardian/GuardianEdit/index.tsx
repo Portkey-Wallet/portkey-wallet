@@ -31,7 +31,6 @@ import { VerifierImage } from 'pages/Guardian/components/VerifierImage';
 import { verification } from 'utils/api';
 import PhoneInput from 'components/PhoneInput';
 import {
-  AppleAuthentication,
   useAppleAuthentication,
   useFacebookAuthentication,
   useGoogleAuthentication,
@@ -54,6 +53,7 @@ import { useEffectOnce, useLatestRef } from '@portkey-wallet/hooks';
 import { NavigateMultiLevelParams } from 'types/navigate';
 import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
 import { useIsFocused } from '@react-navigation/native';
+import { TAppleAuthentication } from 'types/authentication';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
@@ -429,7 +429,7 @@ const GuardianEdit: React.FC = () => {
 
   const onAppleSign = useCallback(async () => {
     Loading.show();
-    let userInfo: AppleAuthentication;
+    let userInfo: TAppleAuthentication;
     try {
       userInfo = await appleSign();
       thirdPartyInfoRef.current = {
@@ -525,8 +525,6 @@ const GuardianEdit: React.FC = () => {
     Loading.show();
     try {
       const userInfo = await facebookSign();
-      console.log(userInfo, '======userInfo');
-
       setAccount(PRIVATE_GUARDIAN_ACCOUNT);
       setFirstName(userInfo.user.firstName || undefined);
       thirdPartyInfoRef.current = {

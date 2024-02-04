@@ -9,7 +9,8 @@ import * as Progress from 'react-native-progress';
 import { codePushOperator } from 'utils/update';
 import { TextM, TextXL } from 'components/CommonText';
 import Svg from 'components/Svg';
-import { FontStyles } from 'assets/theme/styles';
+import GStyles from 'assets/theme/GStyles';
+import fonts from 'assets/theme/fonts';
 
 function UpdateBody() {
   const [progress, setProgress] = useState(0);
@@ -39,7 +40,7 @@ function UpdateBody() {
         color={defaultColors.bg5}
         textStyle={styles.textStyle}
       />
-      <TextXL style={{ marginTop: pTd(8) }}>Downloading...</TextXL>
+      <TextXL style={[fonts.mediumFont, GStyles.marginTop(pTd(8))]}>Downloading...</TextXL>
       <TextM style={styles.tips}>You can close the pop-up window and the new version will continue to download.</TextM>
     </View>
   );

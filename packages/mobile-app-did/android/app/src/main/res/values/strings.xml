@@ -2,7 +2,4 @@
   <string name="expo_splash_screen_resize_mode" translatable="false">native</string>
   <string name="expo_splash_screen_status_bar_translucent" translatable="false">true</string>
   <string name="app_name">Portkey (Early Access)</string>
-  <string name="facebook_app_id">1061123428463627</string>
-  <string name="facebook_client_token">bed40cd4149ed0abccd5570dd62a8509</string>
-  <string name="fb_login_protocol_scheme">fb1061123428463627</string>
 </resources>

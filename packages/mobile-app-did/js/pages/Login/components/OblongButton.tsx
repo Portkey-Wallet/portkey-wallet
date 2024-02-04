@@ -5,7 +5,7 @@ import { TextL } from 'components/CommonText';
 import Svg, { IconName } from 'components/Svg';
 import Touchable from 'components/Touchable';
 import React, { useMemo } from 'react';
-import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 
 export interface IOblongButton {
@@ -34,7 +34,11 @@ export default function OblongButton(props: IOblongButton) {
 
   return (
     <Touchable style={[styles.wrap, outerStyle]} onPress={onPress}>
-      {icon && <Svg icon={icon} size={pTd(20)} iconStyle={styles.iconWrap} />}
+      {icon && (
+        <View style={styles.iconWrap}>
+          <Svg icon={icon} size={pTd(20)} />
+        </View>
+      )}
       <TextL style={[fonts.mediumFont, FontStyles.font5]}>{title}</TextL>
     </Touchable>
   );
@@ -45,7 +49,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: pTd(48),
     borderRadius: pTd(6),
-    borderWidth: Math.max(pTd(0.5), StyleSheet.hairlineWidth),
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: defaultColors.border1,
     display: 'flex',
     justifyContent: 'center',
@@ -53,8 +57,15 @@ const styles = StyleSheet.create({
   },
   iconWrap: {
     position: 'absolute',
-    left: pTd(12),
-    top: pTd(14),
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    paddingLeft: pTd(12),
   },
   container: {
     paddingVertical: 6,

@@ -110,8 +110,6 @@ export default function Referral({
     const loadingKey = Loading.show();
     try {
       const userInfo = await authenticationSign(LoginType.Facebook);
-      console.log(userInfo, '======userInfo-onFacebookSign');
-
       await onLogin({
         loginAccount: userInfo.user.userId,
         loginType: LoginType.Facebook,
@@ -139,11 +137,11 @@ export default function Referral({
         onPress: onFacebookSign,
       },
       {
-        icon: 'phone-login',
+        icon: 'phone',
         onPress: () => setLoginType(PageLoginType.phone),
       },
       {
-        icon: 'email-login',
+        icon: 'email',
         onPress: () => setLoginType(PageLoginType.email),
       },
     ],
@@ -165,7 +163,7 @@ export default function Referral({
           style={GStyles.marginTop(40)}
         />
         <OblongButton
-          icon="telegram-blue"
+          icon="telegram"
           title={TitleMap[type].telegram}
           onPress={onTelegramSign}
           style={GStyles.marginTop(16)}

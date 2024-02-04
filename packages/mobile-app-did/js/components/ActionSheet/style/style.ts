@@ -67,7 +67,7 @@ export const styles = StyleSheet.create({
   },
   alertTitle2: {
     color: defaultColors.font5,
-    marginBottom: pTd(12),
+    marginBottom: pTd(16),
     textAlign: 'center',
   },
   closeWrap: {

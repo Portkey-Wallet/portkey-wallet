@@ -11,6 +11,11 @@ import { getWalletState } from './SWGetReduxStore';
 import { apis } from 'utils/BrowserApis';
 import singleMessage from 'utils/singleMessage';
 
+export const timeout = async (timer = 2000) => {
+  await sleep(timer);
+  return 'Chrome service worker is not working';
+};
+
 export const closeTabPrompt = async (closeParams: CloseParams) => {
   if (!closeParams?.windowId) {
     const tab = await apis.tabs.getCurrent();
@@ -39,14 +44,10 @@ export const useLockWallet = () => {
   }, []);
 };
 
-export const useActiveLockStatusAction = () => {
-  return useCallback(async () => {
-    try {
-      await InternalMessage.payload(PortkeyMessageTypes.ACTIVE_LOCK_STATUS).send();
-    } catch (error) {
-      singleMessage.error('Active lock error');
-    }
-  }, []);
+export const activeLockStatusAction = async () => {
+  const res = await Promise.race([InternalMessage.payload(PortkeyMessageTypes.ACTIVE_LOCK_STATUS).send(), timeout()]);
+  console.log(res, 'Check ACTIVE_LOCK_STATUS');
+  if (typeof res === 'string') return chrome.runtime.reload();
 };
 
 export const setPinAction = (pin: string) => InternalMessage.payload(PortkeyMessageTypes.SET_SEED, pin).send();

@@ -212,6 +212,8 @@ const TabsDrawerContent: React.FC = () => {
       const canGoForward: boolean = tabStateMap?.canGoForward?.[String(ele?.id)];
 
       const onNavigationStateChange = (navState: any) => {
+        console.log('onNavigationStateChange');
+
         if (ele.id === activeTabId) {
           setTabStateMap(pre => ({
             canGoBack: {
@@ -263,10 +265,10 @@ const TabsDrawerContent: React.FC = () => {
                 <TextM style={styles.switchButton}>{tabs?.length || 0}</TextM>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => clickBottomActionBtn('home')} style={rightDomStyle.iconWrap}>
-                <Svg icon="homepage" size={pTd(24)} />
+                <Svg icon="homepage" size={pTd(24)} color={defaultColors.font5} />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => clickBottomActionBtn('more')} style={rightDomStyle.iconWrap}>
-                <Svg icon="more" size={20} color={defaultColors.icon1} />
+                <Svg icon="more" size={20} color={defaultColors.font5} />
               </TouchableOpacity>
             </View>
           )}
@@ -404,9 +406,9 @@ const styles = StyleSheet.create({
     borderRadius: pTd(4),
     borderWidth: pTd(1.5),
     borderColor: defaultColors.font5,
-    display: 'flex',
+    color: defaultColors.font5,
     textAlign: 'center',
-    alignItems: 'center',
+    lineHeight: pTd(18),
   },
 });
 

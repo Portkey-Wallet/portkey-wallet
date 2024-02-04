@@ -17,7 +17,6 @@ export const useCheckCodePushUpdate = () => {
       } else {
         dispatch(setUpdateInfo(undefined));
       }
-      console.log(updateInfo, '=====updateInfo');
     } catch (error) {
       dispatch(setUpdateInfo(undefined));
     }

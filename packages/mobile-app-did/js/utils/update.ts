@@ -139,15 +139,10 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
   }
 
   public async showUpdatedAlert() {
-    const [currentData, latestData] = await Promise.all([
-      this.getUpdateMetadata(CodePush.UpdateState.RUNNING),
-      this.getUpdateMetadata(CodePush.UpdateState.LATEST),
-    ]);
-    console.log(currentData, latestData, '=======currentData');
+    const currentData = await this.getUpdateMetadata(CodePush.UpdateState.RUNNING);
     if (!currentData) return;
     if (this.getStorageUpdateInfo(currentData.packageHash)) return;
     const info = await this.getUpdateInfo(currentData.label);
-    console.log(info, currentData, '=======info');
     if (info.updatedContent || info.updatedTitle) {
       this.setStorageUpdateInfo(currentData.packageHash);
       ActionSheet.alert({
@@ -163,8 +158,6 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
   public async showCheckUpdate() {
     try {
       const updateInfo = await this.checkForUpdate();
-      console.log(updateInfo, '=======showCheckUpdate');
-
       const [currentData] = await Promise.all([this.getUpdateMetadata(CodePush.UpdateState.RUNNING)]);
       if (updateInfo?.packageHash === currentData?.packageHash) return;
       if (!updateInfo) return;
@@ -243,7 +236,6 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
         await CodePush.clearUpdates();
         this.syncData(updateInfo, isForceUpdate);
       }
-      console.log(syncStatus, '======syncStatus');
     } catch (error) {
       const message = handleErrorMessage(error);
       if (message === CODE_PUSH_ERROR.Downloading) throw error;
@@ -259,13 +251,10 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
         return;
       }
       const updateInfo = await this.checkForUpdate();
-      console.log(updateInfo, '====updateInfo');
       const [currentData, pendingData] = await Promise.all([
         this.getUpdateMetadata(CodePush.UpdateState.RUNNING),
         this.getUpdateMetadata(CodePush.UpdateState.PENDING),
       ]);
-      console.log(currentData, pendingData, '=====currentData, pendingData');
-
       if (!updateInfo) {
         if (pendingData && pendingData?.packageHash !== currentData?.packageHash) {
           this.restartApp();

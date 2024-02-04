@@ -4,6 +4,7 @@ import portkeyLogo from 'assets/image/pngs/portkeyBlackBorderRadius.png';
 import { pTd } from 'utils/unit';
 import { StyleSheet, View } from 'react-native';
 import { TextL } from 'components/CommonText';
+import { defaultColors } from 'assets/theme';
 
 type CommonQRCodeStyledPropsType = {
   qrData: string;
@@ -79,11 +80,11 @@ const styles = StyleSheet.create({
   mask: {
     position: 'absolute',
     zIndex: 99,
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#ffffff',
+    top: -pTd(1),
+    bottom: -pTd(1),
+    left: -pTd(1),
+    right: -pTd(1),
+    backgroundColor: defaultColors.bg1,
     opacity: 0.96,
     alignItems: 'center',
     justifyContent: 'center',

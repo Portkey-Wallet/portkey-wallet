@@ -30,9 +30,9 @@ export const LOGIN_TYPE_LIST = [
     name: LOGIN_TYPE_LABEL_MAP[LoginType.Apple],
     icon: LoginGuardianTypeIcon[LoginType.Apple],
   },
-  // {
-  //   value: LoginType.Telegram,
-  //   name: LOGIN_TYPE_LABEL_MAP[LoginType.Telegram],
-  //   icon: LoginGuardianTypeIcon[LoginType.Telegram],
-  // },
+  {
+    value: LoginType.Telegram,
+    name: LOGIN_TYPE_LABEL_MAP[LoginType.Telegram],
+    icon: LoginGuardianTypeIcon[LoginType.Telegram],
+  },
 ];

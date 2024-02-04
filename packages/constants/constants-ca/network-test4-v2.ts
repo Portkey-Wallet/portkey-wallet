@@ -4,7 +4,7 @@ import { LINK_PATH_ENUM } from './link';
 
 export const NetworkList: NetworkItem[] = [
   BackEndNetWorkMap['back-end-test4-v2'],
-  BackEndNetWorkMap['back-end-testnet-v2'],
+  BackEndNetWorkMap['back-end-test3-v2'],
 ];
 
 export const DefaultChainId = 'AELF';
@@ -27,3 +27,5 @@ export const DAPP_WHITELIST: string[] = [...EBridgeList, ...ETransferList];
 export enum DappMap {
   bridge = 'http://192.168.67.173:3000',
 }
+
+export const OpenLogin = `https://openlogin-test.portkey.finance`;

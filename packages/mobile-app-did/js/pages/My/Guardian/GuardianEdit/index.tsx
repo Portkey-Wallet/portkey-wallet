@@ -525,8 +525,6 @@ const GuardianEdit: React.FC = () => {
     Loading.show();
     try {
       const userInfo = await facebookSign();
-      console.log(userInfo, '======userInfo');
-
       setAccount(PRIVATE_GUARDIAN_ACCOUNT);
       setFirstName(userInfo.user.firstName || undefined);
       thirdPartyInfoRef.current = {

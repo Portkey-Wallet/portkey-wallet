@@ -110,8 +110,6 @@ export default function Referral({
     const loadingKey = Loading.show();
     try {
       const userInfo = await authenticationSign(LoginType.Facebook);
-      console.log(userInfo, '======userInfo-onFacebookSign');
-
       await onLogin({
         loginAccount: userInfo.user.userId,
         loginType: LoginType.Facebook,

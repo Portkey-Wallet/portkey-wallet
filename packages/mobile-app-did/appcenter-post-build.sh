@@ -18,7 +18,7 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
                                 {
                                     "tag": "a",
                                     "text": "click here",
-                                    "href": "https://install.appcenter.ms/orgs/aelf-web/apps/DID-Android"
+                                    "href": "https://install.appcenter.ms/orgs/aelf-web/apps/DID-Android/distribution_groups/did-test-group"
                                 },
                                       {
                                     "tag": "text",
@@ -26,7 +26,7 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
                                 },
                                 {   
                                     "tag": "img",
-                                    "image_key": "img_v2_4fe5ee4e-d195-47b8-a783-33a7201118bg"
+                                    "image_key": "img_v3_027o_e27390d9-f6e4-4c1d-a538-f201dfb49c6g"
                                 }
                             ]
                         ]
@@ -59,7 +59,7 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
                                 {
                                     "tag": "a",
                                     "text": "click here",
-                                    "href": "https://install.appcenter.ms/orgs/aelf-web/apps/DID-IOS"
+                                    "href": "https://install.appcenter.ms/orgs/aelf-web/apps/DID-IOS/distribution_groups/did-test-group"
                                 },
                                 {
                                     "tag": "text",
@@ -67,7 +67,7 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
                                 },
                                 {   
                                     "tag": "img",
-                                    "image_key": "img_v2_4dceff8d-f98a-4774-9319-ac019165206g"
+                                    "image_key": "img_v3_027o_04ca9071-1f6c-4798-afa0-35b37b9f0d8g"
                                 }
                             ]
                         ]
@@ -148,7 +148,7 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
                                 {
                                     "tag": "a",
                                     "text": "click here",
-                                    "href": "https://install.appcenter.ms/orgs/aelf-web/apps/DID-Android-V2"
+                                    "href": "https://install.appcenter.ms/orgs/aelf-web/apps/DID-Android-V2/distribution_groups/did-test-group"
                                 },
                                       {
                                     "tag": "text",
@@ -156,7 +156,7 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
                                 },
                                 {   
                                     "tag": "img",
-                                    "image_key": "img_v3_027i_3b2cc2f9-0269-4803-8e9f-3886ff78770g"
+                                    "image_key": "img_v3_027o_1f2f81f0-cbfa-46d1-b966-c403dec9eb0g"
                                 }
                             ]
                         ]
@@ -189,7 +189,7 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
                                 {
                                     "tag": "a",
                                     "text": "click here",
-                                    "href": "https://install.appcenter.ms/orgs/aelf-web/apps/DID-IOS-V2"
+                                    "href": "https://install.appcenter.ms/orgs/aelf-web/apps/DID-IOS-V2/distribution_groups/did-test-group"
                                 },
                                 {
                                     "tag": "text",
@@ -197,7 +197,7 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
                                 },
                                 {   
                                     "tag": "img",
-                                    "image_key": "img_v3_027i_ab9a9d00-8fb0-4a80-a616-aee3ed7f747g"
+                                    "image_key": "img_v3_027o_2b4935be-cbde-466e-898d-c0dab7c2528g"
                                 }
                             ]
                         ]

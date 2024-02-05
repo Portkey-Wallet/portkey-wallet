@@ -7,7 +7,6 @@ import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 
 import { useLanguage } from 'i18n/hooks';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { TextM } from 'components/CommonText';
@@ -16,7 +15,6 @@ import { FontStyles } from 'assets/theme/styles';
 import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 
 import { Camera } from 'expo-camera';
-import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import Loading from 'components/Loading';
 import { useHandleDataFromQrCode } from 'hooks/useQrScan';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
@@ -28,8 +26,6 @@ interface QrScannerProps {
 
 const QrScanner: React.FC<QrScannerProps> = () => {
   const { t } = useLanguage();
-  const { currentNetwork } = useWallet();
-  const jumpToWebview = useDiscoverJumpWithNetWork();
 
   const [refresh, setRefresh] = useState<boolean>();
   const handleDataFromQrCode = useHandleDataFromQrCode();
@@ -58,7 +54,7 @@ const QrScanner: React.FC<QrScannerProps> = () => {
         Loading.hide();
       }
     },
-    [currentNetwork, jumpToWebview],
+    [handleDataFromQrCode, latestIsFocused],
   );
 
   const selectImage = async () => {

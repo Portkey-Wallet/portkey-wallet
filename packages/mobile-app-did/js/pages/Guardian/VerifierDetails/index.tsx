@@ -17,7 +17,6 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import myEvents from 'utils/deviceEvent';
 import { useCurrentWalletInfo, useOriginChainId, useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useGetCurrentCAContract } from 'hooks/contract';
 import { LoginType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { GuardiansApproved, GuardiansStatusItem } from '../types';
 import { verification } from 'utils/api';
@@ -84,7 +83,6 @@ export default function VerifierDetails() {
   const { address: managerAddress } = useCurrentWalletInfo();
   const pin = usePin();
   const onRequestOrSetPin = useOnRequestOrSetPin();
-  const getCurrentCAContract = useGetCurrentCAContract();
 
   const setGuardianStatus = useCallback(
     (status: GuardiansStatusItem) => {
@@ -227,6 +225,7 @@ export default function VerifierDetails() {
       originChainId,
       operationType,
       targetChainId,
+      latestVerifyManagerAddress,
       onRequestOrSetPin,
       setGuardianStatus,
       accelerateChainId,

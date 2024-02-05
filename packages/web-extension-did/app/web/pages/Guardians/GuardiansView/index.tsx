@@ -234,7 +234,7 @@ export default function GuardiansView() {
         setBtnLoading(false);
       }
     },
-    [currentGuardian?.guardianAccount, opGuardian?.guardianAccount, originChainId, t, userGuardiansList],
+    [currentGuardian?.guardianAccount, handleSwitch, opGuardian?.guardianAccount, originChainId, t, userGuardiansList],
   );
 
   const onBack = useCallback(() => {

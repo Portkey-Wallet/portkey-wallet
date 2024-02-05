@@ -102,7 +102,7 @@ export default function SessionList() {
     } catch (error) {
       console.log('error nextChannelList', error);
     }
-  }, [channelList, hasNextChannelList, nextChannelList]);
+  }, [hasNextChannelList, nextChannelList]);
 
   const onPressItem = useCallback(
     (item: ChannelItem) => {

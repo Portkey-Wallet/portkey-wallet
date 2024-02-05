@@ -243,7 +243,7 @@ export const useInitIM = () => {
         console.log('initIm getRelationId error', error);
       });
     },
-    [dispatch, networkType, relationToken],
+    [dispatch, getRelationId, relationToken],
   );
   return initIm;
 };

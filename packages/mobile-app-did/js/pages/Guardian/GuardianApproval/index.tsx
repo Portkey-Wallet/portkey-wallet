@@ -669,6 +669,7 @@ export default function GuardianApproval() {
   }, [
     approvalType,
     registerAccount,
+    lastOnEmitDapp,
     onAddGuardian,
     onSetLoginAccount,
     onUnsetLoginAccount,

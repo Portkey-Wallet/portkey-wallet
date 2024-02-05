@@ -131,5 +131,5 @@ export function useCheckManagerOnLogout() {
       const msg = handleErrorMessage(error);
       singleMessage.error(msg);
     }
-  }, [address, caHash, logout, originChainId]);
+  }, [address, caHash, checkManager, latestOriginChainId, logout]);
 }

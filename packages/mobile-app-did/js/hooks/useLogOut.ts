@@ -102,7 +102,6 @@ export function useCheckManager() {
 }
 
 export function useCheckManagerOnLogout() {
-  const getCurrentCAViewContract = useGetCurrentCAViewContract();
   const checkManager = useCheckManager();
   const { caHash, address } = useCurrentWalletInfo();
   const originChainId = useOriginChainId();
@@ -117,5 +116,5 @@ export function useCheckManagerOnLogout() {
     } catch (error) {
       console.log(error, '======error-useCheckManagerOnLogout');
     }
-  }, [address, caHash, getCurrentCAViewContract, logout, originChainId]);
+  }, [address, caHash, checkManager, latestOriginChainId, logout]);
 }

@@ -50,19 +50,22 @@ export const useClickUrl = ({ fromChannelUuid = '', isGroup = false }: IClickUrl
   const isShowChat = useIsChatShow();
   const clickChatUrl = useClickChatUrl({ fromChannelUuid, isGroup });
 
-  return useThrottleCallback((url: string) => {
-    const URL_PATTERN = /^(http|https):\/\//i;
-    if (!URL_PATTERN.test(url)) url = `https://${url}`;
-    const { id, type } = parseLinkPortkeyUrl(url);
-    if (id && isShowChat) {
-      clickChatUrl({ id, type });
-    } else {
-      const openWinder = window.open(url, '_blank');
-      if (openWinder) {
-        openWinder.opener = null;
+  return useThrottleCallback(
+    (url: string) => {
+      const URL_PATTERN = /^(http|https):\/\//i;
+      if (!URL_PATTERN.test(url)) url = `https://${url}`;
+      const { id, type } = parseLinkPortkeyUrl(url);
+      if (id && isShowChat) {
+        clickChatUrl({ id, type });
+      } else {
+        const openWinder = window.open(url, '_blank');
+        if (openWinder) {
+          openWinder.opener = null;
+        }
       }
-    }
-  }, []);
+    },
+    [clickChatUrl, isShowChat],
+  );
 };
 
 export interface IClickChatUrlProps {

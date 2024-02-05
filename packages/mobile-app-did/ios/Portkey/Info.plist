@@ -31,7 +31,6 @@
 			<string>com.portkey.finance</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>portkey.did</string>
 				<string>portkey.finance</string>
 			</array>
 		</dict>

@@ -1,4 +1,5 @@
-export const DID_SCHEME = 'portkey.did';
+export const V1_DID_SCHEME = 'portkey.did';
+export const DID_SCHEME = 'portkey.finance';
 
 export enum SCHEME_ACTION {
   login = 'login',

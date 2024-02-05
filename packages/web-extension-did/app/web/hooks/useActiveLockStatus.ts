@@ -9,8 +9,8 @@ export const useActiveLockStatus = () => {
     () => {
       activeLockStatusAction();
     },
-    1000 * skipTime,
     [],
+    1000 * skipTime,
   );
   return () => timer.remove();
 };

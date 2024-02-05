@@ -96,9 +96,13 @@ export default function Updater() {
       CommonToast.success(data.body);
     });
   });
-  useInterval(() => {
-    latestCheckCodePushUpdate.current();
-  }, CHECK_CODE_PUSH_TIME);
+  useInterval(
+    () => {
+      latestCheckCodePushUpdate.current();
+    },
+    [latestCheckCodePushUpdate],
+    CHECK_CODE_PUSH_TIME,
+  );
 
   useEffect(() => {
     if (!pin) return;

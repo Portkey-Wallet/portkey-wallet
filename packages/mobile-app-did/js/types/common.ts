@@ -12,7 +12,6 @@ export type LinkDappData = {
   url: string;
 };
 
-// todo: add more type
 export type FCMMessageData = {
   badge: number;
   channelId: string;

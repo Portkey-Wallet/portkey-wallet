@@ -473,7 +473,14 @@ export function useVerifyToken() {
         ...params,
       });
     },
-    [verifyTelegramToken, verifyAppleToken, verifyGoogleToken, verifyTwitterToken, verifyFacebookToken],
+    [
+      verifyGoogleToken,
+      latestVerifyManagerAddress,
+      verifyAppleToken,
+      verifyTelegramToken,
+      verifyTwitterToken,
+      verifyFacebookToken,
+    ],
   );
 }
 export function useVerifierAuth() {

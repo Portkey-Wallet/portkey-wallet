@@ -60,7 +60,6 @@ export default function DiscoverSearch() {
   );
 
   const onSearch = useCallback(() => {
-    // todo: check when compare use toLowerCase
     const newValue = value.replace(/\s+/g, '');
     if (!newValue) return;
 

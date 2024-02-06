@@ -34,7 +34,7 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
                 }
             }
         }' \
-       $NOTICE_BOT_URI
+       $RNRN_NOTICE_BOT_URI
     else
         echo "Current branch is $APPCENTER_BRANCH"
     fi
@@ -75,7 +75,7 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
                 }
             }
         }' \
-       $NOTICE_BOT_URI
+       $RN_NOTICE_BOT_URI
     else
         echo "Current branch is $APPCENTER_BRANCH"
     fi
@@ -85,7 +85,7 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
      then
         curl -X POST -H "Content-Type: application/json" \
          -d '{"msg_type":"text","content":{"text":"The latest ios package(id:'$APPCENTER_BUILD_ID') has been completed and successfully pushed to testFlight, you can apply to join the internal testing group and view/download the latest version of the app on testFlight."}}' \
-       $NOTICE_BOT_URI
+       $RN_NOTICE_BOT_URI
 
     else
         echo "Current branch is $APPCENTER_BRANCH"
@@ -124,7 +124,7 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
                 }
             }
         }' \
-       $NOTICE_BOT_URI
+       $RN_NOTICE_BOT_URI
     else
         echo "Current branch is $APPCENTER_BRANCH"
     fi
@@ -164,7 +164,7 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
                 }
             }
         }' \
-        $NOTICE_BOT_URI
+        $RN_NOTICE_BOT_URI
     else
         echo "Current branch is $APPCENTER_BRANCH"
     fi
@@ -205,7 +205,7 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
                 }
             }
         }' \
-         $NOTICE_BOT_URI
+         $RN_NOTICE_BOT_URI
     else
         echo "Current branch is $APPCENTER_BRANCH"
     fi
@@ -215,7 +215,7 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
      then
         curl -X POST -H "Content-Type: application/json" \
          -d '{"msg_type":"text","content":{"text":"The latest ios package(id:'$APPCENTER_BUILD_ID') has been completed and successfully pushed to testFlight, you can apply to join the internal testing group and view/download the latest version of the app on testFlight."}}' \
-       $NOTICE_BOT_URI
+       $RN_NOTICE_BOT_URI
 
     else
         echo "Current branch is $APPCENTER_BRANCH"
@@ -254,7 +254,7 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
                 }
             }
         }' \
-       $NOTICE_BOT_URI
+       $RN_NOTICE_BOT_URI
     else
         echo "Current branch is $APPCENTER_BRANCH"
     fi

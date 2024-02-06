@@ -6,8 +6,8 @@ export const guardianTypeList: IGuardianType[] = [
   { label: 'Google', value: LoginType.Google, icon: 'Google' },
   { label: 'Apple', value: LoginType.Apple, icon: 'Apple' },
   { label: 'Telegram', value: LoginType.Telegram, icon: 'Telegram' },
-  { label: 'Twitter', value: LoginType.Twitter, icon: 'Twitter' },
-  { label: 'Facebook', value: LoginType.Facebook, icon: 'Facebook' },
+  // { label: 'Twitter', value: LoginType.Twitter, icon: 'Twitter' },
+  // { label: 'Facebook', value: LoginType.Facebook, icon: 'Facebook' },
 ];
 
 export const phoneInit: IPhoneInput = {

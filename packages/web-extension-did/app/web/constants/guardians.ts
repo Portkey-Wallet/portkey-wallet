@@ -2,7 +2,6 @@ import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { IGuardianType, IPhoneInput, ISocialInput } from 'types/guardians';
 
 export const guardianTypeList: IGuardianType[] = [
-  { label: 'Phone', value: LoginType.Phone, icon: 'Phone' },
   { label: 'Email', value: LoginType.Email, icon: 'Email' },
   { label: 'Google', value: LoginType.Google, icon: 'Google' },
   { label: 'Apple', value: LoginType.Apple, icon: 'Apple' },

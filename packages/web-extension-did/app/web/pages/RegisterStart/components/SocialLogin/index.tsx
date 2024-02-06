@@ -28,10 +28,6 @@ const guardianList = [
     type: 'Facebook',
   },
   {
-    icon: <CustomSvg type="Phone" />,
-    type: 'Phone',
-  },
-  {
     icon: <CustomSvg type="Email" />,
     type: 'Email',
   },

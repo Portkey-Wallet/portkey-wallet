@@ -141,7 +141,6 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
         label: 'Transfer',
         icon: 'chat-transfer',
         onPress: async () => {
-          // todo: change back
           if (currentChannel?.currentChannelType === 'P2P') {
             try {
               Loading.show();

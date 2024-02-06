@@ -3,7 +3,7 @@ import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 
 export const LoginGuardianTypeIcon: any = {
   [LoginType.Email]: 'email',
-  [LoginType.Phone]: 'phone',
+  // [LoginType.Phone]: 'phone',
   [LoginType.Google]: 'google',
   [LoginType.Apple]: 'apple',
   [LoginType.Telegram]: 'telegram',
@@ -17,11 +17,11 @@ export const LOGIN_TYPE_LIST = [
     name: LOGIN_TYPE_LABEL_MAP[LoginType.Email],
     icon: LoginGuardianTypeIcon[LoginType.Email],
   },
-  {
-    value: LoginType.Phone,
-    name: LOGIN_TYPE_LABEL_MAP[LoginType.Phone],
-    icon: LoginGuardianTypeIcon[LoginType.Phone],
-  },
+  // {
+  //   value: LoginType.Phone,
+  //   name: LOGIN_TYPE_LABEL_MAP[LoginType.Phone],
+  //   icon: LoginGuardianTypeIcon[LoginType.Phone],
+  // },
   {
     value: LoginType.Google,
     name: LOGIN_TYPE_LABEL_MAP[LoginType.Google],

@@ -72,8 +72,8 @@ export function useIntervalQueryCAInfoByAddress(
         console.log(error, '=====error');
       }
     },
+    [address, caInfo, network, validateManager, getChainInfo],
     3000,
-    [caInfo, network, address, validateManager],
   );
   return caInfo;
 }
@@ -103,14 +103,14 @@ export function useCheckManager(callback: () => void) {
     } catch (error) {
       console.log(error, '=====error');
     }
-  }, [caHash, address, originChainId]);
+  }, [address, caHash, currentNetwork, originChainId, savedCallback]);
 
   const interval = useInterval(
     () => {
       checkManager();
     },
-    5000,
     [checkManager],
+    5000,
   );
   useEffect(() => {
     if (!caHash || !address) {

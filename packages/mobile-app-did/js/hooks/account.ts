@@ -43,16 +43,15 @@ export function useGetAccountTokenList() {
 
 export function useGetAllTokenInfoList() {
   const dispatch = useAppDispatch();
-  const { caAddressList } = useCurrentWalletInfo();
   const caAddressInfoList = useCaAddressInfoList();
   const chainIdList = useChainIdList();
 
   return useThrottleCallback(
     () => {
-      if (caAddressList?.length === 0) return;
+      if (caAddressInfoList?.length === 0) return;
       return dispatch(fetchAllTokenListAsync({ chainIdArray: chainIdList }));
     },
-    [caAddressInfoList, caAddressList, dispatch],
+    [caAddressInfoList?.length, chainIdList, dispatch],
     1000,
   );
 }

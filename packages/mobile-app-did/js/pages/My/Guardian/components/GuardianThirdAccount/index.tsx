@@ -22,7 +22,7 @@ const LABEL_MAP: Record<any, string> = {
   [LoginType.Google]: 'Guardian Google',
   [LoginType.Apple]: 'Guardian Apple',
   [LoginType.Telegram]: 'Guardian Telegram',
-  [LoginType.Twitter]: 'Guardian Twitter', // TODO: x or twitter
+  [LoginType.Twitter]: 'Guardian Twitter',
   [LoginType.Facebook]: 'Guardian Facebook',
 };
 
@@ -30,8 +30,8 @@ const BUTTON_LABEL_MAP: Record<any, string> = {
   [LoginType.Google]: 'Click Add Google Account',
   [LoginType.Apple]: 'Click Add Apple ID',
   [LoginType.Telegram]: 'Click Add Telegram Account',
-  [LoginType.Twitter]: 'Click Add Twitter Account', // TODO: check text
-  [LoginType.Facebook]: 'Click Add Facebook Account', // TODO: check text
+  [LoginType.Twitter]: 'Click Add Twitter Account',
+  [LoginType.Facebook]: 'Click Add Facebook Account',
 };
 
 const GuardianThirdAccount = ({

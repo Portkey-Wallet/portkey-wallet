@@ -123,7 +123,7 @@ function GuardianItemButton({
       CommonToast.failError(error);
     }
     Loading.hide();
-  }, [guardianInfo, originChainId, operationType, onSetGuardianStatus]);
+  }, [guardianInfo, originChainId, operationType, targetChainId, onSetGuardianStatus]);
 
   const onVerifierAuth = useCallback(async () => {
     try {
@@ -184,7 +184,7 @@ function GuardianItemButton({
         break;
       }
     }
-  }, [guardianInfo, requestCodeResult, onVerifierAuth]);
+  }, [guardianItem.guardianType, onVerifierAuth, guardianInfo, requestCodeResult, targetChainId]);
   const buttonProps: CommonButtonProps = useMemo(() => {
     // expired
     if (isExpired && status !== VerifyStatus.Verified) {

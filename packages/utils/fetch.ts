@@ -1,3 +1,4 @@
+import { DEFAULT_FETCH_TIMEOUT } from '@portkey-wallet/constants/misc';
 import { timeoutPromise } from '@portkey-wallet/im/request';
 import { stringify } from 'query-string';
 export interface StringifyOptions {
@@ -265,7 +266,7 @@ const fetchFormat = (
 
 export const customFetch: CustomFetchFun = (url, _config) => {
   const control = new AbortController();
-  const timeout = _config?.timeout ?? 8000;
+  const timeout = _config?.timeout ?? DEFAULT_FETCH_TIMEOUT;
   delete _config?.timeout;
   const config: RequestInit & { url: string; params?: any; resourceUrl?: CustomFetchConfig['resourceUrl'] } = {
     ..._config,

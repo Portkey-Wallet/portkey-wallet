@@ -136,10 +136,10 @@ export default function Referral({
         icon: 'facebook',
         onPress: onFacebookSign,
       },
-      {
-        icon: 'phone',
-        onPress: () => setLoginType(PageLoginType.phone),
-      },
+      // {
+      //   icon: 'phone',
+      //   onPress: () => setLoginType(PageLoginType.phone),
+      // },
       {
         icon: 'email',
         onPress: () => setLoginType(PageLoginType.email),

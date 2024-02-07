@@ -37,7 +37,7 @@ export default function CustomToken() {
       chainList?.map((item) => ({
         value: item,
         children: (
-          <div className="flex select-option">
+          <div className="flex select-custom-token-option">
             <CustomSvg type={isMainnet ? 'Aelf' : 'elf-icon'} />
             <span className="title">{transNetworkText(item, !isMainnet)}</span>
           </div>

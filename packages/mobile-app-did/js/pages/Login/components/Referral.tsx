@@ -128,24 +128,24 @@ export default function Referral({
         icon: isIOS ? 'google' : 'apple',
         onPress: isIOS ? onGoogleSign : onAppleSign,
       },
-      {
-        icon: 'twitter',
-        onPress: onTwitterSign,
-      },
-      {
-        icon: 'facebook',
-        onPress: onFacebookSign,
-      },
-      {
-        icon: 'phone',
-        onPress: () => setLoginType(PageLoginType.phone),
-      },
+      // {
+      //   icon: 'twitter',
+      //   onPress: onTwitterSign,
+      // },
+      // {
+      //   icon: 'facebook',
+      //   onPress: onFacebookSign,
+      // },
+      // {
+      //   icon: 'phone',
+      //   onPress: () => setLoginType(PageLoginType.phone),
+      // },
       {
         icon: 'email',
         onPress: () => setLoginType(PageLoginType.email),
       },
     ],
-    [onAppleSign, onFacebookSign, onGoogleSign, onTwitterSign, setLoginType],
+    [onAppleSign, onGoogleSign, setLoginType],
   );
 
   return (

@@ -19,18 +19,14 @@ const guardianList = [
     icon: <CustomSvg type="Apple" />,
     type: 'Apple',
   },
-  {
-    icon: <CustomSvg type="Twitter" />,
-    type: 'Twitter',
-  },
-  {
-    icon: <CustomSvg type="Facebook" />,
-    type: 'Facebook',
-  },
-  {
-    icon: <CustomSvg type="Phone" />,
-    type: 'Phone',
-  },
+  // {
+  //   icon: <CustomSvg type="Twitter" />,
+  //   type: 'Twitter',
+  // },
+  // {
+  //   icon: <CustomSvg type="Facebook" />,
+  //   type: 'Facebook',
+  // },
   {
     icon: <CustomSvg type="Email" />,
     type: 'Email',
@@ -112,14 +108,14 @@ export default function SocialLogin({
                     onSocialChange(SocialLoginEnum.Apple);
                     return;
                   }
-                  if (item.type === SocialLoginEnum.Facebook) {
-                    onSocialChange(SocialLoginEnum.Facebook);
-                    return;
-                  }
-                  if (item.type === SocialLoginEnum.Twitter) {
-                    onSocialChange(SocialLoginEnum.Twitter);
-                    return;
-                  }
+                  // if (item.type === SocialLoginEnum.Facebook) {
+                  //   onSocialChange(SocialLoginEnum.Facebook);
+                  //   return;
+                  // }
+                  // if (item.type === SocialLoginEnum.Twitter) {
+                  //   onSocialChange(SocialLoginEnum.Twitter);
+                  //   return;
+                  // }
                   switchLogin?.(item.type);
                 }}>
                 {item.icon}

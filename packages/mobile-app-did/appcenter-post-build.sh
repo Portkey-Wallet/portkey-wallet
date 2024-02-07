@@ -34,7 +34,7 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
                 }
             }
         }' \
-       $NOTICE_BOT_URI
+       $RNNOTICE_BOT_URI
     else
         echo "Current branch is $APPCENTER_BRANCH"
     fi

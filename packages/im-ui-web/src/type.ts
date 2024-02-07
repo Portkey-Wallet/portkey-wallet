@@ -181,6 +181,7 @@ export type IAvatarSize = 'small' | 'default' | 'large';
 
 export interface IAvatarProps {
   src?: string;
+  svgSrc?: string;
   letter?: string;
   className?: string;
   alt?: string;

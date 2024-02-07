@@ -81,7 +81,6 @@ export default function WalletName() {
     <WalletNamePrompt
       headerTitle={headerTitle}
       data={state}
-      showChat={showChat}
       type={type}
       editText={editText}
       goBack={showView}
@@ -92,7 +91,6 @@ export default function WalletName() {
     <WalletNamePopup
       headerTitle={headerTitle}
       data={state}
-      showChat={showChat}
       type={type}
       editText={editText}
       goBack={showView}

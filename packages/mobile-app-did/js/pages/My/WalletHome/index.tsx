@@ -20,6 +20,8 @@ import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/acti
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import WalletMenuItem from '../components/WalletMenuItem';
+import { TextS } from 'components/CommonText';
+import { useUpdateInfo } from 'store/user/hooks';
 
 interface WalletHomeProps {
   name?: string;
@@ -33,6 +35,7 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
   } = useCurrentWallet();
   const getCurrentCAContract = useGetCurrentCAContract();
   const logout = useLogOut();
+  const updateInfo = useUpdateInfo();
 
   useEffect(() => {
     appDispatch(getCaHolderInfoAsync());
@@ -81,6 +84,8 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
             title={t('Switch Networks')}
           />
           <MenuItem
+            // change to components
+            suffix={!!updateInfo && <TextS style={pageStyles.newVersion}>New Version</TextS>}
             style={pageStyles.menuItem}
             onPress={() => navigationService.navigate('AboutUs')}
             title={t('About Us')}
@@ -118,5 +123,16 @@ const pageStyles = StyleSheet.create({
   },
   menuItem: {
     marginBottom: pTd(24),
+  },
+  newVersion: {
+    height: pTd(20),
+    marginRight: pTd(4),
+    paddingHorizontal: pTd(8),
+    textAlign: 'center',
+    lineHeight: pTd(20),
+    borderRadius: pTd(4),
+    overflow: 'hidden',
+    backgroundColor: defaultColors.bg27,
+    color: defaultColors.font13,
   },
 });

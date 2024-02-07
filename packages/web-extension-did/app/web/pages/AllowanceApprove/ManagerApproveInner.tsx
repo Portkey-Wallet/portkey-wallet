@@ -19,7 +19,6 @@ import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import { DEFAULT_DECIMAL, DEFAULT_NFT_DECIMAL } from '@portkey-wallet/constants/constants-ca/activity';
 import { LANG_MAX } from '@portkey-wallet/constants/misc';
 import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
-import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { request } from '@portkey-wallet/api/api-did';
 import { isNFT } from 'utils';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
@@ -135,7 +134,6 @@ export default function ManagerApproveInner({
   );
 
   const targetChainInfo = useCurrentChain(targetChainId);
-  const { walletInfo } = useCurrentWallet();
 
   const getTokenInfo = useDebounceCallback(async () => {
     try {
@@ -159,7 +157,7 @@ export default function ManagerApproveInner({
     } finally {
       setLoading(false);
     }
-  }, [amount, targetChainInfo, onError, symbol, walletInfo.AESEncryptPrivateKey]);
+  }, [targetChainInfo, symbol, amount, onError, setLoading]);
 
   useEffect(() => {
     setLoading(true);

@@ -18,12 +18,12 @@ type TransactionDataSectionType = {
 export const TransactionDataSection = (props: TransactionDataSectionType) => {
   const { dataInfo, style = {} } = props;
 
-  const [collapsed, setCollapsed] = useState<boolean>(true);
+  const [collapsed, setCollapsed] = useState<boolean>(false);
 
   const TopSection = useMemo(
     () => (
       <Touchable style={styles.topSection} onPress={() => setCollapsed(pre => !pre)}>
-        <TextM style={[FontStyles.font5, fonts.mediumFont]}>Data</TextM>
+        <TextM style={[FontStyles.font5, fonts.mediumFont]}>Message</TextM>
         <Svg size={pTd(20)} icon={collapsed ? 'down-arrow' : 'up-arrow'} />
       </Touchable>
     ),

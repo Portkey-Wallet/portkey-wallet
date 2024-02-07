@@ -14,7 +14,7 @@ import GStyles from 'assets/theme/GStyles';
 import { PageLoginType, PageType } from '../types';
 import { useOnLogin } from 'hooks/login';
 import TermsServiceButton from './TermsServiceButton';
-import Button from './Button';
+import TabButton from './TabButton';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useInputFocus } from 'hooks/useInputFocus';
 
@@ -67,8 +67,8 @@ export default function Email({
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter]}>
       <View style={GStyles.width100}>
         <View style={[GStyles.flexRowWrap, GStyles.marginBottom(20)]}>
-          <Button title="Phone" style={GStyles.marginRight(8)} onPress={() => setLoginType(PageLoginType.phone)} />
-          <Button isActive title="Email" onPress={() => setLoginType(PageLoginType.email)} />
+          <TabButton title="Phone" style={GStyles.marginRight(8)} onPress={() => setLoginType(PageLoginType.phone)} />
+          <TabButton isActive title="Email" onPress={() => setLoginType(PageLoginType.email)} />
         </View>
         <CommonInput
           ref={iptRef}

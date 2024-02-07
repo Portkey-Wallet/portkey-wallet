@@ -52,15 +52,24 @@ export const activeLockStatusAction = async () => {
 
 export const setPinAction = (pin: string) => InternalMessage.payload(PortkeyMessageTypes.SET_SEED, pin).send();
 
+const twitterAuthPath = '/api/app/twitterAuth/receive';
+const facebookAuthPath = '/api/app/facebookAuth/receive';
+
 export const socialLoginAction = async (type: ISocialLogin, network: NetworkType): Promise<SendResponseParams> => {
-  const { JOIN_AUTH_URL, JOIN_TELEGRAM_URL } = getPortkeyFinanceUrl(network);
+  const { JOIN_AUTH_URL, JOIN_TELEGRAM_URL, OPEN_LOGIN_URL, domain } = getPortkeyFinanceUrl(network);
   let externalLink = `${JOIN_AUTH_URL}/${network}/${type}?version=v2`;
   if (type === 'Telegram') {
     externalLink = JOIN_TELEGRAM_URL;
+  } else if (type === 'Facebook' || type === 'Twitter') {
+    externalLink = `${OPEN_LOGIN_URL}/social-login/${type}?redirectURI=${domain}${
+      type === 'Facebook' ? facebookAuthPath : twitterAuthPath
+    }`;
   }
-  return await InternalMessage.payload(PortkeyMessageTypes.SOCIAL_LOGIN, {
+  const result = await InternalMessage.payload(PortkeyMessageTypes.SOCIAL_LOGIN, {
     externalLink,
   }).send();
+  if (result.error) throw result.message || 'auth error';
+  return result;
 };
 
 export const reCAPTCHAAction = async (): Promise<ReCaptchaResponseParams> => {

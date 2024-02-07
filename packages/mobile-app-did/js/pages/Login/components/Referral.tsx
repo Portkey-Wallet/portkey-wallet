@@ -10,9 +10,7 @@ import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import qrCode from 'assets/image/pngs/QR-code.png';
 import { PageLoginType, PageType } from '../types';
-import CommonButton from 'components/CommonButton';
 import TermsServiceButton from './TermsServiceButton';
-import { defaultColors } from 'assets/theme';
 import Divider from 'components/Divider';
 import CommonToast from 'components/CommonToast';
 import { useAuthenticationSign } from 'hooks/authentication';
@@ -22,8 +20,8 @@ import Loading from 'components/Loading';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import RoundButton from './RoundButton';
-import fonts from 'assets/theme/fonts';
 import { checkIsUserCancel } from '@portkey-wallet/utils';
+import OblongButton from './OblongButton';
 const TitleMap = {
   [PageType.login]: {
     apple: 'Login with Apple',
@@ -93,22 +91,62 @@ export default function Referral({
     Loading.hide(loadingKey);
   }, [authenticationSign, onLogin]);
 
-  const otherLoginTypeList = useMemo<{ icon: IconName; onPress: () => any }[]>(() => {
-    return [
+  const onTwitterSign = useLockCallback(async () => {
+    const loadingKey = Loading.show();
+    try {
+      const userInfo = await authenticationSign(LoginType.Twitter);
+      await onLogin({
+        loginAccount: userInfo.user.id,
+        loginType: LoginType.Twitter,
+        authenticationInfo: { [userInfo.user.id]: userInfo.accessToken },
+      });
+    } catch (error) {
+      if (!checkIsUserCancel(error)) CommonToast.failError(error);
+    }
+    Loading.hide(loadingKey);
+  }, [authenticationSign, onLogin]);
+
+  const onFacebookSign = useLockCallback(async () => {
+    const loadingKey = Loading.show();
+    try {
+      const userInfo = await authenticationSign(LoginType.Facebook);
+      await onLogin({
+        loginAccount: userInfo.user.userId,
+        loginType: LoginType.Facebook,
+        authenticationInfo: { [userInfo.user.userId]: userInfo.accessToken },
+      });
+    } catch (error) {
+      console.log(error, checkIsUserCancel(error), '======error-onFacebookSign');
+      if (!checkIsUserCancel(error)) CommonToast.failError(error);
+    }
+    Loading.hide(loadingKey);
+  }, [authenticationSign, onLogin]);
+
+  const otherLoginTypeList = useMemo<{ icon: IconName; onPress: () => any }[]>(
+    () => [
       {
         icon: isIOS ? 'google' : 'apple',
         onPress: isIOS ? onGoogleSign : onAppleSign,
       },
       {
-        icon: 'phone-login',
+        icon: 'twitter',
+        onPress: onTwitterSign,
+      },
+      {
+        icon: 'facebook',
+        onPress: onFacebookSign,
+      },
+      {
+        icon: 'phone',
         onPress: () => setLoginType(PageLoginType.phone),
       },
       {
-        icon: 'email-login',
+        icon: 'email',
         onPress: () => setLoginType(PageLoginType.email),
       },
-    ];
-  }, [onAppleSign, onGoogleSign, setLoginType]);
+    ],
+    [onAppleSign, onFacebookSign, onGoogleSign, onTwitterSign, setLoginType],
+  );
 
   return (
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter, GStyles.spaceBetween]}>
@@ -118,21 +156,17 @@ export default function Referral({
         </Touchable>
       )}
       <View style={GStyles.width100}>
-        <CommonButton
-          type="outline"
-          onPress={isIOS ? onAppleSign : onGoogleSign}
+        <OblongButton
+          icon={isIOS ? 'apple' : 'google'}
           title={TitleMap[type][isIOS ? 'apple' : 'google']}
-          icon={<Svg icon={isIOS ? 'apple' : 'google'} size={pTd(20)} />}
-          containerStyle={[pageStyles.outlineContainerStyle, pageStyles.firstBtn]}
-          titleStyle={[FontStyles.font3, fonts.mediumFont, pageStyles.outlineTitleStyle]}
+          onPress={isIOS ? onAppleSign : onGoogleSign}
+          style={GStyles.marginTop(40)}
         />
-        <CommonButton
-          type="outline"
-          onPress={onTelegramSign}
+        <OblongButton
+          icon="telegram"
           title={TitleMap[type].telegram}
-          icon={<Svg icon="telegram-blue" size={pTd(20)} />}
-          containerStyle={pageStyles.outlineContainerStyle}
-          titleStyle={[FontStyles.font3, fonts.mediumFont, pageStyles.outlineTitleStyle]}
+          onPress={onTelegramSign}
+          style={GStyles.marginTop(16)}
         />
         <Divider title="OR" inset={true} style={pageStyles.dividerStyle} />
         <View style={[GStyles.flexRow, GStyles.flexCenter]}>
@@ -161,21 +195,10 @@ export default function Referral({
 }
 
 const pageStyles = StyleSheet.create({
-  outlineContainerStyle: {
-    marginTop: pTd(16),
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border1,
-  },
-  outlineTitleStyle: {
-    marginLeft: 12,
-  },
   dividerStyle: {
     marginVertical: 16,
   },
   blank: {
-    width: pTd(24),
-  },
-  firstBtn: {
-    marginTop: pTd(40),
+    width: pTd(15),
   },
 });

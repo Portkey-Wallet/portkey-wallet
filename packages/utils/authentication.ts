@@ -78,3 +78,103 @@ export function parseTelegramToken(token?: string | null): TelegramUserInfo | un
   const lastName = payload.lastName;
   return { isExpired, userId, expirationTime, firstName, picture, lastName, id: userId, givenName };
 }
+
+export type TFacebookUserInfo = {
+  isExpired: boolean;
+  userId: string;
+  id: string;
+  expirationTime: number;
+  firstName: string;
+  lastName?: string;
+  picture?: string;
+  email?: undefined;
+  isPrivate: boolean;
+  name: string;
+  accessToken: string;
+};
+
+const fbUserInfo: { [key: string]: TFacebookUserInfo } = {};
+
+export async function parseFacebookToken(tokenStr?: string | null): Promise<TFacebookUserInfo | undefined> {
+  if (!tokenStr) return;
+  try {
+    const { userId, token: accessToken, expiredTime } = JSON.parse(tokenStr);
+
+    const expirationTime = Number(expiredTime) * 1000;
+    const isExpired = new Date(expirationTime) < new Date();
+
+    if (!fbUserInfo[accessToken]) {
+      const result = await customFetch(
+        `https://graph.facebook.com/${userId}?fields=id,name,email,picture&access_token=${accessToken}`,
+        {
+          method: 'GET',
+        },
+      );
+      const [firstName, lastName] = result?.name.split(' ');
+
+      fbUserInfo[accessToken] = {
+        userId,
+        id: userId,
+        name: result.name,
+        isExpired,
+        expirationTime,
+        isPrivate: true,
+        firstName,
+        lastName,
+        picture: result?.picture?.data?.url,
+        accessToken: accessToken,
+      };
+    }
+
+    return fbUserInfo[accessToken];
+  } catch (error) {
+    return;
+  }
+}
+
+export interface TwitterUserInfo {
+  isExpired: boolean;
+  userId: string;
+  id: string;
+  expirationTime: number;
+  firstName: string;
+  lastName?: string;
+  picture?: string;
+  email?: undefined;
+  isPrivate: boolean;
+  name: string;
+  accessToken: string;
+  username?: string;
+}
+
+const XUserInfo: { [key: string]: TwitterUserInfo } = {};
+
+export function parseTwitterToken(tokenStr?: string | null): TwitterUserInfo | undefined {
+  if (!tokenStr) return;
+  try {
+    const { token: accessToken, id, name, username } = JSON.parse(tokenStr);
+    const [firstName, lastName] = name.split(' ');
+
+    let expirationTime = Date.now() + 60 * 60 * 1000;
+
+    if (XUserInfo[accessToken]) expirationTime = XUserInfo[accessToken].expirationTime;
+    const isExpired = new Date(expirationTime) < new Date();
+
+    return {
+      isExpired,
+      userId: id,
+      id,
+      expirationTime,
+      firstName: firstName,
+      lastName: lastName,
+      picture: undefined,
+      email: undefined,
+      isPrivate: true,
+      name: name,
+      accessToken,
+      username,
+    };
+  } catch (error) {
+    return;
+  }
+}

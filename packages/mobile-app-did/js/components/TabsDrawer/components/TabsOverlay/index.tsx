@@ -160,7 +160,6 @@ const BrowserEditModal = ({
       { title: HANDLE_TYPE.REFRESH, icon: 'refresh1' },
       { title: HANDLE_TYPE.COPY, icon: 'copy1' },
       { title: HANDLE_TYPE.SHARE, icon: 'share' },
-      { title: HANDLE_TYPE.SWITCH, icon: 'switch' },
       {
         title: bookmark ? HANDLE_TYPE.UN_BOOKMARK : HANDLE_TYPE.BOOKMARK,
         icon: bookmark ? 'bookmarked' : 'bookmark',
@@ -240,6 +239,7 @@ const styles = StyleSheet.create({
   listWrap: {
     marginTop: pTd(24),
     marginBottom: pTd(24),
+    marginHorizontal: pTd(12),
     display: 'flex',
     flexWrap: 'wrap',
     flexDirection: 'row',

@@ -286,7 +286,6 @@ const SendHome: React.FC = () => {
     }
 
     if (isCrossChain(selectedToContact.address, assetInfo.chainId)) {
-      // TODO: check if  cross chain
       showDialog('crossChain', () => {
         setErrorMessage([]);
         setStep(2);
@@ -456,7 +455,6 @@ const SendHome: React.FC = () => {
   ]);
 
   const preview = useCallback(async () => {
-    // TODO : getTransactionFee and check the balance
     const result = await checkCanPreview();
     if (!result?.status) return;
 

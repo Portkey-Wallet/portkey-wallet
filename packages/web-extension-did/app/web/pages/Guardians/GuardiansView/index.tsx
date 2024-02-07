@@ -1,5 +1,4 @@
 import { Button, Switch } from 'antd';
-import CustomSvg from 'components/CustomSvg';
 import { useAppDispatch, useGuardiansInfo, useLoading, useLoginInfo } from 'store/Provider/hooks';
 import { useMemo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,6 +31,7 @@ import singleMessage from 'utils/singleMessage';
 import './index.less';
 import { useNavigateState } from 'hooks/router';
 import { FromPageEnum, TGuardianApprovalLocationState, TVerifierAccountLocationState } from 'types/router';
+import BaseGuardianTypeIcon from 'components/BaseGuardianTypeIcon';
 
 export default function GuardiansView() {
   const { t } = useTranslation();
@@ -55,6 +55,8 @@ export default function GuardiansView() {
     () =>
       opGuardian?.guardianType === LoginType.Google ||
       opGuardian?.guardianType === LoginType.Apple ||
+      opGuardian?.guardianType === LoginType.Twitter ||
+      opGuardian?.guardianType === LoginType.Facebook ||
       opGuardian?.guardianType === LoginType.Telegram,
     [opGuardian?.guardianType],
   );
@@ -232,7 +234,7 @@ export default function GuardiansView() {
         setBtnLoading(false);
       }
     },
-    [currentGuardian?.guardianAccount, opGuardian?.guardianAccount, originChainId, t, userGuardiansList],
+    [currentGuardian?.guardianAccount, handleSwitch, opGuardian?.guardianAccount, originChainId, t, userGuardiansList],
   );
 
   const onBack = useCallback(() => {
@@ -249,7 +251,7 @@ export default function GuardiansView() {
             <div className="input-item">
               <div className="label">{`Guardian ${LoginType[opGuardian?.guardianType || 0]}`}</div>
               <div className="control">
-                <CustomSvg type={guardianIconMap[opGuardian?.guardianType || 0]} />
+                <BaseGuardianTypeIcon type={guardianIconMap[opGuardian?.guardianType || 0]} />
                 <AccountShow guardian={opGuardian} />
               </div>
             </div>

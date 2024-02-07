@@ -23,7 +23,7 @@ import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type'
 import { FontStyles } from 'assets/theme/styles';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
-import { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
+import useRouterParams, { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { useAppDispatch } from 'store/hooks';
 import { setPreGuardianAction } from '@portkey-wallet/store/store-ca/guardians/actions';
@@ -31,10 +31,11 @@ import { VerifierImage } from 'pages/Guardian/components/VerifierImage';
 import { verification } from 'utils/api';
 import PhoneInput from 'components/PhoneInput';
 import {
-  AppleAuthentication,
   useAppleAuthentication,
+  useFacebookAuthentication,
   useGoogleAuthentication,
   useTelegramAuthentication,
+  useTwitterAuthentication,
   useVerifyToken,
 } from 'hooks/authentication';
 import GuardianAccountItem from '../components/GuardianAccountItem';
@@ -48,6 +49,11 @@ import { useRefreshGuardiansList } from 'hooks/guardian';
 import GuardianThirdAccount from '../components/GuardianThirdAccount';
 import { useSetLoginAccount } from '../hooks/useSetLoginAccount';
 import { AuthTypes } from 'constants/guardian';
+import { useEffectOnce, useLatestRef } from '@portkey-wallet/hooks';
+import { NavigateMultiLevelParams } from 'types/navigate';
+import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
+import { useIsFocused } from '@react-navigation/native';
+import { TAppleAuthentication } from 'types/authentication';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
@@ -85,11 +91,26 @@ const GuardianEdit: React.FC = () => {
   const { appleSign } = useAppleAuthentication();
   const { googleSign } = useGoogleAuthentication();
   const { telegramSign } = useTelegramAuthentication();
+  const { twitterSign } = useTwitterAuthentication();
+  const { facebookSign } = useFacebookAuthentication();
 
   const verifyToken = useVerifyToken();
   const [firstName, setFirstName] = useState<string>();
 
   const thirdPartyInfoRef = useRef<thirdPartyInfoType>();
+  const { approveParams } = useRouterParams<NavigateMultiLevelParams>();
+  const isFocused = useIsFocused();
+  const onEmitDapp = useCallback(() => {
+    if (!isFocused) return;
+    approveParams?.isDiscover && dispatch(changeDrawerOpenStatus(true));
+  }, [approveParams, dispatch]);
+  const lastOnEmitDapp = useLatestRef(onEmitDapp);
+
+  useEffectOnce(() => {
+    return () => {
+      lastOnEmitDapp.current();
+    };
+  });
 
   useEffect(() => {
     if (editGuardian) {
@@ -408,7 +429,7 @@ const GuardianEdit: React.FC = () => {
 
   const onAppleSign = useCallback(async () => {
     Loading.show();
-    let userInfo: AppleAuthentication;
+    let userInfo: TAppleAuthentication;
     try {
       userInfo = await appleSign();
       thirdPartyInfoRef.current = {
@@ -485,6 +506,37 @@ const GuardianEdit: React.FC = () => {
     Loading.hide();
   }, [telegramSign]);
 
+  const onTwitterSign = useCallback(async () => {
+    Loading.show();
+    try {
+      const userInfo = await twitterSign();
+      setAccount(PRIVATE_GUARDIAN_ACCOUNT);
+      setFirstName(userInfo.user.name || undefined);
+      thirdPartyInfoRef.current = {
+        id: userInfo.user.id,
+        accessToken: userInfo.accessToken,
+      };
+    } catch (error) {
+      CommonToast.failError(error);
+    }
+    Loading.hide();
+  }, [twitterSign]);
+  const onFacebookSign = useCallback(async () => {
+    Loading.show();
+    try {
+      const userInfo = await facebookSign();
+      setAccount(PRIVATE_GUARDIAN_ACCOUNT);
+      setFirstName(userInfo.user.firstName || undefined);
+      thirdPartyInfoRef.current = {
+        id: userInfo.user.id,
+        accessToken: userInfo.accessToken,
+      };
+    } catch (error) {
+      CommonToast.failError(error);
+    }
+    Loading.hide();
+  }, [facebookSign]);
+
   const renderGuardianAccount = useCallback(() => {
     if (isEdit) {
       return (
@@ -558,6 +610,28 @@ const GuardianEdit: React.FC = () => {
             type={LoginType.Telegram}
           />
         );
+      case LoginType.Twitter:
+        return (
+          <GuardianThirdAccount
+            account={account}
+            firstName={firstName}
+            clearAccount={clearAccount}
+            guardianAccountError={guardianAccountError}
+            onPress={onTwitterSign}
+            type={LoginType.Twitter}
+          />
+        );
+      case LoginType.Facebook:
+        return (
+          <GuardianThirdAccount
+            account={account}
+            firstName={firstName}
+            clearAccount={clearAccount}
+            guardianAccountError={guardianAccountError}
+            onPress={onFacebookSign}
+            type={LoginType.Facebook}
+          />
+        );
       default:
         break;
     }
@@ -574,6 +648,8 @@ const GuardianEdit: React.FC = () => {
     onAppleSign,
     onGoogleSign,
     onTelegramSign,
+    onFacebookSign,
+    onTwitterSign,
     selectedType,
   ]);
 

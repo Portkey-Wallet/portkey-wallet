@@ -161,6 +161,7 @@ export default function TransferSettingsEdit() {
       setLoading(false);
     }
   }, [
+    setLoading,
     dispatch,
     walletInfo.managerInfo?.loginAccount,
     walletInfo.managerInfo?.type,

@@ -139,7 +139,7 @@ export default function Preview() {
         type: side,
         address: wallet?.AELF?.caAddress || '',
         email: emailGuardian?.guardianAccount,
-        crypto: crypto,
+        crypto: providerSelected.providerSymbol || crypto,
         network: providerSelected.providerNetwork,
         country: country,
         fiat: fiat,

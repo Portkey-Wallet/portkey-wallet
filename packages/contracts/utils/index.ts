@@ -49,7 +49,7 @@ export function handleContractErrorMessage(error?: any) {
   if (typeof error === 'string') return error;
   if (error?.message) return error.message;
   if (error.Error) {
-    return error.Error.Details || error.Error.Message || error.Error || error.Status;
+    return error.Error.Details || error.Error.Message || error.Error;
   }
   return `Transaction: ${error.Status}`;
 }

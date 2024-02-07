@@ -17,11 +17,11 @@ export const LOGIN_TYPE_LIST = [
     name: LOGIN_TYPE_LABEL_MAP[LoginType.Email],
     icon: LoginGuardianTypeIcon[LoginType.Email],
   },
-  {
-    value: LoginType.Phone,
-    name: LOGIN_TYPE_LABEL_MAP[LoginType.Phone],
-    icon: LoginGuardianTypeIcon[LoginType.Phone],
-  },
+  // {
+  //   value: LoginType.Phone,
+  //   name: LOGIN_TYPE_LABEL_MAP[LoginType.Phone],
+  //   icon: LoginGuardianTypeIcon[LoginType.Phone],
+  // },
   {
     value: LoginType.Google,
     name: LOGIN_TYPE_LABEL_MAP[LoginType.Google],
@@ -37,14 +37,14 @@ export const LOGIN_TYPE_LIST = [
     name: LOGIN_TYPE_LABEL_MAP[LoginType.Telegram],
     icon: LoginGuardianTypeIcon[LoginType.Telegram],
   },
-  {
-    value: LoginType.Twitter,
-    name: LOGIN_TYPE_LABEL_MAP[LoginType.Twitter],
-    icon: LoginGuardianTypeIcon[LoginType.Twitter],
-  },
-  {
-    value: LoginType.Facebook,
-    name: LOGIN_TYPE_LABEL_MAP[LoginType.Facebook],
-    icon: LoginGuardianTypeIcon[LoginType.Facebook],
-  },
+  // {
+  //   value: LoginType.Twitter,
+  //   name: LOGIN_TYPE_LABEL_MAP[LoginType.Twitter],
+  //   icon: LoginGuardianTypeIcon[LoginType.Twitter],
+  // },
+  // {
+  //   value: LoginType.Facebook,
+  //   name: LOGIN_TYPE_LABEL_MAP[LoginType.Facebook],
+  //   icon: LoginGuardianTypeIcon[LoginType.Facebook],
+  // },
 ];

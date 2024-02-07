@@ -67,7 +67,7 @@ export default function Email({
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter]}>
       <View style={GStyles.width100}>
         <View style={[GStyles.flexRowWrap, GStyles.marginBottom(20)]}>
-          <TabButton title="Phone" style={GStyles.marginRight(8)} onPress={() => setLoginType(PageLoginType.phone)} />
+          {/* <TabButton title="Phone" style={GStyles.marginRight(8)} onPress={() => setLoginType(PageLoginType.phone)} /> */}
           <TabButton isActive title="Email" onPress={() => setLoginType(PageLoginType.email)} />
         </View>
         <CommonInput

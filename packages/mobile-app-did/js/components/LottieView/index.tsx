@@ -15,6 +15,7 @@ export function LottieView(props: AnimatedLottieViewProps) {
   const lottieRef = useRef<LottieActions>();
   useEffect(() => {
     if (props.autoPlay) {
+      listener.current?.remove();
       listener.current = AppState.addEventListener('change', nextAppState => {
         if (appStateRef.current?.match(/inactive|background/) && nextAppState === 'active') lottieRef.current?.play();
         appStateRef.current = nextAppState;

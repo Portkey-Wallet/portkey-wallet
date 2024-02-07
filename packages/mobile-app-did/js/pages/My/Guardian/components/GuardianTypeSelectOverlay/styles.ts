@@ -4,6 +4,7 @@ import { pTd } from 'utils/unit';
 
 const styles = StyleSheet.create({
   itemRow: {
+    flex: 1,
     height: pTd(72),
     flexDirection: 'row',
     alignItems: 'center',
@@ -15,6 +16,7 @@ const styles = StyleSheet.create({
     height: pTd(72),
     flexDirection: 'row',
     alignItems: 'center',
+    marginRight: pTd(20),
   },
   itemIconWrap: {
     borderWidth: StyleSheet.hairlineWidth,
@@ -26,6 +28,7 @@ const styles = StyleSheet.create({
     marginRight: pTd(16),
   },
   itemIcon: {
+    right: pTd(2),
     position: 'absolute',
   },
   typeOverlayTitleLabel: {

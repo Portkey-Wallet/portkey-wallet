@@ -654,7 +654,6 @@ export default function GuardianApproval() {
         onRemoveOtherManager();
         break;
       case ApprovalType.managerApprove:
-        lastOnEmitDapp.current();
         dappApprove();
         break;
       case ApprovalType.modifyTransferLimit:

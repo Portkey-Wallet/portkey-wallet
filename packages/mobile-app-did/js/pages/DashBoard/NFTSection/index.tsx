@@ -110,7 +110,7 @@ export default function NFTSection() {
         },
       }));
     },
-    [currentNetwork, dispatch, openCollectionObj, walletInfo?.caInfo],
+    [caAddressInfos, currentNetwork, dispatch, walletInfo?.caInfo],
   );
 
   const loadMoreItem = useCallback(

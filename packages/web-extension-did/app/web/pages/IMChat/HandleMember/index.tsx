@@ -103,7 +103,7 @@ export default function HandleMember() {
       _v ? handleSearch(_v) : setShowMemberList(allContactRef.current || []);
       setFilterWord(_v);
     },
-    [],
+    [handleSearch],
     500,
   );
   const handleOperate = useCallback(async () => {

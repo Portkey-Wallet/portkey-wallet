@@ -10,7 +10,7 @@ export type MediaKitPageQueryVariables = Types.Exact<{
   offset?: Types.InputMaybe<Types.Scalars['Int']>;
   page?: Types.InputMaybe<Types.Scalars['Int']>;
   search?: Types.InputMaybe<Types.Scalars['String']>;
-  filter1?: Types.InputMaybe<Types.Directus_Files_Filter>;
+  filter1?: Types.InputMaybe<Types.Boilerplate_Filter>;
   sort1?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -26,7 +26,7 @@ export type MediaKitPageQueryVariables = Types.Exact<{
   offset2?: Types.InputMaybe<Types.Scalars['Int']>;
   page2?: Types.InputMaybe<Types.Scalars['Int']>;
   search2?: Types.InputMaybe<Types.Scalars['String']>;
-  filter3?: Types.InputMaybe<Types.MediaKit_Filter>;
+  filter3?: Types.InputMaybe<Types.MediaKitPage_Boilerplate_Filter>;
   sort3?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -42,7 +42,7 @@ export type MediaKitPageQueryVariables = Types.Exact<{
   offset4?: Types.InputMaybe<Types.Scalars['Int']>;
   page4?: Types.InputMaybe<Types.Scalars['Int']>;
   search4?: Types.InputMaybe<Types.Scalars['String']>;
-  filter5?: Types.InputMaybe<Types.MediaKitPage_MediaKit_Filter>;
+  filter5?: Types.InputMaybe<Types.Directus_Files_Filter>;
   sort5?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -50,7 +50,7 @@ export type MediaKitPageQueryVariables = Types.Exact<{
   offset5?: Types.InputMaybe<Types.Scalars['Int']>;
   page5?: Types.InputMaybe<Types.Scalars['Int']>;
   search5?: Types.InputMaybe<Types.Scalars['String']>;
-  filter6?: Types.InputMaybe<Types.MediaKitPage_Filter>;
+  filter6?: Types.InputMaybe<Types.MediaKit_Filter>;
   sort6?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -58,7 +58,7 @@ export type MediaKitPageQueryVariables = Types.Exact<{
   offset6?: Types.InputMaybe<Types.Scalars['Int']>;
   page6?: Types.InputMaybe<Types.Scalars['Int']>;
   search6?: Types.InputMaybe<Types.Scalars['String']>;
-  filter7?: Types.InputMaybe<Types.MediaKitPage_MediaKit_Filter>;
+  filter7?: Types.InputMaybe<Types.MediaKitPage_Filter>;
   sort7?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -66,16 +66,51 @@ export type MediaKitPageQueryVariables = Types.Exact<{
   offset7?: Types.InputMaybe<Types.Scalars['Int']>;
   page7?: Types.InputMaybe<Types.Scalars['Int']>;
   search7?: Types.InputMaybe<Types.Scalars['String']>;
+  filter8?: Types.InputMaybe<Types.MediaKitPage_MediaKit_Filter>;
+  sort8?: Types.InputMaybe<
+    Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
+  >;
+  limit8?: Types.InputMaybe<Types.Scalars['Int']>;
+  offset8?: Types.InputMaybe<Types.Scalars['Int']>;
+  page8?: Types.InputMaybe<Types.Scalars['Int']>;
+  search8?: Types.InputMaybe<Types.Scalars['String']>;
+  filter9?: Types.InputMaybe<Types.MediaKitPage_Filter>;
+  sort9?: Types.InputMaybe<
+    Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
+  >;
+  limit9?: Types.InputMaybe<Types.Scalars['Int']>;
+  offset9?: Types.InputMaybe<Types.Scalars['Int']>;
+  page9?: Types.InputMaybe<Types.Scalars['Int']>;
+  search9?: Types.InputMaybe<Types.Scalars['String']>;
+  filter10?: Types.InputMaybe<Types.MediaKitPage_Boilerplate_Filter>;
+  sort10?: Types.InputMaybe<
+    Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
+  >;
+  limit10?: Types.InputMaybe<Types.Scalars['Int']>;
+  offset10?: Types.InputMaybe<Types.Scalars['Int']>;
+  page10?: Types.InputMaybe<Types.Scalars['Int']>;
+  search10?: Types.InputMaybe<Types.Scalars['String']>;
+  filter11?: Types.InputMaybe<Types.MediaKitPage_MediaKit_Filter>;
+  sort11?: Types.InputMaybe<
+    Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
+  >;
+  limit11?: Types.InputMaybe<Types.Scalars['Int']>;
+  offset11?: Types.InputMaybe<Types.Scalars['Int']>;
+  page11?: Types.InputMaybe<Types.Scalars['Int']>;
+  search11?: Types.InputMaybe<Types.Scalars['String']>;
 }>;
 
 export type MediaKitPageQuery = {
   __typename?: 'Query';
   mediaKitPage?: {
     __typename?: 'mediaKitPage';
+    boilerplateContent?: string | null;
+    boilerplateTitle?: string | null;
     content: string;
     date_created?: any | null;
     date_updated?: any | null;
     id: string;
+    mediaKitDescription?: string | null;
     status?: string | null;
     title: string;
     user_created?: string | null;
@@ -150,19 +185,17 @@ export type MediaKitPageQuery = {
       minute?: number | null;
       second?: number | null;
     } | null;
-    mediaKitList?: Array<{
-      __typename?: 'mediaKitPage_mediaKit';
+    boilerplateList?: Array<{
+      __typename?: 'mediaKitPage_boilerplate';
       id: string;
-      mediaKit_id?: {
-        __typename?: 'mediaKit';
-        backgroundColor?: string | null;
+      boilerplate_id?: {
+        __typename?: 'boilerplate';
         date_created?: any | null;
         date_updated?: any | null;
         id: string;
         index?: number | null;
-        name: string;
-        sort?: number | null;
-        status?: string | null;
+        name?: string | null;
+        url?: string | null;
         user_created?: string | null;
         user_updated?: string | null;
         date_created_func?: {
@@ -187,109 +220,16 @@ export type MediaKitPageQuery = {
           minute?: number | null;
           second?: number | null;
         } | null;
-        png?: {
-          __typename?: 'directus_files';
-          charset?: string | null;
-          description?: string | null;
-          duration?: number | null;
-          embed?: string | null;
-          filename_disk?: string | null;
-          filename_download: string;
-          filesize?: any | null;
-          folder?: string | null;
-          height?: number | null;
-          id: string;
-          location?: string | null;
-          metadata?: any | null;
-          modified_by?: string | null;
-          modified_on?: any | null;
-          storage: string;
-          tags?: any | null;
-          title?: string | null;
-          type?: string | null;
-          uploaded_by?: string | null;
-          uploaded_on?: any | null;
-          width?: number | null;
-          metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-          modified_on_func?: {
-            __typename?: 'datetime_functions';
-            year?: number | null;
-            month?: number | null;
-            week?: number | null;
-            day?: number | null;
-            weekday?: number | null;
-            hour?: number | null;
-            minute?: number | null;
-            second?: number | null;
-          } | null;
-          tags_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-          uploaded_on_func?: {
-            __typename?: 'datetime_functions';
-            year?: number | null;
-            month?: number | null;
-            week?: number | null;
-            day?: number | null;
-            weekday?: number | null;
-            hour?: number | null;
-            minute?: number | null;
-            second?: number | null;
-          } | null;
-        } | null;
-        svg?: {
-          __typename?: 'directus_files';
-          charset?: string | null;
-          description?: string | null;
-          duration?: number | null;
-          embed?: string | null;
-          filename_disk?: string | null;
-          filename_download: string;
-          filesize?: any | null;
-          folder?: string | null;
-          height?: number | null;
-          id: string;
-          location?: string | null;
-          metadata?: any | null;
-          modified_by?: string | null;
-          modified_on?: any | null;
-          storage: string;
-          tags?: any | null;
-          title?: string | null;
-          type?: string | null;
-          uploaded_by?: string | null;
-          uploaded_on?: any | null;
-          width?: number | null;
-          metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-          modified_on_func?: {
-            __typename?: 'datetime_functions';
-            year?: number | null;
-            month?: number | null;
-            week?: number | null;
-            day?: number | null;
-            weekday?: number | null;
-            hour?: number | null;
-            minute?: number | null;
-            second?: number | null;
-          } | null;
-          tags_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-          uploaded_on_func?: {
-            __typename?: 'datetime_functions';
-            year?: number | null;
-            month?: number | null;
-            week?: number | null;
-            day?: number | null;
-            weekday?: number | null;
-            hour?: number | null;
-            minute?: number | null;
-            second?: number | null;
-          } | null;
-        } | null;
       } | null;
       mediaKitPage_id?: {
         __typename?: 'mediaKitPage';
+        boilerplateContent?: string | null;
+        boilerplateTitle?: string | null;
         content: string;
         date_created?: any | null;
         date_updated?: any | null;
         id: string;
+        mediaKitDescription?: string | null;
         status?: string | null;
         title: string;
         user_created?: string | null;
@@ -340,10 +280,162 @@ export type MediaKitPageQuery = {
           minute?: number | null;
           second?: number | null;
         } | null;
-        mediaKitList?: Array<{ __typename?: 'mediaKitPage_mediaKit'; id: string } | null> | null;
-        mediaKitList_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+        boilerplateList?: Array<{ __typename?: 'mediaKitPage_boilerplate'; id: string } | null> | null;
+        boilerplateList_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+        mediaKitList?: Array<{
+          __typename?: 'mediaKitPage_mediaKit';
+          id: string;
+          mediaKit_id?: {
+            __typename?: 'mediaKit';
+            backgroundColor?: string | null;
+            date_created?: any | null;
+            date_updated?: any | null;
+            id: string;
+            index?: number | null;
+            name: string;
+            sort?: number | null;
+            status?: string | null;
+            user_created?: string | null;
+            user_updated?: string | null;
+            date_created_func?: {
+              __typename?: 'datetime_functions';
+              year?: number | null;
+              month?: number | null;
+              week?: number | null;
+              day?: number | null;
+              weekday?: number | null;
+              hour?: number | null;
+              minute?: number | null;
+              second?: number | null;
+            } | null;
+            date_updated_func?: {
+              __typename?: 'datetime_functions';
+              year?: number | null;
+              month?: number | null;
+              week?: number | null;
+              day?: number | null;
+              weekday?: number | null;
+              hour?: number | null;
+              minute?: number | null;
+              second?: number | null;
+            } | null;
+            png?: {
+              __typename?: 'directus_files';
+              charset?: string | null;
+              description?: string | null;
+              duration?: number | null;
+              embed?: string | null;
+              filename_disk?: string | null;
+              filename_download: string;
+              filesize?: any | null;
+              folder?: string | null;
+              height?: number | null;
+              id: string;
+              location?: string | null;
+              metadata?: any | null;
+              modified_by?: string | null;
+              modified_on?: any | null;
+              storage: string;
+              tags?: any | null;
+              title?: string | null;
+              type?: string | null;
+              uploaded_by?: string | null;
+              uploaded_on?: any | null;
+              width?: number | null;
+              metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+              modified_on_func?: {
+                __typename?: 'datetime_functions';
+                year?: number | null;
+                month?: number | null;
+                week?: number | null;
+                day?: number | null;
+                weekday?: number | null;
+                hour?: number | null;
+                minute?: number | null;
+                second?: number | null;
+              } | null;
+              tags_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+              uploaded_on_func?: {
+                __typename?: 'datetime_functions';
+                year?: number | null;
+                month?: number | null;
+                week?: number | null;
+                day?: number | null;
+                weekday?: number | null;
+                hour?: number | null;
+                minute?: number | null;
+                second?: number | null;
+              } | null;
+            } | null;
+            svg?: {
+              __typename?: 'directus_files';
+              charset?: string | null;
+              description?: string | null;
+              duration?: number | null;
+              embed?: string | null;
+              filename_disk?: string | null;
+              filename_download: string;
+              filesize?: any | null;
+              folder?: string | null;
+              height?: number | null;
+              id: string;
+              location?: string | null;
+              metadata?: any | null;
+              modified_by?: string | null;
+              modified_on?: any | null;
+              storage: string;
+              tags?: any | null;
+              title?: string | null;
+              type?: string | null;
+              uploaded_by?: string | null;
+              uploaded_on?: any | null;
+              width?: number | null;
+              metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+              modified_on_func?: {
+                __typename?: 'datetime_functions';
+                year?: number | null;
+                month?: number | null;
+                week?: number | null;
+                day?: number | null;
+                weekday?: number | null;
+                hour?: number | null;
+                minute?: number | null;
+                second?: number | null;
+              } | null;
+              tags_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+              uploaded_on_func?: {
+                __typename?: 'datetime_functions';
+                year?: number | null;
+                month?: number | null;
+                week?: number | null;
+                day?: number | null;
+                weekday?: number | null;
+                hour?: number | null;
+                minute?: number | null;
+                second?: number | null;
+              } | null;
+            } | null;
+          } | null;
+          mediaKitPage_id?: {
+            __typename?: 'mediaKitPage';
+            boilerplateContent?: string | null;
+            boilerplateTitle?: string | null;
+            content: string;
+            date_created?: any | null;
+            date_updated?: any | null;
+            id: string;
+            mediaKitDescription?: string | null;
+            status?: string | null;
+            title: string;
+            user_created?: string | null;
+            user_updated?: string | null;
+            mediaKitList_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+          } | null;
+        } | null> | null;
       } | null;
     } | null> | null;
+    boilerplateList_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+    mediaKitList?: Array<{ __typename?: 'mediaKitPage_mediaKit'; id: string } | null> | null;
     mediaKitList_func?: { __typename?: 'count_functions'; count?: number | null } | null;
   } | null;
 };
@@ -356,7 +448,7 @@ export const MediaKitPageDocument = gql`
     $offset: Int
     $page: Int
     $search: String
-    $filter1: directus_files_filter
+    $filter1: boilerplate_filter
     $sort1: [String]
     $limit1: Int
     $offset1: Int
@@ -368,7 +460,7 @@ export const MediaKitPageDocument = gql`
     $offset2: Int
     $page2: Int
     $search2: String
-    $filter3: mediaKit_filter
+    $filter3: mediaKitPage_boilerplate_filter
     $sort3: [String]
     $limit3: Int
     $offset3: Int
@@ -380,24 +472,48 @@ export const MediaKitPageDocument = gql`
     $offset4: Int
     $page4: Int
     $search4: String
-    $filter5: mediaKitPage_mediaKit_filter
+    $filter5: directus_files_filter
     $sort5: [String]
     $limit5: Int
     $offset5: Int
     $page5: Int
     $search5: String
-    $filter6: mediaKitPage_filter
+    $filter6: mediaKit_filter
     $sort6: [String]
     $limit6: Int
     $offset6: Int
     $page6: Int
     $search6: String
-    $filter7: mediaKitPage_mediaKit_filter
+    $filter7: mediaKitPage_filter
     $sort7: [String]
     $limit7: Int
     $offset7: Int
     $page7: Int
     $search7: String
+    $filter8: mediaKitPage_mediaKit_filter
+    $sort8: [String]
+    $limit8: Int
+    $offset8: Int
+    $page8: Int
+    $search8: String
+    $filter9: mediaKitPage_filter
+    $sort9: [String]
+    $limit9: Int
+    $offset9: Int
+    $page9: Int
+    $search9: String
+    $filter10: mediaKitPage_boilerplate_filter
+    $sort10: [String]
+    $limit10: Int
+    $offset10: Int
+    $page10: Int
+    $search10: String
+    $filter11: mediaKitPage_mediaKit_filter
+    $sort11: [String]
+    $limit11: Int
+    $offset11: Int
+    $page11: Int
+    $search11: String
   ) {
     mediaKitPage {
       allMediaKitZip(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
@@ -449,6 +565,8 @@ export const MediaKitPageDocument = gql`
         }
         width
       }
+      boilerplateContent
+      boilerplateTitle
       content
       date_created
       date_created_func {
@@ -473,14 +591,27 @@ export const MediaKitPageDocument = gql`
         second
       }
       id
+      mediaKitDescription
       status
       title
       user_created
       user_updated
-      mediaKitList(filter: $filter7, sort: $sort7, limit: $limit7, offset: $offset7, page: $page7, search: $search7) {
-        id
-        mediaKit_id(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3) {
-          backgroundColor
+      boilerplateList(
+        filter: $filter10
+        sort: $sort10
+        limit: $limit10
+        offset: $offset10
+        page: $page10
+        search: $search10
+      ) {
+        boilerplate_id(
+          filter: $filter1
+          sort: $sort1
+          limit: $limit1
+          offset: $offset1
+          page: $page1
+          search: $search1
+        ) {
           date_created
           date_created_func {
             year
@@ -506,124 +637,26 @@ export const MediaKitPageDocument = gql`
           id
           index
           name
-          png(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1) {
-            charset
-            description
-            duration
-            embed
-            filename_disk
-            filename_download
-            filesize
-            folder
-            height
-            id
-            location
-            metadata
-            metadata_func {
-              count
-            }
-            modified_by
-            modified_on
-            modified_on_func {
-              year
-              month
-              week
-              day
-              weekday
-              hour
-              minute
-              second
-            }
-            storage
-            tags
-            tags_func {
-              count
-            }
-            title
-            type
-            uploaded_by
-            uploaded_on
-            uploaded_on_func {
-              year
-              month
-              week
-              day
-              weekday
-              hour
-              minute
-              second
-            }
-            width
-          }
-          sort
-          status
-          svg(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2) {
-            charset
-            description
-            duration
-            embed
-            filename_disk
-            filename_download
-            filesize
-            folder
-            height
-            id
-            location
-            metadata
-            metadata_func {
-              count
-            }
-            modified_by
-            modified_on
-            modified_on_func {
-              year
-              month
-              week
-              day
-              weekday
-              hour
-              minute
-              second
-            }
-            storage
-            tags
-            tags_func {
-              count
-            }
-            title
-            type
-            uploaded_by
-            uploaded_on
-            uploaded_on_func {
-              year
-              month
-              week
-              day
-              weekday
-              hour
-              minute
-              second
-            }
-            width
-          }
+          url
           user_created
           user_updated
         }
+        id
         mediaKitPage_id(
-          filter: $filter6
-          sort: $sort6
-          limit: $limit6
-          offset: $offset6
-          page: $page6
-          search: $search6
+          filter: $filter9
+          sort: $sort9
+          limit: $limit9
+          offset: $offset9
+          page: $page9
+          search: $search9
         ) {
           allMediaKitZip(
-            filter: $filter4
-            sort: $sort4
-            limit: $limit4
-            offset: $offset4
-            page: $page4
-            search: $search4
+            filter: $filter2
+            sort: $sort2
+            limit: $limit2
+            offset: $offset2
+            page: $page2
+            search: $search2
           ) {
             charset
             description
@@ -647,6 +680,8 @@ export const MediaKitPageDocument = gql`
             uploaded_on
             width
           }
+          boilerplateContent
+          boilerplateTitle
           content
           date_created
           date_created_func {
@@ -671,24 +706,208 @@ export const MediaKitPageDocument = gql`
             second
           }
           id
+          mediaKitDescription
           status
           title
           user_created
           user_updated
-          mediaKitList(
-            filter: $filter5
-            sort: $sort5
-            limit: $limit5
-            offset: $offset5
-            page: $page5
-            search: $search5
+          boilerplateList(
+            filter: $filter3
+            sort: $sort3
+            limit: $limit3
+            offset: $offset3
+            page: $page3
+            search: $search3
           ) {
             id
           }
-          mediaKitList_func {
+          boilerplateList_func {
             count
           }
+          mediaKitList(
+            filter: $filter8
+            sort: $sort8
+            limit: $limit8
+            offset: $offset8
+            page: $page8
+            search: $search8
+          ) {
+            id
+            mediaKit_id(
+              filter: $filter6
+              sort: $sort6
+              limit: $limit6
+              offset: $offset6
+              page: $page6
+              search: $search6
+            ) {
+              backgroundColor
+              date_created
+              date_created_func {
+                year
+                month
+                week
+                day
+                weekday
+                hour
+                minute
+                second
+              }
+              date_updated
+              date_updated_func {
+                year
+                month
+                week
+                day
+                weekday
+                hour
+                minute
+                second
+              }
+              id
+              index
+              name
+              png(filter: $filter4, sort: $sort4, limit: $limit4, offset: $offset4, page: $page4, search: $search4) {
+                charset
+                description
+                duration
+                embed
+                filename_disk
+                filename_download
+                filesize
+                folder
+                height
+                id
+                location
+                metadata
+                metadata_func {
+                  count
+                }
+                modified_by
+                modified_on
+                modified_on_func {
+                  year
+                  month
+                  week
+                  day
+                  weekday
+                  hour
+                  minute
+                  second
+                }
+                storage
+                tags
+                tags_func {
+                  count
+                }
+                title
+                type
+                uploaded_by
+                uploaded_on
+                uploaded_on_func {
+                  year
+                  month
+                  week
+                  day
+                  weekday
+                  hour
+                  minute
+                  second
+                }
+                width
+              }
+              sort
+              status
+              svg(filter: $filter5, sort: $sort5, limit: $limit5, offset: $offset5, page: $page5, search: $search5) {
+                charset
+                description
+                duration
+                embed
+                filename_disk
+                filename_download
+                filesize
+                folder
+                height
+                id
+                location
+                metadata
+                metadata_func {
+                  count
+                }
+                modified_by
+                modified_on
+                modified_on_func {
+                  year
+                  month
+                  week
+                  day
+                  weekday
+                  hour
+                  minute
+                  second
+                }
+                storage
+                tags
+                tags_func {
+                  count
+                }
+                title
+                type
+                uploaded_by
+                uploaded_on
+                uploaded_on_func {
+                  year
+                  month
+                  week
+                  day
+                  weekday
+                  hour
+                  minute
+                  second
+                }
+                width
+              }
+              user_created
+              user_updated
+            }
+            mediaKitPage_id(
+              filter: $filter7
+              sort: $sort7
+              limit: $limit7
+              offset: $offset7
+              page: $page7
+              search: $search7
+            ) {
+              boilerplateContent
+              boilerplateTitle
+              content
+              date_created
+              date_updated
+              id
+              mediaKitDescription
+              status
+              title
+              user_created
+              user_updated
+              mediaKitList_func {
+                count
+              }
+            }
+          }
         }
+      }
+      boilerplateList_func {
+        count
+      }
+      mediaKitList(
+        filter: $filter11
+        sort: $sort11
+        limit: $limit11
+        offset: $offset11
+        page: $page11
+        search: $search11
+      ) {
+        id
       }
       mediaKitList_func {
         count
@@ -757,6 +976,30 @@ export const MediaKitPageDocument = gql`
  *      offset7: // value for 'offset7'
  *      page7: // value for 'page7'
  *      search7: // value for 'search7'
+ *      filter8: // value for 'filter8'
+ *      sort8: // value for 'sort8'
+ *      limit8: // value for 'limit8'
+ *      offset8: // value for 'offset8'
+ *      page8: // value for 'page8'
+ *      search8: // value for 'search8'
+ *      filter9: // value for 'filter9'
+ *      sort9: // value for 'sort9'
+ *      limit9: // value for 'limit9'
+ *      offset9: // value for 'offset9'
+ *      page9: // value for 'page9'
+ *      search9: // value for 'search9'
+ *      filter10: // value for 'filter10'
+ *      sort10: // value for 'sort10'
+ *      limit10: // value for 'limit10'
+ *      offset10: // value for 'offset10'
+ *      page10: // value for 'page10'
+ *      search10: // value for 'search10'
+ *      filter11: // value for 'filter11'
+ *      sort11: // value for 'sort11'
+ *      limit11: // value for 'limit11'
+ *      offset11: // value for 'offset11'
+ *      page11: // value for 'page11'
+ *      search11: // value for 'search11'
  *   },
  * });
  */

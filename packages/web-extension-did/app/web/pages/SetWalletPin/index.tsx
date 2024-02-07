@@ -21,7 +21,6 @@ import { sendScanLoginSuccess } from '@portkey-wallet/api/api-did/message/utils'
 import ModalTip from 'pages/components/ModalTip';
 import './index.less';
 import {
-  SetPinAndAddManager,
   AddManagerType,
   DIDWalletInfo,
   CreatePendingInfo,
@@ -35,6 +34,8 @@ import useDistributeLoginFail from 'hooks/useDistributeLoginFail';
 import { NetworkType } from '@portkey-wallet/types';
 import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
+import { useDebounceCallback } from '@portkey-wallet/hooks';
+import SetPinAndAddManager from 'pages/components/SetPinAndAddManager';
 
 export default function SetWalletPin() {
   const { t } = useTranslation();
@@ -107,7 +108,7 @@ export default function SetWalletPin() {
     [dispatch, navigate, scanCaWalletInfo, scanWalletInfo, state],
   );
 
-  const onCreate = useCallback(
+  const onCreate = useDebounceCallback(
     async (value: DIDWalletInfo | string) => {
       try {
         if (state === 'scan' && typeof value === 'string') return createByScan(value);
@@ -147,6 +148,7 @@ export default function SetWalletPin() {
       }
     },
     [state, createByScan, originChainId, dispatch, navigate, setLoading],
+    500,
   );
 
   const pendingInfo = useRef<{ walletInfo?: any; pin: string; networkType?: NetworkType; caInfo?: CAInfoType }>();

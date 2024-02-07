@@ -1,11 +1,9 @@
 import CustomSvg from 'components/CustomSvg';
 import DropdownSearch from 'components/DropdownSearch';
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import '../index.less';
-import { useSellCrypto } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { IRampCryptoItem } from '@portkey-wallet/ramp';
-import { getBuyCrypto } from '@portkey-wallet/utils/ramp';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 
@@ -15,7 +13,7 @@ export interface ISelectCryptoListProps {
   title?: ReactNode;
   searchPlaceHolder?: string;
   defaultFiat?: string;
-  country?: string;
+  supportList: IRampCryptoItem[];
 }
 
 export default function SelectCryptoList({
@@ -23,34 +21,16 @@ export default function SelectCryptoList({
   onClose,
   title,
   searchPlaceHolder,
-  defaultFiat = '',
-  country = '',
+  supportList,
 }: ISelectCryptoListProps) {
   const { t } = useTranslation();
   const isMainNet = useIsMainnet();
   const [openDrop, setOpenDrop] = useState<boolean>(false);
   const [filterWord, setFilterWord] = useState<string>('');
-  const [filterCryptoList, setFilterCryptoList] = useState<IRampCryptoItem[]>([]);
-  const { sellCryptoList: totalCryptoList } = useSellCrypto();
-
-  const getFilterCryptoList = useCallback(async () => {
-    const { buyCryptoList } = await getBuyCrypto({ fiat: defaultFiat, country });
-    setFilterCryptoList(buyCryptoList);
-  }, [country, defaultFiat]);
-
-  useEffect(() => {
-    if (defaultFiat && country) {
-      getFilterCryptoList();
-    }
-  }, [country, defaultFiat, getFilterCryptoList]);
-
-  const cryptoList: IRampCryptoItem[] = useMemo(() => {
-    return defaultFiat ? filterCryptoList : totalCryptoList;
-  }, [defaultFiat, filterCryptoList, totalCryptoList]);
 
   const showCryptoList = useMemo(() => {
-    return filterWord === '' ? cryptoList : cryptoList.filter((item) => filterWord === item.symbol);
-  }, [cryptoList, filterWord]);
+    return filterWord === '' ? supportList : supportList.filter((item) => filterWord === item.symbol);
+  }, [filterWord, supportList]);
 
   useEffect(() => {
     setOpenDrop(!!filterWord && !showCryptoList.length);
@@ -67,7 +47,15 @@ export default function SelectCryptoList({
               onChange?.(crypto);
               onClose?.();
             }}>
-            <CustomSvg type="elf-icon" />
+            {!!crypto.icon && (
+              <div
+                className="token-item-image"
+                style={{
+                  backgroundImage: `url(${crypto.icon})`,
+                }}
+              />
+            )}
+            {!crypto.icon && <CustomSvg type="elf-icon" />}
             <div className="flex-column text">
               <div>{crypto.symbol}</div>
               <div className="chain">{transNetworkText(crypto.chainId, !isMainNet)}</div>

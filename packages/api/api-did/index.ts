@@ -19,6 +19,8 @@ import { API_REQ_FUNCTION } from '../types';
 import { ES_API_REQ_FUNCTION } from './es/type';
 import activityApi from './activity';
 import securityApi from './security';
+import guideApi from './guide';
+import managerApi from './manager';
 import referralApi from './referral';
 
 export const DEFAULT_METHOD = 'POST';
@@ -57,6 +59,8 @@ export const EXPAND_APIS = {
   im: imApi,
   security: securityApi,
   privacy: privacyApi,
+  guide: guideApi,
+  manager: managerApi,
   referral: referralApi,
 };
 

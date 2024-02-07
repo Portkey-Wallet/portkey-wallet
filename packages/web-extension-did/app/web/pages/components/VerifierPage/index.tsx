@@ -7,7 +7,7 @@ import { setUserGuardianSessionIdAction } from '@portkey-wallet/store/store-ca/g
 import { verifyErrorHandler } from 'utils/tryErrorHandler';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { verification } from 'utils/api';
-import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useOriginChainId, useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCommonState } from 'store/Provider/hooks';
 import { useLocation } from 'react-router';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
@@ -15,6 +15,7 @@ import { CodeVerifyUI, PortkeyStyleProvider } from '@portkey/did-ui-react';
 import { AccountType } from '@portkey/services';
 import { ChainId } from '@portkey-wallet/types';
 import singleMessage from 'utils/singleMessage';
+import { useLatestRef } from '@portkey-wallet/hooks';
 
 const MAX_TIMER = 60;
 
@@ -54,6 +55,8 @@ export default function VerifierPage({
   const dispatch = useAppDispatch();
   const originChainId = useOriginChainId();
   const uiRef = useRef<ICodeVerifyUIInterface>();
+  const verifyManagerAddress = useVerifyManagerAddress();
+  const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
 
   useEffect(() => {
     setIsFromLoginOrRegister(pathname.includes('register') || pathname.includes('login'));
@@ -79,6 +82,7 @@ export default function VerifierPage({
               chainId: originChainId,
               operationType,
               targetChainId: targetChainId,
+              operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
             },
           });
 
@@ -100,7 +104,17 @@ export default function VerifierPage({
         singleMessage.error(_error);
       }
     },
-    [guardianType, originChainId, currentGuardian, setLoading, targetChainId, onSuccess, t, operationType],
+    [
+      guardianType,
+      currentGuardian,
+      setLoading,
+      originChainId,
+      operationType,
+      targetChainId,
+      latestVerifyManagerAddress,
+      onSuccess,
+      t,
+    ],
   );
 
   const resendCode = useCallback(async () => {

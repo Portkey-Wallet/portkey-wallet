@@ -51,7 +51,7 @@ import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/
 import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { sleep } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
-import { useLatestRef } from '@portkey-wallet/hooks';
+import { useLatestRef, useThrottleCallback } from '@portkey-wallet/hooks';
 import { useUpdateTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
 import { useCheckRouteExistInRouteStack } from 'hooks/route';
 import { useRefreshGuardianList } from 'hooks/guardian';
@@ -114,16 +114,19 @@ export default function GuardianApproval() {
   const dispatch = useAppDispatch();
   const checkRouteExistInRouteStack = useCheckRouteExistInRouteStack();
 
-  const onEmitDapp = useCallback(
+  const onEmitDapp = useThrottleCallback(
     (guardiansApproved?: GuardiansApproved) => {
-      if (approvalType !== ApprovalType.managerApprove || !approveParams) return;
+      if ((approvalType !== ApprovalType.managerApprove && approvalType !== ApprovalType.addGuardian) || !approveParams)
+        return;
       approveParams.isDiscover && dispatch(changeDrawerOpenStatus(true));
-      DeviceEventEmitter.emit(
-        approveParams.eventName,
-        guardiansApproved ? { approveInfo: approveParams.approveInfo, success: true, guardiansApproved } : undefined,
-      );
+      approveParams.eventName &&
+        DeviceEventEmitter.emit(
+          approveParams.eventName,
+          guardiansApproved ? { approveInfo: approveParams.approveInfo, success: true, guardiansApproved } : undefined,
+        );
     },
     [approvalType, approveParams, dispatch],
+    2000,
   );
 
   const lastOnEmitDapp = useLatestRef(onEmitDapp);
@@ -215,7 +218,11 @@ export default function GuardianApproval() {
     lastOnEmitDapp.current();
     switch (approvalType) {
       case ApprovalType.addGuardian:
-        navigationService.navigate('GuardianEdit');
+        if (approveParams?.isDiscover) {
+          navigationService.navigate('Tab');
+        } else {
+          navigationService.navigate('GuardianEdit');
+        }
         break;
       case ApprovalType.setLoginAccount:
       case ApprovalType.unsetLoginAccount:
@@ -231,7 +238,7 @@ export default function GuardianApproval() {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [approvalType, guardianItem]);
+  }, [approvalType, guardianItem, approveParams]);
   const onRequestOrSetPin = useOnRequestOrSetPin();
 
   const dappApprove = useCallback(() => {
@@ -628,6 +635,7 @@ export default function GuardianApproval() {
         registerAccount();
         break;
       case ApprovalType.addGuardian:
+        lastOnEmitDapp.current();
         onAddGuardian();
         break;
       case ApprovalType.setLoginAccount:
@@ -646,6 +654,7 @@ export default function GuardianApproval() {
         onRemoveOtherManager();
         break;
       case ApprovalType.managerApprove:
+        lastOnEmitDapp.current();
         dappApprove();
         break;
       case ApprovalType.modifyTransferLimit:
@@ -660,6 +669,7 @@ export default function GuardianApproval() {
   }, [
     approvalType,
     registerAccount,
+    lastOnEmitDapp,
     onAddGuardian,
     onSetLoginAccount,
     onUnsetLoginAccount,

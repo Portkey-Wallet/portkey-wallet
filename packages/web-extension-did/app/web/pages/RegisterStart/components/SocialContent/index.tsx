@@ -19,7 +19,7 @@ export default function SocialContent({ type, onSocialChange }: GoogleBtnProps) 
       </Button>
 
       <Button onClick={() => onSocialChange('Telegram')}>
-        <CustomSvg type="Telegram-Login" />
+        <CustomSvg type="Telegram" />
         <span>{`${type} with Telegram`}</span>
         <span className="empty"></span>
       </Button>

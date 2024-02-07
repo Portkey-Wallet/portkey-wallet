@@ -1,3 +1,4 @@
+import { DEFAULT_FETCH_TIMEOUT } from '@portkey-wallet/constants/misc';
 import { firebase } from '@react-native-firebase/app-check';
 import Config from 'react-native-config';
 import { copyText } from 'utils';
@@ -7,7 +8,7 @@ export const getAppCheckToken = async (forceRefresh?: boolean): Promise<string> 
   const timeoutPromise = new Promise<string>((_, reject) => {
     timer = setTimeout(() => {
       reject(new Error('getAppCheckToken timeout'));
-    }, 8000);
+    }, DEFAULT_FETCH_TIMEOUT);
   });
 
   const appCheckTokenPromise = new Promise<string>((resolve, reject) => {

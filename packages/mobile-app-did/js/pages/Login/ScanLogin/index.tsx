@@ -20,6 +20,7 @@ import { extraDataEncode, getDeviceInfoFromQR } from '@portkey-wallet/utils/devi
 import socket from '@portkey-wallet/socket/socket-did';
 import { request } from '@portkey-wallet/api/api-did';
 import { checkQRCodeExist } from '@portkey-wallet/api/api-did/message/utils';
+import { managerSpeed } from 'utils/manager';
 
 const ScrollViewProps = { disabled: true };
 
@@ -32,19 +33,6 @@ export default function ScanLogin() {
   const getCurrentCAContract = useGetCurrentCAContract();
 
   const targetClientId = useMemo(() => (id ? `${managerAddress}_${id}` : undefined), [managerAddress, id]);
-
-  // useEffectOnce(() => {
-  //   if (!targetClientId) return;
-  //   try {
-  //     request.message.sendScanLogin({
-  //       params: {
-  //         targetClientId,
-  //       },
-  //     });
-  //   } catch (error) {
-  //     console.log('sendScanLogin: error', error);
-  //   }
-  // });
 
   const onLogin = useCallback(async () => {
     if (!caHash || loading || !managerAddress) return;
@@ -68,6 +56,7 @@ export default function ScanLogin() {
       const extraData = await extraDataEncode(deviceInfo || {}, true);
       const req = await addManager({ contract, caHash, address, managerAddress, extraData });
       if (req?.error) throw req?.error;
+      managerSpeed({ caHash, address, managerAddress, extraData });
       socket.doOpen({
         url: `${request.defaultConfig.baseURL}/ca`,
         clientId: managerAddress,

@@ -54,6 +54,18 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
       </intent-filter>
+			<intent-filter>
+        <data android:scheme="https" android:host="app.portkey.finance"/>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+      </intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
+				<data android:scheme="@string/FB_LOGIN_PROTOCOL_SCHEME" />
+      </intent-filter>
 			<!-- <intent-filter>
 				<data android:scheme="ethereum" />
 				<action android:name="android.intent.action.VIEW" />
@@ -86,5 +98,7 @@
 			</intent-filter> -->
       <meta-data android:name="firebase_performance_logcat_enabled" android:value="true"/>
     </activity>
+		<meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/FACEBOOK_APP_ID"/>
+    <meta-data android:name="com.facebook.sdk.ClientToken" android:value="@string/FACEBOOK_CLIENT_TOKEN"/>
   </application>
 </manifest>

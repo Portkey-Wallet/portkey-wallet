@@ -13,6 +13,7 @@ export const initialRampState: IRampStateType = {
     amount: '',
     country: '',
     countryName: '',
+    icon: '',
   },
   buyDefaultCryptoList: [],
   buyDefaultCrypto: {
@@ -20,6 +21,7 @@ export const initialRampState: IRampStateType = {
     amount: '',
     network: '',
     chainId: MAIN_CHAIN_ID,
+    icon: '',
   },
   sellCryptoList: [],
   sellDefaultCrypto: {
@@ -27,6 +29,7 @@ export const initialRampState: IRampStateType = {
     amount: '',
     network: '',
     chainId: MAIN_CHAIN_ID,
+    icon: '',
   },
   sellDefaultFiatList: [],
   sellDefaultFiat: {
@@ -34,5 +37,6 @@ export const initialRampState: IRampStateType = {
     amount: '',
     country: '',
     countryName: '',
+    icon: '',
   },
 };

@@ -7,7 +7,6 @@ import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
 import { useLoading, useWalletInfo } from 'store/Provider/hooks';
 import './index.less';
 import IdAndAddress from 'pages/Contacts/components/IdAndAddress';
-import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { IProfileDetailDataProps } from 'types/Profile';
 import UploadAvatar from 'pages/components/UploadAvatar';
 import uploadImageToS3 from 'utils/compressAndUploadToS3';
@@ -24,7 +23,6 @@ export interface ISetWalletNameFormProps {
 export default function SetWalletNameForm({ data, saveCallback }: ISetWalletNameFormProps) {
   const [form] = Form.useForm();
   const { t } = useTranslation();
-  const showChat = useIsChatShow();
   const { userInfo } = useWalletInfo();
   const setUserInfo = useSetUserInfo();
   const [disable, setDisable] = useState<boolean>(false);
@@ -141,13 +139,11 @@ export default function SetWalletNameForm({ data, saveCallback }: ISetWalletName
           </FormItem>
         </div>
 
-        {showChat && (
-          <IdAndAddress
-            portkeyId={data?.caHolderInfo?.userId}
-            relationId={data?.relationId}
-            addresses={data?.addresses || []}
-          />
-        )}
+        <IdAndAddress
+          portkeyId={data?.caHolderInfo?.userId}
+          relationId={data?.relationId}
+          addresses={data?.addresses || []}
+        />
       </div>
       <div className="form-btn">
         <FormItem>

@@ -17,6 +17,7 @@ import { handleErrorMessage } from '@portkey-wallet/utils';
 import singleMessage from 'utils/singleMessage';
 import { useLocationState } from 'hooks/router';
 import { TEditContactLocationState } from 'types/router';
+import { isValidRemark } from '@portkey-wallet/utils/reg';
 
 export type IEditContactProps = IEditContactFormProps & BaseHeaderProps;
 
@@ -65,6 +66,10 @@ export default function EditContact() {
   const onFinish = useCallback(
     async (values: ContactItemType & { remark: string }) => {
       const { remark } = values;
+      if (!isValidRemark(remark)) {
+        setValidRemark({ validateStatus: 'error', errorMsg: 'Only a-z, A-Z, 0-9 and "_"  allowed' });
+        return;
+      }
 
       try {
         setLoading(true);

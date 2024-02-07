@@ -62,7 +62,7 @@ export default function ContactChatList({ onClose, onConfirm }: IContactChatList
       _v ? handleSearch(_v) : setShowMemberList(allContactRef.current || []);
       setFilterWord(_v);
     },
-    [],
+    [handleSearch],
     500,
   );
   const clickAddItem = useCallback(

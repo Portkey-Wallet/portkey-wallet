@@ -51,10 +51,14 @@ export function useReferral() {
     }
   }, [currentNetwork, dispatch]);
 
-  const setViewReferralStatusStatus = useCallback(() => {
+  const setViewReferralStatusStatus = useCallback(async () => {
     dispatch(setViewReferralStatusLocal({ network: currentNetwork, value: ReferralStatusEnum.VIEWED }));
 
-    return request.referral.setReferralRedDotsStatus();
+    try {
+      await request.referral.setReferralRedDotsStatus();
+    } catch (error) {
+      console.log(error);
+    }
   }, [currentNetwork, dispatch]);
 
   return {

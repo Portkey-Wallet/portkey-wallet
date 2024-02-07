@@ -16,8 +16,7 @@ import CommonToast from 'components/CommonToast';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import myEvents from 'utils/deviceEvent';
-import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useGetCurrentCAContract } from 'hooks/contract';
+import { useCurrentWalletInfo, useOriginChainId, useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { LoginType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { GuardiansApproved, GuardiansStatusItem } from '../types';
 import { verification } from 'utils/api';
@@ -34,6 +33,7 @@ import { handleGuardiansApproved } from 'utils/login';
 import { checkVerifierIsInvalidCode } from '@portkey-wallet/utils/guardian';
 import { pTd } from 'utils/unit';
 import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { useLatestRef } from '@portkey-wallet/hooks';
 
 type RouterParams = {
   guardianItem?: UserGuardianItem;
@@ -83,7 +83,6 @@ export default function VerifierDetails() {
   const { address: managerAddress } = useCurrentWalletInfo();
   const pin = usePin();
   const onRequestOrSetPin = useOnRequestOrSetPin();
-  const getCurrentCAContract = useGetCurrentCAContract();
 
   const setGuardianStatus = useCallback(
     (status: GuardiansStatusItem) => {
@@ -130,6 +129,9 @@ export default function VerifierDetails() {
   );
 
   const { error: codeError, setError: setCodeError } = useErrorMessage();
+  const verifyManagerAddress = useVerifyManagerAddress();
+  const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
+
   const onFinish = useLockCallback(
     async (code: string) => {
       if (!requestCodeResult || !guardianItem || !code) return;
@@ -147,6 +149,7 @@ export default function VerifierDetails() {
             chainId: originChainId,
             operationType,
             targetChainId,
+            operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
           },
         });
         !isRequestResult && CommonToast.success('Verified Successfully');
@@ -222,6 +225,7 @@ export default function VerifierDetails() {
       originChainId,
       operationType,
       targetChainId,
+      latestVerifyManagerAddress,
       onRequestOrSetPin,
       setGuardianStatus,
       accelerateChainId,

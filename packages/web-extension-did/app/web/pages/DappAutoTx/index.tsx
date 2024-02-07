@@ -90,7 +90,7 @@ export default function DappAutoTx() {
         windowId: curWindow.id,
       });
     }
-  }, [payload?.rpcUrl, payload?.method, payload?.contractAddress, txParams]);
+  }, [payload.chainId, payload?.contractAddress, payload?.rpcUrl, payload?.method, txParams]);
 
   const executeFn = useCallback(() => {
     switch (txParams.method) {

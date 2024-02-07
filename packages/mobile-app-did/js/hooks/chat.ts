@@ -106,7 +106,6 @@ export function useOnUrlPress() {
   const handlePortkeyId = useHandlePortkeyId();
   const handleGroupId = useHandleGroupId();
   const isChatShow = useIsChatShow();
-
   return useThrottleCallback(
     (url: string) => {
       url = prefixUrlWithProtocol(url);
@@ -126,6 +125,6 @@ export function useOnUrlPress() {
 
       jump({ item: { url: url, name: url } });
     },
-    [jump, isChatShow],
+    [isChatShow, handlePortkeyId, handleGroupId, jump],
   );
 }

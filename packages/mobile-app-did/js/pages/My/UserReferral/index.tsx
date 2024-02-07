@@ -24,7 +24,7 @@ import fonts from 'assets/theme/fonts';
 const UserReferral = () => {
   const [hasClicked, setHasClicked] = React.useState(false);
 
-  const { getReferralLink, referralLink = '', setViewReferralStatusStatus } = useReferral();
+  const { getReferralLink, referralLink = '' } = useReferral();
 
   const onPressInvite = useCallback(() => {
     setHasClicked(true);
@@ -40,17 +40,8 @@ const UserReferral = () => {
     }
   }, [getReferralLink]);
 
-  const setReferral = useLockCallback(async () => {
-    try {
-      await setViewReferralStatusStatus();
-    } catch (error) {
-      console.log(error);
-    }
-  }, [setViewReferralStatusStatus]);
-
   useEffectOnce(() => {
     getLink();
-    setReferral();
   });
 
   return (

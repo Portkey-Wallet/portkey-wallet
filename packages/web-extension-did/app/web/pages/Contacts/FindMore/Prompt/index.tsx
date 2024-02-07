@@ -25,7 +25,7 @@ export default function FindMorePrompt({
         <SecondPageHeader className="find-more-header" paddingLeft={24} title={headerTitle} leftCallBack={goBack} />
         <ContactsSearchInput
           className="find-more-search"
-          placeholder="Address/Portkey ID/phone number/email"
+          placeholder="Address/Portkey ID/email"
           handleChange={handleSearch}
         />
         {!isSearch && (

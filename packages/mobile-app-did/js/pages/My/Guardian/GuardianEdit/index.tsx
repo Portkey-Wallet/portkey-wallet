@@ -682,7 +682,11 @@ const GuardianEdit: React.FC = () => {
               titleTextStyle={[pageStyles.titleTextStyle, !selectedType && FontStyles.font7]}
               style={pageStyles.typeWrap}
               titleLeftElement={
-                selectedType?.icon && <Svg icon={selectedType.icon} size={pTd(28)} iconStyle={pageStyles.typeIcon} />
+                selectedType?.icon && (
+                  <View style={[GStyles.center, pageStyles.itemIconWrap]}>
+                    <Svg icon={selectedType.icon} size={pTd(20)} />
+                  </View>
+                )
               }
               title={selectedType?.name || 'Select guardian types'}
               rightElement={<Svg size={pTd(20)} icon="down-arrow" />}

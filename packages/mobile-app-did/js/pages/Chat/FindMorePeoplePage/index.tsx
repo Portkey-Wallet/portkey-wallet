@@ -24,6 +24,8 @@ import Touchable from 'components/Touchable';
 import { copyText } from 'utils';
 import { useInputFocus } from 'hooks/useInputFocus';
 import CommonToast from 'components/CommonToast';
+import InviteFriendsSection from '../components/InviteFriendsSection';
+import OfficialChatGroup from '../components/OfficialChatGroup';
 
 const FindMorePeople = () => {
   const iptRef = useRef<TextInput>(null);
@@ -116,19 +118,23 @@ const FindMorePeople = () => {
           rightIconContainerStyle={styles.rightIconContainerStyle}
         />
       </View>
-      {!keyword && (
-        <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemEnd, styles.portkeyIdWrap]}>
-          <View style={[GStyles.flex1, GStyles.paddingRight(16)]}>
-            <TextM>{`My Portkey ID : `}</TextM>
-            <TextM numberOfLines={1}>{userId}</TextM>
+      {!debounceWord && (
+        <>
+          <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemEnd, styles.portkeyIdWrap]}>
+            <View style={[GStyles.flex1, GStyles.paddingRight(16)]}>
+              <TextM>{`My Portkey ID : `}</TextM>
+              <TextM numberOfLines={1}>{userId}</TextM>
+            </View>
+            <Touchable onPress={() => copyText(userId || '')}>
+              <Svg icon="copy" size={pTd(16)} />
+            </Touchable>
+            <Touchable style={GStyles.marginLeft(pTd(16))} onPress={() => navigationService.navigate('ChatQrCodePage')}>
+              <Svg icon="chat-scan" size={pTd(16)} />
+            </Touchable>
           </View>
-          <Touchable onPress={() => copyText(userId || '')}>
-            <Svg icon="copy" size={pTd(16)} />
-          </Touchable>
-          <Touchable style={GStyles.marginLeft(pTd(16))} onPress={() => navigationService.navigate('ChatQrCodePage')}>
-            <Svg icon="chat-scan" size={pTd(16)} />
-          </Touchable>
-        </View>
+          <InviteFriendsSection />
+          <OfficialChatGroup />
+        </>
       )}
       <FlatList
         data={list}

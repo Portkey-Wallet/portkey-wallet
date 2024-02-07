@@ -1,10 +1,12 @@
 import axios from 'axios';
 import { BaseConfig, RequestConfig } from './types';
+import { DEFAULT_FETCH_TIMEOUT } from '@portkey-wallet/constants/misc';
 
 const axiosInstance = axios.create({
   baseURL: '/',
-  timeout: 20000,
+  timeout: DEFAULT_FETCH_TIMEOUT,
 });
+
 axiosInstance.defaults.headers.common['x-csrf-token'] = 'AUTH_TOKEN';
 
 axiosInstance.interceptors.request.use(

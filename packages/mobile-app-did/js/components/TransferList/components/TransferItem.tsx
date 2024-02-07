@@ -79,7 +79,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
   );
 
   const retryCrossChain = useCallback(
-    async (managerTransferTxId: string, data: CrossChainTransferParamsType) => {
+    async (managerTransferTxId: string, data: CrossChainTransferParamsType & { issueChainId: number }) => {
       const chainInfo = currentChainList?.find(chain => chain.chainId === data.tokenInfo.chainId);
       if (!chainInfo || !pin) return;
       const account = getManagerAccount(pin);
@@ -136,6 +136,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
         <Text style={[itemStyle.tokenBalance, fonts.regularFont]}>
           {item?.nftInfo?.nftId ? `#${item?.nftInfo?.nftId}` : amountString}
         </Text>
+
         {/* TODO : change func formatAmountShow */}
         {isMainnet && !item?.nftInfo && (isTokenHasPrice || item?.symbol === null) && (
           <Text style={itemStyle.usdtBalance}>{`$ ${formatAmountShow(
@@ -153,9 +154,6 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
       <View style={[itemStyle.contentWrap]}>
         <CommonAvatar
           style={itemStyle.left}
-          // svgName={
-          //   SHOW_FROM_TRANSACTION_TYPES.includes(item?.transactionType as TransactionTypes) ? 'transfer' : 'Contract'
-          // }
           svgName={item?.listIcon ? undefined : 'transfer'}
           imageUrl={item?.listIcon || ''}
           avatarSize={pTd(32)}

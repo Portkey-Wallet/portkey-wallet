@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useAppDispatch, useCommonState } from 'store/Provider/hooks';
 import { resetSettings } from '@portkey-wallet/store/settings/slice';
 import { resetNetwork } from '@portkey-wallet/store/network/actions';
-import { resetCaInfo, resetWallet } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { reSetCheckManagerExceed, resetCaInfo, resetWallet } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { resetToken } from '@portkey-wallet/store/token/slice';
 import { resetLoginInfoAction } from 'store/reducers/loginCache/actions';
 import { request } from '@portkey-wallet/api/api-did';
@@ -55,6 +55,7 @@ export default function useLogOut() {
       dispatch(resetIm(currentNetwork));
       dispatch(resetDisclaimerConfirmedDapp(currentNetwork));
       dispatch(resetSecurity(currentNetwork));
+      dispatch(reSetCheckManagerExceed(currentNetwork));
       signalrFCM.exitWallet();
       if (otherNetworkLogged) {
         dispatch(resetCaInfo(currentNetwork));
@@ -130,5 +131,5 @@ export function useCheckManagerOnLogout() {
       const msg = handleErrorMessage(error);
       singleMessage.error(msg);
     }
-  }, [address, caHash, logout, originChainId]);
+  }, [address, caHash, checkManager, latestOriginChainId, logout]);
 }

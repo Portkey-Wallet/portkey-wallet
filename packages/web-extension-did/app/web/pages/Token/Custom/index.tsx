@@ -82,7 +82,7 @@ export default function CustomToken() {
     [curChainId, setLoading],
   );
 
-  const searchDebounce = useDebounceCallback(handleSearch, [value], 500);
+  const searchDebounce = useDebounceCallback(handleSearch, [handleSearch], 500);
 
   const handleChangeChainId = useCallback(
     (chainId: ChainId) => {

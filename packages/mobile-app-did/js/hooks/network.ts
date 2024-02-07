@@ -33,7 +33,7 @@ export function useChangeNetwork(route: RouteProp<ParamListBase>) {
       if (routeName !== route.name && !(routeName === 'LoginPortkey' && route.name === 'SignupPortkey'))
         navigationService.reset(routeName);
     },
-    [dispatch, route.name],
+    [dispatch, resetStore, route.name],
   );
   return useThrottleCallback(
     (network: NetworkItem, isShowAlert = true) => {
@@ -62,6 +62,6 @@ export function useChangeNetwork(route: RouteProp<ParamListBase>) {
         ],
       });
     },
-    [wallet, onConfirm],
+    [wallet, onConfirm, t],
   );
 }

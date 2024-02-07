@@ -11,6 +11,11 @@ import { getWalletState } from './SWGetReduxStore';
 import { apis } from 'utils/BrowserApis';
 import singleMessage from 'utils/singleMessage';
 
+export const timeout = async (timer = 2000) => {
+  await sleep(timer);
+  return 'Chrome service worker is not working';
+};
+
 export const closeTabPrompt = async (closeParams: CloseParams) => {
   if (!closeParams?.windowId) {
     const tab = await apis.tabs.getCurrent();
@@ -39,27 +44,32 @@ export const useLockWallet = () => {
   }, []);
 };
 
-export const useActiveLockStatusAction = () => {
-  return useCallback(async () => {
-    try {
-      await InternalMessage.payload(PortkeyMessageTypes.ACTIVE_LOCK_STATUS).send();
-    } catch (error) {
-      singleMessage.error('Active lock error');
-    }
-  }, []);
+export const activeLockStatusAction = async () => {
+  const res = await Promise.race([InternalMessage.payload(PortkeyMessageTypes.ACTIVE_LOCK_STATUS).send(), timeout()]);
+  console.log(res, 'Check ACTIVE_LOCK_STATUS');
+  if (typeof res === 'string') return chrome.runtime.reload();
 };
 
 export const setPinAction = (pin: string) => InternalMessage.payload(PortkeyMessageTypes.SET_SEED, pin).send();
 
+const twitterAuthPath = '/api/app/twitterAuth/receive';
+const facebookAuthPath = '/api/app/facebookAuth/receive';
+
 export const socialLoginAction = async (type: ISocialLogin, network: NetworkType): Promise<SendResponseParams> => {
-  const { JOIN_AUTH_URL, JOIN_TELEGRAM_URL } = getPortkeyFinanceUrl(network);
+  const { JOIN_AUTH_URL, JOIN_TELEGRAM_URL, OPEN_LOGIN_URL, domain } = getPortkeyFinanceUrl(network);
   let externalLink = `${JOIN_AUTH_URL}/${network}/${type}?version=v2`;
   if (type === 'Telegram') {
     externalLink = JOIN_TELEGRAM_URL;
+  } else if (type === 'Facebook' || type === 'Twitter') {
+    externalLink = `${OPEN_LOGIN_URL}/social-login/${type}?redirectURI=${domain}${
+      type === 'Facebook' ? facebookAuthPath : twitterAuthPath
+    }`;
   }
-  return await InternalMessage.payload(PortkeyMessageTypes.SOCIAL_LOGIN, {
+  const result = await InternalMessage.payload(PortkeyMessageTypes.SOCIAL_LOGIN, {
     externalLink,
   }).send();
+  if (result.error) throw result.message || 'auth error';
+  return result;
 };
 
 export const reCAPTCHAAction = async (): Promise<ReCaptchaResponseParams> => {

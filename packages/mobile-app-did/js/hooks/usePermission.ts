@@ -21,12 +21,15 @@ export default function useRequestNotifyPermission() {
     openSettings();
   }, []);
 
-  return useCallback(async () => {
-    if (settings.closeNotificationsModalTime) return;
+  return useCallback(async (): Promise<boolean> => {
+    if (settings.closeNotificationsModalTime) return false;
 
     const isPermissionOK = await requestUserNotifyPermission();
     if (!isPermissionOK && !settings.closeNotificationsModalTime) {
       showGoToSettingsModal({ onClose, onGoToSetting });
+      return true;
     }
+
+    return false;
   }, [onClose, onGoToSetting, settings]);
 }

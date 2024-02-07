@@ -5,7 +5,7 @@ import { resetSettings } from '@portkey-wallet/store/settings/slice';
 import navigationService from 'utils/navigationService';
 import { resetNetwork } from '@portkey-wallet/store/network/actions';
 
-import { resetCaInfo, resetWallet } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { reSetCheckManagerExceed, resetCaInfo, resetWallet } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { resetUser } from 'store/user/actions';
 
 import { resetGuardians } from '@portkey-wallet/store/store-ca/guardians/actions';
@@ -57,6 +57,7 @@ export default function useLogOut() {
 
       dispatch(resetIm(currentNetwork));
       dispatch(resetSecurity(currentNetwork));
+      dispatch(reSetCheckManagerExceed(currentNetwork));
 
       if (otherNetworkLogged) {
         dispatch(resetCaInfo(currentNetwork));
@@ -101,7 +102,6 @@ export function useCheckManager() {
 }
 
 export function useCheckManagerOnLogout() {
-  const getCurrentCAViewContract = useGetCurrentCAViewContract();
   const checkManager = useCheckManager();
   const { caHash, address } = useCurrentWalletInfo();
   const originChainId = useOriginChainId();
@@ -116,5 +116,5 @@ export function useCheckManagerOnLogout() {
     } catch (error) {
       console.log(error, '======error-useCheckManagerOnLogout');
     }
-  }, [address, caHash, getCurrentCAViewContract, logout, originChainId]);
+  }, [address, caHash, checkManager, latestOriginChainId, logout]);
 }

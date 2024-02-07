@@ -1,6 +1,5 @@
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
-import CustomSvg from 'components/CustomSvg';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useGuardiansInfo, useLoading, useLoginInfo } from 'store/Provider/hooks';
 import CustomSelect from 'pages/components/CustomSelect';
@@ -33,6 +32,7 @@ import { verifierExistTip } from '@portkey-wallet/constants/constants-ca/guardia
 import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
 import { FromPageEnum, TGuardianApprovalLocationState, TVerifierAccountLocationState } from 'types/router';
+import BaseGuardianTypeIcon from 'components/BaseGuardianTypeIcon';
 import './index.less';
 
 export default function GuardiansEdit() {
@@ -57,6 +57,8 @@ export default function GuardiansEdit() {
     () =>
       preGuardian?.guardianType === LoginType.Google ||
       preGuardian?.guardianType === LoginType.Apple ||
+      preGuardian?.guardianType === LoginType.Twitter ||
+      preGuardian?.guardianType === LoginType.Facebook ||
       preGuardian?.guardianType === LoginType.Telegram,
     [preGuardian?.guardianType],
   );
@@ -345,7 +347,7 @@ export default function GuardiansEdit() {
           <div className="input-item">
             <div className="label">{`Guardian ${LoginType[opGuardian?.guardianType || 0]}`}</div>
             <div className="control">
-              <CustomSvg type={guardianIconMap[opGuardian?.guardianType || 0]} />
+              <BaseGuardianTypeIcon type={guardianIconMap[opGuardian?.guardianType || 0]} />
               <AccountShow guardian={opGuardian} />
             </div>
           </div>

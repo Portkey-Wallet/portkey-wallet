@@ -7,7 +7,7 @@ import React, { memo, useMemo } from 'react';
 import { TouchableOpacity, StyleSheet, StyleProp, ViewStyle, TextProps, View } from 'react-native';
 import { pTd } from 'utils/unit';
 
-interface MenuItemProps {
+export interface IMenuItemProps {
   title: string;
   icon?: IconName;
   onPress?: () => void;
@@ -16,12 +16,13 @@ interface MenuItemProps {
   TextComponent?: React.FC<TextProps>;
   arrowSize?: number;
   suffix?: string | number | React.ReactNode;
+  iconColor?: string;
   iconStyle?: StyleProp<ViewStyle>;
   svgUrl?: string;
   showWarningCycle?: boolean;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({
+const MenuItem: React.FC<IMenuItemProps> = ({
   title,
   icon,
   onPress,
@@ -29,6 +30,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
   size = pTd(28),
   arrowSize = pTd(20),
   suffix,
+  iconColor,
   iconStyle,
   svgUrl,
   showWarningCycle = false,
@@ -52,7 +54,12 @@ const MenuItem: React.FC<MenuItemProps> = ({
       {icon && (
         <View style={styles.svgWrap}>
           {showWarningCycle && <View style={styles.warningCycle} />}
-          <Svg icon={icon} size={size} iconStyle={[styles.menuIcon, iconStyle]} />
+          <Svg
+            icon={icon}
+            size={size}
+            color={iconColor ? iconColor : undefined}
+            iconStyle={[styles.menuIcon, iconStyle]}
+          />
         </View>
       )}
       <TextL style={styles.titleWrap}>{title}</TextL>

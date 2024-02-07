@@ -24,7 +24,6 @@ import s3Instance from '@portkey-wallet/utils/s3';
 import initIm from 'hooks/im';
 import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useExtensionEntrance } from 'hooks/cms';
-import { useInitRamp } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { initConfig, initDidReactSDKToken, initRequest } from './initConfig';
 import useFCM from 'hooks/useFCM';
@@ -67,14 +66,12 @@ export default function Updater() {
   useLocationChange();
   useChainListFetch();
 
-  const initRamp = useInitRamp({ clientType: 'Extension' });
   const refreshToken = useRefreshTokenConfig();
   useMemo(async () => {
     const pin = await getPin();
     const token = await refreshToken(pin);
     initDidReactSDKToken(token);
-    initRamp();
-  }, [initRamp, refreshToken]);
+  }, [refreshToken]);
 
   const checkUpdate = useCheckUpdate();
   useFCM();

@@ -64,7 +64,7 @@ export default function ChatListSearch() {
       await handleSearch(params);
       setLoading(false);
     },
-    [],
+    [handleSearch, setLoading],
     500,
   );
 

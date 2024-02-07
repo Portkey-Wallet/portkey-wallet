@@ -50,7 +50,10 @@ const GuardianAccountItem = ({ guardian }: GuardianAccountItemProps) => {
     <View style={styles.guardianTypeWrap}>
       {guardian && (
         <>
-          <Svg iconStyle={styles.loginTypeIcon} icon={LoginGuardianTypeIcon[guardian.guardianType]} size={pTd(28)} />
+          <View style={[GStyles.center, styles.loginTypeIconWrap]}>
+            <Svg icon={LoginGuardianTypeIcon[guardian.guardianType]} size={pTd(16)} />
+          </View>
+
           {renderGuardianAccount()}
         </>
       )}
@@ -69,11 +72,16 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg1,
     paddingHorizontal: pTd(16),
   },
-  loginTypeIcon: {
-    borderRadius: pTd(14),
-    marginRight: pTd(12),
-  },
   firstNameStyle: {
     marginBottom: pTd(2),
+  },
+  loginTypeIconWrap: {
+    marginRight: pTd(12),
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: defaultColors.border6,
+    backgroundColor: defaultColors.bg6,
+    width: pTd(28),
+    height: pTd(28),
+    borderRadius: pTd(16),
   },
 });

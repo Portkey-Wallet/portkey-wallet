@@ -46,46 +46,49 @@ export default function FindMore() {
   const headerTitle = 'Find People';
   const [contacts, setContacts] = useState<IContactItemRes[]>([]);
 
-  const handleSearch = useDebounceCallback(async (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.trim();
+  const handleSearch = useDebounceCallback(
+    async (e: ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value.trim();
 
-    if (!value) {
-      setContacts([]);
-      setIsSearch(false);
-      return;
-    }
+      if (!value) {
+        setContacts([]);
+        setIsSearch(false);
+        return;
+      }
 
-    setIsSearch(true);
+      setIsSearch(true);
 
-    const addressTrans = getAddressInfo(value.trim());
-    if (!addressTrans?.address) {
-      setContacts([]);
-      return;
-    }
+      const addressTrans = getAddressInfo(value.trim());
+      if (!addressTrans?.address) {
+        setContacts([]);
+        return;
+      }
 
-    try {
-      const res = await im.service.getUserInfoList({ keywords: addressTrans.address });
+      try {
+        const res = await im.service.getUserInfoList({ keywords: addressTrans.address });
 
-      const resTrans: IContactItemRes[] = res.data.map((item) => {
-        return {
-          ...item,
-          index: item?.name?.substring(0, 1).toLocaleUpperCase(),
-          name: item?.name,
-          imInfo: {
-            relationId: item.relationId,
-            portkeyId: item.portkeyId,
-          },
-          isAdded: !!contactRelationIdMap?.[item?.relationId],
-        };
-      });
+        const resTrans: IContactItemRes[] = res.data.map((item) => {
+          return {
+            ...item,
+            index: item?.name?.substring(0, 1).toLocaleUpperCase(),
+            name: item?.name,
+            imInfo: {
+              relationId: item.relationId,
+              portkeyId: item.portkeyId,
+            },
+            isAdded: !!contactRelationIdMap?.[item?.relationId],
+          };
+        });
 
-      setContacts(resTrans);
-    } catch (error) {
-      const err = handleErrorMessage(error, 'handle display error');
-      singleMessage.error(err);
-      setContacts([]);
-    }
-  }, []);
+        setContacts(resTrans);
+      } catch (error) {
+        const err = handleErrorMessage(error, 'handle display error');
+        singleMessage.error(err);
+        setContacts([]);
+      }
+    },
+    [contactRelationIdMap],
+  );
 
   const goBack = () => {
     if (state?.previousPage === FromPageEnum.chatSearch) return navigate('/chat-list-search', { state });

@@ -38,13 +38,13 @@ import navigationService from 'utils/navigationService';
 import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import Touchable from 'components/Touchable';
 
 const TabsDrawerContent: React.FC = () => {
   const { t } = useLanguage();
   const { networkType } = useCurrentNetworkInfo();
   const nav = useNavigation();
   const dappList = useCurrentDappList();
-
   const dispatch = useAppCommonDispatch();
   const {
     isDrawerOpen,
@@ -54,12 +54,22 @@ const TabsDrawerContent: React.FC = () => {
     autoApproveMap,
   } = useAppCASelector(state => state.discover);
   const { tabs } = discoverMap[networkType] ?? {};
+  const activeItem = useMemo(() => tabs?.find(ele => ele.id === activeTabId) as ITabItem, [activeTabId, tabs]);
+
   const checkAndUpDateRecordItemName = useCheckAndUpDateRecordItemName();
   const checkAndUpDateTabItemName = useCheckAndUpDateTabItemName();
   const { getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
 
   const tabRef = useRef<IBrowserTab | null>(null);
   const [preActiveTabId, setPreActiveTabId] = useState<number | undefined>(activeTabId);
+
+  const [tabStateMap, setTabStateMap] = useState<{
+    canGoBack: Record<string, boolean>;
+    canGoForward: Record<string, boolean>;
+  }>({
+    canGoBack: {},
+    canGoForward: {},
+  });
 
   const activeWebviewScreenShot = useCallback(async () => {
     if (!activeTabId) return;
@@ -77,7 +87,7 @@ const TabsDrawerContent: React.FC = () => {
     if (nav) {
       const routes = nav.getState().routes;
       const currentRoute = routes[routes.length - 1];
-      const activeItem = tabs?.find(ele => ele.id === activeTabId) as ITabItem;
+
       if (
         currentRoute.name === 'DappDetail' &&
         !dappList?.find(ele => ele.origin === getOrigin(activeItem?.url || ''))
@@ -88,64 +98,20 @@ const TabsDrawerContent: React.FC = () => {
 
     activeWebviewScreenShot();
     dispatch(changeDrawerOpenStatus(false));
-  }, [activeTabId, activeWebviewScreenShot, dappList, dispatch, nav, tabs]);
+  }, [activeItem?.url, activeWebviewScreenShot, dappList, dispatch, nav]);
 
   // header right
   const rightDom = useMemo(() => {
-    const activeItem = tabs?.find(ele => ele.id === activeTabId) as ITabItem;
     if (activeTabId)
       return (
         <View style={rightDomStyle.iconGroupWrap}>
           <TouchableOpacity style={rightDomStyle.iconWrap} onPress={() => showWalletInfo({ tabInfo: activeItem })}>
             <Svg icon="wallet-white" size={20} />
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() =>
-              showBrowserModal({
-                browserInfo: activeItem,
-                activeWebViewRef: tabRef,
-                activeWebviewScreenShot,
-                setPreActiveTabId,
-              })
-            }
-            style={rightDomStyle.iconWrap}>
-            <Svg icon="more" size={20} />
-          </TouchableOpacity>
         </View>
       );
     return null;
-  }, [activeTabId, activeWebviewScreenShot, tabs]);
-
-  const TabsDom = useMemo(() => {
-    return tabs?.map(ele => {
-      const isHidden = activeTabId !== ele.id;
-      const initialized = initializedList?.has(ele.id);
-      if (isHidden && !initialized) return;
-      const autoApprove = autoApproveMap?.[ele.id];
-      return (
-        <BrowserTab
-          key={ele.id}
-          id={ele.id}
-          uri={ele.url}
-          isHidden={isHidden}
-          autoApprove={autoApprove}
-          onLoadEnd={nativeEvent => {
-            if (autoApprove) dispatch(removeAutoApproveItem(ele.id));
-            checkAndUpDateRecordItemName({ id: ele.id, name: nativeEvent.title });
-            checkAndUpDateTabItemName({ id: ele.id, name: nativeEvent.title });
-          }}
-        />
-      );
-    });
-  }, [
-    activeTabId,
-    autoApproveMap,
-    checkAndUpDateRecordItemName,
-    checkAndUpDateTabItemName,
-    dispatch,
-    initializedList,
-    tabs,
-  ]);
+  }, [activeItem, activeTabId]);
 
   const value = useMemo(
     () => ({
@@ -155,10 +121,6 @@ const TabsDrawerContent: React.FC = () => {
     }),
     [],
   );
-
-  const activeItem = useMemo(() => {
-    return tabs?.find(ele => ele.id === activeTabId);
-  }, [activeTabId, tabs]);
 
   const closeAll = useCallback(() => {
     if (tabs?.length === 0) return;
@@ -202,6 +164,159 @@ const TabsDrawerContent: React.FC = () => {
     }, [backToSearchPage, isDrawerOpen]),
   );
 
+  const clickBottomActionBtn = useCallback(
+    (type: 'back' | 'forward' | 'showTab' | 'home' | 'more') => {
+      switch (type) {
+        case 'back':
+          tabRef.current?.goBack?.();
+          break;
+
+        case 'forward':
+          tabRef.current?.goForward?.();
+          break;
+
+        case 'showTab':
+          if (!activeTabId) return;
+          activeWebviewScreenShot();
+          setPreActiveTabId(Number(activeItem?.id));
+          break;
+
+        case 'home':
+          tabRef.current?.goBackHome?.();
+          break;
+
+        case 'more':
+          showBrowserModal({
+            browserInfo: activeItem,
+            activeWebViewRef: tabRef,
+            activeWebviewScreenShot,
+            setPreActiveTabId,
+          });
+          break;
+
+        default:
+          break;
+      }
+    },
+    [activeItem, activeTabId, activeWebviewScreenShot],
+  );
+
+  const TabsDom = useMemo(() => {
+    return tabs?.map(ele => {
+      const isHidden = activeTabId !== ele.id;
+      const initialized = initializedList?.has(ele.id);
+      if (isHidden && !initialized) return;
+      const autoApprove = autoApproveMap?.[ele.id];
+
+      const canGoBack: boolean = tabStateMap?.canGoBack?.[ele.id];
+      const canGoForward: boolean = tabStateMap?.canGoForward?.[String(ele?.id)];
+
+      const onNavigationStateChange = (navState: any) => {
+        console.log('onNavigationStateChange');
+
+        if (ele.id === activeTabId) {
+          setTabStateMap(pre => ({
+            canGoBack: {
+              ...pre.canGoBack,
+              [ele.id]: navState?.canGoBack,
+            },
+            canGoForward: {
+              ...pre.canGoForward,
+              [ele.id]: navState?.canGoForward,
+            },
+          }));
+        }
+      };
+
+      return (
+        <>
+          <BrowserTab
+            key={ele.id}
+            id={ele.id}
+            uri={ele.url}
+            isHidden={isHidden}
+            autoApprove={autoApprove}
+            onLoadEnd={nativeEvent => {
+              if (autoApprove) dispatch(removeAutoApproveItem(ele.id));
+              checkAndUpDateRecordItemName({ id: ele.id, name: nativeEvent.title });
+              checkAndUpDateTabItemName({ id: ele.id, name: nativeEvent.title });
+            }}
+            onNavigationStateChange={onNavigationStateChange}
+          />
+          {!isHidden && (
+            <View style={handleButtonStyle.wrap}>
+              <TouchableOpacity
+                disabled={!canGoBack}
+                onPress={() => clickBottomActionBtn('back')}
+                style={rightDomStyle.iconWrap}>
+                <Svg icon="left-arrow" size={pTd(20)} color={canGoBack ? defaultColors.font5 : defaultColors.bg16} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                disabled={!canGoForward}
+                onPress={() => clickBottomActionBtn('forward')}
+                style={rightDomStyle.iconWrap}>
+                <Svg
+                  icon="right-arrow"
+                  size={pTd(24)}
+                  color={canGoForward ? defaultColors.font5 : defaultColors.bg16}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => clickBottomActionBtn('showTab')} style={rightDomStyle.iconWrap}>
+                <TextM style={styles.switchButton}>{tabs?.length || 0}</TextM>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => clickBottomActionBtn('home')} style={rightDomStyle.iconWrap}>
+                <Svg icon="homepage" size={pTd(24)} color={defaultColors.font5} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => clickBottomActionBtn('more')} style={rightDomStyle.iconWrap}>
+                <Svg icon="more" size={20} color={defaultColors.font5} />
+              </TouchableOpacity>
+            </View>
+          )}
+        </>
+      );
+    });
+  }, [
+    activeTabId,
+    autoApproveMap,
+    checkAndUpDateRecordItemName,
+    checkAndUpDateTabItemName,
+    clickBottomActionBtn,
+    dispatch,
+    initializedList,
+    tabStateMap?.canGoBack,
+    tabStateMap?.canGoForward,
+    tabs,
+  ]);
+
+  // card group
+  const CardGroupDom = useMemo(() => {
+    return (
+      <>
+        <ScrollView>
+          <View style={styles.cardsContainer}>
+            {tabs?.map(ele => (
+              <Card key={ele.id} item={ele} />
+            ))}
+          </View>
+        </ScrollView>
+        <View style={handleButtonStyle.container}>
+          <TouchableOpacity style={handleButtonStyle.handleItem} onPress={closeAll}>
+            <TextM style={[FontStyles.font4, tabs?.length === 0 && handleButtonStyle.noTap]}>{t('Close All')}</TextM>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[handleButtonStyle.handleItem, handleButtonStyle.add]}
+            onPress={() => dispatch(changeDrawerOpenStatus(false))}>
+            <Svg icon="add-blue" size={pTd(28)} />
+          </TouchableOpacity>
+          <TouchableOpacity style={handleButtonStyle.handleItem} onPress={onDone}>
+            <TextM style={[handleButtonStyle.done, FontStyles.font4]}>{t('Done')}</TextM>
+          </TouchableOpacity>
+        </View>
+      </>
+    );
+  }, [closeAll, dispatch, onDone, t, tabs]);
+
   return (
     <BrowserContext.Provider value={value}>
       <PageContainer
@@ -209,15 +324,17 @@ const TabsDrawerContent: React.FC = () => {
         noCenterDom={!!activeTabId}
         noLeftDom={!activeTabId}
         leftDom={
-          <TouchableOpacity style={styles.leftWrap} onPress={backToSearchPage}>
-            <Svg icon="left-arrow" size={pTd(16)} color={defaultColors.bg1} iconStyle={styles.backIcon} />
+          <View style={styles.leftWrap}>
+            <Touchable onPress={backToSearchPage} style={styles.backIcon}>
+              <Svg icon="left-arrow" size={pTd(16)} color={defaultColors.bg1} />
+            </Touchable>
             <TextWithProtocolIcon
               type="iconLeft"
               location="header"
               title={getCmsWebsiteInfoName(activeItem?.url || '') || activeItem?.name}
               url={activeItem?.url || ''}
             />
-          </TouchableOpacity>
+          </View>
         }
         rightDom={rightDom}
         notHandleHardwareBackPress
@@ -226,34 +343,7 @@ const TabsDrawerContent: React.FC = () => {
         scrollViewProps={{ disabled: true }}
         titleDom={activeTabId ? '' : `${tabs?.length} Tabs`}>
         {TabsDom}
-        {/* card group */}
-        {!activeTabId && isDrawerOpen && (
-          <>
-            <ScrollView>
-              <View style={styles.cardsContainer}>
-                {tabs?.map(ele => (
-                  <Card key={ele.id} item={ele} />
-                ))}
-              </View>
-            </ScrollView>
-            <View style={handleButtonStyle.container}>
-              <TouchableOpacity style={handleButtonStyle.handleItem} onPress={closeAll}>
-                <TextM style={[FontStyles.font4, tabs?.length === 0 && handleButtonStyle.noTap]}>
-                  {t('Close All')}
-                </TextM>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[handleButtonStyle.handleItem, handleButtonStyle.add]}
-                onPress={() => dispatch(changeDrawerOpenStatus(false))}>
-                <Svg icon="add-blue" size={pTd(28)} />
-              </TouchableOpacity>
-              <TouchableOpacity style={handleButtonStyle.handleItem} onPress={onDone}>
-                <TextM style={[handleButtonStyle.done, FontStyles.font4]}>{t('Done')}</TextM>
-              </TouchableOpacity>
-            </View>
-          </>
-        )}
+        {!activeTabId && isDrawerOpen && CardGroupDom}
       </PageContainer>
     </BrowserContext.Provider>
   );
@@ -310,6 +400,16 @@ const styles = StyleSheet.create({
     paddingRight: pTd(20),
     paddingBottom: pTd(50),
   },
+  switchButton: {
+    width: pTd(21),
+    height: pTd(21),
+    borderRadius: pTd(4),
+    borderWidth: pTd(1.5),
+    borderColor: defaultColors.font5,
+    color: defaultColors.font5,
+    textAlign: 'center',
+    lineHeight: pTd(18),
+  },
 });
 
 const handleButtonStyle = StyleSheet.create({
@@ -344,6 +444,15 @@ const handleButtonStyle = StyleSheet.create({
   noTap: {
     opacity: 0.3,
   },
+  wrap: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: screenWidth,
+    height: pTd(44),
+    backgroundColor: defaultColors.bg1,
+  },
 });
 
 const rightDomStyle = StyleSheet.create({
@@ -354,6 +463,6 @@ const rightDomStyle = StyleSheet.create({
   },
   iconWrap: {
     ...GStyles.paddingArg(pTd(4)),
-    marginRight: pTd(16),
+    marginHorizontal: pTd(20),
   },
 });

@@ -28,7 +28,7 @@ export default function IdAndAddress({
   return (
     <div className="id-and-address">
       {/* Section - ID - my - wallet */}
-      {showChat && portkeyId && portkeyId === userInfo?.userId && (
+      {portkeyId && portkeyId === userInfo?.userId && (
         <div className="info-section section-border-bottom">
           <div className="info-title">Portkey ID</div>
           <div className="flex-row-between info-content">

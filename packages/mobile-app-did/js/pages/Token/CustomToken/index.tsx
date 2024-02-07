@@ -83,7 +83,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
     }
   }, [keyword, tokenItem.chainId]);
 
-  const fetchTokenItemDebounce = useDebounceCallback(fetchTokenItem, [tokenItem], 800);
+  const fetchTokenItemDebounce = useDebounceCallback(fetchTokenItem, [fetchTokenItem], 800);
 
   const onKeywordChange = useCallback(
     (v: string) => {

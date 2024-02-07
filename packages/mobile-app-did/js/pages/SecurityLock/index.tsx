@@ -77,7 +77,7 @@ export default function SecurityLock() {
         }
       }
     },
-    [biometrics, biometricsReady, managerInfo, navigation],
+    [biometrics, biometricsReady, isFocusedRef, managerInfo, navigation],
     2000,
   );
   const handlePassword = useCallback(

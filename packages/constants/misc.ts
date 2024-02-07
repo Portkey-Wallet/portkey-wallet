@@ -30,4 +30,4 @@ export const VERIFIER_EXPIRATION = 1;
 // guardian expired time (millisecond)
 export const GUARDIAN_EXPIRED_TIME = 58 * 60 * 1000;
 
-export const DEFAULT_FETCH_TIMEOUT = 8000;
+export const DEFAULT_FETCH_TIMEOUT = 10000;

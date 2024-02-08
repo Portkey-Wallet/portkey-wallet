@@ -1,11 +1,11 @@
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { ScreenWidth } from '@rneui/base';
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { Drawer } from 'react-native-drawer-layout';
 import TabsDrawerContent from './TabsDrawerContent';
 import { usePin } from 'hooks/store';
 import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
-import { useAppCommonDispatch } from '@portkey-wallet/hooks';
+import { useAppCommonDispatch, useThrottleCallback } from '@portkey-wallet/hooks';
 
 type TabsDrawerPropsType = {
   children: React.ReactNode;
@@ -18,19 +18,21 @@ const TabsDrawer = (props: TabsDrawerPropsType) => {
   const dispatch = useAppCommonDispatch();
   const { isDrawerOpen } = useAppCASelector(state => state.discover);
 
-  const tabsDrawerContent = React.useMemo(() => <TabsDrawerContent />, []);
+  const tabsDrawerContent = useMemo(() => <TabsDrawerContent />, []);
+
+  const onClose = useThrottleCallback(() => {
+    dispatch(changeDrawerOpenStatus(false));
+  }, [dispatch]);
 
   return (
     <Drawer
       open={!!pin && isDrawerOpen}
-      onClose={() => {
-        // if no close, the drawer will crash
-        dispatch(changeDrawerOpenStatus(false));
-      }}
+      onClose={onClose}
       onOpen={() => {
         // if no onOpen, the drawer will crash
         dispatch(changeDrawerOpenStatus(true));
       }}
+      // onTransitionEnd={onTransitionEnd}
       swipeEnabled={isDrawerOpen}
       drawerPosition="right"
       drawerStyle={{ width: ScreenWidth }}

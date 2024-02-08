@@ -112,7 +112,7 @@ const FindMorePeople = () => {
           loading={loading}
           allowClear
           value={keyword}
-          placeholder="Address/Portkey ID/phone number/email"
+          placeholder="Address/Portkey ID/email"
           onChangeText={setKeyword}
           rightIcon={IptRightIcon}
           rightIconContainerStyle={styles.rightIconContainerStyle}

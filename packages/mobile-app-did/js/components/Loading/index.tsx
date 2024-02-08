@@ -4,8 +4,8 @@ import { View, StyleSheet, Keyboard } from 'react-native';
 import { TextM } from '../CommonText';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import Lottie from 'lottie-react-native';
 import { pTd } from 'utils/unit';
+import { LottieView } from 'components/LottieView';
 
 let elements: number[] = [];
 let timer: NodeJS.Timeout | null = null;
@@ -24,7 +24,7 @@ type LoadingPositionType = 'center' | 'bottom';
 function LoadingBody({ text }: { text?: string; position?: LoadingPositionType; iconType: IconType }) {
   return (
     <View style={[GStyles.center, styles.loadingWrap]}>
-      <Lottie source={require('assets/lottieFiles/globalLoading.json')} style={styles.loadingStyle} autoPlay loop />
+      <LottieView source={require('assets/lottieFiles/globalLoading.json')} style={styles.loadingStyle} autoPlay loop />
       <TextM style={styles.textStyles}>{text}</TextM>
     </View>
   );

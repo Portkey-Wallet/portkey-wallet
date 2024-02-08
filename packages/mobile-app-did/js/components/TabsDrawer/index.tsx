@@ -20,9 +20,13 @@ const TabsDrawer = (props: TabsDrawerPropsType) => {
 
   const tabsDrawerContent = useMemo(() => <TabsDrawerContent />, []);
 
-  const onClose = useThrottleCallback(() => {
-    dispatch(changeDrawerOpenStatus(false));
-  }, [dispatch]);
+  const onClose = useThrottleCallback(
+    () => {
+      dispatch(changeDrawerOpenStatus(false));
+    },
+    [dispatch],
+    1000,
+  );
 
   return (
     <Drawer

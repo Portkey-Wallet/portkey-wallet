@@ -3,9 +3,9 @@ import { IRampStateType } from './type';
 
 export const initialRampState: IRampStateType = {
   rampEntry: {
-    isRampShow: true,
-    isBuySectionShow: true,
-    isSellSectionShow: true,
+    isRampShow: false,
+    isBuySectionShow: false,
+    isSellSectionShow: false,
   },
   buyFiatList: [],
   buyDefaultFiat: {

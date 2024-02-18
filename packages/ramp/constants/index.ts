@@ -15,7 +15,7 @@ export enum IRampProviderType {
 
 export const DefaultRampListenList = ['onRampOrderChanged'];
 
-export const RAMP_SOCKET_TIMEOUT = 15 * 1000 * 8; // TODO
+export const RAMP_SOCKET_TIMEOUT = 15 * 1000;
 
 export enum SELL_ORDER_DISPLAY_STATUS {
   INITIALIZED = 'Initialized',

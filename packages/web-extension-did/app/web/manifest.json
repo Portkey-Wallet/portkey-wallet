@@ -3,8 +3,8 @@
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   },
-  "name": "Portkey Wallet: Crypto & Games",
-  "version": "1.4.16",
+  "name": "Portkey Wallet: Crypto & Games (Deprecated)",
+  "version": "1.4.18",
   "description": "A User-Friendly and Secure AA Wallet for Asset Management and Web3 Experience",
   "icons": {
     "16": "assets/images/extension_logo.png",
@@ -16,7 +16,7 @@
   },
   "action": {
     "default_icon": "assets/images/extension_logo.png",
-    "default_title": "Portkey Wallet: Crypto & Games",
+    "default_title": "Portkey Wallet: Crypto & Games (Deprecated)",
     "default_popup": "popup.html"
   },
   "sandbox": {

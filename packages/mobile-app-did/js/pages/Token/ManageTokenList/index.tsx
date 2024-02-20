@@ -2,7 +2,7 @@ import PageContainer from 'components/PageContainer';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import CommonInput from 'components/CommonInput';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import gStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -21,6 +21,7 @@ import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import { useFocusEffect } from '@react-navigation/native';
+import Touchable from 'components/Touchable';
 
 interface ManageTokenListProps {
   route?: any;
@@ -131,13 +132,9 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
 
   const RightDom = useMemo(
     () => (
-      <TouchableOpacity
-        style={pageStyles.rightIconStyle}
-        onPress={() => {
-          navigationService.navigate('CustomToken');
-        }}>
+      <Touchable style={pageStyles.rightIconStyle} onPress={() => navigationService.navigate('CustomToken')}>
         <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
-      </TouchableOpacity>
+      </Touchable>
     ),
     [],
   );

@@ -2,10 +2,12 @@ import React from 'react';
 import { Button, ButtonProps } from '@rneui/themed';
 import { styles } from './style';
 import { pTd } from 'utils/unit';
+import { useThrottleCallback } from '@portkey-wallet/hooks';
 
 export type CommonButtonProps = {
   buttonType?: 'send' | 'receive';
   type?: 'solid' | 'clear' | 'outline' | 'primary' | 'transparent';
+  onPressWithSecond?: number;
 } & Omit<ButtonProps, 'type'>;
 const stylesMap: any = {
   outline: {
@@ -34,8 +36,21 @@ const stylesMap: any = {
 };
 
 const CommonButton: React.FC<CommonButtonProps> = props => {
-  const { type, buttonStyle, titleStyle, disabledStyle, disabledTitleStyle, ...buttonProps } = props;
+  const {
+    type,
+    buttonStyle,
+    titleStyle,
+    disabledStyle,
+    disabledTitleStyle,
+    onPress,
+    onPressIn,
+    onPressWithSecond,
+    ...buttonProps
+  } = props;
   const mapStyles = type ? stylesMap[type] : undefined;
+
+  const handleOnPressIn = useThrottleCallback(onPressIn, [onPressIn], onPressWithSecond);
+  const handleOnPress = useThrottleCallback(onPress, [onPress], onPressWithSecond);
 
   return (
     <Button
@@ -47,6 +62,8 @@ const CommonButton: React.FC<CommonButtonProps> = props => {
       disabledStyle={[styles.disabledStyle, mapStyles?.disabledStyle, disabledStyle]}
       disabledTitleStyle={[styles.disabledTitleStyle, mapStyles?.disabledTitleStyle, disabledTitleStyle]}
       {...buttonProps}
+      onPress={onPress ? handleOnPress : undefined}
+      onPressIn={onPressIn ? handleOnPressIn : undefined}
       type={type === 'primary' || type === 'transparent' ? undefined : type}
     />
   );

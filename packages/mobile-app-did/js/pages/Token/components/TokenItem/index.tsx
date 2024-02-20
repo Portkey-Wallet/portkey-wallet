@@ -48,10 +48,7 @@ const TokenItem = ({ networkType, item, onHandleToken }: TokenItemProps) => {
         {item.isDefault ? (
           <Svg icon="lock" size={pTd(20)} iconStyle={itemStyle.addedStyle} />
         ) : (
-          <TouchableOpacity
-            onPress={() => {
-              onHandleToken(item, !!item.isAdded);
-            }}>
+          <TouchableOpacity onPress={() => onHandleToken(item, !!item.isAdded)}>
             <View pointerEvents="none">
               <CommonSwitch value={!!item.isAdded} />
             </View>

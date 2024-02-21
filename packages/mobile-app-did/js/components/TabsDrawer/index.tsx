@@ -6,6 +6,7 @@ import TabsDrawerContent from './TabsDrawerContent';
 import { usePin } from 'hooks/store';
 import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
 import { useAppCommonDispatch, useThrottleCallback } from '@portkey-wallet/hooks';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 type TabsDrawerPropsType = {
   children: React.ReactNode;
@@ -37,7 +38,7 @@ const TabsDrawer = (props: TabsDrawerPropsType) => {
         dispatch(changeDrawerOpenStatus(true));
       }}
       // onTransitionEnd={onTransitionEnd}
-      swipeEnabled={isDrawerOpen}
+      swipeEnabled={isIOS && isDrawerOpen}
       drawerPosition="right"
       drawerStyle={{ width: ScreenWidth }}
       renderDrawerContent={() => tabsDrawerContent}>

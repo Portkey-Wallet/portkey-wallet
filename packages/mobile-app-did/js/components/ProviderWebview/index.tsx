@@ -5,7 +5,7 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
 import { MobileStream } from 'dapp/mobileStream';
 import DappMobileOperator from 'dapp/dappMobileOperator';
-import { WebViewErrorEvent, WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
+import { WebViewErrorEvent, WebViewNavigation, WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
 import URL from 'url-parse';
 import { store } from 'store';
 import { DappOverlay } from 'dapp/dappOverlay';
@@ -17,6 +17,8 @@ import * as Application from 'expo-application';
 import { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { PROTOCOL_ALLOW_LIST } from 'constants/web';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
+export const BLANK_PAGE = 'about:blank';
 
 export interface IWebView {
   goBack: WebView['goBack'];
@@ -42,7 +44,7 @@ const ProviderWebview = forwardRef<
   const operatorRef = useRef<DappMobileOperator | null>(null);
   // Android will trigger onLoadEnd before onLoadStart, Mark start status.
   const loadStartRef = useRef<boolean>(false);
-
+  const prePageUrl = useRef<string>();
   const [entryScriptWeb3, setEntryScriptWeb3] = useState<string>();
   useEffectOnce(() => {
     const getEntryScriptWeb3 = async () => {
@@ -185,6 +187,12 @@ const ProviderWebview = forwardRef<
           if (!loadStartRef.current) return;
           handleUpdate(event);
           props.onLoad?.(event);
+        }}
+        onNavigationStateChange={(event: WebViewNavigation) => {
+          if (prePageUrl.current === BLANK_PAGE && event.url !== BLANK_PAGE && !isIOS)
+            webViewRef.current?.clearHistory?.();
+          prePageUrl.current = event.url;
+          props.onNavigationStateChange?.(event);
         }}
         onMessage={event => {
           const { nativeEvent } = event;

@@ -1,4 +1,4 @@
-import React, { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { Linking, StyleSheet } from 'react-native';
 import WebView, { WebViewProps } from 'react-native-webview';
 import useEffectOnce from 'hooks/useEffectOnce';
@@ -158,10 +158,8 @@ const ProviderWebview = forwardRef<
     // }
     return false;
   };
-  if (!entryScriptWeb3) return null;
-
-  return (
-    <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.scrollStyle}>
+  const webViewDom = useMemo(
+    () => (
       <WebView
         ref={webViewRef}
         // style={styles.webView}
@@ -200,6 +198,16 @@ const ProviderWebview = forwardRef<
         // https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md#oncontentprocessdidterminate
         onContentProcessDidTerminate={() => webViewRef.current?.reload()}
       />
+    ),
+    [entryScriptWeb3, handleUpdate, onLoadStart, props, source],
+  );
+  if (!entryScriptWeb3) return null;
+
+  if (isIOS) return webViewDom;
+
+  return (
+    <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.scrollStyle}>
+      {webViewDom}
     </KeyboardAwareScrollView>
   );
 });

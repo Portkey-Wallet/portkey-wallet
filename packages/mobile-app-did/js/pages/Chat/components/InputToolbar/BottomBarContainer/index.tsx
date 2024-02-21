@@ -83,7 +83,8 @@ export function BottomBarContainer({
     if (replyMessageInfo?.message) {
       inputFocus(true);
     }
-  }, [bottomBarStatus, dispatch, inputFocus, replyMessageInfo?.message]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [replyMessageInfo?.message]);
 
   const onSend = useCallback(async () => {
     dispatch(setChatText(''));

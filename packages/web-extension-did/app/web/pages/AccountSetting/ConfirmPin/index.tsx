@@ -29,7 +29,7 @@ export default function ConfirmPin() {
   const walletInfo = useCurrentWalletInfo();
   const { isNotLessThan768 } = useCommonState();
 
-  const handleNext = useCallback(async () => {
+  const handleNext = useCallback(() => {
     const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);
     if (privateKey) {
       setErrMsg('');

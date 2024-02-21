@@ -12,6 +12,7 @@ import ImageDisplay from 'pages/components/ImageDisplay';
 import { showValueToStr } from '@portkey-wallet/utils/byteConversion';
 import getSeed from 'utils/getSeed';
 import singleMessage from 'utils/singleMessage';
+import AsyncButton from 'components/AsyncButton';
 import './index.less';
 
 export default function GetSignature() {
@@ -78,9 +79,9 @@ export default function GetSignature() {
           }}>
           {t('Reject')}
         </Button>
-        <Button type="primary" onClick={sendHandler}>
+        <AsyncButton type="primary" onClick={sendHandler}>
           {t('Sign')}
-        </Button>
+        </AsyncButton>
       </div>
     </div>
   );

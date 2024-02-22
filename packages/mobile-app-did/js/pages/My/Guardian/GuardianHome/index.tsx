@@ -1,7 +1,7 @@
 import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
 import React, { useCallback, useMemo } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import PageContainer from 'components/PageContainer';
@@ -50,13 +50,13 @@ export default function GuardianHome() {
       scrollViewProps={{ disabled: true }}
       rightDom={
         isAddAllowed && (
-          <TouchableOpacity
+          <Touchable
             style={{ padding: pTd(16) }}
             onPress={() => {
               navigationService.navigate('GuardianEdit');
             }}>
             <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
-          </TouchableOpacity>
+          </Touchable>
         )
       }>
       <ScrollView showsVerticalScrollIndicator={false}>

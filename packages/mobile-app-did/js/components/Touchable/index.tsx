@@ -15,6 +15,7 @@ const Touchable: React.FC<TouchableOpacityProps & TouchableProps> = props => {
 
   const handleOnPressIn = useThrottleCallback(onPressIn, [onPressIn], onPressWithSecond);
   const handleOnPress = useThrottleCallback(onPress, [onPress], onPressWithSecond);
+
   if (highlight)
     return (
       <TouchableHighlight

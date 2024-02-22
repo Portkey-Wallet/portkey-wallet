@@ -132,7 +132,11 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
 
   const RightDom = useMemo(
     () => (
-      <Touchable style={pageStyles.rightIconStyle} onPress={() => navigationService.navigate('CustomToken')}>
+      <Touchable
+        style={pageStyles.rightIconStyle}
+        onPress={() => {
+          navigationService.navigate('CustomToken');
+        }}>
         <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
       </Touchable>
     ),

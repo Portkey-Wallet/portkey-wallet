@@ -1,10 +1,11 @@
 import React, { memo } from 'react';
-import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 import { TextM, TextS } from 'components/CommonText';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import CommonAvatar from 'components/CommonAvatar';
+import Touchable from 'components/Touchable';
 
 export type NoDataPropsType = {
   style?: ViewStyle | ViewStyle[];
@@ -30,7 +31,7 @@ const NFTAvatar: React.FC<NoDataPropsType> = props => {
   const outStyles = Array.isArray(style) ? style : [style];
 
   return (
-    <TouchableOpacity style={[styles.wrap, ...outStyles]} onPress={onPress}>
+    <Touchable style={[styles.wrap, ...outStyles]} onPress={onPress}>
       {imageUrl && <CommonAvatar avatarSize={pTd(98)} shapeType="square" imageUrl={imageUrl} style={styles.img} />}
       <TextM
         numberOfLines={imageUrl ? 1 : 2}
@@ -40,7 +41,7 @@ const NFTAvatar: React.FC<NoDataPropsType> = props => {
       </TextM>
       <TextS style={[styles.id, !!imageUrl && styles.idNoPic]}>{`# ${tokenId}`}</TextS>
       {imageUrl && <View style={styles.mask} />}
-    </TouchableOpacity>
+    </Touchable>
   );
 };
 export default memo(NFTAvatar);

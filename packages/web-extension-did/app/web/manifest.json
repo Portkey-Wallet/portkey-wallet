@@ -3,8 +3,8 @@
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   },
-  "name": "Portkey (Early Access)",
-  "version": "1.6.0",
+  "name": "Portkey Wallet",
+  "version": "1.6.2",
   "description": "A User-Friendly and Secure AA Wallet for Asset Management and Web3 Experience",
   "icons": {
     "16": "assets/images/extension_logo.png",
@@ -16,7 +16,7 @@
   },
   "action": {
     "default_icon": "assets/images/extension_logo.png",
-    "default_title": "Portkey (Early Access)",
+    "default_title": "Portkey Wallet",
     "default_popup": "popup.html"
   },
   "sandbox": {

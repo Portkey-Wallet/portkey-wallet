@@ -138,11 +138,12 @@ type RedPacketAmountShowPropsType = {
   amountShow: string;
   symbol: string;
   textColor?: string;
+  isNFT?: boolean;
   wrapStyle?: StyleProp<ViewStyle>;
 };
 
 export const RedPacketAmountShow = (props: RedPacketAmountShowPropsType) => {
-  const { componentType, amountShow, symbol = 'ELF', textColor = defaultColors.font15, wrapStyle = {} } = props;
+  const { componentType, amountShow, symbol = 'ELF', isNFT, textColor = defaultColors.font15, wrapStyle = {} } = props;
 
   const amountShowStyle = useMemo(() => {
     let type = 'amount-style1';
@@ -169,6 +170,13 @@ export const RedPacketAmountShow = (props: RedPacketAmountShowPropsType) => {
   }, [amountShow.length, componentType]);
 
   const TextColorStyle = useMemo<StyleProp<TextStyle>>(() => ({ color: textColor }), [textColor]);
+
+  if (isNFT)
+    return (
+      <Text style={[GStyles.textAlignCenter, wrapStyle]}>
+        <Text style={[amountShowStyle, styles.amount, TextColorStyle]}>{amountShow}</Text>
+      </Text>
+    );
 
   return (
     <Text style={[GStyles.textAlignCenter, wrapStyle]}>

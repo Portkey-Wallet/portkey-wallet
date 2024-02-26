@@ -78,6 +78,16 @@ export interface AccountAssetItem {
   nftInfo?: NftInfo;
 }
 
+export interface IAccountCryptoBoxAssetItem {
+  chainId: ChainId;
+  address: string;
+  symbol: string;
+  imageUrl: string;
+  decimals: number;
+  alias?: string;
+  tokenId?: string;
+}
+
 export type AccountAssets = AccountAssetItem[];
 
 export type UseTokenListAddType = (

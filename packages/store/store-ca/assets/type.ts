@@ -1,3 +1,4 @@
+import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import { ChainId } from '@portkey-wallet/types';
 
 export interface ITokenInfoType {
@@ -22,6 +23,17 @@ export interface IAssetItemType {
   address: string;
   tokenInfo?: ITokenInfoType;
   nftInfo?: INftInfoType;
+}
+
+export interface ICryptoBoxAssetItemType {
+  chainId: ChainId;
+  address: string;
+  symbol: string;
+  imageUrl: string;
+  decimals: number;
+  alias?: string;
+  tokenId?: string;
+  assetType?: AssetType;
 }
 
 export enum AddressCheckError {

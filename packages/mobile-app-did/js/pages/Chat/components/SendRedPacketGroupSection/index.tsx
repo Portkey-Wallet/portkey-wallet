@@ -11,8 +11,6 @@ import { TextM, TextS } from 'components/CommonText';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import TokenOverlay from 'components/TokenOverlay';
-import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 import RedPacketAmountShow from '../RedPacketAmountShow';
 import CommonAvatar from 'components/CommonAvatar';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
@@ -29,14 +27,20 @@ import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/u
 import { isEmojiString } from 'pages/Chat/utils';
 import { isPotentialNumber } from '@portkey-wallet/utils/reg';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import CryptoAssetsListOverlay from '../CryptoAssetsListOverlay';
+import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
+import { ICryptoBoxAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
 
 export type ValuesType = {
   packetNum?: string;
   count: string;
   symbol: string;
-  decimals: string;
+  decimals: string | number;
   memo: string;
   chainId: ChainId;
+  assetType?: AssetType;
+  alias?: string;
+  tokenId?: string;
   imageUrl?: string;
 };
 
@@ -65,6 +69,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
     decimals: defaultToken.decimals,
     memo: '',
     chainId: MAIN_CHAIN_ID,
+    assetType: AssetType.ft,
   });
 
   const tokenPrice = useMemo<string | number | undefined>(
@@ -233,15 +238,12 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
             <Touchable
               style={styles.unitWrap}
               onPress={() => {
-                TokenOverlay.showTokenList({
-                  title: 'Select Assets',
-                  onFinishSelectToken: (tokenInfo: TokenItemShowType) => {
+                CryptoAssetsListOverlay.showCryptoAssetList({
+                  onFinishSelectAssets: (assetInfo: ICryptoBoxAssetItemType) => {
                     setValues(pre => ({
                       ...pre,
-                      count: pre.symbol !== tokenInfo.symbol || pre.chainId !== tokenInfo.chainId ? '' : pre.count,
-                      symbol: tokenInfo.symbol,
-                      decimals: String(tokenInfo.decimals),
-                      chainId: tokenInfo.chainId,
+                      ...assetInfo,
+                      count: pre.symbol !== assetInfo.symbol || pre.chainId !== assetInfo.chainId ? '' : pre.count,
                     }));
                     setCountError({ ...INIT_NONE_ERROR });
                   },
@@ -251,16 +253,21 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
               }}>
               <CommonAvatar
                 hasBorder
-                resizeMode="cover"
-                style={styles.avatar}
+                shapeType={values.assetType === AssetType.nft ? 'square' : 'circular'}
+                resizeMode={'contain'}
+                style={[styles.avatar, values.assetType === AssetType.nft && styles.borderRadius4]}
                 title={values.symbol}
                 avatarSize={pTd(24)}
                 // elf token icon is fixed , only use white background color
                 svgName={values?.symbol === defaultToken.symbol ? 'testnet' : undefined}
                 imageUrl={values.imageUrl || symbolImages[values.symbol]}
               />
-              <View style={[GStyles.flex1]}>
-                <TextM style={[GStyles.flex1, fonts.mediumFont]}>{values.symbol}</TextM>
+              <View style={[styles.assetInfoWrap, GStyles.flex1]}>
+                <TextM style={[GStyles.flex1, fonts.mediumFont]}>
+                  {values.assetType === AssetType.nft
+                    ? `${values.alias} #${values.tokenId}` || values.symbol
+                    : values.symbol}
+                </TextM>
                 <TextS style={[GStyles.flex1, FontStyles.font3]} numberOfLines={1}>
                   {formatChainInfoToShow(values.chainId)}
                 </TextS>
@@ -350,7 +357,12 @@ const styles = StyleSheet.create({
     marginTop: pTd(24),
   },
   avatar: {
-    marginRight: pTd(8),
     fontSize: pTd(12),
+  },
+  borderRadius4: {
+    borderRadius: pTd(4),
+  },
+  assetInfoWrap: {
+    marginLeft: pTd(8),
   },
 });

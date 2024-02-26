@@ -53,6 +53,9 @@ export type RedPackageDetail = {
   grabbed: number;
   type: RedPackageTypeEnum;
   viewStatus: RedPackageStatusEnum;
+  alias: string;
+  tokenId: string;
+  imageUrl: string;
 };
 
 export type RedPackageGrabInfoItem = {

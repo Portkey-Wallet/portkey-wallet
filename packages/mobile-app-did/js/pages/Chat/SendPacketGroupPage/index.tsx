@@ -193,9 +193,7 @@ export default function SendPacketGroupPage() {
         </View>
         <View style={GStyles.flex1}>{tabList.find(item => item.type === selectTab)?.component}</View>
         <TextM style={styles.tips}>
-          {
-            'A crypto box is valid for 24 hours. Unclaimed tokens will be automatically returned to you upon expiration.'
-          }
+          {`A crypto box is valid for 24 hours. Unclaimed tokens/NFTs will be automatically returned to you upon expiration.`}
         </TextM>
       </KeyboardAwareScrollView>
     </PageContainer>

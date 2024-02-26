@@ -8,6 +8,7 @@ import CommonAvatar from 'components/CommonAvatar';
 
 export type NoDataPropsType = {
   style?: ViewStyle | ViewStyle[];
+  disabled?: boolean;
   data: {
     alias: string;
     balance: string;
@@ -23,6 +24,7 @@ export type NoDataPropsType = {
 const NFTAvatar: React.FC<NoDataPropsType> = props => {
   const {
     style = {},
+    disabled = false,
     data: { imageUrl, tokenId, alias },
     onPress,
   } = props;
@@ -30,7 +32,7 @@ const NFTAvatar: React.FC<NoDataPropsType> = props => {
   const outStyles = Array.isArray(style) ? style : [style];
 
   return (
-    <TouchableOpacity style={[styles.wrap, ...outStyles]} onPress={onPress}>
+    <TouchableOpacity disabled={disabled} style={[styles.wrap, ...outStyles]} onPress={onPress}>
       {imageUrl && <CommonAvatar avatarSize={pTd(98)} shapeType="square" imageUrl={imageUrl} style={styles.img} />}
       <TextM
         numberOfLines={imageUrl ? 1 : 2}

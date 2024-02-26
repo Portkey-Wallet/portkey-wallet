@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { StyleSheet, View, Text } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
@@ -33,10 +33,13 @@ import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { InsufficientTransactionFee } from 'hooks/useCalculateRedPacketFee';
 import { useAppRampEntryShow } from 'hooks/ramp';
+import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 
 export type PaymentTokenInfo = {
   symbol: string;
   decimals: number | string;
+  imageUrl?: string;
+  assetType?: AssetType;
 };
 
 export type PaymentOverlayProps = {
@@ -227,6 +230,20 @@ const PaymentModal = ({
 
   const tokenBalanceComponent = useMemo(() => {
     if (isInsufficientTransactionFee) return;
+
+    // TODO: nft
+    if (tokenInfo.assetType === AssetType.nft)
+      return (
+        <Text style={styles.marginTop4}>
+          <TextS style={FontStyles.font3}>
+            {formatAmountShow(
+              divDecimals(currentTokenInfo?.balance, currentTokenInfo?.decimals),
+              currentTokenInfo?.decimals,
+            )}
+          </TextS>
+        </Text>
+      );
+
     return (
       <Text style={styles.marginTop4}>
         <TextS style={FontStyles.font3}>
@@ -252,6 +269,7 @@ const PaymentModal = ({
     currentTokenInfo?.price,
     currentTokenInfo?.symbol,
     isInsufficientTransactionFee,
+    tokenInfo.assetType,
   ]);
 
   useEffectOnce(() => {
@@ -264,6 +282,8 @@ const PaymentModal = ({
         <View style={[GStyles.itemCenter, GStyles.flex1]}>
           <TextM style={styles.titleStyle}> {title}</TextM>
           <RedPacketAmountShow
+            // TODO: fix this
+            isNFT
             componentType="sendPacketPage"
             textColor={defaultColors.font5}
             amountShow={amount}
@@ -272,6 +292,12 @@ const PaymentModal = ({
           {!!currentTokenInfo?.price && (
             <TextM style={GStyles.marginTop(pTd(2))}>{convertAmountUSDShow(amount, currentTokenInfo?.price)}</TextM>
           )}
+
+          {/* TODO: change  */}
+          <View style={GStyles.marginTop(pTd(2))}>
+            <CommonAvatar shapeType="square" avatarSize={pTd(24)} />
+            <TextM numberOfLines={1} style={GStyles.marginLeft(pTd(8))}>{`${'alias'} #${'amount'}`}</TextM>
+          </View>
 
           <View style={[GStyles.marginTop(pTd(40)), GStyles.width100]}>
             <TextS style={styles.balanceLabelStyle}>Balance</TextS>

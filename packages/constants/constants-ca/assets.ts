@@ -41,3 +41,8 @@ export enum ContactsTab {
   ALL = 'All',
   Chats = 'Chats',
 }
+
+export enum AssetType {
+  ft = 1,
+  nft = 2,
+}

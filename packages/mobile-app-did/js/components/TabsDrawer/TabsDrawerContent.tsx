@@ -3,7 +3,7 @@ import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
 import PageContainer from 'components/PageContainer';
 import { TouchableOpacity } from 'react-native';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState, Fragment } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca/index';
 import { pTd } from 'utils/unit';
@@ -212,8 +212,6 @@ const TabsDrawerContent: React.FC = () => {
       const canGoForward: boolean = tabStateMap?.canGoForward?.[String(ele?.id)];
 
       const onNavigationStateChange = (navState: any) => {
-        console.log('onNavigationStateChange');
-
         if (ele.id === activeTabId) {
           setTabStateMap(pre => ({
             canGoBack: {
@@ -229,7 +227,7 @@ const TabsDrawerContent: React.FC = () => {
       };
 
       return (
-        <>
+        <Fragment key={ele.id}>
           <BrowserTab
             key={ele.id}
             id={ele.id}
@@ -272,7 +270,7 @@ const TabsDrawerContent: React.FC = () => {
               </TouchableOpacity>
             </View>
           )}
-        </>
+        </Fragment>
       );
     });
   }, [

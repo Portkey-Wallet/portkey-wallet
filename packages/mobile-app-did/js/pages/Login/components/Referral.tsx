@@ -125,27 +125,15 @@ export default function Referral({
   const otherLoginTypeList = useMemo<{ icon: IconName; onPress: () => any }[]>(
     () => [
       {
-        icon: isIOS ? 'google' : 'apple',
-        onPress: isIOS ? onGoogleSign : onAppleSign,
-      },
-      // {
-      //   icon: 'twitter',
-      //   onPress: onTwitterSign,
-      // },
-      // {
-      //   icon: 'facebook',
-      //   onPress: onFacebookSign,
-      // },
-      // {
-      //   icon: 'phone',
-      //   onPress: () => setLoginType(PageLoginType.phone),
-      // },
-      {
         icon: 'email',
         onPress: () => setLoginType(PageLoginType.email),
       },
+      {
+        icon: 'telegram',
+        onPress: onTelegramSign,
+      },
     ],
-    [onAppleSign, onGoogleSign, setLoginType],
+    [onTelegramSign, setLoginType],
   );
 
   return (
@@ -163,9 +151,9 @@ export default function Referral({
           style={GStyles.marginTop(40)}
         />
         <OblongButton
-          icon="telegram"
-          title={TitleMap[type].telegram}
-          onPress={onTelegramSign}
+          icon={isIOS ? 'google' : 'apple'}
+          title={TitleMap[type][isIOS ? 'google' : 'google']}
+          onPress={isIOS ? onGoogleSign : onAppleSign}
           style={GStyles.marginTop(16)}
         />
         <Divider title="OR" inset={true} style={pageStyles.dividerStyle} />

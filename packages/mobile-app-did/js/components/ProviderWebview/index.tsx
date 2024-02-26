@@ -5,7 +5,12 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
 import { MobileStream } from 'dapp/mobileStream';
 import DappMobileOperator from 'dapp/dappMobileOperator';
-import { WebViewErrorEvent, WebViewNavigation, WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
+import {
+  FileDownloadEvent,
+  WebViewErrorEvent,
+  WebViewNavigation,
+  WebViewNavigationEvent,
+} from 'react-native-webview/lib/WebViewTypes';
 import URL from 'url-parse';
 import { store } from 'store';
 import { DappOverlay } from 'dapp/dappOverlay';
@@ -148,7 +153,15 @@ const ProviderWebview = forwardRef<
     }),
     [],
   );
-
+  const onFileDownload = useCallback(async (event: FileDownloadEvent) => {
+    try {
+      await Linking.openURL(event.nativeEvent.downloadUrl);
+    } catch (er: any) {
+      console.log('Failed to open Link:', er.message);
+    } finally {
+      webViewRef.current?.reload();
+    }
+  }, []);
   const onShouldStartLoadWithRequest = ({ url }: ShouldStartLoadRequest) => {
     const { protocol } = new URL(url);
     if (PROTOCOL_ALLOW_LIST.includes(protocol)) return true;
@@ -199,6 +212,7 @@ const ProviderWebview = forwardRef<
           operatorRef.current?.handleRequestMessage(nativeEvent.data);
           props.onMessage?.(event);
         }}
+        onFileDownload={props.onFileDownload ? props.onFileDownload : onFileDownload}
         // fix webview show blank page when not used for some time in android
         // https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md#onrenderprocessgone
         onRenderProcessGone={() => webViewRef.current?.reload()}
@@ -207,7 +221,7 @@ const ProviderWebview = forwardRef<
         onContentProcessDidTerminate={() => webViewRef.current?.reload()}
       />
     ),
-    [entryScriptWeb3, handleUpdate, onLoadStart, props, source],
+    [entryScriptWeb3, handleUpdate, onFileDownload, onLoadStart, props, source],
   );
   if (!entryScriptWeb3) return null;
 

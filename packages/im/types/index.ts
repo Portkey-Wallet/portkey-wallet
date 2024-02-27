@@ -1,5 +1,6 @@
 export type MessageType = 'TEXT' | 'IMAGE' | 'SYS' | 'REDPACKAGE-CARD' | 'TRANSFER-CARD' | 'PIN-SYS';
 export type ParsedContent = string | ParsedImage | ParsedRedPackage | ParsedTransfer | ParsedPinSys | undefined;
+import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import { PIN_OPERATION_TYPE_ENUM } from './pin';
 import { RedPackageStatusInfo } from './redPackage';
 
@@ -31,6 +32,10 @@ export type ParsedRedPackage = {
     id: string;
     senderId: string;
     memo: string;
+    assetType?: AssetType;
+    imageUrl?: string;
+    alias?: string;
+    tokenId?: string;
   };
 };
 

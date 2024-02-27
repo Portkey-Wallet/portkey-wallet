@@ -299,7 +299,7 @@ const PaymentModal = ({
         <View style={[GStyles.itemCenter, GStyles.flex1]}>
           <TextM style={styles.titleStyle}> {title}</TextM>
           <RedPacketAmountShow
-            isNFT={assetInfo.assetType === AssetType.nft}
+            assetType={assetInfo.assetType}
             componentType="sendPacketPage"
             textColor={defaultColors.font5}
             amountShow={amount}

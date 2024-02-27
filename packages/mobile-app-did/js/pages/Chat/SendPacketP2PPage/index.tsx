@@ -4,7 +4,7 @@ import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
-import SendRedPacketGroupSection, { ValuesType } from '../components/SendRedPacketGroupSection';
+import SendRedPacketGroupSection, { CryptoValuesType } from '../components/SendRedPacketGroupSection';
 import { TextM } from 'components/CommonText';
 import { RedPackageTypeEnum } from '@portkey-wallet/im';
 import PaymentOverlay from 'components/PaymentOverlay';
@@ -28,7 +28,6 @@ import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
 import { createTimeRecorder } from '@portkey-wallet/utils/timeRecorder';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 
 export default function SendPacketP2PPage() {
   const currentChannelId = useCurrentChannelId();
@@ -43,15 +42,17 @@ export default function SendPacketP2PPage() {
   const reportAnalyticsEvent = useReportAnalyticsEvent();
 
   const onPressBtn = useLockCallback(
-    async (values: ValuesType) => {
+    async (values: CryptoValuesType) => {
+      const { token } = values;
+
       Loading.show();
       try {
-        const isManagerSynced = await checkManagerSyncState(values.chainId);
+        const isManagerSynced = await checkManagerSyncState(token.chainId);
         if (!isManagerSynced) {
           CommonToast.warn('Synchronizing on-chain account information...');
           return;
         }
-        const isSafe = await securitySafeCheckAndToast(values.chainId);
+        const isSafe = await securitySafeCheckAndToast(token.chainId);
         if (!isSafe) return;
       } catch (error) {
         CommonToast.failError(error);
@@ -60,32 +61,39 @@ export default function SendPacketP2PPage() {
         Loading.hide();
       }
 
-      const totalAmount = timesDecimals(values.count, values.decimals);
+      const totalAmount = timesDecimals(values.count, token.decimals);
       let caContract: ContractBasic;
       try {
         await PaymentOverlay.showRedPacket({
           assetInfo: {
-            symbol: values.symbol,
-            decimals: values.decimals,
+            symbol: token.symbol,
+            decimals: token.decimals,
           },
           amount: values.count,
-          chainId: values.chainId,
-          calculateTransactionFee: () => calculateRedPacketFee(values),
+          chainId: token.chainId,
+          calculateTransactionFee: () =>
+            calculateRedPacketFee({
+              symbol: token.symbol,
+              chainId: token.chainId,
+              decimals: token.decimals,
+              count: values.count,
+            }),
         });
 
-        const redPacketContractAddress = getContractAddress(values.chainId);
+        const redPacketContractAddress = getContractAddress(token.chainId);
         if (!redPacketContractAddress) {
           throw new Error('redPacketContractAddress is not exist');
         }
 
-        caContract = await getCAContract(values.chainId);
+        caContract = await getCAContract(token.chainId);
 
         await checkAllowanceAndApprove({
           caContract,
           spender: redPacketContractAddress,
           bigAmount: totalAmount,
-          ...values,
-          decimals: Number(values.decimals),
+          symbol: token.symbol,
+          chainId: token.chainId,
+          decimals: Number(token.decimals),
           isShowOnceLoading: true,
         });
       } catch (error) {
@@ -101,16 +109,13 @@ export default function SendPacketP2PPage() {
       const timeRecorder = createTimeRecorder();
       try {
         await sendRedPackage({
-          chainId: values.chainId,
-          symbol: values.symbol,
           totalAmount: totalAmount.toFixed(0),
-          decimal: values.decimals,
           memo: values.memo,
           caContract: caContract,
           type: RedPackageTypeEnum.P2P,
           count: 1,
           channelId: currentChannelId || '',
-          assetType: values.assetType || AssetType.ft,
+          token,
         });
         reportAnalyticsEvent({ page: 'SendPacketP2PPage', time: timeRecorder.endBySecond() }, 'RecordMessage');
         CommonToast.success('Sent successfully!');

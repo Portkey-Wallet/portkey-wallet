@@ -153,9 +153,11 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
 
   const [countError, setCountError] = useState<ErrorType>(INIT_NONE_ERROR);
   const onPreparePress = useCallback(() => {
-    const { decimals, chainId, symbol } = selectToken;
+    const { decimals, chainId, symbol, alias } = selectToken;
     const { packetNum, count } = values;
     let isError = false;
+
+    console.log('onPreparePress', values);
 
     const amount = timesDecimals(count, decimals);
     const tokenConfig = getTokenInfo(chainId, symbol);
@@ -175,13 +177,14 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
       if (amount.lt(totalMinAmount)) {
         setCountError({
           isError: true,
-          errorMsg: `At least ${divDecimalsStr(minAmount, decimals)} ${symbol} for each crypto box`,
+          errorMsg: `At least ${divDecimalsStr(minAmount, decimals)} ${alias || symbol} for each crypto box`,
         });
         isError = true;
       }
     }
 
     if (isError) return;
+
     onPressButton({
       token: selectToken,
       packetNum: values.packetNum || '1',
@@ -285,7 +288,9 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
                 imageUrl={selectToken.imageUrl || symbolImages[selectToken.symbol]}
               />
               <View style={[styles.assetInfoWrap, GStyles.flex1]}>
-                <TextM style={[GStyles.flex1, fonts.mediumFont]}>{assetName}</TextM>
+                <TextM numberOfLines={1} style={[GStyles.flex1, fonts.mediumFont]}>
+                  {assetName}
+                </TextM>
                 <TextS style={[GStyles.flex1, FontStyles.font3]} numberOfLines={1}>
                   {formatChainInfoToShow(selectToken.chainId)}
                 </TextS>

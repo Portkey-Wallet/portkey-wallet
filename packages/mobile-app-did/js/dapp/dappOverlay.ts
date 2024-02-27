@@ -14,6 +14,7 @@ export type ApproveInfo = {
   spender: string;
   decimals: number;
   targetChainId: ChainId;
+  alias?: string;
 };
 
 export type ApproveParams = {

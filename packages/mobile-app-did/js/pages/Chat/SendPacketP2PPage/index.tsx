@@ -43,7 +43,7 @@ export default function SendPacketP2PPage() {
 
   const onPressBtn = useLockCallback(
     async (values: CryptoValuesType) => {
-      const { token } = values;
+      const { token, count } = values;
 
       Loading.show();
       try {
@@ -65,10 +65,7 @@ export default function SendPacketP2PPage() {
       let caContract: ContractBasic;
       try {
         await PaymentOverlay.showRedPacket({
-          assetInfo: {
-            symbol: token.symbol,
-            decimals: token.decimals,
-          },
+          assetInfo: token,
           amount: values.count,
           chainId: token.chainId,
           calculateTransactionFee: () =>
@@ -76,7 +73,7 @@ export default function SendPacketP2PPage() {
               symbol: token.symbol,
               chainId: token.chainId,
               decimals: token.decimals,
-              count: values.count,
+              count: count,
             }),
         });
 
@@ -95,6 +92,7 @@ export default function SendPacketP2PPage() {
           chainId: token.chainId,
           decimals: Number(token.decimals),
           isShowOnceLoading: true,
+          alias: token.alias,
         });
       } catch (error) {
         console.log(error, 'send check ====error');

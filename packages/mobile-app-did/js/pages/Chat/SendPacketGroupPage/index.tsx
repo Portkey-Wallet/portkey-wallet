@@ -67,11 +67,7 @@ export default function SendPacketGroupPage() {
 
       try {
         await PaymentOverlay.showRedPacket({
-          assetInfo: {
-            ...values,
-            symbol: token.symbol,
-            decimals: token.decimals,
-          },
+          assetInfo: token,
           amount: values.count,
           chainId: token.chainId,
           calculateTransactionFee: () =>
@@ -98,6 +94,7 @@ export default function SendPacketGroupPage() {
           chainId: token.chainId,
           decimals: Number(token.decimals),
           isShowOnceLoading: true,
+          alias: token.alias,
         });
       } catch (error) {
         console.log(error, 'send check ====error');

@@ -11,11 +11,11 @@ export type NoDataPropsType = {
   disabled?: boolean;
   data: {
     alias: string;
-    balance: string;
+    balance?: string;
     chainId: string;
     imageUrl: string;
-    symbol: string;
-    tokenContractAddress: string;
+    symbol?: string;
+    tokenContractAddress?: string;
     tokenId: string;
   };
   onPress?: () => void;

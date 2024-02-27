@@ -26,6 +26,7 @@ import { divDecimalsStr } from '@portkey-wallet/utils/converter';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { formatRedPacketNoneLeftTime, getNumberWithUnit, getUnit } from '../utils/format';
 import NFTAvatar from 'components/NFTAvatar';
+import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 
 export type RedPacketRouterParams = {
   redPacketId: string;
@@ -58,7 +59,8 @@ export const RedPacketDetails = () => {
 
   const renderRedPacketTipContent = useMemo(() => {
     // TODO: isNFT
-    const tokenUnit = isMyPacket ? redPacketData?.symbol : `${redPacketData?.symbol} NFTs`;
+    const tokenUnit =
+      redPacketData?.assetType === AssetType.ft ? redPacketData?.symbol : `${redPacketData?.alias} NFTs`;
 
     // isP2P && my packet && isRedPackageFullyClaimed
     if (isP2P && isMyPacket && redPacketData?.isRedPackageFullyClaimed)
@@ -131,6 +133,8 @@ export const RedPacketDetails = () => {
   }, [
     isMyPacket,
     isP2P,
+    redPacketData?.alias,
+    redPacketData?.assetType,
     redPacketData?.count,
     redPacketData?.createTime,
     redPacketData?.decimal,
@@ -161,26 +165,36 @@ export const RedPacketDetails = () => {
           </TextXL>
         </View>
 
-        <TextM style={[FontStyles.font7, styles.memo]}>{redPacketData?.memo}</TextM>
+        <TextM
+          style={[
+            FontStyles.font7,
+            styles.memo,
+            redPacketData?.assetType === AssetType.nft && GStyles.marginBottom(24),
+          ]}>
+          {redPacketData?.memo}
+        </TextM>
 
-        <NFTAvatar
-          disabled
-          data={{
-            alias: 'hi',
-            balance: '',
-            chainId: 'AELF',
-            imageUrl: 'https://aelf.io/images/elf.png',
-            symbol: 'ELF',
-            tokenContractAddress: '',
-            tokenId: 'xx',
-          }}
-        />
+        {redPacketData?.assetType === AssetType.nft && (
+          <NFTAvatar
+            disabled
+            style={GStyles.marginBottom(16)}
+            data={{
+              alias: redPacketData?.alias || '',
+              chainId: redPacketData?.chainId || '',
+              imageUrl: redPacketData?.imageUrl || '',
+              symbol: redPacketData?.symbol || '',
+              tokenContractAddress: '',
+              tokenId: redPacketData?.tokenId || '',
+            }}
+          />
+        )}
         {redPacketData?.isCurrentUserGrabbed && (
           <>
             <RedPacketAmountShow
+              assetType={redPacketData?.assetType}
               componentType="packetDetailPage"
               amountShow={divDecimalsStr(redPacketData?.currentUserGrabbedAmount, redPacketData?.decimal)}
-              symbol={redPacketData?.symbol || ''}
+              symbol={redPacketData.assetType === AssetType.ft ? redPacketData?.symbol : ''}
             />
             <TextS style={[FontStyles.font15, styles.tips]}>
               {`You can find the claiming record in the "Activity" section.`}
@@ -190,13 +204,18 @@ export const RedPacketDetails = () => {
       </View>
     );
   }, [
+    redPacketData?.alias,
+    redPacketData?.assetType,
+    redPacketData?.chainId,
     redPacketData?.currentUserGrabbedAmount,
     redPacketData?.decimal,
+    redPacketData?.imageUrl,
     redPacketData?.isCurrentUserGrabbed,
     redPacketData?.memo,
     redPacketData?.senderAvatar,
     redPacketData?.senderName,
     redPacketData?.symbol,
+    redPacketData?.tokenId,
   ]);
 
   const nextList = useCallback(() => {
@@ -234,8 +253,8 @@ export const RedPacketDetails = () => {
               <RedPacketReceiverItem
                 key={item.userId}
                 item={item}
-                symbol={redPacketData?.symbol || ''}
-                decimals={redPacketData?.decimal || ''}
+                symbol={redPacketData?.assetType === AssetType.ft ? redPacketData?.symbol : ''}
+                decimals={redPacketData?.decimal}
                 isLuckyKing={item.userId === luckKingId}
               />
             )}
@@ -243,9 +262,8 @@ export const RedPacketDetails = () => {
             ListFooterComponentStyle={styles.listFooterComponentStyle}
             ListFooterComponent={() =>
               isShowBottomTips ? (
-                //  todo: nft is other
                 <TextM style={styles.bottomTips}>
-                  {'Unclaimed tokens have been automatically returned to the sender.'}
+                  {'Unclaimed tokens/NFTs have been automatically returned to the sender.'}
                 </TextM>
               ) : null
             }
@@ -307,7 +325,7 @@ const styles = StyleSheet.create({
     marginTop: pTd(4),
   },
   divider: {
-    marginTop: pTd(40),
+    marginTop: pTd(24),
     backgroundColor: defaultColors.bg6,
   },
   redPacketStyleIntro: {

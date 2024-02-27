@@ -35,15 +35,17 @@ import { InsufficientTransactionFee } from 'hooks/useCalculateRedPacketFee';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 
-export type PaymentTokenInfo = {
+export type PaymentAssetInfo = {
   symbol: string;
   decimals: number | string;
+  alias?: string;
+  tokenId?: string;
   imageUrl?: string;
   assetType?: AssetType;
 };
 
 export type PaymentOverlayProps = {
-  tokenInfo: PaymentTokenInfo;
+  assetInfo: PaymentAssetInfo;
   chainId: ChainId;
   amount: string;
   title: string;
@@ -52,7 +54,7 @@ export type PaymentOverlayProps = {
 };
 
 const PaymentModal = ({
-  tokenInfo,
+  assetInfo,
   chainId,
   amount,
   title,
@@ -78,28 +80,28 @@ const PaymentModal = ({
     const currentSymbolList: TokenItemShowType[] = [];
     const crossSufficient: TokenItemShowType[] = [];
     const map: { [key: string]: TokenItemShowType } = accountTokenList.reduce((acc, item) => {
-      if (item.symbol === tokenInfo.symbol) {
+      if (item?.symbol === assetInfo?.symbol) {
         currentSymbolList.push(item);
-        if (item.chainId !== chainId && divDecimals(item.balance, item.decimals).gte(amount))
+        if (item?.chainId !== chainId && divDecimals(item?.balance, item?.decimals).gte(amount))
           crossSufficient.push(item);
-        return merge(acc, { [item.chainId]: item });
+        return merge(acc, { [item?.chainId]: item });
       }
       return acc;
     }, {});
     return [map, crossSufficient];
-  }, [accountTokenList, amount, chainId, tokenInfo.symbol]);
+  }, [accountTokenList, amount, assetInfo?.symbol, chainId]);
 
   const crossSufficientItem = useMemo(() => crossSufficientList[0], [crossSufficientList]);
   const currentTokenInfo: TokenItemShowType | undefined = useMemo(() => {
     if (tokenMap?.[chainId]) return tokenMap?.[chainId];
 
-    return tokenInfoList.find(ele => ele.symbol === tokenInfo.symbol);
-  }, [chainId, tokenInfo.symbol, tokenInfoList, tokenMap]);
+    return tokenInfoList.find(ele => ele.symbol === assetInfo.symbol);
+  }, [assetInfo.symbol, chainId, tokenInfoList, tokenMap]);
 
   const { isBuySectionShow } = useAppRampEntryShow();
   const isCanBuy = useMemo(
-    () => tokenInfo.symbol === defaultToken.symbol && isBuySectionShow,
-    [isBuySectionShow, defaultToken.symbol, tokenInfo.symbol],
+    () => assetInfo.symbol === defaultToken.symbol && isBuySectionShow,
+    [assetInfo.symbol, defaultToken.symbol, isBuySectionShow],
   );
 
   // update AccountTokenList
@@ -194,7 +196,7 @@ const PaymentModal = ({
         OverlayModal.hide(false);
         navigationService.navigateByMultiLevelParams('RampHome', {
           params: {
-            symbol: tokenInfo.symbol,
+            symbol: assetInfo.symbol,
           },
           multiLevelParams: {
             successNavigateName,
@@ -208,31 +210,46 @@ const PaymentModal = ({
         <TextS style={FontStyles.font11}>{buttonTitle}</TextS>
       </Touchable>
     );
-  }, [chainId, crossSufficientItem, currentCaAddress, currentChannelType, fee.error, isCanBuy, tokenInfo.symbol]);
+  }, [assetInfo.symbol, chainId, crossSufficientItem, currentCaAddress, currentChannelType, fee.error, isCanBuy]);
 
   const disableStyle = useMemo(() => !!isInsufficientTransactionFee && styles.opacity, [isInsufficientTransactionFee]);
+
   const tokenRowComponent = useMemo(() => {
     return (
       <View style={[GStyles.flex1, GStyles.flexRow, styles.rowCenter, disableStyle]}>
         <CommonAvatar
           hasBorder
+          shapeType={assetInfo.assetType === AssetType.nft ? 'square' : 'circular'}
           style={styles.avatar}
-          title={currentTokenInfo?.symbol}
+          title={assetInfo.symbol}
           avatarSize={pTd(24)}
-          imageUrl={currentTokenInfo?.imageUrl}
+          // TODO: adjust token
+          imageUrl={assetInfo?.imageUrl}
         />
-        <TextL style={[GStyles.flex1, GStyles.paddingRight(8), FontStyles.font5]} numberOfLines={1}>
-          {tokenInfo.symbol} ({formatChainInfoToShow(chainId, currentNetwork)})
-        </TextL>
+        <View style={[GStyles.flexRow, GStyles.flex1, GStyles.paddingRight(8)]}>
+          <TextL style={[FontStyles.font5]} numberOfLines={1}>
+            {`${assetInfo.assetType === AssetType.nft ? assetInfo.alias + ' #' + assetInfo.tokenId : assetInfo.symbol}`}
+          </TextL>
+          <TextS style={FontStyles.font5}>{formatChainInfoToShow(chainId, currentNetwork)}</TextS>
+        </View>
       </View>
     );
-  }, [chainId, currentNetwork, currentTokenInfo?.imageUrl, currentTokenInfo?.symbol, disableStyle, tokenInfo.symbol]);
+  }, [
+    assetInfo.alias,
+    assetInfo.assetType,
+    assetInfo?.imageUrl,
+    assetInfo.symbol,
+    assetInfo.tokenId,
+    chainId,
+    currentNetwork,
+    disableStyle,
+  ]);
 
   const tokenBalanceComponent = useMemo(() => {
     if (isInsufficientTransactionFee) return;
 
     // TODO: nft
-    if (tokenInfo.assetType === AssetType.nft)
+    if (assetInfo.assetType === AssetType.nft)
       return (
         <Text style={styles.marginTop4}>
           <TextS style={FontStyles.font3}>
@@ -264,16 +281,16 @@ const PaymentModal = ({
       </Text>
     );
   }, [
+    assetInfo.assetType,
     currentTokenInfo?.balance,
     currentTokenInfo?.decimals,
     currentTokenInfo?.price,
     currentTokenInfo?.symbol,
     isInsufficientTransactionFee,
-    tokenInfo.assetType,
   ]);
 
   useEffectOnce(() => {
-    getTokensPrice([tokenInfo.symbol, defaultToken.symbol]);
+    getTokensPrice([assetInfo.symbol, defaultToken.symbol]);
   });
 
   return (
@@ -282,21 +299,30 @@ const PaymentModal = ({
         <View style={[GStyles.itemCenter, GStyles.flex1]}>
           <TextM style={styles.titleStyle}> {title}</TextM>
           <RedPacketAmountShow
-            // TODO: fix this
-            isNFT
+            isNFT={assetInfo.assetType === AssetType.nft}
             componentType="sendPacketPage"
             textColor={defaultColors.font5}
             amountShow={amount}
-            symbol={tokenInfo.symbol}
+            symbol={assetInfo.symbol}
           />
           {!!currentTokenInfo?.price && (
             <TextM style={GStyles.marginTop(pTd(2))}>{convertAmountUSDShow(amount, currentTokenInfo?.price)}</TextM>
           )}
 
           {/* TODO: change  */}
-          <View style={GStyles.marginTop(pTd(2))}>
-            <CommonAvatar shapeType="square" avatarSize={pTd(24)} />
-            <TextM numberOfLines={1} style={GStyles.marginLeft(pTd(8))}>{`${'alias'} #${'amount'}`}</TextM>
+          <View style={[GStyles.flexRow, GStyles.center, GStyles.marginTop(pTd(4))]}>
+            <CommonAvatar
+              shapeType="square"
+              avatarSize={pTd(24)}
+              imageUrl={assetInfo.imageUrl}
+              style={styles.nftAvatar}
+            />
+            <TextM
+              numberOfLines={1}
+              style={[
+                GStyles.marginLeft(pTd(8)),
+                FontStyles.font5,
+              ]}>{`${assetInfo.alias} #${assetInfo.tokenId}`}</TextM>
           </View>
 
           <View style={[GStyles.marginTop(pTd(40)), GStyles.width100]}>
@@ -314,7 +340,7 @@ const PaymentModal = ({
                 )}
                 {!!(crossSufficientItem && fee.error) && (
                   <TextS style={[FontStyles.font6, styles.marginTop4]}>
-                    {`You can transfer some ${tokenInfo.symbol} from your ${formatChainInfoToShow(
+                    {`You can transfer some ${assetInfo.symbol} from your ${formatChainInfoToShow(
                       crossSufficientItem?.chainId,
                       currentNetwork,
                     )} address`}
@@ -405,5 +431,8 @@ export const styles = StyleSheet.create({
   },
   marginTop4: {
     marginTop: pTd(4),
+  },
+  nftAvatar: {
+    borderRadius: pTd(4),
   },
 });

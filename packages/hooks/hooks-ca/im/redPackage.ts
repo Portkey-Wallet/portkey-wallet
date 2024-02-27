@@ -26,6 +26,7 @@ import { useCurrentNetworkInfo } from '../network';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { generateRedPackageRawTransaction, getSendUuid } from '@portkey-wallet/utils/chat';
 import useLockCallback from '../../useLockCallback';
+import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 
 export interface ICreateRedPacketParams {
   id: string;
@@ -49,6 +50,7 @@ export interface ISendRedPackageHookParams {
   memo: string;
   caContract: ContractBasic;
   image?: string;
+  assetType: AssetType;
 }
 export const useSendRedPackage = () => {
   const { relationId, getRelationId } = useRelationId();
@@ -59,7 +61,7 @@ export const useSendRedPackage = () => {
 
   return useCallback(
     async (params: ISendRedPackageHookParams) => {
-      const { channelId, chainId, symbol, totalAmount, image = '', memo, type, count, caContract } = params;
+      const { channelId, chainId, symbol, totalAmount, image = '', memo, type, count, caContract, assetType } = params;
 
       const caHash = wallet.caHash;
       const caAddress = wallet[chainId]?.caAddress;
@@ -126,6 +128,7 @@ export const useSendRedPackage = () => {
         channelUuid: channelId,
         rawTransaction,
         message: JSON.stringify(message),
+        assetType,
       });
 
       const { data: creationStatus } = await handleLoopFetch({

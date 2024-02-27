@@ -28,6 +28,7 @@ import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
 import { createTimeRecorder } from '@portkey-wallet/utils/timeRecorder';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 
 export default function SendPacketP2PPage() {
   const currentChannelId = useCurrentChannelId();
@@ -63,7 +64,7 @@ export default function SendPacketP2PPage() {
       let caContract: ContractBasic;
       try {
         await PaymentOverlay.showRedPacket({
-          tokenInfo: {
+          assetInfo: {
             symbol: values.symbol,
             decimals: values.decimals,
           },
@@ -109,6 +110,7 @@ export default function SendPacketP2PPage() {
           type: RedPackageTypeEnum.P2P,
           count: 1,
           channelId: currentChannelId || '',
+          assetType: values.assetType || AssetType.ft,
         });
         reportAnalyticsEvent({ page: 'SendPacketP2PPage', time: timeRecorder.endBySecond() }, 'RecordMessage');
         CommonToast.success('Sent successfully!');

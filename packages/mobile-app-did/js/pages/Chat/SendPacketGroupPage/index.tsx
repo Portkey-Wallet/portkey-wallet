@@ -29,6 +29,7 @@ import CommonTouchableTabs, { TabItemType } from 'components/CommonTouchableTabs
 import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
 import { createTimeRecorder } from '@portkey-wallet/utils/timeRecorder';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 
 export default function SendPacketGroupPage() {
   const currentChannelId = useCurrentChannelId();
@@ -65,7 +66,8 @@ export default function SendPacketGroupPage() {
 
       try {
         await PaymentOverlay.showRedPacket({
-          tokenInfo: {
+          assetInfo: {
+            ...values,
             symbol: values.symbol,
             decimals: values.decimals,
           },
@@ -111,6 +113,7 @@ export default function SendPacketGroupPage() {
           type: selectTab === GroupRedPacketTabEnum.Fixed ? RedPackageTypeEnum.FIXED : RedPackageTypeEnum.RANDOM,
           count: Number(values.packetNum || 1),
           channelId: currentChannelId || '',
+          assetType: values.assetType || AssetType.ft,
         });
         CommonToast.success('Sent successfully!');
         navigationService.goBack();

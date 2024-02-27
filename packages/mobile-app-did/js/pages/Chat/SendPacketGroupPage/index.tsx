@@ -6,7 +6,7 @@ import { GroupRedPacketTabEnum } from '../types';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { TextM } from 'components/CommonText';
-import SendRedPacketGroupSection, { ValuesType } from '../components/SendRedPacketGroupSection';
+import SendRedPacketGroupSection, { CryptoValuesType } from '../components/SendRedPacketGroupSection';
 import { RedPackageTypeEnum } from '@portkey-wallet/im';
 import PaymentOverlay from 'components/PaymentOverlay';
 import { useCurrentChannelId } from '../context/hooks';
@@ -29,7 +29,6 @@ import CommonTouchableTabs, { TabItemType } from 'components/CommonTouchableTabs
 import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
 import { createTimeRecorder } from '@portkey-wallet/utils/timeRecorder';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 
 export default function SendPacketGroupPage() {
   const currentChannelId = useCurrentChannelId();
@@ -44,15 +43,17 @@ export default function SendPacketGroupPage() {
   const { getContractAddress } = useGetRedPackageConfig(true);
   const reportAnalyticsEvent = useReportAnalyticsEvent();
   const onPressBtn = useLockCallback(
-    async (values: ValuesType) => {
+    async (values: CryptoValuesType) => {
+      const { token } = values;
+
       Loading.show();
       try {
-        const isManagerSynced = await checkManagerSyncState(values.chainId);
+        const isManagerSynced = await checkManagerSyncState(token.chainId);
         if (!isManagerSynced) {
           CommonToast.warn('Synchronizing on-chain account information...');
           return;
         }
-        const isSafe = await securitySafeCheckAndToast(values.chainId);
+        const isSafe = await securitySafeCheckAndToast(token.chainId);
         if (!isSafe) return;
       } catch (error) {
         CommonToast.failError(error);
@@ -61,34 +62,41 @@ export default function SendPacketGroupPage() {
         Loading.hide();
       }
 
-      const totalAmount = timesDecimals(values.count, values.decimals);
+      const totalAmount = timesDecimals(values.count, token.decimals);
       let caContract: ContractBasic;
 
       try {
         await PaymentOverlay.showRedPacket({
           assetInfo: {
             ...values,
-            symbol: values.symbol,
-            decimals: values.decimals,
+            symbol: token.symbol,
+            decimals: token.decimals,
           },
           amount: values.count,
-          chainId: values.chainId,
-          calculateTransactionFee: () => calculateRedPacketFee(values),
+          chainId: token.chainId,
+          calculateTransactionFee: () =>
+            calculateRedPacketFee({
+              symbol: token.symbol,
+              chainId: token.chainId,
+              decimals: token.decimals,
+              count: values.count,
+            }),
         });
 
-        const redPacketContractAddress = getContractAddress(values.chainId);
+        const redPacketContractAddress = getContractAddress(token.chainId);
         if (!redPacketContractAddress) {
           throw new Error('redPacketContractAddress is not exist');
         }
 
-        caContract = await getCAContract(values.chainId);
+        caContract = await getCAContract(token.chainId);
 
         await checkAllowanceAndApprove({
           caContract,
           spender: redPacketContractAddress,
           bigAmount: totalAmount,
-          ...values,
-          decimals: Number(values.decimals),
+          symbol: token.symbol,
+          chainId: token.chainId,
+          decimals: Number(token.decimals),
           isShowOnceLoading: true,
         });
       } catch (error) {
@@ -104,16 +112,13 @@ export default function SendPacketGroupPage() {
       const timeRecorder = createTimeRecorder();
       try {
         await sendRedPackage({
-          chainId: values.chainId,
-          symbol: values.symbol,
           totalAmount: totalAmount.toFixed(0),
-          decimal: values.decimals,
           memo: values.memo,
           caContract: caContract,
           type: selectTab === GroupRedPacketTabEnum.Fixed ? RedPackageTypeEnum.FIXED : RedPackageTypeEnum.RANDOM,
           count: Number(values.packetNum || 1),
           channelId: currentChannelId || '',
-          assetType: values.assetType || AssetType.ft,
+          token,
         });
         CommonToast.success('Sent successfully!');
         navigationService.goBack();

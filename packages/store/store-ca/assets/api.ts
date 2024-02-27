@@ -1,7 +1,8 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
-import { IAssetItemType, ICryptoBoxAssetItemType } from './type';
+import { IAssetItemType } from './type';
 import { NFT_SMALL_SIZE, NFT_MIDDLE_SIZE } from '@portkey-wallet/constants/constants-ca/assets';
+import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 
 type ITokenItemResponse = Omit<TokenItemShowType, 'name' | 'address'>;
 

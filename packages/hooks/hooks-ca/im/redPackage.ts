@@ -9,6 +9,7 @@ import im, {
   RedPackageTypeEnum,
 } from '@portkey-wallet/im';
 import { ChainId } from '@portkey-wallet/types';
+import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import { handleLoopFetch } from '@portkey-wallet/utils';
 import { useRedPackageConfigMapState, useRelationId } from '.';
 import { RedPackageCreationStatusEnum } from '@portkey-wallet/im/types';
@@ -39,19 +40,18 @@ export interface ICreateRedPacketParams {
   publicKey: string;
   signature: string;
 }
+
 export interface ISendRedPackageHookParams {
   channelId: string;
-  chainId: ChainId;
-  symbol: string;
   totalAmount: string;
-  decimal: string | number;
   type: RedPackageTypeEnum;
   count: number;
   memo: string;
   caContract: ContractBasic;
   image?: string;
-  assetType: AssetType;
+  token: ICryptoBoxAssetItemType;
 }
+
 export const useSendRedPackage = () => {
   const { relationId, getRelationId } = useRelationId();
   const { networkType } = useCurrentNetworkInfo();
@@ -61,7 +61,8 @@ export const useSendRedPackage = () => {
 
   return useCallback(
     async (params: ISendRedPackageHookParams) => {
-      const { channelId, chainId, symbol, totalAmount, image = '', memo, type, count, caContract, assetType } = params;
+      const { channelId, totalAmount, image = '', memo, type, count, caContract, token } = params;
+      const { chainId, symbol, assetType = AssetType.ft, imageUrl, alias, tokenId } = token;
 
       const caHash = wallet.caHash;
       const caAddress = wallet[chainId]?.caAddress;
@@ -106,6 +107,10 @@ export const useSendRedPackage = () => {
           id,
           senderId: userInfo.userId,
           memo,
+          assetType,
+          imageUrl,
+          alias,
+          tokenId,
         },
       };
       const message = {

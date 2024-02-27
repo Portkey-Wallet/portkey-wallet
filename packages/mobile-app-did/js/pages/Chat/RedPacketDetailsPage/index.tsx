@@ -178,7 +178,6 @@ export const RedPacketDetails = () => {
         {redPacketData?.isCurrentUserGrabbed && (
           <>
             <RedPacketAmountShow
-              isNFT
               componentType="packetDetailPage"
               amountShow={divDecimalsStr(redPacketData?.currentUserGrabbedAmount, redPacketData?.decimal)}
               symbol={redPacketData?.symbol || ''}

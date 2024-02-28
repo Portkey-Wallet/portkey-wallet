@@ -2,7 +2,7 @@ import React, { memo, useMemo } from 'react';
 import Svg from 'components/Svg';
 import navigationService from 'utils/navigationService';
 
-import { View, TouchableOpacity, StyleProp, ViewProps } from 'react-native';
+import { View, StyleProp, ViewProps } from 'react-native';
 import { TextM } from 'components/CommonText';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';

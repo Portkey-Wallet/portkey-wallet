@@ -1,6 +1,7 @@
 import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
 import { BackEndNetWorkMap } from './backend-network';
 import { LINK_PATH_ENUM } from './link';
+import { T_ENV_NAME } from '@portkey-wallet/types';
 
 export const NetworkList: NetworkItem[] = [
   BackEndNetWorkMap['back-end-test4-v2'],
@@ -29,3 +30,5 @@ export enum DappMap {
 }
 
 export const OpenLogin = `https://openlogin-test.portkey.finance`;
+
+export const ENV_NAME: T_ENV_NAME = 'offline';

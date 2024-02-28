@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
 import SimulatedInputBox from 'components/SimulatedInputBox';
@@ -15,6 +15,7 @@ import { DiscoverArchivedSection } from '../components/DiscoverArchivedSection';
 import { useCheckAndInitNetworkDiscoverMap } from 'hooks/discover';
 import { useFetchCurrentRememberMeBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useFocusEffect } from '@react-navigation/native';
+import Touchable from 'components/Touchable';
 
 export default function DiscoverHome() {
   useCheckAndInitNetworkDiscoverMap();
@@ -23,14 +24,14 @@ export default function DiscoverHome() {
 
   const RightDom = useMemo(
     () => (
-      <TouchableOpacity
+      <Touchable
         style={styles.svgWrap}
         onPress={async () => {
           if (!(await qrScanPermissionAndToast())) return;
           navigationService.navigate('QrScanner');
         }}>
         <Svg icon="scan" size={22} color={defaultColors.font2} />
-      </TouchableOpacity>
+      </Touchable>
     ),
     [qrScanPermissionAndToast],
   );

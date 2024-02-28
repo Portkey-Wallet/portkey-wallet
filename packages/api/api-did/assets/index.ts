@@ -4,6 +4,8 @@ export default {
   fetchAccountNftCollectionItemList: '/api/app/user/assets/nftItems',
   // nft and tokens
   fetchAccountAssetsByKeywords: '/api/app/user/assets/searchUserAssets',
+  // nft and token in crypto box
+  fetchCryptoBoxAccountAssetsByKeywords: 'api/app/user/assets/searchUserPackageAssets',
   fetchTokenPrice: {
     target: '/api/app/tokens/prices',
     config: { method: 'GET' },

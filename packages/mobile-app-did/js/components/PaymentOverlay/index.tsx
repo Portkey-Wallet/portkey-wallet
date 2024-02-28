@@ -91,8 +91,8 @@ const PaymentModal = ({
   }, [accountAssetList, amount, assetInfo?.symbol, chainId]);
 
   const currentNft = useMemo(
-    () => accountAssetList.find(ele => ele.symbol === assetInfo.symbol),
-    [accountAssetList, assetInfo.symbol],
+    () => accountAssetList.find(ele => ele.symbol === assetInfo.symbol && ele.chainId === chainId),
+    [accountAssetList, assetInfo.symbol, chainId],
   );
 
   const crossSufficientItem = useMemo(() => crossSufficientList[0], [crossSufficientList]);
@@ -185,6 +185,7 @@ const PaymentModal = ({
         navigationService.navigateByMultiLevelParams('SendHome', {
           params: {
             assetInfo: crossSufficientItem,
+            sendType: assetInfo.assetType === AssetType.ft ? 'token' : 'nft',
             toInfo: {
               address: addressFormat(currentCaAddress, chainId),
             },

@@ -33,11 +33,13 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { getGuardiansApprovedByApprove } from 'utils/guardian';
 import { ChainId } from '@portkey-wallet/types';
 import { checkSecuritySafe } from 'utils/security';
+import AElf from 'aelf-sdk';
 
 const SEND_METHOD: { [key: string]: true } = {
   [MethodsBase.SEND_TRANSACTION]: true,
   [MethodsBase.REQUEST_ACCOUNTS]: true,
   [MethodsWallet.GET_WALLET_SIGNATURE]: true,
+  [MethodsWallet.GET_WALLET_TRANSACTION_SIGNATURE]: true,
 };
 
 const ACTIVE_VIEW_METHOD: { [key: string]: true } = {
@@ -174,6 +176,12 @@ export default class DappMobileOperator extends Operator {
           data: await this.dappManager.networkType(),
         });
       }
+      case MethodsBase.CA_HASH: {
+        return generateNormalResponse({
+          eventName,
+          data: await this.dappManager.caHash(),
+        });
+      }
       case MethodsWallet.GET_WALLET_STATE: {
         const [isActive, isLocked] = await Promise.all([this.isActive(), this.dappManager.isLocked()]);
         const data: WalletState = { isConnected: isActive, isUnlocked: !isLocked };
@@ -303,6 +311,26 @@ export default class DappMobileOperator extends Operator {
       });
     }
   };
+  protected handleTransactionSignature: SendRequest<GetSignatureParams> = async (eventName, params) => {
+    try {
+      if (!params.data) return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+      const manager = getManager();
+      if (!manager?.keyPair) return generateErrorResponse({ eventName, code: ResponseCode.INTERNAL_ERROR });
+      const data = manager.keyPair.sign(AElf.utils.sha256(params.data), {
+        canonical: true,
+      });
+      return generateNormalResponse({
+        eventName,
+        data,
+      });
+    } catch (error) {
+      return generateErrorResponse({
+        eventName,
+        code: ResponseCode.CONTRACT_ERROR,
+        msg: handleErrorMessage(error),
+      });
+    }
+  };
   protected async sendRequest({
     eventName,
     params,
@@ -387,7 +415,8 @@ export default class DappMobileOperator extends Operator {
   };
 
   protected handleSendRequest = async (request: IRequestParams): Promise<IResponseType> => {
-    const { method, eventName, origin } = request;
+    const { eventName, origin } = request;
+    let method = request.method;
     if (this.dapp.origin !== origin)
       return generateErrorResponse({
         eventName,
@@ -443,6 +472,15 @@ export default class DappMobileOperator extends Operator {
       case MethodsWallet.GET_WALLET_SIGNATURE: {
         if (!isActive) return this.unauthenticated(eventName);
         callBack = this.handleSignature;
+        payload = { data: request.payload.data };
+        if (!payload || (typeof payload.data !== 'string' && typeof payload.data !== 'number'))
+          return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+        break;
+      }
+      case MethodsWallet.GET_WALLET_TRANSACTION_SIGNATURE: {
+        method = MethodsWallet.GET_WALLET_SIGNATURE;
+        if (!isActive) return this.unauthenticated(eventName);
+        callBack = this.handleTransactionSignature;
         payload = { data: request.payload.data };
         if (!payload || (typeof payload.data !== 'string' && typeof payload.data !== 'number'))
           return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });

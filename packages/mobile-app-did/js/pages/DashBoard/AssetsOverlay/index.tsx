@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { TextL, TextS } from 'components/CommonText';
 import { ModalBody } from 'components/ModalBody';
 import CommonInput from 'components/CommonInput';
@@ -28,6 +28,7 @@ import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca
 import { useAppDispatch } from 'store/hooks';
 import { fetchAssetAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
+import Touchable from 'components/Touchable';
 
 export type ImTransferInfoType = {
   isGroupChat?: boolean;
@@ -60,7 +61,7 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
       nftInfo: { tokenId },
     } = item;
     return (
-      <TouchableOpacity style={itemStyle.wrap} onPress={() => onPress?.(item)}>
+      <Touchable style={itemStyle.wrap} onPress={() => onPress?.(item)}>
         {item.nftInfo.imageUrl ? (
           <CommonAvatar avatarSize={pTd(48)} style={[itemStyle.left]} imageUrl={item?.nftInfo?.imageUrl} />
         ) : (
@@ -82,7 +83,7 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
             <TextS style={itemStyle.dollar} />
           </View>
         </View>
-      </TouchableOpacity>
+      </Touchable>
     );
   }
   return null;

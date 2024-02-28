@@ -11,7 +11,7 @@ import Svg from 'components/Svg';
 import { setStringAsync } from 'expo-clipboard';
 import { useLanguage } from 'i18n/hooks';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { FlatList, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { FlatList, View, StyleSheet } from 'react-native';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 import TransferItem from 'components/TransferList/components/TransferItem';
@@ -25,6 +25,7 @@ import myEvents from 'utils/deviceEvent';
 import { IActivityListWithAddressApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 import CommonAvatar from 'components/CommonAvatar';
+import Touchable from 'components/Touchable';
 
 interface ParamsType {
   fromChainId: ChainId;
@@ -169,18 +170,18 @@ const ContactActivity: React.FC = () => {
             <TextS style={styles.chainInfo}>{formatChainInfoToShow(chainId)}</TextS>
             <View style={styles.handleWrap}>
               {!addressName && (
-                <TouchableOpacity style={styles.handleIconItem} onPress={navToAddContact}>
+                <Touchable style={styles.handleIconItem} onPress={navToAddContact}>
                   <Svg icon="add-contact" size={pTd(20)} />
-                </TouchableOpacity>
+                </Touchable>
               )}
-              <TouchableOpacity
+              <Touchable
                 style={styles.handleIconItem}
                 onPress={() => copyAddress(addressFormat(address, chainId, 'aelf'))}>
                 <Svg color={defaultColors.font4} icon="copy3" size={pTd(20)} />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.handleIconItem} onPress={() => navToExplore(address, chainId)}>
+              </Touchable>
+              <Touchable style={styles.handleIconItem} onPress={() => navToExplore(address, chainId)}>
                 <Svg icon="share2" size={pTd(20)} />
-              </TouchableOpacity>
+              </Touchable>
             </View>
           </View>
         </>

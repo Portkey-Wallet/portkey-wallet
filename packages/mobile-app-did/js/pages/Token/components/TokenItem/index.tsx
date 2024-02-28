@@ -25,7 +25,9 @@ const TokenItem = ({ networkType, item, onHandleToken }: TokenItemProps) => {
   const defaultToken = useDefaultToken();
 
   return (
-    <View style={itemStyle.wrap} key={`${item.symbol}${item.address}${item.chainId}}`}>
+    // if not touchable, can not scroll
+
+    <Touchable style={itemStyle.wrap} key={`${item.symbol}${item.address}${item.chainId}}`}>
       <CommonAvatar
         hasBorder
         shapeType="circular"
@@ -59,7 +61,7 @@ const TokenItem = ({ networkType, item, onHandleToken }: TokenItemProps) => {
           </Touchable>
         )}
       </View>
-    </View>
+    </Touchable>
   );
 };
 

@@ -14,12 +14,14 @@ import getSeed from 'utils/getSeed';
 import singleMessage from 'utils/singleMessage';
 import AsyncButton from 'components/AsyncButton';
 import './index.less';
-
+import AElf from 'aelf-sdk';
+import { IBlockchainWallet } from '@portkey/types';
 export default function GetSignature() {
   const { payload } = usePromptSearch<{
     payload: {
       data: string;
       origin: string;
+      autoSha256?: boolean;
     };
   }>();
   const { t } = useTranslation();
@@ -41,6 +43,18 @@ export default function GetSignature() {
     [curDapp],
   );
 
+  const onSignByManager = useCallback(
+    (manager: IBlockchainWallet) => {
+      if (payload.autoSha256) {
+        return manager.keyPair.sign(AElf.utils.sha256(payload?.data), {
+          canonical: true,
+        });
+      }
+      return manager.keyPair.sign(payload?.data);
+    },
+    [payload.autoSha256, payload?.data],
+  );
+
   const sendHandler = useCallback(async () => {
     try {
       const { privateKey } = await getSeed();
@@ -51,8 +65,8 @@ export default function GetSignature() {
         closePrompt({ ...errorHandler(400001), data: { code: ResponseCode.INTERNAL_ERROR, msg: 'invalid error' } });
         return;
       }
+      const data = onSignByManager(manager);
 
-      const data = manager.keyPair.sign(payload?.data);
       closePrompt({
         ...errorHandler(0),
         data,
@@ -61,7 +75,7 @@ export default function GetSignature() {
       console.error(error, 'error===detail');
       singleMessage.error(handleErrorMessage(error));
     }
-  }, [payload]);
+  }, [onSignByManager]);
 
   return (
     <div className="get-signature flex">

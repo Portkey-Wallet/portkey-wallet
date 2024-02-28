@@ -23,6 +23,10 @@ export abstract class DappManager<T extends CACommonState = CACommonState>
   extends BaseDappManager<IDappManagerStore<T>>
   implements IDappManager<T>
 {
+  async caHash(): Promise<string> {
+    const currentCAInfo = await this.getCurrentCAInfo();
+    return Object.values<CAInfo>(currentCAInfo as any).filter(i => i?.caHash)[0]?.caHash || '';
+  }
   async getState(): Promise<T> {
     return this.store.getState();
   }

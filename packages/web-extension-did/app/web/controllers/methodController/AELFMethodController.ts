@@ -30,6 +30,7 @@ const storeInSW = {
 };
 
 const aelfMethodList = [
+  MethodsBase.CA_HASH,
   MethodsBase.ACCOUNTS,
   MethodsBase.CHAIN_ID,
   MethodsBase.CHAIN_IDS,

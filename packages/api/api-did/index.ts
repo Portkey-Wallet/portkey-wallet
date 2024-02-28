@@ -14,7 +14,7 @@ import imApi from './im';
 import privacyApi from './privacy';
 
 import esApi from './es';
-import myServer, { DidService } from './server';
+import { DidService } from './server';
 import { API_REQ_FUNCTION } from '../types';
 import { ES_API_REQ_FUNCTION } from './es/type';
 import activityApi from './activity';
@@ -22,6 +22,8 @@ import securityApi from './security';
 import guideApi from './guide';
 import managerApi from './manager';
 import referralApi from './referral';
+import im from '@portkey-wallet/im';
+import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 
 export const DEFAULT_METHOD = 'POST';
 
@@ -76,9 +78,23 @@ export type EXPAND_REQ_TYPES = {
 
 export type ES_REQ_TYPES = Record<keyof typeof esApi, ES_API_REQ_FUNCTION>;
 
+const myServer = new DidService();
 myServer.parseRouter('es', esApi as any);
 
 myServer.parseRouter('base', BASE_APIS);
+
+myServer.onConnectTokenChange(authorization => {
+  im.config.setConfig({
+    requestDefaults: {
+      headers: {
+        ...im.config.requestConfig?.headers,
+        Authorization: authorization,
+      },
+    },
+  });
+
+  signalrFCM.setPortkeyToken(authorization);
+});
 
 Object.entries(EXPAND_APIS).forEach(([key, value]) => {
   myServer.parseRouter(key, value as any);

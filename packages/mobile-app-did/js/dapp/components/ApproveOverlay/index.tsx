@@ -132,12 +132,8 @@ const ApproveModal = (props: SignModalPropsType) => {
   });
 
   return (
-    <ModalBody modalBodyType="bottom" title="" onClose={onReject}>
-      <View
-        style={styles.contentWrap}
-        onTouchStart={() => {
-          Keyboard.dismiss();
-        }}>
+    <ModalBody modalBodyType="bottom" title="" onClose={onReject} onTouchStart={Keyboard.dismiss}>
+      <View style={styles.contentWrap}>
         <View style={[GStyles.center, styles.headerSection]}>
           {dappInfo.svgIcon ? (
             <Svg icon={dappInfo.svgIcon as IconName} size={pTd(48)} />

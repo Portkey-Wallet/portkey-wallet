@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import OverlayModal from '../OverlayModal';
-import { View, Text, TouchableOpacity, Keyboard, ImageBackground, ImageSourcePropType, ScrollView } from 'react-native';
+import { View, Text, Keyboard, ImageBackground, ImageSourcePropType, ScrollView } from 'react-native';
 import { styles } from './style/style';
 import { TextL, TextM, TextTitle } from 'components/CommonText';
 import ButtonRow, { ButtonRowProps } from 'components/ButtonRow';
@@ -9,6 +9,7 @@ import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import { defaultColors } from 'assets/theme';
 import { TextStyleType } from 'types/styles';
+import Touchable from 'components/Touchable';
 
 const show = (
   items: {
@@ -26,7 +27,7 @@ const show = (
         {items.map((item, index) => {
           const { title, onPress } = item;
           return (
-            <TouchableOpacity
+            <Touchable
               key={index}
               style={styles.itemBox}
               onPress={() => {
@@ -34,14 +35,14 @@ const show = (
                 onPress?.(item);
               }}>
               <Text style={styles.itemText}>{title}</Text>
-            </TouchableOpacity>
+            </Touchable>
           );
         })}
       </View>
       {cancelItem && (
-        <TouchableOpacity onPress={() => OverlayModal.hide()} style={styles.cancelBox}>
+        <Touchable onPress={() => OverlayModal.hide()} style={styles.cancelBox}>
           <Text style={styles.cancelText}>{cancelItem.title}</Text>
-        </TouchableOpacity>
+        </Touchable>
       )}
     </>,
     {

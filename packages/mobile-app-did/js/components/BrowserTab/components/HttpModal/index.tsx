@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
 import { TextM, TextL } from 'components/CommonText';
 import { pTd } from 'utils/unit';
@@ -9,6 +9,7 @@ import { useLanguage } from 'i18n/hooks';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useDiscoverWhiteList } from 'hooks/discover';
 import { getProtocolAndHost, isDangerousLink } from '@portkey-wallet/utils/dapp/browser';
+import Touchable from 'components/Touchable';
 
 type HttpModalPropsType = {
   uri: string;
@@ -39,12 +40,12 @@ export default function HttpModal(props: HttpModalPropsType) {
         )}
       </TextL>
       <View style={styles.buttonGroupWrap}>
-        <TouchableOpacity onPress={disableHttp}>
+        <Touchable onPress={disableHttp}>
           <TextM style={[styles.buttonBaseStyle, buttonStyles.type1Button]}>{t('Disable notifications')}</TextM>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setIsShowHttpModal(false)}>
+        </Touchable>
+        <Touchable onPress={() => setIsShowHttpModal(false)}>
           <TextM style={[styles.buttonBaseStyle, buttonStyles.type2Button]}>{t('Continue')}</TextM>
-        </TouchableOpacity>
+        </Touchable>
       </View>
     </View>
   );

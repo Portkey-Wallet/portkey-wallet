@@ -22,6 +22,7 @@ export interface ModalBodyProps extends ViewProps {
   style?: ViewStyleType;
   onClose?: () => void;
   onBack?: () => void;
+  onTouchStart?: () => void;
   bottomButtonGroup?: {
     onPress?: () => void;
     type?: CommonButtonProps['type'];
@@ -41,13 +42,14 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
     style = {},
     onClose,
     bottomButtonGroup,
+    onTouchStart,
   } = props;
 
   const gStyles = useGStyles();
 
   if (modalBodyType === 'bottom') {
     return (
-      <View style={[styles.commonBox, gStyles.overlayStyle, styles.wrapStyle, style]}>
+      <View onTouchStart={onTouchStart} style={[styles.commonBox, gStyles.overlayStyle, styles.wrapStyle, style]}>
         <View style={styles.topWrap}>
           {isShowLeftBackIcon && (
             <View

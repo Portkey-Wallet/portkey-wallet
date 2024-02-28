@@ -26,8 +26,6 @@ export function useManagerExceedTipModal() {
 
   return useCallback(async () => {
     const status = await showManagerExceedTip();
-
-    console.log('===showManagerExceedTip status', status);
     if (status) {
       ActionSheet.alert({
         title: t('Remove Login Devices'),

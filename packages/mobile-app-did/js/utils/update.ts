@@ -139,18 +139,22 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
   }
 
   public async showUpdatedAlert() {
-    const currentData = await this.getUpdateMetadata(CodePush.UpdateState.RUNNING);
-    if (!currentData) return;
-    if (this.getStorageUpdateInfo(currentData.packageHash)) return;
-    const info = await this.getUpdateInfo(currentData.label);
-    if (info.updatedContent || info.updatedTitle) {
-      this.setStorageUpdateInfo(currentData.packageHash);
-      ActionSheet.alert({
-        messageStyle: { textAlign: 'left' },
-        title: info.updatedTitle || '',
-        message: info.updatedContent,
-        buttons: [{ title: 'I Know' }],
-      });
+    try {
+      const currentData = await this.getUpdateMetadata(CodePush.UpdateState.RUNNING);
+      if (!currentData) return;
+      if (this.getStorageUpdateInfo(currentData.packageHash)) return;
+      const info = await this.getUpdateInfo(currentData.label);
+      if (info.updatedContent || info.updatedTitle) {
+        this.setStorageUpdateInfo(currentData.packageHash);
+        ActionSheet.alert({
+          messageStyle: { textAlign: 'left' },
+          title: info.updatedTitle || '',
+          message: info.updatedContent,
+          buttons: [{ title: 'I Know' }],
+        });
+      }
+    } catch (error) {
+      console.log(error, '=====error-showUpdatedAlert');
     }
   }
 
@@ -167,7 +171,7 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
       }
       if (info.label && info.version) return info;
     } catch (error) {
-      console.log(error, '======error');
+      console.log(error, '======showCheckUpdate-error');
     }
   }
   public async initLocalPackage() {

@@ -16,7 +16,7 @@ import { pTd } from 'utils/unit';
 interface IReceiverItemProps {
   item: RedPackageGrabInfoItem;
   symbol: string;
-  decimals: string | number;
+  decimals?: string | number;
   isLuckyKing: boolean;
 }
 
@@ -50,11 +50,13 @@ const RedPacketReceiverItem: React.FC<IReceiverItemProps> = props => {
           </TextL>
           <View style={itemStyle.blank} />
           {item.isLuckyKing || isLuckyKing ? (
-            <View style={[GStyles.flexRow, GStyles.itemCenter]}>
+            <View style={[GStyles.flexRow, GStyles.itemCenter, itemStyle.luckiestWrap]}>
               <Svg icon="luckiest" size={pTd(16)} />
               <TextM style={itemStyle.luckiest}>Luckiest Draw</TextM>
             </View>
-          ) : null}
+          ) : (
+            <View style={itemStyle.luckiestWrap} />
+          )}
         </View>
       </View>
     </View>
@@ -116,5 +118,8 @@ const itemStyle = StyleSheet.create({
   luckiest: {
     marginLeft: pTd(4),
     color: defaultColors.font6,
+  },
+  luckiestWrap: {
+    height: pTd(16),
   },
 });

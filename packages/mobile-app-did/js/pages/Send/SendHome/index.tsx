@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
@@ -495,7 +495,7 @@ const SendHome: React.FC = () => {
       titleDom={`${t('Send')}${sendType === 'token' ? ' ' + assetInfo.symbol : ''}`}
       rightDom={
         sendType === 'token' && !isFixedToContact ? (
-          <TouchableOpacity
+          <Touchable
             onPress={async () => {
               if (selectedToContact?.address) return showDialog('clearAddress');
               if (!(await qrScanPermissionAndToast())) return;
@@ -503,7 +503,7 @@ const SendHome: React.FC = () => {
               navigationService.navigate('QrScanner', { fromSendPage: true });
             }}>
             <Svg icon="scan" size={pTd(17.5)} color={defaultColors.font2} iconStyle={styles.iconStyle} />
-          </TouchableOpacity>
+          </Touchable>
         ) : undefined
       }
       containerStyles={styles.pageWrap}

@@ -83,9 +83,10 @@ export interface IAccountCryptoBoxAssetItem {
   address: string;
   symbol: string;
   imageUrl: string;
-  decimals: number;
+  decimals: number | string;
   alias?: string;
   tokenId?: string;
+  balance?: string;
 }
 
 export type AccountAssets = AccountAssetItem[];

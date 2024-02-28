@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 import CommonInput from 'components/CommonInput';
 import GStyles from 'assets/theme/GStyles';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
@@ -17,6 +17,7 @@ import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { useInputFocus } from 'hooks/useInputFocus';
+import Touchable from 'components/Touchable';
 
 export default function DiscoverSearch() {
   const { t } = useLanguage();
@@ -97,17 +98,17 @@ export default function DiscoverSearch() {
           containerStyle={styles.inputStyle}
           rightIcon={
             value ? (
-              <TouchableOpacity onPress={clearText}>
+              <Touchable onPress={clearText}>
                 <Svg icon="clear3" size={pTd(16)} />
-              </TouchableOpacity>
+              </Touchable>
             ) : undefined
           }
           rightIconContainerStyle={styles.rightIconContainerStyle}
           style={styles.rnInputStyle}
         />
-        <TouchableOpacity onPress={navigationService.goBack}>
+        <Touchable onPress={navigationService.goBack}>
           <TextM style={[FontStyles.font2, styles.cancelButton]}>{t('Cancel')}</TextM>
-        </TouchableOpacity>
+        </Touchable>
       </View>
       {showRecord ? <RecordSection /> : <SearchDiscoverSection searchedDiscoverList={filteredDiscoverList || []} />}
     </PageContainer>

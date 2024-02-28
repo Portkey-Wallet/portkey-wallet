@@ -13,7 +13,7 @@ import { useCaAddressInfoList, useWallet } from '@portkey-wallet/hooks/hooks-ca/
 import TokenListItem from 'components/TokenListItem';
 import { FontStyles } from 'assets/theme/styles';
 import { fetchCryptoBoxAssetList } from '@portkey-wallet/store/store-ca/assets/api';
-import { IAssetItemType, ICryptoBoxAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
+import { IAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
 import { useGStyles } from 'assets/theme/useGStyles';
@@ -28,6 +28,7 @@ import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
 import Svg from 'components/Svg';
 import GStyles from 'assets/theme/GStyles';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
+import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 
 export type ImTransferInfoType = {
   isGroupChat?: boolean;
@@ -62,7 +63,7 @@ const AssetItem = (props: {
         noBalanceShow
         currentSymbol={currentSymbol}
         currentChainId={currentChainId}
-        item={{ name: '', ...item, tokenContractAddress: address }}
+        item={{ name: '', ...item, tokenContractAddress: address, decimals: Number(item.decimals || 0) }}
         onPress={() => onPress(item)}
       />
     );

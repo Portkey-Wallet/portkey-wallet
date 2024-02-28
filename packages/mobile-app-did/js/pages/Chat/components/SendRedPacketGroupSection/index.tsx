@@ -15,7 +15,6 @@ import RedPacketAmountShow from '../RedPacketAmountShow';
 import CommonAvatar from 'components/CommonAvatar';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { RedPackageTypeEnum } from '@portkey-wallet/im';
-import { ChainId } from '@portkey-wallet/types';
 import { INIT_NONE_ERROR, ErrorType } from '@portkey-wallet/constants/constants-ca/common';
 import { useGetRedPackageConfig } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ZERO } from '@portkey-wallet/constants/misc';
@@ -29,25 +28,22 @@ import { isPotentialNumber } from '@portkey-wallet/utils/reg';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import CryptoAssetsListOverlay from '../CryptoAssetsListOverlay';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
-import { ICryptoBoxAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
+import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 
-export type ValuesType = {
+export type TInputValue = {
   packetNum?: string;
   count: string;
-  symbol: string;
-  decimals: string | number;
   memo: string;
-  chainId: ChainId;
-  assetType?: AssetType;
-  alias?: string;
-  tokenId?: string;
-  imageUrl?: string;
+};
+
+export type CryptoValuesType = TInputValue & {
+  token: ICryptoBoxAssetItemType;
 };
 
 export type SendRedPacketGroupSectionPropsType = {
   type?: RedPackageTypeEnum;
   groupMemberCount?: number;
-  onPressButton: (values: ValuesType) => void;
+  onPressButton: (values: CryptoValuesType) => void;
 };
 
 const AMOUNT_LABEL_MAP = {
@@ -62,19 +58,20 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
 
   const defaultToken = useDefaultToken(MAIN_CHAIN_ID);
-  const [values, setValues] = useState<ValuesType>({
+
+  const [selectToken, setSelectToken] = useState<ICryptoBoxAssetItemType>({
+    ...defaultToken,
+    chainId: MAIN_CHAIN_ID,
+  });
+  const [values, setValues] = useState<TInputValue>({
     packetNum: '',
     count: '',
-    symbol: defaultToken.symbol,
-    decimals: defaultToken.decimals,
     memo: '',
-    chainId: MAIN_CHAIN_ID,
-    assetType: AssetType.ft,
   });
 
   const tokenPrice = useMemo<string | number | undefined>(
-    () => tokenPriceObject?.[values.symbol],
-    [tokenPriceObject, values.symbol],
+    () => tokenPriceObject?.[selectToken.symbol],
+    [tokenPriceObject, selectToken.symbol],
   );
 
   const symbolImages = useSymbolImages();
@@ -85,22 +82,32 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
         setCountError({ ...INIT_NONE_ERROR });
         return;
       }
+
+      const decimals = Number(selectToken.decimals || 0);
       if (value === '.') {
-        setValues(pre => ({ ...pre, count: '0.' }));
+        if (decimals !== 0) {
+          setValues(pre => {
+            return { ...pre, count: '0.' };
+          });
+        }
+
         setCountError({ ...INIT_NONE_ERROR });
         return;
       }
 
+      if (decimals === 0) {
+        if (value === '0') return;
+        if (value.split('.').length > 1) return;
+      }
+      if (value.split('.')[1]?.length > decimals) return;
+      if (!isPotentialNumber(value)) return;
+
       setValues(pre => {
-        const decimals = Number(pre.decimals || 0);
-        if (decimals === 0 && value.split('.').length > 1) return pre;
-        if (value.split('.')[1]?.length > Number(decimals)) return pre;
-        if (!isPotentialNumber(value)) return pre;
         setCountError({ ...INIT_NONE_ERROR });
         return { ...pre, count: value };
       });
     },
-    [setValues],
+    [selectToken],
   );
 
   const onPacketNumChange = useCallback(
@@ -136,18 +143,21 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
   const isAllowPrepare = useMemo(() => {
     if (isGTMax) return false;
 
-    if (!values.symbol || values.decimals === '' || values.count === '') return false;
+    if (!selectToken.symbol || selectToken.decimals === '' || values.count === '') return false;
 
     if (type !== RedPackageTypeEnum.P2P && !values.packetNum) {
       return false;
     }
     return true;
-  }, [isGTMax, type, values.count, values.decimals, values.packetNum, values.symbol]);
+  }, [isGTMax, selectToken.decimals, selectToken.symbol, type, values.count, values.packetNum]);
 
   const [countError, setCountError] = useState<ErrorType>(INIT_NONE_ERROR);
   const onPreparePress = useCallback(() => {
-    const { packetNum, count, decimals, chainId, symbol } = values;
+    const { decimals, chainId, symbol, alias } = selectToken;
+    const { packetNum, count } = values;
     let isError = false;
+
+    console.log('onPreparePress', values);
 
     const amount = timesDecimals(count, decimals);
     const tokenConfig = getTokenInfo(chainId, symbol);
@@ -167,15 +177,16 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
       if (amount.lt(totalMinAmount)) {
         setCountError({
           isError: true,
-          errorMsg: `At least ${divDecimalsStr(minAmount, decimals || 1)} ${symbol} for each crypto box`,
+          errorMsg: `At least ${divDecimalsStr(minAmount, decimals)} ${alias || symbol} for each crypto box`,
         });
         isError = true;
       }
     }
 
     if (isError) return;
+
     onPressButton({
-      ...values,
+      token: selectToken,
       packetNum: values.packetNum || '1',
       memo: values.memo.trim() || RED_PACKAGE_DEFAULT_MEMO,
       count:
@@ -185,7 +196,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
               .toFixed()
           : ZERO.plus(values.count).toFixed(),
     });
-  }, [getTokenInfo, onPressButton, type, values]);
+  }, [getTokenInfo, onPressButton, selectToken, type, values]);
 
   const amountLabel = useMemo(() => AMOUNT_LABEL_MAP[type || RedPackageTypeEnum.P2P], [type]);
 
@@ -208,6 +219,27 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
     if (isEmojiString(_value)) return;
     setValues(pre => ({ ...pre, memo: _value }));
   }, []);
+
+  const onTokenChange = useCallback((assetInfo: ICryptoBoxAssetItemType) => {
+    setSelectToken(pre => {
+      if (pre.symbol !== assetInfo.symbol || pre.chainId !== assetInfo.chainId) {
+        setValues(preValue => ({
+          ...preValue,
+          count: '',
+        }));
+        setCountError({ ...INIT_NONE_ERROR });
+      }
+      return assetInfo;
+    });
+  }, []);
+
+  const assetName = useMemo(
+    () =>
+      selectToken.assetType === AssetType.nft
+        ? `${selectToken.alias} #${selectToken.tokenId}` || selectToken.symbol
+        : selectToken.symbol,
+    [selectToken.alias, selectToken.assetType, selectToken.symbol, selectToken.tokenId],
+  );
 
   return (
     <>
@@ -239,37 +271,28 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
               style={styles.unitWrap}
               onPress={() => {
                 CryptoAssetsListOverlay.showCryptoAssetList({
-                  onFinishSelectAssets: (assetInfo: ICryptoBoxAssetItemType) => {
-                    setValues(pre => ({
-                      ...pre,
-                      ...assetInfo,
-                      count: pre.symbol !== assetInfo.symbol || pre.chainId !== assetInfo.chainId ? '' : pre.count,
-                    }));
-                    setCountError({ ...INIT_NONE_ERROR });
-                  },
-                  currentSymbol: values.symbol,
-                  currentChainId: values.chainId,
+                  onFinishSelectAssets: onTokenChange,
+                  currentSymbol: selectToken.symbol,
+                  currentChainId: selectToken.chainId,
                 });
               }}>
               <CommonAvatar
                 hasBorder
-                shapeType={values.assetType === AssetType.nft ? 'square' : 'circular'}
+                shapeType={selectToken.assetType === AssetType.nft ? 'square' : 'circular'}
                 resizeMode={'contain'}
-                style={[styles.avatar, values.assetType === AssetType.nft && styles.borderRadius4]}
-                title={values.symbol}
+                style={[styles.avatar, selectToken.assetType === AssetType.nft && styles.borderRadius4]}
+                title={selectToken.symbol}
                 avatarSize={pTd(24)}
                 // elf token icon is fixed , only use white background color
-                svgName={values?.symbol === defaultToken.symbol ? 'testnet' : undefined}
-                imageUrl={values.imageUrl || symbolImages[values.symbol]}
+                svgName={selectToken?.symbol === defaultToken.symbol ? 'testnet' : undefined}
+                imageUrl={selectToken.imageUrl || symbolImages[selectToken.symbol]}
               />
               <View style={[styles.assetInfoWrap, GStyles.flex1]}>
-                <TextM style={[GStyles.flex1, fonts.mediumFont]}>
-                  {values.assetType === AssetType.nft
-                    ? `${values.alias} #${values.tokenId}` || values.symbol
-                    : values.symbol}
+                <TextM numberOfLines={1} style={[GStyles.flex1, fonts.mediumFont]}>
+                  {assetName}
                 </TextM>
                 <TextS style={[GStyles.flex1, FontStyles.font3]} numberOfLines={1}>
-                  {formatChainInfoToShow(values.chainId)}
+                  {formatChainInfoToShow(selectToken.chainId)}
                 </TextS>
               </View>
               <Svg size={pTd(16)} icon="down-arrow" color={defaultColors.icon1} />
@@ -294,13 +317,41 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
           onChangeText={onMemoChange}
         />
       </FormItem>
-      <RedPacketAmountShow
-        componentType="sendPacketPage"
-        amountShow={amountShowStr}
-        symbol={values.symbol}
-        textColor={defaultColors.font5}
-        wrapStyle={GStyles.marginTop(pTd(8))}
-      />
+
+      {selectToken.assetType === AssetType.nft ? (
+        <>
+          <RedPacketAmountShow
+            componentType="sendPacketPage"
+            amountShow={amountShowStr}
+            textColor={defaultColors.font5}
+            wrapStyle={GStyles.marginTop(pTd(8))}
+            assetType={selectToken.assetType}
+          />
+          <View style={[GStyles.flexRow, GStyles.center, styles.nftInfoWrap]}>
+            <CommonAvatar
+              hasBorder
+              shapeType={'square'}
+              resizeMode={'contain'}
+              style={[styles.avatar, styles.borderRadius4]}
+              title={selectToken.symbol}
+              avatarSize={pTd(24)}
+              // elf token icon is fixed , only use white background color
+              svgName={selectToken?.symbol === defaultToken.symbol ? 'testnet' : undefined}
+              imageUrl={selectToken.imageUrl || symbolImages[selectToken.symbol]}
+            />
+            <TextM style={styles.nftNameWrap}>{assetName}</TextM>
+          </View>
+        </>
+      ) : (
+        <RedPacketAmountShow
+          componentType="sendPacketPage"
+          amountShow={amountShowStr}
+          symbol={selectToken.symbol}
+          textColor={defaultColors.font5}
+          wrapStyle={GStyles.marginTop(pTd(8))}
+        />
+      )}
+
       <CommonButton
         disabled={!isAllowPrepare}
         type="primary"
@@ -363,6 +414,12 @@ const styles = StyleSheet.create({
     borderRadius: pTd(4),
   },
   assetInfoWrap: {
+    marginLeft: pTd(8),
+  },
+  nftInfoWrap: {
+    marginTop: pTd(4),
+  },
+  nftNameWrap: {
     marginLeft: pTd(8),
   },
 });

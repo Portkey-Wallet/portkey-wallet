@@ -160,7 +160,7 @@ export default function SendPacketP2PPage() {
         <View style={GStyles.flex1} onLayout={() => resetOverlayCount(p => p + 1)} />
         <TextM style={styles.tips}>
           {
-            'A crypto box is valid for 24 hours. Unclaimed tokens will be automatically returned to you upon expiration.'
+            'A crypto box is valid for 24 hours. Unclaimed tokens/NFTs will be automatically returned to you upon expiration.'
           }
         </TextM>
       </KeyboardAwareScrollView>

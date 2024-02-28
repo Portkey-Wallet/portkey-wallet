@@ -12,7 +12,7 @@ import { useLanguage } from 'i18n/hooks';
 import { FontStyles } from 'assets/theme/styles';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import Card from './components/Card';
-import { useAppCommonDispatch } from '@portkey-wallet/hooks';
+import { useAppCommonDispatch, useLatestRef } from '@portkey-wallet/hooks';
 import {
   changeDrawerOpenStatus,
   closeAllTabs,
@@ -58,6 +58,8 @@ const TabsDrawerContent: React.FC = () => {
 
   const checkAndUpDateRecordItemName = useCheckAndUpDateRecordItemName();
   const checkAndUpDateTabItemName = useCheckAndUpDateTabItemName();
+  const latestCheckAndUpDateRecordItemName = useLatestRef(checkAndUpDateRecordItemName);
+  const latestCheckAndUpDateTabItemName = useLatestRef(checkAndUpDateTabItemName);
   const { getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
 
   const tabRef = useRef<IBrowserTab | null>(null);
@@ -236,8 +238,8 @@ const TabsDrawerContent: React.FC = () => {
             autoApprove={autoApprove}
             onLoadEnd={nativeEvent => {
               if (autoApprove) dispatch(removeAutoApproveItem(ele.id));
-              checkAndUpDateRecordItemName({ id: ele.id, name: nativeEvent.title });
-              checkAndUpDateTabItemName({ id: ele.id, name: nativeEvent.title });
+              latestCheckAndUpDateRecordItemName.current({ id: ele.id, name: nativeEvent.title });
+              latestCheckAndUpDateTabItemName.current({ id: ele.id, name: nativeEvent.title });
             }}
             onNavigationStateChange={onNavigationStateChange}
           />
@@ -276,11 +278,11 @@ const TabsDrawerContent: React.FC = () => {
   }, [
     activeTabId,
     autoApproveMap,
-    checkAndUpDateRecordItemName,
-    checkAndUpDateTabItemName,
     clickBottomActionBtn,
     dispatch,
     initializedList,
+    latestCheckAndUpDateRecordItemName,
+    latestCheckAndUpDateTabItemName,
     tabStateMap?.canGoBack,
     tabStateMap?.canGoForward,
     tabs,

@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import { useLanguage } from 'i18n/hooks';
 import { TextS } from 'components/CommonText';
@@ -13,6 +13,7 @@ import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
 import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
+import Touchable from 'components/Touchable';
 interface ISearchDiscoverSectionProps {
   searchedDiscoverList: DiscoverItem[];
 }
@@ -40,7 +41,7 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
   return (
     <ScrollView style={styles.sectionWrap}>
       {searchedDiscoverList?.map((item, index) => (
-        <TouchableOpacity key={index} style={itemStyle.wrap} onPress={() => onClickJump(item)}>
+        <Touchable key={index} style={itemStyle.wrap} onPress={() => onClickJump(item)}>
           <DiscoverWebsiteImage imageUrl={`${s3Url}/${item?.imgUrl?.filename_disk}`} size={pTd(32)} />
           <View style={itemStyle.right}>
             <View style={itemStyle.infoWrap}>
@@ -50,7 +51,7 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
               </TextS>
             </View>
           </View>
-        </TouchableOpacity>
+        </Touchable>
       ))}
     </ScrollView>
   );

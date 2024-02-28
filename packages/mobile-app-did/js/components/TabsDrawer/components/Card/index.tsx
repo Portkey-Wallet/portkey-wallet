@@ -1,6 +1,5 @@
 import GStyles from 'assets/theme/GStyles';
 import { TextS } from 'components/CommonText';
-import { TouchableOpacity } from 'react-native';
 import React from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 import { pTd } from 'utils/unit';
@@ -14,6 +13,7 @@ import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { defaultColors } from 'assets/theme';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import Touchable from 'components/Touchable';
 
 interface ICardsProps {
   item: ITabItem;
@@ -32,11 +32,11 @@ const Card: React.FC<ICardsProps> = (props: ICardsProps) => {
         <TextS numberOfLines={1} ellipsizeMode="tail" style={tabShowItemStyle.title}>
           {getCmsWebsiteInfoName(item.url) || item?.name || getHost(item?.url)}
         </TextS>
-        <TouchableOpacity onPress={() => dispatch(closeExistingTab({ id: item?.id, networkType }))}>
+        <Touchable onPress={() => dispatch(closeExistingTab({ id: item?.id, networkType }))}>
           <Svg icon="close" size={12} />
-        </TouchableOpacity>
+        </Touchable>
       </View>
-      <TouchableOpacity onPress={() => dispatch(setActiveTab({ id: item.id, networkType }))}>
+      <Touchable onPress={() => dispatch(setActiveTab({ id: item.id, networkType }))}>
         <Image
           resizeMode="cover"
           style={tabShowItemStyle.screenshot}
@@ -44,7 +44,7 @@ const Card: React.FC<ICardsProps> = (props: ICardsProps) => {
             uri: item?.screenShotUrl,
           }}
         />
-      </TouchableOpacity>
+      </Touchable>
     </View>
   );
 };

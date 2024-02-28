@@ -182,7 +182,7 @@ export default function SetWalletPin() {
     [dispatch, loginAccount?.guardianAccount, loginAccount?.loginType, state],
   );
 
-  const backHandler = useCallback(async () => {
+  const backHandler = useCallback(() => {
     switch (state) {
       case 'register':
         navigate('/register/start/create');

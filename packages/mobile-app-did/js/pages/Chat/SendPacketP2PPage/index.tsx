@@ -4,7 +4,7 @@ import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
-import SendRedPacketGroupSection, { ValuesType } from '../components/SendRedPacketGroupSection';
+import SendRedPacketGroupSection, { CryptoValuesType } from '../components/SendRedPacketGroupSection';
 import { TextM } from 'components/CommonText';
 import { RedPackageTypeEnum } from '@portkey-wallet/im';
 import PaymentOverlay from 'components/PaymentOverlay';
@@ -42,15 +42,17 @@ export default function SendPacketP2PPage() {
   const reportAnalyticsEvent = useReportAnalyticsEvent();
 
   const onPressBtn = useLockCallback(
-    async (values: ValuesType) => {
+    async (values: CryptoValuesType) => {
+      const { token, count } = values;
+
       Loading.show();
       try {
-        const isManagerSynced = await checkManagerSyncState(values.chainId);
+        const isManagerSynced = await checkManagerSyncState(token.chainId);
         if (!isManagerSynced) {
           CommonToast.warn('Synchronizing on-chain account information...');
           return;
         }
-        const isSafe = await securitySafeCheckAndToast(values.chainId);
+        const isSafe = await securitySafeCheckAndToast(token.chainId);
         if (!isSafe) return;
       } catch (error) {
         CommonToast.failError(error);
@@ -59,33 +61,38 @@ export default function SendPacketP2PPage() {
         Loading.hide();
       }
 
-      const totalAmount = timesDecimals(values.count, values.decimals);
+      const totalAmount = timesDecimals(values.count, token.decimals);
       let caContract: ContractBasic;
       try {
         await PaymentOverlay.showRedPacket({
-          tokenInfo: {
-            symbol: values.symbol,
-            decimals: values.decimals,
-          },
+          assetInfo: token,
           amount: values.count,
-          chainId: values.chainId,
-          calculateTransactionFee: () => calculateRedPacketFee(values),
+          chainId: token.chainId,
+          calculateTransactionFee: () =>
+            calculateRedPacketFee({
+              symbol: token.symbol,
+              chainId: token.chainId,
+              decimals: token.decimals,
+              count: count,
+            }),
         });
 
-        const redPacketContractAddress = getContractAddress(values.chainId);
+        const redPacketContractAddress = getContractAddress(token.chainId);
         if (!redPacketContractAddress) {
           throw new Error('redPacketContractAddress is not exist');
         }
 
-        caContract = await getCAContract(values.chainId);
+        caContract = await getCAContract(token.chainId);
 
         await checkAllowanceAndApprove({
           caContract,
           spender: redPacketContractAddress,
           bigAmount: totalAmount,
-          ...values,
-          decimals: Number(values.decimals),
+          symbol: token.symbol,
+          chainId: token.chainId,
+          decimals: Number(token.decimals),
           isShowOnceLoading: true,
+          alias: token.alias,
         });
       } catch (error) {
         console.log(error, 'send check ====error');
@@ -100,15 +107,13 @@ export default function SendPacketP2PPage() {
       const timeRecorder = createTimeRecorder();
       try {
         await sendRedPackage({
-          chainId: values.chainId,
-          symbol: values.symbol,
           totalAmount: totalAmount.toFixed(0),
-          decimal: values.decimals,
           memo: values.memo,
           caContract: caContract,
           type: RedPackageTypeEnum.P2P,
           count: 1,
           channelId: currentChannelId || '',
+          token,
         });
         reportAnalyticsEvent({ page: 'SendPacketP2PPage', time: timeRecorder.endBySecond() }, 'RecordMessage');
         CommonToast.success('Sent successfully!');
@@ -155,7 +160,7 @@ export default function SendPacketP2PPage() {
         <View style={GStyles.flex1} onLayout={() => resetOverlayCount(p => p + 1)} />
         <TextM style={styles.tips}>
           {
-            'A crypto box is valid for 24 hours. Unclaimed tokens will be automatically returned to you upon expiration.'
+            'A crypto box is valid for 24 hours. Unclaimed tokens/NFTs will be automatically returned to you upon expiration.'
           }
         </TextM>
       </KeyboardAwareScrollView>

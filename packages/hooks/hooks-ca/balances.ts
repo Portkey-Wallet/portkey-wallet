@@ -25,6 +25,10 @@ export function useAllTokenInfoList() {
   return useAppCASelector(state => state.tokenManagement.tokenDataShowInMarket);
 }
 
+export function useAccountCryptoBoxAssetList() {
+  return useAppCASelector(state => state.assets?.accountCryptoBoxAssets.accountAssetsList);
+}
+
 export const useAccountBalanceUSD = () => {
   const {
     accountToken: { accountTokenList },

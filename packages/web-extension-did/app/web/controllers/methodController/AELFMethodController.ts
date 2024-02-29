@@ -30,7 +30,6 @@ const storeInSW = {
 };
 
 const aelfMethodList = [
-  MethodsBase.CA_HASH,
   MethodsBase.ACCOUNTS,
   MethodsBase.CHAIN_ID,
   MethodsBase.CHAIN_IDS,
@@ -43,7 +42,6 @@ const aelfMethodList = [
   MethodsWallet.GET_WALLET_NAME,
   MethodsWallet.GET_WALLET_CURRENT_MANAGER_ADDRESS,
   MethodsWallet.GET_WALLET_MANAGER_SYNC_STATUS,
-  MethodsWallet.GET_WALLET_TRANSACTION_SIGNATURE,
 ];
 interface AELFMethodControllerProps {
   notificationService: NotificationService;
@@ -117,10 +115,13 @@ export default class AELFMethodController {
       case MethodsWallet.GET_WALLET_SIGNATURE:
         this.getSignature(sendResponse, message.payload);
         break;
-      case MethodsWallet.GET_WALLET_TRANSACTION_SIGNATURE:
+      case MethodsWallet.GET_WALLET_TRANSACTION_SIGNATURE: {
         if (message.payload.payload) message.payload.payload.autoSha256 = true;
+        const { hexData, data } = message.payload.payload;
+        if (!data && hexData) message.payload.payload.data = hexData;
         this.getSignature(sendResponse, message.payload);
         break;
+      }
       case MethodsWallet.GET_WALLET_STATE:
         this.getWalletState(sendResponse, message.payload);
         break;

@@ -46,7 +46,7 @@ export default function GetSignature() {
   const onSignByManager = useCallback(
     (manager: IBlockchainWallet) => {
       if (autoSha256) {
-        return manager.keyPair.sign(AElf.utils.sha256(payload?.data), {
+        return manager.keyPair.sign(AElf.utils.sha256(Buffer.from(payload?.data, 'hex')), {
           canonical: true,
         });
       }

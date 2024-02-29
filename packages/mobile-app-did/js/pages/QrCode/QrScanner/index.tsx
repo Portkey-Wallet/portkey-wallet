@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet } from 'react-native';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
@@ -20,6 +20,7 @@ import { useHandleDataFromQrCode } from 'hooks/useQrScan';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { sleep } from '@portkey-wallet/utils';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import Touchable from 'components/Touchable';
 interface QrScannerProps {
   route?: any;
 }
@@ -84,21 +85,21 @@ const QrScanner: React.FC<QrScannerProps> = () => {
           <SafeAreaView style={PageStyle.innerView}>
             <View style={PageStyle.iconWrap}>
               <Text style={PageStyle.leftBlock} />
-              <TouchableOpacity
+              <Touchable
                 style={PageStyle.svgWrap}
                 onPress={() => {
                   navigationService.goBack();
                 }}>
                 <Svg icon="close1" size={pTd(14)} iconStyle={PageStyle.icon} />
-              </TouchableOpacity>
+              </Touchable>
             </View>
             <Svg icon="scan-square" size={pTd(240)} iconStyle={PageStyle.scan} />
             <TextM style={PageStyle.tips}>{t('Receive code / Login code / URL code')}</TextM>
 
-            <TouchableOpacity style={[PageStyle.albumWrap, GStyles.alignCenter]} onPress={selectImage}>
+            <Touchable style={[PageStyle.albumWrap, GStyles.alignCenter]} onPress={selectImage}>
               <Svg icon="album" size={pTd(48)} />
               <TextM style={[FontStyles.font2, PageStyle.albumText]}>{t('Album')}</TextM>
-            </TouchableOpacity>
+            </Touchable>
           </SafeAreaView>
         </Camera>
       )}

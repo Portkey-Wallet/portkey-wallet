@@ -15,10 +15,10 @@ import { useNavigateState } from 'hooks/router';
 import './index.less';
 
 const guardianList = [
-  {
-    icon: <CustomSvg type="Apple" />,
-    type: 'Apple',
-  },
+  // {
+  //   icon: <CustomSvg type="Apple" />,
+  //   type: 'Apple',
+  // },
   // {
   //   icon: <CustomSvg type="Twitter" />,
   //   type: 'Twitter',
@@ -30,6 +30,10 @@ const guardianList = [
   {
     icon: <CustomSvg type="Email" />,
     type: 'Email',
+  },
+  {
+    icon: <CustomSvg type="Telegram" />,
+    type: 'Telegram',
   },
 ] as const;
 
@@ -104,8 +108,8 @@ export default function SocialLogin({
                 key={item.type}
                 className="guardian-type-icon flex-center"
                 onClick={() => {
-                  if (item.type === SocialLoginEnum.Apple) {
-                    onSocialChange(SocialLoginEnum.Apple);
+                  if (item.type === SocialLoginEnum.Telegram) {
+                    onSocialChange(SocialLoginEnum.Telegram);
                     return;
                   }
                   // if (item.type === SocialLoginEnum.Facebook) {

@@ -25,6 +25,8 @@ import { RedPackageTypeEnum } from '@portkey-wallet/im';
 import { divDecimalsStr } from '@portkey-wallet/utils/converter';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { formatRedPacketNoneLeftTime, getNumberWithUnit, getUnit } from '../utils/format';
+import NFTAvatar from 'components/NFTAvatar';
+import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 
 export type RedPacketRouterParams = {
   redPacketId: string;
@@ -56,31 +58,34 @@ export const RedPacketDetails = () => {
   });
 
   const renderRedPacketTipContent = useMemo(() => {
+    // TODO: isNFT
+    const tokenUnit =
+      redPacketData?.assetType === AssetType.ft ? redPacketData?.symbol : `${redPacketData?.alias} NFTs`;
+
     // isP2P && my packet && isRedPackageFullyClaimed
     if (isP2P && isMyPacket && redPacketData?.isRedPackageFullyClaimed)
-      return `This crypto box was opened, with ${divDecimalsStr(redPacketData?.totalAmount, redPacketData?.decimal)} ${
-        redPacketData?.symbol
-      } claimed.`;
+      return `This crypto box was opened, with ${divDecimalsStr(
+        redPacketData?.totalAmount,
+        redPacketData?.decimal,
+      )} ${tokenUnit} claimed.`;
 
     // isP2P && my packet && !isRedPackageFullyClaimed && !expired
     if (isP2P && isMyPacket && !redPacketData?.isRedPackageFullyClaimed && !redPacketData?.isRedPackageExpired)
-      return `${divDecimalsStr(redPacketData?.totalAmount, redPacketData?.decimal)} ${
-        redPacketData?.symbol
-      } to be claimed.`;
+      return `${divDecimalsStr(redPacketData?.totalAmount, redPacketData?.decimal)} ${tokenUnit} to be claimed.`;
 
     // isP2P && my packet && !isRedPackageFullyClaimed && expired
     if (isP2P && isMyPacket && !redPacketData?.isRedPackageFullyClaimed && redPacketData?.isRedPackageExpired)
       return `Crypto box expired. It was not opened, with ${divDecimalsStr(
         redPacketData?.totalAmount,
         redPacketData?.decimal,
-      )} ${redPacketData?.symbol} unclaimed.`;
+      )} ${tokenUnit} unclaimed.`;
 
     // !isP2P  && my wallet && isRedPackageFullyClaimed
     if (!isP2P && isMyPacket && redPacketData?.isRedPackageFullyClaimed)
       return `${getNumberWithUnit(redPacketData?.count, 'crypto box', 'crypto boxes')} with ${divDecimalsStr(
         redPacketData?.totalAmount,
         redPacketData?.decimal,
-      )} ${redPacketData?.symbol} in total, opened in ${formatRedPacketNoneLeftTime(
+      )} ${tokenUnit} in total, opened in ${formatRedPacketNoneLeftTime(
         redPacketData?.createTime,
         redPacketData?.endTime,
       )}`;
@@ -92,7 +97,7 @@ export const RedPacketDetails = () => {
       } opened and  ${divDecimalsStr(redPacketData?.grabbedAmount, redPacketData?.decimal)}/${divDecimalsStr(
         redPacketData?.totalAmount,
         redPacketData?.decimal,
-      )} ${redPacketData?.symbol} claimed.`;
+      )} ${tokenUnit} claimed.`;
 
     // !isP2P  && my wallet && !isRedPackageFullyClaimed && !isRedPackageExpired
     if (!isP2P && isMyPacket && !redPacketData?.isRedPackageFullyClaimed && !redPacketData?.isRedPackageExpired)
@@ -103,7 +108,7 @@ export const RedPacketDetails = () => {
       )} opened, with ${divDecimalsStr(redPacketData?.grabbedAmount, redPacketData?.decimal, '0')}/${divDecimalsStr(
         redPacketData?.totalAmount,
         redPacketData?.decimal,
-      )} ${redPacketData?.symbol} claimed.`;
+      )} ${tokenUnit} claimed.`;
 
     // !isP2P  && !my wallet  && isRedPackageFullyClaimed
     if (!isP2P && !isMyPacket && redPacketData?.isRedPackageFullyClaimed)
@@ -128,6 +133,8 @@ export const RedPacketDetails = () => {
   }, [
     isMyPacket,
     isP2P,
+    redPacketData?.alias,
+    redPacketData?.assetType,
     redPacketData?.count,
     redPacketData?.createTime,
     redPacketData?.decimal,
@@ -143,25 +150,51 @@ export const RedPacketDetails = () => {
   const headerDom = useMemo(() => {
     return (
       <View style={[GStyles.center, styles.topWrap]}>
-        <CommonAvatar
-          hasBorder
-          resizeMode="cover"
-          style={styles.sendAvatar}
-          avatarSize={pTd(48)}
-          title={redPacketData?.senderName}
-          imageUrl={redPacketData?.senderAvatar}
-        />
-        <TextXL numberOfLines={1} style={[FontStyles.font5, styles.sendBy, FontStyles.weight500]}>
-          {`Crypto Box from ${redPacketData?.senderName}`}
-        </TextXL>
-        <TextM style={[FontStyles.font7, styles.memo]}>{redPacketData?.memo}</TextM>
+        <View style={styles.headerTitleWrap}>
+          <CommonAvatar
+            hasBorder
+            resizeMode="cover"
+            avatarSize={pTd(24)}
+            style={styles.sendAvatar}
+            title={redPacketData?.senderName}
+            imageUrl={redPacketData?.senderAvatar}
+          />
 
+          <TextXL numberOfLines={1} style={[FontStyles.font5, FontStyles.weight500]}>
+            {`Crypto Box from ${redPacketData?.senderName}`}
+          </TextXL>
+        </View>
+
+        <TextM
+          style={[
+            FontStyles.font7,
+            styles.memo,
+            redPacketData?.assetType === AssetType.nft && GStyles.marginBottom(24),
+          ]}>
+          {redPacketData?.memo}
+        </TextM>
+
+        {redPacketData?.assetType === AssetType.nft && (
+          <NFTAvatar
+            disabled
+            style={GStyles.marginBottom(16)}
+            data={{
+              alias: redPacketData?.alias || '',
+              chainId: redPacketData?.chainId || '',
+              imageUrl: redPacketData?.imageUrl || '',
+              symbol: redPacketData?.symbol || '',
+              tokenContractAddress: '',
+              tokenId: redPacketData?.tokenId || '',
+            }}
+          />
+        )}
         {redPacketData?.isCurrentUserGrabbed && (
           <>
             <RedPacketAmountShow
+              assetType={redPacketData?.assetType}
               componentType="packetDetailPage"
               amountShow={divDecimalsStr(redPacketData?.currentUserGrabbedAmount, redPacketData?.decimal)}
-              symbol={redPacketData?.symbol || ''}
+              symbol={redPacketData.assetType === AssetType.ft ? redPacketData?.symbol : ''}
             />
             <TextS style={[FontStyles.font15, styles.tips]}>
               {`You can find the claiming record in the "Activity" section.`}
@@ -171,13 +204,18 @@ export const RedPacketDetails = () => {
       </View>
     );
   }, [
+    redPacketData?.alias,
+    redPacketData?.assetType,
+    redPacketData?.chainId,
     redPacketData?.currentUserGrabbedAmount,
     redPacketData?.decimal,
+    redPacketData?.imageUrl,
     redPacketData?.isCurrentUserGrabbed,
     redPacketData?.memo,
     redPacketData?.senderAvatar,
     redPacketData?.senderName,
     redPacketData?.symbol,
+    redPacketData?.tokenId,
   ]);
 
   const nextList = useCallback(() => {
@@ -215,8 +253,8 @@ export const RedPacketDetails = () => {
               <RedPacketReceiverItem
                 key={item.userId}
                 item={item}
-                symbol={redPacketData?.symbol || ''}
-                decimals={redPacketData?.decimal || ''}
+                symbol={redPacketData?.assetType === AssetType.ft ? redPacketData?.symbol : ''}
+                decimals={redPacketData?.decimal}
                 isLuckyKing={item.userId === luckKingId}
               />
             )}
@@ -225,7 +263,7 @@ export const RedPacketDetails = () => {
             ListFooterComponent={() =>
               isShowBottomTips ? (
                 <TextM style={styles.bottomTips}>
-                  {'Unclaimed tokens have been automatically returned to the sender.'}
+                  {'Unclaimed tokens/NFTs have been automatically returned to the sender.'}
                 </TextM>
               ) : null
             }
@@ -266,12 +304,18 @@ const styles = StyleSheet.create({
   topWrap: {
     paddingHorizontal: pTd(20),
   },
-  sendAvatar: {
+  headerTitleWrap: {
     marginTop: pTd(24),
-  },
-  sendBy: {
-    marginTop: pTd(12),
     marginBottom: pTd(4),
+    paddingHorizontal: pTd(12),
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sendAvatar: {
+    marginRight: pTd(8),
+    fontSize: pTd(14),
   },
   memo: {
     textAlign: 'center',
@@ -281,7 +325,7 @@ const styles = StyleSheet.create({
     marginTop: pTd(4),
   },
   divider: {
-    marginTop: pTd(40),
+    marginTop: pTd(24),
     backgroundColor: defaultColors.bg6,
   },
   redPacketStyleIntro: {

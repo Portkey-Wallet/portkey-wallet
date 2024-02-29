@@ -4,7 +4,7 @@ import { FontStyles } from 'assets/theme/styles';
 import { TextM, TextS } from 'components/CommonText';
 import { useDiscoverJumpWithNetWork, useRecordsList } from 'hooks/discover';
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
 import navigationService from 'utils/navigationService';
@@ -15,6 +15,7 @@ import { IBookmarkItem, ITabItem } from '@portkey-wallet/store/store-ca/discover
 import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { IRecordsItemType } from '@portkey-wallet/types/types-ca/discover';
+import Touchable from 'components/Touchable';
 
 export function DiscoverArchivedSection() {
   const discoverJump = useDiscoverJumpWithNetWork();
@@ -70,18 +71,18 @@ export function DiscoverArchivedSection() {
     <View style={styles.wrap}>
       <View style={styles.headerWrap}>
         <View style={styles.archivedTabWrap}>
-          <TouchableOpacity style={GStyles.marginRight(24)} onPress={() => setIndex(ArchivedTabEnum.Bookmarks)}>
+          <Touchable style={GStyles.marginRight(24)} onPress={() => setIndex(ArchivedTabEnum.Bookmarks)}>
             <TextM style={[index === ArchivedTabEnum.Bookmarks ? FontStyles.weight500 : FontStyles.font3]}>
               Bookmarks
             </TextM>
-          </TouchableOpacity>
-          <TouchableOpacity style={GStyles.marginRight(24)} onPress={() => setIndex(ArchivedTabEnum.History)}>
+          </Touchable>
+          <Touchable style={GStyles.marginRight(24)} onPress={() => setIndex(ArchivedTabEnum.History)}>
             <TextM style={index === ArchivedTabEnum.History ? FontStyles.weight500 : FontStyles.font3}>Records</TextM>
-          </TouchableOpacity>
+          </Touchable>
         </View>
-        <TouchableOpacity onPress={onSeeAllPress}>
+        <Touchable onPress={onSeeAllPress}>
           <TextS style={FontStyles.font4}>See All</TextS>
-        </TouchableOpacity>
+        </Touchable>
       </View>
       <View style={styles.tabViewWrap}>
         {index === ArchivedTabEnum.Bookmarks && (
@@ -91,7 +92,7 @@ export function DiscoverArchivedSection() {
             ) : (
               <View style={styles.tabListWrap}>
                 {bookmarkList.map((item, idx) => (
-                  <TouchableOpacity
+                  <Touchable
                     key={idx}
                     style={[styles.tabItemWrap, idx === 0 && GStyles.marginLeft(0)]}
                     onPress={() => onClickJump(item)}>
@@ -101,7 +102,7 @@ export function DiscoverArchivedSection() {
                         {getCmsWebsiteInfoName(item?.url) || item?.name || item?.url}
                       </TextS>
                     </View>
-                  </TouchableOpacity>
+                  </Touchable>
                 ))}
               </View>
             )}
@@ -114,7 +115,7 @@ export function DiscoverArchivedSection() {
             ) : (
               <View style={styles.tabListWrap}>
                 {recordsList.map((item, idx) => (
-                  <TouchableOpacity
+                  <Touchable
                     key={idx}
                     style={[styles.tabItemWrap, idx === 0 && GStyles.marginLeft(0)]}
                     onPress={() => onClickJump(item)}>
@@ -124,7 +125,7 @@ export function DiscoverArchivedSection() {
                         {getCmsWebsiteInfoName(item?.url || '') || item.name || item.url}
                       </TextS>
                     </View>
-                  </TouchableOpacity>
+                  </Touchable>
                 ))}
               </View>
             )}

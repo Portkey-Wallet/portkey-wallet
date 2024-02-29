@@ -1,6 +1,7 @@
 import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
 import { BackEndNetWorkMap } from './backend-network';
 import { LINK_PATH_ENUM } from './link';
+import { T_ENV_NAME } from '@portkey-wallet/types';
 export const NetworkList: NetworkItem[] = [
   BackEndNetWorkMap['back-end-mainnet'],
   BackEndNetWorkMap['back-end-testnet'],
@@ -23,3 +24,5 @@ export const LinkPortkeyPath = {
   addContact: LinkPortkeyWebsite + LINK_PATH_ENUM.addContact,
   addGroup: LinkPortkeyWebsite + LINK_PATH_ENUM.addGroup,
 };
+
+export const ENV_NAME: T_ENV_NAME = 'online';

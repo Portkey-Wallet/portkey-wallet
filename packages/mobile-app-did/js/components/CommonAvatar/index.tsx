@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { Text } from 'react-native';
@@ -52,6 +52,9 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     }),
     [avatarSize, hasBorder, height, shapeType, width],
   );
+
+  // when change url ,reset loading error state
+  useEffect(() => setLoadError(false), [imageUrl]);
 
   if (svgName)
     return (

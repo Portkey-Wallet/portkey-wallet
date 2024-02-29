@@ -19,6 +19,7 @@ import {
 } from '.';
 import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 import { IM_PIN_LIST_SORT_TYPE_ENUM } from '../constant';
+import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 
 export type IMServiceCommon<T> = Promise<{
   code: string;
@@ -232,6 +233,7 @@ export type SendRedPackageParams = {
   channelUuid: string;
   rawTransaction: string;
   message: string;
+  assetType: AssetType;
 };
 
 export type SendRedPackageResult = {

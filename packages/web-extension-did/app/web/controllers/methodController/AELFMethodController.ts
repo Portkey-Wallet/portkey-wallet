@@ -30,6 +30,7 @@ const storeInSW = {
 };
 
 const aelfMethodList = [
+  MethodsBase.CA_HASH,
   MethodsBase.ACCOUNTS,
   MethodsBase.CHAIN_ID,
   MethodsBase.CHAIN_IDS,
@@ -42,6 +43,7 @@ const aelfMethodList = [
   MethodsWallet.GET_WALLET_NAME,
   MethodsWallet.GET_WALLET_CURRENT_MANAGER_ADDRESS,
   MethodsWallet.GET_WALLET_MANAGER_SYNC_STATUS,
+  MethodsWallet.GET_WALLET_TRANSACTION_SIGNATURE,
 ];
 interface AELFMethodControllerProps {
   notificationService: NotificationService;

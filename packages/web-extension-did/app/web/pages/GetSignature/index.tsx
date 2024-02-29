@@ -17,12 +17,12 @@ import './index.less';
 import AElf from 'aelf-sdk';
 import { IBlockchainWallet } from '@portkey/types';
 export default function GetSignature() {
-  const { payload } = usePromptSearch<{
+  const { payload, autoSha256 } = usePromptSearch<{
     payload: {
       data: string;
       origin: string;
-      autoSha256?: boolean;
     };
+    autoSha256?: boolean;
   }>();
   const { t } = useTranslation();
   const { currentNetwork } = useWalletInfo();
@@ -45,14 +45,14 @@ export default function GetSignature() {
 
   const onSignByManager = useCallback(
     (manager: IBlockchainWallet) => {
-      if (payload.autoSha256) {
+      if (autoSha256) {
         return manager.keyPair.sign(AElf.utils.sha256(payload?.data), {
           canonical: true,
         });
       }
       return manager.keyPair.sign(payload?.data);
     },
-    [payload.autoSha256, payload?.data],
+    [autoSha256, payload?.data],
   );
 
   const sendHandler = useCallback(async () => {

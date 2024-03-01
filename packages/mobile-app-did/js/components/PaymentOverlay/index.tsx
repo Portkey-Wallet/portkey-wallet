@@ -248,7 +248,12 @@ const PaymentModal = ({
             GStyles.paddingRight(8),
             (!!crossSufficientItem || !!isCanBuy) && GStyles.paddingRight(88),
           ]}>
-          <TextL style={[FontStyles.font5]} numberOfLines={1}>
+          <TextL
+            style={[
+              FontStyles.font5,
+              !!crossSufficientItem || !!isCanBuy ? GStyles.maxWidth(pTd(80)) : GStyles.maxWidth(pTd(180)),
+            ]}
+            numberOfLines={1}>
             {`${assetInfo.assetType === AssetType.nft ? assetInfo.alias + ' #' + assetInfo.tokenId : assetInfo.symbol}`}
           </TextL>
           <TextS style={FontStyles.font5} numberOfLines={1}>
@@ -344,6 +349,7 @@ const PaymentModal = ({
                 numberOfLines={1}
                 style={[
                   GStyles.marginLeft(pTd(8)),
+                  GStyles.maxWidth(250),
                   FontStyles.font5,
                 ]}>{`${assetInfo.alias} #${assetInfo.tokenId}`}</TextM>
             </View>
@@ -451,6 +457,7 @@ export const styles = StyleSheet.create({
   avatar: {
     fontSize: pTd(14),
     marginRight: pTd(8),
+    borderRadius: pTd(4),
   },
   marginTop4: {
     marginTop: pTd(4),

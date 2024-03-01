@@ -111,21 +111,22 @@ const SendHome: React.FC = () => {
         decimals: assetInfo.decimals,
         symbol: assetInfo.symbol,
         caContract: contractRef.current,
-        tokenContractAddress: assetInfo.tokenContractAddress,
+        tokenContractAddress: assetInfo.tokenContractAddress || assetInfo.address || '',
         toAddress: getEntireDIDAelfAddress(selectedToContact.address, undefined, assetInfo.chainId),
         chainId: assetInfo.chainId,
       });
     },
     [
-      assetInfo.chainId,
       chainInfo,
-      debounceSendNumber,
-      getCAContract,
       getTransferFee,
+      debounceSendNumber,
       assetInfo.decimals,
       assetInfo.symbol,
       assetInfo.tokenContractAddress,
+      assetInfo.address,
+      assetInfo.chainId,
       selectedToContact.address,
+      getCAContract,
     ],
   );
 

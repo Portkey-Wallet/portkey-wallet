@@ -117,10 +117,13 @@ export default class AELFMethodController {
       case MethodsWallet.GET_WALLET_SIGNATURE:
         this.getSignature(sendResponse, message.payload);
         break;
-      case MethodsWallet.GET_WALLET_TRANSACTION_SIGNATURE:
+      case MethodsWallet.GET_WALLET_TRANSACTION_SIGNATURE: {
         if (message.payload.payload) message.payload.payload.autoSha256 = true;
+        const { hexData, data } = message.payload.payload;
+        if (!data && hexData) message.payload.payload.data = hexData;
         this.getSignature(sendResponse, message.payload);
         break;
+      }
       case MethodsWallet.GET_WALLET_STATE:
         this.getWalletState(sendResponse, message.payload);
         break;

@@ -27,10 +27,10 @@ import { pTd } from 'utils/unit';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
 import { useIsTokenHasPrice, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import CommonAvatar from 'components/CommonAvatar';
 import { IActivityApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import Lottie from 'lottie-react-native';
 import Touchable from 'components/Touchable';
+import NFTAvatar from 'components/NFTAvatar';
 
 const ActivityDetail = () => {
   const { t } = useLanguage();
@@ -225,11 +225,13 @@ const ActivityDetail = () => {
         (isNft ? (
           <>
             <View style={styles.topWrap}>
-              {activityItem?.nftInfo?.imageUrl ? (
-                <CommonAvatar avatarSize={pTd(64)} imageUrl={activityItem?.nftInfo?.imageUrl} style={styles.img} />
-              ) : (
-                <Text style={styles.noImg}>{activityItem?.nftInfo?.alias?.slice(0, 1)}</Text>
-              )}
+              <NFTAvatar
+                disabled
+                seedType="ft"
+                nftSize={pTd(64)}
+                data={{ imageUrl: activityItem?.nftInfo?.imageUrl || '' }}
+                style={styles.img}
+              />
               <View style={styles.nftInfo}>
                 <TextL style={styles.nftTitle}>{`${activityItem?.nftInfo?.alias || ''} #${
                   activityItem?.nftInfo?.nftId || ''

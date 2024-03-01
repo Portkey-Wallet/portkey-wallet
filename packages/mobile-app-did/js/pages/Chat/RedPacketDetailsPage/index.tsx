@@ -177,14 +177,11 @@ export const RedPacketDetails = () => {
         {redPacketData?.assetType === AssetType.nft && (
           <NFTAvatar
             disabled
+            seedType="ft"
+            badgeSizeType="normal"
             style={GStyles.marginBottom(16)}
             data={{
-              alias: redPacketData?.alias || '',
-              chainId: redPacketData?.chainId || '',
               imageUrl: redPacketData?.imageUrl || '',
-              symbol: redPacketData?.symbol || '',
-              tokenContractAddress: '',
-              tokenId: redPacketData?.tokenId || '',
             }}
           />
         )}
@@ -204,9 +201,7 @@ export const RedPacketDetails = () => {
       </View>
     );
   }, [
-    redPacketData?.alias,
     redPacketData?.assetType,
-    redPacketData?.chainId,
     redPacketData?.currentUserGrabbedAmount,
     redPacketData?.decimal,
     redPacketData?.imageUrl,
@@ -215,7 +210,6 @@ export const RedPacketDetails = () => {
     redPacketData?.senderAvatar,
     redPacketData?.senderName,
     redPacketData?.symbol,
-    redPacketData?.tokenId,
   ]);
 
   const nextList = useCallback(() => {

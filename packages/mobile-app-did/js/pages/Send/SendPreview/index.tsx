@@ -45,12 +45,12 @@ import { ChainId } from '@portkey-wallet/types';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
-import CommonAvatar from 'components/CommonAvatar';
 import { useCheckTransferLimitWithJump } from 'hooks/security';
 import { useSendIMTransfer } from '@portkey-wallet/hooks/hooks-ca/im/transfer';
 import { TransferTypeEnum } from '@portkey-wallet/im';
 import { useJumpToChatDetails, useJumpToChatGroupDetails } from 'hooks/chat';
 import { useFocusEffect } from '@react-navigation/native';
+import NFTAvatar from 'components/NFTAvatar';
 
 const SendHome: React.FC = () => {
   const { t } = useLanguage();
@@ -401,11 +401,18 @@ const SendHome: React.FC = () => {
       scrollViewProps={{ disabled: true }}>
       {sendType === 'nft' ? (
         <View style={styles.topWrap}>
-          {!assetInfo?.imageUrl ? (
-            <Text style={styles.noImg}>{assetInfo?.alias[0]}</Text>
-          ) : (
-            <CommonAvatar avatarSize={pTd(64)} style={styles.img} imageUrl={assetInfo?.imageUrl || ''} />
-          )}
+          {
+            <NFTAvatar
+              disabled
+              seedType="ft"
+              nftSize={pTd(64)}
+              badgeSizeType="normal"
+              data={{
+                imageUrl: assetInfo.imageLargeUrl,
+              }}
+              style={styles.img}
+            />
+          }
           <View style={styles.topLeft}>
             <TextL style={[styles.nftTitle, fonts.mediumFont]}>{`${assetInfo.alias} #${assetInfo?.tokenId}`} </TextL>
             <TextS style={[FontStyles.font3]}>{`Amount：${sendNumber}`}</TextS>

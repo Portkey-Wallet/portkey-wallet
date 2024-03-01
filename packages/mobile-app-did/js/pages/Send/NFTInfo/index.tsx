@@ -1,14 +1,13 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
-// import { parseInputChange } from '@portkey/utils/input';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 
 import { useLanguage } from 'i18n/hooks';
 import { TextL, TextS } from 'components/CommonText';
-import CommonAvatar from 'components/CommonAvatar';
 import { FontStyles } from 'assets/theme/styles';
+import NFTAvatar from 'components/NFTAvatar';
 
 interface AmountNFT {
   nftItem: any;
@@ -19,13 +18,7 @@ export default function NFTInfo({ nftItem = { alias: '', balance: 0 } }: AmountN
 
   return (
     <View style={styles.wrap}>
-      <CommonAvatar
-        shapeType="square"
-        imageUrl={nftItem?.imageUrl}
-        title={nftItem?.alias || ''}
-        avatarSize={pTd(56)}
-        style={styles.avatar}
-      />
+      <NFTAvatar disabled seedType="ft" nftSize={pTd(56)} badgeSizeType="normal" data={nftItem} style={styles.avatar} />
       <View>
         <TextL numberOfLines={1} style={styles.nftTitle}>{`${nftItem?.alias || ''}  #${nftItem?.tokenId}`}</TextL>
         <TextS numberOfLines={1} style={[styles.balance, FontStyles.font3]}>{`${t('Balance')}: ${
@@ -47,6 +40,8 @@ export const styles = StyleSheet.create({
     borderWidth: 0,
     backgroundColor: defaultColors.bg7,
     marginRight: pTd(16),
+    width: pTd(56),
+    height: pTd(56),
   },
   nftTitle: {
     maxWidth: pTd(230),

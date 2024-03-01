@@ -108,13 +108,16 @@ export default function NFTItem(props: NFTItemPropsType) {
         <View style={[styles.listWrap]}>
           {showChildren?.map((ele: any, index: number) => (
             <NFTAvatar
+              // change seed
+              seedType="ft"
+              badgeSizeType="normal"
+              key={ele.symbol}
+              data={ele}
               style={[
                 styles.itemAvatarStyle,
                 index < 3 ? styles.marginTop0 : {},
                 index % 3 === 2 ? styles.marginRight0 : {},
               ]}
-              key={ele.symbol}
-              data={ele}
               onPress={() => {
                 navigationService.navigate('NFTDetail', { ...ele, collectionInfo: { imageUrl, collectionName } });
               }}

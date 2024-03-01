@@ -20,6 +20,7 @@ import { ScreenWidth } from '@rneui/base';
 import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
 import { copyText } from 'utils';
 import Touchable from 'components/Touchable';
+import NFTAvatar from 'components/NFTAvatar';
 
 export interface TokenDetailProps {
   route?: any;
@@ -71,12 +72,18 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
           <TextM style={[FontStyles.font3, styles.marginLeft8, fonts.mediumFont]}>{collectionName}</TextM>
         </View>
         <TextXXL style={styles.tokenId}>{`${alias} #${tokenId}`}</TextXXL>
-
-        <CommonAvatar
-          title={alias}
-          style={[imageLargeUrl ? styles.image1 : styles.image]}
-          imageUrl={imageLargeUrl}
-          avatarSize={pTd(335)}
+        <NFTAvatar
+          // TODO:  change
+          disabled
+          seedType="ft"
+          nftSize={pTd(335)}
+          badgeSizeType="large"
+          data={{
+            alias,
+            imageUrl: imageLargeUrl,
+            tokenId,
+          }}
+          style={styles.image}
         />
 
         <View style={styles.infoWrap}>
@@ -165,16 +172,6 @@ export const styles = StyleSheet.create({
     fontSize: pTd(100),
     backgroundColor: defaultColors.bg7,
     color: defaultColors.font7,
-  },
-  image1: {
-    marginTop: pTd(24),
-    marginBottom: pTd(24),
-    width: pTd(335),
-    height: pTd(335),
-    borderRadius: pTd(8),
-    lineHeight: pTd(335),
-    textAlign: 'center',
-    fontSize: pTd(100),
   },
   basicInfoTitle: {
     marginBottom: pTd(8),

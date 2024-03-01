@@ -87,6 +87,7 @@ export interface IAccountCryptoBoxAssetItem {
   alias?: string;
   tokenId?: string;
   balance?: string;
+  tokenContractAddress?: string;
 }
 
 export type AccountAssets = AccountAssetItem[];

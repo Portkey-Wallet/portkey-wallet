@@ -11,5 +11,5 @@
   const timer = setTimeout(() => {
     clearTimeout(timer);
     document.body.appendChild(script);
-  }, 1000);
+  }, 10);
 })();

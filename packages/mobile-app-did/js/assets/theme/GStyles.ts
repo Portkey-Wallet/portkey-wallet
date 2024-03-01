@@ -16,6 +16,7 @@ export default {
     flexWrap: 'wrap',
   },
   flexRow: {
+    display: 'flex',
     flexDirection: 'row',
   },
   flexCol: {

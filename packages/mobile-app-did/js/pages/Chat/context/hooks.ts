@@ -10,6 +10,10 @@ export function useChatText() {
   return useAppSelector(state => state.chats.text);
 }
 
+export function useChatReplyMessageInfo() {
+  return useAppSelector(state => state.chats.replyMessageInfo);
+}
+
 export function useIsShowInput() {
   return useAppSelector(state => state.chats.bottomBarStatus) === ChatBottomBarStatus.input;
 }
@@ -29,6 +33,10 @@ export function useLatestText() {
   return useLatestRef(text);
 }
 
+export function useCurrentChannel() {
+  return useAppSelector(state => state.chats.currentChannel);
+}
+
 export function useCurrentChannelId() {
-  return useAppSelector(state => state.chats.currentChannelId);
+  return useAppSelector(state => state.chats.currentChannel?.currentChannelId);
 }

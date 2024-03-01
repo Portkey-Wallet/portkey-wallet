@@ -1,9 +1,6 @@
-import { message } from 'antd';
 import CustomModal from 'pages/components/CustomModal';
 import { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
-import { useCopyToClipboard } from 'react-use';
 import { useCommonState } from 'store/Provider/hooks';
 import { ExtraType, IProfileDetailDataProps } from 'types/Profile';
 import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
@@ -58,23 +55,10 @@ export const useProfileChat = () => {
           const res = await createChannel(relationId);
           navigate(`/chat-box/${res.channelUuid}`);
         } catch (error) {
-          message.error('cannot chat');
+          singleMessage.error('cannot chat');
         }
       }
     },
     [createChannel, isPrompt, navigate],
-  );
-};
-
-export const useProfileCopy = () => {
-  const [, setCopied] = useCopyToClipboard();
-  const { t } = useTranslation();
-
-  return useCallback(
-    (val: string) => {
-      setCopied(val);
-      singleMessage.success(t('Copy Success'));
-    },
-    [setCopied, t],
   );
 };

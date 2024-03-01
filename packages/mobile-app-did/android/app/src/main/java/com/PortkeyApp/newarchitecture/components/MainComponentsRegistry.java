@@ -1,4 +1,4 @@
-package com.portkey.did.newarchitecture.components;
+package com.portkey.finance.newarchitecture.components;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;

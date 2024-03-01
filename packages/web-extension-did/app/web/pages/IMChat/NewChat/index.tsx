@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
@@ -11,14 +10,16 @@ import { useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
-import { message } from 'antd';
+import singleMessage from 'utils/singleMessage';
+import { useLocationState, useNavigateState } from 'hooks/router';
+import { TNewChatLocationState, TViewContactLocationState } from 'types/router';
 import './index.less';
 
 export default function NewChat() {
   const { t } = useTranslation();
-  const { state } = useLocation();
+  const { state } = useLocationState<TNewChatLocationState>();
   const [filterWord, setFilterWord] = useState<string>('');
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TViewContactLocationState>();
   const { setLoading } = useLoading();
   const [chatList, setChatList] = useState<ContactItemType[]>([]);
   const localSearch = useLocalContactSearch();
@@ -54,15 +55,18 @@ export default function NewChat() {
         navigate(`/chat-box/${res.channelUuid}`);
       } catch (e) {
         console.log('===create channel error', e);
-        message.error('create channel error');
+        singleMessage.error('create channel error');
       }
     },
     [createChannel, navigate],
   );
   useEffect(() => {
-    setFilterWord(state?.search ?? '');
-    handleSearch(state?.search ?? '');
-  }, [handleSearch, state?.search]);
+    const _v = state?.search;
+    if (_v) {
+      setFilterWord(state?.search ?? '');
+      handleSearch(state?.search ?? '');
+    }
+  }, [handleSearch, state]);
 
   return (
     <div className="new-chat-page flex-column">
@@ -94,7 +98,7 @@ export default function NewChat() {
               hasChatEntry={true}
               list={chatList}
               clickItem={(item: ContactItemType) =>
-                navigate('/setting/contacts/view', { state: { ...item, search: filterWord, from: 'new-chat' } })
+                navigate('/setting/contacts/view', { state: { ...item, search: filterWord, previousPage: 'new-chat' } })
               }
               clickChat={handleClickChat}
             />

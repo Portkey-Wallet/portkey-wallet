@@ -6,14 +6,22 @@ import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { ChatMessage } from 'pages/Chat/types';
 import { TextS } from 'components/CommonText';
+import { isCommonView } from 'pages/Chat/utils';
+import { isMemberMessage } from '@portkey-wallet/utils/chat';
 
 export default function CustomBubble(props: BubbleProps<ChatMessage> & { isGroupChat?: boolean }) {
   const { isGroupChat, currentMessage, previousMessage, user } = props || {};
   const { messageType } = currentMessage || {};
 
+  const isGeneralMessage = useMemo(() => !isCommonView(messageType), [messageType]);
+
   const isHideName = useMemo(
-    () => currentMessage?.user?._id === previousMessage?.user?._id || user?._id === currentMessage?.user?._id,
-    [currentMessage?.user?._id, previousMessage?.user?._id, user?._id],
+    () =>
+      (currentMessage?.user?._id === previousMessage?.user?._id &&
+        previousMessage?.messageType &&
+        isMemberMessage(previousMessage?.messageType)) ||
+      user?._id === currentMessage?.user?._id,
+    [currentMessage?.user?._id, previousMessage?.messageType, previousMessage?.user?._id, user?._id],
   );
 
   return (
@@ -27,14 +35,24 @@ export default function CustomBubble(props: BubbleProps<ChatMessage> & { isGroup
         touchableProps={{ disabled: true }}
         wrapperStyle={useMemo(
           () => ({
-            left: [styles.wrapperStyle, styles.wrapLeft, messageType === 'NOT_SUPPORTED' && styles.notSupportStyle],
-            right: [styles.wrapperStyle, styles.wrapRight, messageType === 'NOT_SUPPORTED' && styles.notSupportStyle],
+            left: [
+              styles.wrapperStyle,
+              styles.wrapLeft,
+              !isGeneralMessage && styles.redPacketWrapStyle,
+              messageType === 'NOT_SUPPORTED' && styles.notSupportStyle,
+            ],
+            right: [
+              styles.wrapperStyle,
+              styles.wrapRight,
+              !isGeneralMessage && styles.redPacketWrapStyle,
+              messageType === 'NOT_SUPPORTED' && styles.notSupportStyle,
+            ],
           }),
-          [messageType],
+          [isGeneralMessage, messageType],
         )}
         containerToNextStyle={{
-          left: styles.containerToNextLeftStyle,
-          right: styles.containerToNextRightStyle,
+          left: [styles.containerToNextLeftStyle, !isGeneralMessage && styles.redPacketContainerToNextStyle],
+          right: [styles.containerToNextRightStyle, !isGeneralMessage && styles.redPacketContainerToNextStyle],
         }}
         containerStyle={{
           left: styles.containerStyle,
@@ -48,27 +66,41 @@ export default function CustomBubble(props: BubbleProps<ChatMessage> & { isGroup
 
 const styles = StyleSheet.create({
   wrapperStyle: {
-    borderRadius: pTd(20),
+    borderRadius: pTd(16),
     color: defaultColors.font5,
+  },
+  redPacketWrapStyle: {
+    borderRadius: pTd(12),
+    backgroundColor: 'transparent',
   },
   wrapLeft: {
     backgroundColor: defaultColors.bg18,
     borderTopLeftRadius: pTd(2),
     marginLeft: -pTd(8),
     overflow: 'hidden',
+    borderColor: 'transparent',
+    borderWidth: StyleSheet.hairlineWidth,
   },
   wrapRight: {
     backgroundColor: defaultColors.bg9,
     borderTopRightRadius: pTd(2),
     marginRight: 0,
     overflow: 'hidden',
+    borderColor: 'transparent',
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  redPacketContainerToNextStyle: {
+    borderBottomRightRadius: pTd(12),
+    borderBottomLeftRadius: pTd(12),
+    borderTopRightRadius: pTd(12),
+    borderTopLeftRadius: pTd(12),
   },
   containerToNextRightStyle: {
-    borderBottomRightRadius: pTd(20),
+    borderBottomRightRadius: pTd(16),
   },
   containerToNextLeftStyle: {
     borderTopLeftRadius: pTd(2),
-    borderBottomLeftRadius: pTd(20),
+    borderBottomLeftRadius: pTd(16),
   },
   containerStyle: {
     marginHorizontal: pTd(4),
@@ -78,7 +110,7 @@ const styles = StyleSheet.create({
   },
   memberName: {
     color: defaultColors.font7,
-    marginBottom: pTd(4),
+    marginBottom: pTd(2),
     marginLeft: -pTd(4),
   },
 });

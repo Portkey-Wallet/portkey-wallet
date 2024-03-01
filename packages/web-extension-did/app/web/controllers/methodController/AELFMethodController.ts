@@ -329,7 +329,7 @@ export default class AELFMethodController {
   getAccounts: RequestCommonHandler = async (sendResponse, message) => {
     try {
       const { origin } = message;
-      sendResponse({ ...errorHandler(0), data: this.dappManager.accounts(origin) });
+      sendResponse({ ...errorHandler(0), data: await this.dappManager.accounts(origin) });
     } catch (error) {
       console.log('getAccounts===', error);
       sendResponse({

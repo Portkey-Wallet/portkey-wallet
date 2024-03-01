@@ -108,6 +108,7 @@
         border-radius: 6px;
         border: 1px solid @border-1;
         padding: 16px 15px;
+        background-color: transparent;
 
         &::placeholder {
           color: @font-12;
@@ -292,6 +293,36 @@
       }
     }
   }
+  .address-form-side-chain {
+    background-color: @bg-13;
+    .address-wrap {
+      border-bottom: none;
+    }
+    .side-chain-tip {
+      cursor: pointer;
+      padding: 12px 16px;
+      background-color: @bg-22;
+      border-radius: 6px;
+      color: @font-13;
+      .info-icon {
+        width: 16px;
+        height: 16px;
+        margin-right: 8px;
+        transform: rotate(180deg);
+        /* stylelint-disable-next-line no-descending-specificity */
+        svg {
+          width: 16px;
+          height: 16px;
+          path {
+            fill: @bg-19;
+          }
+        }
+      }
+      .leftarrow-icon {
+        transform: rotate(-90deg);
+      }
+    }
+  }
   .btn-wrap {
     background-color: @bg-11;
     padding: 16px;
@@ -299,6 +330,15 @@
     .stage-btn {
       border-radius: 100px;
       height: 48px;
+    }
+  }
+}
+
+.side-chain-modal {
+  .@{app-prefix}-modal-confirm-content {
+    margin-top: 0;
+    .modal-title {
+      margin-bottom: 8px;
     }
   }
 }

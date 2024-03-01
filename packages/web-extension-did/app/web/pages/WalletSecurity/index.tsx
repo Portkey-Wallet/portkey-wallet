@@ -1,5 +1,4 @@
 import { useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDeviceList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { MenuItemInfo } from 'pages/components/MenuList';
@@ -7,6 +6,7 @@ import { BaseHeaderProps } from 'types/UI';
 import WalletSecurityPrompt from './Prompt';
 import WalletSecurityPopup from './Popup';
 import { useCommonState, useDapp, useWalletInfo } from 'store/Provider/hooks';
+import { useNavigateState } from 'hooks/router';
 
 export interface IWalletSecurityProps extends BaseHeaderProps {
   menuList: MenuItemInfo[];
@@ -14,7 +14,7 @@ export interface IWalletSecurityProps extends BaseHeaderProps {
 
 export default function WalletSecurity() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const { isNotLessThan768 } = useCommonState();
   const { deviceAmount } = useDeviceList({
     isAmountOnly: true,

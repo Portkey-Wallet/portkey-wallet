@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useAppDispatch, useCommonState, useLoading } from 'store/Provider/hooks';
 import { resetUserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import useGuardianList from 'hooks/useGuardianList';
@@ -11,10 +11,12 @@ import DeviceDetailPrompt from './Prompt';
 import DeviceDetailPopup from './Popup';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
+import { useNavigateState } from 'hooks/router';
+import { FromPageEnum, TGuardianApprovalLocationState } from 'types/router';
 
 export default function DeviceDetail() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TGuardianApprovalLocationState>();
   const { isPrompt, isNotLessThan768 } = useCommonState();
   const { setLoading } = useLoading();
   const { managerAddress } = useParams();
@@ -48,9 +50,15 @@ export default function DeviceDetail() {
 
     isPrompt
       ? navigate('/setting/wallet-security/manage-devices/guardian-approval', {
-          state: `removeManage_${device.managerAddress}`,
+          state: {
+            previousPage: FromPageEnum.removeManage,
+            manageAddress: `${device.managerAddress}`,
+          },
         })
-      : InternalMessage.payload(PortkeyMessageTypes.GUARDIANS_APPROVAL, `removeManage_${device.managerAddress}`).send();
+      : InternalMessage.payload(
+          PortkeyMessageTypes.GUARDIANS_APPROVAL,
+          JSON.stringify({ previousPage: FromPageEnum.removeManage, manageAddress: device.managerAddress }),
+        ).send();
   }, [
     dispatch,
     walletInfo.managerInfo?.loginAccount,

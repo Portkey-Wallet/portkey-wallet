@@ -1,4 +1,4 @@
-package com.portkey.did;
+package com.portkey.finance;
 import expo.modules.ReactActivityDelegateWrapper;
 
 import com.facebook.react.ReactActivity;

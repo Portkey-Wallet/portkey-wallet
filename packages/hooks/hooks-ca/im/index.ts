@@ -18,6 +18,7 @@ import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/ac
 import { request } from '@portkey-wallet/api/api-did';
 import useLockCallback from '../../useLockCallback';
 import { handleLoopFetch } from '@portkey-wallet/utils';
+import { messageContentParser } from '@portkey-wallet/im/utils';
 
 export const useIMState = () => useAppCASelector(state => state.im);
 export const useIMHasNextNetMapState = () => useAppCASelector(state => state.im.hasNextNetMap);
@@ -26,6 +27,9 @@ export const useIMChannelMessageListNetMapState = () => useAppCASelector(state =
 export const useIMRelationIdNetMapNetMapState = () => useAppCASelector(state => state.im.relationIdNetMap);
 export const useIMRelationTokenNetMapNetMapState = () => useAppCASelector(state => state.im.relationTokenNetMap);
 export const useIMGroupInfoMapNetMapState = () => useAppCASelector(state => state.im.groupInfoMapNetMap);
+export const useRedPackageConfigMapState = () => useAppCASelector(state => state.im.redPackageConfigMap);
+export const useIMPinListNetMapState = () => useAppCASelector(state => state.im.pinListNetMap);
+export const useIMLastPinNetMapState = () => useAppCASelector(state => state.im.lastPinNetMap);
 
 export const useUnreadCount = () => {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -71,12 +75,11 @@ export const useRelationId = () => {
     getRelationId,
   };
 };
-
+let observersList: { remove: () => void }[] = [];
 export const useInitIM = () => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
   const { getRelationId } = useRelationId();
-
   const channelListNetMap = useIMChannelListNetMapState();
   const list = useMemo(() => channelListNetMap?.[networkType]?.list || [], [channelListNetMap, networkType]);
   const listRef = useRef(list);
@@ -105,7 +108,7 @@ export const useInitIM = () => {
                 unreadMessageCount: 1,
                 mentionsCount: 0,
                 lastMessageType: rawMsg.type,
-                lastMessageContent: rawMsg.content,
+                lastMessageContent: messageContentParser(rawMsg.type, rawMsg.content),
                 lastPostAt: rawMsg.createAt,
                 mute: rawMsg.mute,
                 pin: false,
@@ -124,7 +127,14 @@ export const useInitIM = () => {
             channelUuid: rawMsg.channelUuid,
           });
           if (list.length) {
-            const channelInfo = list[0];
+            const channelInfoResult = list[0];
+            const channelInfo = {
+              ...channelInfoResult,
+              lastMessageContent: messageContentParser(
+                channelInfoResult.lastMessageType,
+                channelInfoResult.lastMessageContent || '',
+              ),
+            };
             dispatch(
               addChannel({
                 network: networkType,
@@ -147,7 +157,7 @@ export const useInitIM = () => {
                   unreadMessageCount: 1,
                   mentionsCount: 0,
                   lastMessageType: rawMsg.type,
-                  lastMessageContent: rawMsg.content,
+                  lastMessageContent: messageContentParser(rawMsg.type, rawMsg.content),
                   lastPostAt: rawMsg.createAt,
                   mute: rawMsg.mute,
                   pin: channelInfo.pin,
@@ -161,14 +171,13 @@ export const useInitIM = () => {
           console.log('UnreadMsg addChannel error:', error);
         }
       } else {
-        console.log('updateUnreadChannel');
         dispatch(
           updateChannelAttribute({
             network: networkType,
             channelId: rawMsg.channelUuid,
             value: {
               lastMessageType: rawMsg.type,
-              lastMessageContent: rawMsg.content,
+              lastMessageContent: messageContentParser(rawMsg.type, rawMsg.content),
               lastPostAt: rawMsg.createAt,
             },
             type: UpdateChannelAttributeTypeEnum.UPDATE_UNREAD_CHANNEL,
@@ -198,14 +207,25 @@ export const useInitIM = () => {
 
   const initIm = useLockCallback(
     async (account: AElfWallet, caHash: string) => {
-      if (![IMStatusEnum.INIT, IMStatusEnum.DESTROY].includes(im.status)) return;
+      if (observersList.length) {
+        observersList.forEach(item => {
+          item.remove();
+        });
+        observersList = [];
+      }
 
-      im.registerUnreadMsgObservers(async (e: any) => {
-        unreadMessageUpdateRef.current(e);
-      });
-      im.registerTokenObserver(async (e: string) => {
-        setTokenUpdateRef.current(e);
-      });
+      observersList.push(
+        im.registerUnreadMsgObservers(async (e: any) => {
+          unreadMessageUpdateRef.current(e);
+        }),
+      );
+      observersList.push(
+        im.registerTokenObserver(async (e: string) => {
+          setTokenUpdateRef.current(e);
+        }),
+      );
+
+      if (![IMStatusEnum.INIT, IMStatusEnum.DESTROY].includes(im.status)) return;
 
       await im.init(account, caHash, relationToken);
       dispatch(fetchContactListAsync());
@@ -216,11 +236,14 @@ export const useInitIM = () => {
         },
       });
 
-      handleLoopFetch(getRelationId, 3).catch(error => {
+      handleLoopFetch({
+        fetch: getRelationId,
+        times: 3,
+      }).catch(error => {
         console.log('initIm getRelationId error', error);
       });
     },
-    [dispatch, networkType, relationToken],
+    [dispatch, getRelationId, relationToken],
   );
   return initIm;
 };
@@ -261,3 +284,4 @@ export const useEditIMContact = () => {
 export * from './channelList';
 export * from './channel';
 export * from './group';
+export * from './redPackage';

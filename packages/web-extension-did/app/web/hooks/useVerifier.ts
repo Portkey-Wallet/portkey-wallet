@@ -10,11 +10,12 @@ import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQ
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
 import { useCallback } from 'react';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { message } from 'antd';
-import { useNavigate } from 'react-router';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import { setRegisterVerifierAction } from 'store/reducers/loginCache/actions';
 import { LoginInfo } from 'store/reducers/loginCache/type';
+import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from './router';
+import { FromPageEnum, TVerifierAccountLocationState } from 'types/router';
 
 /**
  * Provides two verification processes
@@ -24,7 +25,7 @@ import { LoginInfo } from 'store/reducers/loginCache/type';
  */
 const useCheckVerifier = () => {
   const { setLoading } = useLoading();
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TVerifierAccountLocationState>();
   const dispatch = useAppDispatch();
   const originChainId = useOriginChainId();
   const { address: managerAddress } = useCurrentWalletInfo();
@@ -35,10 +36,10 @@ const useCheckVerifier = () => {
     async (verifierItem: VerifierItem, loginAccount?: LoginInfo) => {
       try {
         if (!loginAccount || !LoginType[loginAccount?.loginType] || !loginAccount?.guardianAccount)
-          return message.error(
+          return singleMessage.error(
             'User registration information is invalid, please fill in the registration method again',
           );
-        if (!verifierItem?.id || !verifierItem?.name) return message.error('Can not get verification');
+        if (!verifierItem?.id || !verifierItem?.name) return singleMessage.error('Can not get verification');
 
         setLoading(true);
 
@@ -69,13 +70,17 @@ const useCheckVerifier = () => {
               salt: '',
             }),
           );
-          navigate('/register/verifier-account', { state: 'register' });
+          navigate('/register/verifier-account', {
+            state: {
+              previousPage: FromPageEnum.register,
+            },
+          });
         }
       } catch (error: any) {
         setLoading(false);
         console.log(error, 'verifyHandler');
         const _error = verifyErrorHandler(error);
-        message.error(_error);
+        singleMessage.error(_error);
       }
     },
     [dispatch, navigate, setLoading],
@@ -88,7 +93,7 @@ const useCheckVerifier = () => {
       try {
         setLoading(true);
         if (!loginAccount?.loginType) throw 'loginType is invalid';
-        if (!verifierItem?.id || !verifierItem?.name) return message.error('Can not get verification');
+        if (!verifierItem?.id || !verifierItem?.name) return singleMessage.error('Can not get verification');
 
         const rst = await verifyToken(loginAccount.loginType, {
           accessToken: loginAccount.authenticationInfo?.[loginAccount.guardianAccount || ''],
@@ -107,17 +112,20 @@ const useCheckVerifier = () => {
         const res = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();
         setLoading(false);
         if (managerAddress && res.data.privateKey) {
-          onManagerAddressAndQueryResult(res.data.privateKey, {
-            verifierId: verifierItem.id as string,
-            verificationDoc: rst.verificationDoc,
-            signature: rst.signature,
+          onManagerAddressAndQueryResult({
+            pin: res.data.privateKey,
+            verifierParams: {
+              verifierId: verifierItem.id as string,
+              verificationDoc: rst.verificationDoc,
+              signature: rst.signature,
+            },
           });
         } else {
           navigate('/login/set-pin/register');
         }
       } catch (error) {
         const msg = handleError(error);
-        message.error(msg);
+        singleMessage.error(msg);
         setLoading(false);
       }
     },

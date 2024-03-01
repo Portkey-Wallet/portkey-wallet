@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.portkey.did">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.portkey.finance">
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.CAMERA"/>
   <uses-permission android:name="android.permission.RECORD_AUDIO"/>
@@ -6,17 +6,65 @@
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
   <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+	<!--for Samsung-->
+	<uses-permission android:name="com.sec.android.provider.badge.permission.READ"/>
+	<uses-permission android:name="com.sec.android.provider.badge.permission.WRITE"/>
+
+	<!--for htc-->
+	<uses-permission android:name="com.htc.launcher.permission.READ_SETTINGS"/>
+	<uses-permission android:name="com.htc.launcher.permission.UPDATE_SHORTCUT"/>
+
+	<!--for sony-->
+	<uses-permission android:name="com.sonyericsson.home.permission.BROADCAST_BADGE"/>
+	<uses-permission android:name="com.sonymobile.home.permission.PROVIDER_INSERT_BADGE"/>
+
+	<!--for apex-->
+	<uses-permission android:name="com.anddoes.launcher.permission.UPDATE_COUNT"/>
+
+	<!--for solid-->
+	<uses-permission android:name="com.majeur.launcher.permission.UPDATE_BADGE"/>
+
+	<!--for huawei-->
+	<uses-permission android:name="com.huawei.android.launcher.permission.CHANGE_BADGE"/>
+	<uses-permission android:name="com.huawei.android.launcher.permission.READ_SETTINGS"/>
+	<uses-permission android:name="com.huawei.android.launcher.permission.WRITE_SETTINGS"/>
+
+	<!--for ZUK-->
+	<uses-permission android:name="android.permission.READ_APP_BADGE"/>
+
+	<!--for OPPO-->
+	<uses-permission android:name="com.oppo.launcher.permission.READ_SETTINGS"/>
+	<uses-permission android:name="com.oppo.launcher.permission.WRITE_SETTINGS"/>
+
+	<!--for EvMe-->
+	<uses-permission android:name="me.everything.badger.permission.BADGE_COUNT_READ"/>
+	<uses-permission android:name="me.everything.badger.permission.BADGE_COUNT_WRITE"/>
+
   <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:networkSecurityConfig="@xml/network_security_config" android:theme="@style/AppTheme">
     <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="stateAlwaysHidden|adjustPan" android:exported="true" android:theme="@style/Theme.App.SplashScreen">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
-      <intent-filter>
-        <data android:scheme="portkey.did"/>
+			<intent-filter>
+        <data android:scheme="portkey.finance"/>
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
+      </intent-filter>
+			<intent-filter>
+        <data android:scheme="https" android:host="app.portkey.finance"/>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+      </intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
+				<data android:scheme="@string/FB_LOGIN_PROTOCOL_SCHEME" />
       </intent-filter>
 			<!-- <intent-filter>
 				<data android:scheme="ethereum" />
@@ -50,5 +98,7 @@
 			</intent-filter> -->
       <meta-data android:name="firebase_performance_logcat_enabled" android:value="true"/>
     </activity>
+		<meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/FACEBOOK_APP_ID"/>
+    <meta-data android:name="com.facebook.sdk.ClientToken" android:value="@string/FACEBOOK_CLIENT_TOKEN"/>
   </application>
 </manifest>

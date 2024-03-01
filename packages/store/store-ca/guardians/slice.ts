@@ -13,6 +13,7 @@ import {
   setPreGuardianAction,
   setOpGuardianAction,
   resetGuardians,
+  setGuardianListAction,
 } from './actions';
 import { GuardiansState } from './type';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
@@ -69,6 +70,9 @@ export const guardiansSlice = createSlice({
         state.userGuardiansList = _guardianList;
         state.userGuardianStatus = userStatus;
         state.guardianExpiredTime = undefined;
+      })
+      .addCase(setGuardianListAction, (state, action) => {
+        state.userGuardiansList = action.payload;
       })
       .addCase(setPreGuardianAction, (state, action) => {
         if (!action.payload) {

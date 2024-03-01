@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
@@ -17,8 +17,8 @@ import { request } from '@portkey-wallet/api/api-did';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
-import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import './index.less';
+import singleMessage from 'utils/singleMessage';
 
 export default function AddToken() {
   const { t } = useTranslation();
@@ -31,7 +31,6 @@ export default function AddToken() {
   const isMainnet = useIsMainnet();
   const { setLoading } = useLoading();
   const [tokenShowList, setTokenShowList] = useState<TokenItemShowType[]>(tokenDataShowInMarket);
-  const symbolImages = useSymbolImages();
   useEffect(() => {
     if (!filterWord) {
       setTokenShowList(tokenDataShowInMarket);
@@ -77,7 +76,7 @@ export default function AddToken() {
       await handleSearch(params);
       setLoading(false);
     },
-    [filterWord],
+    [handleSearch, setLoading],
     500,
   );
 
@@ -109,10 +108,10 @@ export default function AddToken() {
         } else {
           await handleSearch(filterWord);
         }
-        message.success('success');
+        singleMessage.success('success');
       } catch (error: any) {
         const err = handleErrorMessage(error, 'handle display error');
-        message.error(err);
+        singleMessage.error(err);
         console.log('=== userToken display', error);
       } finally {
         setLoading(false);
@@ -149,7 +148,7 @@ export default function AddToken() {
     (item: TokenItemShowType) => (
       <div className="token-item" key={`${item.symbol}-${item.chainId}`}>
         <div className="token-item-content">
-          <TokenImageDisplay className="custom-logo" width={28} symbol={item.symbol} src={symbolImages[item.symbol]} />
+          <TokenImageDisplay className="custom-logo" width={28} symbol={item.symbol} src={item.imageUrl} />
           <p className="token-info">
             <span className="token-item-symbol">{item.symbol}</span>
             <span className="token-item-net">{transNetworkText(item.chainId, !isMainnet)}</span>
@@ -158,7 +157,7 @@ export default function AddToken() {
         <div className="token-item-action">{renderTokenItemBtn(item)}</div>
       </div>
     ),
-    [isMainnet, renderTokenItemBtn, symbolImages],
+    [isMainnet, renderTokenItemBtn],
   );
 
   const renderNoSearchResult = useMemo(

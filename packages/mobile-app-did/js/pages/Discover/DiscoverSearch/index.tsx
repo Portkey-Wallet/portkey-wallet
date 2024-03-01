@@ -60,14 +60,20 @@ export default function DiscoverSearch() {
   );
 
   const onSearch = useCallback(() => {
-    const newValue = value.replace(/\s+/g, '').toLocaleLowerCase();
+    const newValue = value.replace(/\s+/g, '');
     if (!newValue) return;
 
+    console.log('checkIsUrl', checkIsUrl(newValue));
+
     if (checkIsUrl(newValue)) {
+      console.log('checkIsUrl', getHost(prefixUrlWithProtocol(newValue)));
+
       onDiscoverJump(getHost(prefixUrlWithProtocol(newValue)), prefixUrlWithProtocol(newValue));
     } else {
       // else search in Discover list
-      const filterList = flatList.filter(item => item.title.replace(/\s+/g, '').toLocaleLowerCase().includes(newValue));
+      const filterList = flatList.filter(item =>
+        item.title.replace(/\s+/g, '').toLocaleLowerCase().includes(newValue.toLocaleLowerCase()),
+      );
       setFilteredDiscoverList(filterList);
       setShowRecord(false);
     }

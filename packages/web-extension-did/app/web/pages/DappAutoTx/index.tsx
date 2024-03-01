@@ -5,14 +5,12 @@ import { closePrompt } from 'utils/lib/serviceWorkerAction';
 import errorHandler from 'utils/errorHandler';
 import { MethodsBase, ResponseCode } from '@portkey/provider-types';
 import { getLocalStorage } from 'utils/storage/chromeStorage';
-import aes from '@portkey-wallet/utils/aes';
 import { callSendMethod } from 'utils/sandboxUtil/sendTransactions';
 import { Loading } from '@portkey/did-ui-react';
-import InternalMessage from 'messages/InternalMessage';
-import InternalMessageTypes from 'messages/InternalMessageTypes';
 import { apis } from 'utils/BrowserApis';
 import { useEffectOnce, useThrottleCallback } from '@portkey-wallet/hooks';
 import { getChainInfo, getCurrentWallet } from 'store/utils/getStore';
+import getSeed from 'utils/getSeed';
 import './index.less';
 
 export default function DappAutoTx() {
@@ -41,8 +39,7 @@ export default function DappAutoTx() {
         return;
       }
 
-      const passwordSeed = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
-      const privateKey = aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed.data.privateKey);
+      const { privateKey } = await getSeed();
 
       if (!privateKey) throw 'Invalid user information, please check';
 
@@ -93,7 +90,7 @@ export default function DappAutoTx() {
         windowId: curWindow.id,
       });
     }
-  }, [payload?.rpcUrl, payload?.method, payload?.contractAddress, txParams]);
+  }, [payload.chainId, payload?.contractAddress, payload?.rpcUrl, payload?.method, txParams]);
 
   const executeFn = useCallback(() => {
     switch (txParams.method) {

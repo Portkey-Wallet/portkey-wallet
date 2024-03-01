@@ -1,9 +1,9 @@
 import { useAppCASelector } from './index';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useAppCommonDispatch } from '../index';
 import { useCurrentNetwork } from './network';
 import { fetchTxFeeAsync } from '@portkey-wallet/store/store-ca/txFee/actions';
-import { ChainId } from '@portkey-wallet/types';
+import { ChainId, NetworkType } from '@portkey-wallet/types';
 import { InitialTxFee } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useCurrentChainList } from './chainList';
 
@@ -26,4 +26,14 @@ export const useGetTxFee = (chainId: ChainId) => {
   const targetTxFee = useMemo(() => txFee[currentNetwork]?.[chainId], [chainId, currentNetwork, txFee]);
 
   return useMemo(() => targetTxFee ?? InitialTxFee, [targetTxFee]);
+};
+
+export const useGetOneTxFee = () => {
+  const txFee = useAppCASelector(state => state.txFee);
+  return useCallback(
+    (chainId: ChainId, currentNetwork: NetworkType) => {
+      return txFee[currentNetwork]?.[chainId] ?? InitialTxFee;
+    },
+    [txFee],
+  );
 };

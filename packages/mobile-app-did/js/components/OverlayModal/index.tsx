@@ -6,9 +6,10 @@ import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import TransformView from 'components/TransformView';
 import { ViewStyleType } from 'types/styles';
+import { sleep } from '@portkey-wallet/utils';
 
 export type OverlayInterface = {
-  close?: () => void;
+  close?: (animated?: boolean) => void;
 };
 
 let elements: OverlayInterface[] = [];
@@ -37,6 +38,8 @@ export type OverlayModalProps = {
   onCloseRequest?: () => void;
   customBounds?: CustomBounds;
   overlayOpacity?: number;
+  // Called after the floating layer is hidden.
+  onDisappearCompleted?: () => void;
 };
 
 export function OverlayTransformView({
@@ -136,10 +139,14 @@ export default class OverlayModal extends React.Component {
     OverlayModal.show(component, overlayProps);
   }
 
-  static hide() {
+  static hide(animated?: boolean) {
     elements = elements.filter(item => item); // Discard invalid data
     const topItem = elements.pop();
-    topItem?.close?.();
+    topItem?.close?.(animated);
+  }
+  static hideSync() {
+    OverlayModal.hide();
+    return sleep(150);
   }
 
   static hideKey(key: number) {

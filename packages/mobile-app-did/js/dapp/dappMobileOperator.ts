@@ -427,7 +427,11 @@ export default class DappMobileOperator extends Operator {
           const isSafe = await this.securityCheck(payload.chainId, originChainId);
           if (!isSafe) return this.userDenied(eventName);
         } catch (error) {
-          return this.userDenied(eventName);
+          return generateErrorResponse({
+            eventName,
+            code: ResponseCode.INTERNAL_ERROR,
+            msg: handleErrorMessage(error),
+          });
         }
         // is approve
         const isApprove = await this.isApprove(request);
@@ -439,7 +443,7 @@ export default class DappMobileOperator extends Operator {
       case MethodsWallet.GET_WALLET_SIGNATURE: {
         if (!isActive) return this.unauthenticated(eventName);
         callBack = this.handleSignature;
-        payload = request.payload;
+        payload = { data: request.payload.data };
         if (!payload || (typeof payload.data !== 'string' && typeof payload.data !== 'number'))
           return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
         break;
@@ -463,8 +467,9 @@ export default class DappMobileOperator extends Operator {
   };
 
   handleRequest = async (request: IRequestParams): Promise<IResponseType> => {
-    if (SEND_METHOD[request.method]) return this.handleSendRequest(request);
+    // dapp is not in the foreground
     if (this.isLockDapp) return this.userDenied(request.eventName);
+    if (SEND_METHOD[request.method]) return this.handleSendRequest(request);
     return this.handleViewRequest(request);
   };
 

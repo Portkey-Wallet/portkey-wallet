@@ -2,7 +2,7 @@ import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import PageContainer from 'components/PageContainer';
 import { DigitInputInterface } from 'components/DigitInput';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef } from 'react';
 import navigationService from 'utils/navigationService';
 import { useAppDispatch } from 'store/hooks';
 import { changePin, createWallet } from '@portkey-wallet/store/store-ca/wallet/actions';
@@ -23,6 +23,8 @@ import { StyleSheet } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import { sendScanLoginSuccess } from '@portkey-wallet/api/api-did/message/utils';
 import { changeCanLock } from 'utils/LockManager';
+import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
+import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
 type RouterParams = {
   oldPin?: string;
   pin?: string;
@@ -48,7 +50,6 @@ export default function ConfirmPin() {
 
   const biometricsReady = useBiometricsReady();
 
-  const [errorMessage, setErrorMessage] = useState<string>();
   const pinRef = useRef<DigitInputInterface>();
   const dispatch = useAppDispatch();
   const { biometrics } = useUser();
@@ -105,23 +106,28 @@ export default function ConfirmPin() {
     ],
   );
 
+  const { error: textError, setError: setTextError } = useErrorMessage();
   const onChangeText = useCallback(
     async (confirmPin: string) => {
       if (confirmPin.length !== PIN_SIZE) {
-        if (errorMessage) setErrorMessage(undefined);
+        if (textError.isError) {
+          setTextError();
+        }
         return;
       }
 
       if (confirmPin !== pin) {
         pinRef.current?.reset();
-        return setErrorMessage('Pins do not match');
+        setTextError('Pins do not match', VERIFY_INVALID_TIME);
+        return;
       }
 
       if (oldPin) return onChangePin(confirmPin);
       if (managerInfo) return onFinish(confirmPin);
     },
-    [errorMessage, oldPin, onChangePin, onFinish, pin, managerInfo],
+    [pin, oldPin, onChangePin, managerInfo, onFinish, textError.isError, setTextError],
   );
+
   return (
     <PageContainer
       titleDom
@@ -140,7 +146,7 @@ export default function ConfirmPin() {
         showHeader
         ref={pinRef}
         title="Confirm Pin"
-        errorMessage={errorMessage}
+        errorMessage={textError.errorMsg}
         onChangeText={onChangeText}
       />
     </PageContainer>

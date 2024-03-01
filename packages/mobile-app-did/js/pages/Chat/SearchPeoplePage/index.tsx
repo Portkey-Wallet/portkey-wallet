@@ -47,7 +47,7 @@ export default function SearchPeople() {
     } finally {
       setLoading(false);
     }
-  }, [debounceKeyword]);
+  }, [debounceKeyword, searchChannel]);
 
   useEffect(() => {
     if (!debounceKeyword) return setFilterList([]);
@@ -101,7 +101,7 @@ export default function SearchPeople() {
           style={[GStyles.flexRow, GStyles.itemCenter, styles.itemWrap]}
           onPress={() => {
             if (item.channelType === ChannelTypeEnum.GROUP) return navToGroupChatDetails({ toRelationId, channelUuid });
-            if (item.channelType === ChannelTypeEnum.P2P) navToChatDetails({ toRelationId, channelUuid });
+            if (item.channelType === ChannelTypeEnum.P2P) return navToChatDetails({ toRelationId, channelUuid });
             return CommonToast.warn(
               'Downloading the latest Portkey for you. To proceed, please close and restart the App.',
             );

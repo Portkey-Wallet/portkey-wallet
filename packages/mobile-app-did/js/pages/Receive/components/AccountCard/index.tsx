@@ -26,7 +26,7 @@ export default function AccountCard({
 
   const info: QRCodeDataObjType = {
     address: toCaAddress,
-    netWorkType: currentNetWork.networkType,
+    networkType: currentNetWork.networkType,
     chainType,
     type: 'send',
     toInfo: {
@@ -44,7 +44,6 @@ export default function AccountCard({
   return (
     <View style={[styles.container, style]}>
       <CommonQRCodeStyled qrData={JSON.stringify(shrinkSendQrData(info))} width={pTd(236)} />
-      <TextM style={styles.textStyle}>{toCaAddress}</TextM>
     </View>
   );
 }
@@ -60,7 +59,7 @@ const styles = StyleSheet.create({
     shadowColor: defaultColors.shadow1,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.2,
-    shadowRadius: 6,
+    shadowRadius: 5,
     elevation: 2,
   },
   textStyle: {

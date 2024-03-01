@@ -1,4 +1,4 @@
-import { ChannelInfo, ChannelItem, Message } from '@portkey-wallet/im/types';
+import { ChannelInfo, ChannelItem, Message, RedPackageConfigType } from '@portkey-wallet/im/types';
 import { NetworkType } from '@portkey-wallet/types';
 
 export type ChannelList = {
@@ -29,6 +29,25 @@ export interface IMStateType {
   groupInfoMapNetMap?: {
     [T in NetworkType]?: {
       [channelId: string]: ChannelInfo;
+    };
+  };
+  redPackageConfigMap?: {
+    [T in NetworkType]?: RedPackageConfigType;
+  };
+  pinListNetMap?: {
+    [T in NetworkType]?: {
+      [channelId: string]: {
+        list: Message[];
+        fetchTime: number;
+      };
+    };
+  };
+  lastPinNetMap?: {
+    [T in NetworkType]?: {
+      [channelId: string]: {
+        message: Message;
+        fetchTime: number;
+      };
     };
   };
 }

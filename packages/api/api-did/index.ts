@@ -5,7 +5,6 @@ import chainApi from './chain';
 import assetsApi from './assets';
 import recentApi from './recent';
 import tokenApi from './token';
-import paymentApi from './payment';
 import deviceApi from './device';
 import messageApi from './message';
 import switchApi from './switch';
@@ -20,6 +19,9 @@ import { API_REQ_FUNCTION } from '../types';
 import { ES_API_REQ_FUNCTION } from './es/type';
 import activityApi from './activity';
 import securityApi from './security';
+import guideApi from './guide';
+import managerApi from './manager';
+import referralApi from './referral';
 
 export const DEFAULT_METHOD = 'POST';
 
@@ -49,7 +51,6 @@ export const EXPAND_APIS = {
   assets: assetsApi,
   recent: recentApi,
   token: tokenApi,
-  payment: paymentApi,
   device: deviceApi,
   message: messageApi,
   switch: switchApi,
@@ -58,6 +59,9 @@ export const EXPAND_APIS = {
   im: imApi,
   security: securityApi,
   privacy: privacyApi,
+  guide: guideApi,
+  manager: managerApi,
+  referral: referralApi,
 };
 
 export type BASE_REQ_TYPES = {

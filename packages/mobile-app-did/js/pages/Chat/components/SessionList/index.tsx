@@ -8,10 +8,8 @@ import NoData from 'components/NoData';
 import { useChannelList, useHideChannel, useMuteChannel, usePinChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import CommonToast from 'components/CommonToast';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import useEffectOnce from 'hooks/useEffectOnce';
 import { useJumpToChatDetails, useJumpToChatGroupDetails } from 'hooks/chat';
-import { useFocusEffect } from '@react-navigation/native';
-import { useLatestRef } from '@portkey-wallet/hooks';
+
 import Touchable from 'components/Touchable';
 import myEvents from 'utils/deviceEvent';
 import GStyles from 'assets/theme/GStyles';
@@ -20,27 +18,13 @@ import { PIN_LIMIT_EXCEED } from '@portkey-wallet/constants/constants-ca/chat';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 
 export default function SessionList() {
-  const {
-    list: channelList,
-    init: initChannelList,
-    next: nextChannelList,
-    hasNext: hasNextChannelList,
-  } = useChannelList();
+  const { list: channelList, next: nextChannelList, hasNext: hasNextChannelList } = useChannelList();
 
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
   const navToChatDetails = useJumpToChatDetails();
   const navToChatGroupDetails = useJumpToChatGroupDetails();
-
-  const lastInitChannelList = useLatestRef(initChannelList);
-
-  useFocusEffect(
-    useCallback(() => {
-      lastInitChannelList.current();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []),
-  );
 
   const onHideChannel = useCallback(
     async (item: ChannelItem) => {
@@ -118,7 +102,7 @@ export default function SessionList() {
     } catch (error) {
       console.log('error nextChannelList', error);
     }
-  }, [channelList, hasNextChannelList, nextChannelList]);
+  }, [hasNextChannelList, nextChannelList]);
 
   const onPressItem = useCallback(
     (item: ChannelItem) => {
@@ -168,10 +152,6 @@ export default function SessionList() {
     },
     [hideChannel, navToChatDetails, navToChatGroupDetails],
   );
-
-  useEffectOnce(() => {
-    initChannelList();
-  });
 
   return (
     <Touchable style={[GStyles.flex1, BGStyles.bg1]} activeOpacity={1} onPress={myEvents.chatHomeListCloseSwiped.emit}>

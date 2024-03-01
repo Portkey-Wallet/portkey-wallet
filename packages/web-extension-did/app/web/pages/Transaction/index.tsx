@@ -11,10 +11,8 @@ import Copy from 'components/Copy';
 import CustomSvg from 'components/CustomSvg';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router';
 import { useEffectOnce } from 'react-use';
 import './index.less';
-import { useIsTestnet } from 'hooks/useNetwork';
 import { dateFormatTransTo13 } from 'utils';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { addressFormat } from '@portkey-wallet/utils';
@@ -23,25 +21,21 @@ import PromptFrame from 'pages/components/PromptFrame';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ChainId } from '@portkey-wallet/types';
-
-export interface ITransactionQuery {
-  item: ActivityItemType;
-  chainId?: string;
-  from?: string;
-}
+import { useLocationState, useNavigateState } from 'hooks/router';
+import { ITransactionLocationState, THomePageLocationState } from 'types/router';
 
 export default function Transaction() {
   const { t } = useTranslation();
-  const { state }: { state: ITransactionQuery } = useLocation();
+  const { state } = useLocationState<ITransactionLocationState>();
   const chainId = state.chainId;
-  const from = state?.from;
+  const from = state?.previousPage;
   const currentWallet = useCurrentWallet();
   const { walletInfo } = currentWallet;
   const caAddresses = useCaAddresses();
   const caAddress = chainId ? [walletInfo?.[chainId as ChainId]?.caAddress] : '';
-  const isTestNet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   useFreshTokenPrice();
   const amountInUsdShow = useAmountInUsdShow();
   const defaultToken = useDefaultToken(chainId ? (chainId as ChainId) : undefined);
@@ -80,7 +74,7 @@ export default function Transaction() {
     };
   }, [activityItem]);
 
-  const nav = useNavigate();
+  const nav = useNavigateState<THomePageLocationState>();
   const onClose = useCallback(() => {
     if (from && from === BalanceTab.ACTIVITY) {
       // come in from the activityTab, go to the homepage activityTab
@@ -122,14 +116,14 @@ export default function Transaction() {
     if (transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(transactionType)) {
       return (
         <p className="amount">
-          {`${formatWithCommas({ amount, decimals, sign })} ${symbol ?? ''}`}
-          {!isTestNet && <span className="usd">{amountInUsdShow(amount, decimals || 0, symbol)}</span>}
+          {`${formatWithCommas({ amount, decimals, sign, digits: Number(decimals) })} ${symbol ?? ''}`}
+          {isMainnet && <span className="usd">{amountInUsdShow(amount, decimals || 0, symbol)}</span>}
         </p>
       );
     } else {
       return <p className="no-amount"></p>;
     }
-  }, [activityItem, amountInUsdShow, isTestNet]);
+  }, [activityItem, amountInUsdShow, isMainnet]);
 
   const statusAndDateUI = useCallback(() => {
     return (
@@ -190,8 +184,8 @@ export default function Transaction() {
   const networkUI = useCallback(() => {
     /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
     const { transactionType, fromChainId, toChainId } = activityItem;
-    const from = transNetworkText(fromChainId, isTestNet);
-    const to = transNetworkText(toChainId, isTestNet);
+    const from = transNetworkText(fromChainId, !isMainnet);
+    const to = transNetworkText(toChainId, !isMainnet);
 
     return (
       transactionType &&
@@ -204,15 +198,15 @@ export default function Transaction() {
         </div>
       )
     );
-  }, [activityItem, isTestNet, t]);
+  }, [activityItem, isMainnet, t]);
 
   const noFeeUI = useCallback(() => {
     return (
       <div className="right-item">
-        <span>{`0 ELF`}</span> {!isTestNet && <span className="right-usd">{`$ 0`}</span>}
+        <span>{`0 ELF`}</span> {isMainnet && <span className="right-usd">{`$ 0`}</span>}
       </div>
     );
-  }, [isTestNet]);
+  }, [isMainnet]);
 
   const feeUI = useCallback(() => {
     return activityItem.isDelegated ? (
@@ -232,8 +226,9 @@ export default function Transaction() {
                   <span>{`${formatWithCommas({
                     amount: item.fee,
                     decimals: item.decimals || defaultToken.decimals,
+                    digits: Number(item.decimals),
                   })} ${item.symbol ?? ''}`}</span>
-                  {!isTestNet && (
+                  {isMainnet && (
                     <span className="right-usd">
                       {amountInUsdShow(item.fee, item?.decimals || defaultToken.decimals, defaultToken.symbol)}
                     </span>
@@ -250,7 +245,7 @@ export default function Transaction() {
     defaultToken.decimals,
     defaultToken.symbol,
     feeInfo,
-    isTestNet,
+    isMainnet,
     noFeeUI,
     t,
   ]);

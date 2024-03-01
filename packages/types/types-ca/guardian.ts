@@ -1,4 +1,4 @@
-import { LoginKeyType } from './wallet';
+import { LoginKeyType, LoginType } from './wallet';
 export interface Verifier {
   id: string; // aelf.Hash
 }
@@ -27,3 +27,13 @@ export interface GuardiansInfo {
   guardianList: { guardians: Guardian[] };
   managerInfos: Manager[];
 }
+
+export type GuardiansApprovedType = {
+  identifierHash: string;
+  type: LoginType;
+  verificationInfo: {
+    id: string | undefined;
+    signature: number[];
+    verificationDoc: string;
+  };
+};

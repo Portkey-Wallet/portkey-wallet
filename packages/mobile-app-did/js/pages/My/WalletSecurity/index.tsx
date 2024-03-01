@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import PageContainer from 'components/PageContainer';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -9,10 +9,17 @@ import navigationService from 'utils/navigationService';
 import MenuItem from '../components/MenuItem';
 import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import { pTd } from 'utils/unit';
+import { useFocusEffect } from '@react-navigation/native';
 
 const WalletSecurity: React.FC = () => {
-  const { deviceAmount } = useDeviceList({ isAmountOnly: true });
+  const { deviceAmount, refresh } = useDeviceList({ isAmountOnly: true, isInit: false });
   const dappList = useCurrentDappList();
+
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+    }, [refresh]),
+  );
 
   return (
     <PageContainer

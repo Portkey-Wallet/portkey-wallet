@@ -1,0 +1,29 @@
+@import '../../../assets/theme/constants.less';
+
+.guardian-approval-modal-wrapper {
+  .portkey-modal-content {
+    .guardian-list-wrapper {
+      padding: 24px;
+    }
+
+    .confirm-approve-btn {
+      box-shadow: none;
+      height: auto;
+      padding: 0;
+      text-shadow: none;
+      width: 100%;
+      background-color: @bg-7;
+      border-color: @border-4;
+      line-height: 46px;
+      border-radius: 46px;
+    }
+
+    .confirm-approve-btn:disabled {
+      background-color: @bg-7;
+      border-color: @border-4;
+      box-shadow: none !important;
+      color: @font-5;
+      opacity: 0.3;
+    }
+  }
+}

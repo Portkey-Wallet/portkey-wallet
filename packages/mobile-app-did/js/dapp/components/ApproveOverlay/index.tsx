@@ -16,7 +16,6 @@ import { ApproveParams } from 'dapp/dappOverlay';
 import navigationService from 'utils/navigationService';
 import { useAppDispatch } from 'store/hooks';
 import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
-import { sleep } from '@portkey-wallet/utils';
 import { ApprovalType } from '@portkey-wallet/types/verifier';
 import Touchable from 'components/Touchable';
 import { FontStyles } from 'assets/theme/styles';
@@ -27,6 +26,7 @@ import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { isIOS } from '@rneui/base';
 import { isValidNumber } from '@portkey-wallet/utils/reg';
+import Svg, { IconName } from 'components/Svg';
 
 type SignModalPropsType = {
   dappInfo: DappStoreItem;
@@ -90,9 +90,8 @@ const ApproveModal = (props: SignModalPropsType) => {
             targetChainId,
             approvalType: ApprovalType.managerApprove,
           });
-          await sleep(250);
           dispatch(changeDrawerOpenStatus(false));
-          OverlayModal.hide();
+          OverlayModal.hide(false);
         },
       },
     ],
@@ -133,14 +132,15 @@ const ApproveModal = (props: SignModalPropsType) => {
   });
 
   return (
-    <ModalBody modalBodyType="bottom" title="" onClose={onReject}>
-      <View
-        style={styles.contentWrap}
-        onTouchStart={() => {
-          Keyboard.dismiss();
-        }}>
+    <ModalBody modalBodyType="bottom" title="" onClose={onReject} onTouchStart={Keyboard.dismiss}>
+      <View style={styles.contentWrap}>
         <View style={[GStyles.center, styles.headerSection]}>
-          <DiscoverWebsiteImage size={pTd(48)} imageUrl={getFaviconUrl(dappInfo.origin)} />
+          {dappInfo.svgIcon ? (
+            <Svg icon={dappInfo.svgIcon as IconName} size={pTd(48)} />
+          ) : (
+            <DiscoverWebsiteImage size={pTd(48)} imageUrl={getFaviconUrl(dappInfo.origin)} />
+          )}
+
           <TextL
             style={[
               FontStyles.font5,
@@ -176,7 +176,7 @@ const ApproveModal = (props: SignModalPropsType) => {
           }
         />
         <TextM style={[FontStyles.font3]}>
-          {`Please set a reasonable value as the allowance for this DApp. Then you can click "Authorize" to request guardian approval.`}
+          {`Transactions below the specified amount won't need your confirmation until the DApp exhausts its allowance.`}
         </TextM>
       </View>
       <OverlayBottomSection bottomButtonGroup={ButtonList} />

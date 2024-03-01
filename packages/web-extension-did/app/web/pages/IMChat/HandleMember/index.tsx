@@ -1,24 +1,26 @@
 import { ChangeEvent, useCallback, useMemo, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
 import DropdownSearch from 'components/DropdownSearch';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import { useAddChannelMembers, useGroupChannelInfo, useRemoveChannelMembers } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useChatContactFlatList } from '@portkey-wallet/hooks/hooks-ca/contact';
 import ContactListSelect, { IContactItemSelectProps } from '../components/ContactListSelect';
 import { ChannelMemberInfo } from '@portkey-wallet/im';
 import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
+import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
 import './index.less';
 
 export default function HandleMember() {
   const { channelUuid, operate } = useParams();
   const { t } = useTranslation();
   const [filterWord, setFilterWord] = useState<string>('');
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const [disabled, setDisabled] = useState(true);
   const allChatContact = useChatContactFlatList();
   const { groupInfo } = useGroupChannelInfo(`${channelUuid}`);
@@ -101,7 +103,7 @@ export default function HandleMember() {
       _v ? handleSearch(_v) : setShowMemberList(allContactRef.current || []);
       setFilterWord(_v);
     },
-    [],
+    [handleSearch],
     500,
   );
   const handleOperate = useCallback(async () => {
@@ -110,7 +112,7 @@ export default function HandleMember() {
         await addMemberApi(selectedContactRef.current!);
         navigate(-1);
       } catch (e) {
-        message.error('Failed to add members');
+        singleMessage.error('Failed to add members');
         console.log('===Failed to add members', e);
       }
       return false;
@@ -124,7 +126,7 @@ export default function HandleMember() {
             await removeMemberApi(selectedContactRef.current?.map((item) => item.relationId) || []);
             navigate(-1);
           } catch (e) {
-            message.error('Failed to remove members');
+            singleMessage.error('Failed to remove members');
             console.log('===Failed to remove members', e);
           }
         },

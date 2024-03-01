@@ -27,7 +27,7 @@ export default function NftInput({
   const [amount, setAmount] = useState<string>(value);
   const currentChain = useCurrentChain(token.chainId as ChainId);
   const currentNetwork = useCurrentNetworkInfo();
-  // const isMain = useMemo(() => currentNetwork.networkType === 'MAIN', [currentNetwork]);
+  // const isMain = useMemo(() => currentNetwork.networkType === 'MAINNET', [currentNetwork]);
   const [balance, setBalance] = useState<string>('');
 
   const handleAmountBlur = useCallback(() => {

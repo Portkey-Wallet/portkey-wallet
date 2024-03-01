@@ -8,11 +8,10 @@ import { fetchAssetAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useCaAddresses, useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
-import { useIsTestnet } from 'hooks/useNetwork';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useAmountInUsdShow, useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import TokenImageDisplay from '../TokenImageDisplay';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import './index.less';
 
 export interface ICustomTokenListProps {
@@ -31,7 +30,7 @@ export default function CustomTokenList({
   drawerType,
 }: ICustomTokenListProps) {
   const { t } = useTranslation();
-  const isTestNet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const { accountAssets } = useAssetInfo();
   const { tokenDataShowInMarket } = useTokenInfo();
   const [openDrop, setOpenDrop] = useState<boolean>(false);
@@ -44,7 +43,6 @@ export default function CustomTokenList({
   const amountInUsdShow = useAmountInUsdShow();
   const caAddressInfos = useCaAddressInfoList();
   useFreshTokenPrice();
-  const symbolImages = useSymbolImages();
   useEffect(() => {
     if (drawerType === 'send') {
       setAssetList(accountAssets.accountAssetsList);
@@ -74,26 +72,26 @@ export default function CustomTokenList({
           key={`${token.symbol}_${token.chainId}`}
           onClick={onChange?.bind(undefined, token, 'token')}>
           <div className="icon flex-center">
-            <TokenImageDisplay symbol={token?.symbol} src={symbolImages[token?.symbol]} />
+            <TokenImageDisplay symbol={token?.symbol} src={token.tokenInfo?.imageUrl} />
           </div>
           <div className="info">
             <p className="symbol">{`${token.symbol}`}</p>
-            <p className="network">{transNetworkText(token.chainId, isTestNet)}</p>
+            <p className="network">{transNetworkText(token.chainId, !isMainnet)}</p>
           </div>
           <div className="amount">
             <p className="quantity">
               {formatAmountShow(divDecimals(token.tokenInfo?.balance, token.tokenInfo?.decimals))}
             </p>
             <p className="convert">
-              {isTestNet
-                ? ''
-                : amountInUsdShow(token.tokenInfo?.balance || '', token.tokenInfo?.decimals || 0, token.symbol)}
+              {isMainnet
+                ? amountInUsdShow(token.tokenInfo?.balance || '', token.tokenInfo?.decimals || 0, token.symbol)
+                : ''}
             </p>
           </div>
         </div>
       );
     },
-    [amountInUsdShow, isTestNet, onChange, symbolImages],
+    [amountInUsdShow, isMainnet, onChange],
   );
 
   const renderReceiveToken = useCallback(
@@ -103,6 +101,7 @@ export default function CustomTokenList({
         symbol: token.symbol,
         address: token.address,
         tokenInfo: {
+          imageUrl: token.imageUrl,
           id: token.id || '',
           balance: token.balance,
           decimals: `${token.decimals}`,
@@ -116,16 +115,16 @@ export default function CustomTokenList({
           key={`${token.symbol}_${token.chainId}`}
           onClick={onChange?.bind(undefined, tokenTmp, 'token')}>
           <div className="icon flex-center">
-            <TokenImageDisplay symbol={token?.symbol} src={symbolImages[token?.symbol]} />
+            <TokenImageDisplay symbol={token?.symbol} src={token?.imageUrl} />
           </div>
           <div className="info">
             <p className="symbol">{`${token.symbol}`}</p>
-            <p className="network">{transNetworkText(token.chainId, isTestNet)}</p>
+            <p className="network">{transNetworkText(token.chainId, !isMainnet)}</p>
           </div>
         </div>
       );
     },
-    [isTestNet, onChange, symbolImages],
+    [isMainnet, onChange],
   );
 
   const renderNft = useCallback(
@@ -140,7 +139,7 @@ export default function CustomTokenList({
           </div>
           <div className="info">
             <p className="alias">{`${token.nftInfo?.alias} #${token.nftInfo?.tokenId}`}</p>
-            <p className="network">{transNetworkText(token.chainId, isTestNet)}</p>
+            <p className="network">{transNetworkText(token.chainId, !isMainnet)}</p>
           </div>
           <div className="amount">
             <div className="balance">{token.nftInfo?.balance}</div>
@@ -148,7 +147,7 @@ export default function CustomTokenList({
         </div>
       );
     },
-    [isTestNet, onChange],
+    [isMainnet, onChange],
   );
 
   return (

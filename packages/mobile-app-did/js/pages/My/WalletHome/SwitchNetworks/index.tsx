@@ -33,7 +33,7 @@ const SwitchNetworks: React.FC = () => {
           disabled={item.networkType === currentNetwork || !item.isActive}
           onPress={() => changeNetwork(item)}>
           <View style={styles.networkItemWrap}>
-            <Svg icon={item.networkType === 'MAIN' ? 'mainnet' : 'testnet'} size={pTd(28)} />
+            <Svg icon={item.networkType === 'MAINNET' ? 'mainnet' : 'testnet'} size={pTd(28)} />
             <TextM style={[GStyles.flex1, GStyles.marginLeft(12), !item.isActive && FontStyles.font7]}>
               {item.name}
             </TextM>

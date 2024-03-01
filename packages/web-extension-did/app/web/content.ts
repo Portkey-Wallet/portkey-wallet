@@ -106,7 +106,6 @@ class Content {
 
   extensionWatch() {
     apis.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-      console.log(message, 'message=content==extensionWatch');
       this.respond({ ...message, target: INPAGE_TARGET });
       sendResponse(true);
     });
@@ -186,12 +185,12 @@ class Content {
   }
 
   internalCommunicate(method: string, message: any) {
-    console.log('internalCommunicate', 'method');
     InternalMessage.payload(method, message)
       .send()
       .then((result) => {
         delete message.payload;
         let response;
+        if (!result) return;
         if (result.error === 0) {
           response = generateNormalResponse({
             ...message,

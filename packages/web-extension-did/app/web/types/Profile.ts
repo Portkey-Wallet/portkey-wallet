@@ -15,7 +15,7 @@ export enum ExtraTypeEnum {
 export interface IProfileDetailDataProps extends Partial<IContactProfile> {
   relationId?: string;
   isShowRemark?: boolean;
-  from?: string;
+  previousPage?: string;
   loginAccountMap?: ILoginAccountListProps;
 }
 
@@ -28,7 +28,6 @@ export interface IProfileDetailBodyProps {
   addContactText?: string;
   isShowRemark?: boolean;
   handleEdit: () => void;
-  handleCopy: (v: string) => void;
   handleChat?: () => void;
   handleAdd?: () => void;
 }

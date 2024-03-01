@@ -2,13 +2,13 @@ import './index.less';
 import CustomSvg from 'components/CustomSvg';
 import { useCommonState } from 'store/Provider/hooks';
 import { useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { useNavigateState } from 'hooks/router';
 
 function TermsOfService({ onBack }: { onBack?: () => void }) {
   const { t } = useTranslation();
 
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const { isPrompt } = useCommonState();
   const closeClick = useCallback(() => {
     if (onBack) onBack();
@@ -26,6 +26,7 @@ function TermsOfService({ onBack }: { onBack?: () => void }) {
             </span>
           </div>
           <div className="close-btn">
+            {/* eslint-disable-next-line no-inline-styles/no-inline-styles */}
             <CustomSvg type="Close3" style={{ width: 16, height: 16 }} onClick={closeClick} />
           </div>
         </div>

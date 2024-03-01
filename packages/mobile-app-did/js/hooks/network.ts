@@ -12,6 +12,7 @@ import ActionSheet from 'components/ActionSheet';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import im from '@portkey-wallet/im';
 import { request } from '@portkey-wallet/api/api-did';
+import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 
 export function useChangeNetwork(route: RouteProp<ParamListBase>) {
   const dispatch = useAppDispatch();
@@ -27,19 +28,24 @@ export function useChangeNetwork(route: RouteProp<ParamListBase>) {
       request.initService();
       im.destroy();
       dispatch(changeNetworkType(network.networkType));
+      signalrFCM.switchNetwork();
+
       if (routeName !== route.name && !(routeName === 'LoginPortkey' && route.name === 'SignupPortkey'))
         navigationService.reset(routeName);
     },
-    [dispatch, route.name],
+    [dispatch, resetStore, route.name],
   );
   return useThrottleCallback(
-    (network: NetworkItem) => {
+    (network: NetworkItem, isShowAlert = true) => {
       const { walletInfo, originChainId } = wallet;
       const { caInfo } = walletInfo || {};
       const tmpCaInfo = caInfo?.[network.networkType];
       const tmpChainId = tmpCaInfo?.originChainId || originChainId || DefaultChainId;
       const logged = tmpCaInfo?.managerInfo && tmpCaInfo[tmpChainId]?.caAddress;
-      const networkName = network.networkType === 'MAIN' ? 'Mainnet' : 'Testnet';
+      const networkName = network.networkType === 'MAINNET' ? 'Mainnet' : 'Testnet';
+
+      if (!isShowAlert) return onConfirm(network, logged);
+
       ActionSheet.alert({
         title: t('You are about to switch to', {
           title: `aelf ${networkName}`,
@@ -56,6 +62,6 @@ export function useChangeNetwork(route: RouteProp<ParamListBase>) {
         ],
       });
     },
-    [wallet, onConfirm],
+    [wallet, onConfirm, t],
   );
 }

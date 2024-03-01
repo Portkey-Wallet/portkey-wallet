@@ -10,8 +10,7 @@
   }
 
   .buy-content {
-    padding: 0 24px;
-    flex: 1;
+    height: 100%;
     background: @bg-11;
 
     .buy-radio {
@@ -47,7 +46,9 @@
         }
       }
     }
-    .buy-input {
+
+    .buy-input,
+    .sell-input {
       margin-top: 16px;
       width: 100%;
       .label {
@@ -84,7 +85,7 @@
               height: 100%;
             }
           }
-          .currency{
+          .currency {
             width: 48px;
             font-size: 16px;
             line-height: 22px;
@@ -106,10 +107,13 @@
         color: @font-8;
       }
     }
-    .buy-target {
-      width: 100%;
+
+    .buy-form,
+    .sell-form {
+      flex: 1;
+      padding: 0 24px;
     }
-    .buy-rate {
+    .exchange-rate {
       width: 100%;
       margin-top: 24px;
       font-size: 14px;
@@ -125,20 +129,33 @@
         }
       }
     }
+    .ramp-footer {
+      width: 100%;
+      height: 80px;
+      padding: 16px;
+      border-top: 1px solid @border-2;
+      background: @bg-11;
+
+      .@{app-prefix}-btn {
+        height: 48px;
+        border-radius: 22px;
+        font-size: 16px;
+        line-height: 22px;
+      }
+    }
   }
+}
 
-  .buy-footer {
-    width: 100%;
-    height: 80px;
-    padding: 16px;
-    border-top: 1px solid @border-2;
-    background: @bg-11;
-
-    .@{app-prefix}-btn {
-      height: 48px;
-      border-radius: 22px;
-      font-size: 16px;
-      line-height: 22px;
+.custom-list {
+  .list {
+    .token-item {
+      .token-item-image {
+        width: 28px;
+        height: 28px;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: contain;
+      }
     }
   }
 }

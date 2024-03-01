@@ -10,6 +10,7 @@ import { defaultColors } from 'assets/theme';
 
 function SystemTime(_props: DayProps<IMessage>) {
   const sameDay = isSameDay(_props.previousMessage?.createdAt, _props.currentMessage?.createdAt);
+
   const isMarginBottom8 = useMemo(() => {
     return _props.previousMessage?.user && _props.previousMessage?.user._id === _props.currentMessage?.user._id;
   }, [_props.currentMessage?.user._id, _props.previousMessage?.user]);
@@ -29,7 +30,7 @@ const styles = StyleSheet.create({
   wrap: {
     width: '100%',
     marginBottom: pTd(0),
-    marginTop: pTd(16),
+    marginTop: pTd(12),
   },
   textStyles: {
     textAlign: 'center',

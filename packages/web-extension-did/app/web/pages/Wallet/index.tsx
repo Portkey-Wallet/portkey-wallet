@@ -24,7 +24,7 @@ export default function Wallet() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { isPrompt, isNotLessThan768 } = useCommonState();
-  const { userInfo, userId } = useWalletInfo();
+  const { userInfo } = useWalletInfo();
   const [exitVisible, setExitVisible] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<string>('');
 
@@ -93,7 +93,7 @@ export default function Wallet() {
       select={selectedItem}
       walletAvatar={userInfo?.avatar}
       walletName={userInfo?.nickName || ''}
-      portkeyId={userId || ''}
+      portkeyId={userInfo?.userId || ''}
       clickAvatar={clickAvatar}
       menuList={MenuList}
       onExit={onExit}
@@ -106,7 +106,7 @@ export default function Wallet() {
       exitVisible={exitVisible}
       walletAvatar={userInfo?.avatar}
       walletName={userInfo?.nickName || ''}
-      portkeyId={userId || ''}
+      portkeyId={userInfo?.userId || ''}
       clickAvatar={clickAvatar}
       menuList={MenuList}
       goBack={goBack}

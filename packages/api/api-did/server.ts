@@ -7,6 +7,9 @@ import { isValidRefreshTokenConfig, queryAuthorization, RefreshTokenConfig } fro
 import { sleep } from '@portkey-wallet/utils';
 import im from '@portkey-wallet/im';
 import { IM_TOKEN_ERROR_ARRAY } from '@portkey-wallet/im/constant';
+import signalrFCM from '@portkey-wallet/socket/socket-fcm';
+
+const C_T_EVENT_NAME = 'connectTokenChange';
 export class DidService extends ServiceInit {
   protected refreshTokenConfig?: RefreshTokenConfig;
   protected onLockApp?: (expired?: boolean) => void;
@@ -15,6 +18,13 @@ export class DidService extends ServiceInit {
   constructor() {
     super();
   }
+
+  public emitConnectTokenChange = (authorization: string) => {
+    this.emit(C_T_EVENT_NAME, authorization);
+  };
+  public onConnectTokenChange = (listener: (...args: any[]) => void) => {
+    return this.on(C_T_EVENT_NAME, listener);
+  };
   getConnectToken = async () => {
     if (this.locked) {
       await sleep(1000);
@@ -24,22 +34,15 @@ export class DidService extends ServiceInit {
     try {
       if (!this.refreshTokenConfig || !isValidRefreshTokenConfig(this.refreshTokenConfig)) return;
       const authorization = await queryAuthorization(this.refreshTokenConfig);
-      this.defaultConfig.headers = { ...this.defaultConfig.headers, Authorization: authorization };
+      this.set('headers', { Authorization: authorization });
+      this.emitConnectTokenChange(authorization);
 
-      im.config.setConfig({
-        requestDefaults: {
-          headers: {
-            ...im.config.requestConfig?.headers,
-            Authorization: authorization,
-          },
-        },
-      });
-      this.locked = false;
       return authorization;
     } catch (error) {
-      this.locked = false;
       console.log(error, '====error-getConnectToken');
       return;
+    } finally {
+      this.locked = false;
     }
   };
 
@@ -51,7 +54,7 @@ export class DidService extends ServiceInit {
     };
   };
 
-  setRefreshTokenConfig = (config: RefreshTokenConfig) => {
+  setRefreshTokenConfig = async (config: RefreshTokenConfig) => {
     // make sure clean Authorization
     if (this.refreshTokenConfig?.ca_hash !== config.ca_hash) {
       this.defaultConfig.headers = {
@@ -61,9 +64,10 @@ export class DidService extends ServiceInit {
     }
     this.refreshTokenConfig = config;
     try {
-      this.getConnectToken();
+      return await this.getConnectToken();
     } catch (error) {
       console.log(error);
+      return undefined;
     }
   };
   send = async (base: BaseConfig, config?: RequestConfig, reCount = 0): Promise<any> => {
@@ -132,4 +136,19 @@ export class DidService extends ServiceInit {
   };
 }
 
-export default new DidService();
+const didServer = new DidService();
+
+didServer.onConnectTokenChange(authorization => {
+  im.config.setConfig({
+    requestDefaults: {
+      headers: {
+        ...im.config.requestConfig?.headers,
+        Authorization: authorization,
+      },
+    },
+  });
+
+  signalrFCM.setPortkeyToken(authorization);
+});
+
+export default didServer;

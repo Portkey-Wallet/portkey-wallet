@@ -6,15 +6,16 @@ import './index.less';
 export interface IGuardianProps {
   headerTitle: string;
   onBack: () => void;
-  renderAddBtn: ReactNode;
+  renderAddBtn?: ReactNode;
   renderGuardianList: ReactNode;
+  renderGuardianTip?: ReactNode;
 }
 
 const GuardiansPopup = (props: IGuardianProps) => {
-  const { headerTitle, onBack, renderAddBtn, renderGuardianList } = props;
+  const { headerTitle, onBack, renderAddBtn, renderGuardianList, renderGuardianTip } = props;
   return (
-    <div className="guardians-popup min-width-max-height">
-      <div className="guardians-title">
+    <div className="guardians-popup min-width-max-height flex-column">
+      <div className="guardians-body flex-column">
         <SettingHeader
           title={headerTitle}
           leftCallBack={onBack}
@@ -26,7 +27,10 @@ const GuardiansPopup = (props: IGuardianProps) => {
           }
         />
       </div>
-      <div className="guardians-content">{renderGuardianList}</div>
+      <div className="guardians-content flex-column-between flex-1">
+        <div className="content-guardian-list flex-1">{renderGuardianList}</div>
+        <div className="content-guardian-tip flex">{renderGuardianTip}</div>
+      </div>
     </div>
   );
 };

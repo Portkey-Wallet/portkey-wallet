@@ -23,7 +23,8 @@ export function useGetCurrentCAViewContract(_chainId?: ChainId) {
       const _chainInfo = paramChainInfo || chainInfo;
       if (!_chainInfo) throw Error('Could not find chain information');
 
-      const caContract = viewContracts?.[_chainInfo.caContractAddress];
+      const key = _chainInfo.caContractAddress + _chainInfo.endPoint;
+      const caContract = viewContracts?.[key];
       if (caContract) return caContract;
 
       const contract = await getContractBasic({
@@ -31,7 +32,7 @@ export function useGetCurrentCAViewContract(_chainId?: ChainId) {
         rpcUrl: _chainInfo.endPoint,
         account: getDefaultWallet(),
       });
-      dispatch(setViewContract({ [_chainInfo.caContractAddress]: contract as ContractBasic }));
+      dispatch(setViewContract({ [key]: contract as ContractBasic }));
 
       return contract as ContractBasic;
     },
@@ -99,5 +100,24 @@ export function useGetCAContract() {
       return contract as ContractBasic;
     },
     [AESEncryptPrivateKey, address, caContracts, dispatch, getChain, pin],
+  );
+}
+
+export function useGetTokenViewContract() {
+  const getChain = useGetChain();
+
+  return useCallback(
+    async (chainId: ChainId) => {
+      const chainInfo = getChain(chainId);
+      if (!chainInfo) throw Error('Could not find chain information');
+
+      const contract = await getContractBasic({
+        contractAddress: chainInfo.defaultToken.address,
+        rpcUrl: chainInfo.endPoint,
+        account: getDefaultWallet(),
+      });
+      return contract as ContractBasic;
+    },
+    [getChain],
   );
 }

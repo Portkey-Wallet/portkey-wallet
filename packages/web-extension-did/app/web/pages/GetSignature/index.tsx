@@ -1,16 +1,17 @@
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import aes from '@portkey-wallet/utils/aes';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import usePromptSearch from 'hooks/usePromptSearch';
 import { useCallback, useMemo } from 'react';
-import { useDapp, useUserInfo, useWalletInfo } from 'store/Provider/hooks';
+import { useDapp, useWalletInfo } from 'store/Provider/hooks';
 import errorHandler from 'utils/errorHandler';
 import { closePrompt } from 'utils/lib/serviceWorkerAction';
 import { ResponseCode } from '@portkey/provider-types';
 import { getWallet } from '@portkey-wallet/utils/aelf';
 import ImageDisplay from 'pages/components/ImageDisplay';
+import { showValueToStr } from '@portkey-wallet/utils/byteConversion';
+import getSeed from 'utils/getSeed';
+import singleMessage from 'utils/singleMessage';
 import './index.less';
 
 export default function GetSignature() {
@@ -20,15 +21,9 @@ export default function GetSignature() {
       origin: string;
     };
   }>();
-  const wallet = useCurrentWalletInfo();
   const { t } = useTranslation();
-  const { passwordSeed } = useUserInfo();
   const { currentNetwork } = useWalletInfo();
   const { dappMap } = useDapp();
-  const privateKey = useMemo(
-    () => aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed),
-    [passwordSeed, wallet.AESEncryptPrivateKey],
-  );
   const curDapp = useMemo(
     () => dappMap[currentNetwork]?.find((item) => item.origin === payload?.origin),
     [currentNetwork, dappMap, payload?.origin],
@@ -47,6 +42,7 @@ export default function GetSignature() {
 
   const sendHandler = useCallback(async () => {
     try {
+      const { privateKey } = await getSeed();
       if (!privateKey) throw 'Invalid user information, please check';
 
       const manager = getWallet(privateKey);
@@ -62,9 +58,9 @@ export default function GetSignature() {
       });
     } catch (error) {
       console.error(error, 'error===detail');
-      message.error(handleErrorMessage(error));
+      singleMessage.error(handleErrorMessage(error));
     }
-  }, [payload, privateKey]);
+  }, [payload]);
 
   return (
     <div className="get-signature flex">
@@ -72,7 +68,7 @@ export default function GetSignature() {
       <div className="title flex-center">{t('Sign Message')}</div>
       <div className="message">
         <div>Message</div>
-        <div className="data">{payload?.data}</div>
+        <div className="data">{showValueToStr(payload?.data)}</div>
       </div>
       <div className="btn flex-between">
         <Button

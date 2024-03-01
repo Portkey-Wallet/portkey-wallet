@@ -31,7 +31,7 @@ const NFTAvatar: React.FC<NoDataPropsType> = props => {
 
   return (
     <TouchableOpacity style={[styles.wrap, ...outStyles]} onPress={onPress}>
-      {imageUrl && <CommonAvatar shapeType="square" imageUrl={imageUrl} style={styles.img} />}
+      {imageUrl && <CommonAvatar avatarSize={pTd(98)} shapeType="square" imageUrl={imageUrl} style={styles.img} />}
       <TextM
         numberOfLines={imageUrl ? 1 : 2}
         ellipsizeMode="tail"
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     // display: 'flex',
     // justifyContent: 'center',
     // alignItems: 'center',
-    backgroundColor: defaultColors.bg4,
+    backgroundColor: defaultColors.bg6,
   },
   img: {
     position: 'absolute',
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     height: pTd(40),
     bottom: 0,
     backgroundColor: 'black',
-    opacity: 0.25,
+    opacity: 0.4,
     shadowOffset: {
       width: pTd(10),
       height: -pTd(10),

@@ -5,10 +5,9 @@ import { setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { ChainId, ChainType } from '@portkey-wallet/types';
 import { isAddress } from '@portkey-wallet/utils';
-import InternalMessage from 'messages/InternalMessage';
-import InternalMessageTypes from 'messages/InternalMessageTypes';
 import { useCallback } from 'react';
 import { useAppDispatch } from 'store/Provider/hooks';
+import getSeed from 'utils/getSeed';
 import { getHolderInfoByContract } from 'utils/sandboxUtil/getHolderInfo';
 
 export const useCaInfoOnChain = () => {
@@ -59,8 +58,7 @@ export const useCaInfoOnChain = () => {
     if (!chainList) return;
     if (!walletInfo.caHash) return;
     const caHash = walletInfo.caHash;
-    const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
-    const pin = getSeedResult.data.privateKey;
+    const { pin } = await getSeed();
     if (!pin) return;
     chainList
       .filter((chain) => chain.chainId !== originChainId)
@@ -89,7 +87,7 @@ export const useCaInfoOnChain = () => {
         fetch();
       }
     },
+    [check, fetch],
     1000,
-    [walletInfo],
   );
 };

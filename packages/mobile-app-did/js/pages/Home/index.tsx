@@ -25,7 +25,7 @@ import { extraDataEncode } from '@portkey-wallet/utils/device';
 import { useGetDeviceInfo } from 'hooks/device';
 import * as Network from 'expo-network';
 
-import im from '@portkey-wallet/im';
+import im, { RedPackageTypeEnum } from '@portkey-wallet/im';
 import useEffectOnce from 'hooks/useEffectOnce';
 import {
   useChannel,
@@ -36,8 +36,11 @@ import {
   usePinChannel,
   useSendChannelMessage,
   useUnreadCount,
+  useSendRedPackage,
+  ICreateRedPacketParams,
 } from '@portkey-wallet/hooks/hooks-ca/im';
 import dayjs from 'dayjs';
+import { timesDecimals } from '@portkey-wallet/utils/converter';
 
 export default function HomeScreen() {
   const wallet = useCurrentWalletInfo();
@@ -93,9 +96,58 @@ export default function HomeScreen() {
     })();
   });
 
+  const sendRedPackage = useSendRedPackage();
+  const sendRedPackageTest = useCallback(async () => {
+    // const params = {
+    //   channelId: 'eff010f5d9dd4df986a20251ae634e86',
+    //   type: RedPackageTypeEnum.FIXED,
+    //   count: 1,
+    // };
+
+    const params = {
+      // channelId: '54aadf08ab98499ea0313664dc8def96',
+      // channelId: '5ff0dba5e16845b89923c2a3118c0e6f',
+      // channelId: '31e10db9361f49cd923b74548c9acf2a',
+      channelId: '0f1f398a16b84ca2b6e2d70691f6e8ad',
+      type: RedPackageTypeEnum.P2P,
+      count: 1,
+    };
+
+    try {
+      const caContract = await getCurrentCAContract();
+      const result = await sendRedPackage({
+        chainId: 'AELF',
+        symbol: 'ELF',
+        totalAmount: '10000000',
+        decimal: '8',
+        memo: `test ${Date.now()}`,
+        caContract: caContract,
+        ...params,
+      });
+      console.log('result', result);
+    } catch (error) {
+      console.log('error', error);
+    }
+  }, [getCurrentCAContract, sendRedPackage]);
+
   return (
     <SafeAreaBox>
       <ScrollView>
+        <Button
+          title="send redPackage"
+          onPress={async () => {
+            for (let i = 0; i < 1; i++) {
+              (async () => {
+                console.log(i);
+                const startTime = Date.now();
+                await sendRedPackageTest();
+                const EndTime = Date.now();
+                console.log(i, '====time', EndTime - startTime);
+              })();
+            }
+          }}
+        />
+
         {/* <Button title="ActionSheet show" onPress={() => ActionSheet.show([{ title: '123' }, { title: '123' }])} />
         <Button
           title="loading show"
@@ -288,7 +340,10 @@ export default function HomeScreen() {
           onPress={async () => {
             try {
               const { channelUuid } = await createChannel('e7i7y-giaaa-aaaaj-2ooma-cai');
-              const result2 = await sendChannelMessage(channelUuid, 'test message');
+              const result2 = await sendChannelMessage({
+                channelId: channelUuid,
+                content: 'test message',
+              });
               console.log('result2', result2);
               // const result = await muteChannel('0a88cea1efde493a805a0afdbf471d08', true);
               // console.log('test', result);

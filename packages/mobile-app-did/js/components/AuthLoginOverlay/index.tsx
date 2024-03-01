@@ -66,7 +66,7 @@ function AuthLogin({ loginData, domain, extraData: websiteInfo }: AuthLoginOverl
   );
 
   const onLogin = useCallback(async () => {
-    if (currentNetwork !== loginData.netWorkType) return showDialog();
+    if (currentNetwork !== loginData.networkType) return showDialog();
     if (!caHash || loading || !managerAddress) return showDialog();
 
     try {

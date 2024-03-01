@@ -1,4 +1,4 @@
-package com.portkey.did.newarchitecture;
+package com.portkey.finance.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -19,9 +19,9 @@ import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.portkey.did.BuildConfig;
-import com.portkey.did.newarchitecture.components.MainComponentsRegistry;
-import com.portkey.did.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.portkey.finance.BuildConfig;
+import com.portkey.finance.newarchitecture.components.MainComponentsRegistry;
+import com.portkey.finance.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 

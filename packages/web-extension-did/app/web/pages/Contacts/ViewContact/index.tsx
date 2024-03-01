@@ -4,18 +4,16 @@ import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCommonState } from 'store/Provider/hooks';
-import { useProfileChat, useProfileCopy, useGoProfileEdit } from 'hooks/useProfile';
+import { useProfileChat, useGoProfileEdit } from 'hooks/useProfile';
 import CustomModal from 'pages/components/CustomModal';
 import {
   REFRESH_DELAY_TIME,
   useAddStrangerContact,
-  useContactInfo,
   useIndexAndName,
-  useIsMyContact,
   useReadImputation,
 } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import { message } from 'antd';
+import singleMessage from 'utils/singleMessage';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import im from '@portkey-wallet/im';
@@ -24,35 +22,43 @@ import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { ILoginAccountListProps } from '../components/LoginAccountList';
-import { IContactProfileLoginAccount } from '@portkey-wallet/types/types-ca/contact';
+import { EditContactItemApiType, IContactProfileLoginAccount } from '@portkey-wallet/types/types-ca/contact';
 
 export default function ViewContact() {
   const { isNotLessThan768 } = useCommonState();
   const dispatch = useAppCommonDispatch();
-  const { state } = useLocation();
+  const { state } = useLocation(); // TViewContactLocationState
   const navigate = useNavigate();
   const { t } = useTranslation();
   const showChat = useIsChatShow();
-  const isMyContactFn = useIsMyContact();
 
   const relationId = useMemo(
     () => state?.relationId || state?.imInfo?.relationId,
     [state?.imInfo?.relationId, state?.relationId],
   );
+  const portkeyId = useMemo(
+    () => state?.portkeyId || state?.imInfo?.portkeyId,
+    [state?.imInfo?.portkeyId, state?.portkeyId],
+  );
 
-  const { name, index } = useIndexAndName(state);
+  const { index } = useIndexAndName(state);
 
-  const [data, setData] = useState<IProfileDetailDataProps>({
-    ...state,
-    id: state?.id,
-    index: index,
-    name: name,
-    imInfo: {
-      portkeyId: state?.portkeyId || state?.imInfo?.portkeyId,
-      relationId: state?.relationId || state?.imInfo?.relationId,
-    },
-  });
-  const contactInfo = useContactInfo({ contactId: state?.id, relationId: relationId });
+  // bind: api response
+  const [profileData, setProfileData] = useState<IProfileDetailDataProps>();
+  // bind: location state
+  const stateTransform = useMemo(
+    () => ({
+      ...state,
+      id: state?.id,
+      index: index,
+      imInfo: {
+        portkeyId: portkeyId,
+        relationId: relationId,
+      },
+    }),
+    [index, portkeyId, relationId, state],
+  );
+  const mergeData = useMemo(() => ({ ...stateTransform, ...profileData }), [profileData, stateTransform]);
 
   const title = t('Details');
   const editText = t('Edit');
@@ -66,6 +72,9 @@ export default function ViewContact() {
       Email: [],
       Google: [],
       Apple: [],
+      Telegram: [],
+      Twitter: [],
+      Facebook: [],
     };
 
     loginAccounts?.forEach((element) => {
@@ -82,7 +91,15 @@ export default function ViewContact() {
         case LoginType.Apple:
           loginAccountMap.Apple.push(element);
           break;
-
+        case LoginType.Telegram:
+          loginAccountMap.Telegram.push(element);
+          break;
+        case LoginType.Twitter:
+          loginAccountMap.Twitter.push(element);
+          break;
+        case LoginType.Facebook:
+          loginAccountMap.Facebook.push(element);
+          break;
         default:
           break;
       }
@@ -91,20 +108,25 @@ export default function ViewContact() {
   }, []);
 
   useEffect(() => {
+    if (!showChat) return;
+
+    // clear api data
+    setProfileData({});
+
     im.service
       .getProfile({
-        id: state.id || undefined,
-        portkeyId: data.imInfo?.portkeyId || undefined,
+        id: state?.id || undefined,
+        portkeyId: portkeyId || undefined,
         relationId: relationId || undefined,
       })
       .then((res) => {
         const loginAccountMap = genLoginAccountMap(res.data.loginAccounts || []);
-        setData({ ...state, ...res?.data, loginAccountMap });
+        setProfileData((v) => ({ ...v, ...res?.data, loginAccountMap }));
       });
-  }, [contactInfo, data.imInfo?.portkeyId, genLoginAccountMap, isMyContactFn, relationId, state, state.id]);
+  }, [genLoginAccountMap, portkeyId, relationId, showChat, state?.id]);
 
   const goBack = useCallback(() => {
-    switch (state?.from) {
+    switch (state?.previousPage) {
       case 'new-chat':
         navigate('/new-chat', { state });
         break;
@@ -132,29 +154,28 @@ export default function ViewContact() {
 
   const handleEdit = useGoProfileEdit();
   const handleChat = useProfileChat();
-  const handleCopy = useProfileCopy();
 
   const addStrangerApi = useAddStrangerContact();
 
   const handleAdd = useLockCallback(async () => {
     try {
-      const res = await addStrangerApi(relationId);
-      setData({ ...state, ...res?.data });
+      const res = await addStrangerApi(relationId || '');
+      setProfileData({ ...state, ...res?.data });
 
       setTimeout(() => {
         dispatch(fetchContactListAsync());
       }, REFRESH_DELAY_TIME);
     } catch (error) {
       const err = handleErrorMessage(error, 'add stranger error');
-      message.error(err);
+      singleMessage.error(err);
     }
   }, [addStrangerApi, dispatch, relationId, state]);
 
   const readImputationApi = useReadImputation();
   useEffect(() => {
-    if (state?.isImputation && state?.from === 'contact-list') {
+    if (state?.isImputation && state?.previousPage === 'contact-list') {
       // imputation from unread to read
-      readImputationApi(state);
+      readImputationApi(state as EditContactItemApiType);
 
       CustomModal({
         content: (
@@ -177,12 +198,13 @@ export default function ViewContact() {
       chatText={chatText}
       addedText={addedText}
       addContactText={addContactText}
-      data={data}
+      data={mergeData}
       goBack={goBack}
-      handleEdit={() => handleEdit(showChat && relationId ? ExtraTypeEnum.CAN_CHAT : ExtraTypeEnum.CANT_CHAT, data)}
+      handleEdit={() =>
+        handleEdit(showChat && relationId ? ExtraTypeEnum.CAN_CHAT : ExtraTypeEnum.CANT_CHAT, mergeData)
+      }
       handleAdd={handleAdd}
-      handleChat={() => handleChat(data?.imInfo?.relationId || '')}
-      handleCopy={handleCopy}
+      handleChat={() => handleChat(relationId || '')}
     />
   ) : (
     <ViewContactPopup
@@ -191,12 +213,13 @@ export default function ViewContact() {
       chatText={chatText}
       addedText={addedText}
       addContactText={addContactText}
-      data={data}
+      data={mergeData}
       goBack={goBack}
-      handleEdit={() => handleEdit(showChat && relationId ? ExtraTypeEnum.CAN_CHAT : ExtraTypeEnum.CANT_CHAT, data)}
+      handleEdit={() =>
+        handleEdit(showChat && relationId ? ExtraTypeEnum.CAN_CHAT : ExtraTypeEnum.CANT_CHAT, mergeData)
+      }
       handleAdd={handleAdd}
-      handleChat={() => handleChat(data?.imInfo?.relationId || '')}
-      handleCopy={handleCopy}
+      handleChat={() => handleChat(relationId || '')}
     />
   );
 }

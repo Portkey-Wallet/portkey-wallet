@@ -6,6 +6,7 @@ import { pTd } from 'utils/unit';
 import { ChatMessage } from 'pages/Chat/types';
 import isEqual from 'lodash/isEqual';
 import GStyles from 'assets/theme/GStyles';
+import { isSystemTypeMessage } from 'pages/Chat/utils';
 
 function ChatMessageContainer(
   props: MessageProps<ChatMessage> & {
@@ -14,17 +15,20 @@ function ChatMessageContainer(
 ) {
   const { previousMessage, currentMessage } = props;
 
-  const isMarginTop8 = useMemo(
-    () => previousMessage?.user && previousMessage?.user._id === currentMessage?.user._id,
-    [currentMessage?.user, previousMessage?.user],
+  const isMarginTop4 = useMemo(
+    () =>
+      previousMessage?.user &&
+      previousMessage?.user._id === currentMessage?.user._id &&
+      !isSystemTypeMessage(currentMessage?.messageType) === !isSystemTypeMessage(previousMessage?.messageType),
+    [currentMessage?.messageType, currentMessage?.user._id, previousMessage?.messageType, previousMessage?.user],
   );
 
   return (
     <Touchable activeOpacity={1} onPress={props.onDismiss}>
       <Message
         containerStyle={{
-          left: [styles.leftMessageContainer, isMarginTop8 && GStyles.marginTop(pTd(8))],
-          right: [styles.rightMessageContainer, isMarginTop8 && GStyles.marginTop(pTd(8))],
+          left: [styles.leftMessageContainer, isMarginTop4 && GStyles.marginTop(pTd(4))],
+          right: [styles.rightMessageContainer, isMarginTop4 && GStyles.marginTop(pTd(4))],
         }}
         {...props}
       />
@@ -33,20 +37,25 @@ function ChatMessageContainer(
 }
 
 export default memo(ChatMessageContainer, (prevProps, nextProps) => {
-  return isEqual(prevProps.currentMessage, nextProps.currentMessage);
+  return (
+    isEqual(prevProps.currentMessage, nextProps.currentMessage) &&
+    isEqual(prevProps.previousMessage?._id, nextProps.previousMessage?._id)
+  );
 });
 
 const styles = StyleSheet.create({
   leftMessageContainer: {
-    marginLeft: pTd(16),
+    marginLeft: pTd(12),
     marginRight: 0,
-    marginTop: pTd(16),
+    marginTop: pTd(12),
     marginBottom: 0,
+    paddingRight: pTd(12),
   },
   rightMessageContainer: {
     marginLeft: 0,
-    marginRight: pTd(16),
-    marginTop: pTd(16),
+    marginRight: pTd(12),
+    marginTop: pTd(12),
     marginBottom: 0,
+    paddingLeft: pTd(12),
   },
 });

@@ -1,0 +1,53 @@
+@import '../../assets/theme/constants.less';
+
+.reply-message-body {
+  width: 100%;
+  font-size: 14px;
+  line-height: 20px;
+  word-break: break-all;
+  white-space: pre-wrap;
+  .reply-message-container {
+    gap: 8px;
+    overflow: hidden;
+    border-radius: 8px;
+    background-color: @bg-11;
+    &.right {
+      background-color: @bg-12;
+    }
+    .container-left {
+      width: 3px;
+      background-color: @bg-1;
+    }
+    .container-content {
+      padding: 4px 8px 4px 0;
+      flex: 1;
+    }
+    .reply-message-image {
+      gap: 8px;
+      img, .imgerr-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 4px;
+        object-fit: cover;
+      }
+      .imgerr-icon {
+        svg {
+          path {
+            fill: @svg-2;
+          }
+        }
+      }
+    }
+    .container-title {
+      color: @font-5;
+      .text-overflow(1);
+    }
+    .container-desc {
+      color: @font-7;
+      .text-overflow(2);
+      &.hide-msg {
+        color: @font-6;
+      }
+    }
+  }
+}

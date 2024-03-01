@@ -22,6 +22,9 @@ export type Scalars = {
 
 export type Query = {
   __typename?: 'Query';
+  boilerplate: Array<Boilerplate>;
+  boilerplate_aggregated: Array<Boilerplate_Aggregated>;
+  boilerplate_by_id?: Maybe<Boilerplate>;
   bottomMenu: Array<BottomMenu>;
   bottomMenu_aggregated: Array<BottomMenu_Aggregated>;
   bottomMenu_by_id?: Maybe<BottomMenu>;
@@ -29,12 +32,12 @@ export type Query = {
   bottomSecondMenu_aggregated: Array<BottomSecondMenu_Aggregated>;
   bottomSecondMenu_by_id?: Maybe<BottomSecondMenu>;
   buyButton?: Maybe<BuyButton>;
-  deviceBrand: Array<DeviceBrand>;
-  deviceBrand_aggregated: Array<DeviceBrand_Aggregated>;
-  deviceBrand_by_id?: Maybe<DeviceBrand>;
-  deviceType: Array<DeviceType>;
-  deviceType_aggregated: Array<DeviceType_Aggregated>;
-  deviceType_by_id?: Maybe<DeviceType>;
+  codePushControl: Array<CodePushControl>;
+  codePushControl_aggregated: Array<CodePushControl_Aggregated>;
+  codePushControl_by_id?: Maybe<CodePushControl>;
+  dApp: Array<DApp>;
+  dApp_aggregated: Array<DApp_Aggregated>;
+  dApp_by_id?: Maybe<DApp>;
   discoverGroup: Array<DiscoverGroup>;
   discoverGroup_aggregated: Array<DiscoverGroup_Aggregated>;
   discoverGroup_by_id?: Maybe<DiscoverGroup>;
@@ -55,8 +58,14 @@ export type Query = {
   entrance_entranceMatch_aggregated: Array<Entrance_EntranceMatch_Aggregated>;
   entrance_entranceMatch_by_id?: Maybe<Entrance_EntranceMatch>;
   home?: Maybe<Home>;
+  home_dApp: Array<Home_DApp>;
+  home_dApp_aggregated: Array<Home_DApp_Aggregated>;
+  home_dApp_by_id?: Maybe<Home_DApp>;
   mediaKit: Array<MediaKit>;
   mediaKitPage?: Maybe<MediaKitPage>;
+  mediaKitPage_boilerplate: Array<MediaKitPage_Boilerplate>;
+  mediaKitPage_boilerplate_aggregated: Array<MediaKitPage_Boilerplate_Aggregated>;
+  mediaKitPage_boilerplate_by_id?: Maybe<MediaKitPage_Boilerplate>;
   mediaKitPage_mediaKit: Array<MediaKitPage_MediaKit>;
   mediaKitPage_mediaKit_aggregated: Array<MediaKitPage_MediaKit_Aggregated>;
   mediaKitPage_mediaKit_by_id?: Maybe<MediaKitPage_MediaKit>;
@@ -71,6 +80,7 @@ export type Query = {
   rememberMeBlackListSites: Array<RememberMeBlackListSites>;
   rememberMeBlackListSites_aggregated: Array<RememberMeBlackListSites_Aggregated>;
   rememberMeBlackListSites_by_id?: Maybe<RememberMeBlackListSites>;
+  serviceSuspension?: Maybe<ServiceSuspension>;
   socialMedia: Array<SocialMedia>;
   socialMedia_aggregated: Array<SocialMedia_Aggregated>;
   socialMedia_by_id?: Maybe<SocialMedia>;
@@ -86,6 +96,29 @@ export type Query = {
   topSecondMenu: Array<TopSecondMenu>;
   topSecondMenu_aggregated: Array<TopSecondMenu_Aggregated>;
   topSecondMenu_by_id?: Maybe<TopSecondMenu>;
+};
+
+export type QueryBoilerplateArgs = {
+  filter?: InputMaybe<Boilerplate_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type QueryBoilerplate_AggregatedArgs = {
+  filter?: InputMaybe<Boilerplate_Filter>;
+  groupBy?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type QueryBoilerplate_By_IdArgs = {
+  id: Scalars['ID'];
 };
 
 export type QueryBottomMenuArgs = {
@@ -134,8 +167,8 @@ export type QueryBottomSecondMenu_By_IdArgs = {
   id: Scalars['ID'];
 };
 
-export type QueryDeviceBrandArgs = {
-  filter?: InputMaybe<DeviceBrand_Filter>;
+export type QueryCodePushControlArgs = {
+  filter?: InputMaybe<CodePushControl_Filter>;
   limit?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
   page?: InputMaybe<Scalars['Int']>;
@@ -143,8 +176,8 @@ export type QueryDeviceBrandArgs = {
   sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
-export type QueryDeviceBrand_AggregatedArgs = {
-  filter?: InputMaybe<DeviceBrand_Filter>;
+export type QueryCodePushControl_AggregatedArgs = {
+  filter?: InputMaybe<CodePushControl_Filter>;
   groupBy?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   limit?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -153,12 +186,12 @@ export type QueryDeviceBrand_AggregatedArgs = {
   sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
-export type QueryDeviceBrand_By_IdArgs = {
+export type QueryCodePushControl_By_IdArgs = {
   id: Scalars['ID'];
 };
 
-export type QueryDeviceTypeArgs = {
-  filter?: InputMaybe<DeviceType_Filter>;
+export type QueryDAppArgs = {
+  filter?: InputMaybe<DApp_Filter>;
   limit?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
   page?: InputMaybe<Scalars['Int']>;
@@ -166,8 +199,8 @@ export type QueryDeviceTypeArgs = {
   sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
-export type QueryDeviceType_AggregatedArgs = {
-  filter?: InputMaybe<DeviceType_Filter>;
+export type QueryDApp_AggregatedArgs = {
+  filter?: InputMaybe<DApp_Filter>;
   groupBy?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   limit?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -176,7 +209,7 @@ export type QueryDeviceType_AggregatedArgs = {
   sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
-export type QueryDeviceType_By_IdArgs = {
+export type QueryDApp_By_IdArgs = {
   id: Scalars['ID'];
 };
 
@@ -318,6 +351,29 @@ export type QueryEntrance_EntranceMatch_By_IdArgs = {
   id: Scalars['ID'];
 };
 
+export type QueryHome_DAppArgs = {
+  filter?: InputMaybe<Home_DApp_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type QueryHome_DApp_AggregatedArgs = {
+  filter?: InputMaybe<Home_DApp_Filter>;
+  groupBy?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type QueryHome_DApp_By_IdArgs = {
+  id: Scalars['ID'];
+};
+
 export type QueryMediaKitArgs = {
   filter?: InputMaybe<MediaKit_Filter>;
   limit?: InputMaybe<Scalars['Int']>;
@@ -325,6 +381,29 @@ export type QueryMediaKitArgs = {
   page?: InputMaybe<Scalars['Int']>;
   search?: InputMaybe<Scalars['String']>;
   sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type QueryMediaKitPage_BoilerplateArgs = {
+  filter?: InputMaybe<MediaKitPage_Boilerplate_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type QueryMediaKitPage_Boilerplate_AggregatedArgs = {
+  filter?: InputMaybe<MediaKitPage_Boilerplate_Filter>;
+  groupBy?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type QueryMediaKitPage_Boilerplate_By_IdArgs = {
+  id: Scalars['ID'];
 };
 
 export type QueryMediaKitPage_MediaKitArgs = {
@@ -548,6 +627,67 @@ export type QueryTopSecondMenu_By_IdArgs = {
   id: Scalars['ID'];
 };
 
+export type Boilerplate = {
+  __typename?: 'boilerplate';
+  date_created?: Maybe<Scalars['Date']>;
+  date_created_func?: Maybe<Datetime_Functions>;
+  date_updated?: Maybe<Scalars['Date']>;
+  date_updated_func?: Maybe<Datetime_Functions>;
+  id: Scalars['ID'];
+  index?: Maybe<Scalars['Int']>;
+  name?: Maybe<Scalars['String']>;
+  url?: Maybe<Scalars['String']>;
+  user_created?: Maybe<Scalars['String']>;
+  user_updated?: Maybe<Scalars['String']>;
+};
+
+export type Boilerplate_Aggregated = {
+  __typename?: 'boilerplate_aggregated';
+  avg?: Maybe<Boilerplate_Aggregated_Fields>;
+  avgDistinct?: Maybe<Boilerplate_Aggregated_Fields>;
+  count?: Maybe<Boilerplate_Aggregated_Count>;
+  countAll?: Maybe<Scalars['Int']>;
+  countDistinct?: Maybe<Boilerplate_Aggregated_Count>;
+  group?: Maybe<Scalars['JSON']>;
+  max?: Maybe<Boilerplate_Aggregated_Fields>;
+  min?: Maybe<Boilerplate_Aggregated_Fields>;
+  sum?: Maybe<Boilerplate_Aggregated_Fields>;
+  sumDistinct?: Maybe<Boilerplate_Aggregated_Fields>;
+};
+
+export type Boilerplate_Aggregated_Count = {
+  __typename?: 'boilerplate_aggregated_count';
+  date_created?: Maybe<Scalars['Int']>;
+  date_updated?: Maybe<Scalars['Int']>;
+  id?: Maybe<Scalars['Int']>;
+  index?: Maybe<Scalars['Int']>;
+  name?: Maybe<Scalars['Int']>;
+  url?: Maybe<Scalars['Int']>;
+  user_created?: Maybe<Scalars['Int']>;
+  user_updated?: Maybe<Scalars['Int']>;
+};
+
+export type Boilerplate_Aggregated_Fields = {
+  __typename?: 'boilerplate_aggregated_fields';
+  id?: Maybe<Scalars['Float']>;
+  index?: Maybe<Scalars['Float']>;
+};
+
+export type Boilerplate_Filter = {
+  _and?: InputMaybe<Array<InputMaybe<Boilerplate_Filter>>>;
+  _or?: InputMaybe<Array<InputMaybe<Boilerplate_Filter>>>;
+  date_created?: InputMaybe<Date_Filter_Operators>;
+  date_created_func?: InputMaybe<Datetime_Function_Filter_Operators>;
+  date_updated?: InputMaybe<Date_Filter_Operators>;
+  date_updated_func?: InputMaybe<Datetime_Function_Filter_Operators>;
+  id?: InputMaybe<Number_Filter_Operators>;
+  index?: InputMaybe<Number_Filter_Operators>;
+  name?: InputMaybe<String_Filter_Operators>;
+  url?: InputMaybe<String_Filter_Operators>;
+  user_created?: InputMaybe<String_Filter_Operators>;
+  user_updated?: InputMaybe<String_Filter_Operators>;
+};
+
 export type Boolean_Filter_Operators = {
   _eq?: InputMaybe<Scalars['Boolean']>;
   _neq?: InputMaybe<Scalars['Boolean']>;
@@ -764,6 +904,85 @@ export type BuyButton = {
   user_updated?: Maybe<Scalars['String']>;
 };
 
+export type CodePushControl = {
+  __typename?: 'codePushControl';
+  content?: Maybe<Scalars['String']>;
+  date_created?: Maybe<Scalars['Date']>;
+  date_created_func?: Maybe<Datetime_Functions>;
+  date_updated?: Maybe<Scalars['Date']>;
+  date_updated_func?: Maybe<Datetime_Functions>;
+  id: Scalars['ID'];
+  isForceUpdate?: Maybe<Scalars['Boolean']>;
+  label?: Maybe<Scalars['String']>;
+  sort?: Maybe<Scalars['Int']>;
+  status?: Maybe<Scalars['String']>;
+  title?: Maybe<Scalars['String']>;
+  updatedContent?: Maybe<Scalars['String']>;
+  updatedTitle?: Maybe<Scalars['String']>;
+  user_created?: Maybe<Scalars['String']>;
+  user_updated?: Maybe<Scalars['String']>;
+  version?: Maybe<Scalars['String']>;
+};
+
+export type CodePushControl_Aggregated = {
+  __typename?: 'codePushControl_aggregated';
+  avg?: Maybe<CodePushControl_Aggregated_Fields>;
+  avgDistinct?: Maybe<CodePushControl_Aggregated_Fields>;
+  count?: Maybe<CodePushControl_Aggregated_Count>;
+  countAll?: Maybe<Scalars['Int']>;
+  countDistinct?: Maybe<CodePushControl_Aggregated_Count>;
+  group?: Maybe<Scalars['JSON']>;
+  max?: Maybe<CodePushControl_Aggregated_Fields>;
+  min?: Maybe<CodePushControl_Aggregated_Fields>;
+  sum?: Maybe<CodePushControl_Aggregated_Fields>;
+  sumDistinct?: Maybe<CodePushControl_Aggregated_Fields>;
+};
+
+export type CodePushControl_Aggregated_Count = {
+  __typename?: 'codePushControl_aggregated_count';
+  content?: Maybe<Scalars['Int']>;
+  date_created?: Maybe<Scalars['Int']>;
+  date_updated?: Maybe<Scalars['Int']>;
+  id?: Maybe<Scalars['Int']>;
+  isForceUpdate?: Maybe<Scalars['Int']>;
+  label?: Maybe<Scalars['Int']>;
+  sort?: Maybe<Scalars['Int']>;
+  status?: Maybe<Scalars['Int']>;
+  title?: Maybe<Scalars['Int']>;
+  updatedContent?: Maybe<Scalars['Int']>;
+  updatedTitle?: Maybe<Scalars['Int']>;
+  user_created?: Maybe<Scalars['Int']>;
+  user_updated?: Maybe<Scalars['Int']>;
+  version?: Maybe<Scalars['Int']>;
+};
+
+export type CodePushControl_Aggregated_Fields = {
+  __typename?: 'codePushControl_aggregated_fields';
+  id?: Maybe<Scalars['Float']>;
+  sort?: Maybe<Scalars['Float']>;
+};
+
+export type CodePushControl_Filter = {
+  _and?: InputMaybe<Array<InputMaybe<CodePushControl_Filter>>>;
+  _or?: InputMaybe<Array<InputMaybe<CodePushControl_Filter>>>;
+  content?: InputMaybe<String_Filter_Operators>;
+  date_created?: InputMaybe<Date_Filter_Operators>;
+  date_created_func?: InputMaybe<Datetime_Function_Filter_Operators>;
+  date_updated?: InputMaybe<Date_Filter_Operators>;
+  date_updated_func?: InputMaybe<Datetime_Function_Filter_Operators>;
+  id?: InputMaybe<Number_Filter_Operators>;
+  isForceUpdate?: InputMaybe<Boolean_Filter_Operators>;
+  label?: InputMaybe<String_Filter_Operators>;
+  sort?: InputMaybe<Number_Filter_Operators>;
+  status?: InputMaybe<String_Filter_Operators>;
+  title?: InputMaybe<String_Filter_Operators>;
+  updatedContent?: InputMaybe<String_Filter_Operators>;
+  updatedTitle?: InputMaybe<String_Filter_Operators>;
+  user_created?: InputMaybe<String_Filter_Operators>;
+  user_updated?: InputMaybe<String_Filter_Operators>;
+  version?: InputMaybe<String_Filter_Operators>;
+};
+
 export type Count_Function_Filter_Operators = {
   count?: InputMaybe<Number_Filter_Operators>;
 };
@@ -771,6 +990,82 @@ export type Count_Function_Filter_Operators = {
 export type Count_Functions = {
   __typename?: 'count_functions';
   count?: Maybe<Scalars['Int']>;
+};
+
+export type DApp = {
+  __typename?: 'dApp';
+  date_created?: Maybe<Scalars['Date']>;
+  date_created_func?: Maybe<Datetime_Functions>;
+  date_updated?: Maybe<Scalars['Date']>;
+  date_updated_func?: Maybe<Datetime_Functions>;
+  id: Scalars['ID'];
+  index?: Maybe<Scalars['Int']>;
+  logo?: Maybe<Directus_Files>;
+  name?: Maybe<Scalars['String']>;
+  status?: Maybe<Scalars['String']>;
+  url?: Maybe<Scalars['String']>;
+  user_created?: Maybe<Scalars['String']>;
+  user_updated?: Maybe<Scalars['String']>;
+};
+
+export type DAppLogoArgs = {
+  filter?: InputMaybe<Directus_Files_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type DApp_Aggregated = {
+  __typename?: 'dApp_aggregated';
+  avg?: Maybe<DApp_Aggregated_Fields>;
+  avgDistinct?: Maybe<DApp_Aggregated_Fields>;
+  count?: Maybe<DApp_Aggregated_Count>;
+  countAll?: Maybe<Scalars['Int']>;
+  countDistinct?: Maybe<DApp_Aggregated_Count>;
+  group?: Maybe<Scalars['JSON']>;
+  max?: Maybe<DApp_Aggregated_Fields>;
+  min?: Maybe<DApp_Aggregated_Fields>;
+  sum?: Maybe<DApp_Aggregated_Fields>;
+  sumDistinct?: Maybe<DApp_Aggregated_Fields>;
+};
+
+export type DApp_Aggregated_Count = {
+  __typename?: 'dApp_aggregated_count';
+  date_created?: Maybe<Scalars['Int']>;
+  date_updated?: Maybe<Scalars['Int']>;
+  id?: Maybe<Scalars['Int']>;
+  index?: Maybe<Scalars['Int']>;
+  logo?: Maybe<Scalars['Int']>;
+  name?: Maybe<Scalars['Int']>;
+  status?: Maybe<Scalars['Int']>;
+  url?: Maybe<Scalars['Int']>;
+  user_created?: Maybe<Scalars['Int']>;
+  user_updated?: Maybe<Scalars['Int']>;
+};
+
+export type DApp_Aggregated_Fields = {
+  __typename?: 'dApp_aggregated_fields';
+  id?: Maybe<Scalars['Float']>;
+  index?: Maybe<Scalars['Float']>;
+};
+
+export type DApp_Filter = {
+  _and?: InputMaybe<Array<InputMaybe<DApp_Filter>>>;
+  _or?: InputMaybe<Array<InputMaybe<DApp_Filter>>>;
+  date_created?: InputMaybe<Date_Filter_Operators>;
+  date_created_func?: InputMaybe<Datetime_Function_Filter_Operators>;
+  date_updated?: InputMaybe<Date_Filter_Operators>;
+  date_updated_func?: InputMaybe<Datetime_Function_Filter_Operators>;
+  id?: InputMaybe<Number_Filter_Operators>;
+  index?: InputMaybe<Number_Filter_Operators>;
+  logo?: InputMaybe<Directus_Files_Filter>;
+  name?: InputMaybe<String_Filter_Operators>;
+  status?: InputMaybe<String_Filter_Operators>;
+  url?: InputMaybe<String_Filter_Operators>;
+  user_created?: InputMaybe<String_Filter_Operators>;
+  user_updated?: InputMaybe<String_Filter_Operators>;
 };
 
 export type Date_Filter_Operators = {
@@ -809,135 +1104,6 @@ export type Datetime_Functions = {
   week?: Maybe<Scalars['Int']>;
   weekday?: Maybe<Scalars['Int']>;
   year?: Maybe<Scalars['Int']>;
-};
-
-export type DeviceBrand = {
-  __typename?: 'deviceBrand';
-  date_created?: Maybe<Scalars['Date']>;
-  date_created_func?: Maybe<Datetime_Functions>;
-  date_updated?: Maybe<Scalars['Date']>;
-  date_updated_func?: Maybe<Datetime_Functions>;
-  id: Scalars['ID'];
-  label?: Maybe<Scalars['String']>;
-  sort?: Maybe<Scalars['Int']>;
-  status?: Maybe<Scalars['String']>;
-  user_created?: Maybe<Scalars['String']>;
-  user_updated?: Maybe<Scalars['String']>;
-  value?: Maybe<Scalars['String']>;
-};
-
-export type DeviceBrand_Aggregated = {
-  __typename?: 'deviceBrand_aggregated';
-  avg?: Maybe<DeviceBrand_Aggregated_Fields>;
-  avgDistinct?: Maybe<DeviceBrand_Aggregated_Fields>;
-  count?: Maybe<DeviceBrand_Aggregated_Count>;
-  countAll?: Maybe<Scalars['Int']>;
-  countDistinct?: Maybe<DeviceBrand_Aggregated_Count>;
-  group?: Maybe<Scalars['JSON']>;
-  max?: Maybe<DeviceBrand_Aggregated_Fields>;
-  min?: Maybe<DeviceBrand_Aggregated_Fields>;
-  sum?: Maybe<DeviceBrand_Aggregated_Fields>;
-  sumDistinct?: Maybe<DeviceBrand_Aggregated_Fields>;
-};
-
-export type DeviceBrand_Aggregated_Count = {
-  __typename?: 'deviceBrand_aggregated_count';
-  date_created?: Maybe<Scalars['Int']>;
-  date_updated?: Maybe<Scalars['Int']>;
-  id?: Maybe<Scalars['Int']>;
-  label?: Maybe<Scalars['Int']>;
-  sort?: Maybe<Scalars['Int']>;
-  status?: Maybe<Scalars['Int']>;
-  user_created?: Maybe<Scalars['Int']>;
-  user_updated?: Maybe<Scalars['Int']>;
-  value?: Maybe<Scalars['Int']>;
-};
-
-export type DeviceBrand_Aggregated_Fields = {
-  __typename?: 'deviceBrand_aggregated_fields';
-  id?: Maybe<Scalars['Float']>;
-  sort?: Maybe<Scalars['Float']>;
-};
-
-export type DeviceBrand_Filter = {
-  _and?: InputMaybe<Array<InputMaybe<DeviceBrand_Filter>>>;
-  _or?: InputMaybe<Array<InputMaybe<DeviceBrand_Filter>>>;
-  date_created?: InputMaybe<Date_Filter_Operators>;
-  date_created_func?: InputMaybe<Datetime_Function_Filter_Operators>;
-  date_updated?: InputMaybe<Date_Filter_Operators>;
-  date_updated_func?: InputMaybe<Datetime_Function_Filter_Operators>;
-  id?: InputMaybe<Number_Filter_Operators>;
-  label?: InputMaybe<String_Filter_Operators>;
-  sort?: InputMaybe<Number_Filter_Operators>;
-  status?: InputMaybe<String_Filter_Operators>;
-  user_created?: InputMaybe<String_Filter_Operators>;
-  user_updated?: InputMaybe<String_Filter_Operators>;
-  value?: InputMaybe<String_Filter_Operators>;
-};
-
-export type DeviceType = {
-  __typename?: 'deviceType';
-  date_created?: Maybe<Scalars['Date']>;
-  date_created_func?: Maybe<Datetime_Functions>;
-  date_updated?: Maybe<Scalars['Date']>;
-  date_updated_func?: Maybe<Datetime_Functions>;
-  id: Scalars['ID'];
-  label?: Maybe<Scalars['String']>;
-  sort?: Maybe<Scalars['Int']>;
-  status?: Maybe<Scalars['String']>;
-  user_created?: Maybe<Scalars['String']>;
-  user_updated?: Maybe<Scalars['String']>;
-  value?: Maybe<Scalars['Int']>;
-};
-
-export type DeviceType_Aggregated = {
-  __typename?: 'deviceType_aggregated';
-  avg?: Maybe<DeviceType_Aggregated_Fields>;
-  avgDistinct?: Maybe<DeviceType_Aggregated_Fields>;
-  count?: Maybe<DeviceType_Aggregated_Count>;
-  countAll?: Maybe<Scalars['Int']>;
-  countDistinct?: Maybe<DeviceType_Aggregated_Count>;
-  group?: Maybe<Scalars['JSON']>;
-  max?: Maybe<DeviceType_Aggregated_Fields>;
-  min?: Maybe<DeviceType_Aggregated_Fields>;
-  sum?: Maybe<DeviceType_Aggregated_Fields>;
-  sumDistinct?: Maybe<DeviceType_Aggregated_Fields>;
-};
-
-export type DeviceType_Aggregated_Count = {
-  __typename?: 'deviceType_aggregated_count';
-  date_created?: Maybe<Scalars['Int']>;
-  date_updated?: Maybe<Scalars['Int']>;
-  id?: Maybe<Scalars['Int']>;
-  label?: Maybe<Scalars['Int']>;
-  sort?: Maybe<Scalars['Int']>;
-  status?: Maybe<Scalars['Int']>;
-  user_created?: Maybe<Scalars['Int']>;
-  user_updated?: Maybe<Scalars['Int']>;
-  value?: Maybe<Scalars['Int']>;
-};
-
-export type DeviceType_Aggregated_Fields = {
-  __typename?: 'deviceType_aggregated_fields';
-  id?: Maybe<Scalars['Float']>;
-  sort?: Maybe<Scalars['Float']>;
-  value?: Maybe<Scalars['Float']>;
-};
-
-export type DeviceType_Filter = {
-  _and?: InputMaybe<Array<InputMaybe<DeviceType_Filter>>>;
-  _or?: InputMaybe<Array<InputMaybe<DeviceType_Filter>>>;
-  date_created?: InputMaybe<Date_Filter_Operators>;
-  date_created_func?: InputMaybe<Datetime_Function_Filter_Operators>;
-  date_updated?: InputMaybe<Date_Filter_Operators>;
-  date_updated_func?: InputMaybe<Datetime_Function_Filter_Operators>;
-  id?: InputMaybe<Number_Filter_Operators>;
-  label?: InputMaybe<String_Filter_Operators>;
-  sort?: InputMaybe<Number_Filter_Operators>;
-  status?: InputMaybe<String_Filter_Operators>;
-  user_created?: InputMaybe<String_Filter_Operators>;
-  user_updated?: InputMaybe<String_Filter_Operators>;
-  value?: InputMaybe<Number_Filter_Operators>;
 };
 
 export type Directus_Files = {
@@ -1506,11 +1672,26 @@ export type Entrance_Filter = {
 
 export type Home = {
   __typename?: 'home';
+  dAppList?: Maybe<Array<Maybe<Home_DApp>>>;
+  dAppList_func?: Maybe<Count_Functions>;
+  dAppSectionTitle?: Maybe<Scalars['String']>;
   date_updated?: Maybe<Scalars['Date']>;
   date_updated_func?: Maybe<Datetime_Functions>;
   focusImage?: Maybe<Directus_Files>;
   id: Scalars['ID'];
   user_updated?: Maybe<Scalars['String']>;
+  videoContent?: Maybe<Scalars['String']>;
+  videoTitle?: Maybe<Scalars['String']>;
+  videoUrl?: Maybe<Scalars['String']>;
+};
+
+export type HomeDAppListArgs = {
+  filter?: InputMaybe<Home_DApp_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
 export type HomeFocusImageArgs = {
@@ -1520,6 +1701,83 @@ export type HomeFocusImageArgs = {
   page?: InputMaybe<Scalars['Int']>;
   search?: InputMaybe<Scalars['String']>;
   sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type Home_DApp = {
+  __typename?: 'home_dApp';
+  dApp_id?: Maybe<DApp>;
+  home_id?: Maybe<Home>;
+  id: Scalars['ID'];
+};
+
+export type Home_DAppDApp_IdArgs = {
+  filter?: InputMaybe<DApp_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type Home_DAppHome_IdArgs = {
+  filter?: InputMaybe<Home_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type Home_DApp_Aggregated = {
+  __typename?: 'home_dApp_aggregated';
+  avg?: Maybe<Home_DApp_Aggregated_Fields>;
+  avgDistinct?: Maybe<Home_DApp_Aggregated_Fields>;
+  count?: Maybe<Home_DApp_Aggregated_Count>;
+  countAll?: Maybe<Scalars['Int']>;
+  countDistinct?: Maybe<Home_DApp_Aggregated_Count>;
+  group?: Maybe<Scalars['JSON']>;
+  max?: Maybe<Home_DApp_Aggregated_Fields>;
+  min?: Maybe<Home_DApp_Aggregated_Fields>;
+  sum?: Maybe<Home_DApp_Aggregated_Fields>;
+  sumDistinct?: Maybe<Home_DApp_Aggregated_Fields>;
+};
+
+export type Home_DApp_Aggregated_Count = {
+  __typename?: 'home_dApp_aggregated_count';
+  dApp_id?: Maybe<Scalars['Int']>;
+  home_id?: Maybe<Scalars['Int']>;
+  id?: Maybe<Scalars['Int']>;
+};
+
+export type Home_DApp_Aggregated_Fields = {
+  __typename?: 'home_dApp_aggregated_fields';
+  dApp_id?: Maybe<Scalars['Float']>;
+  home_id?: Maybe<Scalars['Float']>;
+  id?: Maybe<Scalars['Float']>;
+};
+
+export type Home_DApp_Filter = {
+  _and?: InputMaybe<Array<InputMaybe<Home_DApp_Filter>>>;
+  _or?: InputMaybe<Array<InputMaybe<Home_DApp_Filter>>>;
+  dApp_id?: InputMaybe<DApp_Filter>;
+  home_id?: InputMaybe<Home_Filter>;
+  id?: InputMaybe<Number_Filter_Operators>;
+};
+
+export type Home_Filter = {
+  _and?: InputMaybe<Array<InputMaybe<Home_Filter>>>;
+  _or?: InputMaybe<Array<InputMaybe<Home_Filter>>>;
+  dAppList?: InputMaybe<Home_DApp_Filter>;
+  dAppList_func?: InputMaybe<Count_Function_Filter_Operators>;
+  dAppSectionTitle?: InputMaybe<String_Filter_Operators>;
+  date_updated?: InputMaybe<Date_Filter_Operators>;
+  date_updated_func?: InputMaybe<Datetime_Function_Filter_Operators>;
+  focusImage?: InputMaybe<Directus_Files_Filter>;
+  id?: InputMaybe<Number_Filter_Operators>;
+  user_updated?: InputMaybe<String_Filter_Operators>;
+  videoContent?: InputMaybe<String_Filter_Operators>;
+  videoTitle?: InputMaybe<String_Filter_Operators>;
+  videoUrl?: InputMaybe<String_Filter_Operators>;
 };
 
 export type MediaKit = {
@@ -1561,12 +1819,17 @@ export type MediaKitSvgArgs = {
 export type MediaKitPage = {
   __typename?: 'mediaKitPage';
   allMediaKitZip?: Maybe<Directus_Files>;
+  boilerplateContent?: Maybe<Scalars['String']>;
+  boilerplateList?: Maybe<Array<Maybe<MediaKitPage_Boilerplate>>>;
+  boilerplateList_func?: Maybe<Count_Functions>;
+  boilerplateTitle?: Maybe<Scalars['String']>;
   content: Scalars['String'];
   date_created?: Maybe<Scalars['Date']>;
   date_created_func?: Maybe<Datetime_Functions>;
   date_updated?: Maybe<Scalars['Date']>;
   date_updated_func?: Maybe<Datetime_Functions>;
   id: Scalars['ID'];
+  mediaKitDescription?: Maybe<Scalars['String']>;
   mediaKitList?: Maybe<Array<Maybe<MediaKitPage_MediaKit>>>;
   mediaKitList_func?: Maybe<Count_Functions>;
   status?: Maybe<Scalars['String']>;
@@ -1584,6 +1847,15 @@ export type MediaKitPageAllMediaKitZipArgs = {
   sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
+export type MediaKitPageBoilerplateListArgs = {
+  filter?: InputMaybe<MediaKitPage_Boilerplate_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
 export type MediaKitPageMediaKitListArgs = {
   filter?: InputMaybe<MediaKitPage_MediaKit_Filter>;
   limit?: InputMaybe<Scalars['Int']>;
@@ -1593,16 +1865,82 @@ export type MediaKitPageMediaKitListArgs = {
   sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
+export type MediaKitPage_Boilerplate = {
+  __typename?: 'mediaKitPage_boilerplate';
+  boilerplate_id?: Maybe<Boilerplate>;
+  id: Scalars['ID'];
+  mediaKitPage_id?: Maybe<MediaKitPage>;
+};
+
+export type MediaKitPage_BoilerplateBoilerplate_IdArgs = {
+  filter?: InputMaybe<Boilerplate_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type MediaKitPage_BoilerplateMediaKitPage_IdArgs = {
+  filter?: InputMaybe<MediaKitPage_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type MediaKitPage_Boilerplate_Aggregated = {
+  __typename?: 'mediaKitPage_boilerplate_aggregated';
+  avg?: Maybe<MediaKitPage_Boilerplate_Aggregated_Fields>;
+  avgDistinct?: Maybe<MediaKitPage_Boilerplate_Aggregated_Fields>;
+  count?: Maybe<MediaKitPage_Boilerplate_Aggregated_Count>;
+  countAll?: Maybe<Scalars['Int']>;
+  countDistinct?: Maybe<MediaKitPage_Boilerplate_Aggregated_Count>;
+  group?: Maybe<Scalars['JSON']>;
+  max?: Maybe<MediaKitPage_Boilerplate_Aggregated_Fields>;
+  min?: Maybe<MediaKitPage_Boilerplate_Aggregated_Fields>;
+  sum?: Maybe<MediaKitPage_Boilerplate_Aggregated_Fields>;
+  sumDistinct?: Maybe<MediaKitPage_Boilerplate_Aggregated_Fields>;
+};
+
+export type MediaKitPage_Boilerplate_Aggregated_Count = {
+  __typename?: 'mediaKitPage_boilerplate_aggregated_count';
+  boilerplate_id?: Maybe<Scalars['Int']>;
+  id?: Maybe<Scalars['Int']>;
+  mediaKitPage_id?: Maybe<Scalars['Int']>;
+};
+
+export type MediaKitPage_Boilerplate_Aggregated_Fields = {
+  __typename?: 'mediaKitPage_boilerplate_aggregated_fields';
+  boilerplate_id?: Maybe<Scalars['Float']>;
+  id?: Maybe<Scalars['Float']>;
+  mediaKitPage_id?: Maybe<Scalars['Float']>;
+};
+
+export type MediaKitPage_Boilerplate_Filter = {
+  _and?: InputMaybe<Array<InputMaybe<MediaKitPage_Boilerplate_Filter>>>;
+  _or?: InputMaybe<Array<InputMaybe<MediaKitPage_Boilerplate_Filter>>>;
+  boilerplate_id?: InputMaybe<Boilerplate_Filter>;
+  id?: InputMaybe<Number_Filter_Operators>;
+  mediaKitPage_id?: InputMaybe<MediaKitPage_Filter>;
+};
+
 export type MediaKitPage_Filter = {
   _and?: InputMaybe<Array<InputMaybe<MediaKitPage_Filter>>>;
   _or?: InputMaybe<Array<InputMaybe<MediaKitPage_Filter>>>;
   allMediaKitZip?: InputMaybe<Directus_Files_Filter>;
+  boilerplateContent?: InputMaybe<String_Filter_Operators>;
+  boilerplateList?: InputMaybe<MediaKitPage_Boilerplate_Filter>;
+  boilerplateList_func?: InputMaybe<Count_Function_Filter_Operators>;
+  boilerplateTitle?: InputMaybe<String_Filter_Operators>;
   content?: InputMaybe<String_Filter_Operators>;
   date_created?: InputMaybe<Date_Filter_Operators>;
   date_created_func?: InputMaybe<Datetime_Function_Filter_Operators>;
   date_updated?: InputMaybe<Date_Filter_Operators>;
   date_updated_func?: InputMaybe<Datetime_Function_Filter_Operators>;
   id?: InputMaybe<Number_Filter_Operators>;
+  mediaKitDescription?: InputMaybe<String_Filter_Operators>;
   mediaKitList?: InputMaybe<MediaKitPage_MediaKit_Filter>;
   mediaKitList_func?: InputMaybe<Count_Function_Filter_Operators>;
   status?: InputMaybe<String_Filter_Operators>;
@@ -1962,6 +2300,21 @@ export type RememberMeBlackListSites_Filter = {
   url?: InputMaybe<String_Filter_Operators>;
   user_created?: InputMaybe<String_Filter_Operators>;
   user_updated?: InputMaybe<String_Filter_Operators>;
+};
+
+export type ServiceSuspension = {
+  __typename?: 'serviceSuspension';
+  androidUrl?: Maybe<Scalars['String']>;
+  date_created?: Maybe<Scalars['Date']>;
+  date_created_func?: Maybe<Datetime_Functions>;
+  date_updated?: Maybe<Scalars['Date']>;
+  date_updated_func?: Maybe<Datetime_Functions>;
+  extensionUrl?: Maybe<Scalars['String']>;
+  iOSUrl?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  isSuspended?: Maybe<Scalars['Boolean']>;
+  user_created?: Maybe<Scalars['String']>;
+  user_updated?: Maybe<Scalars['String']>;
 };
 
 export type SocialMedia = {

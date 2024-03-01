@@ -3,8 +3,8 @@
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   },
-  "name": "Portkey Wallet: Crypto & Games",
-  "version": "1.4.9",
+  "name": "Portkey Wallet",
+  "version": "1.7.0",
   "description": "A User-Friendly and Secure AA Wallet for Asset Management and Web3 Experience",
   "icons": {
     "16": "assets/images/extension_logo.png",
@@ -16,7 +16,7 @@
   },
   "action": {
     "default_icon": "assets/images/extension_logo.png",
-    "default_title": "Portkey Wallet: Crypto & Games",
+    "default_title": "Portkey Wallet",
     "default_popup": "popup.html"
   },
   "sandbox": {
@@ -39,7 +39,7 @@
       "run_at": "document_end"
     }
   ],
-  "permissions": ["storage", "unlimitedStorage", "tabs", "alarms"],
+  "permissions": ["storage", "unlimitedStorage", "tabs", "alarms", "gcm"],
   "host_permissions": ["http://*/*", "https://*/*"],
   "web_accessible_resources": [
     {

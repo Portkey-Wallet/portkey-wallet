@@ -5,7 +5,7 @@ export const enum CUSTOM_EVENT_ENUM {
 }
 
 export const enum NETWORK_TYPE {
-  MAIN = 'main',
+  MAINNET = 'main',
   TESTNET = 'testnet',
 }
 

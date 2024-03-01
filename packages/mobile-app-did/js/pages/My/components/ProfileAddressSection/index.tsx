@@ -1,5 +1,5 @@
 import { AELF_CHIAN_TYPE } from '@portkey-wallet/constants/constants-ca/activity';
-import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ChainId, ChainType } from '@portkey-wallet/types';
 import { addressFormat, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { transNetworkTextWithAllChain } from '@portkey-wallet/utils/activity';
@@ -33,7 +33,7 @@ type ProfileAddressSectionPropsType = {
 
 const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props => {
   const { title = 'Address', disable, noMarginTop, addressList: addressListProps, isMySelf } = props;
-  const isTestnet = useIsTestnet();
+  const isMainnet = useIsMainnet();
 
   const copyId = useCallback(
     (ele: addressItemType) =>
@@ -68,7 +68,7 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
           </View>
           <View style={GStyles.flexRow}>
             {isMySelf ? (
-              <Svg icon={isTestnet ? 'testnet' : 'mainnet'} size={pTd(16)} />
+              <Svg icon={isMainnet ? 'mainnet' : 'testnet'} size={pTd(16)} />
             ) : (
               <Image
                 source={{
@@ -78,7 +78,7 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
               />
             )}
             <TextS style={[FontStyles.font3, GStyles.marginLeft(pTd(8))]}>
-              {transNetworkTextWithAllChain(ele.chainId, isTestnet, ele.chainName || 'aelf')}
+              {transNetworkTextWithAllChain(ele.chainId, !isMainnet, ele.chainName || 'aelf')}
             </TextS>
           </View>
         </View>

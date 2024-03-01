@@ -8,7 +8,7 @@ import {
   IEntrance,
 } from '@portkey-wallet/types/types-ca/cms';
 import BigNumber from 'bignumber.js';
-import { getEntrance as getEntranceGraphQL } from '@portkey-wallet/graphql/cms/queries';
+import { getEntrance as getEntranceGraphQL, getCodePushControl } from '@portkey-wallet/graphql/cms/queries';
 import { NetworkType } from '@portkey-wallet/types';
 
 const createEntranceMatchRule = (type: IEntranceMatchRuleType, params: string): any => {
@@ -28,6 +28,8 @@ export const DEFAULT_ENTRANCE_SHOW: IEntrance = {
   buy: false,
   sell: false,
   bridge: false,
+  eTransDeposit: false,
+  eTransWithdraw: false,
 };
 
 export const generateEntranceShow = async (
@@ -111,4 +113,28 @@ export const getEntrance = async (networkType: NetworkType) => {
     return result.data.entrance;
   }
   throw new Error('getEntrance error');
+};
+
+export const getCmsCodePoshControl = async ({
+  version,
+  label,
+  networkType,
+  isIOS,
+}: {
+  version: string;
+  label: string;
+  networkType: NetworkType;
+  isIOS: boolean;
+}) => {
+  const result = await getCodePushControl(networkType, {
+    filter: {
+      _and: [{ label: { _icontains: label } }, { label: { _icontains: isIOS ? 'iOS' : 'android' } }],
+      version: { _eq: version },
+      status: { _eq: 'published' },
+    },
+  });
+
+  if (!result?.data?.codePushControl?.[0]) throw new Error('getCmsCodePoshControl error');
+
+  return result?.data?.codePushControl?.[0];
 };

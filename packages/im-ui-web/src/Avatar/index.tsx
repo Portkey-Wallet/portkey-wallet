@@ -1,17 +1,16 @@
 import clsx from 'clsx';
 import { useMemo, useState } from 'react';
 import { IAvatarProps } from '../type';
+import CustomSvg, { SvgType } from '../components/CustomSvg';
 import './index.less';
-import { ChannelTypeEnum } from '@portkey-wallet/im/types';
-import CustomSvg from '../components/CustomSvg';
 
 const Avatar: React.FC<IAvatarProps> = ({
   src,
-  showLetter = false,
-  letter,
+  svgSrc,
+  isGroupAvatar = false,
+  letter = '',
   alt = 'img',
   className,
-  channelType,
   avatarSize = 'default',
   onClick,
 }) => {
@@ -20,14 +19,20 @@ const Avatar: React.FC<IAvatarProps> = ({
   const renderGroupAvatar = useMemo(
     () => (
       <>
-        {src && !isError ? (
-          <img
-            alt={alt}
-            src={src}
-            className="avatar-group-img"
-            onError={() => setIsError(true)}
-            onLoad={() => setIsError(false)}
-          />
+        {(src || svgSrc) && !isError ? (
+          svgSrc ? (
+            <div className="avatar-group-svg">
+              <CustomSvg type={svgSrc as SvgType} />
+            </div>
+          ) : (
+            <img
+              alt={alt}
+              src={src}
+              className="avatar-group-img"
+              onError={() => setIsError(true)}
+              onLoad={() => setIsError(false)}
+            />
+          )
         ) : (
           <div className="flex-center avatar-group-default">
             <CustomSvg type="GroupAvatar" className="group-avatar-icon" />
@@ -36,32 +41,36 @@ const Avatar: React.FC<IAvatarProps> = ({
         <CustomSvg type="GroupAvatar" className="flex-center avatar-group-badge" />
       </>
     ),
-    [alt, isError, src],
+    [alt, isError, src, svgSrc],
   );
   const renderAvatar = useMemo(
     () => (
       <>
-        {showLetter ? (
-          <div className="avatar-letter flex-center">{letter || 'A'}</div>
-        ) : src && !isError ? (
-          <img
-            alt={alt}
-            src={src}
-            className="avatar-img"
-            onError={() => setIsError(true)}
-            onLoad={() => setIsError(false)}
-          />
+        {(src || svgSrc) && !isError ? (
+          svgSrc ? (
+            <div className="avatar-svg">
+              <CustomSvg type={svgSrc as SvgType} />
+            </div>
+          ) : (
+            <img
+              alt={alt}
+              src={src}
+              className="avatar-img"
+              onError={() => setIsError(true)}
+              onLoad={() => setIsError(false)}
+            />
+          )
         ) : (
-          <div className="avatar-letter flex-center">{letter || 'A'}</div>
+          <div className="avatar-letter flex-center">{letter.substring(0, 1).toUpperCase() || 'A'}</div>
         )}
       </>
     ),
-    [alt, isError, letter, showLetter, src],
+    [alt, isError, letter, src, svgSrc],
   );
 
   return (
     <div className={clsx('portkey-avatar-container', className, `portkey-avatar-${avatarSize}`)} onClick={onClick}>
-      {channelType === ChannelTypeEnum.GROUP ? renderGroupAvatar : renderAvatar}
+      {isGroupAvatar ? renderGroupAvatar : renderAvatar}
     </div>
   );
 };

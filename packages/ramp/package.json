@@ -1,0 +1,17 @@
+{
+  "name": "@portkey-wallet/ramp",
+  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "1.0.0",
+  "type": "commonjs",
+  "scripts": {
+    "test": "node ./__tests__/@portkey-wallet/ramp.test.js"
+  },
+  "dependencies": {
+    "@portkey-wallet/api": "^1.3.0",
+    "@portkey-wallet/types": "^1.3.0",
+    "@portkey-wallet/utils": "^1.3.0"
+  }
+}

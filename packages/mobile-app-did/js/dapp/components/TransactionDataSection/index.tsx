@@ -8,7 +8,8 @@ import Svg from 'components/Svg';
 import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import Touchable from 'components/Touchable';
-
+import Collapsible from 'components/Collapsible';
+import { showValueToStr } from '@portkey-wallet/utils/byteConversion';
 type TransactionDataSectionType = {
   dataInfo: { [key: string]: any } | string;
   style?: ViewStyle;
@@ -17,12 +18,12 @@ type TransactionDataSectionType = {
 export const TransactionDataSection = (props: TransactionDataSectionType) => {
   const { dataInfo, style = {} } = props;
 
-  const [collapsed, setCollapsed] = useState<boolean>(true);
+  const [collapsed, setCollapsed] = useState<boolean>(false);
 
   const TopSection = useMemo(
     () => (
       <Touchable style={styles.topSection} onPress={() => setCollapsed(pre => !pre)}>
-        <TextM style={[FontStyles.font5, fonts.mediumFont]}>Data</TextM>
+        <TextM style={[FontStyles.font5, fonts.mediumFont]}>Message</TextM>
         <Svg size={pTd(20)} icon={collapsed ? 'down-arrow' : 'up-arrow'} />
       </Touchable>
     ),
@@ -40,13 +41,13 @@ export const TransactionDataSection = (props: TransactionDataSectionType) => {
       return Object.entries(dataInfo).map(([key, value], index) => (
         <View key={index} style={styles.dataInfoGroup}>
           <TextM style={FontStyles.font5}>{key}</TextM>
-          <TextS style={[FontStyles.font3, styles.dataValue]}>{JSON.stringify(value)}</TextS>
+          <TextS style={[FontStyles.font3, styles.dataValue]}>{showValueToStr(value)}</TextS>
         </View>
       ));
     } else {
       return (
         <View style={styles.dataInfoGroup}>
-          <TextS style={[FontStyles.font3, styles.dataValue]}>{JSON.stringify(dataInfo)}</TextS>
+          <TextS style={[FontStyles.font3, styles.dataValue]}>{showValueToStr(dataInfo)}</TextS>
         </View>
       );
     }
@@ -55,7 +56,7 @@ export const TransactionDataSection = (props: TransactionDataSectionType) => {
   return (
     <View style={[styles.card, style]}>
       {TopSection}
-      {!collapsed && DataSection}
+      <Collapsible collapsed={collapsed}>{DataSection}</Collapsible>
     </View>
   );
 };
@@ -77,6 +78,7 @@ const styles = StyleSheet.create({
     ...GStyles.paddingArg(16),
   },
   dataInfoGroup: {
+    flex: 1,
     marginBottom: pTd(16),
     ...GStyles.paddingArg(0, 16),
   },

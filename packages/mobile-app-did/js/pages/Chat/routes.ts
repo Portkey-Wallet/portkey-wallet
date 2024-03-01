@@ -14,12 +14,45 @@ import AddMembersPage from './AddMembersPage';
 import RemoveMembersPage from './RemoveMembersPage';
 import ChatQrCodePage from './ChatQrCodePage';
 import ChatGroupQrCodePage from './ChatGroupQrCodePage';
+import SendPacketP2PPage from './SendPacketP2PPage';
+import SendPacketGroupPage from './SendPacketGroupPage';
+import RedPacketDetails from './RedPacketDetailsPage';
+import { Animated } from 'react-native';
+import SelectGroupMembersToTransferPage from './SelectGroupMembersToTransferPage';
+
+const RedPacketDetailsPageOptions = {
+  transitionSpec: {
+    open: {
+      animation: 'timing',
+      config: {
+        duration: 0,
+      } as Animated.TimingAnimationConfig,
+    },
+    close: {
+      animation: 'spring',
+      config: {
+        stiffness: 1000,
+        damping: 500,
+        mass: 3,
+        overshootClamping: true,
+        restDisplacementThreshold: 0.01,
+        restSpeedThreshold: 0.01,
+      },
+    },
+  },
+};
 
 const stackNav = [
   { name: 'ChatHomePage', component: ChatHomePage },
   { name: 'ChatCameraPage', component: ChatCameraPage },
-  { name: 'ChatDetailsPage', component: ChatDetailsPage },
-  { name: 'ChatGroupDetailsPage', component: ChatGroupDetailsPage },
+  {
+    name: 'ChatDetailsPage',
+    component: ChatDetailsPage,
+  },
+  {
+    name: 'ChatGroupDetailsPage',
+    component: ChatGroupDetailsPage,
+  },
   { name: 'CreateGroupPage', component: CreateGroupPage },
   { name: 'SearchPeoplePage', component: SearchPeoplePage },
   { name: 'NewChatHomePage', component: NewChatHomePage },
@@ -32,6 +65,14 @@ const stackNav = [
   { name: 'RemoveMembersPage', component: RemoveMembersPage },
   { name: 'ChatQrCodePage', component: ChatQrCodePage },
   { name: 'ChatGroupQrCodePage', component: ChatGroupQrCodePage },
+  { name: 'SendPacketP2PPage', component: SendPacketP2PPage },
+  { name: 'SendPacketGroupPage', component: SendPacketGroupPage },
+  {
+    name: 'RedPacketDetails',
+    component: RedPacketDetails,
+    options: RedPacketDetailsPageOptions,
+  },
+  { name: 'SelectGroupMembersToTransferPage', component: SelectGroupMembersToTransferPage },
 ] as const;
 
 export default stackNav;

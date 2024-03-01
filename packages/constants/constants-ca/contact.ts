@@ -16,13 +16,19 @@ export const CONTACT_PRIVACY_TYPE_LABEL_MAP: { [key in LoginType]: string } = {
   [LoginType.Phone]: 'Phone Number',
   [LoginType.Apple]: 'Apple ID',
   [LoginType.Google]: 'Google Account',
+  [LoginType.Telegram]: 'Telegram Account',
+  [LoginType.Facebook]: 'Facebook Account',
+  [LoginType.Twitter]: 'Twitter Account',
 };
 
 export const CONTACT_PRIVACY_TYPE_LOWER_LABEL_MAP: { [key in LoginType]: string } = {
   [LoginType.Email]: 'Email',
-  [LoginType.Phone]: 'phone number',
+  [LoginType.Phone]: 'Phone number',
   [LoginType.Apple]: 'Apple ID',
   [LoginType.Google]: 'Google Account',
+  [LoginType.Telegram]: 'Telegram Account',
+  [LoginType.Facebook]: 'Facebook Account',
+  [LoginType.Twitter]: 'Twitter Account',
 };
 
 export const CONTACT_PERMISSION_LIST = [

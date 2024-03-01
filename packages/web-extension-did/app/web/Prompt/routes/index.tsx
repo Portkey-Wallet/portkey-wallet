@@ -7,12 +7,12 @@ import SuccessPage from 'pages/SuccessPage';
 import GuardianApproval from 'pages/GuardianApproval';
 import Unlock from 'pages/Unlock';
 import QueryPage from 'pages/QueryPage';
-import TestSocket from 'pages/TestSocket';
 import ConfirmPin from 'pages/AccountSetting/ConfirmPin';
 import NotFound from 'pages/NotFound';
-import Example from 'pages/Example';
-import SignUpUI from 'pages/Example/SignUpUI';
-import Login from 'pages/Example/login';
+// import Example from 'pages/Example';
+// import SignUpUI from 'pages/Example/SignUpUI';
+// import Login from 'pages/Example/login';
+// import TestSocket from 'pages/TestSocket';
 import Home from 'pages/Home';
 import AddGuardian from 'pages/Guardians/GuardiansAdd';
 import GuardiansEdit from 'pages/Guardians/GuardiansEdit';
@@ -152,24 +152,24 @@ export const PageRouter = () => {
       path: '/permission',
       element: <Permission />,
     },
-    {
-      path: '/test',
-      element: <Example />,
-    },
-    {
-      path: '/test/example-SignUpUI',
-      element: <SignUpUI />,
-    },
+    // {
+    //   path: '/test',
+    //   element: <Example />,
+    // },
+    // {
+    //   path: '/test/example-SignUpUI',
+    //   element: <SignUpUI />,
+    // },
 
-    {
-      path: '/test/example-login',
-      element: <Login />,
-    },
+    // {
+    //   path: '/test/example-login',
+    //   element: <Login />,
+    // },
 
-    {
-      path: '/test/socket',
-      element: <TestSocket />,
-    },
+    // {
+    //   path: '/test/socket',
+    //   element: <TestSocket />,
+    // },
     {
       path: '/connect-wallet',
       element: <ConnectWallet />,

@@ -1,6 +1,13 @@
-import im, { utils, MessageType, Message, TriggerMessageEventActionEnum, ChannelStatusEnum } from '@portkey-wallet/im';
+import im, {
+  MessageType,
+  Message,
+  TriggerMessageEventActionEnum,
+  ChannelStatusEnum,
+  MessageTypeEnum,
+  RedPackageStatusEnum,
+} from '@portkey-wallet/im';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { randomId } from '@portkey-wallet/utils';
+import { sleep } from '@portkey-wallet/utils';
 import { MESSAGE_LIST_LIMIT, SEARCH_CHANNEL_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
 
 import { useCurrentNetworkInfo } from '../network';
@@ -22,6 +29,9 @@ import { request } from '@portkey-wallet/api/api-did';
 import { useWallet } from '../wallet';
 import { IMServiceCommon, SendMessageResult } from '@portkey-wallet/im/types/service';
 import useLockCallback from '../../useLockCallback';
+import { useIMPin } from './pin';
+import { getSendUuid } from '@portkey-wallet/utils/chat';
+import { PIN_OPERATION_TYPE_ENUM } from '@portkey-wallet/im/types/pin';
 
 export type ImageMessageFileType = {
   body: string | File;
@@ -77,15 +87,16 @@ export const useSendChannelMessage = () => {
           throw new Error('No user info');
         }
       }
-      const uuid = randomId();
+
       return im.service.sendMessage({
         channelUuid: channelId,
         toRelationId,
         type,
         content,
-        sendUuid: `${_relationId}-${toRelationId}-${Date.now()}-${uuid}`,
+        sendUuid: getSendUuid(_relationId, toRelationId || ''),
       });
     },
+
     [getRelationId, relationId],
   );
 
@@ -129,7 +140,17 @@ export const useSendChannelMessage = () => {
   );
 
   const sendChannelMessage = useCallback(
-    async (channelId: string, content: string, type = 'TEXT' as MessageType) => {
+    async ({
+      channelId,
+      content,
+      type = 'TEXT',
+      quoteMessage: _quoteMessage,
+    }: {
+      channelId: string;
+      content: string;
+      type?: MessageType;
+      quoteMessage?: Message;
+    }) => {
       let _relationId = relationId;
       if (!_relationId) {
         try {
@@ -138,12 +159,13 @@ export const useSendChannelMessage = () => {
           throw new Error('No user info');
         }
       }
-      const uuid = randomId();
+      const quoteMessage = _quoteMessage ? { ..._quoteMessage } : undefined;
       const msgParams = {
         channelUuid: channelId,
         type,
         content,
-        sendUuid: `${_relationId}-${channelId}-${Date.now()}-${uuid}`,
+        sendUuid: getSendUuid(_relationId, channelId),
+        quoteId: quoteMessage?.id,
       };
 
       const msgObj: Message = messageParser({
@@ -153,6 +175,8 @@ export const useSendChannelMessage = () => {
         fromName: walletName,
         createAt: `${Date.now()}`,
       });
+      msgObj.quote = quoteMessage;
+
       dispatch(
         addChannelMessage({
           network: networkType,
@@ -169,7 +193,7 @@ export const useSendChannelMessage = () => {
             channelId: channelId,
             value: {
               lastMessageType: msgObj.type,
-              lastMessageContent: msgObj.content,
+              lastMessageContent: msgObj.parsedContent,
               lastPostAt: msgObj.createAt,
             },
           }),
@@ -192,7 +216,15 @@ export const useSendChannelMessage = () => {
     [dispatch, getRelationId, networkType, relationId, walletName],
   );
   const sendChannelImageByS3Result = useCallback(
-    async (channelId: string, s3Result: UploadFileType & ImageMessageFileType) => {
+    async ({
+      channelId,
+      s3Result,
+      quoteMessage,
+    }: {
+      channelId: string;
+      s3Result: UploadFileType & ImageMessageFileType;
+      quoteMessage?: Message;
+    }) => {
       try {
         const { thumbWidth, thumbHeight } = getThumbSize(s3Result.width, s3Result.height);
 
@@ -219,7 +251,12 @@ export const useSendChannelMessage = () => {
 
         const content = `type:image;action:localImage;p1(Text):${p1Url},p2(Text):${p1Key},p3(Text):${p2Url},p4(Text):${p2Key},p5(Text):${s3Result.width},p6(Text):${s3Result.height}`;
 
-        return sendChannelMessage(channelId, content, 'IMAGE');
+        return sendChannelMessage({
+          channelId,
+          content,
+          type: 'IMAGE',
+          quoteMessage,
+        });
       } catch (error) {
         console.log('sendChannelImage: error', error);
         throw error;
@@ -228,13 +265,25 @@ export const useSendChannelMessage = () => {
     [sendChannelMessage],
   );
   const sendChannelImage = useCallback(
-    async (channelId: string, file: ImageMessageFileType) => {
+    async ({
+      channelId,
+      file,
+      quoteMessage,
+    }: {
+      channelId: string;
+      file: ImageMessageFileType;
+      quoteMessage?: Message;
+    }) => {
       try {
         const s3Result = await s3Instance.uploadFile({
           body: file.body,
           suffix: file.suffix,
         });
-        await sendChannelImageByS3Result(channelId, { ...s3Result, ...file });
+        await sendChannelImageByS3Result({
+          channelId,
+          s3Result: { ...s3Result, ...file },
+          quoteMessage,
+        });
         return s3Result;
       } catch (error) {
         console.log('sendChannelImage: error', error);
@@ -256,11 +305,13 @@ export const useSendChannelMessage = () => {
 export const useDeleteMessage = (channelId: string) => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
+  const { refresh: refreshPin, addMockPinSysMessage } = useIMPin(channelId);
 
   const list = useCurrentChannelMessageList(channelId);
   const listRef = useLatestRef(list);
   return useCallback(
-    async (id?: string) => {
+    async (message: Message) => {
+      const { id } = message;
       if (!id) {
         throw new Error('no message id');
       }
@@ -294,7 +345,7 @@ export const useDeleteMessage = (channelId: string) => {
                 channelId: channelId,
                 value: {
                   lastMessageType: nextMsg.type,
-                  lastMessageContent: nextMsg.content,
+                  lastMessageContent: nextMsg.parsedContent,
                 },
               }),
             );
@@ -307,12 +358,17 @@ export const useDeleteMessage = (channelId: string) => {
             id,
           }),
         );
+
+        if (message.pinInfo) {
+          refreshPin();
+          addMockPinSysMessage(PIN_OPERATION_TYPE_ENUM.UnPin, message);
+        }
       } catch (error) {
         console.log('deleteMessage: error', error);
         throw error;
       }
     },
-    [channelId, dispatch, listRef, networkType],
+    [addMockPinSysMessage, channelId, dispatch, listRef, networkType, refreshPin],
   );
 };
 
@@ -331,6 +387,20 @@ export const useChannelMessageList = (channelId: string) => {
         const list = listRef.current;
         const lastMsg = list[0];
         maxCreateAt = lastMsg?.createAt ? Number(lastMsg?.createAt) : Date.now();
+      } else {
+        im.service.readMessage({ channelUuid: channelId, total: 9999 }).then(async () => {
+          await sleep(500);
+          dispatch(
+            updateChannelAttribute({
+              network: networkType,
+              channelId: channelId,
+              value: {
+                unreadMessageCount: 0,
+              },
+            }),
+          );
+          im.refreshMessageCount();
+        });
       }
 
       setLoading(true);
@@ -344,7 +414,7 @@ export const useChannelMessageList = (channelId: string) => {
         const hasNextValue = length >= MESSAGE_LIST_LIMIT;
         setHasNext(hasNextValue);
 
-        const list: Message[] = result.data.map((item: any) => utils.messageParser(item));
+        const list: Message[] = result.data.map((item: any) => messageParser(item));
         if (isInit) {
           dispatch(
             setChannelMessageList({
@@ -353,18 +423,6 @@ export const useChannelMessageList = (channelId: string) => {
               list,
             }),
           );
-          im.service.readMessage({ channelUuid: channelId, total: 9999 }).then(() => {
-            im.refreshMessageCount();
-            dispatch(
-              updateChannelAttribute({
-                network: networkType,
-                channelId: channelId,
-                value: {
-                  unreadMessageCount: 0,
-                },
-              }),
-            );
-          });
         } else {
           dispatch(
             nextChannelMessageList({
@@ -411,6 +469,8 @@ export const useChannel = (channelId: string) => {
   const info = useChannelItemInfo(channelId);
   const isStranger = useIsStranger(info?.toRelationId || '');
   const { list, next, hasNext, init, loading } = useChannelMessageList(channelId);
+  const listRef = useRef(list);
+  listRef.current = list;
 
   const connectHandler = useCallback(
     async (e: any) => {
@@ -434,7 +494,13 @@ export const useChannel = (channelId: string) => {
     (e: any) => {
       const rawMsg = e['im-message'];
       if (rawMsg.channelUuid !== channelId) return;
-      const parsedMsg = utils.messageParser(rawMsg);
+      if (listRef.current.findIndex(ele => ele.sendUuid === rawMsg.sendUuid) >= 0) return;
+      const parsedMsg = messageParser(rawMsg);
+      if (parsedMsg.type === MessageTypeEnum.REDPACKAGE_CARD) {
+        parsedMsg.redPackage = {
+          viewStatus: RedPackageStatusEnum.UNOPENED,
+        };
+      }
       dispatch(
         addChannelMessage({
           network: networkType,
@@ -449,7 +515,7 @@ export const useChannel = (channelId: string) => {
           channelId: channelId,
           value: {
             lastMessageType: parsedMsg.type,
-            lastMessageContent: parsedMsg.content,
+            lastMessageContent: parsedMsg.parsedContent,
             lastPostAt: parsedMsg.createAt,
           },
         }),
@@ -499,14 +565,22 @@ export const useChannel = (channelId: string) => {
   const exit = useCallback(async () => hideChannel(channelId), [channelId, hideChannel]);
 
   const sendMessage = useCallback(
-    (content: string, type?: MessageType) => {
-      return sendChannelMessage(channelId, content, type);
+    ({ content, type, quoteMessage }: { content: string; type?: MessageType; quoteMessage?: Message }) => {
+      return sendChannelMessage({
+        channelId,
+        content,
+        type,
+        quoteMessage,
+      });
     },
     [channelId, sendChannelMessage],
   );
   const sendImage = useCallback(
     (file: ImageMessageFileType) => {
-      return sendChannelImage(channelId, file);
+      return sendChannelImage({
+        channelId,
+        file,
+      });
     },
     [channelId, sendChannelImage],
   );

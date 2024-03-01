@@ -4,26 +4,25 @@ import { AmountSign, formatWithCommas, formatStr2EllipsisStr } from '@portkey-wa
 import { List } from 'antd-mobile';
 import CustomSvg from 'components/CustomSvg';
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigateState } from 'hooks/router';
 import './index.less';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
-import { useIsTestnet } from 'hooks/useNetwork';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { Button, Modal } from 'antd';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { dateFormatTransTo13 } from 'utils';
 import { useTranslation } from 'react-i18next';
 import { intervalCrossChainTransfer } from 'utils/sandboxUtil/crossChainTransfer';
-import { useAppDispatch, useLoading, useUserInfo } from 'store/Provider/hooks';
+import { useAppDispatch, useLoading } from 'store/Provider/hooks';
 import { removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
 import { useCurrentChainList, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import aes from '@portkey-wallet/utils/aes';
 import { addressFormat } from '@portkey-wallet/utils';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ChainId } from '@portkey/provider-types';
+import getSeed from 'utils/getSeed';
+import { ITransactionLocationState } from 'types/router';
 
 export interface IActivityListProps {
   data?: ActivityItemType[];
@@ -34,12 +33,10 @@ export interface IActivityListProps {
 
 export default function ActivityList({ data, chainId, hasMore, loadMore }: IActivityListProps) {
   const activity = useAppCASelector((state) => state.activity);
-  const isTestNet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const { t } = useTranslation();
   const { setLoading } = useLoading();
   const dispatch = useAppDispatch();
-  const { passwordSeed } = useUserInfo();
-  const wallet = useCurrentWalletInfo();
   const chainList = useCurrentChainList();
   useFreshTokenPrice();
   const amountInUsdShow = useAmountInUsdShow();
@@ -49,11 +46,10 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
     return SHOW_FROM_TRANSACTION_TYPES.includes(type) ? 'Transfer' : 'socialRecovery';
   };
 
-  const nav = useNavigate();
-
+  const nav = useNavigateState<ITransactionLocationState>();
   const navToDetail = useCallback(
     (item: ActivityItemType) => {
-      nav('/transaction', { state: { item, chainId, from: chainId ? '' : BalanceTab.ACTIVITY } });
+      nav('/transaction', { state: { item, chainId, previousPage: chainId ? '' : BalanceTab.ACTIVITY } });
     },
     [chainId, nav],
   );
@@ -62,16 +58,20 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
     const { transactionName, isReceived, amount, symbol, nftInfo, decimals } = item;
     const sign = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
     return (
-      <p className="row-1">
-        <span>{transactionName}</span>
-        <span>
-          <span>
-            {nftInfo?.nftId && <span>#{nftInfo.nftId}</span>}
-            {!nftInfo?.nftId && (
-              <span>{`${formatWithCommas({ sign, amount, decimals, digits: 4 })} ${symbol ?? ''}`}</span>
-            )}
-          </span>
+      <p className="row-1 flex-row-between">
+        <span className="row-1-left flex-row-between">
+          <span>{transactionName}</span>
+          {nftInfo?.nftId && <span className="nft-id-show">#{nftInfo.nftId}</span>}
+          {!nftInfo?.nftId && (
+            <span className="amount-show">{`${formatWithCommas({
+              sign,
+              amount,
+              decimals,
+              digits: Number(decimals),
+            })}`}</span>
+          )}
         </span>
+        {!nftInfo?.nftId && symbol && <span className="amount-symbol">{symbol}</span>}
       </p>
     );
   };
@@ -86,24 +86,24 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         <p className="row-2">
           <span>{`From: ${formatStr2EllipsisStr(transFromAddress, [7, 4])}`}</span>
           {nftInfo?.nftId && <span className="nft-name">{formatStr2EllipsisStr(nftInfo.alias)}</span>}
-          {!isTestNet && !nftInfo?.nftId && (
+          {isMainnet && !nftInfo?.nftId && (
             <span>{amountInUsdShow(amount, decimals || defaultToken.decimals, symbol)}</span>
           )}
         </p>
       );
     },
-    [amountInUsdShow, currentNetwork.walletType, defaultToken.decimals, isTestNet],
+    [amountInUsdShow, currentNetwork.walletType, defaultToken.decimals, isMainnet],
   );
 
   const networkUI = useCallback(
     (item: ActivityItemType) => {
       const { fromChainId, toChainId } = item;
-      const from = transNetworkText(fromChainId, isTestNet);
-      const to = transNetworkText(toChainId, isTestNet);
+      const from = transNetworkText(fromChainId, !isMainnet);
+      const to = transNetworkText(toChainId, !isMainnet);
 
       return <p className="row-3">{`${from}->${to}`}</p>;
     },
-    [isTestNet],
+    [isMainnet],
   );
 
   const showErrorModal = useCallback(
@@ -118,7 +118,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         title: (
           <div className="flex-column-center transaction-msg">
             <CustomSvg type="warnRed" />
-            {t('Transaction failed ！')}
+            {t('Transaction failed !')}
           </div>
         ),
         onOk: () => {
@@ -137,7 +137,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         const chainId = params.tokenInfo.chainId;
         const chainInfo = chainList?.filter((chain) => chain.chainId === chainId)?.[0];
         if (!chainInfo) return;
-        const privateKey = aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed);
+        const { privateKey } = await getSeed();
         if (!privateKey) return;
         setLoading(true);
         await intervalCrossChainTransfer({ ...params, chainInfo, privateKey });
@@ -149,7 +149,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         setLoading(false);
       }
     },
-    [chainList, dispatch, passwordSeed, setLoading, showErrorModal, wallet.AESEncryptPrivateKey],
+    [chainList, dispatch, setLoading, showErrorModal],
   );
 
   const handleResend = useCallback(
@@ -185,14 +185,14 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
           <span>{item?.transactionName}</span>
           <div className="right-not-from-amount">
             <div>{`${formatWithCommas({ sign, amount, decimals, digits: 4 })} ${symbol ?? ''}`}</div>
-            {!isTestNet && (
+            {isMainnet && (
               <div className="usd">{amountInUsdShow(amount, decimals || defaultToken.decimals, symbol)}</div>
             )}
           </div>
         </div>
       );
     },
-    [amountInUsdShow, defaultToken.decimals, isTestNet],
+    [amountInUsdShow, defaultToken.decimals, isMainnet],
   );
 
   return (

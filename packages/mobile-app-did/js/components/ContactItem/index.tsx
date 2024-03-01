@@ -8,7 +8,6 @@ import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import React, { memo } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
-// import { formatStr2EllipsisStr } from 'utils';
 import { pTd } from 'utils/unit';
 
 export interface ItemType {

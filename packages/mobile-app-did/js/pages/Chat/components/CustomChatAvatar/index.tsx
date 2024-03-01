@@ -6,11 +6,16 @@ import CommonAvatar from 'components/CommonAvatar';
 import { ChatMessage } from 'pages/Chat/types';
 import Touchable from 'components/Touchable';
 import navigationService from 'utils/navigationService';
+import { isMemberMessage } from '@portkey-wallet/utils/chat';
 
 export default function CustomChatAvatar(props: AvatarProps<ChatMessage>) {
   const { currentMessage, previousMessage } = props;
 
-  if (currentMessage?.user?._id === previousMessage?.user?._id) {
+  if (
+    currentMessage?.user?._id === previousMessage?.user?._id &&
+    previousMessage?.messageType &&
+    isMemberMessage(previousMessage?.messageType)
+  ) {
     return <View style={styles.blank} />;
   }
 

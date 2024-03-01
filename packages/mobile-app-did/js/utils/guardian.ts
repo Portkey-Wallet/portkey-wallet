@@ -4,11 +4,16 @@ import { GuardiansApproved, GuardiansStatus } from 'pages/Guardian/types';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
 import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { SendOptions } from '@portkey-wallet/contracts/types';
+import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
 
-const getGuardiansApproved = (userGuardiansList: UserGuardianItem[], guardiansStatus: GuardiansStatus) => {
+export const getGuardiansApproved = (
+  userGuardiansList: UserGuardianItem[],
+  guardiansStatus: GuardiansStatus,
+): GuardiansApprovedType[] => {
   return userGuardiansList
+    .filter(item => guardiansStatus[item.key] && guardiansStatus[item.key].verifierInfo)
     .map(guardian => {
-      if (!guardiansStatus[guardian.key] || !guardiansStatus[guardian.key].verifierInfo) return null;
       const verificationDoc = guardiansStatus[guardian.key].verifierInfo?.verificationDoc || '';
       const { guardianIdentifier } = handleVerificationDoc(verificationDoc);
       return {
@@ -20,8 +25,7 @@ const getGuardiansApproved = (userGuardiansList: UserGuardianItem[], guardiansSt
           verificationDoc,
         },
       };
-    })
-    .filter(item => item !== null);
+    });
 };
 
 export const getGuardiansApprovedByApprove = (guardiansApprove: GuardiansApproved) => {
@@ -125,42 +129,67 @@ export function setLoginAccount(
   contract: ContractBasic,
   address: string,
   caHash: string,
+  verifierInfo: VerifierInfo,
   guardianItem: UserGuardianItem,
+  userGuardiansList: UserGuardianItem[],
+  guardiansStatus: GuardiansStatus,
 ) {
+  const guardian = {
+    identifierHash: guardianItem.identifierHash,
+    type: guardianItem.guardianType,
+    verificationInfo: {
+      id: guardianItem.verifier?.id,
+      signature: Object.values(Buffer.from(verifierInfo.signature as any, 'hex')),
+      verificationDoc: verifierInfo.verificationDoc,
+    },
+  };
+  const guardiansApproved = getGuardiansApproved(userGuardiansList, guardiansStatus);
   return contract?.callSendMethod('SetGuardianForLogin', address, {
     caHash,
-    guardian: {
-      type: guardianItem.guardianType,
-      verifierId: guardianItem.verifier?.id,
-      identifierHash: guardianItem.identifierHash,
-    },
+    guardianToSetLogin: guardian,
+    guardiansApproved: guardiansApproved,
   });
 }
 
-export function cancelLoginAccount(
+export function unsetLoginAccount(
   contract: ContractBasic,
   address: string,
   caHash: string,
+  verifierInfo: VerifierInfo,
   guardianItem: UserGuardianItem,
+  userGuardiansList: UserGuardianItem[],
+  guardiansStatus: GuardiansStatus,
 ) {
+  const guardian = {
+    identifierHash: guardianItem.identifierHash,
+    type: guardianItem.guardianType,
+    verificationInfo: {
+      id: guardianItem.verifier?.id,
+      signature: Object.values(Buffer.from(verifierInfo.signature as any, 'hex')),
+      verificationDoc: verifierInfo.verificationDoc,
+    },
+  };
+  const guardiansApproved = getGuardiansApproved(userGuardiansList, guardiansStatus);
   return contract?.callSendMethod('UnsetGuardianForLogin', address, {
     caHash,
-    guardian: {
-      type: guardianItem.guardianType,
-      verifierId: guardianItem.verifier?.id,
-      identifierHash: guardianItem.identifierHash,
-    },
+    guardianToUnsetLogin: guardian,
+    guardiansApproved: guardiansApproved,
   });
 }
 
-export function removeManager(contract: ContractBasic, address: string, caHash: string) {
-  return contract?.callSendMethod('RemoveManagerInfo', address, {
-    caHash,
-    managerInfo: {
-      address,
-      extraData: Date.now(),
+export function removeManager(contract: ContractBasic, address: string, caHash: string, sendOptions?: SendOptions) {
+  return contract?.callSendMethod(
+    'RemoveManagerInfo',
+    address,
+    {
+      caHash,
+      managerInfo: {
+        address,
+        extraData: Date.now(),
+      },
     },
-  });
+    sendOptions,
+  );
 }
 
 export function encodedDeletionManager(contract: ContractBasic, address: string, caHash: string) {

@@ -4,6 +4,13 @@ import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useMemo, useCallback, useEffect } from 'react';
 import { useAppCASelector, useAppCommonDispatch } from '../index';
 import { useIsMainnet } from './network';
+import { useDefaultToken } from './chainList';
+
+export function useDefaultTokenPrice() {
+  const defaultToken = useDefaultToken();
+  const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
+  return tokenPriceObject?.[defaultToken.symbol] || 0;
+}
 
 export function useGetCurrentAccountTokenPrice(): [
   Record<string, number | string>,

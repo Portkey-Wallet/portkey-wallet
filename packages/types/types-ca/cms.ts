@@ -1,4 +1,4 @@
-export type IEntranceModuleName = 'buy' | 'sell' | 'bridge';
+export type IEntranceModuleName = 'buy' | 'sell' | 'bridge' | 'eTransDeposit' | 'eTransWithdraw';
 export type IEntranceMatchKey = 'version' | 'installationTime' | 'deviceType';
 export type IEntranceMatchRuleType = 'String' | 'BigNumber' | 'Regex';
 

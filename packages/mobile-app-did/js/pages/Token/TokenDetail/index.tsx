@@ -28,12 +28,18 @@ import fonts from 'assets/theme/fonts';
 import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import BuyButton from 'components/BuyButton';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import FaucetButton from 'components/FaucetButton';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useAppBuyButtonShow } from 'hooks/cms';
+import { useAppETransShow } from 'hooks/cms';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
+import { ETransTokenList } from '@portkey-wallet/constants/constants-ca/dapp';
+import CommonToolButton from 'components/CommonToolButton';
+import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
+import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
+import { useAppRampEntryShow } from 'hooks/ramp';
+import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -48,6 +54,8 @@ const INIT_PAGE_INFO = {
 const TokenDetail: React.FC = () => {
   const { t } = useLanguage();
   const { tokenInfo } = useRouterParams<RouterParams>();
+  const { isETransDepositShow, isETransWithdrawShow } = useAppETransShow();
+
   const defaultToken = useDefaultToken();
 
   const isMainnet = useIsMainnet();
@@ -59,8 +67,7 @@ const TokenDetail: React.FC = () => {
   const { accountToken } = useAppCASelector(state => state.assets);
   const isTokenHasPrice = useIsTokenHasPrice(tokenInfo.symbol);
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
-
-  const { isBuyButtonShow: isBuyButtonShowStore } = useAppBuyButtonShow();
+  const { isRampShow } = useAppRampEntryShow();
 
   const [reFreshing, setFreshing] = useState(false);
 
@@ -130,8 +137,8 @@ const TokenDetail: React.FC = () => {
   });
 
   const isBuyButtonShow = useMemo(
-    () => tokenInfo.symbol === defaultToken.symbol && tokenInfo.chainId === 'AELF' && isBuyButtonShowStore,
-    [defaultToken.symbol, isBuyButtonShowStore, tokenInfo.chainId, tokenInfo.symbol],
+    () => SHOW_RAMP_SYMBOL_LIST.includes(tokenInfo.symbol) && tokenInfo.chainId === 'AELF' && isRampShow,
+    [isRampShow, tokenInfo.chainId, tokenInfo.symbol],
   );
 
   const isFaucetButtonShow = useMemo(
@@ -139,18 +146,33 @@ const TokenDetail: React.FC = () => {
     [defaultToken.symbol, isMainnet, tokenInfo.chainId, tokenInfo.symbol],
   );
 
+  const isETransToken = useMemo(() => ETransTokenList.includes(tokenInfo.symbol), [tokenInfo.symbol]);
+
+  const isDepositShow = useMemo(
+    () => isETransToken && isETransDepositShow && !isBuyButtonShow && !isFaucetButtonShow,
+    [isETransToken, isETransDepositShow, isBuyButtonShow, isFaucetButtonShow],
+  );
+  const isWithdrawShow = useMemo(
+    () => isETransToken && isETransWithdrawShow && !isBuyButtonShow && !isFaucetButtonShow,
+    [isETransToken, isETransWithdrawShow, isBuyButtonShow, isFaucetButtonShow],
+  );
+  const { eTransferUrl } = useCurrentNetworkInfo();
+  const onDisclaimerModalPress = useOnDisclaimerModalPress();
   const buttonCount = useMemo(() => {
     let count = 3;
     if (isBuyButtonShow) count++;
+    if (isDepositShow) count++;
+    if (isWithdrawShow) count++;
     // FaucetButton
-    if (!isMainnet) count++;
+    if (isFaucetButtonShow) count++;
     return count;
-  }, [isBuyButtonShow, isMainnet]);
+  }, [isBuyButtonShow, isDepositShow, isFaucetButtonShow, isWithdrawShow]);
+  console.log(buttonCount, '====buttonCount');
 
   const buttonGroupWrapStyle = useMemo(() => {
     if (buttonCount >= 5) {
       // styles
-      return {};
+      return styles.buttonRow;
     } else {
       return GStyles.flexCenter;
     }
@@ -191,10 +213,52 @@ const TokenDetail: React.FC = () => {
           )}`}</Text>
         )}
         <View style={[styles.buttonGroupWrap, buttonGroupWrapStyle]}>
-          {isBuyButtonShow && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}
+          {isBuyButtonShow && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
           <SendButton themeType="innerPage" sentToken={currentToken} wrapStyle={buttonWrapStyle} />
           <ReceiveButton currentTokenInfo={currentToken} themeType="innerPage" wrapStyle={buttonWrapStyle} />
           {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}
+          {isDepositShow && (
+            <CommonToolButton
+              title="Deposit"
+              icon="deposit"
+              onPress={() =>
+                onDisclaimerModalPress(
+                  DepositModalMap.depositUSDT,
+                  stringifyETrans({
+                    url: eTransferUrl || '',
+                    query: {
+                      tokenSymbol: tokenInfo?.symbol,
+                      type: 'Deposit',
+                      chainId: tokenInfo?.chainId,
+                    },
+                  }),
+                )
+              }
+              themeType="innerPage"
+              wrapStyle={buttonWrapStyle}
+            />
+          )}
+          {isWithdrawShow && (
+            <CommonToolButton
+              title="Withdraw"
+              icon="withdraw"
+              onPress={() =>
+                onDisclaimerModalPress(
+                  DepositModalMap.withdrawUSDT,
+                  stringifyETrans({
+                    url: eTransferUrl || '',
+                    query: {
+                      tokenSymbol: tokenInfo?.symbol,
+                      type: 'Withdraw',
+                      chainId: tokenInfo?.chainId,
+                    },
+                  }),
+                )
+              }
+              themeType="innerPage"
+              wrapStyle={buttonWrapStyle}
+            />
+          )}
         </View>
       </View>
 

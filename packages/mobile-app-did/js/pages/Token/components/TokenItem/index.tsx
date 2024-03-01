@@ -30,7 +30,7 @@ const TokenItem = ({ networkType, item, onHandleToken }: TokenItemProps) => {
         shapeType="circular"
         title={item.symbol}
         svgName={item.symbol === defaultToken.symbol ? 'testnet' : undefined}
-        imageUrl={symbolImages[item.symbol]}
+        imageUrl={item.imageUrl || symbolImages[item.symbol]}
         avatarSize={pTd(48)}
         style={itemStyle.left}
       />

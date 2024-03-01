@@ -26,6 +26,7 @@ import { useJoinGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useJumpToChatGroupDetails } from './chat';
 import { ALREADY_JOINED_GROUP_CODE } from '@portkey-wallet/constants/constants-ca/chat';
 import { isDIDAelfAddress } from '@portkey-wallet/utils/aelf';
+import { NetworkType } from '@portkey-wallet/types';
 
 export const useQrScanPermission = (): [boolean, () => Promise<boolean>] => {
   const [hasPermission, setHasPermission] = useState<any>(null);
@@ -188,12 +189,16 @@ export const useHandleObjectData = () => {
   return useCallback(
     (data: string) => {
       const qrCodeData = expandQrData(JSON.parse(data));
-      if (!qrCodeData?.netWorkType || !qrCodeData?.address || !qrCodeData?.type) throw data;
+      if (!qrCodeData?.networkType || !qrCodeData?.address || !qrCodeData?.type) throw data;
+
+      if (qrCodeData.networkType.includes('MAIN')) {
+        qrCodeData.networkType = 'MAINNET' as NetworkType;
+      }
 
       // check network
-      if (currentNetwork !== qrCodeData.netWorkType)
+      if (currentNetwork !== qrCodeData.networkType)
         return invalidQRCode(
-          currentNetwork === 'MAIN' ? InvalidQRCodeText.SWITCH_TO_TESTNET : InvalidQRCodeText.SWITCH_TO_MAINNET,
+          currentNetwork === 'MAINNET' ? InvalidQRCodeText.SWITCH_TO_TESTNET : InvalidQRCodeText.SWITCH_TO_MAINNET,
         );
       handlePortkeyQRCodeData(qrCodeData, previousRouteInfo);
     },

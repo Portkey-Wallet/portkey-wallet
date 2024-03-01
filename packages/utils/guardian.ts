@@ -4,6 +4,7 @@ import { GuardiansInfo } from '@portkey-wallet/types/types-ca/guardian';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { VerifierItem } from '@portkey-wallet/types/verifier';
 import BigNumber from 'bignumber.js';
+import { handleErrorMessage } from '.';
 
 const APPROVAL_COUNT = ZERO.plus(3).div(5);
 export function getApprovalCount(length: number) {
@@ -25,7 +26,7 @@ export function handleUserGuardiansList(
     return {
       ...item,
       guardianAccount: item.guardianIdentifier || item.identifierHash,
-      guardianType: LoginType[item.type as any],
+      guardianType: LoginType[item.type as any] as unknown as LoginType,
       key: `${item.guardianIdentifier}&${item.verifierId}`,
       verifier: Array.isArray(verifierServers)
         ? verifierServers.find(verifierItem => verifierItem.id === item.verifierId)
@@ -46,4 +47,9 @@ export function checkIsLastLoginAccount(guardiansList: UserGuardianItem[], guard
       ),
   );
   return loginIndex === -1;
+}
+
+export function checkVerifierIsInvalidCode(error: any) {
+  const text = handleErrorMessage(error);
+  return !!text?.includes('Invalid code');
 }

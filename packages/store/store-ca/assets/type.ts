@@ -1,6 +1,8 @@
+import { ChainId } from '@portkey-wallet/types';
+
 export interface ITokenInfoType {
   balance: string;
-  decimals: string;
+  decimals: number;
   balanceInUsd: string;
   tokenContractAddress: string;
 }
@@ -15,7 +17,7 @@ export interface INftInfoType {
 }
 
 export interface IAssetItemType {
-  chainId: string;
+  chainId: ChainId;
   symbol: string;
   address: string;
   tokenInfo?: ITokenInfoType;

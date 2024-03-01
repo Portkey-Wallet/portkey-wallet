@@ -1,0 +1,46 @@
+@import '../../assets/theme/constants.less';
+
+.input-bar-reply-message-body {
+  width: 100%;
+  gap: 8px;
+  padding: 8px 12px 0;
+  font-size: 14px;
+  line-height: 20px;
+  background-color: @bg-4;
+  word-break: break-all;
+  white-space: pre-wrap;
+  .reply-message-container {
+    padding-left: 8px;
+    border-left: 3px solid @border-3;
+    .reply-message-image {
+      gap: 8px;
+      img {
+        width: 40px;
+        height: 40px;
+        border-radius: 4px;
+        object-fit: cover;
+      }
+      .imgerr-icon {
+        width: 32px;
+        height: 32px;
+        svg {
+          path {
+            fill: @svg-2;
+          }
+        }
+      }
+    }
+    .container-title {
+      color: @font-5;
+      font-weight: 500;
+      .text-overflow(1);
+    }
+    .container-content {
+      color: @font-7;
+      .text-overflow(1);
+    }
+  }
+  .close2-icon {
+    cursor: pointer;
+  }
+}

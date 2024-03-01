@@ -1,6 +1,7 @@
 import SandboxEventTypes from 'messages/SandboxEventTypes';
 import SandboxEventService, { SandboxErrorCode } from 'service/SandboxEventService';
 import { BaseSendOption } from './types';
+import { GuardianItem } from 'types/guardians';
 
 export const crossChainTransferToCa = async ({
   rpcUrl,
@@ -17,6 +18,7 @@ export const crossChainTransferToCa = async ({
     to: string;
     amount: number | string;
     memo?: string;
+    guardiansApproved?: GuardianItem[];
   };
 }) => {
   if (!paramsOption.memo) {

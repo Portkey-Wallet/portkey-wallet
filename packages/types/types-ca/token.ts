@@ -56,6 +56,7 @@ export interface TokenInfo {
   decimals: string;
   balanceInUsd?: string;
   tokenContractAddress: string;
+  imageUrl?: string;
 }
 
 export interface NftInfo {

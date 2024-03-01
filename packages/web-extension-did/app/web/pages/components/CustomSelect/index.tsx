@@ -7,9 +7,10 @@ import './index.less';
 const { Option } = Select;
 interface CustomSelectProps extends SelectProps {
   items?: OptionProps[];
+  customChild?: React.ReactNode;
 }
 
-export default function CustomSelect({ items = [], className, ...props }: CustomSelectProps) {
+export default function CustomSelect({ items = [], className, customChild, ...props }: CustomSelectProps) {
   return (
     <Select className={clsx('custom-select', className)} size="large" popupClassName="custom-select-popup" {...props}>
       {items.map((op) => (
@@ -22,6 +23,7 @@ export default function CustomSelect({ items = [], className, ...props }: Custom
           </div>
         </Option>
       ))}
+      {customChild}
     </Select>
   );
 }

@@ -21,22 +21,29 @@ import InterfaceProvider from 'contexts/useInterface';
 import GlobalStyleHandler from 'components/GlobalStyleHandler';
 import ErrorBoundary from 'components/ErrorBoundary';
 import { lockScreenOrientation } from 'utils/screenOrientation';
+import { setupAppCheck } from 'utils/appCheck';
 import Updater from 'components/Updater';
 import CodePush from 'react-native-code-push';
 import 'utils/sentryInit';
 import 'utils/logBox';
 import 'utils/initExceptionManager';
-const codePushOptions = {
-  updateDialog: false,
-  deploymentKey: (isIOS ? Config.CODE_PUSH_IOS_DEPLOYMENT_KEY : Config.CODE_PUSH_ANDROID_DEPLOYMENT_KEY) || '',
-  installMode: CodePush.InstallMode.ON_NEXT_RESTART,
-  checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME,
-};
+import 'utils/initRequest';
+import { initFCMSignalR } from 'utils/FCM';
+import { initNotifications } from 'utils/notifee';
+import { logBoxTextColorSaver } from 'utils/textColor';
+import { CODE_PUSH_OPTIONS } from 'constants/codePush';
+
+if (__DEV__) {
+  logBoxTextColorSaver();
+}
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
 initLanguage();
+setupAppCheck();
+initNotifications();
+initFCMSignalR();
 secureStore.init(Config.PORT_KEY_CODE || 'EXAMPLE_PORT_KEY_CODE');
 
 const persistor = persistStore(store);
@@ -80,4 +87,4 @@ const App = () => {
   );
 };
 
-export default Sentry.wrap(CodePush(codePushOptions)(App));
+export default Sentry.wrap(CodePush(CODE_PUSH_OPTIONS)(App));

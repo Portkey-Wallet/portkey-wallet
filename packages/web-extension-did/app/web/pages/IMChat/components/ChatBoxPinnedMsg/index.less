@@ -1,0 +1,49 @@
+@import '../../../../assets/theme/constants.less';
+
+.chat-box-pinned-msg-container {
+  z-index: 2;
+  width: 100%;
+  gap: 8px;
+  padding: 8px 12px 7px;
+  background-color: @bg-13;
+  border-bottom: 1px solid @border-2;
+  box-shadow: 0 2px 4px 0 @shadow-1;
+  cursor: pointer;
+  .container-content {
+    padding-left: 8px;
+    border-left: 3px solid @border-3;
+    font-size: 14px;
+    line-height: 20px;
+    color: @font-11;
+    word-break: break-all;
+    white-space: pre-wrap;
+    .image-content {
+      align-items: center;
+      img, .imgerr-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 4px;
+        object-fit: cover;
+      }
+      img {
+        margin-right: 8px;
+      }
+      .imgerr-icon {
+        display: flex;
+        align-items: center;
+        svg {
+          path {
+            fill: @svg-3;
+          }
+        }
+      }
+    }
+    .content-title {
+      font-weight: 500;
+      color: @font-9;
+    }
+    .content-pin-msg {
+      .text-overflow(1);
+    }
+  }
+}

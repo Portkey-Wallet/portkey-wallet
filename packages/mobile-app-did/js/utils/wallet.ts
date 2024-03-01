@@ -6,6 +6,10 @@ import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { request } from '@portkey-wallet/api/api-did';
 import socket from '@portkey-wallet/socket/socket-did';
 import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
+import { contractQueries } from '@portkey-wallet/graphql';
+import { getCurrentCAViewContract, getWallet } from './redux';
+import { ChainId } from '@portkey-wallet/types';
+import { SendOptions } from '@portkey-wallet/contracts/types';
 
 export type TimerResult = {
   remove: () => void;
@@ -30,6 +34,26 @@ export function intervalGetResult({ managerInfo, onPass, onFail }: IntervalGetRe
       console.debug(error);
     }
   };
+
+  const distributeFail = async (message: string) => {
+    try {
+      if (message.includes('ManagerInfo exists')) {
+        const wallet = getWallet();
+        const address = wallet?.walletInfo?.address || '';
+        const { caHolderManagerInfo } = await contractQueries.getCAHolderByManager(wallet.currentNetwork, {
+          manager: wallet?.walletInfo?.address || '',
+        });
+        const info = caHolderManagerInfo[0];
+        if (!info.originChainId) throw new Error('caHolderManagerInfo is empty');
+        const caContract = await getCurrentCAViewContract(info.originChainId as ChainId);
+        const contractInfo = await caContract?.callViewMethod('GetHolderInfo', { caHash: info.caHash });
+        const { managerInfos, caAddress, caHash } = contractInfo?.data;
+        const exist = await managerInfos?.some((manager: { address: string }) => manager?.address === address);
+        if (exist) return onPass?.({ caAddress, caHash });
+      }
+    } catch {}
+    onFail?.(message);
+  };
   const sendResult = (result: any) => {
     if (mark) return;
     switch (result.recoveryStatus || result.registerStatus) {
@@ -42,7 +66,7 @@ export function intervalGetResult({ managerInfo, onPass, onFail }: IntervalGetRe
         break;
       }
       case 'fail': {
-        onFail?.(result.recoveryMessage || result.registerMessage);
+        distributeFail(result.recoveryMessage || result.registerMessage);
         remove();
         mark = true;
         break;
@@ -51,7 +75,7 @@ export function intervalGetResult({ managerInfo, onPass, onFail }: IntervalGetRe
         break;
     }
   };
-  const clientId = managerInfo.requestId || '';
+  const clientId = managerInfo.clientId || '';
   const requestId = managerInfo.requestId || '';
   socket.doOpen({
     url: `${request.defaultConfig.baseURL}/ca`,
@@ -92,18 +116,25 @@ export async function addManager({
   caHash,
   managerAddress,
   extraData,
+  sendOptions,
 }: {
   contract: ContractBasic;
   address: string;
   caHash: string;
   managerAddress?: LoginQRData['address'];
   extraData?: string;
+  sendOptions?: SendOptions;
 }) {
-  return contract.callSendMethod('AddManagerInfo', address, {
-    caHash,
-    managerInfo: {
-      address: managerAddress,
-      extraData: extraData || '',
+  return contract.callSendMethod(
+    'AddManagerInfo',
+    address,
+    {
+      caHash,
+      managerInfo: {
+        address: managerAddress,
+        extraData: extraData || '',
+      },
     },
-  });
+    sendOptions,
+  );
 }

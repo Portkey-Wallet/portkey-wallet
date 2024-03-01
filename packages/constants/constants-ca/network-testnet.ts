@@ -12,13 +12,11 @@ export const OfficialWebsite = 'https://portkey.finance';
 
 export const BingoGame = 'https://portkey-bingo-game.vercel.app';
 export const ThirdParty = `https://thirdparty.portkey.finance`;
-
-export enum DappMap {
-  bridge = 'https://test.ebridge.exchange',
-}
+export const OpenLogin = `https://openlogin.portkey.finance`;
 
 const EBridgeList = NetworkList.map(i => i.eBridgeUrl).filter(i => !!i) as string[];
-export const DAPP_WHITELIST: string[] = [...EBridgeList];
+const ETransferList = NetworkList.map(i => i.eTransferUrl).filter(i => !!i) as string[];
+export const DAPP_WHITELIST: string[] = [...EBridgeList, ...ETransferList];
 
 export const LinkPortkeyWebsite = OfficialWebsite;
 export const LinkPortkeyPath = {

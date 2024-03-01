@@ -21,8 +21,16 @@ import {
   removeChannelMembers,
   transferChannelOwner,
   addChannelMembers,
+  setPinList,
+  nextPinList,
+  setLastPinMessage,
+  updateChannelMessageRedPackageAttribute,
+  updateChannelRedPackageAttribute,
+  setRedPackageConfig,
+  cleanALLChannelMessagePin,
 } from './actions';
 import { formatChannelList } from './util';
+import { MessageTypeEnum, ParsedRedPackage } from '@portkey-wallet/im';
 
 const initialState: IMStateType = {
   channelListNetMap: {},
@@ -31,6 +39,9 @@ const initialState: IMStateType = {
   relationIdNetMap: {},
   relationTokenNetMap: {},
   groupInfoMapNetMap: {},
+  redPackageConfigMap: {},
+  pinListNetMap: {},
+  lastPinNetMap: {},
 };
 export const imSlice = createSlice({
   name: 'im',
@@ -84,6 +95,32 @@ export const imSlice = createSlice({
                 ...item,
                 ...value,
                 ...plusAttribute,
+              };
+            }
+            return item;
+          }),
+        };
+
+        state.channelListNetMap[network] = formatChannelList(channelList);
+        return state;
+      })
+      .addCase(updateChannelRedPackageAttribute, (state, action): any => {
+        const { network, channelId, id, value } = action.payload;
+
+        const preChannelList = state.channelListNetMap[network];
+        if (!preChannelList) return state;
+
+        const channelList = {
+          ...preChannelList,
+          list: preChannelList.list.map(item => {
+            if (
+              item.channelUuid === channelId &&
+              item.lastMessageType === MessageTypeEnum.REDPACKAGE_CARD &&
+              (item.lastMessageContent as ParsedRedPackage)?.data?.id === id
+            ) {
+              return {
+                ...item,
+                redPackage: value,
               };
             }
             return item;
@@ -207,6 +244,32 @@ export const imSlice = createSlice({
                     return {
                       ...item,
                       ...value,
+                    };
+                  }
+                  return item;
+                }) || []),
+              ],
+            },
+          },
+        };
+      })
+      .addCase(updateChannelMessageRedPackageAttribute, (state, action) => {
+        const { network, channelId, id, value } = action.payload;
+        return {
+          ...state,
+          channelMessageListNetMap: {
+            ...state.channelMessageListNetMap,
+            [network]: {
+              ...state.channelMessageListNetMap?.[network],
+              [channelId]: [
+                ...(state.channelMessageListNetMap?.[network]?.[channelId]?.map(item => {
+                  if (
+                    item.type === MessageTypeEnum.REDPACKAGE_CARD &&
+                    (item.parsedContent as ParsedRedPackage)?.data.id === id
+                  ) {
+                    return {
+                      ...item,
+                      redPackage: value,
                     };
                   }
                   return item;
@@ -340,6 +403,109 @@ export const imSlice = createSlice({
           },
         };
       })
+
+      .addCase(setRedPackageConfig, (state, action) => {
+        const { network, value } = action.payload;
+        return {
+          ...state,
+          redPackageConfigMap: {
+            ...state.redPackageConfigMap,
+            [network]: value,
+          },
+        };
+      })
+
+      .addCase(setPinList, (state, action) => {
+        const { network, channelId, list, fetchTime } = action.payload;
+        const preListObj = state.pinListNetMap?.[network]?.[channelId];
+        if (preListObj && preListObj.fetchTime > fetchTime) {
+          return state;
+        }
+
+        return {
+          ...state,
+          pinListNetMap: {
+            ...state.pinListNetMap,
+            [network]: {
+              ...state.pinListNetMap?.[network],
+              [channelId]: {
+                list,
+                fetchTime,
+              },
+            },
+          },
+        };
+      })
+      .addCase(nextPinList, (state, action) => {
+        const { network, channelId, list, fetchTime } = action.payload;
+
+        let _list = list;
+        const preListObj = state.pinListNetMap?.[network]?.[channelId];
+        if (preListObj) {
+          if (preListObj.fetchTime > fetchTime) return state;
+          const preListMap: Record<string, boolean> = {};
+          preListObj.list.forEach(item => {
+            preListMap[item.sendUuid] = true;
+          });
+          _list = list.filter(item => !preListMap[item.sendUuid]);
+        }
+
+        return {
+          ...state,
+          pinListNetMap: {
+            ...state.pinListNetMap,
+            [network]: {
+              ...state.pinListNetMap?.[network],
+              [channelId]: {
+                list: [..._list, ...(preListObj?.list || [])],
+                fetchTime,
+              },
+            },
+          },
+        };
+      })
+      .addCase(cleanALLChannelMessagePin, (state, action) => {
+        const { network, channelId } = action.payload;
+        return {
+          ...state,
+          channelMessageListNetMap: {
+            ...state.channelMessageListNetMap,
+            [network]: {
+              ...state.channelMessageListNetMap?.[network],
+              [channelId]: [
+                ...(state.channelMessageListNetMap?.[network]?.[channelId]?.map(item => {
+                  return {
+                    ...item,
+                    pinInfo: undefined,
+                  };
+                }) || []),
+              ],
+            },
+          },
+        };
+      })
+      .addCase(setLastPinMessage, (state, action) => {
+        const { network, channelId, message, fetchTime } = action.payload;
+        const preLastPinObj = state.lastPinNetMap?.[network]?.[channelId];
+        if (preLastPinObj && preLastPinObj.fetchTime > fetchTime) {
+          return state;
+        }
+
+        return {
+          ...state,
+          lastPinNetMap: {
+            ...state.lastPinNetMap,
+            [network]: {
+              ...state.lastPinNetMap?.[network],
+              [channelId]: {
+                message,
+                fetchTime,
+              },
+            },
+          },
+        };
+      })
+
       .addCase(resetIm, (state, action) => {
         return {
           ...state,
@@ -365,6 +531,14 @@ export const imSlice = createSlice({
           },
           groupInfoMapNetMap: {
             ...state.groupInfoMapNetMap,
+            [action.payload]: undefined,
+          },
+          pinListNetMap: {
+            ...state.pinListNetMap,
+            [action.payload]: undefined,
+          },
+          lastPinNetMap: {
+            ...state.lastPinNetMap,
             [action.payload]: undefined,
           },
         };

@@ -49,7 +49,7 @@ const SelectList = <ItemType extends ItemTypeBase<ItemValueType>, ItemValueType 
                   callBack(item);
                 }}>
                 <View style={styles.itemRow}>
-                  {networkType === 'MAIN' ? (
+                  {networkType === 'MAINNET' ? (
                     <Svg icon="mainnet" size={pTd(40)} />
                   ) : (
                     <Svg icon="testnet" size={pTd(40)} />

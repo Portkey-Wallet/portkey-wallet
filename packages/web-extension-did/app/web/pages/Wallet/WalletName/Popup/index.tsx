@@ -10,11 +10,9 @@ export default function WalletNamePopup({
   goBack,
   type,
   data,
-  showChat = false,
   editText,
   isShowRemark = false,
   handleEdit,
-  handleCopy,
   saveCallback,
 }: IProfileDetailProps) {
   return (
@@ -26,19 +24,10 @@ export default function WalletNamePopup({
           rightElement={<CustomSvg type="Close2" onClick={goBack} />}
         />
       </div>
-      {showChat && type === MyProfilePageType.VIEW && (
-        <ViewContactBody
-          data={data}
-          editText={editText}
-          isShowRemark={isShowRemark}
-          handleEdit={handleEdit}
-          handleCopy={handleCopy}
-        />
+      {type === MyProfilePageType.VIEW && (
+        <ViewContactBody data={data} editText={editText} isShowRemark={isShowRemark} handleEdit={handleEdit} />
       )}
-      {showChat && type === MyProfilePageType.EDIT && (
-        <SetWalletNameForm data={data} handleCopy={handleCopy} saveCallback={saveCallback} />
-      )}
-      {!showChat && <SetWalletNameForm data={data} handleCopy={handleCopy} saveCallback={saveCallback} />}
+      {type === MyProfilePageType.EDIT && <SetWalletNameForm data={data} saveCallback={saveCallback} />}
     </div>
   );
 }

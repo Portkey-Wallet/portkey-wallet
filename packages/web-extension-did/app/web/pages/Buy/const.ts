@@ -1,62 +1,50 @@
-import { FiatType } from '@portkey-wallet/store/store-ca/payment/type';
-import { ChainId } from '@portkey-wallet/types';
-import { ICurToken } from './components/TokenInput';
-import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
-
-export enum DrawerType {
-  token,
-  currency,
-}
-
-export type PartialFiatType = Partial<FiatType>;
-
-export type TokenType = {
-  symbol: string;
-  chainId: ChainId;
-};
-
-export const initToken: ICurToken = {
-  crypto: 'ELF',
-  network: 'ELF', // TODO 'AELF'
-};
-
-export const initFiat: PartialFiatType = {
-  country: 'US',
-  currency: 'USD',
-};
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
+import { IRampProviderType, RampType } from '@portkey-wallet/ramp';
+import { IGetBuyDetail, IGetSellDetail } from '@portkey-wallet/utils/ramp';
 
 export const MAX_UPDATE_TIME = 15;
-export const initCurrency = '200';
-export const initCrypto = '400';
-export const initValueSave: {
-  amount: string;
-  currency: string;
-  country: string;
-  crypto: string;
-  network: string;
-  min: number | null;
-  max: number | null;
-  side: PaymentTypeEnum;
-  receive: string;
-  isShowErrMsg: boolean;
-} = {
-  amount: initCurrency,
-  currency: 'USD',
-  country: 'US',
-  crypto: 'ELF',
-  network: 'ELF', // TODO 'AELF'
-  min: null,
-  max: null,
-  side: PaymentTypeEnum.BUY,
-  receive: '',
-  isShowErrMsg: false,
-};
+export const initCryptoAmount = '400';
 
 export const initPreviewData = {
-  crypto: 'ELF',
-  network: 'ELF', // TODO 'AELF'
+  crypto: ELF_SYMBOL,
+  network: MAIN_CHAIN_ID,
   fiat: 'USD',
   country: 'US',
-  amount: '200',
-  side: PaymentTypeEnum.BUY,
+  amount: initCryptoAmount,
+  side: RampType.BUY,
+};
+
+export const InitProviderSelected: IGetBuyDetail | IGetSellDetail = {
+  cryptoAmount: '',
+  exchange: '',
+  fiatAmount: '',
+  amount: '',
+  providerNetwork: '',
+  providerSymbol: '',
+  feeInfo: {
+    networkFee: {
+      amount: '',
+      symbol: '',
+      type: 'FIAT',
+    },
+    rampFee: {
+      amount: '',
+      symbol: '',
+      type: 'FIAT',
+    },
+  },
+  providerInfo: {
+    appId: '',
+    baseUrl: '',
+    coverage: {
+      buy: true,
+      sell: true,
+    },
+    key: IRampProviderType.AlchemyPay,
+    logo: '',
+    name: '',
+    paymentTags: [],
+  },
+  thirdPart: IRampProviderType.AlchemyPay,
 };

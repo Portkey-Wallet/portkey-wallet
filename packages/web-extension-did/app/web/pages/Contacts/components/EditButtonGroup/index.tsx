@@ -1,4 +1,4 @@
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import DeleteContact from 'pages/Contacts/DeleteContact';
 import clsx from 'clsx';
@@ -7,6 +7,7 @@ import { useCallback, useState } from 'react';
 import { useDeleteContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useNavigate } from 'react-router';
 import { EditContactItemApiType } from '@portkey-wallet/types/types-ca/contact';
+import singleMessage from 'utils/singleMessage';
 
 interface IEditButtonGroupProps {
   className?: string;
@@ -37,7 +38,7 @@ export default function EditButtonGroup({ className, data, cantSave }: IEditButt
       default:
         navigate('/setting/contacts');
     }
-    message.success('Contact deleted successfully');
+    singleMessage.success('Contact deleted successfully');
   }, [data, deleteContactApi, navigate]);
 
   return (

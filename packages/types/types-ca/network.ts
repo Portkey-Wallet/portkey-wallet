@@ -5,13 +5,16 @@ export type NetworkItem = {
   networkType: NetworkType;
   isActive?: boolean;
   apiUrl: string;
+  domain?: string;
   graphqlUrl: string;
   networkIconUrl?: string;
   connectUrl: string;
   tokenClaimContractAddress?: string;
   cmsUrl?: string;
   s3Url?: string;
+  referralUrl?: string;
   portkeyFinanceUrl?: string; // portkey website url
+  portkeyOpenLoginUrl?: string; // web page
   buyConfig?: {
     ach?: {
       appId?: string;
@@ -22,4 +25,5 @@ export type NetworkItem = {
   imWsUrl?: string;
   imS3Bucket?: string;
   eBridgeUrl?: string;
+  eTransferUrl?: string;
 };

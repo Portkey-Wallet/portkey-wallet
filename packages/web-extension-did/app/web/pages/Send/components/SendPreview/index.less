@@ -1,6 +1,6 @@
 @import '../../../../assets/theme/color.less';
 .send-preview {
-  max-height: 423px;
+  // max-height: 423px;
   overflow-y: overlay;
   background-color: @bg-11;
   display: flex;
@@ -149,12 +149,13 @@
     color: @font-11;
     /* stylelint-disable-next-line no-descending-specificity */
     .label {
-      width: 120px;
       font-size: 14px;
       line-height: 20px;
     }
     /* stylelint-disable-next-line no-descending-specificity */
     .value {
+      flex-grow: 1;
+      white-space: nowrap;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;

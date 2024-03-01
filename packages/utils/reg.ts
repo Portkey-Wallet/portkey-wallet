@@ -2,6 +2,9 @@
 const protocolAndDomainRE = /^(?:\w+:)?\/\/(\S+)$/;
 const localhostDomainRE = /^localhost[\:?\d]*(?:[^\:?\d]\S*)?$/;
 const nonLocalhostDomainRE = /^[^\s\.]+\.\S{2,}$/;
+export const websiteRE =
+  /[a-zA-Z0-9-.]+\.(com|org|net|int|edu|gov|mil|academy|accountant|accountants|agency|app|associates|bank|biz|blog|box|business|capital|cash|center|city|club|college|community|company|computer|country|credit|creditcard|dev|digital|download|education|enterprises|finance|financial|foo|fund|game|google|gov|global|gmail|guide|help|hotmail|io|law|legal|live|market|marketing|markets|network|news|online|search|site|solutions|storage|tab|tech|technology|website|wiki|xyz|youtube)$/i;
+const avatarTypeReg = /\s*(\.jpg|\.png|\.jpeg)$/;
 
 export function isUrl(string: string) {
   if (typeof string !== 'string') {
@@ -96,4 +99,13 @@ export const isValidUrl = (url: string) => {
 
 export const isValidBase58 = (str: string) => {
   return !/[\u4e00-\u9fa5\u3000-\u303f\uff01-\uff5e]/.test(str);
+};
+
+export const POTENTIAL_NUMBER = /^(0|[1-9]\d*)(\.\d*)?$/;
+export const isPotentialNumber = (str: string) => {
+  return POTENTIAL_NUMBER.test(str);
+};
+
+export const isValidAvatarFile = (fileName: string) => {
+  return avatarTypeReg.test(fileName);
 };

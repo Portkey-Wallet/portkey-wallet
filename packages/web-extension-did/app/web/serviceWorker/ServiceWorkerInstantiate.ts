@@ -494,10 +494,10 @@ export default class ServiceWorkerInstantiate {
     }
   }
 
-  static lockWallet(sendResponse?: SendResponseFun, isManualLockWallet?: boolean) {
+  static async lockWallet(sendResponse?: SendResponseFun, isManualLockWallet?: boolean) {
     try {
       seed = null;
-      setLocalStorage({
+      await setLocalStorage({
         locked: true,
       });
       isManualLockWallet && SWEventController.dispatchEvent({ eventName: 'accountsChanged', data: {} });
@@ -507,10 +507,10 @@ export default class ServiceWorkerInstantiate {
     }
   }
 
-  static unlockWallet(sendResponse: SendResponseFun, _seed: string | null) {
+  static async unlockWallet(sendResponse: SendResponseFun, _seed: string | null) {
     if (!_seed) return sendResponse(errorHandler(500001, 'unlockWallet error'));
     sendResponse(errorHandler(0));
-    setLocalStorage({
+    await setLocalStorage({
       locked: false,
     });
   }

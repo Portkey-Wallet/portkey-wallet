@@ -3,7 +3,6 @@ import GStyles from 'assets/theme/GStyles';
 import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
-import fonts from 'assets/theme/fonts';
 import FormItem from 'components/FormItem';
 import CommonInput from 'components/CommonInput';
 import CommonButton from 'components/CommonButton';
@@ -288,7 +287,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
                 imageUrl={selectToken.imageUrl || symbolImages[selectToken.symbol]}
               />
               <View style={[styles.assetInfoWrap, GStyles.flex1]}>
-                <TextM numberOfLines={1} style={[GStyles.flex1, fonts.mediumFont]}>
+                <TextM numberOfLines={1} style={GStyles.flex1}>
                   {assetName}
                 </TextM>
                 <TextS style={[GStyles.flex1, FontStyles.font3]} numberOfLines={1}>
@@ -339,7 +338,9 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
               svgName={selectToken?.symbol === defaultToken.symbol ? 'testnet' : undefined}
               imageUrl={selectToken.imageUrl || symbolImages[selectToken.symbol]}
             />
-            <TextM style={styles.nftNameWrap}>{assetName}</TextM>
+            <TextM numberOfLines={1} style={styles.nftNameWrap}>
+              {assetName}
+            </TextM>
           </View>
         </>
       ) : (
@@ -421,5 +422,6 @@ const styles = StyleSheet.create({
   },
   nftNameWrap: {
     marginLeft: pTd(8),
+    maxWidth: pTd(250),
   },
 });

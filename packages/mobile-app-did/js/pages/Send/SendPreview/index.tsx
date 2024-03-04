@@ -407,7 +407,9 @@ const SendHome: React.FC = () => {
             <CommonAvatar avatarSize={pTd(64)} style={styles.img} imageUrl={assetInfo?.imageUrl || ''} />
           )}
           <View style={styles.topLeft}>
-            <TextL style={[styles.nftTitle, fonts.mediumFont]}>{`${assetInfo.alias} #${assetInfo?.tokenId}`} </TextL>
+            <TextL numberOfLines={1} style={[styles.nftTitle, fonts.mediumFont]}>
+              {`${assetInfo.alias} #${assetInfo?.tokenId}  `}
+            </TextL>
             <TextS style={[FontStyles.font3]}>{`Amount：${sendNumber}`}</TextS>
           </View>
         </View>
@@ -591,6 +593,7 @@ export const styles = StyleSheet.create({
   nftTitle: {
     color: defaultColors.font5,
     marginBottom: pTd(4),
+    paddingRight: pTd(8),
   },
   tokenCount: {
     marginTop: pTd(40),

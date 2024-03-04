@@ -594,6 +594,7 @@ export const styles = StyleSheet.create({
     color: defaultColors.font5,
     marginBottom: pTd(4),
     paddingRight: pTd(8),
+    maxWidth: pTd(230),
   },
   tokenCount: {
     marginTop: pTd(40),

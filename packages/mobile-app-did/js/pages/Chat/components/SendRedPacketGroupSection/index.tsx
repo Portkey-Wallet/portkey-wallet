@@ -416,6 +416,9 @@ const styles = StyleSheet.create({
   },
   assetInfoWrap: {
     marginLeft: pTd(8),
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
   },
   nftInfoWrap: {
     marginTop: pTd(4),

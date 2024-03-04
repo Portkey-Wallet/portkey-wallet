@@ -9,21 +9,23 @@ import TitleWrapper from 'components/TitleWrapper';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import PromptFrame from 'pages/components/PromptFrame';
 import QRCodeCommon from 'pages/components/QRCodeCommon';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import './index.less';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import {
-  SideChainTipContent,
-  SideChainTipTitle,
-  MainChainTipTitle,
-  MainChainTipContent,
+  RECEIVE_MAIN_CHAIN_TOKEN_TIP_TITLE,
+  RECEIVE_MAIN_CHAIN_TOKEN_TIP_CONTENT,
+  RECEIVE_SIDE_CHAIN_TOKEN_TIP_TITLE,
+  RECEIVE_SIDE_CHAIN_TOKEN_TIP_CONTENT,
 } from '@portkey-wallet/constants/constants-ca/send';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useLocationState } from 'hooks/router';
 import { TReceiveLocationState } from 'types/router';
+import ReceiveTipModal from 'pages/components/ReceiveTipModal';
+import { useSideChainTokenReceiveTipSetting } from '@portkey-wallet/hooks/hooks-ca/misc';
 
 export default function Receive() {
   const navigate = useNavigate();
@@ -32,19 +34,21 @@ export default function Receive() {
   const wallet = useCurrentWalletInfo();
   const { currentNetwork } = useWalletInfo();
   const isMainnet = useIsMainnet();
+  const { showSideChainTokenReceiveTip } = useSideChainTokenReceiveTipSetting();
   const caAddress = useMemo(
     () => `ELF_${wallet?.[state.chainId || 'AELF']?.caAddress}_${state.chainId}`,
     [state, wallet],
   );
+  const isMainChain = useMemo(() => state.chainId === MAIN_CHAIN_ID, [state.chainId]);
   const tipTitle = useMemo(
-    () => (state.chainId === MAIN_CHAIN_ID ? MainChainTipTitle : SideChainTipTitle),
-    [state.chainId],
+    () => (isMainChain ? RECEIVE_MAIN_CHAIN_TOKEN_TIP_TITLE : RECEIVE_SIDE_CHAIN_TOKEN_TIP_TITLE),
+    [isMainChain],
   );
   const tipContent = useMemo(
-    () => (state.chainId === MAIN_CHAIN_ID ? MainChainTipContent : SideChainTipContent),
-    [state.chainId],
+    () => (isMainChain ? RECEIVE_MAIN_CHAIN_TOKEN_TIP_CONTENT : RECEIVE_SIDE_CHAIN_TOKEN_TIP_CONTENT),
+    [isMainChain],
   );
-
+  const [showTip, setShowTip] = useState(!isMainChain);
   const rightElement = useMemo(() => {
     return (
       <div>
@@ -100,24 +104,31 @@ export default function Receive() {
             <CustomSvg type="Info" />
             <div className="receive-tip-text">
               <div className="receive-tip-title">{tipTitle}</div>
-              <div>{tipContent}</div>
+              <div>
+                {tipContent.map((item, i) => (
+                  <div key={`receive_${i}`}>{item}</div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
         {isPrompt && <PromptEmptyElement />}
+        <ReceiveTipModal open={showSideChainTokenReceiveTip && showTip} onClose={() => setShowTip(false)} />
       </div>
     );
   }, [
-    caAddress,
     isPrompt,
-    isMainnet,
     rightElement,
-    state.chainId,
-    state?.imageUrl,
     symbol,
-    tipContent,
-    tipTitle,
+    state?.imageUrl,
+    state.chainId,
+    isMainnet,
     value,
+    caAddress,
+    tipTitle,
+    tipContent,
+    showSideChainTokenReceiveTip,
+    showTip,
   ]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;

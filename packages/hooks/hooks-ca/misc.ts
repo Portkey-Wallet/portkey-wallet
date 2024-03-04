@@ -182,7 +182,7 @@ export const useSideChainTokenReceiveTipSetting = () => {
   const miscState = useAppCASelector(state => state.misc);
   const dispatch = useAppCommonDispatch();
 
-  const sideChainTokenReceiveTip = useMemo(
+  const showSideChainTokenReceiveTip = useMemo(
     () => miscState.sideChainTokenReceiveTipMap[currentNetworkInfo.networkType],
     [currentNetworkInfo.networkType, miscState.sideChainTokenReceiveTipMap],
   );
@@ -208,7 +208,7 @@ export const useSideChainTokenReceiveTipSetting = () => {
   }, [setSideChainTokenReceiveTip]);
 
   return {
-    sideChainTokenReceiveTip,
+    showSideChainTokenReceiveTip,
     cancelSideChainTokenReceiveTip,
     setSideChainTokenReceiveTip,
     reSetSideChainTokenReceiveTip,

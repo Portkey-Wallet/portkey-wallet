@@ -231,10 +231,10 @@ const ActivityDetail = () => {
                 <Text style={styles.noImg}>{activityItem?.nftInfo?.alias?.slice(0, 1)}</Text>
               )}
               <View style={styles.nftInfo}>
-                <TextL style={styles.nftTitle}>{`${activityItem?.nftInfo?.alias || ''} #${
+                <TextL numberOfLines={1} style={styles.nftTitle}>{`${activityItem?.nftInfo?.alias || ''} #${
                   activityItem?.nftInfo?.nftId || ''
                 }`}</TextL>
-                <TextS style={[FontStyles.font3, styles.marginTop4]}>Amount: {activityItem?.amount || ''}</TextS>
+                <TextS numberOfLines={1} style={[FontStyles.font3, styles.marginTop4]}>Amount: {activityItem?.amount || ''}</TextS>
               </View>
             </View>
             <View style={styles.divider} />
@@ -404,6 +404,7 @@ export const styles = StyleSheet.create({
     ...fonts.mediumFont,
     color: defaultColors.font5,
     marginBottom: pTd(4),
+    maxWidth: pTd(230),
     flexDirection: 'row',
     display: 'flex',
     flexWrap: 'wrap',

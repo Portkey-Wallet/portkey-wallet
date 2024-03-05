@@ -58,7 +58,7 @@ function FacebookSign({ onConfirm, onReject }: FacebookProps) {
         onReject(handleErrorMessage(error));
       }
     },
-    [onReject],
+    [onConfirm, onReject],
   );
   return (
     <ModalBody title="Facebook Login" modalBodyType="bottom">

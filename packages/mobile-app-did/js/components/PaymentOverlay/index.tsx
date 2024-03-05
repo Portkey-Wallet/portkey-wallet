@@ -237,7 +237,6 @@ const PaymentModal = ({
           style={styles.avatar}
           title={assetInfo.symbol}
           avatarSize={pTd(24)}
-          // TODO: adjust token
           imageUrl={assetInfo?.imageUrl}
         />
         <View

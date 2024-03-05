@@ -7,11 +7,12 @@ import { FontStyles } from 'assets/theme/styles';
 import { TextM, TextS } from 'components/CommonText';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import React, { useCallback } from 'react';
-import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
 import { pTd } from 'utils/unit';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import fonts from 'assets/theme/fonts';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
+import Touchable from 'components/Touchable';
 
 export function DiscoverCmsListSection() {
   const GroupList = useDiscoverGroupList();
@@ -37,7 +38,7 @@ export function DiscoverCmsListSection() {
           <TextM style={[FontStyles.font5, fonts.mediumFont, styles.groupTitle]}>{group.title}</TextM>
           <View style={styles.itemsGroup}>
             {group.items.map((item, i) => (
-              <TouchableOpacity key={i} style={styles.itemWrap} onPress={() => onClickJump(item)}>
+              <Touchable key={i} style={styles.itemWrap} onPress={() => onClickJump(item)}>
                 <Image
                   style={styles.image}
                   source={{
@@ -52,7 +53,7 @@ export function DiscoverCmsListSection() {
                     {item?.description}
                   </TextS>
                 </View>
-              </TouchableOpacity>
+              </Touchable>
             ))}
           </View>
         </View>

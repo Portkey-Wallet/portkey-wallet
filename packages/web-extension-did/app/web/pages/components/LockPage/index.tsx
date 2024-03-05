@@ -14,6 +14,7 @@ import aes from '@portkey-wallet/utils/aes';
 import { sleep } from '@portkey-wallet/utils';
 import { getWalletState } from 'utils/lib/SWGetReduxStore';
 import singleMessage from 'utils/singleMessage';
+import { useSetTokenConfig } from 'hooks/useSetTokenConfig';
 
 interface LockPageProps extends FormProps {
   onUnLockHandler?: (pwd: string) => void;
@@ -22,7 +23,7 @@ interface LockPageProps extends FormProps {
 
 export default function LockPage({ header, onUnLockHandler, ...props }: LockPageProps) {
   const { t } = useTranslation();
-
+  const setTokenConfig = useSetTokenConfig();
   const [form] = Form.useForm();
   const [isPassword, setIsPassword] = useState<-1 | 0 | 1>(-1);
   const dispatch = useDispatch();
@@ -40,12 +41,13 @@ export default function LockPage({ header, onUnLockHandler, ...props }: LockPage
         dispatch(setPasswordSeed(password));
         InternalMessage.payload(InternalMessageTypes.SET_SEED, password).send();
         await sleep(100);
+        setTokenConfig();
         onUnLockHandler?.(password);
       } else {
         setIsPassword(0);
       }
     },
-    [dispatch, onUnLockHandler],
+    [dispatch, onUnLockHandler, setTokenConfig],
   );
 
   return (

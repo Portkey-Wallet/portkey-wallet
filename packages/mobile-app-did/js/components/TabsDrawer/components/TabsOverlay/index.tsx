@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useCallback, useMemo, useRef, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { StyleSheet, TouchableOpacity, View, Share } from 'react-native';
+import { StyleSheet, View, Share } from 'react-native';
 import { TextL, TextS } from 'components/CommonText';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
@@ -20,6 +20,7 @@ import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import { request } from '@portkey-wallet/api/api-did';
 import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import Touchable from 'components/Touchable';
 
 enum HANDLE_TYPE {
   REFRESH = 'Refresh',
@@ -177,26 +178,26 @@ const BrowserEditModal = ({
             {getCmsWebsiteInfoName(browserInfo?.url) || browserInfo?.url}
           </TextS>
         </View>
-        <TouchableOpacity onPress={() => handleUrl(HANDLE_TYPE.CANCEL)}>
+        <Touchable onPress={() => handleUrl(HANDLE_TYPE.CANCEL)}>
           <Svg icon="close" size={pTd(12)} />
-        </TouchableOpacity>
+        </Touchable>
       </View>
       <View style={styles.listWrap}>
         {handleArray.map((ele, index) => (
-          <TouchableOpacity key={index} style={styles.listItem} onPress={() => handleUrl(ele.title)}>
+          <Touchable key={index} style={styles.listItem} onPress={() => handleUrl(ele.title)}>
             <View style={[styles.svgWrap]}>
               <Svg icon={ele.icon} size={pTd(52)} />
             </View>
             <TextS key={index} style={[FontStyles.font3, styles.itemTitle]}>
               {ele.title}
             </TextS>
-          </TouchableOpacity>
+          </Touchable>
         ))}
       </View>
       <View style={styles.divider} />
-      <TouchableOpacity style={[GStyles.center, styles.cancelButton]} onPress={() => handleUrl(HANDLE_TYPE.CANCEL)}>
+      <Touchable style={[GStyles.center, styles.cancelButton]} onPress={() => handleUrl(HANDLE_TYPE.CANCEL)}>
         <TextL style={[GStyles.alignCenter, FontStyles.font3]}>{t('Cancel')}</TextL>
-      </TouchableOpacity>
+      </Touchable>
     </View>
   );
 };

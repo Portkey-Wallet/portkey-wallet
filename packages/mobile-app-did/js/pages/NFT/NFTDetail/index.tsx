@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, StatusBar, View, ScrollView } from 'react-native';
+import { StyleSheet, StatusBar, View, ScrollView } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
@@ -19,6 +19,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { ScreenWidth } from '@rneui/base';
 import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
 import { copyText } from 'utils';
+import Touchable from 'components/Touchable';
 
 export interface TokenDetailProps {
   route?: any;
@@ -60,9 +61,9 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
   return (
     <SafeAreaBox style={styles.pageWrap}>
       <StatusBar barStyle={'default'} />
-      <TouchableOpacity style={styles.iconWrap} onPress={() => navigationService.goBack()}>
+      <Touchable style={styles.iconWrap} onPress={() => navigationService.goBack()}>
         <Svg icon="left-arrow" size={20} />
-      </TouchableOpacity>
+      </Touchable>
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={[styles.collection, GStyles.flexRow, GStyles.itemCenter]}>
@@ -86,11 +87,11 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
             <TextM style={[styles.leftTitle, FontStyles.font5]}>
               {formatStr2EllipsisStr(addressFormat(tokenContractAddress, chainId))}
             </TextM>
-            <TouchableOpacity
+            <Touchable
               style={[styles.marginLeft8, GStyles.flexCol, styles.copyIconWrap]}
               onPress={async () => await copyText(addressFormat(tokenContractAddress, chainId))}>
               <Svg icon="copy" size={pTd(13)} />
-            </TouchableOpacity>
+            </Touchable>
           </View>
           <View style={[GStyles.flexRow, styles.rowWrap]}>
             <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('BlockChain')}</TextM>

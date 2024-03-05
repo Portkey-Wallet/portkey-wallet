@@ -7,12 +7,13 @@ import Collapsible from 'components/Collapsible';
 import { TextL, TextM, TextS } from 'components/CommonText';
 import Svg from 'components/Svg';
 import React, { memo, useState } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { ChainId } from '@portkey-wallet/types';
 import navigationService from 'utils/navigationService';
 import CommonAvatar from 'components/CommonAvatar';
+import Touchable from 'components/Touchable';
 
 export interface ItemType {
   fromChainId?: ChainId;
@@ -29,8 +30,8 @@ const SendRecentItem: React.FC<ItemType> = props => {
 
   if (contact?.name)
     return (
-      <TouchableOpacity style={styles.itemWrap}>
-        <TouchableOpacity style={styles.topWrap} onPress={() => setCollapsed(!collapsed)}>
+      <View style={styles.itemWrap}>
+        <Touchable style={styles.topWrap} onPress={() => setCollapsed(!collapsed)}>
           <CommonAvatar
             hasBorder
             resizeMode="cover"
@@ -41,12 +42,12 @@ const SendRecentItem: React.FC<ItemType> = props => {
           />
           <TextL style={styles.contactName}>{contact.name}</TextL>
           <Svg icon={collapsed ? 'down-arrow' : 'up-arrow'} size={pTd(20)} />
-        </TouchableOpacity>
+        </Touchable>
 
         <Collapsible collapsed={collapsed} style={styles.addressListWrap}>
           {contact?.addresses?.map((ele, index) =>
             isContacts || ele?.transactionTime ? (
-              <TouchableOpacity
+              <Touchable
                 style={[index !== 0 && styles.addressItemWrap]}
                 key={`${ele?.address}${ele?.chainId}`}
                 onPress={() => {
@@ -60,7 +61,7 @@ const SendRecentItem: React.FC<ItemType> = props => {
                   style={[styles.address, styles.chainInfo, !isContacts && !ele?.transactionTime && FontStyles.font7]}>
                   {formatChainInfoToShow(ele?.chainId as ChainId, currentNetwork)}
                 </TextS>
-                <TouchableOpacity
+                <TextS
                   style={[styles.contactActivity, styles.moreIconWrapStyle]}
                   onPress={() =>
                     navigationService.navigate('ContactActivity', {
@@ -72,8 +73,8 @@ const SendRecentItem: React.FC<ItemType> = props => {
                     })
                   }>
                   <Svg icon="more-info" size={pTd(20)} />
-                </TouchableOpacity>
-              </TouchableOpacity>
+                </TextS>
+              </Touchable>
             ) : (
               <View style={[index !== 0 && styles.addressItemWrap]} key={`${ele?.address}${ele?.chainId}`}>
                 <TextM style={[styles.address, !ele?.transactionTime && FontStyles.font7]}>
@@ -82,7 +83,7 @@ const SendRecentItem: React.FC<ItemType> = props => {
                 <TextS style={[styles.address, styles.chainInfo, !ele?.transactionTime && FontStyles.font7]}>
                   {formatChainInfoToShow(ele?.chainId as ChainId, currentNetwork)}
                 </TextS>
-                <TouchableOpacity
+                <Touchable
                   hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
                   style={[styles.contactActivity, styles.moreIconWrapStyle]}
                   onPress={() =>
@@ -95,16 +96,16 @@ const SendRecentItem: React.FC<ItemType> = props => {
                     })
                   }>
                   <Svg icon="more-info" size={pTd(20)} />
-                </TouchableOpacity>
+                </Touchable>
               </View>
             ),
           )}
         </Collapsible>
-      </TouchableOpacity>
+      </View>
     );
 
   return (
-    <TouchableOpacity
+    <Touchable
       style={styles.itemWrap}
       onPress={() => {
         onPress?.({ address: `ELF_${contact.address}_${contact.addressChainId}`, name: '' });
@@ -115,7 +116,7 @@ const SendRecentItem: React.FC<ItemType> = props => {
       <TextS style={styles.chainInfo1}>
         {formatChainInfoToShow(contact?.addressChainId as ChainId, currentNetwork)}
       </TextS>
-      <TouchableOpacity
+      <TextM
         style={[styles.contactActivity]}
         onPress={() =>
           navigationService.navigate('ContactActivity', {
@@ -125,8 +126,8 @@ const SendRecentItem: React.FC<ItemType> = props => {
           })
         }>
         <Svg icon="more-info" size={pTd(20)} />
-      </TouchableOpacity>
-    </TouchableOpacity>
+      </TextM>
+    </Touchable>
   );
 };
 

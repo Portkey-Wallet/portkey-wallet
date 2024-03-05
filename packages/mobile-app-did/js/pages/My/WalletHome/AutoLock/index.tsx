@@ -39,8 +39,6 @@ const AutoLockList: { value: number; label: string }[] = [
 export default function InnerSettings() {
   const dispatch = useAppCommonDispatch();
   const { autoLockingTime } = useAppCASelector(state => state.settings);
-  console.log('autoLockingTimeAutoLockingTime', autoLockingTime);
-
   const { t } = useLanguage();
 
   return (

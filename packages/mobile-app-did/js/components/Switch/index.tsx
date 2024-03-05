@@ -1,6 +1,7 @@
+import Touchable from 'components/Touchable';
 import useEffectOnce from 'hooks/useEffectOnce';
 import React, { useCallback, useRef, useState } from 'react';
-import { StyleSheet, Animated, TouchableOpacity, SwitchProps } from 'react-native';
+import { StyleSheet, Animated, SwitchProps } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -74,10 +75,10 @@ function Switch({
     }
   }, [onPress, onValueChange, scaleBg, toggleOn, togglePosition, useOnce]);
   return (
-    <TouchableOpacity style={[styles.container]} onPressIn={toggleSwitch} activeOpacity={1}>
+    <Touchable style={[styles.container]} onPressIn={toggleSwitch} activeOpacity={1}>
       <Animated.View style={[styles.scaleBg, { transform: [{ scale: scaleBg }] }]} />
       <Animated.View style={[styles.toggleBtn, { left: togglePosition }]} />
-    </TouchableOpacity>
+    </Touchable>
   );
 }
 export default Switch;

@@ -1,5 +1,11 @@
 import { ChainId } from '..';
 
+export enum SeedTypeEnum {
+  'None' = 0,
+  'FT' = 1,
+  'NFT' = 2,
+}
+
 // nft collection types
 export type NFTCollectionItemBaseType = {
   chainId: ChainId;
@@ -7,7 +13,9 @@ export type NFTCollectionItemBaseType = {
   imageUrl: string;
   itemCount: number;
   symbol: string;
-  decimals: number; // 0
+  isSeed: boolean;
+  seedType?: SeedTypeEnum;
+  expires?: string;
 };
 
 export interface NFTCollectionItemShowType extends NFTCollectionItemBaseType {
@@ -28,6 +36,9 @@ export type NFTItemBaseType = {
   imageUrl: string;
   tokenContractAddress: string;
   totalSupply: string | number;
+  decimals: string;
+  isSeed: boolean;
+  seedType?: SeedTypeEnum;
 };
 
 // assets types
@@ -42,6 +53,9 @@ export type AssetsItemType = {
     protocolName: string;
     quantity: string;
     metaData: any;
+    decimals: string;
+    isSeed: boolean;
+    seedType?: SeedTypeEnum;
   };
 };
 

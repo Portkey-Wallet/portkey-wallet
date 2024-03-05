@@ -1,6 +1,7 @@
 import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
 import { ChainId, ChainType } from '..';
 import { BaseToken } from './token';
+import { SeedTypeEnum } from './assets';
 
 export type ActivityItemType = {
   chainId: string;
@@ -31,6 +32,8 @@ export type NftInfo = {
   imageUrl: string;
   alias: string;
   nftId: string;
+  isSeed: boolean;
+  seedType?: SeedTypeEnum;
 };
 
 export type TransactionFees = {

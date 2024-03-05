@@ -58,7 +58,6 @@ export const RedPacketDetails = () => {
   });
 
   const renderRedPacketTipContent = useMemo(() => {
-    // TODO: isNFT
     const tokenUnit =
       redPacketData?.assetType === AssetType.ft ? redPacketData?.symbol : `${redPacketData?.alias} NFTs`;
 

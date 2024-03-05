@@ -30,7 +30,7 @@ import GStyles from 'assets/theme/GStyles';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 
-export type ImTransferInfoType = {
+export type TImTransferInfo = {
   isGroupChat?: boolean;
   channelId?: string;
   toUserId?: string;
@@ -41,7 +41,7 @@ export type ImTransferInfoType = {
 export type ShowCryptoBoxAssetListParamsType = {
   currentSymbol: string;
   currentChainId: ChainId;
-  imTransferInfo?: ImTransferInfoType;
+  imTransferInfo?: TImTransferInfo;
   toAddress?: string;
   onFinishSelectAssets: (item: ICryptoBoxAssetItemType) => void;
 };
@@ -55,7 +55,7 @@ const AssetItem = (props: {
   const { currentNetwork } = useWallet();
 
   const { currentSymbol, currentChainId, onPress, item } = props;
-  const { address, assetType, chainId, decimals, imageUrl, symbol, alias, tokenId } = item;
+  const { address, assetType, chainId, imageUrl, symbol, alias, tokenId } = item;
 
   if (assetType === AssetType.ft)
     return (
@@ -78,7 +78,7 @@ const AssetItem = (props: {
         )}
         <View style={itemStyle.right}>
           <View>
-            <TextL numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font5]}>
+            <TextL numberOfLines={1} ellipsizeMode={'tail'} style={[itemStyle.nftNameShow, FontStyles.font5]}>
               {`${alias} #${tokenId}`}
             </TextL>
             <TextS numberOfLines={1} style={[FontStyles.font3, itemStyle.nftItemInfo]}>
@@ -99,10 +99,9 @@ const CryptoAssetsList = ({
   currentSymbol,
   currentChainId,
   imTransferInfo,
-  toAddress = '',
   onFinishSelectAssets,
 }: ShowCryptoBoxAssetListParamsType) => {
-  const { addresses = [], isGroupChat, toUserId } = imTransferInfo || {};
+  const { addresses = [] } = imTransferInfo || {};
 
   const { t } = useLanguage();
   const caAddressInfos = useCaAddressInfoList();
@@ -331,5 +330,8 @@ const itemStyle = StyleSheet.create({
   },
   nftItemInfo: {
     marginTop: pTd(2),
+  },
+  nftNameShow: {
+    width: pTd(250),
   },
 });

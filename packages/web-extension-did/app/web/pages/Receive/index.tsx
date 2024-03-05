@@ -39,6 +39,13 @@ export default function Receive() {
     () => `ELF_${wallet?.[state.chainId || 'AELF']?.caAddress}_${state.chainId}`,
     [state, wallet],
   );
+  const replaceSuffixShow = useCallback(
+    (str: string) => {
+      const reg = /CHAIN_SUFFIX/gi;
+      return str.replace(reg, `_${state.chainId}`);
+    },
+    [state.chainId],
+  );
   const isMainChain = useMemo(() => state.chainId === MAIN_CHAIN_ID, [state.chainId]);
   const tipTitle = useMemo(
     () => (isMainChain ? RECEIVE_MAIN_CHAIN_TOKEN_TIP_TITLE : RECEIVE_SIDE_CHAIN_TOKEN_TIP_TITLE),
@@ -104,16 +111,20 @@ export default function Receive() {
             <CustomSvg type="Info" />
             <div className="receive-tip-text">
               <div className="receive-tip-title">{tipTitle}</div>
-              <div>
+              <div className="receive-tip-content flex-column">
                 {tipContent.map((item, i) => (
-                  <div key={`receive_${i}`}>{item}</div>
+                  <div key={`receive_${i}`}>{replaceSuffixShow(item)}</div>
                 ))}
               </div>
             </div>
           </div>
         </div>
         {isPrompt && <PromptEmptyElement />}
-        <ReceiveTipModal open={showSideChainTokenReceiveTip && showTip} onClose={() => setShowTip(false)} />
+        <ReceiveTipModal
+          open={showSideChainTokenReceiveTip && showTip}
+          chainId={state.chainId}
+          onClose={() => setShowTip(false)}
+        />
       </div>
     );
   }, [
@@ -129,6 +140,7 @@ export default function Receive() {
     tipContent,
     showSideChainTokenReceiveTip,
     showTip,
+    replaceSuffixShow,
   ]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;

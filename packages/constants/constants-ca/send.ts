@@ -29,7 +29,7 @@ export const RECEIVE_SIDE_CHAIN_TOKEN_TIP_CONTENT = [
   `If you wish to receive assets from exchanges, please note that they will not be credited to your SideChain address, and you cannot make the transfer through QR code scanning.`,
   `To receive, please follow these steps:`,
   ` · Copy your wallet address.`,
-  ` · Remove the "ELF_" prefix and "_tDVV" suffix.`,
+  ` · Remove the "ELF_" prefix and "CHAIN_SUFFIX" suffix.`,
   ` · Use only the middle part of the address.`,
   `Upon completing the transaction, the assets will be sent to your MainChain address.`,
 ];

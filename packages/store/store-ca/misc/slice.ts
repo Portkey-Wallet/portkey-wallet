@@ -4,13 +4,15 @@ import { MiscState } from './types';
 import { DefaultCountry } from '@portkey-wallet/constants/constants-ca/country';
 import { NetworkType } from '@portkey-wallet/types';
 
+const sideChainTokenReceiveTipMapInit = {
+  MAINNET: false, // will tip
+  TESTNET: false,
+};
+
 const initialState: MiscState = {
   phoneCountryCodeListChainMap: {},
   defaultPhoneCountryCode: DefaultCountry,
-  sideChainTokenReceiveTipMap: {
-    MAINNET: true,
-    TESTNET: true,
-  },
+  sideChainTokenReceiveTipMap: sideChainTokenReceiveTipMapInit,
 };
 export const miscSlice = createSlice({
   name: 'misc',
@@ -18,10 +20,20 @@ export const miscSlice = createSlice({
   reducers: {
     setSideChainTokenReceiveTipMap: (state, { payload }: { payload: { network: NetworkType; value: boolean } }) => {
       const { network, value } = payload;
-      state.sideChainTokenReceiveTipMap = {
-        ...state.sideChainTokenReceiveTipMap,
-        [network]: value,
-      };
+      if (state.sideChainTokenReceiveTipMap) {
+        state.sideChainTokenReceiveTipMap = {
+          ...state.sideChainTokenReceiveTipMap,
+          [network]: value,
+        };
+      } else {
+        state = {
+          ...state,
+          sideChainTokenReceiveTipMap: {
+            ...sideChainTokenReceiveTipMapInit,
+            [network]: value,
+          },
+        };
+      }
     },
     resetMisc: () => initialState,
   },

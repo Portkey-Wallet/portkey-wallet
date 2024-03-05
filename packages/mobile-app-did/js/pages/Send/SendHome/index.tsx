@@ -117,15 +117,15 @@ const SendHome: React.FC = () => {
       });
     },
     [
-      assetInfo.chainId,
       chainInfo,
-      debounceSendNumber,
-      getCAContract,
       getTransferFee,
+      debounceSendNumber,
       assetInfo.decimals,
       assetInfo.symbol,
       assetInfo.tokenContractAddress,
+      assetInfo.chainId,
       selectedToContact.address,
+      getCAContract,
     ],
   );
 

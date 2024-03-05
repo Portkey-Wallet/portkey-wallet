@@ -316,7 +316,7 @@ export default class DappMobileOperator extends Operator {
       if (!params.data) return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
       const manager = getManager();
       if (!manager?.keyPair) return generateErrorResponse({ eventName, code: ResponseCode.INTERNAL_ERROR });
-      const data = manager.keyPair.sign(AElf.utils.sha256(params.data), {
+      const data = manager.keyPair.sign(AElf.utils.sha256(Buffer.from(params.data, 'hex')), {
         canonical: true,
       });
       return generateNormalResponse({
@@ -478,6 +478,7 @@ export default class DappMobileOperator extends Operator {
         break;
       }
       case MethodsWallet.GET_WALLET_TRANSACTION_SIGNATURE: {
+        if (request.payload.hexData && !request.payload.data) request.payload.data = request.payload.hexData;
         method = MethodsWallet.GET_WALLET_SIGNATURE;
         if (!isActive) return this.unauthenticated(eventName);
         callBack = this.handleTransactionSignature;

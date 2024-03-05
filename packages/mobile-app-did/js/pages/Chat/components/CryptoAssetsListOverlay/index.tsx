@@ -74,7 +74,7 @@ const AssetItem = (props: {
         <NFTAvatar disabled seedType="ft" nftSize={pTd(48)} badgeSizeType="small" data={item} style={itemStyle.left} />
         <View style={itemStyle.right}>
           <View>
-            <TextL numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font5]}>
+            <TextL numberOfLines={1} ellipsizeMode={'tail'} style={[itemStyle.nftNameShow, FontStyles.font5]}>
               {`${alias} #${tokenId}`}
             </TextL>
             <TextS numberOfLines={1} style={[FontStyles.font3, itemStyle.nftItemInfo]}>
@@ -326,5 +326,8 @@ const itemStyle = StyleSheet.create({
   },
   nftItemInfo: {
     marginTop: pTd(2),
+  },
+  nftNameShow: {
+    width: pTd(250),
   },
 });

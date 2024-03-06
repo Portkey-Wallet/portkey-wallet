@@ -294,7 +294,7 @@ const PaymentModal = ({
       return (
         <Text style={styles.marginTop4}>
           <TextS style={FontStyles.font3}>
-            {formatAmountShow(divDecimalsStr(currentNft?.balance, currentNft?.decimals), '')}
+            {formatAmountShow(divDecimalsStr(currentNft?.balance, currentNft?.decimals))}
           </TextS>
         </Text>
       );

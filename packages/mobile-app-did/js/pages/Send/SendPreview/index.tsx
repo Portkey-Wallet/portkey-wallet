@@ -431,7 +431,7 @@ const SendPreview: React.FC = () => {
               nftSize={pTd(64)}
               badgeSizeType="normal"
               data={{
-                imageUrl: assetInfo.imageLargeUrl,
+                imageUrl: assetInfo.imageUrl,
                 alias: assetInfo.alias,
               }}
               style={styles.img}

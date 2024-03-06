@@ -62,6 +62,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
   const [selectToken, setSelectToken] = useState<ICryptoBoxAssetItemType>({
     ...defaultToken,
     chainId: MAIN_CHAIN_ID,
+    assetType: AssetType.ft,
   });
   const [values, setValues] = useState<TInputValue>({
     packetNum: '',

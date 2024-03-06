@@ -199,16 +199,22 @@
       border-bottom: 1px solid @border-2;
       margin-bottom: 15px;
       .avatar {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        position: relative;
         width: 64px;
         height: 64px;
         border-radius: 6px;
         background: @bg-15;
-        left: 48px;
         font-size: 24px;
         color: @font-12;
+        .tokentagmedium-icon,
+        .nfttagmedium-icon {
+          display: flex;
+          position: absolute;
+          width: 32px;
+          height: 16px;
+          top: 0;
+          right: 4px;
+        }
         img {
           width: 64px;
           height: 64px;

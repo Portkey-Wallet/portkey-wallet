@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import OverlayModal from '../OverlayModal';
-import { View, Text, TouchableOpacity, Keyboard } from 'react-native';
+import { View, Text, Keyboard, ImageBackground, ImageSourcePropType, ScrollView } from 'react-native';
 import { styles } from './style/style';
 import { TextL, TextM, TextTitle } from 'components/CommonText';
 import ButtonRow, { ButtonRowProps } from 'components/ButtonRow';
@@ -8,6 +8,8 @@ import ButtonCol from 'components/ButtonCol';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import { defaultColors } from 'assets/theme';
+import { TextStyleType } from 'types/styles';
+import Touchable from 'components/Touchable';
 
 const show = (
   items: {
@@ -25,7 +27,7 @@ const show = (
         {items.map((item, index) => {
           const { title, onPress } = item;
           return (
-            <TouchableOpacity
+            <Touchable
               key={index}
               style={styles.itemBox}
               onPress={() => {
@@ -33,14 +35,14 @@ const show = (
                 onPress?.(item);
               }}>
               <Text style={styles.itemText}>{title}</Text>
-            </TouchableOpacity>
+            </Touchable>
           );
         })}
       </View>
       {cancelItem && (
-        <TouchableOpacity onPress={() => OverlayModal.hide()} style={styles.cancelBox}>
+        <Touchable onPress={() => OverlayModal.hide()} style={styles.cancelBox}>
           <Text style={styles.cancelText}>{cancelItem.title}</Text>
-        </TouchableOpacity>
+        </Touchable>
       )}
     </>,
     {
@@ -59,6 +61,9 @@ type AlertBodyProps = {
   messageList?: ReactNode[];
   buttonGroupDirection?: 'row' | 'column';
   isCloseShow?: boolean;
+  messageStyle?: TextStyleType;
+  titleStyle?: TextStyleType;
+  bgImage?: ImageSourcePropType;
 };
 
 function AlertBody({
@@ -71,9 +76,13 @@ function AlertBody({
   messageList,
   buttonGroupDirection = 'row',
   isCloseShow = false,
+  messageStyle,
+  titleStyle,
+  bgImage,
 }: AlertBodyProps) {
   return (
-    <View style={[styles.alertBox, isCloseShow && styles.alertBoxWithClose]}>
+    <View style={[styles.alertBox, styles.wrapStyle]}>
+      {!!bgImage && <ImageBackground source={bgImage} style={styles.headerBackgroundBg} />}
       {isCloseShow && (
         <View
           onTouchEnd={() => {
@@ -83,41 +92,61 @@ function AlertBody({
           <Svg icon={'close'} size={pTd(12.5)} color={defaultColors.font7} />
         </View>
       )}
-      {title ? <TextTitle style={styles.alertTitle}>{title}</TextTitle> : null}
-      {typeof title2 === 'string' ? <TextL style={styles.alertTitle2}>{title2}</TextL> : title2}
-      {typeof message === 'string' ? <TextM style={styles.alertMessage}>{message}</TextM> : message}
-      {typeof message2 === 'string' ? <TextM style={styles.alertMessage}>{message2}</TextM> : message2}
-      {messageList?.map((item, index) => {
-        return typeof item === 'string' ? (
-          <TextM key={index} style={styles.alertMessage}>
-            {item}
-          </TextM>
+      <View style={styles.alertBox}>
+        {title ? <TextTitle style={[styles.alertTitle, titleStyle]}>{title}</TextTitle> : null}
+        {typeof title2 === 'string' ? <TextL style={styles.alertTitle2}>{title2}</TextL> : title2}
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={styles.scrollViewStyle}
+          contentContainerStyle={styles.scrollViewContainerStyle}>
+          {typeof message === 'string' ? (
+            message ? (
+              <TextM style={[styles.alertMessage, messageStyle]}>{message}</TextM>
+            ) : null
+          ) : (
+            message
+          )}
+          {typeof message2 === 'string' ? (
+            message2 ? (
+              <TextM style={[styles.alertMessage, messageStyle]}>{message2}</TextM>
+            ) : null
+          ) : (
+            message2
+          )}
+          {messageList?.map((item, index) => {
+            return typeof item === 'string' ? (
+              item ? (
+                <TextM key={index} style={[styles.alertMessage, messageStyle]}>
+                  {item}
+                </TextM>
+              ) : null
+            ) : (
+              item
+            );
+          })}
+        </ScrollView>
+        {buttonGroupDirection === 'row' ? (
+          <ButtonRow
+            buttons={buttons?.map(i => ({
+              ...i,
+              onPress: () => {
+                if (autoClose) OverlayModal.hide();
+                i.onPress?.();
+              },
+            }))}
+          />
         ) : (
-          item
-        );
-      })}
-
-      {buttonGroupDirection === 'row' ? (
-        <ButtonRow
-          buttons={buttons?.map(i => ({
-            ...i,
-            onPress: () => {
-              if (autoClose) OverlayModal.hide();
-              i.onPress?.();
-            },
-          }))}
-        />
-      ) : (
-        <ButtonCol
-          buttons={buttons?.map(i => ({
-            ...i,
-            onPress: () => {
-              if (autoClose) OverlayModal.hide();
-              i.onPress?.();
-            },
-          }))}
-        />
-      )}
+          <ButtonCol
+            buttons={buttons?.map(i => ({
+              ...i,
+              onPress: () => {
+                if (autoClose) OverlayModal.hide();
+                i.onPress?.();
+              },
+            }))}
+          />
+        )}
+      </View>
     </View>
   );
 }

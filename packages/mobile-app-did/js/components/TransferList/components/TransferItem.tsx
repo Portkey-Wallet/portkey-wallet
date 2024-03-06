@@ -3,10 +3,8 @@ import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import { useLanguage } from 'i18n/hooks';
 import React, { memo, useCallback, useMemo, useRef } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { formatTransferTime } from 'utils';
+import { StyleSheet, Text, View } from 'react-native';
 import { formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
-
 import { pTd } from 'utils/unit';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
@@ -32,6 +30,8 @@ import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wal
 import fonts from 'assets/theme/fonts';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { getEllipsisTokenShow } from 'pages/Chat/utils/format';
+import Touchable from 'components/Touchable';
+import { formatTransferTime } from '@portkey-wallet/utils/time';
 
 interface ActivityItemPropsType {
   item?: ActivityItemType;
@@ -79,7 +79,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
   );
 
   const retryCrossChain = useCallback(
-    async (managerTransferTxId: string, data: CrossChainTransferParamsType) => {
+    async (managerTransferTxId: string, data: CrossChainTransferParamsType & { issueChainId: number }) => {
       const chainInfo = currentChainList?.find(chain => chain.chainId === data.tokenInfo.chainId);
       if (!chainInfo || !pin) return;
       const account = getManagerAccount(pin);
@@ -136,6 +136,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
         <Text style={[itemStyle.tokenBalance, fonts.regularFont]}>
           {item?.nftInfo?.nftId ? `#${item?.nftInfo?.nftId}` : amountString}
         </Text>
+
         {/* TODO : change func formatAmountShow */}
         {isMainnet && !item?.nftInfo && (isTokenHasPrice || item?.symbol === null) && (
           <Text style={itemStyle.usdtBalance}>{`$ ${formatAmountShow(
@@ -148,14 +149,11 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
   }, [amountString, isMainnet, isTokenHasPrice, item, tokenPriceObject]);
 
   return (
-    <TouchableOpacity style={itemStyle.itemWrap} onPress={() => onPress?.(item)}>
+    <Touchable style={itemStyle.itemWrap} onPress={() => onPress?.(item)}>
       <Text style={itemStyle.time}>{formatTransferTime(Number(item?.timestamp) * 1000)}</Text>
       <View style={[itemStyle.contentWrap]}>
         <CommonAvatar
           style={itemStyle.left}
-          // svgName={
-          //   SHOW_FROM_TRANSACTION_TYPES.includes(item?.transactionType as TransactionTypes) ? 'transfer' : 'Contract'
-          // }
           svgName={item?.listIcon ? undefined : 'transfer'}
           imageUrl={item?.listIcon || ''}
           avatarSize={pTd(32)}
@@ -187,7 +185,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
           />
         </View>
       )}
-    </TouchableOpacity>
+    </Touchable>
   );
 };
 

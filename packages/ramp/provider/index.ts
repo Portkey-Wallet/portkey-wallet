@@ -58,6 +58,13 @@ export class AlchemyPayProvider extends RampProvider implements IAlchemyPayProvi
 
     if (orderId) handleOrderUrl += `&merchantOrderNo=${orderId}`;
 
+    if (withdrawUrl) {
+      const withdrawUrlTrans = encodeURIComponent(
+        withdrawUrl + `&payload=${encodeURIComponent(JSON.stringify({ orderNo: orderId }))}`,
+      );
+      handleOrderUrl += `&withdrawUrl=${withdrawUrlTrans}`;
+    }
+
     if (type === RampType.BUY) {
       handleOrderUrl += `&fiatAmount=${amount}`;
 
@@ -71,11 +78,7 @@ export class AlchemyPayProvider extends RampProvider implements IAlchemyPayProvi
       const signature = await this.getSignature(address);
       handleOrderUrl += `&address=${address}&sign=${encodeURIComponent(signature)}`;
     } else {
-      const withdrawUrlTrans = encodeURIComponent(
-        withdrawUrl + `&payload=${encodeURIComponent(JSON.stringify({ orderNo: orderId }))}`,
-      );
-
-      handleOrderUrl += `&cryptoAmount=${amount}&withdrawUrl=${withdrawUrlTrans}&source=3#/sell-formUserInfo`;
+      handleOrderUrl += `&cryptoAmount=${amount}&source=3#/sell-formUserInfo`;
     }
 
     return { orderId, url: handleOrderUrl };
@@ -106,7 +109,7 @@ export class TransakProvider extends RampProvider implements IRampProvider {
 
   async createOrder(params: IRampProviderCreateOrderParams): Promise<IRampProviderCreateOrderResult> {
     const { baseUrl, appId, key } = this.providerInfo;
-    const { type, network, country, fiat, crypto, amount, address, email } = params;
+    const { type, network, country, fiat, crypto, amount, address, email, withdrawUrl } = params;
 
     const orderId = await this.getOrderId({
       transDirect: type === RampType.BUY ? ITransDirectEnum.TOKEN_BUY : ITransDirectEnum.TOKEN_SELL,
@@ -128,6 +131,7 @@ export class TransakProvider extends RampProvider implements IRampProvider {
             walletAddress: address,
             email: email,
             partnerOrderId: orderId,
+            redirectURL: withdrawUrl,
           },
         },
         { encode: true },

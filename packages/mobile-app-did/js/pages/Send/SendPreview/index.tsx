@@ -45,14 +45,15 @@ import { ChainId } from '@portkey-wallet/types';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
-import CommonAvatar from 'components/CommonAvatar';
 import { useCheckTransferLimitWithJump } from 'hooks/security';
 import { useSendIMTransfer } from '@portkey-wallet/hooks/hooks-ca/im/transfer';
 import { TransferTypeEnum } from '@portkey-wallet/im';
 import { useJumpToChatDetails, useJumpToChatGroupDetails } from 'hooks/chat';
 import { useFocusEffect } from '@react-navigation/native';
+import NFTAvatar from 'components/NFTAvatar';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-mainnet-v2';
 
-const SendHome: React.FC = () => {
+const SendPreview: React.FC = () => {
   const { t } = useLanguage();
   const isMainnet = useIsMainnet();
   const defaultToken = useDefaultToken();
@@ -88,7 +89,7 @@ const SendHome: React.FC = () => {
   const currentNetwork = useCurrentNetworkInfo();
   const caAddressInfos = useCaAddressInfoList();
   const wallet = useCurrentWalletInfo();
-  const { walletName } = useWallet();
+  const { userInfo } = useWallet();
   const contractRef = useRef<ContractBasic>();
   const tokenContractRef = useRef<ContractBasic>();
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
@@ -209,7 +210,7 @@ const SendHome: React.FC = () => {
 
     if (sendType === 'nft') {
       dispatch(clearNftCollection());
-      dispatch(fetchNFTCollectionsAsync({ caAddresses: caAddresses, caAddressInfos }));
+      dispatch(fetchNFTCollectionsAsync({ caAddressInfos }));
     } else {
       dispatch(fetchTokenListAsync({ caAddresses: caAddresses, caAddressInfos }));
     }
@@ -372,9 +373,30 @@ const SendHome: React.FC = () => {
     Loading.hide();
   }, [dispatch, retryCrossChain, showRetry, transfer]);
 
+  const checkAndSend = useCallback(() => {
+    if (assetInfo.chainId !== DefaultChainId)
+      return ActionSheet.alert({
+        title: t('Send to exchange account?'),
+        message: t(
+          `Please note that assets on the SideChain can't be sent directly to exchanges. You can transfer your SideChain assets to the MainChain before sending them to your exchange account.`,
+        ),
+        buttons: [
+          {
+            type: 'outline',
+            title: 'Cancel',
+          },
+          {
+            title: t('Confirm'),
+            type: 'primary',
+            onPress: GeneralSend,
+          },
+        ],
+      });
+    GeneralSend();
+  }, [GeneralSend, assetInfo.chainId, t]);
   const onSend = useCallback(() => {
-    imTransferInfo ? imSend() : GeneralSend();
-  }, [GeneralSend, imSend, imTransferInfo]);
+    imTransferInfo ? imSend() : checkAndSend();
+  }, [checkAndSend, imSend, imTransferInfo]);
 
   useFocusEffect(
     useCallback(() => {
@@ -401,13 +423,24 @@ const SendHome: React.FC = () => {
       scrollViewProps={{ disabled: true }}>
       {sendType === 'nft' ? (
         <View style={styles.topWrap}>
-          {!assetInfo?.imageUrl ? (
-            <Text style={styles.noImg}>{assetInfo?.alias[0]}</Text>
-          ) : (
-            <CommonAvatar avatarSize={pTd(64)} style={styles.img} imageUrl={assetInfo?.imageUrl || ''} />
-          )}
+          {
+            <NFTAvatar
+              disabled
+              isSeed={assetInfo.isSeed}
+              seedType={assetInfo.seedType}
+              nftSize={pTd(64)}
+              badgeSizeType="normal"
+              data={{
+                imageUrl: assetInfo.imageUrl,
+                alias: assetInfo.alias,
+              }}
+              style={styles.img}
+            />
+          }
           <View style={styles.topLeft}>
-            <TextL style={[styles.nftTitle, fonts.mediumFont]}>{`${assetInfo.alias} #${assetInfo?.tokenId}`} </TextL>
+            <TextL numberOfLines={1} style={[styles.nftTitle, fonts.mediumFont]}>
+              {`${assetInfo.alias} #${assetInfo?.tokenId}  `}
+            </TextL>
             <TextS style={[FontStyles.font3]}>{`Amount：${sendNumber}`}</TextS>
           </View>
         </View>
@@ -430,7 +463,7 @@ const SendHome: React.FC = () => {
           <View style={styles.section}>
             <View style={[styles.flexSpaceBetween]}>
               <TextM style={styles.lightGrayFontColor}>{t('From')}</TextM>
-              <TextM style={styles.blackFontColor}>{walletName}</TextM>
+              <TextM style={styles.blackFontColor}>{userInfo?.nickName}</TextM>
             </View>
             <View style={[styles.flexSpaceBetween]}>
               <TextM style={styles.lightGrayFontColor} />
@@ -554,7 +587,7 @@ const SendHome: React.FC = () => {
   );
 };
 
-export default memo(SendHome);
+export default memo(SendPreview);
 
 export const styles = StyleSheet.create({
   pageWrap: {
@@ -591,6 +624,8 @@ export const styles = StyleSheet.create({
   nftTitle: {
     color: defaultColors.font5,
     marginBottom: pTd(4),
+    paddingRight: pTd(8),
+    maxWidth: pTd(230),
   },
   tokenCount: {
     marginTop: pTd(40),

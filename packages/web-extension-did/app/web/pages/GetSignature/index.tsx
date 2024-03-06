@@ -12,14 +12,17 @@ import ImageDisplay from 'pages/components/ImageDisplay';
 import { showValueToStr } from '@portkey-wallet/utils/byteConversion';
 import getSeed from 'utils/getSeed';
 import singleMessage from 'utils/singleMessage';
+import AsyncButton from 'components/AsyncButton';
 import './index.less';
-
+import AElf from 'aelf-sdk';
+import { IBlockchainWallet } from '@portkey/types';
 export default function GetSignature() {
-  const { payload } = usePromptSearch<{
+  const { payload, autoSha256 } = usePromptSearch<{
     payload: {
       data: string;
       origin: string;
     };
+    autoSha256?: boolean;
   }>();
   const { t } = useTranslation();
   const { currentNetwork } = useWalletInfo();
@@ -40,6 +43,18 @@ export default function GetSignature() {
     [curDapp],
   );
 
+  const onSignByManager = useCallback(
+    (manager: IBlockchainWallet) => {
+      if (autoSha256) {
+        return manager.keyPair.sign(AElf.utils.sha256(Buffer.from(payload?.data, 'hex')), {
+          canonical: true,
+        });
+      }
+      return manager.keyPair.sign(payload?.data);
+    },
+    [autoSha256, payload?.data],
+  );
+
   const sendHandler = useCallback(async () => {
     try {
       const { privateKey } = await getSeed();
@@ -50,8 +65,8 @@ export default function GetSignature() {
         closePrompt({ ...errorHandler(400001), data: { code: ResponseCode.INTERNAL_ERROR, msg: 'invalid error' } });
         return;
       }
+      const data = onSignByManager(manager);
 
-      const data = manager.keyPair.sign(payload?.data);
       closePrompt({
         ...errorHandler(0),
         data,
@@ -60,7 +75,7 @@ export default function GetSignature() {
       console.error(error, 'error===detail');
       singleMessage.error(handleErrorMessage(error));
     }
-  }, [payload]);
+  }, [onSignByManager]);
 
   return (
     <div className="get-signature flex">
@@ -78,9 +93,9 @@ export default function GetSignature() {
           }}>
           {t('Reject')}
         </Button>
-        <Button type="primary" onClick={sendHandler}>
+        <AsyncButton type="primary" onClick={sendHandler}>
           {t('Sign')}
-        </Button>
+        </AsyncButton>
       </div>
     </div>
   );

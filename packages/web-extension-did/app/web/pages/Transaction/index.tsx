@@ -5,7 +5,13 @@ import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types
 import { Transaction } from '@portkey-wallet/types/types-ca/trade';
 import { getExploreLink } from '@portkey-wallet/utils';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { formatStr2EllipsisStr, AmountSign, formatWithCommas } from '@portkey-wallet/utils/converter';
+import {
+  formatStr2EllipsisStr,
+  AmountSign,
+  formatWithCommas,
+  formatAmountShow,
+  divDecimals,
+} from '@portkey-wallet/utils/converter';
 import clsx from 'clsx';
 import Copy from 'components/Copy';
 import CustomSvg from 'components/CustomSvg';
@@ -25,6 +31,7 @@ import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks
 import { ChainId } from '@portkey-wallet/types';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { ITransactionLocationState, THomePageLocationState } from 'types/router';
+import { getSeedTypeTag } from 'utils/assets';
 
 export default function Transaction() {
   const { t } = useTranslation();
@@ -88,10 +95,13 @@ export default function Transaction() {
   const isNft = useMemo(() => !!activityItem?.nftInfo?.nftId, [activityItem?.nftInfo?.nftId]);
 
   const nftHeaderUI = useCallback(() => {
-    const { nftInfo, amount } = activityItem;
+    const { nftInfo, amount, decimals } = activityItem;
+    const seedTypeTag = nftInfo ? getSeedTypeTag(nftInfo) : '';
+
     return (
       <div className="nft-amount">
-        <div className="assets">
+        <div className="assets flex-center">
+          {seedTypeTag && <CustomSvg type={seedTypeTag} />}
           {nftInfo?.imageUrl ? (
             <img className="assets-img" src={nftInfo?.imageUrl} />
           ) : (
@@ -103,7 +113,7 @@ export default function Transaction() {
             <span>{nftInfo?.alias}</span>
             <span className="token-id">#{nftInfo?.nftId}</span>
           </p>
-          <p className="quantity">{`Amount: ${amount}`}</p>
+          <p className="quantity">{`Amount: ${formatAmountShow(divDecimals(amount, decimals || 0))}`}</p>
         </div>
       </div>
     );

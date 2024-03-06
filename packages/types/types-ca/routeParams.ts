@@ -1,4 +1,5 @@
 import { ChainId, ChainType } from '..';
+import { SeedTypeEnum } from './assets';
 import { GuardiansApprovedType } from './guardian';
 import type { SendType } from './send';
 
@@ -8,6 +9,7 @@ export interface IToSendHomeAssetParamsBaseType {
   balance: string;
   imageUrl: string;
   tokenContractAddress: string;
+  address?: string;
   [key: string]: any;
 }
 
@@ -19,6 +21,9 @@ export interface IToSendTokenParamsType extends IToSendHomeAssetParamsBaseType {
 export interface IToSendNftParamsType extends IToSendHomeAssetParamsBaseType {
   alias: string;
   tokenId: string;
+  decimals: string;
+  isSeed?: boolean;
+  seedType?: SeedTypeEnum;
 }
 
 export type IToSendAssetParamsType = IToSendTokenParamsType | IToSendNftParamsType;

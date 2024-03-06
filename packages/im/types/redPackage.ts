@@ -1,4 +1,6 @@
+import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import { ChainId } from '.';
+import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
 
 export type RedPackageStatusInfo = {
   viewStatus: RedPackageStatusEnum;
@@ -53,6 +55,12 @@ export type RedPackageDetail = {
   grabbed: number;
   type: RedPackageTypeEnum;
   viewStatus: RedPackageStatusEnum;
+  alias: string;
+  tokenId: string;
+  imageUrl: string;
+  assetType: AssetType;
+  isSeed?: boolean;
+  seedType?: SeedTypeEnum;
 };
 
 export type RedPackageGrabInfoItem = {

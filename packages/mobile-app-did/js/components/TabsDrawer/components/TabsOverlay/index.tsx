@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useCallback, useMemo, useRef, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { StyleSheet, TouchableOpacity, View, Share } from 'react-native';
+import { StyleSheet, View, Share } from 'react-native';
 import { TextL, TextS } from 'components/CommonText';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
@@ -20,6 +20,7 @@ import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import { request } from '@portkey-wallet/api/api-did';
 import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import Touchable from 'components/Touchable';
 
 enum HANDLE_TYPE {
   REFRESH = 'Refresh',
@@ -160,7 +161,6 @@ const BrowserEditModal = ({
       { title: HANDLE_TYPE.REFRESH, icon: 'refresh1' },
       { title: HANDLE_TYPE.COPY, icon: 'copy1' },
       { title: HANDLE_TYPE.SHARE, icon: 'share' },
-      { title: HANDLE_TYPE.SWITCH, icon: 'switch' },
       {
         title: bookmark ? HANDLE_TYPE.UN_BOOKMARK : HANDLE_TYPE.BOOKMARK,
         icon: bookmark ? 'bookmarked' : 'bookmark',
@@ -178,26 +178,26 @@ const BrowserEditModal = ({
             {getCmsWebsiteInfoName(browserInfo?.url) || browserInfo?.url}
           </TextS>
         </View>
-        <TouchableOpacity onPress={() => handleUrl(HANDLE_TYPE.CANCEL)}>
+        <Touchable onPress={() => handleUrl(HANDLE_TYPE.CANCEL)}>
           <Svg icon="close" size={pTd(12)} />
-        </TouchableOpacity>
+        </Touchable>
       </View>
       <View style={styles.listWrap}>
         {handleArray.map((ele, index) => (
-          <TouchableOpacity key={index} style={styles.listItem} onPress={() => handleUrl(ele.title)}>
+          <Touchable key={index} style={styles.listItem} onPress={() => handleUrl(ele.title)}>
             <View style={[styles.svgWrap]}>
               <Svg icon={ele.icon} size={pTd(52)} />
             </View>
             <TextS key={index} style={[FontStyles.font3, styles.itemTitle]}>
               {ele.title}
             </TextS>
-          </TouchableOpacity>
+          </Touchable>
         ))}
       </View>
       <View style={styles.divider} />
-      <TouchableOpacity style={[GStyles.center, styles.cancelButton]} onPress={() => handleUrl(HANDLE_TYPE.CANCEL)}>
+      <Touchable style={[GStyles.center, styles.cancelButton]} onPress={() => handleUrl(HANDLE_TYPE.CANCEL)}>
         <TextL style={[GStyles.alignCenter, FontStyles.font3]}>{t('Cancel')}</TextL>
-      </TouchableOpacity>
+      </Touchable>
     </View>
   );
 };
@@ -240,6 +240,7 @@ const styles = StyleSheet.create({
   listWrap: {
     marginTop: pTd(24),
     marginBottom: pTd(24),
+    marginHorizontal: pTd(12),
     display: 'flex',
     flexWrap: 'wrap',
     flexDirection: 'row',

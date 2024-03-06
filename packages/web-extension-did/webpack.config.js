@@ -159,6 +159,11 @@ let config = {
           toType: 'file',
         },
         {
+          from: './app/web/popup-load.js',
+          to: `./${outputDir}/js/popup-load.js`,
+          toType: 'file',
+        },
+        {
           from: './app/web/assets/fonts',
           to: `./${outputDir}/assets/fonts`,
           toType: 'dir',

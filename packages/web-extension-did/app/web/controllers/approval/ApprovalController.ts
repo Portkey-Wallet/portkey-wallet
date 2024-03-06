@@ -120,10 +120,10 @@ export default class ApprovalController {
    * Obtain authorization to get signature
    *
    */
-  async authorizedToGetSignature(params: any): Promise<SendResponseParams> {
+  async authorizedToGetSignature(params: any, autoSha256 = false): Promise<SendResponseParams> {
     return this.notificationService.openPrompt({
       method: PromptRouteTypes.GET_SIGNATURE,
-      search: JSON.stringify(params),
+      search: JSON.stringify({ ...params, autoSha256 }),
     });
   }
 

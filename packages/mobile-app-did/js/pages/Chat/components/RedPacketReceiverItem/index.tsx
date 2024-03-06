@@ -1,5 +1,5 @@
 import { RedPackageGrabInfoItem } from '@portkey-wallet/im';
-import { divDecimalsStr } from '@portkey-wallet/utils/converter';
+import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
@@ -10,13 +10,13 @@ import Svg from 'components/Svg';
 import { getEllipsisTokenShow } from 'pages/Chat/utils/format';
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { formatTransferTime } from 'utils';
+import { formatTransferTime } from '@portkey-wallet/utils/time';
 import { pTd } from 'utils/unit';
 
 interface IReceiverItemProps {
   item: RedPackageGrabInfoItem;
   symbol: string;
-  decimals: string | number;
+  decimals?: string | number;
   isLuckyKing: boolean;
 }
 
@@ -46,15 +46,17 @@ const RedPacketReceiverItem: React.FC<IReceiverItemProps> = props => {
 
         <View style={itemStyle.balanceWrap}>
           <TextL style={itemStyle.amount} numberOfLines={1} ellipsizeMode={'tail'}>
-            {getEllipsisTokenShow(divDecimalsStr(item.amount, decimals), symbol)}
+            {getEllipsisTokenShow(formatAmountShow(divDecimals(item.amount, decimals)), symbol)}
           </TextL>
           <View style={itemStyle.blank} />
           {item.isLuckyKing || isLuckyKing ? (
-            <View style={[GStyles.flexRow, GStyles.itemCenter]}>
+            <View style={[GStyles.flexRow, GStyles.itemCenter, itemStyle.luckiestWrap]}>
               <Svg icon="luckiest" size={pTd(16)} />
               <TextM style={itemStyle.luckiest}>Luckiest Draw</TextM>
             </View>
-          ) : null}
+          ) : (
+            <View style={itemStyle.luckiestWrap} />
+          )}
         </View>
       </View>
     </View>
@@ -116,5 +118,8 @@ const itemStyle = StyleSheet.create({
   luckiest: {
     marginLeft: pTd(4),
     color: defaultColors.font6,
+  },
+  luckiestWrap: {
+    height: pTd(16),
   },
 });

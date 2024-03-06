@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { View, Text, StyleProp, ViewProps } from 'react-native';
 import Svg from 'components/Svg';
 import { styles } from './style';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
 import ActivityButton from 'pages/DashBoard/ActivityButton';
@@ -18,6 +17,7 @@ import FaucetButton from 'components/FaucetButton';
 import GStyles from 'assets/theme/GStyles';
 import DepositButton from 'components/DepositButton';
 import { DepositItem, useDepositList } from 'hooks/deposit';
+import Touchable from 'components/Touchable';
 
 const Card: React.FC = () => {
   const isMainnet = useIsMainnet();
@@ -47,14 +47,14 @@ const Card: React.FC = () => {
     <View style={[styles.cardWrap]}>
       <View style={styles.refreshWrap}>
         <Text style={styles.block} />
-        <TouchableOpacity
+        <Touchable
           style={styles.svgWrap}
           onPress={async () => {
             if (!(await qrScanPermissionAndToast())) return;
             navigationService.navigate('QrScanner');
           }}>
           <Svg icon="scan" size={22} color={defaultColors.font2} />
-        </TouchableOpacity>
+        </Touchable>
       </View>
       <Text style={styles.usdtBalance}>{isMainnet ? `$${accountBalanceUSD}` : 'Dev Mode'}</Text>
       <TextM style={styles.accountName}>{userInfo?.nickName}</TextM>

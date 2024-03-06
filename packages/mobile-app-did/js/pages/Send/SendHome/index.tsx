@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
@@ -50,7 +50,6 @@ import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useGetTransferFee } from 'hooks/transfer';
 
 const SendHome: React.FC = () => {
-  const IM = useRoute<RouteProp<{ params: IToSendHomeParamsType }>>();
   const {
     params: { sendType = 'token', toInfo, assetInfo, imTransferInfo },
   } = useRoute<RouteProp<{ params: IToSendHomeParamsType }>>();
@@ -58,8 +57,6 @@ const SendHome: React.FC = () => {
   useFetchTxFee();
   const isValidChainId = useIsValidSuffix();
   const defaultToken = useDefaultToken();
-
-  console.log('SendHomeSendHomeSendHome', IM);
 
   const wallet = useCurrentWalletInfo();
   const chainInfo = useCurrentChain(assetInfo?.chainId);
@@ -117,15 +114,15 @@ const SendHome: React.FC = () => {
       });
     },
     [
-      assetInfo.chainId,
       chainInfo,
-      debounceSendNumber,
-      getCAContract,
       getTransferFee,
+      debounceSendNumber,
       assetInfo.decimals,
       assetInfo.symbol,
       assetInfo.tokenContractAddress,
+      assetInfo.chainId,
       selectedToContact.address,
+      getCAContract,
     ],
   );
 
@@ -286,7 +283,6 @@ const SendHome: React.FC = () => {
     }
 
     if (isCrossChain(selectedToContact.address, assetInfo.chainId)) {
-      // TODO: check if  cross chain
       showDialog('crossChain', () => {
         setErrorMessage([]);
         setStep(2);
@@ -456,7 +452,6 @@ const SendHome: React.FC = () => {
   ]);
 
   const preview = useCallback(async () => {
-    // TODO : getTransactionFee and check the balance
     const result = await checkCanPreview();
     if (!result?.status) return;
 
@@ -497,7 +492,7 @@ const SendHome: React.FC = () => {
       titleDom={`${t('Send')}${sendType === 'token' ? ' ' + assetInfo.symbol : ''}`}
       rightDom={
         sendType === 'token' && !isFixedToContact ? (
-          <TouchableOpacity
+          <Touchable
             onPress={async () => {
               if (selectedToContact?.address) return showDialog('clearAddress');
               if (!(await qrScanPermissionAndToast())) return;
@@ -505,7 +500,7 @@ const SendHome: React.FC = () => {
               navigationService.navigate('QrScanner', { fromSendPage: true });
             }}>
             <Svg icon="scan" size={pTd(17.5)} color={defaultColors.font2} iconStyle={styles.iconStyle} />
-          </TouchableOpacity>
+          </Touchable>
         ) : undefined
       }
       containerStyles={styles.pageWrap}
@@ -559,7 +554,7 @@ const SendHome: React.FC = () => {
             <NFTInfo nftItem={assetInfo} />
           </View>
           <View style={styles.group}>
-            <AmountNFT sendNumber={sendNumber} setSendNumber={setSendNumber} />
+            <AmountNFT sendNumber={sendNumber} setSendNumber={setSendNumber} assetInfo={assetInfo} />
           </View>
         </>
       )}

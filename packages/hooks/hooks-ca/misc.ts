@@ -8,6 +8,7 @@ import { CountryItem } from '@portkey-wallet/types/types-ca/country';
 import signalrDid from '@portkey-wallet/socket/socket-did';
 import { request } from '@portkey-wallet/api/api-did';
 import { INIT_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/constants/constants-ca/common';
+import { resetMisc, setSideChainTokenReceiveTipMap } from '@portkey-wallet/store/store-ca/misc/slice';
 
 export const useMisc = () => useAppCASelector(state => state.misc);
 
@@ -124,7 +125,7 @@ export const useIsScanQRCode = (clientId: string | undefined) => {
 };
 
 export const useTimer = () => {
-  const timerRef = useRef<NodeJS.Timeout>();
+  const timerRef = useRef<NodeJS.Timeout | number>();
 
   useEffect(() => {
     return () => {
@@ -173,5 +174,61 @@ export const useErrorMessage = () => {
   return {
     error,
     setError: onSetError,
+  };
+};
+
+export const useSideChainTokenReceiveTipSetting = () => {
+  const currentNetworkInfo = useCurrentNetworkInfo();
+  const miscState = useAppCASelector(state => state.misc);
+  const dispatch = useAppCommonDispatch();
+
+  const showSideChainTokenReceiveTip = useMemo(
+    () => !miscState.sideChainTokenReceiveTipMap?.[currentNetworkInfo.networkType],
+    [currentNetworkInfo.networkType, miscState.sideChainTokenReceiveTipMap],
+  );
+
+  const setSideChainTokenReceiveTip = useCallback(
+    (tip: boolean) => {
+      dispatch(
+        setSideChainTokenReceiveTipMap({
+          network: currentNetworkInfo.networkType,
+          value: tip,
+        }),
+      );
+    },
+    [currentNetworkInfo.networkType, dispatch],
+  );
+
+  const cancelSideChainTokenReceiveTip = useCallback(() => {
+    setSideChainTokenReceiveTip(true);
+  }, [setSideChainTokenReceiveTip]);
+
+  const reSetSideChainTokenReceiveTip = useCallback(() => {
+    setSideChainTokenReceiveTip(false);
+  }, [setSideChainTokenReceiveTip]);
+
+  return {
+    showSideChainTokenReceiveTip,
+    cancelSideChainTokenReceiveTip,
+    setSideChainTokenReceiveTip,
+    reSetSideChainTokenReceiveTip,
+  };
+};
+
+export const useMiscSetting = () => {
+  const dispatch = useAppCommonDispatch();
+  const { reSetSideChainTokenReceiveTip } = useSideChainTokenReceiveTipSetting();
+
+  const resetCurrentNetworkSetting = useCallback(() => {
+    reSetSideChainTokenReceiveTip();
+  }, [reSetSideChainTokenReceiveTip]);
+
+  const resetAllSetting = useCallback(() => {
+    dispatch(resetMisc());
+  }, [dispatch]);
+
+  return {
+    resetCurrentNetworkSetting,
+    resetAllSetting,
   };
 };

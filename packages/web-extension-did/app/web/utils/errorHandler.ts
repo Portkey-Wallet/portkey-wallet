@@ -77,7 +77,7 @@ export default function errorHandler(code: keyof typeof errorMap, error?: any | 
     output = {
       ...output,
       name: error.name,
-      message: error.message || error.Error?.Message || error.Error,
+      message: error?.error?.message || error.message || error.Error?.Message || error.Error,
       stack: error.stack,
       data: error.data,
     };

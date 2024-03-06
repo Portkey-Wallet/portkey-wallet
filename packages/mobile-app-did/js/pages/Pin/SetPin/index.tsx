@@ -56,7 +56,6 @@ export default function SetPin() {
         message: MessageMap[managerInfo.verificationType],
         buttons: [
           { title: 'No', type: 'outline' },
-          // TODO: navigate
           {
             title: 'Yes',
             onPress: () => {

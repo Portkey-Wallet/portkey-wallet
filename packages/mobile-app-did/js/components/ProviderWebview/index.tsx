@@ -1,11 +1,16 @@
-import React, { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { Linking, StyleSheet } from 'react-native';
 import WebView, { WebViewProps } from 'react-native-webview';
 import useEffectOnce from 'hooks/useEffectOnce';
 import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
 import { MobileStream } from 'dapp/mobileStream';
 import DappMobileOperator from 'dapp/dappMobileOperator';
-import { WebViewErrorEvent, WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
+import {
+  FileDownloadEvent,
+  WebViewErrorEvent,
+  WebViewNavigation,
+  WebViewNavigationEvent,
+} from 'react-native-webview/lib/WebViewTypes';
 import URL from 'url-parse';
 import { store } from 'store';
 import { DappOverlay } from 'dapp/dappOverlay';
@@ -17,6 +22,8 @@ import * as Application from 'expo-application';
 import { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { PROTOCOL_ALLOW_LIST } from 'constants/web';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
+export const BLANK_PAGE = 'about:blank';
 
 export interface IWebView {
   goBack: WebView['goBack'];
@@ -42,7 +49,7 @@ const ProviderWebview = forwardRef<
   const operatorRef = useRef<DappMobileOperator | null>(null);
   // Android will trigger onLoadEnd before onLoadStart, Mark start status.
   const loadStartRef = useRef<boolean>(false);
-
+  const prePageUrl = useRef<string>();
   const [entryScriptWeb3, setEntryScriptWeb3] = useState<string>();
   useEffectOnce(() => {
     const getEntryScriptWeb3 = async () => {
@@ -146,7 +153,15 @@ const ProviderWebview = forwardRef<
     }),
     [],
   );
-
+  const onFileDownload = useCallback(async (event: FileDownloadEvent) => {
+    try {
+      await Linking.openURL(event.nativeEvent.downloadUrl);
+    } catch (er: any) {
+      console.log('Failed to open Link:', er.message);
+    } finally {
+      webViewRef.current?.reload();
+    }
+  }, []);
   const onShouldStartLoadWithRequest = ({ url }: ShouldStartLoadRequest) => {
     const { protocol } = new URL(url);
     if (PROTOCOL_ALLOW_LIST.includes(protocol)) return true;
@@ -158,10 +173,8 @@ const ProviderWebview = forwardRef<
     // }
     return false;
   };
-  if (!entryScriptWeb3) return null;
-
-  return (
-    <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.scrollStyle}>
+  const webViewDom = useMemo(
+    () => (
       <WebView
         ref={webViewRef}
         // style={styles.webView}
@@ -188,11 +201,18 @@ const ProviderWebview = forwardRef<
           handleUpdate(event);
           props.onLoad?.(event);
         }}
+        onNavigationStateChange={(event: WebViewNavigation) => {
+          if (prePageUrl.current === BLANK_PAGE && event.url !== BLANK_PAGE && !isIOS)
+            webViewRef.current?.clearHistory?.();
+          prePageUrl.current = event.url;
+          props.onNavigationStateChange?.(event);
+        }}
         onMessage={event => {
           const { nativeEvent } = event;
           operatorRef.current?.handleRequestMessage(nativeEvent.data);
           props.onMessage?.(event);
         }}
+        onFileDownload={props.onFileDownload ? props.onFileDownload : onFileDownload}
         // fix webview show blank page when not used for some time in android
         // https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md#onrenderprocessgone
         onRenderProcessGone={() => webViewRef.current?.reload()}
@@ -200,6 +220,16 @@ const ProviderWebview = forwardRef<
         // https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md#oncontentprocessdidterminate
         onContentProcessDidTerminate={() => webViewRef.current?.reload()}
       />
+    ),
+    [entryScriptWeb3, handleUpdate, onFileDownload, onLoadStart, props, source],
+  );
+  if (!entryScriptWeb3) return null;
+
+  if (isIOS) return webViewDom;
+
+  return (
+    <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.scrollStyle}>
+      {webViewDom}
     </KeyboardAwareScrollView>
   );
 });

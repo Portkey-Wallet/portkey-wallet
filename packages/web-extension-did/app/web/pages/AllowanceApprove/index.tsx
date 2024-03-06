@@ -16,6 +16,7 @@ import { IGuardiansApproved } from '@portkey/did-ui-react';
 import ManagerApproveInner from './ManagerApproveInner';
 import getSeed from 'utils/getSeed';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 import './index.less';
 
 export default function AllowanceApprove() {
@@ -29,6 +30,7 @@ export default function AllowanceApprove() {
   const caHash = useCurrentCaHash();
   const originChainId = useOriginChainId();
   const chainInfo = useCurrentChain(chainId);
+  const currentNetwork = useCurrentNetwork();
 
   const [txParams, setTxParams] = useState<any>();
 
@@ -131,6 +133,7 @@ export default function AllowanceApprove() {
     <div className="common-content1">
       {txParams && (
         <ManagerApproveInner
+          networkType={currentNetwork}
           originChainId={originChainId}
           targetChainId={chainId}
           caHash={caHash || ''}

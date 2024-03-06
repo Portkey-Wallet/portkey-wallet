@@ -10,7 +10,7 @@ import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { Button, Modal } from 'antd';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
-import { dateFormatTransTo13 } from 'utils';
+import { formatTransferTime } from '@portkey-wallet/utils/time';
 import { useTranslation } from 'react-i18next';
 import { intervalCrossChainTransfer } from 'utils/sandboxUtil/crossChainTransfer';
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
@@ -201,7 +201,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         {data?.map((item, index) => (
           <List.Item key={`activityList_${item.transactionId}_${index}`}>
             <div className="activity-item" onClick={() => navToDetail(item)}>
-              <div className="time">{dateFormatTransTo13(Number(item.timestamp))}</div>
+              <div className="time">{formatTransferTime(item.timestamp)}</div>
               <div className="info">
                 {!!item.listIcon && (
                   <div

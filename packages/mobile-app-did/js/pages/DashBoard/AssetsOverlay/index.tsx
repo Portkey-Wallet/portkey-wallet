@@ -29,6 +29,7 @@ import { fetchAssetAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
 import Touchable from 'components/Touchable';
 import NFTAvatar from 'components/NFTAvatar';
+import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 
 export type ImTransferInfoType = {
   isGroupChat?: boolean;
@@ -62,7 +63,14 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
     } = item;
     return (
       <Touchable style={itemStyle.wrap} onPress={() => onPress?.(item)}>
-        <NFTAvatar disabled seedType="ft" nftSize={pTd(48)} data={item?.nftInfo} style={itemStyle.left} />
+        <NFTAvatar
+          disabled
+          isSeed={item?.nftInfo?.isSeed}
+          seedType={item?.nftInfo?.seedType}
+          nftSize={pTd(48)}
+          data={item?.nftInfo}
+          style={itemStyle.left}
+        />
 
         <View style={itemStyle.right}>
           <View>
@@ -76,7 +84,9 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
           </View>
 
           <View style={itemStyle.balanceWrap}>
-            <TextL style={[itemStyle.token, FontStyles.font5]}>{item?.nftInfo?.balance}</TextL>
+            <TextL style={[itemStyle.token, FontStyles.font5]}>
+              {formatAmountShow(divDecimals(item?.nftInfo?.balance, item.nftInfo.decimals))}
+            </TextL>
             <TextS style={itemStyle.dollar} />
           </View>
         </View>
@@ -315,8 +325,6 @@ const itemStyle = StyleSheet.create({
   },
   left: {
     marginLeft: pTd(16),
-    width: pTd(48),
-    height: pTd(48),
     borderRadius: pTd(6),
     overflow: 'hidden',
   },

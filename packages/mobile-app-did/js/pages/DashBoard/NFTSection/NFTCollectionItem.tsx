@@ -108,8 +108,9 @@ export default function NFTItem(props: NFTItemPropsType) {
         <View style={[styles.listWrap]}>
           {showChildren?.map((ele: any, index: number) => (
             <NFTAvatar
-              // change seed
-              seedType="ft"
+              showNftDetailInfo
+              isSeed={ele.isSeed}
+              seedType={ele.seedType}
               badgeSizeType="normal"
               key={ele.symbol}
               data={ele}
@@ -182,6 +183,7 @@ const styles = StyleSheet.create({
   itemAvatarStyle: {
     marginRight: pTd(8) - StyleSheet.hairlineWidth,
     marginTop: pTd(8),
+    backgroundColor: defaultColors.bg4,
   },
   noMarginRight: {
     marginRight: 0,

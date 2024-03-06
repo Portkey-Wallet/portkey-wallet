@@ -20,7 +20,7 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { useLanguage } from 'i18n/hooks';
 import React, { useCallback, useMemo, useState } from 'react';
 import { StatusBar, StyleSheet, Text, View } from 'react-native';
-import { formatTransferTime } from 'utils';
+import { formatTransferTime } from '@portkey-wallet/utils/time';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
@@ -227,16 +227,19 @@ const ActivityDetail = () => {
             <View style={styles.topWrap}>
               <NFTAvatar
                 disabled
-                seedType="ft"
+                isSeed={activityItem?.nftInfo?.isSeed}
+                seedType={activityItem?.nftInfo?.seedType}
                 nftSize={pTd(64)}
-                data={{ imageUrl: activityItem?.nftInfo?.imageUrl || '' }}
+                data={{ imageUrl: activityItem?.nftInfo?.imageUrl || '', alias: activityItem?.nftInfo?.alias }}
                 style={styles.img}
               />
               <View style={styles.nftInfo}>
-                <TextL style={styles.nftTitle}>{`${activityItem?.nftInfo?.alias || ''} #${
+                <TextL numberOfLines={1} style={styles.nftTitle}>{`${activityItem?.nftInfo?.alias || ''} #${
                   activityItem?.nftInfo?.nftId || ''
-                }`}</TextL>
-                <TextS style={[FontStyles.font3, styles.marginTop4]}>Amount: {activityItem?.amount || ''}</TextS>
+                }  `}</TextL>
+                <TextS numberOfLines={1} style={[FontStyles.font3, styles.marginTop4]}>{`Amount: ${formatAmountShow(
+                  divDecimals(activityItem?.amount, activityItem?.decimals),
+                )}`}</TextS>
               </View>
             </View>
             <View style={styles.divider} />
@@ -406,6 +409,7 @@ export const styles = StyleSheet.create({
     ...fonts.mediumFont,
     color: defaultColors.font5,
     marginBottom: pTd(4),
+    maxWidth: pTd(230),
     flexDirection: 'row',
     display: 'flex',
     flexWrap: 'wrap',

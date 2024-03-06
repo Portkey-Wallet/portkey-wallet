@@ -55,7 +55,7 @@ const AssetItem = (props: {
   const { currentNetwork } = useWallet();
 
   const { currentSymbol, currentChainId, onPress, item } = props;
-  const { address, assetType, chainId, symbol, alias, tokenId } = item;
+  const { address, assetType, chainId, symbol, alias, tokenId, isSeed, seedType } = item;
 
   if (assetType === AssetType.ft)
     return (
@@ -71,7 +71,15 @@ const AssetItem = (props: {
   if (assetType === AssetType.nft) {
     return (
       <TouchableOpacity style={itemStyle.wrap} onPress={() => onPress?.(item)}>
-        <NFTAvatar disabled seedType="ft" nftSize={pTd(48)} badgeSizeType="small" data={item} style={itemStyle.left} />
+        <NFTAvatar
+          disabled
+          isSeed={isSeed}
+          seedType={seedType}
+          nftSize={pTd(48)}
+          badgeSizeType="small"
+          data={item}
+          style={itemStyle.left}
+        />
         <View style={itemStyle.right}>
           <View>
             <TextL numberOfLines={1} ellipsizeMode={'tail'} style={[itemStyle.nftNameShow, FontStyles.font5]}>

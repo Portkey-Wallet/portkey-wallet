@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react';
-import { StyleSheet, View, ViewStyle, Image, StyleProp, ImageStyle } from 'react-native';
+import { StyleSheet, View, Text, ViewStyle, Image, StyleProp, ImageStyle, TextStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 import { TextM, TextS } from 'components/CommonText';
 import { defaultColors } from 'assets/theme';
@@ -8,11 +8,14 @@ import CommonAvatar from 'components/CommonAvatar';
 import Touchable from 'components/Touchable';
 import nftBadge from 'assets/image/pngs/nftBadge.png';
 import tokenBadge from 'assets/image/pngs/tokenBadge.png';
+import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
+import { FontStyles } from 'assets/theme/styles';
 
 export type NoDataPropsType = {
   style?: ViewStyle | ViewStyle[];
   disabled?: boolean;
-  seedType?: 'ft' | 'nft';
+  isSeed?: boolean;
+  seedType?: SeedTypeEnum;
   showNftDetailInfo?: boolean;
   nftSize?: number;
   badgeSizeType?: 'small' | 'normal' | 'large';
@@ -31,6 +34,7 @@ const NFTAvatar: React.FC<NoDataPropsType> = props => {
     seedType,
     showNftDetailInfo = false,
     nftSize = pTd(98),
+    isSeed = false,
     badgeSizeType = 'small',
     data: { imageUrl, tokenId, alias },
     onPress,
@@ -54,13 +58,28 @@ const NFTAvatar: React.FC<NoDataPropsType> = props => {
     return { width: pTd(32), height: pTd(16) };
   }, [badgeSizeType]);
 
+  const fontSizeStyle = useMemo<StyleProp<TextStyle>>(
+    () => ({
+      fontSize: nftSize / 2,
+      height: nftSize,
+      lineHeight: nftSize,
+    }),
+    [nftSize],
+  );
+
   const nftWrapStyle = useMemo<StyleProp<ImageStyle>>(() => {
     return { width: nftSize, height: nftSize };
   }, [nftSize]);
 
   return (
-    <Touchable disabled={disabled} style={[styles.wrap, nftWrapStyle, ...outStyles]} onPress={onPress}>
-      {seedType && <Image source={seedType === 'ft' ? tokenBadge : nftBadge} style={[styles.badge, badgeSizeStyle]} />}
+    <Touchable
+      disabled={disabled}
+      style={[styles.wrap, !imageUrl && !showNftDetailInfo && styles.wrapContentCenter, nftWrapStyle, ...outStyles]}
+      onPress={onPress}>
+      {isSeed && (
+        <Image source={seedType === SeedTypeEnum.FT ? tokenBadge : nftBadge} style={[styles.badge, badgeSizeStyle]} />
+      )}
+      {!imageUrl && !showNftDetailInfo && <Text style={[FontStyles.font7, fontSizeStyle]}>{alias?.[0]}</Text>}
       {imageUrl && <CommonAvatar avatarSize={nftSize} shapeType="square" imageUrl={imageUrl} style={[styles.img]} />}
       {showNftDetailInfo && (
         <>
@@ -87,10 +106,12 @@ const styles = StyleSheet.create({
     ...GStyles.paddingArg(12, 8),
     borderRadius: pTd(8),
     overflow: 'hidden',
-    // display: 'flex',
-    // justifyContent: 'center',
-    // alignItems: 'center',
-    backgroundColor: defaultColors.bg6,
+    backgroundColor: defaultColors.bg4,
+  },
+  wrapContentCenter: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   img: {
     position: 'absolute',

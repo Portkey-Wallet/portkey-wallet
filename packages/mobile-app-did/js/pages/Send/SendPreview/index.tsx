@@ -209,7 +209,7 @@ const SendHome: React.FC = () => {
 
     if (sendType === 'nft') {
       dispatch(clearNftCollection());
-      dispatch(fetchNFTCollectionsAsync({ caAddresses: caAddresses, caAddressInfos }));
+      dispatch(fetchNFTCollectionsAsync({ caAddressInfos }));
     } else {
       dispatch(fetchTokenListAsync({ caAddresses: caAddresses, caAddressInfos }));
     }
@@ -404,11 +404,13 @@ const SendHome: React.FC = () => {
           {
             <NFTAvatar
               disabled
-              seedType="ft"
+              isSeed={assetInfo.isSeed}
+              seedType={assetInfo.seedType}
               nftSize={pTd(64)}
               badgeSizeType="normal"
               data={{
                 imageUrl: assetInfo.imageLargeUrl,
+                alias: assetInfo.alias,
               }}
               style={styles.img}
             />

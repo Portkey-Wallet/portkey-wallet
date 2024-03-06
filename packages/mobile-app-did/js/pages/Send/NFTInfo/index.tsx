@@ -8,22 +8,48 @@ import { useLanguage } from 'i18n/hooks';
 import { TextL, TextS } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import NFTAvatar from 'components/NFTAvatar';
+import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { IToSendAssetParamsType } from '@portkey-wallet/types/types-ca/routeParams';
+import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
 
 interface AmountNFT {
-  nftItem: any;
+  nftItem: IToSendAssetParamsType;
 }
 
-export default function NFTInfo({ nftItem = { alias: '', balance: 0 } }: AmountNFT) {
+export default function NFTInfo({
+  nftItem = {
+    alias: '',
+    balance: '0',
+    imageUrl: '',
+    tokenId: '',
+    decimals: '0',
+    symbol: '',
+    chainId: 'AELF',
+    tokenContractAddress: '',
+    isSeed: false,
+    seedType: SeedTypeEnum.FT,
+  },
+}: AmountNFT) {
   const { t } = useLanguage();
 
   return (
     <View style={styles.wrap}>
-      <NFTAvatar disabled seedType="ft" nftSize={pTd(56)} badgeSizeType="normal" data={nftItem} style={styles.avatar} />
+      <NFTAvatar
+        disabled
+        isSeed={nftItem.isSeed}
+        seedType={nftItem.seedType}
+        nftSize={pTd(56)}
+        badgeSizeType="normal"
+        data={nftItem}
+        style={styles.avatar}
+      />
       <View>
-        <TextL numberOfLines={1} style={styles.nftTitle}>{`${nftItem?.alias || ''}  #${nftItem?.tokenId}`}</TextL>
-        <TextS numberOfLines={1} style={[styles.balance, FontStyles.font3]}>{`${t('Balance')}: ${
-          nftItem?.balance
-        }`}</TextS>
+        <TextL numberOfLines={1} style={styles.nftTitle}>
+          {`${nftItem?.alias || ''}  #${nftItem?.tokenId}`}
+        </TextL>
+        <TextS numberOfLines={1} style={[styles.balance, FontStyles.font3]}>{`${t('Balance')}:  ${formatAmountShow(
+          divDecimals(nftItem?.balance, nftItem?.decimals),
+        )}`}</TextS>
       </View>
     </View>
   );
@@ -38,7 +64,6 @@ export const styles = StyleSheet.create({
   },
   avatar: {
     borderWidth: 0,
-    backgroundColor: defaultColors.bg7,
     marginRight: pTd(16),
     width: pTd(56),
     height: pTd(56),

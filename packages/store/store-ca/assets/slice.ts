@@ -138,15 +138,13 @@ export const fetchTokenListAsync = createAsyncThunk(
 export const fetchNFTCollectionsAsync = createAsyncThunk(
   'fetchNFTCollectionsAsync',
   async ({
-    caAddresses,
     caAddressInfos,
     maxNFTCount = PAGE_SIZE_IN_NFT_ITEM,
   }: {
-    caAddresses: string[];
     caAddressInfos: { chainId: ChainId; caAddress: string }[];
     maxNFTCount?: number;
   }) => {
-    const response = await fetchNFTSeriesList({ caAddresses, caAddressInfos, skipCount: 0 });
+    const response = await fetchNFTSeriesList({ caAddressInfos, skipCount: 0 });
     return { list: response.data, totalRecordCount: response.totalRecordCount, maxNFTCount };
   },
 );

@@ -52,7 +52,7 @@ export const managerForwardCall = async ({
     code: resMessage.code,
     result: {
       rpcUrl,
-      ...resMessage.message,
+      message: resMessage.message,
     },
   };
 };

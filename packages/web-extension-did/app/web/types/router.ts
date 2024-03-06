@@ -10,6 +10,7 @@ import { IProfileDetailDataProps } from './Profile';
 import { ToAccount, SendStage } from 'pages/Send';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { GuardianItem } from './guardians';
+import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
 
 export enum FromPageEnum {
   register = 'register',
@@ -163,6 +164,13 @@ export type TNFTLocationState = {
   imageUrl?: string;
   balance: string;
   alias?: string;
+  decimals?: string;
+  isSeed?: boolean;
+  seedType?: SeedTypeEnum;
+  inscriptionName?: string;
+  limitPerMint?: number;
+  expires?: string;
+  seedOwnedSymbol?: string;
 };
 
 // SetPin

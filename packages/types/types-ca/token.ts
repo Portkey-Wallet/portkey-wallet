@@ -1,6 +1,7 @@
 import { ChainId } from '..';
 import { ChainItemType } from '../chain';
 import { AccountType } from '../wallet';
+import { SeedTypeEnum } from './assets';
 
 export interface BaseToken {
   id?: string; // id
@@ -12,6 +13,12 @@ export interface BaseToken {
   imageUrl?: string;
   alias?: string;
   tokenId?: string; // nft tokenId
+  isSeed?: boolean;
+  seedType?: SeedTypeEnum;
+  inscriptionName?: string;
+  limitPerMint?: number;
+  expires?: string;
+  seedOwnedSymbol?: string;
 }
 
 export interface TokenItemType extends BaseToken {
@@ -50,7 +57,7 @@ export type TokenListShowInMarketType = TokenItemShowType[];
 export type UserTokenListType = UserTokenItemType[];
 
 // assets token+nft
-export interface TokenInfo {
+export interface AssetsTokenInfo {
   id: string;
   balance?: string;
   decimals: string;
@@ -59,7 +66,7 @@ export interface TokenInfo {
   imageUrl?: string;
 }
 
-export interface NftInfo {
+export interface AssetsNftInfo {
   imageUrl: string;
   alias: string;
   tokenId: string;
@@ -68,14 +75,20 @@ export interface NftInfo {
   balance?: string;
   decimals: string;
   tokenContractAddress: string;
+  isSeed?: boolean;
+  seedType?: SeedTypeEnum;
+  inscriptionName?: string;
+  limitPerMint?: number;
+  expires?: string;
+  seedOwnedSymbol?: string;
 }
 
 export interface AccountAssetItem {
   chainId: ChainId;
   symbol: string;
   address: string;
-  tokenInfo?: TokenInfo;
-  nftInfo?: NftInfo;
+  tokenInfo?: AssetsTokenInfo;
+  nftInfo?: AssetsNftInfo;
 }
 
 export interface IAccountCryptoBoxAssetItem {

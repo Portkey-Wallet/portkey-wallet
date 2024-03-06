@@ -1,22 +1,16 @@
 import useInterval from '@portkey-wallet/hooks/useInterval';
 import { useCommonState } from 'store/Provider/hooks';
-import { useActiveLockStatusAction } from 'utils/lib/serviceWorkerAction';
+import { activeLockStatusAction } from 'utils/lib/serviceWorkerAction';
 
 export const useActiveLockStatus = () => {
-  const activeLockStatus = useActiveLockStatusAction();
   const { isPrompt } = useCommonState();
+  const skipTime = isPrompt ? 60 : 3;
   const timer = useInterval(
     () => {
-      if (isPrompt) {
-        timer.remove();
-      } else {
-        activeLockStatus().catch((err) => {
-          console.log('useActiveLockStatus error', err);
-        });
-      }
+      activeLockStatusAction();
     },
-    1000 * 60,
     [],
+    1000 * skipTime,
   );
   return () => timer.remove();
 };

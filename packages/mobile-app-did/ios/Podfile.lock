@@ -46,6 +46,10 @@ PODS:
     - ExpoModulesCore
   - Expo (46.0.15):
     - ExpoModulesCore
+  - ExpoAdapterFBSDKNext (12.1.3):
+    - ExpoModulesCore
+    - FBSDKCoreKit
+    - React-Core
   - ExpoAdapterGoogleSignIn (8.2.2):
     - ExpoModulesCore
     - GoogleSignIn (~> 6.2)
@@ -75,6 +79,8 @@ PODS:
   - EXSplashScreen (0.16.2):
     - ExpoModulesCore
     - React-Core
+  - FBAEMKit (16.3.1):
+    - FBSDKCoreKit_Basics (= 16.3.1)
   - FBLazyVector (0.69.7)
   - FBReactNativeSpec (0.69.7):
     - RCT-Folly (= 2021.06.28.00-v2)
@@ -83,6 +89,18 @@ PODS:
     - React-Core (= 0.69.7)
     - React-jsi (= 0.69.7)
     - ReactCommon/turbomodule/core (= 0.69.7)
+  - FBSDKCoreKit (16.3.1):
+    - FBAEMKit (= 16.3.1)
+    - FBSDKCoreKit_Basics (= 16.3.1)
+  - FBSDKCoreKit_Basics (16.3.1)
+  - FBSDKGamingServicesKit (16.3.1):
+    - FBSDKCoreKit (= 16.3.1)
+    - FBSDKCoreKit_Basics (= 16.3.1)
+    - FBSDKShareKit (= 16.3.1)
+  - FBSDKLoginKit (16.3.1):
+    - FBSDKCoreKit (= 16.3.1)
+  - FBSDKShareKit (16.3.1):
+    - FBSDKCoreKit (= 16.3.1)
   - Firebase (10.15.0):
     - Firebase/Core (= 10.15.0)
   - Firebase/Analytics (10.15.0):
@@ -575,6 +593,21 @@ PODS:
     - react-native-config/App (= 1.4.6)
   - react-native-config/App (1.4.6):
     - React-Core
+  - react-native-fbsdk-next (12.1.3):
+    - React-Core
+    - react-native-fbsdk-next/Core (= 12.1.3)
+    - react-native-fbsdk-next/Login (= 12.1.3)
+    - react-native-fbsdk-next/Share (= 12.1.3)
+  - react-native-fbsdk-next/Core (12.1.3):
+    - FBSDKCoreKit (~> 16.3.1)
+    - React-Core
+  - react-native-fbsdk-next/Login (12.1.3):
+    - FBSDKLoginKit (~> 16.3.1)
+    - React-Core
+  - react-native-fbsdk-next/Share (12.1.3):
+    - FBSDKGamingServicesKit (~> 16.3.1)
+    - FBSDKShareKit (~> 16.3.1)
+    - React-Core
   - react-native-flipper (0.161.0):
     - React-Core
   - react-native-get-random-values (1.8.0):
@@ -595,7 +628,7 @@ PODS:
     - React
   - react-native-view-shot (3.6.0):
     - React-Core
-  - react-native-webview (11.23.1):
+  - react-native-webview (13.8.1):
     - React-Core
   - React-perflogger (0.69.7)
   - React-RCTActionSheet (0.69.7):
@@ -791,6 +824,7 @@ DEPENDENCIES:
   - EXNetwork (from `../node_modules/expo-network/ios`)
   - EXNotifications (from `../node_modules/expo-notifications/ios`)
   - Expo (from `../node_modules/expo`)
+  - ExpoAdapterFBSDKNext (from `../node_modules/react-native-fbsdk-next/ios`)
   - "ExpoAdapterGoogleSignIn (from `../node_modules/@react-native-google-signin/google-signin/expo/ios`)"
   - ExpoClipboard (from `../node_modules/expo-clipboard/ios`)
   - ExpoCrypto (from `../node_modules/expo-crypto/ios`)
@@ -862,6 +896,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-background-timer (from `../node_modules/react-native-background-timer`)
   - react-native-config (from `../node_modules/react-native-config`)
+  - react-native-fbsdk-next (from `../node_modules/react-native-fbsdk-next`)
   - react-native-flipper (from `../node_modules/react-native-flipper`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-minimizer (from `../node_modules/rn-minimizer`)
@@ -913,6 +948,12 @@ SPEC REPOS:
     - AppAuth
     - Base64
     - CocoaAsyncSocket
+    - FBAEMKit
+    - FBSDKCoreKit
+    - FBSDKCoreKit_Basics
+    - FBSDKGamingServicesKit
+    - FBSDKLoginKit
+    - FBSDKShareKit
     - Firebase
     - FirebaseABTesting
     - FirebaseAnalytics
@@ -993,6 +1034,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-notifications/ios"
   Expo:
     :path: "../node_modules/expo"
+  ExpoAdapterFBSDKNext:
+    :path: "../node_modules/react-native-fbsdk-next/ios"
   ExpoAdapterGoogleSignIn:
     :path: "../node_modules/@react-native-google-signin/google-signin/expo/ios"
   ExpoClipboard:
@@ -1061,6 +1104,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-background-timer"
   react-native-config:
     :path: "../node_modules/react-native-config"
+  react-native-fbsdk-next:
+    :path: "../node_modules/react-native-fbsdk-next"
   react-native-flipper:
     :path: "../node_modules/react-native-flipper"
   react-native-get-random-values:
@@ -1155,7 +1200,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AppAuth: 8fca6b5563a5baef2c04bee27538025e4ceb2add
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
-  boost: a7c83b31436843459a1961bfd74b96033dc77234
+  boost: aa35e27b639bf67de7573b279486f84a3c6546c2
   BVLinearGradient: 880f91a7854faff2df62518f0281afb1c60d49a3
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   CodePush: dce1b253fde81078249ea9cd4b948e4ac7b761a9
@@ -1173,6 +1218,7 @@ SPEC CHECKSUMS:
   EXNetwork: cba9570f90f4f27ce938afd57810b484febf1fab
   EXNotifications: babce2a87b7922051354fcfe7a74dd279b7e272a
   Expo: 7e821e708a35d2720ef6baa658e224dd91c4821e
+  ExpoAdapterFBSDKNext: ee58a6200726bda53f000c4f32942c8466861e71
   ExpoAdapterGoogleSignIn: b7792934ab1b5d559a3eee31334d752a73f0366e
   ExpoClipboard: 7a5a26a3119bd1d0337ee065db3bf5d8a40e23a1
   ExpoCrypto: e534314db0e1a17ae12b5140d529bd0c5efcbc6a
@@ -1185,8 +1231,14 @@ SPEC CHECKSUMS:
   EXScreenOrientation: c309fed5399e482c6adebe14f41a7fd9001d7bde
   EXSecureStore: ac4b3c89dd5810528074d9422d5fed5a9e684467
   EXSplashScreen: 799bece80089219b2c989c1082d70f3b00995cda
+  FBAEMKit: 6c7b5eb77c96861bb59e040842c6e55bf39512ce
   FBLazyVector: 6b7f5692909b4300d50e7359cdefbcd09dd30faa
   FBReactNativeSpec: affcf71d996f6b0c01f68883482588297b9d5e6e
+  FBSDKCoreKit: 5e4dd478947ab1bcc887e8cfadeae0727af1a942
+  FBSDKCoreKit_Basics: cd7b5f5d1e8868c26706917919d058999ca672c3
+  FBSDKGamingServicesKit: fb0dcf086e8ca51f5a0074908edb783dba286af0
+  FBSDKLoginKit: 572cca0bc6c90067ef197187697cb3b584310c52
+  FBSDKShareKit: d9269157b4e9620f0bc1a461c5ead35a65cede9a
   Firebase: 66043bd4579e5b73811f96829c694c7af8d67435
   FirebaseABTesting: 03f0a8b88cf618350527f2c6a2234e29b9c65064
   FirebaseAnalytics: 47cef43728f81a839cf1306576bdd77ffa2eac7e
@@ -1244,6 +1296,7 @@ SPEC CHECKSUMS:
   React-logger: 1e7ac909607ee65fd5c4d8bea8c6e644f66b8843
   react-native-background-timer: 17ea5e06803401a379ebf1f20505b793ac44d0fe
   react-native-config: 7cd105e71d903104e8919261480858940a6b9c0e
+  react-native-fbsdk-next: 42229cf278a44c0f7249179c9b2d084109d8e2bd
   react-native-flipper: ea555c5b21d9d15814999327aecf31b98ac87079
   react-native-get-random-values: a6ea6a8a65dc93e96e24a11105b1a9c8cfe1d72a
   react-native-minimizer: 48a715600fd432ef1d182cfd1858f92f0afa022f
@@ -1252,7 +1305,7 @@ SPEC CHECKSUMS:
   react-native-safe-area-context: 99b24a0c5acd0d5dcac2b1a7f18c49ea317be99a
   react-native-spinkit: da294fd828216ad211fe36a5c14c1e09f09e62db
   react-native-view-shot: 705f999ac2a24e4e6c909c0ca65c732ed33ca2ff
-  react-native-webview: d33e2db8925d090871ffeb232dfa50cb3a727581
+  react-native-webview: bef49fb935d75e1ca83aed3ac74eecf5b78764ac
   React-perflogger: 8e832d4e21fdfa613033c76d58d7e617341e804b
   React-RCTActionSheet: 9ca778182a9523991bff6381045885b6e808bb73
   React-RCTAnimation: 9ced26ad20b96e532ac791a8ab92a7b1ce2266b8

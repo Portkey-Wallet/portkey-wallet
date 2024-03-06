@@ -9,6 +9,7 @@ import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
 import { contractQueries } from '@portkey-wallet/graphql';
 import { getCurrentCAViewContract, getWallet } from './redux';
 import { ChainId } from '@portkey-wallet/types';
+import { SendOptions } from '@portkey-wallet/contracts/types';
 
 export type TimerResult = {
   remove: () => void;
@@ -115,18 +116,25 @@ export async function addManager({
   caHash,
   managerAddress,
   extraData,
+  sendOptions,
 }: {
   contract: ContractBasic;
   address: string;
   caHash: string;
   managerAddress?: LoginQRData['address'];
   extraData?: string;
+  sendOptions?: SendOptions;
 }) {
-  return contract.callSendMethod('AddManagerInfo', address, {
-    caHash,
-    managerInfo: {
-      address: managerAddress,
-      extraData: extraData || '',
+  return contract.callSendMethod(
+    'AddManagerInfo',
+    address,
+    {
+      caHash,
+      managerInfo: {
+        address: managerAddress,
+        extraData: extraData || '{}',
+      },
     },
-  });
+    sendOptions,
+  );
 }

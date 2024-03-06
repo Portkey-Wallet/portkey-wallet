@@ -31,3 +31,5 @@ export type CalculateTransactionFeeResponse = {
   } | null;
   Error: string | null;
 };
+
+export type T_ENV_NAME = 'online' | 'offline';

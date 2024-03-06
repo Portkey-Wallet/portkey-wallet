@@ -1,11 +1,11 @@
-import { useCaAddresses, useCaAddressInfoList, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchNFTAsync, fetchNFTCollectionsAsync } from '@portkey-wallet/store/store-ca/assets/slice';
+import { useCaAddressInfoList, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { fetchNFTAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { ChainId } from '@portkey-wallet/types';
 import { NFTCollectionItemShowType, NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
 import { Collapse } from 'antd';
 import { List } from 'antd-mobile';
 import CustomSvg from 'components/CustomSvg';
-import { useCallback, useEffect, useState, useMemo } from 'react';
+import { useCallback, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import clsx from 'clsx';
 import { useAppDispatch, useAssetInfo, useCommonState } from 'store/Provider/hooks';
@@ -14,6 +14,7 @@ import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { PAGE_SIZE_IN_NFT_ITEM } from '@portkey-wallet/constants/constants-ca/assets';
 import { PAGE_SIZE_IN_NFT_ITEM_PROMPT } from 'constants/index';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { getSeedTypeTag } from 'utils/assets';
 
 export default function NFT() {
   const nav = useNavigate();
@@ -24,7 +25,6 @@ export default function NFT() {
     accountNFT: { accountNFTList },
   } = useAssetInfo();
   const dispatch = useAppDispatch();
-  const caAddresses = useCaAddresses();
   const wallet = useCurrentWalletInfo();
   const { isPrompt } = useCommonState();
   const caAddressInfos = useCaAddressInfoList();
@@ -80,10 +80,6 @@ export default function NFT() {
     [caAddressInfos, dispatch, nftNum, openPanel, wallet],
   );
 
-  useEffect(() => {
-    dispatch(fetchNFTCollectionsAsync({ caAddresses, maxNFTCount: maxNftNum, caAddressInfos }));
-  }, [caAddressInfos, caAddresses, dispatch, maxNftNum]);
-
   const renderItem = useCallback(
     (nft: NFTCollectionItemShowType) => {
       const nftColKey = `${nft.symbol}_${nft.chainId}`;
@@ -91,21 +87,24 @@ export default function NFT() {
         <Collapse.Panel
           key={nftColKey}
           header={
-            <div className="protocol">
-              <div className="avatar">
+            <div className="nft-collection flex-row-center">
+              <div className="avatar flex-center">
                 {nft.imageUrl ? <img src={nft.imageUrl} /> : nft.collectionName?.slice(0, 1)}
               </div>
-              <div className="info">
-                <p className="alias">{nft.collectionName}</p>
+              <div className="info flex-column">
+                <div className="flex-between info-top">
+                  <div className="alias">{nft.collectionName}</div>
+                  <div className="amount">{nft.itemCount}</div>
+                </div>
                 <p className="network">{transNetworkText(nft.chainId, !isMainnet)}</p>
               </div>
-              <div className="amount">{nft.itemCount}</div>
             </div>
           }>
-          <div className="list">
+          <div className="nft-item-list">
             {!!nftNum[nftColKey] &&
               nft.children.map((nftItem: NFTItemBaseType, index: number) => {
                 const curNftNum = nftNum[nftColKey] ?? 0;
+                const seedTypeTag = getSeedTypeTag(nftItem);
                 return (
                   index < curNftNum * maxNftNum && (
                     <div
@@ -113,19 +112,19 @@ export default function NFT() {
                       style={{
                         backgroundImage: `url('${nftItem.imageUrl}')`,
                       }}
-                      className={clsx(['item', nftItem.imageUrl ? 'item-img' : ''])}
+                      className={clsx(['nft-item', nftItem.imageUrl ? '' : 'nft-item-no-img'])}
                       onClick={() => {
                         nav('/nft', {
                           state: {
                             ...nftItem,
                             address: nftItem.tokenContractAddress,
-                            decimals: 0,
                             collectionName: nft.collectionName,
                             collectionImageUrl: nft.imageUrl,
                           },
                         });
                       }}>
-                      <div className="mask">
+                      {seedTypeTag && <CustomSvg type={seedTypeTag} />}
+                      <div className="mask flex-column">
                         <p className="alias">{nftItem.alias}</p>
                         <p className="token-id">#{nftItem.tokenId}</p>
                       </div>

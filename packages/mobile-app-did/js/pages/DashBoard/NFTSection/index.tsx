@@ -64,8 +64,8 @@ export default function NFTSection() {
 
   const fetchNFTList = useCallback(() => {
     if (caAddresses.length === 0) return;
-    dispatch(fetchNFTCollectionsAsync({ caAddresses, caAddressInfos }));
-  }, [caAddressInfos, caAddresses, dispatch]);
+    dispatch(fetchNFTCollectionsAsync({ caAddressInfos }));
+  }, [caAddressInfos, caAddresses.length, dispatch]);
 
   useEffect(() => {
     fetchNFTList();
@@ -110,7 +110,7 @@ export default function NFTSection() {
         },
       }));
     },
-    [currentNetwork, dispatch, openCollectionObj, walletInfo?.caInfo],
+    [caAddressInfos, currentNetwork, dispatch, walletInfo?.caInfo],
   );
 
   const loadMoreItem = useCallback(

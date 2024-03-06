@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, ViewStyle, StyleProp } from 'react-native';
+import { View, ViewStyle, StyleProp } from 'react-native';
 import React, { ReactNode, useEffect, useMemo } from 'react';
 import Svg from 'components/Svg';
 import { blueStyles, hideTitleStyles, whitStyles } from './style/index.style';
@@ -11,6 +11,7 @@ import type { SafeAreaColorMapKeyUnit } from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import { ViewStyleType } from 'types/styles';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
+import Touchable from 'components/Touchable';
 
 export type CustomHeaderProps = {
   themeType?: SafeAreaColorMapKeyUnit;
@@ -92,16 +93,16 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
     const onPress = leftCallback ? leftCallback : () => navigationService.goBack();
     if (type === 'leftBack') {
       return (
-        <TouchableOpacity style={[GStyles.flexRow, GStyles.itemCenter, styles.leftTitle]} onPress={onPress}>
+        <Touchable style={[GStyles.flexRow, GStyles.itemCenter, styles.leftTitle]} onPress={onPress}>
           {leftIcon}
           <TextL style={styles.leftBackTitle}>{t(backTitle)}</TextL>
-        </TouchableOpacity>
+        </Touchable>
       );
     }
     return (
-      <TouchableOpacity onPress={onPress} style={{ padding: pTd(16) }}>
+      <Touchable onPress={onPress} style={{ padding: pTd(16) }}>
         {leftIcon}
-      </TouchableOpacity>
+      </Touchable>
     );
   }, [
     backTitle,

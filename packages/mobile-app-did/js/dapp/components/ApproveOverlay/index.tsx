@@ -26,7 +26,7 @@ import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { isIOS } from '@rneui/base';
 import { isValidNumber } from '@portkey-wallet/utils/reg';
-import Svg from 'components/Svg';
+import Svg, { IconName } from 'components/Svg';
 
 type SignModalPropsType = {
   dappInfo: DappStoreItem;
@@ -132,15 +132,11 @@ const ApproveModal = (props: SignModalPropsType) => {
   });
 
   return (
-    <ModalBody modalBodyType="bottom" title="" onClose={onReject}>
-      <View
-        style={styles.contentWrap}
-        onTouchStart={() => {
-          Keyboard.dismiss();
-        }}>
+    <ModalBody modalBodyType="bottom" title="" onClose={onReject} onTouchStart={Keyboard.dismiss}>
+      <View style={styles.contentWrap}>
         <View style={[GStyles.center, styles.headerSection]}>
           {dappInfo.svgIcon ? (
-            <Svg icon={dappInfo.svgIcon} size={pTd(48)} />
+            <Svg icon={dappInfo.svgIcon as IconName} size={pTd(48)} />
           ) : (
             <DiscoverWebsiteImage size={pTd(48)} imageUrl={getFaviconUrl(dappInfo.origin)} />
           )}
@@ -152,7 +148,7 @@ const ApproveModal = (props: SignModalPropsType) => {
               GStyles.marginTop(pTd(8)),
               GStyles.marginBottom(pTd(8)),
             ]}>{`${dappInfo.name || dappInfo.origin} is requesting access to your ${
-            approveParams.approveInfo.symbol
+            approveParams.approveInfo.alias || approveParams.approveInfo.symbol
           }`}</TextL>
           <TextS style={[FontStyles.font7, GStyles.textAlignCenter]}>
             {`To ensure your assets' security while interacting with the DApp, please set a token allowance for this DApp. The DApp will notify you when its allowance is used up and you can modify the settings again.`}
@@ -160,7 +156,9 @@ const ApproveModal = (props: SignModalPropsType) => {
         </View>
 
         <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.inputTitle]}>
-          <TextM style={GStyles.flex1}>{`Set Allowance (${approveParams.approveInfo.symbol})`}</TextM>
+          <TextM style={GStyles.flex1}>{`Set Allowance (${
+            approveParams.approveInfo.alias || approveParams.approveInfo.symbol
+          })`}</TextM>
           <Touchable onPress={onUseRecommendedValue}>
             <TextM style={FontStyles.font4}> Use Recommended Value</TextM>
           </Touchable>

@@ -45,7 +45,7 @@ export default function MemberList() {
       _v ? handleSearch(_v) : setShowMemberList(groupInfo?.members || []);
       setFilterWord(_v);
     },
-    [],
+    [groupInfo?.members, handleSearch],
     500,
   );
   const handleGoProfile = useCallback(

@@ -13,19 +13,11 @@ import { chainShowText } from '@portkey-wallet/utils';
 import { useAmountInUsdShow, useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { getSeedTypeTag } from 'utils/assets';
+import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
+import CustomSvg from 'components/CustomSvg';
 
-export default function SendPreview({
-  amount,
-  symbol,
-  alias,
-  toAccount,
-  transactionFee,
-  type,
-  imageUrl,
-  chainId,
-  isCross,
-  tokenId,
-}: {
+export interface ISendPreviewProps {
   amount: string;
   symbol: string;
   alias: string;
@@ -36,7 +28,12 @@ export default function SendPreview({
   chainId: ChainId;
   isCross: boolean;
   tokenId: string;
-}) {
+  isSeed?: boolean;
+  seedType?: SeedTypeEnum;
+}
+
+export default function SendPreview(props: ISendPreviewProps) {
+  const { amount, symbol, alias, toAccount, transactionFee, type, imageUrl, chainId, isCross, tokenId } = props;
   const { userInfo } = useWalletInfo();
   const wallet = useCurrentWalletInfo();
   const isMainnet = useIsMainnet();
@@ -44,6 +41,7 @@ export default function SendPreview({
   useFreshTokenPrice();
   const { crossChain: crossChainFee } = useGetTxFee(chainId);
   const defaultToken = useDefaultToken(chainId);
+  const seedTypeTag = useMemo(() => getSeedTypeTag(props), [props]);
 
   const toChain = useMemo(() => {
     const arr = toAccount.address.split('_');
@@ -87,12 +85,15 @@ export default function SendPreview({
         </div>
       ) : (
         <div className="amount-preview nft">
-          <div className="avatar">{imageUrl ? <img src={imageUrl} /> : <p>{symbol?.slice(0, 1)}</p>}</div>
+          <div className="avatar flex-center">
+            {seedTypeTag && <CustomSvg type={seedTypeTag} />}
+            {imageUrl ? <img src={imageUrl} /> : <p>{symbol?.slice(0, 1)}</p>}
+          </div>
           <div className="info">
-            <p className="index flex">
+            <div className="index flex">
               <p className="alias">{alias}</p>
               <p className="token-id">{`#${tokenId}`}</p>
-            </p>
+            </div>
             <p className="quantity">
               Amount: <span>{formatAmountShow(amount)}</span>
             </p>

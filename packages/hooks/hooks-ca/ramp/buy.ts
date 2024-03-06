@@ -13,6 +13,7 @@ import {
   useBuyFiatListState,
 } from './index';
 import { getBuyCrypto, getBuyFiat } from '@portkey-wallet/utils/ramp';
+import { IGetFiatDataRequest, IRampCryptoItem } from '@portkey-wallet/ramp';
 
 export const useBuyFiat = () => {
   const dispatch = useAppCommonDispatch();
@@ -53,11 +54,25 @@ export const useBuyFiat = () => {
     };
   }, [dispatch]);
 
+  const getSpecifiedFiat = useCallback(async ({ crypto, network }: IGetFiatDataRequest) => {
+    let specifiedCrypto: IRampCryptoItem[] = [];
+    if (!network) {
+      const { buyCryptoList } = await getBuyCrypto({});
+      specifiedCrypto = buyCryptoList.filter(item => item.symbol === crypto, []);
+      network = specifiedCrypto[0].network;
+    }
+    if (!network) return;
+    const { fiatList, defaultFiat } = await getBuyFiat({ crypto, network });
+
+    return { fiatList, defaultFiat, defaultCrypto: specifiedCrypto?.[0] };
+  }, []);
+
   return {
     buyDefaultFiat,
     buyFiatList,
     buyDefaultCryptoList,
     buyDefaultCrypto,
     refreshBuyFiat,
+    getSpecifiedFiat,
   };
 };

@@ -6,6 +6,7 @@ import {
   useBuyDefaultCryptoListState,
   useBuyDefaultCryptoState,
   useBuyDefaultFiatState,
+  useBuyFiat,
   useBuyFiatListState,
 } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { useCallback, useMemo, useRef, useState } from 'react';
@@ -35,6 +36,7 @@ export default function BuyForm() {
   const { symbol: defaultCrypto, network: defaultNetwork } = useBuyDefaultCryptoState();
   const fiatList = useBuyFiatListState();
   const defaultCryptoList = useBuyDefaultCryptoListState();
+  const [supportCryptoList, setSupportCryptoList] = useState<IRampCryptoItem[]>(defaultCryptoList);
   const filterFiatSelected = useMemo(() => {
     return fiatList.filter(
       (item) => item.symbol === (state?.fiat || defaultFiat) && item.country === (state?.country || defaultCountry),
@@ -101,6 +103,8 @@ export default function BuyForm() {
             cryptoSelectedRef.current = { ...newDefaultCrypto[0] };
           }
 
+          setSupportCryptoList(buyCryptoList);
+
           await updateBuyReceive();
         }
       } catch (error) {
@@ -125,7 +129,27 @@ export default function BuyForm() {
     [updateBuyReceive],
   );
 
+  const { getSpecifiedFiat } = useBuyFiat();
+  const fetchSpecifiedFiat = useCallback(async () => {
+    if (state?.crypto && state?.tokenInfo?.symbol) return;
+    try {
+      setLoading(true);
+      const fiatResult = await getSpecifiedFiat({ crypto: state?.crypto || state?.tokenInfo?.symbol });
+      if (fiatResult?.defaultFiat) {
+        await handleFiatSelect(fiatResult?.defaultFiat);
+        if (fiatResult?.defaultCrypto) {
+          await handleCryptoSelect(fiatResult?.defaultCrypto);
+        }
+      }
+    } catch (error) {
+      console.log('fetchSpecifiedFiat error', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [getSpecifiedFiat, handleCryptoSelect, handleFiatSelect, setLoading, state?.crypto, state?.tokenInfo?.symbol]);
+
   useEffectOnce(() => {
+    fetchSpecifiedFiat();
     updateBuyReceive();
   });
 
@@ -182,7 +206,7 @@ export default function BuyForm() {
             curCrypto={cryptoSelected}
             readOnly={true}
             defaultFiat={defaultFiat}
-            country={defaultCountry}
+            supportList={supportCryptoList}
             onSelect={handleCryptoSelect}
             onKeyDown={handleKeyDown}
           />

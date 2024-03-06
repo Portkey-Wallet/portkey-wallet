@@ -10,7 +10,7 @@ export interface ICryptoInputProps {
   curCrypto: IRampCryptoItem;
   readOnly: boolean;
   defaultFiat?: string;
-  country?: string;
+  supportList: IRampCryptoItem[];
   onChange?: (val: string) => void;
   onKeyDown: (e: IKeyDownParams) => void;
   onSelect: (v: IRampCryptoItem) => void;
@@ -24,7 +24,7 @@ export default function CryptoInput({
   curCrypto,
   readOnly,
   defaultFiat,
-  country,
+  supportList,
   onChange,
   onKeyDown,
   onSelect,
@@ -54,7 +54,7 @@ export default function CryptoInput({
         searchPlaceHolder={SearchCrypto}
         open={openDrawer}
         defaultFiat={defaultFiat}
-        country={country}
+        supportList={supportList}
         onClose={() => setOpenDrawer(false)}
         onChange={onSelect}
       />

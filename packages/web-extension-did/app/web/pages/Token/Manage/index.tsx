@@ -76,7 +76,7 @@ export default function AddToken() {
       await handleSearch(params);
       setLoading(false);
     },
-    [filterWord],
+    [handleSearch, setLoading],
     500,
   );
 

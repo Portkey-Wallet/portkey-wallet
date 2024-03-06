@@ -4,12 +4,13 @@ import './index.less';
 import { useCommonState } from 'store/Provider/hooks';
 import CustomPromptModal from 'pages/components/CustomPromptModal';
 import SelectCryptoList from '../SelectCryptoList';
+import { IRampCryptoItem } from '@portkey-wallet/ramp';
 
 interface SelectCryptoListWrapPartialProps {
   title: string;
   searchPlaceHolder?: string;
   defaultFiat?: string;
-  country?: string;
+  supportList: IRampCryptoItem[];
   onChange?: (v: any) => void;
   onClose: () => void;
 }
@@ -26,7 +27,7 @@ export default function SelectCryptoListWrap({
   title,
   searchPlaceHolder,
   defaultFiat,
-  country,
+  supportList,
   ...props
 }: SelectCryptoListWrapProps) {
   const { isPrompt } = useCommonState();
@@ -37,7 +38,7 @@ export default function SelectCryptoListWrap({
         title={title}
         searchPlaceHolder={searchPlaceHolder}
         defaultFiat={defaultFiat}
-        country={country}
+        supportList={supportList}
         onClose={onClose}
         onChange={onChange}
       />
@@ -48,7 +49,7 @@ export default function SelectCryptoListWrap({
         title={title}
         searchPlaceHolder={searchPlaceHolder}
         defaultFiat={defaultFiat}
-        country={country}
+        supportList={supportList}
         onClose={onClose}
         onChange={onChange}
       />

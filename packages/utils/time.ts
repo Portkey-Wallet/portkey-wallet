@@ -22,3 +22,18 @@ export function dateToDayjs(date?: dayjs.ConfigType) {
 export function isSameDay(date1: dayjs.ConfigType, date2: dayjs.ConfigType) {
   return dateToDayjs(date1).isSame(dateToDayjs(date2), 'day');
 }
+
+/**
+ * timestamp to formatted time like 'Nov 10 at 1:09 pm', if last year format to "2020 Nov 10 at 1:09 pm "
+ * @param time
+ * @returns
+ */
+export const formatTransferTime = (time?: string | number) => {
+  if (!time) return '';
+
+  if (dayjs(time).isBefore(dayjs(), 'year')) {
+    return dayjs(time).format('YYYY MMM D , h:mm a').replace(',', 'at');
+  }
+
+  return dayjs(time).format('MMM D , h:mm a').replace(',', 'at');
+};

@@ -13,6 +13,7 @@ import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import getManager from 'utils/getManager';
 import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import AsyncButton from 'components/AsyncButton';
 import './index.less';
 
 const allowItem = ['view wallet balance and activities', 'send you transaction requests'];
@@ -105,9 +106,9 @@ export default function ConnectWallet() {
           }}>
           {t('Reject')}
         </Button>
-        <Button disabled={disabled} type="primary" onClick={handleSign}>
+        <AsyncButton disabled={disabled} type="primary" onClick={handleSign}>
           {t('Approve')}
-        </Button>
+        </AsyncButton>
       </div>
     </div>
   );

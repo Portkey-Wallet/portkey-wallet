@@ -22,6 +22,7 @@ export interface IDappManager<T = CACommonState> {
   getRpcUrl(chainId: ChainId): Promise<string | undefined>;
   getCaInfo(chainId: ChainId): Promise<CAInfo | undefined>;
   networkType(): Promise<NetworkType>;
+  caHash(): Promise<string>;
   walletName(): Promise<WalletName>;
   currentManagerAddress(): Promise<Address | undefined>;
   getSessionInfo(origin: string): Promise<SessionInfo | undefined>;

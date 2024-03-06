@@ -3,7 +3,7 @@ import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 import { useCallback } from 'react';
 import singleMessage from 'utils/singleMessage';
 
-export const useClickReferral = () => {
+export const useClickReferral = (setReferralStatus = true) => {
   const { setViewReferralStatusStatus, referralLink } = useReferral();
   const currentNetworkInfo = useCurrentNetworkInfo();
   return useCallback(() => {
@@ -11,11 +11,11 @@ export const useClickReferral = () => {
       singleMessage.info('Please check your internet connection and try again.');
       return;
     }
-    setViewReferralStatusStatus();
+    setReferralStatus && setViewReferralStatusStatus();
     const url = `${currentNetworkInfo?.referralUrl}/referral?shortLink=${encodeURIComponent(referralLink)}`;
     const openWinder = window.open(url, '_blank');
     if (openWinder) {
       openWinder.opener = null;
     }
-  }, [currentNetworkInfo.referralUrl, referralLink, setViewReferralStatusStatus]);
+  }, [currentNetworkInfo?.referralUrl, referralLink, setReferralStatus, setViewReferralStatusStatus]);
 };

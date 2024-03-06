@@ -1,6 +1,7 @@
 import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
 import { BackEndNetWorkMap } from './backend-network';
 import { LINK_PATH_ENUM } from './link';
+import { T_ENV_NAME } from '@portkey-wallet/types';
 
 export const NetworkList: NetworkItem[] = [BackEndNetWorkMap['back-end-test4'], BackEndNetWorkMap['back-end-test1']];
 
@@ -28,3 +29,5 @@ export const DAPP_WHITELIST: string[] = [...EBridgeList, ...ETransferList];
 export enum DappMap {
   bridge = 'http://192.168.67.173:3000',
 }
+
+export const ENV_NAME: T_ENV_NAME = 'offline';

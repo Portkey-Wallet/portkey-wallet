@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import CommonInput, { CommonInputProps } from 'components/CommonInput';
 import GStyles from 'assets/theme/GStyles';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
@@ -7,6 +7,7 @@ import { pTd } from 'utils/unit';
 import { TextM } from 'components/CommonText';
 import Svg from 'components/Svg';
 import { useLanguage } from 'i18n/hooks';
+import Touchable from 'components/Touchable';
 
 type InputWithCancelPropsType = CommonInputProps & {
   clearText: () => void;
@@ -25,9 +26,9 @@ const InputWithCancel = React.forwardRef(function InputWithCancel(props: InputWi
         containerStyle={styles.inputStyle}
         rightIcon={
           value ? (
-            <TouchableOpacity onPress={clearText}>
+            <Touchable onPress={clearText}>
               <Svg icon="clear3" size={pTd(16)} />
-            </TouchableOpacity>
+            </Touchable>
           ) : undefined
         }
         rightIconContainerStyle={styles.rightIconContainerStyle}
@@ -35,9 +36,9 @@ const InputWithCancel = React.forwardRef(function InputWithCancel(props: InputWi
         {...props}
         ref={ref}
       />
-      <TouchableOpacity onPress={onCancel}>
+      <Touchable onPress={onCancel}>
         <TextM style={[FontStyles.font2, styles.cancelButton]}>{t('Cancel')}</TextM>
-      </TouchableOpacity>
+      </Touchable>
     </View>
   );
 });

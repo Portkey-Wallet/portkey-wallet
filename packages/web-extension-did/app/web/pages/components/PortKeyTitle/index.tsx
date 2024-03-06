@@ -3,6 +3,7 @@ import { ReactNode, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import './index.less';
+import clsx from 'clsx';
 
 export default function PortKeyTitle({
   leftElement,
@@ -34,15 +35,13 @@ export default function PortKeyTitle({
         </div>
         <div className="right-element">{rightElement}</div>
       </div>
-      {leftElement && (
-        <div
-          className="left-element"
-          onClick={() => {
-            leftCallBack ? leftCallBack?.() : navigate(-1);
-          }}>
-          {typeof leftElement === 'boolean' ? defaultEle : leftElement}
-        </div>
-      )}
+      <div
+        className={clsx('left-element', !leftElement && 'left-element-hidden')}
+        onClick={() => {
+          leftCallBack ? leftCallBack?.() : navigate(-1);
+        }}>
+        {typeof leftElement === 'boolean' ? defaultEle : leftElement}
+      </div>
     </>
   );
 }

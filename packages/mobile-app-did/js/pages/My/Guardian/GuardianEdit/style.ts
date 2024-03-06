@@ -52,4 +52,13 @@ export const pageStyles = StyleSheet.create({
     borderRadius: pTd(14),
     marginRight: pTd(12),
   },
+  itemIconWrap: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: defaultColors.border6,
+    backgroundColor: defaultColors.bg6,
+    width: pTd(32),
+    height: pTd(32),
+    borderRadius: pTd(16),
+    marginRight: pTd(10),
+  },
 });

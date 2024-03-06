@@ -2,7 +2,7 @@ import { getCaHolder } from '@portkey-wallet/api/api-did/es/utils';
 import { NetworkList } from '@portkey-wallet/constants/constants-ca/network';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
 import { CAInfo, CAInfoType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
-import { WalletInfoType } from '@portkey-wallet/types/wallet';
+import { TWalletInfo, WalletInfoType } from '@portkey-wallet/types/wallet';
 import { checkPinInput, formatWalletInfo } from '@portkey-wallet/utils/wallet';
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import AElf from 'aelf-sdk';
@@ -36,11 +36,29 @@ export const createWallet =
     }
     throw new Error('createWallet fail');
   };
+
+export const createNewTmpWallet = () => (dispatch: any) => {
+  const walletInfo = AElf.wallet.createNewWallet();
+  if (!walletInfo?.publicKey) {
+    const publicKey = walletInfo.keyPair.getPublic();
+    walletInfo.publicKey = {
+      x: publicKey.x.toString('hex'),
+      y: publicKey.y.toString('hex'),
+    };
+  }
+  walletInfo.keyPair && delete walletInfo.keyPair;
+  walletInfo.childWallet && delete walletInfo.childWallet;
+  dispatch(createNewTmpWalletAction({ walletInfo }));
+};
 export const createWalletAction = createAction<{
   walletInfo: WalletInfoType;
   networkType?: NetworkType;
   caInfo?: CAInfoType;
 }>('wallet/createWallet');
+
+export const createNewTmpWalletAction = createAction<{
+  walletInfo: TWalletInfo;
+}>('wallet/createNewTmpWalletAction');
 
 export const setManagerInfo = createAction<{
   networkType?: NetworkType;
@@ -66,6 +84,8 @@ export const setCAInfoType = createAction<{
 }>('wallet/setCAInfoType');
 
 export const resetWallet = createAction('wallet/resetWallet');
+export const setCheckManagerExceed = createAction<{ network: NetworkType }>('wallet/setCheckManagerExceed');
+export const reSetCheckManagerExceed = createAction<NetworkType | undefined>('wallet/reSetCheckManagerExceed');
 export const resetUserInfo = createAction('wallet/resetUserInfo');
 export const resetCaInfo = createAction<NetworkType>('wallet/resetCaInfo');
 export const changePin = createAction<{ pin: string; newPin: string }>('wallet/changePin');

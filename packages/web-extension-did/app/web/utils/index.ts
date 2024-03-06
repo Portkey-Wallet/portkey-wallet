@@ -62,6 +62,8 @@ export const getPortkeyFinanceUrl = (currentNetwork: NetworkType) => {
     portkeyFinanceUrl: host = '',
     portkeyOpenLoginUrl: webPageUrl = '',
     networkType = '',
+    domain,
+    apiUrl,
   } = NetworkList.find((item) => item.networkType === currentNetwork) || {};
 
   return {
@@ -69,6 +71,8 @@ export const getPortkeyFinanceUrl = (currentNetwork: NetworkType) => {
     JOIN_TELEGRAM_URL: `${webPageUrl}/social-login/Telegram?from=portkey&network=${networkType}`,
     AUTH_APPLE_URL: `${host}/apple-auth`,
     RECAPTCHA_URL: `${host}/recaptcha-check`,
+    OPEN_LOGIN_URL: webPageUrl,
+    domain: domain || apiUrl,
   };
 };
 

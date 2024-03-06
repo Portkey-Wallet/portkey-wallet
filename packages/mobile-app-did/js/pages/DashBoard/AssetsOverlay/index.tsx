@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import { TextL, TextS } from 'components/CommonText';
 import { ModalBody } from 'components/ModalBody';
 import CommonInput from 'components/CommonInput';
@@ -23,8 +23,13 @@ import { useGStyles } from 'assets/theme/useGStyles';
 import myEvents from 'utils/deviceEvent';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import CommonAvatar from 'components/CommonAvatar';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
+import { useAppDispatch } from 'store/hooks';
+import { fetchAssetAsync } from '@portkey-wallet/store/store-ca/assets/slice';
+import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
+import Touchable from 'components/Touchable';
+import NFTAvatar from 'components/NFTAvatar';
+import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 
 export type ImTransferInfoType = {
   isGroupChat?: boolean;
@@ -40,7 +45,7 @@ export type ShowAssetListParamsType = {
 };
 
 const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: IAssetItemType }) => {
-  const { symbol, onPress, item } = props;
+  const { onPress, item } = props;
 
   const { currentNetwork } = useWallet();
 
@@ -57,12 +62,16 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
       nftInfo: { tokenId },
     } = item;
     return (
-      <TouchableOpacity style={itemStyle.wrap} onPress={() => onPress?.(item)}>
-        {item.nftInfo.imageUrl ? (
-          <CommonAvatar avatarSize={pTd(48)} style={[itemStyle.left]} imageUrl={item?.nftInfo?.imageUrl} />
-        ) : (
-          <Text style={[itemStyle.left, itemStyle.noPic]}>{item.symbol[0]}</Text>
-        )}
+      <Touchable style={itemStyle.wrap} onPress={() => onPress?.(item)}>
+        <NFTAvatar
+          disabled
+          isSeed={item?.nftInfo?.isSeed}
+          seedType={item?.nftInfo?.seedType}
+          nftSize={pTd(48)}
+          data={item?.nftInfo}
+          style={itemStyle.left}
+        />
+
         <View style={itemStyle.right}>
           <View>
             <TextL numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font5]}>
@@ -75,11 +84,13 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
           </View>
 
           <View style={itemStyle.balanceWrap}>
-            <TextL style={[itemStyle.token, FontStyles.font5]}>{item?.nftInfo?.balance}</TextL>
+            <TextL style={[itemStyle.token, FontStyles.font5]}>
+              {formatAmountShow(divDecimals(item?.nftInfo?.balance, item.nftInfo.decimals))}
+            </TextL>
             <TextS style={itemStyle.dollar} />
           </View>
         </View>
-      </TouchableOpacity>
+      </Touchable>
     );
   }
   return null;
@@ -93,12 +104,14 @@ const INIT_PAGE_INFO = {
 
 const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) => {
   const { addresses = [], isGroupChat, toUserId } = imTransferInfo || {};
-  console.log('addresses', addresses);
+
   const { t } = useLanguage();
   const caAddresses = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
   const [keyword, setKeyword] = useState('');
   const gStyles = useGStyles();
+  const dispatch = useAppDispatch();
+  const { accountAllAssets } = useAssets();
 
   const chainIds = useMemo(() => addresses?.map(item => item.chainId), [addresses]);
 
@@ -106,6 +119,15 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
 
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const [listShow, setListShow] = useState<IAssetItemType[]>([]);
+
+  const assetListShow = useMemo(() => {
+    if (debounceKeyword) {
+      return listShow;
+    } else {
+      return accountAllAssets.accountAssetsList;
+    }
+  }, [accountAllAssets.accountAssetsList, debounceKeyword, listShow]);
+
   const pageInfoRef = useRef({
     ...INIT_PAGE_INFO,
   });
@@ -163,6 +185,7 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
 
   useEffectOnce(() => {
     getTokenPrice();
+    dispatch(fetchAssetAsync({ caAddresses, keyword: '', caAddressInfos }));
   });
 
   const renderItem = useCallback(
@@ -242,7 +265,7 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
           }
         }}
         style={styles.flatList}
-        data={listShow || []}
+        data={(assetListShow as IAssetItemType[]) || []}
         renderItem={renderItem}
         keyExtractor={(_item, index) => `${index}`}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
@@ -302,8 +325,6 @@ const itemStyle = StyleSheet.create({
   },
   left: {
     marginLeft: pTd(16),
-    width: pTd(48),
-    height: pTd(48),
     borderRadius: pTd(6),
     overflow: 'hidden',
   },

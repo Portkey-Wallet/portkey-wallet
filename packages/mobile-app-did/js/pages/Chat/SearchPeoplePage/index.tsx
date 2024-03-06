@@ -47,7 +47,7 @@ export default function SearchPeople() {
     } finally {
       setLoading(false);
     }
-  }, [debounceKeyword]);
+  }, [debounceKeyword, searchChannel]);
 
   useEffect(() => {
     if (!debounceKeyword) return setFilterList([]);

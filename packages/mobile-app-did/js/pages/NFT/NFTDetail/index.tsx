@@ -164,7 +164,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
               <View style={[GStyles.flexRow, styles.rowWrap]}>
                 <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Expires')}</TextM>
                 <View style={GStyles.flex1} />
-                <TextM style={[styles.leftTitle, FontStyles.font5]}>{formatTransferTime(expires || '')}</TextM>
+                <TextM style={[styles.leftTitle, FontStyles.font5]}>{formatTransferTime(expires)}</TextM>
               </View>
             </View>
           )}

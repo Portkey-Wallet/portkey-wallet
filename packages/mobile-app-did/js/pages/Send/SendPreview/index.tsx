@@ -51,8 +51,9 @@ import { TransferTypeEnum } from '@portkey-wallet/im';
 import { useJumpToChatDetails, useJumpToChatGroupDetails } from 'hooks/chat';
 import { useFocusEffect } from '@react-navigation/native';
 import NFTAvatar from 'components/NFTAvatar';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-mainnet-v2';
 
-const SendHome: React.FC = () => {
+const SendPreview: React.FC = () => {
   const { t } = useLanguage();
   const isMainnet = useIsMainnet();
   const defaultToken = useDefaultToken();
@@ -88,7 +89,7 @@ const SendHome: React.FC = () => {
   const currentNetwork = useCurrentNetworkInfo();
   const caAddressInfos = useCaAddressInfoList();
   const wallet = useCurrentWalletInfo();
-  const { walletName } = useWallet();
+  const { userInfo } = useWallet();
   const contractRef = useRef<ContractBasic>();
   const tokenContractRef = useRef<ContractBasic>();
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
@@ -372,9 +373,30 @@ const SendHome: React.FC = () => {
     Loading.hide();
   }, [dispatch, retryCrossChain, showRetry, transfer]);
 
+  const checkAndSend = useCallback(() => {
+    if (assetInfo.chainId !== DefaultChainId)
+      return ActionSheet.alert({
+        title: t('Send to exchange account?'),
+        message: t(
+          `Please note that assets on the SideChain can't be sent directly to exchanges. You can transfer your SideChain assets to the MainChain before sending them to your exchange account.`,
+        ),
+        buttons: [
+          {
+            type: 'outline',
+            title: 'Cancel',
+          },
+          {
+            title: t('Confirm'),
+            type: 'primary',
+            onPress: GeneralSend,
+          },
+        ],
+      });
+    GeneralSend();
+  }, [GeneralSend, assetInfo.chainId, t]);
   const onSend = useCallback(() => {
-    imTransferInfo ? imSend() : GeneralSend();
-  }, [GeneralSend, imSend, imTransferInfo]);
+    imTransferInfo ? imSend() : checkAndSend();
+  }, [checkAndSend, imSend, imTransferInfo]);
 
   useFocusEffect(
     useCallback(() => {
@@ -441,7 +463,7 @@ const SendHome: React.FC = () => {
           <View style={styles.section}>
             <View style={[styles.flexSpaceBetween]}>
               <TextM style={styles.lightGrayFontColor}>{t('From')}</TextM>
-              <TextM style={styles.blackFontColor}>{walletName}</TextM>
+              <TextM style={styles.blackFontColor}>{userInfo?.nickName}</TextM>
             </View>
             <View style={[styles.flexSpaceBetween]}>
               <TextM style={styles.lightGrayFontColor} />
@@ -565,7 +587,7 @@ const SendHome: React.FC = () => {
   );
 };
 
-export default memo(SendHome);
+export default memo(SendPreview);
 
 export const styles = StyleSheet.create({
   pageWrap: {

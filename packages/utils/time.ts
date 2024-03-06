@@ -28,7 +28,9 @@ export function isSameDay(date1: dayjs.ConfigType, date2: dayjs.ConfigType) {
  * @param time
  * @returns
  */
-export const formatTransferTime = (time: string | number) => {
+export const formatTransferTime = (time?: string | number) => {
+  if (!time) return '';
+
   if (dayjs(time).isBefore(dayjs(), 'year')) {
     return dayjs(time).format('YYYY MMM D , h:mm a').replace(',', 'at');
   }

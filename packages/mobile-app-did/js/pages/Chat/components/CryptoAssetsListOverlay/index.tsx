@@ -30,7 +30,7 @@ import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import NFTAvatar from 'components/NFTAvatar';
 
-export type ImTransferInfoType = {
+export type TImTransferInfo = {
   isGroupChat?: boolean;
   channelId?: string;
   toUserId?: string;
@@ -41,7 +41,7 @@ export type ImTransferInfoType = {
 export type ShowCryptoBoxAssetListParamsType = {
   currentSymbol: string;
   currentChainId: ChainId;
-  imTransferInfo?: ImTransferInfoType;
+  imTransferInfo?: TImTransferInfo;
   toAddress?: string;
   onFinishSelectAssets: (item: ICryptoBoxAssetItemType) => void;
 };

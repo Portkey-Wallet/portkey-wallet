@@ -16,7 +16,7 @@ export interface MiscState {
   };
   defaultPhoneCountryCode?: CountryItem;
   localPhoneCountryCode?: CountryItem;
-  sideChainTokenReceiveTipMap: {
+  sideChainTokenReceiveTipMap?: {
     [T in NetworkType]: boolean;
   };
 }

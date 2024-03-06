@@ -8,6 +8,7 @@ export default function CustomPromptModal({ onClose, wrapClassName, ...props }: 
     <Modal
       {...props}
       wrapClassName={clsx(['custom-prompt-modal', wrapClassName])}
+      maskClosable={true}
       closable={false}
       centered={true}
       onCancel={onClose}

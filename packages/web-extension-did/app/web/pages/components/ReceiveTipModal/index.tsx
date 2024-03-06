@@ -9,14 +9,16 @@ import {
   RECEIVE_SIDE_CHAIN_TOKEN_TIP_MODAL_BUTTON_TEXT,
 } from '@portkey-wallet/constants/constants-ca/send';
 import { useSideChainTokenReceiveTipSetting } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { ChainId } from '@portkey-wallet/types';
 import './index.less';
 
 export interface IReceiveTipModalProps extends ModalProps {
   open: boolean;
+  chainId: ChainId;
   onClose: () => void;
 }
 
-const ReceiveTipModal = ({ open, onClose, ...props }: IReceiveTipModalProps) => {
+const ReceiveTipModal = ({ open, onClose, chainId, ...props }: IReceiveTipModalProps) => {
   const [confirm, setConfirm] = useState<boolean>(false);
   const { cancelSideChainTokenReceiveTip } = useSideChainTokenReceiveTipSetting();
 
@@ -24,6 +26,14 @@ const ReceiveTipModal = ({ open, onClose, ...props }: IReceiveTipModalProps) => 
     setConfirm(false);
     onClose();
   }, [onClose]);
+
+  const replaceSuffixShow = useCallback(
+    (str: string) => {
+      const reg = /CHAIN_SUFFIX/gi;
+      return str.replace(reg, `_${chainId}`);
+    },
+    [chainId],
+  );
 
   const handleConfirm = useCallback(() => {
     if (confirm) {
@@ -36,7 +46,6 @@ const ReceiveTipModal = ({ open, onClose, ...props }: IReceiveTipModalProps) => 
     <CustomPromptModal
       {...props}
       destroyOnClose
-      maskClosable={false}
       open={open}
       wrapClassName="receive-modal-wrapper"
       onClose={handleClose}>
@@ -45,9 +54,7 @@ const ReceiveTipModal = ({ open, onClose, ...props }: IReceiveTipModalProps) => 
           <div className="receive-modal-header flex-center">{RECEIVE_SIDE_CHAIN_TOKEN_TIP_TITLE}</div>
           <div className="receive-modal-content flex-column">
             {RECEIVE_SIDE_CHAIN_TOKEN_TIP_CONTENT.map((item, i) => (
-              <div key={i} className="content-item">
-                {item}
-              </div>
+              <div key={i}>{replaceSuffixShow(item)}</div>
             ))}
           </div>
         </div>

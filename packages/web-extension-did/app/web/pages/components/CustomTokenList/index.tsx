@@ -12,6 +12,7 @@ import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useAmountInUsdShow, useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import TokenImageDisplay from '../TokenImageDisplay';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { NFTSizeEnum, getSeedTypeTag } from 'utils/assets';
 import './index.less';
 
 export interface ICustomTokenListProps {
@@ -129,12 +130,14 @@ export default function CustomTokenList({
 
   const renderNft = useCallback(
     (token: AccountAssetItem) => {
+      const seedTypeTag = token.nftInfo ? getSeedTypeTag(token.nftInfo, NFTSizeEnum.small) : '';
       return (
         <div
           key={`${token.chainId}_${token.nftInfo?.alias}_${token.nftInfo?.tokenId}`}
           className="item protocol"
           onClick={onChange?.bind(undefined, token, 'nft')}>
-          <div className="avatar">
+          <div className="avatar flex-center">
+            {seedTypeTag && <CustomSvg type={seedTypeTag} />}
             {token.nftInfo?.imageUrl ? <img src={token.nftInfo.imageUrl} /> : token.nftInfo?.alias?.slice(0, 1)}
           </div>
           <div className="info">
@@ -142,7 +145,9 @@ export default function CustomTokenList({
             <p className="network">{transNetworkText(token.chainId, !isMainnet)}</p>
           </div>
           <div className="amount">
-            <div className="balance">{token.nftInfo?.balance}</div>
+            <div className="balance">
+              {formatAmountShow(divDecimals(token.nftInfo?.balance, token.nftInfo?.decimals || 0))}
+            </div>
           </div>
         </div>
       );

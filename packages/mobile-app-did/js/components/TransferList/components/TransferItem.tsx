@@ -4,9 +4,7 @@ import GStyles from 'assets/theme/GStyles';
 import { useLanguage } from 'i18n/hooks';
 import React, { memo, useCallback, useMemo, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { formatTransferTime } from 'utils';
 import { formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
-
 import { pTd } from 'utils/unit';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
@@ -33,6 +31,7 @@ import fonts from 'assets/theme/fonts';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { getEllipsisTokenShow } from 'pages/Chat/utils/format';
 import Touchable from 'components/Touchable';
+import { formatTransferTime } from '@portkey-wallet/utils/time';
 
 interface ActivityItemPropsType {
   item?: ActivityItemType;

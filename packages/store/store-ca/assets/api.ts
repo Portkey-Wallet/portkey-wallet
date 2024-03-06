@@ -81,19 +81,16 @@ export function fetchCryptoBoxAssetList({
 }
 
 export function fetchNFTSeriesList({
-  caAddresses = [],
   caAddressInfos,
   skipCount = 0,
   maxResultCount = 1000,
 }: {
-  caAddresses: string[];
   skipCount: number;
   maxResultCount?: number;
   caAddressInfos: { chainId: string; caAddress: string }[];
 }): Promise<{ data: any[]; totalRecordCount: number }> {
   return request.assets.fetchAccountNftCollectionList({
     params: {
-      caAddresses,
       caAddressInfos,
       skipCount,
       maxResultCount,

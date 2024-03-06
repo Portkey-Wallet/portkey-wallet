@@ -32,7 +32,7 @@ export type NftInfo = {
   imageUrl: string;
   alias: string;
   nftId: string;
-  isSeed: boolean;
+  isSeed?: boolean;
   seedType?: SeedTypeEnum;
 };
 

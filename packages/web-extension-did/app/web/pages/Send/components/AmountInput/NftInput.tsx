@@ -1,13 +1,15 @@
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { Input } from 'antd';
-import { handleKeyDownInt } from 'pages/Send/utils/util.keyDown';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
 import { getBalance } from 'utils/sandboxUtil/getBalance';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { getSeedTypeTag } from 'utils/assets';
+import { parseInputNumberChange } from '@portkey-wallet/utils/input';
+import CustomSvg from 'components/CustomSvg';
 
 export default function NftInput({
   fromAccount,
@@ -23,27 +25,13 @@ export default function NftInput({
   onChange: (params: { amount: string; balance: string }) => void;
 }) {
   const { t } = useTranslation();
-  // const [errorMsg, setErrorMsg] = useState('Insufficient funds');
   const [amount, setAmount] = useState<string>(value);
   const currentChain = useCurrentChain(token.chainId as ChainId);
   const currentNetwork = useCurrentNetworkInfo();
-  // const isMain = useMemo(() => currentNetwork.networkType === 'MAINNET', [currentNetwork]);
   const [balance, setBalance] = useState<string>('');
+  const seedTypeTag = useMemo(() => getSeedTypeTag(token), [token]);
 
   const handleAmountBlur = useCallback(() => {
-    // setAmount((v) => {
-    //   const reg = new RegExp(`.+\\.\\d{0,${token?.decimals || 8}}|.+`);
-    //   const valueProcessed = v
-    //     ?.replace(/\.+$/, '')
-    //     .replace(/^0+\./, '0.')
-    //     .replace(/^0+/, '')
-    //     .replace(/^\.+/, '0.')
-    //     .match(reg)
-    //     ?.toString();
-    //   const valueString = valueProcessed ? `${parseInputChange(valueProcessed, ZERO, token?.decimals) || 0}` : '';
-    //   onChange(valueString);
-    //   return valueString.length ? `${valueString}` : '';
-    // });
     onChange({ amount, balance });
   }, [amount, balance, onChange]);
 
@@ -70,7 +58,10 @@ export default function NftInput({
   return (
     <div className="amount-wrap">
       <div className="item asset nft">
-        <div className="avatar">{token.imageUrl ? <img src={token.imageUrl} /> : <p>{token.symbol[0]}</p>}</div>
+        <div className="avatar flex-center">
+          {seedTypeTag && <CustomSvg type={seedTypeTag} />}
+          {token.imageUrl ? <img src={token.imageUrl} /> : <p>{token.symbol[0]}</p>}
+        </div>
         <div className="info">
           <div className="index">
             <p className="alias">{token.alias}</p>
@@ -87,14 +78,13 @@ export default function NftInput({
           <div className="amount-input">
             <Input
               type="text"
-              maxLength={18}
               placeholder={`0`}
               value={amount}
-              onKeyDown={handleKeyDownInt}
               onBlur={handleAmountBlur}
               onChange={(e) => {
-                setAmount(e.target.value);
-                onChange({ amount: e.target.value, balance });
+                const _v = parseInputNumberChange(e.target.value, undefined, token.decimals);
+                setAmount(_v);
+                onChange({ amount: _v, balance });
               }}
             />
           </div>

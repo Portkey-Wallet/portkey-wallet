@@ -101,8 +101,20 @@ export default function Send() {
       imageUrl: state.imageUrl,
       alias: state.alias,
       tokenId: state.tokenId,
+      isSeed: state.isSeed,
+      seedType: state.seedType,
     }),
-    [chainId, state.address, state.alias, state.decimals, state.imageUrl, state.symbol, state.tokenId],
+    [
+      chainId,
+      state.address,
+      state.alias,
+      state.decimals,
+      state.imageUrl,
+      state.isSeed,
+      state.seedType,
+      state.symbol,
+      state.tokenId,
+    ],
   );
   const defaultToken = useDefaultToken(chainId);
 
@@ -247,17 +259,14 @@ export default function Send() {
       navigate('/');
     } catch (error: any) {
       setLoading(false);
-      if (!error?.type) return singleMessage.error(error);
-      if (error.type === 'managerTransfer') {
-        return singleMessage.error(error);
-      } else if (error.type === 'crossChainTransfer') {
+      if (error && error.type === 'crossChainTransfer') {
         dispatch(addFailedActivity(error.data));
         console.log('addFailedActivity', error);
 
         showErrorModal(error.data);
         return;
       } else {
-        singleMessage.error(handleErrorMessage(error));
+        singleMessage.error(handleErrorMessage(error, 'Transfer Failed'));
       }
     } finally {
       setLoading(false);
@@ -553,6 +562,7 @@ export default function Send() {
             onChange={({ amount, balance }) => {
               setAmount(amount);
               setBalance(balance);
+              setTipMsg('');
             }}
             getTranslationInfo={getTranslationInfo}
             setErrorMsg={setTipMsg}
@@ -583,6 +593,8 @@ export default function Send() {
             transactionFee={txFee || ''}
             isCross={isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF')}
             tokenId={tokenInfo.tokenId || ''}
+            isSeed={state.isSeed}
+            seedType={state.seedType}
           />
         ),
       },
@@ -598,6 +610,8 @@ export default function Send() {
       getTranslationInfo,
       chainInfo?.chainId,
       txFee,
+      state.isSeed,
+      state.seedType,
       validateToAddress,
       t,
       navigate,

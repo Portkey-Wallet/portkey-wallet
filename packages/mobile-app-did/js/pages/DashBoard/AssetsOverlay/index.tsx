@@ -30,6 +30,7 @@ import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
 import Touchable from 'components/Touchable';
 import NFTAvatar from 'components/NFTAvatar';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 export type ImTransferInfoType = {
   isGroupChat?: boolean;
@@ -140,7 +141,7 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
     [chainIds],
   );
 
-  const getList = useCallback(
+  const getList = useLockCallback(
     async (_keyword = '', isInit = false) => {
       if (!isInit && listShow.length > 0 && listShow.length >= pageInfoRef.current.total) return;
       if (pageInfoRef.current.isLoading) return;
@@ -156,7 +157,6 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
 
         pageInfoRef.current.curPage = pageInfoRef.current.curPage + 1;
         pageInfoRef.current.total = response.totalRecordCount;
-        console.log('fetchAccountAssetsByKeywords:', response);
 
         if (isInit) {
           setListShow(filterList(response.data));
@@ -195,7 +195,6 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
       return (
         <AssetItem
           symbol={item.symbol || ''}
-          // icon={'aelf-avatar'}
           item={item}
           onPress={() => {
             OverlayModal.hide();

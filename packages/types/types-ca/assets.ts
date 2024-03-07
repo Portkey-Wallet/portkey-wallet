@@ -2,12 +2,6 @@ import { ChainId } from '..';
 
 export enum SeedTypeEnum {
   'None' = 0,
-  'FT' = 1,
-  'NFT' = 2,
-}
-
-export enum SeedTypeShowEnum {
-  '' = 0,
   'Token' = 1,
   'NFT' = 2,
 }

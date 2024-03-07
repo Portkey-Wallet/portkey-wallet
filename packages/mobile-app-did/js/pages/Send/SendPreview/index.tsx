@@ -441,7 +441,7 @@ const SendPreview: React.FC = () => {
             <TextL numberOfLines={1} style={[styles.nftTitle, fonts.mediumFont]}>
               {`${assetInfo.alias} #${assetInfo?.tokenId}  `}
             </TextL>
-            <TextS style={[FontStyles.font3]}>{`Amount：${sendNumber}`}</TextS>
+            <TextS style={[FontStyles.font3]}>{`Amount：${formatAmountShow(sendNumber)}`}</TextS>
           </View>
         </View>
       ) : (

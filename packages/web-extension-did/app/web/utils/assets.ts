@@ -16,7 +16,7 @@ export const getSeedTypeTag = (
   size = NFTSizeEnum.medium,
 ): SvgType | '' => {
   if (nft.isSeed) {
-    if (nft.seedType === SeedTypeEnum.FT) {
+    if (nft.seedType === SeedTypeEnum.Token) {
       switch (size) {
         case NFTSizeEnum.large:
           return 'TokenTagLarge';

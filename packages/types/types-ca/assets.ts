@@ -2,7 +2,7 @@ import { ChainId } from '..';
 
 export enum SeedTypeEnum {
   'None' = 0,
-  'FT' = 1,
+  'Token' = 1,
   'NFT' = 2,
 }
 
@@ -46,28 +46,6 @@ export type NFTItemBaseType = {
   limitPerMint?: number;
   expires?: string;
   seedOwnedSymbol?: string;
-};
-
-// assets types
-export type AssetsItemType = {
-  chainId: ChainId;
-  symbol: string;
-  address: string;
-  nftInfo: {
-    imageUrl: string;
-    alias: string;
-    tokenId: string;
-    protocolName: string;
-    quantity: string;
-    metaData: any;
-    decimals?: string;
-    isSeed?: boolean;
-    seedType?: SeedTypeEnum;
-    inscriptionName?: string;
-    limitPerMint?: number;
-    expires?: string;
-    seedOwnedSymbol?: string;
-  };
 };
 
 export type RateBaseType = {

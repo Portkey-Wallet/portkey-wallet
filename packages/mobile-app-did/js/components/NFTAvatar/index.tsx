@@ -77,7 +77,10 @@ const NFTAvatar: React.FC<NoDataPropsType> = props => {
       style={[styles.wrap, !imageUrl && !showNftDetailInfo && styles.wrapContentCenter, nftWrapStyle, ...outStyles]}
       onPress={onPress}>
       {isSeed && (
-        <Image source={seedType === SeedTypeEnum.FT ? tokenBadge : nftBadge} style={[styles.badge, badgeSizeStyle]} />
+        <Image
+          source={seedType === SeedTypeEnum.Token ? tokenBadge : nftBadge}
+          style={[styles.badge, badgeSizeStyle]}
+        />
       )}
       {!imageUrl && !showNftDetailInfo && <Text style={[FontStyles.font7, fontSizeStyle]}>{alias?.[0]}</Text>}
       {imageUrl && <CommonAvatar avatarSize={nftSize} shapeType="square" imageUrl={imageUrl} style={[styles.img]} />}

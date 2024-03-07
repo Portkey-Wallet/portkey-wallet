@@ -153,7 +153,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
                 <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Type')}</TextM>
                 <View style={GStyles.flex1} />
                 <TextM style={[styles.leftTitle, FontStyles.font5]}>
-                  {seedType === SeedTypeEnum.NFT ? 'NFT' : 'Token'}
+                  {SeedTypeEnum[seedType || SeedTypeEnum.None]}
                 </TextM>
               </View>
               <View style={[GStyles.flexRow, styles.rowWrap]}>
@@ -273,11 +273,11 @@ export const styles = StyleSheet.create({
   bottomSection: {
     backgroundColor: defaultColors.bg1,
     position: 'absolute',
-    bottom: bottomBarHeight,
+    bottom: 0,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: defaultColors.border6,
     width: ScreenWidth,
-    height: pTd(110),
+    height: pTd(110) + bottomBarHeight,
     paddingLeft: pTd(20),
     paddingRight: pTd(20),
   },

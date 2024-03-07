@@ -27,7 +27,7 @@ export default function NFTInfo({
     chainId: 'AELF',
     tokenContractAddress: '',
     isSeed: false,
-    seedType: SeedTypeEnum.FT,
+    seedType: SeedTypeEnum.Token,
   },
 }: AmountNFT) {
   const { t } = useLanguage();

@@ -150,7 +150,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
 
   return (
     <Touchable style={itemStyle.itemWrap} onPress={() => onPress?.(item)}>
-      <Text style={itemStyle.time}>{formatTransferTime(Number(item?.timestamp) * 1000)}</Text>
+      <Text style={itemStyle.time}>{formatTransferTime(item?.timestamp)}</Text>
       <View style={[itemStyle.contentWrap]}>
         <CommonAvatar
           style={itemStyle.left}

@@ -266,7 +266,7 @@ const ActivityDetail = () => {
       <View style={[styles.flexSpaceBetween, styles.values1]}>
         <TextM style={styles.greenFontColor}>{t(status.text)}</TextM>
         <TextM style={styles.blackFontColor}>
-          {activityItem && activityItem.timestamp ? formatTransferTime(Number(activityItem?.timestamp) * 1000) : ''}
+          {activityItem && activityItem.timestamp ? formatTransferTime(activityItem?.timestamp) : ''}
         </TextM>
       </View>
       <View style={styles.card}>

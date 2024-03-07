@@ -17,7 +17,7 @@ import { NFTSizeEnum, getSeedTypeTag } from 'utils/assets';
 import CustomSvg from 'components/CustomSvg';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { formatTransferTime } from '@portkey-wallet/utils/time';
-import { SeedTypeEnum, SeedTypeShowEnum } from '@portkey-wallet/types/types-ca/assets';
+import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
 import './index.less';
 
 export default function NFT() {
@@ -69,7 +69,7 @@ export default function NFT() {
         <div className="title">Token Creation via This Seed</div>
         <div className="info-item flex-between">
           <div className="label">Type</div>
-          <div>{SeedTypeShowEnum[seedType || SeedTypeEnum.None]}</div>
+          <div>{SeedTypeEnum[seedType || SeedTypeEnum.None]}</div>
         </div>
         <div className="info-item flex-between">
           <div className="label">Token Symbol</div>

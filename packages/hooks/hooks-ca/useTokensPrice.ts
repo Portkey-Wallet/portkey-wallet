@@ -1,7 +1,7 @@
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { fetchTokensPriceAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
-import { useMemo, useCallback, useEffect } from 'react';
+import { useMemo, useCallback, useEffect, useRef } from 'react';
 import { useAppCASelector, useAppCommonDispatch } from '../index';
 import { useIsMainnet } from './network';
 import { useDefaultToken } from './chainList';
@@ -22,6 +22,7 @@ export function useGetCurrentAccountTokenPrice(): [
     accountToken,
   } = useAppCASelector(state => state.assets);
   const dispatch = useAppCommonDispatch();
+  const symbolsRef = useRef<string[]>([]);
 
   const symbols = useMemo(() => {
     return Array.from(new Set(accountToken?.accountTokenList?.map(item => item.symbol)));
@@ -30,6 +31,8 @@ export function useGetCurrentAccountTokenPrice(): [
   const getTokenPrice = useCallback(
     (symbol?: string) => {
       if (symbols.length === 0) return;
+      if (symbolsRef.current.toString() === symbols.toString()) return;
+      symbolsRef.current = symbols;
       dispatch(fetchTokensPriceAsync({ symbols: symbol ? [symbol] : symbols }));
     },
     [dispatch, symbols],

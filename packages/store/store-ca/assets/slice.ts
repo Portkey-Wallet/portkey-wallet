@@ -112,18 +112,16 @@ const initialState: AssetsStateType = {
 export const fetchTokenListAsync = createAsyncThunk(
   'fetchTokenListAsync',
   async ({
-    caAddresses,
     caAddressInfos,
     skipCount = 0,
     maxResultCount = 1000,
   }: {
-    caAddresses: string[];
     caAddressInfos: { chainId: ChainId; caAddress: string }[];
     skipCount?: number;
     maxResultCount?: number;
   }) => {
     // if (totalRecordCount === 0 || totalRecordCount > accountTokenList.length) {
-    const response = await fetchTokenList({ caAddresses, caAddressInfos, skipCount, maxResultCount });
+    const response = await fetchTokenList({ caAddressInfos, skipCount, maxResultCount });
 
     // mock data fro new account
     if (response.data.length === 0) {

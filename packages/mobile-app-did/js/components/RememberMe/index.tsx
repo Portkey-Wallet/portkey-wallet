@@ -1,5 +1,5 @@
-import React, { Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react';
-import { Keyboard, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { Dispatch, SetStateAction, useCallback } from 'react';
+import { Keyboard, ScrollView, StyleSheet, View } from 'react-native';
 import { TextL, TextM } from 'components/CommonText';
 import OverlayModal from 'components/OverlayModal';
 import Svg from 'components/Svg';
@@ -14,6 +14,7 @@ import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { SessionKeyMap, SessionKeyArray } from '@portkey-wallet/constants/constants-ca/dapp';
 import GStyles from 'assets/theme/GStyles';
 import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import Touchable from 'components/Touchable';
 
 export type RememberInfoType = {
   isRemember: boolean;
@@ -56,10 +57,10 @@ function RememberMeOverlay(props: RememberMeOverlayProps) {
         <TextL style={[fonts.mediumFont, FontStyles.font5]}>{t('Session key expires in')}</TextL>
 
         {SessionKeyArray.map(ele => (
-          <TouchableOpacity key={ele.value} style={Overlay.itemRow} onPress={() => onPressItem(ele?.value)}>
+          <Touchable key={ele.value} style={Overlay.itemRow} onPress={() => onPressItem(ele?.value)}>
             <TextL>{ele.label}</TextL>
             {value === ele.value && <Svg icon="selected" size={pTd(24)} />}
-          </TouchableOpacity>
+          </Touchable>
         ))}
       </ScrollView>
     </ModalBody>
@@ -82,10 +83,10 @@ function PeriodOverlay(props: RememberMeOverlayProps) {
     <ModalBody modalBodyType="bottom" title={'Select Period'}>
       <ScrollView style={Overlay.wrapStyle}>
         {SessionKeyArray.map(ele => (
-          <TouchableOpacity key={ele.value} style={Overlay.itemRow} onPress={() => onPressItem(ele?.value)}>
+          <Touchable key={ele.value} style={Overlay.itemRow} onPress={() => onPressItem(ele?.value)}>
             <TextL>{ele.label}</TextL>
             {value === ele.value && <Svg icon="selected" size={pTd(24)} />}
-          </TouchableOpacity>
+          </Touchable>
         ))}
       </ScrollView>
     </ModalBody>
@@ -123,19 +124,19 @@ export const RememberMe = (props: RememberMeProps) => {
 
   return (
     <View style={styles.rememberWrap}>
-      <TouchableOpacity onPress={() => setRememberMeInfo(pre => ({ ...pre, isRemember: !pre.isRemember }))}>
+      <Touchable onPress={() => setRememberMeInfo(pre => ({ ...pre, isRemember: !pre.isRemember }))}>
         <Svg
           icon={rememberInfo?.isRemember ? 'selected' : 'unselected'}
           size={pTd(20)}
           iconStyle={styles.selectedIcon}
         />
-      </TouchableOpacity>
+      </Touchable>
       <TextM numberOfLines={2} style={styles.text}>
         <View>
           <TextM>Remember me to skip authentication for </TextM>
-          <TouchableOpacity style={(GStyles.flexRow, styles.label)} onPress={() => showRememberMeOverlay(props)}>
+          <Touchable style={(GStyles.flexRow, styles.label)} onPress={() => showRememberMeOverlay(props)}>
             <TextM style={FontStyles.font4}>{SessionKeyMap[rememberInfo.value || SessionExpiredPlan.hour1]}</TextM>
-          </TouchableOpacity>
+          </Touchable>
         </View>
       </TextM>
     </View>

@@ -43,7 +43,7 @@ export const shrinkSendQrData = (data: QRCodeDataObjType): QrCodeDataArrType => 
   // 1.chainType  2.networkType 3.data.type 4.toAddress 5. symbol 6. tokenContractAddress 7. chainId 8. decimals
 
   if (data.networkType?.includes('MAIN')) {
-    data.networkType = 'MAIN' as any;
+    data.networkType = 'MAIN' as NetworkType;
   }
 
   return [

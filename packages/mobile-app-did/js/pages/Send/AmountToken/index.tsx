@@ -1,5 +1,5 @@
 import React, { useMemo, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TextInput } from 'react-native';
 import { pTd } from 'utils/unit';
 import { parseInputChange } from '@portkey-wallet/utils/input';
 import { ZERO } from '@portkey-wallet/constants/misc';
@@ -19,6 +19,7 @@ import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wal
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useInputFocus } from 'hooks/useInputFocus';
+import Touchable from 'components/Touchable';
 
 interface AmountTokenProps {
   onPressMax: () => void;
@@ -95,9 +96,9 @@ export default function AmountToken({
               setSendTokenNumber(newAmount);
             }}
           />
-          <TouchableOpacity style={styles.max} onPress={onPressMax}>
+          <Touchable style={styles.max} onPress={onPressMax}>
             <TextM style={FontStyles.font4}>{t('Max')}</TextM>
-          </TouchableOpacity>
+          </Touchable>
         </View>
       </View>
       {isMainnet && isTokenHasPrice && (

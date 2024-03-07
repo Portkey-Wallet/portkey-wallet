@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { TextL, TextS } from 'components/CommonText';
 import { ModalBody } from 'components/ModalBody';
 import CommonInput from 'components/CommonInput';
@@ -12,12 +12,9 @@ import { defaultColors } from 'assets/theme';
 import { useCaAddressInfoList, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import TokenListItem from 'components/TokenListItem';
 import { FontStyles } from 'assets/theme/styles';
-import { useCaAddresses } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchAssetList } from '@portkey-wallet/store/store-ca/assets/api';
+import { fetchCryptoBoxAssetList } from '@portkey-wallet/store/store-ca/assets/api';
 import { IAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
-import navigationService from 'utils/navigationService';
-import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
-import { addressFormat, formatChainInfoToShow } from '@portkey-wallet/utils';
+import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
 import { useGStyles } from 'assets/theme/useGStyles';
 import myEvents from 'utils/deviceEvent';
@@ -26,11 +23,14 @@ import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/u
 import CommonAvatar from 'components/CommonAvatar';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 import { useAppDispatch } from 'store/hooks';
-import { fetchAssetAsync } from '@portkey-wallet/store/store-ca/assets/slice';
+import { fetchCryptoBoxAssetAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
-import Touchable from 'components/Touchable';
+import Svg from 'components/Svg';
+import GStyles from 'assets/theme/GStyles';
+import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
+import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 
-export type ImTransferInfoType = {
+export type TImTransferInfo = {
   isGroupChat?: boolean;
   channelId?: string;
   toUserId?: string;
@@ -38,73 +38,79 @@ export type ImTransferInfoType = {
   addresses?: { address: string; chainId: ChainId; chainName?: string }[];
 };
 
-export type ShowAssetListParamsType = {
-  imTransferInfo?: ImTransferInfoType;
+export type ShowCryptoBoxAssetListParamsType = {
+  currentSymbol: string;
+  currentChainId: ChainId;
+  imTransferInfo?: TImTransferInfo;
   toAddress?: string;
+  onFinishSelectAssets: (item: ICryptoBoxAssetItemType) => void;
 };
 
-const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: IAssetItemType }) => {
-  const { onPress, item } = props;
-
+const AssetItem = (props: {
+  currentSymbol: string;
+  currentChainId: ChainId;
+  item: ICryptoBoxAssetItemType;
+  onPress: (item: any) => void;
+}) => {
   const { currentNetwork } = useWallet();
 
-  if (item.tokenInfo)
+  const { currentSymbol, currentChainId, onPress, item } = props;
+  const { address, assetType, chainId, imageUrl, symbol, alias, tokenId } = item;
+
+  if (assetType === AssetType.ft)
     return (
       <TokenListItem
-        item={{ name: '', ...item, ...item?.tokenInfo, tokenContractAddress: item.address }}
+        noBalanceShow
+        currentSymbol={currentSymbol}
+        currentChainId={currentChainId}
+        item={{ name: '', ...item, tokenContractAddress: address, decimals: Number(item.decimals || 0) }}
         onPress={() => onPress(item)}
       />
     );
 
-  if (item.nftInfo) {
-    const {
-      nftInfo: { tokenId },
-    } = item;
+  if (assetType === AssetType.nft) {
     return (
-      <Touchable style={itemStyle.wrap} onPress={() => onPress?.(item)}>
-        {item.nftInfo.imageUrl ? (
-          <CommonAvatar avatarSize={pTd(48)} style={[itemStyle.left]} imageUrl={item?.nftInfo?.imageUrl} />
+      <TouchableOpacity style={itemStyle.wrap} onPress={() => onPress?.(item)}>
+        {imageUrl ? (
+          <CommonAvatar avatarSize={pTd(48)} style={[itemStyle.left]} imageUrl={imageUrl} />
         ) : (
-          <Text style={[itemStyle.left, itemStyle.noPic]}>{item.symbol[0]}</Text>
+          <Text style={[itemStyle.left, itemStyle.noPic]}>{symbol[0]}</Text>
         )}
         <View style={itemStyle.right}>
           <View>
-            <TextL numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font5]}>
-              {`${item?.nftInfo?.alias} #${tokenId}`}
+            <TextL numberOfLines={1} ellipsizeMode={'tail'} style={[itemStyle.nftNameShow, FontStyles.font5]}>
+              {`${alias} #${tokenId}`}
             </TextL>
-
             <TextS numberOfLines={1} style={[FontStyles.font3, itemStyle.nftItemInfo]}>
-              {formatChainInfoToShow(item.chainId as ChainId, currentNetwork)}
+              {formatChainInfoToShow(chainId as ChainId, currentNetwork)}
             </TextS>
           </View>
-
-          <View style={itemStyle.balanceWrap}>
-            <TextL style={[itemStyle.token, FontStyles.font5]}>{item?.nftInfo?.balance}</TextL>
-            <TextS style={itemStyle.dollar} />
-          </View>
+          {currentSymbol === symbol && currentChainId === item?.chainId && (
+            <Svg icon="selected" size={pTd(24)} iconStyle={GStyles.flexEnd} />
+          )}
         </View>
-      </Touchable>
+      </TouchableOpacity>
     );
   }
   return null;
 };
-const MAX_RESULT_COUNT = 10;
-const INIT_PAGE_INFO = {
-  curPage: 0,
-  total: 0,
-  isLoading: false,
-};
 
-const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) => {
-  const { addresses = [], isGroupChat, toUserId } = imTransferInfo || {};
+const CryptoAssetsList = ({
+  currentSymbol,
+  currentChainId,
+  imTransferInfo,
+  onFinishSelectAssets,
+}: ShowCryptoBoxAssetListParamsType) => {
+  const { addresses = [] } = imTransferInfo || {};
 
   const { t } = useLanguage();
-  const caAddresses = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
   const [keyword, setKeyword] = useState('');
   const gStyles = useGStyles();
   const dispatch = useAppDispatch();
-  const { accountAllAssets } = useAssets();
+  const { accountCryptoBoxAssets } = useAssets();
+
+  console.log('accountCryptoBoxAssets:', accountCryptoBoxAssets);
 
   const chainIds = useMemo(() => addresses?.map(item => item.chainId), [addresses]);
 
@@ -117,13 +123,9 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
     if (debounceKeyword) {
       return listShow;
     } else {
-      return accountAllAssets.accountAssetsList;
+      return accountCryptoBoxAssets?.accountAssetsList || [];
     }
-  }, [accountAllAssets.accountAssetsList, debounceKeyword, listShow]);
-
-  const pageInfoRef = useRef({
-    ...INIT_PAGE_INFO,
-  });
+  }, [accountCryptoBoxAssets?.accountAssetsList, debounceKeyword, listShow]);
 
   const filterList = useCallback(
     (list: IAssetItemType[]) => {
@@ -135,21 +137,14 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
 
   const getList = useCallback(
     async (_keyword = '', isInit = false) => {
-      if (!isInit && listShow.length > 0 && listShow.length >= pageInfoRef.current.total) return;
-      if (pageInfoRef.current.isLoading) return;
-      pageInfoRef.current.isLoading = true;
+      if (!isInit && listShow.length > 0) return;
       try {
-        const response = await fetchAssetList({
+        const response = await fetchCryptoBoxAssetList({
           caAddressInfos,
-          caAddresses,
-          maxResultCount: MAX_RESULT_COUNT,
-          skipCount: pageInfoRef.current.curPage * MAX_RESULT_COUNT,
+          maxResultCount: 1000,
+          skipCount: 0,
           keyword: _keyword,
         });
-
-        pageInfoRef.current.curPage = pageInfoRef.current.curPage + 1;
-        pageInfoRef.current.total = response.totalRecordCount;
-        console.log('fetchAccountAssetsByKeywords:', response);
 
         if (isInit) {
           setListShow(filterList(response.data));
@@ -157,17 +152,13 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
           setListShow(pre => filterList(pre.concat(response.data)));
         }
       } catch (err) {
-        console.log('fetchAccountAssetsByKeywords err:', err);
+        console.log('fetchCryptoBoxAssetList err:', err);
       }
-      pageInfoRef.current.isLoading = false;
     },
-    [caAddressInfos, caAddresses, filterList, listShow.length],
+    [caAddressInfos, filterList, listShow.length],
   );
 
   const onKeywordChange = useCallback(() => {
-    pageInfoRef.current = {
-      ...INIT_PAGE_INFO,
-    };
     getList(debounceKeyword, true);
   }, [getList, debounceKeyword]);
 
@@ -178,50 +169,24 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
 
   useEffectOnce(() => {
     getTokenPrice();
-    dispatch(fetchAssetAsync({ caAddresses, keyword: '', caAddressInfos }));
+    dispatch(fetchCryptoBoxAssetAsync({ keyword: '', caAddressInfos }));
   });
 
   const renderItem = useCallback(
-    ({ item }: { item: IAssetItemType }) => {
-      const addressItem = addresses?.find(ele => ele?.chainId === item.chainId);
-
+    ({ item }: { item: ICryptoBoxAssetItemType }) => {
       return (
         <AssetItem
-          symbol={item.symbol || ''}
-          // icon={'aelf-avatar'}
           item={item}
           onPress={() => {
             OverlayModal.hide();
-            const routeParams = {
-              sendType: item?.nftInfo ? 'nft' : 'token',
-              assetInfo: item?.nftInfo
-                ? { ...item?.nftInfo, chainId: item.chainId, symbol: item.symbol }
-                : { ...item?.tokenInfo, chainId: item.chainId, symbol: item.symbol },
-              toInfo: {
-                address: addressItem ? addressFormat(addressItem.address, addressItem.chainId) : toAddress,
-                name: imTransferInfo?.name || '',
-              },
-            };
-
-            if (imTransferInfo?.channelId) {
-              navigationService.navigateByMultiLevelParams('SendHome', {
-                params: routeParams as unknown as IToSendHomeParamsType,
-                multiLevelParams: {
-                  imTransferInfo: {
-                    isGroupChat,
-                    channelId: imTransferInfo?.channelId,
-                    toUserId,
-                  },
-                },
-              });
-            } else {
-              navigationService.navigate('SendHome', routeParams as unknown as IToSendHomeParamsType);
-            }
+            onFinishSelectAssets?.(item);
           }}
+          currentSymbol={currentSymbol}
+          currentChainId={currentChainId}
         />
       );
     },
-    [addresses, imTransferInfo?.channelId, imTransferInfo?.name, isGroupChat, toAddress, toUserId],
+    [currentChainId, currentSymbol, onFinishSelectAssets],
   );
 
   const noData = useMemo(() => {
@@ -231,6 +196,9 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
       <NoData noPic message={t('There are currently no assets to send.')} />
     );
   }, [debounceKeyword, t]);
+
+  console.log('assetListShow:', assetListShow);
+
   return (
     <ModalBody modalBodyType="bottom" title={t('Select Assets')} style={gStyles.overlayStyle}>
       {/* no assets in this account  */}
@@ -258,9 +226,9 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
           }
         }}
         style={styles.flatList}
-        data={(assetListShow as IAssetItemType[]) || []}
+        data={(assetListShow as ICryptoBoxAssetItemType[]) || []}
         renderItem={renderItem}
-        keyExtractor={(_item, index) => `${index}`}
+        keyExtractor={(_item, index) => `${_item.symbol}${index}`}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListEmptyComponent={noData}
         onEndReached={() => {
@@ -271,8 +239,8 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
   );
 };
 
-export const showAssetList = (params?: ShowAssetListParamsType) => {
-  OverlayModal.show(<AssetList {...params} />, {
+export const showCryptoAssetList = (params: ShowCryptoBoxAssetListParamsType) => {
+  OverlayModal.show(<CryptoAssetsList {...params} />, {
     position: 'bottom',
     autoKeyboardInsets: false,
     enabledNestScrollView: true,
@@ -280,7 +248,7 @@ export const showAssetList = (params?: ShowAssetListParamsType) => {
 };
 
 export default {
-  showAssetList,
+  showCryptoAssetList,
 };
 
 export const styles = StyleSheet.create({
@@ -362,5 +330,8 @@ const itemStyle = StyleSheet.create({
   },
   nftItemInfo: {
     marginTop: pTd(2),
+  },
+  nftNameShow: {
+    width: pTd(250),
   },
 });

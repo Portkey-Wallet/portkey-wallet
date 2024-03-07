@@ -23,9 +23,9 @@ const TabsDrawer = (props: TabsDrawerPropsType) => {
 
   const onClose = useThrottleCallback(
     () => {
-      dispatch(changeDrawerOpenStatus(false));
+      if (pin) dispatch(changeDrawerOpenStatus(false));
     },
-    [dispatch],
+    [dispatch, pin],
     1000,
   );
 

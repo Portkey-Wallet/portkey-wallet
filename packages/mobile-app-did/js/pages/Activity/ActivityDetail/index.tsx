@@ -19,7 +19,7 @@ import * as Clipboard from 'expo-clipboard';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useLanguage } from 'i18n/hooks';
 import React, { useCallback, useMemo, useState } from 'react';
-import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import { formatTransferTime } from 'utils';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import navigationService from 'utils/navigationService';
@@ -30,6 +30,7 @@ import { useIsTokenHasPrice, useGetCurrentAccountTokenPrice } from '@portkey-wal
 import CommonAvatar from 'components/CommonAvatar';
 import { IActivityApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import Lottie from 'lottie-react-native';
+import Touchable from 'components/Touchable';
 
 const ActivityDetail = () => {
   const { t } = useLanguage();
@@ -101,11 +102,9 @@ const ActivityDetail = () => {
 
   const CopyIconUI = useCallback(
     (content: string) => (
-      <TouchableOpacity
-        style={[styles.marginLeft8, GStyles.flexCol, styles.copyIconWrap]}
-        onPress={() => copyStr(content)}>
+      <Touchable style={[styles.marginLeft8, GStyles.flexCol, styles.copyIconWrap]} onPress={() => copyStr(content)}>
         <Svg icon="copy" size={pTd(13)} />
-      </TouchableOpacity>
+      </Touchable>
     ),
     [copyStr],
   );
@@ -200,9 +199,9 @@ const ActivityDetail = () => {
         containerStyles={styles.containerStyle}
         scrollViewProps={{ disabled: true }}>
         <StatusBar barStyle={'dark-content'} />
-        <TouchableOpacity style={styles.closeWrap} onPress={() => navigationService.goBack()}>
+        <Touchable style={styles.closeWrap} onPress={() => navigationService.goBack()}>
           <Svg icon="close" size={pTd(16)} />
-        </TouchableOpacity>
+        </Touchable>
         <View style={[GStyles.marginTop(pTd(24)), GStyles.flexRow, GStyles.flexCenter]}>
           <Lottie style={styles.loadingIcon} source={require('assets/lottieFiles/loading.json')} autoPlay loop />
         </View>
@@ -216,9 +215,9 @@ const ActivityDetail = () => {
       containerStyles={styles.containerStyle}
       scrollViewProps={{ disabled: true }}>
       <StatusBar barStyle={'dark-content'} />
-      <TouchableOpacity style={styles.closeWrap} onPress={() => navigationService.goBack()}>
+      <Touchable style={styles.closeWrap} onPress={() => navigationService.goBack()}>
         <Svg icon="close" size={pTd(16)} />
-      </TouchableOpacity>
+      </Touchable>
       <Text style={[styles.typeTitle]}>{activityItem?.transactionName}</Text>
 
       {activityItem?.transactionType &&
@@ -232,10 +231,10 @@ const ActivityDetail = () => {
                 <Text style={styles.noImg}>{activityItem?.nftInfo?.alias?.slice(0, 1)}</Text>
               )}
               <View style={styles.nftInfo}>
-                <TextL style={styles.nftTitle}>{`${activityItem?.nftInfo?.alias || ''} #${
+                <TextL numberOfLines={1} style={styles.nftTitle}>{`${activityItem?.nftInfo?.alias || ''} #${
                   activityItem?.nftInfo?.nftId || ''
                 }`}</TextL>
-                <TextS style={[FontStyles.font3, styles.marginTop4]}>Amount: {activityItem?.amount || ''}</TextS>
+                <TextS numberOfLines={1} style={[FontStyles.font3, styles.marginTop4]}>Amount: {activityItem?.amount || ''}</TextS>
               </View>
             </View>
             <View style={styles.divider} />
@@ -405,6 +404,7 @@ export const styles = StyleSheet.create({
     ...fonts.mediumFont,
     color: defaultColors.font5,
     marginBottom: pTd(4),
+    maxWidth: pTd(230),
     flexDirection: 'row',
     display: 'flex',
     flexWrap: 'wrap',

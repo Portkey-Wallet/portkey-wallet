@@ -5543,24 +5543,24 @@
   resolved "https://registry.yarnpkg.com/@portkey/accounts/-/accounts-2.0.1-alpha.0.tgz#1ed39ca709cfde4bedf3b6612a5637d1e480ec77"
   integrity sha512-i8jhOaX3n/WBwrktx78MFSO4pNtdGZGqjoqDmcXLqgUAfS6CLny3DoNZygxyVWkLi3j8JUuzmmMNLHGHRvM9aQ==
 
-"@portkey/chain@^2.0.0-alpha.4", "@portkey/chain@^2.0.0-alpha.5":
-  version "2.0.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@portkey/chain/-/chain-2.0.0-alpha.5.tgz#7c84ba619a563ad3209c46d165af8e8d7dc4d0c2"
-  integrity sha512-K1f73VxoXcqerLYEGDUnksVvhulVFG3erm6N1xnVZpOjpz6HrV3ESPtT8nur2X+gJI2OvUL/6GgqY9KNvak4Ew==
+"@portkey/chain@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@portkey/chain/-/chain-2.1.0.tgz#195df5b60dcfe3ce79192957ea2e3f3c8b047379"
+  integrity sha512-crM91g9SM6wq0lwlmmNx5kNB+oMmwYjZl16tPx6KFVq8qui55yQDnOAzbokMSp5vWWRVJIW6q+R9omzTc0++Sg==
   dependencies:
-    "@portkey/contracts" "^2.0.0-alpha.0"
-    "@portkey/provider-types" "^2.0.0-alpha.5"
+    "@portkey/contracts" "^2.0.4"
+    "@portkey/provider-types" "^2.1.0"
     aelf-sdk "^3.2.45-beta.0"
-
-"@portkey/contracts@^2.0.0-alpha.0":
-  version "2.0.0-alpha.0"
-  resolved "https://registry.yarnpkg.com/@portkey/contracts/-/contracts-2.0.0-alpha.0.tgz#c7d29815ceaf78bac2b14d6e9debd672d7ae3520"
-  integrity sha512-16tfyG1oVs7XYknj8W8edS4l5CuBHSr9tuyFQfuvD1s29P1NOP5MgixVLegUDKQRy6JynCb+QJHMcC5FJrg3PA==
 
 "@portkey/contracts@^2.0.1-alpha.0":
   version "2.0.1-alpha.0"
   resolved "https://registry.yarnpkg.com/@portkey/contracts/-/contracts-2.0.1-alpha.0.tgz#5e4a4af4afd7848661b6cbdcd04bfcba56fdf882"
   integrity sha512-uKu6A6dZh2rIKeak+WVrMIvcfgn3PAT/7VN/ysw7iv9xUA2NbwuqgFnj3xqN1bHvMyh9s42MGeln4oV5Yky/jw==
+
+"@portkey/contracts@^2.0.4":
+  version "2.0.4"
+  resolved "https://registry.npmjs.org/@portkey/contracts/-/contracts-2.0.4.tgz#8dc6758dcd59bab496eb428964baf8adafed44ed"
+  integrity sha512-8cWejiX2shyHkAlX6hwvabk4tgAL+zAKsZY+u/E+HYG8kCOu+9tWrnrrCt8DpOOc3yjoOBogrH0MlXI019I6hQ==
 
 "@portkey/detect-provider@^2.0.0-alpha.2":
   version "2.0.0-alpha.5"
@@ -5607,13 +5607,13 @@
   dependencies:
     "@portkey/services" "^2.0.1-alpha.0"
 
-"@portkey/extension-provider@2.0.0-alpha.4":
-  version "2.0.0-alpha.4"
-  resolved "https://registry.yarnpkg.com/@portkey/extension-provider/-/extension-provider-2.0.0-alpha.4.tgz#794c6ed8526e619d9f9bc003f307a6370b814497"
-  integrity sha512-qnd2C3/hDqUnbwObN0SKpVYYL1BCAMJbehb2VBpoa71V6oHbjbDJJsPgANwHG8lPmVJ612WNsqqVa20rZXUR6w==
+"@portkey/extension-provider@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@portkey/extension-provider/-/extension-provider-2.1.0.tgz#99481bff2826868dbdcb9d6479d1fe1391d3effd"
+  integrity sha512-Ag0TV7/Lm6RDeky394baTXQZ8MgXNDYQoxzQ3k6TbdJKNSPlnDDY040EAYU9VCiZoSNLwnQw0nZPO+vqA+LrDA==
   dependencies:
-    "@portkey/provider-types" "^2.0.0-alpha.4"
-    "@portkey/providers" "^2.0.0-alpha.4"
+    "@portkey/provider-types" "^2.1.0"
+    "@portkey/providers" "^2.1.0"
     "@types/elliptic" "^6.4.14"
     readable-stream "^4.4.0"
 
@@ -5627,10 +5627,10 @@
     graphql "^16.6.0"
     subscriptions-transport-ws "^0.11.0"
 
-"@portkey/mobile-provider@2.0.0-alpha.4":
-  version "2.0.0-alpha.4"
-  resolved "https://registry.yarnpkg.com/@portkey/mobile-provider/-/mobile-provider-2.0.0-alpha.4.tgz#584ab1e847e7a7d901644b02e7322fc665f42ec5"
-  integrity sha512-jK2MRxz3VhF8x0/CrWj9sXex0z9URdlF/iarmxwaykw67+EM7AZ/0jFIpf57tEPydGGy/aflOdc7ZrKmKMy3Qw==
+"@portkey/mobile-provider@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@portkey/mobile-provider/-/mobile-provider-2.1.0.tgz#72e2d5f3fdbb8a63195571de3f7b3695c28d7f5b"
+  integrity sha512-HvXVRlwMh7Ln/c6LTw43jwRgbxRpE92nIdmYHSNwfphUIt1wbAAIWY7KgkhXBvL7XoEhTIGfFhYYkveXhVEF0A==
 
 "@portkey/onboarding@^2.0.1-alpha.0":
   version "2.0.1-alpha.0"
@@ -5651,7 +5651,15 @@
     "@portkey/types" "^2.0.0-alpha.0"
     "@types/readable-stream" "^2.3.15"
 
-"@portkey/provider-types@^2.0.0-alpha.4", "@portkey/provider-types@^2.0.0-alpha.5":
+"@portkey/provider-types@2.1.0", "@portkey/provider-types@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@portkey/provider-types/-/provider-types-2.1.0.tgz#10713b38463463f2bd9737496d425906ab9e38a1"
+  integrity sha512-FyNQHIr4G04mY2RPHNLTRM/iEMUVLtMwFKayu2UIhxTz2E+EjLq9jWz6zlkZjr1PESxYvBJiVUQikK+giVcCbg==
+  dependencies:
+    "@portkey/types" "^2.0.0-alpha.0"
+    "@types/readable-stream" "^2.3.15"
+
+"@portkey/provider-types@^2.0.0-alpha.5":
   version "2.0.0-alpha.5"
   resolved "https://registry.yarnpkg.com/@portkey/provider-types/-/provider-types-2.0.0-alpha.5.tgz#c00ca6ba467e193ce207955d787c562117e3538d"
   integrity sha512-KaaiF4ZOzWTIShgn3KYXlYQBDkn7FhPoEJbtRtKQQMA+idxSusDC3X2ZNsX6fmcwK2eezP9UGUEqeTzwDQO+/g==
@@ -5659,40 +5667,21 @@
     "@portkey/types" "^2.0.0-alpha.0"
     "@types/readable-stream" "^2.3.15"
 
-"@portkey/provider-utils@2.0.0-alpha.4":
-  version "2.0.0-alpha.4"
-  resolved "https://registry.yarnpkg.com/@portkey/provider-utils/-/provider-utils-2.0.0-alpha.4.tgz#d11a243592c857351a8f984e670ff5be32dcd8e4"
-  integrity sha512-mLokdAkVhJzU9OlIwcIQSPKOdyRMkCWvKPze15ZjphsRCIRa8606Cs/utA2yvlftV9bzdLceog3b0ic+vQUfDg==
+"@portkey/provider-utils@2.1.0", "@portkey/provider-utils@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@portkey/provider-utils/-/provider-utils-2.1.0.tgz#f885d76c89faae2106a4ab131124e852dc9d19b9"
+  integrity sha512-njtE4enDW3q6T+Bndxnoiwp3PgTfFRskHHqTJO6FinjmreqF20bgRN2kZ93ojzh2CLsDrFcyvUm6v/4VT4MuJg==
   dependencies:
-    "@portkey/provider-types" "^2.0.0-alpha.4"
+    "@portkey/provider-types" "^2.1.0"
 
-"@portkey/provider-utils@^2.0.0-alpha.4", "@portkey/provider-utils@^2.0.0-alpha.5":
-  version "2.0.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@portkey/provider-utils/-/provider-utils-2.0.0-alpha.5.tgz#43a8ad18ac727e267346a3bb77d99b8b3412e4e9"
-  integrity sha512-WkttM/Ef/nA5CEsfxgpau5gmy65O492xgQOmzB8yB0WwhOZD3bSZCfTlA6HDM9BTmtyn53l33hCU6Boxu/YxLQ==
+"@portkey/providers@2.1.0", "@portkey/providers@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@portkey/providers/-/providers-2.1.0.tgz#de93655c35dd54bd53492d92be36acd7aeb87cf3"
+  integrity sha512-/BoRMUKQtun88CNe65ZASy85zb8D8rOwxG3QgtOg3C7r931Kf1CJGrj0AVETMfG/qzhnT/F4KopqnMfsEfv1iw==
   dependencies:
-    "@portkey/provider-types" "^2.0.0-alpha.5"
-
-"@portkey/providers@2.0.0-alpha.4":
-  version "2.0.0-alpha.4"
-  resolved "https://registry.yarnpkg.com/@portkey/providers/-/providers-2.0.0-alpha.4.tgz#f63ef7e5fca7cd2f66cf314e4c8251fb446bcb34"
-  integrity sha512-Vn+qalzVhmtIytXRPzR32RWLqV2X9hPIrwdvLzhr66Jt5MBoMqwNRp71CkvnOStlygQkRXPYXuXUQtygwgdRRQ==
-  dependencies:
-    "@portkey/chain" "^2.0.0-alpha.4"
-    "@portkey/provider-types" "^2.0.0-alpha.4"
-    "@portkey/provider-utils" "^2.0.0-alpha.4"
-    "@types/readable-stream" "^2.3.15"
-    lodash "^4.17.21"
-    readable-stream "^4.4.0"
-
-"@portkey/providers@^2.0.0-alpha.4":
-  version "2.0.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@portkey/providers/-/providers-2.0.0-alpha.5.tgz#a7bfab7db4f3276242c8ce8431202ab88bcb6371"
-  integrity sha512-DYkg0RcxxawujyON7MFdIqyKOLJPvm9OBkPm4RG7mAwZlwXxelHKB3+o8bHsVtlAo9mEPD1vic8JkddBt5a9TA==
-  dependencies:
-    "@portkey/chain" "^2.0.0-alpha.5"
-    "@portkey/provider-types" "^2.0.0-alpha.5"
-    "@portkey/provider-utils" "^2.0.0-alpha.5"
+    "@portkey/chain" "^2.1.0"
+    "@portkey/provider-types" "^2.1.0"
+    "@portkey/provider-utils" "^2.1.0"
     "@types/readable-stream" "^2.3.15"
     lodash "^4.17.21"
     readable-stream "^4.4.0"
@@ -24752,10 +24741,10 @@ react-native-view-shot@^3.6.0:
   resolved "https://registry.yarnpkg.com/react-native-view-shot/-/react-native-view-shot-3.6.0.tgz#2c5febd03cb1effb9923372b29aed227c680d9fd"
   integrity sha512-QUYGaIaAxQwOTydUzqGMooBwrg455cuOQgTloZ+gPO1QCUuLRdncCqrEMwKW5eUnN5U8JGMKeFRll2m6egOxtA==
 
-react-native-webview@^11.23.0:
-  version "11.23.1"
-  resolved "https://registry.npmmirror.com/react-native-webview/-/react-native-webview-11.23.1.tgz#6a4bf2620e491dd4fecf4e6dc079005117fae12c"
-  integrity sha512-bmqsdg4RYOUYD37R9XTrQALm7eD62KbLNPRfgvpLGd1SjaurvAjjsLrLN4mt6yOtKOMKeZvlcAl3x6De6cCQsA==
+react-native-webview@^13.8.1:
+  version "13.8.1"
+  resolved "https://registry.npmjs.org/react-native-webview/-/react-native-webview-13.8.1.tgz#d0058c063e38241476049aaab2e5cc9f254d5480"
+  integrity sha512-7Jqm1WzWJrOWraBAXQfKtr/Uo5Jw/IJHzC40jYLwgV/eVGmLJ9BpGKw6QVw7wpRkjmTZ2Typ4B1aHJLJJQFslA==
   dependencies:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"

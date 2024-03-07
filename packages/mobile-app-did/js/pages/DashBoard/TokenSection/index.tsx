@@ -2,7 +2,7 @@ import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import navigationService from 'utils/navigationService';
 import { useAppCASelector } from '@portkey-wallet/hooks/index';
-import { View, TouchableOpacity, FlatList } from 'react-native';
+import { View, FlatList } from 'react-native';
 import Svg from 'components/Svg';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { TextM } from 'components/CommonText';
@@ -13,6 +13,7 @@ import { useLanguage } from 'i18n/hooks';
 import { REFRESH_TIME } from '@portkey-wallet/constants/constants-ca/assets';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useGetAccountTokenList } from 'hooks/account';
+import Touchable from 'components/Touchable';
 
 export interface TokenSectionProps {
   getAccountBalance?: () => void;
@@ -67,14 +68,14 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
           getTokenPrice();
         }}
         ListFooterComponent={
-          <TouchableOpacity
+          <Touchable
             style={styles.addWrap}
             onPress={() => {
               navigationService.navigate('ManageTokenList');
             }}>
             <Svg icon="add-token" size={20} />
             <TextM style={styles.addTokenText}>{t('Add Tokens')}</TextM>
-          </TouchableOpacity>
+          </Touchable>
         }
       />
     </View>

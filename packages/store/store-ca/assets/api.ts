@@ -2,6 +2,7 @@ import { request } from '@portkey-wallet/api/api-did';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { IAssetItemType } from './type';
 import { NFT_SMALL_SIZE, NFT_MIDDLE_SIZE } from '@portkey-wallet/constants/constants-ca/assets';
+import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 
 type ITokenItemResponse = Omit<TokenItemShowType, 'name' | 'address'>;
 
@@ -50,6 +51,29 @@ export function fetchAssetList({
       SkipCount: skipCount,
       MaxResultCount: maxResultCount,
       Keyword: keyword,
+      width: NFT_SMALL_SIZE,
+      height: -1,
+    },
+  });
+}
+
+export function fetchCryptoBoxAssetList({
+  caAddressInfos,
+  maxResultCount,
+  skipCount,
+  keyword = '',
+}: {
+  maxResultCount: number;
+  skipCount: number;
+  keyword: string;
+  caAddressInfos: { chainId: string; caAddress: string }[];
+}): Promise<{ data: ICryptoBoxAssetItemType[]; totalRecordCount: number }> {
+  return request.assets.fetchCryptoBoxAccountAssetsByKeywords({
+    params: {
+      caAddressInfos,
+      keyword,
+      skipCount,
+      maxResultCount,
       width: NFT_SMALL_SIZE,
       height: -1,
     },

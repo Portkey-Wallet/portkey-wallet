@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import svgsList from 'assets/svgs';
-import { useLockWallet } from 'utils/lib/serviceWorkerAction';
+import { lockWallet } from 'utils/lib/serviceWorkerAction';
 import PortKeyHeader from 'pages/components/PortKeyHeader';
 import SettingHeader from 'pages/components/SettingHeader';
 import './index.less';
@@ -68,11 +68,10 @@ export default function PromptMy() {
       });
   }, [curMenuInfo, navigate, settingList]);
 
-  const lockWallet = useLockWallet();
   const handleLock = useCallback(() => {
     lockWallet();
     navigate('/unlock');
-  }, [lockWallet, navigate]);
+  }, [navigate]);
 
   const backCb = useCallback(() => {
     navigate('/');

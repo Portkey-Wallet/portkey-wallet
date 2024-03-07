@@ -8,6 +8,7 @@ export interface IToSendHomeAssetParamsBaseType {
   balance: string;
   imageUrl: string;
   tokenContractAddress: string;
+  address?: string;
   [key: string]: any;
 }
 

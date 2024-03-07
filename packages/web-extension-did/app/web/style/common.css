@@ -24,3 +24,23 @@ body.en-language-wrapper {
   overflow-y: auto;
   height: 100vh;
 }
+
+body {
+  padding: 0;
+  margin: 0;
+}
+#loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#loading-content > .loading-logo {
+  margin-top: 144px;
+  width: 128px;
+  height: 134px;
+}
+#loading-content > .loading-spinner {
+  margin-top: 146px;
+  width: 44px;
+  height: 44px;
+}

@@ -1,17 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
-import {
-  FlatList,
-  RefreshControl,
-  View,
-  ActivityIndicator,
-  TouchableOpacity,
-  StyleSheet,
-  FlatListProps,
-} from 'react-native';
+import { FlatList, RefreshControl, View, ActivityIndicator, StyleSheet, FlatListProps } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
 import { TextM } from 'components/CommonText';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
+import Touchable from 'components/Touchable';
 interface ListComponentProps<ItemT> extends FlatListProps<ItemT> {
   whetherAutomatic?: boolean; // Whether to automatically load more, if there is a ceiling, you can not set this property to true
   upPullRefresh?: () => void; // Pull-down refresh callback
@@ -96,13 +89,13 @@ const ListComponent = forwardRef(function ListComponent(
       );
     }
     return (
-      <TouchableOpacity onPress={() => onEndReached(true)} style={styles.FooterStyles}>
+      <Touchable onPress={() => onEndReached(true)} style={styles.FooterStyles}>
         {bottomLoad ? (
           <ActivityIndicator size="large" color={defaultColors.primaryColor} />
         ) : (
           <TextM>{bottomLoadTip || 'Click to load more'}</TextM>
         )}
-      </TouchableOpacity>
+      </Touchable>
     );
   }, [bottomLoad, loadCompleted, onEndReached, props]);
   return (

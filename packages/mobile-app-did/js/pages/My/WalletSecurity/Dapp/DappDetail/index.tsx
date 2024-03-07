@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import PageContainer from 'components/PageContainer';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -29,6 +29,7 @@ import CommonToast from 'components/CommonToast';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import CommonButton from 'components/CommonButton';
+import Touchable from 'components/Touchable';
 
 interface RouterParams {
   origin: string;
@@ -147,10 +148,10 @@ const DappDetail: React.FC = () => {
         <View
           style={[GStyles.flexRow, GStyles.spaceBetween, BGStyles.bg1, pageStyles.sectionWrap, pageStyles.section2]}>
           <View>
-            <TouchableOpacity onPress={showTips} style={[GStyles.flexRow, GStyles.itemCenter]}>
+            <Touchable onPress={showTips} style={[GStyles.flexRow, GStyles.itemCenter]}>
               <TextM>{t('Remember me')}</TextM>
               <Svg icon="question-mark" size={pTd(16)} color={defaultColors.icon1} iconStyle={pageStyles.rightArrow} />
-            </TouchableOpacity>
+            </Touchable>
             <TextS style={FontStyles.font3}>{t('Skip authentication after enabled')}</TextS>
           </View>
           <CommonSwitch value={isRememberMe} onChange={() => switchRememberMe(!isRememberMe)} />
@@ -161,12 +162,12 @@ const DappDetail: React.FC = () => {
         <View
           style={[GStyles.flexRow, GStyles.spaceBetween, BGStyles.bg1, pageStyles.sectionWrap, pageStyles.section1]}>
           <TextM>{t('Session key expires in')}</TextM>
-          <TouchableOpacity style={[GStyles.flexRow, GStyles.center]} onPress={showOverlay}>
+          <Touchable style={[GStyles.flexRow, GStyles.center]} onPress={showOverlay}>
             <TextM style={FontStyles.font3}>
               {SessionKeyMap[sessionInfo?.expiredPlan || SessionExpiredPlan.hour1]}
             </TextM>
             <Svg icon="right-arrow" size={pTd(16)} color={defaultColors.icon1} iconStyle={pageStyles.rightArrow} />
-          </TouchableOpacity>
+          </Touchable>
         </View>
       )}
 
@@ -181,12 +182,6 @@ const DappDetail: React.FC = () => {
           </TextM>
         </View>
       )}
-
-      {/* <View style={[GStyles.center, GStyles.paddingArg(10, 20, 16), pageStyles.buttonContainer]}>
-        <TouchableOpacity style={[GStyles.center, pageStyles.btnWrap]} onPress={disconnectDapp}>
-          <TextL style={FontStyles.font12}>Disconnect</TextL>
-        </TouchableOpacity>
-      </View> */}
 
       <View style={[GStyles.center, GStyles.paddingArg(10, 20, 18), pageStyles.buttonContainer]}>
         <CommonButton

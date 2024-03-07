@@ -1,10 +1,10 @@
+import React, { memo, useMemo } from 'react';
 import { defaultColors } from 'assets/theme';
 import { TextL, TextM } from 'components/CommonText';
 import Svg, { IconName } from 'components/Svg';
 import SvgUri from 'components/Svg/SvgUri';
-
-import React, { memo, useMemo } from 'react';
-import { TouchableOpacity, StyleSheet, StyleProp, ViewStyle, TextProps, View } from 'react-native';
+import Touchable from 'components/Touchable';
+import { StyleSheet, StyleProp, ViewStyle, TextProps, View } from 'react-native';
 import { pTd } from 'utils/unit';
 
 export interface IMenuItemProps {
@@ -44,7 +44,7 @@ const MenuItem: React.FC<IMenuItemProps> = ({
   }, [suffix]);
 
   return (
-    <TouchableOpacity style={[styles.itemWrap, style]} onPress={() => onPress?.()}>
+    <Touchable style={[styles.itemWrap, style]} onPress={() => onPress?.()}>
       {svgUrl !== undefined &&
         (svgUrl !== '' ? (
           <SvgUri source={{ uri: svgUrl }} width={size} height={size} style={[styles.menuIcon, iconStyle]} />
@@ -65,7 +65,7 @@ const MenuItem: React.FC<IMenuItemProps> = ({
       <TextL style={styles.titleWrap}>{title}</TextL>
       {SuffixDom}
       <Svg icon="right-arrow" size={arrowSize} color={defaultColors.icon1} />
-    </TouchableOpacity>
+    </Touchable>
   );
 };
 

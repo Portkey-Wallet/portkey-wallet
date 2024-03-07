@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
@@ -36,11 +36,11 @@ const DappListItem: React.FC<DappListItemProps> = ({ item, type = 'home', onPres
             title={getCmsWebsiteInfoName(item?.origin || '') || item?.name || getHost(item?.origin || '')}
             url={item?.origin || ''}
           />
-          <TouchableOpacity onPress={() => onPress?.(item)}>
+          <Touchable onPress={() => onPress?.(item)}>
             <TextM numberOfLines={1} style={[FontStyles.font4, itemStyles.itemDappUrl]}>
               {item?.origin}
             </TextM>
-          </TouchableOpacity>
+          </Touchable>
         </View>
       </View>
     );

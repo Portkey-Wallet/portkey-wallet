@@ -6,7 +6,7 @@ import CommonAvatar from 'components/CommonAvatar';
 import { TextL, TextS } from 'components/CommonText';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import React, { memo } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -15,6 +15,7 @@ import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
 import Svg from 'components/Svg';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import Touchable from 'components/Touchable';
 interface TokenListItemType {
   currentSymbol?: string;
   currentChainId?: ChainId;
@@ -35,7 +36,7 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
 
   return (
-    <TouchableOpacity style={itemStyle.wrap} onPress={() => onPress?.(item)}>
+    <Touchable style={itemStyle.wrap} onPress={() => onPress?.(item)}>
       <CommonAvatar
         hasBorder
         style={itemStyle.left}
@@ -74,7 +75,7 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
           <Svg icon="selected" size={pTd(24)} />
         )}
       </View>
-    </TouchableOpacity>
+    </Touchable>
   );
 };
 

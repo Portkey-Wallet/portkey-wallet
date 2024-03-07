@@ -3,7 +3,6 @@ import { ISocialLogin } from '@portkey-wallet/types/types-ca/wallet';
 import { sleep } from '@portkey-wallet/utils';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
-import { useCallback } from 'react';
 import { CloseParams } from 'service/NotificationService';
 import { CreatePromptType, ReCaptchaResponseParams, SendResponseParams } from 'types';
 import { getPortkeyFinanceUrl } from 'utils';
@@ -34,14 +33,12 @@ export const closePrompt = async (closeParams?: CloseParams, promptType?: Create
   }).send();
 };
 
-export const useLockWallet = () => {
-  return useCallback(async () => {
-    try {
-      await InternalMessage.payload(PortkeyMessageTypes.LOCK_WALLET).send();
-    } catch (error) {
-      singleMessage.error('Lock error');
-    }
-  }, []);
+export const lockWallet = async () => {
+  try {
+    await InternalMessage.payload(PortkeyMessageTypes.LOCK_WALLET).send();
+  } catch (error) {
+    singleMessage.error('Lock error');
+  }
 };
 
 export const activeLockStatusAction = async () => {

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAssetInfo, useTokenInfo, useUserInfo } from 'store/Provider/hooks';
 import { fetchAssetAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
-import { useCaAddresses, useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useAmountInUsdShow, useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
@@ -39,7 +39,6 @@ export default function CustomTokenList({
   const [assetList, setAssetList] = useState<TokenItemShowType[] | AccountAssets>([]);
   const appDispatch = useAppDispatch();
   const { passwordSeed } = useUserInfo();
-  const caAddresses = useCaAddresses();
   const chainIdArray = useChainIdList();
   const amountInUsdShow = useAmountInUsdShow();
   const caAddressInfos = useCaAddressInfoList();
@@ -55,11 +54,11 @@ export default function CustomTokenList({
   useEffect(() => {
     if (!passwordSeed) return;
     if (drawerType === 'send') {
-      appDispatch(fetchAssetAsync({ caAddresses, keyword: filterWord, caAddressInfos }));
+      appDispatch(fetchAssetAsync({ keyword: filterWord, caAddressInfos }));
     } else {
       appDispatch(fetchAllTokenListAsync({ chainIdArray, keyword: filterWord }));
     }
-  }, [passwordSeed, filterWord, drawerType, caAddresses, appDispatch, chainIdArray, caAddressInfos]);
+  }, [passwordSeed, filterWord, drawerType, appDispatch, chainIdArray, caAddressInfos]);
 
   useEffect(() => {
     setFilterWord('');

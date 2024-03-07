@@ -6,6 +6,12 @@ export enum SeedTypeEnum {
   'NFT' = 2,
 }
 
+export enum SeedTypeShowEnum {
+  '' = 0,
+  'Token' = 1,
+  'NFT' = 2,
+}
+
 // nft collection types
 export type NFTCollectionItemBaseType = {
   chainId: ChainId;
@@ -46,28 +52,6 @@ export type NFTItemBaseType = {
   limitPerMint?: number;
   expires?: string;
   seedOwnedSymbol?: string;
-};
-
-// assets types
-export type AssetsItemType = {
-  chainId: ChainId;
-  symbol: string;
-  address: string;
-  nftInfo: {
-    imageUrl: string;
-    alias: string;
-    tokenId: string;
-    protocolName: string;
-    quantity: string;
-    metaData: any;
-    decimals?: string;
-    isSeed?: boolean;
-    seedType?: SeedTypeEnum;
-    inscriptionName?: string;
-    limitPerMint?: number;
-    expires?: string;
-    seedOwnedSymbol?: string;
-  };
 };
 
 export type RateBaseType = {

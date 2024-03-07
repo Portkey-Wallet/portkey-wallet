@@ -19,7 +19,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useEffectOnce } from 'react-use';
 import './index.less';
-import { dateFormatTransTo13 } from 'utils';
+import { formatTransferTime } from '@portkey-wallet/utils/time';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { addressFormat } from '@portkey-wallet/utils';
 import { useCommonState } from 'store/Provider/hooks';
@@ -144,7 +144,7 @@ export default function Transaction() {
         </p>
         <p className="value">
           <span className={clsx(['left', status.style])}>{t(status.text)}</span>
-          <span className="right">{dateFormatTransTo13(activityItem.timestamp)}</span>
+          <span className="right">{formatTransferTime(activityItem.timestamp)}</span>
         </p>
       </div>
     );

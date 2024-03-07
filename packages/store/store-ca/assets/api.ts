@@ -10,12 +10,10 @@ export function fetchTokenList({
   // todo maybe remote tokenList change
   skipCount = 0,
   maxResultCount = 1000,
-  caAddresses,
   caAddressInfos,
 }: {
   skipCount?: number;
   maxResultCount?: number;
-  caAddresses: string[];
   caAddressInfos: { chainId: string; caAddress: string }[];
 }): Promise<{
   data: ITokenItemResponse[];
@@ -23,7 +21,6 @@ export function fetchTokenList({
 }> {
   return request.assets.fetchAccountTokenList({
     params: {
-      caAddresses,
       caAddressInfos,
       skipCount,
       maxResultCount,

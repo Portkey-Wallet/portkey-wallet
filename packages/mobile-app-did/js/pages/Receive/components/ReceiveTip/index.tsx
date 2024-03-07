@@ -50,7 +50,9 @@ function ReceiveTip({ chainId, style }: TTopViewProps) {
     <View>
       <TipView chainId={chainId} style={style} />
       <View style={[GStyles.flexRow, GStyles.itemCenter, styles.selectBox]}>
-        <Touchable onPress={() => setSideChainTokenReceiveTip(!showSideChainTokenReceiveTip)}>
+        <Touchable
+          style={GStyles.marginRight(pTd(8))}
+          onPress={() => setSideChainTokenReceiveTip(showSideChainTokenReceiveTip)}>
           <Svg icon={!showSideChainTokenReceiveTip ? 'selected' : 'unselected'} size={pTd(20)} />
         </Touchable>
         <TextM style={GStyles.flex1}>{`Don't show this again`}</TextM>

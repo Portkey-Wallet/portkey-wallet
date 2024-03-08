@@ -38,8 +38,13 @@ export default function Transaction() {
   const { state } = useLocationState<ITransactionLocationState>();
   const chainId = state.chainId;
   const from = state?.previousPage;
-  const caAddressInfos = useCaAddressInfoList();
   const isMainnet = useIsMainnet();
+  const caAddressInfoList = useCaAddressInfoList();
+  const caAddressInfos = useMemo(() => {
+    const result = caAddressInfoList.filter((ele) => ele.chainId === chainId);
+    return result?.length > 0 ? result : caAddressInfoList;
+  }, [caAddressInfoList, chainId]);
+
   useFreshTokenPrice();
   const amountInUsdShow = useAmountInUsdShow();
   const defaultToken = useDefaultToken(chainId ? (chainId as ChainId) : undefined);

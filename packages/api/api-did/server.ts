@@ -108,7 +108,12 @@ export class DidService extends ServiceInit {
   };
   sendOrigin = async (base: BaseConfig, config?: RequestConfig, reCount = 0): Promise<any> => {
     const { URL, fetchConfig, method } = this.getConfig(base, config);
-    let fetchResult = undefined;
+    let fetchResult: {
+      status: number;
+      result?: any;
+      code: string;
+      message?: string;
+    };
     if (this.fetchInstance) {
       const requestConfig = {
         ...fetchConfig,
@@ -117,11 +122,11 @@ export class DidService extends ServiceInit {
       const { url, params = {}, headers, resourceUrl, stringifyOptions } = requestConfig;
       let uri = url;
       // handle body & url & method
-      let myBody = params;
+      let myBody = undefined;
       const _method = method.toUpperCase();
       if (_method === 'GET' || _method === 'DELETE') {
         uri = Object.keys(params).length > 0 ? `${uri}?${stringify(params, stringifyOptions)}` : uri;
-        myBody = params;
+        myBody = undefined;
       } else {
         if (requestConfig.body) {
           myBody = JSON.parse(requestConfig.body as string);

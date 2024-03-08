@@ -82,10 +82,6 @@ export class SDKFetch implements IFetch {
     status: NetworkResult;
     result?: any;
     code: string;
-    //     return res;
-    //   };
-    // }
-    // export default new RnsdkService();
     message?: string | undefined;
   }> {
     return nativeFetch(url, method, params, headers, extraOptions);

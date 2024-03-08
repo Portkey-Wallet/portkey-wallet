@@ -47,7 +47,7 @@ export enum ActivityTypeEnum {
 export interface IActivityApiParams {
   transactionId: string;
   blockHash: string;
-  caAddresses?: string[];
+  caAddressInfos?: ICaAddressInfoListItemType[];
   activityType?: ActivityTypeEnum;
 }
 

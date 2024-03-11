@@ -25,7 +25,7 @@ import { fetchNFTCollectionsAsync, fetchTokenListAsync } from '@portkey-wallet/s
 import { fetchAllTokenListAsync, getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import CustomTokenModal from 'pages/components/CustomTokenModal';
-import { AccountAssetItem } from '@portkey-wallet/types/types-ca/token';
+import { IAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
 import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import useVerifierList from 'hooks/useVerifierList';
@@ -155,7 +155,7 @@ export default function MyBalance() {
   }, []);
 
   const onSelectedToken = useCallback(
-    (v: AccountAssetItem, type: 'token' | 'nft') => {
+    (v: IAssetItemType, type: 'token' | 'nft') => {
       setTokenOpen(false);
       const isNFT = type === 'nft';
       const state = {
@@ -169,10 +169,6 @@ export default function MyBalance() {
         tokenId: isNFT ? v.nftInfo?.tokenId : '',
         isSeed: isNFT ? v.nftInfo?.isSeed : false,
         seedType: isNFT ? v.nftInfo?.seedType : SeedTypeEnum.None,
-        inscriptionName: isNFT ? v.nftInfo?.inscriptionName : '',
-        limitPerMint: isNFT ? v.nftInfo?.limitPerMint : undefined,
-        expires: isNFT ? v.nftInfo?.expires : undefined,
-        seedOwnedSymbol: isNFT ? v.nftInfo?.seedOwnedSymbol : undefined,
       };
       navigate(`/${navTarget}/${type}/${v.symbol}`, { state });
     },

@@ -31,6 +31,7 @@ export interface NFTCollectionItemShowType extends NFTCollectionItemBaseType {
 
 // nft item types
 export type NFTItemBaseType = {
+  balance: string;
   chainId: ChainId;
   symbol: string;
   tokenId: string;
@@ -46,6 +47,8 @@ export type NFTItemBaseType = {
   limitPerMint?: number;
   expires?: string;
   seedOwnedSymbol?: string;
+  recommendedRefreshSeconds?: number;
+  generation?: string;
 };
 
 export type RateBaseType = {

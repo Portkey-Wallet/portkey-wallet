@@ -1,6 +1,7 @@
+import { INftInfoType } from '@portkey-wallet/store/store-ca/assets/type';
 import { NftInfo } from '@portkey-wallet/types/types-ca/activity';
 import { NFTItemBaseType, SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
-import { AssetsNftInfo, BaseToken } from '@portkey-wallet/types/types-ca/token';
+import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { SvgType } from 'components/CustomSvg';
 import { ISendPreviewProps } from 'pages/Send/components/SendPreview';
 import { TNFTLocationState } from 'types/router';
@@ -12,7 +13,7 @@ export enum NFTSizeEnum {
 }
 
 export const getSeedTypeTag = (
-  nft: NFTItemBaseType | TNFTLocationState | NftInfo | AssetsNftInfo | BaseToken | ISendPreviewProps,
+  nft: NFTItemBaseType | TNFTLocationState | NftInfo | BaseToken | ISendPreviewProps | INftInfoType,
   size = NFTSizeEnum.medium,
 ): SvgType | '' => {
   if (nft.isSeed) {

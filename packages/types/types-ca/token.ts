@@ -56,41 +56,6 @@ export type TokenListShowInMarketType = TokenItemShowType[];
 // add-token list
 export type UserTokenListType = UserTokenItemType[];
 
-// assets token+nft
-export interface AssetsTokenInfo {
-  id: string;
-  balance?: string;
-  decimals: string;
-  balanceInUsd?: string;
-  tokenContractAddress: string;
-  imageUrl?: string;
-}
-
-export interface AssetsNftInfo {
-  imageUrl: string;
-  alias: string;
-  tokenId: string;
-  protocolName: string;
-  quantity: string;
-  balance?: string;
-  decimals: string;
-  tokenContractAddress: string;
-  isSeed?: boolean;
-  seedType?: SeedTypeEnum;
-  inscriptionName?: string;
-  limitPerMint?: number;
-  expires?: string;
-  seedOwnedSymbol?: string;
-}
-
-export interface AccountAssetItem {
-  chainId: ChainId;
-  symbol: string;
-  address: string;
-  tokenInfo?: AssetsTokenInfo;
-  nftInfo?: AssetsNftInfo;
-}
-
 export interface IAccountCryptoBoxAssetItem {
   chainId: ChainId;
   address: string;
@@ -102,8 +67,6 @@ export interface IAccountCryptoBoxAssetItem {
   balance?: string;
   tokenContractAddress?: string;
 }
-
-export type AccountAssets = AccountAssetItem[];
 
 export type UseTokenListAddType = (
   currentChain: ChainItemType,

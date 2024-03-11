@@ -108,7 +108,6 @@ export const useSendRedPackage = () => {
           senderId: userInfo.userId,
           memo,
           assetType,
-          imageUrl,
           alias,
           tokenId,
         },

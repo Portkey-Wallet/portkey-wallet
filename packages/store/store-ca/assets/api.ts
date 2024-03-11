@@ -110,6 +110,18 @@ export function fetchNFTList({
   });
 }
 
+export function fetchNFTItem({
+  symbol,
+  caAddressInfos,
+}: {
+  symbol: string;
+  caAddressInfos: { chainId: string; caAddress: string }[];
+}): Promise<{ data: any }> {
+  return request.assets.fetchAccountNftCollectionItem({
+    params: { caAddressInfos, symbol, width: NFT_MIDDLE_SIZE, height: -1 },
+  });
+}
+
 export function fetchTokenPrices({
   symbols,
 }: {

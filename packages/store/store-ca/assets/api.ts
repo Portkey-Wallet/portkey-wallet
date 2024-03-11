@@ -10,12 +10,10 @@ export function fetchTokenList({
   // todo maybe remote tokenList change
   skipCount = 0,
   maxResultCount = 1000,
-  caAddresses,
   caAddressInfos,
 }: {
   skipCount?: number;
   maxResultCount?: number;
-  caAddresses: string[];
   caAddressInfos: { chainId: string; caAddress: string }[];
 }): Promise<{
   data: ITokenItemResponse[];
@@ -23,7 +21,6 @@ export function fetchTokenList({
 }> {
   return request.assets.fetchAccountTokenList({
     params: {
-      caAddresses,
       caAddressInfos,
       skipCount,
       maxResultCount,
@@ -32,13 +29,11 @@ export function fetchTokenList({
 }
 
 export function fetchAssetList({
-  caAddresses,
   caAddressInfos,
   maxResultCount,
   skipCount,
   keyword = '',
 }: {
-  caAddresses: string[];
   maxResultCount: number;
   skipCount: number;
   keyword: string;
@@ -46,11 +41,10 @@ export function fetchAssetList({
 }): Promise<{ data: IAssetItemType[]; totalRecordCount: number }> {
   return request.assets.fetchAccountAssetsByKeywords({
     params: {
-      CaAddresses: caAddresses,
       caAddressInfos,
-      SkipCount: skipCount,
-      MaxResultCount: maxResultCount,
-      Keyword: keyword,
+      skipCount: skipCount,
+      maxResultCount: maxResultCount,
+      keyword: keyword,
       width: NFT_SMALL_SIZE,
       height: -1,
     },
@@ -102,19 +96,29 @@ export function fetchNFTSeriesList({
 
 export function fetchNFTList({
   symbol,
-  caAddresses,
   caAddressInfos,
   skipCount = 0,
   maxResultCount = 1000,
 }: {
   symbol: string;
-  caAddresses: string[];
   caAddressInfos: { chainId: string; caAddress: string }[];
   skipCount: number;
   maxResultCount: number;
 }): Promise<{ data: any[]; totalRecordCount: number }> {
   return request.assets.fetchAccountNftCollectionItemList({
-    params: { caAddresses, caAddressInfos, symbol, skipCount, maxResultCount, width: NFT_MIDDLE_SIZE, height: -1 },
+    params: { caAddressInfos, symbol, skipCount, maxResultCount, width: NFT_MIDDLE_SIZE, height: -1 },
+  });
+}
+
+export function fetchNFTItem({
+  symbol,
+  caAddressInfos,
+}: {
+  symbol: string;
+  caAddressInfos: { chainId: string; caAddress: string }[];
+}): Promise<{ data: any }> {
+  return request.assets.fetchAccountNftCollectionItem({
+    params: { caAddressInfos, symbol, width: NFT_MIDDLE_SIZE, height: -1 },
   });
 }
 

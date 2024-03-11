@@ -12,7 +12,7 @@ import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenMana
 import useDebounce from 'hooks/useDebounce';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { request } from '@portkey-wallet/api/api-did';
-import { useCaAddresses, useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import Loading from 'components/Loading';
 import FilterTokenSection from '../components/FilterToken';
@@ -35,7 +35,6 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   const chainIdList = useChainIdList();
 
   const dispatch = useAppCommonDispatch();
-  const caAddressArray = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
 
   const { tokenDataShowInMarket } = useAppCASelector(state => state.tokenManagement);
@@ -82,7 +81,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
           },
         });
         timerRef.current = setTimeout(async () => {
-          dispatch(fetchTokenListAsync({ caAddresses: caAddressArray, caAddressInfos }));
+          dispatch(fetchTokenListAsync({ caAddressInfos }));
           if (debounceWord) {
             await fetchSearchedTokenList();
           } else {
@@ -96,7 +95,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
         CommonToast.failError(err);
       }
     },
-    [caAddressArray, caAddressInfos, chainIdList, debounceWord, dispatch, fetchSearchedTokenList],
+    [caAddressInfos, chainIdList, debounceWord, dispatch, fetchSearchedTokenList],
   );
 
   useFocusEffect(

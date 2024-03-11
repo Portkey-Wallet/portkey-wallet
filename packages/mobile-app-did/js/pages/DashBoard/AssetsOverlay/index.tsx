@@ -12,7 +12,6 @@ import { defaultColors } from 'assets/theme';
 import { useCaAddressInfoList, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import TokenListItem from 'components/TokenListItem';
 import { FontStyles } from 'assets/theme/styles';
-import { useCaAddresses } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchAssetList } from '@portkey-wallet/store/store-ca/assets/api';
 import { IAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
 import navigationService from 'utils/navigationService';
@@ -107,7 +106,6 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
   const { addresses = [], isGroupChat, toUserId } = imTransferInfo || {};
 
   const { t } = useLanguage();
-  const caAddresses = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
   const [keyword, setKeyword] = useState('');
   const gStyles = useGStyles();
@@ -149,7 +147,6 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
       try {
         const response = await fetchAssetList({
           caAddressInfos,
-          caAddresses,
           maxResultCount: MAX_RESULT_COUNT,
           skipCount: pageInfoRef.current.curPage * MAX_RESULT_COUNT,
           keyword: _keyword,
@@ -168,7 +165,7 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
       }
       pageInfoRef.current.isLoading = false;
     },
-    [caAddressInfos, caAddresses, filterList, listShow.length],
+    [caAddressInfos, filterList, listShow.length],
   );
 
   const onKeywordChange = useCallback(() => {
@@ -185,7 +182,7 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
 
   useEffectOnce(() => {
     getTokenPrice();
-    dispatch(fetchAssetAsync({ caAddresses, keyword: '', caAddressInfos }));
+    dispatch(fetchAssetAsync({ keyword: '', caAddressInfos }));
   });
 
   const renderItem = useCallback(

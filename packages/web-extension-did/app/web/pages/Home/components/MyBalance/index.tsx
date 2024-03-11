@@ -16,7 +16,6 @@ import {
   useLoading,
 } from 'store/Provider/hooks';
 import {
-  useCaAddresses,
   useCaAddressInfoList,
   useChainIdList,
   useCurrentWallet,
@@ -82,7 +81,6 @@ export default function MyBalance() {
   const { state } = useLocationState<TMyBalanceState>();
   const { passwordSeed } = useUserInfo();
   const appDispatch = useAppDispatch();
-  const caAddresses = useCaAddresses();
   const chainIdArray = useChainIdList();
   const isMainNet = useIsMainnet();
   const { walletInfo } = useCurrentWallet();
@@ -135,11 +133,11 @@ export default function MyBalance() {
       setActiveKey(state.key);
     }
     if (!passwordSeed) return;
-    appDispatch(fetchTokenListAsync({ caAddresses, caAddressInfos }));
+    appDispatch(fetchTokenListAsync({ caAddressInfos }));
     appDispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray }));
     appDispatch(getCaHolderInfoAsync());
     appDispatch(getSymbolImagesAsync());
-  }, [passwordSeed, appDispatch, caAddresses, chainIdArray, caAddressInfos, isMainNet, state?.key, isRampShow]);
+  }, [passwordSeed, appDispatch, isRampShow, state?.key, caAddressInfos, chainIdArray]);
 
   useEffect(() => {
     appDispatch(fetchNFTCollectionsAsync({ maxNFTCount: maxNftNum, caAddressInfos }));

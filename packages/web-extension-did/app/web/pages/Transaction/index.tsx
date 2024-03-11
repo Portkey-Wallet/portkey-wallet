@@ -1,5 +1,5 @@
 import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
-import { useCaAddresses, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
 import { Transaction } from '@portkey-wallet/types/types-ca/trade';
@@ -38,11 +38,13 @@ export default function Transaction() {
   const { state } = useLocationState<ITransactionLocationState>();
   const chainId = state.chainId;
   const from = state?.previousPage;
-  const currentWallet = useCurrentWallet();
-  const { walletInfo } = currentWallet;
-  const caAddresses = useCaAddresses();
-  const caAddress = chainId ? [walletInfo?.[chainId as ChainId]?.caAddress] : '';
   const isMainnet = useIsMainnet();
+  const caAddressInfoList = useCaAddressInfoList();
+  const caAddressInfos = useMemo(() => {
+    const result = caAddressInfoList.filter((ele) => ele.chainId === chainId);
+    return result?.length > 0 ? result : caAddressInfoList;
+  }, [caAddressInfoList, chainId]);
+
   useFreshTokenPrice();
   const amountInUsdShow = useAmountInUsdShow();
   const defaultToken = useDefaultToken(chainId ? (chainId as ChainId) : undefined);
@@ -56,7 +58,7 @@ export default function Transaction() {
   // Because some data is not returned in the Activities API. Such as from, to.
   useEffectOnce(() => {
     const params = {
-      caAddresses: caAddress || caAddresses,
+      caAddressInfos,
       transactionId: activityItem.transactionId,
       blockHash: activityItem.blockHash,
     };

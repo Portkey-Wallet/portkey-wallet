@@ -112,18 +112,16 @@ const initialState: AssetsStateType = {
 export const fetchTokenListAsync = createAsyncThunk(
   'fetchTokenListAsync',
   async ({
-    caAddresses,
     caAddressInfos,
     skipCount = 0,
     maxResultCount = 1000,
   }: {
-    caAddresses: string[];
     caAddressInfos: { chainId: ChainId; caAddress: string }[];
     skipCount?: number;
     maxResultCount?: number;
   }) => {
     // if (totalRecordCount === 0 || totalRecordCount > accountTokenList.length) {
-    const response = await fetchTokenList({ caAddresses, caAddressInfos, skipCount, maxResultCount });
+    const response = await fetchTokenList({ caAddressInfos, skipCount, maxResultCount });
 
     // mock data fro new account
     if (response.data.length === 0) {
@@ -155,13 +153,11 @@ export const fetchNFTAsync = createAsyncThunk(
   async (
     {
       symbol,
-      caAddresses,
       caAddressInfos,
       chainId,
       pageNum = 0,
     }: {
       symbol: string;
-      caAddresses: string[];
       caAddressInfos: { chainId: ChainId; caAddress: string }[];
       chainId: ChainId;
       pageNum: number;
@@ -181,7 +177,7 @@ export const fetchNFTAsync = createAsyncThunk(
     if ((pageNum + 1) * maxResultCount <= children.length) return;
 
     if (totalRecordCount === 0 || Number(totalRecordCount) > children.length) {
-      const response = await fetchNFTList({ symbol, caAddresses, caAddressInfos, skipCount, maxResultCount });
+      const response = await fetchNFTList({ symbol, caAddressInfos, skipCount, maxResultCount });
       return { symbol, chainId, list: response.data, totalRecordCount: response.totalRecordCount, skipCount };
     }
     return { symbol, chainId, list: [], totalRecordCount, skipCount };
@@ -192,11 +188,9 @@ export const fetchNFTAsync = createAsyncThunk(
 export const fetchAssetAsync = createAsyncThunk(
   'fetchAssetsAsync',
   async ({
-    caAddresses,
     keyword,
     caAddressInfos,
   }: {
-    caAddresses: string[];
     keyword: string;
     caAddressInfos: { chainId: ChainId; caAddress: string }[];
   }) => {
@@ -206,7 +200,7 @@ export const fetchAssetAsync = createAsyncThunk(
     // } = assets;
 
     // if (totalRecordCount === 0 || totalRecordCount > accountAssetsList.length) {
-    const response = await fetchAssetList({ caAddresses, caAddressInfos, keyword, skipCount: 0, maxResultCount: 1000 });
+    const response = await fetchAssetList({ caAddressInfos, keyword, skipCount: 0, maxResultCount: 1000 });
 
     return { list: response.data, totalRecordCount: response.totalRecordCount, keyword };
     // }

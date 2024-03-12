@@ -28,6 +28,7 @@ import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import CryptoAssetsListOverlay from '../CryptoAssetsListOverlay';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
+import NFTAvatar from 'components/NFTAvatar';
 
 export type TInputValue = {
   packetNum?: string;
@@ -61,6 +62,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
   const [selectToken, setSelectToken] = useState<ICryptoBoxAssetItemType>({
     ...defaultToken,
     chainId: MAIN_CHAIN_ID,
+    assetType: AssetType.ft,
   });
   const [values, setValues] = useState<TInputValue>({
     packetNum: '',
@@ -275,17 +277,22 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
                   currentChainId: selectToken.chainId,
                 });
               }}>
-              <CommonAvatar
-                hasBorder
-                shapeType={selectToken.assetType === AssetType.nft ? 'square' : 'circular'}
-                resizeMode={'contain'}
-                style={[styles.avatar, selectToken.assetType === AssetType.nft && styles.borderRadius4]}
-                title={selectToken.symbol}
-                avatarSize={pTd(24)}
-                // elf token icon is fixed , only use white background color
-                svgName={selectToken?.symbol === defaultToken.symbol ? 'testnet' : undefined}
-                imageUrl={selectToken.imageUrl || symbolImages[selectToken.symbol]}
-              />
+              {selectToken.assetType === AssetType.ft ? (
+                <CommonAvatar
+                  hasBorder
+                  title={selectToken.symbol}
+                  shapeType={'circular'}
+                  resizeMode={'contain'}
+                  style={[styles.avatar]}
+                  avatarSize={pTd(24)}
+                  // elf token icon is fixed , only use white background color
+                  svgName={selectToken?.symbol === defaultToken.symbol ? 'testnet' : undefined}
+                  imageUrl={selectToken.imageUrl || symbolImages[selectToken.symbol]}
+                />
+              ) : (
+                <NFTAvatar disabled nftSize={pTd(24)} data={selectToken} style={styles.borderRadius4} />
+              )}
+
               <View style={[styles.assetInfoWrap, GStyles.flex1]}>
                 <TextM numberOfLines={1} style={GStyles.flex1}>
                   {assetName}
@@ -327,17 +334,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
             assetType={selectToken.assetType}
           />
           <View style={[GStyles.flexRow, GStyles.center, styles.nftInfoWrap]}>
-            <CommonAvatar
-              hasBorder
-              shapeType={'square'}
-              resizeMode={'contain'}
-              style={[styles.avatar, styles.borderRadius4]}
-              title={selectToken.symbol}
-              avatarSize={pTd(24)}
-              // elf token icon is fixed , only use white background color
-              svgName={selectToken?.symbol === defaultToken.symbol ? 'testnet' : undefined}
-              imageUrl={selectToken.imageUrl || symbolImages[selectToken.symbol]}
-            />
+            <NFTAvatar disabled nftSize={pTd(24)} data={selectToken} style={styles.borderRadius4} />
             <TextM numberOfLines={1} style={styles.nftNameWrap}>
               {assetName}
             </TextM>
@@ -410,6 +407,7 @@ const styles = StyleSheet.create({
   },
   avatar: {
     fontSize: pTd(12),
+    backgroundColor: defaultColors.bg4,
   },
   borderRadius4: {
     borderRadius: pTd(4),

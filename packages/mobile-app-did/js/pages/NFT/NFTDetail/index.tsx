@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, StatusBar, View, ScrollView } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import CommonButton from 'components/CommonButton';
@@ -13,29 +13,25 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import SafeAreaBox from 'components/SafeAreaBox';
 import Svg from 'components/Svg';
-import CommonAvatar from 'components/CommonAvatar';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
-import { ChainId } from '@portkey-wallet/types';
 import { ScreenWidth } from '@rneui/base';
 import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
 import { copyText } from 'utils';
+import { formatTransferTime } from '@portkey-wallet/utils/time';
 import Touchable from 'components/Touchable';
+import NFTAvatar from 'components/NFTAvatar';
+import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { SeedTypeEnum, NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { useNFTItemDetail } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 
 export interface TokenDetailProps {
   route?: any;
 }
 
-interface NftItemType {
-  alias: string;
-  balance: string;
-  chainId: ChainId;
-  imageUrl: string;
-  imageLargeUrl: string;
-  symbol: string;
-  tokenContractAddress: string;
-  tokenId: string;
-  totalSupply: string;
-  collectionInfo: {
+interface INftDetailPage extends NFTItemBaseType {
+  collectionInfo?: {
     imageUrl: string;
     collectionName: string;
   };
@@ -44,19 +40,61 @@ interface NftItemType {
 const NFTDetail: React.FC<TokenDetailProps> = () => {
   const { t } = useLanguage();
 
-  const nftItem = useRouterParams<NftItemType>();
+  const timerRef = useRef<NodeJS.Timeout>();
+  const nftItem = useRouterParams<INftDetailPage>();
+  const fetchNftDetail = useNFTItemDetail();
+
+  const [nftDetailInfo, setNftDetailInfo] = useState<INftDetailPage>(nftItem);
 
   const {
     alias,
     balance,
-    tokenContractAddress,
+    isSeed,
+    seedType,
+    chainId,
+    imageUrl,
     imageLargeUrl,
     symbol,
-    totalSupply,
-    chainId,
+    tokenContractAddress,
     tokenId,
-    collectionInfo: { imageUrl, collectionName },
-  } = nftItem;
+    decimals,
+    totalSupply,
+    inscriptionName,
+    limitPerMint,
+    expires,
+    seedOwnedSymbol,
+    recommendedRefreshSeconds,
+    generation,
+    collectionInfo,
+    traitsPercentages,
+  } = nftDetailInfo;
+
+  const fetchDetail = useLockCallback(async () => {
+    try {
+      const result = await fetchNftDetail({
+        symbol,
+        chainId,
+      });
+      setNftDetailInfo(pre => ({ ...pre, ...result }));
+    } catch (error) {
+      console.log('fetchDetail error', error);
+    }
+  }, [fetchNftDetail, chainId, symbol]);
+
+  useEffectOnce(() => {
+    if (traitsPercentages && recommendedRefreshSeconds) {
+      timerRef.current = setInterval(async () => {
+        await fetchDetail();
+      }, recommendedRefreshSeconds * 1000);
+    }
+  });
+
+  useEffect(
+    () => () => {
+      if (timerRef.current && traitsPercentages) clearInterval(timerRef.current);
+    },
+    [nftDetailInfo.traits, traitsPercentages],
+  );
 
   return (
     <SafeAreaBox style={styles.pageWrap}>
@@ -67,52 +105,146 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={[styles.collection, GStyles.flexRow, GStyles.itemCenter]}>
-          <CommonAvatar imageUrl={imageUrl} title={collectionName} shapeType={'circular'} avatarSize={pTd(24)} />
-          <TextM style={[FontStyles.font3, styles.marginLeft8, fonts.mediumFont]}>{collectionName}</TextM>
+          <NFTAvatar
+            disabled
+            nftSize={pTd(24)}
+            badgeSizeType="large"
+            data={{
+              alias: collectionInfo?.collectionName,
+              imageUrl: collectionInfo?.imageUrl || '',
+            }}
+            style={styles.collectionAvatar}
+          />
+          <TextM style={[FontStyles.font3, styles.marginLeft8, fonts.mediumFont]}>
+            {collectionInfo?.collectionName}
+          </TextM>
         </View>
         <TextXXL style={styles.tokenId}>{`${alias} #${tokenId}`}</TextXXL>
-
-        <CommonAvatar
-          title={alias}
-          style={[imageLargeUrl ? styles.image1 : styles.image]}
-          imageUrl={imageLargeUrl}
-          avatarSize={pTd(335)}
+        <NFTAvatar
+          disabled
+          isSeed={isSeed}
+          seedType={seedType}
+          nftSize={pTd(335)}
+          badgeSizeType="large"
+          data={{
+            alias,
+            imageUrl: imageLargeUrl || imageUrl,
+            tokenId,
+          }}
+          style={styles.image}
         />
 
         <View style={styles.infoWrap}>
-          <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Basic info')}</TextL>
-          <View style={[GStyles.flexRow, styles.rowWrap]}>
-            <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Contract address')}</TextM>
-            <View style={GStyles.flex1} />
-            <TextM style={[styles.leftTitle, FontStyles.font5]}>
-              {formatStr2EllipsisStr(addressFormat(tokenContractAddress, chainId))}
-            </TextM>
-            <Touchable
-              style={[styles.marginLeft8, GStyles.flexCol, styles.copyIconWrap]}
-              onPress={async () => await copyText(addressFormat(tokenContractAddress, chainId))}>
-              <Svg icon="copy" size={pTd(13)} />
-            </Touchable>
+          {/* Basic info */}
+          <View>
+            <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Basic info')}</TextL>
+            <View style={[GStyles.flexRow, styles.rowWrap]}>
+              <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Contract address')}</TextM>
+              <View style={GStyles.flex1} />
+              <TextM style={[styles.leftTitle, FontStyles.font5]}>
+                {formatStr2EllipsisStr(addressFormat(tokenContractAddress, chainId))}
+              </TextM>
+              <Touchable
+                style={[styles.marginLeft8, GStyles.flexCol, styles.copyIconWrap]}
+                onPress={async () => await copyText(addressFormat(tokenContractAddress, chainId))}>
+                <Svg icon="copy" size={pTd(13)} />
+              </Touchable>
+            </View>
+            <View style={[GStyles.flexRow, styles.rowWrap]}>
+              <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('BlockChain')}</TextM>
+              <View style={GStyles.flex1} />
+              <TextM style={[styles.leftTitle, FontStyles.font5]}>{formatChainInfoToShow(chainId)}</TextM>
+            </View>
+            <View style={[GStyles.flexRow, styles.rowWrap]}>
+              <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Symbol')}</TextM>
+              <View style={GStyles.flex1} />
+              <TextM style={[styles.leftTitle, FontStyles.font5]}>{symbol}</TextM>
+            </View>
+            <View style={[GStyles.flexRow, styles.rowWrap]}>
+              <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Total supply')}</TextM>
+              <View style={GStyles.flex1} />
+              <TextM style={[styles.leftTitle, FontStyles.font5]}>
+                {formatAmountShow(divDecimals(totalSupply, decimals))}
+              </TextM>
+            </View>
           </View>
-          <View style={[GStyles.flexRow, styles.rowWrap]}>
-            <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('BlockChain')}</TextM>
-            <View style={GStyles.flex1} />
-            <TextM style={[styles.leftTitle, FontStyles.font5]}>{formatChainInfoToShow(chainId)}</TextM>
-          </View>
-          <View style={[GStyles.flexRow, styles.rowWrap]}>
-            <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Token symbol')}</TextM>
-            <View style={GStyles.flex1} />
-            <TextM style={[styles.leftTitle, FontStyles.font5]}>{symbol}</TextM>
-          </View>
-          <View style={[GStyles.flexRow, styles.rowWrap]}>
-            <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Total supply')}</TextM>
-            <View style={GStyles.flex1} />
-            <TextM style={[styles.leftTitle, FontStyles.font5]}>{totalSupply ?? ''}</TextM>
-          </View>
+
+          {/* Token Creation via This Seed */}
+          {isSeed && (
+            <View style={GStyles.marginTop(pTd(24))}>
+              <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Token Creation via This Seed')}</TextL>
+              <View style={[GStyles.flexRow, styles.rowWrap]}>
+                <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Type')}</TextM>
+                <View style={GStyles.flex1} />
+                <TextM style={[styles.leftTitle, FontStyles.font5]}>
+                  {SeedTypeEnum[seedType || SeedTypeEnum.None]}
+                </TextM>
+              </View>
+              <View style={[GStyles.flexRow, styles.rowWrap]}>
+                <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Token Symbol')}</TextM>
+                <View style={GStyles.flex1} />
+                <TextM style={[styles.leftTitle, FontStyles.font5]}>{seedOwnedSymbol}</TextM>
+              </View>
+              <View style={[GStyles.flexRow, styles.rowWrap]}>
+                <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Expires')}</TextM>
+                <View style={GStyles.flex1} />
+                <TextM style={[styles.leftTitle, FontStyles.font5]}>{formatTransferTime(expires)}</TextM>
+              </View>
+            </View>
+          )}
+
+          {/* Traits */}
+          {traitsPercentages && (
+            <View style={GStyles.marginTop(pTd(24))}>
+              <TextL style={fonts.mediumFont}>{t('Traits')}</TextL>
+              {traitsPercentages.map((ele, idx) => (
+                <View key={idx} style={[GStyles.flexRow, GStyles.itemCenter, GStyles.marginTop(12)]}>
+                  <View>
+                    <TextM style={[styles.leftTitle, FontStyles.font3]}>{t(ele?.traitType)}</TextM>
+                    <TextM style={[styles.leftTitle, fonts.mediumFont]}>{ele?.value}</TextM>
+                  </View>
+                  <View style={GStyles.flex1} />
+                  <TextM style={FontStyles.font5}>{ele?.percent}</TextM>
+                </View>
+              ))}
+            </View>
+          )}
+
+          {/* Generation info */}
+          {generation && (
+            <View style={GStyles.marginTop(pTd(24))}>
+              <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Generation info')}</TextL>
+              <View style={[GStyles.flexRow, styles.rowWrap]}>
+                <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Generation')}</TextM>
+                <View style={GStyles.flex1} />
+                <TextM style={[styles.leftTitle, FontStyles.font5]}>{generation}</TextM>
+              </View>
+            </View>
+          )}
+
+          {/* Inscription info */}
+          {inscriptionName && (
+            <View style={GStyles.marginTop(pTd(24))}>
+              <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Inscription info')}</TextL>
+              <View style={[GStyles.flexRow, styles.rowWrap]}>
+                <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Inscription Name')}</TextM>
+                <View style={GStyles.flex1} />
+                <TextM style={[styles.leftTitle, FontStyles.font5]}>{inscriptionName}</TextM>
+              </View>
+              <View style={[GStyles.flexRow, styles.rowWrap]}>
+                <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Limit Per Mint')}</TextM>
+                <View style={GStyles.flex1} />
+                <TextM style={[styles.leftTitle, FontStyles.font5]}>{limitPerMint}</TextM>
+              </View>
+            </View>
+          )}
         </View>
       </ScrollView>
 
       <View style={[GStyles.flexCol, styles.bottomSection]}>
-        <TextM style={[styles.balance, FontStyles.font5, fonts.mediumFont]}>{`You have: ${balance}`}</TextM>
+        <TextM style={[styles.balance, FontStyles.font5, fonts.mediumFont]}>{`You have: ${formatAmountShow(
+          divDecimals(balance, decimals),
+        )}`}</TextM>
         <CommonButton
           title={t('Send')}
           style={styles.sendBtn}
@@ -145,7 +277,9 @@ export const styles = StyleSheet.create({
   collection: {
     marginTop: pTd(8),
   },
-  collectionAvatar: {},
+  collectionAvatar: {
+    borderRadius: pTd(4),
+  },
   tokenId: {
     ...fonts.mediumFont,
     lineHeight: pTd(24),
@@ -165,16 +299,6 @@ export const styles = StyleSheet.create({
     fontSize: pTd(100),
     backgroundColor: defaultColors.bg7,
     color: defaultColors.font7,
-  },
-  image1: {
-    marginTop: pTd(24),
-    marginBottom: pTd(24),
-    width: pTd(335),
-    height: pTd(335),
-    borderRadius: pTd(8),
-    lineHeight: pTd(335),
-    textAlign: 'center',
-    fontSize: pTd(100),
   },
   basicInfoTitle: {
     marginBottom: pTd(8),
@@ -202,11 +326,11 @@ export const styles = StyleSheet.create({
   bottomSection: {
     backgroundColor: defaultColors.bg1,
     position: 'absolute',
-    bottom: bottomBarHeight,
+    bottom: 0,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: defaultColors.border6,
     width: ScreenWidth,
-    height: pTd(110),
+    height: pTd(110) + bottomBarHeight,
     paddingLeft: pTd(20),
     paddingRight: pTd(20),
   },

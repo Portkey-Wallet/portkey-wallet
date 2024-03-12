@@ -16,22 +16,22 @@ import {
   useLoading,
 } from 'store/Provider/hooks';
 import {
-  useCaAddresses,
   useCaAddressInfoList,
   useChainIdList,
   useCurrentWallet,
   useOriginChainId,
 } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
+import { fetchNFTCollectionsAsync, fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { fetchAllTokenListAsync, getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import CustomTokenModal from 'pages/components/CustomTokenModal';
-import { AccountAssetItem } from '@portkey-wallet/types/types-ca/token';
+import { IAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
 import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import useVerifierList from 'hooks/useVerifierList';
 import useGuardianList from 'hooks/useGuardianList';
-import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
+import { PAGE_SIZE_IN_NFT_ITEM_PROMPT } from 'constants/index';
+import { BalanceTab, PAGE_SIZE_IN_NFT_ITEM } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import AccountConnect from 'pages/components/AccountConnect';
@@ -55,6 +55,7 @@ import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { TSendLocationState } from 'types/router';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
+import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
 
 export interface TransactionResult {
   total: number;
@@ -80,7 +81,6 @@ export default function MyBalance() {
   const { state } = useLocationState<TMyBalanceState>();
   const { passwordSeed } = useUserInfo();
   const appDispatch = useAppDispatch();
-  const caAddresses = useCaAddresses();
   const chainIdArray = useChainIdList();
   const isMainNet = useIsMainnet();
   const { walletInfo } = useCurrentWallet();
@@ -125,17 +125,23 @@ export default function MyBalance() {
   const { isBridgeShow } = useExtensionBridgeButtonShow();
   const { isETransShow } = useExtensionETransShow();
   const reportFCMStatus = useReportFCMStatus();
+  const { isNotLessThan768, isPrompt } = useCommonState();
+  const maxNftNum = useMemo(() => (isPrompt ? PAGE_SIZE_IN_NFT_ITEM_PROMPT : PAGE_SIZE_IN_NFT_ITEM), [isPrompt]);
 
   useEffect(() => {
     if (state?.key) {
       setActiveKey(state.key);
     }
     if (!passwordSeed) return;
-    appDispatch(fetchTokenListAsync({ caAddresses, caAddressInfos }));
+    appDispatch(fetchTokenListAsync({ caAddressInfos }));
     appDispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray }));
     appDispatch(getCaHolderInfoAsync());
     appDispatch(getSymbolImagesAsync());
-  }, [passwordSeed, appDispatch, caAddresses, chainIdArray, caAddressInfos, isMainNet, state?.key, isRampShow]);
+  }, [passwordSeed, appDispatch, isRampShow, state?.key, caAddressInfos, chainIdArray]);
+
+  useEffect(() => {
+    appDispatch(fetchNFTCollectionsAsync({ maxNFTCount: maxNftNum, caAddressInfos }));
+  }, [appDispatch, caAddressInfos, maxNftNum]);
 
   useEffect(() => {
     getGuardianList({ caHash: walletInfo?.caHash });
@@ -149,25 +155,26 @@ export default function MyBalance() {
   }, []);
 
   const onSelectedToken = useCallback(
-    (v: AccountAssetItem, type: 'token' | 'nft') => {
+    (v: IAssetItemType, type: 'token' | 'nft') => {
       setTokenOpen(false);
       const isNFT = type === 'nft';
       const state = {
         chainId: v.chainId,
-        decimals: isNFT ? 0 : Number(v.tokenInfo?.decimals ?? 8),
+        decimals: Number(isNFT ? v.nftInfo?.decimals : v.tokenInfo?.decimals ?? 8),
         address: isNFT ? `${v?.nftInfo?.tokenContractAddress}` : `${v?.tokenInfo?.tokenContractAddress}`,
         symbol: v.symbol,
         name: v.symbol,
         imageUrl: isNFT ? v.nftInfo?.imageUrl : v.tokenInfo?.imageUrl,
         alias: isNFT ? v.nftInfo?.alias : '',
         tokenId: isNFT ? v.nftInfo?.tokenId : '',
+        isSeed: isNFT ? v.nftInfo?.isSeed : false,
+        seedType: isNFT ? v.nftInfo?.seedType : SeedTypeEnum.None,
       };
       navigate(`/${navTarget}/${type}/${v.symbol}`, { state });
     },
     [navTarget, navigate],
   );
 
-  const { isNotLessThan768, isPrompt } = useCommonState();
   const SelectTokenELe = useMemo(() => {
     const title = navTarget === 'receive' ? 'Select Token' : 'Select Assets';
     const searchPlaceHolder = navTarget === 'receive' ? 'Search Token' : 'Search Assets';

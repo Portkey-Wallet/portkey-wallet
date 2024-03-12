@@ -11,7 +11,7 @@ import { getActivityListAsync } from '@portkey-wallet/store/store-ca/activity/ac
 import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
 import NoData from 'components/NoData';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
-import { useCaAddressInfoList, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
@@ -30,7 +30,6 @@ const ActivityListPage = () => {
   const caAddressInfos = useCaAddressInfoList();
   const activity = useAppCASelector(state => state.activity);
   const currentActivity = activity?.activityMap?.[getCurrentActivityMapKey(chainId, symbol)] || {};
-  const currentWallet = useCurrentWallet();
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
 
   const isLoadingRef = useRef(false);
@@ -44,7 +43,6 @@ const ActivityListPage = () => {
     const params: IActivitiesApiParams = {
       maxResultCount: maxResultCount,
       skipCount: isInit ? 0 : skipCount + maxResultCount,
-      caAddresses: currentWallet.walletInfo.caAddressList,
       caAddressInfos,
       // managerAddresses: address,
       chainId: chainId,

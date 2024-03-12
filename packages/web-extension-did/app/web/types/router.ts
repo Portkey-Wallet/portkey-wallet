@@ -10,6 +10,7 @@ import { IProfileDetailDataProps } from './Profile';
 import { ToAccount, SendStage } from 'pages/Send';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { GuardianItem } from './guardians';
+import { NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
 
 export enum FromPageEnum {
   register = 'register',
@@ -152,17 +153,11 @@ export type TNewChatLocationState = {
 };
 
 // NFT
-export type TNFTLocationState = {
+export type TNFTLocationState = NFTItemBaseType & {
   address: string;
-  chainId: ChainId;
-  symbol: string;
-  totalSupply: string;
   collectionName?: string;
   collectionImageUrl?: string;
-  tokenId: string;
-  imageUrl?: string;
   balance: string;
-  alias?: string;
 };
 
 // SetPin

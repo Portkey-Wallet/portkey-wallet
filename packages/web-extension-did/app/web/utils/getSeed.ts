@@ -12,7 +12,7 @@ export async function getPin() {
 export default async function getSeed() {
   const pin = await getPin();
   const walletInfo = getWalletInfo();
-  if (!walletInfo?.AESEncryptPrivateKey) throw Error('walletInfo.AESEncryptPrivateKey is not exist');
+  if (!walletInfo?.AESEncryptPrivateKey) return { pin, privateKey: '' };
   const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);
   return { pin, privateKey };
 }

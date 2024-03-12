@@ -42,9 +42,11 @@ import { getBalance } from 'utils/sandboxUtil/getBalance';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import CustomModal from 'pages/components/CustomModal';
-import { SideChainTipContent, SideChainTipTitle } from '@portkey-wallet/constants/constants-ca/send';
+import {
+  SEND_SIDE_CHAIN_TOKEN_TIP_CONTENT,
+  SEND_SIDE_CHAIN_TOKEN_TIP_TITLE,
+} from '@portkey-wallet/constants/constants-ca/send';
 import getSeed from 'utils/getSeed';
-import { useDebounceCallback } from '@portkey-wallet/hooks';
 import singleMessage from 'utils/singleMessage';
 import { usePromptLocationParams } from 'hooks/router';
 import { TSendLocationState, TSendPageType } from 'types/router';
@@ -89,6 +91,7 @@ export default function Send() {
   const checkManagerSyncState = useCheckManagerSyncState();
   const [txFee, setTxFee] = useState<string>();
   const currentChain = useCurrentChain(chainId);
+  const isSideChainSend = useMemo(() => state.chainId !== MAIN_CHAIN_ID, [state.chainId]);
   useFetchTxFee();
   const { crossChain: crossChainFee } = useGetTxFee(chainId);
   const tokenInfo: BaseToken = useMemo(
@@ -101,8 +104,20 @@ export default function Send() {
       imageUrl: state.imageUrl,
       alias: state.alias,
       tokenId: state.tokenId,
+      isSeed: state.isSeed,
+      seedType: state.seedType,
     }),
-    [chainId, state.address, state.alias, state.decimals, state.imageUrl, state.symbol, state.tokenId],
+    [
+      chainId,
+      state.address,
+      state.alias,
+      state.decimals,
+      state.imageUrl,
+      state.isSeed,
+      state.seedType,
+      state.symbol,
+      state.tokenId,
+    ],
   );
   const defaultToken = useDefaultToken(chainId);
 
@@ -247,17 +262,14 @@ export default function Send() {
       navigate('/');
     } catch (error: any) {
       setLoading(false);
-      if (!error?.type) return singleMessage.error(error);
-      if (error.type === 'managerTransfer') {
-        return singleMessage.error(error);
-      } else if (error.type === 'crossChainTransfer') {
+      if (error && error.type === 'crossChainTransfer') {
         dispatch(addFailedActivity(error.data));
         console.log('addFailedActivity', error);
 
         showErrorModal(error.data);
         return;
       } else {
-        singleMessage.error(handleErrorMessage(error));
+        singleMessage.error(handleErrorMessage(error, 'Transfer Failed'));
       }
     } finally {
       setLoading(false);
@@ -433,48 +445,66 @@ export default function Send() {
     crossChainFee,
   ]);
 
-  const sendHandler = useDebounceCallback(
-    async (): Promise<string | void> => {
-      if (!oneTimeApprovalList.current || oneTimeApprovalList.current.length === 0) {
-        if (!tokenInfo) throw 'No Symbol info';
-        setLoading(true);
-        try {
-          // transfer limit check
-          const limitRes = await checkLimit({
-            chainId: tokenInfo.chainId,
-            symbol: tokenInfo.symbol,
+  const sendHandler = useCallback(async (): Promise<string | void> => {
+    if (!oneTimeApprovalList.current || oneTimeApprovalList.current.length === 0) {
+      if (!tokenInfo) throw 'No Symbol info';
+      setLoading(true);
+      try {
+        // transfer limit check
+        const limitRes = await checkLimit({
+          chainId: tokenInfo.chainId,
+          symbol: tokenInfo.symbol,
+          amount: amount,
+          decimals: tokenInfo.decimals,
+          from: ICheckLimitBusiness.SEND,
+          balance,
+          extra: {
+            stage,
             amount: amount,
-            decimals: tokenInfo.decimals,
-            from: ICheckLimitBusiness.SEND,
-            balance,
-            extra: {
-              stage,
-              amount: amount,
-              address: tokenInfo.address,
-              imageUrl: tokenInfo.imageUrl,
-              alias: tokenInfo.alias,
-              tokenId: tokenInfo.tokenId,
-              toAccount,
-            },
-            onOneTimeApproval: handleOneTimeApproval,
-          });
-          if (!limitRes) {
-            setLoading(false);
-            return ExceedLimit;
-          }
-        } catch (error) {
+            address: tokenInfo.address,
+            imageUrl: tokenInfo.imageUrl,
+            alias: tokenInfo.alias,
+            tokenId: tokenInfo.tokenId,
+            toAccount,
+          },
+          onOneTimeApproval: handleOneTimeApproval,
+        });
+        if (!limitRes) {
           setLoading(false);
-
-          const msg = handleErrorMessage(error);
-          singleMessage.error(msg);
-          return;
+          return ExceedLimit;
         }
+      } catch (error) {
+        setLoading(false);
+
+        const msg = handleErrorMessage(error);
+        singleMessage.error(msg);
+        return;
       }
-      await sendTransfer();
-    },
-    [amount, balance, checkLimit, handleOneTimeApproval, sendTransfer, setLoading, stage, toAccount, tokenInfo],
-    500,
-  );
+    }
+    await sendTransfer();
+  }, [amount, balance, checkLimit, handleOneTimeApproval, sendTransfer, setLoading, stage, toAccount, tokenInfo]);
+
+  const checkSideChainSendModal = useCallback(() => {
+    const modal = CustomModal({
+      type: 'confirm',
+      className: 'side-chain-modal',
+      content: (
+        <div>
+          <div className="modal-title">{SEND_SIDE_CHAIN_TOKEN_TIP_TITLE}</div>
+          <div>
+            {SEND_SIDE_CHAIN_TOKEN_TIP_CONTENT.map((item, i) => (
+              <div key={`send_modal_${i}`}>{item}</div>
+            ))}
+          </div>
+        </div>
+      ),
+      okText: 'Confirm',
+      onOk: () => {
+        modal.destroy();
+        sendHandler();
+      },
+    });
+  }, [sendHandler]);
 
   const StageObj: TypeStageObj = useMemo(
     () => ({
@@ -553,6 +583,7 @@ export default function Send() {
             onChange={({ amount, balance }) => {
               setAmount(amount);
               setBalance(balance);
+              setTipMsg('');
             }}
             getTranslationInfo={getTranslationInfo}
             setErrorMsg={setTipMsg}
@@ -562,7 +593,11 @@ export default function Send() {
       2: {
         btnText: 'Send',
         handler: () => {
-          sendHandler();
+          if (isSideChainSend) {
+            checkSideChainSendModal();
+          } else {
+            sendHandler();
+          }
         },
         backFun: () => {
           setStage(SendStage.Amount);
@@ -583,6 +618,8 @@ export default function Send() {
             transactionFee={txFee || ''}
             isCross={isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF')}
             tokenId={tokenInfo.tokenId || ''}
+            isSeed={state.isSeed}
+            seedType={state.seedType}
           />
         ),
       },
@@ -598,10 +635,14 @@ export default function Send() {
       getTranslationInfo,
       chainInfo?.chainId,
       txFee,
+      state.isSeed,
+      state.seedType,
       validateToAddress,
       t,
       navigate,
       handleCheckPreview,
+      isSideChainSend,
+      checkSideChainSendModal,
       sendHandler,
     ],
   );
@@ -611,8 +652,12 @@ export default function Send() {
       className: 'side-chain-modal',
       content: (
         <div>
-          <div className="modal-title">{SideChainTipTitle}</div>
-          <div>{SideChainTipContent}</div>
+          <div className="modal-title">{SEND_SIDE_CHAIN_TOKEN_TIP_TITLE}</div>
+          <div>
+            {SEND_SIDE_CHAIN_TOKEN_TIP_CONTENT.map((item, i) => (
+              <div key={`send_${i}`}>{item}</div>
+            ))}
+          </div>
         </div>
       ),
       okText: 'Got it',
@@ -626,7 +671,7 @@ export default function Send() {
         <div className="flex-row-between side-chain-tip" onClick={showSideChainModal}>
           <div className="flex">
             <CustomSvg type="Info" />
-            <div>{SideChainTipTitle}</div>
+            <div>{SEND_SIDE_CHAIN_TOKEN_TIP_TITLE}</div>
           </div>
           <CustomSvg type="LeftArrow" />
         </div>

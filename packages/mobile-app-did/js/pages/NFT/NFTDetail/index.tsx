@@ -75,26 +75,25 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
         symbol,
         chainId,
       });
-
-      setNftDetailInfo(pre => ({ ...pre, result }));
+      setNftDetailInfo(pre => ({ ...pre, ...result }));
     } catch (error) {
       console.log('fetchDetail error', error);
     }
   }, [fetchNftDetail, chainId, symbol]);
 
   useEffectOnce(() => {
-    if (traitsPercentages) {
+    if (traitsPercentages && recommendedRefreshSeconds) {
       timerRef.current = setInterval(async () => {
         await fetchDetail();
-      }, (recommendedRefreshSeconds ?? 10) * 1000);
+      }, recommendedRefreshSeconds * 1000);
     }
   });
 
   useEffect(
     () => () => {
-      if (timerRef.current && nftDetailInfo.traits) clearInterval(timerRef.current);
+      if (timerRef.current && traitsPercentages) clearInterval(timerRef.current);
     },
-    [nftDetailInfo.traits],
+    [nftDetailInfo.traits, traitsPercentages],
   );
 
   return (
@@ -112,7 +111,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
             badgeSizeType="large"
             data={{
               alias: collectionInfo?.collectionName,
-              imageUrl: nftDetailInfo?.imageUrl,
+              imageUrl: collectionInfo?.imageUrl || '',
             }}
             style={styles.collectionAvatar}
           />
@@ -136,6 +135,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
         />
 
         <View style={styles.infoWrap}>
+          {/* Basic info */}
           <View>
             <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Basic info')}</TextL>
             <View style={[GStyles.flexRow, styles.rowWrap]}>
@@ -171,7 +171,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
 
           {/* Token Creation via This Seed */}
           {isSeed && (
-            <View style={GStyles.marginTop(pTd(32))}>
+            <View style={GStyles.marginTop(pTd(24))}>
               <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Token Creation via This Seed')}</TextL>
               <View style={[GStyles.flexRow, styles.rowWrap]}>
                 <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Type')}</TextM>
@@ -195,7 +195,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
 
           {/* Traits */}
           {traitsPercentages && (
-            <View style={GStyles.marginTop(pTd(32))}>
+            <View style={GStyles.marginTop(pTd(24))}>
               <TextL style={fonts.mediumFont}>{t('Traits')}</TextL>
               {traitsPercentages.map((ele, idx) => (
                 <View key={idx} style={[GStyles.flexRow, GStyles.itemCenter, GStyles.marginTop(12)]}>
@@ -212,7 +212,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
 
           {/* Generation info */}
           {generation && (
-            <View style={GStyles.marginTop(pTd(32))}>
+            <View style={GStyles.marginTop(pTd(24))}>
               <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Generation info')}</TextL>
               <View style={[GStyles.flexRow, styles.rowWrap]}>
                 <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Generation')}</TextM>
@@ -224,7 +224,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
 
           {/* Inscription info */}
           {inscriptionName && (
-            <View style={GStyles.marginTop(pTd(32))}>
+            <View style={GStyles.marginTop(pTd(24))}>
               <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Inscription info')}</TextL>
               <View style={[GStyles.flexRow, styles.rowWrap]}>
                 <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Inscription Name')}</TextM>

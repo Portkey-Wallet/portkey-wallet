@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, StatusBar, View, ScrollView } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import CommonButton from 'components/CommonButton';
@@ -14,7 +14,6 @@ import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParam
 import SafeAreaBox from 'components/SafeAreaBox';
 import Svg from 'components/Svg';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
-import { ChainId } from '@portkey-wallet/types';
 import { ScreenWidth } from '@rneui/base';
 import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
 import { copyText } from 'utils';
@@ -22,30 +21,17 @@ import { formatTransferTime } from '@portkey-wallet/utils/time';
 import Touchable from 'components/Touchable';
 import NFTAvatar from 'components/NFTAvatar';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
-import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
+import { SeedTypeEnum, NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { useNFTItemDetail } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 
 export interface TokenDetailProps {
   route?: any;
 }
 
-interface NftItemType {
-  alias: string;
-  balance: string;
-  isSeed?: boolean;
-  seedType?: SeedTypeEnum;
-  chainId: ChainId;
-  imageUrl: string;
-  imageLargeUrl: string;
-  symbol: string;
-  tokenContractAddress: string;
-  tokenId: string;
-  decimals: string;
-  totalSupply: string;
-  inscriptionName?: string;
-  limitPerMint?: string;
-  expires?: string;
-  seedOwnedSymbol?: string;
-  collectionInfo: {
+interface INftDetailPage extends NFTItemBaseType {
+  collectionInfo?: {
     imageUrl: string;
     collectionName: string;
   };
@@ -54,26 +40,63 @@ interface NftItemType {
 const NFTDetail: React.FC<TokenDetailProps> = () => {
   const { t } = useLanguage();
 
-  const nftItem = useRouterParams<NftItemType>();
+  const timerRef = useRef<NodeJS.Timeout>();
+  const nftItem = useRouterParams<INftDetailPage>();
+  const fetchNftDetail = useNFTItemDetail();
+
+  const [nftDetailInfo, setNftDetailInfo] = useState<INftDetailPage>(nftItem);
 
   const {
     alias,
     balance,
-    tokenContractAddress,
-    imageLargeUrl,
-    symbol,
-    chainId,
-    tokenId,
-    decimals,
     isSeed,
     seedType,
-    inscriptionName,
+    chainId,
+    imageUrl,
+    imageLargeUrl,
+    symbol,
+    tokenContractAddress,
+    tokenId,
+    decimals,
     totalSupply,
+    inscriptionName,
     limitPerMint,
     expires,
     seedOwnedSymbol,
-    collectionInfo: { imageUrl, collectionName },
-  } = nftItem;
+    traits,
+    recommendedRefreshSeconds,
+    generation,
+    traitsPercentages,
+    collectionInfo,
+  } = nftDetailInfo;
+
+  const fetchDetail = useLockCallback(async () => {
+    try {
+      const result = await fetchNftDetail({
+        symbol,
+        chainId,
+      });
+
+      setNftDetailInfo(pre => ({ ...pre, result }));
+    } catch (error) {
+      console.log('fetchDetail error', error);
+    }
+  }, [fetchNftDetail, chainId, symbol]);
+
+  useEffectOnce(() => {
+    if (traits) {
+      timerRef.current = setInterval(async () => {
+        await fetchDetail();
+      }, (recommendedRefreshSeconds ?? 10) * 1000);
+    }
+  });
+
+  useEffect(
+    () => () => {
+      if (timerRef.current && nftDetailInfo.traits) clearInterval(timerRef.current);
+    },
+    [nftDetailInfo.traits],
+  );
 
   return (
     <SafeAreaBox style={styles.pageWrap}>
@@ -89,12 +112,14 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
             nftSize={pTd(24)}
             badgeSizeType="large"
             data={{
-              alias: collectionName,
-              imageUrl,
+              alias: collectionInfo?.collectionName,
+              imageUrl: nftDetailInfo?.imageUrl,
             }}
             style={styles.collectionAvatar}
           />
-          <TextM style={[FontStyles.font3, styles.marginLeft8, fonts.mediumFont]}>{collectionName}</TextM>
+          <TextM style={[FontStyles.font3, styles.marginLeft8, fonts.mediumFont]}>
+            {collectionInfo?.collectionName}
+          </TextM>
         </View>
         <TextXXL style={styles.tokenId}>{`${alias} #${tokenId}`}</TextXXL>
         <NFTAvatar
@@ -105,7 +130,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
           badgeSizeType="large"
           data={{
             alias,
-            imageUrl: imageLargeUrl,
+            imageUrl: imageLargeUrl || imageUrl,
             tokenId,
           }}
           style={styles.image}
@@ -165,6 +190,30 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
                 <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Expires')}</TextM>
                 <View style={GStyles.flex1} />
                 <TextM style={[styles.leftTitle, FontStyles.font5]}>{formatTransferTime(expires)}</TextM>
+              </View>
+            </View>
+          )}
+
+          {/* Traits */}
+          {traits && (
+            <View style={GStyles.marginTop(pTd(32))}>
+              <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Traits')}</TextL>
+              <View style={[GStyles.flexRow, styles.rowWrap]}>
+                <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Generation')}</TextM>
+                <View style={GStyles.flex1} />
+                <TextM style={[styles.leftTitle, FontStyles.font5]}>{'inscriptionName'}</TextM>
+              </View>
+            </View>
+          )}
+
+          {/* Generation info */}
+          {generation && (
+            <View style={GStyles.marginTop(pTd(32))}>
+              <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Inscription info')}</TextL>
+              <View style={[GStyles.flexRow, styles.rowWrap]}>
+                <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Generation')}</TextM>
+                <View style={GStyles.flex1} />
+                <TextM style={[styles.leftTitle, FontStyles.font5]}>{'inscriptionName'}</TextM>
               </View>
             </View>
           )}

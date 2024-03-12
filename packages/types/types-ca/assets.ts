@@ -47,8 +47,14 @@ export type NFTItemBaseType = {
   limitPerMint?: number;
   expires?: string;
   seedOwnedSymbol?: string;
+  circulatingSupply?: number;
+  collectionSymbol?: string;
+  imageLargeUrl?: string;
+  tokenName?: string;
+  traits?: string;
   recommendedRefreshSeconds?: number;
   generation?: string;
+  traitsPercentages?: string;
 };
 
 export type RateBaseType = {

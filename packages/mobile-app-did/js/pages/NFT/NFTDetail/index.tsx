@@ -63,11 +63,10 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
     limitPerMint,
     expires,
     seedOwnedSymbol,
-    traits,
     recommendedRefreshSeconds,
     generation,
-    traitsPercentages,
     collectionInfo,
+    traitsPercentages,
   } = nftDetailInfo;
 
   const fetchDetail = useLockCallback(async () => {
@@ -84,7 +83,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
   }, [fetchNftDetail, chainId, symbol]);
 
   useEffectOnce(() => {
-    if (traits) {
+    if (traitsPercentages) {
       timerRef.current = setInterval(async () => {
         await fetchDetail();
       }, (recommendedRefreshSeconds ?? 10) * 1000);
@@ -195,25 +194,30 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
           )}
 
           {/* Traits */}
-          {traits && (
+          {traitsPercentages && (
             <View style={GStyles.marginTop(pTd(32))}>
-              <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Traits')}</TextL>
-              <View style={[GStyles.flexRow, styles.rowWrap]}>
-                <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Generation')}</TextM>
-                <View style={GStyles.flex1} />
-                <TextM style={[styles.leftTitle, FontStyles.font5]}>{'inscriptionName'}</TextM>
-              </View>
+              <TextL style={fonts.mediumFont}>{t('Traits')}</TextL>
+              {traitsPercentages.map((ele, idx) => (
+                <View key={idx} style={[GStyles.flexRow, GStyles.itemCenter, GStyles.marginTop(12)]}>
+                  <View>
+                    <TextM style={[styles.leftTitle, FontStyles.font3]}>{t(ele?.traitType)}</TextM>
+                    <TextM style={[styles.leftTitle, fonts.mediumFont]}>{ele?.value}</TextM>
+                  </View>
+                  <View style={GStyles.flex1} />
+                  <TextM style={FontStyles.font5}>{ele?.percent}</TextM>
+                </View>
+              ))}
             </View>
           )}
 
           {/* Generation info */}
           {generation && (
             <View style={GStyles.marginTop(pTd(32))}>
-              <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Inscription info')}</TextL>
+              <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Generation info')}</TextL>
               <View style={[GStyles.flexRow, styles.rowWrap]}>
                 <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Generation')}</TextM>
                 <View style={GStyles.flex1} />
-                <TextM style={[styles.leftTitle, FontStyles.font5]}>{'inscriptionName'}</TextM>
+                <TextM style={[styles.leftTitle, FontStyles.font5]}>{generation}</TextM>
               </View>
             </View>
           )}

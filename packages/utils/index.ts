@@ -187,7 +187,7 @@ export const formatChainInfoToShow = (
  * @param type
  * @returns
  */
-export const formatStr2EllipsisStr = (address = '', digit = 10, type: 'middle' | 'tail' = 'middle'): string => {
+export const formatStr2EllipsisStr = (address = '', digit = 8, type: 'middle' | 'tail' = 'middle'): string => {
   if (!address) return '';
 
   const len = address.length;

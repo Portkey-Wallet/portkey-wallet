@@ -8,12 +8,8 @@ import {
   fetchTokenList,
   fetchTokenPrices,
 } from './api';
-import {
-  AccountAssetItem,
-  AccountAssets,
-  TokenItemShowType,
-  IAccountCryptoBoxAssetItem,
-} from '@portkey-wallet/types/types-ca/token';
+import { TokenItemShowType, IAccountCryptoBoxAssetItem } from '@portkey-wallet/types/types-ca/token';
+import { IAssetItemType } from './type';
 import { ChainId } from '@portkey-wallet/types';
 import { NEW_CLIENT_MOCK_ELF_LIST, PAGE_SIZE_IN_NFT_ITEM } from '@portkey-wallet/constants/constants-ca/assets';
 import { ZERO } from '@portkey-wallet/constants/misc';
@@ -45,14 +41,14 @@ export type AssetsStateType = {
     isFetching: boolean;
     skipCount: number;
     maxResultCount: number;
-    accountAssetsList: AccountAssets;
+    accountAssetsList: IAssetItemType[];
     totalRecordCount: number;
   };
   accountAllAssets: {
     isFetching: boolean;
     skipCount: number;
     maxResultCount: number;
-    accountAssetsList: AccountAssetItem[];
+    accountAssetsList: IAssetItemType[];
     totalRecordCount: number;
   };
   accountCryptoBoxAssets: {
@@ -345,7 +341,7 @@ export const assetsSlice = createSlice({
       .addCase(fetchAssetAsync.fulfilled, (state, action) => {
         const { list, totalRecordCount, keyword } = action.payload;
 
-        state.accountAssets.accountAssetsList = list as AccountAssets;
+        state.accountAssets.accountAssetsList = list as IAssetItemType[];
         // state.accountAssets.accountAssetsList = [...state.accountAssets.accountAssetsList, ...list];
         state.accountAssets.skipCount = state.accountAssets.accountAssetsList.length;
         state.accountAssets.totalRecordCount = totalRecordCount;
@@ -353,7 +349,7 @@ export const assetsSlice = createSlice({
         if (!keyword) {
           state.accountAllAssets = {
             ...state.accountAllAssets,
-            accountAssetsList: list as AccountAssets,
+            accountAssetsList: list as IAssetItemType[],
             skipCount: state.accountAllAssets.accountAssetsList.length,
             totalRecordCount: totalRecordCount,
             isFetching: false,

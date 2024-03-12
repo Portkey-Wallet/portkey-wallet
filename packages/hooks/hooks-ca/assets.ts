@@ -12,7 +12,7 @@ export function useNFTItemDetail() {
   return useCallback(
     async ({ symbol, chainId }: { symbol: string; chainId: ChainId }) => {
       const caAddressInfo = caAddressInfos.filter(item => item.chainId === chainId);
-      await fetchNFTItem({ caAddressInfos: caAddressInfo, symbol });
+      return fetchNFTItem({ caAddressInfos: caAddressInfo, symbol });
     },
     [caAddressInfos],
   );

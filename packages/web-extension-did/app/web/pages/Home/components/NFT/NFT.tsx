@@ -114,7 +114,6 @@ export default function NFT() {
                         nav('/nft', {
                           state: {
                             ...nftItem,
-                            address: nftItem.tokenContractAddress,
                             collectionName: nft.collectionName,
                             collectionImageUrl: nft.imageUrl,
                           },

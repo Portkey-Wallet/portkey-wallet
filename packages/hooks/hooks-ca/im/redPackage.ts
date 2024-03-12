@@ -62,7 +62,7 @@ export const useSendRedPackage = () => {
   return useCallback(
     async (params: ISendRedPackageHookParams) => {
       const { channelId, totalAmount, image = '', memo, type, count, caContract, token } = params;
-      const { chainId, symbol, assetType = AssetType.ft, imageUrl, alias, tokenId } = token;
+      const { chainId, symbol, assetType = AssetType.ft, alias, tokenId } = token;
 
       const caHash = wallet.caHash;
       const caAddress = wallet[chainId]?.caAddress;

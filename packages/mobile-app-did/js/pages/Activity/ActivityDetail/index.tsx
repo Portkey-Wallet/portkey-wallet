@@ -232,6 +232,7 @@ const ActivityDetail = () => {
             <View style={styles.topWrap}>
               <NFTAvatar
                 disabled
+                badgeSizeType="small"
                 isSeed={activityItem?.nftInfo?.isSeed}
                 seedType={activityItem?.nftInfo?.seedType}
                 nftSize={pTd(64)}
@@ -379,7 +380,6 @@ export const styles = StyleSheet.create({
   },
   topWrap: {
     width: '100%',
-    marginTop: pTd(40),
     display: 'flex',
     flexDirection: 'row',
     minWidth: '100%',

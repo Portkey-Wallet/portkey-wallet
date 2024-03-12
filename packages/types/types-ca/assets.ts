@@ -54,7 +54,11 @@ export type NFTItemBaseType = {
   traits?: string;
   recommendedRefreshSeconds?: number;
   generation?: string;
-  traitsPercentages?: string;
+  traitsPercentages?: {
+    traitType: string;
+    value: string;
+    percent: string;
+  }[];
 };
 
 export type RateBaseType = {

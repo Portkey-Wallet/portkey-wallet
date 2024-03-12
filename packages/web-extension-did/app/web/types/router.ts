@@ -154,10 +154,8 @@ export type TNewChatLocationState = {
 
 // NFT
 export type TNFTLocationState = NFTItemBaseType & {
-  address: string;
   collectionName?: string;
   collectionImageUrl?: string;
-  balance: string;
 };
 
 // SetPin

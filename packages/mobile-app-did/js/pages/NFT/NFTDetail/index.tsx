@@ -151,7 +151,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
               </Touchable>
             </View>
             <View style={[GStyles.flexRow, styles.rowWrap]}>
-              <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('BlockChain')}</TextM>
+              <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Blockchain')}</TextM>
               <View style={GStyles.flex1} />
               <TextM style={[styles.leftTitle, FontStyles.font5]}>{formatChainInfoToShow(chainId)}</TextM>
             </View>
@@ -181,7 +181,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
                 </TextM>
               </View>
               <View style={[GStyles.flexRow, styles.rowWrap]}>
-                <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Token Symbol')}</TextM>
+                <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Token symbol')}</TextM>
                 <View style={GStyles.flex1} />
                 <TextM style={[styles.leftTitle, FontStyles.font5]}>{seedOwnedSymbol}</TextM>
               </View>

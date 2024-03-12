@@ -134,6 +134,7 @@
     "node": ">=15.9.0"
   },
   "scripts": {
+    "copy-lib": "bash ./scripts/copyBrowserImageCompression.sh",
     "handle-network": "yarn workspace @portkey-wallet/constants run handle-network",
     "lint": "eslint . --ext .tsx",
     "autod": "autod",
@@ -141,10 +142,10 @@
     "start:dev": "webpack-dev-server",
     "none": "webpack --mode none",
     "none:watch": "webpack watch --mode none",
-    "dev": "webpack --mode development",
-    "dev:watch": "webpack watch --mode development",
-    "pro": "rm -rf app/public && webpack --mode production",
-    "pro:watch": "webpack watch --mode production",
+    "dev": "webpack --mode development && yarn copy-lib",
+    "dev:watch": "webpack watch --mode development && yarn copy-lib",
+    "pro": "rm -rf app/public && webpack --mode production && yarn copy-lib",
+    "pro:watch": "webpack watch --mode production && yarn copy-lib",
     "prepare": "husky install"
   },
   "ci": {

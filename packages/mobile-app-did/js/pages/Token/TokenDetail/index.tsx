@@ -85,11 +85,10 @@ const TokenDetail: React.FC = () => {
   const fixedParamObj = useMemo(
     () => ({
       caAddressInfos: caAddressInfos.filter(ele => ele.chainId === tokenInfo.chainId),
-      caAddresses: [currentWallet.walletInfo[tokenInfo.chainId]?.caAddress || ''],
       symbol: tokenInfo.symbol,
       chainId: tokenInfo.chainId,
     }),
-    [caAddressInfos, currentWallet.walletInfo, tokenInfo.chainId, tokenInfo.symbol],
+    [caAddressInfos, tokenInfo.chainId, tokenInfo.symbol],
   );
   const pageInfoRef = useRef({
     ...INIT_PAGE_INFO,
@@ -133,7 +132,7 @@ const TokenDetail: React.FC = () => {
 
   // refresh token List
   useEffectOnce(() => {
-    dispatch(fetchTokenListAsync({ caAddresses: currentWallet.walletInfo.caAddressList || [], caAddressInfos }));
+    dispatch(fetchTokenListAsync({ caAddressInfos }));
   });
 
   const isBuyButtonShow = useMemo(

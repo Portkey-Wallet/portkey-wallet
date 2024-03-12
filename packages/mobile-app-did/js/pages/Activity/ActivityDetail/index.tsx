@@ -1,6 +1,6 @@
 import { ELF_DECIMAL, TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useCaAddresses, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWallet, useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
@@ -38,7 +38,12 @@ const ActivityDetail = () => {
   const isMainnet = useIsMainnet();
   const activityItemFromRoute = useRouterParams<ActivityItemType & IActivityApiParams>();
   const { transactionId = '', blockHash = '', isReceived: isReceivedParams, activityType } = activityItemFromRoute;
-  const caAddresses = useCaAddresses();
+  const caAddressesInfoList = useCaAddressInfoList();
+  const caAddressInfos = useMemo(() => {
+    const result = caAddressesInfoList.filter(item => item.chainId === activityItemFromRoute?.fromChainId);
+    return result?.length > 0 ? result : caAddressesInfoList;
+  }, [activityItemFromRoute?.fromChainId, caAddressesInfoList]);
+
   const isTokenHasPrice = useIsTokenHasPrice(activityItemFromRoute?.symbol);
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const { currentNetwork } = useCurrentWallet();
@@ -50,7 +55,7 @@ const ActivityDetail = () => {
 
   const getActivityDetail = useCallback(async () => {
     const params = {
-      caAddresses,
+      caAddressInfos,
       transactionId,
       blockHash,
       activityType,
@@ -71,7 +76,7 @@ const ActivityDetail = () => {
     } catch (error) {
       CommonToast.fail('This transfer is being processed on the blockchain. Please check the details later.');
     }
-  }, [activityType, blockHash, caAddresses, isReceivedParams, transactionId]);
+  }, [activityType, blockHash, caAddressInfos, isReceivedParams, transactionId]);
 
   useEffectOnce(() => {
     getActivityDetail();
@@ -266,7 +271,7 @@ const ActivityDetail = () => {
       <View style={[styles.flexSpaceBetween, styles.values1]}>
         <TextM style={styles.greenFontColor}>{t(status.text)}</TextM>
         <TextM style={styles.blackFontColor}>
-          {activityItem && activityItem.timestamp ? formatTransferTime(Number(activityItem?.timestamp) * 1000) : ''}
+          {activityItem && activityItem.timestamp ? formatTransferTime(activityItem?.timestamp) : ''}
         </TextM>
       </View>
       <View style={styles.card}>

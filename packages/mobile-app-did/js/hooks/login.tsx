@@ -611,7 +611,15 @@ export function useOnLogin(isLogin?: boolean) {
         }
       }
     },
-    [getChainInfo, getGuardiansInfo, getRegisterInfo, getVerifierServers, goGuardianApproval, goSelectVerifier],
+    [
+      dispatch,
+      getChainInfo,
+      getGuardiansInfo,
+      getRegisterInfo,
+      getVerifierServers,
+      goGuardianApproval,
+      goSelectVerifier,
+    ],
   );
 }
 

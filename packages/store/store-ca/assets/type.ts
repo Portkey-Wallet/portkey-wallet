@@ -6,18 +6,21 @@ export interface ITokenInfoType {
   decimals: number;
   balanceInUsd: string;
   tokenContractAddress: string;
+  imageUrl?: string;
 }
 
 export interface INftInfoType {
   imageUrl: string;
   alias: string;
   tokenId: string;
+  tokenName?: string;
   collectionName?: string;
   balance: string;
   chainId: string;
   decimals: number;
   seedType?: SeedTypeEnum;
   isSeed?: boolean;
+  tokenContractAddress?: string;
 }
 
 export interface IAssetItemType {

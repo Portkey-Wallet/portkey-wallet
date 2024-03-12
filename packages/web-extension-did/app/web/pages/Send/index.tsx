@@ -498,7 +498,7 @@ export default function Send() {
           </div>
         </div>
       ),
-      okText: 'I Know',
+      okText: 'Confirm',
       onOk: () => {
         modal.destroy();
         sendHandler();

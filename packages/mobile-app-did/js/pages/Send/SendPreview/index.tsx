@@ -22,7 +22,7 @@ import crossChainTransfer, {
   intervalCrossChainTransfer,
 } from 'utils/transfer/crossChainTransfer';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useCaAddresses, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { formatAmountShow, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
 import sameChainTransfer from 'utils/transfer/sameChainTransfer';
 import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
@@ -79,7 +79,6 @@ const SendPreview: React.FC = () => {
   const dispatch = useAppCommonDispatch();
   const pin = usePin();
   const chainInfo = useCurrentChain(assetInfo.chainId);
-  const caAddresses = useCaAddresses();
 
   const sendIMTransfer = useSendIMTransfer();
   const jumpToChatDetails = useJumpToChatDetails();
@@ -212,7 +211,7 @@ const SendPreview: React.FC = () => {
       dispatch(clearNftCollection());
       dispatch(fetchNFTCollectionsAsync({ caAddressInfos }));
     } else {
-      dispatch(fetchTokenListAsync({ caAddresses: caAddresses, caAddressInfos }));
+      dispatch(fetchTokenListAsync({ caAddressInfos }));
     }
     if (successNavigateName) {
       navigationService.navigate(successNavigateName);
@@ -224,7 +223,6 @@ const SendPreview: React.FC = () => {
     amount,
     assetInfo,
     caAddressInfos,
-    caAddresses,
     chainInfo,
     checkTransferLimitWithJump,
     crossDefaultFee,
@@ -441,7 +439,7 @@ const SendPreview: React.FC = () => {
             <TextL numberOfLines={1} style={[styles.nftTitle, fonts.mediumFont]}>
               {`${assetInfo.alias} #${assetInfo?.tokenId}  `}
             </TextL>
-            <TextS style={[FontStyles.font3]}>{`Amount：${sendNumber}`}</TextS>
+            <TextS style={[FontStyles.font3]}>{`Amount：${formatAmountShow(sendNumber)}`}</TextS>
           </View>
         </View>
       ) : (

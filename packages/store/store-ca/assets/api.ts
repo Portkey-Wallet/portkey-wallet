@@ -1,8 +1,9 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { IAssetItemType } from './type';
-import { NFT_SMALL_SIZE, NFT_MIDDLE_SIZE } from '@portkey-wallet/constants/constants-ca/assets';
+import { NFT_SMALL_SIZE, NFT_MIDDLE_SIZE, NFT_LARGE_SIZE } from '@portkey-wallet/constants/constants-ca/assets';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
+import { NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
 
 type ITokenItemResponse = Omit<TokenItemShowType, 'name' | 'address'>;
 
@@ -104,7 +105,7 @@ export function fetchNFTList({
   caAddressInfos: { chainId: string; caAddress: string }[];
   skipCount: number;
   maxResultCount: number;
-}): Promise<{ data: any[]; totalRecordCount: number }> {
+}): Promise<{ data: NFTItemBaseType[]; totalRecordCount: number }> {
   return request.assets.fetchAccountNftCollectionItemList({
     params: { caAddressInfos, symbol, skipCount, maxResultCount, width: NFT_MIDDLE_SIZE, height: -1 },
   });
@@ -116,9 +117,9 @@ export function fetchNFTItem({
 }: {
   symbol: string;
   caAddressInfos: { chainId: string; caAddress: string }[];
-}): Promise<{ data: any }> {
+}): Promise<{ data: NFTItemBaseType }> {
   return request.assets.fetchAccountNftCollectionItem({
-    params: { caAddressInfos, symbol, width: NFT_MIDDLE_SIZE, height: -1 },
+    params: { caAddressInfos, symbol, width: NFT_LARGE_SIZE, height: -1 },
   });
 }
 

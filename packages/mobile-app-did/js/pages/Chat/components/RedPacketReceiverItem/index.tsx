@@ -1,5 +1,5 @@
 import { RedPackageGrabInfoItem } from '@portkey-wallet/im';
-import { divDecimalsStr } from '@portkey-wallet/utils/converter';
+import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
@@ -10,7 +10,7 @@ import Svg from 'components/Svg';
 import { getEllipsisTokenShow } from 'pages/Chat/utils/format';
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { formatTransferTime } from 'utils';
+import { formatTransferTime } from '@portkey-wallet/utils/time';
 import { pTd } from 'utils/unit';
 
 interface IReceiverItemProps {
@@ -46,7 +46,7 @@ const RedPacketReceiverItem: React.FC<IReceiverItemProps> = props => {
 
         <View style={itemStyle.balanceWrap}>
           <TextL style={itemStyle.amount} numberOfLines={1} ellipsizeMode={'tail'}>
-            {getEllipsisTokenShow(divDecimalsStr(item.amount, decimals), symbol)}
+            {getEllipsisTokenShow(formatAmountShow(divDecimals(item.amount, decimals)), symbol)}
           </TextL>
           <View style={itemStyle.blank} />
           {item.isLuckyKing || isLuckyKing ? (

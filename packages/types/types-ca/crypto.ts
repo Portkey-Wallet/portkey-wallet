@@ -1,5 +1,6 @@
 import { ChainId } from '../index';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
+import { SeedTypeEnum } from './assets';
 
 export interface ICryptoBoxAssetItemType {
   chainId: ChainId;
@@ -10,4 +11,6 @@ export interface ICryptoBoxAssetItemType {
   alias?: string;
   tokenId?: string;
   assetType?: AssetType;
+  isSeed?: boolean;
+  seedType?: SeedTypeEnum;
 }

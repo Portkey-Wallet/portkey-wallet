@@ -21,6 +21,9 @@ import Touchable from 'components/Touchable';
 import { FontStyles } from 'assets/theme/styles';
 import fonts from 'assets/theme/fonts';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
+import { useAfterTransitionEffectOnce } from 'hooks/afterTransition';
+import ReceiveTip, { TipView } from './components/ReceiveTip';
+import { useSideChainTokenReceiveTipSetting } from '@portkey-wallet/hooks/hooks-ca/misc';
 
 export default function Receive() {
   const { t } = useLanguage();
@@ -37,6 +40,10 @@ export default function Receive() {
   const copyId = useCallback(() => copyText(`ELF_${currentCaAddress}_${chainId}`), [chainId, currentCaAddress]);
 
   const isMainChain = useMemo(() => chainId === DefaultChainId, [chainId]);
+  const { showSideChainTokenReceiveTip } = useSideChainTokenReceiveTipSetting();
+  useAfterTransitionEffectOnce(() => {
+    if (!isMainChain && showSideChainTokenReceiveTip) ReceiveTip.showReceiveTip({ chainId });
+  });
 
   return (
     <PageContainer
@@ -81,11 +88,13 @@ export default function Receive() {
           <Svg icon="warning1" size={pTd(16)} />
           <TextM style={[GStyles.marginLeft(pTd(8)), FontStyles.font3]}>Receive from exchange account?</TextM>
         </View>
-        <TextS style={[styles.warningContent, FontStyles.font3]}>
-          {isMainChain
-            ? `Please note that your Portkey account can only receive assets from certain exchanges, like Binance, Upbit, OKX, and gate.io, and you need to ensure that "AELF" is selected as the withdrawal network.`
-            : `Please note that your SideChain address may not be able to receive assets directly from exchanges. You can send your assets in exchanges to your MainChain address before transferring them to the SideChain.`}
-        </TextS>
+        {isMainChain ? (
+          <TextS style={[styles.warningContent, FontStyles.font3]}>
+            {`Please note that your Portkey account can only receive assets from certain exchanges, like Binance, Upbit, OKX, and gate.io, and you need to ensure that "AELF" is selected as the withdrawal network.`}
+          </TextS>
+        ) : (
+          <TipView textStyle={FontStyles.size12} chainId={chainId} style={styles.warningContent} />
+        )}
       </View>
     </PageContainer>
   );
@@ -141,6 +150,7 @@ const styles = StyleSheet.create({
     marginTop: pTd(24),
     padding: pTd(12),
     borderRadius: pTd(6),
+    marginBottom: pTd(24),
   },
   warningContent: {
     marginTop: pTd(4),

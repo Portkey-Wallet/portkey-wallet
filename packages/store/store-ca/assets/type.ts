@@ -1,19 +1,26 @@
 import { ChainId } from '@portkey-wallet/types';
+import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
 
 export interface ITokenInfoType {
   balance: string;
   decimals: number;
   balanceInUsd: string;
   tokenContractAddress: string;
+  imageUrl?: string;
 }
 
 export interface INftInfoType {
   imageUrl: string;
   alias: string;
   tokenId: string;
-  collectionName: string;
+  tokenName?: string;
+  collectionName?: string;
   balance: string;
   chainId: string;
+  decimals: number;
+  seedType?: SeedTypeEnum;
+  isSeed?: boolean;
+  tokenContractAddress?: string;
 }
 
 export interface IAssetItemType {

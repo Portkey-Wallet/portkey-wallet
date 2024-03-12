@@ -50,7 +50,6 @@ import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useGetTransferFee } from 'hooks/transfer';
 
 const SendHome: React.FC = () => {
-  const IM = useRoute<RouteProp<{ params: IToSendHomeParamsType }>>();
   const {
     params: { sendType = 'token', toInfo, assetInfo, imTransferInfo },
   } = useRoute<RouteProp<{ params: IToSendHomeParamsType }>>();
@@ -58,8 +57,6 @@ const SendHome: React.FC = () => {
   useFetchTxFee();
   const isValidChainId = useIsValidSuffix();
   const defaultToken = useDefaultToken();
-
-  console.log('SendHomeSendHomeSendHome', IM);
 
   const wallet = useCurrentWalletInfo();
   const chainInfo = useCurrentChain(assetInfo?.chainId);
@@ -557,7 +554,7 @@ const SendHome: React.FC = () => {
             <NFTInfo nftItem={assetInfo} />
           </View>
           <View style={styles.group}>
-            <AmountNFT sendNumber={sendNumber} setSendNumber={setSendNumber} />
+            <AmountNFT sendNumber={sendNumber} setSendNumber={setSendNumber} assetInfo={assetInfo} />
           </View>
         </>
       )}

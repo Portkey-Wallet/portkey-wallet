@@ -52,6 +52,7 @@ export const FontStyles = StyleSheet.create({
   weight500: fonts.mediumFont,
   size16: { fontSize: pTd(16) },
   size14: { fontSize: pTd(14) },
+  size12: { fontSize: pTd(12) },
   size18: { fontSize: pTd(18) },
 });
 

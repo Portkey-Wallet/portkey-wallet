@@ -34,6 +34,7 @@ import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/u
 import { InsufficientTransactionFee } from 'hooks/useCalculateRedPacketFee';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
+import NFTAvatar from 'components/NFTAvatar';
 
 export type PaymentAssetInfo = {
   symbol: string;
@@ -231,14 +232,26 @@ const PaymentModal = ({
   const tokenRowComponent = useMemo(() => {
     return (
       <View style={[GStyles.flex1, GStyles.flexRow, styles.rowCenter, disableStyle]}>
-        <CommonAvatar
-          hasBorder
-          shapeType={assetInfo.assetType === AssetType.nft ? 'square' : 'circular'}
-          style={styles.avatar}
-          title={assetInfo.symbol}
-          avatarSize={pTd(24)}
-          imageUrl={assetInfo?.imageUrl}
-        />
+        {assetInfo.assetType === AssetType.nft ? (
+          <NFTAvatar
+            disabled
+            style={[GStyles.marginRight(8), styles.nftAvatar]}
+            nftSize={pTd(24)}
+            data={{
+              imageUrl: assetInfo.imageUrl || '',
+              alias: assetInfo.alias,
+            }}
+          />
+        ) : (
+          <CommonAvatar
+            hasBorder
+            shapeType={'circular'}
+            style={styles.avatar}
+            title={assetInfo.symbol}
+            avatarSize={pTd(24)}
+            imageUrl={assetInfo?.imageUrl}
+          />
+        )}
         <View
           style={[
             GStyles.flexRow,
@@ -281,7 +294,7 @@ const PaymentModal = ({
       return (
         <Text style={styles.marginTop4}>
           <TextS style={FontStyles.font3}>
-            {formatAmountShow(divDecimalsStr(currentNft?.balance, currentNft?.decimals), '')}
+            {formatAmountShow(divDecimalsStr(currentNft?.balance, currentNft?.decimals))}
           </TextS>
         </Text>
       );
@@ -338,12 +351,16 @@ const PaymentModal = ({
           )}
           {assetInfo.assetType === AssetType.nft && (
             <View style={[GStyles.flexRow, GStyles.center, GStyles.marginTop(pTd(4))]}>
-              <CommonAvatar
-                shapeType="square"
-                avatarSize={pTd(24)}
-                imageUrl={assetInfo.imageUrl}
+              <NFTAvatar
+                disabled
+                nftSize={pTd(24)}
                 style={styles.nftAvatar}
+                data={{
+                  imageUrl: assetInfo.imageUrl || '',
+                  alias: assetInfo.alias,
+                }}
               />
+
               <TextM
                 numberOfLines={1}
                 style={[

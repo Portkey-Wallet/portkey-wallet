@@ -39,7 +39,7 @@ export default function NFTInfo({
         isSeed={nftItem.isSeed}
         seedType={nftItem.seedType}
         nftSize={pTd(56)}
-        badgeSizeType="normal"
+        badgeSizeType="small"
         data={nftItem}
         style={styles.avatar}
       />

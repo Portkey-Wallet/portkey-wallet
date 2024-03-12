@@ -75,8 +75,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
         symbol,
         chainId,
       });
-
-      setNftDetailInfo(pre => ({ ...pre, result }));
+      setNftDetailInfo(pre => ({ ...pre, ...result }));
     } catch (error) {
       console.log('fetchDetail error', error);
     }

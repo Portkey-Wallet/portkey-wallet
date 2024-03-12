@@ -92,9 +92,9 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
 
   useEffect(
     () => () => {
-      if (timerRef.current && nftDetailInfo.traits) clearInterval(timerRef.current);
+      if (timerRef.current && traitsPercentages) clearInterval(timerRef.current);
     },
-    [nftDetailInfo.traits],
+    [nftDetailInfo.traits, traitsPercentages],
   );
 
   return (
@@ -112,7 +112,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
             badgeSizeType="large"
             data={{
               alias: collectionInfo?.collectionName,
-              imageUrl: nftDetailInfo?.imageUrl,
+              imageUrl: collectionInfo?.imageUrl || '',
             }}
             style={styles.collectionAvatar}
           />

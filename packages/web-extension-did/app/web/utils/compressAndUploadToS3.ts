@@ -9,6 +9,7 @@ const uploadImageToS3 = async (paramFile: RcFile | File, isCompress = false) => 
       maxSizeMB: 10,
       maxWidthOrHeight: 200,
       useWebWorker: true,
+      libURL: `/js/browser-image-compression.js`,
     };
 
     // get compression image sources

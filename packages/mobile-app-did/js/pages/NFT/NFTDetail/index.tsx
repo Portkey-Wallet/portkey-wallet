@@ -63,11 +63,10 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
     limitPerMint,
     expires,
     seedOwnedSymbol,
-    traits,
     recommendedRefreshSeconds,
     generation,
-    traitsPercentages,
     collectionInfo,
+    traitsPercentages,
   } = nftDetailInfo;
 
   const fetchDetail = useLockCallback(async () => {
@@ -76,26 +75,25 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
         symbol,
         chainId,
       });
-
-      setNftDetailInfo(pre => ({ ...pre, result }));
+      setNftDetailInfo(pre => ({ ...pre, ...result }));
     } catch (error) {
       console.log('fetchDetail error', error);
     }
   }, [fetchNftDetail, chainId, symbol]);
 
   useEffectOnce(() => {
-    if (traits) {
+    if (traitsPercentages && recommendedRefreshSeconds) {
       timerRef.current = setInterval(async () => {
         await fetchDetail();
-      }, (recommendedRefreshSeconds ?? 10) * 1000);
+      }, recommendedRefreshSeconds * 1000);
     }
   });
 
   useEffect(
     () => () => {
-      if (timerRef.current && nftDetailInfo.traits) clearInterval(timerRef.current);
+      if (timerRef.current && traitsPercentages) clearInterval(timerRef.current);
     },
-    [nftDetailInfo.traits],
+    [nftDetailInfo.traits, traitsPercentages],
   );
 
   return (
@@ -113,7 +111,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
             badgeSizeType="large"
             data={{
               alias: collectionInfo?.collectionName,
-              imageUrl: nftDetailInfo?.imageUrl,
+              imageUrl: collectionInfo?.imageUrl || '',
             }}
             style={styles.collectionAvatar}
           />
@@ -137,6 +135,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
         />
 
         <View style={styles.infoWrap}>
+          {/* Basic info */}
           <View>
             <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Basic info')}</TextL>
             <View style={[GStyles.flexRow, styles.rowWrap]}>
@@ -152,7 +151,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
               </Touchable>
             </View>
             <View style={[GStyles.flexRow, styles.rowWrap]}>
-              <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('BlockChain')}</TextM>
+              <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Blockchain')}</TextM>
               <View style={GStyles.flex1} />
               <TextM style={[styles.leftTitle, FontStyles.font5]}>{formatChainInfoToShow(chainId)}</TextM>
             </View>
@@ -172,7 +171,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
 
           {/* Token Creation via This Seed */}
           {isSeed && (
-            <View style={GStyles.marginTop(pTd(32))}>
+            <View style={GStyles.marginTop(pTd(24))}>
               <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Token Creation via This Seed')}</TextL>
               <View style={[GStyles.flexRow, styles.rowWrap]}>
                 <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Type')}</TextM>
@@ -182,7 +181,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
                 </TextM>
               </View>
               <View style={[GStyles.flexRow, styles.rowWrap]}>
-                <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Token Symbol')}</TextM>
+                <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Token symbol')}</TextM>
                 <View style={GStyles.flex1} />
                 <TextM style={[styles.leftTitle, FontStyles.font5]}>{seedOwnedSymbol}</TextM>
               </View>
@@ -195,32 +194,37 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
           )}
 
           {/* Traits */}
-          {traits && (
-            <View style={GStyles.marginTop(pTd(32))}>
-              <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Traits')}</TextL>
-              <View style={[GStyles.flexRow, styles.rowWrap]}>
-                <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Generation')}</TextM>
-                <View style={GStyles.flex1} />
-                <TextM style={[styles.leftTitle, FontStyles.font5]}>{'inscriptionName'}</TextM>
-              </View>
+          {traitsPercentages && (
+            <View style={GStyles.marginTop(pTd(24))}>
+              <TextL style={fonts.mediumFont}>{t('Traits')}</TextL>
+              {traitsPercentages.map((ele, idx) => (
+                <View key={idx} style={[GStyles.flexRow, GStyles.itemCenter, GStyles.marginTop(12)]}>
+                  <View>
+                    <TextM style={[styles.leftTitle, FontStyles.font3]}>{t(ele?.traitType)}</TextM>
+                    <TextM style={[styles.leftTitle, fonts.mediumFont]}>{ele?.value}</TextM>
+                  </View>
+                  <View style={GStyles.flex1} />
+                  <TextM style={FontStyles.font5}>{ele?.percent}</TextM>
+                </View>
+              ))}
             </View>
           )}
 
           {/* Generation info */}
           {generation && (
-            <View style={GStyles.marginTop(pTd(32))}>
-              <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Inscription info')}</TextL>
+            <View style={GStyles.marginTop(pTd(24))}>
+              <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Generation info')}</TextL>
               <View style={[GStyles.flexRow, styles.rowWrap]}>
                 <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Generation')}</TextM>
                 <View style={GStyles.flex1} />
-                <TextM style={[styles.leftTitle, FontStyles.font5]}>{'inscriptionName'}</TextM>
+                <TextM style={[styles.leftTitle, FontStyles.font5]}>{generation}</TextM>
               </View>
             </View>
           )}
 
           {/* Inscription info */}
           {inscriptionName && (
-            <View style={GStyles.marginTop(pTd(32))}>
+            <View style={GStyles.marginTop(pTd(24))}>
               <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Inscription info')}</TextL>
               <View style={[GStyles.flexRow, styles.rowWrap]}>
                 <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Inscription Name')}</TextM>

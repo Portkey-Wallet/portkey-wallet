@@ -23235,11 +23235,12 @@ progress@2.0.3, progress@^2.0.0, progress@^2.0.3:
   integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
 
 progressbar.js@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/progressbar.js/-/progressbar.js-1.1.0.tgz#300f99be40ba93fb0867f91dff01771236cade70"
-  integrity sha512-K68/xcyXKo2I6T3PfIkXrRaycxROmWeU4bugb49iulWR25cU94PM0cfZ47S0jDhG5K3vPhZwCOy1fgb5Pgh6UQ==
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/progressbar.js/-/progressbar.js-1.1.1.tgz#8c7dc52ce4cc8845c4f3055da75afc366a0543e9"
+  integrity sha512-FBsw3BKsUbb+hNeYfiP3xzvAAQrPi4DnGDw66bCmfuRCDLcslxyxv2GyYUdBSKFGSIBa73CUP5WMcl6F8AAXlw==
   dependencies:
-    shifty "^2.1.2"
+    lodash.merge "^4.6.2"
+    shifty "^2.8.3"
 
 promise-all-reject-late@^1.0.0:
   version "1.0.1"
@@ -26307,7 +26308,7 @@ shell-quote@^1.6.1, shell-quote@^1.7.3:
   resolved "https://registry.npmmirror.com/shell-quote/-/shell-quote-1.7.3.tgz#aa40edac170445b9a431e17bb62c0b881b9c4123"
   integrity sha512-Vpfqwm4EnqGdlsBFNmHhxhElJYrdfcxPThu+ryKS5J8L/fhAwLazFZtq+S+TWZ9ANj2piSQLGj6NQg+lKPmxrw==
 
-shifty@^2.1.2:
+shifty@^2.8.3:
   version "2.20.4"
   resolved "https://registry.yarnpkg.com/shifty/-/shifty-2.20.4.tgz#fb2ec81697b808b250024fa9548b5b93fadd78cf"
   integrity sha512-4Y0qRkg8ME5XN8yGNAwmFOmsIURGFKT9UQfNL6DDJQErYtN5HsjyoBuJn41ZQfTkuu2rIbRMn9qazjKsDpO2TA==

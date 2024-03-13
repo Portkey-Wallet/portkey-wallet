@@ -24,8 +24,8 @@ export default function useInit() {
   const { walletInfo } = useCurrentWallet();
   const init = useCallback(async () => {
     const { privateKey } = await getSeed();
-
-    const account = getWallet(privateKey || '');
+    if (!privateKey) return;
+    const account = getWallet(privateKey);
     if (!account || !walletInfo.caHash) return;
 
     try {

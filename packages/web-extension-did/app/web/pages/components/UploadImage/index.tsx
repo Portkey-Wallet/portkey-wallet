@@ -32,6 +32,7 @@ export default function UploadImage({
               maxSizeMB: 10,
               maxWidthOrHeight: 200,
               useWebWorker: true,
+              libURL: `/js/browser-image-compression.js`,
             };
 
             // get compression image sources

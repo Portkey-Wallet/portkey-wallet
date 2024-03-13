@@ -2,7 +2,7 @@ import PageContainer from 'components/PageContainer';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import CommonInput from 'components/CommonInput';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import gStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -12,7 +12,7 @@ import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenMana
 import useDebounce from 'hooks/useDebounce';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { request } from '@portkey-wallet/api/api-did';
-import { useCaAddresses, useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import Loading from 'components/Loading';
 import FilterTokenSection from '../components/FilterToken';
@@ -21,6 +21,7 @@ import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import { useFocusEffect } from '@react-navigation/native';
+import Touchable from 'components/Touchable';
 
 interface ManageTokenListProps {
   route?: any;
@@ -34,7 +35,6 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   const chainIdList = useChainIdList();
 
   const dispatch = useAppCommonDispatch();
-  const caAddressArray = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
 
   const { tokenDataShowInMarket } = useAppCASelector(state => state.tokenManagement);
@@ -81,7 +81,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
           },
         });
         timerRef.current = setTimeout(async () => {
-          dispatch(fetchTokenListAsync({ caAddresses: caAddressArray, caAddressInfos }));
+          dispatch(fetchTokenListAsync({ caAddressInfos }));
           if (debounceWord) {
             await fetchSearchedTokenList();
           } else {
@@ -95,7 +95,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
         CommonToast.failError(err);
       }
     },
-    [caAddressArray, caAddressInfos, chainIdList, debounceWord, dispatch, fetchSearchedTokenList],
+    [caAddressInfos, chainIdList, debounceWord, dispatch, fetchSearchedTokenList],
   );
 
   useFocusEffect(
@@ -131,13 +131,13 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
 
   const RightDom = useMemo(
     () => (
-      <TouchableOpacity
+      <Touchable
         style={pageStyles.rightIconStyle}
         onPress={() => {
           navigationService.navigate('CustomToken');
         }}>
         <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
-      </TouchableOpacity>
+      </Touchable>
     ),
     [],
   );

@@ -2,12 +2,13 @@ import { defaultColors } from 'assets/theme';
 import { FontStyles } from 'assets/theme/styles';
 import { TextS } from 'components/CommonText';
 import React, { memo } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { IRecordsItemType } from '@portkey-wallet/types/types-ca/discover';
 import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import Touchable from 'components/Touchable';
 
 type RecordListItemType = {
   item: IRecordsItemType;
@@ -19,7 +20,7 @@ const SearchRecordItem: React.FC<RecordListItemType> = props => {
   const { getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
 
   return (
-    <TouchableOpacity style={itemStyle.wrap} onPress={() => onPress?.()}>
+    <Touchable style={itemStyle.wrap} onPress={() => onPress?.()}>
       <DiscoverWebsiteImage imageUrl={getCmsWebsiteInfoImageUrl(item?.url || '')} />
       <View style={itemStyle.right}>
         <View style={itemStyle.infoWrap}>
@@ -32,7 +33,7 @@ const SearchRecordItem: React.FC<RecordListItemType> = props => {
           </TextS>
         </View>
       </View>
-    </TouchableOpacity>
+    </Touchable>
   );
 };
 

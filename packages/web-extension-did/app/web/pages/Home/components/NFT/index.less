@@ -1,4 +1,5 @@
 @import '../../../../assets/theme/color.less';
+@import '../../../../assets/theme/constants.less';
 
 .tab-nft {
   .empty-text {
@@ -17,6 +18,7 @@
         .adm-list-item-content {
           padding: 0;
           .adm-list-item-content-main {
+            overflow: hidden;
             padding: 0 0 12px;
           }
         }
@@ -32,6 +34,9 @@
       .@{app-prefix}-collapse-header {
         align-items: center;
         padding: 25px 16px;
+        .@{app-prefix}-collapse-header-text {
+          overflow: hidden;
+        }
         .@{app-prefix}-collapse-arrow {
           margin-top: 6px;
           margin-right: 8px;
@@ -49,20 +54,16 @@
         }
       }
     }
-    .protocol {
-      display: flex;
-      align-items: center;
+    .nft-collection {
+      gap: 12px;
       .avatar {
-        display: flex;
-        align-items: center;
-        justify-content: center;
         width: 36px;
         height: 36px;
+        flex-shrink: 0;
         border-radius: 6px;
         background-color: @bg-15;
         font-size: 20px;
         color: @font-12;
-        margin-right: 12px;
         img {
           width: 100%;
           height: 100%;
@@ -71,19 +72,20 @@
         }
       }
       .info {
-        display: flex;
         flex: 1;
-        flex-direction: column;
         gap: 4px;
-        .alias {
-          line-height: 22px;
-          font-size: 16px;
-          color: @font-11;
-          overflow: hidden;
-          -webkit-box-orient: vertical;
-          -webkit-line-clamp: 1;
-          text-overflow: ellipsis;
-          max-width: 217px;
+        overflow: hidden;
+        .info-top {
+          gap: 2px;
+          .alias {
+            flex: 1;
+            line-height: 22px;
+            font-size: 16px;
+            color: @font-11;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
         }
         .network {
           line-height: 20px;
@@ -91,69 +93,72 @@
           color: @font-13;
         }
       }
-      .amount {
-        align-self: flex-start;
-        max-width: 80px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
     }
-    .list {
+    .nft-item-list {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       padding: 0 0 24px 40px;
-      .item {
+      .nft-item {
+        position: relative;
         width: 96px;
         height: 96px;
         border-radius: 6px;
         background-color: @bg-13;
         background-position: center;
         background-size: cover;
-        .mask {
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          padding: 9px 8px 12px;
-          height: 100%;
-          .alias {
-            overflow: hidden;
-            -webkit-box-orient: vertical;
-            -webkit-line-clamp: 2;
-            text-overflow: ellipsis;
-            height: 40px;
-            line-height: 20px;
-            font-size: 14px;
-            color: @font-11;
-          }
+        .tokentagmedium-icon,
+        .nfttagmedium-icon {
+          position: absolute;
+          width: 32px;
+          height: 16px;
+          top: 0;
+          right: 6px;
         }
-      }
-      .item.item-img {
         .mask {
-          justify-content: flex-end;
-          margin-top: 60px;
-          padding: 9px 8px 4px;
-          height: 60px;
+          margin-top: 50%;
+          padding: 10px 8px 4px;
+          height: 50%;
           gap: 2px;
+          line-height: 16px;
+          font-size: 12px;
           background: linear-gradient(@bg-28, @bg-29);
           border-radius: 6px;
           .alias {
-            -webkit-line-clamp: 1;
-            height: 16px;
-            line-height: 16px;
-            font-size: 12px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             color: @font-5;
           }
           .token-id {
-            height: 16px;
-            line-height: 16px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             opacity: 0.8;
-            font-size: 12px;
             color: @font-5;
           }
         }
+        &.nft-item-no-img {
+          .mask {
+            margin-top: 0;
+            justify-content: space-between;
+            height: 100%;
+            padding: 12px 8px;
+            background: none;
+            .alias {
+              font-size: 14px;
+              line-height: 20px;
+              color: @font-11;
+              .text-overflow(2);
+            }
+            .token-id {
+              opacity: 1;
+              color: @font-13;
+            }
+          }
+        }
       }
+
       .load-more {
         cursor: pointer;
         width: calc(100% + 40px);
@@ -184,12 +189,15 @@
         }
       }
       
-      .list{
+      .nft-item-list{
         gap: 18px;
         padding: 0 24px 24px 48px;
-        .item{
+        .nft-item{
           width: 120px;
           height: 120px;
+          .mask {
+            padding: 18px 8px 8px;
+          }
         }
       }
     }

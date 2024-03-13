@@ -2,8 +2,7 @@ import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
 import PageContainer from 'components/PageContainer';
-import { TouchableOpacity } from 'react-native';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState, Fragment } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca/index';
 import { pTd } from 'utils/unit';
@@ -12,7 +11,7 @@ import { useLanguage } from 'i18n/hooks';
 import { FontStyles } from 'assets/theme/styles';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import Card from './components/Card';
-import { useAppCommonDispatch } from '@portkey-wallet/hooks';
+import { useAppCommonDispatch, useLatestRef } from '@portkey-wallet/hooks';
 import {
   changeDrawerOpenStatus,
   closeAllTabs,
@@ -58,6 +57,8 @@ const TabsDrawerContent: React.FC = () => {
 
   const checkAndUpDateRecordItemName = useCheckAndUpDateRecordItemName();
   const checkAndUpDateTabItemName = useCheckAndUpDateTabItemName();
+  const latestCheckAndUpDateRecordItemName = useLatestRef(checkAndUpDateRecordItemName);
+  const latestCheckAndUpDateTabItemName = useLatestRef(checkAndUpDateTabItemName);
   const { getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
 
   const tabRef = useRef<IBrowserTab | null>(null);
@@ -105,9 +106,9 @@ const TabsDrawerContent: React.FC = () => {
     if (activeTabId)
       return (
         <View style={rightDomStyle.iconGroupWrap}>
-          <TouchableOpacity style={rightDomStyle.iconWrap} onPress={() => showWalletInfo({ tabInfo: activeItem })}>
+          <Touchable style={rightDomStyle.iconWrap} onPress={() => showWalletInfo({ tabInfo: activeItem })}>
             <Svg icon="wallet-white" size={20} />
-          </TouchableOpacity>
+          </Touchable>
         </View>
       );
     return null;
@@ -212,8 +213,6 @@ const TabsDrawerContent: React.FC = () => {
       const canGoForward: boolean = tabStateMap?.canGoForward?.[String(ele?.id)];
 
       const onNavigationStateChange = (navState: any) => {
-        console.log('onNavigationStateChange');
-
         if (ele.id === activeTabId) {
           setTabStateMap(pre => ({
             canGoBack: {
@@ -229,7 +228,7 @@ const TabsDrawerContent: React.FC = () => {
       };
 
       return (
-        <>
+        <Fragment key={ele.id}>
           <BrowserTab
             key={ele.id}
             id={ele.id}
@@ -238,20 +237,20 @@ const TabsDrawerContent: React.FC = () => {
             autoApprove={autoApprove}
             onLoadEnd={nativeEvent => {
               if (autoApprove) dispatch(removeAutoApproveItem(ele.id));
-              checkAndUpDateRecordItemName({ id: ele.id, name: nativeEvent.title });
-              checkAndUpDateTabItemName({ id: ele.id, name: nativeEvent.title });
+              latestCheckAndUpDateRecordItemName.current({ id: ele.id, name: nativeEvent.title });
+              latestCheckAndUpDateTabItemName.current({ id: ele.id, name: nativeEvent.title });
             }}
             onNavigationStateChange={onNavigationStateChange}
           />
           {!isHidden && (
             <View style={handleButtonStyle.wrap}>
-              <TouchableOpacity
+              <Touchable
                 disabled={!canGoBack}
                 onPress={() => clickBottomActionBtn('back')}
                 style={rightDomStyle.iconWrap}>
                 <Svg icon="left-arrow" size={pTd(20)} color={canGoBack ? defaultColors.font5 : defaultColors.bg16} />
-              </TouchableOpacity>
-              <TouchableOpacity
+              </Touchable>
+              <Touchable
                 disabled={!canGoForward}
                 onPress={() => clickBottomActionBtn('forward')}
                 style={rightDomStyle.iconWrap}>
@@ -260,29 +259,29 @@ const TabsDrawerContent: React.FC = () => {
                   size={pTd(24)}
                   color={canGoForward ? defaultColors.font5 : defaultColors.bg16}
                 />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => clickBottomActionBtn('showTab')} style={rightDomStyle.iconWrap}>
+              </Touchable>
+              <Touchable onPress={() => clickBottomActionBtn('showTab')} style={rightDomStyle.iconWrap}>
                 <TextM style={styles.switchButton}>{tabs?.length || 0}</TextM>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => clickBottomActionBtn('home')} style={rightDomStyle.iconWrap}>
+              </Touchable>
+              <Touchable onPress={() => clickBottomActionBtn('home')} style={rightDomStyle.iconWrap}>
                 <Svg icon="homepage" size={pTd(24)} color={defaultColors.font5} />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => clickBottomActionBtn('more')} style={rightDomStyle.iconWrap}>
+              </Touchable>
+              <Touchable onPress={() => clickBottomActionBtn('more')} style={rightDomStyle.iconWrap}>
                 <Svg icon="more" size={20} color={defaultColors.font5} />
-              </TouchableOpacity>
+              </Touchable>
             </View>
           )}
-        </>
+        </Fragment>
       );
     });
   }, [
     activeTabId,
     autoApproveMap,
-    checkAndUpDateRecordItemName,
-    checkAndUpDateTabItemName,
     clickBottomActionBtn,
     dispatch,
     initializedList,
+    latestCheckAndUpDateRecordItemName,
+    latestCheckAndUpDateTabItemName,
     tabStateMap?.canGoBack,
     tabStateMap?.canGoForward,
     tabs,
@@ -300,18 +299,18 @@ const TabsDrawerContent: React.FC = () => {
           </View>
         </ScrollView>
         <View style={handleButtonStyle.container}>
-          <TouchableOpacity style={handleButtonStyle.handleItem} onPress={closeAll}>
+          <Touchable style={handleButtonStyle.handleItem} onPress={closeAll}>
             <TextM style={[FontStyles.font4, tabs?.length === 0 && handleButtonStyle.noTap]}>{t('Close All')}</TextM>
-          </TouchableOpacity>
+          </Touchable>
 
-          <TouchableOpacity
+          <Touchable
             style={[handleButtonStyle.handleItem, handleButtonStyle.add]}
             onPress={() => dispatch(changeDrawerOpenStatus(false))}>
             <Svg icon="add-blue" size={pTd(28)} />
-          </TouchableOpacity>
-          <TouchableOpacity style={handleButtonStyle.handleItem} onPress={onDone}>
+          </Touchable>
+          <Touchable style={handleButtonStyle.handleItem} onPress={onDone}>
             <TextM style={[handleButtonStyle.done, FontStyles.font4]}>{t('Done')}</TextM>
-          </TouchableOpacity>
+          </Touchable>
         </View>
       </>
     );

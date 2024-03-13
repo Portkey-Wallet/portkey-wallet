@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
@@ -75,13 +75,13 @@ const ChatCameraPage: React.FC = () => {
           <View style={PageStyle.iconWrap}>
             <Text style={PageStyle.leftBlock} />
             {!sending && (
-              <TouchableOpacity
+              <Touchable
                 style={PageStyle.svgWrap}
                 onPress={() => {
                   navigationService.goBack();
                 }}>
                 <Svg icon="close1" size={pTd(14)} iconStyle={PageStyle.icon} />
-              </TouchableOpacity>
+              </Touchable>
             )}
           </View>
         </Camera>

@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { checkIsSvgUrl } from 'utils';
@@ -53,6 +53,9 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     [avatarSize, hasBorder, height, shapeType, width],
   );
 
+  // when change url ,reset loading error state
+  useEffect(() => setLoadError(false), [imageUrl]);
+
   if (svgName)
     return (
       <Svg
@@ -70,13 +73,14 @@ export default function CommonAvatar(props: CommonAvatarProps) {
 
   if (imageUrl && !loadError) {
     return checkIsSvgUrl(imageUrl) ? (
-      <SvgCssUri
-        uri={imageUrl}
-        width={sizeStyle.width}
-        height={sizeStyle.height}
-        preserveAspectRatio={preserveAspectRatio}
-        style={[styles.avatarWrap, shapeType === 'square' && styles.squareStyle, sizeStyle, style]}
-      />
+      <View style={[styles.avatarWrap, shapeType === 'square' && styles.squareStyle, sizeStyle, style]}>
+        <SvgCssUri
+          uri={imageUrl}
+          width={sizeStyle.width}
+          height={sizeStyle.height}
+          preserveAspectRatio={preserveAspectRatio}
+        />
+      </View>
     ) : (
       <FastImage
         resizeMode={resizeMode}

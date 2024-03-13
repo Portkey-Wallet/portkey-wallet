@@ -56,10 +56,11 @@ type CheckAllowanceAndApproveParams = {
   decimals: number;
   caContract: ContractBasic;
   isShowOnceLoading?: boolean;
+  alias?: string;
 };
 export const useCheckAllowanceAndApprove = () => {
   return useCallback(async (params: CheckAllowanceAndApproveParams) => {
-    const { chainId, spender, symbol, bigAmount, decimals, caContract, isShowOnceLoading } = params;
+    const { chainId, spender, symbol, bigAmount, decimals, alias, caContract, isShowOnceLoading } = params;
     const caInfo = getCurrentCaInfoByChainId(chainId);
 
     const tokenContract = await getViewTokenContractByChainId(chainId);
@@ -94,6 +95,7 @@ export const useCheckAllowanceAndApprove = () => {
             spender,
             decimals,
             targetChainId: chainId,
+            alias,
           },
         },
       );

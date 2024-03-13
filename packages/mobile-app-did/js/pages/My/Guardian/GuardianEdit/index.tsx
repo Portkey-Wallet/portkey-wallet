@@ -103,7 +103,7 @@ const GuardianEdit: React.FC = () => {
   const onEmitDapp = useCallback(() => {
     if (!isFocused) return;
     approveParams?.isDiscover && dispatch(changeDrawerOpenStatus(true));
-  }, [approveParams, dispatch]);
+  }, [approveParams?.isDiscover, dispatch, isFocused]);
   const lastOnEmitDapp = useLatestRef(onEmitDapp);
 
   useEffectOnce(() => {

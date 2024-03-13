@@ -6,6 +6,7 @@ import { TextM } from 'components/CommonText';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { isNumberInInterval, INFINITY } from 'utils';
+import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 
 const RedPacketAmountShowInDetailPageStyleMap = {
   'amount-style1': {
@@ -136,13 +137,21 @@ export type RedPacketAmountShowInSendPageStyleKeyItemType = keyof typeof RedPack
 type RedPacketAmountShowPropsType = {
   componentType: 'packetDetailPage' | 'sendPacketPage';
   amountShow: string;
-  symbol: string;
+  symbol?: string;
   textColor?: string;
   wrapStyle?: StyleProp<ViewStyle>;
+  assetType?: AssetType;
 };
 
 export const RedPacketAmountShow = (props: RedPacketAmountShowPropsType) => {
-  const { componentType, amountShow, symbol = 'ELF', textColor = defaultColors.font15, wrapStyle = {} } = props;
+  const {
+    componentType,
+    amountShow,
+    symbol,
+    textColor = defaultColors.font15,
+    wrapStyle = {},
+    assetType = AssetType.ft,
+  } = props;
 
   const amountShowStyle = useMemo(() => {
     let type = 'amount-style1';
@@ -170,10 +179,15 @@ export const RedPacketAmountShow = (props: RedPacketAmountShowPropsType) => {
 
   const TextColorStyle = useMemo<StyleProp<TextStyle>>(() => ({ color: textColor }), [textColor]);
 
+  const amountShowValue = useMemo(() => {
+    if (amountShow) return amountShow;
+    return assetType === AssetType.ft ? '0.00' : '0';
+  }, [amountShow, assetType]);
+
   return (
     <Text style={[GStyles.textAlignCenter, wrapStyle]}>
-      <Text style={[amountShowStyle, styles.amount, TextColorStyle]}>{amountShow || '0.00'}</Text>
-      <TextM style={[GStyles.paddingLeft(pTd(8)), styles.symbol, TextColorStyle]}>{`  ${symbol}`}</TextM>
+      <Text style={[amountShowStyle, styles.amount, TextColorStyle]}>{amountShowValue}</Text>
+      {symbol && <TextM style={[GStyles.paddingLeft(pTd(8)), styles.symbol, TextColorStyle]}>{`  ${symbol}`}</TextM>}
     </Text>
   );
 };

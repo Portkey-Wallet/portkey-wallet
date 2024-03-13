@@ -132,7 +132,7 @@ export async function addManager({
       caHash,
       managerInfo: {
         address: managerAddress,
-        extraData: extraData || '',
+        extraData: extraData || '{}',
       },
     },
     sendOptions,

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, TextInput, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
@@ -64,9 +64,9 @@ const FindMorePeople = () => {
       return <Lottie style={styles.loadingIcon} source={require('assets/lottieFiles/loading.json')} autoPlay loop />;
 
     return keyword ? (
-      <TouchableOpacity onPress={() => setKeyword('')}>
+      <Touchable onPress={() => setKeyword('')}>
         <Svg icon="clear3" size={pTd(16)} />
-      </TouchableOpacity>
+      </Touchable>
     ) : undefined;
   }, [loading, keyword]);
 

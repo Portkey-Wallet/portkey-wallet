@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { MenuItemInfo } from 'pages/components/MenuList';
 import { useEffect, useMemo } from 'react';
-import CustomSvg from 'components/CustomSvg';
+import BaseGuardianTypeIcon from 'components/BaseGuardianTypeIcon';
 import {
   CONTACT_PERMISSION_LABEL_MAP,
   CONTACT_PRIVACY_TYPE_LABEL_MAP,
@@ -15,7 +15,7 @@ import './index.less';
 import { GuardianTypeIcon } from 'components/VerifierPair';
 import { useContactPrivacyList } from '@portkey-wallet/hooks/hooks-ca/security';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import { message } from 'antd';
+import singleMessage from 'utils/singleMessage';
 
 export interface IChatPrivacyProps extends BaseHeaderProps {
   menuList: MenuItemInfo[];
@@ -38,7 +38,7 @@ export default function ChatPrivacy() {
     return list.map((item) => {
       return {
         key: item.identifier + item.privacyType,
-        icon: <CustomSvg type={GuardianTypeIcon[item.privacyType]} className="info-privacy-icon" />,
+        icon: <BaseGuardianTypeIcon type={GuardianTypeIcon[item.privacyType]} className="info-privacy-icon" />,
         element: (
           <div className="flex-between-center info-privacy">
             <div className="info-left">
@@ -58,7 +58,7 @@ export default function ChatPrivacy() {
   useEffect(() => {
     refresh().catch((error) => {
       const msg = handleErrorMessage(error);
-      message.error(msg);
+      singleMessage.error(msg);
     });
   }, [refresh]);
 

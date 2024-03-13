@@ -7,7 +7,7 @@ const { font2, font4 } = defaultColors;
 export const commonButtonStyle = StyleSheet.create({
   buttonWrap: {
     marginBottom: pTd(24),
-    width: pTd(54),
+    width: pTd(65),
   },
   iconWrapStyle: {
     display: 'flex',

@@ -2,18 +2,18 @@ import { useTranslation } from 'react-i18next';
 import { IDeviceItem, useDeviceList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCallback, useEffect, useState } from 'react';
 import { DeviceItemType } from '@portkey-wallet/types/types-ca/device';
-import { useNavigate } from 'react-router';
 import { useLoading } from 'store/Provider/hooks';
 import DevicesPopup from './Popup';
 import DevicesPrompt from './Prompt';
 import { useCommonState } from 'store/Provider/hooks';
-import { message } from 'antd';
+import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
 
 export default function Devices() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const onError = useCallback(() => {
-    message.error(`Loading failed. Please retry.`);
+    singleMessage.error(`Loading failed. Please retry.`);
   }, []);
   const { deviceList, refresh, loading } = useDeviceList({
     isInit: false,

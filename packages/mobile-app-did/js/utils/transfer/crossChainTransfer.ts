@@ -10,6 +10,7 @@ import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { ELF_DECIMAL } from '@portkey-wallet/constants/constants-ca/activity';
 import { getTokenIssueChainId } from './getTokenInfo';
+import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
 
 export interface CrossChainTransferParamsType {
   tokenInfo: BaseToken;
@@ -73,6 +74,7 @@ interface CrossChainTransferParams extends CrossChainTransferParamsType {
   contract: ContractBasic;
   caHash: string;
   crossDefaultFee: number;
+  guardiansApproved?: GuardiansApprovedType[];
 }
 const crossChainTransfer = async ({
   tokenInfo,
@@ -85,6 +87,7 @@ const crossChainTransfer = async ({
   contract,
   caHash,
   crossDefaultFee,
+  guardiansApproved,
 }: CrossChainTransferParams) => {
   let managerTransferResult;
   const issueChainId = await getTokenIssueChainId({ tokenContract, paramsOption: { symbol: tokenInfo.symbol } });
@@ -94,14 +97,16 @@ const crossChainTransfer = async ({
     console.log('first transaction:transfer to manager itself Amount', amount);
 
     managerTransferResult = await managerTransfer({
-      contract,
-      paramsOption: {
-        caHash,
+      caContract: contract,
+      tokenContractAddress: tokenInfo.address,
+      caHash,
+      paramsArgs: {
         symbol: tokenInfo.symbol,
         to: managerAddress,
         amount,
         memo,
       },
+      guardiansApproved,
     });
     if (managerTransferResult.error) throw managerTransferResult.error;
 

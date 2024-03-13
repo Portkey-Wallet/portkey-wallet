@@ -14,10 +14,13 @@ interface VerifierPairProps {
 }
 
 export const GuardianTypeIcon: Record<LoginType, IconType> = {
-  [LoginType.Email]: 'email',
-  [LoginType.Phone]: 'GuardianPhone',
-  [LoginType.Google]: 'GuardianGoogle',
-  [LoginType.Apple]: 'GuardianApple',
+  [LoginType.Email]: 'Email',
+  [LoginType.Phone]: 'Phone',
+  [LoginType.Google]: 'Google',
+  [LoginType.Apple]: 'Apple',
+  [LoginType.Telegram]: 'Telegram',
+  [LoginType.Facebook]: 'Facebook',
+  [LoginType.Twitter]: 'Twitter',
 };
 
 export default function VerifierPair({
@@ -29,7 +32,9 @@ export default function VerifierPair({
 }: VerifierPairProps) {
   return (
     <div className={clsx('flex-row-center icon-pair', wrapperClassName)}>
-      <CustomSvg type={GuardianTypeIcon[guardianType]} style={{ width: size, height: size, fontSize: size }} />
+      <div className="guardian-icon flex-center" style={{ width: size, height: size, fontSize: size }}>
+        <CustomSvg className="flex" type={GuardianTypeIcon[guardianType]} />
+      </div>
       <div className="verifier-icon-border">
         <BaseVerifierIcon src={verifierSrc} fallback={verifierName?.[0]} />
       </div>

@@ -70,7 +70,7 @@ export default function ContactsBody({ isSearch, list, contactCount, initData, c
           <ContactListIndexBar
             hasChatEntry={showChat}
             list={list}
-            clickItem={(item) => handleGoProfile({ ...item, from: 'contact-list' })}
+            clickItem={(item) => handleGoProfile({ ...item, previousPage: 'contact-list' })}
             clickChat={(e, item) => handleChat(e, item?.imInfo?.relationId || '')}
           />
         )}
@@ -113,7 +113,7 @@ export default function ContactsBody({ isSearch, list, contactCount, initData, c
           className="contact-search-list"
           hasChatEntry={showChat}
           list={flatList}
-          clickItem={(item) => handleGoProfile({ ...item, from: 'contact-list' })}
+          clickItem={(item) => handleGoProfile({ ...item, previousPage: 'contact-list' })}
           clickChat={(e, item) => handleChat(e, item?.imInfo?.relationId || '')}
         />
       )}

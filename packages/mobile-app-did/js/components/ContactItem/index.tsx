@@ -7,8 +7,7 @@ import { TextL, TextS } from 'components/CommonText';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import React, { memo } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
-// import { formatStr2EllipsisStr } from 'utils';
+import { View, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 
 export interface ItemType {
@@ -24,7 +23,7 @@ const ContactItem: React.FC<ItemType> = props => {
   const { isShowChat = false, isShowWarning, isShowContactIcon = false, contact, onPress, onPressChat } = props;
 
   return (
-    <TouchableOpacity onPress={() => onPress?.(contact)}>
+    <Touchable onPress={() => onPress?.(contact)}>
       <View style={styles.itemWrap}>
         <View style={[styles.itemAvatar, styles.avatarWrap]}>
           {isShowWarning && <View style={styles.warningCycle} />}
@@ -54,7 +53,7 @@ const ContactItem: React.FC<ItemType> = props => {
           </Touchable>
         )}
       </View>
-    </TouchableOpacity>
+    </Touchable>
   );
 };
 

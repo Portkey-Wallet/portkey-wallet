@@ -50,6 +50,6 @@ export const styles = StyleSheet.create({
     width: pTd(32),
   },
   buttonWrapStyle1: {
-    marginHorizontal: pTd(16),
+    marginHorizontal: screenWidth * 0.03,
   },
 });

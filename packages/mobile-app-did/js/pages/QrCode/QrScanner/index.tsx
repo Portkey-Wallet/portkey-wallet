@@ -1,13 +1,12 @@
 import React, { useCallback, useState } from 'react';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet } from 'react-native';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 
 import { useLanguage } from 'i18n/hooks';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { TextM } from 'components/CommonText';
@@ -16,20 +15,18 @@ import { FontStyles } from 'assets/theme/styles';
 import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 
 import { Camera } from 'expo-camera';
-import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import Loading from 'components/Loading';
 import { useHandleDataFromQrCode } from 'hooks/useQrScan';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { sleep } from '@portkey-wallet/utils';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import Touchable from 'components/Touchable';
 interface QrScannerProps {
   route?: any;
 }
 
 const QrScanner: React.FC<QrScannerProps> = () => {
   const { t } = useLanguage();
-  const { currentNetwork } = useWallet();
-  const jumpToWebview = useDiscoverJumpWithNetWork();
 
   const [refresh, setRefresh] = useState<boolean>();
   const handleDataFromQrCode = useHandleDataFromQrCode();
@@ -58,7 +55,7 @@ const QrScanner: React.FC<QrScannerProps> = () => {
         Loading.hide();
       }
     },
-    [currentNetwork, jumpToWebview],
+    [handleDataFromQrCode, latestIsFocused],
   );
 
   const selectImage = async () => {
@@ -88,21 +85,21 @@ const QrScanner: React.FC<QrScannerProps> = () => {
           <SafeAreaView style={PageStyle.innerView}>
             <View style={PageStyle.iconWrap}>
               <Text style={PageStyle.leftBlock} />
-              <TouchableOpacity
+              <Touchable
                 style={PageStyle.svgWrap}
                 onPress={() => {
                   navigationService.goBack();
                 }}>
                 <Svg icon="close1" size={pTd(14)} iconStyle={PageStyle.icon} />
-              </TouchableOpacity>
+              </Touchable>
             </View>
             <Svg icon="scan-square" size={pTd(240)} iconStyle={PageStyle.scan} />
             <TextM style={PageStyle.tips}>{t('Receive code / Login code / URL code')}</TextM>
 
-            <TouchableOpacity style={[PageStyle.albumWrap, GStyles.alignCenter]} onPress={selectImage}>
+            <Touchable style={[PageStyle.albumWrap, GStyles.alignCenter]} onPress={selectImage}>
               <Svg icon="album" size={pTd(48)} />
               <TextM style={[FontStyles.font2, PageStyle.albumText]}>{t('Album')}</TextM>
-            </TouchableOpacity>
+            </Touchable>
           </SafeAreaView>
         </Camera>
       )}

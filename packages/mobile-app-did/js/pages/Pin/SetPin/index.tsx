@@ -21,6 +21,7 @@ type RouterParams = {
   walletInfo?: AElfWallet;
   verifierInfo?: VerifierInfo;
   guardiansApproved?: GuardiansApproved;
+  autoLogin?: boolean;
 };
 
 const scrollViewProps = {
@@ -38,7 +39,8 @@ const RouterMap: any = {
   [VerificationType.addManager]: 'LoginPortkey',
 };
 export default function SetPin() {
-  const { oldPin, managerInfo, caInfo, walletInfo, verifierInfo, guardiansApproved } = useRouterParams<RouterParams>();
+  const { oldPin, managerInfo, caInfo, walletInfo, verifierInfo, guardiansApproved, autoLogin } =
+    useRouterParams<RouterParams>();
   const digitInput = useRef<DigitInputInterface>();
 
   const checkRouteExistInRouteStack = useCheckRouteExistInRouteStack();
@@ -54,7 +56,6 @@ export default function SetPin() {
         message: MessageMap[managerInfo.verificationType],
         buttons: [
           { title: 'No', type: 'outline' },
-          // TODO: navigate
           {
             title: 'Yes',
             onPress: () => {
@@ -74,11 +75,11 @@ export default function SetPin() {
         ],
       });
 
-    if (managerInfo && MessageMap[managerInfo.verificationType])
+    if (!autoLogin && managerInfo && MessageMap[managerInfo.verificationType])
       return navigationService.navigate(RouterMap[managerInfo.verificationType]);
 
     navigationService.goBack();
-  }, [checkRouteExistInRouteStack, managerInfo, oldPin]);
+  }, [autoLogin, checkRouteExistInRouteStack, managerInfo, oldPin]);
   return (
     <PageContainer
       scrollViewProps={scrollViewProps}

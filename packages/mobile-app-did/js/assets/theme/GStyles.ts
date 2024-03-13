@@ -16,6 +16,7 @@ export default {
     flexWrap: 'wrap',
   },
   flexRow: {
+    display: 'flex',
     flexDirection: 'row',
   },
   flexCol: {
@@ -185,5 +186,8 @@ export default {
   },
   marginRight: function (n: number) {
     return { marginRight: pTd(n) };
+  },
+  maxWidth: function (n: number) {
+    return { maxWidth: pTd(n) };
   },
 } as const;

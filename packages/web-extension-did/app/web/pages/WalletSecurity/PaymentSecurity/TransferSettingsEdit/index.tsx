@@ -2,7 +2,6 @@ import { useAppDispatch, useCommonState, useLoading } from 'store/Provider/hooks
 import TransferSettingsEditPopup from './Popup';
 import TransferSettingsEditPrompt from './Prompt';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router';
 import { useCallback, useRef, useState } from 'react';
 import { ValidData } from 'pages/Contacts/AddContact';
 import { Form } from 'antd';
@@ -18,6 +17,9 @@ import { LimitFormatTip, SingleExceedDaily } from 'constants/security';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import { useEffectOnce } from 'react-use';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
+import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { useLocationState, useNavigateState } from 'hooks/router';
+import { FromPageEnum, TTransferSettingEditLocationState } from 'types/router';
 
 export default function TransferSettingsEdit() {
   const { isPrompt, isNotLessThan768 } = useCommonState();
@@ -25,8 +27,8 @@ export default function TransferSettingsEdit() {
   const userGuardianList = useGuardianList();
   const { walletInfo } = useCurrentWallet();
   const { t } = useTranslation();
-  const { state } = useLocation();
-  const navigate = useNavigate();
+  const { state } = useLocationState<TTransferSettingEditLocationState>();
+  const navigate = useNavigateState();
   const [form] = Form.useForm();
   const headerTitle = t('Transfer Settings');
   const [restrictedText, setRestrictedText] = useState(!!state?.restricted);
@@ -81,7 +83,14 @@ export default function TransferSettingsEdit() {
   }, [form]);
 
   const handleBack = useCallback(() => {
-    navigate('/setting/wallet-security/payment-security/transfer-settings', { state: state?.initStateBackUp || state });
+    const res = state?.initStateBackUp || state;
+    if (state.from === ICheckLimitBusiness.SEND) {
+      return navigate(`/send/token/${state.symbol}`, { state: { ...res, ...state.extra } });
+    }
+    if (state.from === ICheckLimitBusiness.RAMP_SELL) {
+      return navigate('/buy', { state: { ...res, ...state.extra } });
+    }
+    navigate('/setting/wallet-security/payment-security/transfer-settings', { state: { ...res, ...state.extra } });
   }, [navigate, state]);
 
   const handleRestrictedChange = useCallback(
@@ -129,15 +138,22 @@ export default function TransferSettingsEdit() {
         from: state.from,
         targetChainId: state.targetChainId || state.chainId,
         initStateBackUp: state,
+        extra: state.extra,
       };
       setLoading(false);
       isPrompt
         ? navigate('/setting/wallet-security/payment-security/guardian-approval', {
-            state: `setTransferLimit_${JSON.stringify(params)}`,
+            state: {
+              previousPage: FromPageEnum.setTransferLimit,
+              ...params,
+            },
           })
         : InternalMessage.payload(
-            PortkeyMessageTypes.GUARDIANS_APPROVAL,
-            `setTransferLimit_${JSON.stringify(params)}`,
+            PortkeyMessageTypes.GUARDIANS_APPROVAL_PAYMENT_SECURITY,
+            JSON.stringify({
+              previousPage: FromPageEnum.setTransferLimit,
+              ...params,
+            }),
           ).send();
     } catch (error) {
       console.log('set limit error: ', error);
@@ -145,6 +161,7 @@ export default function TransferSettingsEdit() {
       setLoading(false);
     }
   }, [
+    setLoading,
     dispatch,
     walletInfo.managerInfo?.loginAccount,
     walletInfo.managerInfo?.type,

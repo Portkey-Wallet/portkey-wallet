@@ -1,4 +1,4 @@
-package com.portkey.did.newarchitecture.modules;
+package com.portkey.finance.newarchitecture.modules;
 
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;

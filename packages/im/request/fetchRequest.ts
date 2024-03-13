@@ -1,7 +1,6 @@
 import { IBaseRequest, RequestOpts, IRequestDefaults } from '@portkey/types';
 import { fetchFormat, timeoutPromise } from './utils';
-
-const DEFAULT_FETCH_TIMEOUT = 8000;
+import { DEFAULT_FETCH_TIMEOUT } from '@portkey-wallet/constants/misc';
 
 export class FetchRequest implements IBaseRequest {
   protected _defaults: IRequestDefaults;

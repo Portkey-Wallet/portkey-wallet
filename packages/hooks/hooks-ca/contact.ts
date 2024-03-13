@@ -168,8 +168,15 @@ export const useCheckContactMap = () => {
     if (contact.lastModified === 0) return;
     const contactMapLength = Object.keys(contact.contactMap).length;
     const contactRelationIdMapLength = Object.keys(contact.contactRelationIdMap || {}).length;
+    const contactPortkeyIdMapLength = Object.keys(contact.contactPortkeyIdMap || {}).length;
+
     const contactIdMapLength = Object.keys(contact.contactIdMap || {}).length;
-    if (contactMapLength === 0 || contactRelationIdMapLength === 0 || contactIdMapLength === 0) {
+    if (
+      contactMapLength === 0 ||
+      contactRelationIdMapLength === 0 ||
+      contactIdMapLength === 0 ||
+      contactPortkeyIdMapLength === 0
+    ) {
       dispatch(refreshContactMap());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -182,6 +189,9 @@ export const useContactRelationIdMap = () => {
 
 export const useContactIdMap = () => {
   return useAppCommonSelector(state => state.contact.contactIdMap);
+};
+export const useContactPortkeyIdMap = () => {
+  return useAppCommonSelector(state => state.contact.contactPortkeyIdMap);
 };
 
 export const useContactInfo = ({ relationId, contactId }: { relationId?: string; contactId?: string }) => {
@@ -387,4 +397,23 @@ export const useAelfContactList = () => {
     });
     return indexList;
   }, [contactIndexList]);
+};
+
+export const useGetContactLabel = () => {
+  const contactPortkeyIdMap = useContactPortkeyIdMap();
+
+  return useCallback(
+    (portkeyId: string, defaultNameFromBackEnd: string) => {
+      const targetContact = contactPortkeyIdMap?.[portkeyId]?.[0];
+
+      return (
+        targetContact?.name ||
+        targetContact?.caHolderInfo?.walletName ||
+        defaultNameFromBackEnd ||
+        targetContact?.imInfo?.name ||
+        ''
+      );
+    },
+    [contactPortkeyIdMap],
+  );
 };

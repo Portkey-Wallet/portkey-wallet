@@ -1,6 +1,6 @@
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import React from 'react';
 import { TextL, TextS } from 'components/CommonText';
@@ -12,6 +12,7 @@ import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { FontStyles } from 'assets/theme/styles';
 import { NetworkType } from '@portkey-wallet/types';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import Touchable from 'components/Touchable';
 
 type TokenItemProps = {
   networkType: NetworkType;
@@ -24,13 +25,15 @@ const TokenItem = ({ networkType, item, onHandleToken }: TokenItemProps) => {
   const defaultToken = useDefaultToken();
 
   return (
-    <TouchableOpacity style={itemStyle.wrap} key={`${item.symbol}${item.address}${item.chainId}}`}>
+    // if not touchable, can not scroll
+
+    <Touchable style={itemStyle.wrap} key={`${item.symbol}${item.address}${item.chainId}}`}>
       <CommonAvatar
         hasBorder
         shapeType="circular"
         title={item.symbol}
         svgName={item.symbol === defaultToken.symbol ? 'testnet' : undefined}
-        imageUrl={symbolImages[item.symbol]}
+        imageUrl={item.imageUrl || symbolImages[item.symbol]}
         avatarSize={pTd(48)}
         style={itemStyle.left}
       />
@@ -48,17 +51,17 @@ const TokenItem = ({ networkType, item, onHandleToken }: TokenItemProps) => {
         {item.isDefault ? (
           <Svg icon="lock" size={pTd(20)} iconStyle={itemStyle.addedStyle} />
         ) : (
-          <TouchableOpacity
+          <Touchable
             onPress={() => {
               onHandleToken(item, !!item.isAdded);
             }}>
             <View pointerEvents="none">
               <CommonSwitch value={!!item.isAdded} />
             </View>
-          </TouchableOpacity>
+          </Touchable>
         )}
       </View>
-    </TouchableOpacity>
+    </Touchable>
   );
 };
 

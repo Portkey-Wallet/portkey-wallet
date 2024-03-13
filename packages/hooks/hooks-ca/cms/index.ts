@@ -193,6 +193,49 @@ export const useBuyButtonShow = (config: IEntranceMatchValueConfig) => {
   };
 };
 
+export const useETransShow = (config: IEntranceMatchValueConfig) => {
+  const { entrance, refresh } = useEntrance(config);
+  const { eTransferUrl } = useCurrentNetworkInfo();
+
+  const isETransDepositShow = useMemo(
+    () => !!(entrance.eTransDeposit && eTransferUrl),
+    [eTransferUrl, entrance.eTransDeposit],
+  );
+
+  const isETransWithdrawShow = useMemo(
+    () => !!(entrance.eTransWithdraw && eTransferUrl),
+    [eTransferUrl, entrance.eTransWithdraw],
+  );
+
+  const isETransShow = useMemo(
+    () => isETransDepositShow || isETransWithdrawShow || false,
+    [isETransDepositShow, isETransWithdrawShow],
+  );
+
+  const refreshETrans = useCallback(async () => {
+    let _isETransDepositShow = false;
+    let _isETransWithdrawShow = false;
+    try {
+      const result = await refresh();
+      _isETransDepositShow = result.eTransDeposit;
+      _isETransWithdrawShow = result.eTransWithdraw;
+    } catch (error) {
+      console.log('refreshBuyButton error');
+    }
+
+    return {
+      isETransDepositShow: _isETransDepositShow,
+      isETransWithdrawShow: _isETransWithdrawShow,
+    };
+  }, [refresh]);
+
+  return {
+    isETransShow,
+    isETransDepositShow,
+    isETransWithdrawShow,
+    refreshETrans,
+  };
+};
 export const useBridgeButtonShow = (config: IEntranceMatchValueConfig) => {
   const { entrance } = useEntrance(config);
   const isBridgeShow = useMemo(() => entrance?.bridge, [entrance.bridge]);

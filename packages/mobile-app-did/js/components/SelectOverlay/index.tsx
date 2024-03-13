@@ -1,12 +1,13 @@
 import React from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { StyleSheet, TouchableOpacity, Text, View, ScrollView } from 'react-native';
-import { TextL, TextM } from 'components/CommonText';
+import { StyleSheet, ScrollView } from 'react-native';
+import { TextL } from 'components/CommonText';
 import { ModalBody } from 'components/ModalBody';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import { useLanguage } from 'i18n/hooks';
+import Touchable from 'components/Touchable';
 
 type DataItemType = { value: string | number; label: string };
 type SelectModalProps = {
@@ -22,7 +23,7 @@ const SelectModal = ({ title = '', value = 1, dataList = [], onChangeValue }: Se
     <ModalBody modalBodyType="bottom" title={title}>
       <ScrollView style={styles.wrapStyle}>
         {dataList.map(ele => (
-          <TouchableOpacity
+          <Touchable
             key={ele.value}
             style={styles.item}
             onPress={() => {
@@ -31,7 +32,7 @@ const SelectModal = ({ title = '', value = 1, dataList = [], onChangeValue }: Se
             }}>
             <TextL>{ele.label}</TextL>
             {value === ele.value && <Svg icon="selected" size={pTd(24)} />}
-          </TouchableOpacity>
+          </Touchable>
         ))}
       </ScrollView>
     </ModalBody>

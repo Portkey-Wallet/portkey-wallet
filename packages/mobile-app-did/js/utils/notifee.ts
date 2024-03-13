@@ -1,4 +1,5 @@
 import notifee from '@notifee/react-native';
+import * as Notifications from 'expo-notifications';
 
 async function onDisplayNotification(): Promise<void> {
   // Request permissions (required for iOS)
@@ -37,7 +38,31 @@ async function onUpdateNotification(channelId: string): Promise<void> {
   });
 }
 
+export const initNotifications = () => {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: false,
+      shouldPlaySound: false,
+      shouldSetBadge: true,
+    }),
+  });
+};
+
+export const setBadge = async (count: number) => {
+  const currentBadgeCount = await Notifications.getBadgeCountAsync();
+  if (currentBadgeCount === count) return;
+
+  return await Notifications.setBadgeCountAsync(count);
+};
+
+export const resetBadge = async () => {
+  return await Notifications.setBadgeCountAsync(0);
+};
+
 export default {
+  initNotifications,
+  setBadge,
+  resetBadge,
   onDisplayNotification,
   onUpdateNotification,
 };

@@ -13,9 +13,11 @@
     padding: 0 24px;
     flex: 1;
     background-color: @bg-11;
+    height: 376px;
+    overflow-y: auto;
 
     .transaction {
-      margin: 40px;
+      margin: 32px;
       .send {
         font-weight: 500;
         color: @font-11;
@@ -48,39 +50,67 @@
         padding: 16px 12px;
         border: 1px solid @border-2;
         border-radius: 6px;
-        .ach {
+        margin-bottom: 8px;
+        position: relative;
+        overflow: hidden;
+        .ramp-provider {
           height: 20px;
+          .ramp-provider-logo {
+            height: 24px;
+            margin-right: 16px;
+          }
           .rate {
             padding: 2px 0;
             font-size: 12px;
             line-height: 16px;
+            color: @font-13;
           }
         }
-        .ach-pay {
+        .ramp-provider-pay {
           margin-top: 24px;
+          .ramp-provider-pay-item {
+            border-radius: 2px;
+            border: 0.5px solid @border-2;
+            min-width: 20px;
+            height: 20px;
+            margin-right: 6px;
+          }
+        }
+        &:nth-last-child(1) {
+          margin-bottom: 24px;
         }
       }
-    }
-    
-  }
 
-  .disclaimer {
-    padding: 24px;
-    font-size: 14px;
-    line-height: 20px;
-    background-color: @bg-11;
-    .highlight {
-      color: @font-9;
-      cursor: pointer;
+      .card-item-selected {
+        border: 1px solid @border-3;
+        .card-selected-icon {
+          position: absolute;
+          top: -1px;
+          right: -1px;
+          width: 24px;
+          height: 18px;
+        }
+      }
     }
   }
 
   .preview-footer {
     width: 100%;
-    height: 80px;
+    height: 128px;
     padding: 16px;
     border-top: 1px solid @border-2;
     background-color: @bg-11;
+
+    .disclaimer {
+      margin: 0 8px 8px;
+      font-size: 14px;
+      line-height: 20px;
+      background-color: @bg-11;
+      .highlight {
+        color: @font-9;
+        cursor: pointer;
+      }
+    }
 
     .@{app-prefix}-btn {
       height: 48px;

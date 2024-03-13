@@ -30,6 +30,7 @@ const storeInSW = {
 };
 
 const aelfMethodList = [
+  MethodsBase.CA_HASH,
   MethodsBase.ACCOUNTS,
   MethodsBase.CHAIN_ID,
   MethodsBase.CHAIN_IDS,
@@ -42,6 +43,7 @@ const aelfMethodList = [
   MethodsWallet.GET_WALLET_NAME,
   MethodsWallet.GET_WALLET_CURRENT_MANAGER_ADDRESS,
   MethodsWallet.GET_WALLET_MANAGER_SYNC_STATUS,
+  MethodsWallet.GET_WALLET_TRANSACTION_SIGNATURE,
 ];
 interface AELFMethodControllerProps {
   notificationService: NotificationService;
@@ -109,9 +111,19 @@ export default class AELFMethodController {
       case MethodsBase.NETWORK:
         this.getNetwork(sendResponse, message.payload);
         break;
+      case MethodsBase.CA_HASH:
+        this.getCAHash(sendResponse, message.payload);
+        break;
       case MethodsWallet.GET_WALLET_SIGNATURE:
         this.getSignature(sendResponse, message.payload);
         break;
+      case MethodsWallet.GET_WALLET_TRANSACTION_SIGNATURE: {
+        if (message.payload.payload) message.payload.payload.autoSha256 = true;
+        const { hexData, data } = message.payload.payload;
+        if (!data && hexData) message.payload.payload.data = hexData;
+        this.getSignature(sendResponse, message.payload);
+        break;
+      }
       case MethodsWallet.GET_WALLET_STATE:
         this.getWalletState(sendResponse, message.payload);
         break;
@@ -329,7 +341,7 @@ export default class AELFMethodController {
   getAccounts: RequestCommonHandler = async (sendResponse, message) => {
     try {
       const { origin } = message;
-      sendResponse({ ...errorHandler(0), data: this.dappManager.accounts(origin) });
+      sendResponse({ ...errorHandler(0), data: await this.dappManager.accounts(origin) });
     } catch (error) {
       console.log('getAccounts===', error);
       sendResponse({
@@ -581,6 +593,8 @@ export default class AELFMethodController {
   };
 
   getSignature: RequestCommonHandler = async (sendResponse, message) => {
+    const autoSha256 = message?.payload.autoSha256;
+    if (autoSha256) delete message.payload.autoSha256;
     try {
       if (
         !message?.payload?.data ||
@@ -605,7 +619,7 @@ export default class AELFMethodController {
           },
         },
         method: MethodsWallet.GET_WALLET_SIGNATURE,
-        callBack: (params: any) => this.approvalController.authorizedToGetSignature(params),
+        callBack: (params: any) => this.approvalController.authorizedToGetSignature(params, autoSha256),
       });
 
       if (result.error === 200003)
@@ -640,6 +654,20 @@ export default class AELFMethodController {
       sendResponse({ ...errorHandler(0), data: networkType });
     } catch (error) {
       console.log('getNetwork===', error);
+      sendResponse({
+        ...errorHandler(100001),
+        data: {
+          code: ResponseCode.INTERNAL_ERROR,
+        },
+      });
+    }
+  };
+  getCAHash: RequestCommonHandler = async (sendResponse) => {
+    try {
+      const caHash = await this.dappManager.caHash();
+      sendResponse({ ...errorHandler(0), data: caHash });
+    } catch (error) {
+      console.log('getCAHash===', error);
       sendResponse({
         ...errorHandler(100001),
         data: {

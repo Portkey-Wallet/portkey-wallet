@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo } from 'react';
 import CustomSvg from 'components/CustomSvg';
 import { useTranslation } from 'react-i18next';
 import useGuardianList from 'hooks/useGuardianList';
-import { useLocation, useNavigate } from 'react-router';
 import { useAppDispatch, useCommonState, useGuardiansInfo } from 'store/Provider/hooks';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { setCurrentGuardianAction, setOpGuardianAction } from '@portkey-wallet/store/store-ca/guardians/actions';
@@ -14,14 +13,22 @@ import GuardiansPrompt from './Prompt';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import AccountShow from './components/AccountShow';
+import { getVerifierStatusMap } from './utils';
+import { guardiansExceedTip } from '@portkey-wallet/constants/constants-ca/guardian';
+import { useLocationState, useNavigateState } from 'hooks/router';
+import { TAddGuardianLocationState, TGuardiansLocationState } from 'types/router';
 import './index.less';
 
 export default function Guardians() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { state } = useLocation();
-  const navigate = useNavigate();
-  const { userGuardiansList } = useGuardiansInfo();
+  const { state } = useLocationState<TGuardiansLocationState>();
+  const navigate = useNavigateState<TAddGuardianLocationState>();
+  const { verifierMap, userGuardiansList } = useGuardiansInfo();
+  const verifierEnableNum = useMemo(() => {
+    const verifierStatusMap = getVerifierStatusMap(verifierMap, userGuardiansList);
+    return Object.values(verifierStatusMap).filter((verifier) => !verifier.isUsed).length;
+  }, [userGuardiansList, verifierMap]);
   const { walletInfo } = useCurrentWallet();
   const { isPrompt, isNotLessThan768 } = useCommonState();
   const getGuardianList = useGuardianList();
@@ -49,7 +56,7 @@ export default function Guardians() {
   const onAdd = useCallback(() => {
     isPrompt
       ? navigate('/setting/guardians/add', { state: { accelerateChainId } })
-      : InternalMessage.payload(PortkeyMessageTypes.ADD_GUARDIANS, `accelerateChainId_${accelerateChainId}`).send();
+      : InternalMessage.payload(PortkeyMessageTypes.ADD_GUARDIANS, JSON.stringify({ accelerateChainId })).send();
   }, [isPrompt, navigate, accelerateChainId]);
 
   const headerTitle = useMemo(() => 'Guardians', []);
@@ -90,22 +97,31 @@ export default function Guardians() {
     [dispatch, formatGuardianList, isPrompt, navigate, t],
   );
 
-  const renderAddBtn = useMemo(
-    () => (
+  const renderAddBtn = useMemo(() => {
+    return verifierEnableNum > 0 ? (
       <Button onClick={onAdd} className="guardian-add-btn">
         Add Guardians
       </Button>
-    ),
-    [onAdd],
-  );
+    ) : null;
+  }, [onAdd, verifierEnableNum]);
+
+  const renderGuardianTip = useMemo(() => {
+    return verifierEnableNum === 0 ? (
+      <div className="guardian-exceed-tip flex">
+        <CustomSvg type="Warning" />
+        <span className="exceed-tip-content">{guardiansExceedTip}</span>
+      </div>
+    ) : null;
+  }, [verifierEnableNum]);
 
   const props = useMemo(
     () => ({
       headerTitle,
       renderAddBtn,
       renderGuardianList,
+      renderGuardianTip,
     }),
-    [headerTitle, renderAddBtn, renderGuardianList],
+    [headerTitle, renderAddBtn, renderGuardianList, renderGuardianTip],
   );
 
   return isNotLessThan768 ? <GuardiansPrompt {...props} /> : <GuardiansPopup {...props} onBack={onBack} />;

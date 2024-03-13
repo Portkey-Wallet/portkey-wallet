@@ -11,21 +11,13 @@ import { getEntireDIDAelfAddress, isAelfAddress } from '@portkey-wallet/utils/ae
 import { ChainId } from '@portkey-wallet/types';
 import { chainShowText } from '@portkey-wallet/utils';
 import { useAmountInUsdShow, useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { useIsTestnet } from 'hooks/useNetwork';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { getSeedTypeTag } from 'utils/assets';
+import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
+import CustomSvg from 'components/CustomSvg';
 
-export default function SendPreview({
-  amount,
-  symbol,
-  alias,
-  toAccount,
-  transactionFee,
-  type,
-  imageUrl,
-  chainId,
-  isCross,
-  tokenId,
-}: {
+export interface ISendPreviewProps {
   amount: string;
   symbol: string;
   alias: string;
@@ -36,14 +28,20 @@ export default function SendPreview({
   chainId: ChainId;
   isCross: boolean;
   tokenId: string;
-}) {
-  const { walletName } = useWalletInfo();
+  isSeed?: boolean;
+  seedType?: SeedTypeEnum;
+}
+
+export default function SendPreview(props: ISendPreviewProps) {
+  const { amount, symbol, alias, toAccount, transactionFee, type, imageUrl, chainId, isCross, tokenId } = props;
+  const { userInfo } = useWalletInfo();
   const wallet = useCurrentWalletInfo();
-  const isTestNet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const amountInUsdShow = useAmountInUsdShow();
   useFreshTokenPrice();
   const { crossChain: crossChainFee } = useGetTxFee(chainId);
   const defaultToken = useDefaultToken(chainId);
+  const seedTypeTag = useMemo(() => getSeedTypeTag(props), [props]);
 
   const toChain = useMemo(() => {
     const arr = toAccount.address.split('_');
@@ -60,20 +58,21 @@ export default function SendPreview({
     if (ZERO.plus(amount).isLessThanOrEqualTo(crossChainFee)) {
       return (
         <>
-          <span className="usd">{!isTestNet && '$0'}</span>0
+          <span className="usd">{isMainnet && '$0'}</span>
+          {`0 ${symbol}`}
         </>
       );
     } else {
       return (
         <>
           <span className="usd">
-            {!isTestNet && amountInUsdShow(ZERO.plus(amount).minus(crossChainFee).toFixed(), 0, symbol)}
+            {isMainnet && amountInUsdShow(ZERO.plus(amount).minus(crossChainFee).toFixed(), 0, symbol)}
           </span>
-          {formatAmountShow(ZERO.plus(amount).minus(crossChainFee))}
+          {`${formatAmountShow(ZERO.plus(amount).minus(crossChainFee), Number(defaultToken.decimals))} ${symbol}`}
         </>
       );
     }
-  }, [amount, amountInUsdShow, crossChainFee, isTestNet, symbol]);
+  }, [amount, amountInUsdShow, crossChainFee, defaultToken.decimals, isMainnet, symbol]);
 
   return (
     <div className="send-preview">
@@ -82,16 +81,19 @@ export default function SendPreview({
           <p className="amount">
             -{formatAmountShow(amount)} {symbol}
           </p>
-          <p className="convert">{!isTestNet && amountInUsdShow(amount, 0, symbol)}</p>
+          <p className="convert">{isMainnet && amountInUsdShow(amount, 0, symbol)}</p>
         </div>
       ) : (
         <div className="amount-preview nft">
-          <div className="avatar">{imageUrl ? <img src={imageUrl} /> : <p>{symbol?.slice(0, 1)}</p>}</div>
+          <div className="avatar flex-center">
+            {seedTypeTag && <CustomSvg type={seedTypeTag} />}
+            {imageUrl ? <img src={imageUrl} /> : <p>{symbol?.slice(0, 1)}</p>}
+          </div>
           <div className="info">
-            <p className="index flex">
+            <div className="index flex">
               <p className="alias">{alias}</p>
               <p className="token-id">{`#${tokenId}`}</p>
-            </p>
+            </div>
             <p className="quantity">
               Amount: <span>{formatAmountShow(amount)}</span>
             </p>
@@ -102,7 +104,7 @@ export default function SendPreview({
         <div className="item">
           <span className="label">From</span>
           <div className="value">
-            <p className="name">{walletName}</p>
+            <p className="name">{userInfo?.nickName}</p>
             <p className="address">{entireFromAddressShow.replace(/(?<=^\w{9})\w+(?=\w{10})/, '...')}</p>
           </div>
         </div>
@@ -130,29 +132,29 @@ export default function SendPreview({
         <span className="label">Transaction fee</span>
         <p className="value">
           <span className="symbol">
-            <span className="usd">{!isTestNet && amountInUsdShow(transactionFee, 0, defaultToken.symbol)}</span>
-            {` ${formatAmountShow(transactionFee)} ${defaultToken.symbol}`}
+            <span className="usd">{isMainnet && amountInUsdShow(transactionFee, 0, defaultToken.symbol)}</span>
+            {` ${formatAmountShow(transactionFee, Number(defaultToken.decimals))} ${defaultToken.symbol}`}
           </span>
         </p>
       </div>
+      {isCross && (
+        <div className="fee-preview">
+          <span className="label">Estimated CrossChain Transfer</span>
+          <p className="value">
+            <span className="symbol">
+              <span className="usd">{isMainnet && amountInUsdShow(crossChainFee, 0, defaultToken.symbol)}</span>
+              {` ${formatAmountShow(crossChainFee, Number(defaultToken.decimals))} ${defaultToken.symbol}`}
+            </span>
+          </p>
+        </div>
+      )}
       {isCross && symbol === defaultToken.symbol && (
-        <>
-          <div className="fee-preview">
-            <span className="label">Cross-chain Transaction fee</span>
-            <p className="value">
-              <span className="symbol">
-                <span className="usd">{!isTestNet && amountInUsdShow(crossChainFee, 0, symbol)}</span>
-                {` ${formatAmountShow(crossChainFee)} ${defaultToken.symbol}`}
-              </span>
-            </p>
-          </div>
-          <div className="fee-preview">
-            <span className="label">Estimated amount received</span>
-            <p className="value">
-              <span className="symbol">{renderEstimateAmount}</span>
-            </p>
-          </div>
-        </>
+        <div className="fee-preview">
+          <span className="label">Estimated amount received</span>
+          <p className="value">
+            <span className="symbol">{renderEstimateAmount}</span>
+          </p>
+        </div>
       )}
     </div>
   );

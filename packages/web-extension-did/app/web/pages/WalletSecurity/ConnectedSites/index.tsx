@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
 import { useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router';
 import SitesPopup from './Popup';
 import SitesPrompt from './Prompt';
 import { useCommonState } from 'store/Provider/hooks';
@@ -8,12 +7,13 @@ import { MenuItemInfo } from 'pages/components/MenuList';
 import ImageDisplay from 'pages/components/ImageDisplay';
 import CustomSvg from 'components/CustomSvg';
 import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
-import { isSafeOrigin } from '../utils';
 import './index.less';
+import { isSafeOrigin } from '../utils';
+import { useNavigateState } from 'hooks/router';
 
 export default function ConnectedSites() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const currentDapp = useCurrentDappList();
   const { isNotLessThan768 } = useCommonState();
 

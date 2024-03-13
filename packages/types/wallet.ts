@@ -8,6 +8,13 @@ export type PublicKey = {
   y: string;
 };
 
+export type TWalletInfo = {
+  BIP44Path: string;
+  address: Address;
+  privateKey: string;
+  publicKey?: PublicKey;
+};
+
 export interface WalletInfoType {
   BIP44Path: string;
   address: Address;

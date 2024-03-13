@@ -37,8 +37,15 @@ function AlertBody({ accelerateChainId }: { accelerateChainId: ChainId }) {
         title: 'Add Guardians',
         type: 'primary',
         onPress: async () => {
-          navigationService.navigate('GuardianEdit', {
-            accelerateChainId,
+          navigationService.navigateByMultiLevelParams('GuardianEdit', {
+            params: {
+              accelerateChainId,
+            },
+            multiLevelParams: {
+              approveParams: {
+                isDiscover: isDrawerOpen,
+              },
+            },
           });
           OverlayModal.hide();
           if (isDrawerOpen) {

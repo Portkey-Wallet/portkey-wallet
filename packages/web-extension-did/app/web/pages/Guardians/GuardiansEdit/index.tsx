@@ -1,20 +1,20 @@
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
-import CustomSvg from 'components/CustomSvg';
-import { useCallback, useMemo, useState } from 'react';
-import { useAppDispatch, useGuardiansInfo, useLoading, useUserInfo } from 'store/Provider/hooks';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useAppDispatch, useGuardiansInfo, useLoading, useLoginInfo } from 'store/Provider/hooks';
 import CustomSelect from 'pages/components/CustomSelect';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import {
   resetUserGuardianStatus,
   setCurrentGuardianAction,
   setOpGuardianAction,
+  setPreGuardianAction,
+  setUserGuardianItemStatus,
 } from '@portkey-wallet/store/store-ca/guardians/actions';
 import useGuardianList from 'hooks/useGuardianList';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
-import { VerifierItem } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum, VerifierItem } from '@portkey-wallet/types/verifier';
 import BaseVerifierIcon from 'components/BaseVerifierIcon';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import GuardianEditPrompt from './Prompt';
@@ -22,59 +22,110 @@ import GuardianEditPopup from './Popup';
 import CustomModal from '../../components/CustomModal';
 import { useCommonState } from 'store/Provider/hooks';
 import AccountShow from '../components/AccountShow';
-import { guardianIconMap } from '../utils';
+import { VerifierStatusItem, getVerifierStatusMap, guardianIconMap } from '../utils';
+import { verification } from 'utils/api';
+import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
+import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
+import clsx from 'clsx';
+import OptionTip from '../components/SelectOptionTip';
+import { verifierExistTip } from '@portkey-wallet/constants/constants-ca/guardian';
+import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
+import { FromPageEnum, TGuardianApprovalLocationState, TVerifierAccountLocationState } from 'types/router';
+import BaseGuardianTypeIcon from 'components/BaseGuardianTypeIcon';
 import './index.less';
-import aes from '@portkey-wallet/utils/aes';
-import { GuardianMth } from 'types/guardians';
-import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
-import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export default function GuardiansEdit() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { currentGuardian, userGuardiansList, preGuardian, opGuardian } = useGuardiansInfo();
-  const { verifierMap } = useGuardiansInfo();
+  const navigate = useNavigateState<TGuardianApprovalLocationState | TVerifierAccountLocationState>();
+  const { verifierMap, currentGuardian, userGuardiansList, preGuardian, opGuardian } = useGuardiansInfo();
+  const verifierStatusMap = useMemo(
+    () => getVerifierStatusMap(verifierMap, userGuardiansList, preGuardian),
+    [preGuardian, userGuardiansList, verifierMap],
+  );
+  const guardiansSaveRef = useRef({ verifierMap, userGuardiansList });
+  guardiansSaveRef.current = { verifierMap, userGuardiansList };
   const [selectVal, setSelectVal] = useState<string>(opGuardian?.verifier?.id as string);
-  const [exist, setExist] = useState<boolean>(false);
+  const [verifierExist, setVerifierExist] = useState<boolean>(false);
   const { walletInfo } = useCurrentWallet();
   const userGuardianList = useGuardianList();
   const dispatch = useAppDispatch();
   const { setLoading } = useLoading();
   const { isNotLessThan768 } = useCommonState();
-
+  const isPhoneType = useMemo(() => preGuardian?.guardianType === LoginType.Phone, [preGuardian?.guardianType]);
+  const isSocialGuardian = useMemo(
+    () =>
+      preGuardian?.guardianType === LoginType.Google ||
+      preGuardian?.guardianType === LoginType.Apple ||
+      preGuardian?.guardianType === LoginType.Twitter ||
+      preGuardian?.guardianType === LoginType.Facebook ||
+      preGuardian?.guardianType === LoginType.Telegram,
+    [preGuardian?.guardianType],
+  );
   const selectOptions = useMemo(
     () =>
-      Object.values(verifierMap ?? {})?.map((item: VerifierItem) => ({
-        value: item.id,
-        children: (
-          <div className="flex verifier-option">
-            <BaseVerifierIcon fallback={item.name[0]} src={item.imageUrl} />
-            <span className="title">{item.name}</span>
-          </div>
-        ),
-      })),
-    [verifierMap],
+      Object.values(verifierStatusMap ?? {})?.map((item: VerifierStatusItem) => {
+        const disabled = item.isUsed && item.id !== preGuardian?.verifier?.id;
+        return {
+          value: item.id,
+          children: (
+            <div className={clsx(['flex', 'verifier-option', disabled && 'no-use'])}>
+              <BaseVerifierIcon fallback={item.name[0]} src={item.imageUrl} />
+              <span className="title">{item.name}</span>
+            </div>
+          ),
+          disabled,
+        };
+      }),
+    [preGuardian?.verifier?.id, verifierStatusMap],
   );
-
-  const disabled = useMemo(() => exist || selectVal === preGuardian?.verifier?.id, [exist, selectVal, preGuardian]);
-
+  const originChainId = useOriginChainId();
+  const { loginAccount } = useLoginInfo();
+  const socialVerify = useSocialVerify();
+  const disabled = useMemo(
+    () => verifierExist || selectVal === preGuardian?.verifier?.id,
+    [verifierExist, selectVal, preGuardian],
+  );
   const targetVerifier = useMemo(
     () => Object.values(verifierMap ?? {})?.filter((item: VerifierItem) => item.id === selectVal),
     [selectVal, verifierMap],
   );
 
+  useEffect(() => {
+    const temp = userGuardiansList?.find((guardian) => guardian.key === opGuardian?.key);
+    if (temp) {
+      dispatch(setCurrentGuardianAction(temp));
+      dispatch(setOpGuardianAction(temp));
+      dispatch(setPreGuardianAction(temp));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userGuardiansList]);
+
   const handleChange = useCallback((value: string) => {
-    setExist(false);
+    setVerifierExist(false);
     setSelectVal(value);
   }, []);
 
+  const checkVerifierIsExist = useCallback(async () => {
+    try {
+      setLoading(true);
+      await userGuardianList({ caHash: walletInfo.caHash });
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.log('===guardian edit userGuardianList error', error);
+    }
+    const { verifierMap, userGuardiansList } = guardiansSaveRef.current;
+    const _verifierStatusMap = getVerifierStatusMap(verifierMap, userGuardiansList);
+    const _verifierIsExist = Object.values(_verifierStatusMap).some(
+      (verifier) => verifier.id === selectVal && verifier.isUsed,
+    );
+    return _verifierIsExist;
+  }, [selectVal, setLoading, userGuardianList, walletInfo.caHash]);
+
   const guardiansChangeHandler = useCallback(async () => {
-    const existFlag: boolean =
-      Object.values(userGuardiansList ?? {})?.some((item) => {
-        return item.key === `${opGuardian?.guardianAccount}&${selectVal}`;
-      }) ?? false;
-    setExist(existFlag);
+    const existFlag: boolean = await checkVerifierIsExist();
+    setVerifierExist(existFlag);
     if (existFlag) return;
     try {
       dispatch(
@@ -95,13 +146,18 @@ export default function GuardiansEdit() {
         }),
       );
       setLoading(false);
-      navigate('/setting/guardians/guardian-approval', { state: 'guardians/edit' });
+      navigate('/setting/guardians/guardian-approval', {
+        state: {
+          previousPage: FromPageEnum.guardiansEdit,
+        },
+      });
     } catch (error: any) {
       setLoading(false);
       console.log('---edit-guardian-error', error);
-      message.error(handleErrorMessage(error));
+      singleMessage.error(handleErrorMessage(error));
     }
   }, [
+    checkVerifierIsExist,
     currentGuardian?.guardianAccount,
     dispatch,
     navigate,
@@ -110,7 +166,6 @@ export default function GuardiansEdit() {
     setLoading,
     targetVerifier,
     userGuardianList,
-    userGuardiansList,
     walletInfo.caHash,
   ]);
 
@@ -129,51 +184,122 @@ export default function GuardiansEdit() {
         ...opGuardian!,
       }),
     );
-    navigate('/setting/guardians/guardian-approval', { state: 'guardians/del' }); // status
-  }, [opGuardian, dispatch, navigate, userGuardianList, walletInfo.caHash]);
-
-  const { passwordSeed } = useUserInfo();
-  const originChainId = useOriginChainId();
-  const currentChain = useCurrentChain(originChainId);
-  const currentNetwork = useCurrentNetworkInfo();
-
-  // unset guardians, then remove
-  const removeLoginGuardians = useCallback(async () => {
-    const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
-    if (!currentChain?.endPoint || !privateKey) return message.error('unset login account error');
-    setLoading(true);
-    await handleGuardian({
-      rpcUrl: currentChain.endPoint,
-      chainType: currentNetwork.walletType,
-      address: currentChain.caContractAddress,
-      privateKey: privateKey,
-      paramsOption: {
-        method: GuardianMth.UnsetGuardianTypeForLogin,
-        params: {
-          caHash: walletInfo?.caHash,
-          guardian: {
-            type: currentGuardian?.guardianType,
-            verifierId: currentGuardian?.verifier?.id,
-            identifierHash: currentGuardian?.identifierHash,
-          },
-        },
+    navigate('/setting/guardians/guardian-approval', {
+      state: {
+        previousPage: FromPageEnum.guardiansDel,
       },
     });
+  }, [opGuardian, dispatch, navigate, userGuardianList, walletInfo.caHash]);
+
+  const handleSocialVerify = useCallback(async () => {
+    try {
+      setLoading(true);
+
+      const verifiedInfo = await socialVerify({
+        operateGuardian: preGuardian as UserGuardianItem,
+        operationType: OperationTypeEnum.unsetLoginAccount,
+        originChainId,
+        loginAccount,
+        targetChainId: originChainId,
+      });
+      verifiedInfo && dispatch(setUserGuardianItemStatus(verifiedInfo));
+
+      setLoading(false);
+      navigate('/setting/guardians/guardian-approval', {
+        state: {
+          previousPage: FromPageEnum.guardiansLoginGuardian,
+          extra: 'edit',
+        },
+      });
+    } catch (error) {
+      setLoading(false);
+      const _error = handleErrorMessage(error);
+      singleMessage.error(_error);
+      console.log('===handleSocialVerify error', error);
+    }
+  }, [setLoading, socialVerify, preGuardian, originChainId, loginAccount, dispatch, navigate]);
+
+  const handleCommonVerify = useCallback(async () => {
+    try {
+      setLoading(true);
+      const result = await verification.sendVerificationCode({
+        params: {
+          guardianIdentifier: preGuardian?.guardianAccount as string,
+          type: LoginType[opGuardian?.guardianType as LoginType],
+          verifierId: preGuardian?.verifier?.id || '',
+          chainId: originChainId,
+          operationType: OperationTypeEnum.unsetLoginAccount,
+        },
+      });
+
+      setLoading(false);
+      if (result.verifierSessionId) {
+        dispatch(
+          setCurrentGuardianAction({
+            ...(preGuardian as UserGuardianItem),
+            verifierInfo: {
+              sessionId: result.verifierSessionId,
+              endPoint: result.endPoint,
+            },
+            isInitStatus: true,
+          }),
+        );
+        navigate('/setting/guardians/verifier-account', {
+          state: {
+            previousPage: FromPageEnum.guardiansLoginGuardian,
+            extra: 'edit',
+          },
+        });
+      } else {
+        const _error = handleErrorMessage(result, 'send code error');
+        singleMessage.error(_error);
+        console.log('===handleCommonVerify error', result);
+      }
+    } catch (error) {
+      setLoading(false);
+      const _error = handleErrorMessage(error);
+      singleMessage.error(_error);
+      console.log('===handleCommonVerify error', error);
+    }
+  }, [dispatch, navigate, opGuardian?.guardianType, originChainId, preGuardian, setLoading]);
+
+  // unset guardians, then remove
+  const unsetLoginGuardian = useCallback(async () => {
+    dispatch(
+      setLoginAccountAction({
+        guardianAccount: preGuardian?.guardianAccount as string,
+        loginType: preGuardian?.guardianType as LoginType,
+      }),
+    );
+    dispatch(resetUserGuardianStatus());
     await userGuardianList({ caHash: walletInfo.caHash });
-    await removeHandler();
-    setLoading(false);
+    if (isSocialGuardian) {
+      handleSocialVerify();
+    } else {
+      CustomModal({
+        type: 'confirm',
+        okText: 'Confirm',
+        content: (
+          <p>
+            {`${opGuardian?.verifier?.name ?? ''} will send a verification code to `}
+            <strong>{opGuardian?.guardianAccount}</strong>
+            {` to verify your ${isPhoneType ? 'phone number' : 'email address'}.`}
+          </p>
+        ),
+        onOk: handleCommonVerify,
+      });
+    }
   }, [
-    currentChain?.caContractAddress,
-    currentChain?.endPoint,
-    currentGuardian?.guardianType,
-    currentGuardian?.identifierHash,
-    currentGuardian?.verifier?.id,
-    currentNetwork.walletType,
-    passwordSeed,
-    removeHandler,
-    setLoading,
+    dispatch,
+    handleCommonVerify,
+    handleSocialVerify,
+    isPhoneType,
+    isSocialGuardian,
+    opGuardian?.guardianAccount,
+    opGuardian?.verifier?.name,
+    preGuardian?.guardianAccount,
+    preGuardian?.guardianType,
     userGuardianList,
-    walletInfo.AESEncryptPrivateKey,
     walletInfo.caHash,
   ]);
 
@@ -189,10 +315,14 @@ export default function GuardiansEdit() {
         CustomModal({
           type: 'confirm',
           content: (
-            <>{t('This guardian is set as a login account. Click "Confirm" to unset and remove this guardian')}</>
+            <>
+              {t(
+                'This guardian is currently set as a login account. You need to unset its login account identity before removing it. Please click "Confirm" to proceed.',
+              )}
+            </>
           ),
           okText: t('Confirm'),
-          onOk: removeLoginGuardians,
+          onOk: unsetLoginGuardian,
         });
       }
     } else {
@@ -208,7 +338,7 @@ export default function GuardiansEdit() {
         onOk: removeHandler,
       });
     }
-  }, [opGuardian?.isLoginAccount, removeHandler, removeLoginGuardians, t, userGuardiansList]);
+  }, [opGuardian?.isLoginAccount, removeHandler, unsetLoginGuardian, t, userGuardiansList]);
 
   const renderContent = useMemo(
     () => (
@@ -217,14 +347,20 @@ export default function GuardiansEdit() {
           <div className="input-item">
             <div className="label">{`Guardian ${LoginType[opGuardian?.guardianType || 0]}`}</div>
             <div className="control">
-              <CustomSvg type={guardianIconMap[opGuardian?.guardianType || 0]} />
+              <BaseGuardianTypeIcon type={guardianIconMap[opGuardian?.guardianType || 0]} />
               <AccountShow guardian={opGuardian} />
             </div>
           </div>
           <div className="input-item">
             <p className="label">{t('Verifier')}</p>
-            <CustomSelect className="select" value={selectVal} onChange={handleChange} items={selectOptions} />
-            {exist && <div className="error">{t('This guardian already exists')}</div>}
+            <CustomSelect
+              className="select"
+              value={selectVal}
+              onChange={handleChange}
+              items={selectOptions}
+              customChild={OptionTip()}
+            />
+            {verifierExist && <div className="error">{verifierExistTip}</div>}
           </div>
         </div>
         <div className="btn-wrap">
@@ -237,7 +373,17 @@ export default function GuardiansEdit() {
         </div>
       </div>
     ),
-    [checkRemove, disabled, exist, guardiansChangeHandler, handleChange, opGuardian, selectOptions, selectVal, t],
+    [
+      checkRemove,
+      disabled,
+      guardiansChangeHandler,
+      handleChange,
+      opGuardian,
+      selectOptions,
+      selectVal,
+      t,
+      verifierExist,
+    ],
   );
   const headerTitle = useMemo(() => t('Edit Guardians'), [t]);
   const onBack = useCallback(() => {

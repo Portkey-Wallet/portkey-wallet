@@ -15,7 +15,6 @@ export default function ViewContactPopup({
   handleEdit,
   handleChat,
   handleAdd,
-  handleCopy,
 }: IProfileDetailProps) {
   return (
     <div className="view-contact-popup">
@@ -35,7 +34,6 @@ export default function ViewContactPopup({
         handleEdit={handleEdit}
         handleChat={handleChat}
         handleAdd={handleAdd}
-        handleCopy={handleCopy}
       />
     </div>
   );

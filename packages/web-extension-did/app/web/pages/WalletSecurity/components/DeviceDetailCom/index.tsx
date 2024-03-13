@@ -1,6 +1,6 @@
 import { IDeviceItem, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { DeviceType } from '@portkey-wallet/types/types-ca/device';
-import { Button } from 'antd';
+import AsyncButton from 'components/AsyncButton';
 import CustomSvg from 'components/CustomSvg';
 import { useTranslation } from 'react-i18next';
 import { dateFormat } from 'utils';
@@ -42,9 +42,9 @@ export default function DeviceDetailCom({ device, isCurrent, onDelete }: IDevice
       </div>
       {!isCurrent && (
         <div className="content-btn">
-          <Button type="primary" htmlType="submit" onClick={onDelete}>
+          <AsyncButton type="primary" htmlType="submit" onClick={onDelete}>
             {t('Remove Device')}
-          </Button>
+          </AsyncButton>
         </div>
       )}
     </div>

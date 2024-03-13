@@ -2,20 +2,21 @@ import { useCallback, useMemo, useState } from 'react';
 import { useWalletInfo } from 'store/Provider/hooks';
 import WalletNamePopup from './Popup';
 import WalletNamePrompt from './Prompt';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useCommonState } from 'store/Provider/hooks';
 import { IProfileDetailDataProps, MyProfilePageType } from 'types/Profile';
-import { useProfileCopy } from 'hooks/useProfile';
 import { useTranslation } from 'react-i18next';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useLocationState } from 'hooks/router';
+import { FromPageEnum, TWalletNameLocationState } from 'types/router';
 
 export default function WalletName() {
   const { isNotLessThan768 } = useCommonState();
   const navigate = useNavigate();
-  const { state: locationState } = useLocation();
+  const { state: locationState } = useLocationState<TWalletNameLocationState>();
   const showChat = useIsChatShow();
-  const { userInfo, userId } = useWalletInfo();
+  const { userInfo } = useWalletInfo();
   const caAddressInfos = useCaAddressInfoList();
   const transAddresses = useMemo(() => {
     return caAddressInfos.map((item) => {
@@ -38,11 +39,11 @@ export default function WalletName() {
       avatar: userInfo?.avatar,
       index: userInfo?.nickName.substring(0, 1).toLocaleUpperCase(),
       addresses: transAddresses, // TODO fetch profile for chain image
-      caHolderInfo: { userId: userId, walletName: userInfo?.nickName },
+      caHolderInfo: { userId: userInfo?.userId, walletName: userInfo?.nickName },
       isShowRemark: false,
-      from: 'my-did',
+      previousPage: 'my-did',
     }),
-    [transAddresses, userId, userInfo?.avatar, userInfo?.nickName],
+    [transAddresses, userInfo?.avatar, userInfo?.nickName, userInfo?.userId],
   );
 
   const showEdit = useCallback(() => {
@@ -52,13 +53,17 @@ export default function WalletName() {
 
   const showView = useCallback(() => {
     if (type === MyProfilePageType.VIEW) {
-      if (locationState?.from === 'chat-group-info') return navigate(`/chat-group-info/${locationState?.channelUuid}`);
+      if (locationState?.previousPage === FromPageEnum.chatGroupInfo)
+        return navigate(`/chat-group-info/${locationState?.channelUuid}`);
 
-      if (locationState?.from === 'chat-member-list')
+      if (locationState?.previousPage === FromPageEnum.chatMemberList)
         return navigate(`/chat-group-info/${locationState?.channelUuid}/member-list`, { state: locationState });
 
-      if (['chat-box', 'chat-box-group'].includes(locationState?.from))
-        return navigate(`/${locationState.from}/${locationState?.channelUuid}`);
+      if (
+        locationState?.previousPage &&
+        [FromPageEnum.chatBox, FromPageEnum.chatBoxGroup].includes(locationState?.previousPage)
+      )
+        return navigate(`/${locationState.previousPage}/${locationState?.channelUuid}`);
       return navigate('/setting/wallet');
     }
     if (type === MyProfilePageType.EDIT) {
@@ -67,7 +72,6 @@ export default function WalletName() {
     }
   }, [locationState, navigate, title, type]);
 
-  const handleCopy = useProfileCopy();
   // const goBack = useCallback(() => navigate('/setting/wallet'), [navigate]);
   const saveCallback = useCallback(() => {
     setType(MyProfilePageType.VIEW);
@@ -77,24 +81,20 @@ export default function WalletName() {
     <WalletNamePrompt
       headerTitle={headerTitle}
       data={state}
-      showChat={showChat}
       type={type}
       editText={editText}
       goBack={showView}
       handleEdit={showEdit}
-      handleCopy={handleCopy}
       saveCallback={saveCallback}
     />
   ) : (
     <WalletNamePopup
       headerTitle={headerTitle}
       data={state}
-      showChat={showChat}
       type={type}
       editText={editText}
       goBack={showView}
       handleEdit={showEdit}
-      handleCopy={handleCopy}
       saveCallback={saveCallback}
     />
   );

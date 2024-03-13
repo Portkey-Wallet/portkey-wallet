@@ -39,7 +39,7 @@ const _renderPaymentSecurityItem = ({ item }: { item: ITransferLimitItem }) => {
           shapeType="circular"
           title={item.symbol}
           svgName={item.symbol === defaultToken.symbol ? 'elf-icon' : undefined}
-          imageUrl={symbolImages[item.symbol]}
+          imageUrl={item.imageUrl || symbolImages[item.symbol]}
           avatarSize={pTd(32)}
         />
         <View style={ItemStyles.content}>

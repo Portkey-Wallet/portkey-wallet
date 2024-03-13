@@ -10,36 +10,36 @@ import { useHandleAchSell } from 'pages/Buy/hooks/useHandleAchSell';
 import { useStorage } from 'hooks/useStorage';
 import walletMessage from 'messages/walletMessage';
 import { useEffectOnce } from 'react-use';
-import { getStoreState } from 'store/utils/getStore';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import initIm from 'hooks/im';
+import { sleep } from '@portkey-wallet/utils';
 import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { fetchAssetAsync } from '@portkey-wallet/store/store-ca/assets/slice';
-import { useCaAddressInfoList, useCaAddresses } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useManagerExceedTipModal } from 'hooks/useManagerExceedTip';
+import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 
 export default function Home() {
   const navigate = useNavigate();
   const { isPrompt, isNotLessThan768 } = useCommonState();
   const isImputation = useIsImputation();
-  const store = getStoreState();
-  console.log('custom', store);
+  const { getViewReferralStatusStatus, getReferralLink, viewReferralStatus } = useReferral();
   const onUserClick = useCallback(() => {
     const url = isNotLessThan768 ? `/setting/wallet` : `/setting`;
     navigate(url);
   }, [isNotLessThan768, navigate]);
   useDiscoverGroupList();
   const appDispatch = useAppDispatch();
-  const caAddresses = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
-
+  const managerExceedTip = useManagerExceedTipModal();
   const { search } = useLocation();
   const isSell = useRef(0); // guaranteed to make only one transfer
   const handleAchSell = useHandleAchSell();
   const locked = useStorage('locked');
 
   const getAccountAllAssets = useCallback(() => {
-    appDispatch(fetchAssetAsync({ caAddresses, keyword: '', caAddressInfos }));
-  }, [appDispatch, caAddressInfos, caAddresses]);
+    appDispatch(fetchAssetAsync({ keyword: '', caAddressInfos }));
+  }, [appDispatch, caAddressInfos]);
 
   const checkAchSell = useCallback(async () => {
     if (search) {
@@ -47,6 +47,10 @@ export default function Home() {
       if (detail && method === walletMessage.ACH_SELL_REDIRECT && !locked && isSell.current === 0) {
         history.replaceState(null, '', location.pathname);
         isSell.current = 1;
+
+        // wait ramp init
+        await sleep(2000);
+
         await handleAchSell(detail);
       }
     }
@@ -55,12 +59,15 @@ export default function Home() {
   useEffectOnce(() => {
     checkAchSell();
     getAccountAllAssets();
+    managerExceedTip();
+    getViewReferralStatusStatus();
+    getReferralLink();
   });
   initIm();
 
   return (
     <div className={clsx(['portkey-home', isPrompt && 'portkey-prompt'])}>
-      <PortKeyHeader unReadShow={isImputation} onUserClick={onUserClick} />
+      <PortKeyHeader unReadShow={isImputation || !viewReferralStatus} onUserClick={onUserClick} />
       <div className="portkey-body">
         <MyBalance />
       </div>

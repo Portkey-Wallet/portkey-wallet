@@ -13,7 +13,7 @@ import clsx from 'clsx';
 import './index.less';
 
 const netWorkIcon: Record<NetworkType, IconType> = {
-  MAIN: 'Aelf',
+  MAINNET: 'Aelf',
   TESTNET: 'elf-icon',
 };
 

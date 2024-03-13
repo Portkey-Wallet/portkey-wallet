@@ -44,7 +44,7 @@ const SelectChain: React.FC<SelectChainProps> = ({ currentNetwork, chainId, chai
     <ListItem
       onPress={onPressItem}
       titleLeftElement={
-        networkType === 'MAIN' ? <Svg icon="mainnet" size={pTd(28)} /> : <Svg icon="testnet" size={pTd(28)} />
+        networkType === 'MAINNET' ? <Svg icon="mainnet" size={pTd(28)} /> : <Svg icon="testnet" size={pTd(28)} />
       }
       titleStyle={[GStyles.flexRowWrap, GStyles.itemCenter]}
       titleTextStyle={styles.chainSelectTitleStyle}

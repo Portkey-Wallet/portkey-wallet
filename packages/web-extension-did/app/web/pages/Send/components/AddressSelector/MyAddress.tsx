@@ -4,7 +4,7 @@ import { ICaAddressInfoListItemType, useCaAddressInfoList } from '@portkey-walle
 import { useEffect, useState } from 'react';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils/converter';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useTranslation } from 'react-i18next';
 
 export default function MyAddress({
@@ -14,7 +14,7 @@ export default function MyAddress({
   chainId: ChainId;
   onClick: (account: IClickAddressProps) => void;
 }) {
-  const isTestNet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const { t } = useTranslation();
   const [addressList, setAddressList] = useState<ICaAddressInfoListItemType[]>([]);
   const caAddressInfos = useCaAddressInfoList();
@@ -28,15 +28,16 @@ export default function MyAddress({
     <div className="my-address">
       {addressList.length === 0 && <p className="no-data">{t('There is no address')}</p>}
       {addressList?.map((item, idx) => {
+        const _address = `ELF_${formatStr2EllipsisStr(item.caAddress, [6, 6])}_${item.chainId}`;
         return (
           <div
             className="my-address-item"
-            key={idx + item.caAddress}
+            key={idx + _address}
             onClick={() => {
               onClick({ chainId: item.chainId, address: item.caAddress, chainName: item.chainName });
             }}>
-            <p className="address">{`ELF_${formatStr2EllipsisStr(item.caAddress, [6, 6])}_${item.chainId}`}</p>
-            <p className="network">{transNetworkText(item.chainId, isTestNet)}</p>
+            <p className="address">{_address}</p>
+            <p className="network">{transNetworkText(item.chainId, !isMainnet)}</p>
           </div>
         );
       })}

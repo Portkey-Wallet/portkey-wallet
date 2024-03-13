@@ -3,14 +3,12 @@ import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import { useLanguage } from 'i18n/hooks';
 import React, { memo, useCallback, useMemo, useRef } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { formatTransferTime } from 'utils';
+import { StyleSheet, Text, View } from 'react-native';
 import { formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
-
 import { pTd } from 'utils/unit';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
-import { AmountSign, divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { AmountSign, divDecimals, divDecimalsStr, formatAmountShow } from '@portkey-wallet/utils/converter';
 import CommonButton from 'components/CommonButton';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import Loading from 'components/Loading';
@@ -31,6 +29,9 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import fonts from 'assets/theme/fonts';
 import { ZERO } from '@portkey-wallet/constants/misc';
+import { getEllipsisTokenShow } from 'pages/Chat/utils/format';
+import Touchable from 'components/Touchable';
+import { formatTransferTime } from '@portkey-wallet/utils/time';
 
 interface ActivityItemPropsType {
   item?: ActivityItemType;
@@ -52,10 +53,11 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
   const amountString = useMemo(() => {
     const { amount = '', isReceived, decimals = 8, symbol } = item || {};
     let prefix = ' ';
-
     if (amount && !ZERO.isEqualTo(amount)) prefix = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
 
-    return `${prefix} ${formatAmountShow(divDecimals(amount, Number(decimals)))}${symbol ? ' ' + symbol : ''}`;
+    const tmpAmount = getEllipsisTokenShow(divDecimalsStr(amount, decimals), symbol || '', 10);
+
+    return `${prefix} ${tmpAmount}`;
   }, [item]);
 
   const showRetry = useCallback(
@@ -77,7 +79,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
   );
 
   const retryCrossChain = useCallback(
-    async (managerTransferTxId: string, data: CrossChainTransferParamsType) => {
+    async (managerTransferTxId: string, data: CrossChainTransferParamsType & { issueChainId: number }) => {
       const chainInfo = currentChainList?.find(chain => chain.chainId === data.tokenInfo.chainId);
       if (!chainInfo || !pin) return;
       const account = getManagerAccount(pin);
@@ -134,6 +136,8 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
         <Text style={[itemStyle.tokenBalance, fonts.regularFont]}>
           {item?.nftInfo?.nftId ? `#${item?.nftInfo?.nftId}` : amountString}
         </Text>
+
+        {/* TODO : change func formatAmountShow */}
         {isMainnet && !item?.nftInfo && (isTokenHasPrice || item?.symbol === null) && (
           <Text style={itemStyle.usdtBalance}>{`$ ${formatAmountShow(
             divDecimals(item?.amount, Number(item?.decimals)).multipliedBy(item ? tokenPriceObject[item?.symbol] : 0),
@@ -145,14 +149,13 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
   }, [amountString, isMainnet, isTokenHasPrice, item, tokenPriceObject]);
 
   return (
-    <TouchableOpacity style={itemStyle.itemWrap} onPress={() => onPress?.(item)}>
-      <Text style={itemStyle.time}>{formatTransferTime(Number(item?.timestamp) * 1000)}</Text>
+    <Touchable style={itemStyle.itemWrap} onPress={() => onPress?.(item)}>
+      <Text style={itemStyle.time}>{formatTransferTime(item?.timestamp)}</Text>
       <View style={[itemStyle.contentWrap]}>
         <CommonAvatar
           style={itemStyle.left}
-          svgName={
-            SHOW_FROM_TRANSACTION_TYPES.includes(item?.transactionType as TransactionTypes) ? 'transfer' : 'Contract'
-          }
+          svgName={item?.listIcon ? undefined : 'transfer'}
+          imageUrl={item?.listIcon || ''}
           avatarSize={pTd(32)}
         />
 
@@ -182,7 +185,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
           />
         </View>
       )}
-    </TouchableOpacity>
+    </Touchable>
   );
 };
 
@@ -207,7 +210,7 @@ const itemStyle = StyleSheet.create({
     height: pTd(74),
   },
   left: {
-    marginRight: pTd(18),
+    marginRight: pTd(12),
     width: pTd(32),
     height: pTd(32),
     borderWidth: 0,
@@ -231,6 +234,7 @@ const itemStyle = StyleSheet.create({
     textAlign: 'right',
     color: defaultColors.font5,
     fontSize: pTd(16),
+    maxWidth: pTd(130),
   },
   usdtBalance: {
     textAlign: 'right',

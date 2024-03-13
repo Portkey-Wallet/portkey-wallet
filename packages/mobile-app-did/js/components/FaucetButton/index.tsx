@@ -8,12 +8,12 @@ import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { TOKEN_CLAIM_CONTRACT_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/payment';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import CommonToast from 'components/CommonToast';
 import { commonButtonStyle } from 'components/SendButton/style';
 import Touchable from 'components/Touchable';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 
 interface SendButtonType {
   themeType?: 'dashBoard' | 'innerPage';
@@ -27,7 +27,7 @@ const FaucetButton = (props: SendButtonType) => {
 
   const currentWallet = useCurrentWalletInfo();
   const currentNetworkInfo = useCurrentNetworkInfo();
-  const getCurrentCAContract = useGetCurrentCAContract(TOKEN_CLAIM_CONTRACT_CHAIN_ID);
+  const getCurrentCAContract = useGetCurrentCAContract(DefaultChainId);
   const isLoading = useRef<boolean>(false);
 
   const buttonTitleStyle = useMemo(

@@ -4,12 +4,10 @@ import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import { windowHeight } from '@portkey-wallet/utils/mobile/device';
 
-const { bg1, font3, bg4, error } = defaultColors;
-
 export const pageStyles = StyleSheet.create({
   pageWrap: {
     flex: 1,
-    backgroundColor: bg4,
+    backgroundColor: defaultColors.bg4,
     justifyContent: 'space-between',
     ...GStyles.paddingArg(24, 20, 18),
     minHeight: windowHeight - pTd(100),
@@ -18,7 +16,7 @@ export const pageStyles = StyleSheet.create({
     flex: 1,
   },
   titleLabel: {
-    color: font3,
+    color: defaultColors.font3,
     lineHeight: pTd(20),
     ...GStyles.marginArg(0, 0, 8, 8),
   },
@@ -38,38 +36,29 @@ export const pageStyles = StyleSheet.create({
     marginTop: pTd(8),
   },
   errorTips: {
-    color: error,
+    color: defaultColors.error,
+    marginLeft: pTd(8),
   },
   accountWrap: {
     marginBottom: pTd(24),
   },
   accountLabel: {
-    color: font3,
+    color: defaultColors.font3,
     marginLeft: pTd(8),
     marginBottom: pTd(8),
     lineHeight: pTd(20),
-  },
-  oAuthBtn: {
-    height: pTd(56),
-    paddingHorizontal: pTd(16),
-    justifyContent: 'center',
-    backgroundColor: bg1,
-    marginBottom: pTd(24),
-    borderRadius: pTd(6),
   },
   typeIcon: {
     borderRadius: pTd(14),
     marginRight: pTd(12),
   },
-  firstNameStyle: {
-    marginBottom: pTd(2),
-  },
-  thirdPartAccount: {
-    height: pTd(56),
-    borderRadius: pTd(6),
-    backgroundColor: defaultColors.bg1,
-    paddingHorizontal: pTd(16),
-    justifyContent: 'center',
-    marginBottom: pTd(24),
+  itemIconWrap: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: defaultColors.border6,
+    backgroundColor: defaultColors.bg6,
+    width: pTd(32),
+    height: pTd(32),
+    borderRadius: pTd(16),
+    marginRight: pTd(10),
   },
 });

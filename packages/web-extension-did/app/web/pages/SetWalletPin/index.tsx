@@ -1,36 +1,47 @@
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import PortKeyTitle from 'pages/components/PortKeyTitle';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useParams } from 'react-router';
 import { useAppDispatch, useGuardiansInfo, useLoading, useLoginInfo } from 'store/Provider/hooks';
 import { setPinAction } from 'utils/lib/serviceWorkerAction';
-import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { createWallet, resetWallet, setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
+import {
+  useCurrentWallet,
+  useOriginChainId,
+  useOtherNetworkLogged,
+  useWallet,
+} from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { createWallet, resetCaInfo, resetWallet, setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useTranslation } from 'react-i18next';
 import { VerificationType } from '@portkey-wallet/types/verifier';
 import { isWalletError } from '@portkey-wallet/store/wallet/utils';
 import { useHardwareBack } from 'hooks/useHardwareBack';
 import { setPasswordSeed } from 'store/reducers/user/slice';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { CAInfoType, LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { sendScanLoginSuccess } from '@portkey-wallet/api/api-did/message/utils';
 import ModalTip from 'pages/components/ModalTip';
 import './index.less';
 import {
-  SetPinAndAddManager,
   AddManagerType,
   DIDWalletInfo,
   CreatePendingInfo,
   handleErrorMessage,
+  OnErrorFunc,
 } from '@portkey/did-ui-react';
 import type { AccountType, GuardiansApproved } from '@portkey/services';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
 import CommonModal from 'components/CommonModal';
+import useDistributeLoginFail from 'hooks/useDistributeLoginFail';
+import { NetworkType } from '@portkey-wallet/types';
+import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
+import { useDebounceCallback } from '@portkey-wallet/hooks';
+import SetPinAndAddManager from 'pages/components/SetPinAndAddManager';
 
 export default function SetWalletPin() {
   const { t } = useTranslation();
   const { type: state } = useParams<{ type: 'login' | 'scan' | 'register' }>();
   const loginType: AddManagerType = useMemo(() => (state === 'register' ? 'register' : 'recovery'), [state]);
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const dispatch = useAppDispatch();
   const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
@@ -38,12 +49,15 @@ export default function SetWalletPin() {
   const { scanWalletInfo, scanCaWalletInfo, loginAccount, registerVerifier } = useLoginInfo();
   const { userGuardianStatus } = useGuardiansInfo();
   const originChainId = useOriginChainId();
+  const distributeFail = useDistributeLoginFail();
+  const { currentNetwork } = useWallet();
+  const otherNetworkLogged = useOtherNetworkLogged();
 
   console.log(walletInfo, state, scanWalletInfo, scanCaWalletInfo, 'walletInfo===caWallet');
 
   useEffect(() => {
     if (state === 'scan' && (!scanWalletInfo || !scanCaWalletInfo)) {
-      message.error('Wallet information is wrong, please go back to scan the code and try again');
+      singleMessage.error('Wallet information is wrong, please go back to scan the code and try again');
       navigate('/register/start/scan');
     }
   }, [navigate, scanCaWalletInfo, scanWalletInfo, state]);
@@ -74,7 +88,7 @@ export default function SetWalletPin() {
       const scanWallet = scanWalletInfo;
       if (!scanWallet?.address || !scanCaWalletInfo) {
         navigate('/register/start/scan');
-        message.error('Wallet information is wrong, please go back to scan the code and try again');
+        singleMessage.error('Wallet information is wrong, please go back to scan the code and try again');
         return;
       }
       dispatch(
@@ -94,7 +108,7 @@ export default function SetWalletPin() {
     [dispatch, navigate, scanCaWalletInfo, scanWalletInfo, state],
   );
 
-  const onCreate = useCallback(
+  const onCreate = useDebounceCallback(
     async (value: DIDWalletInfo | string) => {
       try {
         if (state === 'scan' && typeof value === 'string') return createByScan(value);
@@ -116,8 +130,7 @@ export default function SetWalletPin() {
             chainId: value.chainId,
           }),
         );
-        const path = state ? 'register' : 'login';
-        navigate(`/success-page/${path}`);
+        navigate(`/success-page/${state}`);
         setLoading(false);
 
         ModalTip({
@@ -128,14 +141,17 @@ export default function SetWalletPin() {
         setLoading(false);
 
         const walletError = isWalletError(error);
-        if (walletError) return message.error(walletError);
-        message.error(handleErrorMessage(error, 'Create wallet failed'));
+        if (walletError) return singleMessage.error(walletError);
+        singleMessage.error(handleErrorMessage(error, 'Create wallet failed'));
       } finally {
         setLoading(false);
       }
     },
     [state, createByScan, originChainId, dispatch, navigate, setLoading],
+    500,
   );
+
+  const pendingInfo = useRef<{ walletInfo?: any; pin: string; networkType?: NetworkType; caInfo?: CAInfoType }>();
 
   const onCreatePending = useCallback(
     async (info: CreatePendingInfo) => {
@@ -150,14 +166,14 @@ export default function SetWalletPin() {
         };
 
         const pin = info.pin;
+        const walletPendingData = {
+          walletInfo: info.walletInfo,
+          pin,
+          caInfo: { managerInfo },
+        };
+        pendingInfo.current = walletPendingData;
         dispatch(setPasswordSeed(pin));
-        dispatch(
-          createWallet({
-            walletInfo: info.walletInfo,
-            pin,
-            caInfo: { managerInfo },
-          }),
-        );
+        dispatch(createWallet(walletPendingData));
         await setPinAction(pin);
       } catch (error) {
         console.log('onCreatePending error:', error);
@@ -166,7 +182,7 @@ export default function SetWalletPin() {
     [dispatch, loginAccount?.guardianAccount, loginAccount?.loginType, state],
   );
 
-  const backHandler = useCallback(async () => {
+  const backHandler = useCallback(() => {
     switch (state) {
       case 'register':
         navigate('/register/start/create');
@@ -195,9 +211,45 @@ export default function SetWalletPin() {
     backHandler();
   });
 
+  const onError: OnErrorFunc = useCallback(
+    async (error) => {
+      try {
+        if (!pendingInfo.current) return;
+        const errorString = handleErrorMessage(error.error);
+        if (errorString?.includes('ManagerInfo exists')) {
+          const isSuccess = await distributeFail({
+            messageStr: errorString,
+            managerAddress: pendingInfo.current.walletInfo.address,
+            currentNetwork,
+            pin: pendingInfo.current.pin,
+            verificationType: state === 'login' ? VerificationType.communityRecovery : VerificationType.register,
+          });
+          if (isSuccess) {
+            ModalTip({
+              content: 'Requested successfully',
+            });
+            return;
+          }
+        }
+        throw errorString;
+      } catch (error) {
+        if (otherNetworkLogged) {
+          dispatch(resetCaInfo(currentNetwork));
+        } else {
+          dispatch(resetWallet());
+        }
+        const walletError = isWalletError(error);
+        if (walletError) return singleMessage.error(walletError);
+        singleMessage.error(handleErrorMessage(error, 'Create wallet failed'));
+        navigate('/register/start');
+      }
+    },
+    [currentNetwork, dispatch, distributeFail, navigate, otherNetworkLogged, state],
+  );
+
   return (
     <div className="common-page set-wallet-pin" id="set-wallet-pin">
-      <PortKeyTitle leftElement leftCallBack={leftCallBack} />
+      <PortKeyTitle leftElement={state !== 'login'} leftCallBack={leftCallBack} />
       <div className="common-content1 set-pin-content">
         <SetPinAndAddManager
           accountType={LoginType[loginAccount?.loginType as LoginType] as AccountType}
@@ -208,6 +260,7 @@ export default function SetWalletPin() {
           guardianIdentifier={loginAccount?.guardianAccount}
           onFinish={onCreate}
           onCreatePending={onCreatePending}
+          onError={onError}
         />
       </div>
 

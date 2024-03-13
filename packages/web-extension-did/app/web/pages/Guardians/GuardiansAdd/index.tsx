@@ -4,10 +4,9 @@ import {
   setOpGuardianAction,
   setUserGuardianItemStatus,
 } from '@portkey-wallet/store/store-ca/guardians/actions';
-import { Input, Button, message } from 'antd';
-import { useNavigate, useLocation } from 'react-router';
+import { Input, Button } from 'antd';
 import CustomSvg from 'components/CustomSvg';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useGuardiansInfo, useLoading, useWalletInfo } from 'store/Provider/hooks';
 import { EmailReg } from '@portkey-wallet/utils/reg';
 import { ISocialLogin, LoginType } from '@portkey-wallet/types/types-ca/wallet';
@@ -16,7 +15,7 @@ import useGuardianList from 'hooks/useGuardianList';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import BaseVerifierIcon from 'components/BaseVerifierIcon';
-import { StoreUserGuardianItem, UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
+import { StoreUserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { useTranslation } from 'react-i18next';
 import { verification } from 'utils/api';
 import PhoneInput from '../components/PhoneInput';
@@ -24,7 +23,13 @@ import { EmailError } from '@portkey-wallet/utils/check';
 import { guardianTypeList, phoneInit, socialInit } from 'constants/guardians';
 import { IPhoneInput, ISocialInput } from 'types/guardians';
 import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
-import { getGoogleUserInfo, parseAppleIdentityToken } from '@portkey-wallet/utils/authentication';
+import {
+  getGoogleUserInfo,
+  parseAppleIdentityToken,
+  parseFacebookToken,
+  parseTelegramToken,
+  parseTwitterToken,
+} from '@portkey-wallet/utils/authentication';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { request } from '@portkey-wallet/api/api-did';
 import { handleErrorMessage } from '@portkey-wallet/utils';
@@ -36,23 +41,41 @@ import GuardianAddPopup from './Popup';
 import CustomModal from '../../components/CustomModal';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useCommonState } from 'store/Provider/hooks';
-import { MessageType } from 'antd/lib/message';
-import qs from 'query-string';
+import clsx from 'clsx';
+import { getVerifierStatusMap, guardianAccountIsExist } from '../utils';
+import OptionTip from '../components/SelectOptionTip';
+import { guardianExistTip, verifierExistTip } from '@portkey-wallet/constants/constants-ca/guardian';
+import singleMessage from 'utils/singleMessage';
+import { usePromptLocationParams, useNavigateState } from 'hooks/router';
+import {
+  FromPageEnum,
+  TAddGuardianLocationSearch,
+  TAddGuardianLocationState,
+  TGuardianApprovalLocationState,
+  TVerifierAccountLocationState,
+} from 'types/router';
+import BaseGuardianTypeIcon from 'components/BaseGuardianTypeIcon';
 import './index.less';
 
 export default function AddGuardian() {
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TVerifierAccountLocationState | TGuardianApprovalLocationState>();
   const { t } = useTranslation();
-  const { state, search } = useLocation();
+  const { locationParams } = usePromptLocationParams<TAddGuardianLocationState, TAddGuardianLocationSearch>();
   const { verifierMap, userGuardiansList, opGuardian } = useGuardiansInfo();
+  const verifierStatusMap = useMemo(
+    () => getVerifierStatusMap(verifierMap, userGuardiansList),
+    [userGuardiansList, verifierMap],
+  );
+  const guardiansSaveRef = useRef({ verifierMap, userGuardiansList });
+  guardiansSaveRef.current = { verifierMap, userGuardiansList };
   const [guardianType, setGuardianType] = useState<LoginType>();
   const [verifierVal, setVerifierVal] = useState<string>();
   const [verifierName, setVerifierName] = useState<string>();
   const [emailVal, setEmailVal] = useState<string>();
   const [phoneValue, setPhoneValue] = useState<IPhoneInput>();
   const [socialValue, setSocialVale] = useState<ISocialInput>();
-  const [emailErr, setEmailErr] = useState<string>();
-  const [exist, setExist] = useState<boolean>(false);
+  const [accountErr, setAccountErr] = useState<string>();
+  const [verifierExist, setVerifierExist] = useState<boolean>(false);
   const [curKey, setCurKey] = useState<string>('');
   const [accountShow, setAccountShow] = useState<string>('');
   const dispatch = useAppDispatch();
@@ -63,15 +86,10 @@ export default function AddGuardian() {
   const originChainId = useOriginChainId();
   const currentChain = useCurrentChain(originChainId);
   const { currentNetwork } = useWalletInfo();
-  const accelerateChainId = useMemo(() => {
-    if (search) {
-      const { detail } = qs.parse(search);
-      if (detail && detail.indexOf('accelerateChainId') !== -1) {
-        return detail.split('_')[1];
-      }
-    }
-    return state?.accelerateChainId || originChainId;
-  }, [originChainId, search, state]);
+  const accelerateChainId = useMemo(
+    () => locationParams?.accelerateChainId || originChainId,
+    [locationParams?.accelerateChainId, originChainId],
+  );
 
   const disabled = useMemo(() => {
     let check = true;
@@ -86,6 +104,9 @@ export default function AddGuardian() {
           break;
         }
         case LoginType.Apple:
+        case LoginType.Telegram:
+        case LoginType.Twitter:
+        case LoginType.Facebook:
         case LoginType.Google: {
           check = !(socialValue?.id || socialValue?.value);
           break;
@@ -94,23 +115,33 @@ export default function AddGuardian() {
           check = true;
       }
     }
-    return check || exist || !!emailErr;
-  }, [guardianType, verifierVal, exist, emailErr, emailVal, phoneValue, socialValue]);
+    return check || verifierExist || !!accountErr;
+  }, [
+    verifierVal,
+    verifierExist,
+    accountErr,
+    guardianType,
+    emailVal,
+    phoneValue?.phoneNumber,
+    socialValue?.id,
+    socialValue?.value,
+  ]);
 
   const selectVerifierItem = useMemo(() => verifierMap?.[verifierVal || ''], [verifierMap, verifierVal]);
 
   const verifierOptions = useMemo(
     () =>
-      Object.values(verifierMap ?? {})?.map((item) => ({
+      Object.values(verifierStatusMap ?? {})?.map((item) => ({
         value: item.id,
         children: (
-          <div className="flex select-option">
+          <div className={clsx(['flex', 'select-option', item.isUsed && 'no-use'])}>
             <BaseVerifierIcon fallback={item.name[0]} src={item.imageUrl} />
             <span className="title">{item.name}</span>
           </div>
         ),
+        disabled: item.isUsed,
       })),
-    [verifierMap],
+    [verifierStatusMap],
   );
 
   const guardianTypeOptions = useMemo(
@@ -119,7 +150,7 @@ export default function AddGuardian() {
         value: item.value,
         children: (
           <div className="flex select-option">
-            <CustomSvg type={item.icon} />
+            <BaseGuardianTypeIcon type={item.icon} />
             <span className="title">{item.label}</span>
           </div>
         ),
@@ -144,6 +175,9 @@ export default function AddGuardian() {
         break;
       }
       case LoginType.Apple:
+      case LoginType.Telegram:
+      case LoginType.Twitter:
+      case LoginType.Facebook:
       case LoginType.Google: {
         key = `${socialValue?.id}&${verifierVal}`;
         tempAccount = `${socialValue?.value}`;
@@ -155,7 +189,7 @@ export default function AddGuardian() {
   }, [emailVal, guardianType, phoneValue, socialValue, verifierVal]);
 
   useEffectOnce(() => {
-    if (state === 'back' && opGuardian) {
+    if (locationParams?.previousPage && opGuardian) {
       setGuardianType(opGuardian.guardianType);
       setVerifierVal(opGuardian.verifier?.id);
       setVerifierName(opGuardian.verifier?.name);
@@ -169,6 +203,9 @@ export default function AddGuardian() {
           break;
         case LoginType.Google:
         case LoginType.Apple:
+        case LoginType.Telegram:
+        case LoginType.Twitter:
+        case LoginType.Facebook:
           setSocialVale(opGuardian.social);
           break;
       }
@@ -176,26 +213,26 @@ export default function AddGuardian() {
   });
 
   const guardianTypeChange = useCallback((value: LoginType) => {
-    setExist(false);
+    setVerifierExist(false);
     setGuardianType(value);
     setEmailVal('');
     setPhoneValue(phoneInit);
     setSocialVale(socialInit);
-    setEmailErr('');
+    setAccountErr('');
   }, []);
 
   const verifierChange = useCallback(
     (value: string) => {
       setVerifierVal(value);
       setVerifierName(verifierMap?.[value]?.name);
-      setExist(false);
+      setVerifierExist(false);
     },
     [verifierMap],
   );
 
   const handleEmailInputChange = useCallback((v: string) => {
-    setEmailErr('');
-    setExist(false);
+    setAccountErr('');
+    setVerifierExist(false);
     setEmailVal(v);
   }, []);
 
@@ -230,19 +267,57 @@ export default function AddGuardian() {
               isPrivate: isPrivate,
             });
           }
+        } else if (v === 'Telegram') {
+          const userInfo = parseTelegramToken(data?.access_token);
+          if (!userInfo) throw 'Telegram auth error';
+          const { firstName, userId } = userInfo;
+          setSocialVale({
+            name: firstName,
+            value: '',
+            id: userId,
+            accessToken: data?.access_token,
+            isPrivate: true,
+          });
+        } else if (v === 'Twitter') {
+          const userInfo = parseTwitterToken(data?.access_token);
+          if (!userInfo) throw 'Twitter auth error';
+          const { firstName, userId, accessToken } = userInfo;
+          setSocialVale({
+            name: firstName,
+            value: '',
+            id: userId,
+            accessToken,
+            isPrivate: true,
+          });
+        } else if (v === 'Facebook') {
+          const userInfo = await parseFacebookToken(data?.access_token);
+          if (!userInfo) throw 'Telegram auth error';
+          const { firstName, userId, accessToken } = userInfo;
+          setSocialVale({
+            name: firstName,
+            value: '',
+            id: userId,
+            accessToken,
+            isPrivate: true,
+          });
         } else {
-          message.error(`type:${v} is not support`);
+          singleMessage.error(`type:${v} is not support`);
         }
         if (result.error) throw result.message ?? result.Error;
       } catch (error) {
         setLoading(false);
         const msg = handleErrorMessage(error);
-        message.error(msg);
+        singleMessage.error(msg);
       }
       setLoading(false);
     },
     [currentNetwork, setLoading],
   );
+
+  const handleClearSocialAccount = useCallback(() => {
+    setSocialVale(socialInit);
+    setAccountErr('');
+  }, []);
 
   const renderSocialGuardianAccount = useCallback(
     (v: ISocialLogin) => (
@@ -251,6 +326,7 @@ export default function AddGuardian() {
           <div className="flex-column social-input detail">
             <span className="name">{socialValue.name}</span>
             <span className="email">{socialValue.isPrivate ? '******' : socialValue.value}</span>
+            <CustomSvg type="Close4" onClick={handleClearSocialAccount} />
           </div>
         ) : (
           <div className="flex social-input click" onClick={() => handleSocialAuth(v)}>
@@ -259,7 +335,7 @@ export default function AddGuardian() {
         )}
       </div>
     ),
-    [handleSocialAuth, socialValue],
+    [handleClearSocialAccount, handleSocialAuth, socialValue],
   );
 
   const renderGuardianAccount = useMemo(
@@ -278,7 +354,9 @@ export default function AddGuardian() {
         label: t('Guardian Email'),
       },
       [LoginType.Phone]: {
-        element: <PhoneInput onChange={handlePhoneInputChange} />,
+        element: (
+          <PhoneInput code={phoneValue?.code} phoneNumber={phoneValue?.phoneNumber} onChange={handlePhoneInputChange} />
+        ),
         label: t('Guardian Phone'),
       },
       [LoginType.Google]: {
@@ -289,8 +367,28 @@ export default function AddGuardian() {
         element: renderSocialGuardianAccount('Apple'),
         label: t('Guardian Apple'),
       },
+      [LoginType.Telegram]: {
+        element: renderSocialGuardianAccount('Telegram'),
+        label: t('Guardian Telegram'),
+      },
+      [LoginType.Twitter]: {
+        element: renderSocialGuardianAccount('Twitter'),
+        label: t('Guardian Twitter'),
+      },
+      [LoginType.Facebook]: {
+        element: renderSocialGuardianAccount('Facebook'),
+        label: t('Guardian Facebook'),
+      },
     }),
-    [emailVal, handleEmailInputChange, handlePhoneInputChange, renderSocialGuardianAccount, t],
+    [
+      emailVal,
+      handleEmailInputChange,
+      handlePhoneInputChange,
+      phoneValue?.code,
+      phoneValue?.phoneNumber,
+      renderSocialGuardianAccount,
+      t,
+    ],
   );
 
   const handleCommonVerify = useCallback(
@@ -317,7 +415,7 @@ export default function AddGuardian() {
         });
         setLoading(false);
         if (result.verifierSessionId) {
-          const newGuardian: UserGuardianItem = {
+          const newGuardian: StoreUserGuardianItem = {
             isLoginAccount: false,
             verifier: selectVerifierItem,
             guardianAccount,
@@ -330,30 +428,37 @@ export default function AddGuardian() {
             isInitStatus: true,
             identifierHash: '',
             salt: '',
+            phone: phoneValue,
+            social: socialValue,
           };
           dispatch(setCurrentGuardianAction(newGuardian));
           dispatch(setOpGuardianAction(newGuardian));
           navigate('/setting/guardians/verifier-account', {
-            state: `guardians/add_accelerateChainId=${accelerateChainId}`,
+            state: {
+              previousPage: FromPageEnum.guardiansAdd,
+              accelerateChainId: accelerateChainId,
+            },
           });
         }
       } catch (error) {
         setLoading(false);
         console.log('---add-guardian-send-code', error);
         const _error = handleErrorMessage(error);
-        message.error(_error);
+        singleMessage.error(_error);
       }
     },
     [
       dispatch,
-      originChainId,
       guardianType,
       setLoading,
       userGuardianList,
-      walletInfo,
+      walletInfo.caHash,
       selectVerifierItem,
-      currentChain,
+      currentChain?.chainId,
+      originChainId,
       curKey,
+      phoneValue,
+      socialValue,
       navigate,
       accelerateChainId,
     ],
@@ -401,6 +506,18 @@ export default function AddGuardian() {
         res = await request.verify.verifyGoogleToken({
           params,
         });
+      } else if (guardianType === LoginType.Telegram) {
+        res = await request.verify.verifyTelegramToken({
+          params,
+        });
+      } else if (guardianType === LoginType.Twitter) {
+        res = await request.verify.verifyTwitterToken({
+          params,
+        });
+      } else if (guardianType === LoginType.Facebook) {
+        res = await request.verify.verifyFacebookToken({
+          params,
+        });
       }
       const { guardianIdentifier } = handleVerificationDoc(res.verificationDoc);
       dispatch(
@@ -413,11 +530,14 @@ export default function AddGuardian() {
         }),
       );
       navigate('/setting/guardians/guardian-approval', {
-        state: `guardians/add_accelerateChainId=${accelerateChainId}`,
+        state: {
+          previousPage: FromPageEnum.guardiansAdd,
+          accelerateChainId,
+        },
       });
     } catch (error) {
       const msg = handleErrorMessage(error);
-      message.error(msg);
+      singleMessage.error(msg);
     } finally {
       setLoading(false);
     }
@@ -444,7 +564,7 @@ export default function AddGuardian() {
     } else if (guardianType === LoginType.Phone) {
       handleCommonVerify(`+${phoneValue?.code}${phoneValue?.phoneNumber}`);
     } else {
-      message.info('router error');
+      singleMessage.info('router error');
     }
   }, [emailVal, guardianType, handleCommonVerify, phoneValue]);
 
@@ -453,21 +573,67 @@ export default function AddGuardian() {
     navigate('/setting/guardians');
   }, [dispatch, navigate]);
 
-  const handleCheck = useCallback((): void | MessageType => {
+  const checkAccountIsExist = useCallback(() => {
+    if (guardianType === LoginType.Email)
+      return guardianAccountIsExist({ guardianType, guardianAccount: emailVal || '' }, userGuardiansList);
+
+    if (guardianType === LoginType.Phone)
+      return guardianAccountIsExist(
+        { guardianType, guardianAccount: `+${phoneValue?.code}${phoneValue?.phoneNumber}` },
+        userGuardiansList,
+      );
+
+    if (
+      [LoginType.Apple, LoginType.Google, LoginType.Telegram, LoginType.Twitter, LoginType.Facebook].includes(
+        guardianType as LoginType,
+      )
+    )
+      return guardianAccountIsExist(
+        { guardianType: guardianType as LoginType, guardianAccount: socialValue?.id || '' },
+        userGuardiansList,
+      );
+
+    return false;
+  }, [emailVal, guardianType, phoneValue?.code, phoneValue?.phoneNumber, socialValue?.id, userGuardiansList]);
+
+  const handleCheck = useCallback(async () => {
+    // 1、check email
     if (guardianType === LoginType.Email) {
       if (!EmailReg.test(emailVal as string)) {
-        setEmailErr(EmailError.invalidEmail);
+        setAccountErr(EmailError.invalidEmail);
         return;
       }
     }
-    if (!selectVerifierItem) return message.error('Can not get the current verifier message');
-    const isExist: boolean =
-      Object.values(userGuardiansList ?? {})?.some((item) => {
-        return item.key === curKey;
-      }) ?? false;
-    setExist(isExist);
-    if (isExist) return;
-    if ([LoginType.Google, LoginType.Apple].includes(guardianType as LoginType)) {
+    // 2、check verifier
+    if (!selectVerifierItem) return singleMessage.error('Can not get the current verifier message');
+
+    // 3、check account is exist
+    if (checkAccountIsExist()) {
+      setAccountErr(guardianExistTip);
+      return;
+    }
+    // 4、check verifier is exist
+    try {
+      setLoading(true);
+      await userGuardianList({ caHash: walletInfo.caHash });
+      setLoading(false);
+    } catch (error) {
+      console.log('===guardian add userGuardianList error', error);
+      setLoading(false);
+    }
+    const { verifierMap, userGuardiansList } = guardiansSaveRef.current;
+    const _verifierStatusMap = getVerifierStatusMap(verifierMap, userGuardiansList);
+    const _verifierIsExist = Object.values(_verifierStatusMap).some(
+      (verifier) => verifier.id === selectVerifierItem.id && verifier.isUsed,
+    );
+    setVerifierExist(_verifierIsExist);
+    if (_verifierIsExist) return;
+
+    if (
+      [LoginType.Google, LoginType.Apple, LoginType.Telegram, LoginType.Twitter, LoginType.Facebook].includes(
+        guardianType as LoginType,
+      )
+    ) {
       handleSocialVerify();
     } else {
       CustomModal({
@@ -486,9 +652,11 @@ export default function AddGuardian() {
   }, [
     guardianType,
     selectVerifierItem,
-    userGuardiansList,
+    checkAccountIsExist,
     emailVal,
-    curKey,
+    setLoading,
+    userGuardianList,
+    walletInfo.caHash,
     handleSocialVerify,
     verifierName,
     accountShow,
@@ -515,7 +683,7 @@ export default function AddGuardian() {
             <div className="input-item">
               <p className="label">{renderGuardianAccount[guardianType].label}</p>
               {renderGuardianAccount[guardianType].element}
-              {emailErr && <span className="err-text">{emailErr}</span>}
+              {accountErr && <span className="err-text">{accountErr}</span>}
             </div>
           )}
           <div className="input-item">
@@ -526,8 +694,9 @@ export default function AddGuardian() {
               placeholder={t('Select guardian verifiers')}
               onChange={verifierChange}
               items={verifierOptions}
+              customChild={OptionTip()}
             />
-            {exist && <div className="error">{t('This guardian already exists')}</div>}
+            {verifierExist && <div className="error">{verifierExistTip}</div>}
           </div>
         </div>
         <div className="btn-wrap">
@@ -538,9 +707,8 @@ export default function AddGuardian() {
       </div>
     ),
     [
+      accountErr,
       disabled,
-      emailErr,
-      exist,
       guardianType,
       guardianTypeChange,
       guardianTypeOptions,
@@ -548,6 +716,7 @@ export default function AddGuardian() {
       renderGuardianAccount,
       t,
       verifierChange,
+      verifierExist,
       verifierOptions,
       verifierVal,
     ],

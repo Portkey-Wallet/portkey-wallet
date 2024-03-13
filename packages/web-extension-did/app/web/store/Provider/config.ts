@@ -17,13 +17,14 @@ import { miscSlice } from '@portkey-wallet/store/store-ca/misc/slice';
 import { guardiansSlice } from '@portkey-wallet/store/store-ca/guardians/slice';
 import activitySlice from '@portkey-wallet/store/store-ca/activity/slice';
 import recentSlice from '@portkey-wallet/store/store-ca/recent/slice';
-import { paymentSlice } from '@portkey-wallet/store/store-ca/payment/slice';
+import { rampSlice } from '@portkey-wallet/store/store-ca/ramp/slice';
 import { cmsSlice } from '@portkey-wallet/store/store-ca/cms/slice';
 import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
 import { discoverSlice } from '@portkey-wallet/store/store-ca/discover/slice';
 import { txFeeSlice } from '@portkey-wallet/store/store-ca/txFee/slice';
 import imSlice from '@portkey-wallet/store/store-ca/im/slice';
 import securitySlice from '@portkey-wallet/store/store-ca/security/slice';
+import { referralSlice } from '@portkey-wallet/store/store-ca/referral/slice';
 
 interface ThunkOptions<E = any> {
   extraArgument: E;
@@ -102,8 +103,8 @@ export const guardiansPersistConfig = {
   storage: localStorage,
 };
 
-export const paymentPersistConfig = {
-  key: paymentSlice.name,
+export const rampPersistConfig = {
+  key: rampSlice.name,
   storage: localStorage,
 };
 
@@ -115,7 +116,13 @@ export const cmsPersistConfig = {
 export const imPersistConfig = {
   key: imSlice.name,
   storage: localStorage,
-  blacklist: ['channelMessageListNetMap', 'groupInfoMapNetMap'],
+  blacklist: ['channelMessageListNetMap', 'groupInfoMapNetMap', 'pinListNetMap', 'lastPinNetMap'],
+};
+
+export const referralPersistConfig = {
+  key: referralSlice.name,
+  storage: localStorage,
+  blacklist: [],
 };
 
 const reduxPersistConfig = {
@@ -141,8 +148,9 @@ const reduxPersistConfig = {
     dappSlice.name,
     discoverSlice.name,
     txFeeSlice.name,
-    imSlice.name,
+    // imSlice.name,
     securitySlice.name,
+    referralSlice.name,
   ],
   // More info here:  https://shift.infinite.red/shipping-persistant-reducers-7341691232b1
   // transforms: [SetTokenTransform],

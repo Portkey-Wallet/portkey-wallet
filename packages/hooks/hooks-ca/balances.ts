@@ -17,6 +17,18 @@ export function useCurrentNetworkBalances() {
   }, [balances, currentNetwork.rpcUrl]);
 }
 
+export function useAccountTokenList() {
+  return useAppCASelector(state => state.assets?.accountToken.accountTokenList);
+}
+
+export function useAllTokenInfoList() {
+  return useAppCASelector(state => state.tokenManagement.tokenDataShowInMarket);
+}
+
+export function useAccountCryptoBoxAssetList() {
+  return useAppCASelector(state => state.assets?.accountCryptoBoxAssets.accountAssetsList);
+}
+
 export const useAccountBalanceUSD = () => {
   const {
     accountToken: { accountTokenList },

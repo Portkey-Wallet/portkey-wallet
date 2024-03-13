@@ -42,7 +42,7 @@ export function divDecimals(a?: BigNumber.Value, decimals: string | number = 18)
 
 export function divDecimalsStr(a?: BigNumber.Value, decimals: string | number = 8, defaultVal = '0') {
   const n = divDecimals(a, decimals);
-  return isEffectiveNumber(n) ? n.toString() : defaultVal;
+  return isEffectiveNumber(n) ? n.toFixed() : defaultVal;
 }
 
 export function divDecimalsToShow(a?: BigNumber.Value, decimals: string | number = 8, defaultVal = '--') {
@@ -144,4 +144,22 @@ export const formatAmountShow = (
   const bigCount = BigNumber.isBigNumber(count) ? count : new BigNumber(count || '');
   if (bigCount.isNaN()) return '0';
   return bigCount.decimalPlaces(typeof decimal !== 'number' ? Number(decimal) : decimal, roundingMode).toFormat();
+};
+
+export const formatAmountUSDShow = (
+  count: number | BigNumber | string,
+  decimal: string | number = 4,
+  roundingMode: BigNumber.RoundingMode = BigNumber.ROUND_DOWN,
+) => {
+  const min = divDecimals(1, decimal);
+  const bigCount = BigNumber.isBigNumber(count) ? count : new BigNumber(count || '');
+  if (bigCount.isNaN() || bigCount.eq(0)) return '$ 0';
+  if (min.gt(bigCount)) return `<$ ${min.toFixed()}`;
+  return (
+    '$ ' + bigCount.decimalPlaces(typeof decimal !== 'number' ? Number(decimal) : decimal, roundingMode).toFormat()
+  );
+};
+
+export const convertAmountUSDShow = (count: BigNumber.Value, price?: BigNumber.Value) => {
+  return formatAmountUSDShow(ZERO.plus(count).times(price ?? 0));
 };

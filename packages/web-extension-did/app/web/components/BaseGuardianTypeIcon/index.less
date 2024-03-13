@@ -1,0 +1,18 @@
+@import '../../assets/theme/color.less';
+
+.base-guardian-type-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid @border-2;
+  background-color: @bg-10;
+
+  .guardian-type-icon {
+    &.custom-svg, 
+    &.custom-svg svg {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+    }
+  }
+}

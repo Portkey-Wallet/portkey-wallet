@@ -65,7 +65,7 @@ const BookmarksOverlay = (props: SelectListProps) => {
     } catch (error) {
       console.log(error);
     }
-  }, [bookmarkList.length, refresh]);
+  }, [bookmarkList.length, initializing, refresh, totalAccount]);
 
   useEffectOnce(() => {
     (async () => {

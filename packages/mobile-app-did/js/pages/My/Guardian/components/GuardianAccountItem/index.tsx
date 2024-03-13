@@ -3,13 +3,13 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
 import Svg from 'components/Svg';
 import { LoginGuardianTypeIcon } from 'constants/misc';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
+import { AuthTypes } from 'constants/guardian';
 
 type GuardianAccountItemProps = {
   guardian?: UserGuardianItem;
@@ -18,7 +18,7 @@ type GuardianAccountItemProps = {
 const GuardianAccountItem = ({ guardian }: GuardianAccountItemProps) => {
   const guardianAccount = useMemo(() => {
     if (!guardian) return '';
-    if (![LoginType.Apple, LoginType.Google].includes(guardian.guardianType)) {
+    if (!AuthTypes.includes(guardian.guardianType)) {
       return guardian.guardianAccount;
     }
     if (guardian.isPrivate) return PRIVATE_GUARDIAN_ACCOUNT;
@@ -29,9 +29,7 @@ const GuardianAccountItem = ({ guardian }: GuardianAccountItemProps) => {
     if (!guardian) return <></>;
     if (!guardian.firstName) {
       return (
-        <TextM
-          numberOfLines={[LoginType.Apple, LoginType.Google].includes(guardian.guardianType) ? 1 : 2}
-          style={GStyles.flex1}>
+        <TextM numberOfLines={AuthTypes.includes(guardian.guardianType) ? 1 : 2} style={GStyles.flex1}>
           {guardianAccount}
         </TextM>
       );
@@ -52,7 +50,10 @@ const GuardianAccountItem = ({ guardian }: GuardianAccountItemProps) => {
     <View style={styles.guardianTypeWrap}>
       {guardian && (
         <>
-          <Svg iconStyle={styles.loginTypeIcon} icon={LoginGuardianTypeIcon[guardian.guardianType]} size={pTd(28)} />
+          <View style={[GStyles.center, styles.loginTypeIconWrap]}>
+            <Svg icon={LoginGuardianTypeIcon[guardian.guardianType]} size={pTd(16)} />
+          </View>
+
           {renderGuardianAccount()}
         </>
       )}
@@ -71,11 +72,16 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg1,
     paddingHorizontal: pTd(16),
   },
-  loginTypeIcon: {
-    borderRadius: pTd(14),
-    marginRight: pTd(12),
-  },
   firstNameStyle: {
     marginBottom: pTd(2),
+  },
+  loginTypeIconWrap: {
+    marginRight: pTd(12),
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: defaultColors.border6,
+    backgroundColor: defaultColors.bg6,
+    width: pTd(28),
+    height: pTd(28),
+    borderRadius: pTd(16),
   },
 });

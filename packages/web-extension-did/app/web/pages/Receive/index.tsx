@@ -6,30 +6,56 @@ import clsx from 'clsx';
 import Copy from 'components/Copy';
 import CustomSvg from 'components/CustomSvg';
 import TitleWrapper from 'components/TitleWrapper';
-import { useIsTestnet } from 'hooks/useNetwork';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import PromptFrame from 'pages/components/PromptFrame';
 import QRCodeCommon from 'pages/components/QRCodeCommon';
-import { useCallback, useMemo } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { useCallback, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
 import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
-import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import './index.less';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import {
+  RECEIVE_MAIN_CHAIN_TOKEN_TIP_TITLE,
+  RECEIVE_MAIN_CHAIN_TOKEN_TIP_CONTENT,
+  RECEIVE_SIDE_CHAIN_TOKEN_TIP_TITLE,
+  RECEIVE_SIDE_CHAIN_TOKEN_TIP_CONTENT,
+} from '@portkey-wallet/constants/constants-ca/send';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useLocationState } from 'hooks/router';
+import { TReceiveLocationState } from 'types/router';
+import ReceiveTipModal from 'pages/components/ReceiveTipModal';
+import { useSideChainTokenReceiveTipSetting } from '@portkey-wallet/hooks/hooks-ca/misc';
 
 export default function Receive() {
   const navigate = useNavigate();
   const { symbol } = useParams();
-  const { state } = useLocation();
+  const { state } = useLocationState<TReceiveLocationState>();
   const wallet = useCurrentWalletInfo();
   const { currentNetwork } = useWalletInfo();
-  const isTestNet = useIsTestnet();
+  const isMainnet = useIsMainnet();
+  const { showSideChainTokenReceiveTip } = useSideChainTokenReceiveTipSetting();
   const caAddress = useMemo(
-    () => `ELF_${wallet?.[(state.chainId as ChainId) || 'AELF']?.caAddress}_${state.chainId}`,
+    () => `ELF_${wallet?.[state.chainId || 'AELF']?.caAddress}_${state.chainId}`,
     [state, wallet],
   );
-  const symbolImages = useSymbolImages();
-
+  const replaceSuffixShow = useCallback(
+    (str: string) => {
+      const reg = /CHAIN_SUFFIX/gi;
+      return str.replace(reg, `_${state.chainId}`);
+    },
+    [state.chainId],
+  );
+  const isMainChain = useMemo(() => state.chainId === MAIN_CHAIN_ID, [state.chainId]);
+  const tipTitle = useMemo(
+    () => (isMainChain ? RECEIVE_MAIN_CHAIN_TOKEN_TIP_TITLE : RECEIVE_SIDE_CHAIN_TOKEN_TIP_TITLE),
+    [isMainChain],
+  );
+  const tipContent = useMemo(
+    () => (isMainChain ? RECEIVE_MAIN_CHAIN_TOKEN_TIP_CONTENT : RECEIVE_SIDE_CHAIN_TOKEN_TIP_CONTENT),
+    [isMainChain],
+  );
+  const [showTip, setShowTip] = useState(!isMainChain);
   const rightElement = useMemo(() => {
     return (
       <div>
@@ -42,7 +68,7 @@ export default function Receive() {
     () => ({
       type: 'send',
       sendType: 'token',
-      netWorkType: currentNetwork,
+      networkType: currentNetwork,
       chainType: 'aelf',
       toInfo: {
         address: caAddress,
@@ -72,20 +98,50 @@ export default function Receive() {
             <div className="name">My Wallet Address to Receive</div>
           </div>
           <div className="token-info">
-            <TokenImageDisplay width={24} className="icon" symbol={symbol} src={symbolImages[symbol || '']} />
+            <TokenImageDisplay width={32} className="icon" symbol={symbol} src={state?.imageUrl} />
             <p className="symbol">{symbol}</p>
-            <p className="network">{transNetworkText(state.chainId, isTestNet)}</p>
+            <p className="network">{transNetworkText(state.chainId, !isMainnet)}</p>
           </div>
           <QRCodeCommon value={JSON.stringify(shrinkSendQrData(value))} />
           <div className="receive-address">
             <div className="address">{caAddress}</div>
             <Copy className="copy-icon" toCopy={caAddress}></Copy>
           </div>
+          <div className="flex receive-tip">
+            <CustomSvg type="Info" />
+            <div className="receive-tip-text">
+              <div className="receive-tip-title">{tipTitle}</div>
+              <div className="receive-tip-content flex-column">
+                {tipContent.map((item, i) => (
+                  <div key={`receive_${i}`}>{replaceSuffixShow(item)}</div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
         {isPrompt && <PromptEmptyElement />}
+        <ReceiveTipModal
+          open={showSideChainTokenReceiveTip && showTip}
+          chainId={state.chainId}
+          onClose={() => setShowTip(false)}
+        />
       </div>
     );
-  }, [caAddress, isPrompt, isTestNet, rightElement, state.chainId, symbol, symbolImages, value]);
+  }, [
+    isPrompt,
+    rightElement,
+    symbol,
+    state?.imageUrl,
+    state.chainId,
+    isMainnet,
+    value,
+    caAddress,
+    tipTitle,
+    tipContent,
+    showSideChainTokenReceiveTip,
+    showTip,
+    replaceSuffixShow,
+  ]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

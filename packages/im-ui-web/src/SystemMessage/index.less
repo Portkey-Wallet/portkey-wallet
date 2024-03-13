@@ -1,19 +1,24 @@
-@import '../assets/theme/color.less';
+@import '../assets/theme/constants.less';
 
 .portkey-container-system {
+  width: 100%;
   justify-content: center;
   font-size: 12px;
   line-height: 16px;
+  color: @font-6;
+  background-color: transparent;
 
-  .portkey-system-text {
-    color: @font-6;
-    background-color: transparent;
+  .portkey-system-date {
+    padding: 2px 8px;
     text-align: center;
-    &.system-time {
-      padding: 2px 8px;
-      background-color: @bg-2;
-      border-radius: 16px;
-      color: @font-7;
-    }
+    background-color: @bg-2;
+    border-radius: 16px;
+    color: @font-7;
   }
+
+  .portkey-system-default,
+  .portkey-system-pin {
+    text-align: center;
+  }
+
 }

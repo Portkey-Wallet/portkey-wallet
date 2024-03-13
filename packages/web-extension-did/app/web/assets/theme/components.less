@@ -18,6 +18,7 @@
 
 .@{app-prefix}-btn-primary {
   border-width: 0;
+
   &:hover,
   &:focus {
     color: white;
@@ -46,6 +47,7 @@
   color: @font-2;
   line-height: 22px;
   border-color: @border-1;
+
   &:hover {
     border-color: @hover2;
   }
@@ -69,6 +71,7 @@
 .clear-input-border {
   border: none !important;
   box-shadow: none !important;
+
   &:focus {
     box-shadow: none !important;
   }
@@ -81,18 +84,22 @@
     height: 16px;
     margin-top: 4px;
   }
+
   .@{app-prefix}-form-item-has-error {
     padding-bottom: 24px;
+
     .@{app-prefix}-form-item-control {
-      & > div:nth-of-type(2) {
+      &>div:nth-of-type(2) {
         line-height: 20px;
         height: 20px !important;
-        & > div:nth-of-type(2) {
+
+        &>div:nth-of-type(2) {
           height: 16px !important;
         }
       }
     }
   }
+
   .@{app-prefix}-input-affix-wrapper-status-error {
     border-color: @border-7;
   }
@@ -105,17 +112,20 @@
   .@{app-prefix}-form-item {
     margin-bottom: 24px;
   }
+
   .@{app-prefix}-form-item-label {
     line-height: 22px;
     font-size: 16px;
     padding-bottom: 16px;
     color: @font-2;
   }
-  .@{app-prefix}-form-item-label > label {
+
+  .@{app-prefix}-form-item-label>label {
     color: @font-2;
     line-height: 22px;
     font-size: 16px;
   }
+
   .@{app-prefix}-btn-primary {
     line-height: 48px;
     font-size: 16px;
@@ -148,20 +158,23 @@
   color: @font-11;
 }
 
-.customer-form{
+.customer-form {
   .@{app-prefix}-form-item .@{app-prefix}-form-item-label {
     padding-bottom: 8px;
   }
-  .@{app-prefix}-form-item-label > label {
+
+  .@{app-prefix}-form-item-label>label {
     color: @font-11;
     font-size: 14px;
     line-height: 20px;
   }
+
   .@{app-prefix}-input:placeholder-shown {
     color: @font-12;
     line-height: 20px;
   }
-  .@{app-prefix}-input-affix-wrapper{
+
+  .@{app-prefix}-input-affix-wrapper {
     height: 48px;
     border-radius: 6px;
     padding-left: 16px;
@@ -169,18 +182,18 @@
   }
 }
 
-.@{app-prefix}-switch{
+.@{app-prefix}-switch {
   width: 43px;
   height: 24px;
   background-color: @bg-13;
   border: 2px solid @border-1;
   position: relative;
 
-  .@{app-prefix}-switch-handle{
+  .@{app-prefix}-switch-handle {
     top: 1px;
   }
 
-  .@{app-prefix}-switch-inner{
+  .@{app-prefix}-switch-inner {
     font-size: 16px;
     line-height: 22px;
     color: @font-13;
@@ -190,19 +203,19 @@
     right: -46px;
   }
 
-  .@{app-prefix}-switch-handle::before{
+  .@{app-prefix}-switch-handle::before {
     background-color: @bg-23;
   }
 }
 
-.@{app-prefix}-switch-checked{
+.@{app-prefix}-switch-checked {
   border: 2px solid @border-3;
 
-  .@{app-prefix}-switch-handle::before{
+  .@{app-prefix}-switch-handle::before {
     background-color: @bg-7;
   }
 
-  .@{app-prefix}-switch-inner{
+  .@{app-prefix}-switch-inner {
     right: -62px;
   }
 }
@@ -226,8 +239,10 @@
 .cross-modal {
   border-radius: 8px;
   overflow: hidden;
+
   .@{app-prefix}-modal-body {
     padding: 0;
+
     .@{app-prefix}-modal-confirm-content {
       padding: 24px;
       margin: 0;
@@ -237,11 +252,13 @@
       font-size: 14px;
       color: @font-13;
     }
+
     .@{app-prefix}-modal-confirm-btns {
       padding: 15px 16px 17px;
       margin: 0;
       display: flex;
       gap: 16px;
+
       button {
         width: 136px;
         height: 48px;
@@ -249,6 +266,63 @@
         margin: 0 !important;
         line-height: 22px;
         font-size: 16px;
+      }
+    }
+  }
+}
+
+.transfer-limit-modal {
+  border-radius: 8px;
+  overflow: hidden;
+
+  .@{app-prefix}-modal-content {
+
+    .@{app-prefix}-modal-body {
+      padding: 0;
+
+      .@{app-prefix}-modal-confirm-body-wrapper {
+        .@{app-prefix}-modal-confirm-content {
+          padding: 32px 24px 24px;
+          margin: 0;
+          border-bottom: 1px solid @border-2;
+          text-align: center;
+          line-height: 20px;
+          font-size: 14px;
+          color: @font-13;
+          position: relative;
+
+          .close-icon {
+            width: 24px;
+            height: 24px;
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+
+    .@{app-prefix}-modal-confirm-btns {
+      padding: 15px 16px 17px !important;
+      margin: 0;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 13px;
+
+      button {
+        width: 100% !important;
+        height: 48px;
+        border-radius: 24px;
+        margin: 0 !important;
+        line-height: 22px;
+        font-size: 16px;
+      }
+
+      .@{app-prefix}-btn-default {
+        border: none;
+        height: auto !important;
+        width: 100% !important;
       }
     }
   }

@@ -23,6 +23,11 @@ export const BGStyles = StyleSheet.create({
   bg17: { backgroundColor: defaultColors.bg17 },
   bg18: { backgroundColor: defaultColors.bg18 },
   bg19: { backgroundColor: defaultColors.bg19 },
+  bg20: { backgroundColor: defaultColors.bg20 },
+  bg21: { backgroundColor: defaultColors.bg21 },
+  bg22: { backgroundColor: defaultColors.bg22 },
+  bg23: { backgroundColor: defaultColors.bg23 },
+  bg24: { backgroundColor: defaultColors.bg24 },
   transparent: { backgroundColor: 'transparent' },
 });
 
@@ -40,9 +45,14 @@ export const FontStyles = StyleSheet.create({
   font11: { color: defaultColors.font11 },
   font12: { color: defaultColors.font12 },
   font13: { color: defaultColors.font13 },
+  font14: { color: defaultColors.font14 },
+  font15: { color: defaultColors.font15 },
+
+  error: { color: defaultColors.error },
   weight500: fonts.mediumFont,
   size16: { fontSize: pTd(16) },
   size14: { fontSize: pTd(14) },
+  size12: { fontSize: pTd(12) },
   size18: { fontSize: pTd(18) },
 });
 

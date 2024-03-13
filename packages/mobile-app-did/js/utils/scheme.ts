@@ -1,4 +1,4 @@
-import { DID_SCHEME, SCHEME_ACTION } from 'constants/scheme';
+import { DID_SCHEME, SCHEME_ACTION, V1_DID_SCHEME } from 'constants/scheme';
 import { parseUrl } from 'query-string';
 import { SchemeParsedUrl } from 'types/common';
 import { isAddress } from '@portkey-wallet/utils';
@@ -7,8 +7,7 @@ import { LINK_PATH_ENUM } from '@portkey-wallet/constants/constants-ca/link';
 export type LinkPortkeyType = 'addContact' | 'addGroup';
 
 export function handleScheme(str: string): SchemeParsedUrl | undefined {
-  if (!str.includes(DID_SCHEME)) return;
-  str = str.replace(`${DID_SCHEME}://`, '');
+  str = str.replace(`${DID_SCHEME}://`, '').replace(`${V1_DID_SCHEME}://`, '');
   const parsedUrl = parseUrl(str, {
     decode: true,
   });
@@ -19,10 +18,10 @@ export function handleScheme(str: string): SchemeParsedUrl | undefined {
 }
 
 export function checkAuthLoginData(extraData: any, data: any) {
-  const { type, address, netWorkType, chainType } = data;
+  const { type, address, networkType, chainType } = data;
 
   if (type !== 'login') return;
-  if (typeof netWorkType !== 'string') return;
+  if (typeof networkType !== 'string') return;
   if (!isAddress(address, chainType)) return;
   if (typeof extraData?.websiteName !== 'string') return;
 

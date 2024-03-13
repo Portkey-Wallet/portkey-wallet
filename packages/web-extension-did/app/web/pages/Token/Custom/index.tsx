@@ -1,6 +1,6 @@
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useChainIdList, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { Button, Input, message } from 'antd';
+import { Button, Input } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import TitleWrapper from 'components/TitleWrapper';
 import { useCallback, useMemo, useState } from 'react';
@@ -16,6 +16,7 @@ import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { ChainId } from '@portkey-wallet/types';
 import { request } from '@portkey-wallet/api/api-did';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import singleMessage from 'utils/singleMessage';
 import './index.less';
 
 export default function CustomToken() {
@@ -36,7 +37,7 @@ export default function CustomToken() {
       chainList?.map((item) => ({
         value: item,
         children: (
-          <div className="flex select-option">
+          <div className="flex select-custom-token-option">
             <CustomSvg type={isMainnet ? 'Aelf' : 'elf-icon'} />
             <span className="title">{transNetworkText(item, !isMainnet)}</span>
           </div>
@@ -81,7 +82,7 @@ export default function CustomToken() {
     [curChainId, setLoading],
   );
 
-  const searchDebounce = useDebounceCallback(handleSearch, [value], 500);
+  const searchDebounce = useDebounceCallback(handleSearch, [handleSearch], 500);
 
   const handleChangeChainId = useCallback(
     (chainId: ChainId) => {
@@ -110,7 +111,7 @@ export default function CustomToken() {
         navigate('/add-token');
       } catch (error: any) {
         const err = handleErrorMessage(error, 'add custom token error');
-        message.error(err);
+        singleMessage.error(err);
         console.log('add custom token error', error);
       } finally {
         setLoading(false);
@@ -134,7 +135,7 @@ export default function CustomToken() {
             )}
           </div>
           <div>
-            <p className="label">{t('Verifier')}</p>
+            <p className="label">{t('Network')}</p>
             <CustomSelect
               className="select value"
               value={curChainId}

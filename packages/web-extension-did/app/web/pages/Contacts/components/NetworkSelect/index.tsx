@@ -3,9 +3,8 @@ import DropdownSearch from 'components/DropdownSearch';
 import { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import './index.less';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { useIsTestnet } from 'hooks/useNetwork';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import './index.less';
 
 export interface INetworkSelectProps {
@@ -18,7 +17,7 @@ export default function NetworkSelect({ onClose, onChange }: INetworkSelectProps
   const [filterWord, setFilterWord] = useState<string>('');
   const [showNetworkLists, setShowNetworkLists] = useState<any[]>([]);
   const { chainList, currentNetwork } = useCurrentWallet();
-  const isTestNet = useIsTestnet();
+  const isMainnet = useIsMainnet();
 
   const networkLists = useMemo(
     () =>
@@ -26,9 +25,9 @@ export default function NetworkSelect({ onClose, onChange }: INetworkSelectProps
         networkType: currentNetwork,
         chainId: chain.chainId,
         chainName: chain.chainName,
-        networkName: transNetworkText(chain.chainId, isTestNet),
+        networkName: transNetworkText(chain.chainId, !isMainnet),
       })),
-    [chainList, currentNetwork, isTestNet],
+    [chainList, currentNetwork, isMainnet],
   );
 
   useEffect(() => {
@@ -66,7 +65,7 @@ export default function NetworkSelect({ onClose, onChange }: INetworkSelectProps
             onClick={() => {
               onChange(net);
             }}>
-            <CustomSvg type={isTestNet ? 'elf-icon' : 'Aelf'} />
+            <CustomSvg type={isMainnet ? 'Aelf' : 'elf-icon'} />
             <div className="info">{net?.networkName}</div>
           </div>
         ))}

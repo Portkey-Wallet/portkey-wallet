@@ -3,7 +3,6 @@ import { ChainType } from '@portkey-wallet/types';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { getChainIdByAddress } from '@portkey-wallet/utils';
 import { crossChainTransferToCa } from './crossChainTransferToCa';
-import { managerTransfer } from './managerTransfer';
 import { getChainNumber } from '@portkey-wallet/utils/aelf';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
@@ -11,6 +10,8 @@ import { the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/act
 import { getTxFee } from 'store/utils/getStore';
 import { DEFAULT_TOKEN } from '@portkey-wallet/constants/constants-ca/wallet';
 import { getTokenInfo } from './getTokenInfo';
+import { GuardianItem } from 'types/guardians';
+import { managerForwardCall } from './managerForwardCall';
 
 export type CrossChainTransferIntervalParams = Omit<CrossChainTransferParams, 'caHash' | 'fee'> & {
   issueChainId: number;
@@ -31,8 +32,6 @@ export const intervalCrossChainTransfer = async (params: CrossChainTransferInter
     });
   }
 
-  console.log(_issueChainId, 'issueChainId===');
-  console.log('error===sendHandler--intervalCrossChainTransfer------', params);
   try {
     const result = await crossChainTransferToCa({
       rpcUrl: chainInfo.endPoint,
@@ -68,6 +67,7 @@ interface CrossChainTransferParams {
   toAddress: string;
   memo?: string;
   fee: number | string;
+  guardiansApproved?: GuardianItem[];
 }
 const crossChainTransfer = async ({
   chainInfo,
@@ -79,6 +79,7 @@ const crossChainTransfer = async ({
   tokenInfo,
   memo = '',
   toAddress,
+  guardiansApproved,
 }: CrossChainTransferParams) => {
   let managerTransferResult;
   const issueChainId = await getTokenInfo({
@@ -94,38 +95,23 @@ const crossChainTransfer = async ({
 
   if (typeof issueChainId !== 'number') throw Error('GetTokenInfo Error');
   try {
-    // let _amount = amount;
-    // if (tokenInfo.symbol === nativeToken.symbol) {
-    //   //
-    //   _amount = ZERO.plus(amount).plus(fee).toNumber();
-    // } else {
-    //   await managerTransfer({
-    //     rpcUrl: chainInfo.endPoint,
-    //     address: chainInfo.caContractAddress,
-    //     chainType,
-    //     privateKey,
-    //     paramsOption: {
-    //       caHash,
-    //       symbol: 'ELF',
-    //       to: managerAddress,
-    //       amount: fee,
-    //       memo,
-    //     },
-    //   });
-    // }
-
     // first transaction:transfer to manager itself
-    managerTransferResult = await managerTransfer({
+    managerTransferResult = await managerForwardCall({
       rpcUrl: chainInfo.endPoint,
       address: chainInfo.caContractAddress,
       chainType,
       privateKey,
       paramsOption: {
         caHash,
-        symbol: tokenInfo.symbol,
-        to: managerAddress,
-        amount: amount,
-        memo,
+        contractAddress: tokenInfo.address,
+        methodName: 'Transfer',
+        args: {
+          symbol: tokenInfo.symbol,
+          to: managerAddress,
+          amount,
+          memo,
+        },
+        guardiansApproved,
       },
     });
   } catch (error) {

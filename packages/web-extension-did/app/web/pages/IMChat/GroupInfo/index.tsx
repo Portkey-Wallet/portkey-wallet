@@ -4,20 +4,23 @@ import {
   useRelationId,
   useSendChannelMessage,
 } from '@portkey-wallet/hooks/hooks-ca/im';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import { ChannelMemberInfo, ChannelTypeEnum } from '@portkey-wallet/im';
+import { ChannelMemberInfo } from '@portkey-wallet/im';
 import Copy from 'components/Copy';
 import ContactListDrawer from '../components/GroupShareDrawer';
 import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
 import { useLoading } from 'store/Provider/hooks';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
+import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
+import { FromPageEnum, TViewContactLocationState, TWalletNameLocationState } from 'types/router';
 import './index.less';
 
 const GroupInfo = () => {
@@ -32,7 +35,7 @@ const GroupInfo = () => {
     () => (typeof groupInfo?.members.length === 'number' ? groupInfo?.members.length : 0),
     [groupInfo?.members.length],
   );
-  const navigate = useNavigate();
+  const navigate = useNavigateState<TWalletNameLocationState | TViewContactLocationState>();
   const { t } = useTranslation();
   const { setLoading } = useLoading();
   const handleLeaveGroup = useCallback(() => {
@@ -45,7 +48,7 @@ const GroupInfo = () => {
           await leaveGroup(`${channelUuid}`);
           navigate('/chat-list');
         } catch (e) {
-          message.error('Failed to leave the group');
+          singleMessage.error('Failed to leave the group');
           console.log('===Failed to leave the group error', e);
         }
       },
@@ -54,10 +57,10 @@ const GroupInfo = () => {
   const handleGoProfile = useCallback(
     (item: ChannelMemberInfo) => {
       if (item.relationId === myRelationId) {
-        navigate('/setting/wallet/wallet-name', { state: { from: 'chat-group-info', channelUuid } });
+        navigate('/setting/wallet/wallet-name', { state: { previousPage: FromPageEnum.chatGroupInfo, channelUuid } });
       } else {
         navigate('/setting/contacts/view', {
-          state: { relationId: item.relationId, from: 'chat-group-info', channelUuid },
+          state: { relationId: item.relationId, previousPage: FromPageEnum.chatGroupInfo, channelUuid },
         });
       }
     },
@@ -83,7 +86,7 @@ const GroupInfo = () => {
       await refresh();
     } catch (error) {
       console.log('===Failed to refresh error', error);
-      message.error('Failed to fetch data');
+      singleMessage.error('Failed to fetch data');
     }
   }, [refresh]);
   useEffect(() => {
@@ -103,7 +106,7 @@ const GroupInfo = () => {
         <div className="group-info-container">
           <div className="info-basic flex-center">
             <div className="flex-column-center">
-              <Avatar channelType={ChannelTypeEnum.GROUP} src={groupInfo?.icon} avatarSize="large" />
+              <Avatar isGroupAvatar={true} src={groupInfo?.icon} avatarSize="large" />
               <div className="group-name">{groupInfo?.name || ''}</div>
               <div className="group-members">
                 {memberLen}

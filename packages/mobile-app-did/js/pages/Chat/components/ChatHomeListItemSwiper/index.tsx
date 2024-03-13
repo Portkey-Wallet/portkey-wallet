@@ -9,14 +9,16 @@ import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import { isIOS, screenWidth } from '@portkey-wallet/utils/mobile/device';
-import { formatChatListTime, formatMessageCountToStr } from '@portkey-wallet/utils/chat';
-import { ChannelItem, ChannelTypeEnum } from '@portkey-wallet/im/types';
+import { formatChatListTime, formatMessageCountToStr, formatPinSysMessageToStr } from '@portkey-wallet/utils/chat';
+import { ChannelItem, ChannelTypeEnum, ParsedPinSys, ParsedRedPackage, ParsedTransfer } from '@portkey-wallet/im/types';
 import CommonAvatar from 'components/CommonAvatar';
 import { useDeviceEvent } from 'hooks/useDeviceEvent';
 import myEvents from 'utils/deviceEvent';
 import { getChatListSvgName } from 'pages/Chat/utils';
 import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
 import GroupAvatarShow from 'pages/Chat/components/GroupAvatarShow';
+import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 
 type ChatHomeListItemSwipedType<T> = {
   item: T;
@@ -30,6 +32,7 @@ const DELETE_TO_END = screenWidth;
 
 export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipedType<ChannelItem>) {
   const { item, onPress, onLongPress, onDelete } = props;
+  const { userInfo } = useWallet();
   const [isEdit, setIsEdit] = useState(false);
   const swipeableRef = useRef<SwipeableItemImperativeRef>(null);
   const listenerCallBack = useCallback(
@@ -40,17 +43,69 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
   );
 
   const eventEmit = useDeviceEvent(myEvents.chatHomeListCloseSwiped.name, listenerCallBack);
-  const lastMessage = useMemo(() => {
-    if (item.lastMessageType === 'TEXT') {
-      return item.lastMessageContent;
-    } else if (item.lastMessageType === 'SYS') {
-      return item.lastMessageContent;
-    } else if (item.lastMessageType === 'IMAGE') {
-      return '[Image]';
-    } else {
-      return UN_SUPPORTED_FORMAT;
+  const renderLastMessage = useMemo(() => {
+    // red packet
+    if (item.lastMessageType === 'REDPACKAGE-CARD') {
+      const redPacketIsHighLight: boolean =
+        item.unreadMessageCount > 0 &&
+        !item.mute &&
+        (item.lastMessageContent as ParsedRedPackage)?.data?.senderId !== userInfo?.userId;
+
+      return (
+        <View style={[GStyles.flexRow, styles.message]}>
+          <TextS numberOfLines={1} style={[FontStyles.font7, redPacketIsHighLight && FontStyles.font6]}>
+            {`[Crypto Box] `}
+          </TextS>
+          <TextS numberOfLines={1} style={[FontStyles.font7, styles.redPacketLastMessageContent]}>
+            {(item.lastMessageContent as ParsedRedPackage)?.data?.memo}
+          </TextS>
+        </View>
+      );
     }
-  }, [item.lastMessageContent, item.lastMessageType]);
+    if (item.lastMessageType === 'TRANSFER-CARD') {
+      const isHighLight: boolean =
+        item.unreadMessageCount > 0 &&
+        !item.mute &&
+        (item.lastMessageContent as ParsedTransfer)?.data?.toUserId === userInfo?.userId;
+
+      const transferInfo = item?.lastMessageContent as ParsedTransfer;
+
+      const infoShow = transferInfo?.transferExtraData?.tokenInfo
+        ? `${formatAmountShow(
+            divDecimals(
+              transferInfo?.transferExtraData?.tokenInfo?.amount || '',
+              transferInfo?.transferExtraData?.tokenInfo?.decimal,
+            ),
+            transferInfo?.transferExtraData?.tokenInfo?.decimal,
+          )} ${transferInfo?.transferExtraData?.tokenInfo?.symbol}`
+        : `${transferInfo?.transferExtraData?.nftInfo?.alias} #${transferInfo?.transferExtraData?.nftInfo?.nftId}`;
+
+      return (
+        <TextS numberOfLines={1} style={[GStyles.flexRow, styles.message]}>
+          <TextS style={[FontStyles.font7, isHighLight && FontStyles.font6]}>{`[Transfer] `}</TextS>
+          <TextS style={FontStyles.font7}>{infoShow}</TextS>
+        </TextS>
+      );
+    }
+
+    // general message
+    let message = '';
+    if (item.lastMessageType === 'TEXT' || item.lastMessageType === 'SYS') {
+      message = item.lastMessageContent as string;
+    } else if (item.lastMessageType === 'PIN-SYS') {
+      message = formatPinSysMessageToStr(item.lastMessageContent as ParsedPinSys);
+    } else if (item.lastMessageType === 'IMAGE') {
+      message = '[Image]';
+    } else {
+      message = UN_SUPPORTED_FORMAT;
+    }
+
+    return (
+      <TextS numberOfLines={1} style={[FontStyles.font7, styles.message]}>
+        {message}
+      </TextS>
+    );
+  }, [item, userInfo?.userId]);
 
   const deleteItem = useCallback(() => {
     swipeableRef.current?.close();
@@ -158,9 +213,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
             </View>
             <View style={styles.blank} />
             <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween]}>
-              <TextS numberOfLines={1} style={[FontStyles.font7, styles.message]}>
-                {lastMessage}
-              </TextS>
+              {renderLastMessage}
               {RightBottomSection}
             </View>
           </View>
@@ -212,6 +265,9 @@ const styles = StyleSheet.create({
   },
   message: {
     maxWidth: pTd(240),
+  },
+  redPacketLastMessageContent: {
+    width: pTd(150),
   },
   messageNum: {
     backgroundColor: defaultColors.bg17,

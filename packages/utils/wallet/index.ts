@@ -1,6 +1,6 @@
 import aes from '../aes';
 import AElf from 'aelf-sdk';
-import { DefaultBIP44Path } from '@portkey-wallet/constants/wallet';
+import { DEFAULT_BIP44PATH } from '@portkey-wallet/constants/wallet';
 import {
   AccountNameErrorMessage,
   FormatAccountInfo,
@@ -51,7 +51,7 @@ export const formatWalletInfo = (
     }
     delete walletInfo.privateKey;
     delete walletInfo.mnemonic;
-    delete walletInfo.xPrivateKey;
+    walletInfo.xPrivateKey && delete walletInfo.xPrivateKey;
     walletInfo.keyPair && delete walletInfo.keyPair;
     walletInfo.childWallet && delete walletInfo.childWallet;
 
@@ -117,7 +117,7 @@ export const getAccountByPrivateKey: GetAccountByPrivateKey = privateKey => {
 export const getNextBIP44Path: GetNextBIP44Path = BIP44Path => {
   const BIPArr = BIP44Path.split('/');
   if (isNaN(+BIPArr[BIPArr.length - 1])) {
-    return DefaultBIP44Path;
+    return DEFAULT_BIP44PATH;
   }
   BIPArr.splice(-1, 1, (+BIPArr[BIPArr.length - 1] + 1).toString());
   return BIPArr.join('/');

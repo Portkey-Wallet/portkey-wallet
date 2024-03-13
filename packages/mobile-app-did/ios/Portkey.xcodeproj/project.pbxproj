@@ -13,12 +13,12 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		19EC8BC9327908E9BDB886C0 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4EB37D631CAABEBC0CC18B /* ExpoModulesProvider.swift */; };
 		2B25ECFC2A1B48DC00586D7D /* InpageBridgeWeb3.js in Resources */ = {isa = PBXBuildFile; fileRef = 2B25ECFB2A1B48DC00586D7D /* InpageBridgeWeb3.js */; };
-		3652EFEAF7157AE32F0A183B /* libPods-Portkey-PortkeyTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C2DDB7964DE97D61553C3007 /* libPods-Portkey-PortkeyTests.a */; };
+		4829DA60155431BA80859D69 /* libPods-Portkey.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CBC1376EE4546148277B04B0 /* libPods-Portkey.a */; };
 		6067DF7E96A3512FE02CDF4C /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EB8AAA944A581AA64A54B32 /* ExpoModulesProvider.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		9C403D3329E5603000035DBC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9C403D3229E5603000035DBC /* GoogleService-Info.plist */; };
-		C080F5E0D94878C8BC74BEDE /* libPods-Portkey.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9760C1D5E86A9D34982348E9 /* libPods-Portkey.a */; };
 		E5A1B79EA5754765B45B0F05 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CB9009F46A7D48EB9656781B /* SplashScreen.storyboard */; };
+		F29931343BA08E67A8162ED1 /* libPods-Portkey-PortkeyTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D8495AACC538C0C18A1ADB57 /* libPods-Portkey-PortkeyTests.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,11 +50,11 @@
 		5C4EB37D631CAABEBC0CC18B /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Portkey-PortkeyTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Portkey/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-Portkey-DIDTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Portkey-DIDTests.release.xcconfig"; path = "Target Support Files/Pods-Portkey-DIDTests/Pods-Portkey-DIDTests.release.xcconfig"; sourceTree = "<group>"; };
-		9760C1D5E86A9D34982348E9 /* libPods-Portkey.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Portkey.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C403D3229E5603000035DBC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		9EB8AAA944A581AA64A54B32 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Portkey/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		C2DDB7964DE97D61553C3007 /* libPods-Portkey-PortkeyTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Portkey-PortkeyTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CB9009F46A7D48EB9656781B /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = Portkey/SplashScreen.storyboard; sourceTree = "<group>"; };
+		CBC1376EE4546148277B04B0 /* libPods-Portkey.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Portkey.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D8495AACC538C0C18A1ADB57 /* libPods-Portkey-PortkeyTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Portkey-PortkeyTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8B841D69BD6243E09089D47 /* Pods-Portkey-PortkeyTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Portkey-PortkeyTests.release.xcconfig"; path = "Target Support Files/Pods-Portkey-PortkeyTests/Pods-Portkey-PortkeyTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F516F04C5343350422866DD6 /* Pods-Portkey-PortkeyTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Portkey-PortkeyTests.debug.xcconfig"; path = "Target Support Files/Pods-Portkey-PortkeyTests/Pods-Portkey-PortkeyTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -65,7 +65,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3652EFEAF7157AE32F0A183B /* libPods-Portkey-PortkeyTests.a in Frameworks */,
+				F29931343BA08E67A8162ED1 /* libPods-Portkey-PortkeyTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -73,7 +73,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C080F5E0D94878C8BC74BEDE /* libPods-Portkey.a in Frameworks */,
+				4829DA60155431BA80859D69 /* libPods-Portkey.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -134,8 +134,8 @@
 			children = (
 				2B4CF73429344C200071ED92 /* hermes.xcframework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				9760C1D5E86A9D34982348E9 /* libPods-Portkey.a */,
-				C2DDB7964DE97D61553C3007 /* libPods-Portkey-PortkeyTests.a */,
+				CBC1376EE4546148277B04B0 /* libPods-Portkey.a */,
+				D8495AACC538C0C18A1ADB57 /* libPods-Portkey-PortkeyTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -602,7 +602,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.portkey.did;
+				PRODUCT_BUNDLE_IDENTIFIER = com.portkey.finance;
 				PRODUCT_NAME = Portkey;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -635,7 +635,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.portkey.did;
+				PRODUCT_BUNDLE_IDENTIFIER = com.portkey.finance;
 				PRODUCT_NAME = Portkey;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;

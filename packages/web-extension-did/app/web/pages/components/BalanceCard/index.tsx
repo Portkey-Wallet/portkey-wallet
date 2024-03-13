@@ -1,78 +1,120 @@
 /* eslint-disable no-inline-styles/no-inline-styles */
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import CustomSvg from 'components/CustomSvg';
 import { useTranslation } from 'react-i18next';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import clsx from 'clsx';
 import { useCommonState } from 'store/Provider/hooks';
+import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/wallet';
 import './index.less';
 
 export interface BalanceCardProps {
   accountInfo?: any;
   amount?: string | number;
+  isShowFaucet?: boolean;
+  isShowBuyEntry?: boolean;
+  isShowDeposit?: boolean;
+  isShowDepositUSDT?: boolean;
+  isShowWithdrawUSDT?: boolean;
+  onBuy?: () => void;
   onSend?: () => void;
   onReceive?: () => void;
-  onBuy?: () => void;
-  isShowBuy?: boolean;
-  isShowBridge?: boolean;
-  onClickBridge?: () => void;
+  onClickDeposit?: () => void;
+  onClickDepositUSDT?: () => void;
+  onClickWithdrawUSDT?: () => void;
 }
 
 export default function BalanceCard({
   onSend,
   onReceive,
+  onClickDeposit,
+  isShowBuyEntry,
+  isShowFaucet,
+  isShowDeposit,
+  isShowDepositUSDT,
+  isShowWithdrawUSDT,
   onBuy,
-  isShowBuy,
-  isShowBridge,
-  onClickBridge,
+  onClickDepositUSDT,
+  onClickWithdrawUSDT,
 }: BalanceCardProps) {
   const { t } = useTranslation();
-  const isMainNet = useIsMainnet();
-  const { isPrompt } = useCommonState();
+  const { isNotLessThan768 } = useCommonState();
 
-  const renderBuy = useMemo(
+  const renderBuyEntry = useMemo(
     () =>
-      !!isShowBuy && (
+      !!isShowBuyEntry && (
         <span className="send btn" onClick={onBuy}>
-          <CustomSvg type="Buy" style={{ width: 36, height: 36 }} />
+          <CustomSvg type="BuyEntry" style={{ width: 36, height: 36 }} />
           <span className="btn-name">{t('Buy')}</span>
         </span>
       ),
-    [isShowBuy, onBuy, t],
+    [isShowBuyEntry, onBuy, t],
   );
+
+  const renderDepositUSDT = useMemo(
+    () =>
+      !!isShowDepositUSDT && (
+        <span className="send btn" onClick={onClickDepositUSDT}>
+          <CustomSvg type="Deposit" style={{ width: 36, height: 36 }} />
+          <span className="btn-name">{t('Deposit')}</span>
+        </span>
+      ),
+    [isShowDepositUSDT, onClickDepositUSDT, t],
+  );
+
+  const renderWithdrawUSDT = useMemo(
+    () =>
+      !!isShowWithdrawUSDT && (
+        <span className="send btn" onClick={onClickWithdrawUSDT}>
+          <CustomSvg type="Withdraw" style={{ width: 36, height: 36 }} />
+          <span className="btn-name">{t('Withdraw')}</span>
+        </span>
+      ),
+    [isShowWithdrawUSDT, onClickWithdrawUSDT, t],
+  );
+
+  const renderDeposit = useMemo(() => {
+    return (
+      !!isShowDeposit && (
+        <span className="deposit btn" onClick={onClickDeposit}>
+          <CustomSvg type="Deposit" style={{ width: 36, height: 36 }} />
+          <span className="btn-name">{t('Deposit')}</span>
+        </span>
+      )
+    );
+  }, [isShowDeposit, onClickDeposit, t]);
+
+  const handleClickFaucet = useCallback(() => {
+    const openWinder = window.open(FAUCET_URL, '_blank');
+    if (openWinder) {
+      openWinder.opener = null;
+    }
+  }, []);
 
   const renderFaucet = useMemo(
     () =>
-      !isMainNet && (
-        <span className="send btn" onClick={onBuy}>
+      isShowFaucet && (
+        <span className="send btn" onClick={handleClickFaucet}>
           <CustomSvg type="Faucet" style={{ width: 36, height: 36 }} />
           <span className="btn-name">{t('Faucet')}</span>
         </span>
       ),
-    [isMainNet, onBuy, t],
-  );
-
-  const renderBridge = useMemo(
-    () =>
-      isShowBridge && (
-        <span className="send btn" onClick={onClickBridge}>
-          <CustomSvg type="Bridge" style={{ width: 36, height: 36 }} />
-          <span className="btn-name">{t('Bridge')}</span>
-        </span>
-      ),
-    [isShowBridge, onClickBridge, t],
+    [handleClickFaucet, isShowFaucet, t],
   );
 
   const showCardNum = useMemo(
-    () => (renderBuy ? 1 : 0) + (renderFaucet ? 1 : 0) + (renderBridge ? 1 : 0),
-    [renderBridge, renderBuy, renderFaucet],
+    () =>
+      (renderBuyEntry ? 1 : 0) +
+      (renderDeposit ? 1 : 0) +
+      (renderDepositUSDT ? 1 : 0) +
+      (renderWithdrawUSDT ? 1 : 0) +
+      (renderFaucet ? 1 : 0),
+    [renderBuyEntry, renderDeposit, renderDepositUSDT, renderFaucet, renderWithdrawUSDT],
   );
-
   return (
     <div className="balance-card">
-      <div className={clsx(['balance-btn', showCardNum > 1 && !isPrompt && 'popup-card-num-more-than-3'])}>
-        {renderBuy}
-        {renderBridge}
+      <div className={clsx(['balance-btn', showCardNum > 1 && !isNotLessThan768 && 'popup-card-num-more-than-3'])}>
+        {renderBuyEntry}
+        {renderDeposit}
         <span className="send btn" onClick={onSend}>
           <CustomSvg type="RightTop" style={{ width: 36, height: 36 }} />
           <span className="btn-name">{t('Send')}</span>
@@ -81,6 +123,8 @@ export default function BalanceCard({
           <CustomSvg type="RightDown" style={{ width: 36, height: 36 }} />
           <span className="btn-name">{t('Receive')}</span>
         </span>
+        {renderDepositUSDT}
+        {renderWithdrawUSDT}
         {renderFaucet}
       </div>
     </div>

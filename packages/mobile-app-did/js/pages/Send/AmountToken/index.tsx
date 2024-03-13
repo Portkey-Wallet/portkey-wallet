@@ -1,7 +1,7 @@
-import React, { useMemo, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import React, { useCallback, useMemo, useRef } from 'react';
+import { View, Text, StyleSheet, TextInput } from 'react-native';
 import { pTd } from 'utils/unit';
-import { parseInputChange } from '@portkey-wallet/utils/input';
+import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
@@ -14,11 +14,12 @@ import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { FontStyles } from 'assets/theme/styles';
 import { TextM, TextS } from 'components/CommonText';
 
-import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useInputFocus } from 'hooks/useInputFocus';
+import Touchable from 'components/Touchable';
 
 interface AmountTokenProps {
   onPressMax: () => void;
@@ -27,7 +28,6 @@ interface AmountTokenProps {
   setSendTokenNumber: any;
   selectedAccount: any;
   selectedToken: IToSendAssetParamsType;
-  setSelectedToken: any;
 }
 
 export default function AmountToken({
@@ -41,17 +41,21 @@ export default function AmountToken({
   const defaultToken = useDefaultToken();
   const iptRef = useRef<TextInput>(null);
   useInputFocus(iptRef);
-  const isTestNet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const isTokenHasPrice = useIsTokenHasPrice(selectedToken?.symbol);
 
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
-
   const symbolImages = useSymbolImages();
-  const aelfIconName = useMemo(() => (isTestNet ? 'testnet' : 'mainnet'), [isTestNet]);
-
   const formattedTokenNameToSuffix = useMemo(() => {
     return selectedToken?.symbol?.length > 5 ? `${selectedToken?.symbol.slice(0, 5)}...` : selectedToken?.symbol;
   }, [selectedToken?.symbol]);
+
+  const onChangeText = useCallback(
+    (value: string) => {
+      setSendTokenNumber(parseInputNumberChange(value, Infinity, Number(selectedToken?.decimals)));
+    },
+    [selectedToken?.decimals, setSendTokenNumber],
+  );
 
   useEffectOnce(() => {
     getTokenPrice(selectedToken.symbol);
@@ -73,9 +77,10 @@ export default function AmountToken({
             hasBorder
             shapeType="circular"
             title={selectedToken.symbol}
-            svgName={selectedToken.symbol === defaultToken.symbol ? aelfIconName : undefined}
-            imageUrl={symbolImages[selectedToken.symbol] || ''}
-            avatarSize={28}
+            // elf token icon is fixed , only use white background color
+            svgName={selectedToken.symbol === defaultToken.symbol ? 'testnet' : undefined}
+            imageUrl={selectedToken.imageUrl || symbolImages[selectedToken.symbol]}
+            avatarSize={pTd(28)}
             style={styles.avatarStyle}
           />
           <Text style={styles.symbolName}>{formattedTokenNameToSuffix}</Text>
@@ -84,26 +89,20 @@ export default function AmountToken({
           <Input
             autoFocus
             ref={iptRef}
-            onFocus={() => {
-              if (sendTokenNumber === '0') setSendTokenNumber('');
-            }}
             keyboardType="numeric"
             value={sendTokenNumber}
             maxLength={18}
             containerStyle={styles.containerStyle}
             inputContainerStyle={styles.inputContainerStyle}
             inputStyle={[styles.inputStyle, sendTokenNumber === '0' && FontStyles.font7]}
-            onChangeText={v => {
-              const newAmount = parseInputChange(v.trim(), ZERO, 4);
-              setSendTokenNumber(newAmount);
-            }}
+            onChangeText={onChangeText}
           />
-          <TouchableOpacity style={styles.max} onPress={onPressMax}>
+          <Touchable style={styles.max} onPress={onPressMax}>
             <TextM style={FontStyles.font4}>{t('Max')}</TextM>
-          </TouchableOpacity>
+          </Touchable>
         </View>
       </View>
-      {!isTestNet && isTokenHasPrice && (
+      {isMainnet && isTokenHasPrice && (
         <View style={styles.bottom}>
           <TextS style={styles.topBalance}>
             {`$ ${formatAmountShow(

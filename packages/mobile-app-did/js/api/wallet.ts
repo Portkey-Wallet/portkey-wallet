@@ -7,9 +7,9 @@ export const NETWORK_CONFIG: {
     url: string;
   };
 } = {
-  MAIN: {
+  MAINNET: {
     name: 'Mainnet',
-    nameEn: 'MAIN',
+    nameEn: 'MAINNET',
     url: 'https://app-wallet-api.aelf.io',
   },
   TESTNET: {

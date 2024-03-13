@@ -1,5 +1,5 @@
 import Svg from 'components/Svg';
-import React, { ReactNode, memo, useCallback, useRef } from 'react';
+import React, { ReactNode, memo, useCallback, useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Actions } from 'react-native-gifted-chat';
 import { pTd } from 'utils/unit';
@@ -7,9 +7,9 @@ import { Animated } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useKeyboardAnim, useSendCurrentChannelMessage, useHideCurrentChannel } from '../../hooks';
-import { useBottomBarStatus, useChatText, useChatsDispatch } from '../../../context/hooks';
+import { useBottomBarStatus, useChatReplyMessageInfo, useChatText, useChatsDispatch } from '../../../context/hooks';
 import { ChatBottomBarStatus } from 'store/chat/slice';
-import { setBottomBarStatus, setChatText } from '../../../context/chatsContext';
+import { setBottomBarStatus, setChatText, setReplyMessageInfo } from '../../../context/chatsContext';
 import { BGStyles } from 'assets/theme/styles';
 import { SendMessageButton } from '../SendMessageButton';
 import { ChatInput, ChatInputBar } from '../ChatInput';
@@ -20,6 +20,7 @@ import { defaultColors } from 'assets/theme';
 import ActionSheet from 'components/ActionSheet';
 import navigationService from 'utils/navigationService';
 import { NO_LONGER_IN_GROUP } from '@portkey-wallet/constants/constants-ca/chat';
+import ReplyContent from '../ReplyContent';
 
 export const ActionsIcon = memo(function ActionsIcon({ onPress }: { onPress?: () => void }) {
   return (
@@ -43,6 +44,7 @@ export function BottomBarContainer({
   const bottomBarStatus = useBottomBarStatus();
   const dispatch = useChatsDispatch();
   const text = useChatText();
+  const replyMessageInfo = useChatReplyMessageInfo();
   const textInputRef = useRef<ChatInput>(null);
   const keyboardAnim = useKeyboardAnim({ textInputRef });
   const timer = useRef<NodeJS.Timeout>();
@@ -76,13 +78,26 @@ export function BottomBarContainer({
       timer.current && clearTimeout(timer.current);
     };
   });
+
+  useEffect(() => {
+    if (replyMessageInfo?.message) {
+      inputFocus(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [replyMessageInfo?.message]);
+
   const onSend = useCallback(async () => {
     dispatch(setChatText(''));
+    dispatch(setReplyMessageInfo(undefined));
     chatInputRecorder?.reset();
 
     try {
       scrollToBottom?.();
-      typeof text === 'string' && (await sendChannelMessage(text.trim()));
+      typeof text === 'string' &&
+        (await sendChannelMessage({
+          content: text.trim(),
+          quoteMessage: replyMessageInfo?.message?.rawMessage,
+        }));
     } catch (error: any) {
       if (error?.code === NO_LONGER_IN_GROUP) {
         hideChannel();
@@ -100,9 +115,11 @@ export function BottomBarContainer({
 
       CommonToast.fail('Failed to send message');
     }
-  }, [dispatch, hideChannel, scrollToBottom, sendChannelMessage, text]);
+  }, [dispatch, hideChannel, replyMessageInfo?.message, scrollToBottom, sendChannelMessage, text]);
+
   return (
     <View style={styles.wrap}>
+      <ReplyContent />
       <View style={[BGStyles.bg6, GStyles.flexRow, GStyles.itemEnd, styles.barWrap]}>
         <ActionsIcon onPress={() => onPressActionButton(ChatBottomBarStatus.tools)} />
         <ChatInputBar ref={textInputRef} onPressActionButton={onPressActionButton} />

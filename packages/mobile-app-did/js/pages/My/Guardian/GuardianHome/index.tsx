@@ -1,7 +1,7 @@
 import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import PageContainer from 'components/PageContainer';
@@ -9,30 +9,21 @@ import { useLanguage } from 'i18n/hooks';
 import { useGuardiansInfo } from 'hooks/store';
 import GuardianItem from 'pages/Guardian/components/GuardianItem';
 import Touchable from 'components/Touchable';
-import { useGetVerifierServers, useRefreshGuardiansList } from 'hooks/guardian';
+import { useRefreshGuardianList } from 'hooks/guardian';
 import useEffectOnce from 'hooks/useEffectOnce';
 import GStyles from 'assets/theme/GStyles';
+import { TextM } from 'components/CommonText';
 
 export default function GuardianHome() {
   const { t } = useLanguage();
 
-  const { userGuardiansList } = useGuardiansInfo();
+  const { userGuardiansList, verifierMap } = useGuardiansInfo();
   const guardianList = useMemo(() => {
     if (!userGuardiansList) return [];
     return [...userGuardiansList].reverse();
   }, [userGuardiansList]);
 
-  const getVerifierServers = useGetVerifierServers();
-  const refreshGuardiansList = useRefreshGuardiansList();
-
-  const init = useCallback(async () => {
-    try {
-      await getVerifierServers();
-      refreshGuardiansList();
-    } catch (error) {
-      console.log(error, '==error');
-    }
-  }, [getVerifierServers, refreshGuardiansList]);
+  const { init } = useRefreshGuardianList();
   useEffectOnce(() => {
     init();
   });
@@ -42,22 +33,33 @@ export default function GuardianHome() {
     [],
   );
 
+  const isAddAllowed = useMemo(() => {
+    if (guardianList.length === 0) return false;
+    const verifierNum = Object.keys(verifierMap || {}).length;
+    const guardianVerifierMap: Record<string, boolean> = {};
+    guardianList.forEach(item => (guardianVerifierMap[item.verifier?.id || ''] = true));
+    const guardianVerifierNum = Object.keys(guardianVerifierMap).length;
+    return verifierNum > guardianVerifierNum;
+  }, [guardianList, verifierMap]);
+
   return (
     <PageContainer
       safeAreaColor={['blue', 'white']}
       titleDom={t('Guardians')}
       containerStyles={pageStyles.pageWrap}
-      scrollViewProps={{ disabled: false }}
+      scrollViewProps={{ disabled: true }}
       rightDom={
-        <TouchableOpacity
-          style={{ padding: pTd(16) }}
-          onPress={() => {
-            navigationService.navigate('GuardianEdit');
-          }}>
-          <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
-        </TouchableOpacity>
+        isAddAllowed && (
+          <Touchable
+            style={{ padding: pTd(16) }}
+            onPress={() => {
+              navigationService.navigate('GuardianEdit');
+            }}>
+            <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
+          </Touchable>
+        )
       }>
-      <View>
+      <ScrollView showsVerticalScrollIndicator={false}>
         {guardianList.map((guardian, idx) => (
           <Touchable
             key={idx}
@@ -72,7 +74,15 @@ export default function GuardianHome() {
             />
           </Touchable>
         ))}
-      </View>
+      </ScrollView>
+      {!isAddAllowed && (
+        <View style={pageStyles.warnWrap}>
+          <Svg icon="warning2" size={pTd(16)} color={defaultColors.icon1} />
+          <TextM style={pageStyles.warnLabelWrap}>
+            {'The number of guardians has reached the maximum limit. Please delete some before trying to add new ones.'}
+          </TextM>
+        </View>
+      )}
     </PageContainer>
   );
 }
@@ -81,6 +91,17 @@ const pageStyles = StyleSheet.create({
   pageWrap: {
     flex: 1,
     backgroundColor: defaultColors.bg1,
-    ...GStyles.paddingArg(16, 20),
+    ...GStyles.paddingArg(16, 20, 10, 20),
+  },
+  warnWrap: {
+    backgroundColor: defaultColors.bg6,
+    borderRadius: pTd(6),
+    padding: pTd(12),
+    flexDirection: 'row',
+  },
+  warnLabelWrap: {
+    color: defaultColors.font3,
+    marginLeft: pTd(8),
+    flex: 1,
   },
 });

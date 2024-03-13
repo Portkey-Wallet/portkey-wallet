@@ -43,6 +43,19 @@ export const transIndexesToContactIdMap = (contactIndexList: ContactIndexType[])
   return contactIdMap;
 };
 
+export const transIndexesToPortkeyIdMap = (contactIndexList: ContactIndexType[]) => {
+  const contactPortkeyMap: ContactMapType = {};
+  contactIndexList.forEach(contactIndex => {
+    contactIndex.contacts.forEach(contact => {
+      if (!contact.caHolderInfo?.userId) return;
+      if (contactPortkeyMap[contact.caHolderInfo?.userId])
+        contactPortkeyMap[contact.caHolderInfo?.userId].push(contact);
+      else contactPortkeyMap[contact.caHolderInfo?.userId] = [contact];
+    });
+  });
+  return contactPortkeyMap;
+};
+
 const getIndexFromChar = (char: string) => {
   return char === '#' ? OTHER_INDEX : char.charCodeAt(0) - CHAR_CODE_A;
 };

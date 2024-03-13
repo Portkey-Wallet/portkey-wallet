@@ -1,8 +1,8 @@
 import { useDisbandChannel, useGroupChannelInfo, useUpdateChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
-import { Button, Form, Input, message } from 'antd';
+import { Button, Form, Input } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
@@ -11,6 +11,8 @@ import uploadImageToS3 from 'utils/compressAndUploadToS3';
 import { useLoading } from 'store/Provider/hooks';
 import './index.less';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import singleMessage from 'utils/singleMessage';
+import { useNavigateState } from 'hooks/router';
 
 const { Item: FormItem } = Form;
 type ValidateStatus = Parameters<typeof Form.Item>[0]['validateStatus'];
@@ -29,7 +31,7 @@ export default function EditGroupInfo() {
   const [validName, setValidName] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
   const [name, setName] = useState<string>(groupInfo?.name || '');
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useNavigateState();
   const [disabled, setDisabled] = useState(false);
   const updateChannelInfo = useUpdateChannelInfo();
   const [file, setFile] = useState<File>();
@@ -48,10 +50,10 @@ export default function EditGroupInfo() {
         s3Url = await uploadImageToS3(file);
       }
       await updateChannelInfo(`${channelUuid}`, `${name?.trim()}`, s3Url);
-      message.success('Group name update');
+      singleMessage.success('Group name update');
       navigate(-1);
     } catch (error) {
-      message.error(handleErrorMessage(error, 'Failed to update group name'));
+      singleMessage.error(handleErrorMessage(error, 'Failed to update group name'));
       console.log('===Failed to update group name', error);
     } finally {
       setLoading(false);
@@ -66,9 +68,9 @@ export default function EditGroupInfo() {
         try {
           await disbandGroup();
           navigate(`/chat-list`);
-          message.success('Group deleted');
+          singleMessage.success('Group deleted');
         } catch (e) {
-          message.error('Failed to disband group');
+          singleMessage.error('Failed to disband group');
           console.log('===Failed to disband group', e);
         }
       },

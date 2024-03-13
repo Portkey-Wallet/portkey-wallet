@@ -29,7 +29,7 @@ export const isDangerousLink = (url: string): boolean => {
  * @returns - String corresponding to sanitized input depending if it's a search or url
  */
 export const prefixUrlWithProtocol = (url: string, defaultProtocol = 'https://') => {
-  const hasProtocol = /^[a-z]*:\/\//.test(url);
+  const hasProtocol = /^[a-zA-Z]*:\/\//.test(url);
   const sanitizedURL = hasProtocol ? url : `${defaultProtocol}${url}`;
   return sanitizedURL;
 };

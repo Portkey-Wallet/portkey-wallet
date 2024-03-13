@@ -8,31 +8,20 @@ export default function WalletNamePrompt({
   headerTitle,
   goBack,
   data,
-  showChat = false,
   type,
   editText,
   isShowRemark = false,
   handleEdit,
-  handleCopy,
   saveCallback,
 }: IProfileDetailProps) {
   return (
     <div className="wallet-name-prompt">
       <SecondPageHeader title={headerTitle} leftCallBack={goBack} />
 
-      {showChat && type === MyProfilePageType.VIEW && (
-        <ViewContactBody
-          data={data}
-          editText={editText}
-          isShowRemark={isShowRemark}
-          handleEdit={handleEdit}
-          handleCopy={handleCopy}
-        />
+      {type === MyProfilePageType.VIEW && (
+        <ViewContactBody data={data} editText={editText} isShowRemark={isShowRemark} handleEdit={handleEdit} />
       )}
-      {showChat && type === MyProfilePageType.EDIT && (
-        <SetWalletNameForm data={data} handleCopy={handleCopy} saveCallback={saveCallback} />
-      )}
-      {!showChat && <SetWalletNameForm data={data} handleCopy={handleCopy} saveCallback={saveCallback} />}
+      {type === MyProfilePageType.EDIT && <SetWalletNameForm data={data} saveCallback={saveCallback} />}
     </div>
   );
 }

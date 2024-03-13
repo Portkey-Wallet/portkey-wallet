@@ -3,6 +3,8 @@ import { SessionExpiredPlan, SessionInfo } from '../types/session';
 import { Timestamp } from '../types';
 import AElf from 'aelf-sdk';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc.js';
+dayjs.extend(utc);
 
 const HOUR = 60 * 60 * 1000;
 

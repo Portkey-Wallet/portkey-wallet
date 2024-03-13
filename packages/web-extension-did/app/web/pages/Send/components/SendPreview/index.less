@@ -1,6 +1,6 @@
 @import '../../../../assets/theme/color.less';
 .send-preview {
-  max-height: 423px;
+  // max-height: 423px;
   overflow-y: overlay;
   background-color: @bg-11;
   display: flex;
@@ -35,19 +35,26 @@
     gap: 16px;
     margin-bottom: 40px;
     .avatar {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      position: relative;
       width: 64px;
       height: 64px;
       border-radius: 6px;
       background: @bg-15;
-      left: 48px;
       font-size: 24px;
       color: @font-12;
+      .tokentagmedium-icon,
+      .nfttagmedium-icon {
+        display: flex;
+        position: absolute;
+        width: 32px;
+        height: 16px;
+        top: 0;
+        right: 4px;
+      }
       img {
         width: 64px;
         height: 64px;
+        flex-shrink: 0;
         border-radius: 6px;
         object-fit: cover;
       }
@@ -149,12 +156,13 @@
     color: @font-11;
     /* stylelint-disable-next-line no-descending-specificity */
     .label {
-      width: 120px;
       font-size: 14px;
       line-height: 20px;
     }
     /* stylelint-disable-next-line no-descending-specificity */
     .value {
+      flex-grow: 1;
+      white-space: nowrap;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;

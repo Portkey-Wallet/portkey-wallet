@@ -11,7 +11,7 @@ import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
 import { PageLoginType, PageType } from '../types';
 import TermsServiceButton from './TermsServiceButton';
-import Button from './Button';
+import TabButton from './TabButton';
 import { useOnLogin } from 'hooks/login';
 import PhoneInput from 'components/PhoneInput';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
@@ -68,13 +68,13 @@ export default function Phone({
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter]}>
       <View style={GStyles.width100}>
         <View style={[GStyles.flexRowWrap, GStyles.marginBottom(20)]}>
-          <Button
+          {/* <TabButton
             title="Phone"
             isActive
             style={GStyles.marginRight(8)}
             onPress={() => setLoginType(PageLoginType.phone)}
-          />
-          <Button title="Email" onPress={() => setLoginType(PageLoginType.email)} />
+          /> */}
+          <TabButton title="Email" onPress={() => setLoginType(PageLoginType.email)} />
         </View>
 
         <PhoneInput

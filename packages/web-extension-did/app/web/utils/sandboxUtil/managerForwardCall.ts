@@ -1,6 +1,7 @@
 import SandboxEventTypes from 'messages/SandboxEventTypes';
 import SandboxEventService, { SandboxErrorCode } from 'service/SandboxEventService';
 import { BaseSendOption } from './types';
+import { GuardianItem } from 'types/guardians';
 
 /**
  *
@@ -19,6 +20,7 @@ interface ParamsOption {
   contractAddress: string; // Contract address that needs to be traded
   methodName: string; // 'Transfer',
   args: ParamsOptionArgs;
+  guardiansApproved?: GuardianItem[];
 }
 
 export interface ManagerForwardCallParams extends BaseSendOption {
@@ -50,7 +52,7 @@ export const managerForwardCall = async ({
     code: resMessage.code,
     result: {
       rpcUrl,
-      ...resMessage.message,
+      message: resMessage.message,
     },
   };
 };

@@ -1,46 +1,37 @@
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import aes from '@portkey-wallet/utils/aes';
-import { message } from 'antd';
+import singleMessage from 'utils/singleMessage';
 import { DEVICE_TYPE } from 'constants/index';
-import { useCallback, useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useGuardiansInfo, useLoading, useUserInfo } from 'store/Provider/hooks';
+import { useCallback } from 'react';
+import { useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import { removeOtherManager } from 'utils/sandboxUtil/removeOtherManager';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { formatGuardianValue } from '../utils/formatGuardianValue';
-import qs from 'query-string';
 import ModalTip from 'pages/components/ModalTip';
+import getSeed from 'utils/getSeed';
+import { usePromptLocationParams, useNavigateState } from 'hooks/router';
+import { TRemoveOtherManageLocationSearch, TRemoveOtherManageLocationState } from 'types/router';
 
 export const useRemoveOtherManage = () => {
   const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
-  const { passwordSeed } = useUserInfo();
 
   const originChainId = useOriginChainId();
   const currentChain = useCurrentChain(originChainId);
-  const { state, search } = useLocation();
-  const navigate = useNavigate();
+  const { locationParams } = usePromptLocationParams<
+    TRemoveOtherManageLocationState,
+    TRemoveOtherManageLocationSearch
+  >();
+  const navigate = useNavigateState();
   const currentNetwork = useCurrentNetworkInfo();
   const { userGuardianStatus } = useGuardiansInfo();
-  const [query, setQuery] = useState('');
-
-  useEffect(() => {
-    if (search) {
-      const { detail } = qs.parse(search);
-      setQuery(detail);
-    } else {
-      setQuery(state);
-    }
-  }, [query, search, state]);
 
   return useCallback(async () => {
     try {
       setLoading(true);
-      const manageAddress = query.split('_')[1];
-      const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
-      if (!currentChain?.endPoint || !privateKey) return message.error('remove manage error');
+      const { privateKey } = await getSeed();
+      if (!currentChain?.endPoint || !privateKey) return singleMessage.error('remove manage error');
       const { guardiansApproved } = formatGuardianValue(userGuardianStatus);
       await removeOtherManager({
         rpcUrl: currentChain.endPoint,
@@ -50,7 +41,7 @@ export const useRemoveOtherManage = () => {
         paramsOption: {
           caHash: walletInfo?.caHash as string,
           managerInfo: {
-            address: manageAddress,
+            address: locationParams.manageAddress,
             extraData: `${DEVICE_TYPE},${Date.now()}`,
           },
           guardiansApproved,
@@ -68,16 +59,15 @@ export const useRemoveOtherManage = () => {
       setLoading(false);
       console.log('---remove-other-manage-error', error);
       const _error = handleErrorMessage(error, 'Try again later');
-      message.error(_error);
+      singleMessage.error(_error);
     }
   }, [
     currentChain,
     currentNetwork.walletType,
+    locationParams.manageAddress,
     navigate,
-    passwordSeed,
     setLoading,
-    query,
     userGuardianStatus,
-    walletInfo,
+    walletInfo?.caHash,
   ]);
 };

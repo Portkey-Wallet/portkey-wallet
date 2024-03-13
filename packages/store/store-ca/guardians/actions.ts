@@ -10,6 +10,8 @@ export const setVerifierListAction = createAction<VerifierItem[] | null>('verifi
 
 export const setGuardiansAction = createAction<GuardiansInfo | null>('verifier/setGuardians');
 
+export const setGuardianListAction = createAction<UserGuardianItem[]>('verifier/setGuardianListAction');
+
 export const setCurrentGuardianAction = createAction<UserGuardianItem>('verifier/setCurrentGuardian');
 
 export const setUserGuardianItemStatus = createAction<{

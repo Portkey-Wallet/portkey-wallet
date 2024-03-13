@@ -9,47 +9,51 @@ import navigationService from 'utils/navigationService';
 import PageContainer from 'components/PageContainer';
 import { pageStyles } from './style';
 import ListItem from 'components/ListItem';
-import { useLanguage } from 'i18n/hooks';
 import CommonInput from 'components/CommonInput';
 import { checkEmail } from '@portkey-wallet/utils/check';
 import { useGuardiansInfo } from 'hooks/store';
 import { LOGIN_TYPE_LIST } from 'constants/misc';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
 import { ApprovalType, VerificationType, OperationTypeEnum, VerifierItem } from '@portkey-wallet/types/verifier';
-import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
+import { INIT_HAS_ERROR, INIT_NONE_ERROR, ErrorType } from '@portkey-wallet/constants/constants-ca/common';
 import GuardianTypeSelectOverlay from '../components/GuardianTypeSelectOverlay';
 import VerifierSelectOverlay from '../components/VerifierSelectOverlay';
 import ActionSheet from 'components/ActionSheet';
-import { ErrorType } from 'types/common';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { FontStyles } from 'assets/theme/styles';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import useRouterParams, { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { useAppDispatch } from 'store/hooks';
 import { setPreGuardianAction } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { VerifierImage } from 'pages/Guardian/components/VerifierImage';
 import { verification } from 'utils/api';
-import fonts from 'assets/theme/fonts';
 import PhoneInput from 'components/PhoneInput';
-import Touchable from 'components/Touchable';
 import {
-  AppleAuthentication,
   useAppleAuthentication,
+  useFacebookAuthentication,
   useGoogleAuthentication,
+  useTelegramAuthentication,
+  useTwitterAuthentication,
   useVerifyToken,
 } from 'hooks/authentication';
 import GuardianAccountItem from '../components/GuardianAccountItem';
 import { request } from '@portkey-wallet/api/api-did';
 import verificationApiConfig from '@portkey-wallet/api/api-did/verification';
-import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { checkIsLastLoginAccount } from '@portkey-wallet/utils/guardian';
-import { cancelLoginAccount } from 'utils/guardian';
-import { useGetCurrentCAContract } from 'hooks/contract';
-import myEvents from 'utils/deviceEvent';
 import { ChainId } from '@portkey-wallet/types';
+import { useRefreshGuardiansList } from 'hooks/guardian';
+import GuardianThirdAccount from '../components/GuardianThirdAccount';
+import { useSetLoginAccount } from '../hooks/useSetLoginAccount';
+import { AuthTypes } from 'constants/guardian';
+import { useEffectOnce, useLatestRef } from '@portkey-wallet/hooks';
+import { NavigateMultiLevelParams } from 'types/navigate';
+import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
+import { useIsFocused } from '@react-navigation/native';
+import { TAppleAuthentication } from 'types/authentication';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
@@ -65,13 +69,15 @@ type thirdPartyInfoType = {
 type TypeItemType = typeof LOGIN_TYPE_LIST[number];
 
 const GuardianEdit: React.FC = () => {
-  const { t } = useLanguage();
   const dispatch = useAppDispatch();
   const originChainId = useOriginChainId();
-  const { caHash, address: managerAddress } = useCurrentWalletInfo();
-  const getCurrentCAContract = useGetCurrentCAContract();
+  const refreshGuardiansList = useRefreshGuardiansList();
 
-  const { guardian: editGuardian, isEdit = false, accelerateChainId = originChainId } = useRouterParams<RouterParams>();
+  const {
+    guardian: editGuardian,
+    isEdit = false,
+    accelerateChainId = originChainId,
+  } = useRouterEffectParams<RouterParams>();
 
   const { verifierMap, userGuardiansList } = useGuardiansInfo();
   const verifierList = useMemo(() => (verifierMap ? Object.values(verifierMap) : []), [verifierMap]);
@@ -79,20 +85,37 @@ const GuardianEdit: React.FC = () => {
   const [selectedType, setSelectedType] = useState<TypeItemType>();
   const [selectedVerifier, setSelectedVerifier] = useState<VerifierItem>();
   const [account, setAccount] = useState<string>();
-  const [guardianTypeError, setGuardianTypeError] = useState<ErrorType>({ ...INIT_HAS_ERROR });
-  const [guardianError, setGuardianError] = useState<ErrorType>({ ...INIT_NONE_ERROR });
+  const [guardianAccountError, setGuardianAccountError] = useState<ErrorType>({ ...INIT_HAS_ERROR });
+  const [verifierError, setVerifierError] = useState<ErrorType>({ ...INIT_NONE_ERROR });
   const { localPhoneCountryCode: country } = usePhoneCountryCode();
   const { appleSign } = useAppleAuthentication();
   const { googleSign } = useGoogleAuthentication();
+  const { telegramSign } = useTelegramAuthentication();
+  const { twitterSign } = useTwitterAuthentication();
+  const { facebookSign } = useFacebookAuthentication();
+
   const verifyToken = useVerifyToken();
   const [firstName, setFirstName] = useState<string>();
 
   const thirdPartyInfoRef = useRef<thirdPartyInfoType>();
+  const { approveParams } = useRouterParams<NavigateMultiLevelParams>();
+  const isFocused = useIsFocused();
+  const onEmitDapp = useCallback(() => {
+    if (!isFocused) return;
+    approveParams?.isDiscover && dispatch(changeDrawerOpenStatus(true));
+  }, [approveParams?.isDiscover, dispatch, isFocused]);
+  const lastOnEmitDapp = useLatestRef(onEmitDapp);
+
+  useEffectOnce(() => {
+    return () => {
+      lastOnEmitDapp.current();
+    };
+  });
 
   useEffect(() => {
     if (editGuardian) {
       setSelectedType(LOGIN_TYPE_LIST.find(item => item.value === editGuardian?.guardianType));
-      if ([LoginType.Apple, LoginType.Google].includes(editGuardian.guardianType)) {
+      if (AuthTypes.includes(editGuardian.guardianType)) {
         setAccount(editGuardian.isPrivate ? PRIVATE_GUARDIAN_ACCOUNT : editGuardian.thirdPartyEmail);
       } else {
         setAccount(editGuardian.guardianAccount);
@@ -103,56 +126,59 @@ const GuardianEdit: React.FC = () => {
 
   const onAccountChange = useCallback((value: string) => {
     setAccount(value);
-    setGuardianTypeError({ ...INIT_NONE_ERROR });
+    setGuardianAccountError({ ...INIT_NONE_ERROR });
   }, []);
 
   const onChooseVerifier = useCallback((item: VerifierItem) => {
-    setGuardianError({ ...INIT_NONE_ERROR });
+    setVerifierError({ ...INIT_NONE_ERROR });
     setSelectedVerifier(item);
   }, []);
 
-  const checkCurGuardianRepeat = useCallback(() => {
-    if (!selectedType) {
-      return { ...INIT_HAS_ERROR };
-    }
-    if ([LoginType.Email, LoginType.Phone].includes(selectedType.value)) {
-      let _account = account;
+  const checkCurGuardianRepeat = useCallback(
+    (guardiansList: UserGuardianItem[]) => {
+      if (!selectedType) return false;
 
-      if (selectedType.value === LoginType.Phone && !isEdit) {
-        _account = `+${country?.code}${account}`;
+      if (isEdit) {
+        guardiansList = guardiansList.filter(guardian => guardian.key !== editGuardian?.key);
+      }
+      let isValid = true;
+      let guardianAccount: string | undefined;
+      if ([LoginType.Email, LoginType.Phone].includes(selectedType.value)) {
+        if (selectedType.value === LoginType.Phone && !isEdit) {
+          guardianAccount = `+${country?.code}${account}`;
+        } else {
+          guardianAccount = account;
+        }
+      } else {
+        // LoginType.Apple & LoginType.Google & LoginType.Telegram
+        guardianAccount = isEdit ? editGuardian?.guardianAccount : thirdPartyInfoRef.current?.id;
       }
 
       if (
-        userGuardiansList?.findIndex(
-          guardian =>
-            guardian.guardianType === selectedType?.value &&
-            guardian.guardianAccount === _account &&
-            guardian.verifier?.id === selectedVerifier?.id,
-        ) !== -1
+        guardiansList.find(
+          item => item.guardianType === selectedType?.value && item.guardianAccount === guardianAccount,
+        )
       ) {
-        return { ...INIT_HAS_ERROR, errorMsg: t('This guardian already exists') };
+        isValid = false;
+        setGuardianAccountError({ ...INIT_HAS_ERROR, errorMsg: 'This account already exists. Please use others.' });
       } else {
-        return { ...INIT_NONE_ERROR };
+        setGuardianAccountError({ ...INIT_NONE_ERROR });
       }
-    }
 
-    if ([LoginType.Apple, LoginType.Google].includes(selectedType.value)) {
-      const guardianAccount = isEdit ? editGuardian?.guardianAccount : thirdPartyInfoRef.current?.id;
-      if (
-        userGuardiansList?.findIndex(
-          guardian =>
-            guardian.guardianType === selectedType?.value &&
-            guardian.guardianAccount === guardianAccount &&
-            guardian.verifier?.id === selectedVerifier?.id,
-        ) !== -1
-      ) {
-        return { ...INIT_HAS_ERROR, errorMsg: t('This guardian already exists') };
+      if (guardiansList.find(item => item.verifier?.id === selectedVerifier?.id)) {
+        isValid = false;
+        setVerifierError({
+          ...INIT_HAS_ERROR,
+          errorMsg: 'This verifier has already been used. Please select from others.',
+        });
       } else {
-        return { ...INIT_NONE_ERROR };
+        setVerifierError({ ...INIT_NONE_ERROR });
       }
-    }
-    return { ...INIT_NONE_ERROR };
-  }, [account, country?.code, editGuardian, isEdit, selectedType, selectedVerifier?.id, t, userGuardiansList]);
+
+      return isValid;
+    },
+    [account, country?.code, editGuardian, isEdit, selectedType, selectedVerifier?.id],
+  );
 
   const thirdPartyConfirm = useCallback(
     async (
@@ -161,6 +187,7 @@ const GuardianEdit: React.FC = () => {
       verifierInfo: VerifierItem,
       guardianType: LoginType,
     ) => {
+      Loading.showOnce();
       const rst = await verifyToken(guardianType, {
         accessToken: thirdPartyInfo.accessToken,
         id: thirdPartyInfo.id,
@@ -202,23 +229,32 @@ const GuardianEdit: React.FC = () => {
     if (guardianType === LoginType.Email) {
       const guardianErrorMsg = checkEmail(account);
       if (guardianErrorMsg) {
-        setGuardianTypeError({
+        setGuardianAccountError({
           isError: true,
           errorMsg: guardianErrorMsg,
         });
-        setGuardianError({ ...INIT_NONE_ERROR });
+        setVerifierError({ ...INIT_NONE_ERROR });
         return;
       }
     }
 
-    const _guardianError = checkCurGuardianRepeat();
-    setGuardianError(_guardianError);
-    if (_guardianError.isError) return;
+    const isValid = checkCurGuardianRepeat(userGuardiansList || []);
+    if (!isValid) return;
 
-    if ([LoginType.Apple, LoginType.Google].includes(guardianType)) {
-      if (!thirdPartyInfoRef.current) return;
+    Loading.showOnce();
+    const _userGuardiansList = await refreshGuardiansList();
+    const isValid2 = checkCurGuardianRepeat(_userGuardiansList || []);
+    if (!isValid2) {
+      Loading.hide();
+      return;
+    }
+
+    if (AuthTypes.includes(guardianType)) {
+      if (!thirdPartyInfoRef.current) {
+        Loading.hide();
+        return;
+      }
       try {
-        Loading.show();
         await thirdPartyConfirm(guardianAccount || '', thirdPartyInfoRef.current, selectedVerifier, guardianType);
       } catch (error) {
         CommonToast.failError(error);
@@ -226,57 +262,58 @@ const GuardianEdit: React.FC = () => {
       Loading.hide();
       return;
     }
+    Loading.hide();
 
     ActionSheet.alert({
       title2: (
         <Text>
           <TextL>{`${selectedVerifier.name} will send a verification code to `}</TextL>
-          <TextL style={fonts.mediumFont}>{showGuardianAccount || guardianAccount}</TextL>
+          <TextL style={FontStyles.weight500}>{showGuardianAccount || guardianAccount}</TextL>
           <TextL>{` to verify your ${guardianType === LoginType.Phone ? 'phone number' : 'email address'}.`}</TextL>
         </Text>
       ),
       buttons: [
         {
-          title: t('Cancel'),
+          title: 'Cancel',
           type: 'outline',
         },
         {
-          title: t('Confirm'),
+          title: 'Confirm',
           onPress: async () => {
             try {
-              if ([LoginType.Email, LoginType.Phone].includes(guardianType)) {
-                Loading.show();
-                const req = await verification.sendVerificationCode({
-                  params: {
-                    type: LoginType[guardianType],
-                    guardianIdentifier: guardianAccount,
-                    verifierId: selectedVerifier.id,
-                    chainId: originChainId,
-                    operationType: OperationTypeEnum.addGuardian,
+              if (![LoginType.Email, LoginType.Phone].includes(guardianType)) return;
+              Loading.show();
+              const req = await verification.sendVerificationCode({
+                params: {
+                  type: LoginType[guardianType],
+                  guardianIdentifier: guardianAccount,
+                  verifierId: selectedVerifier.id,
+                  chainId: originChainId,
+                  operationType: OperationTypeEnum.addGuardian,
+                },
+              });
+              if (req.verifierSessionId) {
+                navigationService.navigate('VerifierDetails', {
+                  guardianItem: {
+                    isLoginAccount: false,
+                    verifier: selectedVerifier,
+                    guardianAccount,
+                    guardianType: guardianType,
                   },
+                  requestCodeResult: {
+                    verifierSessionId: req.verifierSessionId,
+                  },
+                  verificationType: VerificationType.addGuardian,
+                  accelerateChainId,
                 });
-                if (req.verifierSessionId) {
-                  navigationService.navigate('VerifierDetails', {
-                    guardianItem: {
-                      isLoginAccount: false,
-                      verifier: selectedVerifier,
-                      guardianAccount,
-                      guardianType: guardianType,
-                    },
-                    requestCodeResult: {
-                      verifierSessionId: req.verifierSessionId,
-                    },
-                    verificationType: VerificationType.addGuardian,
-                    accelerateChainId,
-                  });
-                } else {
-                  throw new Error('send fail');
-                }
+              } else {
+                throw new Error('send fail');
               }
             } catch (error) {
               CommonToast.failError(error);
+            } finally {
+              Loading.hide();
             }
-            Loading.hide();
           },
         },
       ],
@@ -286,19 +323,25 @@ const GuardianEdit: React.FC = () => {
     selectedType,
     account,
     checkCurGuardianRepeat,
-    t,
+    userGuardiansList,
+    refreshGuardiansList,
     country.code,
     thirdPartyConfirm,
     originChainId,
     accelerateChainId,
   ]);
 
-  const onApproval = useCallback(() => {
-    const _guardianError = checkCurGuardianRepeat();
-    setGuardianError(_guardianError);
-    if (_guardianError.isError || !editGuardian || !selectedVerifier) return;
-    dispatch(setPreGuardianAction(editGuardian));
+  const onApproval = useCallback(async () => {
+    const isValid = checkCurGuardianRepeat(userGuardiansList || []);
+    if (!isValid || !editGuardian || !selectedVerifier) return;
 
+    Loading.show();
+    const _userGuardiansList = await refreshGuardiansList();
+    const isValid2 = checkCurGuardianRepeat(_userGuardiansList || []);
+    Loading.hide();
+    if (!isValid2) return;
+
+    dispatch(setPreGuardianAction(editGuardian));
     navigationService.navigate('GuardianApproval', {
       approvalType: ApprovalType.editGuardian,
       guardianItem: {
@@ -306,8 +349,9 @@ const GuardianEdit: React.FC = () => {
         verifier: selectedVerifier,
       },
     });
-  }, [checkCurGuardianRepeat, dispatch, editGuardian, selectedVerifier]);
+  }, [checkCurGuardianRepeat, dispatch, editGuardian, refreshGuardiansList, selectedVerifier, userGuardiansList]);
 
+  const setLoginAccount = useSetLoginAccount(true);
   const onRemove = useCallback(async () => {
     if (!editGuardian || !userGuardiansList) return;
 
@@ -315,10 +359,10 @@ const GuardianEdit: React.FC = () => {
 
     if (isLastLoginAccount) {
       ActionSheet.alert({
-        title2: t('This guardian is the only login account and cannot be removed'),
+        title2: 'This guardian is the only login account and cannot be removed',
         buttons: [
           {
-            title: t('OK'),
+            title: 'OK',
           },
         ],
       });
@@ -330,53 +374,34 @@ const GuardianEdit: React.FC = () => {
       ActionSheet.alert({
         title: isLoginAccount ? undefined : 'Are you sure you want to remove this guardian?',
         title2: isLoginAccount
-          ? `This guardian is set as a login account. Click "Confirm" to unset and remove this guardian`
+          ? `This guardian is currently set as a login account. You need to unset its login account identity before removing it. Please click "Confirm" to proceed.`
           : undefined,
         message: isLoginAccount ? undefined : `Removing a guardian requires guardians' approval`,
         buttons: [
           {
             title: isLoginAccount ? 'Cancel' : 'Close',
             type: 'outline',
-            onPress: () => {
-              resolve(false);
-            },
+            onPress: () => resolve(false),
           },
           {
             title: isLoginAccount ? 'Confirm' : 'Send Request',
-            onPress: () => {
-              resolve(true);
-            },
+            onPress: () => resolve(true),
           },
         ],
       });
     });
     if (!result) return;
 
-    if (editGuardian.isLoginAccount) {
-      if (!managerAddress || !caHash) return;
-      Loading.show();
-      try {
-        const caContract = await getCurrentCAContract();
-        const req = await cancelLoginAccount(caContract, managerAddress, caHash, editGuardian);
-        if (req && !req.error) {
-          myEvents.refreshGuardiansList.emit();
-        } else {
-          CommonToast.fail(req?.error?.message || '');
-          return;
-        }
-      } catch (error) {
-        CommonToast.failError(error);
-        return;
-      } finally {
-        Loading.hide();
-      }
+    if (!isLoginAccount) {
+      navigationService.navigate('GuardianApproval', {
+        approvalType: ApprovalType.deleteGuardian,
+        guardianItem: editGuardian,
+      });
+      return;
     }
 
-    navigationService.navigate('GuardianApproval', {
-      approvalType: ApprovalType.deleteGuardian,
-      guardianItem: editGuardian,
-    });
-  }, [caHash, editGuardian, getCurrentCAContract, managerAddress, t, userGuardiansList]);
+    setLoginAccount(editGuardian, false);
+  }, [editGuardian, setLoginAccount, userGuardiansList]);
 
   const isConfirmDisable = useMemo(
     () => !selectedVerifier || !selectedType || !account,
@@ -388,17 +413,23 @@ const GuardianEdit: React.FC = () => {
     [editGuardian, selectedVerifier],
   );
 
-  const onChooseType = useCallback((_type: TypeItemType) => {
-    setSelectedType(_type);
+  const clearAccount = useCallback(() => {
     setAccount(undefined);
     setFirstName(undefined);
     thirdPartyInfoRef.current = undefined;
-    setGuardianError({ ...INIT_NONE_ERROR });
+    setGuardianAccountError({ ...INIT_NONE_ERROR });
   }, []);
+  const onChooseType = useCallback(
+    (_type: TypeItemType) => {
+      setSelectedType(_type);
+      clearAccount();
+    },
+    [clearAccount],
+  );
 
   const onAppleSign = useCallback(async () => {
     Loading.show();
-    let userInfo: AppleAuthentication;
+    let userInfo: TAppleAuthentication;
     try {
       userInfo = await appleSign();
       thirdPartyInfoRef.current = {
@@ -459,49 +490,52 @@ const GuardianEdit: React.FC = () => {
     Loading.hide();
   }, [googleSign]);
 
-  const renderGoogleAccount = useCallback(() => {
-    return (
-      <>
-        <TextM style={pageStyles.accountLabel}>Guardian Google</TextM>
-        {account ? (
-          <View style={pageStyles.thirdPartAccount}>
-            {firstName && <TextM style={pageStyles.firstNameStyle}>{firstName}</TextM>}
-            <TextS style={[!!firstName && FontStyles.font3]} numberOfLines={1}>
-              {account}
-            </TextS>
-          </View>
-        ) : (
-          <Touchable onPress={onGoogleSign}>
-            <View style={pageStyles.oAuthBtn}>
-              <TextM style={[FontStyles.font4, fonts.mediumFont]}>Click Add Google Account</TextM>
-            </View>
-          </Touchable>
-        )}
-      </>
-    );
-  }, [account, firstName, onGoogleSign]);
+  const onTelegramSign = useCallback(async () => {
+    Loading.show();
+    try {
+      const userInfo = await telegramSign();
+      setAccount(PRIVATE_GUARDIAN_ACCOUNT);
+      setFirstName(userInfo.user.firstName || undefined);
+      thirdPartyInfoRef.current = {
+        id: userInfo.user.id,
+        accessToken: userInfo.accessToken,
+      };
+    } catch (error) {
+      CommonToast.failError(error);
+    }
+    Loading.hide();
+  }, [telegramSign]);
 
-  const renderAppleAccount = useCallback(() => {
-    return (
-      <>
-        <TextM style={pageStyles.accountLabel}>Guardian Apple</TextM>
-        {account ? (
-          <View style={pageStyles.thirdPartAccount}>
-            {firstName && <TextM style={pageStyles.firstNameStyle}>{firstName}</TextM>}
-            <TextS style={[!!firstName && FontStyles.font3]} numberOfLines={1}>
-              {account}
-            </TextS>
-          </View>
-        ) : (
-          <Touchable onPress={onAppleSign}>
-            <View style={pageStyles.oAuthBtn}>
-              <TextM style={[FontStyles.font4, fonts.mediumFont]}>Click Add Apple ID</TextM>
-            </View>
-          </Touchable>
-        )}
-      </>
-    );
-  }, [account, firstName, onAppleSign]);
+  const onTwitterSign = useCallback(async () => {
+    Loading.show();
+    try {
+      const userInfo = await twitterSign();
+      setAccount(PRIVATE_GUARDIAN_ACCOUNT);
+      setFirstName(userInfo.user.name || undefined);
+      thirdPartyInfoRef.current = {
+        id: userInfo.user.id,
+        accessToken: userInfo.accessToken,
+      };
+    } catch (error) {
+      CommonToast.failError(error);
+    }
+    Loading.hide();
+  }, [twitterSign]);
+  const onFacebookSign = useCallback(async () => {
+    Loading.show();
+    try {
+      const userInfo = await facebookSign();
+      setAccount(PRIVATE_GUARDIAN_ACCOUNT);
+      setFirstName(userInfo.user.firstName || undefined);
+      thirdPartyInfoRef.current = {
+        id: userInfo.user.id,
+        accessToken: userInfo.accessToken,
+      };
+    } catch (error) {
+      CommonToast.failError(error);
+    }
+    Loading.hide();
+  }, [facebookSign]);
 
   const renderGuardianAccount = useCallback(() => {
     if (isEdit) {
@@ -509,6 +543,7 @@ const GuardianEdit: React.FC = () => {
         <View style={pageStyles.accountWrap}>
           <TextM style={pageStyles.accountLabel}>Guardian {LoginType[editGuardian?.guardianType || 0]}</TextM>
           <GuardianAccountItem guardian={editGuardian} />
+          <TextM>{guardianAccountError.errorMsg}</TextM>
         </View>
       );
     }
@@ -522,45 +557,100 @@ const GuardianEdit: React.FC = () => {
             disabled={isEdit}
             type="general"
             theme="white-bg"
-            label={t('Guardian email')}
+            label={'Guardian email'}
             value={account}
-            placeholder={t('Enter email')}
+            placeholder={'Enter email'}
             onChangeText={onAccountChange}
-            errorMessage={guardianTypeError.isError ? guardianTypeError.errorMsg : ''}
+            errorMessage={guardianAccountError.isError ? guardianAccountError.errorMsg : ''}
             keyboardType="email-address"
           />
         );
       case LoginType.Phone:
         return (
           <PhoneInput
-            label={t('Guardian Phone')}
+            label={'Guardian Phone'}
             theme="white-bg"
             value={account}
-            errorMessage={guardianTypeError.isError ? guardianTypeError.errorMsg : ''}
+            errorMessage={guardianAccountError.isError ? guardianAccountError.errorMsg : ''}
             onChangeText={onAccountChange}
             selectCountry={country}
           />
         );
       case LoginType.Google:
-        return renderGoogleAccount();
+        return (
+          <GuardianThirdAccount
+            account={account}
+            firstName={firstName}
+            clearAccount={clearAccount}
+            guardianAccountError={guardianAccountError}
+            onPress={onGoogleSign}
+            type={LoginType.Google}
+          />
+        );
+
       case LoginType.Apple:
-        return renderAppleAccount();
+        return (
+          <GuardianThirdAccount
+            account={account}
+            firstName={firstName}
+            clearAccount={clearAccount}
+            guardianAccountError={guardianAccountError}
+            onPress={onAppleSign}
+            type={LoginType.Apple}
+          />
+        );
+      case LoginType.Telegram:
+        return (
+          <GuardianThirdAccount
+            account={account}
+            firstName={firstName}
+            clearAccount={clearAccount}
+            guardianAccountError={guardianAccountError}
+            onPress={onTelegramSign}
+            type={LoginType.Telegram}
+          />
+        );
+      case LoginType.Twitter:
+        return (
+          <GuardianThirdAccount
+            account={account}
+            firstName={firstName}
+            clearAccount={clearAccount}
+            guardianAccountError={guardianAccountError}
+            onPress={onTwitterSign}
+            type={LoginType.Twitter}
+          />
+        );
+      case LoginType.Facebook:
+        return (
+          <GuardianThirdAccount
+            account={account}
+            firstName={firstName}
+            clearAccount={clearAccount}
+            guardianAccountError={guardianAccountError}
+            onPress={onFacebookSign}
+            type={LoginType.Facebook}
+          />
+        );
       default:
         break;
     }
     return <></>;
   }, [
     account,
+    clearAccount,
     country,
     editGuardian,
-    guardianTypeError.errorMsg,
-    guardianTypeError.isError,
+    firstName,
+    guardianAccountError,
     isEdit,
     onAccountChange,
-    renderAppleAccount,
-    renderGoogleAccount,
+    onAppleSign,
+    onGoogleSign,
+    onTelegramSign,
+    onFacebookSign,
+    onTwitterSign,
     selectedType,
-    t,
   ]);
 
   const goBack = useCallback(() => {
@@ -571,14 +661,14 @@ const GuardianEdit: React.FC = () => {
   return (
     <PageContainer
       safeAreaColor={['blue', 'gray']}
-      titleDom={isEdit ? t('Edit Guardians') : t('Add Guardians')}
+      titleDom={isEdit ? 'Edit Guardians' : 'Add Guardians'}
       leftCallback={goBack}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View style={pageStyles.contentWrap}>
         {!isEdit && (
           <>
-            <TextM style={pageStyles.titleLabel}>{t('Guardian Type')}</TextM>
+            <TextM style={pageStyles.titleLabel}>{'Guardian Type'}</TextM>
             <ListItem
               onPress={() => {
                 GuardianTypeSelectOverlay.showList({
@@ -592,9 +682,13 @@ const GuardianEdit: React.FC = () => {
               titleTextStyle={[pageStyles.titleTextStyle, !selectedType && FontStyles.font7]}
               style={pageStyles.typeWrap}
               titleLeftElement={
-                selectedType?.icon && <Svg icon={selectedType.icon} size={pTd(28)} iconStyle={pageStyles.typeIcon} />
+                selectedType?.icon && (
+                  <View style={[GStyles.center, pageStyles.itemIconWrap]}>
+                    <Svg icon={selectedType.icon} size={pTd(20)} />
+                  </View>
+                )
               }
-              title={selectedType?.name || t('Select guardian types')}
+              title={selectedType?.name || 'Select guardian types'}
               rightElement={<Svg size={pTd(20)} icon="down-arrow" />}
             />
           </>
@@ -602,14 +696,13 @@ const GuardianEdit: React.FC = () => {
 
         {renderGuardianAccount()}
 
-        <TextM style={pageStyles.titleLabel}>{t('Verifier')}</TextM>
+        <TextM style={pageStyles.titleLabel}>{'Verifier'}</TextM>
         <ListItem
           onPress={() => {
             VerifierSelectOverlay.showList({
               id: selectedVerifier?.id,
-              labelAttrName: 'name',
-              list: verifierList,
               callBack: onChooseVerifier,
+              editGuardian: editGuardian,
             });
           }}
           titleLeftElement={
@@ -625,29 +718,29 @@ const GuardianEdit: React.FC = () => {
           titleStyle={[GStyles.flexRowWrap, GStyles.itemCenter]}
           titleTextStyle={[pageStyles.titleTextStyle, !selectedVerifier && FontStyles.font7]}
           style={pageStyles.verifierWrap}
-          title={selectedVerifier?.name || t('Select guardian verifiers')}
+          title={selectedVerifier?.name || 'Select guardian verifiers'}
           rightElement={<Svg size={pTd(20)} icon="down-arrow" />}
         />
-        {guardianError.isError && <TextS style={pageStyles.errorTips}>{guardianError.errorMsg || ''}</TextS>}
+        {verifierError.isError && <TextS style={pageStyles.errorTips}>{verifierError.errorMsg || ''}</TextS>}
       </View>
 
       <View>
         {isEdit ? (
           <>
             <CommonButton disabled={isApprovalDisable} type="primary" onPress={onApproval}>
-              {t('Send Request')}
+              {'Send Request'}
             </CommonButton>
             <CommonButton
               style={pageStyles.removeBtnWrap}
               type="clear"
               onPress={onRemove}
               titleStyle={FontStyles.font12}>
-              {t('Remove')}
+              {'Remove'}
             </CommonButton>
           </>
         ) : (
           <CommonButton disabled={isConfirmDisable} type="primary" onPress={onConfirm}>
-            {t('Confirm')}
+            {'Confirm'}
           </CommonButton>
         )}
       </View>

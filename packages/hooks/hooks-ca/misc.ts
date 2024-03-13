@@ -7,6 +7,8 @@ import { DefaultCountry, getCountryCodeIndex } from '@portkey-wallet/constants/c
 import { CountryItem } from '@portkey-wallet/types/types-ca/country';
 import signalrDid from '@portkey-wallet/socket/socket-did';
 import { request } from '@portkey-wallet/api/api-did';
+import { INIT_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/constants/constants-ca/common';
+import { resetMisc, setSideChainTokenReceiveTipMap } from '@portkey-wallet/store/store-ca/misc/slice';
 
 export const useMisc = () => useAppCASelector(state => state.misc);
 
@@ -120,4 +122,113 @@ export const useIsScanQRCode = (clientId: string | undefined) => {
   }, [clientId]);
 
   return isScanQRCode;
+};
+
+export const useTimer = () => {
+  const timerRef = useRef<NodeJS.Timeout | number>();
+
+  useEffect(() => {
+    return () => {
+      timerRef.current && clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  const setTimer = useCallback((callback: () => void, time: number) => {
+    timerRef.current && clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(callback, time);
+  }, []);
+
+  const clearTimer = useCallback(() => {
+    timerRef.current && clearTimeout(timerRef.current);
+    timerRef.current = undefined;
+  }, []);
+
+  return { setTimer, clearTimer };
+};
+
+export const useErrorMessage = () => {
+  const { setTimer, clearTimer } = useTimer();
+  const [error, setError] = useState(INIT_ERROR);
+
+  const onSetError = useCallback(
+    (errorMsg?: string, time?: number) => {
+      clearTimer();
+      if (errorMsg === undefined) {
+        setError({ ...INIT_NONE_ERROR });
+        return;
+      }
+
+      setError({
+        errorMsg,
+        isError: true,
+      });
+      if (time !== undefined) {
+        setTimer(() => {
+          setError({ ...INIT_NONE_ERROR });
+        }, time);
+      }
+    },
+    [clearTimer, setTimer],
+  );
+
+  return {
+    error,
+    setError: onSetError,
+  };
+};
+
+export const useSideChainTokenReceiveTipSetting = () => {
+  const currentNetworkInfo = useCurrentNetworkInfo();
+  const miscState = useAppCASelector(state => state.misc);
+  const dispatch = useAppCommonDispatch();
+
+  const showSideChainTokenReceiveTip = useMemo(
+    () => !miscState.sideChainTokenReceiveTipMap?.[currentNetworkInfo.networkType],
+    [currentNetworkInfo.networkType, miscState.sideChainTokenReceiveTipMap],
+  );
+
+  const setSideChainTokenReceiveTip = useCallback(
+    (tip: boolean) => {
+      dispatch(
+        setSideChainTokenReceiveTipMap({
+          network: currentNetworkInfo.networkType,
+          value: tip,
+        }),
+      );
+    },
+    [currentNetworkInfo.networkType, dispatch],
+  );
+
+  const cancelSideChainTokenReceiveTip = useCallback(() => {
+    setSideChainTokenReceiveTip(true);
+  }, [setSideChainTokenReceiveTip]);
+
+  const reSetSideChainTokenReceiveTip = useCallback(() => {
+    setSideChainTokenReceiveTip(false);
+  }, [setSideChainTokenReceiveTip]);
+
+  return {
+    showSideChainTokenReceiveTip,
+    cancelSideChainTokenReceiveTip,
+    setSideChainTokenReceiveTip,
+    reSetSideChainTokenReceiveTip,
+  };
+};
+
+export const useMiscSetting = () => {
+  const dispatch = useAppCommonDispatch();
+  const { reSetSideChainTokenReceiveTip } = useSideChainTokenReceiveTipSetting();
+
+  const resetCurrentNetworkSetting = useCallback(() => {
+    reSetSideChainTokenReceiveTip();
+  }, [reSetSideChainTokenReceiveTip]);
+
+  const resetAllSetting = useCallback(() => {
+    dispatch(resetMisc());
+  }, [dispatch]);
+
+  return {
+    resetCurrentNetworkSetting,
+    resetAllSetting,
+  };
 };

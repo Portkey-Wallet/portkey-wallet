@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import svgsList from 'assets/svgs';
-import { useLockWallet } from 'utils/lib/serviceWorkerAction';
+import { lockWallet } from 'utils/lib/serviceWorkerAction';
 import PortKeyHeader from 'pages/components/PortKeyHeader';
 import SettingHeader from 'pages/components/SettingHeader';
 import './index.less';
@@ -12,6 +12,8 @@ import { Outlet } from 'react-router-dom';
 import clsx from 'clsx';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import UnReadBadge from 'pages/components/UnReadBadge';
+import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
+import { useClickReferral } from 'hooks/referral';
 
 interface MyMenuItemInfo {
   label: string;
@@ -24,7 +26,8 @@ export default function PromptMy() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isImputation = useIsImputation();
-
+  const { viewReferralStatus } = useReferral();
+  const clickReferral = useClickReferral();
   const { pathname } = useLocation();
 
   const settingList: MyMenuItemInfo[] = useMemo(
@@ -65,11 +68,10 @@ export default function PromptMy() {
       });
   }, [curMenuInfo, navigate, settingList]);
 
-  const lockWallet = useLockWallet();
   const handleLock = useCallback(() => {
     lockWallet();
     navigate('/unlock');
-  }, [lockWallet, navigate]);
+  }, [navigate]);
 
   const backCb = useCallback(() => {
     navigate('/');
@@ -86,7 +88,7 @@ export default function PromptMy() {
 
   return (
     <div className="prompt-my-page flex-column">
-      <PortKeyHeader unReadShow={isImputation} onUserClick={backCb} />
+      <PortKeyHeader unReadShow={isImputation || !viewReferralStatus} onUserClick={backCb} />
 
       <div className="prompt-my-frame">
         <SettingHeader title={t('My')} leftCallBack={backCb} />
@@ -107,6 +109,18 @@ export default function PromptMy() {
                 {t(item.label)}
               </MenuItem>
             ))}
+            <MenuItem
+              className="menu-item-common"
+              key="referral"
+              height={56}
+              icon={<CustomSvg type="Referral" />}
+              onClick={clickReferral}
+              showEnterIcon={false}>
+              <div className="flex">
+                <div>Referral</div>
+                <div className="referral-tag flex-center">New</div>
+              </div>
+            </MenuItem>
             <div className="lock-row flex-center" onClick={handleLock}>
               {/* eslint-disable-next-line no-inline-styles/no-inline-styles */}
               <CustomSvg type={'Lock'} style={{ width: 16, height: 16 }} />

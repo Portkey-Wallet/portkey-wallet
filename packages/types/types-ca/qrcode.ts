@@ -4,7 +4,7 @@ import { IToSendAssetParamsType } from './routeParams';
 
 export interface QRData {
   type: 'login' | 'send';
-  netWorkType: NetworkType;
+  networkType: NetworkType;
   chainType: ChainType; // eth or nft
   address: string;
 }

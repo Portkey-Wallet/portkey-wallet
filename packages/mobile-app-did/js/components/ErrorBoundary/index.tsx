@@ -4,6 +4,8 @@ import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import { Severity } from '@portkey-wallet/utils/ExceptionManager';
 import ReactErrorBoundary, { ErrorBoundaryTrue, handleReportError } from '@portkey-wallet/utils/errorBoundary';
 import * as errorUtils from 'utils/errorUtils';
+import crashlytics from '@react-native-firebase/crashlytics';
+
 export type ErrorBoundaryProps = {
   children: ReactNode;
   view: string;
@@ -26,7 +28,9 @@ class ReactNativeErrorBoundary extends ReactErrorBoundary {
 export default function ErrorBoundary({ children, view }: ErrorBoundaryProps) {
   const onCaptureException = useCallback(
     ({ error, componentStack }: Omit<ErrorBoundaryTrue, 'hasError'>) => {
-      exceptionManager.reportError(handleReportError({ error, componentStack, view }), Severity.Error);
+      const handleError = handleReportError({ error, componentStack, view });
+      crashlytics().recordError(handleError, view);
+      exceptionManager.reportError(handleError, Severity.Error);
     },
     [view],
   );

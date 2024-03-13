@@ -1,8 +1,8 @@
 import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import navigationService from 'utils/navigationService';
-import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks/index';
-import { View, TouchableOpacity, FlatList } from 'react-native';
+import { useAppCASelector } from '@portkey-wallet/hooks/index';
+import { View, FlatList } from 'react-native';
 import Svg from 'components/Svg';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { TextM } from 'components/CommonText';
@@ -10,10 +10,10 @@ import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import TokenListItem from 'components/TokenListItem';
 import { useLanguage } from 'i18n/hooks';
-import { useCaAddressInfoList, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { REFRESH_TIME } from '@portkey-wallet/constants/constants-ca/assets';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useGetAccountTokenList } from 'hooks/account';
+import Touchable from 'components/Touchable';
 
 export interface TokenSectionProps {
   getAccountBalance?: () => void;
@@ -21,14 +21,9 @@ export interface TokenSectionProps {
 
 export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
   const { t } = useLanguage();
-  const dispatch = useAppCommonDispatch();
   const {
     accountToken: { accountTokenList },
   } = useAppCASelector(state => state.assets);
-  const caAddressInfoList = useCaAddressInfoList();
-  const {
-    walletInfo: { caAddressList },
-  } = useCurrentWallet();
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const [isFetching] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -44,15 +39,11 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
     [onNavigate],
   );
 
-  const getAccountTokenList = useCallback(() => {
-    if (caAddressList?.length === 0) return;
-
-    dispatch(fetchTokenListAsync({ caAddresses: caAddressList || [], caAddressInfos: caAddressInfoList || [] }));
-  }, [caAddressInfoList, caAddressList, dispatch]);
+  const getAccountTokenList = useGetAccountTokenList();
 
   useEffect(() => {
     getAccountTokenList();
-  }, [caAddressList, getAccountTokenList]);
+  }, [getAccountTokenList]);
 
   useEffect(() => {
     if (timerRef.current) clearInterval(timerRef.current);
@@ -77,14 +68,14 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
           getTokenPrice();
         }}
         ListFooterComponent={
-          <TouchableOpacity
+          <Touchable
             style={styles.addWrap}
             onPress={() => {
               navigationService.navigate('ManageTokenList');
             }}>
             <Svg icon="add-token" size={20} />
             <TextM style={styles.addTokenText}>{t('Add Tokens')}</TextM>
-          </TouchableOpacity>
+          </Touchable>
         }
       />
     </View>

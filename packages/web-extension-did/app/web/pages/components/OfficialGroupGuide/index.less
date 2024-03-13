@@ -1,0 +1,37 @@
+@import '../../../assets/theme/color.less';
+@import '../../../assets/theme/constants.less';
+
+.official-group-guide-component {
+  .official-group-guide-title {
+    margin: 32px 20px 8px;
+    font-size: 14px;
+    line-height: 20px;
+    color: @font-13;
+  }
+  .official-group-guide-container {
+    padding: 12px 16px;
+    .guide-item {
+      justify-content: space-between;
+      .guide-item-left {
+        gap: 16px;
+        .content-title {
+          font-size: 16px;
+          line-height: 22px;
+          font-weight: 500;
+          color: @font-11;
+          .text-overflow(1);
+        }
+      }
+      .guide-item-right {
+        padding: 4px 12px;
+        font-size: 12px;
+        line-height: 16px;
+        font-weight: 500;
+        color: @font-5;
+        background-color: @bg-7;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+    }
+  }
+}

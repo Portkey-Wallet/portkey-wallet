@@ -3,8 +3,7 @@ import { useLanguage } from 'i18n/hooks';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import CommonButton from 'components/CommonButton';
 import CommonInput from 'components/CommonInput';
-import { ErrorType } from 'types/common';
-import { INIT_HAS_ERROR } from 'constants/common';
+import { INIT_HAS_ERROR, ErrorType } from '@portkey-wallet/constants/constants-ca/common';
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
 import navigationService from 'utils/navigationService';
 import CommonToast from 'components/CommonToast';
@@ -83,7 +82,7 @@ const EditWalletName: React.FC = () => {
 
       await setUserInfo({ nickName: _nameValue, avatar: s3Url || userInfo?.avatar });
       navigationService.goBack();
-      CommonToast.success(t('Saved Successful'), undefined, 'bottom');
+      CommonToast.success(t('Saved Successful'));
     } catch (error: any) {
       console.log('setUserInfo: error', error);
       CommonToast.failError(error);

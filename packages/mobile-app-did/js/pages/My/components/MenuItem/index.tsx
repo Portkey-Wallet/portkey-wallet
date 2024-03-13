@@ -1,13 +1,13 @@
+import React, { memo, useMemo } from 'react';
 import { defaultColors } from 'assets/theme';
 import { TextL, TextM } from 'components/CommonText';
 import Svg, { IconName } from 'components/Svg';
 import SvgUri from 'components/Svg/SvgUri';
-
-import React, { memo } from 'react';
-import { TouchableOpacity, StyleSheet, StyleProp, ViewStyle, TextProps, View } from 'react-native';
+import Touchable from 'components/Touchable';
+import { StyleSheet, StyleProp, ViewStyle, TextProps, View } from 'react-native';
 import { pTd } from 'utils/unit';
 
-interface MenuItemProps {
+export interface IMenuItemProps {
   title: string;
   icon?: IconName;
   onPress?: () => void;
@@ -15,13 +15,14 @@ interface MenuItemProps {
   size?: number;
   TextComponent?: React.FC<TextProps>;
   arrowSize?: number;
-  suffix?: string | number;
+  suffix?: string | number | React.ReactNode;
+  iconColor?: string;
   iconStyle?: StyleProp<ViewStyle>;
   svgUrl?: string;
   showWarningCycle?: boolean;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({
+const MenuItem: React.FC<IMenuItemProps> = ({
   title,
   icon,
   onPress,
@@ -29,12 +30,21 @@ const MenuItem: React.FC<MenuItemProps> = ({
   size = pTd(28),
   arrowSize = pTd(20),
   suffix,
+  iconColor,
   iconStyle,
   svgUrl,
   showWarningCycle = false,
 }) => {
+  const SuffixDom = useMemo((): React.ReactNode => {
+    if (!suffix) return null;
+    if (typeof suffix === 'number' || typeof suffix === 'string')
+      return <TextM style={styles.suffixWrap}>{suffix}</TextM>;
+
+    return suffix;
+  }, [suffix]);
+
   return (
-    <TouchableOpacity style={[styles.itemWrap, style]} onPress={() => onPress?.()}>
+    <Touchable style={[styles.itemWrap, style]} onPress={() => onPress?.()}>
       {svgUrl !== undefined &&
         (svgUrl !== '' ? (
           <SvgUri source={{ uri: svgUrl }} width={size} height={size} style={[styles.menuIcon, iconStyle]} />
@@ -44,14 +54,18 @@ const MenuItem: React.FC<MenuItemProps> = ({
       {icon && (
         <View style={styles.svgWrap}>
           {showWarningCycle && <View style={styles.warningCycle} />}
-          <Svg icon={icon} size={size} iconStyle={[styles.menuIcon, iconStyle]} />
+          <Svg
+            icon={icon}
+            size={size}
+            color={iconColor ? iconColor : undefined}
+            iconStyle={[styles.menuIcon, iconStyle]}
+          />
         </View>
       )}
-
       <TextL style={styles.titleWrap}>{title}</TextL>
-      {suffix !== undefined && <TextM style={styles.suffixWrap}>{suffix}</TextM>}
+      {SuffixDom}
       <Svg icon="right-arrow" size={arrowSize} color={defaultColors.icon1} />
-    </TouchableOpacity>
+    </Touchable>
   );
 };
 

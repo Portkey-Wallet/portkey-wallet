@@ -19,7 +19,6 @@ import ImageWithUploadFunc, { ImageWithUploadFuncInstance } from 'components/Ima
 import Touchable from 'components/Touchable';
 import { TextL } from 'components/CommonText';
 import { sleep } from '@portkey-wallet/utils';
-import { isIOS } from '@rneui/base';
 
 const EditGroupPage = () => {
   const iptRef = useRef<TextInput>();

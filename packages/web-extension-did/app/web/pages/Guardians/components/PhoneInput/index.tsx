@@ -6,10 +6,11 @@ import { CountryItem } from '@portkey-wallet/types/types-ca/country';
 
 interface PhoneProps {
   code?: string;
+  phoneNumber?: string;
   onChange: (phoneNumber: { code: string; phoneNumber: string }) => void;
 }
 
-export default function PhoneInput({ code, onChange }: PhoneProps) {
+export default function PhoneInput({ code, phoneNumber: phoneNum = '', onChange }: PhoneProps) {
   const { localPhoneCountryCode: countryCode, phoneCountryCodeList, setLocalPhoneCountryCode } = usePhoneCountryCode();
   const defaultCountryCode = useMemo(() => {
     if (code) {
@@ -23,7 +24,7 @@ export default function PhoneInput({ code, onChange }: PhoneProps) {
     }
     return countryCode;
   }, [code, countryCode, phoneCountryCodeList]);
-  const [phoneNumber, setPhoneNumber] = useState<string>('');
+  const [phoneNumber, setPhoneNumber] = useState<string>(phoneNum);
   const [areaValue, setAreaValue] = useState<CountryItem>(defaultCountryCode);
 
   return (

@@ -19,7 +19,6 @@ let config = {
   // When mode is production or not defined, minimize is enabled. This option automatically adds Uglify plugin.
   // production will remove the 'dead code'. Look at Tree Shaking
   // mode: 'none',
-  devtool: 'source-map',
   // mode: 'development',
   entry: {
     // wallet: './app/web/js/index.jsx',
@@ -160,8 +159,18 @@ let config = {
           toType: 'file',
         },
         {
-          from: './app/web/assets',
-          to: `./${outputDir}/assets`,
+          from: './app/web/popup-load.js',
+          to: `./${outputDir}/js/popup-load.js`,
+          toType: 'file',
+        },
+        {
+          from: './app/web/assets/fonts',
+          to: `./${outputDir}/assets/fonts`,
+          toType: 'dir',
+        },
+        {
+          from: './app/web/assets/images',
+          to: `./${outputDir}/assets/images`,
           toType: 'dir',
         },
         {
@@ -195,10 +204,12 @@ module.exports = (env, argv) => {
     envConfig.SENTRY_DSN = devConfig.SENTRY_DSN;
     envConfig.IM_S3_KEY = devConfig.IM_S3_KEY;
     envConfig.IM_S3_TESTNET_KEY = devConfig.IM_S3_TESTNET_KEY;
+    envConfig.FCM_PROJECT_ID = devConfig.FCM_PROJECT_ID;
   } else {
     envConfig.SENTRY_DSN = productionConfig.SENTRY_DSN;
     envConfig.IM_S3_KEY = productionConfig.IM_S3_KEY;
     envConfig.IM_S3_TESTNET_KEY = productionConfig.IM_S3_TESTNET_KEY;
+    envConfig.FCM_PROJECT_ID = productionConfig.FCM_PROJECT_ID;
   }
 
   // console.log(JSON.stringify(envConfig.SENTRY_DSN), 'SENTRY_DSN===')
@@ -211,13 +222,17 @@ module.exports = (env, argv) => {
     'process.env.SENTRY_DSN': JSON.stringify(envConfig.SENTRY_DSN),
     'process.env.IM_S3_KEY': JSON.stringify(envConfig.IM_S3_KEY),
     'process.env.IM_S3_TESTNET_KEY': JSON.stringify(envConfig.IM_S3_TESTNET_KEY),
+    'process.env.FCM_PROJECT_ID': JSON.stringify(envConfig.FCM_PROJECT_ID),
   });
+
+  console.log(definePlugin)
 
   config.plugins.push(
     definePlugin
   );
 
   if (argv.mode === 'production') {
+
     config.plugins.push(
       new TerserPlugin({
         //   cache: true,
@@ -243,6 +258,8 @@ module.exports = (env, argv) => {
         },
       }),
     );
+  } else {
+    config.devtool = 'source-map'
   }
 
   return config;

@@ -14,6 +14,7 @@ export type ApproveInfo = {
   spender: string;
   decimals: number;
   targetChainId: ChainId;
+  alias?: string;
 };
 
 export type ApproveParams = {
@@ -21,6 +22,28 @@ export type ApproveParams = {
   eventName: string;
   isDiscover?: boolean;
 };
+
+export async function requestManagerApprove(
+  dappInfo: DappStoreItem,
+  approveParams: ApproveParams,
+): Promise<{ success: boolean; guardiansApproved: GuardiansApproved; approveInfo: ApproveInfo } | false> {
+  return new Promise(resolve => {
+    const listener = DeviceEventEmitter.addListener(approveParams.eventName, data => {
+      const { success } = data || {};
+      listener.remove();
+      if (!success) return resolve(false);
+      return resolve(data);
+    });
+    ApproveOverlay.showApproveModal({
+      dappInfo,
+      approveParams,
+      onReject: () => {
+        listener.remove();
+        resolve(false);
+      },
+    });
+  });
+}
 
 export interface IDappOverlay {
   requestAccounts(dapp: DappStoreItem): Promise<boolean>;

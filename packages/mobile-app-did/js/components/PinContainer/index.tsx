@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   },
   pinStyle: {
     marginTop: 24,
-    width: pTd(230),
+    width: pTd(216),
     alignSelf: 'center',
   },
 });

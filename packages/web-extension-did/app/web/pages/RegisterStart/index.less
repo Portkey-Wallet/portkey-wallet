@@ -113,15 +113,20 @@
       margin-top: -20px;
     }
     .testnet-flag {
-      justify-content: center;
-      .flag-text {
-        width: 41px;
-        height: 18px;
-        font-size: 12px;
-        line-height: 16px;
-        color: @font-9;
-        background-color: @bg-9;
-        border-radius: 10px;
+      .content {
+        position: relative;
+        .flag-text {
+          position: absolute;
+          top: 0;
+          right: -41px;
+          width: 41px;
+          height: 18px;
+          font-size: 12px;
+          line-height: 16px;
+          color: @font-9;
+          background-color: @bg-9;
+          border-radius: 10px;
+        }
       }
     }
   }

@@ -18,7 +18,6 @@ export interface IEditContactFormProps extends FormProps {
   isShowRemark?: boolean;
   cantSave?: boolean;
   handleInputRemarkChange: (v: string) => void;
-  handleCopy: (val: string) => void;
 }
 
 export default function EditContactForm({
@@ -29,7 +28,6 @@ export default function EditContactForm({
   isShowRemark = true,
   cantSave = false,
   handleInputRemarkChange,
-  handleCopy,
   onFinish,
 }: IEditContactFormProps) {
   const { t } = useTranslation();
@@ -77,7 +75,6 @@ export default function EditContactForm({
           portkeyId={state?.imInfo?.portkeyId}
           relationId={state?.imInfo?.relationId}
           addresses={state?.addresses || []}
-          handleCopy={handleCopy}
         />
 
         {/* login account info */}

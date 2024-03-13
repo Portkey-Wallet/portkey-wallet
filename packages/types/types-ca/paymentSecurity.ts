@@ -1,4 +1,5 @@
 import { ChainId } from '@portkey-wallet/types';
+import { ICheckRampLimitExtraParams, ICheckSendLimitExtraParams } from 'hooks/useSecurity';
 
 export interface ITransferLimitItem {
   chainId: ChainId;
@@ -9,6 +10,7 @@ export interface ITransferLimitItem {
   decimals: number | string;
   defaultDailyLimit?: string;
   defaultSingleLimit?: string;
+  imageUrl?: string;
 }
 
 export enum ICheckLimitBusiness {
@@ -16,7 +18,12 @@ export enum ICheckLimitBusiness {
   RAMP_SELL = 'ramp-sell',
 }
 
-export type ITransferLimitRouteState = ITransferLimitItem & { from: ICheckLimitBusiness; targetChainId?: ChainId };
+export type ITransferLimitRouteState = ITransferLimitItem & {
+  from?: ICheckLimitBusiness;
+  targetChainId?: ChainId;
+  extra?: ICheckRampLimitExtraParams | ICheckSendLimitExtraParams;
+  initStateBackUp?: ITransferLimitRouteState;
+};
 
 export interface ITransferLimitListResponse {
   data: ITransferLimitItem[];

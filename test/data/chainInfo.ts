@@ -35,7 +35,7 @@ export const currentWallet = (currentNetwork: NetworkType) => {
       AESEncryptMnemonic: 'U6F...zHss',
     },
     chainList: undefined,
-    chainInfo: { MAIN: [{ chainId: 'AELF' } as any] },
+    chainInfo: { MAINNET: [{ chainId: 'AELF' } as any] },
     walletAvatar: 'master6',
     walletType: 'aelf' as ChainType,
     walletName: 'Wallet k',

@@ -1,34 +1,32 @@
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import aes from '@portkey-wallet/utils/aes';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import usePromptSearch from 'hooks/usePromptSearch';
 import { useCallback, useMemo } from 'react';
-import { useDapp, useUserInfo, useWalletInfo } from 'store/Provider/hooks';
+import { useDapp, useWalletInfo } from 'store/Provider/hooks';
 import errorHandler from 'utils/errorHandler';
 import { closePrompt } from 'utils/lib/serviceWorkerAction';
 import { ResponseCode } from '@portkey/provider-types';
 import { getWallet } from '@portkey-wallet/utils/aelf';
 import ImageDisplay from 'pages/components/ImageDisplay';
+import { showValueToStr } from '@portkey-wallet/utils/byteConversion';
+import getSeed from 'utils/getSeed';
+import singleMessage from 'utils/singleMessage';
+import AsyncButton from 'components/AsyncButton';
 import './index.less';
-
+import AElf from 'aelf-sdk';
+import { IBlockchainWallet } from '@portkey/types';
 export default function GetSignature() {
-  const { payload } = usePromptSearch<{
+  const { payload, autoSha256 } = usePromptSearch<{
     payload: {
       data: string;
       origin: string;
     };
+    autoSha256?: boolean;
   }>();
-  const wallet = useCurrentWalletInfo();
   const { t } = useTranslation();
-  const { passwordSeed } = useUserInfo();
   const { currentNetwork } = useWalletInfo();
   const { dappMap } = useDapp();
-  const privateKey = useMemo(
-    () => aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed),
-    [passwordSeed, wallet.AESEncryptPrivateKey],
-  );
   const curDapp = useMemo(
     () => dappMap[currentNetwork]?.find((item) => item.origin === payload?.origin),
     [currentNetwork, dappMap, payload?.origin],
@@ -45,8 +43,21 @@ export default function GetSignature() {
     [curDapp],
   );
 
+  const onSignByManager = useCallback(
+    (manager: IBlockchainWallet) => {
+      if (autoSha256) {
+        return manager.keyPair.sign(AElf.utils.sha256(Buffer.from(payload?.data, 'hex')), {
+          canonical: true,
+        });
+      }
+      return manager.keyPair.sign(payload?.data);
+    },
+    [autoSha256, payload?.data],
+  );
+
   const sendHandler = useCallback(async () => {
     try {
+      const { privateKey } = await getSeed();
       if (!privateKey) throw 'Invalid user information, please check';
 
       const manager = getWallet(privateKey);
@@ -54,17 +65,17 @@ export default function GetSignature() {
         closePrompt({ ...errorHandler(400001), data: { code: ResponseCode.INTERNAL_ERROR, msg: 'invalid error' } });
         return;
       }
+      const data = onSignByManager(manager);
 
-      const data = manager.keyPair.sign(payload?.data);
       closePrompt({
         ...errorHandler(0),
         data,
       });
     } catch (error) {
       console.error(error, 'error===detail');
-      message.error(handleErrorMessage(error));
+      singleMessage.error(handleErrorMessage(error));
     }
-  }, [payload, privateKey]);
+  }, [onSignByManager]);
 
   return (
     <div className="get-signature flex">
@@ -72,7 +83,7 @@ export default function GetSignature() {
       <div className="title flex-center">{t('Sign Message')}</div>
       <div className="message">
         <div>Message</div>
-        <div className="data">{payload?.data}</div>
+        <div className="data">{showValueToStr(payload?.data)}</div>
       </div>
       <div className="btn flex-between">
         <Button
@@ -82,9 +93,9 @@ export default function GetSignature() {
           }}>
           {t('Reject')}
         </Button>
-        <Button type="primary" onClick={sendHandler}>
+        <AsyncButton type="primary" onClick={sendHandler}>
           {t('Sign')}
-        </Button>
+        </AsyncButton>
       </div>
     </div>
   );

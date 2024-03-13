@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp, CardStyleInterpolators } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import Tab, { IRenderTabMenuItem } from './Tab';
 import navigationService from 'utils/navigationService';
@@ -18,23 +19,23 @@ import Receive from 'pages/Receive';
 import NFTDetail from 'pages/NFT/NFTDetail';
 import QrCodeNav from 'pages/QrCode';
 import MyNav from 'pages/My/router';
-import BuyNav from 'pages/Buy';
+import RampNav from 'pages/Ramp';
 import DiscoverNav from 'pages/Discover/index';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import Discover from 'Test/Discover';
 
 import TabsDrawer from 'components/TabsDrawer';
 import ChatNav from 'pages/Chat/routes';
-import EBridge from 'pages/EBridge';
+import ProviderWebPage from 'pages/ProviderWebPage';
 
-const Stack = createStackNavigator();
+const Stack = isIOS ? createNativeStackNavigator() : createStackNavigator();
 export const productionNav = [
   { name: 'Referral', component: Referral },
   { name: 'Tab', component: Tab },
   { name: 'SecurityLock', component: SecurityLock, options: { gestureEnabled: false } },
   { name: 'Receive', component: Receive },
   { name: 'NFTDetail', component: NFTDetail },
-  { name: 'EBridge', component: EBridge },
+  { name: 'ProviderWebPage', component: ProviderWebPage },
 
   ...QrCodeNav,
   ...GuardianNav,
@@ -44,7 +45,7 @@ export const productionNav = [
   ...SendNav,
   ...PinNav,
   ...MyNav,
-  ...BuyNav,
+  ...RampNav,
   ...ChatNav,
   ...DiscoverNav,
 ] as const;
@@ -53,7 +54,7 @@ export const productionNav = [
 export const devNav = [
   ...productionNav,
   { name: 'Home', component: Home },
-  { name: 'Discover', component: Discover },
+  // { name: 'Discover', component: Discover },
 ] as const;
 
 const stackNav = __DEV__ ? devNav : productionNav;
@@ -73,13 +74,17 @@ export default function NavigationRoot() {
       <TabsDrawer>
         <Stack.Navigator
           initialRouteName="Referral"
-          screenOptions={{
-            headerShown: false,
-            gestureVelocityImpact: 1,
-            headerBackAllowFontScaling: false,
-            headerTitleAllowFontScaling: false,
-            cardStyleInterpolator: !isIOS ? CardStyleInterpolators.forHorizontalIOS : undefined,
-          }}>
+          screenOptions={
+            isIOS
+              ? { headerShown: false }
+              : {
+                  headerShown: false,
+                  gestureVelocityImpact: 1,
+                  headerBackAllowFontScaling: false,
+                  headerTitleAllowFontScaling: false,
+                  cardStyleInterpolator: !isIOS ? CardStyleInterpolators.forHorizontalIOS : undefined,
+                }
+          }>
           {stackNav.map((item, index) => (
             <Stack.Screen options={(item as any).options} key={index} {...(item as any)} />
           ))}

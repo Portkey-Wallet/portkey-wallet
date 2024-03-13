@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>339329964702-49cp3l2v4o0gocfvl8m5ij9fi77sdht8.apps.googleusercontent.com</string>
+	<string>339329964702-ap4huoocu9l2l0r9mda0hpttubnkdrpn.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.339329964702-49cp3l2v4o0gocfvl8m5ij9fi77sdht8</string>
+	<string>com.googleusercontent.apps.339329964702-ap4huoocu9l2l0r9mda0hpttubnkdrpn</string>
 	<key>ANDROID_CLIENT_ID</key>
 	<string>339329964702-qbe65qoheb6g142qn8og79gba7dpdd7j.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.portkey.did</string>
+	<string>com.portkey.finance</string>
 	<key>PROJECT_ID</key>
 	<string>wallet-test-dev-88ace</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:339329964702:ios:c81558c5852383de5df98f</string>
+	<string>1:339329964702:ios:fff602b489432d1e5df98f</string>
 </dict>
 </plist>

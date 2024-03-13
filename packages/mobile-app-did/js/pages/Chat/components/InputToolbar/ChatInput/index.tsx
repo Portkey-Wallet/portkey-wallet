@@ -178,8 +178,12 @@ export const IOSChatInputBar = forwardRef(function InputBar(
 export const ChatInputBar = isIOS ? IOSChatInputBar : AndroidChatInputBar;
 
 const styles = StyleSheet.create({
-  inputStyle: { paddingRight: pTd(40) },
-  emojiStyle: { position: 'absolute', bottom: 8 },
+  inputStyle: {
+    paddingRight: pTd(40),
+    fontSize: pTd(16),
+    lineHeight: pTd(20),
+  },
+  emojiStyle: { position: 'absolute', bottom: pTd(8) },
   emojiSvg: {
     marginLeft: 0,
     marginBottom: 0,

@@ -1,6 +1,13 @@
 import { createAction } from '@reduxjs/toolkit';
 import { ChannelList, UpdateChannelAttributeTypeEnum } from './type';
-import { ChannelInfo, ChannelItem, ChannelMemberInfo, Message } from '@portkey-wallet/im';
+import {
+  ChannelInfo,
+  ChannelItem,
+  ChannelMemberInfo,
+  Message,
+  RedPackageConfigType,
+  RedPackageStatusInfo,
+} from '@portkey-wallet/im';
 import { NetworkType } from '@portkey-wallet/types';
 
 export const setChannelList = createAction<{
@@ -24,6 +31,13 @@ export const updateChannelAttribute = createAction<{
   value: Partial<ChannelItem>;
   type?: UpdateChannelAttributeTypeEnum;
 }>('im/updateChannelAttribute');
+
+export const updateChannelRedPackageAttribute = createAction<{
+  network: NetworkType;
+  channelId: string;
+  id: string;
+  value: RedPackageStatusInfo;
+}>('im/updateChannelRedPackageAttribute');
 
 export const addChannel = createAction<{
   network: NetworkType;
@@ -66,6 +80,13 @@ export const updateChannelMessageAttribute = createAction<{
   value: Partial<Message>;
 }>('im/updateChannelMessageAttribute');
 
+export const updateChannelMessageRedPackageAttribute = createAction<{
+  network: NetworkType;
+  channelId: string;
+  id: string;
+  value: RedPackageStatusInfo;
+}>('im/updateChannelMessageRedPackageAttribute');
+
 export const setRelationId = createAction<{
   network: NetworkType;
   relationId: string;
@@ -104,5 +125,35 @@ export const updateGroupInfo = createAction<{
   channelId: string;
   value: Partial<ChannelInfo>;
 }>('im/updateGroupInfo');
+
+export const setPinList = createAction<{
+  network: NetworkType;
+  channelId: string;
+  list: Message[];
+  fetchTime: number;
+}>('im/setPinList');
+
+export const nextPinList = createAction<{
+  network: NetworkType;
+  channelId: string;
+  list: Message[];
+  fetchTime: number;
+}>('im/nextPinList');
+
+export const cleanALLChannelMessagePin = createAction<{
+  network: NetworkType;
+  channelId: string;
+}>('im/cleanALLChannelMessagePin');
+
+export const setLastPinMessage = createAction<{
+  network: NetworkType;
+  channelId: string;
+  message: Message | undefined;
+  fetchTime: number;
+}>('im/setLastPinMessage');
+export const setRedPackageConfig = createAction<{
+  network: NetworkType;
+  value: RedPackageConfigType;
+}>('im/setRedPackageConfig');
 
 export const resetIm = createAction<NetworkType>('im/resetIm');

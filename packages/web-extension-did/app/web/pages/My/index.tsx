@@ -6,7 +6,7 @@ import MenuItem from 'components/MenuItem';
 import CustomSvg from 'components/CustomSvg';
 import BackHeader from 'components/BackHeader';
 import PortKeyHeader from 'pages/components/PortKeyHeader';
-import { useLockWallet } from 'utils/lib/serviceWorkerAction';
+import { lockWallet } from 'utils/lib/serviceWorkerAction';
 import { IconType } from 'types/icon';
 import { useCommonState } from 'store/Provider/hooks';
 import './index.less';
@@ -15,6 +15,8 @@ import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import svgsList from 'assets/svgs';
 import UnReadBadge from 'pages/components/UnReadBadge';
+import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
+import { useClickReferral } from 'hooks/referral';
 
 interface MenuItemInfo {
   label: string;
@@ -25,10 +27,10 @@ interface MenuItemInfo {
 export default function My() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const lockWallet = useLockWallet();
   const { isPrompt } = useCommonState();
   const isImputation = useIsImputation();
-
+  const { viewReferralStatus } = useReferral();
+  const clickReferral = useClickReferral();
   const MenuList: MenuItemInfo[] = useMemo(
     () => [
       {
@@ -63,7 +65,7 @@ export default function My() {
   const handleLock = useCallback(() => {
     lockWallet();
     navigate('/unlock');
-  }, [lockWallet, navigate]);
+  }, [navigate]);
 
   const handleExpandView = () => {
     InternalMessage.payload(PortkeyMessageTypes.SETTING).send();
@@ -81,7 +83,7 @@ export default function My() {
   return (
     <div className="flex-column my-frame">
       <PortKeyHeader
-        unReadShow={isImputation}
+        unReadShow={isImputation || !viewReferralStatus}
         onUserClick={() => {
           navigate('/');
         }}
@@ -106,6 +108,12 @@ export default function My() {
               {t(item.label)}
             </MenuItem>
           ))}
+          <MenuItem key="referral" height={56} icon={<CustomSvg type="Referral" />} onClick={clickReferral}>
+            <div className="flex-between-center">
+              <div>Referral</div>
+              <div className="referral-tag flex-center">New</div>
+            </div>
+          </MenuItem>
         </div>
         {!isPrompt && (
           <div className="btn flex-center">

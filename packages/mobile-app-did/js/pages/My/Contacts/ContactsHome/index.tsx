@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { View } from 'react-native';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import PageContainer from 'components/PageContainer';
@@ -19,6 +19,7 @@ import FindMoreButton from 'pages/Chat/components/FindMoreButton';
 import ContactUpdateWarning from 'pages/My/components/ContactUpdateWarning';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import Touchable from 'components/Touchable';
 
 const ContactsHome: React.FC = () => {
   const { t } = useLanguage();
@@ -60,13 +61,13 @@ const ContactsHome: React.FC = () => {
       titleDom={t('Contacts')}
       safeAreaColor={['blue', 'white']}
       rightDom={
-        <TouchableOpacity
+        <Touchable
           style={{ padding: pTd(16) }}
           onPress={() => {
             navigationService.navigate('NoChatContactProfileEdit');
           }}>
           <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
-        </TouchableOpacity>
+        </Touchable>
       }
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
@@ -79,9 +80,9 @@ const ContactsHome: React.FC = () => {
               onChangeText={value => setKeyword(value.trim())}
               rightIcon={
                 keyword ? (
-                  <TouchableOpacity onPress={clearText}>
+                  <Touchable onPress={clearText}>
                     <Svg icon="clear3" size={pTd(16)} />
-                  </TouchableOpacity>
+                  </Touchable>
                 ) : undefined
               }
               rightIconContainerStyle={pageStyles.rightIconContainerStyle}

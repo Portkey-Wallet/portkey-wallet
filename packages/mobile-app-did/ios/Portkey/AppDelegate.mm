@@ -6,6 +6,7 @@
 #import <React/RCTRootView.h>
 
 #import <React/RCTAppSetupUtils.h>
+#import "RNFBAppCheckModule.h" // ADD FB AppCheck
 #import <Firebase.h>
 
 
@@ -43,6 +44,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [RNFBAppCheckModule sharedInstance]; // ADD FB AppCheck
   [FIRApp configure];
   RCTAppSetupPrepareApp(application);
 

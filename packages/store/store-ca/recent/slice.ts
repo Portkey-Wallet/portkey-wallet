@@ -36,7 +36,6 @@ export const fetchRecentListAsync = createAsyncThunk(
     const { skipCount = 0 } = recent?.[caAddress] || {};
 
     const response = await fetchRecentTransactionUsers({
-      caAddresses: [caAddress],
       caAddressInfos,
       skipCount: isFirstTime ? 0 : skipCount,
       maxResultCount: RECENT_LIST_PAGE_SIZE,

@@ -38,11 +38,31 @@
       .right {
         flex: 1;
         .row-1 {
-          display: flex;
-          justify-content: space-between;
           line-height: 22px;
           color: @font-11;
           font-size: 16px;
+          .row-1-left {
+            flex-grow: 1;
+            gap: 10px;
+            span {
+              flex: 1;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              /* stylelint-disable-next-line value-no-vendor-prefix */
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              line-clamp: 1;
+              -webkit-line-clamp: 1;
+              word-break: break-all;
+            }
+            .nft-id-show,
+            .amount-show {
+              text-align: right;
+            }
+          }
+          .amount-symbol {
+            margin-left: 4px;
+          }
         }
         .row-2 {
           display: flex;

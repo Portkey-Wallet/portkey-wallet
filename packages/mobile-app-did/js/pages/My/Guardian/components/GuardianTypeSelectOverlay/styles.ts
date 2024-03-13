@@ -4,6 +4,7 @@ import { pTd } from 'utils/unit';
 
 const styles = StyleSheet.create({
   itemRow: {
+    flex: 1,
     height: pTd(72),
     flexDirection: 'row',
     alignItems: 'center',
@@ -15,19 +16,25 @@ const styles = StyleSheet.create({
     height: pTd(72),
     flexDirection: 'row',
     alignItems: 'center',
+    marginRight: pTd(20),
+  },
+  itemIconWrap: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: defaultColors.border6,
+    backgroundColor: defaultColors.bg6,
+    width: pTd(32),
+    height: pTd(32),
+    borderRadius: pTd(16),
+    marginRight: pTd(16),
   },
   itemIcon: {
+    right: pTd(2),
     position: 'absolute',
-    right: 26,
   },
   typeOverlayTitleLabel: {
     marginTop: pTd(16),
     marginBottom: pTd(8),
     textAlign: 'center',
-  },
-  leftIcon: {
-    borderRadius: pTd(14),
-    marginRight: pTd(16),
   },
 });
 

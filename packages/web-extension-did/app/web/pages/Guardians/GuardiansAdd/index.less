@@ -49,8 +49,18 @@
         color: @font-9;
         cursor: pointer;
       }
-      .detail {
+      &.detail {
+        position: relative;
         height: 56px;
+        .close4-icon {
+          position: absolute;
+          right: 16px;
+          top: 20px;
+          cursor: pointer;
+          path {
+            fill: @svg-4;
+          }
+        }
       }
     }
     .control {
@@ -79,11 +89,6 @@
         .@{app-prefix}-select-selection-item {
           display: flex;
           align-items: center;
-          .custom-svg,
-          svg {
-            width: 32px;
-            height: 32px;
-          }
           .title {
             display: flex;
             align-items: center;
@@ -131,17 +136,9 @@
     height: 32px;
     border-radius: 50%;
   }
-  /* stylelint-disable-next-line no-descending-specificity */
-  .custom-svg {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    /* stylelint-disable-next-line no-descending-specificity */
-    svg {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-    }
+  &.no-use {
+    opacity: 0.3;
+    cursor: not-allowed;
   }
   .title {
     display: flex;

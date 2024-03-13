@@ -6,6 +6,7 @@ import {
   IEntranceMatchValueMap,
   IEntranceModuleName,
   IEntrance,
+  IBaseEntranceItem,
 } from '@portkey-wallet/types/types-ca/cms';
 import BigNumber from 'bignumber.js';
 import { getEntrance as getEntranceGraphQL, getCodePushControl } from '@portkey-wallet/graphql/cms/queries';
@@ -32,10 +33,39 @@ export const DEFAULT_ENTRANCE_SHOW: IEntrance = {
   eTransWithdraw: false,
 };
 
-export const generateEntranceShow = async (
-  config: IEntranceMatchValueConfig,
-  entranceList: IEntranceItem[],
-): Promise<IEntrance> => {
+const checkIsEntranceShow = (item: IBaseEntranceItem, matchValueMap: IEntranceMatchValueMap) => {
+  const { defaultSwitch, matchList } = item;
+
+  let matchValue = defaultSwitch;
+
+  if (matchList.length === 0) return defaultSwitch;
+
+  for (let i = 0; i < matchList.length; i++) {
+    const ele = matchList[i];
+    const { matchRuleList, matchSwitch } = ele.entranceMatch_id;
+    if (!Array.isArray(matchRuleList) || matchRuleList.length === 0) continue;
+
+    const isMatch = matchRuleList.every(rule => {
+      const { type, left, opt, right: matchKey } = rule;
+      const matchRule = createEntranceMatchRule(type as IEntranceMatchRuleType, left);
+      const matchValue = matchValueMap[matchKey as IEntranceMatchKey];
+
+      if (matchRule[opt] && matchValue !== undefined) {
+        return matchRule[opt](matchValue);
+      }
+      return false;
+    });
+
+    if (isMatch) {
+      matchValue = matchSwitch;
+      break;
+    }
+  }
+
+  return matchValue;
+};
+
+export const generateMatchValueMap = async (config: IEntranceMatchValueConfig) => {
   const matchValueMap: IEntranceMatchValueMap = {};
   for (const key in config) {
     if (Object.prototype.hasOwnProperty.call(config, key)) {
@@ -47,52 +77,24 @@ export const generateEntranceShow = async (
           console.log('Entrance: generate config error', error);
         }
       }
-      if (typeof value === 'string') {
-        matchValueMap[key as IEntranceMatchKey] = value;
-      }
+      if (typeof value === 'string') matchValueMap[key as IEntranceMatchKey] = value;
     }
   }
+  return matchValueMap;
+};
 
-  const entranceShow: IEntrance = {
-    ...DEFAULT_ENTRANCE_SHOW,
-  };
+export const generateEntranceShow = async (
+  config: IEntranceMatchValueConfig,
+  entranceList: IEntranceItem[],
+): Promise<IEntrance> => {
+  const matchValueMap = await generateMatchValueMap(config);
+
+  const entranceShow: IEntrance = { ...DEFAULT_ENTRANCE_SHOW };
 
   (Object.keys(entranceShow) as Array<IEntranceModuleName>).forEach(moduleName => {
     const entranceStrategy = entranceList.find(ele => ele.moduleName.value === moduleName);
     if (!entranceStrategy) return;
-    const { defaultSwitch, matchList } = entranceStrategy;
-    if (matchList.length === 0) {
-      entranceShow[moduleName] = defaultSwitch;
-      return;
-    }
-
-    let isMatch = false;
-    matchList
-      // .sort((a, b) => b.entranceMatch_id.weight - a.entranceMatch_id.weight)
-      .forEach(ele => {
-        if (isMatch) return;
-        const { matchRuleList, matchSwitch } = ele.entranceMatch_id;
-        if (!Array.isArray(matchRuleList) || matchRuleList.length === 0) return;
-
-        isMatch = matchRuleList.every(rule => {
-          const { type, left, opt, right: matchKey } = rule;
-          const matchRule = createEntranceMatchRule(type as IEntranceMatchRuleType, left);
-          const matchValue = matchValueMap[matchKey as IEntranceMatchKey];
-
-          if (matchRule[opt] && matchValue !== undefined) {
-            return matchRule[opt](matchValue);
-          }
-          return false;
-        });
-
-        if (isMatch) {
-          entranceShow[moduleName] = matchSwitch;
-        }
-      });
-
-    if (!isMatch) {
-      entranceShow[moduleName] = defaultSwitch;
-    }
+    entranceShow[moduleName] = checkIsEntranceShow(entranceStrategy, matchValueMap);
   });
 
   return entranceShow;

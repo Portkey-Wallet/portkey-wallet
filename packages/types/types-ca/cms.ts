@@ -15,14 +15,17 @@ export type IEntranceMatchItem = {
   weight: number;
   matchSwitch: boolean;
 };
-export type IEntranceItem = {
-  moduleName: {
-    value: IEntranceModuleName;
-  };
+
+export interface IBaseEntranceItem {
   defaultSwitch: boolean;
   matchList: Array<{
     entranceMatch_id: IEntranceMatchItem;
   }>;
-};
+}
+export interface IEntranceItem extends IBaseEntranceItem {
+  moduleName: {
+    value: IEntranceModuleName;
+  };
+}
 export type IEntranceMatchValueConfig = Partial<Record<IEntranceMatchKey, string | (() => Promise<string>)>>;
 export type IEntranceMatchValueMap = Partial<Record<IEntranceMatchKey, string>>;

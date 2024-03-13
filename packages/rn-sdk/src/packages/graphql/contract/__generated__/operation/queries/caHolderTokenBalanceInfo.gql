@@ -1,0 +1,27 @@
+query caHolderTokenBalanceInfo($dto: GetCAHolderTokenBalanceDto){
+    caHolderTokenBalanceInfo(dto: $dto){
+        totalRecordCount
+        data{
+            chainId
+            caAddress
+            tokenInfo{
+                id
+                chainId
+                blockHash
+                blockHeight
+                previousBlockHash
+                symbol
+                type
+                tokenContractAddress
+                decimals
+                totalSupply
+                tokenName
+                issuer
+                isBurnable
+                issueChainId
+            }
+            balance
+            tokenIds
+        }
+    }
+}

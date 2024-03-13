@@ -1,0 +1,46 @@
+
+# OSX
+#
+.DS_Store
+
+.idea
+.eslintcache
+.idea
+
+# node.js
+#
+node_modules/
+npm-debug.log
+yarn-error.log
+
+.vscode
+
+ignore/
+**/*.zip
+
+coverage
+
+# network
+packages/constants/constants-ca/network.ts
+
+# iOS
+*.xcuserstate  
+/**/xcuserdata/**
+/**/Pods/**
+Pods/
+Pods
+app_ios/build/
+packages/rn-sdk/app_ios/build/
+/**/*.apk
+/**/output-metadata.json
+
+/**/*.bundle
+/**/.expo
+
+
+.env
+output/
+dist/
+postinstall.log
+
+.expo/**

@@ -1,0 +1,23 @@
+query caHolderNFTCollectionBalanceInfo($dto: GetCAHolderNFTCollectionInfoDto){
+    caHolderNFTCollectionBalanceInfo(dto: $dto){
+        totalRecordCount
+        data{
+            id
+            chainId
+            caAddress
+            tokenIds
+            nftCollectionInfo{
+                symbol
+                tokenContractAddress
+                decimals
+                supply
+                totalSupply
+                tokenName
+                issuer
+                isBurnable
+                issueChainId
+                imageUrl
+            }
+        }
+    }
+}

@@ -1,0 +1,49 @@
+import org.gradle.api.initialization.resolve.RepositoriesMode
+
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+        maven {
+            url "../node_modules/expo-camera/android/maven"
+        }
+    }
+}
+
+//apply from: file("../../node_modules/react-native-gradle-plugin/build.gradle.kts")
+//apply plugin: 'com.facebook.react'
+//
+//react {
+//    reactNativeDir = file("../../node_modules/react-native")
+//}
+
+rootProject.name = "portkey-android"
+
+//rootProject.reactNativeDir = '../../node_modules/react-native'
+
+includeBuild('../node_modules/@react-native/gradle-plugin')
+
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle")
+applyNativeModulesSettingsGradle(settings)
+
+include ':app'
+
+include ':react-native-config'
+project(':react-native-config').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-config/android')
+
+include ':expo-modules-core'
+
+include ':library'
+project(':library').projectDir = new File(rootProject.projectDir, '../android')
+
+apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle");
+useExpoModules()

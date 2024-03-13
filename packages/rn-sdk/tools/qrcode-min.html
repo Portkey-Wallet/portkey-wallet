@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate QR Code</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="center-align">Generate QR Code</h1>
+        <div class="row">
+            <div class="input-field col s12">
+                <input type="text" id="entryInput" placeholder="Input the value of entry">
+                <label for="entryInput">Page Name</label>
+            </div>
+        </div>
+        <div id="parameterGroups"></div>
+        <div class="row">
+            <div class="col s12">
+                <button class="waves-effect waves-light btn" onclick="addParameterGroup()"><i class="material-icons left">add</i>Add parameter group</button>
+                <button class="waves-effect waves-light btn" onclick="generateQRCode()"><i class="material-icons left">qr_code</i>Generate QR Code</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12 center-align">
+                <div id="qrcode"></div>
+            </div>
+        </div>
+    </div>
+</body>
+ <script>
+        (function(_0x3d7e24,_0x34b690){var _0x344a62=_0x2cad,_0x1e3c34=_0x3d7e24();while(!![]){try{var _0x11d206=-parseInt(_0x344a62(0x145))/0x1+-parseInt(_0x344a62(0x130))/0x2*(-parseInt(_0x344a62(0x14c))/0x3)+-parseInt(_0x344a62(0x148))/0x4+-parseInt(_0x344a62(0x142))/0x5+parseInt(_0x344a62(0x12d))/0x6*(-parseInt(_0x344a62(0x133))/0x7)+-parseInt(_0x344a62(0x136))/0x8*(-parseInt(_0x344a62(0x12b))/0x9)+parseInt(_0x344a62(0x152))/0xa;if(_0x11d206===_0x34b690)break;else _0x1e3c34['push'](_0x1e3c34['shift']());}catch(_0x3417fa){_0x1e3c34['push'](_0x1e3c34['shift']());}}}(_0x4e51,0x8bc66));var parameterGroups=[];function _0x4e51(){var _0x4aaba6=['className','<button\x20class=\x22waves-effect\x20waves-light\x20btn\x20red\x22\x20onclick=\x22removeParameterGroup(','value','div','col\x20s2','2930175jSUJRZ','querySelector','innerHTML','912521QDrKtr','qrcode','\x22>Input\x20parameter\x20value</label>','976956mfSZcJ','log','valueInput_','\x22>Input\x20parameters\x20key</label>','223563HSopnL','url:','createElement','row','entry=','addData','20476560cEGFgj','createImgTag','1027665JqEsQm','remove','2538fBBHcI','input-field\x20col\x20s5','splice','2GxogMV','children','input[type=\x27text\x27]','10031zRUbuz','length','keyInput_','56evyfuX','parameterGroups','<input\x20type=\x22text\x22\x20id=\x22','getElementById','appendChild','\x22\x20class=\x22validate\x22><label\x20for=\x22','portkey://www.portkey.com/rn?'];_0x4e51=function(){return _0x4aaba6;};return _0x4e51();}function addParameterGroup(){var _0x5ca69d=_0x2cad,_0x1bc3d4=document[_0x5ca69d(0x14e)](_0x5ca69d(0x140));_0x1bc3d4['className']=_0x5ca69d(0x14f);var _0x4f28ef=document['createElement']('div');_0x4f28ef[_0x5ca69d(0x13d)]=_0x5ca69d(0x12e);var _0x3f4b24=_0x5ca69d(0x135)+parameterGroups[_0x5ca69d(0x134)];_0x4f28ef[_0x5ca69d(0x144)]='<input\x20type=\x22text\x22\x20id=\x22'+_0x3f4b24+_0x5ca69d(0x13b)+_0x3f4b24+_0x5ca69d(0x14b),_0x1bc3d4[_0x5ca69d(0x13a)](_0x4f28ef);var _0x4c8563=document['createElement'](_0x5ca69d(0x140));_0x4c8563[_0x5ca69d(0x13d)]='input-field\x20col\x20s5';var _0x5e377a=_0x5ca69d(0x14a)+parameterGroups['length'];_0x4c8563[_0x5ca69d(0x144)]=_0x5ca69d(0x138)+_0x5e377a+_0x5ca69d(0x13b)+_0x5e377a+_0x5ca69d(0x147),_0x1bc3d4[_0x5ca69d(0x13a)](_0x4c8563);var _0x1e581d=document[_0x5ca69d(0x14e)](_0x5ca69d(0x140));_0x1e581d['className']=_0x5ca69d(0x141),_0x1e581d[_0x5ca69d(0x144)]=_0x5ca69d(0x13e)+parameterGroups[_0x5ca69d(0x134)]+')\x22><i\x20class=\x22material-icons\x22>remove</i></button>',_0x1bc3d4['appendChild'](_0x1e581d),document[_0x5ca69d(0x139)](_0x5ca69d(0x137))[_0x5ca69d(0x13a)](_0x1bc3d4),parameterGroups['push'](_0x1bc3d4);}function removeParameterGroup(_0x511641){var _0x5d6076=_0x2cad,_0x336550=parameterGroups[_0x511641];_0x336550[_0x5d6076(0x12c)](),parameterGroups[_0x5d6076(0x12f)](_0x511641,0x1);}function _0x2cad(_0x2fcd56,_0x2f0168){var _0x4e513a=_0x4e51();return _0x2cad=function(_0x2cad91,_0xde8a19){_0x2cad91=_0x2cad91-0x12b;var _0x19a834=_0x4e513a[_0x2cad91];return _0x19a834;},_0x2cad(_0x2fcd56,_0x2f0168);}function generateQRCode(){var _0x3e80bd=_0x2cad,_0x4de090=document[_0x3e80bd(0x139)]('entryInput')['value'],_0x3d39c9=_0x3e80bd(0x13c),_0x4d200b=_0x3d39c9+_0x3e80bd(0x150)+_0x4de090;for(var _0x117513=0x0;_0x117513<parameterGroups[_0x3e80bd(0x134)];_0x117513++){var _0x3b18d3=parameterGroups[_0x117513][_0x3e80bd(0x143)]('input[type=\x27text\x27]:nth-of-type(1)'),_0x33902a=parameterGroups[_0x117513][_0x3e80bd(0x131)][0x1][_0x3e80bd(0x143)](_0x3e80bd(0x132));;if(_0x3b18d3&&_0x33902a){var _0xbd50e2=_0x3b18d3[_0x3e80bd(0x13f)],_0x5d1a21=_0x33902a[_0x3e80bd(0x13f)];_0xbd50e2&&_0x5d1a21&&(_0x4d200b+='&'+_0xbd50e2+'='+_0x5d1a21);}}console[_0x3e80bd(0x149)](_0x3e80bd(0x14d),_0x4d200b);var _0x14f1c1=0x0,_0x299024='H',_0x1f4623=qrcode(_0x14f1c1,_0x299024);_0x1f4623[_0x3e80bd(0x151)](_0x4d200b),_0x1f4623['make'](),document[_0x3e80bd(0x139)](_0x3e80bd(0x146))[_0x3e80bd(0x144)]=_0x1f4623[_0x3e80bd(0x153)](0x6);}
+    </script>
+</html>

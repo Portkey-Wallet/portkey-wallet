@@ -1,0 +1,70 @@
+apply plugin: 'maven-publish'
+
+def checkIsAarMode(){
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    def isNpmProduct = Boolean.parseBoolean(properties.getProperty('isPortkeyNpmProduct', 'true'))
+    if(isNpmProduct){
+        throw new Exception("Please set isPortkeyNpmProduct=false in local.properties file. ")
+    }
+}
+checkIsAarMode()
+def GroupId = 'finance.portkey'
+def ArtifactId = 'portkey-rn-sdk'
+def Version = android.defaultConfig.versionName
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+def userName = properties.getProperty('ossrhUsername')
+def passWord = properties.getProperty('ossrhPassword')
+
+
+def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+
+
+task generateSourcesJar(type:Jar){
+    from android.sourceSets.main.java.srcDirs
+    classifier "sources"
+}
+
+
+afterEvaluate {
+    publishing {
+        publications{
+            release(MavenPublication){
+
+                groupId = GroupId
+                artifactId = ArtifactId
+                version = Version
+
+                afterEvaluate { artifact(tasks.getByName("bundleReleaseAar")) }
+                artifact generateSourcesJar
+                pom.withXml{
+                    def dependenciesNode = asNode().appendNode("dependencies")
+                    configurations.implementation.allDependencies.forEach(){
+                        Dependency dependency ->
+                            if (dependency.version != "unspecified" && dependency.name != "unspecified"){
+                                def dependencyNode = dependenciesNode.appendNode('dependency')
+                                dependencyNode.appendNode('groupId', dependency.group)
+                                dependencyNode.appendNode('artifactId', dependency.name)
+                                dependencyNode.appendNode('version', dependency.version)
+                            }
+                    }
+                }
+            }
+        }
+
+
+        repositories {
+            maven {
+                //allow http
+               allowInsecureProtocol = true
+                url = releasesRepoUrl
+               credentials {
+                   username = userName
+                   password = passWord
+               }
+            }
+        }
+    }
+}

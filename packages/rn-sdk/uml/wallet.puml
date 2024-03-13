@@ -1,0 +1,52 @@
+@startuml wallet
+
+note right of PortkeyWallet
+# the return type just means that the function invokes NativeModule's method with this type of object
+# actually all of those methods return void
+end note
+interface PortkeyWallet {
+    isUnlocked: (params:GeneralJSMethodConfig) => Promise<boolean>
+    exitWallet: (params:GeneralJSMethodConfig) => Promise<boolean>
+    callCaMethod: (params:CaContractConfig) => Promise<string> 
+    callContractMethod: (params:GeneralContractConfig) => Promise<string>
+}
+
+note left of PortkeyWallet::callCaMethod
+JSON string
+end note
+
+interface GeneralJSMethodConfig {
+    eventId: string
+}
+
+interface CaContractConfig extends GeneralJSMethodConfig {
+    methodName: string
+    params: any
+    isViewMethod: boolean
+}
+
+interface GeneralContractConfig extends CaContractConfig {
+    contractAddress?: string
+    contractName?: string
+}
+
+interface NetworkConfig {
+    name: string
+    endPointUrl: string
+}
+
+interface LoginStatus {
+
+}
+
+interface CAInfo {
+
+}
+
+interface WalletInfo {
+
+}
+
+GeneralJSMethodConfig --> PortkeyWallet 
+
+@enduml

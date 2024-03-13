@@ -1,0 +1,48 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "eslint-config-prettier",
+    "plugin:prettier/recommended"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 2021,
+    "sourceType": "module",
+    "allowImportExportEverywhere": true
+  },
+  "settings": {
+    "react": {
+      "version": "18.2.0"
+    }
+  },
+  "rules": {
+    "react/prop-types": 0,
+    "react/display-name": 0,
+    "react/react-in-jsx-scope": 0,
+    "no-async-promise-executor": 0,
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": 1,
+    "@typescript-eslint/explicit-module-boundary-types": 0,
+    "@typescript-eslint/ban-types": 0,
+    "@typescript-eslint/no-explicit-any": 0,
+    "no-inline-styles/no-inline-styles": 2
+  },
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "globals": {
+    "globalThis": "writable",
+    "chrome": "writable",
+    "browser": "readonly"
+  },
+
+  "plugins": ["react", "eslint-plugin-no-inline-styles"]
+}

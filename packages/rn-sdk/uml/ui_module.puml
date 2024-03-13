@@ -1,0 +1,112 @@
+@startuml module
+
+interface IPortkeyAccount {
+    login: (callback: MethodCallback<AccountModel>) => void
+    logout: (callback: MethodCallback<boolean>) => void
+    loginStatus: () => LoginStatus
+}
+
+interface IPortkeyLockModule{
+    isUnlocked: () => boolean
+    lock: (callback: MethodCallback<boolean>) => void
+    unlock: (callback: MethodCallback<boolean>) => void
+}
+
+interface IPortkeyGuardianModule{
+    guardianCount: (callback:MethodCallback<number>) => void
+    openGuardianList: (callback:MethodCallback<boolean>) => void
+    openAddGuardian: (callback:MethodCallback<boolean>) => void
+}
+
+interface IPortkeyAssetsModule{
+    openAssetsCard: (callback:MethodCallback<boolean>) => void
+}
+
+interface IPortkeyContractModule {
+    callCaMethod: (params: CaContractConfig, callback:MethodCallback<string>) => void
+    callContractMethod: (params: GeneralContractConfig, callback:MethodCallback<string>) => void
+}
+
+interface IPortkeyConfig {
+    setNetwork: (config: NetworkConfig) => void
+    setTermsOfService: (prefix: string, title: string) => void
+    clearAllData: () => boolean
+}
+
+interface IPortkeyTheme {
+    setTheme: (theme: Theme) => void
+    setAppName: (appName: string) => void
+    setNavigationTheme: (navigationTheme: NavigationTheme) => void
+}
+
+interface IPortkeyService {
+    public lockModule: IPortkeyLockModule
+    public guardianModule: IPortkeyGuardianModule
+    public contractModule: IPortkeyContractModule
+    public assetsModule: IPortkeyAssetsModule
+}
+
+note left of IPortkeyService
+    manage submodules in login state
+end note
+
+interface IPortkey implements IPortkeyAccount {
+    private portkeyAccount: IPortkeyAccount
+    private portkeyService: IPortkeyService
+    public getPortkeyService: () => IPortkeyService
+    public portkeyConfig: IPortkeyConfig
+    public portkeyTheme: IPortkeyTheme
+
+    static init: () => void
+    static getInstance: () => IPortkey
+    login: (callback: MethodCallback<AccountModel>) => void
+    logout: (callback: MethodCallback<boolean>) => void
+}
+
+note right of IPortkey::getPortkeyService
+    return portkeyService
+end note
+
+note left of IPortkey::login
+    portkeyAccount.login()
+    if (loginSuccess) {
+        portkeyService = new PortkeyService()
+    }
+end note
+
+note left of IPortkey::logout
+    portkeyAccount.logout()
+    if (logoutSuccess) {
+        portkeyService = null
+    }
+end note
+
+class PortkeyAccount extends IPortkeyAccount{
+    
+}
+
+class PortkeyLockModule extends IPortkeyLockModule{
+    
+}
+
+class PortkeyGuardianModule extends IPortkeyGuardianModule{
+    
+}
+
+class PortkeyAssetsModule extends IPortkeyAssetsModule{
+    
+}
+
+class PortkeyContractModule extends IPortkeyContractModule{
+    
+}
+
+IPortkeyService --> IPortkeyLockModule
+IPortkeyService --> IPortkeyGuardianModule
+IPortkeyService --> IPortkeyContractModule
+IPortkeyService --> IPortkeyAssetsModule
+IPortkey --> IPortkeyService
+IPortkey --> IPortkeyConfig
+IPortkey --> IPortkeyTheme
+
+@enduml

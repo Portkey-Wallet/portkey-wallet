@@ -1,0 +1,907 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 54;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		379965F6D55E5BFD355DFCC8 /* Pods_PortkeySDKExample_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4309FEAD594FF4BCCCDCC3AB /* Pods_PortkeySDKExample_Example.framework */; };
+		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
+		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
+		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
+		6003F5B0195388D20070C39A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F5AF195388D20070C39A /* XCTest.framework */; };
+		6003F5B1195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
+		6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
+		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
+		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
+		EAA3A8DD2AE8B892001D1CE0 /* TermsOfServiceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EAA3A8DC2AE8B892001D1CE0 /* TermsOfServiceViewController.m */; };
+		EAD432A92ABC29ED00EEA69D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = EAD4329B2ABC29ED00EEA69D /* InfoPlist.strings */; };
+		EAD432AA2ABC29ED00EEA69D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EAD4329E2ABC29ED00EEA69D /* AppDelegate.m */; };
+		EAD432AB2ABC29ED00EEA69D /* PortkeySDKExample-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = EAD4329F2ABC29ED00EEA69D /* PortkeySDKExample-Info.plist */; };
+		EAD432AC2ABC29ED00EEA69D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EAD432A02ABC29ED00EEA69D /* LaunchScreen.storyboard */; };
+		EAD432AD2ABC29ED00EEA69D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EAD432A22ABC29ED00EEA69D /* Main.storyboard */; };
+		EAD432AE2ABC29ED00EEA69D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EAD432A42ABC29ED00EEA69D /* main.m */; };
+		EAD432AF2ABC29ED00EEA69D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EAD432A52ABC29ED00EEA69D /* Images.xcassets */; };
+		EAD432B02ABC29ED00EEA69D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EAD432A72ABC29ED00EEA69D /* ViewController.m */; };
+		EADF94572AF3847F00B07C1D /* BundleConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EADF94562AF3847F00B07C1D /* BundleConfigViewController.m */; };
+		EDE868D741F47F2FD227CA24 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB237CBC0EF8A113646C992 /* ExpoModulesProvider.swift */; };
+		F3F50471043C8974F9A0CC49 /* Pods_PortkeySDKExample_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 059DB1ABAA48E398AC16B0AA /* Pods_PortkeySDKExample_Tests.framework */; };
+		FB9C76A798DED3DBCC764D3F /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4B7F65653A1041B86DF8CB /* ExpoModulesProvider.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		6003F5B3195388D20070C39A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6003F582195388D10070C39A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6003F589195388D20070C39A;
+			remoteInfo = AelfPortkey;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		059DB1ABAA48E398AC16B0AA /* Pods_PortkeySDKExample_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PortkeySDKExample_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		120D60A7502DCA5E5DB2F3DC /* Pods-PortkeySDKExample_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortkeySDKExample_Tests.debug.xcconfig"; path = "Target Support Files/Pods-PortkeySDKExample_Tests/Pods-PortkeySDKExample_Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		196E2FEA8BA5B37F74410ACE /* Pods-AelfPortkey_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AelfPortkey_Example.release.xcconfig"; path = "Target Support Files/Pods-AelfPortkey_Example/Pods-AelfPortkey_Example.release.xcconfig"; sourceTree = "<group>"; };
+		1FB237CBC0EF8A113646C992 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-PortkeySDKExample_Example/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		4309FEAD594FF4BCCCDCC3AB /* Pods_PortkeySDKExample_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PortkeySDKExample_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		58B8649AAAEF2C57C9DAB9AD /* Pods-PortkeySDKExample_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortkeySDKExample_Example.release.xcconfig"; path = "Target Support Files/Pods-PortkeySDKExample_Example/Pods-PortkeySDKExample_Example.release.xcconfig"; sourceTree = "<group>"; };
+		6003F58A195388D20070C39A /* PortkeySDKExample_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PortkeySDKExample_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		6003F58F195388D20070C39A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		6003F591195388D20070C39A /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		6003F5AE195388D20070C39A /* PortkeySDKExample_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PortkeySDKExample_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6003F5AF195388D20070C39A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		6003F5B7195388D20070C39A /* Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Tests-Info.plist"; sourceTree = "<group>"; };
+		6003F5B9195388D20070C39A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		6003F5BB195388D20070C39A /* Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Tests.m; sourceTree = "<group>"; };
+		606FC2411953D9B200FFA9A0 /* Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Tests-Prefix.pch"; sourceTree = "<group>"; };
+		7044B54E4BB8607B8EEC8311 /* Pods-PortkeySDKExample_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortkeySDKExample_Tests.release.xcconfig"; path = "Target Support Files/Pods-PortkeySDKExample_Tests/Pods-PortkeySDKExample_Tests.release.xcconfig"; sourceTree = "<group>"; };
+		82A6DA67C134C4FC8F4392A1 /* Pods-AelfPortkey_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AelfPortkey_Tests.debug.xcconfig"; path = "Target Support Files/Pods-AelfPortkey_Tests/Pods-AelfPortkey_Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		868DF6131B624D1805049FD9 /* Pods-AelfPortkey_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AelfPortkey_Example.debug.xcconfig"; path = "Target Support Files/Pods-AelfPortkey_Example/Pods-AelfPortkey_Example.debug.xcconfig"; sourceTree = "<group>"; };
+		903BDF27E1D312AFA5748B17 /* Pods-PortkeySDKExample_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortkeySDKExample_Example.debug.xcconfig"; path = "Target Support Files/Pods-PortkeySDKExample_Example/Pods-PortkeySDKExample_Example.debug.xcconfig"; sourceTree = "<group>"; };
+		AB4B7F65653A1041B86DF8CB /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-PortkeySDKExample_Tests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		D626B180E2AD432D67A0B86A /* Pods-AelfPortkey_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AelfPortkey_Tests.release.xcconfig"; path = "Target Support Files/Pods-AelfPortkey_Tests/Pods-AelfPortkey_Tests.release.xcconfig"; sourceTree = "<group>"; };
+		EAA3A8DB2AE8B892001D1CE0 /* TermsOfServiceViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermsOfServiceViewController.h; sourceTree = "<group>"; };
+		EAA3A8DC2AE8B892001D1CE0 /* TermsOfServiceViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TermsOfServiceViewController.m; sourceTree = "<group>"; };
+		EAD4329C2ABC29ED00EEA69D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		EAD4329D2ABC29ED00EEA69D /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		EAD4329E2ABC29ED00EEA69D /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		EAD4329F2ABC29ED00EEA69D /* PortkeySDKExample-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "PortkeySDKExample-Info.plist"; sourceTree = "<group>"; };
+		EAD432A12ABC29ED00EEA69D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		EAD432A32ABC29ED00EEA69D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		EAD432A42ABC29ED00EEA69D /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		EAD432A52ABC29ED00EEA69D /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		EAD432A62ABC29ED00EEA69D /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		EAD432A72ABC29ED00EEA69D /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		EAD432A82ABC29ED00EEA69D /* PortkeySDKExample-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PortkeySDKExample-Prefix.pch"; sourceTree = "<group>"; };
+		EADF94412AEA65E600B07C1D /* PortkeySDKExample_Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PortkeySDKExample_Example.entitlements; sourceTree = "<group>"; };
+		EADF94552AF3847F00B07C1D /* BundleConfigViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BundleConfigViewController.h; sourceTree = "<group>"; };
+		EADF94562AF3847F00B07C1D /* BundleConfigViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BundleConfigViewController.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6003F587195388D20070C39A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */,
+				6003F592195388D20070C39A /* UIKit.framework in Frameworks */,
+				6003F58E195388D20070C39A /* Foundation.framework in Frameworks */,
+				379965F6D55E5BFD355DFCC8 /* Pods_PortkeySDKExample_Example.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6003F5AB195388D20070C39A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6003F5B0195388D20070C39A /* XCTest.framework in Frameworks */,
+				6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */,
+				6003F5B1195388D20070C39A /* Foundation.framework in Frameworks */,
+				F3F50471043C8974F9A0CC49 /* Pods_PortkeySDKExample_Tests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0A059379C4890923AF873BCD /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				22B12376B4C04926C97F9117 /* PortkeySDKExample_Example */,
+				38D12E4400DD5E6B5367B7BF /* PortkeySDKExample_Tests */,
+			);
+			name = ExpoModulesProviders;
+			sourceTree = "<group>";
+		};
+		22B12376B4C04926C97F9117 /* PortkeySDKExample_Example */ = {
+			isa = PBXGroup;
+			children = (
+				1FB237CBC0EF8A113646C992 /* ExpoModulesProvider.swift */,
+			);
+			name = PortkeySDKExample_Example;
+			sourceTree = "<group>";
+		};
+		38D12E4400DD5E6B5367B7BF /* PortkeySDKExample_Tests */ = {
+			isa = PBXGroup;
+			children = (
+				AB4B7F65653A1041B86DF8CB /* ExpoModulesProvider.swift */,
+			);
+			name = PortkeySDKExample_Tests;
+			sourceTree = "<group>";
+		};
+		6003F581195388D10070C39A = {
+			isa = PBXGroup;
+			children = (
+				EADF94412AEA65E600B07C1D /* PortkeySDKExample_Example.entitlements */,
+				EAD4329A2ABC29ED00EEA69D /* PortkeySDKExample */,
+				6003F5B5195388D20070C39A /* Tests */,
+				6003F58C195388D20070C39A /* Frameworks */,
+				6003F58B195388D20070C39A /* Products */,
+				6857E7AFC1AAC160AC620039 /* Pods */,
+				0A059379C4890923AF873BCD /* ExpoModulesProviders */,
+			);
+			sourceTree = "<group>";
+		};
+		6003F58B195388D20070C39A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6003F58A195388D20070C39A /* PortkeySDKExample_Example.app */,
+				6003F5AE195388D20070C39A /* PortkeySDKExample_Tests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6003F58C195388D20070C39A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6003F58D195388D20070C39A /* Foundation.framework */,
+				6003F58F195388D20070C39A /* CoreGraphics.framework */,
+				6003F591195388D20070C39A /* UIKit.framework */,
+				6003F5AF195388D20070C39A /* XCTest.framework */,
+				4309FEAD594FF4BCCCDCC3AB /* Pods_PortkeySDKExample_Example.framework */,
+				059DB1ABAA48E398AC16B0AA /* Pods_PortkeySDKExample_Tests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		6003F5B5195388D20070C39A /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				6003F5BB195388D20070C39A /* Tests.m */,
+				6003F5B6195388D20070C39A /* Supporting Files */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		6003F5B6195388D20070C39A /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				6003F5B7195388D20070C39A /* Tests-Info.plist */,
+				6003F5B8195388D20070C39A /* InfoPlist.strings */,
+				606FC2411953D9B200FFA9A0 /* Tests-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		6857E7AFC1AAC160AC620039 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				868DF6131B624D1805049FD9 /* Pods-AelfPortkey_Example.debug.xcconfig */,
+				196E2FEA8BA5B37F74410ACE /* Pods-AelfPortkey_Example.release.xcconfig */,
+				82A6DA67C134C4FC8F4392A1 /* Pods-AelfPortkey_Tests.debug.xcconfig */,
+				D626B180E2AD432D67A0B86A /* Pods-AelfPortkey_Tests.release.xcconfig */,
+				903BDF27E1D312AFA5748B17 /* Pods-PortkeySDKExample_Example.debug.xcconfig */,
+				58B8649AAAEF2C57C9DAB9AD /* Pods-PortkeySDKExample_Example.release.xcconfig */,
+				120D60A7502DCA5E5DB2F3DC /* Pods-PortkeySDKExample_Tests.debug.xcconfig */,
+				7044B54E4BB8607B8EEC8311 /* Pods-PortkeySDKExample_Tests.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		EAA3A8DA2AE8B867001D1CE0 /* TermsOfServiceConfig */ = {
+			isa = PBXGroup;
+			children = (
+				EAA3A8DB2AE8B892001D1CE0 /* TermsOfServiceViewController.h */,
+				EAA3A8DC2AE8B892001D1CE0 /* TermsOfServiceViewController.m */,
+			);
+			path = TermsOfServiceConfig;
+			sourceTree = "<group>";
+		};
+		EAD4329A2ABC29ED00EEA69D /* PortkeySDKExample */ = {
+			isa = PBXGroup;
+			children = (
+				EADF94542AF3846600B07C1D /* BundleConfig */,
+				EAA3A8DA2AE8B867001D1CE0 /* TermsOfServiceConfig */,
+				EAD432A82ABC29ED00EEA69D /* PortkeySDKExample-Prefix.pch */,
+				EAD432A62ABC29ED00EEA69D /* AppDelegate.h */,
+				EAD4329E2ABC29ED00EEA69D /* AppDelegate.m */,
+				EAD4329D2ABC29ED00EEA69D /* ViewController.h */,
+				EAD432A72ABC29ED00EEA69D /* ViewController.m */,
+				EAD4329F2ABC29ED00EEA69D /* PortkeySDKExample-Info.plist */,
+				EAD4329B2ABC29ED00EEA69D /* InfoPlist.strings */,
+				EAD432A02ABC29ED00EEA69D /* LaunchScreen.storyboard */,
+				EAD432A22ABC29ED00EEA69D /* Main.storyboard */,
+				EAD432A42ABC29ED00EEA69D /* main.m */,
+				EAD432A52ABC29ED00EEA69D /* Images.xcassets */,
+			);
+			path = PortkeySDKExample;
+			sourceTree = "<group>";
+		};
+		EADF94542AF3846600B07C1D /* BundleConfig */ = {
+			isa = PBXGroup;
+			children = (
+				EADF94552AF3847F00B07C1D /* BundleConfigViewController.h */,
+				EADF94562AF3847F00B07C1D /* BundleConfigViewController.m */,
+			);
+			path = BundleConfig;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6003F589195388D20070C39A /* PortkeySDKExample_Example */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6003F5BF195388D20070C39A /* Build configuration list for PBXNativeTarget "PortkeySDKExample_Example" */;
+			buildPhases = (
+				5A46A2AF3F17544BE309AD63 /* [CP] Check Pods Manifest.lock */,
+				539169251F5D0C90B6BF8D4F /* [Expo] Configure project */,
+				6003F586195388D20070C39A /* Sources */,
+				6003F587195388D20070C39A /* Frameworks */,
+				6003F588195388D20070C39A /* Resources */,
+				6A582D2C5C7FE5B1DC95747A /* [CP] Copy Pods Resources */,
+				EAF1224A2AEA1AFE00C60025 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PortkeySDKExample_Example;
+			productName = AelfPortkey;
+			productReference = 6003F58A195388D20070C39A /* PortkeySDKExample_Example.app */;
+			productType = "com.apple.product-type.application";
+		};
+		6003F5AD195388D20070C39A /* PortkeySDKExample_Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6003F5C2195388D20070C39A /* Build configuration list for PBXNativeTarget "PortkeySDKExample_Tests" */;
+			buildPhases = (
+				7DF994007816945A3CAC8F1C /* [CP] Check Pods Manifest.lock */,
+				BF92CC8D09E3C76522815A53 /* [Expo] Configure project */,
+				6003F5AA195388D20070C39A /* Sources */,
+				6003F5AB195388D20070C39A /* Frameworks */,
+				6003F5AC195388D20070C39A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6003F5B4195388D20070C39A /* PBXTargetDependency */,
+			);
+			name = PortkeySDKExample_Tests;
+			productName = AelfPortkeyTests;
+			productReference = 6003F5AE195388D20070C39A /* PortkeySDKExample_Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6003F582195388D10070C39A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = APK;
+				LastUpgradeCheck = 0720;
+				ORGANIZATIONNAME = "wade-portkey";
+				TargetAttributes = {
+					6003F5AD195388D20070C39A = {
+						TestTargetID = 6003F589195388D20070C39A;
+					};
+				};
+			};
+			buildConfigurationList = 6003F585195388D10070C39A /* Build configuration list for PBXProject "PortkeySDKExample" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				en,
+				Base,
+			);
+			mainGroup = 6003F581195388D10070C39A;
+			productRefGroup = 6003F58B195388D20070C39A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6003F589195388D20070C39A /* PortkeySDKExample_Example */,
+				6003F5AD195388D20070C39A /* PortkeySDKExample_Tests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6003F588195388D20070C39A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EAD432AC2ABC29ED00EEA69D /* LaunchScreen.storyboard in Resources */,
+				EAD432AF2ABC29ED00EEA69D /* Images.xcassets in Resources */,
+				EAD432A92ABC29ED00EEA69D /* InfoPlist.strings in Resources */,
+				EAD432AB2ABC29ED00EEA69D /* PortkeySDKExample-Info.plist in Resources */,
+				EAD432AD2ABC29ED00EEA69D /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6003F5AC195388D20070C39A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		539169251F5D0C90B6BF8D4F /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-PortkeySDKExample_Example/expo-configure-project.sh\"\n";
+		};
+		5A46A2AF3F17544BE309AD63 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-PortkeySDKExample_Example-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6A582D2C5C7FE5B1DC95747A /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PortkeySDKExample_Example/Pods-PortkeySDKExample_Example-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleSignIn/GoogleSignIn.bundle",
+				"${PODS_ROOT}/../../ios/Assets/assets/js/assets/image/pngs/biometric.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/js/assets/image/pngs/phone.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/js/assets/image/pngs/portkeyBlackBorderRadius.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/js/assets/image/pngs/portkeyBlueBackground.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/js/assets/image/pngs/QR-code.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/js/assets/image/pngs/skeleton-email.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/js/assets/image/pngs/skeleton-referral.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/js/pages/Login/img/background.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/react-native-ratings/dist/images/airbnb-star-selected.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/react-native-ratings/dist/images/airbnb-star.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/react-native-ratings/dist/images/bell.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/react-native-ratings/dist/images/heart.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/react-native-ratings/dist/images/rocket.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/react-native-ratings/dist/images/star.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/react-native-spring-scrollview/Customize/res/arrow@2x.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/rn-teaset/icons/fail.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/rn-teaset/icons/fail@2x.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/rn-teaset/icons/fail@3x.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/rn-teaset/icons/info.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/rn-teaset/icons/info@2x.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/rn-teaset/icons/info@3x.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/rn-teaset/icons/sad.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/rn-teaset/icons/sad@2x.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/rn-teaset/icons/sad@3x.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/rn-teaset/icons/smile.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/rn-teaset/icons/smile@2x.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/rn-teaset/icons/smile@3x.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/rn-teaset/icons/stop.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/rn-teaset/icons/stop@2x.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/rn-teaset/icons/stop@3x.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/rn-teaset/icons/success.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/rn-teaset/icons/success@2x.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/node_modules/rn-teaset/icons/success@3x.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/src/assets/image/pngs/biometric.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/src/assets/image/pngs/phone.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/src/assets/image/pngs/portkeyBlackBorderRadius.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/src/assets/image/pngs/portkeyBlueBackground.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/src/assets/image/pngs/QR-code.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/src/assets/image/pngs/securityWarning.png",
+				"${PODS_ROOT}/../../ios/Assets/assets/src/pages/Login/img/background.png",
+				"${PODS_CONFIGURATION_BUILD_DIR}/PortkeySDK/JSBundle.bundle",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Entypo.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Feather.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Foundation.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Octicons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Zocial.ttf",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
+				"${PODS_ROOT}/SVProgressHUD/SVProgressHUD/SVProgressHUD.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/biometric.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/phone.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/portkeyBlackBorderRadius.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/portkeyBlueBackground.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/QR-code.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/skeleton-email.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/skeleton-referral.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/background.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/airbnb-star-selected.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/airbnb-star.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/bell.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/heart.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/rocket.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/arrow@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/fail.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/fail@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/fail@3x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/info.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/info@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/info@3x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/sad.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/sad@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/sad@3x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/smile.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/smile@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/smile@3x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/stop.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/stop@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/stop@3x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/success.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/success@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/success@3x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/securityWarning.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/JSBundle.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AntDesign.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Entypo.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EvilIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Feather.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Brands.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Regular.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Solid.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Fontisto.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Foundation.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Ionicons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MaterialCommunityIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MaterialIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Octicons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SimpleLineIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Zocial.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SVProgressHUD.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PortkeySDKExample_Example/Pods-PortkeySDKExample_Example-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7DF994007816945A3CAC8F1C /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-PortkeySDKExample_Tests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BF92CC8D09E3C76522815A53 /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-PortkeySDKExample_Tests/expo-configure-project.sh\"\n";
+		};
+		EAF1224A2AEA1AFE00C60025 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\necho \"$PWD\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6003F586195388D20070C39A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EADF94572AF3847F00B07C1D /* BundleConfigViewController.m in Sources */,
+				EAD432B02ABC29ED00EEA69D /* ViewController.m in Sources */,
+				EAD432AE2ABC29ED00EEA69D /* main.m in Sources */,
+				EAD432AA2ABC29ED00EEA69D /* AppDelegate.m in Sources */,
+				EAA3A8DD2AE8B892001D1CE0 /* TermsOfServiceViewController.m in Sources */,
+				EDE868D741F47F2FD227CA24 /* ExpoModulesProvider.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6003F5AA195388D20070C39A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6003F5BC195388D20070C39A /* Tests.m in Sources */,
+				FB9C76A798DED3DBCC764D3F /* ExpoModulesProvider.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6003F5B4195388D20070C39A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6003F589195388D20070C39A /* PortkeySDKExample_Example */;
+			targetProxy = 6003F5B3195388D20070C39A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		6003F5B8195388D20070C39A /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6003F5B9195388D20070C39A /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		EAD4329B2ABC29ED00EEA69D /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				EAD4329C2ABC29ED00EEA69D /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		EAD432A02ABC29ED00EEA69D /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				EAD432A12ABC29ED00EEA69D /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		EAD432A22ABC29ED00EEA69D /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				EAD432A32ABC29ED00EEA69D /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		6003F5BD195388D20070C39A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					" ",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(inherited)",
+					" ",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-Wl",
+					"-ld_classic",
+				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6003F5BE195388D20070C39A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION,
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					" ",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(inherited)",
+					" ",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-Wl",
+					"-ld_classic",
+				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		6003F5C0195388D20070C39A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 903BDF27E1D312AFA5748B17 /* Pods-PortkeySDKExample_Example.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = PortkeySDKExample_Example.entitlements;
+				CURRENT_PROJECT_VERSION = 7;
+				DEVELOPMENT_TEAM = 56DKXVFJS2;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PortkeySDKExample/PortkeySDKExample-Prefix.pch";
+				INFOPLIST_FILE = "PortkeySDKExample/PortkeySDKExample-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = PortkeySDK;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(LD_RUNPATH_SEARCH_PATHS_$(IS_MACCATALYST))",
+					/usr/lib/swift,
+				);
+				MARKETING_VERSION = 1.3.0;
+				MODULE_NAME = ExampleApp;
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
+				PRODUCT_BUNDLE_IDENTIFIER = com.portkey.rnsdk.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		6003F5C1195388D20070C39A /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 58B8649AAAEF2C57C9DAB9AD /* Pods-PortkeySDKExample_Example.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = PortkeySDKExample_Example.entitlements;
+				CURRENT_PROJECT_VERSION = 7;
+				DEVELOPMENT_TEAM = 56DKXVFJS2;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PortkeySDKExample/PortkeySDKExample-Prefix.pch";
+				INFOPLIST_FILE = "PortkeySDKExample/PortkeySDKExample-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = PortkeySDK;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(LD_RUNPATH_SEARCH_PATHS_$(IS_MACCATALYST))",
+					/usr/lib/swift,
+				);
+				MARKETING_VERSION = 1.3.0;
+				MODULE_NAME = ExampleApp;
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
+				PRODUCT_BUNDLE_IDENTIFIER = com.portkey.rnsdk.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		6003F5C3195388D20070C39A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 120D60A7502DCA5E5DB2F3DC /* Pods-PortkeySDKExample_Tests.debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Tests/Tests-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "Tests/Tests-Info.plist";
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PortkeySDKExample_Example.app/PortkeySDKExample_Example";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		6003F5C4195388D20070C39A /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7044B54E4BB8607B8EEC8311 /* Pods-PortkeySDKExample_Tests.release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Tests/Tests-Prefix.pch";
+				INFOPLIST_FILE = "Tests/Tests-Info.plist";
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PortkeySDKExample_Example.app/PortkeySDKExample_Example";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		6003F585195388D10070C39A /* Build configuration list for PBXProject "PortkeySDKExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6003F5BD195388D20070C39A /* Debug */,
+				6003F5BE195388D20070C39A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6003F5BF195388D20070C39A /* Build configuration list for PBXNativeTarget "PortkeySDKExample_Example" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6003F5C0195388D20070C39A /* Debug */,
+				6003F5C1195388D20070C39A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6003F5C2195388D20070C39A /* Build configuration list for PBXNativeTarget "PortkeySDKExample_Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6003F5C3195388D20070C39A /* Debug */,
+				6003F5C4195388D20070C39A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6003F582195388D10070C39A /* Project object */;
+}

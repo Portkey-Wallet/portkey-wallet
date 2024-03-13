@@ -1,0 +1,51 @@
+use_frameworks! :linkage => :static
+
+source 'https://gitee.com/mirrors/CocoaPods-Specs.git'
+
+platform :ios, '13.4'
+
+$root_path = ".."
+$node_modules = "#{$root_path}/node_modules"
+$react_native_path = "#{$node_modules}/react-native"
+
+require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
+
+require_relative "#{$node_modules}/react-native/scripts/react_native_pods"
+require_relative "#{$node_modules}/@react-native-community/cli-platform-ios/native_modules"
+
+target 'PortkeySDKExample_Example' do
+  
+  use_expo_modules!
+  post_integrate do |installer|
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+  end
+  
+  use_native_modules!
+  use_react_native!(path: $react_native_path, hermes_enabled: false)
+  
+  pod 'PortkeySDK', :path => '../'
+  
+  pod 'YYKit', git: 'https://github.com/SAGESSE-CN/YYKit.git'
+  pod 'Toast', '4.0.0'
+  pod 'SVProgressHUD'
+
+  target 'PortkeySDKExample_Tests' do
+    inherit! :search_paths
+
+    pod 'FBSnapshotTestCase'
+  end
+  
+  post_install do |installer|
+    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
+    react_native_post_install(
+      installer,
+      $react_native_path,
+      :mac_catalyst_enabled => false
+    )
+    __apply_Xcode_12_5_M1_post_install_workaround(installer)
+  end
+end

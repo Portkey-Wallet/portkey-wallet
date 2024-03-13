@@ -12,6 +12,8 @@
       "**/@react-native-**",
       "**/@react-native-**/**",
       "**/expo-**",
+      "**/expo",
+      "**/@expo/**",
       "**/@sentry/**"
     ]
   },
@@ -31,7 +33,8 @@
     "page": "yarn workspace web-page run",
     "test": "jest",
     "test-cov": "jest --coverage",
-    "test-badges": "jest --coverage && istanbul-badges-readme"
+    "test-badges": "jest --coverage && istanbul-badges-readme",
+    "app:sdk": "yarn workspace @portkey/react-native-sdk start"
   },
   "devDependencies": {
     "@babel/core": "^7.19.1",

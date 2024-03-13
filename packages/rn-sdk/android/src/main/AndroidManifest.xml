@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="finance.portkey.lib">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <application>
+        <activity
+            android:name=".components.activities.DefaultReactActivity"
+            android:launchMode="standard"
+            android:screenOrientation="portrait"
+            android:theme="@style/ReactActivityAnimation"
+            android:windowSoftInputMode="adjustNothing"
+            />
+
+        <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+
+        <service android:name="finance.portkey.aar.services.GeneralJSMethodService"/>
+        <provider
+            android:name=".PortKeyInitiator"
+            android:exported="false"
+            android:authorities="${applicationId}.MMKVInitializationProvider"
+            android:initOrder="1"/>
+    </application>
+
+</manifest>

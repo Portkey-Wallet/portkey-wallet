@@ -1,0 +1,10 @@
+query tabMenuCustom($filter: tabMenu_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String) {
+  tabMenu(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
+    index
+    status
+    title
+    type {
+      value
+    }
+  }
+}

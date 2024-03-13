@@ -1,0 +1,135 @@
+buildscript {
+    ext._kotlinVersion = rootProject.ext.has("kotlinVersion") ?  rootProject.ext.get('kotlinVersion') : '1.8.10'
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        // classpath 'com.android.tools.build:gradle:4.1.0'
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${_kotlinVersion}")
+    }
+}
+
+// plugins {
+//     id 'com.android.library'
+//     id 'org.jetbrains.kotlin.android'
+//     // id 'com.facebook.react'
+// }
+
+apply plugin: 'com.android.library'
+apply plugin: 'org.jetbrains.kotlin.android'
+
+def _ext = rootProject.ext
+def _reactNativeVersion = _ext.has('reactNative') ? _ext.reactNative : '+'
+def _compileSdkVersion = _ext.has('compileSdkVersion') ? _ext.compileSdkVersion : 30
+def _buildToolsVersion = _ext.has('buildToolsVersion') ? _ext.buildToolsVersion : '30.0.2'
+def _minSdkVersion = _ext.has('minSdkVersion') ? _ext.minSdkVersion : 21
+def _targetSdkVersion = _ext.has('targetSdkVersion') ? _ext.targetSdkVersion : 30
+def _junitVersion = _ext.has('junitVersion') ? _ext.junitVersion : '4.13.2'
+def _mockitoVersion = _ext.has('mockitoVersion') ? _ext.mockitoVersion : '3.2.0'
+def _androidTestRunnerVersion = _ext.has('androidTestRunnerVersion') ? _ext.androidTestRunnerVersion : '1.1.0'
+preBuild.doFirst {
+//    System.err.println("Build fresh bundle...")
+//    def process = (getRootProject().rootDir.path.replace("/android","") + "/script/build-android-bundle.sh").execute()
+//    process.waitForProcessOutput(System.out, System.err)
+}
+
+android {
+     namespace 'finance.portkey.lib'
+    // compileSdk 33
+    compileSdkVersion _compileSdkVersion
+    buildToolsVersion _buildToolsVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    sourceSets {
+        main {
+            java {
+                exclude 'finance/portkey/npm/**'
+            }
+        }
+    }
+    defaultConfig {
+        minSdk _minSdkVersion
+        targetSdk _targetSdkVersion
+        versionCode 1
+        versionName "1.1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11.majorVersion
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField("Boolean", "IS_DEBUG", "false")
+        }
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField("Boolean", "IS_DEBUG", "true")
+        }
+    }
+    // kotlinOptions {
+    //     jvmTarget = '1.8'
+    // }
+    // buildFeatures {
+    //     buildConfig true
+    // }
+    // packagingOptions {
+    //     pickFirst 'lib/x86_64/libreactnativejni.so'
+    //     pickFirst 'lib/armeabi-v7a/libreactnativejni.so'
+    //     pickFirst 'lib/arm64-v8a/libreactnativejni.so'
+    //     pickFirst 'lib/x86/libreactnativejni.so'
+    // }
+
+}
+repositories {
+    mavenCentral()
+}
+dependencies {
+
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
+    // Other dependencies here
+    implementation "com.facebook.react:react-android:0.72.4"
+    implementation "com.facebook.react:hermes-android:0.72.4"
+
+    api "com.google.code.gson:gson:2.8.8"
+
+    // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
+    implementation 'com.squareup.okhttp3:okhttp:4.9.2'
+    implementation 'com.squareup.okhttp3:okhttp-urlconnection:4.9.2'
+
+    // https://mvnrepository.com/artifact/com.tencent/mmkv
+    api 'com.tencent:mmkv:1.3.1'
+    implementation 'androidx.biometric:biometric-ktx:1.2.0-alpha05'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.0"
+    // implementation project(':react-native-config')
+    implementation project(path: ':expo-modules-core')
+//    implementation project(path: ':react-native-localize')
+
+}
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
+//rootProject.findProject()
+
+
+Properties properties = new Properties()
+File localProperties = project.rootProject.file('local.properties')
+if (localProperties.exists()) {
+    properties.load(localProperties.newDataInputStream())
+}
+def isNpmProduct = Boolean.parseBoolean(properties.getProperty('isPortkeyNpmProduct', 'true'))
+if (!isNpmProduct) {
+    // As an aar product, this line is required. As an npm product, developers usually already have this line under the app module, so there is no need to add this line.
+    apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle");
+    applyNativeModulesAppBuildGradle(project)
+}

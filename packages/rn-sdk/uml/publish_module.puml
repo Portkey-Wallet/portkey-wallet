@@ -1,0 +1,121 @@
+@startuml
+class Portkey {
+  -services: IServices
+  +init(config?: IConfig, theme?: ITheme) 
+  +callCaContractMethod(props: CallCaMethodProps): Promise<BaseMethodResult>
+  +getWalletInfo(): Promise<UnlockedWallet>
+  +getWalletState(): Promise<WalletState>
+  +getAssetsInfo(): Promise<AssetsState>
+  +scanQRCodeManager(): Promise<void>
+  +openActivityList(): Promise<void>
+  +openActivityDetail(props: ActivityDetailPropsType): Promise<void>
+  +settingsManager(): Promise<void>
+  +paymentSecurityManager(): Promise<void>
+  +openRampHome(toTab?: RampTabType | undefined): Promise<void>
+  +openAssetsDashboard(): Promise<void>
+  +openSendToken(props: IToSendHomeParamsType): Promise<void>
+  +guardiansManager(): Promise<void>
+  +login(): Promise<UnlockedWallet | null>
+  +exitWallet(): Promise<boolean>
+  +lockWallet(): Promise<boolean>
+  +unlockWallet(): Promise<UnlockedWallet | null>
+}
+interface IServices {
+  +accountService: IAccountService;
+  +guardianService: IGuardianService;
+  +assetsService: IAssetsService;
+  +rampService: IRampService;
+  +settingsService: ISettingsService;
+  +activityService: IActivityService;
+  +scanService: IScanService;
+  +dataService: IDataService;
+  +contractService: IContractService;
+}
+interface IAccountService {
+  +login(): Promise<UnlockedWallet | null>;
+  +exitWallet(): Promise<boolean>;
+  +lockWallet(): Promise<boolean>;
+  +unlockWallet(): Promise<UnlockedWallet | null>;
+}
+interface IAssetsService {
+  +openAssetsDashboard(): Promise<void>;
+  +openSendToken(props: IToSendHomeParamsType): Promise<void>;
+}
+interface IActivityService {
+  +openActivityList(): Promise<void>;
+  +openActivityDetail(props: ActivityDetailPropsType): Promise<void>;
+}
+interface IContractService {
+  +callCaContractMethod(props: CallCaMethodProps): Promise<BaseMethodResult>;
+}
+interface IDataService {
+  +getWalletInfo(): Promise<UnlockedWallet>;
+  +getWalletState(): Promise<WalletState>;
+  +getAssetsInfo(): Promise<AssetsState>;
+  // getNTFInfo(): Promise<any>;
+  // getActivityInfo(): Promise<any>;
+}
+interface IGuardianService {
+  +guardiansManager(): Promise<void>;
+}
+interface IRampService {
+  +openRampHome(toTab?: RampTabType): Promise<void>;
+}
+interface IScanService {
+  +scanQRCodeManager(): Promise<void>;
+}
+interface ISettingsService {
+  +settingsManager(): Promise<void>;
+  +paymentSecurityManager(): Promise<void>;
+}
+
+class BaseService {
+  -_dataService: IDataService;
+  #openFromExternal(target: PortkeyEntries, param?: any)
+  #openResultFromExternal<R>(target: PortkeyEntries, callback: (res: EntryResult<R>) => void, param?: any)
+  #async checkIsUnlocked()
+  #async checkIsLocked() 
+}
+
+interface IConfig {
+  networkConfig: NetworkConfig;
+}
+interface NetworkConfig {
+  apiUrl?: string;
+  connectUrl?: string;
+  graphQLUrl?: string;
+  networkType?: NetworkType;
+}
+interface ITheme {
+    theme: Theme;
+    appName: string;
+    navigationTheme: NavigationTheme;
+}
+note left of BaseService
+    the parent service of all services
+end note
+Portkey --> "1" IServices: services
+Portkey --> "2" IConfig: config
+Portkey --> "3" ITheme: theme
+IConfig --> NetworkConfig: networkConfig
+IServices --> "1" IAccountService: accountService
+IServices --> "2" IGuardianService: guardianService
+IServices --> "3" IAssetsService: assetsService
+IServices --> "4" IRampService: rampService
+IServices --> "5" ISettingsService: settingsService
+IServices --> "6" IActivityService: activityService
+IServices --> "7" IScanService: scanService
+IServices --> "8" IDataService: dataService
+IServices --> "9" IContractService: contractService
+
+' PortkeyAccountService ..|> IPortkeyAccountService
+' UIManagerService ..|> IPortkeyUIManagerService
+' Portkey ..|> IPortkeyAccountService
+' Portkey ..|> IPortkeyUIManagerService
+' Portkey --> PortkeyAccountService
+' Portkey --> UIManagerService
+' UIManagerService --> PortkeyAccountService  : "IoC"
+' note "Use IoC, Service can continuous iteration" as N1
+' PortkeyAccountService .. N1
+' UIManagerService .. N1
+@enduml

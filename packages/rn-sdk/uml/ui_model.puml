@@ -1,0 +1,69 @@
+@startuml model
+
+interface IBaseModel {
+    id: string
+}
+
+interface ICAInfoModel extends IBaseModel {
+  caAddress: string
+  caHash: string
+}
+
+interface IWalletModel extends IBaseModel {
+    address: number
+    mnemonic: string
+    privateKey: string
+}
+
+interface IAccountModel extends IBaseModel {
+    wallet: WalletModel
+    caInfo: CAInfoModel
+}
+
+interface ICallResult<T> extends IBaseModel {
+    status: 'success' | 'fail' | 'pending'
+    data: T
+    errorMsg: string
+}
+
+interface IMethodCallback<T> {
+    (result: CallResult<T>): void;
+}
+
+interface IBaseConfig extends IBaseModel {
+    
+}
+
+interface INetworkConfig extends IBaseConfig {
+    apiUrl: string;
+    graphqlUrl: string;
+}
+
+interface ICaContractConfig extends IBaseConfig {
+    methodName: string
+    params: any
+    isViewMethod: boolean
+}
+
+interface IGeneralContractConfig extends ICaContractConfig {
+    contractAddress?: string
+    contractName?: string
+}
+
+interface ITheme extends IBaseModel {
+    themeColor: string
+    themeFont: string
+}
+
+interface INavigationTheme extends ITheme {
+    tintColor: string
+    backImage: string
+    titleColor: string
+    titleFont: string
+}
+
+IAccountModel --> IWalletModel
+IAccountModel --> ICAInfoModel
+IMethodCallback --> ICallResult
+
+@enduml

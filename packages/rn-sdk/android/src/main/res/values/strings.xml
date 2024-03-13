@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">My-RN-Application</string>
+    <string name="build_config_package">finance.portkey.lib</string>
+</resources>

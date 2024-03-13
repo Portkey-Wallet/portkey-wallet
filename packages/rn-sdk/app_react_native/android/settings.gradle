@@ -1,0 +1,23 @@
+import org.gradle.api.initialization.resolve.RepositoriesMode
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+        maven {
+            url "../node_modules/expo-camera/android/maven"
+        }
+    }
+}
+rootProject.name = 'app_react_native'
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
+include ':app'
+includeBuild('../node_modules/@react-native/gradle-plugin')
+
+
+// mask: add expo autolink
+apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle");
+useExpoModules()
+

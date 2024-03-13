@@ -1,0 +1,36 @@
+import { Container } from 'inversify';
+import { IBaseService, IServices, TYPES } from './types';
+import { AccountService } from './services/account';
+import { IAccountService } from './types/account';
+import { IActivityService } from './types/activity';
+import { ActivityService } from './services/activity';
+import { IAssetsService } from './types/assets';
+import { AssetsService } from './services/assets';
+import { IContractService } from './types/contract';
+import { ContractService } from './services/contract';
+import { IDataService } from './types/data';
+import { DataService } from './services/data';
+import { IGuardianService } from './types/guardians';
+import { GuardiansService } from './services/guardians';
+import { IRampService } from './types/ramp';
+import { RampService } from './services/ramp';
+import { IScanService } from './types/scan';
+import { ScanService } from './services/scan';
+import { ISettingsService } from './types/settings';
+import { SettingsService } from './services/settings';
+import { BaseService, Services } from './services';
+
+const myContainer = new Container();
+myContainer.bind<IAccountService>(TYPES.AccountService).to(AccountService).inSingletonScope();
+myContainer.bind<IActivityService>(TYPES.ActivityService).to(ActivityService).inSingletonScope();
+myContainer.bind<IAssetsService>(TYPES.AssetsService).to(AssetsService).inSingletonScope();
+myContainer.bind<IContractService>(TYPES.ContractService).to(ContractService).inSingletonScope();
+myContainer.bind<IDataService>(TYPES.DataService).to(DataService).inSingletonScope();
+myContainer.bind<IGuardianService>(TYPES.GuardiansService).to(GuardiansService).inSingletonScope();
+myContainer.bind<IRampService>(TYPES.RampService).to(RampService).inSingletonScope();
+myContainer.bind<IScanService>(TYPES.ScanService).to(ScanService).inSingletonScope();
+myContainer.bind<ISettingsService>(TYPES.SettingsService).to(SettingsService).inSingletonScope();
+
+myContainer.bind<IBaseService>(TYPES.BaseService).to(BaseService).inSingletonScope();
+myContainer.bind<IServices>(TYPES.Services).to(Services).inSingletonScope();
+export { myContainer };

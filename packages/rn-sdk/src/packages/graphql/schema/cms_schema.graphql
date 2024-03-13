@@ -1,0 +1,1585 @@
+type Query {
+  bottomMenu(filter: bottomMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [bottomMenu!]!
+  bottomMenu_by_id(id: ID!): bottomMenu
+  bottomMenu_aggregated(groupBy: [String], filter: bottomMenu_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [bottomMenu_aggregated!]!
+  bottomSecondMenu(filter: bottomSecondMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [bottomSecondMenu!]!
+  bottomSecondMenu_by_id(id: ID!): bottomSecondMenu
+  bottomSecondMenu_aggregated(groupBy: [String], filter: bottomSecondMenu_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [bottomSecondMenu_aggregated!]!
+  buyButton: buyButton
+  deviceBrand(filter: deviceBrand_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [deviceBrand!]!
+  deviceBrand_by_id(id: ID!): deviceBrand
+  deviceBrand_aggregated(groupBy: [String], filter: deviceBrand_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [deviceBrand_aggregated!]!
+  deviceType(filter: deviceType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [deviceType!]!
+  deviceType_by_id(id: ID!): deviceType
+  deviceType_aggregated(groupBy: [String], filter: deviceType_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [deviceType_aggregated!]!
+  discoverGroup(filter: discoverGroup_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverGroup!]!
+  discoverGroup_by_id(id: ID!): discoverGroup
+  discoverGroup_aggregated(groupBy: [String], filter: discoverGroup_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverGroup_aggregated!]!
+  discoverItem(filter: discoverItem_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverItem!]!
+  discoverItem_by_id(id: ID!): discoverItem
+  discoverItem_aggregated(groupBy: [String], filter: discoverItem_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverItem_aggregated!]!
+  download: download
+  entrance(filter: entrance_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entrance!]!
+  entrance_by_id(id: ID!): entrance
+  entrance_aggregated(groupBy: [String], filter: entrance_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [entrance_aggregated!]!
+  entrance_entranceMatch(filter: entrance_entranceMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entrance_entranceMatch!]!
+  entrance_entranceMatch_by_id(id: ID!): entrance_entranceMatch
+  entrance_entranceMatch_aggregated(groupBy: [String], filter: entrance_entranceMatch_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [entrance_entranceMatch_aggregated!]!
+  entranceMatch(filter: entranceMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entranceMatch!]!
+  entranceMatch_by_id(id: ID!): entranceMatch
+  entranceMatch_aggregated(groupBy: [String], filter: entranceMatch_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [entranceMatch_aggregated!]!
+  entranceModuleName(filter: entranceModuleName_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entranceModuleName!]!
+  entranceModuleName_by_id(id: ID!): entranceModuleName
+  entranceModuleName_aggregated(groupBy: [String], filter: entranceModuleName_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [entranceModuleName_aggregated!]!
+  home: home
+  mediaKit(filter: mediaKit_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [mediaKit!]!
+  mediaKit_by_id(id: ID!): mediaKit
+  mediaKit_aggregated(groupBy: [String], filter: mediaKit_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [mediaKit_aggregated!]!
+  mediaKitPage: mediaKitPage
+  mediaKitPage_mediaKit(filter: mediaKitPage_mediaKit_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [mediaKitPage_mediaKit!]!
+  mediaKitPage_mediaKit_by_id(id: ID!): mediaKitPage_mediaKit
+  mediaKitPage_mediaKit_aggregated(groupBy: [String], filter: mediaKitPage_mediaKit_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [mediaKitPage_mediaKit_aggregated!]!
+  navigationType(filter: navigationType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [navigationType!]!
+  navigationType_by_id(id: ID!): navigationType
+  navigationType_aggregated(groupBy: [String], filter: navigationType_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [navigationType_aggregated!]!
+  officialSocialMedia(filter: officialSocialMedia_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [officialSocialMedia!]!
+  officialSocialMedia_by_id(id: ID!): officialSocialMedia
+  officialSocialMedia_aggregated(groupBy: [String], filter: officialSocialMedia_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [officialSocialMedia_aggregated!]!
+  rememberMeBlackListSites(filter: rememberMeBlackListSites_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [rememberMeBlackListSites!]!
+  rememberMeBlackListSites_by_id(id: ID!): rememberMeBlackListSites
+  rememberMeBlackListSites_aggregated(groupBy: [String], filter: rememberMeBlackListSites_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [rememberMeBlackListSites_aggregated!]!
+  socialMedia(filter: socialMedia_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [socialMedia!]!
+  socialMedia_by_id(id: ID!): socialMedia
+  socialMedia_aggregated(groupBy: [String], filter: socialMedia_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [socialMedia_aggregated!]!
+  tabMenu(filter: tabMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [tabMenu!]!
+  tabMenu_by_id(id: ID!): tabMenu
+  tabMenu_aggregated(groupBy: [String], filter: tabMenu_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [tabMenu_aggregated!]!
+  tabType(filter: tabType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [tabType!]!
+  tabType_by_id(id: ID!): tabType
+  tabType_aggregated(groupBy: [String], filter: tabType_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [tabType_aggregated!]!
+  topMenu(filter: topMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [topMenu!]!
+  topMenu_by_id(id: ID!): topMenu
+  topMenu_aggregated(groupBy: [String], filter: topMenu_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [topMenu_aggregated!]!
+  topSecondMenu(filter: topSecondMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [topSecondMenu!]!
+  topSecondMenu_by_id(id: ID!): topSecondMenu
+  topSecondMenu_aggregated(groupBy: [String], filter: topSecondMenu_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [topSecondMenu_aggregated!]!
+}
+
+"""The `Boolean` scalar type represents `true` or `false`."""
+scalar Boolean
+
+"""ISO8601 Date values"""
+scalar Date
+
+"""
+The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point).
+"""
+scalar Float
+
+"""BigInt value"""
+scalar GraphQLBigInt
+
+"""A Float or a String"""
+scalar GraphQLStringOrFloat
+
+"""
+The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"4"`) or integer (such as `4`) input value will be accepted as an ID.
+"""
+scalar ID
+
+"""
+The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.
+"""
+scalar Int
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+"""
+The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
+"""
+scalar String
+
+type bottomMenu {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  index: Int!
+  path: String
+  sort: Int
+  status: String
+  title: String!
+  type(filter: navigationType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): navigationType
+  user_created: String
+  user_updated: String
+  children(filter: bottomSecondMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [bottomSecondMenu]
+  children_func: count_functions
+}
+
+type bottomMenu_aggregated {
+  group: JSON
+  countAll: Int
+  count: bottomMenu_aggregated_count
+  countDistinct: bottomMenu_aggregated_count
+  avg: bottomMenu_aggregated_fields
+  sum: bottomMenu_aggregated_fields
+  avgDistinct: bottomMenu_aggregated_fields
+  sumDistinct: bottomMenu_aggregated_fields
+  min: bottomMenu_aggregated_fields
+  max: bottomMenu_aggregated_fields
+}
+
+type bottomMenu_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  index: Int
+  path: Int
+  sort: Int
+  status: Int
+  title: Int
+  type: Int
+  user_created: Int
+  user_updated: Int
+  children: Int
+}
+
+type bottomMenu_aggregated_fields {
+  id: Float
+  index: Float
+  sort: Float
+  type: Float
+}
+
+type bottomSecondMenu {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  index: Int!
+  parent(filter: bottomMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): bottomMenu
+  path: String
+  sort: Int
+  status: String
+  title: String!
+  type(filter: navigationType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): navigationType
+  user_created: String
+  user_updated: String
+}
+
+type bottomSecondMenu_aggregated {
+  group: JSON
+  countAll: Int
+  count: bottomSecondMenu_aggregated_count
+  countDistinct: bottomSecondMenu_aggregated_count
+  avg: bottomSecondMenu_aggregated_fields
+  sum: bottomSecondMenu_aggregated_fields
+  avgDistinct: bottomSecondMenu_aggregated_fields
+  sumDistinct: bottomSecondMenu_aggregated_fields
+  min: bottomSecondMenu_aggregated_fields
+  max: bottomSecondMenu_aggregated_fields
+}
+
+type bottomSecondMenu_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  index: Int
+  parent: Int
+  path: Int
+  sort: Int
+  status: Int
+  title: Int
+  type: Int
+  user_created: Int
+  user_updated: Int
+}
+
+type bottomSecondMenu_aggregated_fields {
+  id: Float
+  index: Float
+  parent: Float
+  sort: Float
+  type: Float
+}
+
+type buyButton {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  isAndroidBuyShow: Boolean
+  isAndroidSellShow: Boolean
+  isBuySectionShow: Boolean
+  isExtensionBuyShow: Boolean
+  isExtensionSellShow: Boolean
+  isIOSBuyShow: Boolean
+  isIOSSellShow: Boolean
+  isSellSectionShow: Boolean
+  status: String
+  user_created: String
+  user_updated: String
+}
+
+type count_functions {
+  count: Int
+}
+
+type datetime_functions {
+  year: Int
+  month: Int
+  week: Int
+  day: Int
+  weekday: Int
+  hour: Int
+  minute: Int
+  second: Int
+}
+
+type deviceBrand {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  label: String
+  sort: Int
+  status: String
+  user_created: String
+  user_updated: String
+  value: String
+}
+
+type deviceBrand_aggregated {
+  group: JSON
+  countAll: Int
+  count: deviceBrand_aggregated_count
+  countDistinct: deviceBrand_aggregated_count
+  avg: deviceBrand_aggregated_fields
+  sum: deviceBrand_aggregated_fields
+  avgDistinct: deviceBrand_aggregated_fields
+  sumDistinct: deviceBrand_aggregated_fields
+  min: deviceBrand_aggregated_fields
+  max: deviceBrand_aggregated_fields
+}
+
+type deviceBrand_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  label: Int
+  sort: Int
+  status: Int
+  user_created: Int
+  user_updated: Int
+  value: Int
+}
+
+type deviceBrand_aggregated_fields {
+  id: Float
+  sort: Float
+}
+
+type deviceType {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  label: String
+  sort: Int
+  status: String
+  user_created: String
+  user_updated: String
+  value: Int
+}
+
+type deviceType_aggregated {
+  group: JSON
+  countAll: Int
+  count: deviceType_aggregated_count
+  countDistinct: deviceType_aggregated_count
+  avg: deviceType_aggregated_fields
+  sum: deviceType_aggregated_fields
+  avgDistinct: deviceType_aggregated_fields
+  sumDistinct: deviceType_aggregated_fields
+  min: deviceType_aggregated_fields
+  max: deviceType_aggregated_fields
+}
+
+type deviceType_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  label: Int
+  sort: Int
+  status: Int
+  user_created: Int
+  user_updated: Int
+  value: Int
+}
+
+type deviceType_aggregated_fields {
+  id: Float
+  sort: Float
+  value: Float
+}
+
+type directus_files {
+  charset: String
+  description: String
+  duration: Int
+  embed: String
+  filename_disk: String
+  filename_download: String!
+  filesize: GraphQLBigInt
+  folder: String
+  height: Int
+  id: ID!
+  location: String
+  metadata: JSON
+  metadata_func: count_functions
+  modified_by: String
+  modified_on: Date
+  modified_on_func: datetime_functions
+  storage: String!
+  tags: JSON
+  tags_func: count_functions
+  title: String
+  type: String
+  uploaded_by: String
+  uploaded_on: Date
+  uploaded_on_func: datetime_functions
+  width: Int
+}
+
+type discoverGroup {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  index: Int
+  sort: Int
+  status: String
+  title: String
+  user_created: String
+  user_updated: String
+  items(filter: discoverItem_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverItem]
+  items_func: count_functions
+}
+
+type discoverGroup_aggregated {
+  group: JSON
+  countAll: Int
+  count: discoverGroup_aggregated_count
+  countDistinct: discoverGroup_aggregated_count
+  avg: discoverGroup_aggregated_fields
+  sum: discoverGroup_aggregated_fields
+  avgDistinct: discoverGroup_aggregated_fields
+  sumDistinct: discoverGroup_aggregated_fields
+  min: discoverGroup_aggregated_fields
+  max: discoverGroup_aggregated_fields
+}
+
+type discoverGroup_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  index: Int
+  sort: Int
+  status: Int
+  title: Int
+  user_created: Int
+  user_updated: Int
+  items: Int
+}
+
+type discoverGroup_aggregated_fields {
+  id: Float
+  index: Float
+  sort: Float
+}
+
+type discoverItem {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  description: String
+  group(filter: discoverGroup_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): discoverGroup
+  id: ID!
+  imgUrl(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  index: Int
+  sort: Int
+  status: String
+  title: String
+  url: String
+  user_created: String
+  user_updated: String
+}
+
+type discoverItem_aggregated {
+  group: JSON
+  countAll: Int
+  count: discoverItem_aggregated_count
+  countDistinct: discoverItem_aggregated_count
+  avg: discoverItem_aggregated_fields
+  sum: discoverItem_aggregated_fields
+  avgDistinct: discoverItem_aggregated_fields
+  sumDistinct: discoverItem_aggregated_fields
+  min: discoverItem_aggregated_fields
+  max: discoverItem_aggregated_fields
+}
+
+type discoverItem_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  description: Int
+  group: Int
+  id: Int
+
+  """Not support svg"""
+  imgUrl: Int
+  index: Int
+  sort: Int
+  status: Int
+  title: Int
+  url: Int
+  user_created: Int
+  user_updated: Int
+}
+
+type discoverItem_aggregated_fields {
+  group: Float
+  id: Float
+  index: Float
+  sort: Float
+}
+
+type download {
+  androidDownloadUrl: String
+  androidProductImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  androidQRCode(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  date_updated: Date
+  date_updated_func: datetime_functions
+  extensionDownloadUrl: String
+  extensionProductImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  id: ID!
+  iosDownloadUrl: String
+  iosProductImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  iosQRCode(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  user_updated: String
+}
+
+type entrance {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  defaultSwitch: Boolean
+  id: ID!
+  moduleName(filter: entranceModuleName_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): entranceModuleName
+  user_created: String
+  user_updated: String
+  matchList(filter: entrance_entranceMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entrance_entranceMatch]
+  matchList_func: count_functions
+}
+
+type entrance_aggregated {
+  group: JSON
+  countAll: Int
+  count: entrance_aggregated_count
+  countDistinct: entrance_aggregated_count
+  avg: entrance_aggregated_fields
+  sum: entrance_aggregated_fields
+  avgDistinct: entrance_aggregated_fields
+  sumDistinct: entrance_aggregated_fields
+  min: entrance_aggregated_fields
+  max: entrance_aggregated_fields
+}
+
+type entrance_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  defaultSwitch: Int
+  id: Int
+  moduleName: Int
+  user_created: Int
+  user_updated: Int
+  matchList: Int
+}
+
+type entrance_aggregated_fields {
+  id: Float
+  moduleName: Float
+}
+
+type entrance_entranceMatch {
+  entrance_id(filter: entrance_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): entrance
+  entranceMatch_id(filter: entranceMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): entranceMatch
+  id: ID!
+}
+
+type entrance_entranceMatch_aggregated {
+  group: JSON
+  countAll: Int
+  count: entrance_entranceMatch_aggregated_count
+  countDistinct: entrance_entranceMatch_aggregated_count
+  avg: entrance_entranceMatch_aggregated_fields
+  sum: entrance_entranceMatch_aggregated_fields
+  avgDistinct: entrance_entranceMatch_aggregated_fields
+  sumDistinct: entrance_entranceMatch_aggregated_fields
+  min: entrance_entranceMatch_aggregated_fields
+  max: entrance_entranceMatch_aggregated_fields
+}
+
+type entrance_entranceMatch_aggregated_count {
+  entrance_id: Int
+  entranceMatch_id: Int
+  id: Int
+}
+
+type entrance_entranceMatch_aggregated_fields {
+  entrance_id: Float
+  entranceMatch_id: Float
+  id: Float
+}
+
+type entranceMatch {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  description: String
+  id: ID!
+  matchRuleList: JSON
+  matchRuleList_func: count_functions
+  matchSwitch: Boolean
+  status: String
+  user_created: String
+  user_updated: String
+  weight: Int
+}
+
+type entranceMatch_aggregated {
+  group: JSON
+  countAll: Int
+  count: entranceMatch_aggregated_count
+  countDistinct: entranceMatch_aggregated_count
+  avg: entranceMatch_aggregated_fields
+  sum: entranceMatch_aggregated_fields
+  avgDistinct: entranceMatch_aggregated_fields
+  sumDistinct: entranceMatch_aggregated_fields
+  min: entranceMatch_aggregated_fields
+  max: entranceMatch_aggregated_fields
+}
+
+type entranceMatch_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  description: Int
+  id: Int
+  matchRuleList: Int
+  matchSwitch: Int
+  status: Int
+  user_created: Int
+  user_updated: Int
+  weight: Int
+}
+
+type entranceMatch_aggregated_fields {
+  id: Float
+  weight: Float
+}
+
+type entranceModuleName {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  description: String
+  id: ID!
+  user_created: String
+  user_updated: String
+  value: String
+}
+
+type entranceModuleName_aggregated {
+  group: JSON
+  countAll: Int
+  count: entranceModuleName_aggregated_count
+  countDistinct: entranceModuleName_aggregated_count
+  avg: entranceModuleName_aggregated_fields
+  sum: entranceModuleName_aggregated_fields
+  avgDistinct: entranceModuleName_aggregated_fields
+  sumDistinct: entranceModuleName_aggregated_fields
+  min: entranceModuleName_aggregated_fields
+  max: entranceModuleName_aggregated_fields
+}
+
+type entranceModuleName_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  description: Int
+  id: Int
+  user_created: Int
+  user_updated: Int
+  value: Int
+}
+
+type entranceModuleName_aggregated_fields {
+  id: Float
+}
+
+type home {
+  date_updated: Date
+  date_updated_func: datetime_functions
+  focusImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  id: ID!
+  user_updated: String
+}
+
+type mediaKit {
+  backgroundColor: String
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  index: Int
+  name: String!
+  png(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  sort: Int
+  status: String
+  svg(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  user_created: String
+  user_updated: String
+}
+
+type mediaKit_aggregated {
+  group: JSON
+  countAll: Int
+  count: mediaKit_aggregated_count
+  countDistinct: mediaKit_aggregated_count
+  avg: mediaKit_aggregated_fields
+  sum: mediaKit_aggregated_fields
+  avgDistinct: mediaKit_aggregated_fields
+  sumDistinct: mediaKit_aggregated_fields
+  min: mediaKit_aggregated_fields
+  max: mediaKit_aggregated_fields
+}
+
+type mediaKit_aggregated_count {
+  backgroundColor: Int
+  date_created: Int
+  date_updated: Int
+  id: Int
+  index: Int
+  name: Int
+  png: Int
+  sort: Int
+  status: Int
+  svg: Int
+  user_created: Int
+  user_updated: Int
+}
+
+type mediaKit_aggregated_fields {
+  id: Float
+  index: Float
+  sort: Float
+}
+
+type mediaKitPage {
+  allMediaKitZip(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  content: String!
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  status: String
+  title: String!
+  user_created: String
+  user_updated: String
+  mediaKitList(filter: mediaKitPage_mediaKit_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [mediaKitPage_mediaKit]
+  mediaKitList_func: count_functions
+}
+
+type mediaKitPage_mediaKit {
+  id: ID!
+  mediaKit_id(filter: mediaKit_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): mediaKit
+  mediaKitPage_id(filter: mediaKitPage_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): mediaKitPage
+}
+
+type mediaKitPage_mediaKit_aggregated {
+  group: JSON
+  countAll: Int
+  count: mediaKitPage_mediaKit_aggregated_count
+  countDistinct: mediaKitPage_mediaKit_aggregated_count
+  avg: mediaKitPage_mediaKit_aggregated_fields
+  sum: mediaKitPage_mediaKit_aggregated_fields
+  avgDistinct: mediaKitPage_mediaKit_aggregated_fields
+  sumDistinct: mediaKitPage_mediaKit_aggregated_fields
+  min: mediaKitPage_mediaKit_aggregated_fields
+  max: mediaKitPage_mediaKit_aggregated_fields
+}
+
+type mediaKitPage_mediaKit_aggregated_count {
+  id: Int
+  mediaKit_id: Int
+  mediaKitPage_id: Int
+}
+
+type mediaKitPage_mediaKit_aggregated_fields {
+  id: Float
+  mediaKit_id: Float
+  mediaKitPage_id: Float
+}
+
+type navigationType {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  description: String
+  id: ID!
+  sort: Int
+  status: String
+  user_created: String
+  user_updated: String
+  value: Int
+}
+
+type navigationType_aggregated {
+  group: JSON
+  countAll: Int
+  count: navigationType_aggregated_count
+  countDistinct: navigationType_aggregated_count
+  avg: navigationType_aggregated_fields
+  sum: navigationType_aggregated_fields
+  avgDistinct: navigationType_aggregated_fields
+  sumDistinct: navigationType_aggregated_fields
+  min: navigationType_aggregated_fields
+  max: navigationType_aggregated_fields
+}
+
+type navigationType_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  description: Int
+  id: Int
+  sort: Int
+  status: Int
+  user_created: Int
+  user_updated: Int
+  value: Int
+}
+
+type navigationType_aggregated_fields {
+  id: Float
+  sort: Float
+  value: Float
+}
+
+type officialSocialMedia {
+  activeSvg(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  index: Int!
+  link: String!
+  name: String!
+  sort: Int
+  status: String
+  svg(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  user_created: String
+  user_updated: String
+}
+
+type officialSocialMedia_aggregated {
+  group: JSON
+  countAll: Int
+  count: officialSocialMedia_aggregated_count
+  countDistinct: officialSocialMedia_aggregated_count
+  avg: officialSocialMedia_aggregated_fields
+  sum: officialSocialMedia_aggregated_fields
+  avgDistinct: officialSocialMedia_aggregated_fields
+  sumDistinct: officialSocialMedia_aggregated_fields
+  min: officialSocialMedia_aggregated_fields
+  max: officialSocialMedia_aggregated_fields
+}
+
+type officialSocialMedia_aggregated_count {
+  activeSvg: Int
+  date_created: Int
+  date_updated: Int
+  id: Int
+  index: Int
+  link: Int
+  name: Int
+  sort: Int
+  status: Int
+  svg: Int
+  user_created: Int
+  user_updated: Int
+}
+
+type officialSocialMedia_aggregated_fields {
+  id: Float
+  index: Float
+  sort: Float
+}
+
+type rememberMeBlackListSites {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  name: String
+  sort: Int
+  status: String
+  url: String
+  user_created: String
+  user_updated: String
+}
+
+type rememberMeBlackListSites_aggregated {
+  group: JSON
+  countAll: Int
+  count: rememberMeBlackListSites_aggregated_count
+  countDistinct: rememberMeBlackListSites_aggregated_count
+  avg: rememberMeBlackListSites_aggregated_fields
+  sum: rememberMeBlackListSites_aggregated_fields
+  avgDistinct: rememberMeBlackListSites_aggregated_fields
+  sumDistinct: rememberMeBlackListSites_aggregated_fields
+  min: rememberMeBlackListSites_aggregated_fields
+  max: rememberMeBlackListSites_aggregated_fields
+}
+
+type rememberMeBlackListSites_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  name: Int
+  sort: Int
+  status: Int
+  url: Int
+  user_created: Int
+  user_updated: Int
+}
+
+type rememberMeBlackListSites_aggregated_fields {
+  id: Float
+  sort: Float
+}
+
+type socialMedia {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  index: Int
+  link: String
+  sort: Int
+  status: String
+  svgUrl(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  title: String
+  user_created: String
+  user_updated: String
+}
+
+type socialMedia_aggregated {
+  group: JSON
+  countAll: Int
+  count: socialMedia_aggregated_count
+  countDistinct: socialMedia_aggregated_count
+  avg: socialMedia_aggregated_fields
+  sum: socialMedia_aggregated_fields
+  avgDistinct: socialMedia_aggregated_fields
+  sumDistinct: socialMedia_aggregated_fields
+  min: socialMedia_aggregated_fields
+  max: socialMedia_aggregated_fields
+}
+
+type socialMedia_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  index: Int
+  link: Int
+  sort: Int
+  status: Int
+
+  """Only support svg"""
+  svgUrl: Int
+  title: Int
+  user_created: Int
+  user_updated: Int
+}
+
+type socialMedia_aggregated_fields {
+  id: Float
+  index: Float
+  sort: Float
+}
+
+type tabMenu {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  index: Int
+  sort: Int
+  status: String
+  title: String
+  type(filter: tabType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): tabType
+  user_created: String
+  user_updated: String
+}
+
+type tabMenu_aggregated {
+  group: JSON
+  countAll: Int
+  count: tabMenu_aggregated_count
+  countDistinct: tabMenu_aggregated_count
+  avg: tabMenu_aggregated_fields
+  sum: tabMenu_aggregated_fields
+  avgDistinct: tabMenu_aggregated_fields
+  sumDistinct: tabMenu_aggregated_fields
+  min: tabMenu_aggregated_fields
+  max: tabMenu_aggregated_fields
+}
+
+type tabMenu_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  index: Int
+  sort: Int
+  status: Int
+  title: Int
+  type: Int
+  user_created: Int
+  user_updated: Int
+}
+
+type tabMenu_aggregated_fields {
+  id: Float
+  index: Float
+  sort: Float
+  type: Float
+}
+
+type tabType {
+  attribute: String
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  sort: Int
+  status: String
+  user_created: String
+  user_updated: String
+  value: String
+}
+
+type tabType_aggregated {
+  group: JSON
+  countAll: Int
+  count: tabType_aggregated_count
+  countDistinct: tabType_aggregated_count
+  avg: tabType_aggregated_fields
+  sum: tabType_aggregated_fields
+  avgDistinct: tabType_aggregated_fields
+  sumDistinct: tabType_aggregated_fields
+  min: tabType_aggregated_fields
+  max: tabType_aggregated_fields
+}
+
+type tabType_aggregated_count {
+  attribute: Int
+  date_created: Int
+  date_updated: Int
+  id: Int
+  sort: Int
+  status: Int
+  user_created: Int
+  user_updated: Int
+  value: Int
+}
+
+type tabType_aggregated_fields {
+  id: Float
+  sort: Float
+}
+
+type topMenu {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  index: Int!
+  path: String
+  sort: Int
+  status: String
+  title: String!
+  type(filter: navigationType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): navigationType
+  user_created: String
+  user_updated: String
+  children(filter: topSecondMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [topSecondMenu]
+  children_func: count_functions
+}
+
+type topMenu_aggregated {
+  group: JSON
+  countAll: Int
+  count: topMenu_aggregated_count
+  countDistinct: topMenu_aggregated_count
+  avg: topMenu_aggregated_fields
+  sum: topMenu_aggregated_fields
+  avgDistinct: topMenu_aggregated_fields
+  sumDistinct: topMenu_aggregated_fields
+  min: topMenu_aggregated_fields
+  max: topMenu_aggregated_fields
+}
+
+type topMenu_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  index: Int
+  path: Int
+  sort: Int
+  status: Int
+  title: Int
+  type: Int
+  user_created: Int
+  user_updated: Int
+  children: Int
+}
+
+type topMenu_aggregated_fields {
+  id: Float
+  index: Float
+  sort: Float
+  type: Float
+}
+
+type topSecondMenu {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  index: Int!
+  parent(filter: topMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): topMenu
+  path: String
+  sort: Int
+  status: String
+  title: String!
+  type(filter: navigationType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): navigationType
+  user_created: String
+  user_updated: String
+}
+
+type topSecondMenu_aggregated {
+  group: JSON
+  countAll: Int
+  count: topSecondMenu_aggregated_count
+  countDistinct: topSecondMenu_aggregated_count
+  avg: topSecondMenu_aggregated_fields
+  sum: topSecondMenu_aggregated_fields
+  avgDistinct: topSecondMenu_aggregated_fields
+  sumDistinct: topSecondMenu_aggregated_fields
+  min: topSecondMenu_aggregated_fields
+  max: topSecondMenu_aggregated_fields
+}
+
+type topSecondMenu_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  index: Int
+  parent: Int
+  path: Int
+  sort: Int
+  status: Int
+  title: Int
+  type: Int
+  user_created: Int
+  user_updated: Int
+}
+
+type topSecondMenu_aggregated_fields {
+  id: Float
+  index: Float
+  parent: Float
+  sort: Float
+  type: Float
+}
+
+input boolean_filter_operators {
+  _eq: Boolean
+  _neq: Boolean
+  _null: Boolean
+  _nnull: Boolean
+}
+
+input bottomMenu_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  index: number_filter_operators
+  path: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  type: navigationType_filter
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  children: bottomSecondMenu_filter
+  children_func: count_function_filter_operators
+  _and: [bottomMenu_filter]
+  _or: [bottomMenu_filter]
+}
+
+input bottomSecondMenu_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  index: number_filter_operators
+  parent: bottomMenu_filter
+  path: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  type: navigationType_filter
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  _and: [bottomSecondMenu_filter]
+  _or: [bottomSecondMenu_filter]
+}
+
+input count_function_filter_operators {
+  count: number_filter_operators
+}
+
+input date_filter_operators {
+  _eq: String
+  _neq: String
+  _gt: String
+  _gte: String
+  _lt: String
+  _lte: String
+  _null: Boolean
+  _nnull: Boolean
+  _in: [String]
+  _nin: [String]
+  _between: [GraphQLStringOrFloat]
+  _nbetween: [GraphQLStringOrFloat]
+}
+
+input datetime_function_filter_operators {
+  year: number_filter_operators
+  month: number_filter_operators
+  week: number_filter_operators
+  day: number_filter_operators
+  weekday: number_filter_operators
+  hour: number_filter_operators
+  minute: number_filter_operators
+  second: number_filter_operators
+}
+
+input deviceBrand_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  label: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  value: string_filter_operators
+  _and: [deviceBrand_filter]
+  _or: [deviceBrand_filter]
+}
+
+input deviceType_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  label: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  value: number_filter_operators
+  _and: [deviceType_filter]
+  _or: [deviceType_filter]
+}
+
+input directus_files_filter {
+  charset: string_filter_operators
+  description: string_filter_operators
+  duration: number_filter_operators
+  embed: string_filter_operators
+  filename_disk: string_filter_operators
+  filename_download: string_filter_operators
+  filesize: number_filter_operators
+  folder: string_filter_operators
+  height: number_filter_operators
+  id: string_filter_operators
+  location: string_filter_operators
+  metadata: string_filter_operators
+  metadata_func: count_function_filter_operators
+  modified_by: string_filter_operators
+  modified_on: date_filter_operators
+  modified_on_func: datetime_function_filter_operators
+  storage: string_filter_operators
+  tags: string_filter_operators
+  tags_func: count_function_filter_operators
+  title: string_filter_operators
+  type: string_filter_operators
+  uploaded_by: string_filter_operators
+  uploaded_on: date_filter_operators
+  uploaded_on_func: datetime_function_filter_operators
+  width: number_filter_operators
+  _and: [directus_files_filter]
+  _or: [directus_files_filter]
+}
+
+input discoverGroup_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  index: number_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  items: discoverItem_filter
+  items_func: count_function_filter_operators
+  _and: [discoverGroup_filter]
+  _or: [discoverGroup_filter]
+}
+
+input discoverItem_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  description: string_filter_operators
+  group: discoverGroup_filter
+  id: number_filter_operators
+  imgUrl: directus_files_filter
+  index: number_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  url: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  _and: [discoverItem_filter]
+  _or: [discoverItem_filter]
+}
+
+input entrance_entranceMatch_filter {
+  entrance_id: entrance_filter
+  entranceMatch_id: entranceMatch_filter
+  id: number_filter_operators
+  _and: [entrance_entranceMatch_filter]
+  _or: [entrance_entranceMatch_filter]
+}
+
+input entrance_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  defaultSwitch: boolean_filter_operators
+  id: number_filter_operators
+  moduleName: entranceModuleName_filter
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  matchList: entrance_entranceMatch_filter
+  matchList_func: count_function_filter_operators
+  _and: [entrance_filter]
+  _or: [entrance_filter]
+}
+
+input entranceMatch_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  description: string_filter_operators
+  id: number_filter_operators
+  matchRuleList: string_filter_operators
+  matchRuleList_func: count_function_filter_operators
+  matchSwitch: boolean_filter_operators
+  status: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  weight: number_filter_operators
+  _and: [entranceMatch_filter]
+  _or: [entranceMatch_filter]
+}
+
+input entranceModuleName_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  description: string_filter_operators
+  id: number_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  value: string_filter_operators
+  _and: [entranceModuleName_filter]
+  _or: [entranceModuleName_filter]
+}
+
+input mediaKit_filter {
+  backgroundColor: string_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  index: number_filter_operators
+  name: string_filter_operators
+  png: directus_files_filter
+  sort: number_filter_operators
+  status: string_filter_operators
+  svg: directus_files_filter
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  _and: [mediaKit_filter]
+  _or: [mediaKit_filter]
+}
+
+input mediaKitPage_filter {
+  allMediaKitZip: directus_files_filter
+  content: string_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  mediaKitList: mediaKitPage_mediaKit_filter
+  mediaKitList_func: count_function_filter_operators
+  _and: [mediaKitPage_filter]
+  _or: [mediaKitPage_filter]
+}
+
+input mediaKitPage_mediaKit_filter {
+  id: number_filter_operators
+  mediaKit_id: mediaKit_filter
+  mediaKitPage_id: mediaKitPage_filter
+  _and: [mediaKitPage_mediaKit_filter]
+  _or: [mediaKitPage_mediaKit_filter]
+}
+
+input navigationType_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  description: string_filter_operators
+  id: number_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  value: number_filter_operators
+  _and: [navigationType_filter]
+  _or: [navigationType_filter]
+}
+
+input number_filter_operators {
+  _eq: GraphQLStringOrFloat
+  _neq: GraphQLStringOrFloat
+  _in: [GraphQLStringOrFloat]
+  _nin: [GraphQLStringOrFloat]
+  _gt: GraphQLStringOrFloat
+  _gte: GraphQLStringOrFloat
+  _lt: GraphQLStringOrFloat
+  _lte: GraphQLStringOrFloat
+  _null: Boolean
+  _nnull: Boolean
+  _between: [GraphQLStringOrFloat]
+  _nbetween: [GraphQLStringOrFloat]
+}
+
+input officialSocialMedia_filter {
+  activeSvg: directus_files_filter
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  index: number_filter_operators
+  link: string_filter_operators
+  name: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  svg: directus_files_filter
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  _and: [officialSocialMedia_filter]
+  _or: [officialSocialMedia_filter]
+}
+
+input rememberMeBlackListSites_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  name: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  url: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  _and: [rememberMeBlackListSites_filter]
+  _or: [rememberMeBlackListSites_filter]
+}
+
+input socialMedia_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  index: number_filter_operators
+  link: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  svgUrl: directus_files_filter
+  title: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  _and: [socialMedia_filter]
+  _or: [socialMedia_filter]
+}
+
+input string_filter_operators {
+  _eq: String
+  _neq: String
+  _contains: String
+  _icontains: String
+  _ncontains: String
+  _starts_with: String
+  _nstarts_with: String
+  _ends_with: String
+  _nends_with: String
+  _in: [String]
+  _nin: [String]
+  _null: Boolean
+  _nnull: Boolean
+  _empty: Boolean
+  _nempty: Boolean
+}
+
+input tabMenu_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  index: number_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  type: tabType_filter
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  _and: [tabMenu_filter]
+  _or: [tabMenu_filter]
+}
+
+input tabType_filter {
+  attribute: string_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  value: string_filter_operators
+  _and: [tabType_filter]
+  _or: [tabType_filter]
+}
+
+input topMenu_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  index: number_filter_operators
+  path: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  type: navigationType_filter
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  children: topSecondMenu_filter
+  children_func: count_function_filter_operators
+  _and: [topMenu_filter]
+  _or: [topMenu_filter]
+}
+
+input topSecondMenu_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  index: number_filter_operators
+  parent: topMenu_filter
+  path: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  type: navigationType_filter
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  _and: [topSecondMenu_filter]
+  _or: [topSecondMenu_filter]
+}

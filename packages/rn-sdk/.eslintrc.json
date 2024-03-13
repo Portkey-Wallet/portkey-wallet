@@ -1,0 +1,35 @@
+{
+  "root": true,
+  "extends": [
+    "@react-native-community",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "eslint-config-prettier",
+    "plugin:prettier/recommended",
+    "prettier"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "@react-native-community"],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "rules": {
+        "@typescript-eslint/no-shadow": ["error"],
+        "no-shadow": "off",
+        "no-undef": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "no-empty": "off",
+        "eslint-comments/no-unused-disable": "off",
+        "eslint-comments/no-unlimited-disable": "off",
+        "@typescript-eslint/no-empty-interface": "off"
+      }
+    }
+  ]
+}

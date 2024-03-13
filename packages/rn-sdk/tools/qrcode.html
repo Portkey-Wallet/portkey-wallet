@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate QR Code</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="center-align">Generate QR Code</h1>
+        <div class="row">
+            <div class="input-field col s12">
+                <input type="text" id="entryInput" placeholder="Input the value of entry">
+                <label for="entryInput">Page Name</label>
+            </div>
+        </div>
+        <div id="parameterGroups"></div>
+        <div class="row">
+            <div class="col s12">
+                <button class="waves-effect waves-light btn" onclick="addParameterGroup()"><i class="material-icons left">add</i>Add parameter group</button>
+                <button class="waves-effect waves-light btn" onclick="generateQRCode()"><i class="material-icons left">qr_code</i>Generate QR Code</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12 center-align">
+                <div id="qrcode"></div>
+            </div>
+        </div>
+    </div>
+</body>
+ <script>
+  // use https://obfuscator.io/#code to  obscure the js code
+        var parameterGroups = []; // store params array
+
+         function addParameterGroup() {
+            var parameterGroup = document.createElement("div");
+            parameterGroup.className = "row";
+
+            var keyInput = document.createElement("div");
+            keyInput.className = "input-field col s5";
+            var keyId = "keyInput_" + parameterGroups.length;
+            keyInput.innerHTML = '<input type="text" id="' + keyId + '" class="validate"><label for="' + keyId + '">Input parameters key</label>';
+            parameterGroup.appendChild(keyInput);
+
+            var valueInput = document.createElement("div");
+            valueInput.className = "input-field col s5";
+            var valueId = "valueInput_" + parameterGroups.length;
+            valueInput.innerHTML = '<input type="text" id="' + valueId + '" class="validate"><label for="' + valueId + '">Input parameter value</label>';
+            parameterGroup.appendChild(valueInput);
+
+            var removeButton = document.createElement("div");
+            removeButton.className = "col s2";
+            removeButton.innerHTML = '<button class="waves-effect waves-light btn red" onclick="removeParameterGroup(' + parameterGroups.length + ')"><i class="material-icons">remove</i></button>';
+            parameterGroup.appendChild(removeButton);
+
+            document.getElementById("parameterGroups").appendChild(parameterGroup);
+
+            parameterGroups.push(parameterGroup);
+        }
+
+        function removeParameterGroup(index) {
+            var parameterGroup = parameterGroups[index];
+            parameterGroup.remove();
+            parameterGroups.splice(index, 1);
+        }
+
+       function generateQRCode() {
+    var entry = document.getElementById("entryInput").value;
+    var pre = 'portkey://www.portkey.com/rn?'
+    var url = pre + "entry=" + entry;
+    for (var i = 0; i < parameterGroups.length; i++) {
+        var keyInput = parameterGroups[i].querySelector("input[type='text']:nth-of-type(1)");
+        var valueInput = parameterGroups[i].children[1].querySelector("input[type='text']");
+;
+        if (keyInput && valueInput) {
+
+            var key = keyInput.value;
+            var value = valueInput.value;
+
+            if (key && value) {
+                url += "&" + key + "=" + value;
+            }
+        }
+    }
+    console.log('url:', url);
+    // generate QR Code
+    var typeNumber = 0;
+    var errorCorrectionLevel = 'H';
+    var qr = qrcode(typeNumber, errorCorrectionLevel);
+    qr.addData(url);
+    qr.make();
+    document.getElementById('qrcode').innerHTML = qr.createImgTag(6);
+}
+    </script>
+</html>

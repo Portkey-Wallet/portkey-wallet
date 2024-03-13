@@ -41,3 +41,4 @@ export default {
     config: { method: 'GET' },
   },
 } as const;
+console.log('test!');

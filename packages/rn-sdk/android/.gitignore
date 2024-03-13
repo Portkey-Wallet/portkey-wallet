@@ -1,0 +1,5 @@
+build/
+.gradle
+src/main/assets/index.android.bundle
+src/main/res/drawable-*/node_modules_*
+src/main/res/drawable-*/src_*

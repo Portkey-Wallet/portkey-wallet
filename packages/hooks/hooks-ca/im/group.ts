@@ -217,7 +217,7 @@ export const useGroupChannelInfo = (channelId: string, isInit = false) => {
   const isAdmin = useMemo(() => {
     if (!groupInfo || !relationId) return false;
     if (groupInfo.type !== ChannelTypeEnum.GROUP) return false;
-    const adminMember = groupInfo.members[0];
+    const adminMember = groupInfo?.memberInfos?.members[0];
     return adminMember && adminMember.relationId === relationId;
   }, [groupInfo, relationId]);
 

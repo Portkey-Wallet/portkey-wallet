@@ -30,7 +30,8 @@ const GroupInfoPage = () => {
 
   const currentChannelId = useCurrentChannelId();
   const { groupInfo, isAdmin, refresh } = useGroupChannelInfo(currentChannelId || '', false);
-  const { members } = groupInfo || {};
+  const { memberInfos } = groupInfo || {};
+  const { members = [], totalCount } = memberInfos || {};
   const leaveGroup = useLeaveChannel();
 
   const inviteLink = useMemo(() => `${LinkPortkeyPath.addGroup}${currentChannelId || ''}`, [currentChannelId]);
@@ -119,8 +120,8 @@ const GroupInfoPage = () => {
           <TextXXXL numberOfLines={1} style={[GStyles.marginTop(pTd(8)), GStyles.paddingArg(0, pTd(20))]}>
             {groupInfo?.name}
           </TextXXXL>
-          <TextM style={[GStyles.marginTop(pTd(4)), FontStyles.font7]}>{`${groupInfo?.members?.length || 0} member${
-            groupInfo?.members.length && groupInfo?.members.length > 1 ? 's' : ''
+          <TextM style={[GStyles.marginTop(pTd(4)), FontStyles.font7]}>{`${totalCount} member${
+            totalCount && totalCount > 1 ? 's' : ''
           }`}</TextM>
         </View>
 

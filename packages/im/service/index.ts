@@ -52,6 +52,8 @@ import {
   UnPinParams,
   GetPinListResult,
   UnPinAllParams,
+  SearchChannelMembersParams,
+  SearchChannelMembersResult,
 } from '../types/service';
 import { ChannelInfo, ChannelMemberInfo, Message, MessageCount, RedPackageConfigType } from '../types';
 import { sleep } from '@portkey-wallet/utils';
@@ -146,7 +148,14 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
   }
   getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<ChannelInfo> {
     return this._request.send({
-      url: '/api/v1/channelContacts/channelDetailInfo',
+      url: '/api/v2/channelContacts/channelDetailInfo',
+      params,
+      method: 'GET',
+    });
+  }
+  searchChannelMembers(params: SearchChannelMembersParams): IMServiceCommon<SearchChannelMembersResult> {
+    return this._request.send({
+      url: '/api/v1/channelContacts/searchMembers',
       params,
       method: 'GET',
     });

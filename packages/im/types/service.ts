@@ -108,6 +108,15 @@ export type SendMessageResult = {
   channelUuid: string;
 };
 
+export type SearchChannelMembersParams = {
+  channelUuid?: string;
+  keyword?: string;
+  skipCount?: number;
+  maxResultCount?: number;
+};
+
+export type SearchChannelMembersResult = { members: ChannelMemberInfo[]; totalCount: number };
+
 export type ReadMessageParams = {
   channelUuid: string;
   total: number;
@@ -346,6 +355,8 @@ export interface IIMService {
   createChannel(params: CreateChannelParams): IMServiceCommon<CreateChannelResult>;
   getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<ChannelInfo>;
   getChannelMembers(params: GetChannelMembersParams): IMServiceCommon<ChannelMemberInfo[]>;
+
+  searchChannelMembers(params: SearchChannelMembersParams): IMServiceCommon<SearchChannelMembersResult>;
 
   sendMessage(params: SendMessageParams): IMServiceCommon<SendMessageResult>;
   readMessage(params: ReadMessageParams): IMServiceCommon<number>;

@@ -108,13 +108,17 @@ export default function NFTItem(props: NFTItemPropsType) {
         <View style={[styles.listWrap]}>
           {showChildren?.map((ele: any, index: number) => (
             <NFTAvatar
+              showNftDetailInfo
+              isSeed={ele.isSeed}
+              seedType={ele.seedType}
+              badgeSizeType="normal"
+              key={ele.symbol}
+              data={ele}
               style={[
                 styles.itemAvatarStyle,
                 index < 3 ? styles.marginTop0 : {},
                 index % 3 === 2 ? styles.marginRight0 : {},
               ]}
-              key={ele.symbol}
-              data={ele}
               onPress={() => {
                 navigationService.navigate('NFTDetail', { ...ele, collectionInfo: { imageUrl, collectionName } });
               }}
@@ -179,6 +183,7 @@ const styles = StyleSheet.create({
   itemAvatarStyle: {
     marginRight: pTd(8) - StyleSheet.hairlineWidth,
     marginTop: pTd(8),
+    backgroundColor: defaultColors.bg4,
   },
   noMarginRight: {
     marginRight: 0,

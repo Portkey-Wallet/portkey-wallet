@@ -15,7 +15,7 @@ import initIm from 'hooks/im';
 import { sleep } from '@portkey-wallet/utils';
 import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { fetchAssetAsync } from '@portkey-wallet/store/store-ca/assets/slice';
-import { useCaAddressInfoList, useCaAddresses } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useManagerExceedTipModal } from 'hooks/useManagerExceedTip';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 
@@ -30,7 +30,6 @@ export default function Home() {
   }, [isNotLessThan768, navigate]);
   useDiscoverGroupList();
   const appDispatch = useAppDispatch();
-  const caAddresses = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
   const managerExceedTip = useManagerExceedTipModal();
   const { search } = useLocation();
@@ -39,8 +38,8 @@ export default function Home() {
   const locked = useStorage('locked');
 
   const getAccountAllAssets = useCallback(() => {
-    appDispatch(fetchAssetAsync({ caAddresses, keyword: '', caAddressInfos }));
-  }, [appDispatch, caAddressInfos, caAddresses]);
+    appDispatch(fetchAssetAsync({ keyword: '', caAddressInfos }));
+  }, [appDispatch, caAddressInfos]);
 
   const checkAchSell = useCallback(async () => {
     if (search) {

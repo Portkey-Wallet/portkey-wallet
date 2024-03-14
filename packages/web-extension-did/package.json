@@ -1,6 +1,6 @@
 {
   "name": "web-extension-did",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "web-extension-did",
   "private": true,
   "dependencies": {
@@ -36,7 +36,7 @@
     "query-string": "^7.1.1",
     "antd": "^4.23.2",
     "antd-mobile": "^5.26.0",
-    "browser-image-compression": "^2.0.2",
+    "browser-image-compression": "git+https://github.com/portkey-yellow/browser-image-compression.git#e6b8e9438cb4b3fb0a37c0c11b11670be9cbf948",
     "clipboard": "^2.0.11",
     "clsx": "^1.2.1",
     "crypto-js": "^4.1.1",

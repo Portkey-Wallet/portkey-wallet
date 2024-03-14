@@ -1,5 +1,11 @@
 import { ChainId } from '..';
 
+export enum SeedTypeEnum {
+  'None' = 0,
+  'Token' = 1,
+  'NFT' = 2,
+}
+
 // nft collection types
 export type NFTCollectionItemBaseType = {
   chainId: ChainId;
@@ -7,7 +13,12 @@ export type NFTCollectionItemBaseType = {
   imageUrl: string;
   itemCount: number;
   symbol: string;
-  decimals: number; // 0
+  inscriptionName?: string;
+  limitPerMint?: number;
+  isSeed?: boolean;
+  seedType?: SeedTypeEnum;
+  expires?: string;
+  seedOwnedSymbol?: string;
 };
 
 export interface NFTCollectionItemShowType extends NFTCollectionItemBaseType {
@@ -20,6 +31,7 @@ export interface NFTCollectionItemShowType extends NFTCollectionItemBaseType {
 
 // nft item types
 export type NFTItemBaseType = {
+  balance: string;
   chainId: ChainId;
   symbol: string;
   tokenId: string;
@@ -28,21 +40,27 @@ export type NFTItemBaseType = {
   imageUrl: string;
   tokenContractAddress: string;
   totalSupply: string | number;
+  decimals?: string;
+  isSeed?: boolean;
+  seedType?: SeedTypeEnum;
+  inscriptionName?: string;
+  limitPerMint?: number;
+  expires?: string;
+  seedOwnedSymbol?: string;
+  circulatingSupply?: number;
+  collectionSymbol?: string;
+  imageLargeUrl?: string;
+  tokenName?: string;
+  traits?: string;
+  recommendedRefreshSeconds?: number;
+  generation?: string;
+  traitsPercentages?: TraitsPercentType[];
 };
 
-// assets types
-export type AssetsItemType = {
-  chainId: ChainId;
-  symbol: string;
-  address: string;
-  nftInfo: {
-    imageUrl: string;
-    alias: string;
-    tokenId: string;
-    protocolName: string;
-    quantity: string;
-    metaData: any;
-  };
+export type TraitsPercentType = {
+  traitType: string;
+  value: string;
+  percent: string;
 };
 
 export type RateBaseType = {

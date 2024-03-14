@@ -6,7 +6,7 @@ import { useInterface } from 'contexts/useInterface';
 import { setCAContract, setViewContract } from 'contexts/useInterface/actions';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { useCallback, useMemo } from 'react';
-import { getDefaultWallet } from 'utils/aelfUtils';
+import { getDefaultWallet } from '@portkey-wallet/utils/aelfUtils';
 import AElf from 'aelf-sdk';
 import { usePin } from './store';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';

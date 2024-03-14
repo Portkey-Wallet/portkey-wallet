@@ -48,7 +48,7 @@ export function parseInputNumberChange(value: string, max: number | BigNumber = 
   }
 }
 
-export function parseInputIntegerChange(value: string, max: number | BigNumber = Infinity, decimal = 8) {
+export function parseInputIntegerChange(value: string, _max: number | BigNumber = Infinity, _decimal = 8) {
   if (!isValidNumber(value)) return '';
   return value.trim().replace(/^(0+)|[^\d]+/g, '');
 }

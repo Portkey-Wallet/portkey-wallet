@@ -1,4 +1,4 @@
-import { AccountAssetItem, AccountAssets, TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import CustomSvg from 'components/CustomSvg';
 import DropdownSearch from 'components/DropdownSearch';
 import { ReactNode, useCallback, useEffect, useState } from 'react';
@@ -6,16 +6,18 @@ import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAssetInfo, useTokenInfo, useUserInfo } from 'store/Provider/hooks';
 import { fetchAssetAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
-import { useCaAddresses, useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useAmountInUsdShow, useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import TokenImageDisplay from '../TokenImageDisplay';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { NFTSizeEnum, getSeedTypeTag } from 'utils/assets';
+import { IAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
 import './index.less';
 
 export interface ICustomTokenListProps {
-  onChange?: (v: AccountAssetItem, type: 'token' | 'nft') => void;
+  onChange?: (v: IAssetItemType, type: 'token' | 'nft') => void;
   onClose?: () => void;
   title?: ReactNode;
   searchPlaceHolder?: string;
@@ -35,10 +37,9 @@ export default function CustomTokenList({
   const { tokenDataShowInMarket } = useTokenInfo();
   const [openDrop, setOpenDrop] = useState<boolean>(false);
   const [filterWord, setFilterWord] = useState<string>('');
-  const [assetList, setAssetList] = useState<TokenItemShowType[] | AccountAssets>([]);
+  const [assetList, setAssetList] = useState<TokenItemShowType[] | IAssetItemType[]>([]);
   const appDispatch = useAppDispatch();
   const { passwordSeed } = useUserInfo();
-  const caAddresses = useCaAddresses();
   const chainIdArray = useChainIdList();
   const amountInUsdShow = useAmountInUsdShow();
   const caAddressInfos = useCaAddressInfoList();
@@ -54,18 +55,18 @@ export default function CustomTokenList({
   useEffect(() => {
     if (!passwordSeed) return;
     if (drawerType === 'send') {
-      appDispatch(fetchAssetAsync({ caAddresses, keyword: filterWord, caAddressInfos }));
+      appDispatch(fetchAssetAsync({ keyword: filterWord, caAddressInfos }));
     } else {
       appDispatch(fetchAllTokenListAsync({ chainIdArray, keyword: filterWord }));
     }
-  }, [passwordSeed, filterWord, drawerType, caAddresses, appDispatch, chainIdArray, caAddressInfos]);
+  }, [passwordSeed, filterWord, drawerType, appDispatch, chainIdArray, caAddressInfos]);
 
   useEffect(() => {
     setFilterWord('');
   }, []);
 
   const renderSendToken = useCallback(
-    (token: AccountAssetItem) => {
+    (token: IAssetItemType) => {
       return (
         <div
           className="item"
@@ -96,16 +97,15 @@ export default function CustomTokenList({
 
   const renderReceiveToken = useCallback(
     (token: TokenItemShowType) => {
-      const tokenTmp: AccountAssetItem = {
+      const tokenTmp: IAssetItemType = {
         chainId: token.chainId,
         symbol: token.symbol,
         address: token.address,
         tokenInfo: {
           imageUrl: token.imageUrl,
-          id: token.id || '',
-          balance: token.balance,
-          decimals: `${token.decimals}`,
-          balanceInUsd: token.balanceInUsd,
+          balance: token.balance || '',
+          decimals: token.decimals,
+          balanceInUsd: token.balanceInUsd || '',
           tokenContractAddress: token.address,
         },
       };
@@ -128,13 +128,15 @@ export default function CustomTokenList({
   );
 
   const renderNft = useCallback(
-    (token: AccountAssetItem) => {
+    (token: IAssetItemType) => {
+      const seedTypeTag = token.nftInfo ? getSeedTypeTag(token.nftInfo, NFTSizeEnum.small) : '';
       return (
         <div
           key={`${token.chainId}_${token.nftInfo?.alias}_${token.nftInfo?.tokenId}`}
           className="item protocol"
           onClick={onChange?.bind(undefined, token, 'nft')}>
-          <div className="avatar">
+          <div className="avatar flex-center">
+            {seedTypeTag && <CustomSvg type={seedTypeTag} />}
             {token.nftInfo?.imageUrl ? <img src={token.nftInfo.imageUrl} /> : token.nftInfo?.alias?.slice(0, 1)}
           </div>
           <div className="info">
@@ -142,7 +144,9 @@ export default function CustomTokenList({
             <p className="network">{transNetworkText(token.chainId, !isMainnet)}</p>
           </div>
           <div className="amount">
-            <div className="balance">{token.nftInfo?.balance}</div>
+            <div className="balance">
+              {formatAmountShow(divDecimals(token.nftInfo?.balance, token.nftInfo?.decimals || 0))}
+            </div>
           </div>
         </div>
       );
@@ -184,9 +188,9 @@ export default function CustomTokenList({
             </p>
           </div>
         ) : (
-          assetList.map((token: TokenItemShowType | AccountAssetItem) => {
+          assetList.map((token: TokenItemShowType | IAssetItemType) => {
             if (drawerType === 'send') {
-              return (token as AccountAssetItem).nftInfo?.tokenId ? renderNft(token) : renderSendToken(token);
+              return (token as IAssetItemType).nftInfo?.tokenId ? renderNft(token) : renderSendToken(token);
             } else {
               return renderReceiveToken(token as TokenItemShowType);
             }

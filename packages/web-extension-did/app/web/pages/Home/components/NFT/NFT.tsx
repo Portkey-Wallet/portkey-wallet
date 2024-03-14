@@ -1,11 +1,11 @@
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchNFTAsync } from '@portkey-wallet/store/store-ca/assets/slice';
+import { fetchNFTAsync, fetchNFTCollectionsAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { ChainId } from '@portkey-wallet/types';
 import { NFTCollectionItemShowType, NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
 import { Collapse } from 'antd';
 import { List } from 'antd-mobile';
 import CustomSvg from 'components/CustomSvg';
-import { useCallback, useState, useMemo } from 'react';
+import { useCallback, useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import clsx from 'clsx';
 import { useAppDispatch, useAssetInfo, useCommonState } from 'store/Provider/hooks';
@@ -22,13 +22,17 @@ export default function NFT() {
   const [nftNum, setNftNum] = useState<Record<string, number>>({});
   const isMainnet = useIsMainnet();
   const {
-    accountNFT: { accountNFTList },
+    accountNFT: { accountNFTList, isFetching },
   } = useAssetInfo();
   const dispatch = useAppDispatch();
   const { isPrompt } = useCommonState();
   const caAddressInfos = useCaAddressInfoList();
   const [getMoreFlag, setGetMoreFlag] = useState(false);
   const maxNftNum = useMemo(() => (isPrompt ? PAGE_SIZE_IN_NFT_ITEM_PROMPT : PAGE_SIZE_IN_NFT_ITEM), [isPrompt]);
+
+  useEffect(() => {
+    dispatch(fetchNFTCollectionsAsync({ maxNFTCount: maxNftNum, caAddressInfos }));
+  }, [dispatch, caAddressInfos, maxNftNum]);
 
   const getMore = useCallback(
     async (symbol: string, chainId: ChainId) => {
@@ -107,7 +111,7 @@ export default function NFT() {
                     <div
                       key={`${nft.symbol}-${nftItem.symbol}`}
                       style={{
-                        backgroundImage: `url('${nftItem.imageUrl}')`,
+                        backgroundImage: `url('${nftItem.imageUrl || ''}')`,
                       }}
                       className={clsx(['nft-item', nftItem.imageUrl ? '' : 'nft-item-no-img'])}
                       onClick={() => {
@@ -151,7 +155,9 @@ export default function NFT() {
       ) : (
         <List className="nft-list">
           <List.Item>
-            <Collapse onChange={handleChange}>{accountNFTList.map((item) => renderItem(item))}</Collapse>
+            <Collapse collapsible={isFetching ? 'disabled' : undefined} onChange={handleChange}>
+              {accountNFTList.map((item) => renderItem(item))}
+            </Collapse>
           </List.Item>
         </List>
       )}

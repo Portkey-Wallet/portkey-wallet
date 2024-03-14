@@ -300,7 +300,10 @@ export const assetsSlice = createSlice({
         state.accountToken.isFetching = false;
       })
       .addCase(fetchNFTCollectionsAsync.pending, state => {
-        state.accountToken.isFetching = true;
+        state.accountNFT.isFetching = true;
+      })
+      .addCase(fetchNFTCollectionsAsync.rejected, state => {
+        state.accountNFT.isFetching = false;
       })
       .addCase(fetchNFTCollectionsAsync.fulfilled, (state, action) => {
         const { list, totalRecordCount, maxNFTCount } = action.payload;

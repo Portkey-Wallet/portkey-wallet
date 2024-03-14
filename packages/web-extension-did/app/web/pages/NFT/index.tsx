@@ -69,9 +69,9 @@ export default function NFT() {
     const formatTokenContractAds = addressFormat(tokenContractAddress, chainId, currentNetwork.walletType);
     return (
       <div className="info">
-        <div className="title">Basic info</div>
+        <div className="title">Basic Info</div>
         <div className="contract info-item flex-between">
-          <div className="label">Contract address</div>
+          <div className="label">Contract Address</div>
           <div className="contract-title flex">
             {formatTokenContractAds.replace(/(?<=^\w{8})\w+(?=\w{9})/, '...')}
             <Copy toCopy={formatTokenContractAds} />
@@ -86,7 +86,7 @@ export default function NFT() {
           <div className="alias-name">{nftDetail.symbol}</div>
         </div>
         <div className="total-supply info-item flex-between">
-          <div className="label">Total supply</div>
+          <div className="label">Total Supply</div>
           <div>{formatAmountShow(divDecimals(nftDetail.totalSupply, nftDetail.decimals || 0))}</div>
         </div>
       </div>
@@ -120,7 +120,7 @@ export default function NFT() {
     const { inscriptionName, limitPerMint } = nftDetail;
     return inscriptionName ? (
       <div className="info">
-        <div className="title">Inscription info</div>
+        <div className="title">Inscription Info</div>
         <div className="info-item flex-between">
           <div className="label">Inscription Name</div>
           <div>{inscriptionName}</div>
@@ -161,7 +161,7 @@ export default function NFT() {
     const { generation } = nftDetail;
     return generation ? (
       <div className="info">
-        <div className="title">Generation info</div>
+        <div className="title">Generation Info</div>
         <div className="info-item flex-between-center">
           <div className="label">Generation</div>
           <div>{generation}</div>

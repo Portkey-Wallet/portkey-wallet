@@ -21,7 +21,7 @@ import {
   useCurrentWallet,
   useOriginChainId,
 } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchNFTCollectionsAsync, fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
+import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { fetchAllTokenListAsync, getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import CustomTokenModal from 'pages/components/CustomTokenModal';
@@ -30,8 +30,7 @@ import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPric
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import useVerifierList from 'hooks/useVerifierList';
 import useGuardianList from 'hooks/useGuardianList';
-import { PAGE_SIZE_IN_NFT_ITEM_PROMPT } from 'constants/index';
-import { BalanceTab, PAGE_SIZE_IN_NFT_ITEM } from '@portkey-wallet/constants/constants-ca/assets';
+import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import AccountConnect from 'pages/components/AccountConnect';
@@ -126,7 +125,6 @@ export default function MyBalance() {
   const { isETransShow } = useExtensionETransShow();
   const reportFCMStatus = useReportFCMStatus();
   const { isNotLessThan768, isPrompt } = useCommonState();
-  const maxNftNum = useMemo(() => (isPrompt ? PAGE_SIZE_IN_NFT_ITEM_PROMPT : PAGE_SIZE_IN_NFT_ITEM), [isPrompt]);
 
   useEffect(() => {
     if (state?.key) {
@@ -138,10 +136,6 @@ export default function MyBalance() {
     appDispatch(getCaHolderInfoAsync());
     appDispatch(getSymbolImagesAsync());
   }, [passwordSeed, appDispatch, isRampShow, state?.key, caAddressInfos, chainIdArray]);
-
-  useEffect(() => {
-    appDispatch(fetchNFTCollectionsAsync({ maxNFTCount: maxNftNum, caAddressInfos }));
-  }, [appDispatch, caAddressInfos, maxNftNum]);
 
   useEffect(() => {
     getGuardianList({ caHash: walletInfo?.caHash });

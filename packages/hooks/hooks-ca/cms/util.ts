@@ -7,10 +7,14 @@ import {
   IEntranceModuleName,
   IEntrance,
   IBaseEntranceItem,
+  ILoginModeItem,
+  TLoginModeIndexKey,
+  TLoginModeRecommendKey,
 } from '@portkey-wallet/types/types-ca/cms';
 import BigNumber from 'bignumber.js';
 import { getEntrance as getEntranceGraphQL, getCodePushControl } from '@portkey-wallet/graphql/cms/queries';
 import { NetworkType } from '@portkey-wallet/types';
+import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 
 const createEntranceMatchRule = (type: IEntranceMatchRuleType, params: string): any => {
   switch (type) {
@@ -139,4 +143,35 @@ export const getCmsCodePoshControl = async ({
   if (!result?.data?.codePushControl?.[0]) throw new Error('getCmsCodePoshControl error');
 
   return result?.data?.codePushControl?.[0];
+};
+
+const LoginModeKeys = {
+  [VersionDeviceType.Android]: 'android',
+  [VersionDeviceType.Extension]: 'extension',
+  [VersionDeviceType.iOS]: 'iOS',
+};
+
+export const parseLoginModeList = (
+  loginModeList: ILoginModeItem[],
+  matchValueMap: IEntranceMatchValueMap,
+  deviceType: VersionDeviceType,
+) => {
+  const key = LoginModeKeys[deviceType];
+  const indexKey = `${key}Index` as TLoginModeIndexKey;
+
+  return loginModeList
+    .filter(item => checkIsEntranceShow(item, matchValueMap))
+    .sort((a, b) => a[indexKey] - b[indexKey]);
+};
+
+export const filterLoginModeListToRecommend = (loginModeList: ILoginModeItem[], deviceType: VersionDeviceType) => {
+  const key = LoginModeKeys[deviceType];
+  const recommendKey = `${key}Recommend` as TLoginModeRecommendKey;
+  return loginModeList.filter(item => item[recommendKey]);
+};
+
+export const filterLoginModeListToOther = (loginModeList: ILoginModeItem[], deviceType: VersionDeviceType) => {
+  const key = LoginModeKeys[deviceType];
+  const recommendKey = `${key}Recommend` as TLoginModeRecommendKey;
+  return loginModeList.filter(item => !item[recommendKey]);
 };

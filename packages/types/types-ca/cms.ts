@@ -29,3 +29,21 @@ export interface IEntranceItem extends IBaseEntranceItem {
 }
 export type IEntranceMatchValueConfig = Partial<Record<IEntranceMatchKey, string | (() => Promise<string>)>>;
 export type IEntranceMatchValueMap = Partial<Record<IEntranceMatchKey, string>>;
+
+type TLoginMode = 'Email' | 'Phone' | 'Apple' | 'Google' | 'Telegram' | 'Twitter' | 'Facebook';
+
+export interface ILoginModeItem extends IBaseEntranceItem {
+  extensionIndex: number;
+  iOSIndex: number;
+  androidIndex: number;
+  extensionRecommend?: boolean;
+  iOSRecommend?: boolean;
+  androidRecommend?: boolean;
+  type: TLoginMode;
+}
+
+export type TLoginModeIndexKey = keyof Pick<ILoginModeItem, 'extensionIndex' | 'iOSIndex' | 'androidIndex'>;
+export type TLoginModeRecommendKey = keyof Pick<
+  ILoginModeItem,
+  'extensionRecommend' | 'iOSRecommend' | 'androidRecommend'
+>;

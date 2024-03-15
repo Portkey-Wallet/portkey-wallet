@@ -5,6 +5,7 @@ import {
   getTabMenuAsync,
   getRememberMeBlackListAsync,
   setEntrance,
+  getLoginControlListAsync,
 } from './actions';
 import { CMSState, CmsWebsiteMapItem } from './types';
 
@@ -66,6 +67,13 @@ export const cmsSlice = createSlice({
         state.entranceNetMap = {
           ...state.entranceNetMap,
           [action.payload.network]: action.payload.value,
+        };
+      })
+      .addCase(getLoginControlListAsync.fulfilled, (state, action) => {
+        console.log('getLoginControlListAsync', action.payload);
+        state.loginModeListMap = {
+          ...(state.loginModeListMap ?? {}),
+          ...action.payload.loginModeListMap,
         };
       });
   },

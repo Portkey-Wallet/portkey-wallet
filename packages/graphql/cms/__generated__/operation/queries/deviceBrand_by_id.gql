@@ -1,6 +1,5 @@
-query serviceSuspension{
-    serviceSuspension{
-        androidUrl
+query deviceBrand_by_id($id: ID!){
+    deviceBrand_by_id(id: $id){
         date_created
         date_created_func{
             year
@@ -23,11 +22,12 @@ query serviceSuspension{
             minute
             second
         }
-        extensionUrl
         id
-        iOSUrl
-        isSuspended
+        label
+        sort
+        status
         user_created
         user_updated
+        value
     }
 }

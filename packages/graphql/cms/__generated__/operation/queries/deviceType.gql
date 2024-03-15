@@ -1,5 +1,5 @@
-query boilerplate($filter: boilerplate_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String){
-    boilerplate(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
+query deviceType($filter: deviceType_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String){
+    deviceType(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
         date_created
         date_created_func{
             year
@@ -23,10 +23,11 @@ query boilerplate($filter: boilerplate_filter, $sort: [String], $limit: Int, $of
             second
         }
         id
-        index
-        name
-        url
+        label
+        sort
+        status
         user_created
         user_updated
+        value
     }
 }

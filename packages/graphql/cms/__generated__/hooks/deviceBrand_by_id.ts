@@ -3,21 +3,23 @@ import * as Types from '../types';
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
-export type ServiceSuspensionQueryVariables = Types.Exact<{ [key: string]: never }>;
+export type DeviceBrand_By_IdQueryVariables = Types.Exact<{
+  id: Types.Scalars['ID'];
+}>;
 
-export type ServiceSuspensionQuery = {
+export type DeviceBrand_By_IdQuery = {
   __typename?: 'Query';
-  serviceSuspension?: {
-    __typename?: 'serviceSuspension';
-    androidUrl?: string | null;
+  deviceBrand_by_id?: {
+    __typename?: 'deviceBrand';
     date_created?: any | null;
     date_updated?: any | null;
-    extensionUrl?: string | null;
     id: string;
-    iOSUrl?: string | null;
-    isSuspended?: boolean | null;
+    label?: string | null;
+    sort?: number | null;
+    status?: string | null;
     user_created?: string | null;
     user_updated?: string | null;
+    value?: string | null;
     date_created_func?: {
       __typename?: 'datetime_functions';
       year?: number | null;
@@ -43,10 +45,9 @@ export type ServiceSuspensionQuery = {
   } | null;
 };
 
-export const ServiceSuspensionDocument = gql`
-  query serviceSuspension {
-    serviceSuspension {
-      androidUrl
+export const DeviceBrand_By_IdDocument = gql`
+  query deviceBrand_by_id($id: ID!) {
+    deviceBrand_by_id(id: $id) {
       date_created
       date_created_func {
         year
@@ -69,46 +70,48 @@ export const ServiceSuspensionDocument = gql`
         minute
         second
       }
-      extensionUrl
       id
-      iOSUrl
-      isSuspended
+      label
+      sort
+      status
       user_created
       user_updated
+      value
     }
   }
 `;
 
 /**
- * __useServiceSuspensionQuery__
+ * __useDeviceBrand_By_IdQuery__
  *
- * To run a query within a React component, call `useServiceSuspensionQuery` and pass it any options that fit your needs.
- * When your component renders, `useServiceSuspensionQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useDeviceBrand_By_IdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useDeviceBrand_By_IdQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useServiceSuspensionQuery({
+ * const { data, loading, error } = useDeviceBrand_By_IdQuery({
  *   variables: {
+ *      id: // value for 'id'
  *   },
  * });
  */
-export function useServiceSuspensionQuery(
-  baseOptions?: Apollo.QueryHookOptions<ServiceSuspensionQuery, ServiceSuspensionQueryVariables>,
+export function useDeviceBrand_By_IdQuery(
+  baseOptions: Apollo.QueryHookOptions<DeviceBrand_By_IdQuery, DeviceBrand_By_IdQueryVariables>,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<ServiceSuspensionQuery, ServiceSuspensionQueryVariables>(ServiceSuspensionDocument, options);
+  return Apollo.useQuery<DeviceBrand_By_IdQuery, DeviceBrand_By_IdQueryVariables>(DeviceBrand_By_IdDocument, options);
 }
-export function useServiceSuspensionLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<ServiceSuspensionQuery, ServiceSuspensionQueryVariables>,
+export function useDeviceBrand_By_IdLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<DeviceBrand_By_IdQuery, DeviceBrand_By_IdQueryVariables>,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<ServiceSuspensionQuery, ServiceSuspensionQueryVariables>(
-    ServiceSuspensionDocument,
+  return Apollo.useLazyQuery<DeviceBrand_By_IdQuery, DeviceBrand_By_IdQueryVariables>(
+    DeviceBrand_By_IdDocument,
     options,
   );
 }
-export type ServiceSuspensionQueryHookResult = ReturnType<typeof useServiceSuspensionQuery>;
-export type ServiceSuspensionLazyQueryHookResult = ReturnType<typeof useServiceSuspensionLazyQuery>;
-export type ServiceSuspensionQueryResult = Apollo.QueryResult<ServiceSuspensionQuery, ServiceSuspensionQueryVariables>;
+export type DeviceBrand_By_IdQueryHookResult = ReturnType<typeof useDeviceBrand_By_IdQuery>;
+export type DeviceBrand_By_IdLazyQueryHookResult = ReturnType<typeof useDeviceBrand_By_IdLazyQuery>;
+export type DeviceBrand_By_IdQueryResult = Apollo.QueryResult<DeviceBrand_By_IdQuery, DeviceBrand_By_IdQueryVariables>;

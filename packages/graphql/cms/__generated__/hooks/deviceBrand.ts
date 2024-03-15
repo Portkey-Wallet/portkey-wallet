@@ -3,8 +3,8 @@ import * as Types from '../types';
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
-export type BoilerplateQueryVariables = Types.Exact<{
-  filter?: Types.InputMaybe<Types.Boilerplate_Filter>;
+export type DeviceBrandQueryVariables = Types.Exact<{
+  filter?: Types.InputMaybe<Types.DeviceBrand_Filter>;
   sort?: Types.InputMaybe<Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>>;
   limit?: Types.InputMaybe<Types.Scalars['Int']>;
   offset?: Types.InputMaybe<Types.Scalars['Int']>;
@@ -12,18 +12,19 @@ export type BoilerplateQueryVariables = Types.Exact<{
   search?: Types.InputMaybe<Types.Scalars['String']>;
 }>;
 
-export type BoilerplateQuery = {
+export type DeviceBrandQuery = {
   __typename?: 'Query';
-  boilerplate: Array<{
-    __typename?: 'boilerplate';
+  deviceBrand: Array<{
+    __typename?: 'deviceBrand';
     date_created?: any | null;
     date_updated?: any | null;
     id: string;
-    index?: number | null;
-    name?: string | null;
-    url?: string | null;
+    label?: string | null;
+    sort?: number | null;
+    status?: string | null;
     user_created?: string | null;
     user_updated?: string | null;
+    value?: string | null;
     date_created_func?: {
       __typename?: 'datetime_functions';
       year?: number | null;
@@ -49,16 +50,16 @@ export type BoilerplateQuery = {
   }>;
 };
 
-export const BoilerplateDocument = gql`
-  query boilerplate(
-    $filter: boilerplate_filter
+export const DeviceBrandDocument = gql`
+  query deviceBrand(
+    $filter: deviceBrand_filter
     $sort: [String]
     $limit: Int
     $offset: Int
     $page: Int
     $search: String
   ) {
-    boilerplate(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
+    deviceBrand(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
       date_created
       date_created_func {
         year
@@ -82,26 +83,27 @@ export const BoilerplateDocument = gql`
         second
       }
       id
-      index
-      name
-      url
+      label
+      sort
+      status
       user_created
       user_updated
+      value
     }
   }
 `;
 
 /**
- * __useBoilerplateQuery__
+ * __useDeviceBrandQuery__
  *
- * To run a query within a React component, call `useBoilerplateQuery` and pass it any options that fit your needs.
- * When your component renders, `useBoilerplateQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useDeviceBrandQuery` and pass it any options that fit your needs.
+ * When your component renders, `useDeviceBrandQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useBoilerplateQuery({
+ * const { data, loading, error } = useDeviceBrandQuery({
  *   variables: {
  *      filter: // value for 'filter'
  *      sort: // value for 'sort'
@@ -112,18 +114,18 @@ export const BoilerplateDocument = gql`
  *   },
  * });
  */
-export function useBoilerplateQuery(
-  baseOptions?: Apollo.QueryHookOptions<BoilerplateQuery, BoilerplateQueryVariables>,
+export function useDeviceBrandQuery(
+  baseOptions?: Apollo.QueryHookOptions<DeviceBrandQuery, DeviceBrandQueryVariables>,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<BoilerplateQuery, BoilerplateQueryVariables>(BoilerplateDocument, options);
+  return Apollo.useQuery<DeviceBrandQuery, DeviceBrandQueryVariables>(DeviceBrandDocument, options);
 }
-export function useBoilerplateLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<BoilerplateQuery, BoilerplateQueryVariables>,
+export function useDeviceBrandLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<DeviceBrandQuery, DeviceBrandQueryVariables>,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<BoilerplateQuery, BoilerplateQueryVariables>(BoilerplateDocument, options);
+  return Apollo.useLazyQuery<DeviceBrandQuery, DeviceBrandQueryVariables>(DeviceBrandDocument, options);
 }
-export type BoilerplateQueryHookResult = ReturnType<typeof useBoilerplateQuery>;
-export type BoilerplateLazyQueryHookResult = ReturnType<typeof useBoilerplateLazyQuery>;
-export type BoilerplateQueryResult = Apollo.QueryResult<BoilerplateQuery, BoilerplateQueryVariables>;
+export type DeviceBrandQueryHookResult = ReturnType<typeof useDeviceBrandQuery>;
+export type DeviceBrandLazyQueryHookResult = ReturnType<typeof useDeviceBrandLazyQuery>;
+export type DeviceBrandQueryResult = Apollo.QueryResult<DeviceBrandQuery, DeviceBrandQueryVariables>;

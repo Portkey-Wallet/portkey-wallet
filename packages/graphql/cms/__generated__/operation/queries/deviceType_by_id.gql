@@ -1,5 +1,5 @@
-query boilerplate_by_id($id: ID!){
-    boilerplate_by_id(id: $id){
+query deviceType_by_id($id: ID!){
+    deviceType_by_id(id: $id){
         date_created
         date_created_func{
             year
@@ -23,10 +23,11 @@ query boilerplate_by_id($id: ID!){
             second
         }
         id
-        index
-        name
-        url
+        label
+        sort
+        status
         user_created
         user_updated
+        value
     }
 }

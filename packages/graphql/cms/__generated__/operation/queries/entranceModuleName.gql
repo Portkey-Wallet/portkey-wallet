@@ -1,5 +1,7 @@
 query entranceModuleName($filter: entranceModuleName_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String){
     entranceModuleName(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
+        id
+        user_created
         date_created
         date_created_func{
             year
@@ -11,6 +13,7 @@ query entranceModuleName($filter: entranceModuleName_filter, $sort: [String], $l
             minute
             second
         }
+        user_updated
         date_updated
         date_updated_func{
             year
@@ -22,10 +25,7 @@ query entranceModuleName($filter: entranceModuleName_filter, $sort: [String], $l
             minute
             second
         }
-        description
-        id
-        user_created
-        user_updated
         value
+        description
     }
 }

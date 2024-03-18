@@ -41,10 +41,10 @@ export default function DepositList({ onClose, onClickBridge, onClickETrans }: I
     if (item.type === DepositType.bridge) {
       return isBridgeShow;
     }
-    if (item.type === DepositType['deposit-usdt']) {
+    if (item.type === DepositType['deposit-crypto']) {
       return isETransDepositShow;
     }
-    if (item.type === DepositType['withdraw-usdt']) {
+    if (item.type === DepositType['withdraw-crypto']) {
       return isETransWithdrawShow;
     }
     return true;
@@ -52,7 +52,7 @@ export default function DepositList({ onClose, onClickBridge, onClickETrans }: I
 
   const handleClickItem = useCallback(
     (item: IDepositItem) => {
-      console.log('===handleClickItem', item, DepositType['deposit-usdt']);
+      console.log('===handleClickItem', item, DepositType['deposit-crypto']);
       if (item.type === DepositType.buy) {
         handleBuy();
         return;
@@ -65,11 +65,11 @@ export default function DepositList({ onClose, onClickBridge, onClickETrans }: I
         onClickBridge?.();
         return;
       }
-      if (item.type === DepositType['deposit-usdt']) {
+      if (item.type === DepositType['deposit-crypto']) {
         onClickETrans?.(ETransType.Deposit);
         return;
       }
-      if (item.type === DepositType['withdraw-usdt']) {
+      if (item.type === DepositType['withdraw-crypto']) {
         onClickETrans?.(ETransType.Withdraw);
         return;
       }

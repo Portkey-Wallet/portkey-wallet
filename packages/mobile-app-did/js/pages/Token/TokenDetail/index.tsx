@@ -147,14 +147,8 @@ const TokenDetail: React.FC = () => {
 
   const isETransToken = useMemo(() => ETransTokenList.includes(tokenInfo.symbol), [tokenInfo.symbol]);
 
-  const isDepositShow = useMemo(
-    () => isETransToken && isETransDepositShow && !isBuyButtonShow && !isFaucetButtonShow,
-    [isETransToken, isETransDepositShow, isBuyButtonShow, isFaucetButtonShow],
-  );
-  const isWithdrawShow = useMemo(
-    () => isETransToken && isETransWithdrawShow && !isBuyButtonShow && !isFaucetButtonShow,
-    [isETransToken, isETransWithdrawShow, isBuyButtonShow, isFaucetButtonShow],
-  );
+  const isDepositShow = useMemo(() => isETransToken && isETransDepositShow, [isETransToken, isETransDepositShow]);
+  const isWithdrawShow = useMemo(() => isETransToken && isETransWithdrawShow, [isETransToken, isETransWithdrawShow]);
   const { eTransferUrl } = useCurrentNetworkInfo();
   const onDisclaimerModalPress = useOnDisclaimerModalPress();
   const buttonCount = useMemo(() => {

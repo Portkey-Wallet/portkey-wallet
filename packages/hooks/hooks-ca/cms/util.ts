@@ -10,6 +10,7 @@ import {
   ILoginModeItem,
   TLoginModeIndexKey,
   TLoginModeRecommendKey,
+  IMatchListItem,
 } from '@portkey-wallet/types/types-ca/cms';
 import BigNumber from 'bignumber.js';
 import { getEntrance as getEntranceGraphQL, getCodePushControl } from '@portkey-wallet/graphql/cms/queries';
@@ -37,16 +38,23 @@ export const DEFAULT_ENTRANCE_SHOW: IEntrance = {
   eTransWithdraw: false,
 };
 
-const checkIsEntranceShow = (item: IBaseEntranceItem, matchValueMap: IEntranceMatchValueMap) => {
+const checkIsEntranceShow = (
+  item: IBaseEntranceItem,
+  matchValueMap: IEntranceMatchValueMap,
+  keyName: keyof IMatchListItem = 'entranceMatch_id',
+) => {
   const { defaultSwitch, matchList } = item;
 
   let matchValue = defaultSwitch;
 
-  if (matchList.length === 0) return defaultSwitch;
+  if (matchList?.length === 0) return defaultSwitch;
 
   for (let i = 0; i < matchList.length; i++) {
     const ele = matchList[i];
-    const { matchRuleList, matchSwitch } = ele.entranceMatch_id;
+    const { matchRuleList, matchSwitch } = ele[keyName] || {};
+
+    if (!matchRuleList && !matchSwitch) return defaultSwitch;
+
     if (!Array.isArray(matchRuleList) || matchRuleList.length === 0) continue;
 
     const isMatch = matchRuleList.every(rule => {
@@ -61,7 +69,7 @@ const checkIsEntranceShow = (item: IBaseEntranceItem, matchValueMap: IEntranceMa
     });
 
     if (isMatch) {
-      matchValue = matchSwitch;
+      matchValue = !!matchSwitch;
       break;
     }
   }
@@ -161,17 +169,21 @@ export const parseLoginModeList = (
 
   return loginModeList
     .filter(item => checkIsEntranceShow(item, matchValueMap))
-    .sort((a, b) => a[indexKey] - b[indexKey]);
+    .sort((a, b) => (a[indexKey] as number) - (b[indexKey] as number));
 };
 
 export const filterLoginModeListToRecommend = (loginModeList: ILoginModeItem[], deviceType: VersionDeviceType) => {
   const key = LoginModeKeys[deviceType];
   const recommendKey = `${key}Recommend` as TLoginModeRecommendKey;
-  return loginModeList.filter(item => item[recommendKey]);
+  const indexKey = `${key}Index` as TLoginModeIndexKey;
+
+  return loginModeList.filter(item => item[recommendKey]).sort((a, b) => a[indexKey] - b[indexKey]);
 };
 
 export const filterLoginModeListToOther = (loginModeList: ILoginModeItem[], deviceType: VersionDeviceType) => {
   const key = LoginModeKeys[deviceType];
   const recommendKey = `${key}Recommend` as TLoginModeRecommendKey;
-  return loginModeList.filter(item => !item[recommendKey]);
+  const indexKey = `${key}Index` as TLoginModeIndexKey;
+
+  return loginModeList.filter(item => !item[recommendKey]).sort((a, b) => a[indexKey] - b[indexKey]);
 };

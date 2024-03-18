@@ -16,16 +16,16 @@ export type EntranceMatchQuery = {
   __typename?: 'Query';
   entranceMatch: Array<{
     __typename?: 'entranceMatch';
-    date_created?: any | null;
-    date_updated?: any | null;
-    description?: string | null;
     id: string;
-    matchRuleList?: any | null;
-    matchSwitch?: boolean | null;
     status?: string | null;
     user_created?: string | null;
+    date_created?: any | null;
     user_updated?: string | null;
+    date_updated?: any | null;
+    matchRuleList?: any | null;
     weight?: number | null;
+    matchSwitch?: boolean | null;
+    description?: string | null;
     date_created_func?: {
       __typename?: 'datetime_functions';
       year?: number | null;
@@ -62,6 +62,9 @@ export const EntranceMatchDocument = gql`
     $search: String
   ) {
     entranceMatch(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
+      id
+      status
+      user_created
       date_created
       date_created_func {
         year
@@ -73,6 +76,7 @@ export const EntranceMatchDocument = gql`
         minute
         second
       }
+      user_updated
       date_updated
       date_updated_func {
         year
@@ -84,17 +88,13 @@ export const EntranceMatchDocument = gql`
         minute
         second
       }
-      description
-      id
       matchRuleList
       matchRuleList_func {
         count
       }
-      matchSwitch
-      status
-      user_created
-      user_updated
       weight
+      matchSwitch
+      description
     }
   }
 `;

@@ -20,20 +20,8 @@ export const miscSlice = createSlice({
   reducers: {
     setSideChainTokenReceiveTipMap: (state, { payload }: { payload: { network: NetworkType; value: boolean } }) => {
       const { network, value } = payload;
-      if (state.sideChainTokenReceiveTipMap) {
-        state.sideChainTokenReceiveTipMap = {
-          ...state.sideChainTokenReceiveTipMap,
-          [network]: value,
-        };
-      } else {
-        state = {
-          ...state,
-          sideChainTokenReceiveTipMap: {
-            ...sideChainTokenReceiveTipMapInit,
-            [network]: value,
-          },
-        };
-      }
+      if (!state.sideChainTokenReceiveTipMap) state.sideChainTokenReceiveTipMap = {};
+      state.sideChainTokenReceiveTipMap[network] = value;
     },
     resetMisc: () => initialState,
   },

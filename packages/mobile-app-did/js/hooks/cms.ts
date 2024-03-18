@@ -1,18 +1,13 @@
 import { useETransShow, useEntrance, useBridgeButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { IEntranceMatchValueConfig } from '@portkey-wallet/types/types-ca/cms';
-import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
-import * as Application from 'expo-application';
+import { IEntranceMatchValueMap } from '@portkey-wallet/types/types-ca/cms';
+import { useMemo } from 'react';
+import MatchValueMap from 'utils/matchValueMap';
 
-export const useEntranceConfig = (): IEntranceMatchValueConfig => {
-  return {
-    deviceType: String(isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android),
-    version: Application.nativeApplicationVersion || undefined,
-    installationTime: async () => {
-      const date = await Application.getInstallationTimeAsync();
-      return String(date.getTime());
-    },
-  };
+export const useEntranceConfig = (): IEntranceMatchValueMap => {
+  useMemo(() => {
+    MatchValueMap.init();
+  }, []);
+  return MatchValueMap;
 };
 
 export const useAppEntrance = (isInit = false) => {

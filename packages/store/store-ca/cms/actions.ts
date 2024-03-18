@@ -120,25 +120,26 @@ export const getLoginControlListAsync = createAsyncThunk<Required<Pick<CMSState,
   async (networkList: NetworkType[]) => {
     try {
       const res = await Promise.all(
-        networkList.map(network =>
-          getLoginMode(network, {
-            filter: {
-              status: {
-                _eq: 'published',
+        networkList.map(async network => {
+          try {
+            return await getLoginMode(network, {
+              filter6: {
+                status: {
+                  _eq: 'published',
+                },
               },
-            },
-          }),
-        ),
+            });
+          } catch (error) {
+            console.log(error, '=====error');
+          }
+        }),
       );
-
       const loginModeListMap: { [T in NetworkType]?: ILoginModeItem[] } = {};
-
       res.map((item, index) => {
-        if (item.data) {
+        if (item?.data) {
           loginModeListMap[networkList[index]] = item.data.loginMode as ILoginModeItem[];
         }
       });
-
       return { loginModeListMap };
     } catch (error) {
       throw new Error('getLoginControlListAsync error');

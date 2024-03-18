@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useAppCASelector } from '../.';
 import { useAppCommonDispatch, useEffectOnce } from '../../index';
 import {
@@ -26,7 +26,6 @@ import {
   filterLoginModeListToOther,
   filterLoginModeListToRecommend,
   generateEntranceShow,
-  generateMatchValueMap,
   getEntrance,
   parseLoginModeList,
 } from './util';
@@ -342,18 +341,30 @@ export const useGetCmsWebsiteInfo = () => {
   };
 };
 
+export const useGetLoginControlListAsync = () => {
+  const dispatch = useAppCommonDispatch();
+  const networkList = useNetworkList();
+  return useCallback(async () => {
+    try {
+      await dispatch(getLoginControlListAsync(networkList.map(item => item.networkType)));
+    } catch (error) {
+      console.log(error, '======error');
+    }
+  }, [dispatch, networkList]);
+};
+
 export const useLoginModeControlList = (init?: boolean) => {
   const { loginModeListMap } = useCMS();
   const { networkType } = useCurrentNetworkInfo();
 
+  const getLoginControlListAsync = useGetLoginControlListAsync();
   const dispatch = useAppCommonDispatch();
-  const networkList = useNetworkList();
 
   useEffect(() => {
-    if (networkList.length > 0 && init) {
-      dispatch(getLoginControlListAsync(networkList.map(item => item.networkType)));
+    if (init) {
+      getLoginControlListAsync();
     }
-  }, [dispatch, init, networkList]);
+  }, [dispatch, getLoginControlListAsync, init]);
 
   return {
     loginModeListMap,
@@ -362,7 +373,7 @@ export const useLoginModeControlList = (init?: boolean) => {
 };
 
 export const useGetFormattedLoginModeList = (
-  config: IEntranceMatchValueConfig,
+  matchValueMap: IEntranceMatchValueMap,
   deviceType: VersionDeviceType,
 ): {
   loginModeList: ILoginModeItem[];
@@ -370,17 +381,6 @@ export const useGetFormattedLoginModeList = (
   loginModeListToOther: ILoginModeItem[];
 } => {
   const { currentNetworkLoginModeList } = useLoginModeControlList();
-
-  const [matchValueMap, setMatchValueMap] = useState<IEntranceMatchValueMap>({});
-
-  const getAndSetMatchValueMap = useCallback(async () => {
-    const matchValueMap = await generateMatchValueMap(config);
-    setMatchValueMap(matchValueMap);
-  }, [config]);
-
-  useEffectOnce(() => {
-    getAndSetMatchValueMap();
-  });
 
   return useMemo(() => {
     if (matchValueMap && currentNetworkLoginModeList && currentNetworkLoginModeList?.length > 0) {

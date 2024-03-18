@@ -1,3 +1,6 @@
+import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
+import { LoginType } from './wallet';
+
 export type IEntranceModuleName = 'buy' | 'sell' | 'bridge' | 'eTransDeposit' | 'eTransWithdraw';
 export type IEntranceMatchKey = 'version' | 'installationTime' | 'deviceType';
 export type IEntranceMatchRuleType = 'String' | 'BigNumber' | 'Regex';
@@ -35,7 +38,7 @@ export interface IEntranceItem extends IBaseEntranceItem {
 export type IEntranceMatchValueConfig = Partial<Record<IEntranceMatchKey, string | (() => Promise<string>)>>;
 export type IEntranceMatchValueMap = Partial<Record<IEntranceMatchKey, string>>;
 
-type TLoginMode = 'Email' | 'Phone' | 'Apple' | 'Google' | 'Telegram' | 'Twitter' | 'Facebook';
+export type TLoginMode = typeof LOGIN_TYPE_LABEL_MAP[LoginType.Apple];
 
 type TCMSLoginMode = {
   label?: string;

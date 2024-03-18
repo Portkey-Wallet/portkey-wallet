@@ -168,7 +168,7 @@ export const parseLoginModeList = (
   const indexKey = `${key}Index` as TLoginModeIndexKey;
 
   return loginModeList
-    .filter(item => checkIsEntranceShow(item, matchValueMap))
+    .filter(item => checkIsEntranceShow(item, matchValueMap, 'loginModeMatch_id'))
     .sort((a, b) => (a[indexKey] as number) - (b[indexKey] as number));
 };
 

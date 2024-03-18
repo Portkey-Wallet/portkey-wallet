@@ -25,7 +25,7 @@ import { getELFChainBalance } from 'packages/utils/balance';
 import { ZERO } from 'packages/constants/misc';
 import CommonToast from 'components/CommonToast';
 import { checkManagerSyncState } from 'model/contract/handler';
-import { useGetTxFee } from 'model/hooks/balance';
+// import { useGetTxFee } from 'model/hooks/balance';
 import { useSellCrypto } from 'packages/hooks/hooks-ca/ramp';
 import { useSDKRampEntryShow } from 'pages/Ramp/RampPreview/hook';
 import { IRampCryptoItem, IRampFiatItem, RampType } from 'packages/ramp';
@@ -40,6 +40,7 @@ import { isPotentialNumber } from 'packages/utils/reg';
 import { getCachedNetworkConfig } from 'model/chain';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
+import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 
 export default function SellForm() {
   const {
@@ -66,8 +67,8 @@ export default function SellForm() {
   const crypto = useMemo(() => currency.crypto, [currency]);
   const fiat = useMemo(() => currency.fiat, [currency]);
 
-  const { txFee } = useGetTxFee(MAIN_CHAIN_ID);
-
+  useFetchTxFee();
+  const { ach: achFee } = useGetTxFee(MAIN_CHAIN_ID);
   const [amount, setAmount] = useState<string>(defaultCrypto.amount);
   const [amountLocalError, setAmountLocalError] = useState<ErrorType>(INIT_NONE_ERROR);
 
@@ -266,7 +267,7 @@ export default function SellForm() {
         return;
       }
 
-      const achFee = txFee?.find(it => it.chainId === chainId)?.transactionFee?.ach || 0;
+      // const achFee = txFee?.find(it => it.chainId === chainId)?.transactionFee?.ach || 0;
 
       if (ZERO.plus(amount).isLessThanOrEqualTo(achFee)) {
         throw new Error('Insufficient funds');
@@ -342,7 +343,7 @@ export default function SellForm() {
     crypto,
     refreshRampShow,
     securitySafeCheckAndToast,
-    txFee,
+    achFee,
     fiat,
     checkTransferLimitWithJump,
     navigateTo,

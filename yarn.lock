@@ -8127,7 +8127,16 @@
     "@types/scheduler" "*"
     csstype "^3.0.2"
 
-"@types/react@^18.0.20", "@types/react@^18.2.21":
+"@types/react@18.2.43":
+  version "18.2.43"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.43.tgz#c58e5abe241e6f71f60ce30e2a9aceb9d3a2a374"
+  integrity sha512-nvOV01ZdBdd/KW6FahSbcNplt2jCJfyWdTos61RYHV+FVv5L/g9AOX1bmbVcWcLFL8+KHQfh1zVIQrud6ihyQA==
+  dependencies:
+    "@types/prop-types" "*"
+    "@types/scheduler" "*"
+    csstype "^3.0.2"
+
+"@types/react@^18.0.20":
   version "18.2.65"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.65.tgz#54eb311fa9aba173c9e163d42ec188d5a42878b8"
   integrity sha512-98TsY0aW4jqx/3RqsUXwMDZSWR1Z4CUlJNue8ueS2/wcxZOsz4xmW1X8ieaWVRHcmmQM3R8xVA4XWB3dJnWwDQ==
@@ -25925,6 +25934,49 @@ react-native-webview@^13.6.0:
   dependencies:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
+
+react-native@0.72.8:
+  version "0.72.8"
+  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.72.8.tgz#2d991cb2d8b589407dd8e0f23d5fbc6a1fb1ddaf"
+  integrity sha512-AAXvCA2CsV5gWXHMRZ0VmqR0MBRwQZ//XIyRC55tLBQ960dWH8qqIH9Dsbxrz5xebCWy8ffgXuFxJLHIt9QhFQ==
+  dependencies:
+    "@jest/create-cache-key-function" "^29.2.1"
+    "@react-native-community/cli" "11.3.10"
+    "@react-native-community/cli-platform-android" "11.3.10"
+    "@react-native-community/cli-platform-ios" "11.3.10"
+    "@react-native/assets-registry" "^0.72.0"
+    "@react-native/codegen" "^0.72.8"
+    "@react-native/gradle-plugin" "^0.72.11"
+    "@react-native/js-polyfills" "^0.72.1"
+    "@react-native/normalize-colors" "^0.72.0"
+    "@react-native/virtualized-lists" "^0.72.8"
+    abort-controller "^3.0.0"
+    anser "^1.4.9"
+    ansi-regex "^5.0.0"
+    base64-js "^1.1.2"
+    deprecated-react-native-prop-types "^4.2.3"
+    event-target-shim "^5.0.1"
+    flow-enums-runtime "^0.0.5"
+    invariant "^2.2.4"
+    jest-environment-node "^29.2.1"
+    jsc-android "^250231.0.0"
+    memoize-one "^5.0.0"
+    metro-runtime "0.76.8"
+    metro-source-map "0.76.8"
+    mkdirp "^0.5.1"
+    nullthrows "^1.1.1"
+    pretty-format "^26.5.2"
+    promise "^8.3.0"
+    react-devtools-core "^4.27.2"
+    react-refresh "^0.4.0"
+    react-shallow-renderer "^16.15.0"
+    regenerator-runtime "^0.13.2"
+    scheduler "0.24.0-canary-efb381bbf-20230505"
+    stacktrace-parser "^0.1.10"
+    use-sync-external-store "^1.0.0"
+    whatwg-fetch "^3.0.0"
+    ws "^6.2.2"
+    yargs "^17.6.2"
 
 react-native@~0.72.4:
   version "0.72.10"

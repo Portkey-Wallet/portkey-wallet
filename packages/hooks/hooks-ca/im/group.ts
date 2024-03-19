@@ -17,8 +17,6 @@ import im, {
 import { useEffectOnce, useAppCommonDispatch } from '../../index';
 import {
   addChannel,
-  addChannelMembers,
-  removeChannelMembers,
   setGroupInfo,
   transferChannelOwner,
   updateChannelAttribute,
@@ -76,32 +74,18 @@ export const useTransferChannelOwner = (channelId: string) => {
 };
 
 export const useAddChannelMembers = (channelId: string) => {
-  const dispatch = useAppCommonDispatch();
-  const { networkType } = useCurrentNetworkInfo();
-
   return useCallback(
     async (memberInfos: ChannelMemberInfo[]) => {
       await im.service.addChannelMembers({
         channelUuid: channelId,
         members: memberInfos.map(item => item.relationId),
       });
-
-      dispatch(
-        addChannelMembers({
-          network: networkType,
-          channelId,
-          memberInfos,
-        }),
-      );
     },
-    [channelId, dispatch, networkType],
+    [channelId],
   );
 };
 
 export const useRemoveChannelMembers = (channelId: string) => {
-  const dispatch = useAppCommonDispatch();
-  const { networkType } = useCurrentNetworkInfo();
-
   return useCallback(
     async (members: string[]) => {
       await im.service.removeChannelMembers({
@@ -109,15 +93,15 @@ export const useRemoveChannelMembers = (channelId: string) => {
         members,
       });
 
-      dispatch(
-        removeChannelMembers({
-          network: networkType,
-          channelId,
-          members,
-        }),
-      );
+      // dispatch(
+      //   removeChannelMembers({
+      //     network: networkType,
+      //     channelId,
+      //     members,
+      //   }),
+      // );
     },
-    [channelId, dispatch, networkType],
+    [channelId],
   );
 };
 

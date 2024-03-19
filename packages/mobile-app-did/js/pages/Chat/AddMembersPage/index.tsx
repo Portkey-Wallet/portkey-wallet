@@ -21,7 +21,7 @@ import { useSelectedItemsMap } from '@portkey-wallet/hooks/hooks-ca/chat';
 
 const AddMembersPage = () => {
   const currentChannelId = useCurrentChannelId();
-  const { groupInfo } = useGroupChannelInfo(currentChannelId || '');
+  const { groupInfo, refresh } = useGroupChannelInfo(currentChannelId || '');
   const { memberInfos } = groupInfo || {};
   const { members = [] } = memberInfos || {};
   const addMembers = useAddChannelMembers(currentChannelId || '');
@@ -45,13 +45,14 @@ const AddMembersPage = () => {
         avatar: '',
       }));
       await addMembers(list);
+      await refresh();
       navigationService.goBack();
     } catch (error) {
       CommonToast.failError(error);
     } finally {
       Loading.hide();
     }
-  }, [addMembers, selectedMemberMap]);
+  }, [addMembers, refresh, selectedMemberMap]);
 
   useEffect(() => {
     try {

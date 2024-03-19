@@ -22,7 +22,7 @@ import im from '@portkey-wallet/im';
 
 const RemoveMembersPage = () => {
   const currentChannelId = useCurrentChannelId();
-  const { groupInfo, refreshChannelMembersInfo } = useGroupChannelInfo(currentChannelId || '', false);
+  const { groupInfo, refresh, refreshChannelMembersInfo } = useGroupChannelInfo(currentChannelId || '', false);
   const { memberInfos } = groupInfo || {};
   const { members = [], totalCount } = memberInfos || {};
 
@@ -49,6 +49,7 @@ const RemoveMembersPage = () => {
               Loading.show();
               const result = Array.from(selectedMemberMap.keys());
               await removeMembers(result || []);
+              await refresh();
               navigationService.goBack();
             } catch (error) {
               CommonToast.failError(error);
@@ -59,7 +60,7 @@ const RemoveMembersPage = () => {
         },
       ],
     });
-  }, [removeMembers, selectedMemberMap]);
+  }, [refresh, removeMembers, selectedMemberMap]);
 
   const searchMemberList = useLockCallback(async () => {
     if (!keyword.trim()) return;

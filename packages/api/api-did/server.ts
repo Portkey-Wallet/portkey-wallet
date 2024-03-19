@@ -16,11 +16,12 @@ export class DidService extends ServiceInit {
   protected refreshTokenConfig?: RefreshTokenConfig;
   protected onLockApp?: (expired?: boolean) => void;
   // private clientType: CLIENT_TYPE;
-  private fetchInstance?: IFetch;
+  private fetchInstance?: IFetch = undefined;
   locked?: boolean;
   exceptionManager?: IExceptionManager;
   constructor(fetchInstance?: IFetch) {
     super();
+    console.log('fetchInstancefetchInstancefetchInstance', fetchInstance);
     this.fetchInstance = fetchInstance;
   }
 
@@ -114,7 +115,9 @@ export class DidService extends ServiceInit {
       code: string;
       message?: string;
     };
+    console.log('fetch', this.fetchInstance, URL, this.getConfig(base, config));
     if (this.fetchInstance) {
+      console.log('fetchInstance in');
       const requestConfig = {
         ...fetchConfig,
         url: URL,
@@ -128,6 +131,7 @@ export class DidService extends ServiceInit {
         uri = Object.keys(params).length > 0 ? `${uri}?${stringify(params, stringifyOptions)}` : uri;
         myBody = undefined;
       } else {
+        myBody = params;
         if (requestConfig.body) {
           myBody = JSON.parse(requestConfig.body as string);
         }
@@ -144,8 +148,10 @@ export class DidService extends ServiceInit {
       Object.entries({ ...defaultHeaders, ...headers }).forEach(([headerItem, value]) => {
         myHeaders[headerItem] = value;
       });
+      console.log('this.fetchInstance.fetch', this.fetchInstance.fetch);
       fetchResult = await this.fetchInstance.fetch(uri, _method, myBody, myHeaders);
     } else {
+      console.log('fetchInstance against');
       fetchResult = await customFetch(URL, {
         ...fetchConfig,
         method,

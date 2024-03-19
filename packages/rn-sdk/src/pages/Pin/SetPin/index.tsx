@@ -27,7 +27,6 @@ const MessageMap: any = {
 export default function SetPin({ deliveredSetPinInfo, oldPin }: SetPinPageProps) {
   const digitInput = useRef<DigitInputInterface>();
   const [errorMessage] = useState<string>();
-
   const { onFinish, navigateForResult } = useBaseContainer({
     entryName: PortkeyEntries.SET_PIN,
   });

@@ -174,6 +174,7 @@ export const requestSocialRecoveryOrRegister = async (params: NormalVerifyPathIn
       })),
     };
     sessionId = (await NetworkController.requestSocialRecovery(socialRecoveryParams))?.sessionId ?? '';
+    console.log('requestSocialRecovery sessionId', sessionId);
   } else {
     const registerParams: RequestRegisterParams = {
       chainId,

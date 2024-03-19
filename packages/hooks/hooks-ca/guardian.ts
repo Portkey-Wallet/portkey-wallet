@@ -4,11 +4,16 @@ import { checkHolderError } from '@portkey-wallet/utils/check';
 import { handleErrorCode, handleErrorMessage } from '@portkey-wallet/utils';
 import { useAppCASelector } from '.';
 
-export const useGetRegisterInfo = () => {
+export const useGetRegisterInfo = (requestInstance?: any) => {
   return useCallback(async (info: { loginGuardianIdentifier?: string; caHash?: string }) => {
     try {
       if (info.loginGuardianIdentifier) {
         info.loginGuardianIdentifier = info.loginGuardianIdentifier.replaceAll(' ', '');
+      }
+      if (requestInstance) {
+        return await requestInstance.wallet.getRegisterInfo({
+          params: info,
+        });
       }
       return await request.wallet.getRegisterInfo({
         params: info,

@@ -1,11 +1,9 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { store } from 'store';
+import { store } from '../../store'; // todo: decoupling the store code in  ./mobile-app-did/js/store
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar, StatusBarProps } from 'react-native';
-import { isIOS } from 'packages/utils/mobile/device';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { request } from 'core/network';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 type HigherOrderComponent<T = unknown> = (
   WrappedComponent: React.ComponentType<T>,
@@ -18,14 +16,10 @@ const ProviderComponent: HigherOrderComponent = (WrappedComponent, extraProps: {
     statusBarProps.translucent = true;
     statusBarProps.backgroundColor = 'transparent';
   }
-  // const { apiUrl } = useCurrentNetworkInfo();
-  // request.set('baseURL', apiUrl);
-  const Component = (props: any) => {
+  const component = (props: any) => {
     return (
       <Provider store={store}>
-        <NetworkConfig />
         <SafeAreaView
-          // eslint-disable-next-line react-native/no-inline-styles
           style={{ width: '100%', height: '100%', backgroundColor: extraProps?.statusbarColor ?? '#5B8EF4' }}>
           <StatusBar {...statusBarProps} />
           <WrappedComponent {...props} />
@@ -33,12 +27,7 @@ const ProviderComponent: HigherOrderComponent = (WrappedComponent, extraProps: {
       </Provider>
     );
   };
-  return Component;
+  return component;
 };
 
-const NetworkConfig = () => {
-  const { apiUrl } = useCurrentNetworkInfo();
-  request.set('baseURL', apiUrl);
-  return null;
-};
 export default ProviderComponent;

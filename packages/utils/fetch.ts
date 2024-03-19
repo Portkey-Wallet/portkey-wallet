@@ -237,6 +237,7 @@ const fetchFormat = (
   },
 ) => {
   const { url, signal, params = {}, method = 'GET', headers, resourceUrl, stringifyOptions } = requestConfig;
+  console.log('fetch npm invoke', url);
   let body: RequestInit['body'] = JSON.stringify(params);
   let uri = url;
   const _method = method.toUpperCase();
@@ -254,6 +255,13 @@ const fetchFormat = (
   const myHeaders = new Headers();
   Object.entries({ ...defaultHeaders, ...headers }).forEach(([headerItem, value]) => {
     myHeaders.append(headerItem, value);
+  });
+  const res = fetch(uri, {
+    ...requestConfig,
+    method: _method,
+    headers: myHeaders,
+    signal,
+    body,
   });
   return fetch(uri, {
     ...requestConfig,
@@ -297,6 +305,7 @@ export const customFetch: CustomFetchFun = (url, _config) => {
                     return;
                   }
                   resolve(res);
+                  console.log('res', res);
                 })
                 .catch((err: any) => reject(err));
             }

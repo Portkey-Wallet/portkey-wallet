@@ -45,8 +45,7 @@ const styles = StyleSheet.create({
     height: 60,
   },
   signUpTip: {
-    position: 'absolute',
-    bottom: 80,
+    marginTop: pTd(40),
   },
   termsServiceTip: {
     position: 'absolute',

@@ -15,4 +15,6 @@ export default {
   checkGoogleRecaptcha: '/api/app/account/isGoogleRecaptchaOpen',
   getVerifierServer: '/api/app/account/getVerifierServer',
   getTelegramBot: { target: '/api/app/telegramAuth/getTelegramBot', config: { method: 'GET' } },
+  registerRequest: '/api/app/account/register/request',
+  recoveryRequest: '/api/app/account/recovery/request',
 } as const;

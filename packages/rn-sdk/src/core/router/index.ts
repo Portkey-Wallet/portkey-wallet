@@ -1,5 +1,5 @@
+import { LaunchMode, LaunchModeSet } from 'global/init/entries';
 import { NativeModules } from 'react-native';
-import { LaunchMode, LaunchModeSet } from './init';
 
 interface Router {
   navigate(target: string, params: any): void;
@@ -12,6 +12,7 @@ export function wrapEntry(entry: string) {
 
 class RNSDKRouter implements Router {
   navigate(target: string, params?: any) {
+    console.log('RNSDKRouter navigate', target, params, NativeModules.RouterModule);
     NativeModules.RouterModule.navigateTo(
       wrapEntry(target),
       LaunchModeSet.get(target) || LaunchMode.STANDARD,

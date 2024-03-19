@@ -71,6 +71,7 @@ type thirdPartyInfoType = {
 type TypeItemType = (typeof LOGIN_TYPE_LIST)[number];
 
 const AddGuardian = (props: { targetScene?: string; accelerateChainId: ChainId }) => {
+  console.log('AddGuardian ??');
   const { targetScene = TargetScene.NORMAL, accelerateChainId } = props;
   const { t } = useLanguage();
   const [userGuardiansList, setUserGuardiansList] = useState<Array<GuardianConfig>>([]);

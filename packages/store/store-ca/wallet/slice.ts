@@ -131,6 +131,7 @@ export const walletSlice = createSlice({
       })
       .addCase(setOriginChainId, (state, action) => {
         state.originChainId = action.payload;
+        console.log('setOriginChainId action exe', action.payload);
       })
       .addCase(resetCaInfo, (state, action) => {
         if (!state.walletInfo?.AESEncryptMnemonic) throw new Error(WalletError.noCreateWallet);

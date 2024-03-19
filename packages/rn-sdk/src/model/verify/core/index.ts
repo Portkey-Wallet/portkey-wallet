@@ -79,13 +79,16 @@ export const getVerifiedAndLockWallet = async (
   setBiometrics?: boolean,
 ): Promise<boolean> => {
   try {
+    console.log('deliveredAfterVerifiedConfig', deliveredAfterVerifiedConfig);
     const afterVerifiedConfig: AfterVerifiedConfig = JSON.parse(deliveredAfterVerifiedConfig);
     const { normalVerifyPathInfo, scanQRCodePathInfo } = afterVerifiedConfig || {};
     console.log('afterVerifiedConfig', afterVerifiedConfig);
     let walletConfig: RecoverWalletConfig | null = null;
     if (normalVerifyPathInfo) {
+      console.log('normalVerifyPathInfo in', JSON.stringify(normalVerifyPathInfo));
       walletConfig = await handleNormalVerify(normalVerifyPathInfo);
     } else if (scanQRCodePathInfo) {
+      console.log('normalVerifyPathInfo against');
       walletConfig = await handleScanQRCodeVerify(scanQRCodePathInfo);
     }
     if (!walletConfig) throw new Error('create wallet failed.');
@@ -143,6 +146,7 @@ const handleNormalVerify = async (config: NormalVerifyPathInfo): Promise<Recover
       }
     },
   });
+  console.log('status', status);
   if (findVerifyProcessOnCurrChain(originalChainId, status) !== ProgressStatus.PASS) {
     console.warn(`after ${retryTimes} times polling, account status is still pending.`);
   }

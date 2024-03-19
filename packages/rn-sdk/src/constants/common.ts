@@ -37,3 +37,5 @@ export const ACH_REDIRECT_URL = 'http://portkey';
 export const ACH_WITHDRAW_URL = 'http://portkey_sell';
 
 export const DISCOVER_BOOKMARK_MAX_COUNT = 30;
+
+export const DEFAULT_VIEW_PRIVATE_KEY = '28805dd286a972f0ff268ba42646d5d952d770141bfec55c98e10619c268ecea';

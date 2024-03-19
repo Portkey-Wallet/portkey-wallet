@@ -13,6 +13,7 @@ import { AssetsStateType } from './type';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
 import { NEW_CLIENT_MOCK_ELF_LIST, PAGE_SIZE_IN_NFT_ITEM } from '@portkey-wallet/constants/constants-ca/assets';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
+import { WalletState } from '../wallet/type';
 
 export const initAccountTokenInfo = {
   skipCount: 0,
@@ -65,17 +66,22 @@ const initialState: AssetsStateType = {
 // fetch tokenList on Dashboard
 export const fetchTokenListAsync = createAsyncThunk(
   'fetchTokenListAsync',
-  async ({
-    caAddressInfos,
-    skipCount = 0,
-    maxResultCount = 1000,
-    currentNetwork = 'MAINNET',
-  }: {
-    caAddressInfos: { chainId: ChainId; caAddress: string }[];
-    skipCount?: number;
-    maxResultCount?: number;
-    currentNetwork?: NetworkType;
-  }) => {
+  async (
+    {
+      caAddressInfos,
+      skipCount = 0,
+      maxResultCount = 1000,
+      currentNetwork,
+    }: {
+      caAddressInfos: { chainId: ChainId; caAddress: string }[];
+      skipCount?: number;
+      maxResultCount?: number;
+      currentNetwork?: NetworkType;
+    },
+    { getState },
+  ) => {
+    const { wallet } = getState() as { wallet: WalletState };
+    currentNetwork = currentNetwork || wallet.currentNetwork || 'MAINNET';
     const response = await fetchTokenList({ caAddressInfos, skipCount, maxResultCount });
 
     // mock data fro new account
@@ -104,19 +110,24 @@ export const fetchTokenListAsync = createAsyncThunk(
 // fetch nftCollectionList on Dashboard
 export const fetchNFTCollectionsAsync = createAsyncThunk(
   'fetchNFTCollectionsAsync',
-  async ({
-    caAddressInfos,
-    maxNFTCount = PAGE_SIZE_IN_NFT_ITEM,
-    skipCount = 0,
-    maxResultCount = 1000,
-    currentNetwork = 'MAINNET',
-  }: {
-    caAddressInfos: { chainId: ChainId; caAddress: string }[];
-    maxNFTCount?: number;
-    skipCount?: number;
-    maxResultCount?: number;
-    currentNetwork?: NetworkType;
-  }) => {
+  async (
+    {
+      caAddressInfos,
+      maxNFTCount = PAGE_SIZE_IN_NFT_ITEM,
+      skipCount = 0,
+      maxResultCount = 1000,
+      currentNetwork,
+    }: {
+      caAddressInfos: { chainId: ChainId; caAddress: string }[];
+      maxNFTCount?: number;
+      skipCount?: number;
+      maxResultCount?: number;
+      currentNetwork?: NetworkType;
+    },
+    { getState },
+  ) => {
+    const { wallet } = getState() as { wallet: WalletState };
+    currentNetwork = currentNetwork || wallet.currentNetwork || 'MAINNET';
     const response = await fetchNFTSeriesList({ caAddressInfos, skipCount, maxResultCount });
     return {
       list: response.data,
@@ -138,7 +149,7 @@ export const fetchNFTAsync = createAsyncThunk(
       caAddressInfos,
       chainId,
       pageNum = 0,
-      currentNetwork = 'MAINNET',
+      currentNetwork,
     }: {
       symbol: string;
       caAddressInfos: { chainId: ChainId; caAddress: string }[];
@@ -148,10 +159,11 @@ export const fetchNFTAsync = createAsyncThunk(
     },
     { getState },
   ) => {
-    const { assets } = getState() as { assets: AssetsStateType };
+    const { assets, wallet } = getState() as { assets: AssetsStateType; wallet: WalletState };
     const {
       accountNFT: { accountNFTInfo },
     } = assets;
+    currentNetwork = currentNetwork || wallet.currentNetwork || 'MAINNET';
     const preAccountNFTCollectionList = accountNFTInfo?.[currentNetwork]?.accountNFTList || [];
     const targetNFTCollection = preAccountNFTCollectionList.find(
       item => item.symbol === symbol && item.chainId === chainId,
@@ -181,19 +193,24 @@ export const fetchNFTAsync = createAsyncThunk(
 // fetch current assets when add sent button
 export const fetchAssetAsync = createAsyncThunk(
   'fetchAssetsAsync',
-  async ({
-    keyword,
-    caAddressInfos,
-    skipCount = 0,
-    maxResultCount = 1000,
-    currentNetwork = 'MAINNET',
-  }: {
-    keyword: string;
-    caAddressInfos: { chainId: ChainId; caAddress: string }[];
-    skipCount?: number;
-    maxResultCount?: number;
-    currentNetwork?: NetworkType;
-  }) => {
+  async (
+    {
+      keyword,
+      caAddressInfos,
+      skipCount = 0,
+      maxResultCount = 1000,
+      currentNetwork,
+    }: {
+      keyword: string;
+      caAddressInfos: { chainId: ChainId; caAddress: string }[];
+      skipCount?: number;
+      maxResultCount?: number;
+      currentNetwork?: NetworkType;
+    },
+    { getState },
+  ) => {
+    const { wallet } = getState() as { wallet: WalletState };
+    currentNetwork = currentNetwork || wallet.currentNetwork || 'MAINNET';
     const response = await fetchAssetList({ caAddressInfos, keyword, skipCount, maxResultCount });
 
     return {

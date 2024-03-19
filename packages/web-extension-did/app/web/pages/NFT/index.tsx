@@ -68,8 +68,8 @@ export default function NFT() {
     const { tokenContractAddress, chainId } = nftDetail;
     const formatTokenContractAds = addressFormat(tokenContractAddress, chainId, currentNetwork.walletType);
     return (
-      <div className="info">
-        <div className="title">Basic Info</div>
+      <div className="info basic-info">
+        <div className="info-title">Basic Info</div>
         <div className="contract info-item flex-between">
           <div className="label">Contract Address</div>
           <div className="contract-title flex">
@@ -81,9 +81,9 @@ export default function NFT() {
           <div className="label">Blockchain</div>
           <div>{transNetworkText(nftDetail.chainId, !isMainNet)}</div>
         </div>
-        <div className="alias info-item flex-between">
+        <div className="info-item flex-between">
           <div className="label">Symbol</div>
-          <div className="alias-name">{nftDetail.symbol}</div>
+          <div className="content">{nftDetail.symbol}</div>
         </div>
         <div className="total-supply info-item flex-between">
           <div className="label">Total Supply</div>
@@ -96,15 +96,15 @@ export default function NFT() {
   const renderIsSeedInfo = useMemo(() => {
     const { seedType, expires, seedOwnedSymbol, isSeed } = nftDetail;
     return isSeed ? (
-      <div className="info">
-        <div className="title">Token Creation via This Seed</div>
+      <div className="info seed-info">
+        <div className="info-title">Token Creation via This Seed</div>
         <div className="info-item flex-between">
           <div className="label">Type</div>
           <div>{SeedTypeEnum[seedType || SeedTypeEnum.None]}</div>
         </div>
         <div className="info-item flex-between">
           <div className="label">Token Symbol</div>
-          <div>{seedOwnedSymbol}</div>
+          <div className="content">{seedOwnedSymbol}</div>
         </div>
         <div className="info-item flex-between">
           <div className="label">Expires</div>
@@ -119,11 +119,11 @@ export default function NFT() {
   const renderInscriptionInfo = useMemo(() => {
     const { inscriptionName, limitPerMint } = nftDetail;
     return inscriptionName ? (
-      <div className="info">
-        <div className="title">Inscription Info</div>
+      <div className="info inscription-info">
+        <div className="info-title">Inscription Info</div>
         <div className="info-item flex-between">
           <div className="label">Inscription Name</div>
-          <div>{inscriptionName}</div>
+          <div className="content">{inscriptionName}</div>
         </div>
         {limitPerMint != null && (
           <div className="info-item flex-between">
@@ -140,15 +140,15 @@ export default function NFT() {
   const renderTraitsInfo = useMemo(() => {
     const { traitsPercentages } = nftDetail;
     return traitsPercentages ? (
-      <div className="info">
-        <div className="title">Traits</div>
+      <div className="info traits-info">
+        <div className="info-title">Traits</div>
         {traitsPercentages.map((trait, i) => (
           <div key={`${trait.traitType}_${i}`} className="info-item flex-between-center">
             <div className="label">
               <div>{trait.traitType}</div>
               <div className="label-bold">{trait.value}</div>
             </div>
-            <div>{trait.percent}</div>
+            <div className="content">{trait.percent}</div>
           </div>
         ))}
       </div>
@@ -160,8 +160,8 @@ export default function NFT() {
   const renderGenerationInfo = useMemo(() => {
     const { generation } = nftDetail;
     return generation ? (
-      <div className="info">
-        <div className="title">Generation Info</div>
+      <div className="info generation-info">
+        <div className="info-title">Generation Info</div>
         <div className="info-item flex-between-center">
           <div className="label">Generation</div>
           <div>{generation}</div>

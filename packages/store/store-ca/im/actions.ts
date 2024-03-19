@@ -126,6 +126,13 @@ export const updateGroupInfo = createAction<{
   value: Partial<ChannelInfo>;
 }>('im/updateGroupInfo');
 
+export const updateGroupInfoMembersInfo = createAction<{
+  network: NetworkType;
+  channelId: string;
+  isInit: boolean;
+  value: ChannelInfo['memberInfos'];
+}>('im/updateGroupInfoMembersInfo');
+
 export const setPinList = createAction<{
   network: NetworkType;
   channelId: string;

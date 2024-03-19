@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -16,19 +16,22 @@ import NoData from 'components/NoData';
 import ActionSheet from 'components/ActionSheet';
 import navigationService from 'utils/navigationService';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { strIncludes } from '@portkey-wallet/utils';
 import { useSelectedItemsMap } from '@portkey-wallet/hooks/hooks-ca/chat';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import im from '@portkey-wallet/im';
 
 const RemoveMembersPage = () => {
   const currentChannelId = useCurrentChannelId();
-  const { groupInfo } = useGroupChannelInfo(currentChannelId || '', false);
-  const { members = [] } = groupInfo || {};
+  const { groupInfo, refreshChannelMembersInfo } = useGroupChannelInfo(currentChannelId || '', false);
+  const { memberInfos } = groupInfo || {};
+  const { members = [], totalCount } = memberInfos || {};
+
   const removeMembers = useRemoveChannelMembers(currentChannelId || '');
 
   const [keyword, setKeyword] = useState('');
   const debounceKeyword = useDebounce(keyword, 200);
-  const [rawMemberList, setRawMemberList] = useState<ChannelMemberInfo[]>([]);
   const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>([]);
+  const listShow = useMemo(() => filterMembers.slice(1), [filterMembers]);
   const { selectedItemsMap: selectedMemberMap, onPressItem } = useSelectedItemsMap<GroupMemberItemType>();
 
   const onRemove = useCallback(() => {
@@ -58,20 +61,42 @@ const RemoveMembersPage = () => {
     });
   }, [removeMembers, selectedMemberMap]);
 
-  useEffect(() => {
-    setFilterMembers(() => {
-      let result = [];
-      if (debounceKeyword) {
-        result = rawMemberList.filter(ele => strIncludes(ele.name, debounceKeyword) && !ele.isAdmin);
-      } else {
-        result = rawMemberList.filter(ele => !ele.isAdmin);
+  const searchMemberList = useLockCallback(async () => {
+    if (!keyword.trim()) return;
+
+    try {
+      const result = await im.service.searchChannelMembers({
+        channelUuid: currentChannelId,
+        keyword,
+      });
+      setFilterMembers(result?.data.members || []);
+    } catch (error) {
+      // TODO: change
+      console.log('error', error);
+    }
+  }, [currentChannelId, keyword]);
+
+  const fetchMemberList = useLockCallback(
+    async (isInit?: false) => {
+      if (!keyword.trim() && !isInit) return;
+      if (totalCount && filterMembers?.length >= totalCount) return;
+
+      try {
+        await refreshChannelMembersInfo(filterMembers?.length || 0);
+      } catch (error) {
+        console.log('fetchMoreData', error);
       }
-      return result;
-    });
-  }, [debounceKeyword, rawMemberList]);
+    },
+    [filterMembers?.length, keyword, refreshChannelMembersInfo, totalCount],
+  );
+
+  // keyword search
+  useEffect(() => {
+    searchMemberList();
+  }, [debounceKeyword, keyword, members, searchMemberList]);
 
   useEffectOnce(() => {
-    setRawMemberList([...members]);
+    fetchMemberList(true);
   });
 
   return (
@@ -92,7 +117,7 @@ const RemoveMembersPage = () => {
       </View>
 
       <FlatList
-        data={filterMembers || []}
+        data={listShow || []}
         keyExtractor={(item: ChannelMemberInfo) => item.relationId}
         ListEmptyComponent={<NoData noPic message="No search result" />}
         renderItem={({ item }) => (

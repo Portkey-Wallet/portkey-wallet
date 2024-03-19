@@ -22,7 +22,8 @@ import { useSelectedItemsMap } from '@portkey-wallet/hooks/hooks-ca/chat';
 const AddMembersPage = () => {
   const currentChannelId = useCurrentChannelId();
   const { groupInfo } = useGroupChannelInfo(currentChannelId || '');
-  const { members = [] } = groupInfo || {};
+  const { memberInfos } = groupInfo || {};
+  const { members = [] } = memberInfos || {};
   const addMembers = useAddChannelMembers(currentChannelId || '');
 
   const [keyword, setKeyword] = useState('');

@@ -113,6 +113,7 @@ export type SearchChannelMembersParams = {
   keyword?: string;
   skipCount?: number;
   maxResultCount?: number;
+  filteredMember?: string;
 };
 
 export type SearchChannelMembersResult = { members: ChannelMemberInfo[]; totalCount: number };

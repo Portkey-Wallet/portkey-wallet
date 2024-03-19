@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -13,33 +13,24 @@ import { ChannelMemberInfo } from '@portkey-wallet/im/types/index';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { showAssetList } from 'pages/DashBoard/AssetsOverlay';
 import { useUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { isTargetMember } from '../utils';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import im from '@portkey-wallet/im';
 
 const SelectGroupMembersToTransferPage = () => {
   const currentChannelId = useCurrentChannelId();
-  const { groupInfo } = useGroupChannelInfo(currentChannelId || '', false);
+  const { groupInfo, refreshChannelMembersInfo } = useGroupChannelInfo(currentChannelId || '', false);
 
   const { userId: myUserId } = useUserInfo() || {};
-  const { members = [] } = groupInfo || {};
-  const [rawMemberList, setRawMemberList] = useState<ChannelMemberInfo[]>([]);
-
+  const { memberInfos } = groupInfo || {};
+  const { members = [], totalCount } = memberInfos || {};
   const [keyword, setKeyword] = useState('');
   const debounceKeyword = useDebounce(keyword, 200);
   const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>([]);
 
-  const channelId = useCurrentChannelId();
+  // TODO: filter myself
+  const listShow = useMemo(() => filterMembers.filter(ele => ele.userId !== myUserId), [filterMembers, myUserId]);
 
-  useEffect(() => {
-    setFilterMembers(() => {
-      let result = [];
-      if (debounceKeyword) {
-        result = rawMemberList.filter(ele => isTargetMember(ele, debounceKeyword) && ele.userId !== myUserId);
-      } else {
-        result = rawMemberList.filter(ele => ele.userId !== myUserId);
-      }
-      return [...result];
-    });
-  }, [debounceKeyword, rawMemberList, myUserId]);
+  const channelId = useCurrentChannelId();
 
   const onPressItem = useCallback(
     (toRelationId: string, item: GroupMemberItemType) => {
@@ -56,8 +47,41 @@ const SelectGroupMembersToTransferPage = () => {
     [channelId],
   );
 
+  const searchMemberList = useLockCallback(async () => {
+    if (!keyword.trim()) return;
+    try {
+      const result = await im.service.searchChannelMembers({
+        channelUuid: currentChannelId,
+        keyword,
+      });
+      setFilterMembers(result?.data.members || []);
+    } catch (error) {
+      // TODO: change
+      console.log('error', error);
+    }
+  }, [currentChannelId, keyword]);
+
+  const fetchMemberList = useLockCallback(
+    async (isInit?: false) => {
+      if (!keyword.trim() && !isInit) return;
+      if (totalCount && filterMembers?.length >= totalCount) return;
+
+      try {
+        await refreshChannelMembersInfo(filterMembers?.length || 0);
+      } catch (error) {
+        console.log('fetchMoreData', error);
+      }
+    },
+    [filterMembers?.length, keyword, refreshChannelMembersInfo, totalCount],
+  );
+
+  // keyword search
+  useEffect(() => {
+    searchMemberList();
+  }, [debounceKeyword, keyword, members, searchMemberList]);
+
   useEffectOnce(() => {
-    setRawMemberList([...members]);
+    fetchMemberList(true);
   });
 
   return (
@@ -78,7 +102,7 @@ const SelectGroupMembersToTransferPage = () => {
       </View>
 
       <FlatList
-        data={filterMembers}
+        data={listShow || []}
         extraData={(item: ChannelMemberInfo) => item.relationId}
         ListEmptyComponent={<NoData noPic message={debounceKeyword ? 'No search result' : 'No member'} />}
         renderItem={({ item }) => (

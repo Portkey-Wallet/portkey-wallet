@@ -23,6 +23,7 @@ import {
   transferChannelOwner,
   updateChannelAttribute,
   updateGroupInfo,
+  updateGroupInfoMembersInfo,
 } from '@portkey-wallet/store/store-ca/im/actions';
 import { useCurrentNetworkInfo } from '../network';
 import { sleep } from '@portkey-wallet/utils';
@@ -202,7 +203,7 @@ export const useGroupChannelInfo = (channelId: string, isInit = false) => {
 
   const { relationId } = useRelationId();
 
-  const refresh = useCallback(async () => {
+  const refreshChannelInfo = useCallback(async () => {
     const { data: groupInfo } = await im.service.getChannelInfo({
       channelUuid: channelId,
     });
@@ -214,6 +215,25 @@ export const useGroupChannelInfo = (channelId: string, isInit = false) => {
     );
   }, [channelId, dispatch, networkType]);
 
+  const refreshChannelMembersInfo = useCallback(
+    async (skipCount = 0, maxResultCount = 20) => {
+      const { data } = await im.service.searchChannelMembers({
+        channelUuid: channelId,
+        skipCount,
+        maxResultCount,
+      });
+      dispatch(
+        updateGroupInfoMembersInfo({
+          network: networkType,
+          channelId,
+          isInit: skipCount === 0,
+          value: data,
+        }),
+      );
+    },
+    [channelId, dispatch, networkType],
+  );
+
   const isAdmin = useMemo(() => {
     if (!groupInfo || !relationId) return false;
     if (groupInfo.type !== ChannelTypeEnum.GROUP) return false;
@@ -222,13 +242,14 @@ export const useGroupChannelInfo = (channelId: string, isInit = false) => {
   }, [groupInfo, relationId]);
 
   useEffectOnce(() => {
-    isInit && refresh();
+    isInit && refreshChannelInfo();
   });
 
   return {
     groupInfo,
     isAdmin,
-    refresh,
+    refresh: refreshChannelInfo,
+    refreshChannelMembersInfo,
   };
 };
 

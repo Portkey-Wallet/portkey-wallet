@@ -22,24 +22,23 @@ import ramp, {
   IRampProviderType,
   ISellProviderPrice,
   RampType,
-} from 'packages/ramp';
+} from '@portkey-wallet/ramp';
 import CommonAvatar from 'components/CommonAvatar';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
-import { LoginType } from 'packages/types/types-ca/wallet';
+import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { RAMP_BUY_URL, RAMP_SELL_URL } from '../constants';
 import { checkIsSvgUrl } from 'utils/commonUtil';
 import { Image } from 'react-native';
-import { formatAmountShow } from 'packages/utils/converter';
-import { GuardiansApprovedType } from 'packages/types/types-ca/routeParams';
-import { MAIN_CHAIN_ID } from 'packages/constants/constants-ca/activity';
-// import { useAppRampEntryShow } from 'hooks/ramp';
+import { formatAmountShow } from '@portkey-wallet/utils/converter';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import useEffectOnce from 'hooks/useEffectOnce';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 import { useSDKRampEntryShow, useCurrentWalletInfo, useDefaultToken, useGuardiansInfo } from './hook';
 import { t } from 'i18next';
 import { getBottomSpace } from 'utils/screen';
+import { GuardiansApprovedType } from 'types/guardians';
 
 interface RouterParams {
   type?: RampType;

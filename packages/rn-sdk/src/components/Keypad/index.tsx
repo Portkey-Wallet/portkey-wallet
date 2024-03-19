@@ -5,7 +5,7 @@ import GStyles from 'assets/theme/GStyles';
 import { TextXXXL } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import CommonSvg from 'components/Svg';
-import { PIN_SIZE } from 'packages/constants/misc';
+import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 
 export interface KeypadPropsType {
   onChange?: (value: string) => void;

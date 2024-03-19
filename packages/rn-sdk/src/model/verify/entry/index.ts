@@ -1,4 +1,4 @@
-import { handleErrorMessage } from 'packages/utils';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 import ActionSheet from 'components/ActionSheet';
 import Loading from 'components/Loading';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
@@ -14,7 +14,7 @@ import { AccountOriginalType, AfterVerifiedConfig, VerifiedGuardianDoc } from '.
 import { GuardianConfig } from '../guardian';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { SendVerifyCodeResultDTO } from 'network/dto/guardian';
-import { OperationTypeEnum } from 'packages/types/verifier';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { NetworkController } from 'network/controller';
 import { PortkeyConfig } from 'global/constants';
 import { VerifierDetailsPageProps } from 'pages/Entries/VerifierDetails';

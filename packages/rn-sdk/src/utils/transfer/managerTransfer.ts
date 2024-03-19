@@ -1,7 +1,7 @@
-import { SendOptions } from 'packages/contracts/types';
-import { GuardiansApprovedType } from 'packages/types/types-ca/routeParams';
-import { ContractBasic } from 'packages/utils/contract';
+import { SendOptions } from '@portkey-wallet/contracts/types';
+import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { managerForwardCall } from './managerForwardCall';
+import { GuardiansApprovedType } from 'types/guardians';
 
 export const managerTransfer = ({
   caContract,

@@ -1,5 +1,5 @@
-import { windowHeight } from 'packages/utils/mobile/device';
-import { isIOS } from 'packages/utils/mobile/device';
+import { windowHeight } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
 import gSTyles from './GStyles';
 

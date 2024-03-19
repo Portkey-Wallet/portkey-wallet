@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import { DigitInputInterface } from 'components/DigitInput';
 import ActionSheet from 'components/ActionSheet';
-import { VerificationType } from 'packages/types/verifier';
+import { VerificationType } from '@portkey-wallet/types/verifier';
 import PinContainer from 'components/PinContainer';
 import { StyleSheet } from 'react-native';
 import useBaseContainer from 'model/container/UseBaseContainer';

@@ -8,7 +8,7 @@ import CommonButton from 'components/CommonButton';
 import { TextM } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
-import { divDecimalsToShow } from 'packages/utils/converter';
+import { divDecimalsToShow } from '@portkey-wallet/utils/converter';
 import { ITransferLimitItem } from 'model/security';
 import { callGetTransferLimitMethod } from 'model/contract/handler';
 import Loading from 'components/Loading';

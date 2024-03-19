@@ -4,8 +4,8 @@ import { TextM } from 'components/CommonText';
 import React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
-import { TokenItemShowType } from 'packages/types/types-ca/token';
-import { shrinkSendQrData, QRCodeDataObjType } from 'packages/utils/qrCode';
+import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { shrinkSendQrData, QRCodeDataObjType } from '@portkey-wallet/utils/qrCode';
 import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
 import { useCurrentNetworkInfo, useDefaultChainType } from '../../hooks/network';
 

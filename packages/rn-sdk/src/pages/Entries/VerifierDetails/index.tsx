@@ -1,4 +1,4 @@
-import { OperationTypeEnum, VerificationType } from 'packages/types/verifier';
+import { OperationTypeEnum, VerificationType } from '@portkey-wallet/types/verifier';
 import { PortkeyEntries } from '../../../config/entries';
 import BaseContainer, { BaseContainerProps } from '../../../model/container/BaseContainer';
 import VerifierDetails from 'pages/Guardian/VerifierDetails';

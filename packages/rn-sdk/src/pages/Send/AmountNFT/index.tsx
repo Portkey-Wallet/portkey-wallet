@@ -5,7 +5,7 @@ import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
-import { parseInputIntegerChange } from 'packages/utils';
+import { parseInputIntegerChange } from '@portkey-wallet/utils';
 
 interface AmountNFT {
   sendNumber: string;

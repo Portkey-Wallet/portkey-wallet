@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { View } from 'react-native';
-import { checkEmail } from 'packages/utils/check';
+import { checkEmail } from '@portkey-wallet/utils/check';
 import { BGStyles } from 'assets/theme/styles';
 import { useLanguage } from 'i18n/hooks';
 import styles from '../styles';

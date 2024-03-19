@@ -3,7 +3,7 @@ import CommonSvg from 'components/Svg';
 import { TextM } from 'components/CommonText';
 import { useLanguage } from 'i18n/hooks';
 import TokenOverlay from 'components/TokenOverlay';
-import { TokenItemShowType } from 'packages/types/types-ca/token';
+import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import { PortkeyEntries } from 'config/entries';

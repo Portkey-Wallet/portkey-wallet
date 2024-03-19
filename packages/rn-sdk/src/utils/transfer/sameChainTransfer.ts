@@ -1,8 +1,8 @@
-import { SendOptions } from 'packages/contracts/types';
-import { GuardiansApprovedType } from 'packages/types/types-ca/routeParams';
-import { BaseToken } from 'packages/types/types-eoa/token';
-import { ContractBasic } from 'packages/utils/contract';
+import { SendOptions } from '@portkey-wallet/contracts/types';
+import { BaseToken } from '@portkey-wallet/types/types-eoa/token';
+import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { managerForwardCall } from './managerForwardCall';
+import { GuardiansApprovedType } from 'types/guardians';
 
 const sameChainTransfer = ({
   contract,

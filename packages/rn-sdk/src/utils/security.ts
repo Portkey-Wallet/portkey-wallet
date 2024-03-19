@@ -1,11 +1,11 @@
-// import { checkSecurity } from 'packages/utils/securityTest';
+// import { checkSecurity } from '@portkey-wallet/utils/securityTest';
 import { ChainId } from '@portkey/provider-types';
 import ActionSheet from 'components/ActionSheet';
 import WalletSecurityOverlay from 'components/WalletSecurityOverlay';
 import WalletSecurityAccelerate from 'components/WalletSecurityAccelerate';
 import { NetworkController } from 'network/controller';
-import { LoginKeyType } from 'packages/types/types-ca/wallet';
-import { sleep } from 'packages/utils';
+import { LoginKeyType } from '@portkey-wallet/types/types-ca/wallet';
+import { sleep } from '@portkey-wallet/utils';
 
 export interface IAccelerateGuardian {
   type: LoginKeyType;

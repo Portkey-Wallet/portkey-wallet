@@ -1,9 +1,10 @@
 import { AddressItem, BaseListResponse } from '@portkey/services';
-import { TransactionTypes } from 'packages/constants/constants-ca/activity';
-import { CaHolderInfo, IImInfo } from 'packages/im';
-import { ITokenInfoType, INftInfoType } from 'packages/store/store-ca/assets/type';
-import { ChainId } from 'packages/types';
-import { NftInfo, TransactionFees } from 'packages/types/types-ca/activity';
+import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
+import { ITokenInfoType, INftInfoType } from '@portkey-wallet/store/store-ca/assets/type';
+import { ChainId } from '@portkey-wallet/types';
+import { NftInfo, TransactionFees } from '@portkey-wallet/types/types-ca/activity';
+import { CaHolderInfo } from '@portkey-wallet/types/types-ca/wallet';
+import { IImInfo } from '@portkey-wallet/types/types-ca/contact';
 
 export interface SearchTokenListParams {
   keyword?: string; // used to filter token list, can be empty

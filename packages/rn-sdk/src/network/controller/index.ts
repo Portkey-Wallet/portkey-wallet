@@ -2,7 +2,7 @@ import { PortkeyConfig } from 'global/constants';
 import { AccountIdentifierStatusDTO, RegisterStatusDTO } from 'network/dto/signIn';
 import { NetworkOptions, ResultWrapper, TypedUrlParams, nativeFetch } from 'service/native-modules';
 import { APIPaths } from 'network/path';
-import { ChainId } from 'packages/types';
+import { ChainId } from '@portkey-wallet/types';
 import {
   CheckVerifyCodeParams,
   CheckVerifyCodeResultDTO,
@@ -15,7 +15,7 @@ import {
   VerifyAppleGuardianParams,
   VerifyGoogleGuardianParams,
 } from 'network/dto/guardian';
-import { OperationTypeEnum } from 'packages/types/verifier';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { CountryCodeDataDTO } from 'types/wallet';
 import {
   AElfChainStatusDTO,
@@ -26,7 +26,7 @@ import {
   RequestRegisterParams,
   RequestSocialRecoveryParams,
 } from 'network/dto/wallet';
-import { sleep } from 'packages/utils';
+import { sleep } from '@portkey-wallet/utils';
 import { getCachedNetworkToken } from 'network/token';
 import { isWalletUnlocked } from 'model/verify/core';
 import { SymbolImages } from 'model/symbolImage';
@@ -42,7 +42,6 @@ import {
   GetAccountAssetsByKeywordsParams,
   GetAccountAssetsByKeywordsResult,
   GetRecentTransactionParams,
-  RecentTransactionResponse,
   GetContractAddressesParams,
   GetContractListApiType,
   IActivitiesApiResponse,
@@ -53,14 +52,15 @@ import {
 import { selectCurrentBackendConfig } from 'utils/commonUtil';
 import { CheckPaymentSecurityRuleParams, CheckPaymentSecurityRuleResult } from 'network/dto/security';
 import { TokenPriceResult } from 'network/dto/token';
-import { TransactionTypes } from 'packages/constants/constants-ca/activity';
+import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
 import {
   CheckSecurityResult,
   CheckTransactionFeeParams,
   CheckTransactionFeeResult,
   CheckTransferSecurityParams,
 } from 'network/dto/transaction';
-import { TokenItemType } from 'packages/types/types-eoa/token';
+import { TokenItemType } from '@portkey-wallet/types/types-eoa/token';
+import { RecentTransactionResponse } from '@portkey/services';
 
 const DEFAULT_MAX_POLLING_TIMES = 50;
 const MAX_PAGE_LIMIT = 100;

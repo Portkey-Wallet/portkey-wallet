@@ -9,10 +9,10 @@ import { pageStyles } from './style';
 import ListItem from 'components/ListItem';
 import { useLanguage } from 'i18n/hooks';
 import CommonInput from 'components/CommonInput';
-import { checkEmail } from 'packages/utils/check';
+import { checkEmail } from '@portkey-wallet/utils/check';
 import { LOGIN_TYPE_LIST } from 'constants/misc';
-import { PRIVATE_GUARDIAN_ACCOUNT } from 'packages/constants/constants-ca/guardian';
-import { OperationTypeEnum, VerificationType, VerifierItem } from 'packages/types/verifier';
+import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
+import { OperationTypeEnum, VerificationType, VerifierItem } from '@portkey-wallet/types/verifier';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import GuardianTypeSelectOverlay from '../components/GuardianTypeSelectOverlay';
 import VerifierSelectOverlay from '../components/VerifierSelectOverlay';
@@ -21,13 +21,13 @@ import { ErrorType } from 'types/common';
 import { FontStyles } from 'assets/theme/styles';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
-import { LoginType } from 'packages/types/types-ca/wallet';
+import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { VerifierImage } from 'pages/Guardian/components/VerifierImage';
 import fonts from 'assets/theme/fonts';
 import PhoneInput from 'components/PhoneInput';
 import Touchable from 'components/Touchable';
-import { request } from 'packages/api/api-did';
-import verificationApiConfig from 'packages/api/api-did/verification';
+import { request } from '@portkey-wallet/api/api-did';
+import verificationApiConfig from '@portkey-wallet/api/api-did/verification';
 import {
   AppleAuthentication,
   useAppleAuthentication,
@@ -55,9 +55,9 @@ import { handleGuardiansApproval, handlePhoneOrEmailGuardianVerify } from 'model
 import { AccountOriginalType } from 'model/verify/core';
 import { GuardianVerifyType, VerifiedGuardianInfo } from 'model/verify/social-recovery';
 import { Buffer } from 'buffer';
-import { sleep } from 'packages/utils';
+import { sleep } from '@portkey-wallet/utils';
 import { TargetScene } from './type';
-import { ChainId } from 'packages/types';
+import { ChainId } from '@portkey-wallet/types';
 
 if (!global.Buffer) {
   global.Buffer = Buffer;

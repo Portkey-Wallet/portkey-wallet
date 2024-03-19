@@ -9,7 +9,7 @@ import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 import CommonAvatar from 'components/CommonAvatar';
 import { ChainId } from '@portkey/provider-types';
-import { addressFormat, formatStr2EllipsisStr, formatChainInfoToShow } from 'packages/utils';
+import { addressFormat, formatStr2EllipsisStr, formatChainInfoToShow } from '@portkey-wallet/utils';
 import { useCurrentNetworkType } from 'model/hooks/network';
 import { RecentContactItemType } from 'network/dto/query';
 import useBaseContainer from 'model/container/UseBaseContainer';

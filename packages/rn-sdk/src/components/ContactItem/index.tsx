@@ -1,3 +1,4 @@
+import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
@@ -5,7 +6,6 @@ import CommonAvatar from 'components/CommonAvatar';
 import { TextL, TextS } from 'components/CommonText';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
-import { ContactItemType } from 'network/dto/query';
 import React, { memo } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';

@@ -1,6 +1,6 @@
 import { defaultColors } from 'assets/theme';
 import { StyleSheet } from 'react-native';
-import { screenHeight, screenWidth, windowHeight } from 'packages/utils/mobile/device';
+import { screenHeight, screenWidth, windowHeight } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
 
 export const overlayStyles = StyleSheet.create({

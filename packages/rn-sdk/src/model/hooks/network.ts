@@ -1,5 +1,5 @@
-import { BackEndNetWorkMap } from 'packages/constants/constants-ca/backend-network';
-import { NetworkType } from 'packages/types';
+import { BackEndNetWorkMap } from '@portkey-wallet/constants/constants-ca/backend-network';
+import { NetworkType } from '@portkey-wallet/types';
 import { PortkeyConfig } from 'global/constants';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useState } from 'react';

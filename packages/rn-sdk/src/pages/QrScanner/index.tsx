@@ -9,15 +9,15 @@ import * as ImagePicker from 'expo-image-picker';
 import { TextM } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
-import { isIOS, screenHeight, screenWidth } from 'packages/utils/mobile/device';
+import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { Camera } from 'expo-camera';
-import { expandQrData } from 'packages/utils/qrCode';
-import { checkIsUrl } from 'packages/utils/dapp/browser';
+import { expandQrData } from '@portkey-wallet/utils/qrCode';
+import { checkIsUrl } from '@portkey-wallet/utils/dapp/browser';
 // import { useDiscoverJumpWithNetWork } from 'hooks/discover'; // currently we do not use this
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
-import { QRData, isLoginQRData } from 'packages/types/types-ca/qrcode';
-import { isAelfAddress } from 'packages/utils/aelf';
+import { QRData } from '@portkey-wallet/types/types-ca/qrcode';
+import { isAelfAddress } from '@portkey-wallet/utils/aelf';
 import useBaseContainer, { VoidResult } from 'model/container/UseBaseContainer';
 import { PortkeyEntries, isPortkeyEntries } from 'config/entries';
 import { EntryResult, PermissionType, chooseImageAndroid, PortkeyModulesEntity } from 'service/native-modules';
@@ -27,6 +27,7 @@ import { isWalletUnlocked } from 'model/verify/core';
 import { checkIsPortKeyUrl, isEntryScheme } from 'utils/scheme';
 import { myThrottle } from 'utils/commonUtil';
 import { getCurrentNetworkType } from 'model/hooks/network';
+import { isLoginQRData } from 'utils/qrcode';
 
 export interface ScanQRCodeProps {
   useScanQRPath?: boolean;

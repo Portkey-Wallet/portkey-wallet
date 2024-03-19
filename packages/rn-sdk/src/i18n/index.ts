@@ -3,8 +3,8 @@ import { initReactI18next } from 'react-i18next';
 import * as RNLocalize from 'react-native-localize';
 import { getStorageData } from 'utils/asyncStorage';
 import { DEFAULT_LANGUAGE, getLocalLanguage, isValidLanguage } from './config';
-import commonEn from 'packages/i18n/en';
-import commonZh from 'packages/i18n/zh';
+import commonEn from '@portkey-wallet/i18n/en';
+import commonZh from '@portkey-wallet/i18n/zh';
 import en from './languages/en.json';
 import zh from './languages/zh.json';
 // the translations

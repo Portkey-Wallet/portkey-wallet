@@ -12,8 +12,8 @@ import GStyles from 'assets/theme/GStyles';
 import { RAMP_BUY_URL, RAMP_SELL_URL } from 'pages/Ramp/constants';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
-import { GuardiansApprovedType } from 'packages/types/types-ca/routeParams';
 import { useHandleRampSell } from './hooks/useHandleRampSell';
+import { GuardiansApprovedType } from 'types/guardians';
 
 const safeAreaColorMap = {
   white: defaultColors.bg1,

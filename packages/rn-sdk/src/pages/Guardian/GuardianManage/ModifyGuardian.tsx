@@ -9,8 +9,8 @@ import PageContainer from 'components/PageContainer';
 import { pageStyles } from './style';
 import ListItem from 'components/ListItem';
 import { useLanguage } from 'i18n/hooks';
-import { LOGIN_TYPE_LIST } from 'packages/constants/verifier';
-import { OperationTypeEnum, VerifierItem } from 'packages/types/verifier';
+import { LOGIN_TYPE_LIST } from 'constants/misc';
+import { OperationTypeEnum, VerifierItem } from '@portkey-wallet/types/verifier';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import VerifierSelectOverlay from '../components/VerifierSelectOverlay';
 import ActionSheet from 'components/ActionSheet';
@@ -18,7 +18,7 @@ import { ErrorType } from 'types/common';
 import { FontStyles } from 'assets/theme/styles';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
-import { LoginType } from 'packages/types/types-ca/wallet';
+import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { VerifierImage } from 'pages/Guardian/components/VerifierImage';
 import GuardianAccountItem from '../components/GuardianAccountItem';
 import { GuardianConfig } from 'model/verify/guardian';
@@ -33,7 +33,7 @@ import { PortkeyEntries } from 'config/entries';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { handleGuardiansApproval } from 'model/verify/entry/hooks';
 import { GuardianVerifyType } from 'model/verify/social-recovery';
-import { UserGuardianItem } from 'packages/store/store-ca/guardians/type';
+import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 
 type thirdPartyInfoType = {
   id: string;

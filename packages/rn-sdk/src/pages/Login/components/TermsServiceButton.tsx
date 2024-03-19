@@ -4,7 +4,7 @@ import GStyles from 'assets/theme/GStyles';
 import { TextS } from 'components/CommonText';
 import Touchable from 'components/Touchable';
 import styles from '../styles';
-import { OfficialWebsite } from 'packages/constants/constants-ca/network';
+import { OfficialWebsite } from '@portkey-wallet/constants/constants-ca/network';
 import { FontStyles } from 'assets/theme/styles';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';

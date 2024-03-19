@@ -1,4 +1,4 @@
-import { RampType } from 'packages/ramp';
+import { RampType } from '@portkey-wallet/ramp';
 import { useMemo } from 'react';
 import { IconName } from 'components/Svg';
 import { useSDKRampEntryShow } from 'pages/Ramp/RampPreview/hook';

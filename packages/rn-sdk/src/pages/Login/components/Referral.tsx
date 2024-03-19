@@ -20,7 +20,7 @@ import Divider from 'components/Divider';
 import { defaultColors } from 'assets/theme';
 import { PageLoginType, PageType } from '../types';
 import { useVerifyEntry } from 'model/verify/entry';
-import { isIOS } from 'packages/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { getUnlockedWallet } from 'model/wallet';
 
 const TitleMap = {

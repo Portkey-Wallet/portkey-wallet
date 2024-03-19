@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MAX_REFRESH_TIME } from './constants';
-import { formatAmountShow } from 'packages/utils/converter';
-import { ErrorType, INIT_HAS_ERROR, INIT_NONE_ERROR } from 'packages/constants/constants-ca/common';
+import { formatAmountShow } from '@portkey-wallet/utils/converter';
+import { ErrorType, INIT_HAS_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/constants/constants-ca/common';
 import isEqual from 'lodash/isEqual';
 import {
   IBuyPriceResult,
@@ -13,9 +13,9 @@ import {
   ISellPriceResult,
   ISellProviderPrice,
   RampType,
-} from 'packages/ramp';
-import { IRampLimit } from 'packages/types/types-ca/ramp';
-import { getBuyDetail, getBuyPrice, getSellDetail, getSellPrice } from 'packages/utils/ramp';
+} from '@portkey-wallet/ramp';
+import { IRampLimit } from '@portkey-wallet/types/types-ca/ramp';
+import { getBuyDetail, getBuyPrice, getSellDetail, getSellPrice } from '@portkey-wallet/utils/ramp';
 
 export interface UseReceiveParams {
   type: RampType;

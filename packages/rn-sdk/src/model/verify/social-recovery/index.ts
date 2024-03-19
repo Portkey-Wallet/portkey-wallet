@@ -3,7 +3,7 @@ import { GuardianConfig } from '../guardian';
 import { CheckVerifyCodeResultDTO } from 'network/dto/guardian';
 import { ThirdPartyAccountInfo } from '../third-party-account';
 import { ITransferLimitItem } from 'model/security';
-import { ChainId } from 'packages/types';
+import { ChainId } from '@portkey-wallet/types';
 import { GuardianApprovalPageResult } from 'pages/Entries/GuardianApproval';
 
 export interface GuardianVerifyConfig {

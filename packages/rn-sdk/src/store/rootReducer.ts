@@ -1,7 +1,7 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import { persistReducer } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { rampSlice } from 'packages/store/store-ca/ramp/slice';
+import { rampSlice } from '@portkey-wallet/store/store-ca/ramp/slice';
 import chainSlice from '@portkey-wallet/store/network/slice';
 import txFeeSlice from '@portkey-wallet/store/store-ca/txFee/slice';
 import securitySlice from '@portkey-wallet/store/store-ca/security/slice';

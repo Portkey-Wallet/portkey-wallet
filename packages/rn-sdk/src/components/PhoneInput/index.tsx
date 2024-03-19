@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import Touchable from 'components/Touchable';
 import CommonInput, { CommonInputProps } from 'components/CommonInput';
-import { CountryItem } from 'packages/types/types-ca/country';
+import { CountryItem } from '@portkey-wallet/types/types-ca/country';
 import { pTd } from 'utils/unit';
 
 import CommonSvg from 'components/Svg';

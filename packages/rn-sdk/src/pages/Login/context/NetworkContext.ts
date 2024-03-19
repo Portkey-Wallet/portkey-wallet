@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { NetworkItem } from 'packages/types/types-ca/network';
+import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
 
 export interface NetworkContextState {
   currentNetwork: NetworkItem | undefined;

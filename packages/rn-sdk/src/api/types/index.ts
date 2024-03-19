@@ -44,7 +44,7 @@ export enum WalletState {
   LOCKED,
   UNLOCKED,
 }
-export type { IToSendHomeParamsType } from 'packages/types/types-ca/routeParams';
+export type { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 export interface IServices {
   readonly accountService: IAccountService;
   readonly guardianService: IGuardianService;

@@ -3,7 +3,7 @@ import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
 import CommonSvg from 'components/Svg';
 import { useLanguage } from 'i18n/hooks';
-import { formatStr2EllipsisStr } from 'packages/utils';
+import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import React, { useCallback } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 import { TouchableOpacity } from 'react-native';

@@ -2,7 +2,7 @@ import React from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { Keyboard, View, ViewProps } from 'react-native';
 import { StyleSheet, ViewStyle } from 'react-native';
-import { screenWidth } from 'packages/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import { TextXL } from 'components/CommonText';
@@ -11,8 +11,8 @@ import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
 import ButtonRow from 'components/ButtonRow';
 import { CommonButtonProps } from 'components/CommonButton';
-import { isIOS } from 'packages/utils/mobile/device';
-import { windowHeight } from 'packages/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { windowHeight } from '@portkey-wallet/utils/mobile/device';
 
 export interface ModalBodyProps extends ViewProps {
   title?: string;

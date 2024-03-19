@@ -1,14 +1,14 @@
 import { useCallback } from 'react';
-import { DeviceInfoType, UpdateNotify, VersionDeviceType } from 'packages/types/types-ca/device';
+import { DeviceInfoType, UpdateNotify, VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 import { DEVICE_TYPE } from 'constants/common';
-import useLockCallback from 'packages/hooks/useLockCallback';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import * as Application from 'expo-application';
-import { request } from 'packages/api/api-did';
+import { request } from '@portkey-wallet/api/api-did';
 import { ButtonRowProps } from 'components/ButtonRow';
 import { Linking, Platform } from 'react-native';
 import OverlayModal from 'components/OverlayModal';
 import ActionSheet from 'components/ActionSheet';
-import { compareVersions } from 'packages/utils/device';
+import { compareVersions } from 'utils/commonUtil';
 import * as Device from 'expo-device';
 
 export const useGetDeviceInfo = () => {

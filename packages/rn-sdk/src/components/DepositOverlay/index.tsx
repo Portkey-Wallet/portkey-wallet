@@ -5,7 +5,7 @@ import Svg from 'components/Svg';
 import { TextL, TextS } from 'components/CommonText';
 import { View } from 'react-native';
 import { StyleSheet } from 'react-native';
-import { screenWidth } from 'packages/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import { FontStyles } from 'assets/theme/styles';

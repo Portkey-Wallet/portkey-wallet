@@ -1,6 +1,6 @@
-import { BaseConfig, RequestConfig } from 'packages/api/types';
+import { BaseConfig, RequestConfig } from '@portkey-wallet/api/types';
 import { NetworkController } from 'network/controller';
-import { IRampRequest } from 'packages/ramp';
+import { IRampRequest } from '@portkey-wallet/ramp';
 
 class RnsdkService implements IRampRequest {
   send = async (base: BaseConfig, config?: RequestConfig | undefined): Promise<any> => {

@@ -1,4 +1,4 @@
-import { OperationTypeEnum } from 'packages/types/verifier';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { PortkeyConfig, setCurrChainId } from 'global/constants';
 import { AccountOriginalType, NormalVerifyPathInfo, VerifiedGuardianDoc, wrapExtraData } from 'model/verify/core';
 import { GuardianConfig } from 'model/verify/guardian';
@@ -14,11 +14,11 @@ import {
   RequestSocialRecoveryParams,
 } from 'network/dto/wallet';
 import { CountryCodeDataDTO } from 'types/wallet';
-import { randomId, sleep } from 'packages/utils';
+import { randomId, sleep } from '@portkey-wallet/utils';
 import { ThirdPartyAccountInfo } from 'model/verify/third-party-account';
 import { GlobalStorage } from 'service/storage';
-import { ChainId } from 'packages/types';
-import { LoginType } from 'packages/types/types-ca/wallet';
+import { ChainId } from '@portkey-wallet/types';
+import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { Verifier } from 'model/contract/handler';
 
 export const COUNTRY_CODE_DATA_KEY = 'countryCodeData';

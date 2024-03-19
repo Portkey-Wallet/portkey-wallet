@@ -4,7 +4,7 @@ import { BaseMethodResult, CallCaMethodProps, IContractService } from 'api/types
 import { AccountError } from 'api/error';
 import { getCAContractInstance } from 'model/contract/handler';
 import { getUnlockedWallet } from 'model/wallet';
-import { SendResult, ViewResult } from 'packages/contracts/types';
+import { SendResult, ViewResult } from '@portkey-wallet/contracts/types';
 import { CheckWalletUnlocked } from 'api/decorate';
 
 @injectable()

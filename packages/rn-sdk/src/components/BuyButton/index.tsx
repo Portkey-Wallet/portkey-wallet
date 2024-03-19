@@ -12,7 +12,7 @@ import { dashBoardBtnStyle } from '../SendButton/style';
 import { innerPageStyles } from './style';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
-import { RampType } from 'packages/ramp';
+import { RampType } from '@portkey-wallet/ramp';
 
 interface SendButtonType {
   themeType?: 'dashBoard' | 'innerPage';

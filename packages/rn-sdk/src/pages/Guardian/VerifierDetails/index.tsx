@@ -1,4 +1,4 @@
-import { DIGIT_CODE } from 'packages/constants/misc';
+import { DIGIT_CODE } from '@portkey-wallet/constants/misc';
 import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
 import VerifierCountdown, { VerifierCountdownInterface } from 'components/VerifierCountdown';
@@ -6,9 +6,9 @@ import PageContainer from 'components/PageContainer';
 import DigitInput, { DigitInputInterface } from 'components/DigitInput';
 import React, { useMemo, useRef } from 'react';
 import { StyleSheet, Text } from 'react-native';
-import { OperationTypeEnum } from 'packages/types/verifier';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { FontStyles } from 'assets/theme/styles';
-import { LoginType } from 'packages/types/types-ca/wallet';
+import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { AccountOriginalType } from 'model/verify/core';
 import usePhoneOrEmailGuardian, { GuardianConfig, INIT_TIME_OUT } from 'model/verify/guardian';
 import { NetworkController } from 'network/controller';
@@ -20,7 +20,7 @@ import { CheckVerifyCodeResultDTO } from 'network/dto/guardian';
 import GuardianItem from '../components/GuardianItem';
 import CommonToast from 'components/CommonToast';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { UserGuardianItem } from 'packages/store/store-ca/guardians/type';
+import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 
 function TipText({ guardianAccount, isRegister }: { guardianAccount?: string; isRegister?: boolean }) {
   const [first, last] = useMemo(() => {

@@ -4,7 +4,7 @@ import {
   SerializableStateInvariantMiddlewareOptions,
 } from '@reduxjs/toolkit';
 import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
-import { rampSlice } from 'packages/store/store-ca/ramp/slice';
+import { rampSlice } from '@portkey-wallet/store/store-ca/ramp/slice';
 import chainSlice from '@portkey-wallet/store/network/slice';
 import txFeeSlice from '@portkey-wallet/store/store-ca/txFee/slice';
 import securitySlice from '@portkey-wallet/store/store-ca/security/slice';

@@ -1,4 +1,4 @@
-import { screenHeight } from 'packages/utils/mobile/device';
+import { screenHeight } from '@portkey-wallet/utils/mobile/device';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { View, ViewStyle, TextStyle, StyleSheet } from 'react-native';
 import CommonLargeList, { CommonLargeListProps } from 'components/CommonLargeList';

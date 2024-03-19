@@ -14,7 +14,7 @@ import { checkPin, getUseBiometric, rememberUseBiometric } from 'model/verify/co
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 import BaseContainerContext from 'model/container/BaseContainerContext';
-import { authenticationReady } from 'packages/utils/mobile/authentication';
+import { authenticationReady } from '@portkey-wallet/utils/mobile/authentication';
 import { authenticateBioAsync, authenticateBioReady } from 'service/biometric';
 import { getUnlockedWallet } from 'model/wallet';
 

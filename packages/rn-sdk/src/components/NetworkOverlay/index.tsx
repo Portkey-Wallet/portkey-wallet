@@ -5,9 +5,9 @@ import OverlayModal from 'components/OverlayModal';
 import Touchable from 'components/Touchable';
 import CommonSvg from 'components/Svg';
 import { pTd } from 'utils/unit';
-import { NetworkItem } from 'packages/types/types-ca/network';
+import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
 import { BorderStyles } from 'assets/theme/styles';
-import { NetworkList } from 'packages/constants/constants-ca/network-mainnet';
+import { NetworkList } from '@portkey-wallet/constants/constants-ca/network-mainnet';
 import { ModalBody } from 'components/ModalBody';
 import ActionSheet from 'components/ActionSheet';
 

@@ -1,4 +1,4 @@
-import { ContractBasic } from 'packages/utils/contract';
+import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 
 export const getTokenInfo = async ({
   tokenContract,

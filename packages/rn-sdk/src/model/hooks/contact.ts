@@ -1,7 +1,8 @@
+import { ContactItemType, GetContractListApiType } from '@portkey-wallet/types/types-ca/contact';
+import { RecentTransactionResponse } from '@portkey/services';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { getUnlockedWallet } from 'model/wallet';
 import { NetworkController } from 'network/controller';
-import { ContactItemType, GetContractListApiType, RecentTransactionResponse } from 'network/dto/query';
 import { useCallback, useMemo, useState } from 'react';
 
 export const useContact = () => {

@@ -1,7 +1,7 @@
 import { ITokenItemResponse, IUserTokenItem } from 'network/dto/query';
 import BigNumber from 'bignumber.js';
 import { createContext } from 'react';
-import { NFTCollectionItemShowType } from 'packages/types/types-ca/assets';
+import { NFTCollectionItemShowType } from '@portkey-wallet/types/types-ca/assets';
 
 export interface AssetsContextType {
   balanceList: Array<ITokenItemResponse>;

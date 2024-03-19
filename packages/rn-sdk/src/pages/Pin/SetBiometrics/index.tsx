@@ -7,9 +7,9 @@ import GStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
 import { BGStyles } from 'assets/theme/styles';
 import Touchable from 'components/Touchable';
-import { usePreventHardwareBack } from 'packages/hooks/mobile';
+import { usePreventHardwareBack } from '@portkey-wallet/hooks/mobile';
 import { pTd } from 'utils/unit';
-import { handleErrorMessage } from 'packages/utils';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 import CommonToast from 'components/CommonToast';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { getVerifiedAndLockWallet } from 'model/verify/core';
@@ -17,7 +17,7 @@ import Loading from 'components/Loading';
 import { PortkeyEntries } from 'config/entries';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { authenticateAsync, LocalAuthenticationResult } from 'expo-local-authentication';
-import { isIOS } from 'packages/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 const ScrollViewProps = { disabled: true };
 

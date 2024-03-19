@@ -1,6 +1,6 @@
-import { ChainId } from 'packages/types';
-import { LoginType } from 'packages/types/types-ca/wallet';
-import { OperationTypeEnum } from 'packages/types/verifier';
+import { ChainId } from '@portkey-wallet/types';
+import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { TypedUrlParams } from 'service/native-modules';
 
 export interface GetRecommendedGuardianParams {

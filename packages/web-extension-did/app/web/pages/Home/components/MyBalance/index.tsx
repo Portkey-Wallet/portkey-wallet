@@ -15,14 +15,8 @@ import {
   useCommonState,
   useLoading,
 } from 'store/Provider/hooks';
-import {
-  useCaAddressInfoList,
-  useChainIdList,
-  useCurrentWallet,
-  useOriginChainId,
-} from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
-import { fetchAllTokenListAsync, getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
+import { useCaAddressInfoList, useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import CustomTokenModal from 'pages/components/CustomTokenModal';
 import { IAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
@@ -72,15 +66,11 @@ export default function MyBalance() {
   const [navTarget, setNavTarget] = useState<'send' | 'receive'>('send');
   const [tokenOpen, setTokenOpen] = useState(false);
   const [depositOpen, setDepositOpen] = useState(false);
-  const {
-    accountToken: { accountTokenList },
-    accountBalance,
-  } = useAssetInfo();
+  const { accountBalance } = useAssetInfo();
   const navigate = useNavigateState<TSendLocationState>();
   const { state } = useLocationState<TMyBalanceState>();
   const { passwordSeed } = useUserInfo();
   const appDispatch = useAppDispatch();
-  const chainIdArray = useChainIdList();
   const isMainNet = useIsMainnet();
   const { walletInfo } = useCurrentWallet();
   const caAddressInfos = useCaAddressInfoList();
@@ -93,7 +83,7 @@ export default function MyBalance() {
       {
         label: t('Tokens'),
         key: BalanceTab.TOKEN,
-        children: <TokenList tokenList={accountTokenList} />,
+        children: <TokenList />,
       },
       {
         label: t('NFTs'),
@@ -106,7 +96,7 @@ export default function MyBalance() {
         children: <Activity />,
       },
     ],
-    [accountTokenList, t],
+    [t],
   );
   const accountBalanceUSD = useAccountBalanceUSD();
   const getGuardianList = useGuardianList();
@@ -131,11 +121,9 @@ export default function MyBalance() {
       setActiveKey(state.key);
     }
     if (!passwordSeed) return;
-    appDispatch(fetchTokenListAsync({ caAddressInfos }));
-    appDispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray }));
     appDispatch(getCaHolderInfoAsync());
     appDispatch(getSymbolImagesAsync());
-  }, [passwordSeed, appDispatch, isRampShow, state?.key, caAddressInfos, chainIdArray]);
+  }, [passwordSeed, appDispatch, isRampShow, state?.key, caAddressInfos]);
 
   useEffect(() => {
     getGuardianList({ caHash: walletInfo?.caHash });

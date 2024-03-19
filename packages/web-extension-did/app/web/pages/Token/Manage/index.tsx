@@ -6,7 +6,7 @@ import CustomSvg from 'components/CustomSvg';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import DropdownSearch from 'components/DropdownSearch';
 import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useCommonState, useLoading, useTokenInfo, useUserInfo } from 'store/Provider/hooks';
+import { useAppDispatch, useCommonState, useLoading, useUserInfo } from 'store/Provider/hooks';
 import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
@@ -17,13 +17,16 @@ import { request } from '@portkey-wallet/api/api-did';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
-import './index.less';
 import singleMessage from 'utils/singleMessage';
+import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
+import LoadingMore from 'components/LoadingMore/LoadingMore';
+import { PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
+import './index.less';
 
 export default function AddToken() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { tokenDataShowInMarket } = useTokenInfo();
+  const { tokenDataShowInMarket, totalRecordCount, fetchTokenInfoList } = useToken();
   const [filterWord, setFilterWord] = useState<string>('');
   const { passwordSeed } = useUserInfo();
   const appDispatch = useAppDispatch();
@@ -31,6 +34,22 @@ export default function AddToken() {
   const isMainnet = useIsMainnet();
   const { setLoading } = useLoading();
   const [tokenShowList, setTokenShowList] = useState<TokenItemShowType[]>(tokenDataShowInMarket);
+  const hasMoreToken = useMemo(
+    () => tokenDataShowInMarket.length < totalRecordCount,
+    [tokenDataShowInMarket.length, totalRecordCount],
+  );
+
+  const getMoreTokenInfo = useCallback(async () => {
+    if (tokenDataShowInMarket.length && tokenDataShowInMarket.length < totalRecordCount) {
+      await fetchTokenInfoList({
+        chainIdArray,
+        keyword: '',
+        skipCount: tokenDataShowInMarket.length,
+        maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+      });
+    }
+  }, [chainIdArray, fetchTokenInfoList, tokenDataShowInMarket.length, totalRecordCount]);
+
   useEffect(() => {
     if (!filterWord) {
       setTokenShowList(tokenDataShowInMarket);
@@ -38,8 +57,10 @@ export default function AddToken() {
   }, [filterWord, tokenDataShowInMarket]);
 
   useEffect(() => {
-    !filterWord && passwordSeed && appDispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray }));
-  }, [passwordSeed, appDispatch, chainIdArray, filterWord]);
+    if (!filterWord) {
+      fetchTokenInfoList({ keyword: '', chainIdArray, skipCount: 0, maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS });
+    }
+  }, [passwordSeed, appDispatch, chainIdArray, filterWord, fetchTokenInfoList]);
 
   const handleAddCustomToken = useCallback(() => {
     setFilterWord('');
@@ -225,9 +246,20 @@ export default function AddToken() {
           />
         </div>
         {renderTokenList}
+        <LoadingMore hasMore={hasMoreToken} loadMore={getMoreTokenInfo} className="load-more" />
       </div>
     );
-  }, [filterWord, isPrompt, navigate, renderTokenList, rightElement, searchDebounce, t]);
+  }, [
+    filterWord,
+    getMoreTokenInfo,
+    hasMoreToken,
+    isPrompt,
+    navigate,
+    renderTokenList,
+    rightElement,
+    searchDebounce,
+    t,
+  ]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

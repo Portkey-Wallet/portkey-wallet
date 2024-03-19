@@ -25,6 +25,12 @@ export const NEW_CLIENT_MOCK_ELF_LIST: TokenItemShowType[] = [
 
 export const PAGE_SIZE_IN_NFT_ITEM = 9;
 
+export const PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION = 10;
+
+export const PAGE_SIZE_IN_ACCOUNT_TOKEN = 10;
+
+export const PAGE_SIZE_IN_ACCOUNT_ASSETS = 10;
+
 export const ELF_SYMBOL = 'ELF';
 
 export const NFT_SMALL_SIZE = 144;

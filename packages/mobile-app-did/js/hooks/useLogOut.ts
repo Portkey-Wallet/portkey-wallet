@@ -20,7 +20,7 @@ import {
 } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { ManagerInfo } from '@portkey-wallet/graphql/contract/__generated__/types';
-import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
+import { useLogoutResetStore, useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import { useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
 import { getWalletInfo, isCurrentCaHash } from 'utils/redux';
@@ -43,6 +43,7 @@ export default function useLogOut() {
   const dispatch = useAppDispatch();
   const { currentNetwork } = useWallet();
   const resetStore = useResetStore();
+  const logoutResetStore = useLogoutResetStore();
   const otherNetworkLogged = useOtherNetworkLogged();
   const { resetCurrentNetworkSetting } = useMiscSetting();
 
@@ -61,6 +62,7 @@ export default function useLogOut() {
       dispatch(resetSecurity(currentNetwork));
       dispatch(reSetCheckManagerExceed(currentNetwork));
       resetCurrentNetworkSetting();
+      logoutResetStore();
       if (otherNetworkLogged) {
         dispatch(resetCaInfo(currentNetwork));
         navigationService.reset('LoginPortkey');

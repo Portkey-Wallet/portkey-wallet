@@ -31,7 +31,7 @@ import { handlePhoneOrEmailGuardianVerify } from 'model/verify/entry/hooks';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
-import { UserGuardianItem } from 'packages/store/store-ca/guardians/type';
+import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 
 export default function GuardianDetail(config: { info: string }) {
   const { t } = useLanguage();

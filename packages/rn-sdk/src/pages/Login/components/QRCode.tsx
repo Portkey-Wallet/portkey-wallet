@@ -8,7 +8,7 @@ import GStyles from 'assets/theme/GStyles';
 import { TextS, TextXXXL } from 'components/CommonText';
 import { PageLoginType } from '../types';
 import { useIntervalQueryCAInfoByAddress } from 'hooks/useIntervalQueryCAInfoByAddress';
-import { LoginQRData } from 'packages/types/types-ca/qrcode';
+import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
 import { useGetDeviceInfo } from 'hooks/device';
 import { DEVICE_INFO_VERSION } from '@portkey-wallet/constants/constants-ca/device';
 import CommonQRCodeStyled from 'components/CommonQRCodeStyled';

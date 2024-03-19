@@ -44,7 +44,7 @@ import {
   callRemoveGuardianMethod,
   getVerifierData,
 } from 'model/contract/handler';
-import { ChainId } from 'packages/types';
+import { ChainId } from '@portkey-wallet/types';
 import { getUnlockedWallet } from 'model/wallet';
 import { ITransferLimitItem } from '@portkey/services';
 export default function GuardianApproval({

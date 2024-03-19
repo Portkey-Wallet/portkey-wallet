@@ -21,7 +21,7 @@ import CommonToast from 'components/CommonToast';
 import { useBuyFiat } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { IRampCryptoItem, IRampFiatItem, RampType } from '@portkey-wallet/ramp';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { IRampLimit } from 'packages/types/types-ca/ramp';
+import { IRampLimit } from '@portkey-wallet/types/types-ca/ramp';
 import isEqual from 'lodash/isEqual';
 import { getBuyCrypto, getBuyLimit } from '@portkey-wallet/utils/ramp';
 import CommonAvatar from 'components/CommonAvatar';

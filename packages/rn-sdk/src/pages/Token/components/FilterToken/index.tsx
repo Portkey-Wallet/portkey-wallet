@@ -10,7 +10,7 @@ import { TextL, TextM } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';
 import Svg from 'components/Svg';
 import { useCurrentNetworkType } from 'model/hooks/network';
-import { TokenItemShowType } from 'packages/types/types-eoa/token';
+import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 

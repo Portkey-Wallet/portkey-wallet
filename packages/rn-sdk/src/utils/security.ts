@@ -4,7 +4,7 @@ import ActionSheet from 'components/ActionSheet';
 import WalletSecurityOverlay from 'components/WalletSecurityOverlay';
 import WalletSecurityAccelerate from 'components/WalletSecurityAccelerate';
 import { NetworkController } from 'network/controller';
-import { LoginKeyType } from 'packages/types/types-ca/wallet';
+import { LoginKeyType } from '@portkey-wallet/types/types-ca/wallet';
 import { sleep } from '@portkey-wallet/utils';
 
 export interface IAccelerateGuardian {

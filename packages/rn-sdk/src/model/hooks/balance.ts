@@ -1,4 +1,4 @@
-import { NFTCollectionItemShowType } from 'packages/types/types-ca/assets';
+import { NFTCollectionItemShowType } from '@portkey-wallet/types/types-ca/assets';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { getUnlockedWallet } from 'model/wallet';
 import { NetworkController } from 'network/controller';

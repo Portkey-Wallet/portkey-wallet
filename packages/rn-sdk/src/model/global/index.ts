@@ -17,8 +17,8 @@ import { CountryCodeDataDTO } from 'types/wallet';
 import { randomId, sleep } from '@portkey-wallet/utils';
 import { ThirdPartyAccountInfo } from 'model/verify/third-party-account';
 import { GlobalStorage } from 'service/storage';
-import { ChainId } from 'packages/types';
-import { LoginType } from 'packages/types/types-ca/wallet';
+import { ChainId } from '@portkey-wallet/types';
+import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { Verifier } from 'model/contract/handler';
 
 export const COUNTRY_CODE_DATA_KEY = 'countryCodeData';

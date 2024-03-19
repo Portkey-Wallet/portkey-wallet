@@ -13,7 +13,7 @@ import { defaultColors } from 'assets/theme';
 import CommonAvatar from 'components/CommonAvatar';
 import { chainShowText } from '@portkey-wallet/utils';
 import { FontStyles } from 'assets/theme/styles';
-import { IRampCryptoItem } from 'packages/ramp';
+import { IRampCryptoItem } from '@portkey-wallet/ramp';
 
 type ItemType = IRampCryptoItem;
 

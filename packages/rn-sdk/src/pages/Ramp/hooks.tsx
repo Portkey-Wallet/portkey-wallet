@@ -14,7 +14,7 @@ import {
   ISellProviderPrice,
   RampType,
 } from '@portkey-wallet/ramp';
-import { IRampLimit } from 'packages/types/types-ca/ramp';
+import { IRampLimit } from '@portkey-wallet/types/types-ca/ramp';
 import { getBuyDetail, getBuyPrice, getSellDetail, getSellPrice } from '@portkey-wallet/utils/ramp';
 
 export interface UseReceiveParams {

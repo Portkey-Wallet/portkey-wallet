@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useRef } from 'react';
 import CommonSvg from 'components/Svg';
 import { dashBoardBtnStyle, innerPageStyles } from './style';
-import { TokenItemShowType } from 'packages/types/types-ca/token';
+import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { View, TouchableOpacity, StyleProp, ViewProps } from 'react-native';
 import { TextM } from 'components/CommonText';
 import { useLanguage } from 'i18n/hooks';

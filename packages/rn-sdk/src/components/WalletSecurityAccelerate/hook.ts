@@ -2,7 +2,7 @@ import { getCachedAllChainInfo } from 'model/chain';
 import { getUnlockedWallet } from 'model/wallet';
 import { AElfChainStatusItemDTO } from 'network/dto/wallet';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { ChainId } from 'packages/types';
+import { ChainId } from '@portkey-wallet/types';
 import { useCallback, useEffect, useState } from 'react';
 import { checkSecuritySafe } from 'utils/security';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';

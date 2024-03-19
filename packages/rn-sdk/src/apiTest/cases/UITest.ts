@@ -1,6 +1,6 @@
 import { TestCaseApi } from 'apiTest/type';
 import { portkey } from 'api';
-import { ChainId } from 'packages/types';
+import { ChainId } from '@portkey-wallet/types';
 /*
 NOTE: 
 1. UI op need to open a new page, so a UI op needs to be placed in an array 

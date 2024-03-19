@@ -1,5 +1,5 @@
-import { LoginKeyType } from 'packages/types/types-ca/wallet';
-import { VerifierInfo, VerifyStatus } from 'packages/types/verifier';
+import { LoginKeyType } from '@portkey-wallet/types/types-ca/wallet';
+import { VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
 
 export type GuardianApproved = {
   type: LoginKeyType;

@@ -5,7 +5,7 @@ import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import CommonSvg from 'components/Svg';
 import { pTd } from 'utils/unit';
-import { AddressItem, ContactItemType } from 'packages/types/types-ca/contact';
+import { AddressItem, ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import Touchable from 'components/Touchable';
 import { setStringAsync } from 'expo-clipboard';
 import CommonToast from 'components/CommonToast';

@@ -12,14 +12,14 @@ import SafeAreaBox from 'components/SafeAreaBox';
 import CommonSvg from 'components/Svg';
 import CommonAvatar from 'components/CommonAvatar';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
-import { ChainId } from 'packages/types';
+import { ChainId } from '@portkey-wallet/types';
 import { ScreenWidth } from '@rneui/base';
 import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
 import { copyText } from 'utils/commonUtil';
 import { getStatusBarHeight } from 'utils/screen';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
-import { IToSendHomeParamsType } from 'packages/types/types-ca/routeParams';
+import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 
 export interface TokenDetailProps {
   nftItem: NftItemType;

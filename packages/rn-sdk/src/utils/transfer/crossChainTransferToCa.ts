@@ -1,5 +1,5 @@
-import { SendOptions } from 'packages/contracts/types';
-import { ContractBasic } from '@portkey-wallet/utils/contract';
+import { SendOptions } from '@portkey-wallet/contracts/types';
+import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 
 export const crossChainTransferToCa = ({
   contract,

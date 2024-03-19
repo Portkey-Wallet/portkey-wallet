@@ -2,7 +2,7 @@ import { PortkeyConfig } from 'global/constants';
 import { AccountIdentifierStatusDTO, RegisterStatusDTO } from 'network/dto/signIn';
 import { NetworkOptions, ResultWrapper, TypedUrlParams, nativeFetch } from 'service/native-modules';
 import { APIPaths } from 'network/path';
-import { ChainId } from 'packages/types';
+import { ChainId } from '@portkey-wallet/types';
 import {
   CheckVerifyCodeParams,
   CheckVerifyCodeResultDTO,
@@ -15,7 +15,7 @@ import {
   VerifyAppleGuardianParams,
   VerifyGoogleGuardianParams,
 } from 'network/dto/guardian';
-import { OperationTypeEnum } from 'packages/types/verifier';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { CountryCodeDataDTO } from 'types/wallet';
 import {
   AElfChainStatusDTO,
@@ -60,7 +60,7 @@ import {
   CheckTransactionFeeResult,
   CheckTransferSecurityParams,
 } from 'network/dto/transaction';
-import { TokenItemType } from 'packages/types/types-eoa/token';
+import { TokenItemType } from '@portkey-wallet/types/types-eoa/token';
 
 const DEFAULT_MAX_POLLING_TIMES = 50;
 const MAX_PAGE_LIMIT = 100;

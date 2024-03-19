@@ -11,7 +11,7 @@ import GStyles from 'assets/theme/GStyles';
 import CommonButton from 'components/CommonButton';
 import socket from '@portkey-wallet/socket/socket-did';
 import CommonToast from 'components/CommonToast';
-import { LoginQRData } from 'packages/types/types-ca/qrcode';
+import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 import { NetworkController } from 'network/controller';

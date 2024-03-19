@@ -57,7 +57,7 @@ import { GuardianVerifyType, VerifiedGuardianInfo } from 'model/verify/social-re
 import { Buffer } from 'buffer';
 import { sleep } from '@portkey-wallet/utils';
 import { TargetScene } from './type';
-import { ChainId } from 'packages/types';
+import { ChainId } from '@portkey-wallet/types';
 
 if (!global.Buffer) {
   global.Buffer = Buffer;

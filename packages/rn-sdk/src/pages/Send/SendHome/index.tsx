@@ -28,7 +28,7 @@ import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { TransactionError } from '@portkey-wallet/constants/constants-ca/assets';
 import { AddressError, AddressErrorArray, TransactionErrorArray } from '@portkey-wallet/constants/constants-ca/send';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { IToSendHomeParamsType } from 'packages/types/types-ca/routeParams';
+import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import { getAddressChainId, isSameAddresses } from '@portkey-wallet/utils';
 import { getEntireDIDAelfAddress, isCrossChain, isAllowAelfAddress, getAelfAddress } from '@portkey-wallet/utils/aelf';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';

@@ -17,7 +17,7 @@ import fonts from 'assets/theme/fonts';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
-import { TokenItemShowType } from 'packages/types/types-ca/token';
+import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { NetworkController } from 'network/controller';

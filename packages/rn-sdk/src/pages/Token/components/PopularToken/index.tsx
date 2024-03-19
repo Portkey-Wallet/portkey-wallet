@@ -7,7 +7,7 @@ import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import TokenItem from '../TokenItem';
 import fonts from 'assets/theme/fonts';
-import { TokenItemShowType } from 'packages/types/types-eoa/token';
+import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 import { useCurrentNetworkType } from 'model/hooks/network';
 
 interface IPopularTokenSectionProps {

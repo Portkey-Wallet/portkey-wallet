@@ -9,7 +9,7 @@ import { useCommonNetworkInfo, useSymbolImages } from 'components/TokenOverlay/h
 import { useLanguage } from 'i18n/hooks';
 import { useCurrentNetworkType } from 'model/hooks/network';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { IToSendAssetParamsType } from 'packages/types/types-ca/routeParams';
+import { IToSendAssetParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import { formatAmountShow, divDecimals } from '@portkey-wallet/utils/converter';
 import { parseInputChange } from '@portkey-wallet/utils/input';
 import { useMemo } from 'react';

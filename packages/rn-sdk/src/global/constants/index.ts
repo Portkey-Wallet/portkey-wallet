@@ -1,5 +1,5 @@
 import { BackEndNetWorkMap } from '@portkey-wallet/constants/constants-ca/backend-network';
-import { ChainId } from 'packages/types';
+import { ChainId } from '@portkey-wallet/types';
 import { GlobalStorage } from 'service/storage';
 
 // Now using v2 on mainnet/testnet/test4, v1/test1 is deprecated

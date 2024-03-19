@@ -7,7 +7,7 @@ import { countryCodeFilter } from '@portkey-wallet/constants/constants-ca/countr
 import GStyles from 'assets/theme/GStyles';
 import IndexBarLargeList from 'components/CommonLargeList/IndexBarLargeList';
 import CommonInput from 'components/CommonInput';
-import { CountryItem } from 'packages/types/types-ca/country';
+import { CountryItem } from '@portkey-wallet/types/types-ca/country';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { TextL, TextM } from 'components/CommonText';

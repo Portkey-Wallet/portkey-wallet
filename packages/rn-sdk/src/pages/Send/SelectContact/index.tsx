@@ -7,7 +7,7 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { useLanguage } from 'i18n/hooks';
 import { FlashList } from '@shopify/flash-list';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
-import { ContactItemType } from 'packages/im';
+import { ContactItemType } from '@portkey-wallet/im';
 import React, { useMemo, useCallback } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';

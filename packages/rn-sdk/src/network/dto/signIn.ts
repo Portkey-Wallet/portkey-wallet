@@ -1,5 +1,5 @@
-import { GuardiansInfo } from 'packages/types/types-ca/guardian';
-import { CAInfo } from 'packages/types/types-ca/wallet';
+import { GuardiansInfo } from '@portkey-wallet/types/types-ca/guardian';
+import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 
 export interface RegisterStatusDTO {
   originChainId: string;

@@ -10,7 +10,7 @@ import { TextM, TextXL } from 'components/CommonText';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
-// import { changeDrawerOpenStatus } from 'packages/store/store-ca/discover/slice';
+// import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
 // import { useAppDispatch } from 'store/hooks';
 import { sleep } from '@portkey-wallet/utils';
 // import { useAppCASelector } from '@portkey-wallet/hooks';

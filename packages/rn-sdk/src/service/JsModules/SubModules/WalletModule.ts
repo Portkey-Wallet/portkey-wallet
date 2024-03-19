@@ -1,4 +1,4 @@
-import { SendResult, ViewResult } from 'packages/contracts/types';
+import { SendResult, ViewResult } from '@portkey-wallet/contracts/types';
 import { PortkeyModulesEntity } from '../../native-modules';
 import { BaseJSModule, BaseMethodParams, BaseMethodResult } from '../types';
 import { callRemoveManagerMethod, getCAContractInstance } from 'model/contract/handler';

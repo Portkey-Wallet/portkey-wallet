@@ -30,7 +30,7 @@ import { useSellCrypto } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { useSDKRampEntryShow } from 'pages/Ramp/RampPreview/hook';
 import { IRampCryptoItem, IRampFiatItem, RampType } from '@portkey-wallet/ramp';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { IRampLimit } from 'packages/types/types-ca/ramp';
+import { IRampLimit } from '@portkey-wallet/types/types-ca/ramp';
 import isEqual from 'lodash/isEqual';
 import { getSellFiat, getSellLimit } from '@portkey-wallet/utils/ramp';
 import CommonAvatar from 'components/CommonAvatar';

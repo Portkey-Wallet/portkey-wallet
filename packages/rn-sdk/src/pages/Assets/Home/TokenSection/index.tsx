@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect, useRef, useContext, useMemo } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { View, FlatList } from 'react-native';
-import { TokenItemShowType } from 'packages/types/types-ca/token';
+import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import TokenListItem from 'components/TokenListItem';

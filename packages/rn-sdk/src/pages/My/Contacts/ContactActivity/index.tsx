@@ -1,4 +1,4 @@
-import { ChainId } from 'packages/types';
+import { ChainId } from '@portkey-wallet/types';
 import { addressFormat, formatChainInfoToShow, getExploreLink } from '@portkey-wallet/utils';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
@@ -15,7 +15,7 @@ import TransferItem from 'components/TransferList/components/TransferItem';
 import NoData from 'components/NoData';
 import SafeAreaBox from 'components/SafeAreaBox';
 import CustomHeader from 'components/CustomHeader';
-import { ActivityItemType } from 'packages/types/types-ca/activity';
+import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { getUnlockedWallet, useUnlockedWallet } from 'model/wallet';
 import { NFT_MIDDLE_SIZE } from '@portkey-wallet/constants/constants-ca/assets';
 import myEvents from 'utils/deviceEvent';

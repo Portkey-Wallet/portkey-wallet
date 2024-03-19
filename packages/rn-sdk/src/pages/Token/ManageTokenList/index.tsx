@@ -12,7 +12,7 @@ import FilterTokenSection from '../components/FilterToken';
 import PopularTokenSection from '../components/PopularToken';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
-import { TokenItemShowType } from 'packages/types/types-eoa/token';
+import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 import { useChainsNetworkInfo } from 'model/hooks/network';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';

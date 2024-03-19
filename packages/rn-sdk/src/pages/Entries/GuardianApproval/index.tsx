@@ -6,7 +6,7 @@ import React from 'react';
 import { AfterVerifiedConfig } from 'model/verify/core';
 import { SetPinPageProps, SetPinPageResult } from 'pages/Pin/SetPin';
 import CommonToast from 'components/CommonToast';
-import { ChainId } from 'packages/types';
+import { ChainId } from '@portkey-wallet/types';
 
 export default class GuardianApprovalEntryPage extends BaseContainer<
   GuardianApprovalPageProps,

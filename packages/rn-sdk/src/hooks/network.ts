@@ -1,4 +1,4 @@
-import { ChainType, NetworkType } from 'packages/types';
+import { ChainType, NetworkType } from '@portkey-wallet/types';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { getCurrentNetworkType } from 'model/hooks/network';
 import { useState } from 'react';

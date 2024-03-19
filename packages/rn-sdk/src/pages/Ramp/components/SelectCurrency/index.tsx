@@ -10,7 +10,7 @@ import CommonInput from 'components/CommonInput';
 import { useGStyles } from 'assets/theme/useGStyles';
 import { ModalBody } from 'components/ModalBody';
 import { defaultColors } from 'assets/theme';
-import { IRampFiatItem } from 'packages/ramp';
+import { IRampFiatItem } from '@portkey-wallet/ramp';
 import CommonAvatar from 'components/CommonAvatar';
 import myEvents from 'utils/deviceEvent';
 import { FlashList } from '@shopify/flash-list';

@@ -243,7 +243,6 @@ export default function MyBalance() {
       const targetUrl = stringifyETrans({
         url: eTransferUrl,
         query: {
-          tokenSymbol: 'USDT',
           type: eTransType,
         },
       });

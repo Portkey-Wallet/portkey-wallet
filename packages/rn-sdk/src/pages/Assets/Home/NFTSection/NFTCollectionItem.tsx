@@ -13,7 +13,7 @@ import { NFTCollectionItemShowType } from 'packages/types/types-ca/assets';
 import Touchable from 'components/Touchable';
 import { OpenCollectionObjType } from './index';
 import { ChainId } from 'packages/types';
-import { formatChainInfoToShow } from 'packages/utils';
+import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { useCurrentNetworkType } from 'model/hooks/network';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';

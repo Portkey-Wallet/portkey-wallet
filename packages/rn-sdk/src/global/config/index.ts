@@ -1,5 +1,5 @@
 import { IConfig, IEntryConfig, ITheme, NetworkConfig } from 'api/config';
-import { BackEndNetWorkMap } from 'packages/constants/constants-ca/backend-network';
+import { BackEndNetWorkMap } from '@portkey-wallet/constants/constants-ca/backend-network';
 
 export const defaultEntryConfig: IEntryConfig = {
   isBuySectionShow: true,

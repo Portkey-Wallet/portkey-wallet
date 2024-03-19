@@ -21,9 +21,9 @@ import CommonToast from 'components/CommonToast';
 import Loading from 'components/Loading';
 import { ModifyGuardianProps } from 'pages/Guardian/GuardianManage/ModifyGuardian';
 import { PortkeyConfig } from 'global/constants';
-import { OperationTypeEnum } from 'packages/types/verifier';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { Verifier, getVerifierData } from 'model/contract/handler';
-import { UserGuardianItem } from 'packages/store/store-ca/guardians/type';
+import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 
 export default function GuardianHome({ containerId }: { containerId: any }) {
   const { t } = useLanguage();

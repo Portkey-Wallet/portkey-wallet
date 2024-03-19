@@ -7,18 +7,18 @@ import securityWarning from 'assets/image/pngs/securityWarning.png';
 // import navigationService from 'utils/navigationService';
 import { defaultColors } from 'assets/theme';
 import { TextM, TextXL } from 'components/CommonText';
-import { screenWidth } from 'packages/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 // import { changeDrawerOpenStatus } from 'packages/store/store-ca/discover/slice';
 // import { useAppDispatch } from 'store/hooks';
-import { sleep } from 'packages/utils';
+import { sleep } from '@portkey-wallet/utils';
 // import { useAppCASelector } from '@portkey-wallet/hooks';
 import { ChainId } from '@portkey/provider-types';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 import { TargetScene } from 'pages/Guardian/GuardianManage/type';
-import { isIOS } from 'packages/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 function AlertBody({ accelerateChainId }: { accelerateChainId: ChainId }) {
   // const dispatch = useAppDispatch();

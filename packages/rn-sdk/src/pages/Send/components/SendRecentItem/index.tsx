@@ -11,7 +11,7 @@ import { PortkeyEntries } from 'config/entries';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { useCurrentNetworkType } from 'model/hooks/network';
 import { RecentContactItemType } from 'network/dto/query';
-import { addressFormat, formatStr2EllipsisStr, formatChainInfoToShow } from 'packages/utils';
+import { addressFormat, formatStr2EllipsisStr, formatChainInfoToShow } from '@portkey-wallet/utils';
 import { useState, memo } from 'react';
 import { TouchableOpacity, View, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';

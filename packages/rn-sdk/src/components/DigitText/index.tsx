@@ -1,10 +1,10 @@
-import { PIN_SIZE } from 'packages/constants/misc';
+import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import { Text } from '@rneui/base';
 import { defaultColors } from 'assets/theme';
 import { TextS } from 'components/CommonText';
 import React, { useCallback, memo, useMemo } from 'react';
 import { StyleSheet, View, StyleProp, ViewStyle } from 'react-native';
-import { screenWidth } from 'packages/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 
 export type DigitTextProps = {
   maxLength?: number;

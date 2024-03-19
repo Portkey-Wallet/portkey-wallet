@@ -1,4 +1,4 @@
-import { PIN_SIZE } from 'packages/constants/misc';
+import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import PageContainer from 'components/PageContainer';
 import { DigitInputInterface } from 'components/DigitInput';
 import React, { useCallback, useRef, useState } from 'react';

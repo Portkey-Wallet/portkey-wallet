@@ -8,7 +8,7 @@ import { TextL } from 'components/CommonText';
 import type { SafeAreaColorMapKeyUnit } from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import { ViewStyleType } from 'types/styles';
-import { useHardwareBackPress } from 'packages/hooks/mobile';
+import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import { PortkeyModulesEntity } from 'service/native-modules';
 
 export type CustomHeaderProps = {

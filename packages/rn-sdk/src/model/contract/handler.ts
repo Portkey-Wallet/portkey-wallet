@@ -1,7 +1,7 @@
-import { getContractBasic } from 'packages/contracts/utils';
-import { ContractBasic } from 'packages/contracts/utils/ContractBasic';
-import { divDecimalsStr, timesDecimals } from 'packages/utils/converter';
-import { handleVerificationDoc } from 'packages/utils/guardian';
+import { getContractBasic } from '@portkey-wallet/contracts/utils';
+import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import { divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
+import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
 import { PortkeyConfig } from 'global/constants';
 import { getCachedAllChainInfo, getCachedNetworkConfig } from 'model/chain';
 import { guardianTypeStrToEnum } from 'model/global';
@@ -18,7 +18,7 @@ import { handleCachedValue } from 'service/storage/cache';
 import { ChainId } from '@portkey/provider-types';
 import { useCommonNetworkInfo } from 'components/TokenOverlay/hooks';
 import { useCurrentWalletInfo } from 'components/WalletSecurityAccelerate/hook';
-import { request } from 'packages/api/api-did';
+import { request } from '@portkey-wallet/api/api-did';
 import { useCallback } from 'react';
 import AElf from 'aelf-sdk';
 

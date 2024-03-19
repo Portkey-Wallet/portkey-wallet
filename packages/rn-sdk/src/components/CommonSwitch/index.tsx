@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Switch, SwitchProps } from 'react-native';
 import { defaultColors } from 'assets/theme';
-import { isIOS } from 'packages/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 const CommonSwitch = (props: SwitchProps) => {
   const { value } = props;

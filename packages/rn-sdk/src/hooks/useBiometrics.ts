@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { authenticationReady } from 'packages/utils/mobile/authentication';
+import { authenticationReady } from '@portkey-wallet/utils/mobile/authentication';
 import useEffectOnce from './useEffectOnce';
 
 export default function useBiometricsReady() {

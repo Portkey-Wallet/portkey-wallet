@@ -15,16 +15,20 @@ import { Platform, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'r
 import { pTd } from 'utils/unit';
 import CommonAvatar from 'components/CommonAvatar';
 import { ActivityItemType, CaAddressInfoType } from 'network/dto/query';
-import { SHOW_FROM_TRANSACTION_TYPES, ELF_DECIMAL, TransactionTypes } from 'packages/constants/constants-ca/activity';
-import { TransactionStatus } from 'packages/types/types-ca/activity';
+import {
+  SHOW_FROM_TRANSACTION_TYPES,
+  ELF_DECIMAL,
+  TransactionTypes,
+} from '@portkey-wallet/constants/constants-ca/activity';
+import { TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
 import {
   formatChainInfoToShow,
   formatStr2EllipsisStr,
   addressFormat,
   getExploreLink,
   formatTransferTime,
-} from 'packages/utils';
-import { formatAmountShow, divDecimalsStr, divDecimals, formatAmountUSDShow } from 'packages/utils/converter';
+} from '@portkey-wallet/utils';
+import { formatAmountShow, divDecimalsStr, divDecimals, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import { useCommonNetworkInfo } from 'components/TokenOverlay/hooks';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';

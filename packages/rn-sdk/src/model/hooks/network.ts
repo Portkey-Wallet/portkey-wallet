@@ -1,4 +1,4 @@
-import { BackEndNetWorkMap } from 'packages/constants/constants-ca/backend-network';
+import { BackEndNetWorkMap } from '@portkey-wallet/constants/constants-ca/backend-network';
 import { NetworkType } from 'packages/types';
 import { PortkeyConfig } from 'global/constants';
 import useEffectOnce from 'hooks/useEffectOnce';

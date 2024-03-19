@@ -9,7 +9,7 @@ import CommonAvatar from 'components/CommonAvatar';
 import { FontStyles } from 'assets/theme/styles';
 import { useSymbolImages } from 'components/TokenOverlay/hooks';
 import { TokenItemShowType } from 'packages/types/types-eoa/token';
-import { formatChainInfoToShow } from 'packages/utils';
+import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { useDefaultToken } from 'pages/Ramp/RampPreview/hook';
 import { NetworkType } from 'packages/types';
 

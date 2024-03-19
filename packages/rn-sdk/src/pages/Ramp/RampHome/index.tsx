@@ -7,17 +7,17 @@ import { TextM } from 'components/CommonText';
 import BuyForm from '../components/BuyForm';
 import SellForm from '../components/SellForm';
 import ActionSheet from 'components/ActionSheet';
-import ramp, { RampType } from 'packages/ramp';
+import ramp, { RampType } from '@portkey-wallet/ramp';
 import { useSDKRampEntryShow } from '../RampPreview/hook';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useSecuritySafeCheckAndToast } from 'components/WalletSecurityAccelerate/hook';
-import { MAIN_CHAIN_ID } from 'packages/constants/constants-ca/activity';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
-import useLockCallback from 'packages/hooks/useLockCallback';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import CommonTouchableTabs from 'components/CommonTouchableTabs';
 import { getBottomSpace } from 'utils/screen';
-import { isIOS } from 'packages/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 type TabItemType = {
   name: string;

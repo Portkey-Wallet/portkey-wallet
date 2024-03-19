@@ -1,11 +1,11 @@
 import React from 'react';
-import { divDecimals, formatAmountShow } from 'packages/utils/converter';
+import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { defaultColors } from 'assets/theme';
 import { FontStyles } from 'assets/theme/styles';
 import CommonAvatar from 'components/CommonAvatar';
 import { TextL, TextS } from 'components/CommonText';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { formatChainInfoToShow } from 'packages/utils';
+import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { CommonInfo } from '../TokenOverlay/hooks';
 import { BigNumber } from 'bignumber.js';

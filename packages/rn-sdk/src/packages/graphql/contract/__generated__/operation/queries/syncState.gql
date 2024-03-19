@@ -1,5 +1,0 @@
-query syncState($dto: GetSyncStateDto){
-    syncState(dto: $dto){
-        confirmedBlockHeight
-    }
-}

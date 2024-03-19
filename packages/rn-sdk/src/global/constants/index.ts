@@ -1,4 +1,4 @@
-import { BackEndNetWorkMap } from 'packages/constants/constants-ca/backend-network';
+import { BackEndNetWorkMap } from '@portkey-wallet/constants/constants-ca/backend-network';
 import { ChainId } from 'packages/types';
 import { GlobalStorage } from 'service/storage';
 

@@ -1,4 +1,4 @@
-import { useThrottleCallback } from 'packages/hooks';
+import { useThrottleCallback } from '@portkey-wallet/hooks';
 import React, { memo } from 'react';
 import { TouchableOpacity, TouchableHighlight, TouchableOpacityProps, TouchableHighlightProps } from 'react-native';
 import { pTd } from 'utils/unit';

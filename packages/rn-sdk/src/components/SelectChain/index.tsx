@@ -6,7 +6,7 @@ import ListItem from 'components/ListItem';
 import GStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
 import { NetworkType, ChainId, ChainItemType } from '@portkey/provider-types';
-import { formatChainInfoToShow } from 'packages/utils';
+import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { useCurrentNetworkType } from 'model/hooks/network';
 import ChainOverlay from 'components/ChainOverlay';
 

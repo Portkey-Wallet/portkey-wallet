@@ -1,11 +1,11 @@
-import { CAInfo, ManagerInfo } from 'packages/types/types-ca/wallet';
-import { VerificationType } from 'packages/types/verifier';
-import { clearTimeoutInterval, setTimeoutInterval } from 'packages/utils/interval';
+import { CAInfo, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
+import { VerificationType } from '@portkey-wallet/types/verifier';
+import { clearTimeoutInterval, setTimeoutInterval } from '@portkey-wallet/utils/interval';
 
-import { ContractBasic } from 'packages/contracts/utils/ContractBasic';
-import { request } from 'packages/api/api-did';
-import socket from 'packages/socket/socket-did';
-import { LoginQRData } from 'packages/types/types-ca/qrcode';
+import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import { request } from '@portkey-wallet/api/api-did';
+import socket from '@portkey-wallet/socket/socket-did';
+import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
 
 export type TimerResult = {
   remove: () => void;

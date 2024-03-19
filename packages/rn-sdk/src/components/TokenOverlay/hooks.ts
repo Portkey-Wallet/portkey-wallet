@@ -1,4 +1,4 @@
-import { DEFAULT_TOKEN } from 'packages/constants/constants-ca/wallet';
+import { DEFAULT_TOKEN } from '@portkey-wallet/constants/constants-ca/wallet';
 import { NetworkType } from 'packages/types';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { Token, getCachedNetworkConfig } from 'model/chain';

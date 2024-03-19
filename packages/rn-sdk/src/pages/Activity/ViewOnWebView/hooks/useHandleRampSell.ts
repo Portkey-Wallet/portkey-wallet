@@ -1,13 +1,13 @@
-import { getContractBasic } from 'packages/contracts/utils';
+import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { useAccountTokenBalanceList } from 'model/hooks/balance';
-import { timesDecimals } from 'packages/utils/converter';
+import { timesDecimals } from '@portkey-wallet/utils/converter';
 import CommonToast from 'components/CommonToast';
 import Loading from 'components/Loading';
 import { useCallback, useMemo } from 'react';
 import AElf from 'aelf-sdk';
 import SparkMD5 from 'spark-md5';
-import ramp, { IGenerateTransactionResult, IOrderInfo } from 'packages/ramp';
-import { GuardiansApprovedType } from 'packages/types/types-ca/routeParams';
+import ramp, { IGenerateTransactionResult, IOrderInfo } from '@portkey-wallet/ramp';
+import { GuardiansApprovedType } from 'types/guardians';
 import { AElfWeb3SDK } from 'network/dto/wallet';
 import { getUnlockedWallet } from 'model/wallet';
 import { getCachedNetworkConfig } from 'model/chain';

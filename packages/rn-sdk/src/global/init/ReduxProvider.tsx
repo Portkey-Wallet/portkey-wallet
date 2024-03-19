@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import { store } from 'store';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar, StatusBarProps } from 'react-native';
-import { isIOS } from 'packages/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 type HigherOrderComponent<T = unknown> = (
   WrappedComponent: React.ComponentType<T>,

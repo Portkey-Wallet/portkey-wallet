@@ -13,7 +13,7 @@ import CustomHeader from 'components/CustomHeader';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import AssetsContext, { AssetsContextType } from 'global/context/assets/AssetsContext';
 import BigNumber from 'bignumber.js';
-import { ZERO } from 'packages/constants/misc';
+import { ZERO } from '@portkey-wallet/constants/misc';
 import { PortkeyEntries } from 'config/entries';
 import ActivityButton from '../ActivityButton';
 import { defaultColors } from 'assets/theme';

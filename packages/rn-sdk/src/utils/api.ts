@@ -1,8 +1,12 @@
-import { request } from 'packages/api/api-did';
-import { IntervalErrorMessage, SendVerificationConfig, Verification } from 'packages/api/api-did/verification/utils';
-import { IStorage } from 'packages/types/storage';
-import { OperationTypeEnum } from 'packages/types/verifier';
-import { baseStore } from 'packages/utils/mobile/storage';
+import { request } from '@portkey-wallet/api/api-did';
+import {
+  IntervalErrorMessage,
+  SendVerificationConfig,
+  Verification,
+} from '@portkey-wallet/api/api-did/verification/utils';
+import { IStorage } from '@portkey-wallet/types/storage';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
+import { baseStore } from '@portkey-wallet/utils/mobile/storage';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
 
 class MobileVerification extends Verification {

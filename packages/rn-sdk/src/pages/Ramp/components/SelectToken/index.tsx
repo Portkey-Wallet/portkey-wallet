@@ -11,7 +11,7 @@ import { useGStyles } from 'assets/theme/useGStyles';
 import { ModalBody } from 'components/ModalBody';
 import { defaultColors } from 'assets/theme';
 import CommonAvatar from 'components/CommonAvatar';
-import { chainShowText } from 'packages/utils';
+import { chainShowText } from '@portkey-wallet/utils';
 import { FontStyles } from 'assets/theme/styles';
 import { IRampCryptoItem } from 'packages/ramp';
 

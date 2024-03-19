@@ -1,4 +1,4 @@
-import { LoginType } from 'packages/types/types-ca/wallet';
+import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 
 export const LoginGuardianTypeIcon: any = {
   [LoginType.Email]: 'email',

@@ -9,13 +9,13 @@ import Touchable from 'components/Touchable';
 import { TextXXXL } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
 import CommonButton from 'components/CommonButton';
-import socket from 'packages/socket/socket-did';
+import socket from '@portkey-wallet/socket/socket-did';
 import CommonToast from 'components/CommonToast';
 import { LoginQRData } from 'packages/types/types-ca/qrcode';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 import { NetworkController } from 'network/controller';
-import { extraDataEncode, getDeviceInfoFromQR } from 'packages/utils/device';
+import { extraDataEncode, getDeviceInfoFromQR } from '@portkey-wallet/utils/device';
 import { PortkeyConfig } from 'global/constants';
 import { callAddManagerMethod } from 'model/contract/handler';
 

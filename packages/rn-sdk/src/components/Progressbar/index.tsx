@@ -1,4 +1,4 @@
-import { screenWidth } from 'packages/utils/mobile/device';
+import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { defaultColors } from 'assets/theme';
 import React, { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';

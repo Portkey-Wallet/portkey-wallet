@@ -8,7 +8,7 @@ import NFTCollectionItem from './NFTCollectionItem';
 import { NFTCollectionItemShowType } from 'packages/types/types-ca/assets';
 import Touchable from 'components/Touchable';
 import { ChainId } from 'packages/types';
-import useLockCallback from 'packages/hooks/useLockCallback';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import AssetsContext, { AssetsContextType } from 'global/context/assets/AssetsContext';
 import Loading from 'components/Loading';
 

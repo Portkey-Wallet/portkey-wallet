@@ -1,6 +1,6 @@
 import React, { forwardRef, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { windowHeight } from 'packages/utils/mobile/device';
+import { windowHeight } from '@portkey-wallet/utils/mobile/device';
 import GStyles from 'assets/theme/GStyles';
 import { TextL } from 'components/CommonText';
 

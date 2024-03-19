@@ -5,7 +5,7 @@ import { TokenItemShowType } from 'packages/types/types-ca/token';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import TokenListItem from 'components/TokenListItem';
-import { REFRESH_TIME } from 'packages/constants/constants-ca/assets';
+import { REFRESH_TIME } from '@portkey-wallet/constants/constants-ca/assets';
 import { useCommonNetworkInfo } from 'components/TokenOverlay/hooks';
 import AssetsContext, { AssetsContextType } from 'global/context/assets/AssetsContext';
 import useBaseContainer from 'model/container/UseBaseContainer';

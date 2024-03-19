@@ -26,7 +26,7 @@ import {
   RequestRegisterParams,
   RequestSocialRecoveryParams,
 } from 'network/dto/wallet';
-import { sleep } from 'packages/utils';
+import { sleep } from '@portkey-wallet/utils';
 import { getCachedNetworkToken } from 'network/token';
 import { isWalletUnlocked } from 'model/verify/core';
 import { SymbolImages } from 'model/symbolImage';
@@ -53,7 +53,7 @@ import {
 import { selectCurrentBackendConfig } from 'utils/commonUtil';
 import { CheckPaymentSecurityRuleParams, CheckPaymentSecurityRuleResult } from 'network/dto/security';
 import { TokenPriceResult } from 'network/dto/token';
-import { TransactionTypes } from 'packages/constants/constants-ca/activity';
+import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
 import {
   CheckSecurityResult,
   CheckTransactionFeeParams,

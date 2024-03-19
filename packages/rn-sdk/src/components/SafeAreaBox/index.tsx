@@ -1,4 +1,4 @@
-import { bottomBarHeight } from 'packages/utils/mobile/device';
+import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
 import React, { useMemo } from 'react';
 import { SafeAreaView, SafeAreaViewProps } from 'react-native-safe-area-context';
 import styles from './styles';

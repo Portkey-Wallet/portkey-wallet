@@ -10,7 +10,7 @@
 
 import { SendOptions } from 'packages/contracts/types';
 import { GuardiansApprovedType } from 'packages/types/types-ca/routeParams';
-import { ContractBasic } from 'packages/utils/contract';
+import { ContractBasic } from '@portkey-wallet/utils/contract';
 
 type ParamsOptionArgs = any;
 

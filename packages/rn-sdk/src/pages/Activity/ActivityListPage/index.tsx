@@ -6,7 +6,7 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { useLanguage } from 'i18n/hooks';
 import NoData from 'components/NoData';
 import { ActivityItemType } from 'network/dto/query';
-import { ON_END_REACHED_THRESHOLD } from 'packages/constants/constants-ca/activity';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 import TransferItem from 'components/TransferList/components/TransferItem';
 import { getUnlockedWallet, useUnlockedWallet } from 'model/wallet';
 import useBaseContainer from 'model/container/UseBaseContainer';

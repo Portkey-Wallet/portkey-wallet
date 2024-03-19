@@ -14,7 +14,7 @@ import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import { useCurrentNetworkType } from 'model/hooks/network';
-import { formatChainInfoToShow } from 'packages/utils';
+import { formatChainInfoToShow } from '@portkey-wallet/utils';
 
 type RouterParams = {
   contact?: ContactItemType;

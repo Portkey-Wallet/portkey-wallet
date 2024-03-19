@@ -1,12 +1,12 @@
 import { getCachedAllChainInfo } from 'model/chain';
 import { getUnlockedWallet } from 'model/wallet';
 import { AElfChainStatusItemDTO } from 'network/dto/wallet';
-import useLockCallback from 'packages/hooks/useLockCallback';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { ChainId } from 'packages/types';
 import { useCallback, useEffect, useState } from 'react';
 import { checkSecuritySafe } from 'utils/security';
-import { divDecimals, timesDecimals } from 'packages/utils/converter';
-import { ZERO } from 'packages/constants/misc';
+import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
+import { ZERO } from '@portkey-wallet/constants/misc';
 import ActionSheet from 'components/ActionSheet';
 import BigNumber from 'bignumber.js';
 import useBaseContainer from 'model/container/UseBaseContainer';

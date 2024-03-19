@@ -1,5 +1,5 @@
 import { ChainId } from 'packages/types';
-import { addressFormat, formatChainInfoToShow, getExploreLink } from 'packages/utils';
+import { addressFormat, formatChainInfoToShow, getExploreLink } from '@portkey-wallet/utils';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
@@ -17,9 +17,9 @@ import SafeAreaBox from 'components/SafeAreaBox';
 import CustomHeader from 'components/CustomHeader';
 import { ActivityItemType } from 'packages/types/types-ca/activity';
 import { getUnlockedWallet, useUnlockedWallet } from 'model/wallet';
-import { NFT_MIDDLE_SIZE } from 'packages/constants/constants-ca/assets';
+import { NFT_MIDDLE_SIZE } from '@portkey-wallet/constants/constants-ca/assets';
 import myEvents from 'utils/deviceEvent';
-import { ON_END_REACHED_THRESHOLD } from 'packages/constants/constants-ca/activity';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 import CommonAvatar from 'components/CommonAvatar';
 import { NetworkController } from 'network/controller';
 import useBaseContainer from 'model/container/UseBaseContainer';

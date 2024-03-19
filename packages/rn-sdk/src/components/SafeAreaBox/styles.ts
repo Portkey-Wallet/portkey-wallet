@@ -1,4 +1,4 @@
-import { bottomBarHeight } from 'packages/utils/mobile/device';
+import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
 import { defaultColors } from 'assets/theme';
 import { StyleSheet } from 'react-native';
 

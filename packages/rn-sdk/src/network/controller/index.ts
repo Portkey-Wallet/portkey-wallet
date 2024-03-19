@@ -42,7 +42,6 @@ import {
   GetAccountAssetsByKeywordsParams,
   GetAccountAssetsByKeywordsResult,
   GetRecentTransactionParams,
-  RecentTransactionResponse,
   GetContractAddressesParams,
   GetContractListApiType,
   IActivitiesApiResponse,
@@ -61,6 +60,7 @@ import {
   CheckTransferSecurityParams,
 } from 'network/dto/transaction';
 import { TokenItemType } from '@portkey-wallet/types/types-eoa/token';
+import { RecentTransactionResponse } from '@portkey/services';
 
 const DEFAULT_MAX_POLLING_TIMES = 50;
 const MAX_PAGE_LIMIT = 100;

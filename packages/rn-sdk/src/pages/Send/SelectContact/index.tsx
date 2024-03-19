@@ -7,7 +7,6 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { useLanguage } from 'i18n/hooks';
 import { FlashList } from '@shopify/flash-list';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
-import { ContactItemType } from '@portkey-wallet/im';
 import React, { useMemo, useCallback } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
@@ -19,6 +18,7 @@ import ContactsList from 'components/ContactList';
 import { RecentContactItemType } from 'network/dto/query';
 import { useContact, useRecent } from 'model/hooks/contact';
 import { RNTabView, TabProps } from 'model/hooks/tabs';
+import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 
 interface SelectContactProps {
   chainId: ChainId;

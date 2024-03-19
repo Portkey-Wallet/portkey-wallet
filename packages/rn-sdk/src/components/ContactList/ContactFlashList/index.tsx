@@ -3,8 +3,7 @@ import { Dimensions, View } from 'react-native';
 import { styles as contactListStyles } from './style';
 import { FlashList } from '@shopify/flash-list';
 import IndexBar from 'components/IndexBar';
-import { ContactItemType } from '@portkey-wallet/im';
-import { ContactIndexType } from '@portkey-wallet/types/types-ca/contact';
+import { ContactIndexType, ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 
 type contactFlatItemType = ContactIndexType | ContactItemType;
 interface ContactsListProps {

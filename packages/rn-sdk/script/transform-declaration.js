@@ -1,8 +1,11 @@
 // this script is used to convert the export/import path of. d.ts files,
 // from absolute path to relative path.
 // [ yarn build ] is using this script
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require('fs');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const glob = require('glob');
 const files = glob.sync('dist/**/*.{ts,tsx}');
 files.forEach(file => {

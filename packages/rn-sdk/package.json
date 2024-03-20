@@ -152,7 +152,7 @@
     "@react-native-community/eslint-plugin": "^1.2.0",
     "@types/crypto-js": "^4.2.1",
     "@types/lodash": "^4.14.202",
-    "@types/react": "18.2.43",
+    "@types/react": "18.0.21",
     "@types/react-native": "^0.69.7",
     "@types/react-native-background-timer": "^2.0.2",
     "@types/uuid": "^9.0.7",

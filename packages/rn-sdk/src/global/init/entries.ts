@@ -41,6 +41,7 @@ import React from 'react';
 import RampPreview from 'pages/Ramp/RampPreview';
 import ManageTokenList from 'pages/Token/ManageTokenList';
 import CustomToken from 'pages/Token/CustomToken';
+import TestComp from 'apiTest/TestComp';
 
 type AcceptableComponentType = ComponentProvider;
 
@@ -49,6 +50,7 @@ const initEntries = () => {
   if (__DEV__) {
     // test only
     entryConfig.set(PortkeyTestEntries.TEST, () => TestEntry);
+    entryConfig.set(PortkeyTestEntries.TEST_COMP, () => TestComp);
   }
 
   // entry stage

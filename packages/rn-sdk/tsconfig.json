@@ -25,7 +25,7 @@
     "emitDecoratorMetadata": true,
     "strictPropertyInitialization": false
   },
-  "exclude": ["android", "ios", "node_modules", "babel.config.js", "metro.config.js", "jest.config.js"],
+  "exclude": ["android", "ios", "node_modules", "babel.config.js", "metro.config.js", "jest.config.js", "app_react_native", "plugins", "script"],
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "extends": "expo/tsconfig.base"
 }

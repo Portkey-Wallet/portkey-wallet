@@ -21,13 +21,8 @@ import {
   TransactionTypes,
 } from '@portkey-wallet/constants/constants-ca/activity';
 import { TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
-import {
-  formatChainInfoToShow,
-  formatStr2EllipsisStr,
-  addressFormat,
-  getExploreLink,
-  formatTransferTime,
-} from '@portkey-wallet/utils';
+import { formatChainInfoToShow, formatStr2EllipsisStr, addressFormat, getExploreLink } from '@portkey-wallet/utils';
+import { formatTransferTime } from '@portkey-wallet/utils/time';
 import { formatAmountShow, divDecimalsStr, divDecimals, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import { useCommonNetworkInfo } from 'components/TokenOverlay/hooks';
 import useBaseContainer from 'model/container/UseBaseContainer';

@@ -67,7 +67,7 @@ export default function CustomTokenList({
     setFilterWord('');
     if (drawerType === 'send') {
       fetchAccountAssetsInfoList({
-        keyword: filterWord,
+        keyword: '',
         caAddressInfos,
         skipCount: 0,
         maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
@@ -75,7 +75,7 @@ export default function CustomTokenList({
     } else {
       fetchTokenInfoList({
         chainIdArray,
-        keyword: filterWord,
+        keyword: '',
         skipCount: 0,
         maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
       });

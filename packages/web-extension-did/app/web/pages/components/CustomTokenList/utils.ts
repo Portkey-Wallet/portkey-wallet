@@ -1,3 +1,4 @@
+import { PAGE_SIZE_DEFAULT } from '@portkey-wallet/constants/constants-ca/assets';
 import { fetchAssetList } from '@portkey-wallet/store/store-ca/assets/api';
 import { fetchAllTokenList } from '@portkey-wallet/store/store-ca/tokenManagement/api';
 import { ChainId } from '@portkey-wallet/types';
@@ -10,7 +11,7 @@ export const fetchAssetsListByFilter = async ({
   keyword: string;
   caAddressInfos: { chainId: ChainId; caAddress: string }[];
 }) => {
-  const response = await fetchAssetList({ caAddressInfos, keyword, skipCount: 0, maxResultCount: 50 });
+  const response = await fetchAssetList({ caAddressInfos, keyword, skipCount: 0, maxResultCount: PAGE_SIZE_DEFAULT });
   return response;
 };
 
@@ -25,7 +26,7 @@ export const fetchTokenListByFilter = async ({
     keyword,
     chainIdArray: chainIdArray || [],
     skipCount: 0,
-    maxResultCount: 50,
+    maxResultCount: PAGE_SIZE_DEFAULT,
   });
   return {
     data: formatTokenItem(response.items),

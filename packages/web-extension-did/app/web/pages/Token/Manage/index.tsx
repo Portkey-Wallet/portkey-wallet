@@ -20,7 +20,7 @@ import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import singleMessage from 'utils/singleMessage';
 import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
-import { PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
+import { PAGE_SIZE_DEFAULT, PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
 import './index.less';
 
 export default function AddToken() {
@@ -75,6 +75,8 @@ export default function AddToken() {
           params: {
             symbol: keyword,
             chainIds: chainIdArray,
+            skipCount: 0,
+            maxResultCount: PAGE_SIZE_DEFAULT,
           },
         });
         const _target = (res || []).map((item: any) => ({
@@ -246,7 +248,7 @@ export default function AddToken() {
           />
         </div>
         {renderTokenList}
-        <LoadingMore hasMore={hasMoreToken} loadMore={getMoreTokenInfo} className="load-more" />
+        {!filterWord && <LoadingMore hasMore={hasMoreToken} loadMore={getMoreTokenInfo} className="load-more" />}
       </div>
     );
   }, [

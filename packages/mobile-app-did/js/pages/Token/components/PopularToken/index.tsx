@@ -36,7 +36,7 @@ const PopularTokenSection: React.FC<IPopularTokenSectionProps> = (props: IPopula
           onHandleToken={() => onHandleTokenItem(item, !item?.isAdded)}
         />
       )}
-      onEndReached={getTokenList}
+      onEndReached={() => getTokenList()}
       keyExtractor={(item: TokenItemShowType) => item?.id || item?.symbol}
     />
   );

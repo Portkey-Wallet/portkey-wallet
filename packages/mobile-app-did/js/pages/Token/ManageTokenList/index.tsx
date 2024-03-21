@@ -61,7 +61,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
         maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
       });
     },
-    [chainIdArray, debounceWord, fetchTokenInfoList, tokenDataShowInMarket.length, totalRecordCount],
+    [chainIdArray, debounceWord, fetchTokenInfoList, tokenDataShowInMarket, totalRecordCount],
   );
 
   const searchToken = useLockCallback(async () => {

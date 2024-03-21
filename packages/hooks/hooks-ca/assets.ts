@@ -3,7 +3,7 @@ import { useAppCASelector } from '.';
 import { useCaAddressInfoList } from './wallet';
 import { fetchNFTItem } from '@portkey-wallet/store/store-ca/assets/api';
 import { ChainId } from '@portkey-wallet/types';
-import { useAppCommonDispatch } from '..';
+import { useAppCommonDispatch } from '../index';
 import { useCurrentNetworkInfo } from './network';
 import {
   fetchAssetAsync,

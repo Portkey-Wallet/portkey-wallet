@@ -1,0 +1,74 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+platform :ios do
+  desc "Push a new beta build to TestFlight"
+  lane :beta do
+    sync_code_signing(
+      type: "appstore"
+      )    # see code signing guide for more information
+    build_app(workspace: "Portkey.xcworkspace", scheme: "Portkey")
+    upload_to_testflight
+    slack(message: "Successfully distributed a new beta build")
+  end
+  desc "builds and packages iOS"
+  lane :build_ipa do
+    # sync certificates and profiles
+    sync_code_signing(
+      type: "adhoc",
+      # readonly: true,
+      force_for_new_devices: true,
+      app_identifier: ["com.aelf.portkeyapp"],
+    )
+    # builds and packages iOS
+    # gym(
+    #   scheme: "walletAppNew",
+    #   export_method: "ad-hoc",
+    #   silent: true,  # Hide all information that's not necessary while building
+    #   clean: true,  # Should the project be cleaned before building it?	
+    # )
+    # builds and packages iOS
+    build_ios_app(
+      workspace: "Portkey.xcworkspace",
+      scheme: "Portkey",
+      export_method: "ad-hoc",
+      silent: true,  # Hide all information that's not necessary while building	
+      clean: true,  # Should the project be cleaned before building it?	
+      output_name: "my-app.ipa",       # specify the name of the .ipa file to generate (including file extension)
+      # sdk: "iphoneos16.1",
+    ) 
+  end
+  desc "Distributes the staging app via Firebase App Distribution"
+  lane :distribute_firebase do
+    # builds to Firebase App Distribution
+    firebase_app_distribution(
+      app: "1:339329964702:ios:6d93597292bfaa2a5df98f",
+      # service_credentials_file: "$projectDir/tangential-box-328411-52e4b821bdcf.json",
+      # service_credentials_file: "#{Dir.pwd.chomp("/fastlane")}/fastlane/tangential-box-328411-52e4b821bdcf.json",
+      groups: "test",
+      release_notes: "Stub"
+    )
+  end
+  desc "Automatically increment the build number"
+  lane :push_telegram do
+    # Automatically increment the build number
+    latest_release = firebase_app_distribution_get_latest_release(
+      app: "1:339329964702:ios:6d93597292bfaa2a5df98f"
+    )
+    increment_build_number({ build_number: latest_release[:buildVersion].to_i + 1 })
+  end
+end

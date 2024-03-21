@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { TextL, TextS } from 'components/CommonText';
 import { ModalBody } from 'components/ModalBody';
 import CommonInput from 'components/CommonInput';
@@ -20,7 +20,6 @@ import { useGStyles } from 'assets/theme/useGStyles';
 import myEvents from 'utils/deviceEvent';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import CommonAvatar from 'components/CommonAvatar';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 import { useAppDispatch } from 'store/hooks';
 import { fetchCryptoBoxAssetAsync } from '@portkey-wallet/store/store-ca/assets/slice';
@@ -29,8 +28,9 @@ import Svg from 'components/Svg';
 import GStyles from 'assets/theme/GStyles';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
+import NFTAvatar from 'components/NFTAvatar';
 
-export type ImTransferInfoType = {
+export type TImTransferInfo = {
   isGroupChat?: boolean;
   channelId?: string;
   toUserId?: string;
@@ -41,7 +41,7 @@ export type ImTransferInfoType = {
 export type ShowCryptoBoxAssetListParamsType = {
   currentSymbol: string;
   currentChainId: ChainId;
-  imTransferInfo?: ImTransferInfoType;
+  imTransferInfo?: TImTransferInfo;
   toAddress?: string;
   onFinishSelectAssets: (item: ICryptoBoxAssetItemType) => void;
 };
@@ -55,7 +55,7 @@ const AssetItem = (props: {
   const { currentNetwork } = useWallet();
 
   const { currentSymbol, currentChainId, onPress, item } = props;
-  const { address, assetType, chainId, imageUrl, symbol, alias, tokenId } = item;
+  const { address, assetType, chainId, symbol, alias, tokenId, isSeed, seedType } = item;
 
   if (assetType === AssetType.ft)
     return (
@@ -71,11 +71,15 @@ const AssetItem = (props: {
   if (assetType === AssetType.nft) {
     return (
       <TouchableOpacity style={itemStyle.wrap} onPress={() => onPress?.(item)}>
-        {imageUrl ? (
-          <CommonAvatar avatarSize={pTd(48)} style={[itemStyle.left]} imageUrl={imageUrl} />
-        ) : (
-          <Text style={[itemStyle.left, itemStyle.noPic]}>{symbol[0]}</Text>
-        )}
+        <NFTAvatar
+          disabled
+          isSeed={isSeed}
+          seedType={seedType}
+          nftSize={pTd(48)}
+          badgeSizeType="small"
+          data={item}
+          style={itemStyle.left}
+        />
         <View style={itemStyle.right}>
           <View>
             <TextL numberOfLines={1} ellipsizeMode={'tail'} style={[itemStyle.nftNameShow, FontStyles.font5]}>

@@ -5543,24 +5543,24 @@
   resolved "https://registry.yarnpkg.com/@portkey/accounts/-/accounts-2.0.1-alpha.0.tgz#1ed39ca709cfde4bedf3b6612a5637d1e480ec77"
   integrity sha512-i8jhOaX3n/WBwrktx78MFSO4pNtdGZGqjoqDmcXLqgUAfS6CLny3DoNZygxyVWkLi3j8JUuzmmMNLHGHRvM9aQ==
 
-"@portkey/chain@^2.1.0-alpha.1":
-  version "2.1.0-alpha.1"
-  resolved "https://registry.npmjs.org/@portkey/chain/-/chain-2.1.0-alpha.1.tgz#bd1090229f2f155137930fd6b26383248ab26a60"
-  integrity sha512-5kZJNMofA4arfdf/wznWvmn9H1jlCZna8NMB5AQfC8wtU9FdsEw0MqB0ITsKerwzkbBg4YVLeg1ZBNqHzqzKTA==
+"@portkey/chain@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@portkey/chain/-/chain-2.1.0.tgz#195df5b60dcfe3ce79192957ea2e3f3c8b047379"
+  integrity sha512-crM91g9SM6wq0lwlmmNx5kNB+oMmwYjZl16tPx6KFVq8qui55yQDnOAzbokMSp5vWWRVJIW6q+R9omzTc0++Sg==
   dependencies:
-    "@portkey/contracts" "^2.0.0-alpha.0"
-    "@portkey/provider-types" "^2.1.0-alpha.1"
+    "@portkey/contracts" "^2.0.4"
+    "@portkey/provider-types" "^2.1.0"
     aelf-sdk "^3.2.45-beta.0"
-
-"@portkey/contracts@^2.0.0-alpha.0":
-  version "2.0.0-alpha.0"
-  resolved "https://registry.yarnpkg.com/@portkey/contracts/-/contracts-2.0.0-alpha.0.tgz#c7d29815ceaf78bac2b14d6e9debd672d7ae3520"
-  integrity sha512-16tfyG1oVs7XYknj8W8edS4l5CuBHSr9tuyFQfuvD1s29P1NOP5MgixVLegUDKQRy6JynCb+QJHMcC5FJrg3PA==
 
 "@portkey/contracts@^2.0.1-alpha.0":
   version "2.0.1-alpha.0"
   resolved "https://registry.yarnpkg.com/@portkey/contracts/-/contracts-2.0.1-alpha.0.tgz#5e4a4af4afd7848661b6cbdcd04bfcba56fdf882"
   integrity sha512-uKu6A6dZh2rIKeak+WVrMIvcfgn3PAT/7VN/ysw7iv9xUA2NbwuqgFnj3xqN1bHvMyh9s42MGeln4oV5Yky/jw==
+
+"@portkey/contracts@^2.0.4":
+  version "2.0.4"
+  resolved "https://registry.npmjs.org/@portkey/contracts/-/contracts-2.0.4.tgz#8dc6758dcd59bab496eb428964baf8adafed44ed"
+  integrity sha512-8cWejiX2shyHkAlX6hwvabk4tgAL+zAKsZY+u/E+HYG8kCOu+9tWrnrrCt8DpOOc3yjoOBogrH0MlXI019I6hQ==
 
 "@portkey/detect-provider@^2.0.0-alpha.2":
   version "2.0.0-alpha.5"
@@ -5607,13 +5607,13 @@
   dependencies:
     "@portkey/services" "^2.0.1-alpha.0"
 
-"@portkey/extension-provider@2.1.0-alpha.1":
-  version "2.1.0-alpha.1"
-  resolved "https://registry.npmjs.org/@portkey/extension-provider/-/extension-provider-2.1.0-alpha.1.tgz#ac754c38e80caaf918fba41c8837759e32955c39"
-  integrity sha512-yyYkWwP2REXcFUtxJZmtBOq8VVB8DRyM1hSs9L7CRxRDShEsHEBk+R0J0tfN4NVFh4vQfRght5AfmW20/uF+hQ==
+"@portkey/extension-provider@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@portkey/extension-provider/-/extension-provider-2.1.0.tgz#99481bff2826868dbdcb9d6479d1fe1391d3effd"
+  integrity sha512-Ag0TV7/Lm6RDeky394baTXQZ8MgXNDYQoxzQ3k6TbdJKNSPlnDDY040EAYU9VCiZoSNLwnQw0nZPO+vqA+LrDA==
   dependencies:
-    "@portkey/provider-types" "^2.1.0-alpha.1"
-    "@portkey/providers" "^2.1.0-alpha.1"
+    "@portkey/provider-types" "^2.1.0"
+    "@portkey/providers" "^2.1.0"
     "@types/elliptic" "^6.4.14"
     readable-stream "^4.4.0"
 
@@ -5627,10 +5627,10 @@
     graphql "^16.6.0"
     subscriptions-transport-ws "^0.11.0"
 
-"@portkey/mobile-provider@2.1.0-alpha.1":
-  version "2.1.0-alpha.1"
-  resolved "https://registry.npmjs.org/@portkey/mobile-provider/-/mobile-provider-2.1.0-alpha.1.tgz#d4a08f439d749a9e7a5a794c45da4e992d466f8a"
-  integrity sha512-Bp6qpvrO23NZwnOITGlaXXHvVBYgsmhGcHU3pKWtx5HvfADcnr3tzEEdDoQH6ooKIuls8wbt8AFoqbtbxdNyUg==
+"@portkey/mobile-provider@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@portkey/mobile-provider/-/mobile-provider-2.1.0.tgz#72e2d5f3fdbb8a63195571de3f7b3695c28d7f5b"
+  integrity sha512-HvXVRlwMh7Ln/c6LTw43jwRgbxRpE92nIdmYHSNwfphUIt1wbAAIWY7KgkhXBvL7XoEhTIGfFhYYkveXhVEF0A==
 
 "@portkey/onboarding@^2.0.1-alpha.0":
   version "2.0.1-alpha.0"
@@ -5651,10 +5651,10 @@
     "@portkey/types" "^2.0.0-alpha.0"
     "@types/readable-stream" "^2.3.15"
 
-"@portkey/provider-types@2.1.0-alpha.1", "@portkey/provider-types@^2.1.0-alpha.1":
-  version "2.1.0-alpha.1"
-  resolved "https://registry.npmjs.org/@portkey/provider-types/-/provider-types-2.1.0-alpha.1.tgz#620de3b4ca206a8529bf4b5cd066e90e235258e8"
-  integrity sha512-Sr4i5ETG4Fj6gl1V5WMQHxaziKb2Dd/PwjflqtevtcvoLSs5QVKNzmnY5G3AZpDMlkG2PSmhnJF3wNmBx8DdBQ==
+"@portkey/provider-types@2.1.0", "@portkey/provider-types@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@portkey/provider-types/-/provider-types-2.1.0.tgz#10713b38463463f2bd9737496d425906ab9e38a1"
+  integrity sha512-FyNQHIr4G04mY2RPHNLTRM/iEMUVLtMwFKayu2UIhxTz2E+EjLq9jWz6zlkZjr1PESxYvBJiVUQikK+giVcCbg==
   dependencies:
     "@portkey/types" "^2.0.0-alpha.0"
     "@types/readable-stream" "^2.3.15"
@@ -5667,21 +5667,21 @@
     "@portkey/types" "^2.0.0-alpha.0"
     "@types/readable-stream" "^2.3.15"
 
-"@portkey/provider-utils@2.1.0-alpha.1", "@portkey/provider-utils@^2.1.0-alpha.1":
-  version "2.1.0-alpha.1"
-  resolved "https://registry.npmjs.org/@portkey/provider-utils/-/provider-utils-2.1.0-alpha.1.tgz#cb9c5ce3e0d13b2bfb5430c60bde51f42505209a"
-  integrity sha512-WqC+xbrFKFampgd3YJ9LnHnN70VKAYXj8fGgLkyBrV6j9zPgXGqYNDN9VWqu1ptTS2kS3nAu14ZHkeeWalGDMA==
+"@portkey/provider-utils@2.1.0", "@portkey/provider-utils@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@portkey/provider-utils/-/provider-utils-2.1.0.tgz#f885d76c89faae2106a4ab131124e852dc9d19b9"
+  integrity sha512-njtE4enDW3q6T+Bndxnoiwp3PgTfFRskHHqTJO6FinjmreqF20bgRN2kZ93ojzh2CLsDrFcyvUm6v/4VT4MuJg==
   dependencies:
-    "@portkey/provider-types" "^2.1.0-alpha.1"
+    "@portkey/provider-types" "^2.1.0"
 
-"@portkey/providers@2.1.0-alpha.1", "@portkey/providers@^2.1.0-alpha.1":
-  version "2.1.0-alpha.1"
-  resolved "https://registry.npmjs.org/@portkey/providers/-/providers-2.1.0-alpha.1.tgz#b7002755290d55a8a44759aa6c220030eaf30ac7"
-  integrity sha512-mzbcG26u47nBWCSNmRWHE1djuwV5cEDyBCQ1Kvtle1T5HZuzBeQpJ8KQU9tfSyhrg1nFQfmf2OqRC77VExs9fQ==
+"@portkey/providers@2.1.0", "@portkey/providers@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@portkey/providers/-/providers-2.1.0.tgz#de93655c35dd54bd53492d92be36acd7aeb87cf3"
+  integrity sha512-/BoRMUKQtun88CNe65ZASy85zb8D8rOwxG3QgtOg3C7r931Kf1CJGrj0AVETMfG/qzhnT/F4KopqnMfsEfv1iw==
   dependencies:
-    "@portkey/chain" "^2.1.0-alpha.1"
-    "@portkey/provider-types" "^2.1.0-alpha.1"
-    "@portkey/provider-utils" "^2.1.0-alpha.1"
+    "@portkey/chain" "^2.1.0"
+    "@portkey/provider-types" "^2.1.0"
+    "@portkey/provider-utils" "^2.1.0"
     "@types/readable-stream" "^2.3.15"
     lodash "^4.17.21"
     readable-stream "^4.4.0"
@@ -10959,10 +10959,9 @@ brorand@^1.0.1, brorand@^1.1.0:
   resolved "https://registry.npmmirror.com/brorand/-/brorand-1.1.0.tgz#12c25efe40a45e3c323eb8675a0a0ce57b22371f"
   integrity sha512-cKV8tMCEpQs4hK/ik71d6LrPOnpkpGBR0wzxqr68g2m/LB2GxVYQroAjMJZRVM1Y4BCjCKc3vAamxSzOY2RP+w==
 
-browser-image-compression@^2.0.2:
+"browser-image-compression@git+https://github.com/portkey-yellow/browser-image-compression.git#e6b8e9438cb4b3fb0a37c0c11b11670be9cbf948":
   version "2.0.2"
-  resolved "https://registry.yarnpkg.com/browser-image-compression/-/browser-image-compression-2.0.2.tgz#4d5ef8882e9e471d6d923715ceb9034499d14eaa"
-  integrity sha512-pBLlQyUf6yB8SmmngrcOw3EoS4RpQ1BcylI3T9Yqn7+4nrQTXJD4sJDe5ODnJdrvNMaio5OicFo75rDyJD2Ucw==
+  resolved "git+https://github.com/portkey-yellow/browser-image-compression.git#e6b8e9438cb4b3fb0a37c0c11b11670be9cbf948"
   dependencies:
     uzip "0.20201231.0"
 

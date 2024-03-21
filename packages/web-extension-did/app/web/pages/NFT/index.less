@@ -1,4 +1,6 @@
 @import '../../assets/theme/color.less';
+@import '../../assets/theme/constants.less';
+
 .nft-detail {
   height: 100%;
   display: flex;
@@ -24,7 +26,7 @@
       img, .img-text {
         width: 100%;
         height: 100%;
-        border-radius: 50%;
+        border-radius: 4px;
       }
       .img-text {
         background-color: @bg-15;
@@ -51,13 +53,23 @@
     line-height: 24px;
     font-weight: 500;
     color: @font-11;
+    word-wrap: break-word;
+    word-break: break-all;
   }
 
   .picture {
-    margin: 16px auto 24px;
+    position: relative;
+    margin: 16px auto 0;
     width: 264px;
     height: 264px;
-    
+    .tokentaglarge-icon,
+    .nfttaglarge-icon {
+      position: absolute;
+      width: 48px;
+      height: 24px;
+      top: 0;
+      right: 16px;
+    }
     /* stylelint-disable-next-line no-descending-specificity */
     img {
       object-fit: contain;
@@ -76,43 +88,58 @@
     border-radius: 6px;
   }
 
-  .info {
-    padding: 0 24px 42px;
-    .title {
-      font-size: 16px;
-      line-height: 22px;
-      font-weight: 500;
-      color: @font-11;
-      overflow: hidden;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 1;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .info-item {
-      margin-top: 14px;
-      font-size: 14px;
-      line-height: 20px;
-      font-weight: 400;
-      color: @font-11;
-      .label {
-        color: @font-13;
+  .nft-info {
+    margin: 24px;
+    gap: 32px;
+    .info {
+      .info-title {
+        font-size: 16px;
+        line-height: 22px;
+        font-weight: 500;
+        color: @font-11;
+        .text-overflow(1);
       }
-    }
-    .contract {
+      .info-item {
+        margin-top: 14px;
+        gap: 8px;
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 400;
+        color: @font-11;
+        .label {
+          color: @font-13;
+          .label-bold {
+            margin-top: 4px;
+            font-weight: 500;
+            color: @font-11; 
+          }
+        }
+      }
       .contract-title {
         gap: 8px;
       }
-    }
-    .alias {
-      .alias-name {
-        max-width: 115px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+      &.basic-info,
+      &.seed-info,
+      &.inscription-info {
+        .label {
+          width: 112px;
+          flex-shrink: 0;
+        }
+        .content {
+          word-break: break-all;
+        }
+      }
+      &.traits-info {
+        .label {
+          word-break: break-all;
+        }
+        .content {
+          width: 64px;
+          flex-shrink: 0;
+          text-align: right;
+        }
       }
     }
-    
   }
   .btn-wrap {
     background: @bg-11;

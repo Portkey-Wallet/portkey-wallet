@@ -1,18 +1,16 @@
 import PageContainer from 'components/PageContainer';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import CommonInput from 'components/CommonInput';
-import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { StyleSheet, View } from 'react-native';
 import gStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CommonToast from 'components/CommonToast';
 import { useLanguage } from 'i18n/hooks';
-import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import useDebounce from 'hooks/useDebounce';
-import { useAppCommonDispatch } from '@portkey-wallet/hooks';
+import { useAppCommonDispatch, useEffectOnce } from '@portkey-wallet/hooks';
 import { request } from '@portkey-wallet/api/api-did';
-import { useCaAddresses, useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import Loading from 'components/Loading';
 import FilterTokenSection from '../components/FilterToken';
@@ -20,8 +18,10 @@ import PopularTokenSection from '../components/PopularToken';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
-import { useFocusEffect } from '@react-navigation/native';
 import Touchable from 'components/Touchable';
+import { PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
+import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 interface ManageTokenListProps {
   route?: any;
@@ -31,44 +31,64 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const [isSearching, setIsSearching] = useState<boolean>(false);
-
-  const chainIdList = useChainIdList();
-
+  const { tokenDataShowInMarket, totalRecordCount, fetchTokenInfoList } = useToken();
   const dispatch = useAppCommonDispatch();
-  const caAddressArray = useCaAddresses();
+  const chainIdArray = useChainIdList();
   const caAddressInfos = useCaAddressInfoList();
-
-  const { tokenDataShowInMarket } = useAppCASelector(state => state.tokenManagement);
 
   const [keyword, setKeyword] = useState<string>('');
   const [filterTokenList, setFilterTokenList] = useState<TokenItemShowType[]>([]);
 
   const debounceWord = useDebounce(keyword, 800);
 
-  const fetchSearchedTokenList = useCallback(async () => {
+  // TODO: test it
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     fetchSearchedTokenList();
+  //     dispatch(fetchAllTokenListAsync({ chainIdArray: chainIdList }));
+  //   }, [chainIdList, dispatch, fetchSearchedTokenList]),
+  // );
+
+  const getTokenList = useLockCallback(
+    async (isInit?: boolean) => {
+      if (debounceWord) return;
+      if (totalRecordCount && tokenDataShowInMarket.length >= totalRecordCount && !isInit) return;
+
+      await fetchTokenInfoList({
+        keyword: '',
+        chainIdArray,
+        skipCount: isInit ? 0 : tokenDataShowInMarket.length,
+        maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+      });
+    },
+    [chainIdArray, debounceWord, fetchTokenInfoList, tokenDataShowInMarket, totalRecordCount],
+  );
+
+  const searchToken = useLockCallback(async () => {
+    if (!debounceWord) return;
+
     try {
-      if (!debounceWord) return;
       setIsSearching(true);
 
-      const list = await request.token.fetchTokenListBySearch({
+      const res = await request.token.fetchTokenListBySearch({
         params: {
-          symbol: debounceWord,
-          chainIds: chainIdList,
+          symbol: keyword,
+          chainIds: chainIdArray,
         },
       });
-
-      const tmpToken: TokenItemShowType[] = list.map((item: any) => ({
+      const _target = (res || []).map((item: any) => ({
         ...item,
         isAdded: item.isDisplay,
         userTokenId: item.id,
       }));
-      setFilterTokenList(tmpToken);
+      setFilterTokenList(_target);
     } catch (error) {
-      CommonToast.failError(error);
+      setFilterTokenList([]);
+      console.log('filter search error', error);
     } finally {
       setIsSearching(false);
     }
-  }, [chainIdList, debounceWord]);
+  }, [chainIdArray, debounceWord, keyword]);
 
   const onHandleTokenItem = useCallback(
     async (item: TokenItemShowType, isDisplay: boolean) => {
@@ -82,11 +102,11 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
           },
         });
         timerRef.current = setTimeout(async () => {
-          dispatch(fetchTokenListAsync({ caAddresses: caAddressArray, caAddressInfos }));
+          dispatch(fetchTokenListAsync({ caAddressInfos }));
           if (debounceWord) {
-            await fetchSearchedTokenList();
+            await searchToken();
           } else {
-            await dispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray: chainIdList }));
+            await getTokenList(true);
           }
           Loading.hide();
           CommonToast.success('Success');
@@ -96,31 +116,18 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
         CommonToast.failError(err);
       }
     },
-    [caAddressArray, caAddressInfos, chainIdList, debounceWord, dispatch, fetchSearchedTokenList],
+    [caAddressInfos, debounceWord, dispatch, getTokenList, searchToken],
   );
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchSearchedTokenList();
-      dispatch(fetchAllTokenListAsync({ chainIdArray: chainIdList }));
-    }, [chainIdList, dispatch, fetchSearchedTokenList]),
-  );
-
+  // search token with keyword
   useEffect(() => {
-    if (tokenDataShowInMarket.length) return;
-    dispatch(fetchAllTokenListAsync({ keyword: debounceWord, chainIdArray: chainIdList }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    searchToken();
+  }, [debounceWord, searchToken]);
 
-  useEffect(() => {
-    if (debounceWord) {
-      // get filter token
-      setFilterTokenList([]);
-      fetchSearchedTokenList();
-    } else {
-      dispatch(fetchAllTokenListAsync({ chainIdArray: chainIdList }));
-    }
-  }, [chainIdList, debounceWord, dispatch, fetchSearchedTokenList]);
+  // get token list
+  useEffectOnce(() => {
+    getTokenList(true);
+  });
 
   // clear timer
   useEffect(
@@ -165,7 +172,11 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
       {debounceWord ? (
         <FilterTokenSection tokenList={filterTokenList} onHandleTokenItem={onHandleTokenItem} />
       ) : (
-        <PopularTokenSection tokenDataShowInMarket={tokenDataShowInMarket} onHandleTokenItem={onHandleTokenItem} />
+        <PopularTokenSection
+          tokenDataShowInMarket={tokenDataShowInMarket}
+          getTokenList={getTokenList}
+          onHandleTokenItem={onHandleTokenItem}
+        />
       )}
     </PageContainer>
   );

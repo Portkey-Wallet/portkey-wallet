@@ -13,6 +13,10 @@
     font-size: 16px;
     line-height: 22px;
     color: @font-13;
+
+    &.hidden-go-sign-up {
+      visibility: hidden;
+    }
     .sign-text {
       margin-left: 8px;
       padding-right: 22px;
@@ -22,12 +26,18 @@
       cursor: pointer;
     }
   }
+  .extra-guardian-type-content-wrapper {
+    min-height: 174px;
+  }
   .extra-guardian-type-content {
+    padding: 0 15px;
     gap: 24px;
+    flex-wrap: wrap;
     margin-bottom: 32px;
     .guardian-type-icon {
       width: 48px;
       height: 48px;
+      flex-shrink: 0;
       border: 1px solid @border-2;
       border-radius: 50%;
       cursor: pointer;

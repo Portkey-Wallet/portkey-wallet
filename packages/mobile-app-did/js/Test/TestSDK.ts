@@ -1,3 +1,4 @@
+import { getDefaultWallet } from '@portkey-wallet/utils/aelfUtils';
 import AElf from 'aelf-sdk';
 
 // const wallet2 = AElf.wallet.createNewWallet();
@@ -10,15 +11,11 @@ import AElf from 'aelf-sdk';
 
 //  account1 has many aelf
 const address1 = 'mfzJTsv5UGQGoZw4gdrivTihVoZgtdm2f8ppnY7W2t6nGYfS1';
-const privateKey1 = '96ab8ea91edbd17f80049daaa92949c1ef2356f1215fbc252e044c7b0b5a3e13';
-const wallet1 = AElf.wallet.getWalletByPrivateKey(privateKey1);
+const wallet1 = getDefaultWallet();
 console.log('wallet1', wallet1);
 
 // account2
 const address2 = 'PhxFvf8eMxKxrQZZNbLvmnsjwAfGShEvkPBDcjkF4qX7vsa2K';
-const privateKey2 = 'b7ad1f71d2853adc040cfe4bc6ebdd1aad6967e2e81f8c21f8b0d1eda8d08750';
-const wallet2 = AElf.wallet.getWalletByPrivateKey(privateKey2);
-console.log('wallet2', wallet2);
 
 // JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE  mainChain
 

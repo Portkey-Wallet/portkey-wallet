@@ -22,7 +22,7 @@ import {
 } from '@portkey-wallet/hooks/hooks-ca/im';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { RedPackageTypeEnum } from '@portkey-wallet/im';
-import { divDecimalsStr } from '@portkey-wallet/utils/converter';
+import { divDecimals, divDecimalsStr, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { formatRedPacketNoneLeftTime, getNumberWithUnit, getUnit } from '../utils/format';
 import NFTAvatar from 'components/NFTAvatar';
@@ -58,7 +58,6 @@ export const RedPacketDetails = () => {
   });
 
   const renderRedPacketTipContent = useMemo(() => {
-    // TODO: isNFT
     const tokenUnit =
       redPacketData?.assetType === AssetType.ft ? redPacketData?.symbol : `${redPacketData?.alias} NFTs`;
 
@@ -177,14 +176,13 @@ export const RedPacketDetails = () => {
         {redPacketData?.assetType === AssetType.nft && (
           <NFTAvatar
             disabled
+            isSeed={redPacketData?.isSeed}
+            seedType={redPacketData?.seedType}
+            badgeSizeType="normal"
             style={GStyles.marginBottom(16)}
             data={{
-              alias: redPacketData?.alias || '',
-              chainId: redPacketData?.chainId || '',
               imageUrl: redPacketData?.imageUrl || '',
-              symbol: redPacketData?.symbol || '',
-              tokenContractAddress: '',
-              tokenId: redPacketData?.tokenId || '',
+              alias: redPacketData?.alias || '',
             }}
           />
         )}
@@ -193,7 +191,9 @@ export const RedPacketDetails = () => {
             <RedPacketAmountShow
               assetType={redPacketData?.assetType}
               componentType="packetDetailPage"
-              amountShow={divDecimalsStr(redPacketData?.currentUserGrabbedAmount, redPacketData?.decimal)}
+              amountShow={formatAmountShow(
+                divDecimals(redPacketData?.currentUserGrabbedAmount, redPacketData?.decimal),
+              )}
               symbol={redPacketData.assetType === AssetType.ft ? redPacketData?.symbol : ''}
             />
             <TextS style={[FontStyles.font15, styles.tips]}>
@@ -206,16 +206,16 @@ export const RedPacketDetails = () => {
   }, [
     redPacketData?.alias,
     redPacketData?.assetType,
-    redPacketData?.chainId,
     redPacketData?.currentUserGrabbedAmount,
     redPacketData?.decimal,
     redPacketData?.imageUrl,
     redPacketData?.isCurrentUserGrabbed,
+    redPacketData?.isSeed,
     redPacketData?.memo,
+    redPacketData?.seedType,
     redPacketData?.senderAvatar,
     redPacketData?.senderName,
     redPacketData?.symbol,
-    redPacketData?.tokenId,
   ]);
 
   const nextList = useCallback(() => {

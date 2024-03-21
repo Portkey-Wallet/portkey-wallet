@@ -242,7 +242,7 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
                                 {
                                     "tag": "a",
                                     "text": "click here",
-                                    "href": "https://play.google.com/apps/internaltest/4700133845286187191"
+                                    "href": "https://play.google.com/apps/internaltest/4701401229375917460"
                                 },
                                 {
                                     "tag": "text",

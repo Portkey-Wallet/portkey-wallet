@@ -1,21 +1,26 @@
-import { AccountAssetItem, AccountAssets, TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import CustomSvg from 'components/CustomSvg';
 import DropdownSearch from 'components/DropdownSearch';
-import { ReactNode, useCallback, useEffect, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useAssetInfo, useTokenInfo, useUserInfo } from 'store/Provider/hooks';
-import { fetchAssetAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
-import { useCaAddresses, useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
+import { useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useAmountInUsdShow, useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import TokenImageDisplay from '../TokenImageDisplay';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { NFTSizeEnum, getSeedTypeTag } from 'utils/assets';
+import { IAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
+import LoadingMore from 'components/LoadingMore/LoadingMore';
+import { PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
+import { useDebounceCallback, useEffectOnce } from '@portkey-wallet/hooks';
+import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
+import { useAccountAssetsInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { fetchAssetsListByFilter, fetchTokenListByFilter } from './utils';
 import './index.less';
 
 export interface ICustomTokenListProps {
-  onChange?: (v: AccountAssetItem, type: 'token' | 'nft') => void;
+  onChange?: (v: IAssetItemType, type: 'token' | 'nft') => void;
   onClose?: () => void;
   title?: ReactNode;
   searchPlaceHolder?: string;
@@ -31,41 +36,113 @@ export default function CustomTokenList({
 }: ICustomTokenListProps) {
   const { t } = useTranslation();
   const isMainnet = useIsMainnet();
-  const { accountAssets } = useAssetInfo();
-  const { tokenDataShowInMarket } = useTokenInfo();
+  const { tokenDataShowInMarket, totalRecordCount: tokenTotalRecordCount, fetchTokenInfoList } = useToken();
+  const {
+    accountAssetsList,
+    totalRecordCount: assetsTotalRecordCount,
+    fetchAccountAssetsInfoList,
+  } = useAccountAssetsInfo();
   const [openDrop, setOpenDrop] = useState<boolean>(false);
   const [filterWord, setFilterWord] = useState<string>('');
-  const [assetList, setAssetList] = useState<TokenItemShowType[] | AccountAssets>([]);
-  const appDispatch = useAppDispatch();
-  const { passwordSeed } = useUserInfo();
-  const caAddresses = useCaAddresses();
+  const [assetList, setAssetList] = useState<TokenItemShowType[] | IAssetItemType[]>([]);
   const chainIdArray = useChainIdList();
   const amountInUsdShow = useAmountInUsdShow();
   const caAddressInfos = useCaAddressInfoList();
-  useFreshTokenPrice();
-  useEffect(() => {
+  const hasMoreData = useMemo(() => {
     if (drawerType === 'send') {
-      setAssetList(accountAssets.accountAssetsList);
+      return accountAssetsList.length < assetsTotalRecordCount;
+    } else {
+      return tokenDataShowInMarket.length < tokenTotalRecordCount;
+    }
+  }, [
+    drawerType,
+    accountAssetsList.length,
+    assetsTotalRecordCount,
+    tokenDataShowInMarket.length,
+    tokenTotalRecordCount,
+  ]);
+  useFreshTokenPrice();
+
+  useEffectOnce(() => {
+    setFilterWord('');
+    if (drawerType === 'send') {
+      fetchAccountAssetsInfoList({
+        keyword: '',
+        caAddressInfos,
+        skipCount: 0,
+        maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+      });
+    } else {
+      fetchTokenInfoList({
+        chainIdArray,
+        keyword: '',
+        skipCount: 0,
+        maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+      });
+    }
+  });
+
+  const setData = useCallback(() => {
+    if (drawerType === 'send') {
+      setAssetList(accountAssetsList);
     } else {
       setAssetList(tokenDataShowInMarket);
     }
-  }, [accountAssets.accountAssetsList, drawerType, tokenDataShowInMarket]);
+  }, [accountAssetsList, drawerType, tokenDataShowInMarket]);
 
   useEffect(() => {
-    if (!passwordSeed) return;
+    setData();
+  }, [setData]);
+
+  const handleSearch = useDebounceCallback(
+    async (keyword: string) => {
+      if (!keyword) return setData();
+      let res;
+      if (drawerType === 'send') {
+        res = await fetchAssetsListByFilter({ keyword, caAddressInfos });
+      } else {
+        res = await fetchTokenListByFilter({ chainIdArray, keyword });
+      }
+      setAssetList(res.data);
+    },
+    [caAddressInfos, chainIdArray, drawerType, setData],
+    500,
+  );
+
+  const getMoreData = useCallback(async () => {
     if (drawerType === 'send') {
-      appDispatch(fetchAssetAsync({ caAddresses, keyword: filterWord, caAddressInfos }));
+      if (accountAssetsList.length && accountAssetsList.length < assetsTotalRecordCount) {
+        await fetchAccountAssetsInfoList({
+          keyword: '',
+          caAddressInfos,
+          skipCount: accountAssetsList.length,
+          maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+        });
+      }
     } else {
-      appDispatch(fetchAllTokenListAsync({ chainIdArray, keyword: filterWord }));
+      if (tokenDataShowInMarket.length && tokenDataShowInMarket.length < tokenTotalRecordCount) {
+        await fetchTokenInfoList({
+          chainIdArray,
+          keyword: '',
+          skipCount: tokenDataShowInMarket.length,
+          maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+        });
+      }
     }
-  }, [passwordSeed, filterWord, drawerType, caAddresses, appDispatch, chainIdArray, caAddressInfos]);
-
-  useEffect(() => {
-    setFilterWord('');
-  }, []);
+  }, [
+    drawerType,
+    accountAssetsList.length,
+    assetsTotalRecordCount,
+    fetchAccountAssetsInfoList,
+    caAddressInfos,
+    tokenDataShowInMarket.length,
+    tokenTotalRecordCount,
+    fetchTokenInfoList,
+    chainIdArray,
+  ]);
 
   const renderSendToken = useCallback(
-    (token: AccountAssetItem) => {
+    (token: IAssetItemType) => {
       return (
         <div
           className="item"
@@ -96,16 +173,15 @@ export default function CustomTokenList({
 
   const renderReceiveToken = useCallback(
     (token: TokenItemShowType) => {
-      const tokenTmp: AccountAssetItem = {
+      const tokenTmp: IAssetItemType = {
         chainId: token.chainId,
         symbol: token.symbol,
         address: token.address,
         tokenInfo: {
           imageUrl: token.imageUrl,
-          id: token.id || '',
-          balance: token.balance,
-          decimals: `${token.decimals}`,
-          balanceInUsd: token.balanceInUsd,
+          balance: token.balance || '',
+          decimals: token.decimals,
+          balanceInUsd: token.balanceInUsd || '',
           tokenContractAddress: token.address,
         },
       };
@@ -128,13 +204,15 @@ export default function CustomTokenList({
   );
 
   const renderNft = useCallback(
-    (token: AccountAssetItem) => {
+    (token: IAssetItemType) => {
+      const seedTypeTag = token.nftInfo ? getSeedTypeTag(token.nftInfo, NFTSizeEnum.small) : '';
       return (
         <div
           key={`${token.chainId}_${token.nftInfo?.alias}_${token.nftInfo?.tokenId}`}
           className="item protocol"
           onClick={onChange?.bind(undefined, token, 'nft')}>
-          <div className="avatar">
+          <div className="avatar flex-center">
+            {seedTypeTag && <CustomSvg type={seedTypeTag} />}
             {token.nftInfo?.imageUrl ? <img src={token.nftInfo.imageUrl} /> : token.nftInfo?.alias?.slice(0, 1)}
           </div>
           <div className="info">
@@ -142,7 +220,9 @@ export default function CustomTokenList({
             <p className="network">{transNetworkText(token.chainId, !isMainnet)}</p>
           </div>
           <div className="amount">
-            <div className="balance">{token.nftInfo?.balance}</div>
+            <div className="balance">
+              {formatAmountShow(divDecimals(token.nftInfo?.balance, token.nftInfo?.decimals || 0))}
+            </div>
           </div>
         </div>
       );
@@ -161,17 +241,14 @@ export default function CustomTokenList({
         open={openDrop}
         value={filterWord}
         overlay={<div className="empty-tip">{t('There is no search result.')}</div>}
-        // onPressEnter={handleSearch}
         inputProps={{
           onBlur: () => setOpenDrop(false),
-          // onFocus: () => {
-          // if (filterWord && !tokenDataShowInMarket.length) setOpenDrop(true);
-          // },
           onChange: (e) => {
             const _value = e.target.value.replaceAll(' ', '');
             if (!_value) setOpenDrop(false);
 
             setFilterWord(_value);
+            handleSearch(_value);
           },
           placeholder: searchPlaceHolder || 'Search Assets',
         }}
@@ -184,14 +261,15 @@ export default function CustomTokenList({
             </p>
           </div>
         ) : (
-          assetList.map((token: TokenItemShowType | AccountAssetItem) => {
+          assetList.map((token: TokenItemShowType | IAssetItemType) => {
             if (drawerType === 'send') {
-              return (token as AccountAssetItem).nftInfo?.tokenId ? renderNft(token) : renderSendToken(token);
+              return (token as IAssetItemType).nftInfo?.tokenId ? renderNft(token) : renderSendToken(token);
             } else {
               return renderReceiveToken(token as TokenItemShowType);
             }
           })
         )}
+        {!filterWord && <LoadingMore hasMore={hasMoreData} loadMore={getMoreData} className="load-more" />}
       </div>
     </div>
   );

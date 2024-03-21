@@ -131,11 +131,12 @@ export const getLoginControlListAsync = createAsyncThunk<Required<Pick<CMSState,
             });
           } catch (error) {
             console.log(error, '=====error');
+            return null;
           }
         }),
       );
       const loginModeListMap: { [T in NetworkType]?: ILoginModeItem[] } = {};
-      res.map((item, index) => {
+      res?.map((item, index) => {
         if (item?.data) {
           loginModeListMap[networkList[index]] = item.data.loginMode as ILoginModeItem[];
         }

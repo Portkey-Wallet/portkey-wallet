@@ -85,7 +85,8 @@ const TokenList = ({ title = 'Select Token', onFinishSelectToken, currentSymbol,
         keyword: debounceKeyword,
         chainIdArray: chainIdList,
       });
-      setFilteredShowList(result?.items);
+
+      setFilteredShowList(result?.items?.map(item => item.token));
     } catch (error) {
       console.log('fetchTokenListByFilter error', error);
     }

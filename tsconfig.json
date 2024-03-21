@@ -21,7 +21,7 @@
     "noImplicitReturns": true,
     "allowUnreachableCode": false,
     "experimentalDecorators": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
   },
   "exclude": ["node_modules", "dist"]
 }

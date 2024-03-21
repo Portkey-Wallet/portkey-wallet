@@ -6576,21 +6576,6 @@
     "@portkey/types" "^2.0.0-alpha.0"
     "@types/readable-stream" "^2.3.15"
 
-"@portkey/provider-types@^1.0.1-alpha.0":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@portkey/provider-types/-/provider-types-1.1.1.tgz#54782454e77eb2c417969703925c3a1c4ae6598d"
-  integrity sha512-eyUiLH1RK5Ml60i7kMKQ+u/K6F75ozKI0VO6JfBhnElh33UI172j0FR0vcKCjw2UNEtGCBJroBqDmMQe++JW8g==
-  dependencies:
-    "@portkey/types" "^1.0.0-alpha.4"
-    "@types/readable-stream" "^2.3.15"
-
-"@portkey/provider-utils@1.0.1-alpha.0":
-  version "1.0.1-alpha.0"
-  resolved "https://registry.yarnpkg.com/@portkey/provider-utils/-/provider-utils-1.0.1-alpha.0.tgz#0ef08b21ce0f6e2f5b259fdd696a9384e0c5948b"
-  integrity sha512-05kLcl7i2giqsdGGjBIdEBTavsipW9lkt/Ea1dy0JMA4mwOLdyLq3mW+S8N1vLRZ8u0IuQocsrE6kA7sRNnheA==
-  dependencies:
-    "@portkey/provider-types" "^1.0.1-alpha.0"
-
 "@portkey/provider-utils@2.0.0-alpha.4":
   version "2.0.0-alpha.4"
   resolved "https://registry.yarnpkg.com/@portkey/provider-utils/-/provider-utils-2.0.0-alpha.4.tgz#d11a243592c857351a8f984e670ff5be32dcd8e4"
@@ -6682,7 +6667,7 @@
   dependencies:
     "@abp/signalr" "^7.0.0"
 
-"@portkey/types@^1.0.0-alpha.4", "@portkey/types@^1.5.3":
+"@portkey/types@^1.5.3":
   version "1.5.3"
   resolved "https://registry.yarnpkg.com/@portkey/types/-/types-1.5.3.tgz#6a20d091efd5d9297d7cb6bb41f6ce5d445835c2"
   integrity sha512-JiodJHJEykQCmvPzn0R+8A9AGoHWJF0ya4mcbMjE4A+AN2nwRotouJq3iKIL9Orf/pt7kU8kG925lrBFs5dToQ==
@@ -26956,6 +26941,14 @@ rn-teaset@0.1.2-alpha.1:
   version "0.1.2-alpha.1"
   resolved "https://registry.yarnpkg.com/rn-teaset/-/rn-teaset-0.1.2-alpha.1.tgz#5d2aefa95c9141342f91c7ad9671a2bc6eddb61e"
   integrity sha512-k10saJEDMHHAkp8w2P7tF4i0HCOFBZOkrvtUGOlgBG96ADv+g/7bOu3ZA44iT8XTTr3dwC/7LuY+heezjwzNtQ==
+  dependencies:
+    prop-types "^15.7.2"
+    react-native-legacy-components "^0.1.3"
+
+rn-teaset@^0.1.2-alpha.1:
+  version "0.1.2-alpha.2"
+  resolved "https://registry.yarnpkg.com/rn-teaset/-/rn-teaset-0.1.2-alpha.2.tgz#64d4a28c548389ce8313d01f2da2612ce4b90f58"
+  integrity sha512-9rmk7IWQX89l8q/FEK2b1m+hJWmK0vrmR72vg4VHjvMk4BNh7o6kPE94tLoZb6QD46LIwg6iKMeA5zYaaD4yJg==
   dependencies:
     prop-types "^15.7.2"
     react-native-legacy-components "^0.1.3"

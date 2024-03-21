@@ -219,13 +219,23 @@ export default function AddToken() {
           <div>
             {!filterWord.length && <div className="token-title">{t('Popular Assets')}</div>}
             {tokenShowList.map((item) => renderTokenItem(item))}
+            {!filterWord && <LoadingMore hasMore={hasMoreToken} loadMore={getMoreTokenInfo} className="load-more" />}
           </div>
           {filterWord && renderSearchResultTip}
         </div>
       ) : (
         <>{filterWord ? renderNoSearchResult : ''}</>
       ),
-    [filterWord, renderNoSearchResult, renderSearchResultTip, renderTokenItem, t, tokenShowList],
+    [
+      filterWord,
+      getMoreTokenInfo,
+      hasMoreToken,
+      renderNoSearchResult,
+      renderSearchResultTip,
+      renderTokenItem,
+      t,
+      tokenShowList,
+    ],
   );
 
   const { isPrompt } = useCommonState();
@@ -248,20 +258,9 @@ export default function AddToken() {
           />
         </div>
         {renderTokenList}
-        {!filterWord && <LoadingMore hasMore={hasMoreToken} loadMore={getMoreTokenInfo} className="load-more" />}
       </div>
     );
-  }, [
-    filterWord,
-    getMoreTokenInfo,
-    hasMoreToken,
-    isPrompt,
-    navigate,
-    renderTokenList,
-    rightElement,
-    searchDebounce,
-    t,
-  ]);
+  }, [filterWord, isPrompt, navigate, renderTokenList, rightElement, searchDebounce, t]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

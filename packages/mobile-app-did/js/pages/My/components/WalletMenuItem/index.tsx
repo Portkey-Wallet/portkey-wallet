@@ -31,7 +31,7 @@ const WalletMenuItem: React.FC<CommonInputProps> = () => {
           {userInfo?.nickName || ''}
         </TextXXL>
         <View style={styles.blank} />
-        <TextM numberOfLines={1} style={styles.portkeyId}>{`Portkey ID: ${userInfo?.userId}`}</TextM>
+        <TextM numberOfLines={1} style={styles.portkeyId}>{`Portkey ID: ${userInfo?.userId || ''}`}</TextM>
       </View>
       <Svg icon="right-arrow" size={pTd(20)} />
     </Touchable>
@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
   },
   nickName: {
     ...fonts.mediumFont,
+    width: pTd(200),
   },
   portkeyId: {
     width: pTd(200),

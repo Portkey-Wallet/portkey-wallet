@@ -152,7 +152,7 @@ export default function Referral({
         />
         <OblongButton
           icon={isIOS ? 'google' : 'apple'}
-          title={TitleMap[type][isIOS ? 'google' : 'google']}
+          title={TitleMap[type][isIOS ? 'google' : 'apple']}
           onPress={isIOS ? onGoogleSign : onAppleSign}
           style={GStyles.marginTop(16)}
         />

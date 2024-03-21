@@ -1,11 +1,17 @@
 import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
-import { useCaAddresses, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
 import { Transaction } from '@portkey-wallet/types/types-ca/trade';
 import { getExploreLink } from '@portkey-wallet/utils';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { formatStr2EllipsisStr, AmountSign, formatWithCommas } from '@portkey-wallet/utils/converter';
+import {
+  formatStr2EllipsisStr,
+  AmountSign,
+  formatWithCommas,
+  formatAmountShow,
+  divDecimals,
+} from '@portkey-wallet/utils/converter';
 import clsx from 'clsx';
 import Copy from 'components/Copy';
 import CustomSvg from 'components/CustomSvg';
@@ -13,7 +19,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useEffectOnce } from 'react-use';
 import './index.less';
-import { dateFormatTransTo13 } from 'utils';
+import { formatTransferTime } from '@portkey-wallet/utils/time';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { addressFormat } from '@portkey-wallet/utils';
 import { useCommonState } from 'store/Provider/hooks';
@@ -25,17 +31,20 @@ import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks
 import { ChainId } from '@portkey-wallet/types';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { ITransactionLocationState, THomePageLocationState } from 'types/router';
+import { getSeedTypeTag } from 'utils/assets';
 
 export default function Transaction() {
   const { t } = useTranslation();
   const { state } = useLocationState<ITransactionLocationState>();
   const chainId = state.chainId;
   const from = state?.previousPage;
-  const currentWallet = useCurrentWallet();
-  const { walletInfo } = currentWallet;
-  const caAddresses = useCaAddresses();
-  const caAddress = chainId ? [walletInfo?.[chainId as ChainId]?.caAddress] : '';
   const isMainnet = useIsMainnet();
+  const caAddressInfoList = useCaAddressInfoList();
+  const caAddressInfos = useMemo(() => {
+    const result = caAddressInfoList.filter((ele) => ele.chainId === chainId);
+    return result?.length > 0 ? result : caAddressInfoList;
+  }, [caAddressInfoList, chainId]);
+
   useFreshTokenPrice();
   const amountInUsdShow = useAmountInUsdShow();
   const defaultToken = useDefaultToken(chainId ? (chainId as ChainId) : undefined);
@@ -49,7 +58,7 @@ export default function Transaction() {
   // Because some data is not returned in the Activities API. Such as from, to.
   useEffectOnce(() => {
     const params = {
-      caAddresses: caAddress || caAddresses,
+      caAddressInfos,
       transactionId: activityItem.transactionId,
       blockHash: activityItem.blockHash,
     };
@@ -88,10 +97,13 @@ export default function Transaction() {
   const isNft = useMemo(() => !!activityItem?.nftInfo?.nftId, [activityItem?.nftInfo?.nftId]);
 
   const nftHeaderUI = useCallback(() => {
-    const { nftInfo, amount } = activityItem;
+    const { nftInfo, amount, decimals } = activityItem;
+    const seedTypeTag = nftInfo ? getSeedTypeTag(nftInfo) : '';
+
     return (
       <div className="nft-amount">
-        <div className="assets">
+        <div className="assets flex-center">
+          {seedTypeTag && <CustomSvg type={seedTypeTag} />}
           {nftInfo?.imageUrl ? (
             <img className="assets-img" src={nftInfo?.imageUrl} />
           ) : (
@@ -103,7 +115,7 @@ export default function Transaction() {
             <span>{nftInfo?.alias}</span>
             <span className="token-id">#{nftInfo?.nftId}</span>
           </p>
-          <p className="quantity">{`Amount: ${amount}`}</p>
+          <p className="quantity">{`Amount: ${formatAmountShow(divDecimals(amount, decimals || 0))}`}</p>
         </div>
       </div>
     );
@@ -134,7 +146,7 @@ export default function Transaction() {
         </p>
         <p className="value">
           <span className={clsx(['left', status.style])}>{t(status.text)}</span>
-          <span className="right">{dateFormatTransTo13(activityItem.timestamp)}</span>
+          <span className="right">{formatTransferTime(activityItem.timestamp)}</span>
         </p>
       </div>
     );

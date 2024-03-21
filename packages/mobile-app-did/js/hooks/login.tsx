@@ -112,11 +112,14 @@ export function useOnManagerAddressAndQueryResult() {
   const storeTmpWalletInfo = useTmpWalletInfo();
   const latestStoreTmpWalletInfo = useLatestRef(storeTmpWalletInfo);
 
-  const createTmpWalletInfo = useCallback((walletInfo?: CurrentWalletType) => {
-    if (walletInfo?.address) return walletInfo;
-    if (latestStoreTmpWalletInfo.current?.address) return latestStoreTmpWalletInfo.current;
-    return AElf.wallet.createNewWallet();
-  }, []);
+  const createTmpWalletInfo = useCallback(
+    (walletInfo?: CurrentWalletType) => {
+      if (walletInfo?.address) return walletInfo;
+      if (latestStoreTmpWalletInfo.current?.address) return latestStoreTmpWalletInfo.current;
+      return AElf.wallet.createNewWallet();
+    },
+    [latestStoreTmpWalletInfo],
+  );
 
   return useCallback(
     async ({
@@ -244,7 +247,7 @@ export function useIntervalGetResult() {
   return useCallback((params: IntervalGetResultParams) => intervalGetResult(params), []);
 }
 
-type LoginParams = {
+export type LoginParams = {
   loginAccount: string;
   loginType?: LoginType;
   authenticationInfo?: AuthenticationInfo;
@@ -611,7 +614,15 @@ export function useOnLogin(isLogin?: boolean) {
         }
       }
     },
-    [getChainInfo, getGuardiansInfo, getRegisterInfo, getVerifierServers, goGuardianApproval, goSelectVerifier],
+    [
+      dispatch,
+      getChainInfo,
+      getGuardiansInfo,
+      getRegisterInfo,
+      getVerifierServers,
+      goGuardianApproval,
+      goSelectVerifier,
+    ],
   );
 }
 

@@ -1,0 +1,46 @@
+query loginMode_loginModeMatch_aggregated($groupBy: [String], $filter: loginMode_loginModeMatch_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
+    loginMode_loginModeMatch_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
+        group
+        countAll
+        count{
+            id
+            loginMode_id
+            loginModeMatch_id
+        }
+        countDistinct{
+            id
+            loginMode_id
+            loginModeMatch_id
+        }
+        avg{
+            id
+            loginMode_id
+            loginModeMatch_id
+        }
+        sum{
+            id
+            loginMode_id
+            loginModeMatch_id
+        }
+        avgDistinct{
+            id
+            loginMode_id
+            loginModeMatch_id
+        }
+        sumDistinct{
+            id
+            loginMode_id
+            loginModeMatch_id
+        }
+        min{
+            id
+            loginMode_id
+            loginModeMatch_id
+        }
+        max{
+            id
+            loginMode_id
+            loginModeMatch_id
+        }
+    }
+}

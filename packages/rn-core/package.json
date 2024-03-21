@@ -1,5 +1,5 @@
 {
-  "name": "@portkey/rn-core",
+  "name": "@portkey-wallet/rn-core",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",

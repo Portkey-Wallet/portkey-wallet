@@ -49,8 +49,8 @@ const initEntries = () => {
   const entryConfig = new Map<string, AcceptableComponentType>();
   if (__DEV__) {
     // test only
-    entryConfig.set(PortkeyTestEntries.TEST, () => TestEntry);
-    entryConfig.set(PortkeyTestEntries.TEST_COMP, () => TestComp);
+    // entryConfig.set(PortkeyTestEntries.TEST, () => TestEntry);
+    entryConfig.set(PortkeyTestEntries.TEST, () => TestComp);
   }
 
   // entry stage

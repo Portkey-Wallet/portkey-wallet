@@ -8,6 +8,7 @@ export const styles = StyleSheet.create({
     overflow: 'hidden',
     borderRadius: 5,
     backgroundColor: 'white',
+    width: screenWidth,
   },
   itemText: {
     color: defaultColors.primaryColor,

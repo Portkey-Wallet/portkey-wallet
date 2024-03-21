@@ -1,37 +1,116 @@
 import React from 'react';
-import ActionSheet from 'components/ActionSheet';
+import ActionSheet from '@portkey-wallet/rn-component/componet/ActionSheet';
 import Button from 'pages/Login/components/Button';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { t } from 'i18next';
-
+import joinGroupBgImage from './joinGroupBgImage.png';
+import ButtonCol from '@portkey-wallet/rn-component/componet/ButtonCol';
+import ButtonRow from '@portkey-wallet/rn-component/componet/ButtonRow';
+import { TextL, TextM, TextTitle } from '@portkey-wallet/rn-component/componet/CommonText';
+import BuyButton from 'components/BuyButton';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
   },
 });
+const JOIN_OFFICIAL_GROUP_TITLE = `Join Portkey Official Group!`;
 
+const JOIN_OFFICIAL_GROUP_CONTENT = `Engage with the Portkey community for the latest updates and discussions.`;
+
+const JOIN_OFFICIAL_GROUP_ERROR_TIP = `This group doesn't exist. Please check the Portkey group before you try again.`;
+
+const JOIN_OFFICIAL_GROUP_BUTTON_TITTLE = 'Join';
 const TestComp = () => {
   return (
     // eslint-disable-next-line react/react-in-jsx-scope
     <SafeAreaView style={styles.container}>
       {/* eslint-disable-next-line react/react-in-jsx-scope */}
+      <ButtonCol
+        buttons={[
+          {
+            title: JOIN_OFFICIAL_GROUP_BUTTON_TITTLE,
+            onPress: () => {
+              console.log('join!');
+            },
+          },
+          {
+            title: 'top',
+            onPress: () => {
+              console.log('join!');
+            },
+          },
+          {
+            title: 'bottom',
+            onPress: () => {
+              console.log('join!');
+            },
+          },
+        ]?.map(i => ({
+          ...i,
+          onPress: () => {
+            // if (autoClose) OverlayModal.hide();
+            i.onPress?.();
+          },
+        }))}
+      />
+      <ButtonRow
+        buttons={[
+          {
+            title: JOIN_OFFICIAL_GROUP_BUTTON_TITTLE,
+            onPress: () => {
+              console.log('join!');
+            },
+          },
+          {
+            title: 'top',
+            onPress: () => {
+              console.log('join!');
+            },
+          },
+          {
+            title: 'bottom',
+            onPress: () => {
+              console.log('join!');
+            },
+          },
+        ]?.map(i => ({
+          ...i,
+          onPress: () => {
+            // if (autoClose) OverlayModal.hide();
+            i.onPress?.();
+          },
+        }))}
+      />
+      <TextL>123</TextL>
+      <TextM>123</TextM>
+      <TextTitle>123</TextTitle>
+      {/*  eslint-disable-next-line react-native/no-inline-styles */}
+      <View style={{ height: 20 }} />
+      <BuyButton themeType="innerPage" />
       <Button
-        title="ActionSheet show"
-        onPress={() =>
+        title="ActionSheet alert"
+        onPress={() => {
           ActionSheet.alert({
-            title: t('Authorization failed'),
-            message: t('Network error, please switch Portkey app to the matching network.'),
+            isCloseShow: true,
+            bgImage: joinGroupBgImage,
+            title: JOIN_OFFICIAL_GROUP_TITLE,
+            message: JOIN_OFFICIAL_GROUP_CONTENT,
             buttons: [
               {
-                title: t('OK'),
-                type: 'solid',
+                title: JOIN_OFFICIAL_GROUP_BUTTON_TITTLE,
+                onPress: () => {
+                  console.log('join!');
+                },
               },
             ],
-          })
-        }
+          });
+        }}
       />
+      <Button title="ActionSheet show" onPress={() => ActionSheet.show([{ title: '123' }, { title: '123' }])} />
     </SafeAreaView>
   );
 };

@@ -27,6 +27,7 @@ import { useGetFormattedLoginModeList } from '@portkey-wallet/hooks/hooks-ca/cms
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
 import { TLoginMode } from '@portkey-wallet/types/types-ca/cms';
+import { LOGIN_GUARDIAN_TYPE_ICON } from 'constants/misc';
 
 const TitlePrefix = {
   [PageType.login]: 'Login with',
@@ -109,7 +110,6 @@ export function useLoginModeMap(
         authenticationInfo: { [userInfo.user.userId]: userInfo.accessToken },
       });
     } catch (error) {
-      console.log(error, checkIsUserCancel(error), '======error-onFacebookSign');
       if (!checkIsUserCancel(error)) CommonToast.failError(error);
     }
     Loading.hide(loadingKey);
@@ -119,37 +119,37 @@ export function useLoginModeMap(
     return {
       [LOGIN_TYPE_LABEL_MAP[LoginType.Apple]]: {
         title: LOGIN_TYPE_LABEL_MAP[LoginType.Apple],
-        icon: 'apple',
+        icon: LOGIN_GUARDIAN_TYPE_ICON[LoginType.Apple],
         onPress: onAppleSign,
       },
       [LOGIN_TYPE_LABEL_MAP[LoginType.Google]]: {
         title: LOGIN_TYPE_LABEL_MAP[LoginType.Google],
-        icon: 'google',
+        icon: LOGIN_GUARDIAN_TYPE_ICON[LoginType.Google],
         onPress: onGoogleSign,
       },
       [LOGIN_TYPE_LABEL_MAP[LoginType.Email]]: {
         title: LOGIN_TYPE_LABEL_MAP[LoginType.Email],
-        icon: 'email',
+        icon: LOGIN_GUARDIAN_TYPE_ICON[LoginType.Email],
         onPress: onEmailSign,
       },
       [LOGIN_TYPE_LABEL_MAP[LoginType.Phone]]: {
         title: LOGIN_TYPE_LABEL_MAP[LoginType.Phone],
-        icon: 'phone',
+        icon: LOGIN_GUARDIAN_TYPE_ICON[LoginType.Phone],
         onPress: onPhoneSign,
       },
       [LOGIN_TYPE_LABEL_MAP[LoginType.Telegram]]: {
         title: LOGIN_TYPE_LABEL_MAP[LoginType.Telegram],
-        icon: 'telegram',
+        icon: LOGIN_GUARDIAN_TYPE_ICON[LoginType.Telegram],
         onPress: onTelegramSign,
       },
       [LOGIN_TYPE_LABEL_MAP[LoginType.Facebook]]: {
         title: LOGIN_TYPE_LABEL_MAP[LoginType.Facebook],
-        icon: 'facebook',
+        icon: LOGIN_GUARDIAN_TYPE_ICON[LoginType.Facebook],
         onPress: onFacebookSign,
       },
       [LOGIN_TYPE_LABEL_MAP[LoginType.Twitter]]: {
         title: LOGIN_TYPE_LABEL_MAP[LoginType.Twitter],
-        icon: 'twitter',
+        icon: LOGIN_GUARDIAN_TYPE_ICON[LoginType.Twitter],
         onPress: onTwitterSign,
       },
     } as {

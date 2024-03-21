@@ -49,6 +49,7 @@ import { useLocationState, useNavigateState } from 'hooks/router';
 import { TSendLocationState } from 'types/router';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
 import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
+import { clsx } from 'clsx';
 
 export interface TransactionResult {
   total: number;
@@ -291,9 +292,9 @@ export default function MyBalance() {
           <ChatEntry unread={unreadCount} />
         </div>
       )}
-      <div className="wallet-name">
+      <div className="wallet-name flex-center">
         {!isPrompt && <AccountConnect />}
-        {userInfo?.nickName}
+        <div className={clsx('wallet-name-text', !isPrompt && 'wallet-name-small-screen')}>{userInfo?.nickName}</div>
       </div>
       <div className="balance-amount">
         {isMainNet ? (

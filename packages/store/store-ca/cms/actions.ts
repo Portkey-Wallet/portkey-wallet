@@ -6,8 +6,9 @@ import {
   getSocialMedia,
   getTabMenu,
   getRememberMeBlackListSites,
+  getLoginMode,
 } from '@portkey-wallet/graphql/cms/queries';
-import { IEntrance } from '@portkey-wallet/types/types-ca/cms';
+import { IEntrance, ILoginModeItem } from '@portkey-wallet/types/types-ca/cms';
 
 export const getSocialMediaAsync = createAsyncThunk<Required<Pick<CMSState, 'socialMediaListNetMap'>>, NetworkType>(
   'cms/getSocialMediaAsync',
@@ -113,6 +114,38 @@ export const getRememberMeBlackListAsync = createAsyncThunk<
     throw new Error('rememberMeBlackListMap error');
   }
 });
+
+export const getLoginControlListAsync = createAsyncThunk<Required<Pick<CMSState, 'loginModeListMap'>>, NetworkType[]>(
+  'cms/getLoginModeList',
+  async (networkList: NetworkType[]) => {
+    try {
+      const res = await Promise.all(
+        networkList.map(async network => {
+          try {
+            return await getLoginMode(network, {
+              filter6: {
+                status: {
+                  _eq: 'published',
+                },
+              },
+            });
+          } catch (error) {
+            console.log(error, '=====error');
+          }
+        }),
+      );
+      const loginModeListMap: { [T in NetworkType]?: ILoginModeItem[] } = {};
+      res.map((item, index) => {
+        if (item?.data) {
+          loginModeListMap[networkList[index]] = item.data.loginMode as ILoginModeItem[];
+        }
+      });
+      return { loginModeListMap };
+    } catch (error) {
+      throw new Error('getLoginControlListAsync error');
+    }
+  },
+);
 
 export const setEntrance = createAction<{
   network: NetworkType;

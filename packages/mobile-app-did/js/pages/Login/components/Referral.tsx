@@ -1,4 +1,4 @@
-import React, { useMemo, Fragment } from 'react';
+import React, { useMemo, Fragment, useCallback } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import navigationService from 'utils/navigationService';
@@ -14,7 +14,7 @@ import TermsServiceButton from './TermsServiceButton';
 import Divider from 'components/Divider';
 import CommonToast from 'components/CommonToast';
 import { useAuthenticationSign } from 'hooks/authentication';
-import { useOnLogin } from 'hooks/login';
+import { LoginParams, useOnLogin } from 'hooks/login';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import Loading from 'components/Loading';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
@@ -22,30 +22,24 @@ import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import RoundButton from './RoundButton';
 import { checkIsUserCancel } from '@portkey-wallet/utils';
 import OblongButton from './OblongButton';
-const TitleMap = {
-  [PageType.login]: {
-    apple: 'Login with Apple',
-    google: 'Login with Google',
-    telegram: 'Login with Telegram',
-  },
-  [PageType.signup]: {
-    apple: 'Signup with Apple',
-    google: 'Signup with Google',
-    telegram: 'Signup with Telegram',
-  },
+import { useEntranceConfig } from 'hooks/cms';
+import { useGetFormattedLoginModeList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
+import { TLoginMode } from '@portkey-wallet/types/types-ca/cms';
+import { LOGIN_GUARDIAN_TYPE_ICON } from 'constants/misc';
+
+const TitlePrefix = {
+  [PageType.login]: 'Login with',
+  [PageType.signup]: 'Signup with',
 };
 
-export default function Referral({
-  setLoginType,
-  type = PageType.login,
-}: {
-  setLoginType: (type: PageLoginType) => void;
-  type?: PageType;
-}) {
+export function useLoginModeMap(
+  onLogin: (params: LoginParams) => Promise<void>,
+  onEmailSign: () => void,
+  onPhoneSign: () => void,
+) {
   const authenticationSign = useAuthenticationSign();
-
-  const onLogin = useOnLogin(type === PageType.login);
-
   const onAppleSign = useLockCallback(async () => {
     const loadingKey = Loading.show();
     try {
@@ -116,24 +110,79 @@ export default function Referral({
         authenticationInfo: { [userInfo.user.userId]: userInfo.accessToken },
       });
     } catch (error) {
-      console.log(error, checkIsUserCancel(error), '======error-onFacebookSign');
       if (!checkIsUserCancel(error)) CommonToast.failError(error);
     }
     Loading.hide(loadingKey);
   }, [authenticationSign, onLogin]);
 
-  const otherLoginTypeList = useMemo<{ icon: IconName; onPress: () => any }[]>(
-    () => [
-      {
-        icon: 'email',
-        onPress: () => setLoginType(PageLoginType.email),
+  return useMemo(() => {
+    return {
+      [LOGIN_TYPE_LABEL_MAP[LoginType.Apple]]: {
+        title: LOGIN_TYPE_LABEL_MAP[LoginType.Apple],
+        icon: LOGIN_GUARDIAN_TYPE_ICON[LoginType.Apple],
+        onPress: onAppleSign,
       },
-      {
-        icon: 'telegram',
+      [LOGIN_TYPE_LABEL_MAP[LoginType.Google]]: {
+        title: LOGIN_TYPE_LABEL_MAP[LoginType.Google],
+        icon: LOGIN_GUARDIAN_TYPE_ICON[LoginType.Google],
+        onPress: onGoogleSign,
+      },
+      [LOGIN_TYPE_LABEL_MAP[LoginType.Email]]: {
+        title: LOGIN_TYPE_LABEL_MAP[LoginType.Email],
+        icon: LOGIN_GUARDIAN_TYPE_ICON[LoginType.Email],
+        onPress: onEmailSign,
+      },
+      [LOGIN_TYPE_LABEL_MAP[LoginType.Phone]]: {
+        title: LOGIN_TYPE_LABEL_MAP[LoginType.Phone],
+        icon: LOGIN_GUARDIAN_TYPE_ICON[LoginType.Phone],
+        onPress: onPhoneSign,
+      },
+      [LOGIN_TYPE_LABEL_MAP[LoginType.Telegram]]: {
+        title: LOGIN_TYPE_LABEL_MAP[LoginType.Telegram],
+        icon: LOGIN_GUARDIAN_TYPE_ICON[LoginType.Telegram],
         onPress: onTelegramSign,
       },
-    ],
-    [onTelegramSign, setLoginType],
+      [LOGIN_TYPE_LABEL_MAP[LoginType.Facebook]]: {
+        title: LOGIN_TYPE_LABEL_MAP[LoginType.Facebook],
+        icon: LOGIN_GUARDIAN_TYPE_ICON[LoginType.Facebook],
+        onPress: onFacebookSign,
+      },
+      [LOGIN_TYPE_LABEL_MAP[LoginType.Twitter]]: {
+        title: LOGIN_TYPE_LABEL_MAP[LoginType.Twitter],
+        icon: LOGIN_GUARDIAN_TYPE_ICON[LoginType.Twitter],
+        onPress: onTwitterSign,
+      },
+    } as {
+      [key: TLoginMode]: {
+        title: string;
+        icon: IconName;
+        onPress: () => void;
+      };
+    };
+  }, [onAppleSign, onEmailSign, onFacebookSign, onGoogleSign, onPhoneSign, onTelegramSign, onTwitterSign]);
+}
+
+export default function Referral({
+  setLoginType,
+  type = PageType.login,
+}: {
+  setLoginType: (type: PageLoginType) => void;
+  type?: PageType;
+}) {
+  const onLogin = useOnLogin(type === PageType.login);
+
+  const config = useEntranceConfig();
+
+  const { loginModeListToRecommend, loginModeListToOther } = useGetFormattedLoginModeList(
+    config,
+    isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android,
+  );
+  console.log(loginModeListToRecommend, loginModeListToOther, '====loginModeListToRecommend, loginModeListToOther ');
+
+  const loginModeMap = useLoginModeMap(
+    onLogin,
+    useCallback(() => setLoginType(PageLoginType.email), [setLoginType]),
+    useCallback(() => setLoginType(PageLoginType.phone), [setLoginType]),
   );
 
   return (
@@ -144,26 +193,32 @@ export default function Referral({
         </Touchable>
       )}
       <View style={GStyles.width100}>
-        <OblongButton
-          icon={isIOS ? 'apple' : 'google'}
-          title={TitleMap[type][isIOS ? 'apple' : 'google']}
-          onPress={isIOS ? onAppleSign : onGoogleSign}
-          style={GStyles.marginTop(40)}
-        />
-        <OblongButton
-          icon={isIOS ? 'google' : 'apple'}
-          title={TitleMap[type][isIOS ? 'google' : 'apple']}
-          onPress={isIOS ? onGoogleSign : onAppleSign}
-          style={GStyles.marginTop(16)}
-        />
+        {loginModeListToRecommend.map((ele, index) => {
+          if (!ele?.type?.value) return null;
+          const item = loginModeMap[ele.type.value];
+          if (!item) return null;
+          return (
+            <OblongButton
+              key={index}
+              {...item}
+              title={`${TitlePrefix[type]} ${item.title}`}
+              style={GStyles.marginTop(index === 0 ? 40 : 16)}
+            />
+          );
+        })}
         <Divider title="OR" inset={true} style={pageStyles.dividerStyle} />
         <View style={[GStyles.flexRow, GStyles.flexCenter]}>
-          {otherLoginTypeList.map((ele, index) => (
-            <Fragment key={index}>
-              {index !== 0 && <View style={pageStyles.blank} />}
-              <RoundButton key={index} icon={ele.icon} onPress={ele.onPress} />
-            </Fragment>
-          ))}
+          {loginModeListToOther.map((ele, index) => {
+            if (!ele?.type?.value) return null;
+            const item = loginModeMap[ele.type.value];
+            if (!item) return null;
+            return (
+              <Fragment key={index}>
+                {index !== 0 && <View style={pageStyles.blank} />}
+                <RoundButton {...item} key={index} />
+              </Fragment>
+            );
+          })}
         </View>
         {type === PageType.login && (
           <Touchable

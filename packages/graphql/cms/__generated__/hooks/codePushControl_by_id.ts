@@ -11,20 +11,20 @@ export type CodePushControl_By_IdQuery = {
   __typename?: 'Query';
   codePushControl_by_id?: {
     __typename?: 'codePushControl';
-    content?: string | null;
-    date_created?: any | null;
-    date_updated?: any | null;
     id: string;
-    isForceUpdate?: boolean | null;
-    label?: string | null;
-    sort?: number | null;
     status?: string | null;
-    title?: string | null;
-    updatedContent?: string | null;
-    updatedTitle?: string | null;
+    sort?: number | null;
     user_created?: string | null;
+    date_created?: any | null;
     user_updated?: string | null;
+    date_updated?: any | null;
     version?: string | null;
+    label?: string | null;
+    title?: string | null;
+    content?: string | null;
+    isForceUpdate?: boolean | null;
+    updatedTitle?: string | null;
+    updatedContent?: string | null;
     date_created_func?: {
       __typename?: 'datetime_functions';
       year?: number | null;
@@ -53,7 +53,10 @@ export type CodePushControl_By_IdQuery = {
 export const CodePushControl_By_IdDocument = gql`
   query codePushControl_by_id($id: ID!) {
     codePushControl_by_id(id: $id) {
-      content
+      id
+      status
+      sort
+      user_created
       date_created
       date_created_func {
         year
@@ -65,6 +68,7 @@ export const CodePushControl_By_IdDocument = gql`
         minute
         second
       }
+      user_updated
       date_updated
       date_updated_func {
         year
@@ -76,17 +80,13 @@ export const CodePushControl_By_IdDocument = gql`
         minute
         second
       }
-      id
-      isForceUpdate
-      label
-      sort
-      status
-      title
-      updatedContent
-      updatedTitle
-      user_created
-      user_updated
       version
+      label
+      title
+      content
+      isForceUpdate
+      updatedTitle
+      updatedContent
     }
   }
 `;

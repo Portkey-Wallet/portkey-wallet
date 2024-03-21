@@ -59,7 +59,7 @@ export default function LoginPortkey() {
               <TextM style={[FontStyles.font11, fonts.mediumFont]}>TEST</TextM>
             </View>
           )}
-          <TextXXXL style={[styles.titleStyle, FontStyles.font11]}>{t('Log In To Portkey')}</TextXXXL>
+          <TextXXXL style={[styles.titleStyle, FontStyles.font11]}>{t('Log In To Portkey ')}</TextXXXL>
         </View>
         {loginMap[loginType]}
         <SwitchNetwork />

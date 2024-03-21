@@ -1,19 +1,22 @@
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import CustomSvg from 'components/CustomSvg';
 import DropdownSearch from 'components/DropdownSearch';
-import { ReactNode, useCallback, useEffect, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useAssetInfo, useTokenInfo, useUserInfo } from 'store/Provider/hooks';
-import { fetchAssetAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useAmountInUsdShow, useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import TokenImageDisplay from '../TokenImageDisplay';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { NFTSizeEnum, getSeedTypeTag } from 'utils/assets';
 import { IAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
+import LoadingMore from 'components/LoadingMore/LoadingMore';
+import { PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
+import { useDebounceCallback, useEffectOnce } from '@portkey-wallet/hooks';
+import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
+import { useAccountAssetsInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { fetchAssetsListByFilter, fetchTokenListByFilter } from './utils';
 import './index.less';
 
 export interface ICustomTokenListProps {
@@ -33,37 +36,110 @@ export default function CustomTokenList({
 }: ICustomTokenListProps) {
   const { t } = useTranslation();
   const isMainnet = useIsMainnet();
-  const { accountAssets } = useAssetInfo();
-  const { tokenDataShowInMarket } = useTokenInfo();
+  const { tokenDataShowInMarket, totalRecordCount: tokenTotalRecordCount, fetchTokenInfoList } = useToken();
+  const {
+    accountAssetsList,
+    totalRecordCount: assetsTotalRecordCount,
+    fetchAccountAssetsInfoList,
+  } = useAccountAssetsInfo();
   const [openDrop, setOpenDrop] = useState<boolean>(false);
   const [filterWord, setFilterWord] = useState<string>('');
   const [assetList, setAssetList] = useState<TokenItemShowType[] | IAssetItemType[]>([]);
-  const appDispatch = useAppDispatch();
-  const { passwordSeed } = useUserInfo();
   const chainIdArray = useChainIdList();
   const amountInUsdShow = useAmountInUsdShow();
   const caAddressInfos = useCaAddressInfoList();
-  useFreshTokenPrice();
-  useEffect(() => {
+  const hasMoreData = useMemo(() => {
     if (drawerType === 'send') {
-      setAssetList(accountAssets.accountAssetsList);
+      return accountAssetsList.length < assetsTotalRecordCount;
+    } else {
+      return tokenDataShowInMarket.length < tokenTotalRecordCount;
+    }
+  }, [
+    drawerType,
+    accountAssetsList.length,
+    assetsTotalRecordCount,
+    tokenDataShowInMarket.length,
+    tokenTotalRecordCount,
+  ]);
+  useFreshTokenPrice();
+
+  useEffectOnce(() => {
+    setFilterWord('');
+    if (drawerType === 'send') {
+      fetchAccountAssetsInfoList({
+        keyword: '',
+        caAddressInfos,
+        skipCount: 0,
+        maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+      });
+    } else {
+      fetchTokenInfoList({
+        chainIdArray,
+        keyword: '',
+        skipCount: 0,
+        maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+      });
+    }
+  });
+
+  const setData = useCallback(() => {
+    if (drawerType === 'send') {
+      setAssetList(accountAssetsList);
     } else {
       setAssetList(tokenDataShowInMarket);
     }
-  }, [accountAssets.accountAssetsList, drawerType, tokenDataShowInMarket]);
+  }, [accountAssetsList, drawerType, tokenDataShowInMarket]);
 
   useEffect(() => {
-    if (!passwordSeed) return;
+    setData();
+  }, [setData]);
+
+  const handleSearch = useDebounceCallback(
+    async (keyword: string) => {
+      if (!keyword) return setData();
+      let res;
+      if (drawerType === 'send') {
+        res = await fetchAssetsListByFilter({ keyword, caAddressInfos });
+      } else {
+        res = await fetchTokenListByFilter({ chainIdArray, keyword });
+      }
+      setAssetList(res.data);
+    },
+    [caAddressInfos, chainIdArray, drawerType, setData],
+    500,
+  );
+
+  const getMoreData = useCallback(async () => {
     if (drawerType === 'send') {
-      appDispatch(fetchAssetAsync({ keyword: filterWord, caAddressInfos }));
+      if (accountAssetsList.length && accountAssetsList.length < assetsTotalRecordCount) {
+        await fetchAccountAssetsInfoList({
+          keyword: '',
+          caAddressInfos,
+          skipCount: accountAssetsList.length,
+          maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+        });
+      }
     } else {
-      appDispatch(fetchAllTokenListAsync({ chainIdArray, keyword: filterWord }));
+      if (tokenDataShowInMarket.length && tokenDataShowInMarket.length < tokenTotalRecordCount) {
+        await fetchTokenInfoList({
+          chainIdArray,
+          keyword: '',
+          skipCount: tokenDataShowInMarket.length,
+          maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+        });
+      }
     }
-  }, [passwordSeed, filterWord, drawerType, appDispatch, chainIdArray, caAddressInfos]);
-
-  useEffect(() => {
-    setFilterWord('');
-  }, []);
+  }, [
+    drawerType,
+    accountAssetsList.length,
+    assetsTotalRecordCount,
+    fetchAccountAssetsInfoList,
+    caAddressInfos,
+    tokenDataShowInMarket.length,
+    tokenTotalRecordCount,
+    fetchTokenInfoList,
+    chainIdArray,
+  ]);
 
   const renderSendToken = useCallback(
     (token: IAssetItemType) => {
@@ -165,17 +241,14 @@ export default function CustomTokenList({
         open={openDrop}
         value={filterWord}
         overlay={<div className="empty-tip">{t('There is no search result.')}</div>}
-        // onPressEnter={handleSearch}
         inputProps={{
           onBlur: () => setOpenDrop(false),
-          // onFocus: () => {
-          // if (filterWord && !tokenDataShowInMarket.length) setOpenDrop(true);
-          // },
           onChange: (e) => {
             const _value = e.target.value.replaceAll(' ', '');
             if (!_value) setOpenDrop(false);
 
             setFilterWord(_value);
+            handleSearch(_value);
           },
           placeholder: searchPlaceHolder || 'Search Assets',
         }}
@@ -196,6 +269,7 @@ export default function CustomTokenList({
             }
           })
         )}
+        {!filterWord && <LoadingMore hasMore={hasMoreData} loadMore={getMoreData} className="load-more" />}
       </div>
     </div>
   );

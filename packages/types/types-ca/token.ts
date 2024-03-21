@@ -1,4 +1,4 @@
-import { ChainId } from '..';
+import { ChainId, NetworkType } from '..';
 import { ChainItemType } from '../chain';
 import { AccountType } from '../wallet';
 import { SeedTypeEnum } from './assets';
@@ -80,14 +80,19 @@ export type UseTokenDeleteType = (
 
 export type FilterTokenList = (token_name: string, address: string) => TokenItemShowType;
 
-export interface TokenState {
+export interface ITokenInfo {
   isFetching: boolean;
-  // addedTokenData: AddedTokenData;
   tokenDataShowInMarket: TokenItemShowType[];
   skipCount: number;
   maxResultCount: number;
   totalRecordCount: number;
+}
+
+export interface TokenState extends ITokenInfo {
   symbolImages: Record<string, string>;
+  tokenInfo?: {
+    [key in NetworkType]?: ITokenInfo;
+  };
 }
 
 export interface AccountItemType {

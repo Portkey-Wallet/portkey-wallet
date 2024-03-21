@@ -2,7 +2,7 @@ import React from 'react';
 import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import OverlayModal, { CustomBounds } from 'components/OverlayModal';
 import Touchable from 'components/Touchable';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
@@ -66,7 +66,7 @@ function ChatPopover({
   customPosition: ShowChatPopoverParams['customPosition'];
 }) {
   return (
-    <View style={styles.backgroundBox}>
+    <TouchableOpacity activeOpacity={1} onPress={() => OverlayModal.hide()} style={styles.backgroundBox}>
       <View style={[styles.container, { ...customPosition }]}>
         {list.map((item, index) => {
           return (
@@ -83,7 +83,7 @@ function ChatPopover({
           );
         })}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 

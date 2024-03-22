@@ -54,14 +54,28 @@ export const useCaInfoOnChain = () => {
       .filter(chain => chain.chainId !== originChainId)
       .forEach(chain => {
         if (!walletInfo[chain.chainId as ChainId]) {
-          getHolderInfoByChainId({
-            chain,
-            walletType: currentNetwork.walletType,
-            caHash: walletInfo.caHash ?? '',
-          });
+          const originCaAddress = walletInfo[originChainId]?.caAddress;
+          if (originCaAddress) {
+            dispatch(
+              setCAInfo({
+                caInfo: {
+                  caAddress: originCaAddress,
+                  caHash: walletInfo.caHash ?? '',
+                },
+                pin,
+                chainId: chain.chainId as ChainId,
+              }),
+            );
+          } else {
+            getHolderInfoByChainId({
+              chain,
+              walletType: currentNetwork.walletType,
+              caHash: walletInfo.caHash ?? '',
+            });
+          }
         }
       });
-  }, [chainList, currentNetwork.walletType, getHolderInfoByChainId, originChainId, pin, walletInfo]);
+  }, [chainList, currentNetwork.walletType, dispatch, getHolderInfoByChainId, originChainId, pin, walletInfo]);
 
   const interval = useInterval(
     () => {

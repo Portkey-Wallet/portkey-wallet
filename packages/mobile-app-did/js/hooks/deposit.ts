@@ -34,17 +34,17 @@ const DepositMap = {
     onPress: () => navigationService.navigate('RampHome', { toTab: RampType.SELL }),
   },
   depositUSDT: {
-    title: 'Deposit USDT',
+    title: 'Deposit Crypto',
     icon: 'deposit',
-    description: 'Receive USDT from other chains',
+    description: 'Receive USDT & SGR from other chains',
     onPress: () => {
       // rewrite onPress
     },
   },
   withdrawUSDT: {
-    title: 'Withdraw USDT',
+    title: 'Withdraw Crypto',
     icon: 'withdraw',
-    description: 'Send USDT to other chains',
+    description: 'Send USDT & SGR to other chains',
     onPress: () => {
       // rewrite onPress
     },
@@ -131,7 +131,6 @@ export function useDepositList() {
             stringifyETrans({
               url: eTransferUrl || '',
               query: {
-                tokenSymbol: 'USDT',
                 type: 'Deposit',
               },
             }),
@@ -146,7 +145,6 @@ export function useDepositList() {
             stringifyETrans({
               url: eTransferUrl || '',
               query: {
-                tokenSymbol: 'USDT',
                 type: 'Withdraw',
               },
             }),

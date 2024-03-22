@@ -3,7 +3,6 @@ import OverlayModal from 'components/OverlayModal';
 import { FlatList, StyleSheet } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
 import CommonInput from 'components/CommonInput';
-import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 import { AccountType } from '@portkey-wallet/types/wallet';
 import TokenListItem from 'components/TokenListItem';
@@ -11,15 +10,18 @@ import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
-import { useAppCommonDispatch } from '@portkey-wallet/hooks';
+import { useAppCommonDispatch, useLatestRef } from '@portkey-wallet/hooks';
 import useDebounce from 'hooks/useDebounce';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
+import { fetchAllTokenList } from '@portkey-wallet/store/store-ca/tokenManagement/api';
 import NoData from 'components/NoData';
 import { useGStyles } from 'assets/theme/useGStyles';
 import myEvents from '../../utils/deviceEvent';
 import { ChainId } from '@portkey-wallet/types';
+import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
 
 type onFinishSelectTokenType = (tokenItem: TokenItemShowType) => void;
 type TokenListProps = {
@@ -32,15 +34,16 @@ type TokenListProps = {
 
 const TokenList = ({ title = 'Select Token', onFinishSelectToken, currentSymbol, currentChainId }: TokenListProps) => {
   const { t } = useLanguage();
+  const { tokenDataShowInMarket, totalRecordCount, fetchTokenInfoList } = useToken();
 
-  const { tokenDataShowInMarket } = useAppCASelector(state => state.tokenManagement);
   const dispatch = useAppCommonDispatch();
   const chainIdList = useChainIdList();
   const gStyles = useGStyles();
 
   const [keyword, setKeyword] = useState('');
-
   const debounceKeyword = useDebounce(keyword, 800);
+
+  const [filteredShowList, setFilteredShowList] = useState<any[]>([]);
 
   const renderItem = useCallback(
     ({ item }: { item: any }) => (
@@ -59,13 +62,42 @@ const TokenList = ({ title = 'Select Token', onFinishSelectToken, currentSymbol,
     [currentChainId, currentSymbol, onFinishSelectToken],
   );
 
+  const getTokenList = useLockCallback(
+    async (init?: boolean) => {
+      if (keyword) return;
+      if (totalRecordCount && tokenDataShowInMarket?.length >= totalRecordCount && !init) return;
+
+      await fetchTokenInfoList({
+        keyword: '',
+        chainIdArray: chainIdList,
+        skipCount: init ? 0 : tokenDataShowInMarket?.length,
+        maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+      });
+    },
+    [chainIdList, fetchTokenInfoList, keyword, tokenDataShowInMarket, totalRecordCount],
+  );
+  const getTokenListLatest = useLatestRef(getTokenList);
+
+  const getTokenListWithKeyword = useLockCallback(async () => {
+    if (!debounceKeyword) return;
+    try {
+      const result = await fetchAllTokenList({
+        keyword: debounceKeyword,
+        chainIdArray: chainIdList,
+      });
+
+      setFilteredShowList(result?.items?.map(item => item.token));
+    } catch (error) {
+      console.log('fetchTokenListByFilter error', error);
+    }
+  }, [chainIdList, debounceKeyword]);
+
   useEffect(() => {
-    dispatch(fetchAllTokenListAsync({ chainIdArray: chainIdList, keyword: debounceKeyword }));
-  }, [chainIdList, debounceKeyword, dispatch]);
+    getTokenListWithKeyword();
+  }, [chainIdList, debounceKeyword, dispatch, getTokenListWithKeyword]);
 
   useEffectOnce(() => {
-    if (tokenDataShowInMarket.length !== 0) return;
-    dispatch(fetchAllTokenListAsync({ chainIdArray: chainIdList, keyword: debounceKeyword }));
+    getTokenListLatest.current(true);
   });
 
   const noData = useMemo(() => {
@@ -98,10 +130,11 @@ const TokenList = ({ title = 'Select Token', onFinishSelectToken, currentSymbol,
             myEvents.nestScrollViewScrolledTop.emit();
           }
         }}
-        data={tokenDataShowInMarket || []}
+        data={debounceKeyword ? filteredShowList : tokenDataShowInMarket}
         renderItem={renderItem}
         ListEmptyComponent={noData}
         keyExtractor={(item: any) => item.id || ''}
+        onEndReached={() => getTokenListLatest.current()}
       />
     </ModalBody>
   );

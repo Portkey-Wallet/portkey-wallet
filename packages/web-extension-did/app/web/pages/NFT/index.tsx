@@ -3,7 +3,7 @@ import PromptFrame from 'pages/components/PromptFrame';
 import SettingHeader from 'pages/components/SettingHeader';
 import { useCommonState } from 'store/Provider/hooks';
 import clsx from 'clsx';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { addressFormat } from '@portkey-wallet/utils';
 import Copy from 'components/Copy';
@@ -18,6 +18,8 @@ import CustomSvg from 'components/CustomSvg';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { formatTransferTime } from '@portkey-wallet/utils/time';
 import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
+import { useNFTItemDetail } from '@portkey-wallet/hooks/hooks-ca/assets';
+import useInterval from '@portkey-wallet/hooks/useInterval';
 import './index.less';
 
 export default function NFT() {
@@ -26,6 +28,35 @@ export default function NFT() {
   const { isPrompt } = useCommonState();
   const isMainNet = useIsMainnet();
   const currentNetwork = useCurrentNetworkInfo();
+  const [nftDetail, setNftDetail] = useState<TNFTLocationState>(state);
+  const refreshTime = useMemo(() => {
+    if (nftDetail.recommendedRefreshSeconds && nftDetail.traitsPercentages) {
+      return nftDetail.recommendedRefreshSeconds * 1000;
+    }
+    return 0;
+  }, [nftDetail.recommendedRefreshSeconds, nftDetail.traitsPercentages]);
+  const fetchNFTItemDetail = useNFTItemDetail();
+
+  const updateNFTItemDetail = useCallback(async () => {
+    try {
+      const data = await fetchNFTItemDetail({ symbol: nftDetail.symbol, chainId: nftDetail.chainId });
+      setNftDetail((pre) => ({ ...pre, ...data }));
+    } catch (error) {
+      console.log('fetch nft item error', error);
+    }
+  }, [fetchNFTItemDetail, nftDetail.symbol, nftDetail.chainId]);
+
+  const getNFTDetailTimer = useInterval(
+    () => {
+      if (refreshTime) {
+        updateNFTItemDetail();
+      } else {
+        getNFTDetailTimer.remove();
+      }
+    },
+    [refreshTime, updateNFTItemDetail],
+    refreshTime,
+  );
 
   useEffectOnce(() => {
     const app = document.getElementById('portkey-ui-root');
@@ -34,46 +65,46 @@ export default function NFT() {
   });
 
   const renderBasicInfo = useMemo(() => {
-    const { address, chainId } = state;
-    const formatTokenContractAds = addressFormat(address, chainId, currentNetwork.walletType);
+    const { tokenContractAddress, chainId } = nftDetail;
+    const formatTokenContractAds = addressFormat(tokenContractAddress, chainId, currentNetwork.walletType);
     return (
-      <div className="info">
-        <div className="title">Basic info</div>
+      <div className="info basic-info">
+        <div className="info-title">Basic Info</div>
         <div className="contract info-item flex-between">
-          <div className="label">Contract address</div>
+          <div className="label">Contract Address</div>
           <div className="contract-title flex">
-            {formatTokenContractAds.replace(/(?<=^\w{6})\w+(?=\w{7})/, '...')}
+            {formatTokenContractAds.replace(/(?<=^\w{8})\w+(?=\w{9})/, '...')}
             <Copy toCopy={formatTokenContractAds} />
           </div>
         </div>
         <div className="chain info-item flex-between">
           <div className="label">Blockchain</div>
-          <div>{transNetworkText(state.chainId, !isMainNet)}</div>
+          <div>{transNetworkText(nftDetail.chainId, !isMainNet)}</div>
         </div>
-        <div className="alias info-item flex-between">
+        <div className="info-item flex-between">
           <div className="label">Symbol</div>
-          <div className="alias-name">{state.symbol}</div>
+          <div className="content">{nftDetail.symbol}</div>
         </div>
         <div className="total-supply info-item flex-between">
-          <div className="label">Total supply</div>
-          <div>{formatAmountShow(divDecimals(state.totalSupply, state.decimals || 0))}</div>
+          <div className="label">Total Supply</div>
+          <div>{formatAmountShow(divDecimals(nftDetail.totalSupply, nftDetail.decimals || 0))}</div>
         </div>
       </div>
     );
-  }, [currentNetwork.walletType, isMainNet, state]);
+  }, [currentNetwork.walletType, isMainNet, nftDetail]);
 
   const renderIsSeedInfo = useMemo(() => {
-    const { seedType, expires, seedOwnedSymbol, isSeed } = state;
+    const { seedType, expires, seedOwnedSymbol, isSeed } = nftDetail;
     return isSeed ? (
-      <div className="info">
-        <div className="title">Token Creation via This Seed</div>
+      <div className="info seed-info">
+        <div className="info-title">Token Creation via This Seed</div>
         <div className="info-item flex-between">
           <div className="label">Type</div>
           <div>{SeedTypeEnum[seedType || SeedTypeEnum.None]}</div>
         </div>
         <div className="info-item flex-between">
           <div className="label">Token Symbol</div>
-          <div>{seedOwnedSymbol}</div>
+          <div className="content">{seedOwnedSymbol}</div>
         </div>
         <div className="info-item flex-between">
           <div className="label">Expires</div>
@@ -83,30 +114,67 @@ export default function NFT() {
     ) : (
       <></>
     );
-  }, [state]);
+  }, [nftDetail]);
 
   const renderInscriptionInfo = useMemo(() => {
-    const { inscriptionName, limitPerMint } = state;
+    const { inscriptionName, limitPerMint } = nftDetail;
     return inscriptionName ? (
-      <div className="info">
-        <div className="title">Inscription info</div>
+      <div className="info inscription-info">
+        <div className="info-title">Inscription Info</div>
         <div className="info-item flex-between">
           <div className="label">Inscription Name</div>
-          <div>{inscriptionName}</div>
+          <div className="content">{inscriptionName}</div>
         </div>
-        <div className="info-item flex-between">
-          <div className="label">Limit Per Mint</div>
-          <div>{limitPerMint}</div>
+        {limitPerMint != null && (
+          <div className="info-item flex-between">
+            <div className="label">Limit Per Mint</div>
+            <div>{limitPerMint}</div>
+          </div>
+        )}
+      </div>
+    ) : (
+      <></>
+    );
+  }, [nftDetail]);
+
+  const renderTraitsInfo = useMemo(() => {
+    const { traitsPercentages } = nftDetail;
+    return traitsPercentages ? (
+      <div className="info traits-info">
+        <div className="info-title">Traits</div>
+        {traitsPercentages.map((trait, i) => (
+          <div key={`${trait.traitType}_${i}`} className="info-item flex-between-center">
+            <div className="label">
+              <div>{trait.traitType}</div>
+              <div className="label-bold">{trait.value}</div>
+            </div>
+            <div className="content">{trait.percent}</div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <></>
+    );
+  }, [nftDetail]);
+
+  const renderGenerationInfo = useMemo(() => {
+    const { generation } = nftDetail;
+    return generation ? (
+      <div className="info generation-info">
+        <div className="info-title">Generation Info</div>
+        <div className="info-item flex-between-center">
+          <div className="label">Generation</div>
+          <div>{generation}</div>
         </div>
       </div>
     ) : (
       <></>
     );
-  }, [state]);
+  }, [nftDetail]);
 
   const mainContent = useCallback(() => {
-    const { collectionName, collectionImageUrl, tokenId, imageUrl, symbol, balance, alias, decimals = 0 } = state;
-    const seedTypeTag = getSeedTypeTag(state, NFTSizeEnum.large);
+    const { collectionName, collectionImageUrl, tokenId, imageUrl, symbol, balance, alias, decimals = 0 } = nftDetail;
+    const seedTypeTag = getSeedTypeTag(nftDetail, NFTSizeEnum.large);
 
     return (
       <div id="nft-detail" className={clsx(['nft-detail', isPrompt && 'detail-page-prompt'])}>
@@ -134,6 +202,8 @@ export default function NFT() {
           <div className="nft-info flex-column">
             {renderBasicInfo}
             {renderIsSeedInfo}
+            {renderTraitsInfo}
+            {renderGenerationInfo}
             {renderInscriptionInfo}
           </div>
         </div>
@@ -145,9 +215,10 @@ export default function NFT() {
               onClick={() =>
                 navigate(`/send/nft/${symbol}`, {
                   state: {
-                    ...state,
-                    decimals: Number(state.decimals),
-                    name: state.symbol,
+                    ...nftDetail,
+                    address: nftDetail.tokenContractAddress,
+                    decimals: Number(nftDetail.decimals),
+                    name: nftDetail.symbol,
                   },
                 })
               }>
@@ -158,7 +229,16 @@ export default function NFT() {
         </div>
       </div>
     );
-  }, [isPrompt, navigate, renderBasicInfo, renderInscriptionInfo, renderIsSeedInfo, state]);
+  }, [
+    isPrompt,
+    navigate,
+    renderBasicInfo,
+    renderGenerationInfo,
+    renderInscriptionInfo,
+    renderIsSeedInfo,
+    renderTraitsInfo,
+    nftDetail,
+  ]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} className="nft-detail-prompt" /> : mainContent()}</>;
 }

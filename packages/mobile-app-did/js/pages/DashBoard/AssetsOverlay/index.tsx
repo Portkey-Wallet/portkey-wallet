@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { TextL, TextS } from 'components/CommonText';
@@ -23,13 +23,12 @@ import myEvents from 'utils/deviceEvent';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
-import { useAppDispatch } from 'store/hooks';
-import { fetchAssetAsync } from '@portkey-wallet/store/store-ca/assets/slice';
-import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { useAccountAssetsInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import Touchable from 'components/Touchable';
 import NFTAvatar from 'components/NFTAvatar';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
 
 export type ImTransferInfoType = {
   isGroupChat?: boolean;
@@ -95,41 +94,22 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
   }
   return null;
 };
-const MAX_RESULT_COUNT = 10;
-const INIT_PAGE_INFO = {
-  curPage: 0,
-  total: 0,
-  isLoading: false,
-};
 
 const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) => {
-  const { addresses = [], isGroupChat, toUserId } = imTransferInfo || {};
+  const { addresses, isGroupChat, toUserId } = imTransferInfo || {};
 
   const { t } = useLanguage();
+  const gStyles = useGStyles();
   const caAddressInfos = useCaAddressInfoList();
   const [keyword, setKeyword] = useState('');
-  const gStyles = useGStyles();
-  const dispatch = useAppDispatch();
-  const { accountAllAssets } = useAssets();
-
-  const chainIds = useMemo(() => addresses?.map(item => item.chainId), [addresses]);
+  const { accountAssetsList, fetchAccountAssetsInfoList, totalRecordCount } = useAccountAssetsInfo();
 
   const debounceKeyword = useDebounce(keyword, 800);
 
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
-  const [listShow, setListShow] = useState<IAssetItemType[]>([]);
+  const [filteredListShow, setFilteredListShow] = useState<IAssetItemType[]>([]);
 
-  const assetListShow = useMemo(() => {
-    if (debounceKeyword) {
-      return listShow;
-    } else {
-      return accountAllAssets.accountAssetsList;
-    }
-  }, [accountAllAssets.accountAssetsList, debounceKeyword, listShow]);
-
-  const pageInfoRef = useRef({
-    ...INIT_PAGE_INFO,
-  });
+  const chainIds = useMemo(() => addresses?.map(item => item.chainId), [addresses]);
 
   const filterList = useCallback(
     (list: IAssetItemType[]) => {
@@ -139,50 +119,57 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
     [chainIds],
   );
 
-  const getList = useLockCallback(
-    async (_keyword = '', isInit = false) => {
-      if (!isInit && listShow.length > 0 && listShow.length >= pageInfoRef.current.total) return;
-      if (pageInfoRef.current.isLoading) return;
-      pageInfoRef.current.isLoading = true;
+  const assetListShow = useMemo(() => {
+    if (debounceKeyword) {
+      return filterList(filteredListShow);
+    } else {
+      return filterList(accountAssetsList);
+    }
+  }, [accountAssetsList, debounceKeyword, filterList, filteredListShow]);
+
+  const getAssetsList = useLockCallback(
+    async (isInit: boolean) => {
+      if (keyword.trim()) return;
+
+      if (totalRecordCount && accountAssetsList.length >= totalRecordCount && !isInit) return;
+
       try {
-        const response = await fetchAssetList({
+        await fetchAccountAssetsInfoList({
           caAddressInfos,
-          maxResultCount: MAX_RESULT_COUNT,
-          skipCount: pageInfoRef.current.curPage * MAX_RESULT_COUNT,
-          keyword: _keyword,
+          skipCount: isInit ? 0 : accountAssetsList.length,
+          maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+          keyword: '',
         });
-
-        pageInfoRef.current.curPage = pageInfoRef.current.curPage + 1;
-        pageInfoRef.current.total = response.totalRecordCount;
-
-        if (isInit) {
-          setListShow(filterList(response.data));
-        } else {
-          setListShow(pre => filterList(pre.concat(response.data)));
-        }
-      } catch (err) {
-        console.log('fetchAccountAssetsByKeywords err:', err);
+      } catch (error) {
+        console.log('fetchAccountAssetsByKeywords err:', error);
       }
-      pageInfoRef.current.isLoading = false;
     },
-    [caAddressInfos, filterList, listShow.length],
+    [accountAssetsList.length, caAddressInfos, fetchAccountAssetsInfoList, keyword, totalRecordCount],
   );
 
-  const onKeywordChange = useCallback(() => {
-    pageInfoRef.current = {
-      ...INIT_PAGE_INFO,
-    };
-    getList(debounceKeyword, true);
-  }, [getList, debounceKeyword]);
+  const getFilteredAssetsList = useLockCallback(async () => {
+    if (!keyword.trim()) return;
+
+    try {
+      const response = await fetchAssetList({
+        caAddressInfos,
+        maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+        skipCount: 0,
+        keyword: debounceKeyword,
+      });
+      setFilteredListShow(response.data);
+    } catch (err) {
+      console.log('fetchAccountAssetsByKeywords err:', err);
+    }
+  }, [caAddressInfos, debounceKeyword, keyword]);
 
   useEffect(() => {
-    onKeywordChange();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debounceKeyword]);
+    getFilteredAssetsList();
+  }, [getFilteredAssetsList]);
 
   useEffectOnce(() => {
     getTokenPrice();
-    dispatch(fetchAssetAsync({ keyword: '', caAddressInfos }));
+    getAssetsList(true);
   });
 
   const renderItem = useCallback(
@@ -234,6 +221,7 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
       <NoData noPic message={t('There are currently no assets to send.')} />
     );
   }, [debounceKeyword, t]);
+
   return (
     <ModalBody modalBodyType="bottom" title={t('Select Assets')} style={gStyles.overlayStyle}>
       {/* no assets in this account  */}
@@ -261,14 +249,12 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
           }
         }}
         style={styles.flatList}
-        data={(assetListShow as IAssetItemType[]) || []}
+        data={assetListShow}
         renderItem={renderItem}
         keyExtractor={(_item, index) => `${index}`}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListEmptyComponent={noData}
-        onEndReached={() => {
-          getList();
-        }}
+        onEndReached={() => getAssetsList()}
       />
     </ModalBody>
   );

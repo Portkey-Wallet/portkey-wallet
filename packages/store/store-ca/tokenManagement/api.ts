@@ -3,10 +3,14 @@ import { request } from '@portkey-wallet/api/api-did';
 export function fetchAllTokenList({
   keyword,
   chainIdArray,
+  skipCount = 0,
+  maxResultCount = 1000,
 }: {
   keyword: string;
   chainIdArray: string[];
-}): Promise<{ items: any[]; totalRecordCount: number }> {
+  skipCount?: number;
+  maxResultCount?: number;
+}): Promise<{ items: any[]; totalCount: number }> {
   const chainIdSearchLanguage = chainIdArray.map(chainId => `token.chainId:${chainId}`).join(' OR ');
 
   const filterKeywords =
@@ -18,8 +22,8 @@ export function fetchAllTokenList({
       // filter: `${filterKeywords}`,
 
       sort: 'sortWeight desc,isDisplay  desc,token.symbol  acs,token.chainId acs',
-      skipCount: 0,
-      maxResultCount: 1000,
+      skipCount,
+      maxResultCount,
     },
   });
 }

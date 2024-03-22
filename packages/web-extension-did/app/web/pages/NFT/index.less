@@ -1,4 +1,6 @@
 @import '../../assets/theme/color.less';
+@import '../../assets/theme/constants.less';
+
 .nft-detail {
   height: 100%;
   display: flex;
@@ -51,6 +53,8 @@
     line-height: 24px;
     font-weight: 500;
     color: @font-11;
+    word-wrap: break-word;
+    word-break: break-all;
   }
 
   .picture {
@@ -88,19 +92,16 @@
     margin: 24px;
     gap: 32px;
     .info {
-      .title {
+      .info-title {
         font-size: 16px;
         line-height: 22px;
         font-weight: 500;
         color: @font-11;
-        overflow: hidden;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 1;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        .text-overflow(1);
       }
       .info-item {
         margin-top: 14px;
+        gap: 8px;
         font-size: 14px;
         line-height: 20px;
         font-weight: 400;
@@ -114,20 +115,30 @@
           }
         }
       }
-      .contract {
-        .contract-title {
-          gap: 8px;
+      .contract-title {
+        gap: 8px;
+      }
+      &.basic-info,
+      &.seed-info,
+      &.inscription-info {
+        .label {
+          width: 112px;
+          flex-shrink: 0;
+        }
+        .content {
+          word-break: break-all;
         }
       }
-      .alias {
-        .alias-name {
-          max-width: 115px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
+      &.traits-info {
+        .label {
+          word-break: break-all;
+        }
+        .content {
+          width: 64px;
+          flex-shrink: 0;
+          text-align: right;
         }
       }
-      
     }
   }
   .btn-wrap {

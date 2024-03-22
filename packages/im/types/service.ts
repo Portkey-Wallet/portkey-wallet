@@ -354,7 +354,14 @@ export interface IIMService {
   getUserInfoList<T = GetUserInfoDefaultResult>(params?: GetUserInfoListParams): IMServiceCommon<T[]>;
 
   createChannel(params: CreateChannelParams): IMServiceCommon<CreateChannelResult>;
-  getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<ChannelInfo>;
+  getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<
+    Omit<ChannelInfo, 'members' | 'totalCount'> & {
+      memberInfos: {
+        members: ChannelMemberInfo[];
+        totalCount: number;
+      };
+    }
+  >;
   getChannelMembers(params: GetChannelMembersParams): IMServiceCommon<ChannelMemberInfo[]>;
 
   searchChannelMembers(params: SearchChannelMembersParams): IMServiceCommon<SearchChannelMembersResult>;

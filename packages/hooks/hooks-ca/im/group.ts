@@ -194,7 +194,11 @@ export const useGroupChannelInfo = (channelId: string, isInit = false) => {
     dispatch(
       setGroupInfo({
         network: networkType,
-        groupInfo,
+        groupInfo: {
+          ...groupInfo,
+          members: groupInfo.memberInfos.members,
+          totalCount: groupInfo.memberInfos.totalCount,
+        },
       }),
     );
   }, [channelId, dispatch, networkType]);
@@ -221,7 +225,7 @@ export const useGroupChannelInfo = (channelId: string, isInit = false) => {
   const isAdmin = useMemo(() => {
     if (!groupInfo || !relationId) return false;
     if (groupInfo.type !== ChannelTypeEnum.GROUP) return false;
-    const adminMember = groupInfo?.memberInfos?.members[0];
+    const adminMember = groupInfo?.members[0];
     return adminMember && adminMember.relationId === relationId;
   }, [groupInfo, relationId]);
 

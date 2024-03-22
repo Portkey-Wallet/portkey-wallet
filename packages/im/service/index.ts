@@ -146,7 +146,14 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       method: 'POST',
     });
   }
-  getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<ChannelInfo> {
+  getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<
+    Omit<ChannelInfo, 'members' | 'totalCount'> & {
+      memberInfos: {
+        members: ChannelMemberInfo[];
+        totalCount: number;
+      };
+    }
+  > {
     return this._request.send({
       url: '/api/v2/channelContacts/channelDetailInfo',
       params,

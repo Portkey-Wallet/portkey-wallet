@@ -136,10 +136,8 @@ export type ChannelInfo = {
   pinAnnouncement: boolean;
   openAccess: boolean;
   type: ChannelTypeEnum;
-  memberInfos: {
-    members: ChannelMemberInfo[];
-    totalCount: number;
-  };
+  members: ChannelMemberInfo[];
+  totalCount: number;
   mute: boolean;
   pin: boolean;
 };

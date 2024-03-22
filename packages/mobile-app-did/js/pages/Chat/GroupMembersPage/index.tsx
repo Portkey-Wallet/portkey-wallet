@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -15,6 +15,7 @@ import navigationService from 'utils/navigationService';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import im from '@portkey-wallet/im';
+import CommonToast from 'components/CommonToast';
 
 const GroupMembersPage = () => {
   const { relationId: myRelationId } = useRelationId();
@@ -24,7 +25,11 @@ const GroupMembersPage = () => {
 
   const [keyword, setKeyword] = useState('');
   const debounceKeyword = useDebounce(keyword, 200);
-  const [filterMembers, setFilterMembers] = useState(members);
+  const [filteredMemberList, setFilteredMemberList] = useState(members);
+
+  const listShow = useMemo(() => {
+    return debounceKeyword ? filteredMemberList : members;
+  }, [debounceKeyword, filteredMemberList, members]);
 
   const onPressItem = useCallback(
     (item: GroupInfoMemberItemType) => {
@@ -50,25 +55,24 @@ const GroupMembersPage = () => {
         channelUuid: currentChannelId,
         keyword,
       });
-      setFilterMembers(result?.data.members || []);
+      setFilteredMemberList(result?.data.members || []);
     } catch (error) {
-      // TODO: change
-      console.log('error', error);
+      CommonToast.failError(error);
     }
   }, [currentChannelId, keyword]);
 
   const fetchMemberList = useLockCallback(
     async (isInit?: false) => {
-      if (!keyword.trim() && !isInit) return;
-      if (totalCount && filterMembers?.length >= totalCount) return;
+      if (keyword.trim()) return;
+      if (totalCount && members?.length >= totalCount && !isInit) return;
 
       try {
-        await refreshChannelMembersInfo(filterMembers?.length || 0);
+        await refreshChannelMembersInfo(members?.length || 0);
       } catch (error) {
         console.log('fetchMoreData', error);
       }
     },
-    [filterMembers?.length, keyword, refreshChannelMembersInfo, totalCount],
+    [keyword, members?.length, refreshChannelMembersInfo, totalCount],
   );
 
   // keyword search
@@ -98,7 +102,7 @@ const GroupMembersPage = () => {
       </View>
 
       <FlatList
-        data={filterMembers}
+        data={listShow || []}
         ListEmptyComponent={<NoData noPic message="No search result" style={BGStyles.bg1} />}
         keyExtractor={item => item.relationId}
         renderItem={({ item }) => (

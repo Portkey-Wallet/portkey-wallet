@@ -215,7 +215,10 @@ export const useGroupChannelInfo = (channelId: string, isInit = false) => {
           network: networkType,
           channelId,
           isInit: skipCount === 0,
-          value: data,
+          value: {
+            members: data.members,
+            totalCount: data.totalCount,
+          },
         }),
       );
     },

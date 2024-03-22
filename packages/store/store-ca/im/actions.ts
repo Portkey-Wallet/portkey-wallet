@@ -130,7 +130,7 @@ export const updateGroupInfoMembersInfo = createAction<{
   network: NetworkType;
   channelId: string;
   isInit: boolean;
-  value: ChannelInfo['memberInfos'];
+  value: Pick<ChannelInfo, 'members' | 'totalCount'>;
 }>('im/updateGroupInfoMembersInfo');
 
 export const setPinList = createAction<{

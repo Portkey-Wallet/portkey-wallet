@@ -160,6 +160,7 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       method: 'GET',
     });
   }
+
   searchChannelMembers(params: SearchChannelMembersParams): IMServiceCommon<SearchChannelMembersResult> {
     return this._request.send({
       url: '/api/v1/channelContacts/searchMembers',

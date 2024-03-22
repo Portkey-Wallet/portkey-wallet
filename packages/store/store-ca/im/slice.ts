@@ -330,10 +330,8 @@ export const imSlice = createSlice({
               ...state.groupInfoMapNetMap?.[network],
               [channelId]: {
                 ...preChannelInfo,
-                memberInfos: {
-                  members: isInit ? [...preChannelInfo.memberInfos.members, ...value.members] : value.members,
-                  totalCount: value?.totalCount,
-                },
+                members: isInit ? [...preChannelInfo.members, ...value.members] : value.members,
+                totalCount: value?.totalCount,
               },
             },
           },
@@ -344,7 +342,7 @@ export const imSlice = createSlice({
         const preChannelInfo = state.groupInfoMapNetMap?.[network]?.[channelId];
         if (!preChannelInfo) return state;
 
-        const [adminMember, ...otherMembers] = preChannelInfo.memberInfos.members;
+        const [adminMember, ...otherMembers] = preChannelInfo.members;
         const otherMembersMap: Record<string, boolean> = {};
         otherMembers.forEach(member => {
           otherMembersMap[member.relationId] = true;
@@ -376,7 +374,7 @@ export const imSlice = createSlice({
         members.forEach(relationId => {
           removeMemberMap[relationId] = true;
         });
-        const newMembers = preChannelInfo?.memberInfos?.members.filter(member => !removeMemberMap[member.relationId]);
+        const newMembers = preChannelInfo?.members.filter(member => !removeMemberMap[member.relationId]);
 
         return {
           ...state,
@@ -398,7 +396,7 @@ export const imSlice = createSlice({
         const preChannelInfo = state.groupInfoMapNetMap?.[network]?.[channelId];
         if (!preChannelInfo) return state;
 
-        const [preOwner, ...otherMembers] = preChannelInfo?.memberInfos?.members || [];
+        const [preOwner, ...otherMembers] = preChannelInfo?.members || [];
         const newOwner = otherMembers.find(member => member.relationId === relationId);
         if (!preOwner || !newOwner) return state;
         const newMembers = otherMembers.filter(member => member.relationId !== relationId);

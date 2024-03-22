@@ -362,6 +362,7 @@ export interface IIMService {
       };
     }
   >;
+
   getChannelMembers(params: GetChannelMembersParams): IMServiceCommon<ChannelMemberInfo[]>;
 
   searchChannelMembers(params: SearchChannelMembersParams): IMServiceCommon<SearchChannelMembersResult>;

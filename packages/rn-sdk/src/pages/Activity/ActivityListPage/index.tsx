@@ -4,7 +4,7 @@ import PageContainer from 'components/PageContainer';
 import { pTd } from 'utils/unit';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useLanguage } from 'i18n/hooks';
-import NoData from 'components/NoData';
+import NoData from '@portkey-wallet/rn-components/components/NoData';
 import { ActivityItemType } from 'network/dto/query';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 import TransferItem from 'components/TransferList/components/TransferItem';

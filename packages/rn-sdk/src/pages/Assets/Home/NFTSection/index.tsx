@@ -1,16 +1,16 @@
 import React, { useState, useCallback, memo, useContext } from 'react';
-import NoData from 'components/NoData';
+import NoData from '@portkey-wallet/rn-components/components/NoData';
 import { StyleSheet, View, FlatList } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import NFTCollectionItem from './NFTCollectionItem';
 import { NFTCollectionItemShowType } from '@portkey-wallet/types/types-ca/assets';
-import Touchable from 'components/Touchable';
+import Touchable from '@portkey-wallet/rn-components/components/Touchable';
 import { ChainId } from '@portkey-wallet/types';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import AssetsContext, { AssetsContextType } from 'global/context/assets/AssetsContext';
-import Loading from 'components/Loading';
+import Loading from '@portkey-wallet/rn-components/components/Loading';
 
 export interface OpenCollectionObjType {
   // key = symbol+chainId

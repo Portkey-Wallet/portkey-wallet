@@ -1,13 +1,13 @@
 import { defaultColors } from 'assets/theme';
 import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
-import Collapsible from 'components/Collapsible';
-import { TextL, TextM, TextS } from 'components/CommonText';
-import CommonSvg from 'components/Svg';
+import Collapsible from '@portkey-wallet/rn-components/components/Collapsible';
+import { TextL, TextM, TextS } from '@portkey-wallet/rn-components/components/CommonText';
+import CommonSvg from '@portkey-wallet/rn-components/components/Svg';
 import React, { memo, useState } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
-import CommonAvatar from 'components/CommonAvatar';
+import CommonAvatar from '@portkey-wallet/rn-components/components/CommonAvatar';
 import { ChainId } from '@portkey/provider-types';
 import { addressFormat, formatStr2EllipsisStr, formatChainInfoToShow } from '@portkey-wallet/utils';
 import { useCurrentNetworkType } from 'model/hooks/network';

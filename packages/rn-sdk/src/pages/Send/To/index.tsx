@@ -1,7 +1,7 @@
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { TextM } from 'components/CommonText';
-import CommonSvg from 'components/Svg';
+import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
+import CommonSvg from '@portkey-wallet/rn-components/components/Svg';
 import { useLanguage } from 'i18n/hooks';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import React, { useCallback } from 'react';

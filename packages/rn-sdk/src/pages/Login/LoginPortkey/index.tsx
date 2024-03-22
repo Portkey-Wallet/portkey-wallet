@@ -1,11 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import PageContainer, { SafeAreaColorMapKeyUnit } from 'components/PageContainer';
-import { TextM, TextXXXL } from 'components/CommonText';
+import { TextM, TextXXXL } from '@portkey-wallet/rn-components/components/CommonText';
 import { pTd } from 'utils/unit';
 import { ImageBackground, View } from 'react-native';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { useLanguage } from 'i18n/hooks';
-import CommonSvg from 'components/Svg';
+import CommonSvg from '@portkey-wallet/rn-components/components/Svg';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import styles from '../styles';
 import Email from '../components/Email';

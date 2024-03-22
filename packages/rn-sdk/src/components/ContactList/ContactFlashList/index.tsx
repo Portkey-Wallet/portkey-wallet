@@ -2,7 +2,7 @@ import React, { useCallback, useRef } from 'react';
 import { Dimensions, View } from 'react-native';
 import { styles as contactListStyles } from './style';
 import { FlashList } from '@shopify/flash-list';
-import IndexBar from 'components/IndexBar';
+import IndexBar from '@portkey-wallet/rn-components/components/IndexBar';
 import { ContactIndexType, ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 
 type contactFlatItemType = ContactIndexType | ContactItemType;

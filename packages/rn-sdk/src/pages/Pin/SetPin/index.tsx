@@ -1,14 +1,14 @@
 import React, { useRef, useState } from 'react';
 import PageContainer from 'components/PageContainer';
-import { DigitInputInterface } from 'components/DigitInput';
-import ActionSheet from 'components/ActionSheet';
+import { DigitInputInterface } from '@portkey-wallet/rn-components/components/DigitInput';
+import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
 import { VerificationType } from '@portkey-wallet/types/verifier';
-import PinContainer from 'components/PinContainer';
+import PinContainer from '@portkey-wallet/rn-components/components/PinContainer';
 import { StyleSheet } from 'react-native';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 import { ConfirmPinPageProps } from '../ConfirmPin';
-import CommonToast from 'components/CommonToast';
+import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 
 const scrollViewProps = {
   disabled: true,

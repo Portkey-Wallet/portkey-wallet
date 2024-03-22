@@ -4,16 +4,16 @@ import { StyleSheet, Text, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import PageContainer from 'components/PageContainer';
 import GStyles from 'assets/theme/GStyles';
-import { TextM, TextS } from 'components/CommonText';
+import { TextM, TextS } from '@portkey-wallet/rn-components/components/CommonText';
 import fonts from 'assets/theme/fonts';
 import { FontStyles } from 'assets/theme/styles';
-import CommonButton from 'components/CommonButton';
-import ActionSheet from 'components/ActionSheet';
+import CommonButton from '@portkey-wallet/rn-components/components/CommonButton';
+import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
 // import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useReceive } from '../hooks';
 // import navigationService from 'utils/navigationService';
-import CommonToast from 'components/CommonToast';
-import Loading from 'components/Loading';
+import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
+import Loading from '@portkey-wallet/rn-components/components/Loading';
 import ramp, {
   IBuyProviderPrice,
   IRampCryptoItem,
@@ -23,9 +23,9 @@ import ramp, {
   ISellProviderPrice,
   RampType,
 } from '@portkey-wallet/ramp';
-import CommonAvatar from 'components/CommonAvatar';
-import Svg from 'components/Svg';
-import Touchable from 'components/Touchable';
+import CommonAvatar from '@portkey-wallet/rn-components/components/CommonAvatar';
+import Svg from '@portkey-wallet/rn-components/components/Svg';
+import Touchable from '@portkey-wallet/rn-components/components/Touchable';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { RAMP_BUY_URL, RAMP_SELL_URL } from '../constants';
 import { checkIsSvgUrl } from 'utils/commonUtil';

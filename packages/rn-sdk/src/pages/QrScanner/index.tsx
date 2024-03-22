@@ -1,12 +1,12 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Platform } from 'react-native';
-import CommonSvg from 'components/Svg';
+import CommonSvg from '@portkey-wallet/rn-components/components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
 import * as ImagePicker from 'expo-image-picker';
-import { TextM } from 'components/CommonText';
+import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
@@ -14,8 +14,8 @@ import { Camera } from 'expo-camera';
 import { expandQrData } from '@portkey-wallet/utils/qrCode';
 import { checkIsUrl } from '@portkey-wallet/utils/dapp/browser';
 // import { useDiscoverJumpWithNetWork } from 'hooks/discover'; // currently we do not use this
-import Loading from 'components/Loading';
-import CommonToast from 'components/CommonToast';
+import Loading from '@portkey-wallet/rn-components/components/Loading';
+import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import { QRData } from '@portkey-wallet/types/types-ca/qrcode';
 import { isAelfAddress } from '@portkey-wallet/utils/aelf';
 import useBaseContainer, { VoidResult } from 'model/container/UseBaseContainer';

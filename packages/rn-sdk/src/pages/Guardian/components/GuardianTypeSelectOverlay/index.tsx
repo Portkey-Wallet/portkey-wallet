@@ -1,14 +1,14 @@
 import React from 'react';
-import OverlayModal from 'components/OverlayModal';
+import OverlayModal from '@portkey-wallet/rn-components/components/OverlayModal';
 import { Keyboard, ScrollView, View } from 'react-native';
-import Touchable from 'components/Touchable';
+import Touchable from '@portkey-wallet/rn-components/components/Touchable';
 import styles from './styles';
 import GStyles from 'assets/theme/GStyles';
-import CommonSvg from 'components/Svg';
-import { TextL } from 'components/CommonText';
+import CommonSvg from '@portkey-wallet/rn-components/components/Svg';
+import { TextL } from '@portkey-wallet/rn-components/components/CommonText';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
-import { ModalBody } from 'components/ModalBody';
+import { ModalBody } from '@portkey-wallet/rn-components/components/ModalBody';
 
 type ValueType = string | number;
 type DefaultValueType = string;

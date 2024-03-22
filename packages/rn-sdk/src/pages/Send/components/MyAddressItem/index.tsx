@@ -1,7 +1,7 @@
 import { ChainId } from '@portkey/provider-types';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { TextS, TextM } from 'components/CommonText';
+import { TextS, TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import { useCurrentNetworkType } from 'model/hooks/network';
 import { addressFormat, formatStr2EllipsisStr, formatChainInfoToShow } from '@portkey-wallet/utils';
 import React, { memo } from 'react';

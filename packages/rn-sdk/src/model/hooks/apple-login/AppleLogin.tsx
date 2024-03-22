@@ -2,7 +2,7 @@ import React from 'react';
 import { forwardRef, useMemo, useState, useCallback, useRef, useImperativeHandle, ReactNode } from 'react';
 import { StyleSheet, View, ViewStyle, StyleProp, TouchableOpacity } from 'react-native';
 import WebView, { WebViewMessageEvent, WebViewProps } from 'react-native-webview';
-import { LoadingBody } from 'components/Loading';
+import { LoadingBody } from '@portkey-wallet/rn-components/components/Loading';
 
 export declare type AppleLoginInterface = {
   open(): void;

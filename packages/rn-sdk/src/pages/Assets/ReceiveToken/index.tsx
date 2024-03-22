@@ -1,12 +1,12 @@
 import React from 'react';
 import PageContainer from 'components/PageContainer';
-import { TextL, TextM, TextXL, TextS } from 'components/CommonText';
+import { TextL, TextM, TextXL, TextS } from '@portkey-wallet/rn-components/components/CommonText';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { pTd } from 'utils/unit';
-import CommonSvg from 'components/Svg';
+import CommonSvg from '@portkey-wallet/rn-components/components/Svg';
 import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
-import CommonAvatar from 'components/CommonAvatar';
+import CommonAvatar from '@portkey-wallet/rn-components/components/CommonAvatar';
 import GStyles from 'assets/theme/GStyles';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import AccountCard from 'components/AccountCard';

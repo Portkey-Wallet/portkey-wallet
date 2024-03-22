@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import PageContainer from 'components/PageContainer';
-import ListItem from 'components/ListItem';
-import CommonToast from 'components/CommonToast';
+import ListItem from '@portkey-wallet/rn-components/components/ListItem';
+import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useLanguage } from 'i18n/hooks';
 import i18n from 'i18n';
-import { TextM } from 'components/CommonText';
-import ActionSheet from 'components/ActionSheet';
+import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
+import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
 import myEvents from 'utils/deviceEvent';
 import { checkPin, getUseBiometric, rememberUseBiometric } from 'model/verify/core';
 import useBaseContainer from 'model/container/UseBaseContainer';

@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, StyleProp, ViewProps } from 'react-native';
 import { styles } from './style';
 import ReceiveButton from 'components/ReceiveButton';
-import { TextM } from 'components/CommonText';
+import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import FaucetButton from 'components/FaucetButton';
 import { useUnlockedWallet } from 'model/wallet';
 import { useCurrentNetworkType } from 'model/hooks/network';
@@ -17,11 +17,11 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { PortkeyEntries } from 'config/entries';
 import ActivityButton from '../ActivityButton';
 import { defaultColors } from 'assets/theme';
-import CommonSvg from 'components/Svg';
+import CommonSvg from '@portkey-wallet/rn-components/components/Svg';
 import DepositButton from 'components/DepositButton';
 import { DepositItem, useDepositList } from 'hooks/deposit';
 import GStyles from 'assets/theme/GStyles';
-import Loading from 'components/Loading';
+import Loading from '@portkey-wallet/rn-components/components/Loading';
 
 const style = StyleSheet.create({
   scanQrCode: {

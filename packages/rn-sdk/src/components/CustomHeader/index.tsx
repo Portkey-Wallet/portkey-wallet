@@ -1,10 +1,10 @@
 import { View, TouchableOpacity, ViewStyle, StyleProp } from 'react-native';
 import React, { ReactNode, useMemo } from 'react';
-import CommonSvg from 'components/Svg';
+import CommonSvg from '@portkey-wallet/rn-components/components/Svg';
 import { blueStyles, hideTitleStyles, whitStyles } from './style/index.style';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
-import { TextL } from 'components/CommonText';
+import { TextL } from '@portkey-wallet/rn-components/components/CommonText';
 import type { SafeAreaColorMapKeyUnit } from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import { ViewStyleType } from 'types/styles';

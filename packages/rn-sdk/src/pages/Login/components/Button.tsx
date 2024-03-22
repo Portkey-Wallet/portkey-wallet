@@ -1,6 +1,6 @@
 import { BGStyles, FontStyles } from 'assets/theme/styles';
-import { TextM } from 'components/CommonText';
-import Touchable from 'components/Touchable';
+import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
+import Touchable from '@portkey-wallet/rn-components/components/Touchable';
 import React from 'react';
 import { StyleSheet, TouchableOpacityProps } from 'react-native';
 import { TextStyleType, ViewStyleType } from 'types/styles';

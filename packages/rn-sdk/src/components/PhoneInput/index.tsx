@@ -1,14 +1,14 @@
 import React, { useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
-import Touchable from 'components/Touchable';
-import CommonInput, { CommonInputProps } from 'components/CommonInput';
+import Touchable from '@portkey-wallet/rn-components/components/Touchable';
+import CommonInput, { CommonInputProps } from '@portkey-wallet/rn-components/components/CommonInput';
 import { CountryItem } from '@portkey-wallet/types/types-ca/country';
 import { pTd } from 'utils/unit';
 
-import CommonSvg from 'components/Svg';
+import CommonSvg from '@portkey-wallet/rn-components/components/Svg';
 import { defaultColors } from 'assets/theme';
-import { TextM } from 'components/CommonText';
+import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import { EntryResult, RouterOptions } from 'service/native-modules';
 import { PortkeyEntries } from 'config/entries';
 import { SelectCountryResult } from 'pages/Login/SelectCountry';

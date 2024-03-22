@@ -1,16 +1,16 @@
 import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import PageContainer from 'components/PageContainer';
-import { DigitInputInterface } from 'components/DigitInput';
+import { DigitInputInterface } from '@portkey-wallet/rn-components/components/DigitInput';
 import React, { useCallback, useRef, useState } from 'react';
 import myEvents from 'utils/deviceEvent';
-import PinContainer from 'components/PinContainer';
+import PinContainer from '@portkey-wallet/rn-components/components/PinContainer';
 import { StyleSheet } from 'react-native';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 import { changePin, getVerifiedAndLockWallet } from 'model/verify/core';
-import Loading from 'components/Loading';
+import Loading from '@portkey-wallet/rn-components/components/Loading';
 import { SetBiometricsProps, SetBiometricsResult, touchAuth } from '../SetBiometrics';
-import CommonToast from 'components/CommonToast';
+import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import { authenticateBioReady, isBiometricsCanUse } from 'service/biometric';
 
 export default function ConfirmPin({ oldPin, pin, deliveredSetPinInfo }: ConfirmPinPageProps) {

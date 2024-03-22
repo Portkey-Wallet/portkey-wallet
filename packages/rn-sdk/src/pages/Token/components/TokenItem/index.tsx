@@ -1,11 +1,11 @@
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import React from 'react';
-import { TextL, TextS } from 'components/CommonText';
+import { TextL, TextS } from '@portkey-wallet/rn-components/components/CommonText';
 import { pTd } from 'utils/unit';
-import Svg from 'components/Svg';
-import CommonSwitch from 'components/CommonSwitch';
-import CommonAvatar from 'components/CommonAvatar';
+import Svg from '@portkey-wallet/rn-components/components/Svg';
+import CommonSwitch from '@portkey-wallet/rn-components/components/CommonSwitch';
+import CommonAvatar from '@portkey-wallet/rn-components/components/CommonAvatar';
 import { FontStyles } from 'assets/theme/styles';
 import { useSymbolImages } from 'components/TokenOverlay/hooks';
 import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';

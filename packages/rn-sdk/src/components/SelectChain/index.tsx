@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import Svg from 'components/Svg';
+import Svg from '@portkey-wallet/rn-components/components/Svg';
 import { pTd } from 'utils/unit';
-import ListItem from 'components/ListItem';
+import ListItem from '@portkey-wallet/rn-components/components/ListItem';
 import GStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
 import { NetworkType, ChainId, ChainItemType } from '@portkey/provider-types';

@@ -33,8 +33,8 @@ import {
   UITestOpenActivityDetailCases,
   UITestOpenRampHomeCases,
 } from './cases/UITest';
-import CommonToast from 'components/CommonToast';
-import Loading from 'components/Loading';
+import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
+import Loading from '@portkey-wallet/rn-components/components/Loading';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;

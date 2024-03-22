@@ -7,7 +7,7 @@ import {
 import { IStorage } from '@portkey-wallet/types/storage';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { baseStore } from '@portkey-wallet/utils/mobile/storage';
-import { verifyHumanMachine } from 'components/VerifyHumanMachine';
+import { verifyHumanMachine } from '@portkey-wallet/rn-components/components/VerifyHumanMachine';
 
 class MobileVerification extends Verification {
   constructor(store: IStorage) {

@@ -1,22 +1,22 @@
-import CommonButton from 'components/CommonButton';
-import { TextL, TextM } from 'components/CommonText';
+import CommonButton from '@portkey-wallet/rn-components/components/CommonButton';
+import { TextL, TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import React, { useCallback, useState } from 'react';
 import { Text, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import PageContainer from 'components/PageContainer';
 import { pageStyles } from './style';
 import { useLanguage } from 'i18n/hooks';
-import CommonSwitch from 'components/CommonSwitch';
-import ActionSheet from 'components/ActionSheet';
-import Loading from 'components/Loading';
-import CommonToast from 'components/CommonToast';
+import CommonSwitch from '@portkey-wallet/rn-components/components/CommonSwitch';
+import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
+import Loading from '@portkey-wallet/rn-components/components/Loading';
+import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import { VerificationType, OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { VerifierImage } from 'pages/Guardian/components/VerifierImage';
 import { cancelLoginAccount, setLoginAccount } from 'utils/guardian';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import fonts from 'assets/theme/fonts';
 import GuardianAccountItem from '../components/GuardianAccountItem';
-import Divider from 'components/Divider';
+import Divider from '@portkey-wallet/rn-components/components/Divider';
 import { useAppleAuthentication, useGoogleAuthentication } from 'model/hooks/authentication';
 import { GuardianConfig } from 'model/verify/guardian';
 import { PortkeyConfig } from 'global/constants';
@@ -30,7 +30,7 @@ import { ModifyGuardianProps, checkIsTheLastLoginGuardian } from '../GuardianMan
 import { handlePhoneOrEmailGuardianVerify } from 'model/verify/entry/hooks';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
-import { verifyHumanMachine } from 'components/VerifyHumanMachine';
+import { verifyHumanMachine } from '@portkey-wallet/rn-components/components/VerifyHumanMachine';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 
 export default function GuardianDetail(config: { info: string }) {

@@ -1,8 +1,8 @@
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { useAccountTokenBalanceList } from 'model/hooks/balance';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
-import CommonToast from 'components/CommonToast';
-import Loading from 'components/Loading';
+import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
+import Loading from '@portkey-wallet/rn-components/components/Loading';
 import { useCallback, useMemo } from 'react';
 import AElf from 'aelf-sdk';
 import SparkMD5 from 'spark-md5';

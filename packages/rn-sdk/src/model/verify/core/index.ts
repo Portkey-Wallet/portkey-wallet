@@ -1,7 +1,7 @@
 import { ChainId } from '@portkey-wallet/types';
 import { DeviceInfoType, DeviceType } from '@portkey-wallet/types/types-ca/device';
 import { sleep } from '@portkey-wallet/utils';
-import CommonToast from 'components/CommonToast';
+import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import { PortkeyConfig } from 'global/constants';
 import { requestSocialRecoveryOrRegister } from 'model/global';
 import { NetworkController, handleRequestPolling } from 'network/controller';

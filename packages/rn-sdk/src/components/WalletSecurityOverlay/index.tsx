@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
-import OverlayModal from '../OverlayModal';
+import OverlayModal from '@portkey-wallet/rn-components/components/OverlayModal';
 import { View, Keyboard, StyleSheet, Image } from 'react-native';
-import ButtonRow from 'components/ButtonRow';
-import { CommonButtonProps } from 'components/CommonButton';
+import ButtonRow from '@portkey-wallet/rn-components/components/ButtonRow';
+import { CommonButtonProps } from '@portkey-wallet/rn-components/components/CommonButton';
 import securityWarning from 'assets/image/pngs/securityWarning.png';
 // import navigationService from 'utils/navigationService';
 import { defaultColors } from 'assets/theme';
-import { TextM, TextXL } from 'components/CommonText';
+import { TextM, TextXL } from '@portkey-wallet/rn-components/components/CommonText';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';

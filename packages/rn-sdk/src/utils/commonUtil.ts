@@ -1,4 +1,4 @@
-import CommonToast from 'components/CommonToast';
+import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import { setStringAsync } from 'expo-clipboard';
 import i18n from 'i18n';
 import { BackEndNetWorkMap } from '@portkey-wallet/constants/constants-ca/backend-network';

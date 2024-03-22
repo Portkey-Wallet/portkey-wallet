@@ -1,6 +1,6 @@
 // import { checkSecurity } from '@portkey-wallet/utils/securityTest';
 import { ChainId } from '@portkey/provider-types';
-import ActionSheet from 'components/ActionSheet';
+import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
 import WalletSecurityOverlay from 'components/WalletSecurityOverlay';
 import WalletSecurityAccelerate from 'components/WalletSecurityAccelerate';
 import { NetworkController } from 'network/controller';

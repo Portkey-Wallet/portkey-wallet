@@ -1,12 +1,12 @@
 import { ScreenWidth } from '@rneui/base';
 import { defaultColors } from 'assets/theme';
-import { TextM } from 'components/CommonText';
+import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { shrinkSendQrData, QRCodeDataObjType } from '@portkey-wallet/utils/qrCode';
-import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
+import CommonQRCodeStyled from '@portkey-wallet/rn-components/components/CommonQRCodeStyled';
 import { useCurrentNetworkInfo, useDefaultChainType } from '../../hooks/network';
 
 const cardWidth = ScreenWidth * 0.63;

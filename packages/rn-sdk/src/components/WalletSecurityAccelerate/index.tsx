@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
-import OverlayModal from '../OverlayModal';
+import OverlayModal from '@portkey-wallet/rn-components/components/OverlayModal';
 import { View, Keyboard, StyleSheet, Image } from 'react-native';
-import ButtonRow from 'components/ButtonRow';
-import { CommonButtonProps } from 'components/CommonButton';
+import ButtonRow from '@portkey-wallet/rn-components/components/ButtonRow';
+import { CommonButtonProps } from '@portkey-wallet/rn-components/components/CommonButton';
 import securityWarning from 'assets/image/pngs/securityWarning.png';
 import { defaultColors } from 'assets/theme';
-import { TextM, TextXL } from 'components/CommonText';
+import { TextM, TextXL } from '@portkey-wallet/rn-components/components/CommonText';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
@@ -14,9 +14,9 @@ import { ChainId } from '@portkey/provider-types';
 import { IAccelerateGuardian, getAccelerateGuardianTxId } from 'utils/security';
 import { getAelfTxResult } from '@portkey-wallet/utils/aelf';
 import { TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
-import CommonSvg from 'components/Svg';
-import Loading from 'components/Loading';
-import CommonToast from 'components/CommonToast';
+import CommonSvg from '@portkey-wallet/rn-components/components/Svg';
+import Loading from '@portkey-wallet/rn-components/components/Loading';
+import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import { useCurrentWalletInfo, useGetChainInfo } from './hook';
 import { guardianAccelerate } from './logic';
 

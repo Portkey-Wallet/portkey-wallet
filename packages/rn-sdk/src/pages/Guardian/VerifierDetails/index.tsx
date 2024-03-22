@@ -1,9 +1,11 @@
 import { DIGIT_CODE } from '@portkey-wallet/constants/misc';
 import GStyles from 'assets/theme/GStyles';
-import { TextM } from 'components/CommonText';
-import VerifierCountdown, { VerifierCountdownInterface } from 'components/VerifierCountdown';
+import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
+import VerifierCountdown, {
+  VerifierCountdownInterface,
+} from '@portkey-wallet/rn-components/components/VerifierCountdown';
 import PageContainer from 'components/PageContainer';
-import DigitInput, { DigitInputInterface } from 'components/DigitInput';
+import DigitInput, { DigitInputInterface } from '@portkey-wallet/rn-components/components/DigitInput';
 import React, { useMemo, useRef } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
@@ -12,13 +14,13 @@ import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { AccountOriginalType } from 'model/verify/core';
 import usePhoneOrEmailGuardian, { GuardianConfig, INIT_TIME_OUT } from 'model/verify/guardian';
 import { NetworkController } from 'network/controller';
-import { verifyHumanMachine } from 'components/VerifyHumanMachine';
-import Loading from 'components/Loading';
+import { verifyHumanMachine } from '@portkey-wallet/rn-components/components/VerifyHumanMachine';
+import Loading from '@portkey-wallet/rn-components/components/Loading';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 import { CheckVerifyCodeResultDTO } from 'network/dto/guardian';
 import GuardianItem from '../components/GuardianItem';
-import CommonToast from 'components/CommonToast';
+import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 

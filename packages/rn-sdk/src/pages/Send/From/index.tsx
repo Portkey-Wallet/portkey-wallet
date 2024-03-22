@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
-import { TextM } from 'components/CommonText';
+import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import { useLanguage } from 'i18n/hooks';
 import { useUnlockedWallet } from 'model/wallet';
 

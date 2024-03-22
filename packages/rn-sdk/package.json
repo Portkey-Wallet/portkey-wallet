@@ -132,7 +132,7 @@
     "lint": "eslint . --ext .ts,.tsx  --config .eslintrc.json",
     "prepublishOnly": "yarn build",
     "build-bundle": "./script/build-android-bundle.sh",
-    "check-package": "babel ./src --config-file ./babel.temp.config.js --out-dir temp --extensions \".js,.jsx,.ts,.tsx\""
+    "check-package": "rm -rf ./dist && babel ./src --config-file ./babel.temp.config.js --out-dir dist --extensions \".js,.jsx,.ts,.tsx\""
   },
   "devDependencies": {
     "@babel/cli": "^7.23.4",

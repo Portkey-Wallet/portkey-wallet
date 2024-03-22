@@ -1,13 +1,13 @@
 import React, { memo, useCallback, useRef } from 'react';
-import CommonSvg from 'components/Svg';
+import CommonSvg from '@portkey-wallet/rn-components/components/Svg';
 import { dashBoardBtnStyle, innerPageStyles } from './style';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { View, TouchableOpacity, StyleProp, ViewProps } from 'react-native';
-import { TextM } from 'components/CommonText';
+import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
-import CommonToast from 'components/CommonToast';
+import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import { callFaucetMethod } from 'model/contract/handler';
 import { isWalletUnlocked } from 'model/verify/core';
 import { getCurrentNetworkType } from 'model/hooks/network';

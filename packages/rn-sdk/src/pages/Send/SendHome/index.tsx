@@ -1,13 +1,13 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
-import CommonSvg from 'components/Svg';
+import CommonSvg from '@portkey-wallet/rn-components/components/Svg';
 import From from '../From';
 import To from '../To';
 import { styles } from './style';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
-import ActionSheet from 'components/ActionSheet';
+import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
 
 import useDebounce from 'hooks/useDebounce';
 import { useLanguage } from 'i18n/hooks';
@@ -15,14 +15,14 @@ import SelectContact from '../SelectContact';
 import AmountToken from '../AmountToken';
 import AmountNFT from '../AmountNFT';
 import NFTInfo from '../NFTInfo';
-import CommonButton from 'components/CommonButton';
+import CommonButton from '@portkey-wallet/rn-components/components/CommonButton';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
-import Loading from 'components/Loading';
+import Loading from '@portkey-wallet/rn-components/components/Loading';
 
-import CommonToast from 'components/CommonToast';
-import { TextM } from 'components/CommonText';
+import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
+import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import GStyles from 'assets/theme/GStyles';
-import Touchable from 'components/Touchable';
+import Touchable from '@portkey-wallet/rn-components/components/Touchable';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { TransactionError } from '@portkey-wallet/constants/constants-ca/assets';

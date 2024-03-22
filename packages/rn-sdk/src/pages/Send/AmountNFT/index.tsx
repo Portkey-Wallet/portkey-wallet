@@ -3,9 +3,9 @@ import { View, StyleSheet, TextInput } from 'react-native';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { TextM } from 'components/CommonText';
+import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
-import { parseInputIntegerChange } from '@portkey-wallet/utils';
+import { parseInputIntegerChange } from '@portkey-wallet/utils/input';
 
 interface AmountNFT {
   sendNumber: string;

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Text } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
-import { TextS } from 'components/CommonText';
-import Touchable from 'components/Touchable';
+import { TextS } from '@portkey-wallet/rn-components/components/CommonText';
+import Touchable from '@portkey-wallet/rn-components/components/Touchable';
 import styles from '../styles';
 import { OfficialWebsite } from '@portkey-wallet/constants/constants-ca/network';
 import { FontStyles } from 'assets/theme/styles';

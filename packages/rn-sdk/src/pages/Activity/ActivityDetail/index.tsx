@@ -2,18 +2,18 @@ import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
-import CommonButton from 'components/CommonButton';
-import { TextL, TextM, TextS } from 'components/CommonText';
-import CommonToast from 'components/CommonToast';
+import CommonButton from '@portkey-wallet/rn-components/components/CommonButton';
+import { TextL, TextM, TextS } from '@portkey-wallet/rn-components/components/CommonText';
+import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import PageContainer from 'components/PageContainer';
-import CommonSvg from 'components/Svg';
+import CommonSvg from '@portkey-wallet/rn-components/components/Svg';
 import * as Clipboard from 'expo-clipboard';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useLanguage } from 'i18n/hooks';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Platform, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { pTd } from 'utils/unit';
-import CommonAvatar from 'components/CommonAvatar';
+import CommonAvatar from '@portkey-wallet/rn-components/components/CommonAvatar';
 import { ActivityItemType, CaAddressInfoType } from 'network/dto/query';
 import {
   SHOW_FROM_TRANSACTION_TYPES,

@@ -13,7 +13,7 @@ import { CheckPinProps } from 'pages/Pin/CheckPin';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { isWalletUnlocked } from 'model/verify/core';
 import { PortkeyModulesEntity } from 'service/native-modules';
-import CommonToast from 'components/CommonToast';
+import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 export default function AccountSettings() {
   const biometricsReady = useBiometricsReady();
   const { navigateTo, onFinish } = useBaseContainer({

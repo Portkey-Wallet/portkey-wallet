@@ -1,14 +1,14 @@
 import React from 'react';
-import OverlayModal from 'components/OverlayModal';
+import OverlayModal from '@portkey-wallet/rn-components/components/OverlayModal';
 import { Keyboard, ScrollView, View } from 'react-native';
-import Touchable from 'components/Touchable';
+import Touchable from '@portkey-wallet/rn-components/components/Touchable';
 import styles from './styles';
-import Svg from 'components/Svg';
-import { TextL } from 'components/CommonText';
+import Svg from '@portkey-wallet/rn-components/components/Svg';
+import { TextL } from '@portkey-wallet/rn-components/components/CommonText';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { useGStyles } from 'assets/theme/useGStyles';
-import { ModalBody } from 'components/ModalBody';
+import { ModalBody } from '@portkey-wallet/rn-components/components/ModalBody';
 import { useCurrentNetworkType } from 'model/hooks/network';
 
 type ValueType = string | number;

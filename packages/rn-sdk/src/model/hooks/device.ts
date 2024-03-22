@@ -1,4 +1,4 @@
-import ActionSheet from 'components/ActionSheet';
+import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
 import { useLanguage } from 'i18n/hooks';
 import { useCallback } from 'react';
 import { PermissionType, PortkeyModulesEntity } from 'service/native-modules';

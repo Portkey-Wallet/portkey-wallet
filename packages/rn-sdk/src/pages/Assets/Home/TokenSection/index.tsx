@@ -10,8 +10,8 @@ import { useCommonNetworkInfo } from 'components/TokenOverlay/hooks';
 import AssetsContext, { AssetsContextType } from 'global/context/assets/AssetsContext';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
-import Svg from 'components/Svg';
-import { TextM } from 'components/CommonText';
+import Svg from '@portkey-wallet/rn-components/components/Svg';
+import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import { useLanguage } from 'i18n/hooks';
 
 export interface TokenSectionProps {

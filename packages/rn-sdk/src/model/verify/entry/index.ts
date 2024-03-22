@@ -1,7 +1,7 @@
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import ActionSheet from 'components/ActionSheet';
-import Loading from 'components/Loading';
-import { verifyHumanMachine } from 'components/VerifyHumanMachine';
+import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
+import Loading from '@portkey-wallet/rn-components/components/Loading';
+import { verifyHumanMachine } from '@portkey-wallet/rn-components/components/VerifyHumanMachine';
 import { PortkeyEntries } from 'config/entries';
 import {
   attemptAccountCheck,

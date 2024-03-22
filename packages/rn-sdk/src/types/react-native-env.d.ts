@@ -8,3 +8,4 @@ declare module 'rn-teaset/components/TransformView/TransformView';
 declare module 'react-native-spring-scrollview/*';
 declare module 'rn-minimizer';
 declare module '*.png';
+declare module '@portkey-wallet/rn-components/components/Collapsible';

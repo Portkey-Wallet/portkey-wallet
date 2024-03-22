@@ -4,10 +4,10 @@ import { DEVICE_TYPE } from 'constants/common';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import * as Application from 'expo-application';
 import { request } from '@portkey-wallet/api/api-did';
-import { ButtonRowProps } from 'components/ButtonRow';
+import { ButtonRowProps } from '@portkey-wallet/rn-components/components/ButtonRow';
 import { Linking, Platform } from 'react-native';
-import OverlayModal from 'components/OverlayModal';
-import ActionSheet from 'components/ActionSheet';
+import OverlayModal from '@portkey-wallet/rn-components/components/OverlayModal';
+import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
 import { compareVersions } from 'utils/commonUtil';
 import * as Device from 'expo-device';
 

@@ -1,6 +1,6 @@
 import React from 'react';
-import CommonSvg from 'components/Svg';
-import { TextM } from 'components/CommonText';
+import CommonSvg from '@portkey-wallet/rn-components/components/Svg';
+import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import { useLanguage } from 'i18n/hooks';
 import TokenOverlay from 'components/TokenOverlay';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';

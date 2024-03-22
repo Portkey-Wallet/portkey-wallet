@@ -4,19 +4,19 @@ import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 
-import CommonButton from 'components/CommonButton';
-import { TextM } from 'components/CommonText';
+import CommonButton from '@portkey-wallet/rn-components/components/CommonButton';
+import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import { divDecimalsToShow } from '@portkey-wallet/utils/converter';
 import { ITransferLimitItem } from 'model/security';
 import { callGetTransferLimitMethod } from 'model/contract/handler';
-import Loading from 'components/Loading';
+import Loading from '@portkey-wallet/rn-components/components/Loading';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 import { PaymentSecurityEditProps } from '../PaymentSecurityEdit';
 import { GuardiansApprovalIntent } from 'pages/GuardianManage/GuardianHome';
-import CommonToast from 'components/CommonToast';
+import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import { getBottomSpace } from 'utils/screen';
 
 export interface PaymentSecurityDetailProps {

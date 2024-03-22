@@ -1,6 +1,6 @@
 import React from 'react';
 import AppleLogin from './AppleLogin';
-import OverlayModal from 'components/OverlayModal';
+import OverlayModal from '@portkey-wallet/rn-components/components/OverlayModal';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { clearBackgroundTimeout, setBackgroundTimeout } from 'utils/backgroundTimer';
 

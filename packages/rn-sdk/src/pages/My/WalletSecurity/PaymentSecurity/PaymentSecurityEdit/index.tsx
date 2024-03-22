@@ -3,13 +3,13 @@ import PageContainer from 'components/PageContainer';
 import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import CommonButton from 'components/CommonButton';
-import { TextM } from 'components/CommonText';
+import CommonButton from '@portkey-wallet/rn-components/components/CommonButton';
+import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import useEffectOnce from 'hooks/useEffectOnce';
-import CommonInput from 'components/CommonInput';
-import CommonSwitch from 'components/CommonSwitch';
+import CommonInput from '@portkey-wallet/rn-components/components/CommonInput';
+import CommonSwitch from '@portkey-wallet/rn-components/components/CommonSwitch';
 import { ErrorType } from 'types/common';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import { isValidInteger } from '@portkey-wallet/utils/reg';
@@ -18,7 +18,7 @@ import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import { ITransferLimitItem } from 'model/security';
 import { handleGuardiansApproval } from 'model/verify/entry/hooks';
 import { GuardianVerifyType } from 'model/verify/social-recovery';
-import CommonToast from 'components/CommonToast';
+import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import { getBottomSpace } from 'utils/screen';
 
 export interface PaymentSecurityEditProps {

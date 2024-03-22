@@ -7,7 +7,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
-import CommonAvatar from 'components/CommonAvatar';
+import CommonAvatar from '@portkey-wallet/rn-components/components/CommonAvatar';
 import { ActivityItemType } from 'network/dto/query';
 import { SHOW_FROM_TRANSACTION_TYPES, TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
 import { ZERO } from '@portkey-wallet/constants/misc';

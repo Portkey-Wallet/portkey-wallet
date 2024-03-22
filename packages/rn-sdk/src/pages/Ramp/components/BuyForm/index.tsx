@@ -3,28 +3,28 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
-import { TextL, TextM, TextS } from 'components/CommonText';
+import { TextL, TextM, TextS } from '@portkey-wallet/rn-components/components/CommonText';
 
-import CommonInput from 'components/CommonInput';
-import Touchable from 'components/Touchable';
-import Svg from 'components/Svg';
+import CommonInput from '@portkey-wallet/rn-components/components/CommonInput';
+import Touchable from '@portkey-wallet/rn-components/components/Touchable';
+import Svg from '@portkey-wallet/rn-components/components/Svg';
 import fonts from 'assets/theme/fonts';
 import SelectToken from '../SelectToken';
 import SelectCurrency from '../SelectCurrency';
 
 import { FontStyles } from 'assets/theme/styles';
-import CommonButton from 'components/CommonButton';
-import Loading from 'components/Loading';
+import CommonButton from '@portkey-wallet/rn-components/components/CommonButton';
+import Loading from '@portkey-wallet/rn-components/components/Loading';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useReceive } from '../../hooks';
-import CommonToast from 'components/CommonToast';
+import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import { useBuyFiat } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { IRampCryptoItem, IRampFiatItem, RampType } from '@portkey-wallet/ramp';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { IRampLimit } from '@portkey-wallet/types/types-ca/ramp';
 import isEqual from 'lodash/isEqual';
 import { getBuyCrypto, getBuyLimit } from '@portkey-wallet/utils/ramp';
-import CommonAvatar from 'components/CommonAvatar';
+import CommonAvatar from '@portkey-wallet/rn-components/components/CommonAvatar';
 import { ErrorType, INIT_HAS_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/constants/constants-ca/common';
 import { isPotentialNumber } from '@portkey-wallet/utils/reg';
 import useBaseContainer from 'model/container/UseBaseContainer';

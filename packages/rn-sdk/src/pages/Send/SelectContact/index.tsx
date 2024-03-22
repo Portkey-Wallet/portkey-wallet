@@ -1,8 +1,8 @@
 import { ChainId } from '@portkey/provider-types';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { TextS } from 'components/CommonText';
-import NoData from 'components/NoData';
+import { TextS } from '@portkey-wallet/rn-components/components/CommonText';
+import NoData from '@portkey-wallet/rn-components/components/NoData';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useLanguage } from 'i18n/hooks';
 import { FlashList } from '@shopify/flash-list';

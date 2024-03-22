@@ -6,8 +6,8 @@ import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 
 import { useLanguage } from 'i18n/hooks';
-import { TextL, TextS } from 'components/CommonText';
-import CommonAvatar from 'components/CommonAvatar';
+import { TextL, TextS } from '@portkey-wallet/rn-components/components/CommonText';
+import CommonAvatar from '@portkey-wallet/rn-components/components/CommonAvatar';
 import { FontStyles } from 'assets/theme/styles';
 import { useImageTracer } from 'model/hooks/imageTracer';
 

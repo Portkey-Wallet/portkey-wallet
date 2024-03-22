@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import OverlayModal from 'components/OverlayModal';
+import OverlayModal from '@portkey-wallet/rn-components/components/OverlayModal';
 import { FlatList, StyleSheet } from 'react-native';
-import { ModalBody } from 'components/ModalBody';
-import CommonInput from 'components/CommonInput';
+import { ModalBody } from '@portkey-wallet/rn-components/components/ModalBody';
+import CommonInput from '@portkey-wallet/rn-components/components/CommonInput';
 import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 import { AccountType } from '@portkey-wallet/types/wallet';
 import TokenListItem from 'components/TokenListItem';
@@ -11,14 +11,14 @@ import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import useDebounce from 'hooks/useDebounce';
-import NoData from 'components/NoData';
+import NoData from '@portkey-wallet/rn-components/components/NoData';
 import { useGStyles } from 'assets/theme/useGStyles';
 import myEvents from '../../utils/deviceEvent';
 import { getCachedAllChainInfo } from 'model/chain';
 import { useCommonNetworkInfo } from './hooks';
 import { NetworkController } from 'network/controller';
 import { IUserTokenItem } from 'network/dto/query';
-import Loading from 'components/Loading';
+import Loading from '@portkey-wallet/rn-components/components/Loading';
 import { UnlockedWallet, getUnlockedWallet } from 'model/wallet';
 import useEffectOnce from 'hooks/useEffectOnce';
 

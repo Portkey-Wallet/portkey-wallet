@@ -1,7 +1,7 @@
 import React from 'react';
 import AssetsHome from './AssetsHome';
 import DashBoardTab from './DashBoardTab';
-import SafeAreaBox from 'components/SafeAreaBox';
+import SafeAreaBox from '@portkey-wallet/rn-components/components/SafeAreaBox';
 import { BGStyles } from 'assets/theme/styles';
 
 const DashBoard: React.FC = ({ containerId }: { containerId?: any }) => {

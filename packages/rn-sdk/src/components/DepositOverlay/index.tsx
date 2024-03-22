@@ -1,8 +1,8 @@
 import React from 'react';
-import OverlayModal from 'components/OverlayModal';
-import Touchable from 'components/Touchable';
-import Svg from 'components/Svg';
-import { TextL, TextS } from 'components/CommonText';
+import OverlayModal from '@portkey-wallet/rn-components/components/OverlayModal';
+import Touchable from '@portkey-wallet/rn-components/components/Touchable';
+import Svg from '@portkey-wallet/rn-components/components/Svg';
+import { TextL, TextS } from '@portkey-wallet/rn-components/components/CommonText';
 import { View } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';

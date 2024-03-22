@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { FontStyles } from 'assets/theme/styles';
-import { TextL } from 'components/CommonText';
+import { TextL } from '@portkey-wallet/rn-components/components/CommonText';
 import { ContactIndexType, ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { ViewStyleType } from 'types/styles';
 import ContactFlashList from './ContactFlashList';

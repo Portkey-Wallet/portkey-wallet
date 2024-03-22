@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { checkSecuritySafe } from 'utils/security';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import ActionSheet from 'components/ActionSheet';
+import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
 import BigNumber from 'bignumber.js';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PaymentSecurityEditProps } from 'pages/My/WalletSecurity/PaymentSecurity/PaymentSecurityEdit';

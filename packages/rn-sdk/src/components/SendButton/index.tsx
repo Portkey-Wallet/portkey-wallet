@@ -1,8 +1,8 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import CommonSvg from 'components/Svg';
+import CommonSvg from '@portkey-wallet/rn-components/components/Svg';
 import dashBoardBtnStyle, { innerPageStyles } from 'components/FaucetButton/style';
 import { View, TouchableOpacity, StyleProp, ViewProps } from 'react-native';
-import { TextM } from 'components/CommonText';
+import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';

@@ -5,7 +5,7 @@ import { GuardianVerifyConfig, GuardianVerifyType } from '../social-recovery';
 import { NetworkController } from 'network/controller';
 import { parseGuardianInfo } from 'model/global';
 import { PortkeyConfig } from 'global/constants';
-import Loading from 'components/Loading';
+import Loading from '@portkey-wallet/rn-components/components/Loading';
 import { GuardiansApprovalIntent } from 'pages/GuardianManage/GuardianHome';
 import { GuardianApprovalPageProps, GuardianApprovalPageResult } from 'pages/Entries/GuardianApproval';
 import { VerifierDetailsPageProps, VerifierDetailsPageResult } from 'pages/Entries/VerifierDetails';

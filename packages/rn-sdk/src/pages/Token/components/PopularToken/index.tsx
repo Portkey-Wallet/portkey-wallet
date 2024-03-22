@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import React from 'react';
 import { FlatList } from 'react-native';
-import { TextL } from 'components/CommonText';
+import { TextL } from '@portkey-wallet/rn-components/components/CommonText';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import TokenItem from '../TokenItem';

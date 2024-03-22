@@ -24,7 +24,8 @@ module.exports = function (babel, options) {
           return;
         }
         needSearchFilter.forEach(item => {
-          if (source.includes(item)) {
+          if (source.includes(item) && !source.includes('@portkey-wallet/rn-component')) {
+            console.log('sourcesourcesourcesource', source);
             const value = full[item];
             // path.node.source.value = ;
             console.log(

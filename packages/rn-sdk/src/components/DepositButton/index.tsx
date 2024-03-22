@@ -1,14 +1,14 @@
 import React, { memo } from 'react';
-import Svg from 'components/Svg';
+import Svg from '@portkey-wallet/rn-components/components/Svg';
 import { View, StyleProp, ViewProps } from 'react-native';
-import { TextM } from 'components/CommonText';
+import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import { commonButtonStyle } from '../SendButton/style';
-import Touchable from 'components/Touchable';
+import Touchable from '@portkey-wallet/rn-components/components/Touchable';
 import DepositOverlay from 'components/DepositOverlay';
-import OverlayModal from 'components/OverlayModal';
+import OverlayModal from '@portkey-wallet/rn-components/components/OverlayModal';
 import { DepositItem } from 'hooks/deposit';
 
 type DepositButtonPropsType = {

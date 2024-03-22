@@ -1,15 +1,15 @@
 import React, { useCallback } from 'react';
 import { Keyboard, StyleSheet, View } from 'react-native';
-import { TextL } from 'components/CommonText';
-import OverlayModal from 'components/OverlayModal';
-import Touchable from 'components/Touchable';
-import CommonSvg from 'components/Svg';
+import { TextL } from '@portkey-wallet/rn-components/components/CommonText';
+import OverlayModal from '@portkey-wallet/rn-components/components/OverlayModal';
+import Touchable from '@portkey-wallet/rn-components/components/Touchable';
+import CommonSvg from '@portkey-wallet/rn-components/components/Svg';
 import { pTd } from 'utils/unit';
 import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
 import { BorderStyles } from 'assets/theme/styles';
 import { NetworkList } from '@portkey-wallet/constants/constants-ca/network-mainnet';
-import { ModalBody } from 'components/ModalBody';
-import ActionSheet from 'components/ActionSheet';
+import { ModalBody } from '@portkey-wallet/rn-components/components/ModalBody';
+import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
 
 function Network({
   network,

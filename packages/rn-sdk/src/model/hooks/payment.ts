@@ -1,4 +1,4 @@
-import Loading from 'components/Loading';
+import Loading from '@portkey-wallet/rn-components/components/Loading';
 import { ITransferLimitItem } from 'model/security';
 import { getUnlockedWallet } from 'model/wallet';
 import { NetworkController } from 'network/controller';

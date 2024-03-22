@@ -330,7 +330,7 @@ export const imSlice = createSlice({
               ...state.groupInfoMapNetMap?.[network],
               [channelId]: {
                 ...preChannelInfo,
-                members: isInit ? [...preChannelInfo.members, ...value.members] : value.members,
+                members: isInit ? value.members : [...preChannelInfo.members, ...value.members],
                 totalCount: value?.totalCount,
               },
             },

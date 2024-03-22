@@ -187,21 +187,26 @@ export const useGroupChannelInfo = (channelId: string, isInit = false) => {
 
   const { relationId } = useRelationId();
 
-  const refreshChannelInfo = useCallback(async () => {
-    const { data: groupInfo } = await im.service.getChannelInfo({
-      channelUuid: channelId,
-    });
-    dispatch(
-      setGroupInfo({
-        network: networkType,
-        groupInfo: {
-          ...groupInfo,
-          members: groupInfo.memberInfos.members,
-          totalCount: groupInfo.memberInfos.totalCount,
-        },
-      }),
-    );
-  }, [channelId, dispatch, networkType]);
+  const refreshChannelInfo = useCallback(
+    async (skipCount = 0, maxResultCount = 20) => {
+      const { data: groupInfo } = await im.service.getChannelInfo({
+        channelUuid: channelId,
+        skipCount,
+        maxResultCount,
+      });
+      dispatch(
+        setGroupInfo({
+          network: networkType,
+          groupInfo: {
+            ...groupInfo,
+            members: groupInfo.memberInfos.members,
+            totalCount: groupInfo.memberInfos.totalCount,
+          },
+        }),
+      );
+    },
+    [channelId, dispatch, networkType],
+  );
 
   const refreshChannelMembersInfo = useCallback(
     async (skipCount = 0, maxResultCount = 20) => {

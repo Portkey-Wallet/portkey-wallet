@@ -23,8 +23,7 @@ import im from '@portkey-wallet/im';
 const RemoveMembersPage = () => {
   const currentChannelId = useCurrentChannelId();
   const { groupInfo, refresh, refreshChannelMembersInfo } = useGroupChannelInfo(currentChannelId || '', false);
-  const { memberInfos } = groupInfo || {};
-  const { members = [], totalCount } = memberInfos || {};
+  const { members = [], totalCount } = groupInfo || {};
 
   const removeMembers = useRemoveChannelMembers(currentChannelId || '');
 

@@ -20,8 +20,7 @@ const GroupMembersPage = () => {
   const { relationId: myRelationId } = useRelationId();
   const currentChannelId = useCurrentChannelId();
   const { groupInfo, refreshChannelMembersInfo } = useGroupChannelInfo(currentChannelId || '', false);
-  const { memberInfos } = groupInfo || {};
-  const { members = [], totalCount } = memberInfos || {};
+  const { members = [], totalCount } = groupInfo || {};
 
   const [keyword, setKeyword] = useState('');
   const debounceKeyword = useDebounce(keyword, 200);

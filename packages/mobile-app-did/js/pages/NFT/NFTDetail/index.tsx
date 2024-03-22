@@ -223,7 +223,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
           {/* Generation Info */}
           {generation && (
             <View style={GStyles.marginTop(pTd(24))}>
-              <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Generation info')}</TextL>
+              <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Generation Info')}</TextL>
               <View style={[GStyles.flexRow, styles.rowWrap, GStyles.marginBottom(0)]}>
                 <TextM style={[styles.leftTitle, FontStyles.font3, GStyles.flex(2)]}>{t('Generation')}</TextM>
                 <View style={GStyles.flex1} />

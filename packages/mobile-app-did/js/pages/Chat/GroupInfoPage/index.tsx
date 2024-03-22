@@ -30,8 +30,7 @@ const GroupInfoPage = () => {
 
   const currentChannelId = useCurrentChannelId();
   const { groupInfo, isAdmin, refresh } = useGroupChannelInfo(currentChannelId || '', false);
-  const { memberInfos } = groupInfo || {};
-  const { members = [], totalCount } = memberInfos || {};
+  const { members = [], totalCount } = groupInfo || {};
   const leaveGroup = useLeaveChannel();
 
   const inviteLink = useMemo(() => `${LinkPortkeyPath.addGroup}${currentChannelId || ''}`, [currentChannelId]);

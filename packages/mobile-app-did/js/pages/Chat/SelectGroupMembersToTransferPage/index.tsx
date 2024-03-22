@@ -20,17 +20,18 @@ const SelectGroupMembersToTransferPage = () => {
   const currentChannelId = useCurrentChannelId();
   const { groupInfo, refreshChannelMembersInfo } = useGroupChannelInfo(currentChannelId || '', false);
 
+  const channelId = useCurrentChannelId();
   const { userId: myUserId } = useUserInfo() || {};
-  const { memberInfos } = groupInfo || {};
-  const { members = [], totalCount } = memberInfos || {};
+  const { members = [], totalCount } = groupInfo || {};
   const [keyword, setKeyword] = useState('');
   const debounceKeyword = useDebounce(keyword, 200);
   const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>([]);
 
   // TODO: filter myself
-  const listShow = useMemo(() => filterMembers.filter(ele => ele.userId !== myUserId), [filterMembers, myUserId]);
-
-  const channelId = useCurrentChannelId();
+  const listShow = useMemo(() => {
+    const _list = debounceKeyword ? filterMembers : members;
+    return _list.filter(ele => ele.userId !== myUserId);
+  }, [debounceKeyword, filterMembers, members, myUserId]);
 
   const onPressItem = useCallback(
     (toRelationId: string, item: GroupMemberItemType) => {
@@ -48,31 +49,34 @@ const SelectGroupMembersToTransferPage = () => {
   );
 
   const searchMemberList = useLockCallback(async () => {
-    if (!keyword.trim()) return;
+    if (!debounceKeyword.trim()) return;
     try {
       const result = await im.service.searchChannelMembers({
         channelUuid: currentChannelId,
-        keyword,
+        keyword: debounceKeyword,
+        skipCount: 0,
+        maxResultCount: 50,
       });
       setFilterMembers(result?.data.members || []);
     } catch (error) {
       // TODO: change
       console.log('error', error);
     }
-  }, [currentChannelId, keyword]);
+  }, [currentChannelId, debounceKeyword]);
 
   const fetchMemberList = useLockCallback(
     async (isInit?: false) => {
-      if (!keyword.trim() && !isInit) return;
-      if (totalCount && filterMembers?.length >= totalCount) return;
+      if (debounceKeyword.trim()) return;
+
+      if (!isInit && totalCount && members?.length >= totalCount) return;
 
       try {
-        await refreshChannelMembersInfo(filterMembers?.length || 0);
+        await refreshChannelMembersInfo(members?.length || 0);
       } catch (error) {
         console.log('fetchMoreData', error);
       }
     },
-    [filterMembers?.length, keyword, refreshChannelMembersInfo, totalCount],
+    [debounceKeyword, members?.length, refreshChannelMembersInfo, totalCount],
   );
 
   // keyword search
@@ -119,6 +123,7 @@ const SelectGroupMembersToTransferPage = () => {
             onPress={onPressItem}
           />
         )}
+        onEndReached={() => fetchMemberList()}
       />
     </PageContainer>
   );

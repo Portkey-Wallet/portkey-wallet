@@ -5,6 +5,7 @@ import {
   ChannelItem,
   ChannelMemberInfo,
   ChannelTypeEnum,
+  IChannelContactItem,
   Message,
   MessageCount,
   RedPackageConfigType,
@@ -89,9 +90,17 @@ export type CreateChannelResult = {
 
 export type GetChannelInfoParams = {
   channelUuid: string;
+  skipCount?: number;
+  maxResultCount?: number;
 };
 
 export type GetChannelMembersParams = GetChannelInfoParams;
+export type getCannelContactsParams = {
+  channelUuid: string;
+  skipCount?: number;
+  maxResultCount?: number;
+  keyword?: string;
+};
 
 export type SendMessageParams = {
   channelUuid?: string;
@@ -364,6 +373,10 @@ export interface IIMService {
   >;
 
   getChannelMembers(params: GetChannelMembersParams): IMServiceCommon<ChannelMemberInfo[]>;
+  getChannelContacts(params: getCannelContactsParams): IMServiceCommon<{
+    contacts: IChannelContactItem[];
+    totalCount: number;
+  }>;
 
   searchChannelMembers(params: SearchChannelMembersParams): IMServiceCommon<SearchChannelMembersResult>;
 

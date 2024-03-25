@@ -8,23 +8,19 @@ import MenuItem from '../components/MenuItem';
 import { pTd } from 'utils/unit';
 import BaseContainerContext from 'model/container/BaseContainerContext';
 import { PortkeyEntries } from 'config/entries';
-import useBaseContainer from 'model/container/UseBaseContainer';
-import { CheckPinProps } from 'pages/Pin/CheckPin';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { isWalletUnlocked } from 'model/verify/core';
 import { PortkeyModulesEntity } from 'service/native-modules';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
+import useNavigation, { useNewIntent } from 'core/router/hook';
+
 export default function AccountSettings() {
   const biometricsReady = useBiometricsReady();
-  const { navigateTo, onFinish } = useBaseContainer({
-    entryName: PortkeyEntries.ACCOUNT_SETTING_ENTRY,
-    onNewIntent: (params: { modified: boolean }) => {
-      console.log('params.modified', params.modified);
-      if (params.modified) {
-        console.log('params.modified if');
-        CommonToast.success(t('Modified Successfully'));
-      }
-    },
+  const navigation = useNavigation();
+  useNewIntent<{ modified: boolean }>(params => {
+    if (params.modified) {
+      CommonToast.success(t('Modified Successfully'));
+    }
   });
   const { t } = useLanguage();
 
@@ -49,25 +45,24 @@ export default function AccountSettings() {
       });
     return _list.sort((a, b) => a.sort - b.sort);
   }, [biometricsReady]);
+
   const navigateNextPage = useCallback(
     (menuName: string) => {
-      console.log('menuName', menuName);
       if (menuName === 'CheckPin') {
-        navigateTo<CheckPinProps>(PortkeyEntries.CHECK_PIN, { targetScene: 'changePin' });
+        navigation.navigation(PortkeyEntries.CHECK_PIN, { targetScene: 'changePin' });
       } else if (menuName === 'Biometric') {
-        navigateTo(PortkeyEntries.BIOMETRIC_SWITCH_ENTRY, {});
+        navigation.navigation(PortkeyEntries.BIOMETRIC_SWITCH_ENTRY);
       }
     },
-    [navigateTo],
+    [navigation],
   );
   useEffectOnce(() => {
     isWalletUnlocked().then(status => {
       if (!status) {
-        onFinish({
+        navigation.goBack({
           status: 'fail',
           data: { msg: 'wallet is not unlocked' },
         });
-        console.log('wallet is not unlocked');
         PortkeyModulesEntity.NativeWrapperModule.onError(
           PortkeyEntries.ACCOUNT_SETTING_ENTRY,
           'wallet is not unlocked',

@@ -82,7 +82,13 @@ const initEntries = () => {
   entryConfig.set(PortkeyEntries.VIEW_ON_WEBVIEW, () => ViewOnWebView);
 
   // account setting
-  entryConfig.set(PortkeyEntries.ACCOUNT_SETTING_ENTRY, () => AccountSettings);
+  entryConfig.set(PortkeyEntries.ACCOUNT_SETTING_ENTRY, () =>
+    ReduxProvider(AccountSettings, {
+      routerParams: {
+        from: PortkeyEntries.ACCOUNT_SETTING_ENTRY,
+      },
+    }),
+  );
   entryConfig.set(PortkeyEntries.BIOMETRIC_SWITCH_ENTRY, () => Biometric);
 
   // assets module

@@ -17,6 +17,7 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import im from '@portkey-wallet/im';
 import CommonToast from 'components/CommonToast';
 import LottieLoading from 'components/LottieLoading';
+import { SEARCH_MEMBER_LIST_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
 
 const GroupMembersPage = () => {
   const { relationId: myRelationId } = useRelationId();
@@ -57,6 +58,8 @@ const GroupMembersPage = () => {
       const result = await im.service.searchChannelMembers({
         channelUuid: currentChannelId,
         keyword: debounceKeyword,
+        skipCount: 0,
+        maxResultCount: SEARCH_MEMBER_LIST_LIMIT,
       });
       setFilteredMemberList(result?.data.members || []);
     } catch (error) {
@@ -72,7 +75,7 @@ const GroupMembersPage = () => {
       if (totalCount && members?.length >= totalCount && !isInit) return;
 
       try {
-        await refreshChannelMembersInfo(members?.length || 0);
+        await refreshChannelMembersInfo(isInit ? 0 : members?.length || 0);
       } catch (error) {
         console.log('fetchMoreData', error);
       }
@@ -128,7 +131,7 @@ const GroupMembersPage = () => {
             style={styles.itemStyle}
           />
         )}
-        onEndReached={fetchMemberList}
+        onEndReached={() => fetchMemberList()}
       />
     </PageContainer>
   );

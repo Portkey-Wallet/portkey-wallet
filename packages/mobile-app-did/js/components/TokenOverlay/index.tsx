@@ -64,7 +64,7 @@ const TokenList = ({ title = 'Select Token', onFinishSelectToken, currentSymbol,
 
   const getTokenList = useLockCallback(
     async (init?: boolean) => {
-      if (keyword) return;
+      if (debounceKeyword.trim()) return;
       if (totalRecordCount && tokenDataShowInMarket?.length >= totalRecordCount && !init) return;
 
       await fetchTokenInfoList({
@@ -74,7 +74,7 @@ const TokenList = ({ title = 'Select Token', onFinishSelectToken, currentSymbol,
         maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
       });
     },
-    [chainIdList, fetchTokenInfoList, keyword, tokenDataShowInMarket, totalRecordCount],
+    [chainIdList, debounceKeyword, fetchTokenInfoList, tokenDataShowInMarket?.length, totalRecordCount],
   );
   const getTokenListLatest = useLatestRef(getTokenList);
 

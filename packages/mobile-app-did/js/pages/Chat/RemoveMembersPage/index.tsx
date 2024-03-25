@@ -10,7 +10,7 @@ import CommonToast from 'components/CommonToast';
 import CommonButton from 'components/CommonButton';
 import Loading from 'components/Loading';
 import { useCurrentChannelId } from '../context/hooks';
-import { useGroupChannelInfo, useRemoveChannelMembers } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useGroupChannelInfo, useRelationId, useRemoveChannelMembers } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ChannelMemberInfo } from '@portkey-wallet/im/types/index';
 import NoData from 'components/NoData';
 import ActionSheet from 'components/ActionSheet';
@@ -23,6 +23,8 @@ import LottieLoading from 'components/LottieLoading';
 import { pTd } from 'utils/unit';
 
 const RemoveMembersPage = () => {
+  const { relationId: myRelationId } = useRelationId();
+
   const currentChannelId = useCurrentChannelId();
   const { groupInfo, refresh, refreshChannelMembersInfo } = useGroupChannelInfo(currentChannelId || '', false);
   const { members = [], totalCount } = groupInfo || {};
@@ -36,8 +38,8 @@ const RemoveMembersPage = () => {
   const { selectedItemsMap: selectedMemberMap, onPressItem } = useSelectedItemsMap<GroupMemberItemType>();
 
   const listShow = useMemo(() => {
-    return debounceKeyword ? filterMembers.slice(1) : members?.slice(1);
-  }, [debounceKeyword, filterMembers, members]);
+    return debounceKeyword ? filterMembers.filter(ele => ele.relationId !== myRelationId) : members?.slice(1);
+  }, [debounceKeyword, filterMembers, members, myRelationId]);
 
   const onRemove = useCallback(() => {
     ActionSheet.alert({

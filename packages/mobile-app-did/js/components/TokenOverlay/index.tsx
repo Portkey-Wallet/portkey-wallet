@@ -21,7 +21,7 @@ import myEvents from '../../utils/deviceEvent';
 import { ChainId } from '@portkey-wallet/types';
 import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
+import { PAGE_SIZE_DEFAULT, PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
 
 type onFinishSelectTokenType = (tokenItem: TokenItemShowType) => void;
 type TokenListProps = {
@@ -84,6 +84,8 @@ const TokenList = ({ title = 'Select Token', onFinishSelectToken, currentSymbol,
       const result = await fetchAllTokenList({
         keyword: debounceKeyword,
         chainIdArray: chainIdList,
+        skipCount: 0,
+        maxResultCount: PAGE_SIZE_DEFAULT,
       });
 
       setFilteredShowList(result?.items?.map(item => item.token));

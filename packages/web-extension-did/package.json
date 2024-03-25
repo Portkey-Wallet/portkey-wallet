@@ -63,7 +63,7 @@
     "redux-persist": "^6.0.0",
     "redux-persist-webextension-storage": "^1.0.2",
     "web3": "^1.8.0",
-    "web3-utils": "^1.8.0",
+    "web3-utils": "^4.2.1",
     "whatwg-fetch": "^3.6.2"
   },
   "devDependencies": {

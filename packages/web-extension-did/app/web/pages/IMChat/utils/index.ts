@@ -1,4 +1,5 @@
-import { Message, MessageType, MessageTypeEnum, ParsedImage } from '@portkey-wallet/im';
+import { SEARCH_MEMBER_LIST_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
+import im, { Message, MessageType, MessageTypeEnum, ParsedImage } from '@portkey-wallet/im';
 import {
   ExtraMessageTypeEnum,
   IMessageShowPage,
@@ -115,3 +116,37 @@ export const formatImageData = (parsedContent: ParsedImage) => ({
   width: parsedContent?.width,
   height: parsedContent?.height,
 });
+
+export const searchChannelMembers = async ({
+  keyword,
+  channelUuid,
+  skipCount = 0,
+  maxResultCount = SEARCH_MEMBER_LIST_LIMIT,
+}: {
+  keyword: string;
+  channelUuid: string;
+  skipCount?: number;
+  maxResultCount?: number;
+}) => {
+  return await im.service.searchChannelMembers({
+    keyword,
+    channelUuid,
+    skipCount,
+    maxResultCount,
+  });
+};
+
+export const fetchChannelContactList = async ({
+  keyword = '',
+  channelUuid,
+  skipCount = 0,
+  maxResultCount = SEARCH_MEMBER_LIST_LIMIT,
+}: {
+  keyword?: string;
+  channelUuid: string;
+  skipCount?: number;
+  maxResultCount?: number;
+}) => {
+  const { data } = await im.service.getChannelContacts({ keyword, channelUuid, skipCount, maxResultCount });
+  return data;
+};

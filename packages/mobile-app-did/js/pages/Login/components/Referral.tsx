@@ -220,17 +220,17 @@ export default function Referral({
             );
           })}
         </View>
-        {type === PageType.login && (
-          <Touchable
-            style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flexCenter, styles.signUpTip]}
-            onPress={() => navigationService.navigate('SignupPortkey')}>
-            <TextM style={FontStyles.font3}>
-              No account? <Text style={FontStyles.font4}>Sign up </Text>
-            </TextM>
-            <Svg size={pTd(20)} color={FontStyles.font4.color} icon="right-arrow2" />
-          </Touchable>
-        )}
       </View>
+      {type === PageType.login && (
+        <Touchable
+          style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flexCenter, styles.signUpTip]}
+          onPress={() => navigationService.navigate('SignupPortkey')}>
+          <TextM style={FontStyles.font3}>
+            No account? <Text style={FontStyles.font4}>Sign up </Text>
+          </TextM>
+          <Svg size={pTd(20)} color={FontStyles.font4.color} icon="right-arrow2" />
+        </Touchable>
+      )}
 
       <TermsServiceButton />
     </View>

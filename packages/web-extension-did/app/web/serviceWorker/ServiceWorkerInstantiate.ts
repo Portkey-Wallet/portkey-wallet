@@ -288,14 +288,14 @@ export default class ServiceWorkerInstantiate {
   };
 
   static registerStartWallet = async () => {
-    // close this(chrome.runtime.id) other tabs when register wallet
-    await OpenNewTabController.closeOpenTabs();
-    notificationService.openPrompt(
+    await notificationService.openPrompt(
       {
         method: PromptRouteTypes.REGISTER_START_WALLET,
       },
       'tabs',
     );
+    // close this(chrome.runtime.id) other tabs when register wallet
+    await OpenNewTabController.closeOpenTabs(true);
   };
 
   static loginWallet = () => {

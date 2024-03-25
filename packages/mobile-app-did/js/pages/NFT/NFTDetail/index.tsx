@@ -135,9 +135,9 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
         />
 
         <View style={styles.infoWrap}>
-          {/* Basic info */}
+          {/* Basic Info */}
           <View>
-            <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Basic info')}</TextL>
+            <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Basic Info')}</TextL>
             <View style={[GStyles.flexRow, styles.rowWrap]}>
               <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Contract address')}</TextM>
               <View style={GStyles.flex(1)} />
@@ -183,7 +183,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
                 </TextM>
               </View>
               <View style={[GStyles.flexRow, styles.rowWrap]}>
-                <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Token symbol')}</TextM>
+                <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Token Symbol')}</TextM>
                 <View style={GStyles.flex1} />
                 <TextM style={[styles.leftTitle, FontStyles.font5]}>{seedOwnedSymbol}</TextM>
               </View>
@@ -220,10 +220,10 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
             </View>
           )}
 
-          {/* Generation info */}
+          {/* Generation Info */}
           {generation && (
             <View style={GStyles.marginTop(pTd(24))}>
-              <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Generation info')}</TextL>
+              <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Generation Info')}</TextL>
               <View style={[GStyles.flexRow, styles.rowWrap, GStyles.marginBottom(0)]}>
                 <TextM style={[styles.leftTitle, FontStyles.font3, GStyles.flex(2)]}>{t('Generation')}</TextM>
                 <View style={GStyles.flex1} />
@@ -232,10 +232,10 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
             </View>
           )}
 
-          {/* Inscription info */}
+          {/* Inscription Info */}
           {inscriptionName && (
             <View style={GStyles.marginTop(pTd(24))}>
-              <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Inscription info')}</TextL>
+              <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Inscription Info')}</TextL>
               <View style={[GStyles.flexRow, styles.rowWrap]}>
                 <TextM style={[styles.leftTitle, FontStyles.font3, GStyles.flex(2)]}>{t('Inscription Name')}</TextM>
                 <View style={styles.blank} />

@@ -38,7 +38,7 @@ export interface IEntranceItem extends IBaseEntranceItem {
 export type IEntranceMatchValueConfig = Partial<Record<IEntranceMatchKey, string | (() => Promise<string>)>>;
 export type IEntranceMatchValueMap = Partial<Record<IEntranceMatchKey, string>>;
 
-export type TLoginMode = typeof LOGIN_TYPE_LABEL_MAP[LoginType.Apple];
+export type TLoginMode = typeof LOGIN_TYPE_LABEL_MAP[keyof typeof LOGIN_TYPE_LABEL_MAP];
 
 type TCMSLoginMode = {
   label?: string;

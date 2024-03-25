@@ -16,6 +16,7 @@ import { useEffectOnce } from '@portkey-wallet/hooks';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import im from '@portkey-wallet/im';
 import CommonToast from 'components/CommonToast';
+import LottieLoading from 'components/LottieLoading';
 
 const GroupMembersPage = () => {
   const { relationId: myRelationId } = useRelationId();
@@ -24,7 +25,8 @@ const GroupMembersPage = () => {
   const { members = [], totalCount } = groupInfo || {};
 
   const [keyword, setKeyword] = useState('');
-  const debounceKeyword = useDebounce(keyword, 200);
+  const debounceKeyword = useDebounce(keyword, 800);
+  const [isSearching, setIsSearching] = useState(false);
   const [filteredMemberList, setFilteredMemberList] = useState(members);
 
   const listShow = useMemo(() => {
@@ -48,22 +50,25 @@ const GroupMembersPage = () => {
   );
 
   const searchMemberList = useLockCallback(async () => {
-    if (!keyword.trim()) return;
+    if (!debounceKeyword.trim()) return;
+    setIsSearching(true);
 
     try {
       const result = await im.service.searchChannelMembers({
         channelUuid: currentChannelId,
-        keyword,
+        keyword: debounceKeyword,
       });
       setFilteredMemberList(result?.data.members || []);
     } catch (error) {
       CommonToast.failError(error);
+    } finally {
+      setIsSearching(false);
     }
-  }, [currentChannelId, keyword]);
+  }, [currentChannelId, debounceKeyword]);
 
   const fetchMemberList = useLockCallback(
     async (isInit?: false) => {
-      if (keyword.trim()) return;
+      if (debounceKeyword.trim()) return;
       if (totalCount && members?.length >= totalCount && !isInit) return;
 
       try {
@@ -72,13 +77,13 @@ const GroupMembersPage = () => {
         console.log('fetchMoreData', error);
       }
     },
-    [keyword, members?.length, refreshChannelMembersInfo, totalCount],
+    [debounceKeyword, members?.length, refreshChannelMembersInfo, totalCount],
   );
 
   // keyword search
   useEffect(() => {
     searchMemberList();
-  }, [debounceKeyword, keyword, members, searchMemberList]);
+  }, [debounceKeyword, members, searchMemberList]);
 
   useEffectOnce(() => {
     fetchMemberList(true);
@@ -103,7 +108,13 @@ const GroupMembersPage = () => {
 
       <FlatList
         data={listShow || []}
-        ListEmptyComponent={<NoData noPic message="No search result" style={BGStyles.bg1} />}
+        ListEmptyComponent={
+          isSearching ? (
+            <LottieLoading lottieWrapStyle={GStyles.marginTop(pTd(24))} />
+          ) : (
+            <NoData noPic message="No search result" style={BGStyles.bg1} />
+          )
+        }
         keyExtractor={item => item.relationId}
         renderItem={({ item }) => (
           <GroupInfoMemberItem

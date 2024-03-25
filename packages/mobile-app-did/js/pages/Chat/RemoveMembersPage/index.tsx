@@ -19,6 +19,8 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { useSelectedItemsMap } from '@portkey-wallet/hooks/hooks-ca/chat';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import im from '@portkey-wallet/im';
+import LottieLoading from 'components/LottieLoading';
+import { pTd } from 'utils/unit';
 
 const RemoveMembersPage = () => {
   const currentChannelId = useCurrentChannelId();
@@ -28,7 +30,8 @@ const RemoveMembersPage = () => {
   const removeMembers = useRemoveChannelMembers(currentChannelId || '');
 
   const [keyword, setKeyword] = useState('');
-  const debounceKeyword = useDebounce(keyword, 200);
+  const debounceKeyword = useDebounce(keyword, 800);
+  const [isSearching, setIsSearching] = useState(false);
   const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>([]);
   const { selectedItemsMap: selectedMemberMap, onPressItem } = useSelectedItemsMap<GroupMemberItemType>();
 
@@ -65,22 +68,25 @@ const RemoveMembersPage = () => {
   }, [refresh, removeMembers, selectedMemberMap]);
 
   const searchMemberList = useLockCallback(async () => {
-    if (!keyword.trim()) return;
+    if (!debounceKeyword.trim()) return;
+    setIsSearching(true);
 
     try {
       const result = await im.service.searchChannelMembers({
         channelUuid: currentChannelId,
-        keyword,
+        keyword: debounceKeyword,
       });
       setFilterMembers(result?.data.members || []);
     } catch (error) {
       CommonToast.failError(error);
+    } finally {
+      setIsSearching(false);
     }
-  }, [currentChannelId, keyword]);
+  }, [currentChannelId, debounceKeyword]);
 
   const fetchMemberList = useLockCallback(
     async (isInit?: false) => {
-      if (keyword.trim()) return;
+      if (debounceKeyword.trim()) return;
       if (totalCount && members?.length >= totalCount && !isInit) return;
 
       try {
@@ -89,13 +95,13 @@ const RemoveMembersPage = () => {
         console.log('fetchMoreData', error);
       }
     },
-    [keyword, members?.length, refreshChannelMembersInfo, totalCount],
+    [debounceKeyword, members?.length, refreshChannelMembersInfo, totalCount],
   );
 
   // keyword search
   useEffect(() => {
     searchMemberList();
-  }, [debounceKeyword, keyword, members, searchMemberList]);
+  }, [debounceKeyword, members, searchMemberList]);
 
   useEffectOnce(() => {
     fetchMemberList(true);
@@ -121,7 +127,13 @@ const RemoveMembersPage = () => {
       <FlatList
         data={listShow || []}
         keyExtractor={(item: ChannelMemberInfo) => item.relationId}
-        ListEmptyComponent={<NoData noPic message="No search result" />}
+        ListEmptyComponent={
+          isSearching ? (
+            <LottieLoading lottieWrapStyle={GStyles.marginTop(pTd(24))} />
+          ) : (
+            <NoData noPic message="No search result" />
+          )
+        }
         renderItem={({ item }) => (
           <GroupMemberItem
             selected={selectedMemberMap.has(item.relationId)}

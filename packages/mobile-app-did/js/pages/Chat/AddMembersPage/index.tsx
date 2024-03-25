@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -18,21 +18,41 @@ import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import navigationService from 'utils/navigationService';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useSelectedItemsMap } from '@portkey-wallet/hooks/hooks-ca/chat';
+import im, { IChannelContactItem } from '@portkey-wallet/im';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import LottieLoading from 'components/LottieLoading';
+import { pTd } from 'utils/unit';
 
 const AddMembersPage = () => {
   const currentChannelId = useCurrentChannelId();
-  const { groupInfo } = useGroupChannelInfo(currentChannelId || '');
-  const { members = [] } = groupInfo || {};
+  const { refresh } = useGroupChannelInfo(currentChannelId || '');
   const addMembers = useAddChannelMembers(currentChannelId || '');
+  const searchContactList = useLocalContactSearch();
+  const { selectedItemsMap: selectedMemberMap, onPressItem } = useSelectedItemsMap<GroupMemberItemType>();
+
+  const pagination = useRef<{
+    skipCount: number;
+    maxResultCount: number;
+  }>({
+    skipCount: 0,
+    maxResultCount: 20,
+  });
 
   const [keyword, setKeyword] = useState('');
   const debounceKeyword = useDebounce(keyword, 800);
 
-  const { selectedItemsMap: selectedMemberMap, onPressItem } = useSelectedItemsMap<GroupMemberItemType>();
+  const [initializing, setInitializing] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
+  const [contactList, setContactList] = useState<IChannelContactItem[]>([]);
 
-  const searchContactList = useLocalContactSearch();
-  const [filterMemberList, setFilterMemberList] = useState<ContactItemType[]>([]);
-  const [memberRelationIdMap, setMemberRelationIdMap] = useState<{ [id: string]: string }>({});
+  const [memberList, setMemberList] = useState<IChannelContactItem[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [filteredMemberList, setFilteredMemberList] = useState<IChannelContactItem[]>([]);
+
+  const listShow = useMemo(() => {
+    if (initializing) return contactList;
+    return debounceKeyword ? filteredMemberList : memberList;
+  }, [contactList, debounceKeyword, filteredMemberList, initializing, memberList]);
 
   const onAdd = useCallback(async () => {
     try {
@@ -44,31 +64,72 @@ const AddMembersPage = () => {
         avatar: '',
       }));
       await addMembers(list);
+      await refresh();
       navigationService.goBack();
     } catch (error) {
       CommonToast.failError(error);
     } finally {
       Loading.hide();
     }
-  }, [addMembers, selectedMemberMap]);
+  }, [addMembers, refresh, selectedMemberMap]);
+
+  const getContactMemberList = useLockCallback(
+    async (isInit: boolean) => {
+      if (!isInit && totalCount && memberList.length >= totalCount) return;
+
+      try {
+        const result = await im.service.getChannelContacts({
+          channelUuid: currentChannelId || '',
+          skipCount: isInit ? 0 : pagination.current.skipCount,
+          maxResultCount: pagination.current.maxResultCount,
+        });
+        setMemberList(per => (isInit ? result.data.contacts : [...per, ...result.data.contacts]));
+        setTotalCount(result.data.totalCount);
+
+        setInitializing(false);
+
+        pagination.current.skipCount = isInit
+          ? pagination.current.maxResultCount
+          : pagination.current.skipCount + result.data.contacts.length;
+      } catch (error) {
+        console.log('err', error);
+      }
+    },
+    [currentChannelId, memberList.length, totalCount],
+  );
+
+  const getFilteredContactMemberList = useLockCallback(async () => {
+    if (!debounceKeyword.trim()) return;
+
+    try {
+      setIsSearching(true);
+      const result = await im.service.getChannelContacts({
+        channelUuid: currentChannelId || '',
+        skipCount: 0,
+        maxResultCount: 50,
+        keyword: debounceKeyword,
+      });
+
+      setFilteredMemberList(result.data.contacts);
+      setInitializing(false);
+    } catch (error) {
+      CommonToast.failError(error);
+    } finally {
+      setIsSearching(false);
+    }
+  }, [currentChannelId, debounceKeyword]);
 
   useEffect(() => {
-    try {
-      const { contactFilterList } = searchContactList(debounceKeyword, ContactsTab.Chats);
-      setFilterMemberList(contactFilterList);
-    } catch (error) {
-      console.log(error);
-    }
-  }, [debounceKeyword, members, searchContactList]);
+    getFilteredContactMemberList();
+  }, [getFilteredContactMemberList]);
 
   useEffectOnce(() => {
-    setMemberRelationIdMap(preMap => {
-      const idMap: { [id: string]: string } = {};
-      members.forEach(ele => {
-        idMap[ele.relationId] = ele.relationId;
-      });
-      return { ...preMap, ...idMap };
-    });
+    getContactMemberList(true);
+  });
+
+  useEffectOnce(() => {
+    const { contactFilterList } = searchContactList('', ContactsTab.Chats);
+    setContactList(contactFilterList as IChannelContactItem[]);
   });
 
   return (
@@ -88,12 +149,18 @@ const AddMembersPage = () => {
         />
       </View>
       <FlatList
-        data={filterMemberList}
+        data={listShow}
         keyExtractor={(item: ContactItemType) => item.imInfo?.relationId || ''}
-        ListEmptyComponent={<NoData noPic message={debounceKeyword ? 'No search found' : 'No Member'} />}
+        ListEmptyComponent={
+          isSearching ? (
+            <LottieLoading lottieWrapStyle={GStyles.marginTop(pTd(24))} />
+          ) : (
+            <NoData noPic message={debounceKeyword ? 'No search found' : 'No Member'} />
+          )
+        }
         renderItem={({ item }) => (
           <GroupMemberItem
-            disabled={!!memberRelationIdMap[item.imInfo?.relationId || '']}
+            disabled={initializing || item?.isGroupMember}
             key={item.id}
             selected={!!selectedMemberMap.has(item.imInfo?.relationId || '')}
             item={{

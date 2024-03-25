@@ -149,7 +149,7 @@ export default function SocialLogin({
   const showLoginModeListToRecommend = useMemo(() => {
     return loginModeListToRecommend
       ?.map((i) => allowedLoginGuardianList.find((v) => LOGIN_TYPE_LABEL_MAP[v.value] === i.type?.value))
-      .filter((i) => i !== undefined) as LoginGuardianListType[];
+      .filter((i) => !!i) as LoginGuardianListType[];
   }, [allowedLoginGuardianList, loginModeListToRecommend]);
 
   const showLoginModeListToOther = useMemo(() => {

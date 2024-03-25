@@ -11,6 +11,7 @@ import {
   formatWithCommas,
   formatAmountShow,
   divDecimals,
+  formatAmountUSDShow,
 } from '@portkey-wallet/utils/converter';
 import clsx from 'clsx';
 import Copy from 'components/Copy';
@@ -240,27 +241,14 @@ export default function Transaction() {
                     decimals: item.decimals || defaultToken.decimals,
                     digits: Number(item.decimals),
                   })} ${item.symbol ?? ''}`}</span>
-                  {isMainnet && (
-                    <span className="right-usd">
-                      {amountInUsdShow(item.fee, item?.decimals || defaultToken.decimals, defaultToken.symbol)}
-                    </span>
-                  )}
+                  {isMainnet && <span className="right-usd">{formatAmountUSDShow(item?.feeInUsd ?? 0)}</span>}
                 </div>
               );
             })}
         </span>
       </div>
     );
-  }, [
-    activityItem.isDelegated,
-    amountInUsdShow,
-    defaultToken.decimals,
-    defaultToken.symbol,
-    feeInfo,
-    isMainnet,
-    noFeeUI,
-    t,
-  ]);
+  }, [activityItem.isDelegated, defaultToken.decimals, feeInfo, isMainnet, noFeeUI, t]);
 
   const transactionUI = useCallback(() => {
     return (

@@ -31,7 +31,9 @@ const TransferOwnershipPage = () => {
   const [selectedMemberId, setSelectedMemberId] = useState<string | undefined>();
   const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>(members);
 
-  const listShow = useMemo(() => filterMembers.slice(1), [filterMembers]);
+  const listShow = useMemo(() => {
+    return debounceKeyword ? filterMembers.slice(1) : members?.slice(1);
+  }, [debounceKeyword, filterMembers, members]);
 
   const onPressItem = useCallback(
     (id: string) => {
@@ -73,7 +75,6 @@ const TransferOwnershipPage = () => {
 
   const searchMemberList = useLockCallback(async () => {
     if (!keyword.trim()) return;
-
     try {
       const result = await im.service.searchChannelMembers({
         channelUuid: currentChannelId,
@@ -81,23 +82,22 @@ const TransferOwnershipPage = () => {
       });
       setFilterMembers(result?.data.members || []);
     } catch (error) {
-      // TODO: change
-      console.log('error', error);
+      CommonToast.failError(error);
     }
   }, [currentChannelId, keyword]);
 
   const fetchMemberList = useLockCallback(
     async (isInit?: false) => {
-      if (!keyword.trim() && !isInit) return;
-      if (totalCount && filterMembers?.length >= totalCount) return;
+      if (keyword.trim()) return;
+      if (totalCount && members?.length >= totalCount && !isInit) return;
 
       try {
-        await refreshChannelMembersInfo(filterMembers?.length || 0);
+        await refreshChannelMembersInfo(members?.length || 0);
       } catch (error) {
         console.log('fetchMoreData', error);
       }
     },
-    [filterMembers?.length, keyword, refreshChannelMembersInfo, totalCount],
+    [keyword, members?.length, refreshChannelMembersInfo, totalCount],
   );
 
   // keyword search
@@ -128,7 +128,7 @@ const TransferOwnershipPage = () => {
       </View>
 
       <FlatList
-        data={listShow}
+        data={listShow || []}
         extraData={(item: ChannelMemberInfo) => item.relationId}
         ListEmptyComponent={<NoData noPic message={debounceKeyword ? 'No search result' : 'No member'} />}
         renderItem={({ item }) => (
@@ -144,7 +144,7 @@ const TransferOwnershipPage = () => {
             onPress={onPressItem}
           />
         )}
-        onEndReached={fetchMemberList}
+        onEndReached={() => fetchMemberList()}
       />
 
       <View style={styles.buttonWrap}>

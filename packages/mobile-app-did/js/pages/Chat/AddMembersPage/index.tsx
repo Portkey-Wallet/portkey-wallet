@@ -20,6 +20,8 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { useSelectedItemsMap } from '@portkey-wallet/hooks/hooks-ca/chat';
 import im, { IChannelContactItem } from '@portkey-wallet/im';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import LottieLoading from 'components/LottieLoading';
+import { pTd } from 'utils/unit';
 
 const AddMembersPage = () => {
   const currentChannelId = useCurrentChannelId();
@@ -40,6 +42,7 @@ const AddMembersPage = () => {
   const debounceKeyword = useDebounce(keyword, 800);
 
   const [initializing, setInitializing] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
   const [contactList, setContactList] = useState<IChannelContactItem[]>([]);
 
   const [memberList, setMemberList] = useState<IChannelContactItem[]>([]);
@@ -99,6 +102,7 @@ const AddMembersPage = () => {
     if (!debounceKeyword.trim()) return;
 
     try {
+      setIsSearching(true);
       const result = await im.service.getChannelContacts({
         channelUuid: currentChannelId || '',
         skipCount: 0,
@@ -109,7 +113,9 @@ const AddMembersPage = () => {
       setFilteredMemberList(result.data.contacts);
       setInitializing(false);
     } catch (error) {
-      console.log('err', error);
+      CommonToast.failError(error);
+    } finally {
+      setIsSearching(false);
     }
   }, [currentChannelId, debounceKeyword]);
 
@@ -145,7 +151,13 @@ const AddMembersPage = () => {
       <FlatList
         data={listShow}
         keyExtractor={(item: ContactItemType) => item.imInfo?.relationId || ''}
-        ListEmptyComponent={<NoData noPic message={debounceKeyword ? 'No search found' : 'No Member'} />}
+        ListEmptyComponent={
+          isSearching ? (
+            <LottieLoading lottieWrapStyle={GStyles.marginTop(pTd(24))} />
+          ) : (
+            <NoData noPic message={debounceKeyword ? 'No search found' : 'No Member'} />
+          )
+        }
         renderItem={({ item }) => (
           <GroupMemberItem
             disabled={initializing || item?.isGroupMember}

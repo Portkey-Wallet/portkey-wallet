@@ -30,8 +30,11 @@ const RemoveMembersPage = () => {
   const [keyword, setKeyword] = useState('');
   const debounceKeyword = useDebounce(keyword, 200);
   const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>([]);
-  const listShow = useMemo(() => filterMembers.slice(1), [filterMembers]);
   const { selectedItemsMap: selectedMemberMap, onPressItem } = useSelectedItemsMap<GroupMemberItemType>();
+
+  const listShow = useMemo(() => {
+    return debounceKeyword ? filterMembers.slice(1) : members?.slice(1);
+  }, [debounceKeyword, filterMembers, members]);
 
   const onRemove = useCallback(() => {
     ActionSheet.alert({
@@ -71,23 +74,22 @@ const RemoveMembersPage = () => {
       });
       setFilterMembers(result?.data.members || []);
     } catch (error) {
-      // TODO: change
-      console.log('error', error);
+      CommonToast.failError(error);
     }
   }, [currentChannelId, keyword]);
 
   const fetchMemberList = useLockCallback(
     async (isInit?: false) => {
-      if (!keyword.trim() && !isInit) return;
-      if (totalCount && filterMembers?.length >= totalCount) return;
+      if (keyword.trim()) return;
+      if (totalCount && members?.length >= totalCount && !isInit) return;
 
       try {
-        await refreshChannelMembersInfo(filterMembers?.length || 0);
+        await refreshChannelMembersInfo(members?.length || 0);
       } catch (error) {
         console.log('fetchMoreData', error);
       }
     },
-    [filterMembers?.length, keyword, refreshChannelMembersInfo, totalCount],
+    [keyword, members?.length, refreshChannelMembersInfo, totalCount],
   );
 
   // keyword search
@@ -127,6 +129,7 @@ const RemoveMembersPage = () => {
             onPress={onPressItem}
           />
         )}
+        onEndReached={() => fetchMemberList()}
       />
       <View style={styles.buttonWrap}>
         <CommonButton disabled={selectedMemberMap.size === 0} title="Remove" type="primary" onPress={onRemove} />

@@ -21,6 +21,7 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import im from '@portkey-wallet/im';
 import LottieLoading from 'components/LottieLoading';
 import { pTd } from 'utils/unit';
+import { SEARCH_MEMBER_LIST_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
 
 const RemoveMembersPage = () => {
   const { relationId: myRelationId } = useRelationId();
@@ -77,6 +78,8 @@ const RemoveMembersPage = () => {
       const result = await im.service.searchChannelMembers({
         channelUuid: currentChannelId,
         keyword: debounceKeyword,
+        skipCount: 0,
+        maxResultCount: SEARCH_MEMBER_LIST_LIMIT,
       });
       setFilterMembers(result?.data.members || []);
     } catch (error) {
@@ -92,7 +95,7 @@ const RemoveMembersPage = () => {
       if (totalCount && members?.length >= totalCount && !isInit) return;
 
       try {
-        await refreshChannelMembersInfo(members?.length || 0);
+        await refreshChannelMembersInfo(isInit ? 0 : members?.length || 0);
       } catch (error) {
         console.log('fetchMoreData', error);
       }

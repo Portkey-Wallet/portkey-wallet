@@ -29,6 +29,7 @@ import NFTAvatar from 'components/NFTAvatar';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { PAGE_SIZE_DEFAULT, PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
+import GStyles from 'assets/theme/GStyles';
 
 export type ImTransferInfoType = {
   isGroupChat?: boolean;
@@ -48,6 +49,11 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
 
   const { currentNetwork } = useWallet();
 
+  const nftAliasAndId = useMemo(
+    () => `${item?.nftInfo?.alias} #${item?.nftInfo?.tokenId}`,
+    [item?.nftInfo?.alias, item?.nftInfo?.tokenId],
+  );
+
   if (item.tokenInfo)
     return (
       <TokenListItem
@@ -57,9 +63,6 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
     );
 
   if (item.nftInfo) {
-    const {
-      nftInfo: { tokenId },
-    } = item;
     return (
       <Touchable style={itemStyle.wrap} onPress={() => onPress?.(item)}>
         <NFTAvatar
@@ -73,8 +76,11 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
 
         <View style={itemStyle.right}>
           <View>
-            <TextL numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font5]}>
-              {`${item?.nftInfo?.alias} #${tokenId}`}
+            <TextL
+              numberOfLines={2}
+              ellipsizeMode={'tail'}
+              style={[FontStyles.font5, GStyles.maxWidth(pTd(160)), nftAliasAndId?.length > 15 && itemStyle.font14]}>
+              {nftAliasAndId}
             </TextL>
 
             <TextS numberOfLines={1} style={[FontStyles.font3, itemStyle.nftItemInfo]}>
@@ -129,7 +135,7 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
 
   const getAssetsList = useLockCallback(
     async (isInit: boolean) => {
-      if (keyword.trim()) return;
+      if (debounceKeyword.trim()) return;
 
       if (totalRecordCount && accountAssetsList.length >= totalRecordCount && !isInit) return;
 
@@ -144,11 +150,11 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
         console.log('fetchAccountAssetsByKeywords err:', error);
       }
     },
-    [accountAssetsList.length, caAddressInfos, fetchAccountAssetsInfoList, keyword, totalRecordCount],
+    [accountAssetsList.length, caAddressInfos, fetchAccountAssetsInfoList, debounceKeyword, totalRecordCount],
   );
 
   const getFilteredAssetsList = useLockCallback(async () => {
-    if (!keyword.trim()) return;
+    if (!debounceKeyword.trim()) return;
 
     try {
       const response = await fetchAssetList({
@@ -161,7 +167,7 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
     } catch (err) {
       console.log('fetchAccountAssetsByKeywords err:', err);
     }
-  }, [caAddressInfos, debounceKeyword, keyword]);
+  }, [caAddressInfos, debounceKeyword]);
 
   useEffect(() => {
     getFilteredAssetsList();
@@ -349,5 +355,8 @@ const itemStyle = StyleSheet.create({
   },
   nftItemInfo: {
     marginTop: pTd(2),
+  },
+  font14: {
+    fontSize: pTd(14),
   },
 });

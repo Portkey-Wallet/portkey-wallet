@@ -211,6 +211,7 @@ export const useGroupChannelInfo = (channelId: string, isInit = false) => {
 
   const refreshChannelMembersInfo = useCallback(
     async (skipCount = 0, maxResultCount = MEMBER_LIST_LIMIT) => {
+      console.log('====params', skipCount);
       const { data } = await im.service.searchChannelMembers({
         channelUuid: channelId,
         skipCount,

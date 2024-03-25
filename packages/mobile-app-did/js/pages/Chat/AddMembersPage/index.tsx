@@ -22,6 +22,7 @@ import im, { IChannelContactItem } from '@portkey-wallet/im';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import LottieLoading from 'components/LottieLoading';
 import { pTd } from 'utils/unit';
+import { SEARCH_MEMBER_LIST_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
 
 const AddMembersPage = () => {
   const currentChannelId = useCurrentChannelId();
@@ -105,9 +106,9 @@ const AddMembersPage = () => {
       setIsSearching(true);
       const result = await im.service.getChannelContacts({
         channelUuid: currentChannelId || '',
-        skipCount: 0,
-        maxResultCount: 50,
         keyword: debounceKeyword,
+        skipCount: 0,
+        maxResultCount: SEARCH_MEMBER_LIST_LIMIT,
       });
 
       setFilteredMemberList(result.data.contacts);
@@ -171,6 +172,7 @@ const AddMembersPage = () => {
             onPress={onPressItem}
           />
         )}
+        onEndReached={() => getContactMemberList()}
       />
       <View style={styles.buttonWrap}>
         <CommonButton disabled={selectedMemberMap.size === 0} title="Save" type="primary" onPress={onAdd} />

@@ -1,5 +1,4 @@
 import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
-import { LoginType } from './wallet';
 
 export type IEntranceModuleName = 'buy' | 'sell' | 'bridge' | 'eTransDeposit' | 'eTransWithdraw';
 export type IEntranceMatchKey = 'version' | 'installationTime' | 'deviceType';

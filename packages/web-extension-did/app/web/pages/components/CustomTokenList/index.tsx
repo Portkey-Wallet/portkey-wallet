@@ -17,6 +17,8 @@ import { useDebounceCallback, useEffectOnce } from '@portkey-wallet/hooks';
 import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { useAccountAssetsInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { fetchAssetsListByFilter, fetchTokenListByFilter } from './utils';
+import { useCommonState } from 'store/Provider/hooks';
+import clsx from 'clsx';
 import './index.less';
 
 export interface ICustomTokenListProps {
@@ -43,6 +45,7 @@ export default function CustomTokenList({
     fetchAccountAssetsInfoList,
   } = useAccountAssetsInfo();
   const [openDrop, setOpenDrop] = useState<boolean>(false);
+  const { isPrompt } = useCommonState();
   const [filterWord, setFilterWord] = useState<string>('');
   const [assetList, setAssetList] = useState<TokenItemShowType[] | IAssetItemType[]>([]);
   const chainIdArray = useChainIdList();
@@ -206,6 +209,8 @@ export default function CustomTokenList({
   const renderNft = useCallback(
     (token: IAssetItemType) => {
       const seedTypeTag = token.nftInfo ? getSeedTypeTag(token.nftInfo, NFTSizeEnum.small) : '';
+      const alias = `${token.nftInfo?.alias} #${token.nftInfo?.tokenId}`;
+      const aliasClassName = !isPrompt && alias.length > 15 ? 'mul-line' : '';
       return (
         <div
           key={`${token.chainId}_${token.nftInfo?.alias}_${token.nftInfo?.tokenId}`}
@@ -216,7 +221,7 @@ export default function CustomTokenList({
             {token.nftInfo?.imageUrl ? <img src={token.nftInfo.imageUrl} /> : token.nftInfo?.alias?.slice(0, 1)}
           </div>
           <div className="info">
-            <p className="alias">{`${token.nftInfo?.alias} #${token.nftInfo?.tokenId}`}</p>
+            <p className={clsx('alias', aliasClassName)}>{alias}</p>
             <p className="network">{transNetworkText(token.chainId, !isMainnet)}</p>
           </div>
           <div className="amount">
@@ -227,7 +232,7 @@ export default function CustomTokenList({
         </div>
       );
     },
-    [isMainnet, onChange],
+    [isMainnet, isPrompt, onChange],
   );
 
   return (

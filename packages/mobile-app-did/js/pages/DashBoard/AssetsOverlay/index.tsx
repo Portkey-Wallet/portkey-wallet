@@ -28,7 +28,7 @@ import Touchable from 'components/Touchable';
 import NFTAvatar from 'components/NFTAvatar';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
+import { PAGE_SIZE_DEFAULT, PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
 
 export type ImTransferInfoType = {
   isGroupChat?: boolean;
@@ -153,7 +153,7 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
     try {
       const response = await fetchAssetList({
         caAddressInfos,
-        maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+        maxResultCount: PAGE_SIZE_DEFAULT,
         skipCount: 0,
         keyword: debounceKeyword,
       });

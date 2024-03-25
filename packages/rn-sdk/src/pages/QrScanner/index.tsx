@@ -28,6 +28,7 @@ import { checkIsPortKeyUrl, isEntryScheme } from 'utils/scheme';
 import { myThrottle } from 'utils/commonUtil';
 import { getCurrentNetworkType } from 'model/hooks/network';
 import { isLoginQRData } from 'utils/qrcode';
+import { NetworkType } from '@portkey-wallet/types';
 
 export interface ScanQRCodeProps {
   useScanQRPath?: boolean;
@@ -134,7 +135,7 @@ const QrScanner: React.FC = ({ useScanQRPath = false }: ScanQRCodeProps) => {
           case 'TESTNET':
             invalidText = InvalidQRCodeText.SWITCH_TO_TESTNET;
             break;
-          case 'TEST1':
+          case 'TEST1' as NetworkType:
             invalidText = InvalidQRCodeText.SWITCH_TO_TEST1;
             break;
         }

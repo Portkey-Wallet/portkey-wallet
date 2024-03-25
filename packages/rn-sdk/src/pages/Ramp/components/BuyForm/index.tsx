@@ -30,6 +30,7 @@ import { isPotentialNumber } from '@portkey-wallet/utils/reg';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 import { useSDKRampEntryShow } from 'pages/Ramp/RampPreview/hook';
+import { useLanguage } from 'i18n/hooks';
 
 export default function BuyForm() {
   const {
@@ -131,6 +132,7 @@ export default function BuyForm() {
   });
   const refreshReceiveRef = useRef<typeof refreshReceive>();
   refreshReceiveRef.current = refreshReceive;
+  const { t } = useLanguage();
 
   const amountError = useMemo(() => {
     if (amountFetchError.isError && amountFetchError.errorMsg !== '') {
@@ -278,6 +280,7 @@ export default function BuyForm() {
           keyboardType="decimal-pad"
           onChangeText={onAmountInput}
           errorMessage={amountError.isError ? amountError.errorMsg : ''}
+          t={t}
         />
 
         <CommonInput
@@ -314,6 +317,7 @@ export default function BuyForm() {
           autoCorrect={false}
           keyboardType="decimal-pad"
           placeholder=" "
+          t={t}
         />
 
         {rate !== '' && (

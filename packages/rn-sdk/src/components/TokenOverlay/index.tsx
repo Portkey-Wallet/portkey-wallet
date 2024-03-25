@@ -97,7 +97,6 @@ const TokenList = ({ onFinishSelectToken }: TokenListProps) => {
   const noData = useMemo(() => {
     return debounceKeyword ? <NoData noPic message={t('There is no search result.')} /> : null;
   }, [debounceKeyword, t]);
-
   return (
     <ModalBody modalBodyType="bottom" title={t('Select Token')} style={gStyles.overlayStyle}>
       <CommonInput
@@ -109,6 +108,7 @@ const TokenList = ({ onFinishSelectToken }: TokenListProps) => {
         onChangeText={v => {
           setKeyword(v.trim());
         }}
+        t={t}
       />
       <FlatList
         onLayout={e => {

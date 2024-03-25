@@ -34,6 +34,7 @@ function InputItem({
   text?: string;
   iconStyle?: StyleProp<ViewStyle>;
 }) {
+  const styles = useStyles();
   if (secureTextEntry) return <View style={[styles.iconStyle, iconStyle]} />;
   return <Text style={styles.textStyles}>{text}</Text>;
 }

@@ -19,6 +19,7 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { getCachedCountryCodeData } from 'model/global';
 import { GlobalStorage } from 'service/storage';
 import { CURRENT_USING_COUNTRY_CODE } from 'model/global';
+import { useLanguage } from 'i18n/hooks';
 
 const IndexHeight = 56,
   SectionHeight = 40;
@@ -33,6 +34,7 @@ export default function SelectCountry({
   const [phoneCountryCodeList, setPhoneCountryCodeList] = useState<CountryItem[]>([]);
   const [List, setList] = useState<{ index: string; items: CountryItem[] }[]>([]);
   const [searchList, setSearchList] = useState<CountryItem[]>();
+  const { t } = useLanguage();
   useEffectOnce(() => {
     checkMMKVStorage();
   });
@@ -90,6 +92,7 @@ export default function SelectCountry({
           placeholder="Search countries and regions"
           type="search"
           onChangeText={s => setSearchList(!s ? undefined : countryCodeFilter(s, phoneCountryCodeList))}
+          t={t}
         />
       </View>
       {Boolean(data) && (

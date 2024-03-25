@@ -41,6 +41,7 @@ import { getCachedNetworkConfig } from 'model/chain';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
+import { useLanguage } from 'i18n/hooks';
 
 export default function SellForm() {
   const {
@@ -208,6 +209,7 @@ export default function SellForm() {
   const { defaultToken } = useCommonNetworkInfo();
   const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
   const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
+  const { t } = useLanguage();
   const onNext = useCallback(async () => {
     if (!limitAmountRef.current || !refreshReceiveRef.current) return;
     const amountNum = Number(amount);
@@ -387,6 +389,7 @@ export default function SellForm() {
           onChangeText={onAmountInput}
           errorStyle={amountError.isWarning && FontStyles.font6}
           errorMessage={amountError.isError ? amountError.errorMsg : ''}
+          t={t}
         />
 
         <CommonInput
@@ -425,6 +428,7 @@ export default function SellForm() {
           autoCorrect={false}
           keyboardType="decimal-pad"
           placeholder=" "
+          t={t}
         />
 
         {rate !== '' && (

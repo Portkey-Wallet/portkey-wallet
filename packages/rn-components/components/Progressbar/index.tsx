@@ -1,6 +1,6 @@
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import React, { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, DimensionValue } from 'react-native';
 import { pTd } from '../../utils/unit';
 import { makeStyles } from '../../theme';
 export interface IProgressbar {
@@ -12,7 +12,7 @@ const Progressbar = forwardRef<IProgressbar>(function Progressbar(props, ref) {
 
   const innerBarWidthStyle = useMemo(() => {
     const num = Number(percentage);
-    return { width: `${num === 1 ? 0 : num * 100}%` };
+    return { width: `${num === 1 ? 0 : num * 100}%` as DimensionValue };
   }, [percentage]);
 
   useImperativeHandle(

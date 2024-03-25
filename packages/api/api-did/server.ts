@@ -142,7 +142,7 @@ export class DidService extends ServiceInit {
       };
       const myHeaders: TypedUrlParams = {};
       Object.entries({ ...defaultHeaders, ...headers }).forEach(([headerItem, value]) => {
-        myHeaders[headerItem] = value;
+        myHeaders[headerItem] = value as string | number | boolean | null | undefined;
       });
       fetchResult = await this.fetchInstance.fetch(uri, _method, myBody, myHeaders);
     } else {

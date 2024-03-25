@@ -1,4 +1,4 @@
-export type IClientType = 'Android' | 'iOS' | 'Extension';
+export type IClientType = 'Android' | 'iOS' | 'Extension' | 'ThirdParty';
 
 export interface IRequestConfig {
   baseUrl: string;

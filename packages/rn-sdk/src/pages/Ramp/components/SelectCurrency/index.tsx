@@ -87,6 +87,7 @@ const SelectCurrency = ({ list, callBack, value }: SelectListProps) => {
           value={keyWord}
           placeholder={t('Search currency')}
           onChangeText={setKeyWord}
+          t={t}
         />
       </View>
       <FlashList

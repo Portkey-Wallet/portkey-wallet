@@ -3,7 +3,6 @@ import { ELF_DECIMAL } from '@portkey-wallet/constants/constants-ca/activity';
 import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { GuardiansApprovedType } from 'types/guardians';
-import { BaseToken } from '@portkey-wallet/types/types-eoa/token';
 import { getChainIdByAddress } from '@portkey-wallet/utils';
 import { getChainNumber } from '@portkey-wallet/utils/aelf';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
@@ -11,6 +10,7 @@ import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { crossChainTransferToCa } from './crossChainTransferToCa';
 import { getTokenIssueChainId } from './getTokenInfo';
 import { managerTransfer } from './managerTransfer';
+import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 
 export interface CrossChainTransferParamsType {
   tokenInfo: BaseToken;

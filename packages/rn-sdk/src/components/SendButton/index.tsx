@@ -6,12 +6,12 @@ import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
-import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import { commonButtonStyle } from './style';
 import AssetsOverlay from 'pages/Assets/Home/AssetsOverlay';
+import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 
 interface SendButtonType {
   themeType?: 'dashBoard' | 'tokenInnerPage' | 'nftInnerPage';

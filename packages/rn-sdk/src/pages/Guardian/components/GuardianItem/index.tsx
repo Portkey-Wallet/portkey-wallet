@@ -32,6 +32,11 @@ const APPROVAL_TO_VERIFICATION_MAP = {
   [ApprovalType.deleteGuardian]: VerificationType.deleteGuardian,
   [ApprovalType.removeOtherManager]: VerificationType.removeOtherManager,
   [ApprovalType.communityRecovery]: VerificationType.communityRecovery,
+  [ApprovalType.managerApprove]: VerificationType.managerApprove,
+  [ApprovalType.modifyTransferLimit]: VerificationType.modifyTransferLimit,
+  [ApprovalType.transferApprove]: VerificationType.transferApprove,
+  [ApprovalType.setLoginAccount]: VerificationType.setLoginAccount,
+  [ApprovalType.unsetLoginAccount]: VerificationType.unsetLoginAccount,
 };
 
 interface GuardianAccountItemProps {

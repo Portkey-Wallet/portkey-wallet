@@ -156,6 +156,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
           placeholder={t('Enter Symbol')}
           onChangeText={onKeywordChange}
           errorMessage={errorMessage}
+          t={t}
         />
       </FormItem>
       <FormItem title={'Token Decimal'}>

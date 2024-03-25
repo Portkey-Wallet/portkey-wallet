@@ -519,6 +519,7 @@ const AddGuardian = (props: { targetScene?: string; accelerateChainId: ChainId }
             onChangeText={onAccountChange}
             errorMessage={guardianTypeError.isError ? guardianTypeError.errorMsg : ''}
             keyboardType="email-address"
+            t={t}
           />
         );
       case LoginType.Phone:
@@ -532,6 +533,7 @@ const AddGuardian = (props: { targetScene?: string; accelerateChainId: ChainId }
             errorMessage={guardianTypeError.isError ? guardianTypeError.errorMsg : ''}
             onChangeText={onAccountChange}
             selectCountry={country}
+            t={t}
           />
         );
       case LoginType.Google:

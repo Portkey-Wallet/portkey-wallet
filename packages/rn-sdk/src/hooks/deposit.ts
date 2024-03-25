@@ -1,6 +1,6 @@
 import { RampType } from '@portkey-wallet/ramp';
 import { useMemo } from 'react';
-import { IconName } from 'components/Svg';
+import { IconName } from '@portkey-wallet/rn-components/components/Svg';
 import { useSDKRampEntryShow } from 'pages/Ramp/RampPreview/hook';
 import { simple_navigateTo_func } from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';

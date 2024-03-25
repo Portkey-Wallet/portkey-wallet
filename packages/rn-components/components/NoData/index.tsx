@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { View, ViewStyle } from 'react-native';
+import { DimensionValue, View, ViewStyle } from 'react-native';
 import { pTd } from '../../utils/unit';
 import { TextL } from '../CommonText';
 import Svg, { IconName } from '../Svg';
@@ -29,7 +29,7 @@ const NoData: React.FC<NoDataPropsType> = props => {
   if (type === 'top') {
     topStyle = {
       justifyContent: 'flex-start',
-      paddingTop: topDistance,
+      paddingTop: topDistance as DimensionValue,
     };
   }
 

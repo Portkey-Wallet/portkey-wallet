@@ -253,6 +253,7 @@ const fetchFormat = (
 
   const myHeaders = new Headers();
   Object.entries({ ...defaultHeaders, ...headers }).forEach(([headerItem, value]) => {
+    // @ts-ignore
     myHeaders.append(headerItem, value);
   });
   return fetch(uri, {

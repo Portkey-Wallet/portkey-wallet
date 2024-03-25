@@ -68,6 +68,7 @@ export default function Email({
           keyboardType="email-address"
           placeholder={t('Enter Email')}
           containerStyle={styles.inputContainerStyle}
+          t={t}
         />
         <CommonButton
           containerStyle={GStyles.marginTop(16)}

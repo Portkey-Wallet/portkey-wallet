@@ -10,7 +10,7 @@ export const getCurrentNetworkType = async (): Promise<NetworkType> => {
   const endPointUrl = await PortkeyConfig.endPointUrl();
   switch (endPointUrl) {
     case BackEndNetWorkMap['back-end-test1'].apiUrl: {
-      return 'TEST1';
+      return 'TESTNET';
     }
 
     case BackEndNetWorkMap['back-end-mainnet-v2'].apiUrl: {

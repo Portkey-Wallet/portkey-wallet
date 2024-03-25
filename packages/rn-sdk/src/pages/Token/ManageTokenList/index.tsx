@@ -163,6 +163,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = ({ containerId }: Manage
           onChangeText={v => {
             setKeyword(v.trim());
           }}
+          t={t}
         />
       </View>
 

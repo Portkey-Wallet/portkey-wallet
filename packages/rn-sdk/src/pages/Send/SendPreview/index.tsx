@@ -17,7 +17,7 @@ import { useCheckTransferLimitWithJump } from 'components/WalletSecurityAccelera
 import { useLanguage } from 'i18n/hooks';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { IToSendPreviewParamsType } from '@portkey-wallet/types/types-ca/routeParams';
-import { BaseToken } from '@portkey-wallet/types/types-eoa/token';
+import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { sleep, formatChainInfoToShow, formatStr2EllipsisStr, addressFormat } from '@portkey-wallet/utils';
 import { isCrossChain } from '@portkey-wallet/utils/aelf';
 import { timesDecimals, formatAmountShow, unitConverter } from '@portkey-wallet/utils/converter';

@@ -15,10 +15,10 @@ import SendContactItem from '../components/SendContactItem';
 import SendRecentItem from '../components/SendRecentItem';
 import { useUnlockedWallet } from 'model/wallet';
 import ContactsList from 'components/ContactList';
-import { RecentContactItemType } from 'network/dto/query';
 import { useContact, useRecent } from 'model/hooks/contact';
 import { RNTabView, TabProps } from 'model/hooks/tabs';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { RecentContactItemType } from 'network/dto/query';
 
 interface SelectContactProps {
   chainId: ChainId;
@@ -82,7 +82,7 @@ export default function SelectContact(props: SelectContactProps) {
               { width: Dimensions.get('screen').width, height: Dimensions.get('screen').height },
             ]}>
             <FlashList
-              data={recentContactList || []}
+              data={(recentContactList as unknown as RecentContactItemType[]) || []}
               renderItem={renderRecentItem}
               estimatedItemSize={pTd(80)}
               ListFooterComponent={

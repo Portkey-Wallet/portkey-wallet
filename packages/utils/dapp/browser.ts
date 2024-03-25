@@ -1,5 +1,6 @@
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import isUrl from 'is-url';
+// @ts-ignore
 import Url from 'url-parse';
 
 /**

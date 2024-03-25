@@ -1,6 +1,7 @@
 import { ChainId, ChainType, NetworkType } from '@portkey-wallet/types';
 import { isAddress as web3IsAddress } from 'web3-utils';
 import { isAelfAddress, isDIDAelfAddress } from './aelf';
+// @ts-ignore
 import * as uuid from 'uuid';
 import { textProcessor } from './textProcessor';
 import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';

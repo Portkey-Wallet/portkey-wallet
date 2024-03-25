@@ -34,7 +34,8 @@
     "test": "jest",
     "test-cov": "jest --coverage",
     "test-badges": "jest --coverage && istanbul-badges-readme",
-    "app:sdk": "yarn workspace @portkey/react-native-sdk start"
+    "app:sdk": "yarn workspace @portkey/react-native-sdk start",
+    "sdk:build": "yarn workspace @portkey/react-native-sdk build"
   },
   "devDependencies": {
     "@babel/core": "^7.19.1",

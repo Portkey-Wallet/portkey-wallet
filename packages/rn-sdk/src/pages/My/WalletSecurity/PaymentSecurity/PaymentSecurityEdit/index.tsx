@@ -20,6 +20,7 @@ import { handleGuardiansApproval } from 'model/verify/entry/hooks';
 import { GuardianVerifyType } from 'model/verify/social-recovery';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import { getBottomSpace } from 'utils/screen';
+import { useLanguage } from 'i18n/hooks';
 
 export interface PaymentSecurityEditProps {
   transferLimitDetail?: ITransferLimitItem;
@@ -37,6 +38,7 @@ const PaymentSecurityEdit: React.FC = (props: PaymentSecurityEditProps) => {
   const [editInfo, setEditInfo] = useState<EditInfoType>();
   const [singleLimitError, setSingleLimitError] = useState<ErrorType>({ ...INIT_NONE_ERROR });
   const [dailyLimitError, setDailyLimitError] = useState<ErrorType>({ ...INIT_NONE_ERROR });
+  const { t } = useLanguage();
 
   const isButtonDisabled = useMemo(() => {
     if (!editInfo?.restricted) return false;
@@ -141,7 +143,6 @@ const PaymentSecurityEdit: React.FC = (props: PaymentSecurityEditProps) => {
       },
     });
   }, [detail, editInfo]);
-
   return (
     <PageContainer
       titleDom={'Transfer Settings'}
@@ -166,6 +167,7 @@ const PaymentSecurityEdit: React.FC = (props: PaymentSecurityEditProps) => {
               onChangeText={onSingleLimitInput}
               maxLength={maxLength}
               errorMessage={singleLimitError.isError ? singleLimitError.errorMsg : ''}
+              t={t}
             />
             <CommonInput
               label={'Daily Limit'}
@@ -177,6 +179,7 @@ const PaymentSecurityEdit: React.FC = (props: PaymentSecurityEditProps) => {
               onChangeText={onDailyLimitInput}
               maxLength={maxLength}
               errorMessage={dailyLimitError.isError ? dailyLimitError.errorMsg : ''}
+              t={t}
             />
             <TextM style={FontStyles.font3}>
               {

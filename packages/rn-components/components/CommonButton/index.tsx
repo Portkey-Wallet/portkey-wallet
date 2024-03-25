@@ -10,6 +10,7 @@ export type CommonButtonProps = {
   type?: 'solid' | 'clear' | 'outline' | 'primary' | 'transparent';
   onPressWithSecond?: number;
 } & Omit<ButtonProps, 'type'>;
+export type StyleType = { buttonStyle: any; titleStyle?: any; disabledTitleStyle?: any; disabledStyle?: any };
 const stylesMap = (styles: {
   buttonStyle?: { height: number; backgroundColor: string };
   titleStyle?: { color: string; fontSize: number };
@@ -25,7 +26,7 @@ const stylesMap = (styles: {
   clearButtonStyle: any;
   transparentButtonStyle: any;
   outlineDisabledTitleStyle: any;
-}) => {
+}): { outline: StyleType; solid: StyleType; clear: StyleType; primary: StyleType; transparent: StyleType } => {
   return {
     outline: {
       buttonStyle: styles.outlineButtonStyle,

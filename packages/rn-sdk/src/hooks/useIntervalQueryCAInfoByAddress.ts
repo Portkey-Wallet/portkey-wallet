@@ -58,8 +58,8 @@ export function useIntervalQueryCAInfoByAddress(network: NetworkType, address?: 
         console.log(error, '=====error');
       }
     },
-    3000,
     [caInfo, network, address],
+    3000,
   );
   return caInfo;
 }

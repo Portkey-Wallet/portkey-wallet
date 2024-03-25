@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import PageContainer from 'components/PageContainer';
-import { DigitInputInterface } from 'components/DigitInput';
+import { DigitInputInterface } from '@portkey-wallet/rn-components/components/DigitInput';
 import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import PinContainer from '@portkey-wallet/rn-components/components/PinContainer';
 import { StyleSheet } from 'react-native';

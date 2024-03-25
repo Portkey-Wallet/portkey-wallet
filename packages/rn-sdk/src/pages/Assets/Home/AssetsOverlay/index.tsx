@@ -191,6 +191,7 @@ const AssetList = ({ toAddress }: { toAddress: string }) => {
         onChangeText={v => {
           setKeyword(v.trim());
         }}
+        t={t}
       />
       <FlatList
         disableScrollViewPanResponder={true}

@@ -44,6 +44,7 @@ const SelectList = ({ list, callBack, value }: SelectListProps) => {
           value={keyWord}
           placeholder={t('Search crypto')}
           onChangeText={setKeyWord}
+          t={t}
         />
       </View>
       {_list.length ? (

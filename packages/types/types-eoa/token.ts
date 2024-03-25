@@ -17,7 +17,12 @@ export interface TokenItemType extends BaseToken {
 }
 export interface TokenItemShowType extends TokenItemType {
   isAdded?: boolean; // boolean
+  tokenContractAddress?: string;
+  imageUrl?: string;
   balance?: string;
+  balanceInUsd?: string;
+  price?: string | number;
+  userTokenId?: string;
 }
 
 //  all Added TokenInfo（all chain all account tokenList）

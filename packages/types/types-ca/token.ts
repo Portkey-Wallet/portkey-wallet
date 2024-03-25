@@ -12,6 +12,7 @@ export interface BaseToken {
   imageUrl?: string;
   alias?: string;
   tokenId?: string; // nft tokenId
+  tokenContractAddress?: string; // used for cross chain transfer
 }
 
 export interface TokenItemType extends BaseToken {

@@ -25,6 +25,7 @@ import {
 } from '@portkey-wallet/store/store-ca/im/actions';
 import { useCurrentNetworkInfo } from '../network';
 import { sleep } from '@portkey-wallet/utils';
+import { MEMBER_LIST_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
 
 export const useDisbandChannel = (channelId: string) => {
   const dispatch = useAppCommonDispatch();
@@ -188,7 +189,7 @@ export const useGroupChannelInfo = (channelId: string, isInit = false) => {
   const { relationId } = useRelationId();
 
   const refreshChannelInfo = useCallback(
-    async (skipCount = 0, maxResultCount = 20) => {
+    async (skipCount = 0, maxResultCount = MEMBER_LIST_LIMIT) => {
       const { data: groupInfo } = await im.service.getChannelInfo({
         channelUuid: channelId,
         skipCount,
@@ -209,11 +210,12 @@ export const useGroupChannelInfo = (channelId: string, isInit = false) => {
   );
 
   const refreshChannelMembersInfo = useCallback(
-    async (skipCount = 0, maxResultCount = 20) => {
+    async (skipCount = 0, maxResultCount = MEMBER_LIST_LIMIT) => {
       const { data } = await im.service.searchChannelMembers({
         channelUuid: channelId,
         skipCount,
         maxResultCount,
+        keyword: '',
       });
       dispatch(
         updateGroupInfoMembersInfo({

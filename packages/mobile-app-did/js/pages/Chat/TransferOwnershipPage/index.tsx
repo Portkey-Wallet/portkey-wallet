@@ -18,6 +18,8 @@ import navigationService from 'utils/navigationService';
 import useEffectOnce from 'hooks/useEffectOnce';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import im from '@portkey-wallet/im';
+import LottieLoading from 'components/LottieLoading';
+import { pTd } from 'utils/unit';
 
 const TransferOwnershipPage = () => {
   const currentChannelId = useCurrentChannelId();
@@ -27,7 +29,8 @@ const TransferOwnershipPage = () => {
   const transferOwner = useTransferChannelOwner(currentChannelId || '');
 
   const [keyword, setKeyword] = useState('');
-  const debounceKeyword = useDebounce(keyword, 200);
+  const debounceKeyword = useDebounce(keyword, 800);
+  const [isSearching, setIsSearching] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState<string | undefined>();
   const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>(members);
 
@@ -74,21 +77,25 @@ const TransferOwnershipPage = () => {
   }, [selectedMemberId, transferOwner]);
 
   const searchMemberList = useLockCallback(async () => {
-    if (!keyword.trim()) return;
+    if (!debounceKeyword.trim()) return;
+    setIsSearching(false);
+
     try {
       const result = await im.service.searchChannelMembers({
         channelUuid: currentChannelId,
-        keyword,
+        keyword: debounceKeyword,
       });
       setFilterMembers(result?.data.members || []);
     } catch (error) {
       CommonToast.failError(error);
+    } finally {
+      setIsSearching(false);
     }
-  }, [currentChannelId, keyword]);
+  }, [currentChannelId, debounceKeyword]);
 
   const fetchMemberList = useLockCallback(
     async (isInit?: false) => {
-      if (keyword.trim()) return;
+      if (debounceKeyword.trim()) return;
       if (totalCount && members?.length >= totalCount && !isInit) return;
 
       try {
@@ -97,13 +104,13 @@ const TransferOwnershipPage = () => {
         console.log('fetchMoreData', error);
       }
     },
-    [keyword, members?.length, refreshChannelMembersInfo, totalCount],
+    [debounceKeyword, members?.length, refreshChannelMembersInfo, totalCount],
   );
 
   // keyword search
   useEffect(() => {
     searchMemberList();
-  }, [debounceKeyword, keyword, members, searchMemberList]);
+  }, [debounceKeyword, members, searchMemberList]);
 
   useEffectOnce(() => {
     fetchMemberList(true);
@@ -130,7 +137,13 @@ const TransferOwnershipPage = () => {
       <FlatList
         data={listShow || []}
         extraData={(item: ChannelMemberInfo) => item.relationId}
-        ListEmptyComponent={<NoData noPic message={debounceKeyword ? 'No search result' : 'No member'} />}
+        ListEmptyComponent={
+          isSearching ? (
+            <LottieLoading lottieWrapStyle={GStyles.marginTop(pTd(24))} />
+          ) : (
+            <NoData noPic message={debounceKeyword ? 'No search result' : 'No member'} />
+          )
+        }
         renderItem={({ item }) => (
           <GroupMemberItem
             key={item.relationId}

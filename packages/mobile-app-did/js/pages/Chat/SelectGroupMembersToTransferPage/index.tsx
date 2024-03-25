@@ -15,6 +15,8 @@ import { showAssetList } from 'pages/DashBoard/AssetsOverlay';
 import { useUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import im from '@portkey-wallet/im';
+import LottieLoading from 'components/LottieLoading';
+import { pTd } from 'utils/unit';
 
 const SelectGroupMembersToTransferPage = () => {
   const currentChannelId = useCurrentChannelId();
@@ -24,7 +26,9 @@ const SelectGroupMembersToTransferPage = () => {
   const { userId: myUserId } = useUserInfo() || {};
   const { members = [], totalCount } = groupInfo || {};
   const [keyword, setKeyword] = useState('');
-  const debounceKeyword = useDebounce(keyword, 200);
+  const debounceKeyword = useDebounce(keyword, 800);
+  const [isSearching, setIsSearching] = useState(false);
+
   const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>([]);
 
   // TODO: filter myself
@@ -50,6 +54,7 @@ const SelectGroupMembersToTransferPage = () => {
 
   const searchMemberList = useLockCallback(async () => {
     if (!debounceKeyword.trim()) return;
+    setIsSearching(true);
     try {
       const result = await im.service.searchChannelMembers({
         channelUuid: currentChannelId,
@@ -61,6 +66,8 @@ const SelectGroupMembersToTransferPage = () => {
     } catch (error) {
       // TODO: change
       console.log('error', error);
+    } finally {
+      setIsSearching(false);
     }
   }, [currentChannelId, debounceKeyword]);
 
@@ -82,7 +89,7 @@ const SelectGroupMembersToTransferPage = () => {
   // keyword search
   useEffect(() => {
     searchMemberList();
-  }, [debounceKeyword, keyword, members, searchMemberList]);
+  }, [debounceKeyword, members, searchMemberList]);
 
   useEffectOnce(() => {
     fetchMemberList(true);
@@ -108,7 +115,13 @@ const SelectGroupMembersToTransferPage = () => {
       <FlatList
         data={listShow || []}
         extraData={(item: ChannelMemberInfo) => item.relationId}
-        ListEmptyComponent={<NoData noPic message={debounceKeyword ? 'No search result' : 'No member'} />}
+        ListEmptyComponent={
+          isSearching ? (
+            <LottieLoading lottieWrapStyle={GStyles.marginTop(pTd(24))} />
+          ) : (
+            <NoData noPic message={debounceKeyword ? 'No search result' : 'No member'} />
+          )
+        }
         renderItem={({ item }) => (
           <GroupMemberItem
             key={item.relationId}

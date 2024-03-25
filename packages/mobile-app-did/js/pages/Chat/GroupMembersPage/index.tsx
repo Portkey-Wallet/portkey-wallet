@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import CommonInput from 'components/CommonInput';
 import useDebounce from 'hooks/useDebounce';
-import CommonToast from 'components/CommonToast';
 import GroupInfoMemberItem, { GroupInfoMemberItemType } from '../components/GroupInfoMemberItem';
 import { pTd } from 'utils/unit';
 import NoData from 'components/NoData';
@@ -13,17 +12,24 @@ import { useGroupChannelInfo, useRelationId } from '@portkey-wallet/hooks/hooks-
 import { useCurrentChannelId } from '../context/hooks';
 import { BGStyles } from 'assets/theme/styles';
 import navigationService from 'utils/navigationService';
-import { strIncludes } from '@portkey-wallet/utils';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import im from '@portkey-wallet/im';
+import CommonToast from 'components/CommonToast';
 
 const GroupMembersPage = () => {
   const { relationId: myRelationId } = useRelationId();
   const currentChannelId = useCurrentChannelId();
-  const { groupInfo } = useGroupChannelInfo(currentChannelId || '', false);
-  const { members = [] } = groupInfo || {};
+  const { groupInfo, refreshChannelMembersInfo } = useGroupChannelInfo(currentChannelId || '', false);
+  const { members = [], totalCount } = groupInfo || {};
 
   const [keyword, setKeyword] = useState('');
   const debounceKeyword = useDebounce(keyword, 200);
-  const [filterMemberList, setFilterMemberList] = useState(members);
+  const [filteredMemberList, setFilteredMemberList] = useState(members);
+
+  const listShow = useMemo(() => {
+    return debounceKeyword ? filteredMemberList : members;
+  }, [debounceKeyword, filteredMemberList, members]);
 
   const onPressItem = useCallback(
     (item: GroupInfoMemberItemType) => {
@@ -41,13 +47,42 @@ const GroupMembersPage = () => {
     [myRelationId],
   );
 
-  useEffect(() => {
+  const searchMemberList = useLockCallback(async () => {
+    if (!keyword.trim()) return;
+
     try {
-      setFilterMemberList(() => members.filter(ele => strIncludes(ele.name, debounceKeyword)));
+      const result = await im.service.searchChannelMembers({
+        channelUuid: currentChannelId,
+        keyword,
+      });
+      setFilteredMemberList(result?.data.members || []);
     } catch (error) {
       CommonToast.failError(error);
     }
-  }, [debounceKeyword, members]);
+  }, [currentChannelId, keyword]);
+
+  const fetchMemberList = useLockCallback(
+    async (isInit?: false) => {
+      if (keyword.trim()) return;
+      if (totalCount && members?.length >= totalCount && !isInit) return;
+
+      try {
+        await refreshChannelMembersInfo(members?.length || 0);
+      } catch (error) {
+        console.log('fetchMoreData', error);
+      }
+    },
+    [keyword, members?.length, refreshChannelMembersInfo, totalCount],
+  );
+
+  // keyword search
+  useEffect(() => {
+    searchMemberList();
+  }, [debounceKeyword, keyword, members, searchMemberList]);
+
+  useEffectOnce(() => {
+    fetchMemberList(true);
+  });
 
   return (
     <PageContainer
@@ -67,7 +102,7 @@ const GroupMembersPage = () => {
       </View>
 
       <FlatList
-        data={filterMemberList}
+        data={listShow || []}
         ListEmptyComponent={<NoData noPic message="No search result" style={BGStyles.bg1} />}
         keyExtractor={item => item.relationId}
         renderItem={({ item }) => (
@@ -82,6 +117,7 @@ const GroupMembersPage = () => {
             style={styles.itemStyle}
           />
         )}
+        onEndReached={fetchMemberList}
       />
     </PageContainer>
   );

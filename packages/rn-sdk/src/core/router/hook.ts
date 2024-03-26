@@ -8,7 +8,7 @@ export default function useNavigation() {
   const { from } = useContext(RouterContext);
   return useMemo(() => {
     return {
-      navigation: (target: string, params?: any) => {
+      navigate: (target: string, params?: any) => {
         router.navigate(target, { ...params, from });
       },
       navigateByResult: (target: string, callback: (res: EntryResult<any>) => void, params?: any) => {

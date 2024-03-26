@@ -204,7 +204,9 @@ export const rememberUseBiometric = async (useBiometric: boolean, config: Recove
   GlobalStorage.set(USE_BIOMETRIC_KEY, useBiometric);
   GlobalStorage.set(LOCAL_WALLET_CONFIG_KEY, await encryptLocal(walletInfo));
 };
-
+export const rememberSimpleBiometric = async (useBiometric: boolean): Promise<void> => {
+  GlobalStorage.set(USE_BIOMETRIC_KEY, useBiometric);
+};
 export const getUseBiometric = async (): Promise<boolean> => {
   return (await GlobalStorage.getBoolean(USE_BIOMETRIC_KEY)) ?? false;
 };

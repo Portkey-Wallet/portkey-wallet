@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import PageContainer from 'components/PageContainer';
 import ListItem from '@portkey-wallet/rn-components/components/ListItem';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
@@ -10,53 +10,46 @@ import i18n from 'i18n';
 import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
 import myEvents from 'utils/deviceEvent';
-import { checkPin, getUseBiometric, rememberUseBiometric } from 'model/verify/core';
-import useBaseContainer from 'model/container/UseBaseContainer';
+import { checkPin, rememberSimpleBiometric } from 'model/verify/core';
 import { PortkeyEntries } from 'config/entries';
 import BaseContainerContext from 'model/container/BaseContainerContext';
-import { authenticationReady } from '@portkey-wallet/utils/mobile/authentication';
 import { authenticateBioAsync, authenticateBioReady } from 'service/biometric';
-import { getUnlockedWallet } from 'model/wallet';
+import useNavigation from 'core/router/hook';
+import { useUser } from 'store/hook';
+import useBiometricsReady, { useSetBiometrics } from 'hooks/useBiometrics';
 
 export default function Biometric() {
-  const [biometricsSwitch, setBiometricsSwitch] = useState<boolean>(false);
-  const [biometricsReady, setBiometricsReady] = useState<boolean>(true);
-  useEffect(() => {
-    Promise.all([getUseBiometric(), authenticationReady()])
-      .then(results => {
-        setBiometricsSwitch(results[0]);
-        setBiometricsReady(results[1]);
-      })
-      .catch(error => {
-        console.log(error); // reject
-      });
-  }, []);
-  const { navigateTo } = useBaseContainer({ entryName: PortkeyEntries.BIOMETRIC_SWITCH_ENTRY });
+  const { biometrics } = useUser();
+  const setBiometrics = useSetBiometrics();
+  const biometricsReady = useBiometricsReady();
+  const navigation = useNavigation();
   const { t } = useLanguage();
-  const openBiometrics = useCallback(async (pin: string) => {
-    // when use bio to verify, the pin value is 'use-bio'
-    const walletConfig = await getUnlockedWallet();
-    if (pin === 'use-bio' || (await checkPin(pin))) {
-      try {
-        if (await authenticateBioReady()) {
-          const enrolled = await authenticateBioAsync();
-          if (enrolled.success) {
-            setBiometricsSwitch(true);
-            await rememberUseBiometric(true, walletConfig);
+  const openBiometrics = useCallback(
+    async (pin: string) => {
+      // when use bio to verify, the pin value is 'use-bio'
+      if (pin === 'use-bio' || (await checkPin(pin))) {
+        try {
+          if (await authenticateBioReady()) {
+            const enrolled = await authenticateBioAsync();
+            if (enrolled.success) {
+              setBiometrics(true);
+              await rememberSimpleBiometric(true);
+            } else {
+              throw { message: enrolled.warning || enrolled.error };
+            }
           } else {
-            CommonToast.fail(enrolled.warning || enrolled.error);
+            throw { message: 'biometrics is not ready' };
           }
-        } else {
-          setBiometricsSwitch(true);
-          await rememberUseBiometric(true, walletConfig);
+        } catch (error: any) {
+          console.log('error', error);
+          CommonToast.failError(error, i18n.t('Failed to enable biometrics'));
+          setBiometrics(false);
+          await rememberSimpleBiometric(false);
         }
-      } catch (error: any) {
-        console.log('error', error);
-        CommonToast.failError(error, i18n.t('Failed to enable biometrics'));
-        await rememberUseBiometric(false, walletConfig);
       }
-    }
-  }, []);
+    },
+    [setBiometrics],
+  );
   useEffectOnce(() => {
     const listener = myEvents.openBiometrics.addListener(openBiometrics);
     return () => listener.remove();
@@ -64,9 +57,7 @@ export default function Biometric() {
   const onValueChange = useCallback(
     async (value: boolean) => {
       if (value) {
-        // const result = await authenticationReady();
-        // if (!result) return CommonToast.fail('This device does not currently support biometrics');
-        navigateTo(PortkeyEntries.CHECK_PIN, { params: { openBiometrics: true } });
+        navigation.navigate(PortkeyEntries.CHECK_PIN, { openBiometrics: true });
       } else {
         ActionSheet.alert({
           title2: 'Disable fingerprint login?',
@@ -77,11 +68,10 @@ export default function Biometric() {
               title: 'Confirm',
               onPress: async () => {
                 try {
-                  const walletConfig = await getUnlockedWallet();
                   const enrolled = await authenticateBioAsync();
                   if (enrolled.success) {
-                    setBiometricsSwitch(value);
-                    await rememberUseBiometric(value, walletConfig);
+                    setBiometrics(value);
+                    await rememberSimpleBiometric(value);
                   } else CommonToast.fail(enrolled.warning || enrolled.error);
                 } catch (error) {
                   CommonToast.failError(error, i18n.t('Failed to enable biometrics'));
@@ -92,7 +82,7 @@ export default function Biometric() {
         });
       }
     },
-    [navigateTo],
+    [navigation, setBiometrics],
   );
   return (
     <BaseContainerContext.Provider value={{ entryName: PortkeyEntries.ACCOUNT_SETTING_ENTRY }}>
@@ -105,7 +95,7 @@ export default function Biometric() {
             <ListItem
               disabled
               switching
-              switchValue={biometricsSwitch}
+              switchValue={biometrics}
               style={styles.listStyle}
               onValueChange={onValueChange}
               title={t('Biometric Authentication')}

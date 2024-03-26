@@ -15,6 +15,7 @@ import activitySlice from '@portkey-wallet/store/store-ca/activity/slice';
 import assetsSlice from '@portkey-wallet/store/store-ca/assets/slice';
 import settingsSlice from '@portkey-wallet/store/settings/slice';
 import { tokenManagementSlice } from '@portkey-wallet/store/store-ca/tokenManagement/slice';
+import userSlice from './user/slice';
 
 interface ThunkOptions<E = any> {
   extraArgument: E;
@@ -46,6 +47,7 @@ const reduxPersistConfig = {
     activitySlice.name,
     tokenManagementSlice.name,
     settingsSlice.name,
+    userSlice.name,
   ],
 
   // More info here:  https://shift.infinite.red/shipping-persistant-reducers-7341691232b1

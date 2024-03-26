@@ -18,6 +18,7 @@ import { PortkeyEntries } from 'config/entries';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { authenticateAsync, LocalAuthenticationResult } from 'expo-local-authentication';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { useSetBiometrics } from 'hooks/useBiometrics';
 
 const ScrollViewProps = { disabled: true };
 
@@ -32,6 +33,7 @@ export async function touchAuth(): Promise<LocalAuthenticationResult> {
 }
 export default function SetBiometrics({ pin, deliveredSetPinInfo }: SetBiometricsProps) {
   usePreventHardwareBack();
+  const setBiometrics = useSetBiometrics();
   // const { pin, caInfo: paramsCAInfo } = useRouterParams<{ pin?: string; caInfo?: CAInfo }>();
   const [errorMessage, setErrorMessage] = useState<string>();
 
@@ -69,6 +71,7 @@ export default function SetBiometrics({ pin, deliveredSetPinInfo }: SetBiometric
         CommonToast.failError('Failed To Verify');
         return;
       }
+      setBiometrics(true);
       await getResult(true);
     } catch (error) {
       Loading.hide();

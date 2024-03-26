@@ -50,11 +50,11 @@ const initEntries = () => {
   if (__DEV__) {
     // test only
     // entryConfig.set(PortkeyTestEntries.TEST, () => TestEntry);
-    entryConfig.set(PortkeyTestEntries.TEST, () => TestComp);
+    entryConfig.set(PortkeyTestEntries.TEST, () => ReduxProvider(TestComp));
   }
 
   // entry stage
-  entryConfig.set(PortkeyEntries.SIGN_IN_ENTRY, () => SignInEntryPage);
+  entryConfig.set(PortkeyEntries.SIGN_IN_ENTRY, () => ReduxProvider(SignInEntryPage as React.ComponentType<any>));
   entryConfig.set(PortkeyEntries.SELECT_COUNTRY_ENTRY, () => SelectCountryPage);
   entryConfig.set(PortkeyEntries.SIGN_UP_ENTRY, () => SignUpEntryPage);
 
@@ -63,10 +63,34 @@ const initEntries = () => {
   entryConfig.set(PortkeyEntries.GUARDIAN_APPROVAL_ENTRY, () => GuardianApprovalEntryPage);
 
   // config stage
-  entryConfig.set(PortkeyEntries.CHECK_PIN, () => CheckPin);
-  entryConfig.set(PortkeyEntries.SET_PIN, () => SetPin);
-  entryConfig.set(PortkeyEntries.CONFIRM_PIN, () => ConfirmPin);
-  entryConfig.set(PortkeyEntries.SET_BIO, () => SetBiometrics);
+  entryConfig.set(PortkeyEntries.CHECK_PIN, () =>
+    ReduxProvider(CheckPin as React.ComponentType<any>, {
+      routerParams: {
+        from: PortkeyEntries.CHECK_PIN,
+      },
+    }),
+  );
+  entryConfig.set(PortkeyEntries.SET_PIN, () =>
+    ReduxProvider(SetPin as React.ComponentType<any>, {
+      routerParams: {
+        from: PortkeyEntries.SET_PIN,
+      },
+    }),
+  );
+  entryConfig.set(PortkeyEntries.CONFIRM_PIN, () =>
+    ReduxProvider(ConfirmPin as React.ComponentType<any>, {
+      routerParams: {
+        from: PortkeyEntries.SET_PIN,
+      },
+    }),
+  );
+  entryConfig.set(PortkeyEntries.SET_BIO, () =>
+    ReduxProvider(SetBiometrics as React.ComponentType<any>, {
+      routerParams: {
+        from: PortkeyEntries.SET_BIO,
+      },
+    }),
+  );
 
   // scan QR code
   entryConfig.set(PortkeyEntries.SCAN_QR_CODE, () => QrScanner);
@@ -89,7 +113,13 @@ const initEntries = () => {
       },
     }),
   );
-  entryConfig.set(PortkeyEntries.BIOMETRIC_SWITCH_ENTRY, () => Biometric);
+  entryConfig.set(PortkeyEntries.BIOMETRIC_SWITCH_ENTRY, () =>
+    ReduxProvider(Biometric, {
+      routerParams: {
+        from: PortkeyEntries.BIOMETRIC_SWITCH_ENTRY,
+      },
+    }),
+  );
 
   // assets module
   entryConfig.set(PortkeyEntries.ASSETS_HOME_ENTRY, () => ReduxProvider(AssetsHome as React.ComponentType<any>));

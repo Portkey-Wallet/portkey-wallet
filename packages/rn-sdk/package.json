@@ -120,7 +120,6 @@
     "@portkey-wallet/api": "1.3.0"
   },
   "scripts": {
-    "prepare": "husky install",
     "start": "react-native start",
     "clean": "echo 'Cleaning dist/ directory...' && rm -rf dist/",
     "build:index": "echo 'Building index.js...' && babel index.js --config-file ./babel.npm.config.js --out-file dist/index.js --extensions \".js,.jsx,.ts,.tsx,.json\"",

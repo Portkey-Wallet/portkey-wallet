@@ -11,6 +11,7 @@ const userSlice = createSlice({
     },
     setBiometrics: (state, action: PayloadAction<UserStoreState['biometrics']>) => {
       state.biometrics = action.payload;
+      console.log('state biometrics is', state.biometrics);
     },
     resetUser: () => initialState,
   },

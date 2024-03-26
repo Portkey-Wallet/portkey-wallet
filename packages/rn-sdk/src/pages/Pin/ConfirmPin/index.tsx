@@ -5,29 +5,29 @@ import React, { useCallback, useRef, useState } from 'react';
 import myEvents from 'utils/deviceEvent';
 import PinContainer from '@portkey-wallet/rn-components/components/PinContainer';
 import { StyleSheet } from 'react-native';
-import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 import { changePin, getVerifiedAndLockWallet } from 'model/verify/core';
 import Loading from '@portkey-wallet/rn-components/components/Loading';
-import { SetBiometricsProps, SetBiometricsResult, touchAuth } from '../SetBiometrics';
+import { touchAuth } from '../SetBiometrics';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import { authenticateBioReady, isBiometricsCanUse } from 'service/biometric';
+import useNavigation from 'core/router/hook';
+import { useUser } from 'store/hook';
 
 export default function ConfirmPin({ oldPin, pin, deliveredSetPinInfo }: ConfirmPinPageProps) {
   const [errorMessage, setErrorMessage] = useState<string>();
   const pinRef = useRef<DigitInputInterface>();
+  const navigation = useNavigation();
+  const { biometrics } = useUser();
 
-  const { onFinish, navigateForResult } = useBaseContainer({
-    entryName: PortkeyEntries.CONFIRM_PIN,
-  });
   const onChangePin = useCallback(
     async (newPin: string) => {
       if (!oldPin) return;
       try {
-        const canUse = isBiometricsCanUse();
-        const biometricsReady = authenticateBioReady();
-        if (await canUse) {
-          if (await biometricsReady) {
+        const canUse = !!biometrics;
+        const biometricsReady = await authenticateBioReady();
+        if (canUse) {
+          if (biometricsReady) {
             const res = await touchAuth();
             if (!res?.success) {
               CommonToast.failError('Failed To Verify');
@@ -38,28 +38,22 @@ export default function ConfirmPin({ oldPin, pin, deliveredSetPinInfo }: Confirm
         } else {
           changePin(newPin);
         }
-        navigateForResult(PortkeyEntries.ACCOUNT_SETTING_ENTRY, { params: { modified: true } });
+        navigation.navigate(PortkeyEntries.ACCOUNT_SETTING_ENTRY, { modified: true });
       } catch (error) {
         CommonToast.failError(error);
       }
     },
-    [navigateForResult, oldPin],
+    [biometrics, navigation, oldPin],
   );
   const onSetPinSuccess = useCallback(
     async (confirmPin: string) => {
       const biometricsReady = await authenticateBioReady();
       if (biometricsReady) {
-        navigateForResult<SetBiometricsResult, SetBiometricsProps>(
+        navigation.navigateByResult(
           PortkeyEntries.SET_BIO,
-          {
-            params: {
-              pin: confirmPin,
-              deliveredSetPinInfo,
-            },
-          },
           async result => {
             if (result?.status === 'success') {
-              onFinish({
+              navigation.goBack({
                 animated: false,
                 status: 'success',
                 data: {
@@ -71,13 +65,17 @@ export default function ConfirmPin({ oldPin, pin, deliveredSetPinInfo }: Confirm
               pinRef.current?.reset();
             }
           },
+          {
+            pin: confirmPin,
+            deliveredSetPinInfo,
+          },
         );
       } else {
         Loading.show();
         const res = await getVerifiedAndLockWallet(deliveredSetPinInfo, confirmPin);
         Loading.hide();
         if (res) {
-          onFinish({
+          navigation.goBack({
             animated: false,
             status: 'success',
             data: {
@@ -90,7 +88,7 @@ export default function ConfirmPin({ oldPin, pin, deliveredSetPinInfo }: Confirm
         }
       }
     },
-    [deliveredSetPinInfo, navigateForResult, onFinish],
+    [deliveredSetPinInfo, navigation],
   );
 
   const onChangeText = useCallback(
@@ -120,7 +118,7 @@ export default function ConfirmPin({ oldPin, pin, deliveredSetPinInfo }: Confirm
       }}
       leftCallback={() => {
         pinRef.current?.reset();
-        onFinish({
+        navigation.goBack({
           status: 'cancel',
           data: {
             finished: false,

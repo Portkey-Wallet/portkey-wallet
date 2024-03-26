@@ -12,6 +12,7 @@ import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import Progressbar, { IProgressbar } from '@portkey-wallet/rn-components/components/Progressbar';
 import CommonThemeProvider from '@portkey-wallet/rn-components/theme/provider';
 import BuyButton from 'components/BuyButton';
+import { useUser } from 'store/hook';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -28,6 +29,8 @@ const JOIN_OFFICIAL_GROUP_ERROR_TIP = `This group doesn't exist. Please check th
 
 const JOIN_OFFICIAL_GROUP_BUTTON_TITTLE = 'Join';
 const TestComp = () => {
+  const { biometrics } = useUser();
+  console.log('biometrics', biometrics);
   const progressbarRef = useRef<IProgressbar>(null);
   return (
     <CommonThemeProvider

@@ -5,10 +5,9 @@ import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
 import { VerificationType } from '@portkey-wallet/types/verifier';
 import PinContainer from '@portkey-wallet/rn-components/components/PinContainer';
 import { StyleSheet } from 'react-native';
-import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
-import { ConfirmPinPageProps } from '../ConfirmPin';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
+import useNavigation from 'core/router/hook';
 
 const scrollViewProps = {
   disabled: true,
@@ -27,30 +26,28 @@ const MessageMap: any = {
 export default function SetPin({ deliveredSetPinInfo, oldPin }: SetPinPageProps) {
   const digitInput = useRef<DigitInputInterface>();
   const [errorMessage] = useState<string>();
-
-  const { onFinish, navigateForResult } = useBaseContainer({
-    entryName: PortkeyEntries.SET_PIN,
-  });
+  const navigation = useNavigation();
 
   const leftCallback = () => {
-    return ActionSheet.alert({
-      title: 'Leave this page?',
-      message: oldPin ? MessageMap[VerificationType.communityRecovery] : MessageMap[VerificationType.communityRecovery],
-      buttons: [
-        { title: 'No', type: 'outline' },
-        {
-          title: 'Yes',
-          onPress: () => {
-            onFinish<SetPinPageResult>({
-              status: 'cancel',
-              data: {
-                finished: false,
-              },
-            });
+    if (!oldPin)
+      return ActionSheet.alert({
+        title: 'Leave this page?',
+        message: MessageMap[VerificationType.communityRecovery],
+        buttons: [
+          { title: 'No', type: 'outline' },
+          {
+            title: 'Yes',
+            onPress: () => {
+              navigation.goBack({
+                status: 'cancel',
+                data: {
+                  finished: false,
+                },
+              });
+            },
           },
-        },
-      ],
-    });
+        ],
+      });
   };
   return (
     <PageContainer
@@ -65,18 +62,11 @@ export default function SetPin({ deliveredSetPinInfo, oldPin }: SetPinPageProps)
         ref={digitInput}
         title={oldPin ? 'Please enter a new pin' : 'Enter pin to protect your device'}
         onFinish={pin => {
-          navigateForResult<ConfirmPinPageProps>(
+          navigation.navigateByResult(
             PortkeyEntries.CONFIRM_PIN,
-            {
-              params: {
-                deliveredSetPinInfo,
-                oldPin,
-                pin,
-              },
-            },
             res => {
               if (res?.status === 'success') {
-                onFinish<SetPinPageResult>({
+                navigation.goBack({
                   animated: false,
                   status: 'success',
                   data: {
@@ -87,6 +77,11 @@ export default function SetPin({ deliveredSetPinInfo, oldPin }: SetPinPageProps)
                 CommonToast.failError('try again');
                 digitInput.current?.reset();
               }
+            },
+            {
+              deliveredSetPinInfo,
+              oldPin,
+              pin,
             },
           );
         }}

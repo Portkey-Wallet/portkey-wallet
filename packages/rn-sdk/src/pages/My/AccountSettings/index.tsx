@@ -49,9 +49,9 @@ export default function AccountSettings() {
   const navigateNextPage = useCallback(
     (menuName: string) => {
       if (menuName === 'CheckPin') {
-        navigation.navigation(PortkeyEntries.CHECK_PIN, { targetScene: 'changePin' });
+        navigation.navigate(PortkeyEntries.CHECK_PIN, { targetScene: 'changePin' });
       } else if (menuName === 'Biometric') {
-        navigation.navigation(PortkeyEntries.BIOMETRIC_SWITCH_ENTRY);
+        navigation.navigate(PortkeyEntries.BIOMETRIC_SWITCH_ENTRY);
       }
     },
     [navigation],

@@ -9,7 +9,7 @@ import { useLatestRef } from '@portkey-wallet/hooks';
 export function useReportingSignalR() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const unreadCount = useUnreadCount();
-  const [appStatus, setAppStatus] = useState<AppStatusUnit>(AppStatusUnit.BACKGROUND);
+  const [appStatus, setAppStatus] = useState<AppStatusUnit>(AppStatusUnit.FOREGROUND);
 
   const handleAppStateChange = useCallback((nextAppState: AppStateStatus) => {
     // report AppStatus and unReadMessage

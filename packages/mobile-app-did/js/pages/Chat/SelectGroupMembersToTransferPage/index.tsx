@@ -12,22 +12,20 @@ import { useGroupChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ChannelMemberInfo } from '@portkey-wallet/im/types/index';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { showAssetList } from 'pages/DashBoard/AssetsOverlay';
-import { useUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { isTargetMember } from '../utils';
-
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 const SelectGroupMembersToTransferPage = () => {
+  // todo: walletName is not used
   const currentChannelId = useCurrentChannelId();
   const { groupInfo } = useGroupChannelInfo(currentChannelId || '', false);
 
-  const { userId: myUserId } = useUserInfo() || {};
-  const { members = [] } = groupInfo || {};
   const [rawMemberList, setRawMemberList] = useState<ChannelMemberInfo[]>([]);
-
-  const [keyword, setKeyword] = useState('');
-  const debounceKeyword = useDebounce(keyword, 200);
-  const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>([]);
-
   const channelId = useCurrentChannelId();
+  const { userId: myUserId } = useCurrentUserInfo() || {};
+  const { members = [] } = groupInfo || {};
+  const [keyword, setKeyword] = useState('');
+  const debounceKeyword = useDebounce(keyword, 800);
+  const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>([]);
 
   useEffect(() => {
     setFilterMembers(() => {

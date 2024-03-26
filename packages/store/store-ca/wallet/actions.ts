@@ -116,6 +116,7 @@ export const getCaHolderInfoAsync = createAsyncThunk<
       nickName: string;
       userId: string;
       avatar?: string;
+      currentNetwork?: NetworkType;
     }
   | undefined
 >('wallet/getCaHolderInfoAsync', async (_, thunkAPI) => {
@@ -144,10 +145,12 @@ export const getCaHolderInfoAsync = createAsyncThunk<
     nickName: caHolder.nickName,
     userId: caHolder.userId,
     avatar: caHolder.avatar,
+    currentNetwork,
   };
 });
 
-export const setWalletNameAction = createAction<string>('wallet/setWalletName');
+export const resetCurrentUserInfoAction = createAction<NetworkType>('wallet/resetCurrentUserInfoAction');
+
 export const setUserInfoAction =
-  createAction<RequireAtLeastOne<{ nickName: string; avatar: string }>>('wallet/setUserInfo');
+  createAction<RequireAtLeastOne<{ nickName: string; avatar: string; networkType: NetworkType }>>('wallet/setUserInfo');
 export const setOriginChainId = createAction<ChainId>('wallet/setOriginChainId');

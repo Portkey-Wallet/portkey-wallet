@@ -2,9 +2,9 @@ import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Form, Input } from 'antd';
 import { FormItem } from 'components/BaseAntd';
-import { useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo, useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
-import { useLoading, useWalletInfo } from 'store/Provider/hooks';
+import { useLoading } from 'store/Provider/hooks';
 import './index.less';
 import IdAndAddress from 'pages/Contacts/components/IdAndAddress';
 import { IProfileDetailDataProps } from 'types/Profile';
@@ -23,7 +23,7 @@ export interface ISetWalletNameFormProps {
 export default function SetWalletNameForm({ data, saveCallback }: ISetWalletNameFormProps) {
   const [form] = Form.useForm();
   const { t } = useTranslation();
-  const { userInfo } = useWalletInfo();
+  const { avatar, nickName } = useCurrentUserInfo() || {};
   const setUserInfo = useSetUserInfo();
   const [disable, setDisable] = useState<boolean>(false);
   const [validName, setValidName] = useState<{
@@ -34,7 +34,7 @@ export default function SetWalletNameForm({ data, saveCallback }: ISetWalletName
     errorMsg: '',
   });
 
-  const [avatarDataUrl, setAvatarDataUrl] = useState(userInfo?.avatar);
+  const [avatarDataUrl, setAvatarDataUrl] = useState(avatar);
   const newAvatarFile = useRef<File>();
   const { setLoading } = useLoading();
 
@@ -59,7 +59,7 @@ export default function SetWalletNameForm({ data, saveCallback }: ISetWalletName
           s3Url = await uploadImageToS3(newAvatarFile.current);
         }
 
-        await setUserInfo({ nickName: walletName, avatar: s3Url || userInfo?.avatar });
+        await setUserInfo({ nickName: walletName, avatar: s3Url || avatar });
         saveCallback?.();
         singleMessage.success(t('Saved Successful'));
       } catch (error) {
@@ -69,7 +69,7 @@ export default function SetWalletNameForm({ data, saveCallback }: ISetWalletName
         setLoading(false);
       }
     },
-    [saveCallback, setLoading, setUserInfo, t, userInfo?.avatar],
+    [avatar, saveCallback, setLoading, setUserInfo, t],
   );
 
   const getFile = useCallback((file: File) => {
@@ -109,7 +109,7 @@ export default function SetWalletNameForm({ data, saveCallback }: ISetWalletName
       className="set-wallet-name-form"
       colon={false}
       layout="vertical"
-      initialValues={{ walletName: userInfo?.nickName }}
+      initialValues={{ walletName: nickName }}
       onFinish={(v) => handleSave(v.walletName.trim())}
       onFinishFailed={onFinishFailed}>
       <div className="form-content-wrap">

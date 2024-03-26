@@ -7,7 +7,7 @@ import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { ModalBody } from 'components/ModalBody';
 import { TextL, TextM, TextS } from 'components/CommonText';
-import { useCurrentCaInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentCaInfo, useCurrentUserInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr, sleep } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
@@ -43,7 +43,8 @@ const ConnectModal = (props: ConnectModalType) => {
   const pin = usePin();
   const defaultToken = useDefaultToken();
   const caInfo = useCurrentCaInfo();
-  const { walletName, currentNetwork } = useWallet();
+  const { currentNetwork } = useWallet();
+  const { nickName = '' } = useCurrentUserInfo() || {};
   const gStyles = useGStyles();
   const updateSessionInfo = useUpdateSessionInfo();
 
@@ -109,7 +110,7 @@ const ConnectModal = (props: ConnectModalType) => {
         <DappInfoSection dappInfo={dappInfo} />
         <TextM style={[styles.walletTitle, FontStyles.font3]}>{t('Wallet')}</TextM>
         <View style={styles.group}>
-          <TextL style={(FontStyles.font5, fonts.mediumFont)}>{walletName}</TextL>
+          <TextL style={(FontStyles.font5, fonts.mediumFont)}>{nickName}</TextL>
           {caInfoList?.map((item, index) => (
             <View key={item?.chaiId} style={[styles.itemWrap, !!index && styles.itemBorderTop]}>
               <View>

@@ -1,12 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
-import { useWalletInfo } from 'store/Provider/hooks';
 import WalletNamePopup from './Popup';
 import WalletNamePrompt from './Prompt';
 import { useNavigate } from 'react-router';
 import { useCommonState } from 'store/Provider/hooks';
 import { IProfileDetailDataProps, MyProfilePageType } from 'types/Profile';
 import { useTranslation } from 'react-i18next';
-import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList, useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useLocationState } from 'hooks/router';
 import { FromPageEnum, TWalletNameLocationState } from 'types/router';
@@ -16,7 +15,7 @@ export default function WalletName() {
   const navigate = useNavigate();
   const { state: locationState } = useLocationState<TWalletNameLocationState>();
   const showChat = useIsChatShow();
-  const { userInfo } = useWalletInfo();
+  const { avatar = '', nickName = '', userId = '' } = useCurrentUserInfo() || {};
   const caAddressInfos = useCaAddressInfoList();
   const transAddresses = useMemo(() => {
     return caAddressInfos.map((item) => {
@@ -36,14 +35,14 @@ export default function WalletName() {
 
   const state: IProfileDetailDataProps = useMemo(
     () => ({
-      avatar: userInfo?.avatar,
-      index: userInfo?.nickName.substring(0, 1).toLocaleUpperCase(),
+      avatar,
+      index: nickName.substring(0, 1).toLocaleUpperCase(),
       addresses: transAddresses, // TODO fetch profile for chain image
-      caHolderInfo: { userId: userInfo?.userId, walletName: userInfo?.nickName },
+      caHolderInfo: { userId, walletName: nickName },
       isShowRemark: false,
       previousPage: 'my-did',
     }),
-    [transAddresses, userInfo?.avatar, userInfo?.nickName, userInfo?.userId],
+    [avatar, nickName, transAddresses, userId],
   );
 
   const showEdit = useCallback(() => {

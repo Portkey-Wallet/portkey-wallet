@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { useAmountInUsdShow, useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import TokenImageDisplay from '../TokenImageDisplay';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { NFTSizeEnum, getSeedTypeTag } from 'utils/assets';
@@ -49,7 +49,6 @@ export default function CustomTokenList({
   const [filterWord, setFilterWord] = useState<string>('');
   const [assetList, setAssetList] = useState<TokenItemShowType[] | IAssetItemType[]>([]);
   const chainIdArray = useChainIdList();
-  const amountInUsdShow = useAmountInUsdShow();
   const caAddressInfos = useCaAddressInfoList();
   const hasMoreData = useMemo(() => {
     if (drawerType === 'send') {
@@ -162,16 +161,12 @@ export default function CustomTokenList({
             <p className="quantity">
               {formatAmountShow(divDecimals(token.tokenInfo?.balance, token.tokenInfo?.decimals))}
             </p>
-            <p className="convert">
-              {isMainnet
-                ? amountInUsdShow(token.tokenInfo?.balance || '', token.tokenInfo?.decimals || 0, token.symbol)
-                : ''}
-            </p>
+            <p className="convert">{isMainnet ? `$ ${formatAmountShow(token.tokenInfo?.balanceInUsd ?? 0, 2)}` : ''}</p>
           </div>
         </div>
       );
     },
-    [amountInUsdShow, isMainnet, onChange],
+    [isMainnet, onChange],
   );
 
   const renderReceiveToken = useCallback(

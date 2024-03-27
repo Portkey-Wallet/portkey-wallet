@@ -69,7 +69,7 @@ export default function SignupPortkey() {
               <TextM style={[FontStyles.font11, fonts.mediumFont]}>TEST</TextM>
             </View>
           )}
-          <TextXXXL style={[styles.titleStyle, FontStyles.font11]}>{t('Sign up Portkey')}</TextXXXL>
+          <TextXXXL style={[styles.titleStyle, FontStyles.font11]}>{t('Sign up Portkey ')}</TextXXXL>
         </View>
 
         {signupMap[loginType]}

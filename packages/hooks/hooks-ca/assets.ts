@@ -136,3 +136,14 @@ export const useAccountNFTCollectionInfo = () => {
     isFetching: assetsState.accountNFT.isFetching,
   };
 };
+
+export const useTokenInfoFromStore = (symbol: string, chainId: ChainId) => {
+  const { networkType } = useCurrentNetworkInfo();
+  const { accountToken } = useAppCASelector(state => state.assets);
+  const { accountTokenList } = accountToken?.accountTokenInfo?.[networkType] || {};
+
+  return useMemo(
+    () => accountTokenList?.find(ele => ele.symbol === symbol && ele.chainId === chainId),
+    [accountTokenList, chainId, symbol],
+  );
+};

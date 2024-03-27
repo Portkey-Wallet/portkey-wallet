@@ -43,4 +43,15 @@ export const useSymbolImages = () => {
   return useMemo(() => symbolImages, [symbolImages]);
 };
 
+export function useSymbolList(): string[] {
+  const { accountToken } = useAppCASelector(state => state.assets);
+  const { networkType } = useCurrentNetworkInfo();
+
+  return useMemo(() => {
+    return Array.from(
+      new Set(accountToken?.accountTokenInfo?.[networkType]?.accountTokenList?.map(item => item.symbol)),
+    );
+  }, [accountToken?.accountTokenInfo, networkType]);
+}
+
 export default useToken;

@@ -5,7 +5,6 @@ import CustomSvg from 'components/CustomSvg';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
-import { useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
@@ -17,7 +16,6 @@ export default function TokenList() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isMainnet = useIsMainnet();
-  const amountInUsdShow = useAmountInUsdShow();
   const caAddressInfos = useCaAddressInfoList();
   const { accountTokenList, totalRecordCount, fetchAccountTokenInfoList } = useAccountTokenInfo();
   const hasMoreTokenList = useMemo(
@@ -64,9 +62,7 @@ export default function TokenList() {
               </div>
               <div className="amount">
                 <p>{transNetworkText(item.chainId, !isMainnet)}</p>
-                {isMainnet && (
-                  <p className="convert">{amountInUsdShow(item.balance || '', item.decimals, item.symbol)}</p>
-                )}
+                {isMainnet && <p className="convert">{`$ ${formatAmountShow(item.balanceInUsd ?? 0, 2)}`}</p>}
               </div>
             </div>
           </li>

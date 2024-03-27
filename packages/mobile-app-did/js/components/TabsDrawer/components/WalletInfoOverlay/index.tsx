@@ -38,8 +38,7 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
   const caInfo = useCurrentCaInfo();
   const { userInfo, currentNetwork } = useWallet();
   const defaultToken = useDefaultToken();
-
-  const { accountTokenList } = useAccountTokenInfo() || [];
+  const { accountTokenList } = useAccountTokenInfo();
 
   const caInfoList = useMemo(() => {
     return Object.entries(caInfo || {})

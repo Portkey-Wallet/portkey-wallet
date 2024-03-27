@@ -3,6 +3,7 @@ import { fetchAllTokenListAsync, getSymbolImagesAsync } from '@portkey-wallet/st
 import { useMemo, useCallback, useEffect } from 'react';
 import { useCurrentNetworkInfo } from './network';
 import { initialTokenInfo } from '@portkey-wallet/store/store-ca/tokenManagement/slice';
+import { useAccountTokenInfo } from './assets';
 
 export const useToken = () => {
   const dispatch = useAppCommonDispatch();
@@ -44,14 +45,11 @@ export const useSymbolImages = () => {
 };
 
 export function useSymbolList(): string[] {
-  const { accountToken } = useAppCASelector(state => state.assets);
-  const { networkType } = useCurrentNetworkInfo();
+  const { accountTokenList } = useAccountTokenInfo();
 
   return useMemo(() => {
-    return Array.from(
-      new Set(accountToken?.accountTokenInfo?.[networkType]?.accountTokenList?.map(item => item.symbol)),
-    );
-  }, [accountToken?.accountTokenInfo, networkType]);
+    return Array.from(new Set(accountTokenList?.map(item => item.symbol)));
+  }, [accountTokenList]);
 }
 
 export default useToken;

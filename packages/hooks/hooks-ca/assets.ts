@@ -138,9 +138,7 @@ export const useAccountNFTCollectionInfo = () => {
 };
 
 export const useTokenInfoFromStore = (symbol: string, chainId: ChainId) => {
-  const { networkType } = useCurrentNetworkInfo();
-  const { accountToken } = useAppCASelector(state => state.assets);
-  const { accountTokenList = [] } = accountToken?.accountTokenInfo?.[networkType] || {};
+  const { accountTokenList } = useAccountTokenInfo();
 
   return useMemo(
     () => accountTokenList?.find(ele => ele.symbol === symbol && ele.chainId === chainId),

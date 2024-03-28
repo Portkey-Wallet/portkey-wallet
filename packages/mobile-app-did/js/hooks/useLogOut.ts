@@ -83,7 +83,7 @@ export default function useLogOut() {
     } catch (error) {
       console.log(error, '====error');
     }
-  }, [currentNetwork, dispatch, otherNetworkLogged, resetCurrentNetworkSetting, resetStore]);
+  }, [currentNetwork, dispatch, logoutResetStore, otherNetworkLogged, resetCurrentNetworkSetting, resetStore]);
 }
 
 export function useCheckManager() {

@@ -18,7 +18,7 @@ import { TextXL } from 'components/CommonText';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
-import { useCaAddressInfoList, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { getActivityListAsync } from '@portkey-wallet/store/store-ca/activity/action';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
@@ -40,6 +40,7 @@ import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
 import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
+import { useTokenInfoFromStore } from '@portkey-wallet/hooks/hooks-ca/assets';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -55,32 +56,30 @@ const TokenDetail: React.FC = () => {
   const { t } = useLanguage();
   const { tokenInfo } = useRouterParams<RouterParams>();
   const { isETransDepositShow, isETransWithdrawShow } = useAppETransShow();
-
   const defaultToken = useDefaultToken();
-
+  const currentTokenInfo = useTokenInfoFromStore(tokenInfo.symbol, tokenInfo.chainId);
   const isMainnet = useIsMainnet();
-  const currentWallet = useCurrentWallet();
   const caAddressInfos = useCaAddressInfoList();
   const navigation = useNavigation();
   const dispatch = useAppCommonDispatch();
   const activity = useAppCASelector(state => state.activity);
-  const { accountToken } = useAppCASelector(state => state.assets);
   const isTokenHasPrice = useIsTokenHasPrice(tokenInfo.symbol);
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const { isRampShow } = useAppRampEntryShow();
 
   const [reFreshing, setFreshing] = useState(false);
 
+  const currentToken = useMemo(() => tokenInfo || currentTokenInfo, [currentTokenInfo, tokenInfo]);
+
+  const balanceShow = useMemo(
+    () => `${formatAmountShow(divDecimals(currentToken?.balance || '0', currentToken?.decimals))}`,
+    [currentToken?.balance, currentToken?.decimals],
+  );
+
   const currentActivity = useMemo(
     () => activity?.activityMap?.[getCurrentActivityMapKey(tokenInfo.chainId, tokenInfo.symbol)] ?? {},
     [activity?.activityMap, tokenInfo.chainId, tokenInfo.symbol],
   );
-
-  const currentToken = useMemo(() => {
-    return accountToken.accountTokenList.find(
-      ele => ele.symbol === tokenInfo.symbol && ele.chainId === tokenInfo.chainId,
-    );
-  }, [accountToken.accountTokenList, tokenInfo.chainId, tokenInfo.symbol]);
 
   const fixedParamObj = useMemo(
     () => ({
@@ -121,11 +120,6 @@ const TokenDetail: React.FC = () => {
     setFreshing(false);
   }, [getActivityList, getTokenPrice, tokenInfo?.symbol]);
 
-  const balanceShow = useMemo(
-    () => `${formatAmountShow(divDecimals(currentToken?.balance || '0', currentToken?.decimals))}`,
-    [currentToken?.balance, currentToken?.decimals],
-  );
-
   useEffectOnce(() => {
     getActivityList(true);
   });
@@ -147,14 +141,8 @@ const TokenDetail: React.FC = () => {
 
   const isETransToken = useMemo(() => ETransTokenList.includes(tokenInfo.symbol), [tokenInfo.symbol]);
 
-  const isDepositShow = useMemo(
-    () => isETransToken && isETransDepositShow && !isBuyButtonShow && !isFaucetButtonShow,
-    [isETransToken, isETransDepositShow, isBuyButtonShow, isFaucetButtonShow],
-  );
-  const isWithdrawShow = useMemo(
-    () => isETransToken && isETransWithdrawShow && !isBuyButtonShow && !isFaucetButtonShow,
-    [isETransToken, isETransWithdrawShow, isBuyButtonShow, isFaucetButtonShow],
-  );
+  const isDepositShow = useMemo(() => isETransToken && isETransDepositShow, [isETransToken, isETransDepositShow]);
+  const isWithdrawShow = useMemo(() => isETransToken && isETransWithdrawShow, [isETransToken, isETransWithdrawShow]);
   const { eTransferUrl } = useCurrentNetworkInfo();
   const onDisclaimerModalPress = useOnDisclaimerModalPress();
   const buttonCount = useMemo(() => {

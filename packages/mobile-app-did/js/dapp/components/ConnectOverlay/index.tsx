@@ -11,7 +11,6 @@ import { useCurrentCaInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wall
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr, sleep } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
-import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
@@ -30,6 +29,7 @@ import { isIOS } from '@rneui/base';
 import Touchable from 'components/Touchable';
 import { copyText } from 'utils';
 import Svg from 'components/Svg';
+import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 
 type ConnectModalType = {
   dappInfo: DappStoreItem;
@@ -52,9 +52,7 @@ const ConnectModal = (props: ConnectModalType) => {
     value: SessionExpiredPlan.hour1,
   });
 
-  const {
-    accountToken: { accountTokenList },
-  } = useAppCASelector(state => state.assets);
+  const { accountTokenList } = useAccountTokenInfo();
 
   const caInfoList = useMemo(() => {
     const list: any[] = [];

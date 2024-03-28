@@ -1,6 +1,9 @@
 query codePushControl_by_id($id: ID!){
     codePushControl_by_id(id: $id){
-        content
+        id
+        status
+        sort
+        user_created
         date_created
         date_created_func{
             year
@@ -12,6 +15,7 @@ query codePushControl_by_id($id: ID!){
             minute
             second
         }
+        user_updated
         date_updated
         date_updated_func{
             year
@@ -23,16 +27,12 @@ query codePushControl_by_id($id: ID!){
             minute
             second
         }
-        id
-        isForceUpdate
-        label
-        sort
-        status
-        title
-        updatedContent
-        updatedTitle
-        user_created
-        user_updated
         version
+        label
+        title
+        content
+        isForceUpdate
+        updatedTitle
+        updatedContent
     }
 }

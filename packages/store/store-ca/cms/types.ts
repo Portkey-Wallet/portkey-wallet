@@ -1,5 +1,5 @@
 import { NetworkType } from '@portkey-wallet/types';
-import { IEntrance } from '@portkey-wallet/types/types-ca/cms';
+import { IEntrance, ILoginModeItem } from '@portkey-wallet/types/types-ca/cms';
 
 export interface SocialMediaItem {
   index: number;
@@ -71,5 +71,8 @@ export interface CMSState {
   };
   entranceNetMap?: {
     [T in NetworkType]?: Partial<IEntrance>;
+  };
+  loginModeListMap?: {
+    [T in NetworkType]?: ILoginModeItem[];
   };
 }

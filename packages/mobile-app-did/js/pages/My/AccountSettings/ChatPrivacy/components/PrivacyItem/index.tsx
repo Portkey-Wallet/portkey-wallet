@@ -8,7 +8,7 @@ import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
 import { IContactPrivacy } from '@portkey-wallet/types/types-ca/contact';
-import { LoginGuardianTypeIcon } from 'constants/misc';
+import { LOGIN_GUARDIAN_TYPE_ICON } from 'constants/misc';
 import {
   CONTACT_PERMISSION_LABEL_MAP,
   CONTACT_PRIVACY_TYPE_LABEL_MAP,
@@ -22,7 +22,7 @@ interface PrivacyItemProps {
 const PrivacyItem: React.FC<PrivacyItemProps> = ({ item, onPress }) => {
   return (
     <Touchable style={styles.itemWrap} onPress={() => onPress?.()}>
-      <Svg icon={LoginGuardianTypeIcon[item.privacyType]} size={pTd(32)} iconStyle={styles.itemImage} />
+      <Svg icon={LOGIN_GUARDIAN_TYPE_ICON[item.privacyType]} size={pTd(32)} iconStyle={styles.itemImage} />
       <View style={styles.itemContent}>
         <TextL>{CONTACT_PRIVACY_TYPE_LABEL_MAP[item.privacyType]}</TextL>
         <TextM numberOfLines={1} style={[FontStyles.font7]}>

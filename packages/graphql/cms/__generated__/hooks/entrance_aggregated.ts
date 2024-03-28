@@ -23,24 +23,24 @@ export type Entrance_AggregatedQuery = {
     countAll?: number | null;
     count?: {
       __typename?: 'entrance_aggregated_count';
-      date_created?: number | null;
-      date_updated?: number | null;
-      defaultSwitch?: number | null;
       id?: number | null;
-      moduleName?: number | null;
       user_created?: number | null;
+      date_created?: number | null;
       user_updated?: number | null;
+      date_updated?: number | null;
+      moduleName?: number | null;
+      defaultSwitch?: number | null;
       matchList?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'entrance_aggregated_count';
-      date_created?: number | null;
-      date_updated?: number | null;
-      defaultSwitch?: number | null;
       id?: number | null;
-      moduleName?: number | null;
       user_created?: number | null;
+      date_created?: number | null;
       user_updated?: number | null;
+      date_updated?: number | null;
+      moduleName?: number | null;
+      defaultSwitch?: number | null;
       matchList?: number | null;
     } | null;
     avg?: { __typename?: 'entrance_aggregated_fields'; id?: number | null; moduleName?: number | null } | null;
@@ -74,23 +74,23 @@ export const Entrance_AggregatedDocument = gql`
       group
       countAll
       count {
-        date_created
-        date_updated
-        defaultSwitch
         id
-        moduleName
         user_created
+        date_created
         user_updated
+        date_updated
+        moduleName
+        defaultSwitch
         matchList
       }
       countDistinct {
-        date_created
-        date_updated
-        defaultSwitch
         id
-        moduleName
         user_created
+        date_created
         user_updated
+        date_updated
+        moduleName
+        defaultSwitch
         matchList
       }
       avg {

@@ -3,23 +3,23 @@ query entrance_aggregated($groupBy: [String], $filter: entrance_filter, $limit: 
         group
         countAll
         count{
-            date_created
-            date_updated
-            defaultSwitch
             id
-            moduleName
             user_created
+            date_created
             user_updated
+            date_updated
+            moduleName
+            defaultSwitch
             matchList
         }
         countDistinct{
-            date_created
-            date_updated
-            defaultSwitch
             id
-            moduleName
             user_created
+            date_created
             user_updated
+            date_updated
+            moduleName
+            defaultSwitch
             matchList
         }
         avg{

@@ -16,13 +16,13 @@ export type EntranceModuleNameQuery = {
   __typename?: 'Query';
   entranceModuleName: Array<{
     __typename?: 'entranceModuleName';
-    date_created?: any | null;
-    date_updated?: any | null;
-    description?: string | null;
     id: string;
     user_created?: string | null;
+    date_created?: any | null;
     user_updated?: string | null;
+    date_updated?: any | null;
     value?: string | null;
+    description?: string | null;
     date_created_func?: {
       __typename?: 'datetime_functions';
       year?: number | null;
@@ -58,6 +58,8 @@ export const EntranceModuleNameDocument = gql`
     $search: String
   ) {
     entranceModuleName(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
+      id
+      user_created
       date_created
       date_created_func {
         year
@@ -69,6 +71,7 @@ export const EntranceModuleNameDocument = gql`
         minute
         second
       }
+      user_updated
       date_updated
       date_updated_func {
         year
@@ -80,11 +83,8 @@ export const EntranceModuleNameDocument = gql`
         minute
         second
       }
-      description
-      id
-      user_created
-      user_updated
       value
+      description
     }
   }
 `;

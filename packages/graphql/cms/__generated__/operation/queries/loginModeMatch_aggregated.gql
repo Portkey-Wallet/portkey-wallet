@@ -1,0 +1,46 @@
+query loginModeMatch_aggregated($groupBy: [String], $filter: loginModeMatch_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
+    loginModeMatch_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
+        group
+        countAll
+        count{
+            id
+            status
+            weight
+            matchSwitch
+            matchRuleList
+            description
+        }
+        countDistinct{
+            id
+            status
+            weight
+            matchSwitch
+            matchRuleList
+            description
+        }
+        avg{
+            id
+            weight
+        }
+        sum{
+            id
+            weight
+        }
+        avgDistinct{
+            id
+            weight
+        }
+        sumDistinct{
+            id
+            weight
+        }
+        min{
+            id
+            weight
+        }
+        max{
+            id
+            weight
+        }
+    }
+}

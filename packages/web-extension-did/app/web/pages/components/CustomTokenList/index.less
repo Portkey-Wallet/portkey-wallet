@@ -1,4 +1,5 @@
 @import '../../../assets/theme/color.less';
+@import '../../../assets/theme/constants.less';
 
 .custom-token-list {
   .header {
@@ -68,15 +69,17 @@
         display: flex;
         flex: 1;
         flex-direction: column;
-        gap: 4px;
+        gap: 2px;
         overflow: hidden;
         .alias {
-          line-height: 22px;
+          line-height: 20px;
           font-size: 16px;
           color: @font-11;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
+          word-break: break-all;
+          .text-overflow(2);
+          &.mul-line {
+            font-size: 14px;
+          }
         }
         .network {
           line-height: 20px;
@@ -87,8 +90,8 @@
       .amount {
         align-self: flex-start;
         .balance {
-          line-height: 22px;
-          font-size: 18px;
+          line-height: 20px;
+          font-size: 16px;
           color: @font-11;
           width: 80px;
           overflow: hidden;
@@ -121,10 +124,10 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 2px;
         .symbol {
-          font-size: 18px;
-          line-height: 22px;
+          font-size: 16px;
+          line-height: 20px;
         }
         .network {
           color: @font-13;
@@ -135,12 +138,12 @@
       .amount {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 2px;
         text-align: right;
         justify-content: flex-start;
         .quantity {
-          line-height: 22px;
-          font-size: 18px;
+          line-height: 20px;
+          font-size: 16px;
           color: @font-11;
         }
         .convert {

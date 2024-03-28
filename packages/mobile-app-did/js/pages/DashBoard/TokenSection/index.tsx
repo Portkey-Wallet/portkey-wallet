@@ -1,7 +1,6 @@
-import React, { useCallback, useState, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import navigationService from 'utils/navigationService';
-import { useAppCASelector } from '@portkey-wallet/hooks/index';
 import { View, FlatList } from 'react-native';
 import Svg from 'components/Svg';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
@@ -10,10 +9,12 @@ import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import TokenListItem from 'components/TokenListItem';
 import { useLanguage } from 'i18n/hooks';
-import { REFRESH_TIME } from '@portkey-wallet/constants/constants-ca/assets';
+import { PAGE_SIZE_IN_ACCOUNT_TOKEN, REFRESH_TIME } from '@portkey-wallet/constants/constants-ca/assets';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { useGetAccountTokenList } from 'hooks/account';
 import Touchable from 'components/Touchable';
+import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { useLatestRef, useThrottleCallback } from '@portkey-wallet/hooks';
+import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 export interface TokenSectionProps {
   getAccountBalance?: () => void;
@@ -21,12 +22,12 @@ export interface TokenSectionProps {
 
 export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
   const { t } = useLanguage();
-  const {
-    accountToken: { accountTokenList },
-  } = useAppCASelector(state => state.assets);
+
+  const { accountTokenList, totalRecordCount, fetchAccountTokenInfoList } = useAccountTokenInfo();
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
-  const [isFetching] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const caAddressInfos = useCaAddressInfoList();
+  const caAddressInfosList = useLatestRef(caAddressInfos);
 
   const onNavigate = useCallback((tokenItem: TokenItemShowType) => {
     navigationService.navigate('TokenDetail', { tokenInfo: tokenItem });
@@ -39,16 +40,33 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
     [onNavigate],
   );
 
-  const getAccountTokenList = useGetAccountTokenList();
+  const getAccountTokenList = useThrottleCallback(
+    async (isInit: boolean) => {
+      if (totalRecordCount && accountTokenList.length >= totalRecordCount && !isInit) return;
+
+      try {
+        await fetchAccountTokenInfoList({
+          caAddressInfos: caAddressInfosList.current || [],
+          skipCount: isInit ? 0 : accountTokenList.length,
+          maxResultCount: PAGE_SIZE_IN_ACCOUNT_TOKEN,
+        });
+      } catch (error) {
+        console.log(error, '===error');
+      }
+    },
+    [accountTokenList.length, caAddressInfosList, fetchAccountTokenInfoList, totalRecordCount],
+    1000,
+  );
 
   useEffect(() => {
-    getAccountTokenList();
-  }, [getAccountTokenList]);
+    getAccountTokenList(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [caAddressInfosList]);
 
   useEffect(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
-      getAccountTokenList();
+      getAccountTokenList(true);
     }, REFRESH_TIME);
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -58,14 +76,15 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
   return (
     <View style={styles.tokenListPageWrap}>
       <FlatList
-        refreshing={isFetching}
+        refreshing={false}
         data={accountTokenList || []}
         renderItem={renderItem}
         keyExtractor={(item: TokenItemShowType) => item.symbol + item.chainId}
+        onEndReached={() => getAccountTokenList()}
         onRefresh={() => {
           getAccountBalance?.();
-          getAccountTokenList();
           getTokenPrice();
+          getAccountTokenList(true);
         }}
         ListFooterComponent={
           <Touchable

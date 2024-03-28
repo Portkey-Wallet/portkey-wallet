@@ -19,6 +19,7 @@ export function fetchTokenList({
 }): Promise<{
   data: ITokenItemResponse[];
   totalRecordCount: number;
+  totalBalanceInUsd?: string;
 }> {
   return request.assets.fetchAccountTokenList({
     params: {
@@ -43,9 +44,9 @@ export function fetchAssetList({
   return request.assets.fetchAccountAssetsByKeywords({
     params: {
       caAddressInfos,
-      skipCount: skipCount,
-      maxResultCount: maxResultCount,
-      keyword: keyword,
+      skipCount,
+      maxResultCount,
+      keyword,
       width: NFT_SMALL_SIZE,
       height: -1,
     },

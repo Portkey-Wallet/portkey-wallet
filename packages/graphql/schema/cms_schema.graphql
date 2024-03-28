@@ -1,7 +1,4 @@
 type Query {
-  boilerplate(filter: boilerplate_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [boilerplate!]!
-  boilerplate_by_id(id: ID!): boilerplate
-  boilerplate_aggregated(groupBy: [String], filter: boilerplate_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [boilerplate_aggregated!]!
   bottomMenu(filter: bottomMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [bottomMenu!]!
   bottomMenu_by_id(id: ID!): bottomMenu
   bottomMenu_aggregated(groupBy: [String], filter: bottomMenu_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [bottomMenu_aggregated!]!
@@ -12,9 +9,12 @@ type Query {
   codePushControl(filter: codePushControl_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [codePushControl!]!
   codePushControl_by_id(id: ID!): codePushControl
   codePushControl_aggregated(groupBy: [String], filter: codePushControl_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [codePushControl_aggregated!]!
-  dApp(filter: dApp_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [dApp!]!
-  dApp_by_id(id: ID!): dApp
-  dApp_aggregated(groupBy: [String], filter: dApp_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [dApp_aggregated!]!
+  deviceBrand(filter: deviceBrand_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [deviceBrand!]!
+  deviceBrand_by_id(id: ID!): deviceBrand
+  deviceBrand_aggregated(groupBy: [String], filter: deviceBrand_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [deviceBrand_aggregated!]!
+  deviceType(filter: deviceType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [deviceType!]!
+  deviceType_by_id(id: ID!): deviceType
+  deviceType_aggregated(groupBy: [String], filter: deviceType_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [deviceType_aggregated!]!
   discoverGroup(filter: discoverGroup_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverGroup!]!
   discoverGroup_by_id(id: ID!): discoverGroup
   discoverGroup_aggregated(groupBy: [String], filter: discoverGroup_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverGroup_aggregated!]!
@@ -25,26 +25,32 @@ type Query {
   entrance(filter: entrance_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entrance!]!
   entrance_by_id(id: ID!): entrance
   entrance_aggregated(groupBy: [String], filter: entrance_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [entrance_aggregated!]!
+  entrance_entranceMatch(filter: entrance_entranceMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entrance_entranceMatch!]!
+  entrance_entranceMatch_by_id(id: ID!): entrance_entranceMatch
+  entrance_entranceMatch_aggregated(groupBy: [String], filter: entrance_entranceMatch_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [entrance_entranceMatch_aggregated!]!
   entranceMatch(filter: entranceMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entranceMatch!]!
   entranceMatch_by_id(id: ID!): entranceMatch
   entranceMatch_aggregated(groupBy: [String], filter: entranceMatch_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [entranceMatch_aggregated!]!
   entranceModuleName(filter: entranceModuleName_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entranceModuleName!]!
   entranceModuleName_by_id(id: ID!): entranceModuleName
   entranceModuleName_aggregated(groupBy: [String], filter: entranceModuleName_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [entranceModuleName_aggregated!]!
-  entrance_entranceMatch(filter: entrance_entranceMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entrance_entranceMatch!]!
-  entrance_entranceMatch_by_id(id: ID!): entrance_entranceMatch
-  entrance_entranceMatch_aggregated(groupBy: [String], filter: entrance_entranceMatch_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [entrance_entranceMatch_aggregated!]!
   home: home
-  home_dApp(filter: home_dApp_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [home_dApp!]!
-  home_dApp_by_id(id: ID!): home_dApp
-  home_dApp_aggregated(groupBy: [String], filter: home_dApp_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [home_dApp_aggregated!]!
+  loginMode(filter: loginMode_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [loginMode!]!
+  loginMode_by_id(id: ID!): loginMode
+  loginMode_aggregated(groupBy: [String], filter: loginMode_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [loginMode_aggregated!]!
+  loginMode_loginModeMatch(filter: loginMode_loginModeMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [loginMode_loginModeMatch!]!
+  loginMode_loginModeMatch_by_id(id: ID!): loginMode_loginModeMatch
+  loginMode_loginModeMatch_aggregated(groupBy: [String], filter: loginMode_loginModeMatch_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [loginMode_loginModeMatch_aggregated!]!
+  loginModeMatch(filter: loginModeMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [loginModeMatch!]!
+  loginModeMatch_by_id(id: ID!): loginModeMatch
+  loginModeMatch_aggregated(groupBy: [String], filter: loginModeMatch_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [loginModeMatch_aggregated!]!
+  loginType(filter: loginType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [loginType!]!
+  loginType_by_id(id: ID!): loginType
+  loginType_aggregated(groupBy: [String], filter: loginType_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [loginType_aggregated!]!
   mediaKit(filter: mediaKit_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [mediaKit!]!
   mediaKit_by_id(id: ID!): mediaKit
   mediaKit_aggregated(groupBy: [String], filter: mediaKit_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [mediaKit_aggregated!]!
   mediaKitPage: mediaKitPage
-  mediaKitPage_boilerplate(filter: mediaKitPage_boilerplate_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [mediaKitPage_boilerplate!]!
-  mediaKitPage_boilerplate_by_id(id: ID!): mediaKitPage_boilerplate
-  mediaKitPage_boilerplate_aggregated(groupBy: [String], filter: mediaKitPage_boilerplate_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [mediaKitPage_boilerplate_aggregated!]!
   mediaKitPage_mediaKit(filter: mediaKitPage_mediaKit_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [mediaKitPage_mediaKit!]!
   mediaKitPage_mediaKit_by_id(id: ID!): mediaKitPage_mediaKit
   mediaKitPage_mediaKit_aggregated(groupBy: [String], filter: mediaKitPage_mediaKit_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [mediaKitPage_mediaKit_aggregated!]!
@@ -57,7 +63,6 @@ type Query {
   rememberMeBlackListSites(filter: rememberMeBlackListSites_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [rememberMeBlackListSites!]!
   rememberMeBlackListSites_by_id(id: ID!): rememberMeBlackListSites
   rememberMeBlackListSites_aggregated(groupBy: [String], filter: rememberMeBlackListSites_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [rememberMeBlackListSites_aggregated!]!
-  serviceSuspension: serviceSuspension
   socialMedia(filter: socialMedia_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [socialMedia!]!
   socialMedia_by_id(id: ID!): socialMedia
   socialMedia_aggregated(groupBy: [String], filter: socialMedia_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [socialMedia_aggregated!]!
@@ -111,48 +116,6 @@ scalar JSON
 The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
 """
 scalar String
-
-type boilerplate {
-  date_created: Date
-  date_created_func: datetime_functions
-  date_updated: Date
-  date_updated_func: datetime_functions
-  id: ID!
-  index: Int
-  name: String
-  url: String
-  user_created: String
-  user_updated: String
-}
-
-type boilerplate_aggregated {
-  group: JSON
-  countAll: Int
-  count: boilerplate_aggregated_count
-  countDistinct: boilerplate_aggregated_count
-  avg: boilerplate_aggregated_fields
-  sum: boilerplate_aggregated_fields
-  avgDistinct: boilerplate_aggregated_fields
-  sumDistinct: boilerplate_aggregated_fields
-  min: boilerplate_aggregated_fields
-  max: boilerplate_aggregated_fields
-}
-
-type boilerplate_aggregated_count {
-  date_created: Int
-  date_updated: Int
-  id: Int
-  index: Int
-  name: Int
-  url: Int
-  user_created: Int
-  user_updated: Int
-}
-
-type boilerplate_aggregated_fields {
-  id: Float
-  index: Float
-}
 
 type bottomMenu {
   date_created: Date
@@ -280,22 +243,22 @@ type buyButton {
 }
 
 type codePushControl {
-  content: String
+  id: ID!
+  status: String
+  sort: Int
+  user_created: String
   date_created: Date
   date_created_func: datetime_functions
+  user_updated: String
   date_updated: Date
   date_updated_func: datetime_functions
-  id: ID!
-  isForceUpdate: Boolean
-  label: String
-  sort: Int
-  status: String
-  title: String
-  updatedContent: String
-  updatedTitle: String
-  user_created: String
-  user_updated: String
   version: String
+  label: String
+  title: String
+  content: String
+  isForceUpdate: Boolean
+  updatedTitle: String
+  updatedContent: String
 }
 
 type codePushControl_aggregated {
@@ -312,20 +275,20 @@ type codePushControl_aggregated {
 }
 
 type codePushControl_aggregated_count {
-  content: Int
-  date_created: Int
-  date_updated: Int
   id: Int
-  isForceUpdate: Int
-  label: Int
-  sort: Int
   status: Int
-  title: Int
-  updatedContent: Int
-  updatedTitle: Int
+  sort: Int
   user_created: Int
+  date_created: Int
   user_updated: Int
+  date_updated: Int
   version: Int
+  label: Int
+  title: Int
+  content: Int
+  isForceUpdate: Int
+  updatedTitle: Int
+  updatedContent: Int
 }
 
 type codePushControl_aggregated_fields {
@@ -335,52 +298,6 @@ type codePushControl_aggregated_fields {
 
 type count_functions {
   count: Int
-}
-
-type dApp {
-  date_created: Date
-  date_created_func: datetime_functions
-  date_updated: Date
-  date_updated_func: datetime_functions
-  id: ID!
-  index: Int
-  logo(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
-  name: String
-  status: String
-  url: String
-  user_created: String
-  user_updated: String
-}
-
-type dApp_aggregated {
-  group: JSON
-  countAll: Int
-  count: dApp_aggregated_count
-  countDistinct: dApp_aggregated_count
-  avg: dApp_aggregated_fields
-  sum: dApp_aggregated_fields
-  avgDistinct: dApp_aggregated_fields
-  sumDistinct: dApp_aggregated_fields
-  min: dApp_aggregated_fields
-  max: dApp_aggregated_fields
-}
-
-type dApp_aggregated_count {
-  date_created: Int
-  date_updated: Int
-  id: Int
-  index: Int
-  logo: Int
-  name: Int
-  status: Int
-  url: Int
-  user_created: Int
-  user_updated: Int
-}
-
-type dApp_aggregated_fields {
-  id: Float
-  index: Float
 }
 
 type datetime_functions {
@@ -394,32 +311,121 @@ type datetime_functions {
   second: Int
 }
 
+type deviceBrand {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  label: String
+  sort: Int
+  status: String
+  user_created: String
+  user_updated: String
+  value: String
+}
+
+type deviceBrand_aggregated {
+  group: JSON
+  countAll: Int
+  count: deviceBrand_aggregated_count
+  countDistinct: deviceBrand_aggregated_count
+  avg: deviceBrand_aggregated_fields
+  sum: deviceBrand_aggregated_fields
+  avgDistinct: deviceBrand_aggregated_fields
+  sumDistinct: deviceBrand_aggregated_fields
+  min: deviceBrand_aggregated_fields
+  max: deviceBrand_aggregated_fields
+}
+
+type deviceBrand_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  label: Int
+  sort: Int
+  status: Int
+  user_created: Int
+  user_updated: Int
+  value: Int
+}
+
+type deviceBrand_aggregated_fields {
+  id: Float
+  sort: Float
+}
+
+type deviceType {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  label: String
+  sort: Int
+  status: String
+  user_created: String
+  user_updated: String
+  value: Int
+}
+
+type deviceType_aggregated {
+  group: JSON
+  countAll: Int
+  count: deviceType_aggregated_count
+  countDistinct: deviceType_aggregated_count
+  avg: deviceType_aggregated_fields
+  sum: deviceType_aggregated_fields
+  avgDistinct: deviceType_aggregated_fields
+  sumDistinct: deviceType_aggregated_fields
+  min: deviceType_aggregated_fields
+  max: deviceType_aggregated_fields
+}
+
+type deviceType_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  label: Int
+  sort: Int
+  status: Int
+  user_created: Int
+  user_updated: Int
+  value: Int
+}
+
+type deviceType_aggregated_fields {
+  id: Float
+  sort: Float
+  value: Float
+}
+
 type directus_files {
-  charset: String
-  description: String
-  duration: Int
-  embed: String
+  id: ID!
+  storage: String!
   filename_disk: String
   filename_download: String!
-  filesize: GraphQLBigInt
-  folder: String
-  height: Int
-  id: ID!
-  location: String
-  metadata: JSON
-  metadata_func: count_functions
-  modified_by: String
-  modified_on: Date
-  modified_on_func: datetime_functions
-  storage: String!
-  tags: JSON
-  tags_func: count_functions
   title: String
   type: String
+  folder: String
   uploaded_by: String
   uploaded_on: Date
   uploaded_on_func: datetime_functions
+  modified_by: String
+  modified_on: Date
+  modified_on_func: datetime_functions
+  charset: String
+  filesize: GraphQLBigInt
   width: Int
+  height: Int
+  duration: Int
+  embed: String
+  description: String
+  location: String
+  tags: JSON
+  tags_func: count_functions
+  metadata: JSON
+  metadata_func: count_functions
 }
 
 type discoverGroup {
@@ -542,15 +548,15 @@ type download {
 }
 
 type entrance {
+  id: ID!
+  user_created: String
   date_created: Date
   date_created_func: datetime_functions
+  user_updated: String
   date_updated: Date
   date_updated_func: datetime_functions
-  defaultSwitch: Boolean
-  id: ID!
   moduleName(filter: entranceModuleName_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): entranceModuleName
-  user_created: String
-  user_updated: String
+  defaultSwitch: Boolean
   matchList(filter: entrance_entranceMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entrance_entranceMatch]
   matchList_func: count_functions
 }
@@ -569,13 +575,13 @@ type entrance_aggregated {
 }
 
 type entrance_aggregated_count {
-  date_created: Int
-  date_updated: Int
-  defaultSwitch: Int
   id: Int
-  moduleName: Int
   user_created: Int
+  date_created: Int
   user_updated: Int
+  date_updated: Int
+  moduleName: Int
+  defaultSwitch: Int
   matchList: Int
 }
 
@@ -585,9 +591,9 @@ type entrance_aggregated_fields {
 }
 
 type entrance_entranceMatch {
+  id: ID!
   entrance_id(filter: entrance_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): entrance
   entranceMatch_id(filter: entranceMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): entranceMatch
-  id: ID!
 }
 
 type entrance_entranceMatch_aggregated {
@@ -604,31 +610,31 @@ type entrance_entranceMatch_aggregated {
 }
 
 type entrance_entranceMatch_aggregated_count {
+  id: Int
   entrance_id: Int
   entranceMatch_id: Int
-  id: Int
 }
 
 type entrance_entranceMatch_aggregated_fields {
+  id: Float
   entrance_id: Float
   entranceMatch_id: Float
-  id: Float
 }
 
 type entranceMatch {
-  date_created: Date
-  date_created_func: datetime_functions
-  date_updated: Date
-  date_updated_func: datetime_functions
-  description: String
   id: ID!
-  matchRuleList: JSON
-  matchRuleList_func: count_functions
-  matchSwitch: Boolean
   status: String
   user_created: String
+  date_created: Date
+  date_created_func: datetime_functions
   user_updated: String
+  date_updated: Date
+  date_updated_func: datetime_functions
+  matchRuleList: JSON
+  matchRuleList_func: count_functions
   weight: Int
+  matchSwitch: Boolean
+  description: String
 }
 
 type entranceMatch_aggregated {
@@ -645,16 +651,16 @@ type entranceMatch_aggregated {
 }
 
 type entranceMatch_aggregated_count {
-  date_created: Int
-  date_updated: Int
-  description: Int
   id: Int
-  matchRuleList: Int
-  matchSwitch: Int
   status: Int
   user_created: Int
+  date_created: Int
   user_updated: Int
+  date_updated: Int
+  matchRuleList: Int
   weight: Int
+  matchSwitch: Int
+  description: Int
 }
 
 type entranceMatch_aggregated_fields {
@@ -663,15 +669,15 @@ type entranceMatch_aggregated_fields {
 }
 
 type entranceModuleName {
-  date_created: Date
-  date_created_func: datetime_functions
-  date_updated: Date
-  date_updated_func: datetime_functions
-  description: String
   id: ID!
   user_created: String
+  date_created: Date
+  date_created_func: datetime_functions
   user_updated: String
+  date_updated: Date
+  date_updated_func: datetime_functions
   value: String
+  description: String
 }
 
 type entranceModuleName_aggregated {
@@ -688,13 +694,13 @@ type entranceModuleName_aggregated {
 }
 
 type entranceModuleName_aggregated_count {
-  date_created: Int
-  date_updated: Int
-  description: Int
   id: Int
   user_created: Int
+  date_created: Int
   user_updated: Int
+  date_updated: Int
   value: Int
+  description: Int
 }
 
 type entranceModuleName_aggregated_fields {
@@ -702,47 +708,163 @@ type entranceModuleName_aggregated_fields {
 }
 
 type home {
-  dAppSectionTitle: String
   date_updated: Date
   date_updated_func: datetime_functions
   focusImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   id: ID!
   user_updated: String
+  dAppSectionTitle: String
   videoContent: String
   videoTitle: String
   videoUrl: String
-  dAppList(filter: home_dApp_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [home_dApp]
-  dAppList_func: count_functions
 }
 
-type home_dApp {
-  dApp_id(filter: dApp_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): dApp
-  home_id(filter: home_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): home
+type loginMode {
   id: ID!
+  status: String
+  extensionIndex: GraphQLBigInt!
+  iOSIndex: GraphQLBigInt!
+  androidIndex: GraphQLBigInt!
+  extensionRecommend: Boolean!
+  iOSRecommend: Boolean!
+  androidRecommend: Boolean!
+  defaultSwitch: Boolean!
+  type(filter: loginType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): loginType
+  matchList(filter: loginMode_loginModeMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [loginMode_loginModeMatch]
+  matchList_func: count_functions
 }
 
-type home_dApp_aggregated {
+type loginMode_aggregated {
   group: JSON
   countAll: Int
-  count: home_dApp_aggregated_count
-  countDistinct: home_dApp_aggregated_count
-  avg: home_dApp_aggregated_fields
-  sum: home_dApp_aggregated_fields
-  avgDistinct: home_dApp_aggregated_fields
-  sumDistinct: home_dApp_aggregated_fields
-  min: home_dApp_aggregated_fields
-  max: home_dApp_aggregated_fields
+  count: loginMode_aggregated_count
+  countDistinct: loginMode_aggregated_count
+  avg: loginMode_aggregated_fields
+  sum: loginMode_aggregated_fields
+  avgDistinct: loginMode_aggregated_fields
+  sumDistinct: loginMode_aggregated_fields
+  min: loginMode_aggregated_fields
+  max: loginMode_aggregated_fields
 }
 
-type home_dApp_aggregated_count {
-  dApp_id: Int
-  home_id: Int
+type loginMode_aggregated_count {
   id: Int
+  status: Int
+  extensionIndex: Int
+  iOSIndex: Int
+  androidIndex: Int
+  extensionRecommend: Int
+  iOSRecommend: Int
+  androidRecommend: Int
+  defaultSwitch: Int
+  type: Int
+  matchList: Int
 }
 
-type home_dApp_aggregated_fields {
-  dApp_id: Float
-  home_id: Float
+type loginMode_aggregated_fields {
+  id: Float
+  extensionIndex: Float
+  iOSIndex: Float
+  androidIndex: Float
+  type: Float
+}
+
+type loginMode_loginModeMatch {
+  id: ID!
+  loginMode_id(filter: loginMode_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): loginMode
+  loginModeMatch_id(filter: loginModeMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): loginModeMatch
+}
+
+type loginMode_loginModeMatch_aggregated {
+  group: JSON
+  countAll: Int
+  count: loginMode_loginModeMatch_aggregated_count
+  countDistinct: loginMode_loginModeMatch_aggregated_count
+  avg: loginMode_loginModeMatch_aggregated_fields
+  sum: loginMode_loginModeMatch_aggregated_fields
+  avgDistinct: loginMode_loginModeMatch_aggregated_fields
+  sumDistinct: loginMode_loginModeMatch_aggregated_fields
+  min: loginMode_loginModeMatch_aggregated_fields
+  max: loginMode_loginModeMatch_aggregated_fields
+}
+
+type loginMode_loginModeMatch_aggregated_count {
+  id: Int
+  loginMode_id: Int
+  loginModeMatch_id: Int
+}
+
+type loginMode_loginModeMatch_aggregated_fields {
+  id: Float
+  loginMode_id: Float
+  loginModeMatch_id: Float
+}
+
+type loginModeMatch {
+  id: ID!
+  status: String
+  weight: GraphQLBigInt!
+  matchSwitch: Boolean!
+  matchRuleList: JSON!
+  matchRuleList_func: count_functions
+  description: String!
+}
+
+type loginModeMatch_aggregated {
+  group: JSON
+  countAll: Int
+  count: loginModeMatch_aggregated_count
+  countDistinct: loginModeMatch_aggregated_count
+  avg: loginModeMatch_aggregated_fields
+  sum: loginModeMatch_aggregated_fields
+  avgDistinct: loginModeMatch_aggregated_fields
+  sumDistinct: loginModeMatch_aggregated_fields
+  min: loginModeMatch_aggregated_fields
+  max: loginModeMatch_aggregated_fields
+}
+
+type loginModeMatch_aggregated_count {
+  id: Int
+  status: Int
+  weight: Int
+  matchSwitch: Int
+  matchRuleList: Int
+  description: Int
+}
+
+type loginModeMatch_aggregated_fields {
+  id: Float
+  weight: Float
+}
+
+type loginType {
+  id: ID!
+  status: String
+  label: String!
+  value: String!
+}
+
+type loginType_aggregated {
+  group: JSON
+  countAll: Int
+  count: loginType_aggregated_count
+  countDistinct: loginType_aggregated_count
+  avg: loginType_aggregated_fields
+  sum: loginType_aggregated_fields
+  avgDistinct: loginType_aggregated_fields
+  sumDistinct: loginType_aggregated_fields
+  min: loginType_aggregated_fields
+  max: loginType_aggregated_fields
+}
+
+type loginType_aggregated_count {
+  id: Int
+  status: Int
+  label: Int
+  value: Int
+}
+
+type loginType_aggregated_fields {
   id: Float
 }
 
@@ -799,60 +921,27 @@ type mediaKit_aggregated_fields {
 
 type mediaKitPage {
   allMediaKitZip(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
-  boilerplateContent: String
-  boilerplateTitle: String
   content: String!
   date_created: Date
   date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
   id: ID!
-  mediaKitDescription: String
   status: String
   title: String!
   user_created: String
   user_updated: String
-  boilerplateList(filter: mediaKitPage_boilerplate_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [mediaKitPage_boilerplate]
-  boilerplateList_func: count_functions
+  boilerplateContent: String
+  boilerplateTitle: String
+  mediaKitDescription: String
   mediaKitList(filter: mediaKitPage_mediaKit_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [mediaKitPage_mediaKit]
   mediaKitList_func: count_functions
 }
 
-type mediaKitPage_boilerplate {
-  boilerplate_id(filter: boilerplate_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): boilerplate
-  id: ID!
-  mediaKitPage_id(filter: mediaKitPage_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): mediaKitPage
-}
-
-type mediaKitPage_boilerplate_aggregated {
-  group: JSON
-  countAll: Int
-  count: mediaKitPage_boilerplate_aggregated_count
-  countDistinct: mediaKitPage_boilerplate_aggregated_count
-  avg: mediaKitPage_boilerplate_aggregated_fields
-  sum: mediaKitPage_boilerplate_aggregated_fields
-  avgDistinct: mediaKitPage_boilerplate_aggregated_fields
-  sumDistinct: mediaKitPage_boilerplate_aggregated_fields
-  min: mediaKitPage_boilerplate_aggregated_fields
-  max: mediaKitPage_boilerplate_aggregated_fields
-}
-
-type mediaKitPage_boilerplate_aggregated_count {
-  boilerplate_id: Int
-  id: Int
-  mediaKitPage_id: Int
-}
-
-type mediaKitPage_boilerplate_aggregated_fields {
-  boilerplate_id: Float
-  id: Float
-  mediaKitPage_id: Float
-}
-
 type mediaKitPage_mediaKit {
   id: ID!
-  mediaKit_id(filter: mediaKit_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): mediaKit
   mediaKitPage_id(filter: mediaKitPage_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): mediaKitPage
+  mediaKit_id(filter: mediaKit_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): mediaKit
 }
 
 type mediaKitPage_mediaKit_aggregated {
@@ -870,14 +959,14 @@ type mediaKitPage_mediaKit_aggregated {
 
 type mediaKitPage_mediaKit_aggregated_count {
   id: Int
-  mediaKit_id: Int
   mediaKitPage_id: Int
+  mediaKit_id: Int
 }
 
 type mediaKitPage_mediaKit_aggregated_fields {
   id: Float
-  mediaKit_id: Float
   mediaKitPage_id: Float
+  mediaKit_id: Float
 }
 
 type navigationType {
@@ -1018,20 +1107,6 @@ type rememberMeBlackListSites_aggregated_count {
 type rememberMeBlackListSites_aggregated_fields {
   id: Float
   sort: Float
-}
-
-type serviceSuspension {
-  androidUrl: String
-  date_created: Date
-  date_created_func: datetime_functions
-  date_updated: Date
-  date_updated_func: datetime_functions
-  extensionUrl: String
-  id: ID!
-  iOSUrl: String
-  isSuspended: Boolean
-  user_created: String
-  user_updated: String
 }
 
 type socialMedia {
@@ -1283,21 +1358,6 @@ type topSecondMenu_aggregated_fields {
   type: Float
 }
 
-input boilerplate_filter {
-  date_created: date_filter_operators
-  date_created_func: datetime_function_filter_operators
-  date_updated: date_filter_operators
-  date_updated_func: datetime_function_filter_operators
-  id: number_filter_operators
-  index: number_filter_operators
-  name: string_filter_operators
-  url: string_filter_operators
-  user_created: string_filter_operators
-  user_updated: string_filter_operators
-  _and: [boilerplate_filter]
-  _or: [boilerplate_filter]
-}
-
 input boolean_filter_operators {
   _eq: Boolean
   _neq: Boolean
@@ -1345,45 +1405,28 @@ input bottomSecondMenu_filter {
 }
 
 input codePushControl_filter {
-  content: string_filter_operators
+  id: number_filter_operators
+  status: string_filter_operators
+  sort: number_filter_operators
+  user_created: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
+  user_updated: string_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  id: number_filter_operators
-  isForceUpdate: boolean_filter_operators
-  label: string_filter_operators
-  sort: number_filter_operators
-  status: string_filter_operators
-  title: string_filter_operators
-  updatedContent: string_filter_operators
-  updatedTitle: string_filter_operators
-  user_created: string_filter_operators
-  user_updated: string_filter_operators
   version: string_filter_operators
+  label: string_filter_operators
+  title: string_filter_operators
+  content: string_filter_operators
+  isForceUpdate: boolean_filter_operators
+  updatedTitle: string_filter_operators
+  updatedContent: string_filter_operators
   _and: [codePushControl_filter]
   _or: [codePushControl_filter]
 }
 
 input count_function_filter_operators {
   count: number_filter_operators
-}
-
-input dApp_filter {
-  date_created: date_filter_operators
-  date_created_func: datetime_function_filter_operators
-  date_updated: date_filter_operators
-  date_updated_func: datetime_function_filter_operators
-  id: number_filter_operators
-  index: number_filter_operators
-  logo: directus_files_filter
-  name: string_filter_operators
-  status: string_filter_operators
-  url: string_filter_operators
-  user_created: string_filter_operators
-  user_updated: string_filter_operators
-  _and: [dApp_filter]
-  _or: [dApp_filter]
 }
 
 input date_filter_operators {
@@ -1412,32 +1455,64 @@ input datetime_function_filter_operators {
   second: number_filter_operators
 }
 
+input deviceBrand_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  label: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  value: string_filter_operators
+  _and: [deviceBrand_filter]
+  _or: [deviceBrand_filter]
+}
+
+input deviceType_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  label: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  value: number_filter_operators
+  _and: [deviceType_filter]
+  _or: [deviceType_filter]
+}
+
 input directus_files_filter {
-  charset: string_filter_operators
-  description: string_filter_operators
-  duration: number_filter_operators
-  embed: string_filter_operators
+  id: string_filter_operators
+  storage: string_filter_operators
   filename_disk: string_filter_operators
   filename_download: string_filter_operators
-  filesize: number_filter_operators
-  folder: string_filter_operators
-  height: number_filter_operators
-  id: string_filter_operators
-  location: string_filter_operators
-  metadata: string_filter_operators
-  metadata_func: count_function_filter_operators
-  modified_by: string_filter_operators
-  modified_on: date_filter_operators
-  modified_on_func: datetime_function_filter_operators
-  storage: string_filter_operators
-  tags: string_filter_operators
-  tags_func: count_function_filter_operators
   title: string_filter_operators
   type: string_filter_operators
+  folder: string_filter_operators
   uploaded_by: string_filter_operators
   uploaded_on: date_filter_operators
   uploaded_on_func: datetime_function_filter_operators
+  modified_by: string_filter_operators
+  modified_on: date_filter_operators
+  modified_on_func: datetime_function_filter_operators
+  charset: string_filter_operators
+  filesize: number_filter_operators
   width: number_filter_operators
+  height: number_filter_operators
+  duration: number_filter_operators
+  embed: string_filter_operators
+  description: string_filter_operators
+  location: string_filter_operators
+  tags: string_filter_operators
+  tags_func: count_function_filter_operators
+  metadata: string_filter_operators
+  metadata_func: count_function_filter_operators
   _and: [directus_files_filter]
   _or: [directus_files_filter]
 }
@@ -1481,23 +1556,23 @@ input discoverItem_filter {
 }
 
 input entrance_entranceMatch_filter {
+  id: number_filter_operators
   entrance_id: entrance_filter
   entranceMatch_id: entranceMatch_filter
-  id: number_filter_operators
   _and: [entrance_entranceMatch_filter]
   _or: [entrance_entranceMatch_filter]
 }
 
 input entrance_filter {
+  id: number_filter_operators
+  user_created: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
+  user_updated: string_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  defaultSwitch: boolean_filter_operators
-  id: number_filter_operators
   moduleName: entranceModuleName_filter
-  user_created: string_filter_operators
-  user_updated: string_filter_operators
+  defaultSwitch: boolean_filter_operators
   matchList: entrance_entranceMatch_filter
   matchList_func: count_function_filter_operators
   _and: [entrance_filter]
@@ -1505,59 +1580,81 @@ input entrance_filter {
 }
 
 input entranceMatch_filter {
-  date_created: date_filter_operators
-  date_created_func: datetime_function_filter_operators
-  date_updated: date_filter_operators
-  date_updated_func: datetime_function_filter_operators
-  description: string_filter_operators
   id: number_filter_operators
-  matchRuleList: string_filter_operators
-  matchRuleList_func: count_function_filter_operators
-  matchSwitch: boolean_filter_operators
   status: string_filter_operators
   user_created: string_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
   user_updated: string_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  matchRuleList: string_filter_operators
+  matchRuleList_func: count_function_filter_operators
   weight: number_filter_operators
+  matchSwitch: boolean_filter_operators
+  description: string_filter_operators
   _and: [entranceMatch_filter]
   _or: [entranceMatch_filter]
 }
 
 input entranceModuleName_filter {
-  date_created: date_filter_operators
-  date_created_func: datetime_function_filter_operators
-  date_updated: date_filter_operators
-  date_updated_func: datetime_function_filter_operators
-  description: string_filter_operators
   id: number_filter_operators
   user_created: string_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
   user_updated: string_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
   value: string_filter_operators
+  description: string_filter_operators
   _and: [entranceModuleName_filter]
   _or: [entranceModuleName_filter]
 }
 
-input home_dApp_filter {
-  dApp_id: dApp_filter
-  home_id: home_filter
+input loginMode_filter {
   id: number_filter_operators
-  _and: [home_dApp_filter]
-  _or: [home_dApp_filter]
+  status: string_filter_operators
+  extensionIndex: number_filter_operators
+  iOSIndex: number_filter_operators
+  androidIndex: number_filter_operators
+  extensionRecommend: boolean_filter_operators
+  iOSRecommend: boolean_filter_operators
+  androidRecommend: boolean_filter_operators
+  defaultSwitch: boolean_filter_operators
+  type: loginType_filter
+  matchList: loginMode_loginModeMatch_filter
+  matchList_func: count_function_filter_operators
+  _and: [loginMode_filter]
+  _or: [loginMode_filter]
 }
 
-input home_filter {
-  dAppSectionTitle: string_filter_operators
-  date_updated: date_filter_operators
-  date_updated_func: datetime_function_filter_operators
-  focusImage: directus_files_filter
+input loginMode_loginModeMatch_filter {
   id: number_filter_operators
-  user_updated: string_filter_operators
-  videoContent: string_filter_operators
-  videoTitle: string_filter_operators
-  videoUrl: string_filter_operators
-  dAppList: home_dApp_filter
-  dAppList_func: count_function_filter_operators
-  _and: [home_filter]
-  _or: [home_filter]
+  loginMode_id: loginMode_filter
+  loginModeMatch_id: loginModeMatch_filter
+  _and: [loginMode_loginModeMatch_filter]
+  _or: [loginMode_loginModeMatch_filter]
+}
+
+input loginModeMatch_filter {
+  id: number_filter_operators
+  status: string_filter_operators
+  weight: number_filter_operators
+  matchSwitch: boolean_filter_operators
+  matchRuleList: string_filter_operators
+  matchRuleList_func: count_function_filter_operators
+  description: string_filter_operators
+  _and: [loginModeMatch_filter]
+  _or: [loginModeMatch_filter]
+}
+
+input loginType_filter {
+  id: number_filter_operators
+  status: string_filter_operators
+  label: string_filter_operators
+  value: string_filter_operators
+  _and: [loginType_filter]
+  _or: [loginType_filter]
 }
 
 input mediaKit_filter {
@@ -1579,31 +1676,21 @@ input mediaKit_filter {
   _or: [mediaKit_filter]
 }
 
-input mediaKitPage_boilerplate_filter {
-  boilerplate_id: boilerplate_filter
-  id: number_filter_operators
-  mediaKitPage_id: mediaKitPage_filter
-  _and: [mediaKitPage_boilerplate_filter]
-  _or: [mediaKitPage_boilerplate_filter]
-}
-
 input mediaKitPage_filter {
   allMediaKitZip: directus_files_filter
-  boilerplateContent: string_filter_operators
-  boilerplateTitle: string_filter_operators
   content: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
   id: number_filter_operators
-  mediaKitDescription: string_filter_operators
   status: string_filter_operators
   title: string_filter_operators
   user_created: string_filter_operators
   user_updated: string_filter_operators
-  boilerplateList: mediaKitPage_boilerplate_filter
-  boilerplateList_func: count_function_filter_operators
+  boilerplateContent: string_filter_operators
+  boilerplateTitle: string_filter_operators
+  mediaKitDescription: string_filter_operators
   mediaKitList: mediaKitPage_mediaKit_filter
   mediaKitList_func: count_function_filter_operators
   _and: [mediaKitPage_filter]
@@ -1612,8 +1699,8 @@ input mediaKitPage_filter {
 
 input mediaKitPage_mediaKit_filter {
   id: number_filter_operators
-  mediaKit_id: mediaKit_filter
   mediaKitPage_id: mediaKitPage_filter
+  mediaKit_id: mediaKit_filter
   _and: [mediaKitPage_mediaKit_filter]
   _or: [mediaKitPage_mediaKit_filter]
 }

@@ -17,15 +17,15 @@ import im, {
 import { useEffectOnce, useAppCommonDispatch } from '../../index';
 import {
   addChannel,
-  addChannelMembers,
-  removeChannelMembers,
   setGroupInfo,
   transferChannelOwner,
   updateChannelAttribute,
   updateGroupInfo,
+  updateGroupInfoMembersInfo,
 } from '@portkey-wallet/store/store-ca/im/actions';
 import { useCurrentNetworkInfo } from '../network';
 import { sleep } from '@portkey-wallet/utils';
+import { MEMBER_LIST_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
 
 export const useDisbandChannel = (channelId: string) => {
   const dispatch = useAppCommonDispatch();
@@ -75,32 +75,18 @@ export const useTransferChannelOwner = (channelId: string) => {
 };
 
 export const useAddChannelMembers = (channelId: string) => {
-  const dispatch = useAppCommonDispatch();
-  const { networkType } = useCurrentNetworkInfo();
-
   return useCallback(
     async (memberInfos: ChannelMemberInfo[]) => {
       await im.service.addChannelMembers({
         channelUuid: channelId,
         members: memberInfos.map(item => item.relationId),
       });
-
-      dispatch(
-        addChannelMembers({
-          network: networkType,
-          channelId,
-          memberInfos,
-        }),
-      );
     },
-    [channelId, dispatch, networkType],
+    [channelId],
   );
 };
 
 export const useRemoveChannelMembers = (channelId: string) => {
-  const dispatch = useAppCommonDispatch();
-  const { networkType } = useCurrentNetworkInfo();
-
   return useCallback(
     async (members: string[]) => {
       await im.service.removeChannelMembers({
@@ -108,15 +94,15 @@ export const useRemoveChannelMembers = (channelId: string) => {
         members,
       });
 
-      dispatch(
-        removeChannelMembers({
-          network: networkType,
-          channelId,
-          members,
-        }),
-      );
+      // dispatch(
+      //   removeChannelMembers({
+      //     network: networkType,
+      //     channelId,
+      //     members,
+      //   }),
+      // );
     },
-    [channelId, dispatch, networkType],
+    [channelId],
   );
 };
 
@@ -202,33 +188,67 @@ export const useGroupChannelInfo = (channelId: string, isInit = false) => {
 
   const { relationId } = useRelationId();
 
-  const refresh = useCallback(async () => {
-    const { data: groupInfo } = await im.service.getChannelInfo({
-      channelUuid: channelId,
-    });
-    dispatch(
-      setGroupInfo({
-        network: networkType,
-        groupInfo,
-      }),
-    );
-  }, [channelId, dispatch, networkType]);
+  const refreshChannelInfo = useCallback(
+    async (skipCount = 0, maxResultCount = MEMBER_LIST_LIMIT) => {
+      const { data: groupInfo } = await im.service.getChannelInfo({
+        channelUuid: channelId,
+        skipCount,
+        maxResultCount,
+      });
+      dispatch(
+        setGroupInfo({
+          network: networkType,
+          groupInfo: {
+            ...groupInfo,
+            members: groupInfo.memberInfos.members,
+            totalCount: groupInfo.memberInfos.totalCount,
+          },
+        }),
+      );
+    },
+    [channelId, dispatch, networkType],
+  );
+
+  const refreshChannelMembersInfo = useCallback(
+    async (skipCount = 0, maxResultCount = MEMBER_LIST_LIMIT) => {
+      console.log('====params', skipCount);
+      const { data } = await im.service.searchChannelMembers({
+        channelUuid: channelId,
+        skipCount,
+        maxResultCount,
+        keyword: '',
+      });
+      dispatch(
+        updateGroupInfoMembersInfo({
+          network: networkType,
+          channelId,
+          isInit: skipCount === 0,
+          value: {
+            members: data.members,
+            totalCount: data.totalCount,
+          },
+        }),
+      );
+    },
+    [channelId, dispatch, networkType],
+  );
 
   const isAdmin = useMemo(() => {
     if (!groupInfo || !relationId) return false;
     if (groupInfo.type !== ChannelTypeEnum.GROUP) return false;
-    const adminMember = groupInfo.members[0];
+    const adminMember = groupInfo?.members[0];
     return adminMember && adminMember.relationId === relationId;
   }, [groupInfo, relationId]);
 
   useEffectOnce(() => {
-    isInit && refresh();
+    isInit && refreshChannelInfo();
   });
 
   return {
     groupInfo,
     isAdmin,
-    refresh,
+    refresh: refreshChannelInfo,
+    refreshChannelMembersInfo,
   };
 };
 

@@ -21,7 +21,7 @@ export default function FindMorePopup({
   clickQRCode,
 }: IFindMoreProps) {
   return (
-    <div className="find-more-popup min-width-max-height">
+    <div className="find-more-popup min-width-max-height flex-column">
       <div className="flex-column find-more-top">
         <BackHeader
           title={headerTitle}

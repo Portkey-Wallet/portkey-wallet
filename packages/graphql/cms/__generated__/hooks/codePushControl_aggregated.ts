@@ -23,37 +23,37 @@ export type CodePushControl_AggregatedQuery = {
     countAll?: number | null;
     count?: {
       __typename?: 'codePushControl_aggregated_count';
-      content?: number | null;
-      date_created?: number | null;
-      date_updated?: number | null;
       id?: number | null;
-      isForceUpdate?: number | null;
-      label?: number | null;
-      sort?: number | null;
       status?: number | null;
-      title?: number | null;
-      updatedContent?: number | null;
-      updatedTitle?: number | null;
+      sort?: number | null;
       user_created?: number | null;
+      date_created?: number | null;
       user_updated?: number | null;
+      date_updated?: number | null;
       version?: number | null;
+      label?: number | null;
+      title?: number | null;
+      content?: number | null;
+      isForceUpdate?: number | null;
+      updatedTitle?: number | null;
+      updatedContent?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'codePushControl_aggregated_count';
-      content?: number | null;
-      date_created?: number | null;
-      date_updated?: number | null;
       id?: number | null;
-      isForceUpdate?: number | null;
-      label?: number | null;
-      sort?: number | null;
       status?: number | null;
-      title?: number | null;
-      updatedContent?: number | null;
-      updatedTitle?: number | null;
+      sort?: number | null;
       user_created?: number | null;
+      date_created?: number | null;
       user_updated?: number | null;
+      date_updated?: number | null;
       version?: number | null;
+      label?: number | null;
+      title?: number | null;
+      content?: number | null;
+      isForceUpdate?: number | null;
+      updatedTitle?: number | null;
+      updatedContent?: number | null;
     } | null;
     avg?: { __typename?: 'codePushControl_aggregated_fields'; id?: number | null; sort?: number | null } | null;
     sum?: { __typename?: 'codePushControl_aggregated_fields'; id?: number | null; sort?: number | null } | null;
@@ -86,36 +86,36 @@ export const CodePushControl_AggregatedDocument = gql`
       group
       countAll
       count {
-        content
-        date_created
-        date_updated
         id
-        isForceUpdate
-        label
-        sort
         status
-        title
-        updatedContent
-        updatedTitle
+        sort
         user_created
+        date_created
         user_updated
+        date_updated
         version
+        label
+        title
+        content
+        isForceUpdate
+        updatedTitle
+        updatedContent
       }
       countDistinct {
-        content
-        date_created
-        date_updated
         id
-        isForceUpdate
-        label
-        sort
         status
-        title
-        updatedContent
-        updatedTitle
+        sort
         user_created
+        date_created
         user_updated
+        date_updated
         version
+        label
+        title
+        content
+        isForceUpdate
+        updatedTitle
+        updatedContent
       }
       avg {
         id

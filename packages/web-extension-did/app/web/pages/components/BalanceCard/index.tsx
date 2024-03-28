@@ -103,6 +103,7 @@ export default function BalanceCard({
 
   const showCardNum = useMemo(
     () =>
+      2 + // Send + Receive
       (renderBuyEntry ? 1 : 0) +
       (renderDeposit ? 1 : 0) +
       (renderDepositUSDT ? 1 : 0) +
@@ -110,23 +111,29 @@ export default function BalanceCard({
       (renderFaucet ? 1 : 0),
     [renderBuyEntry, renderDeposit, renderDepositUSDT, renderFaucet, renderWithdrawUSDT],
   );
+
+  const cardNumClassName = useMemo(() => {
+    if (isNotLessThan768) return 'prompt-card';
+    if (showCardNum < 4) return 'popup-card-num-less-than-4';
+    if (showCardNum === 4) return 'popup-card-num-4';
+    return 'popup-card-num-more-than-4';
+  }, [isNotLessThan768, showCardNum]);
+
   return (
-    <div className="balance-card">
-      <div className={clsx(['balance-btn', showCardNum > 1 && !isNotLessThan768 && 'popup-card-num-more-than-3'])}>
-        {renderBuyEntry}
-        {renderDeposit}
-        <span className="send btn" onClick={onSend}>
-          <CustomSvg type="RightTop" style={{ width: 36, height: 36 }} />
-          <span className="btn-name">{t('Send')}</span>
-        </span>
-        <span className="receive btn" onClick={onReceive}>
-          <CustomSvg type="RightDown" style={{ width: 36, height: 36 }} />
-          <span className="btn-name">{t('Receive')}</span>
-        </span>
-        {renderDepositUSDT}
-        {renderWithdrawUSDT}
-        {renderFaucet}
-      </div>
+    <div className={clsx(['balance-card', 'flex-center', cardNumClassName])}>
+      {renderBuyEntry}
+      {renderDeposit}
+      <span className="send btn" onClick={onSend}>
+        <CustomSvg type="RightTop" style={{ width: 36, height: 36 }} />
+        <span className="btn-name">{t('Send')}</span>
+      </span>
+      <span className="receive btn" onClick={onReceive}>
+        <CustomSvg type="RightDown" style={{ width: 36, height: 36 }} />
+        <span className="btn-name">{t('Receive')}</span>
+      </span>
+      {renderDepositUSDT}
+      {renderWithdrawUSDT}
+      {renderFaucet}
     </div>
   );
 }

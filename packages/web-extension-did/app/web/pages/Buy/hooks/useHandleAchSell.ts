@@ -1,4 +1,4 @@
-import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
@@ -20,10 +20,10 @@ import { StorageKeyType } from 'utils/storage/storage';
 export const useHandleAchSell = () => {
   const { setLoading } = useLoading();
 
-  const { accountToken } = useAssets();
+  const { accountTokenList } = useAccountTokenInfo();
   const aelfToken = useMemo(
-    () => accountToken.accountTokenList.find((item) => item.symbol === ELF_SYMBOL && item.chainId === MAIN_CHAIN_ID),
-    [accountToken],
+    () => accountTokenList.find((item) => item.symbol === ELF_SYMBOL && item.chainId === MAIN_CHAIN_ID),
+    [accountTokenList],
   );
   const chainInfo = useCurrentChain(MAIN_CHAIN_ID);
   const wallet = useCurrentWalletInfo();

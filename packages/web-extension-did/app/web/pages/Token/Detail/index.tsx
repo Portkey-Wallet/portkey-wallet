@@ -8,7 +8,7 @@ import clsx from 'clsx';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/wallet';
+import { DEFAULT_TOKEN, FAUCET_URL } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useExtensionETransShow } from 'hooks/cms';
 import { ETransType } from 'types/eTrans';
@@ -154,6 +154,7 @@ function TokenDetail() {
                   state: { ...currentToken, address: currentToken.tokenContractAddress },
                 })
               }
+              isShowFaucet={!isMainNet && currentToken.symbol === DEFAULT_TOKEN.symbol}
             />
           </div>
         </div>

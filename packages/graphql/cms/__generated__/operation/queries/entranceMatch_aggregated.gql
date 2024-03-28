@@ -3,28 +3,28 @@ query entranceMatch_aggregated($groupBy: [String], $filter: entranceMatch_filter
         group
         countAll
         count{
-            date_created
-            date_updated
-            description
             id
-            matchRuleList
-            matchSwitch
             status
             user_created
+            date_created
             user_updated
+            date_updated
+            matchRuleList
             weight
+            matchSwitch
+            description
         }
         countDistinct{
-            date_created
-            date_updated
-            description
             id
-            matchRuleList
-            matchSwitch
             status
             user_created
+            date_created
             user_updated
+            date_updated
+            matchRuleList
             weight
+            matchSwitch
+            description
         }
         avg{
             id

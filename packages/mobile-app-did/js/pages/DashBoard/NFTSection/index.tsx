@@ -6,14 +6,15 @@ import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import NFTCollectionItem from './NFTCollectionItem';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchNFTAsync, fetchNFTCollectionsAsync } from '@portkey-wallet/store/store-ca/assets/slice';
+import { fetchNFTAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
-import { useAppCASelector } from '@portkey-wallet/hooks';
 import { NFTCollectionItemShowType } from '@portkey-wallet/types/types-ca/assets';
 import Touchable from 'components/Touchable';
 import { ChainId } from '@portkey-wallet/types';
 import { useRoute } from '@react-navigation/native';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION } from '@portkey-wallet/constants/constants-ca/assets';
 
 export interface OpenCollectionObjType {
   // key = symbol+chainId
@@ -51,22 +52,28 @@ export default function NFTSection() {
   const caAddressInfos = useCaAddressInfoList();
   const dispatch = useAppCommonDispatch();
 
-  const {
-    accountNFT: { accountNFTList, totalRecordCount },
-  } = useAppCASelector(state => state.assets);
+  const { fetchAccountNFTCollectionInfoList, accountNFTList, totalRecordCount } = useAccountNFTCollectionInfo();
 
   const [reFreshing] = useState(false);
   const [openCollectionObj, setOpenCollectionObj] = useState<OpenCollectionObjType>({});
   const { clearType } = useRoute<any>();
 
-  const fetchNFTList = useCallback(() => {
-    if (caAddressInfos.length === 0) return;
-    dispatch(fetchNFTCollectionsAsync({ caAddressInfos }));
-  }, [caAddressInfos, dispatch]);
+  const getNFTCollectionsAsync = useLockCallback(
+    async (isInit: boolean) => {
+      if (totalRecordCount && accountNFTList.length >= totalRecordCount && !isInit) return;
+
+      await fetchAccountNFTCollectionInfoList({
+        caAddressInfos,
+        skipCount: isInit ? 0 : accountNFTList.length,
+        maxResultCount: PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
+      });
+    },
+    [accountNFTList.length, caAddressInfos, fetchAccountNFTCollectionInfoList, totalRecordCount],
+  );
 
   useEffect(() => {
-    fetchNFTList();
-  }, [fetchNFTList]);
+    getNFTCollectionsAsync(true);
+  }, [getNFTCollectionsAsync]);
 
   useEffect(() => {
     if (clearType) setOpenCollectionObj({});
@@ -159,8 +166,9 @@ export default function NFTSection() {
         keyExtractor={(item: NFTCollectionItemShowType) => item?.symbol + item.chainId}
         onRefresh={() => {
           setOpenCollectionObj({});
-          fetchNFTList();
+          getNFTCollectionsAsync(true);
         }}
+        onEndReached={() => getNFTCollectionsAsync()}
       />
     </View>
   );

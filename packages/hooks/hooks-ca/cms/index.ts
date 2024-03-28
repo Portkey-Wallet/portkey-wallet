@@ -13,15 +13,31 @@ import {
   getRememberMeBlackListAsync,
   getTabMenuAsync,
   setEntrance,
+  getLoginControlListAsync,
 } from '@portkey-wallet/store/store-ca/cms/actions';
+import { DEFAULT_LOGIN_MODE_LIST } from '@portkey-wallet/constants/constants-ca/cms';
 
 import { getFaviconUrl, getOrigin } from '@portkey-wallet/utils/dapp/browser';
 
 import { checkSiteIsInBlackList } from '@portkey-wallet/utils/session';
 import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
-import { DEFAULT_ENTRANCE_SHOW, generateEntranceShow, getEntrance } from './util';
-import { IEntranceItem, IEntranceMatchValueConfig } from '@portkey-wallet/types/types-ca/cms';
+import {
+  DEFAULT_ENTRANCE_SHOW,
+  filterLoginModeListToOther,
+  filterLoginModeListToRecommend,
+  generateEntranceShow,
+  getEntrance,
+  parseLoginModeList,
+  sortLoginModeListToAll,
+} from './util';
+import {
+  IEntranceItem,
+  IEntranceMatchValueConfig,
+  IEntranceMatchValueMap,
+  ILoginModeItem,
+} from '@portkey-wallet/types/types-ca/cms';
 import { NetworkType } from '@portkey-wallet/types';
+import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 
 export const useCMS = () => useAppCASelector(state => state.cms);
 
@@ -324,4 +340,65 @@ export const useGetCmsWebsiteInfo = () => {
     getCmsWebsiteInfoImageUrl,
     getCmsWebsiteInfoName,
   };
+};
+
+export const useGetLoginControlListAsync = () => {
+  const dispatch = useAppCommonDispatch();
+  const networkList = useNetworkList();
+  return useCallback(async () => {
+    try {
+      await dispatch(getLoginControlListAsync(networkList.map(item => item.networkType)));
+    } catch (error) {
+      console.log(error, '======error');
+    }
+  }, [dispatch, networkList]);
+};
+
+export const useLoginModeControlList = (forceUpdate?: boolean) => {
+  const { loginModeListMap } = useCMS();
+  const { networkType } = useCurrentNetworkInfo();
+
+  const getLoginControlListAsync = useGetLoginControlListAsync();
+  const dispatch = useAppCommonDispatch();
+
+  useEffect(() => {
+    if (forceUpdate) {
+      getLoginControlListAsync();
+    }
+  }, [dispatch, getLoginControlListAsync, forceUpdate]);
+
+  return {
+    loginModeListMap,
+    currentNetworkLoginModeList: loginModeListMap?.[networkType],
+  };
+};
+
+export const useGetFormattedLoginModeList = (
+  matchValueMap: IEntranceMatchValueMap,
+  deviceType: VersionDeviceType,
+  forceUpdate?: boolean,
+): {
+  loginModeList: ILoginModeItem[];
+  loginModeListToRecommend: ILoginModeItem[];
+  loginModeListToOther: ILoginModeItem[];
+} => {
+  const { currentNetworkLoginModeList } = useLoginModeControlList(forceUpdate);
+
+  return useMemo(() => {
+    if (matchValueMap && currentNetworkLoginModeList && currentNetworkLoginModeList?.length > 0) {
+      const loginModeList = parseLoginModeList(currentNetworkLoginModeList, matchValueMap, deviceType);
+
+      return {
+        loginModeList,
+        loginModeListToRecommend: filterLoginModeListToRecommend(loginModeList, deviceType),
+        loginModeListToOther: filterLoginModeListToOther(loginModeList, deviceType),
+      };
+    }
+
+    return {
+      loginModeList: sortLoginModeListToAll(DEFAULT_LOGIN_MODE_LIST, deviceType),
+      loginModeListToRecommend: filterLoginModeListToRecommend(DEFAULT_LOGIN_MODE_LIST, deviceType),
+      loginModeListToOther: filterLoginModeListToOther(DEFAULT_LOGIN_MODE_LIST, deviceType),
+    };
+  }, [currentNetworkLoginModeList, deviceType, matchValueMap]);
 };

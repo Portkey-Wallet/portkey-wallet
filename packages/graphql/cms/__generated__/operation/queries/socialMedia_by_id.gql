@@ -28,20 +28,24 @@ query socialMedia_by_id($filter: directus_files_filter, $sort: [String], $limit:
         sort
         status
         svgUrl(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
-            charset
-            description
-            duration
-            embed
+            id
+            storage
             filename_disk
             filename_download
-            filesize
+            title
+            type
             folder
-            height
-            id
-            location
-            metadata
-            metadata_func{
-                count
+            uploaded_by
+            uploaded_on
+            uploaded_on_func{
+                year
+                month
+                week
+                day
+                weekday
+                hour
+                minute
+                second
             }
             modified_by
             modified_on
@@ -55,26 +59,22 @@ query socialMedia_by_id($filter: directus_files_filter, $sort: [String], $limit:
                 minute
                 second
             }
-            storage
+            charset
+            filesize
+            width
+            height
+            duration
+            embed
+            description
+            location
             tags
             tags_func{
                 count
             }
-            title
-            type
-            uploaded_by
-            uploaded_on
-            uploaded_on_func{
-                year
-                month
-                week
-                day
-                weekday
-                hour
-                minute
-                second
+            metadata
+            metadata_func{
+                count
             }
-            width
         }
         title
         user_created

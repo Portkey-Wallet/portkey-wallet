@@ -31,7 +31,7 @@ export default function PortKeyTitle({
     <>
       <div className="flex-row-center portkey-title-wrapper">
         <div className="flex-row-center title-left">
-          <CustomSvg type="Logo2" className="portkey-logo" />
+          <CustomSvg type="PortKeyPrompt" className="portkey-logo" />
         </div>
         <div className="right-element">{rightElement}</div>
       </div>

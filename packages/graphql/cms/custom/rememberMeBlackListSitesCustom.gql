@@ -1,7 +1,14 @@
-query rememberMeBlackListSitesCustom($filter: rememberMeBlackListSites_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String){
-    rememberMeBlackListSites(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
-        id
-        name
-        url
-    }
+query rememberMeBlackListSitesCustom(
+  $filter: rememberMeBlackListSites_filter
+  $sort: [String]
+  $limit: Int
+  $offset: Int
+  $page: Int
+  $search: String
+) {
+  rememberMeBlackListSites(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
+    id
+    name
+    url
+  }
 }

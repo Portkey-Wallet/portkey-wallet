@@ -4,43 +4,43 @@ query mediaKitPage_mediaKit_aggregated($groupBy: [String], $filter: mediaKitPage
         countAll
         count{
             id
-            mediaKit_id
             mediaKitPage_id
+            mediaKit_id
         }
         countDistinct{
             id
-            mediaKit_id
             mediaKitPage_id
+            mediaKit_id
         }
         avg{
             id
-            mediaKit_id
             mediaKitPage_id
+            mediaKit_id
         }
         sum{
             id
-            mediaKit_id
             mediaKitPage_id
+            mediaKit_id
         }
         avgDistinct{
             id
-            mediaKit_id
             mediaKitPage_id
+            mediaKit_id
         }
         sumDistinct{
             id
-            mediaKit_id
             mediaKitPage_id
+            mediaKit_id
         }
         min{
             id
-            mediaKit_id
             mediaKitPage_id
+            mediaKit_id
         }
         max{
             id
-            mediaKit_id
             mediaKitPage_id
+            mediaKit_id
         }
     }
 }

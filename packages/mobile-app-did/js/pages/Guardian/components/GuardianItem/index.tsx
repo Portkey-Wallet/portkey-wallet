@@ -21,7 +21,7 @@ import {
   VerifyStatus,
 } from '@portkey-wallet/types/verifier';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
-import { LoginGuardianTypeIcon } from 'constants/misc';
+import { LOGIN_GUARDIAN_TYPE_ICON } from 'constants/misc';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { VerifierImage } from '../VerifierImage';
 import { GuardiansStatus, GuardiansStatusItem } from 'pages/Guardian/types';
@@ -288,7 +288,7 @@ export default function GuardianItem({
       )}
       <View style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flex1]}>
         <View style={[GStyles.center, styles.loginTypeIconWrap]}>
-          <Svg icon={LoginGuardianTypeIcon[guardianItem.guardianType]} size={pTd(18)} />
+          <Svg icon={LOGIN_GUARDIAN_TYPE_ICON[guardianItem.guardianType]} size={pTd(18)} />
         </View>
 
         <VerifierImage

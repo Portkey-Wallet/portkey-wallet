@@ -31,10 +31,6 @@ const GroupInfo = () => {
   const { groupInfo, isAdmin, refresh } = useGroupChannelInfo(`${channelUuid}`);
   const { sendMassMessage } = useSendChannelMessage();
   const shareLink = useMemo(() => LinkPortkeyPath.addGroup + channelUuid, [channelUuid]);
-  const memberLen = useMemo(
-    () => (typeof groupInfo?.members.length === 'number' ? groupInfo?.members.length : 0),
-    [groupInfo?.members.length],
-  );
   const navigate = useNavigateState<TWalletNameLocationState | TViewContactLocationState>();
   const { t } = useTranslation();
   const { setLoading } = useLoading();
@@ -109,8 +105,8 @@ const GroupInfo = () => {
               <Avatar isGroupAvatar={true} src={groupInfo?.icon} avatarSize="large" />
               <div className="group-name">{groupInfo?.name || ''}</div>
               <div className="group-members">
-                {memberLen}
-                {memberLen > 1 ? ' members' : ' member'}
+                {groupInfo?.totalCount}
+                {(groupInfo?.totalCount ?? 0) > 1 ? ' members' : ' member'}
               </div>
             </div>
           </div>

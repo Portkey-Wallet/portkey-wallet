@@ -1,14 +1,11 @@
 import { useETransShow, useEntrance, useBridgeButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { IEntranceMatchValueConfig } from '@portkey-wallet/types/types-ca/cms';
-
+import { IEntranceMatchValueMap } from '@portkey-wallet/types/types-ca/cms';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 
-export const useEntranceConfig = (): IEntranceMatchValueConfig => {
+export const useEntranceConfig = (): IEntranceMatchValueMap => {
   return {
     deviceType: String(VersionDeviceType.Extension),
-    version: async () => {
-      return process.env.SDK_VERSION?.slice(1) || '';
-    },
+    version: process.env.SDK_VERSION?.slice(1) || '',
   };
 };
 

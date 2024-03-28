@@ -1,6 +1,5 @@
-query home($filter: directus_files_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String, $filter1: directus_files_filter, $sort1: [String], $limit1: Int, $offset1: Int, $page1: Int, $search1: String, $filter2: dApp_filter, $sort2: [String], $limit2: Int, $offset2: Int, $page2: Int, $search2: String, $filter3: directus_files_filter, $sort3: [String], $limit3: Int, $offset3: Int, $page3: Int, $search3: String, $filter4: home_dApp_filter, $sort4: [String], $limit4: Int, $offset4: Int, $page4: Int, $search4: String, $filter5: home_filter, $sort5: [String], $limit5: Int, $offset5: Int, $page5: Int, $search5: String, $filter6: home_dApp_filter, $sort6: [String], $limit6: Int, $offset6: Int, $page6: Int, $search6: String){
+query home($filter: directus_files_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String){
     home{
-        dAppSectionTitle
         date_updated
         date_updated_func{
             year
@@ -13,20 +12,24 @@ query home($filter: directus_files_filter, $sort: [String], $limit: Int, $offset
             second
         }
         focusImage(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
-            charset
-            description
-            duration
-            embed
+            id
+            storage
             filename_disk
             filename_download
-            filesize
+            title
+            type
             folder
-            height
-            id
-            location
-            metadata
-            metadata_func{
-                count
+            uploaded_by
+            uploaded_on
+            uploaded_on_func{
+                year
+                month
+                week
+                day
+                weekday
+                hour
+                minute
+                second
             }
             modified_by
             modified_on
@@ -40,165 +43,28 @@ query home($filter: directus_files_filter, $sort: [String], $limit: Int, $offset
                 minute
                 second
             }
-            storage
+            charset
+            filesize
+            width
+            height
+            duration
+            embed
+            description
+            location
             tags
             tags_func{
                 count
             }
-            title
-            type
-            uploaded_by
-            uploaded_on
-            uploaded_on_func{
-                year
-                month
-                week
-                day
-                weekday
-                hour
-                minute
-                second
+            metadata
+            metadata_func{
+                count
             }
-            width
         }
         id
         user_updated
+        dAppSectionTitle
         videoContent
         videoTitle
         videoUrl
-        dAppList(filter: $filter6, sort: $sort6, limit: $limit6, offset: $offset6, page: $page6, search: $search6){
-            dApp_id(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2){
-                date_created
-                date_created_func{
-                    year
-                    month
-                    week
-                    day
-                    weekday
-                    hour
-                    minute
-                    second
-                }
-                date_updated
-                date_updated_func{
-                    year
-                    month
-                    week
-                    day
-                    weekday
-                    hour
-                    minute
-                    second
-                }
-                id
-                index
-                logo(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1){
-                    charset
-                    description
-                    duration
-                    embed
-                    filename_disk
-                    filename_download
-                    filesize
-                    folder
-                    height
-                    id
-                    location
-                    metadata
-                    metadata_func{
-                        count
-                    }
-                    modified_by
-                    modified_on
-                    modified_on_func{
-                        year
-                        month
-                        week
-                        day
-                        weekday
-                        hour
-                        minute
-                        second
-                    }
-                    storage
-                    tags
-                    tags_func{
-                        count
-                    }
-                    title
-                    type
-                    uploaded_by
-                    uploaded_on
-                    uploaded_on_func{
-                        year
-                        month
-                        week
-                        day
-                        weekday
-                        hour
-                        minute
-                        second
-                    }
-                    width
-                }
-                name
-                status
-                url
-                user_created
-                user_updated
-            }
-            home_id(filter: $filter5, sort: $sort5, limit: $limit5, offset: $offset5, page: $page5, search: $search5){
-                dAppSectionTitle
-                date_updated
-                date_updated_func{
-                    year
-                    month
-                    week
-                    day
-                    weekday
-                    hour
-                    minute
-                    second
-                }
-                focusImage(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3){
-                    charset
-                    description
-                    duration
-                    embed
-                    filename_disk
-                    filename_download
-                    filesize
-                    folder
-                    height
-                    id
-                    location
-                    metadata
-                    modified_by
-                    modified_on
-                    storage
-                    tags
-                    title
-                    type
-                    uploaded_by
-                    uploaded_on
-                    width
-                }
-                id
-                user_updated
-                videoContent
-                videoTitle
-                videoUrl
-                dAppList(filter: $filter4, sort: $sort4, limit: $limit4, offset: $offset4, page: $page4, search: $search4){
-                    id
-                }
-                dAppList_func{
-                    count
-                }
-            }
-            id
-        }
-        dAppList_func{
-            count
-        }
     }
 }

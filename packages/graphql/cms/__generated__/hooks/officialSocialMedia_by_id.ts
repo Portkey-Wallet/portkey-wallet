@@ -37,28 +37,38 @@ export type OfficialSocialMedia_By_IdQuery = {
     user_updated?: string | null;
     activeSvg?: {
       __typename?: 'directus_files';
-      charset?: string | null;
-      description?: string | null;
-      duration?: number | null;
-      embed?: string | null;
+      id: string;
+      storage: string;
       filename_disk?: string | null;
       filename_download: string;
-      filesize?: any | null;
-      folder?: string | null;
-      height?: number | null;
-      id: string;
-      location?: string | null;
-      metadata?: any | null;
-      modified_by?: string | null;
-      modified_on?: any | null;
-      storage: string;
-      tags?: any | null;
       title?: string | null;
       type?: string | null;
+      folder?: string | null;
       uploaded_by?: string | null;
       uploaded_on?: any | null;
+      modified_by?: string | null;
+      modified_on?: any | null;
+      charset?: string | null;
+      filesize?: any | null;
       width?: number | null;
-      metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+      height?: number | null;
+      duration?: number | null;
+      embed?: string | null;
+      description?: string | null;
+      location?: string | null;
+      tags?: any | null;
+      metadata?: any | null;
+      uploaded_on_func?: {
+        __typename?: 'datetime_functions';
+        year?: number | null;
+        month?: number | null;
+        week?: number | null;
+        day?: number | null;
+        weekday?: number | null;
+        hour?: number | null;
+        minute?: number | null;
+        second?: number | null;
+      } | null;
       modified_on_func?: {
         __typename?: 'datetime_functions';
         year?: number | null;
@@ -71,17 +81,7 @@ export type OfficialSocialMedia_By_IdQuery = {
         second?: number | null;
       } | null;
       tags_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-      uploaded_on_func?: {
-        __typename?: 'datetime_functions';
-        year?: number | null;
-        month?: number | null;
-        week?: number | null;
-        day?: number | null;
-        weekday?: number | null;
-        hour?: number | null;
-        minute?: number | null;
-        second?: number | null;
-      } | null;
+      metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
     } | null;
     date_created_func?: {
       __typename?: 'datetime_functions';
@@ -107,28 +107,38 @@ export type OfficialSocialMedia_By_IdQuery = {
     } | null;
     svg?: {
       __typename?: 'directus_files';
-      charset?: string | null;
-      description?: string | null;
-      duration?: number | null;
-      embed?: string | null;
+      id: string;
+      storage: string;
       filename_disk?: string | null;
       filename_download: string;
-      filesize?: any | null;
-      folder?: string | null;
-      height?: number | null;
-      id: string;
-      location?: string | null;
-      metadata?: any | null;
-      modified_by?: string | null;
-      modified_on?: any | null;
-      storage: string;
-      tags?: any | null;
       title?: string | null;
       type?: string | null;
+      folder?: string | null;
       uploaded_by?: string | null;
       uploaded_on?: any | null;
+      modified_by?: string | null;
+      modified_on?: any | null;
+      charset?: string | null;
+      filesize?: any | null;
       width?: number | null;
-      metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+      height?: number | null;
+      duration?: number | null;
+      embed?: string | null;
+      description?: string | null;
+      location?: string | null;
+      tags?: any | null;
+      metadata?: any | null;
+      uploaded_on_func?: {
+        __typename?: 'datetime_functions';
+        year?: number | null;
+        month?: number | null;
+        week?: number | null;
+        day?: number | null;
+        weekday?: number | null;
+        hour?: number | null;
+        minute?: number | null;
+        second?: number | null;
+      } | null;
       modified_on_func?: {
         __typename?: 'datetime_functions';
         year?: number | null;
@@ -141,17 +151,7 @@ export type OfficialSocialMedia_By_IdQuery = {
         second?: number | null;
       } | null;
       tags_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-      uploaded_on_func?: {
-        __typename?: 'datetime_functions';
-        year?: number | null;
-        month?: number | null;
-        week?: number | null;
-        day?: number | null;
-        weekday?: number | null;
-        hour?: number | null;
-        minute?: number | null;
-        second?: number | null;
-      } | null;
+      metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
     } | null;
   } | null;
 };
@@ -174,20 +174,24 @@ export const OfficialSocialMedia_By_IdDocument = gql`
   ) {
     officialSocialMedia_by_id(id: $id) {
       activeSvg(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
-        charset
-        description
-        duration
-        embed
+        id
+        storage
         filename_disk
         filename_download
-        filesize
+        title
+        type
         folder
-        height
-        id
-        location
-        metadata
-        metadata_func {
-          count
+        uploaded_by
+        uploaded_on
+        uploaded_on_func {
+          year
+          month
+          week
+          day
+          weekday
+          hour
+          minute
+          second
         }
         modified_by
         modified_on
@@ -201,26 +205,22 @@ export const OfficialSocialMedia_By_IdDocument = gql`
           minute
           second
         }
-        storage
+        charset
+        filesize
+        width
+        height
+        duration
+        embed
+        description
+        location
         tags
         tags_func {
           count
         }
-        title
-        type
-        uploaded_by
-        uploaded_on
-        uploaded_on_func {
-          year
-          month
-          week
-          day
-          weekday
-          hour
-          minute
-          second
+        metadata
+        metadata_func {
+          count
         }
-        width
       }
       date_created
       date_created_func {
@@ -251,20 +251,24 @@ export const OfficialSocialMedia_By_IdDocument = gql`
       sort
       status
       svg(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1) {
-        charset
-        description
-        duration
-        embed
+        id
+        storage
         filename_disk
         filename_download
-        filesize
+        title
+        type
         folder
-        height
-        id
-        location
-        metadata
-        metadata_func {
-          count
+        uploaded_by
+        uploaded_on
+        uploaded_on_func {
+          year
+          month
+          week
+          day
+          weekday
+          hour
+          minute
+          second
         }
         modified_by
         modified_on
@@ -278,26 +282,22 @@ export const OfficialSocialMedia_By_IdDocument = gql`
           minute
           second
         }
-        storage
+        charset
+        filesize
+        width
+        height
+        duration
+        embed
+        description
+        location
         tags
         tags_func {
           count
         }
-        title
-        type
-        uploaded_by
-        uploaded_on
-        uploaded_on_func {
-          year
-          month
-          week
-          day
-          weekday
-          hour
-          minute
-          second
+        metadata
+        metadata_func {
+          count
         }
-        width
       }
       user_created
       user_updated

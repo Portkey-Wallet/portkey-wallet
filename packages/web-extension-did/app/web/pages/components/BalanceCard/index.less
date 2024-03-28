@@ -1,17 +1,16 @@
 @import '../../../assets/theme/color.less';
 
 .balance-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   padding-bottom: 23px;
-
-  .balance-btn {
-    display: flex;
-    gap: 48px;
-    &.popup-card-num-more-than-3 {
+    &.prompt-card,
+    &.popup-card-num-less-than-4 {
+      gap: 48px;
+    }
+    &.popup-card-num-4 {
       gap: 24px;
+    }
+    &.popup-card-num-more-than-4 {
+      justify-content: space-evenly;
     }
     .btn {
       display: flex;
@@ -38,5 +37,4 @@
         text-align: center;
       }
     }
-  }
 }

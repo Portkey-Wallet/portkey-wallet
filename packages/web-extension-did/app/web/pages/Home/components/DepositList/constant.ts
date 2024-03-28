@@ -3,8 +3,8 @@ import { SvgType } from 'components/CustomSvg';
 export enum DepositType {
   buy,
   sell,
-  'deposit-usdt',
-  'withdraw-usdt',
+  'deposit-crypto',
+  'withdraw-crypto',
   bridge,
 }
 
@@ -29,16 +29,16 @@ export const depositList: IDepositItem[] = [
     desc: 'Sell crypto for fiat currency',
   },
   {
-    title: 'Deposit USDT',
-    type: DepositType['deposit-usdt'],
+    title: 'Deposit Crypto',
+    type: DepositType['deposit-crypto'],
     icon: 'Deposit',
-    desc: 'Receive USDT from other chains',
+    desc: 'Receive USDT & SGR from other chains',
   },
   {
-    title: 'Withdraw USDT',
-    type: DepositType['withdraw-usdt'],
+    title: 'Withdraw Crypto',
+    type: DepositType['withdraw-crypto'],
     icon: 'Withdraw',
-    desc: 'Send USDT to other chains',
+    desc: 'Send USDT & SGR to other chains',
   },
   {
     title: 'Cross-Chain Bridge',

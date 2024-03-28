@@ -1,13 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { TokenItemShowType, TokenState } from '@portkey-wallet/types/types-ca/token';
-import { fetchAllTokenListAsync, getSymbolImagesAsync } from './action';
+import { fetchAllTokenListAsync, getSymbolImagesAsync, resetTokenInfo } from './action';
 
-const initialState: TokenState = {
+export const initialTokenInfo = {
   tokenDataShowInMarket: [],
-  isFetching: false,
   skipCount: 0,
   maxResultCount: 1000,
   totalRecordCount: 0,
+};
+
+const initialState: TokenState = {
+  ...initialTokenInfo,
+  isFetching: false,
   symbolImages: {},
 };
 
@@ -29,10 +33,11 @@ export const tokenManagementSlice = createSlice({
     builder
       .addCase(fetchAllTokenListAsync.pending, state => {
         state.isFetching = true;
-        // state.status = 'loading';
       })
       .addCase(fetchAllTokenListAsync.fulfilled, (state, action) => {
-        const { list } = action.payload;
+        const { list, totalRecordCount, skipCount, maxResultCount, currentNetwork = 'MAINNET' } = action.payload;
+        const preTokenDataShowInMarket = state.tokenInfo?.[currentNetwork]?.tokenDataShowInMarket || [];
+        if (skipCount !== 0 && preTokenDataShowInMarket?.length === totalRecordCount) return;
         const tmpToken: TokenItemShowType[] = list.map(item => ({
           isAdded: item.isDisplay,
           isDefault: item.isDefault,
@@ -46,13 +51,24 @@ export const tokenManagementSlice = createSlice({
           name: item.token.symbol,
           imageUrl: item.token.imageUrl,
         }));
-
-        state.tokenDataShowInMarket = tmpToken;
+        const newList = skipCount === 0 ? tmpToken : [...preTokenDataShowInMarket, ...tmpToken];
+        if (!state.tokenInfo) state.tokenInfo = {};
+        state.tokenInfo[currentNetwork] = {
+          tokenDataShowInMarket: newList,
+          totalRecordCount,
+          skipCount,
+          maxResultCount,
+          isFetching: false,
+        };
         state.isFetching = false;
       })
       .addCase(fetchAllTokenListAsync.rejected, state => {
         state.isFetching = false;
-        // state.status = 'failed';
+      })
+      .addCase(resetTokenInfo, (state, action) => {
+        const tokenInfo = state.tokenInfo;
+        if (tokenInfo?.[action.payload]) delete tokenInfo[action.payload];
+        state.tokenInfo = tokenInfo;
       })
       .addCase(getSymbolImagesAsync.fulfilled, (state, action) => {
         state.symbolImages = {

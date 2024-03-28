@@ -1,0 +1,13 @@
+query loginModeMatch_by_id($id: ID!){
+    loginModeMatch_by_id(id: $id){
+        id
+        status
+        weight
+        matchSwitch
+        matchRuleList
+        matchRuleList_func{
+            count
+        }
+        description
+    }
+}

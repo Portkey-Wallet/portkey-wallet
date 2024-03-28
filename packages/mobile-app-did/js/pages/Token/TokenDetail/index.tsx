@@ -59,7 +59,6 @@ const TokenDetail: React.FC = () => {
   const defaultToken = useDefaultToken();
 
   const isMainnet = useIsMainnet();
-  const currentWallet = useCurrentWallet();
   const caAddressInfos = useCaAddressInfoList();
   const navigation = useNavigation();
   const dispatch = useAppCommonDispatch();

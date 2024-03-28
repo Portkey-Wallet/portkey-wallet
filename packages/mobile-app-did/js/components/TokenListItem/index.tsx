@@ -10,12 +10,12 @@ import { StyleSheet, View } from 'react-native';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
 import Svg from 'components/Svg';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import Touchable from 'components/Touchable';
+import { ZERO } from '@portkey-wallet/constants/misc';
 interface TokenListItemType {
   currentSymbol?: string;
   currentChainId?: ChainId;
@@ -29,11 +29,8 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
   const { currentNetwork } = useWallet();
   const defaultToken = useDefaultToken();
 
-  const isTokenHasPrice = useIsTokenHasPrice(item?.symbol);
   const isMainnet = useIsMainnet();
   const symbolImages = useSymbolImages();
-
-  const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
 
   return (
     <Touchable style={itemStyle.wrap} onPress={() => onPress?.(item)}>
@@ -62,12 +59,9 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
               {formatAmountShow(divDecimals(item?.balance, item.decimals))}
             </TextL>
             <TextS numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.dollar}>
-              {isMainnet &&
-                isTokenHasPrice &&
-                `$ ${formatAmountShow(
-                  divDecimals(item?.balance, item.decimals).multipliedBy(tokenPriceObject[item?.symbol]),
-                  2,
-                )}`}
+              {isMainnet && item.balanceInUsd && !ZERO.isEqualTo(item.balanceInUsd) && item.balanceInUsd
+                ? `$ ${formatAmountShow(item.balanceInUsd, 2)}`
+                : ''}
             </TextS>
           </View>
         )}

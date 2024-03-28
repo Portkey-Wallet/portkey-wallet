@@ -28,6 +28,7 @@ import {
   generateEntranceShow,
   getEntrance,
   parseLoginModeList,
+  sortLoginModeListToAll,
 } from './util';
 import {
   IEntranceItem,
@@ -395,7 +396,7 @@ export const useGetFormattedLoginModeList = (
     }
 
     return {
-      loginModeList: [],
+      loginModeList: sortLoginModeListToAll(DEFAULT_LOGIN_MODE_LIST, deviceType),
       loginModeListToRecommend: filterLoginModeListToRecommend(DEFAULT_LOGIN_MODE_LIST, deviceType),
       loginModeListToOther: filterLoginModeListToOther(DEFAULT_LOGIN_MODE_LIST, deviceType),
     };

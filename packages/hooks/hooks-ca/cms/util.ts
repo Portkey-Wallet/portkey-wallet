@@ -172,6 +172,12 @@ export const parseLoginModeList = (
     .sort((a, b) => (a[indexKey] as number) - (b[indexKey] as number));
 };
 
+export const sortLoginModeListToAll = (loginModeList: ILoginModeItem[], deviceType: VersionDeviceType) => {
+  const key = LoginModeKeys[deviceType];
+  const indexKey = `${key}Index` as TLoginModeIndexKey;
+  return loginModeList.sort((a, b) => a[indexKey] - b[indexKey]);
+};
+
 export const filterLoginModeListToRecommend = (loginModeList: ILoginModeItem[], deviceType: VersionDeviceType) => {
   const key = LoginModeKeys[deviceType];
   const recommendKey = `${key}Recommend` as TLoginModeRecommendKey;

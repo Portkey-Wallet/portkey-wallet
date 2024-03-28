@@ -98,7 +98,7 @@ const GuardianEdit: React.FC = () => {
 
   const verifyToken = useVerifyToken();
   const [firstName, setFirstName] = useState<string>();
-  const loginModeList = useLoginModeList(true);
+  const loginModeList = useLoginModeList();
 
   const thirdPartyInfoRef = useRef<thirdPartyInfoType>();
   const { approveParams } = useRouterParams<NavigateMultiLevelParams>();

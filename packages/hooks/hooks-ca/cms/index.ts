@@ -353,7 +353,7 @@ export const useGetLoginControlListAsync = () => {
   }, [dispatch, networkList]);
 };
 
-export const useLoginModeControlList = (init?: boolean) => {
+export const useLoginModeControlList = (forceUpdate?: boolean) => {
   const { loginModeListMap } = useCMS();
   const { networkType } = useCurrentNetworkInfo();
 
@@ -361,10 +361,10 @@ export const useLoginModeControlList = (init?: boolean) => {
   const dispatch = useAppCommonDispatch();
 
   useEffect(() => {
-    if (init) {
+    if (forceUpdate) {
       getLoginControlListAsync();
     }
-  }, [dispatch, getLoginControlListAsync, init]);
+  }, [dispatch, getLoginControlListAsync, forceUpdate]);
 
   return {
     loginModeListMap,
@@ -375,12 +375,13 @@ export const useLoginModeControlList = (init?: boolean) => {
 export const useGetFormattedLoginModeList = (
   matchValueMap: IEntranceMatchValueMap,
   deviceType: VersionDeviceType,
+  forceUpdate?: boolean,
 ): {
   loginModeList: ILoginModeItem[];
   loginModeListToRecommend: ILoginModeItem[];
   loginModeListToOther: ILoginModeItem[];
 } => {
-  const { currentNetworkLoginModeList } = useLoginModeControlList();
+  const { currentNetworkLoginModeList } = useLoginModeControlList(forceUpdate);
 
   return useMemo(() => {
     if (matchValueMap && currentNetworkLoginModeList && currentNetworkLoginModeList?.length > 0) {

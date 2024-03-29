@@ -72,6 +72,7 @@ export const useAccountTokenInfo = () => {
       caAddressInfos: { chainId: ChainId; caAddress: string }[];
       skipCount?: number;
       maxResultCount?: number;
+      isInit?: boolean;
     }) => {
       return dispatch(
         fetchTokenListAsync({

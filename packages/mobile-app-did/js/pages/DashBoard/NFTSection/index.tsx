@@ -6,8 +6,6 @@ import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import NFTCollectionItem from './NFTCollectionItem';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchNFTAsync } from '@portkey-wallet/store/store-ca/assets/slice';
-import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { NFTCollectionItemShowType } from '@portkey-wallet/types/types-ca/assets';
 import Touchable from 'components/Touchable';
 import { ChainId } from '@portkey-wallet/types';
@@ -50,9 +48,8 @@ const NFTCollection: React.FC<NFTCollectionProps> = memo(function NFTCollection(
 export default function NFTSection() {
   const { t } = useLanguage();
   const caAddressInfos = useCaAddressInfoList();
-  const dispatch = useAppCommonDispatch();
-
-  const { fetchAccountNFTCollectionInfoList, accountNFTList, totalRecordCount } = useAccountNFTCollectionInfo();
+  const { fetchAccountNFTCollectionInfoList, fetchAccountNFTItem, accountNFTList, totalRecordCount } =
+    useAccountNFTCollectionInfo();
 
   const [reFreshing] = useState(false);
   const [openCollectionObj, setOpenCollectionObj] = useState<OpenCollectionObjType>({});
@@ -93,14 +90,12 @@ export default function NFTSection() {
     async (symbol: string, chainId: ChainId, itemCount: number) => {
       const key = `${symbol}${chainId}`;
 
-      await dispatch(
-        fetchNFTAsync({
-          symbol,
-          chainId,
-          caAddressInfos: caAddressInfos.filter(item => item.chainId === chainId),
-          pageNum: 0,
-        }),
-      );
+      await fetchAccountNFTItem({
+        symbol,
+        chainId,
+        caAddressInfos: caAddressInfos.filter(item => item.chainId === chainId),
+        pageNum: 0,
+      });
 
       setOpenCollectionObj(pre => ({
         ...pre,
@@ -111,7 +106,7 @@ export default function NFTSection() {
         },
       }));
     },
-    [caAddressInfos, dispatch],
+    [caAddressInfos, fetchAccountNFTItem],
   );
 
   const loadMoreItem = useCallback(
@@ -121,14 +116,12 @@ export default function NFTSection() {
       const currentCollectionObj = accountNFTList.find(item => item.symbol === symbol && item.chainId === chainId);
       console.log('=====', pageNum, currentOpenObj, currentCollectionObj);
 
-      await dispatch(
-        fetchNFTAsync({
-          symbol,
-          chainId,
-          caAddressInfos: caAddressInfos.filter(item => item.chainId === chainId),
-          pageNum: pageNum,
-        }),
-      );
+      fetchAccountNFTItem({
+        symbol,
+        chainId,
+        caAddressInfos: caAddressInfos.filter(item => item.chainId === chainId),
+        pageNum: pageNum,
+      });
 
       setOpenCollectionObj(prev => ({
         ...prev,
@@ -138,7 +131,7 @@ export default function NFTSection() {
         },
       }));
     },
-    [accountNFTList, caAddressInfos, dispatch, openCollectionObj],
+    [accountNFTList, caAddressInfos, fetchAccountNFTItem, openCollectionObj],
   );
 
   return (

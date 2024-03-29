@@ -2,7 +2,7 @@ import { useAppCASelector, useAppCommonDispatch } from '../index';
 import { fetchAllTokenListAsync, getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { useMemo, useCallback, useEffect } from 'react';
 import { useCurrentNetworkInfo } from './network';
-import { initialTokenInfo } from '@portkey-wallet/store/store-ca/tokenManagement/slice';
+import { INITIAL_TOKEN_INFO } from '@portkey-wallet/store/store-ca/tokenManagement/slice';
 import { useAccountTokenInfo } from './assets';
 
 export const useToken = () => {
@@ -12,13 +12,13 @@ export const useToken = () => {
   const tokenState = useAppCASelector(state => state.tokenManagement);
 
   const tokenInfo = useMemo(
-    () => tokenState?.tokenInfo?.[currentNetworkInfo.networkType] || initialTokenInfo,
+    () => tokenState?.tokenInfo?.[currentNetworkInfo.networkType] || INITIAL_TOKEN_INFO,
     [currentNetworkInfo.networkType, tokenState?.tokenInfo],
   );
 
   const fetchTokenInfoList = useCallback(
-    async (params: { keyword: string; chainIdArray: string[]; skipCount?: number; maxResultCount?: number }) => {
-      await dispatch(
+    (params: { keyword: string; chainIdArray: string[]; skipCount?: number; maxResultCount?: number }) => {
+      return dispatch(
         fetchAllTokenListAsync({
           ...params,
           currentNetwork: currentNetworkInfo.networkType,

@@ -62,14 +62,19 @@ export default function NFT() {
       const nftColKey = `${symbol}_${chainId}`;
       const curNftNum = nftNum[nftColKey];
       setGetMoreFlag(true);
-      await fetchAccountNFTItem({
-        symbol,
-        chainId: chainId as ChainId,
-        pageNum: curNftNum,
-        caAddressInfos: caAddressInfos.filter((item) => item.chainId === chainId),
-      });
-      setNftNum({ ...nftNum, [nftColKey]: curNftNum + 1 });
-      setGetMoreFlag(false);
+      try {
+        await fetchAccountNFTItem({
+          symbol,
+          chainId: chainId as ChainId,
+          pageNum: curNftNum,
+          caAddressInfos: caAddressInfos.filter((item) => item.chainId === chainId),
+        });
+      } catch (error) {
+        console.log('===getMoreNFTItem error', error);
+      } finally {
+        setNftNum({ ...nftNum, [nftColKey]: curNftNum + 1 });
+        setGetMoreFlag(false);
+      }
     },
     [getMoreFlag, nftNum, fetchAccountNFTItem, caAddressInfos],
   );

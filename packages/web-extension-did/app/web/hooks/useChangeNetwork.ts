@@ -38,7 +38,7 @@ export function useChangeNetwork() {
       } else {
         if (!isPrompt) {
           await sleep(500);
-          InternalMessage.payload(PortkeyMessageTypes.REGISTER_START_WALLET).send();
+          await InternalMessage.payload(PortkeyMessageTypes.REGISTER_START_WALLET).send();
         } else {
           await OpenNewTabController.closeOpenTabs(true);
           navigate('/register/start');

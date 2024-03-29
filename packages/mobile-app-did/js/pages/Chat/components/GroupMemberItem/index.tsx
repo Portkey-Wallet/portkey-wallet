@@ -64,7 +64,7 @@ export default memo(
       </Touchable>
     );
   },
-  (preProps, nextProps) => preProps.selected === nextProps.selected,
+  (preProps, nextProps) => preProps.selected === nextProps.selected && preProps.disabled === nextProps.disabled,
 );
 
 const styles = StyleSheet.create({

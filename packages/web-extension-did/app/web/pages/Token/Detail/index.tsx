@@ -8,7 +8,7 @@ import clsx from 'clsx';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { DEFAULT_TOKEN, FAUCET_URL } from '@portkey-wallet/constants/constants-ca/wallet';
+import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useExtensionETransShow } from 'hooks/cms';
 import { ETransType } from 'types/eTrans';
@@ -21,6 +21,7 @@ import { useLocationState, useNavigateState } from 'hooks/router';
 import { TSendLocationState, TTokenDetailLocationState } from 'types/router';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
 import { SHOW_RAMP_CHAIN_ID_LIST, SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 export enum TokenTransferStatus {
   CONFIRMED = 'Confirmed',
@@ -57,6 +58,11 @@ function TokenDetail() {
   const isShowWithdrawUSDT = useMemo(
     () => currentToken.symbol === 'USDT' && isETransWithdrawShow,
     [currentToken.symbol, isETransWithdrawShow],
+  );
+  const defaultToken = useDefaultToken();
+  const isShowFaucet = useMemo(
+    () => !isMainNet && currentToken.symbol === defaultToken.symbol && currentToken.chainId === 'AELF',
+    [currentToken.chainId, currentToken.symbol, defaultToken.symbol, isMainNet],
   );
   const amountInUsdShow = useAmountInUsdShow();
   useFreshTokenPrice();
@@ -154,7 +160,7 @@ function TokenDetail() {
                   state: { ...currentToken, address: currentToken.tokenContractAddress },
                 })
               }
-              isShowFaucet={!isMainNet && currentToken.symbol === DEFAULT_TOKEN.symbol}
+              isShowFaucet={isShowFaucet}
             />
           </div>
         </div>
@@ -172,6 +178,7 @@ function TokenDetail() {
     isShowWithdrawUSDT,
     isShowBuy,
     handleBuy,
+    isShowFaucet,
     navigate,
     handleClickETrans,
   ]);

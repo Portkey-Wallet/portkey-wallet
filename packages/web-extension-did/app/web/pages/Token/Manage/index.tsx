@@ -7,7 +7,6 @@ import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import DropdownSearch from 'components/DropdownSearch';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useCommonState, useLoading, useUserInfo } from 'store/Provider/hooks';
-import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import PromptFrame from 'pages/components/PromptFrame';
@@ -127,7 +126,12 @@ export default function AddToken() {
         });
         await sleep(1000);
         if (!filterWord) {
-          await appDispatch(fetchAllTokenListAsync({ chainIdArray }));
+          await fetchTokenInfoList({
+            chainIdArray,
+            keyword: '',
+            skipCount: 0,
+            maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+          });
         } else {
           await handleSearch(filterWord);
         }
@@ -140,7 +144,7 @@ export default function AddToken() {
         setLoading(false);
       }
     },
-    [appDispatch, chainIdArray, filterWord, handleSearch, setLoading],
+    [chainIdArray, fetchTokenInfoList, filterWord, handleSearch, setLoading],
   );
 
   const renderTokenItemBtn = useCallback(

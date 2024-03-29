@@ -3,7 +3,7 @@ import OverlayModal from 'components/OverlayModal';
 import { FlatList, StyleSheet } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
 import CommonInput from 'components/CommonInput';
-import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
+import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { AccountType } from '@portkey-wallet/types/wallet';
 import TokenListItem from 'components/TokenListItem';
 import { defaultColors } from 'assets/theme';
@@ -34,7 +34,7 @@ type TokenListProps = {
 
 const TokenList = ({ title = 'Select Token', onFinishSelectToken, currentSymbol, currentChainId }: TokenListProps) => {
   const { t } = useLanguage();
-  const { tokenDataShowInMarket, totalRecordCount, fetchTokenInfoList } = useToken();
+  const { tokenDataShowInMarket = [], totalRecordCount, fetchTokenInfoList } = useToken();
 
   const dispatch = useAppCommonDispatch();
   const chainIdList = useChainIdList();
@@ -43,10 +43,10 @@ const TokenList = ({ title = 'Select Token', onFinishSelectToken, currentSymbol,
   const [keyword, setKeyword] = useState('');
   const debounceKeyword = useDebounce(keyword, 800);
 
-  const [filteredShowList, setFilteredShowList] = useState<any[]>([]);
+  const [filteredShowList, setFilteredShowList] = useState<TokenItemShowType[]>([]);
 
   const renderItem = useCallback(
-    ({ item }: { item: any }) => (
+    ({ item }: { item: TokenItemShowType }) => (
       <TokenListItem
         noBalanceShow
         key={`${item.symbol}${item.chainId}`}

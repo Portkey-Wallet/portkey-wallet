@@ -11,7 +11,6 @@ import { useCurrentCaInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wall
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
-import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import GStyles from 'assets/theme/GStyles';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
@@ -26,6 +25,7 @@ import CommonButton from 'components/CommonButton';
 import Svg from 'components/Svg';
 import { copyText } from 'utils';
 import Touchable from 'components/Touchable';
+import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 
 type MyWalletModalType = {
   tabInfo: ITabItem;
@@ -38,10 +38,7 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
   const caInfo = useCurrentCaInfo();
   const { userInfo, currentNetwork } = useWallet();
   const defaultToken = useDefaultToken();
-
-  const {
-    accountToken: { accountTokenList },
-  } = useAppCASelector(state => state.assets);
+  const { accountTokenList } = useAccountTokenInfo();
 
   const caInfoList = useMemo(() => {
     return Object.entries(caInfo || {})

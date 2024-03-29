@@ -5,7 +5,7 @@ import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { useCaAddressInfoList, useChainIdList, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useAppDispatch } from 'store/hooks';
 import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
-import { useThrottleCallback } from '@portkey-wallet/hooks';
+import { useLatestRef, useThrottleCallback } from '@portkey-wallet/hooks';
 import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 
 export function useIsShowDeletion() {
@@ -28,13 +28,14 @@ export function useGetAccountTokenList() {
   const { caAddressList } = useCurrentWalletInfo();
   const dispatch = useAppDispatch();
   const caAddressInfoList = useCaAddressInfoList();
-
+  const lastCaAddressInfoList = useLatestRef(caAddressInfoList);
   return useThrottleCallback(
     () => {
       if (caAddressList?.length === 0) return;
-      return dispatch(fetchTokenListAsync({ caAddressInfos: caAddressInfoList || [] }));
+      return dispatch(fetchTokenListAsync({ caAddressInfos: lastCaAddressInfoList.current || [] }));
     },
-    [caAddressInfoList, caAddressList, dispatch],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [caAddressList, caAddressInfoList, dispatch, lastCaAddressInfoList],
     1000,
   );
 }

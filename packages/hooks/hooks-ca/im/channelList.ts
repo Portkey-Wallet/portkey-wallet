@@ -184,8 +184,9 @@ export const useCreateP2pChannel = () => {
                 network: networkType,
                 channelId: channelUuid,
                 value: {
-                  displayName: channelInfo.members.find(item => item.relationId === relationId)?.name || '',
-                  channelIcon: channelInfo.members.find(item => item.relationId === relationId)?.avatar || '',
+                  displayName: channelInfo.memberInfos.members.find(item => item.relationId === relationId)?.name || '',
+                  channelIcon:
+                    channelInfo.memberInfos.members.find(item => item.relationId === relationId)?.avatar || '',
                   mute: channelInfo.mute,
                   pin: channelInfo.pin,
                 },

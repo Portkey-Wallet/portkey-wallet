@@ -3,22 +3,22 @@ query entranceModuleName_aggregated($groupBy: [String], $filter: entranceModuleN
         group
         countAll
         count{
-            date_created
-            date_updated
-            description
             id
             user_created
+            date_created
             user_updated
+            date_updated
             value
+            description
         }
         countDistinct{
-            date_created
-            date_updated
-            description
             id
             user_created
+            date_created
             user_updated
+            date_updated
             value
+            description
         }
         avg{
             id

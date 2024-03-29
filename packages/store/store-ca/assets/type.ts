@@ -38,21 +38,21 @@ export enum AddressCheckError {
   equalIsValid = 'The sender and recipient address are identical',
 }
 
-export type AccountTokenInfoType = {
+export type TAccountTokenInfo = {
   skipCount: number;
   maxResultCount: number;
   accountTokenList: TokenItemShowType[];
   totalRecordCount: number;
 };
 
-export type AccountNFTInfoType = {
+export type TAccountNFTInfo = {
   skipCount: number;
   maxResultCount: number;
   accountNFTList: NFTCollectionItemShowType[];
   totalRecordCount: number;
 };
 
-export type AccountAssetsInfoType = {
+export type TAccountAssetsInfo = {
   skipCount: number;
   maxResultCount: number;
   accountAssetsList: IAssetItemType[];
@@ -60,17 +60,17 @@ export type AccountAssetsInfoType = {
 };
 
 // asset = token + nft
-export type AssetsStateType = {
-  accountToken: AccountTokenInfoType & {
+export type TAssetsState = {
+  accountToken: TAccountTokenInfo & {
     isFetching: boolean;
     accountTokenInfo?: {
-      [key in NetworkType]?: AccountTokenInfoType;
+      [key in NetworkType]?: TAccountTokenInfo;
     };
   };
-  accountNFT: AccountNFTInfoType & {
+  accountNFT: TAccountNFTInfo & {
     isFetching: boolean;
     accountNFTInfo?: {
-      [key in NetworkType]?: AccountNFTInfoType;
+      [key in NetworkType]?: TAccountNFTInfo;
     };
   };
   tokenPrices: {
@@ -79,10 +79,10 @@ export type AssetsStateType = {
       [symbol: string]: number | string;
     };
   };
-  accountAssets: AccountAssetsInfoType & {
+  accountAssets: TAccountAssetsInfo & {
     isFetching: boolean;
     accountAssetsInfo?: {
-      [key in NetworkType]?: AccountAssetsInfoType;
+      [key in NetworkType]?: TAccountAssetsInfo;
     };
   };
   accountCryptoBoxAssets: {

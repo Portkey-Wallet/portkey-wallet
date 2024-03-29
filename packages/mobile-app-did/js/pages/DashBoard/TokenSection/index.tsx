@@ -13,8 +13,9 @@ import { PAGE_SIZE_IN_ACCOUNT_TOKEN, REFRESH_TIME } from '@portkey-wallet/consta
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import Touchable from 'components/Touchable';
 import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
-import { useLatestRef, useThrottleCallback } from '@portkey-wallet/hooks';
+import { useLatestRef } from '@portkey-wallet/hooks';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 export interface TokenSectionProps {
   getAccountBalance?: () => void;
@@ -40,7 +41,7 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
     [onNavigate],
   );
 
-  const getAccountTokenList = useThrottleCallback(
+  const getAccountTokenList = useLockCallback(
     async (isInit: boolean) => {
       if (totalRecordCount && accountTokenList.length >= totalRecordCount && !isInit) return;
 
@@ -55,7 +56,6 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
       }
     },
     [accountTokenList.length, caAddressInfosList, fetchAccountTokenInfoList, totalRecordCount],
-    1000,
   );
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 import { ILoginModeItem } from '@portkey-wallet/types/types-ca/cms';
 export const DEFAULT_LOGIN_MODE_LIST: ILoginModeItem[] = [
   {
-    extensionIndex: 1,
+    extensionIndex: 2,
     iOSIndex: 1,
     androidIndex: 1,
     extensionRecommend: true,
@@ -12,7 +12,7 @@ export const DEFAULT_LOGIN_MODE_LIST: ILoginModeItem[] = [
     matchList: [],
   },
   {
-    extensionIndex: 2,
+    extensionIndex: 1,
     iOSIndex: 2,
     androidIndex: 2,
     extensionRecommend: true,

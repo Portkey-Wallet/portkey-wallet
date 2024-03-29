@@ -4,9 +4,9 @@ import CustomSvg from 'components/CustomSvg';
 import { AddressItem } from '@portkey-wallet/types/types-ca/contact';
 import clsx from 'clsx';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { useWalletInfo } from 'store/Provider/hooks';
 import { useNavigate } from 'react-router';
 import Copy from 'components/Copy';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 interface IIdAndAddressProps {
   portkeyId?: string;
@@ -22,7 +22,7 @@ export default function IdAndAddress({
   addressSectionLabel = 'Address',
 }: IIdAndAddressProps) {
   const showChat = useIsChatShow();
-  const { userInfo } = useWalletInfo();
+  const userInfo = useCurrentUserInfo();
   const navigate = useNavigate();
 
   return (

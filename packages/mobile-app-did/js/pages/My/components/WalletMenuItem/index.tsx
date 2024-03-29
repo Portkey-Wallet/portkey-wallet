@@ -1,4 +1,4 @@
-import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
@@ -13,7 +13,7 @@ import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 
 const WalletMenuItem: React.FC<CommonInputProps> = () => {
-  const { userInfo } = useCurrentWallet();
+  const userInfo = useCurrentUserInfo();
   return (
     <Touchable
       style={[GStyles.flexRow, GStyles.center, styles.itemWrap]}
@@ -31,7 +31,7 @@ const WalletMenuItem: React.FC<CommonInputProps> = () => {
           {userInfo?.nickName || ''}
         </TextXXL>
         <View style={styles.blank} />
-        <TextM numberOfLines={1} style={styles.portkeyId}>{`Portkey ID: ${userInfo?.userId}`}</TextM>
+        <TextM numberOfLines={1} style={styles.portkeyId}>{`Portkey ID: ${userInfo?.userId || ''}`}</TextM>
       </View>
       <Svg icon="right-arrow" size={pTd(20)} />
     </Touchable>
@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
   },
   nickName: {
     ...fonts.mediumFont,
+    width: pTd(200),
   },
   portkeyId: {
     width: pTd(200),

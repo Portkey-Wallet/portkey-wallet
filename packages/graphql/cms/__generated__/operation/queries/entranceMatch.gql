@@ -1,5 +1,8 @@
 query entranceMatch($filter: entranceMatch_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String){
     entranceMatch(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
+        id
+        status
+        user_created
         date_created
         date_created_func{
             year
@@ -11,6 +14,7 @@ query entranceMatch($filter: entranceMatch_filter, $sort: [String], $limit: Int,
             minute
             second
         }
+        user_updated
         date_updated
         date_updated_func{
             year
@@ -22,16 +26,12 @@ query entranceMatch($filter: entranceMatch_filter, $sort: [String], $limit: Int,
             minute
             second
         }
-        description
-        id
         matchRuleList
         matchRuleList_func{
             count
         }
-        matchSwitch
-        status
-        user_created
-        user_updated
         weight
+        matchSwitch
+        description
     }
 }

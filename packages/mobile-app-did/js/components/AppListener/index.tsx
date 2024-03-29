@@ -7,6 +7,8 @@ import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { AppState, AppStateStatus } from 'react-native';
 import { useCheckUpdate } from 'hooks/device';
+import { useGetLoginControlListAsync } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useLatestRef } from '@portkey-wallet/hooks';
 let appState = 'active',
   changeTime = Date.now();
 interface AppListenerProps {
@@ -31,10 +33,15 @@ const AppListener: React.FC<AppListenerProps> = props => {
     if (prevLockingTime !== lockingTime) lockManager.current?.updateLockTime(lockingTime * 1000);
   }, [lockingTime, prevLockingTime]);
 
+  const getLoginControlListAsync = useGetLoginControlListAsync();
+  const latestGetLoginControlListAsync = useLatestRef(getLoginControlListAsync);
   const handleAppStateChange = useCallback(
     (nextAppState: AppStateStatus) => {
       const currentTime = Date.now();
-      if (nextAppState === 'active' && appState === 'background' && currentTime > changeTime + 1000) checkUpdate();
+      if (nextAppState === 'active' && appState === 'background' && currentTime > changeTime + 1000) {
+        checkUpdate();
+        latestGetLoginControlListAsync.current();
+      }
       if (nextAppState === 'background') {
         if (canLock) appState = nextAppState;
         changeTime = currentTime;
@@ -42,7 +49,7 @@ const AppListener: React.FC<AppListenerProps> = props => {
         appState = nextAppState;
       }
     },
-    [checkUpdate],
+    [checkUpdate, latestGetLoginControlListAsync],
   );
   useEffectOnce(() => {
     const timer = setTimeout(checkUpdate, 1000);

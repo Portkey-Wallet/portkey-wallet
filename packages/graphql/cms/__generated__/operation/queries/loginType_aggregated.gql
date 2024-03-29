@@ -1,0 +1,36 @@
+query loginType_aggregated($groupBy: [String], $filter: loginType_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
+    loginType_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
+        group
+        countAll
+        count{
+            id
+            status
+            label
+            value
+        }
+        countDistinct{
+            id
+            status
+            label
+            value
+        }
+        avg{
+            id
+        }
+        sum{
+            id
+        }
+        avgDistinct{
+            id
+        }
+        sumDistinct{
+            id
+        }
+        min{
+            id
+        }
+        max{
+            id
+        }
+    }
+}

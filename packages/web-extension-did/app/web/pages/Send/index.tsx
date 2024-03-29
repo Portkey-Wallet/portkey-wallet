@@ -620,6 +620,7 @@ export default function Send() {
             tokenId={tokenInfo.tokenId || ''}
             isSeed={state.isSeed}
             seedType={state.seedType}
+            decimals={tokenInfo.decimals}
           />
         ),
       },

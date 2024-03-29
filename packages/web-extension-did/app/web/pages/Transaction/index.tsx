@@ -116,7 +116,7 @@ export default function Transaction() {
             <span>{nftInfo?.alias}</span>
             <span className="token-id">#{nftInfo?.nftId}</span>
           </p>
-          <p className="quantity">{`Amount: ${formatAmountShow(divDecimals(amount, decimals || 0))}`}</p>
+          <p className="quantity">{`Amount: ${formatAmountShow(divDecimals(amount, decimals || 0), decimals)}`}</p>
         </div>
       </div>
     );
@@ -128,10 +128,15 @@ export default function Transaction() {
     /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
     if (transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(transactionType)) {
       return (
-        <p className="amount">
-          {`${formatWithCommas({ amount, decimals, sign, digits: Number(decimals) })} ${symbol ?? ''}`}
-          {isMainnet && <span className="usd">{amountInUsdShow(amount, decimals || 0, symbol)}</span>}
-        </p>
+        <div className="token-amount flex-column-center">
+          <div className="token-amount-text flex-center">
+            <div className="token-amount-number">
+              {formatWithCommas({ amount, decimals, sign, digits: Number(decimals) })}
+            </div>
+            <div className="token-amount-symbol">{symbol ?? ''}</div>
+          </div>
+          {isMainnet && <div className="usd">{amountInUsdShow(amount, decimals || 0, symbol)}</div>}
+        </div>
       );
     } else {
       return <p className="no-amount"></p>;
@@ -235,7 +240,7 @@ export default function Transaction() {
           {feeInfo?.length > 0 &&
             feeInfo.map((item, idx) => {
               return (
-                <div key={'transactionFee' + idx} className="right-item">
+                <div key={'transactionFee' + idx} className="right-item flex-column">
                   <span>{`${formatWithCommas({
                     amount: item.fee,
                     decimals: item.decimals || defaultToken.decimals,

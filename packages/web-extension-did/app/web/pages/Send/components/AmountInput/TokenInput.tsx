@@ -50,7 +50,10 @@ export default function TokenInput({
     () => amountInUsdShow(value || amount, 0, token.symbol),
     [amount, amountInUsdShow, token.symbol, value],
   );
-
+  const needConvert = useMemo(
+    () => isMainnet && token.symbol === defaultToken.symbol,
+    [defaultToken.symbol, isMainnet, token.symbol],
+  );
   useEffect(() => {
     getTokenPrice(token.symbol);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -139,6 +142,7 @@ export default function TokenInput({
               <p className="symbol">{token?.symbol}</p>
               <p className="amount">{`${t('Balance_with_colon')} ${formatAmountShow(
                 divDecimals(balance, token.decimals),
+                token.decimals,
               )} ${token?.symbol}`}</p>
             </div>
           </div>
@@ -150,11 +154,11 @@ export default function TokenInput({
           <Button onClick={handleMax}>Max</Button>
         </div>
         <div className="control">
-          <div className="amount-input">
+          <div className={clsx('amount-input', needConvert ? 'need-convert' : '')}>
             <Input
               type="text"
               placeholder={`0`}
-              className={clsx(isMainnet && token.symbol === defaultToken.symbol && 'need-convert')}
+              className={clsx(needConvert ? 'need-convert' : '')}
               value={amount}
               onFocus={() => {
                 setAmount((v) => v?.replace(` ${token?.symbol}`, ''));

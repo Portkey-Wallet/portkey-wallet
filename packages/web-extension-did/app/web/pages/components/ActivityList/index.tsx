@@ -83,11 +83,11 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
       const transFromAddress = addressFormat(fromAddress, fromChainId, currentNetwork.walletType);
 
       return (
-        <p className="row-2">
+        <p className="row-2 flex-between">
           <span>{`From: ${formatStr2EllipsisStr(transFromAddress, [7, 4])}`}</span>
           {nftInfo?.nftId && <span className="nft-name">{formatStr2EllipsisStr(nftInfo.alias)}</span>}
           {isMainnet && !nftInfo?.nftId && (
-            <span>{amountInUsdShow(amount, decimals || defaultToken.decimals, symbol)}</span>
+            <span className="convert">{amountInUsdShow(amount, decimals || defaultToken.decimals, symbol)}</span>
           )}
         </p>
       );

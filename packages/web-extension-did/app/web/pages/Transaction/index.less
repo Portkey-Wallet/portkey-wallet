@@ -60,19 +60,26 @@
           font-weight: 500;
           line-height: 24px;
         }
-        .amount {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
+        .token-amount {
           gap: 4px;
           color: @font-11;
           line-height: 22px;
           font-size: 18px;
           margin-bottom: 15px;
+          .token-amount-text {
+            gap: 4px;
+            .token-amount-number {
+              flex: 1;
+              word-break: break-all;
+              text-align: center
+            }
+          }
           .usd {
             line-height: 16px;
             font-size: 12px;
             color: @font-13;
+            word-break: break-all;
+            text-align: center;
           }
         }
         .no-amount {
@@ -243,13 +250,16 @@
               font-weight: 500;
               .right-item {
                 margin-bottom: 8px;
-              }
-              .right-usd {
-                display: block;
-                text-align: right;
-                color: @font-13;
-                font-size: 12px;
-                font-weight: 400;
+                span {
+                  text-align: right;
+                  flex-wrap: wrap;
+                  word-break: break-all;
+                }
+                .right-usd {
+                  color: @font-13;
+                  font-size: 12px;
+                  font-weight: 400;
+                }
               }
             }
             .tx-id {

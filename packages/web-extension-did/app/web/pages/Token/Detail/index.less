@@ -46,25 +46,27 @@
     box-shadow: @shadow-1 0 7px 5px -5px;
     z-index: 1;
     .balance-amount {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 32px 0 28px;
+      margin: 32px 24px 28px;
 
       .amount {
+        gap: 4px;
         font-size: 32px;
         color: @font-11;
         font-weight: 500;
-        margin: 0 0 4px;
-        height: 38px;
         line-height: 38px;
+        .amount-number {
+          flex: 1;
+          word-break: break-all;
+          text-align: center;
+        }
       }
 
       .convert {
         font-size: 16px;
         color: @font-13;
-        height: 22px;
         line-height: 22px;
+        word-break: break-all;
+        text-align: center;
       }
     }
   }

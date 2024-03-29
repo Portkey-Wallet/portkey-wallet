@@ -12,7 +12,6 @@ import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { AssetsStateType } from './type';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
 import { NEW_CLIENT_MOCK_ELF_LIST, PAGE_SIZE_IN_NFT_ITEM } from '@portkey-wallet/constants/constants-ca/assets';
-import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { WalletState } from '../wallet/type';
 
 export const initAccountTokenInfo = {
@@ -335,7 +334,7 @@ export const assetsSlice = createSlice({
         list.forEach(ele => {
           if (ele.symbol) priceObj[ele.symbol] = ele.price ?? 0;
         });
-        state.accountBalance = formatAmountShow(totalBalanceInUsd, 2);
+        state.accountBalance = totalBalanceInUsd;
         const newTokenList = skipCount === 0 ? list : [...preAccountTokenList, ...list];
         state.tokenPrices.tokenPriceObject = { ...state.tokenPrices.tokenPriceObject, ...priceObj };
 

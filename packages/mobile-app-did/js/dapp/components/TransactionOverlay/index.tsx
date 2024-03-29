@@ -112,14 +112,9 @@ const ConnectModal = (props: TransactionModalPropsType) => {
 
   const formatAmountInUsdShow = useCallback(
     (amount: string | number, decimals: string | number, symbol: string) => {
-      const value = amountInUsdShow(amount, decimals, symbol);
-      if (symbol === defaultToken.symbol) {
-        return value === '$ 0' ? '<$ 0.01' : value;
-      } else {
-        return value;
-      }
+      return amountInUsdShow(amount, decimals, symbol);
     },
-    [amountInUsdShow, defaultToken.symbol],
+    [amountInUsdShow],
   );
 
   const transferContent = useMemo(() => {

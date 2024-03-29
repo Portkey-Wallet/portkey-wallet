@@ -1,4 +1,3 @@
-import { request } from '@portkey-wallet/api/api-did';
 import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import {
@@ -8,16 +7,13 @@ import {
   addRecordsItem,
   createNewTab,
   initNetworkDiscoverMap,
-  cleanBookmarkList,
-  addBookmarkList,
   addAutoApproveItem,
   upDateRecordsItem,
   updateTab,
 } from '@portkey-wallet/store/store-ca/discover/slice';
-import { IBookmarkItem, ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
+import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { isUrl } from '@portkey-wallet/utils';
 import { prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
-import { DISCOVER_BOOKMARK_MAX_COUNT } from 'constants/common';
 import { useCallback, useEffect, useMemo } from 'react';
 
 export const useIsDrawerOpen = () => useAppCASelector(state => state.discover.isDrawerOpen);

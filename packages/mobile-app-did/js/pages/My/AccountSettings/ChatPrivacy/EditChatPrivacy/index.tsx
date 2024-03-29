@@ -9,7 +9,7 @@ import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import { ContactPermissionEnum, IContactPrivacy } from '@portkey-wallet/types/types-ca/contact';
 import Svg from 'components/Svg';
-import { LoginGuardianTypeIcon } from 'constants/misc';
+import { LOGIN_GUARDIAN_TYPE_ICON } from 'constants/misc';
 import ListItem from 'components/ListItem';
 import {
   CONTACT_PERMISSION_LABEL_MAP,
@@ -79,7 +79,7 @@ const EditChatPrivacy: React.FC = () => {
         CONTACT_PRIVACY_TYPE_LABEL_MAP[detail.privacyType]
       }`}</TextM>
       <View style={pageStyles.infoWrap}>
-        <Svg icon={LoginGuardianTypeIcon[detail.privacyType]} size={pTd(28)} />
+        <Svg icon={LOGIN_GUARDIAN_TYPE_ICON[detail.privacyType]} size={pTd(28)} />
         <TextM numberOfLines={1} style={pageStyles.infoLabel}>
           {detail.identifier}
         </TextM>

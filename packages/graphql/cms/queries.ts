@@ -34,6 +34,8 @@ import {
   CodePushControlCustomQueryVariables,
 } from './__generated__/hooks/codepushControlCustom';
 
+import { LoginModeDocument, LoginModeQuery, LoginModeQueryVariables } from './__generated__/hooks/loginModeCustom';
+
 // SocialMedia
 const getSocialMedia = async (network: NetworkType, params: SocialMediaCustomQueryVariables) => {
   const apolloClient = getApolloClient(network);
@@ -97,4 +99,22 @@ const getCodePushControl = async (network: NetworkType, params: CodePushControlC
   return result;
 };
 
-export { getSocialMedia, getTabMenu, getDiscoverGroup, getRememberMeBlackListSites, getEntrance, getCodePushControl };
+// loginMode control
+const getLoginMode = async (network: NetworkType, params: LoginModeQueryVariables) => {
+  const apolloClient = getApolloClient(network);
+  const result = await apolloClient.query<LoginModeQuery>({
+    query: LoginModeDocument,
+    variables: params,
+  });
+  return result;
+};
+
+export {
+  getSocialMedia,
+  getTabMenu,
+  getDiscoverGroup,
+  getRememberMeBlackListSites,
+  getEntrance,
+  getCodePushControl,
+  getLoginMode,
+};

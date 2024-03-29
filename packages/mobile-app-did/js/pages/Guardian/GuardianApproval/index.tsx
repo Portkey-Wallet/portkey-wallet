@@ -252,24 +252,6 @@ export default function GuardianApproval() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guardiansStatus, userGuardiansList]);
   const registerAccount = useCallback(() => {
-    console.log(
-      {
-        managerInfo: {
-          verificationType: VerificationType.communityRecovery,
-          loginAccount,
-          type: loginType,
-        } as ManagerInfo,
-        guardiansApproved: handleGuardiansApproved(
-          guardiansStatus as GuardiansStatus,
-          userGuardiansList as UserGuardianItem[],
-        ) as GuardiansApproved,
-        verifierInfo,
-      },
-      guardiansStatus,
-      userGuardiansList,
-      '=====registerAccount',
-    );
-
     onRequestOrSetPin({
       managerInfo: {
         verificationType: VerificationType.communityRecovery,

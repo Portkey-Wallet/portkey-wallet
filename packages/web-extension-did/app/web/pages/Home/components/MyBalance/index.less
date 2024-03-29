@@ -1,4 +1,5 @@
 @import '../../../../assets/theme/color.less';
+@import '../../../../assets/theme/constants.less';
 
 .balance {
   overflow-y: overlay;
@@ -24,6 +25,13 @@
       position: absolute;
       top: 16px;
       left: 8px;
+    }
+    .wallet-name-text {
+      word-break: break-all;
+      .text-overflow(1);
+      &.wallet-name-small-screen {
+        max-width: 124px;
+      }
     }
   }
   .balance-amount {

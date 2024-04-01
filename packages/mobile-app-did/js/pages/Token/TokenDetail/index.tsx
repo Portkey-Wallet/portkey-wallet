@@ -25,7 +25,6 @@ import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import fonts from 'assets/theme/fonts';
-import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import BuyButton from 'components/BuyButton';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -41,6 +40,8 @@ import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useTokenInfoFromStore } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { PAGE_SIZE_IN_ACCOUNT_TOKEN } from '@portkey-wallet/constants/constants-ca/assets';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -66,6 +67,7 @@ const TokenDetail: React.FC = () => {
   const isTokenHasPrice = useIsTokenHasPrice(tokenInfo.symbol);
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const { isRampShow } = useAppRampEntryShow();
+  const { fetchAccountTokenInfoList } = useAccountTokenInfo();
 
   const [reFreshing, setFreshing] = useState(false);
 
@@ -126,7 +128,11 @@ const TokenDetail: React.FC = () => {
 
   // refresh token List
   useEffectOnce(() => {
-    dispatch(fetchTokenListAsync({ caAddressInfos }));
+    fetchAccountTokenInfoList({
+      caAddressInfos,
+      skipCount: 0,
+      maxResultCount: PAGE_SIZE_IN_ACCOUNT_TOKEN,
+    });
   });
 
   const isBuyButtonShow = useMemo(

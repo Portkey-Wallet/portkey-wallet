@@ -34,11 +34,6 @@ import { IToSendPreviewParamsType } from '@portkey-wallet/types/types-ca/routePa
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import {
-  clearNftCollection,
-  fetchNFTCollectionsAsync,
-  fetchTokenListAsync,
-} from '@portkey-wallet/store/store-ca/assets/slice';
 import { sleep } from '@portkey-wallet/utils';
 import { FontStyles } from 'assets/theme/styles';
 import { ChainId } from '@portkey-wallet/types';
@@ -52,6 +47,11 @@ import { useJumpToChatDetails, useJumpToChatGroupDetails } from 'hooks/chat';
 import { useFocusEffect } from '@react-navigation/native';
 import NFTAvatar from 'components/NFTAvatar';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-mainnet-v2';
+import { useAccountNFTCollectionInfo, useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import {
+  PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
+  PAGE_SIZE_IN_ACCOUNT_TOKEN,
+} from '@portkey-wallet/constants/constants-ca/assets';
 
 const SendPreview: React.FC = () => {
   const { t } = useLanguage();
@@ -79,6 +79,9 @@ const SendPreview: React.FC = () => {
   const dispatch = useAppCommonDispatch();
   const pin = usePin();
   const chainInfo = useCurrentChain(assetInfo.chainId);
+
+  const { fetchAccountNFTCollectionInfoList } = useAccountNFTCollectionInfo();
+  const { fetchAccountTokenInfoList } = useAccountTokenInfo();
 
   const sendIMTransfer = useSendIMTransfer();
   const jumpToChatDetails = useJumpToChatDetails();
@@ -208,10 +211,17 @@ const SendPreview: React.FC = () => {
     await sleep(1500);
 
     if (sendType === 'nft') {
-      dispatch(clearNftCollection());
-      dispatch(fetchNFTCollectionsAsync({ caAddressInfos }));
+      fetchAccountNFTCollectionInfoList({
+        caAddressInfos,
+        skipCount: 0,
+        maxResultCount: PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
+      });
     } else {
-      dispatch(fetchTokenListAsync({ caAddressInfos }));
+      fetchAccountTokenInfoList({
+        caAddressInfos,
+        skipCount: 0,
+        maxResultCount: PAGE_SIZE_IN_ACCOUNT_TOKEN,
+      });
     }
     if (successNavigateName) {
       navigationService.navigate(successNavigateName);
@@ -227,7 +237,8 @@ const SendPreview: React.FC = () => {
     checkTransferLimitWithJump,
     crossDefaultFee,
     currentNetwork.walletType,
-    dispatch,
+    fetchAccountNFTCollectionInfoList,
+    fetchAccountTokenInfoList,
     guardiansApproved,
     isApproved,
     isCrossChainTransfer,

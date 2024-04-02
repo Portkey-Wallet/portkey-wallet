@@ -1,7 +1,7 @@
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ChainId } from '@portkey-wallet/types';
 import { NFTCollectionItemShowType, NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
-import { Collapse } from 'antd';
+import { Collapse, Skeleton } from 'antd';
 import { List } from 'antd-mobile';
 import CustomSvg from 'components/CustomSvg';
 import { useCallback, useState, useMemo, useEffect } from 'react';
@@ -19,6 +19,7 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { getSeedTypeTag } from 'utils/assets';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { ZERO } from '@portkey-wallet/constants/misc';
 
 export default function NFT() {
   const nav = useNavigate();
@@ -34,6 +35,10 @@ export default function NFT() {
   const hasMoreNFTCollection = useMemo(
     () => accountNFTList.length < totalRecordCount,
     [accountNFTList.length, totalRecordCount],
+  );
+  const calSkeletonLength = useCallback(
+    (needToShowNum: number) => (needToShowNum >= 0 ? (needToShowNum < maxNftNum ? needToShowNum : maxNftNum) : 0),
+    [maxNftNum],
   );
 
   useEffect(() => {
@@ -63,6 +68,7 @@ export default function NFT() {
       const curNftNum = nftNum[nftColKey];
       setGetMoreFlag(true);
       try {
+        setNftNum((pre) => ({ ...pre, [nftColKey]: curNftNum + 1 }));
         await fetchAccountNFTItem({
           symbol,
           chainId: chainId as ChainId,
@@ -72,7 +78,6 @@ export default function NFT() {
       } catch (error) {
         console.log('===getMoreNFTItem error', error);
       } finally {
-        setNftNum({ ...nftNum, [nftColKey]: curNftNum + 1 });
         setGetMoreFlag(false);
       }
     },
@@ -84,7 +89,7 @@ export default function NFT() {
       const openArr = typeof arr === 'string' ? [arr] : arr;
       openPanel.forEach((prev: string) => {
         if (!openArr.some((cur: string) => cur === prev)) {
-          setNftNum({ ...nftNum, [prev]: 0 });
+          setNftNum((pre) => ({ ...pre, [prev]: 0 }));
         }
       });
       openArr.forEach((cur: string) => {
@@ -96,17 +101,23 @@ export default function NFT() {
             pageNum: 0,
             caAddressInfos: caAddressInfos.filter((item) => item.chainId === curTmp[1]),
           });
-          setNftNum({ ...nftNum, [cur]: 1 });
+          setNftNum((pre) => ({ ...pre, [cur]: 1 }));
         }
       });
       setOpenPanel(openArr);
     },
-    [caAddressInfos, fetchAccountNFTItem, nftNum, openPanel],
+    [caAddressInfos, fetchAccountNFTItem, openPanel],
   );
 
   const renderItem = useCallback(
     (nft: NFTCollectionItemShowType) => {
       const nftColKey = `${nft.symbol}_${nft.chainId}`;
+      const curNftNum = nftNum?.[nftColKey] ?? 0;
+      const curNFTSkeletonLength = calSkeletonLength(
+        ZERO.plus(nft.itemCount)
+          .minus(ZERO.plus(curNftNum - 1).times(maxNftNum))
+          .toNumber(),
+      );
       return (
         <Collapse.Panel
           key={nftColKey}
@@ -127,7 +138,6 @@ export default function NFT() {
           <div className="nft-item-list">
             {!!nftNum[nftColKey] &&
               nft.children.map((nftItem: NFTItemBaseType, index: number) => {
-                const curNftNum = nftNum[nftColKey] ?? 0;
                 const seedTypeTag = getSeedTypeTag(nftItem);
                 return (
                   index < curNftNum * maxNftNum && (
@@ -155,6 +165,12 @@ export default function NFT() {
                   )
                 );
               })}
+            {nft.isFetching &&
+              new Array(curNFTSkeletonLength)
+                .fill('')
+                .map((_item, index) => (
+                  <Skeleton.Avatar className="nft-item-skeleton" key={`skeleton_${index}`} shape="square" active />
+                ))}
             {!!nftNum[nftColKey] && Number(nft.totalRecordCount) > nftNum[nftColKey] * maxNftNum && (
               <div
                 className="load-more"
@@ -168,7 +184,7 @@ export default function NFT() {
         </Collapse.Panel>
       );
     },
-    [getMoreNFTItem, isMainnet, maxNftNum, nav, nftNum],
+    [nftNum, calSkeletonLength, maxNftNum, isMainnet, nav, getMoreNFTItem],
   );
 
   return (

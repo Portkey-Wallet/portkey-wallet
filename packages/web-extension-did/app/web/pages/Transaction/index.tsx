@@ -25,7 +25,7 @@ import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca
 import { addressFormat } from '@portkey-wallet/utils';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
-import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -47,7 +47,6 @@ export default function Transaction() {
   }, [caAddressInfoList, chainId]);
 
   useFreshTokenPrice();
-  const amountInUsdShow = useAmountInUsdShow();
   const defaultToken = useDefaultToken(chainId ? (chainId as ChainId) : undefined);
 
   // Obtain data through routing to ensure that the page must have data and prevent Null Data Errors.
@@ -123,7 +122,7 @@ export default function Transaction() {
   }, [activityItem]);
 
   const tokenHeaderUI = useCallback(() => {
-    const { amount, isReceived, decimals, symbol, transactionType } = activityItem;
+    const { amount, isReceived, decimals, symbol, transactionType, currentTxPriceInUsd = '' } = activityItem;
     const sign = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
     /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
     if (transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(transactionType)) {
@@ -135,13 +134,13 @@ export default function Transaction() {
             </div>
             <div className="token-amount-symbol">{symbol ?? ''}</div>
           </div>
-          {isMainnet && <div className="usd">{amountInUsdShow(amount, decimals || 0, symbol)}</div>}
+          {isMainnet && <div className="usd">{formatAmountUSDShow(currentTxPriceInUsd)}</div>}
         </div>
       );
     } else {
       return <p className="no-amount"></p>;
     }
-  }, [activityItem, amountInUsdShow, isMainnet]);
+  }, [activityItem, isMainnet]);
 
   const statusAndDateUI = useCallback(() => {
     return (

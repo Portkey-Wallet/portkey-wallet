@@ -8,7 +8,13 @@ import { formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/ut
 import { pTd } from 'utils/unit';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
-import { AmountSign, divDecimals, divDecimalsStr, formatAmountShow } from '@portkey-wallet/utils/converter';
+import {
+  AmountSign,
+  divDecimals,
+  divDecimalsStr,
+  formatAmountShow,
+  formatAmountUSDShow,
+} from '@portkey-wallet/utils/converter';
 import CommonButton from 'components/CommonButton';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import Loading from 'components/Loading';
@@ -139,10 +145,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
 
         {/* TODO : change func formatAmountShow */}
         {isMainnet && !item?.nftInfo && (isTokenHasPrice || item?.symbol === null) && (
-          <Text style={itemStyle.usdtBalance}>{`$ ${formatAmountShow(
-            divDecimals(item?.amount, Number(item?.decimals)).multipliedBy(item ? tokenPriceObject[item?.symbol] : 0),
-            2,
-          )}`}</Text>
+          <Text style={itemStyle.usdtBalance}>{formatAmountUSDShow(item?.currentTxPriceInUsd || '')}</Text>
         )}
       </View>
     );

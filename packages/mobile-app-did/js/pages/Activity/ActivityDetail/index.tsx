@@ -256,12 +256,7 @@ const ActivityDetail = () => {
               {SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType as TransactionTypes) && amountShow}
             </Text>
             {isMainnet && isTokenHasPrice && (
-              <Text style={styles.usdtCount}>{`$ ${formatAmountShow(
-                divDecimals(activityItem?.amount, activityItem?.decimals).multipliedBy(
-                  tokenPriceObject[activityItem.symbol],
-                ),
-                2,
-              )}`}</Text>
+              <Text style={styles.usdtCount}>{formatAmountUSDShow(activityItem?.currentTxPriceInUsd ?? 0)}</Text>
             )}
           </>
         ))}

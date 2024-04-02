@@ -1,16 +1,9 @@
 import { useCallback } from 'react';
 import { useAppDispatch } from 'store/hooks';
-import { resetSettings } from '@portkey-wallet/store/settings/slice';
 
 import navigationService from 'utils/navigationService';
-import { resetNetwork } from '@portkey-wallet/store/network/actions';
 
-import {
-  reSetCheckManagerExceed,
-  resetCaInfo,
-  resetCurrentUserInfoAction,
-  resetWallet,
-} from '@portkey-wallet/store/store-ca/wallet/actions';
+import { reSetCheckManagerExceed } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { resetUser } from 'store/user/actions';
 
 import { resetGuardians } from '@portkey-wallet/store/store-ca/guardians/actions';
@@ -58,7 +51,6 @@ export default function useLogOut() {
       dispatch(resetDappList(currentNetwork));
       dispatch(resetDiscover(currentNetwork));
       dispatch(resetDisclaimerConfirmedDapp(currentNetwork));
-      dispatch(resetCurrentUserInfoAction(currentNetwork));
 
       dispatch(changeDrawerOpenStatus(false));
       im.destroy();
@@ -70,15 +62,11 @@ export default function useLogOut() {
       resetCurrentNetworkSetting();
       logoutResetStore();
       if (otherNetworkLogged) {
-        dispatch(resetCaInfo(currentNetwork));
         navigationService.reset('LoginPortkey');
       } else {
         resetBadge();
         deleteFCMToken();
-        dispatch(resetWallet());
         dispatch(resetUser());
-        dispatch(resetSettings());
-        dispatch(resetNetwork());
         dispatch(resetGuardians());
         navigationService.reset('Referral');
         setTimeout(() => {

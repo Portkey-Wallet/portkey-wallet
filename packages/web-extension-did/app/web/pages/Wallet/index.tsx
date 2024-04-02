@@ -25,7 +25,7 @@ export default function Wallet() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { isPrompt, isNotLessThan768 } = useCommonState();
-  const { nickName, avatar, userId } = useCurrentUserInfo() || {};
+  const { nickName, avatar, userId } = useCurrentUserInfo();
   const [exitVisible, setExitVisible] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<string>('');
 

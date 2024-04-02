@@ -15,7 +15,7 @@ export default function WalletName() {
   const navigate = useNavigate();
   const { state: locationState } = useLocationState<TWalletNameLocationState>();
   const showChat = useIsChatShow();
-  const { avatar = '', nickName = '', userId = '' } = useCurrentUserInfo() || {};
+  const { avatar = '', nickName = '', userId = '' } = useCurrentUserInfo();
   const caAddressInfos = useCaAddressInfoList();
   const transAddresses = useMemo(() => {
     return caAddressInfos.map((item) => {

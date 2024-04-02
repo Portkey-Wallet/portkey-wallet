@@ -23,7 +23,7 @@ export interface ISetWalletNameFormProps {
 export default function SetWalletNameForm({ data, saveCallback }: ISetWalletNameFormProps) {
   const [form] = Form.useForm();
   const { t } = useTranslation();
-  const { avatar, nickName } = useCurrentUserInfo() || {};
+  const { avatar, nickName } = useCurrentUserInfo();
   const setUserInfo = useSetUserInfo();
   const [disable, setDisable] = useState<boolean>(false);
   const [validName, setValidName] = useState<{

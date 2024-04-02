@@ -68,7 +68,7 @@ export const useCurrentUserInfo = (forceUpdate?: boolean) => {
     if (forceUpdate) dispatch(getCaHolderInfoAsync());
   }, [currentNetwork, dispatch, forceUpdate, userInfo]);
 
-  return userInfo?.[currentNetwork];
+  return userInfo?.[currentNetwork] || { nickName: '', userId: '', avatar: '' };
 };
 
 export const useCurrentWalletInfo = () => {
@@ -197,7 +197,7 @@ export const useSetUserInfo = () => {
         baseURL: networkInfo.apiUrl,
         params,
       });
-      dispatch(setUserInfoAction(params));
+      dispatch(setUserInfoAction({ ...params, networkType: networkInfo.networkType }));
     },
     [dispatch, networkInfo],
   );

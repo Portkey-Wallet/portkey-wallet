@@ -28,6 +28,7 @@ import {
   generateEntranceShow,
   getEntrance,
   parseLoginModeList,
+  sortLoginModeListToAll,
 } from './util';
 import {
   IEntranceItem,
@@ -353,7 +354,7 @@ export const useGetLoginControlListAsync = () => {
   }, [dispatch, networkList]);
 };
 
-export const useLoginModeControlList = (init?: boolean) => {
+export const useLoginModeControlList = (forceUpdate?: boolean) => {
   const { loginModeListMap } = useCMS();
   const { networkType } = useCurrentNetworkInfo();
 
@@ -361,10 +362,10 @@ export const useLoginModeControlList = (init?: boolean) => {
   const dispatch = useAppCommonDispatch();
 
   useEffect(() => {
-    if (init) {
+    if (forceUpdate) {
       getLoginControlListAsync();
     }
-  }, [dispatch, getLoginControlListAsync, init]);
+  }, [dispatch, getLoginControlListAsync, forceUpdate]);
 
   return {
     loginModeListMap,
@@ -375,12 +376,13 @@ export const useLoginModeControlList = (init?: boolean) => {
 export const useGetFormattedLoginModeList = (
   matchValueMap: IEntranceMatchValueMap,
   deviceType: VersionDeviceType,
+  forceUpdate?: boolean,
 ): {
   loginModeList: ILoginModeItem[];
   loginModeListToRecommend: ILoginModeItem[];
   loginModeListToOther: ILoginModeItem[];
 } => {
-  const { currentNetworkLoginModeList } = useLoginModeControlList();
+  const { currentNetworkLoginModeList } = useLoginModeControlList(forceUpdate);
 
   return useMemo(() => {
     if (matchValueMap && currentNetworkLoginModeList && currentNetworkLoginModeList?.length > 0) {
@@ -394,7 +396,7 @@ export const useGetFormattedLoginModeList = (
     }
 
     return {
-      loginModeList: [],
+      loginModeList: sortLoginModeListToAll(DEFAULT_LOGIN_MODE_LIST, deviceType),
       loginModeListToRecommend: filterLoginModeListToRecommend(DEFAULT_LOGIN_MODE_LIST, deviceType),
       loginModeListToOther: filterLoginModeListToOther(DEFAULT_LOGIN_MODE_LIST, deviceType),
     };

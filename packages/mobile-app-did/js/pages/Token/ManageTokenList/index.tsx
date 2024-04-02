@@ -8,10 +8,9 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import CommonToast from 'components/CommonToast';
 import { useLanguage } from 'i18n/hooks';
 import useDebounce from 'hooks/useDebounce';
-import { useAppCommonDispatch, useEffectOnce } from '@portkey-wallet/hooks';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 import { request } from '@portkey-wallet/api/api-did';
 import { useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import Loading from 'components/Loading';
 import FilterTokenSection from '../components/FilterToken';
 import PopularTokenSection from '../components/PopularToken';
@@ -19,9 +18,10 @@ import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
-import { PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
+import { PAGE_SIZE_IN_ACCOUNT_ASSETS, PAGE_SIZE_IN_ACCOUNT_TOKEN } from '@portkey-wallet/constants/constants-ca/assets';
 import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 
 interface ManageTokenListProps {
   route?: any;
@@ -32,22 +32,15 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
 
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const { tokenDataShowInMarket, totalRecordCount, fetchTokenInfoList } = useToken();
-  const dispatch = useAppCommonDispatch();
   const chainIdArray = useChainIdList();
   const caAddressInfos = useCaAddressInfoList();
+
+  const { fetchAccountTokenInfoList } = useAccountTokenInfo();
 
   const [keyword, setKeyword] = useState<string>('');
   const [filterTokenList, setFilterTokenList] = useState<TokenItemShowType[]>([]);
 
   const debounceWord = useDebounce(keyword, 800);
-
-  // TODO: test it
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     fetchSearchedTokenList();
-  //     dispatch(fetchAllTokenListAsync({ chainIdArray: chainIdList }));
-  //   }, [chainIdList, dispatch, fetchSearchedTokenList]),
-  // );
 
   const getTokenList = useLockCallback(
     async (isInit?: boolean) => {
@@ -102,7 +95,12 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
           },
         });
         timerRef.current = setTimeout(async () => {
-          dispatch(fetchTokenListAsync({ caAddressInfos }));
+          fetchAccountTokenInfoList({
+            caAddressInfos,
+            skipCount: 0,
+            maxResultCount: PAGE_SIZE_IN_ACCOUNT_TOKEN,
+          });
+
           if (debounceWord) {
             await searchToken();
           } else {
@@ -116,7 +114,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
         CommonToast.failError(err);
       }
     },
-    [caAddressInfos, debounceWord, dispatch, getTokenList, searchToken],
+    [caAddressInfos, debounceWord, fetchAccountTokenInfoList, getTokenList, searchToken],
   );
 
   // search token with keyword

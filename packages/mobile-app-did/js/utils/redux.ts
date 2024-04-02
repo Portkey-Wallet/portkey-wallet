@@ -67,13 +67,6 @@ export const getCurrentCaInfoByChainId = (chainId?: ChainId) => {
   return getCurrentCaInfo()?.[chainId || DefaultChainId];
 };
 
-export const getCurrentCaHash = () => {
-  const wallet = getWallet();
-  const caInfo = getCurrentCaInfo();
-  const originChainId = wallet.originChainId || caInfo?.originChainId;
-  return caInfo?.[originChainId || DefaultChainId]?.caHash;
-};
-
 export const getTxFee = () => getState().txFee;
 
 export const getCurrentTxFee = () => {
@@ -140,5 +133,11 @@ export const isMyPayTransactionFee = (address: string, chainId?: ChainId) => {
 export const getOriginChainId = () => {
   const wallet = getWallet();
   const caInfo = getCurrentCaInfo();
-  return wallet?.originChainId || caInfo?.originChainId;
+  return caInfo?.originChainId || wallet?.originChainId || DefaultChainId;
+};
+
+export const getCurrentCaHash = () => {
+  const caInfo = getCurrentCaInfo();
+  const originChainId = getOriginChainId();
+  return caInfo?.[originChainId]?.caHash;
 };

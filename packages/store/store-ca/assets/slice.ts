@@ -9,43 +9,43 @@ import {
   fetchTokenPrices,
 } from './api';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
-import { AssetsStateType } from './type';
+import { TAssetsState } from './type';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
 import { NEW_CLIENT_MOCK_ELF_LIST, PAGE_SIZE_IN_NFT_ITEM } from '@portkey-wallet/constants/constants-ca/assets';
 import { WalletState } from '../wallet/type';
 
-export const initAccountTokenInfo = {
+export const INIT_ACCOUNT_TOKEN_INFO = {
   skipCount: 0,
   maxResultCount: 10,
   accountTokenList: NEW_CLIENT_MOCK_ELF_LIST,
   totalRecordCount: 0,
 };
 
-export const initAccountNFTInfo = {
+export const INIT_ACCOUNT_NFT_INFO = {
   skipCount: 0,
   maxResultCount: 10,
   accountNFTList: [],
   totalRecordCount: 0,
 };
 
-export const initAccountAssetsInfo = {
+export const INIT_ACCOUNT_ASSETS_INFO = {
   skipCount: 0,
   maxResultCount: 1000,
   accountAssetsList: [],
   totalRecordCount: 0,
 };
 
-const initialState: AssetsStateType = {
+const initialState: TAssetsState = {
   accountToken: {
-    ...initAccountTokenInfo,
+    ...INIT_ACCOUNT_TOKEN_INFO,
     isFetching: false,
   },
   accountNFT: {
-    ...initAccountNFTInfo,
+    ...INIT_ACCOUNT_NFT_INFO,
     isFetching: false,
   },
   accountAssets: {
-    ...initAccountAssetsInfo,
+    ...INIT_ACCOUNT_ASSETS_INFO,
     isFetching: false,
   },
   accountCryptoBoxAssets: {
@@ -158,7 +158,7 @@ export const fetchNFTAsync = createAsyncThunk(
     },
     { getState },
   ) => {
-    const { assets, wallet } = getState() as { assets: AssetsStateType; wallet: WalletState };
+    const { assets, wallet } = getState() as { assets: TAssetsState; wallet: WalletState };
     const {
       accountNFT: { accountNFTInfo },
     } = assets;
@@ -247,7 +247,7 @@ export const fetchTokensPriceAsync = createAsyncThunk(
       assets: {
         accountToken: { accountTokenList },
       },
-    } = getState() as { assets: AssetsStateType };
+    } = getState() as { assets: TAssetsState };
     // const {
     //   accountAssets: { totalRecordCount, accountAssetsList },
     // } = assets;
@@ -286,7 +286,7 @@ export const assetsSlice = createSlice({
         state.accountNFT.accountNFTInfo = {
           ...state.accountNFT.accountNFTInfo,
           [network]: {
-            ...initAccountNFTInfo,
+            ...INIT_ACCOUNT_NFT_INFO,
             ...state.accountNFT.accountNFTInfo?.[network],
             accountNFTList: newAccountNFTList,
           },

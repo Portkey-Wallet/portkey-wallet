@@ -24,7 +24,6 @@ import { TextL } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { sleep } from '@portkey-wallet/utils';
 
 const EditWalletName: React.FC = () => {

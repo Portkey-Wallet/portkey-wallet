@@ -22,6 +22,7 @@ import { TSendLocationState, TTokenDetailLocationState } from 'types/router';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
 import { SHOW_RAMP_CHAIN_ID_LIST, SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useEffectOnce } from '@portkey-wallet/hooks';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 export enum TokenTransferStatus {
   CONFIRMED = 'Confirmed',
@@ -58,6 +59,11 @@ function TokenDetail() {
   const isShowWithdrawUSDT = useMemo(
     () => currentToken.symbol === 'USDT' && isETransWithdrawShow,
     [currentToken.symbol, isETransWithdrawShow],
+  );
+  const defaultToken = useDefaultToken();
+  const isShowFaucet = useMemo(
+    () => !isMainNet && currentToken.symbol === defaultToken.symbol && currentToken.chainId === 'AELF',
+    [currentToken.chainId, currentToken.symbol, defaultToken.symbol, isMainNet],
   );
   useFreshTokenPrice();
   const disclaimerData = useRef<IDisclaimerProps>(initDisclaimerData);
@@ -140,6 +146,25 @@ function TokenDetail() {
               <div className="amount-symbol">{currentToken.symbol}</div>
             </div>
             {isMainNet && <div className="convert">{formatAmountUSDShow(currentToken.balanceInUsd ?? 0)}</div>}
+            <BalanceCard
+              isShowDepositUSDT={isShowDepositUSDT}
+              onClickDepositUSDT={() => handleClickETrans(ETransType.Deposit)}
+              onClickWithdrawUSDT={() => handleClickETrans(ETransType.Withdraw)}
+              isShowWithdrawUSDT={isShowWithdrawUSDT}
+              isShowBuyEntry={isShowBuy}
+              onBuy={handleBuy}
+              onSend={async () => {
+                navigate(`/send/token/${currentToken?.symbol}`, {
+                  state: { ...currentToken, address: currentToken?.tokenContractAddress },
+                });
+              }}
+              onReceive={() =>
+                navigate(`/receive/token/${currentToken?.symbol}`, {
+                  state: { ...currentToken, address: currentToken.tokenContractAddress },
+                })
+              }
+              isShowFaucet={isShowFaucet}
+            />
           </div>
           <BalanceCard
             isShowDepositUSDT={isShowDepositUSDT}
@@ -173,6 +198,7 @@ function TokenDetail() {
     isShowWithdrawUSDT,
     isShowBuy,
     handleBuy,
+    isShowFaucet,
     navigate,
     handleClickETrans,
   ]);

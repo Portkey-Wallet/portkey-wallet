@@ -130,7 +130,7 @@ const AddMembersPage = () => {
 
   useEffectOnce(() => {
     const { contactFilterList } = searchContactList('', ContactsTab.Chats);
-    setContactList(contactFilterList as IChannelContactItem[]);
+    setContactList(contactFilterList.slice(0, 20) as IChannelContactItem[]);
   });
 
   return (

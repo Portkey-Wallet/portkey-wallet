@@ -24,6 +24,7 @@ import { ManagerInfo, Maybe } from '@portkey-wallet/graphql/contract/__generated
 export interface CurrentWalletType extends WalletInfoType, CAInfoType {
   caHash?: string;
   caAddressList?: string[];
+  caAddress?: string;
 }
 
 export interface IDeviceItem {
@@ -47,6 +48,7 @@ export function getCurrentWalletInfo(
 
   const tmpWalletInfo: any = Object.assign({}, walletInfo, currentCAInfo, {
     caHash: currentCAInfo?.[originChainId]?.caHash,
+    caAddress: currentCAInfo?.[originChainId]?.caAddress,
     caAddressList: Object.values(currentCAInfo || {})
       ?.filter((info: any) => !!info?.caAddress)
       ?.map((i: any) => i?.caAddress),

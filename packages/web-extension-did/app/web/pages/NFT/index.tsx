@@ -209,7 +209,7 @@ export default function NFT() {
         </div>
         <div>
           <div className="btn-wrap flex-column-center">
-            <div className="balance">{`You have: ${formatAmountShow(divDecimals(balance, decimals))}`}</div>
+            <div className="balance">{`You have: ${formatAmountShow(divDecimals(balance, decimals), decimals)}`}</div>
             <Button
               type="primary"
               onClick={() =>

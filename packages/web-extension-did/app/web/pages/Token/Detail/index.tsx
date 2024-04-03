@@ -1,13 +1,13 @@
 import SettingHeader from 'pages/components/SettingHeader';
 import BalanceCard from 'pages/components/BalanceCard';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimals, formatAmountShow, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import Activity from 'pages/Home/components/Activity';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
-import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useExtensionETransShow } from 'hooks/cms';
@@ -21,6 +21,7 @@ import { useLocationState, useNavigateState } from 'hooks/router';
 import { TSendLocationState, TTokenDetailLocationState } from 'types/router';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
 import { SHOW_RAMP_CHAIN_ID_LIST, SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 export enum TokenTransferStatus {
@@ -64,7 +65,6 @@ function TokenDetail() {
     () => !isMainNet && currentToken.symbol === defaultToken.symbol && currentToken.chainId === 'AELF',
     [currentToken.chainId, currentToken.symbol, defaultToken.symbol, isMainNet],
   );
-  const amountInUsdShow = useAmountInUsdShow();
   useFreshTokenPrice();
   const disclaimerData = useRef<IDisclaimerProps>(initDisclaimerData);
   const handleBuy = useCallback(() => {
@@ -116,6 +116,13 @@ function TokenDetail() {
     },
     [checkDappIsConfirmed, checkSecurity, currentToken.chainId, currentToken.symbol, eTransferUrl, setLoading],
   );
+
+  useEffectOnce(() => {
+    const app = document.getElementById('portkey-ui-root');
+    if (!app) return;
+    app.scrollTop = 0;
+  });
+
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['token-detail', isPrompt ? 'portkey-body' : ''])}>
@@ -131,19 +138,15 @@ function TokenDetail() {
           />
         </div>
         <div className="token-detail-content">
-          <div className="balance">
-            <div className="balance-amount">
-              <span className="amount">
-                {formatAmountShow(divDecimals(currentToken.balance, currentToken.decimals))} {currentToken.symbol}
-              </span>
-              {isMainNet && (
-                <span className="convert">
-                  {amountInUsdShow(currentToken.balance, currentToken.decimals, currentToken.symbol)}
-                </span>
-              )}
+          <div className="balance-amount flex-column-center">
+            <div className="flex-center amount">
+              <div className="amount-number">
+                {formatAmountShow(divDecimals(currentToken.balance, currentToken.decimals), currentToken.decimals)}
+              </div>
+              <div className="amount-symbol">{currentToken.symbol}</div>
             </div>
+            {isMainNet && <div className="convert">{formatAmountUSDShow(currentToken.balanceInUsd ?? 0)}</div>}
             <BalanceCard
-              amount={currentToken?.balanceInUsd}
               isShowDepositUSDT={isShowDepositUSDT}
               onClickDepositUSDT={() => handleClickETrans(ETransType.Deposit)}
               onClickWithdrawUSDT={() => handleClickETrans(ETransType.Withdraw)}
@@ -173,7 +176,6 @@ function TokenDetail() {
     isPrompt,
     currentToken,
     isMainNet,
-    amountInUsdShow,
     isShowDepositUSDT,
     isShowWithdrawUSDT,
     isShowBuy,

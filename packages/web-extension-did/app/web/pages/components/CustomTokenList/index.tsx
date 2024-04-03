@@ -3,7 +3,7 @@ import CustomSvg from 'components/CustomSvg';
 import DropdownSearch from 'components/DropdownSearch';
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimals, formatAmountShow, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import { useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
@@ -153,15 +153,18 @@ export default function CustomTokenList({
           <div className="icon flex-center">
             <TokenImageDisplay symbol={token?.symbol} src={token.tokenInfo?.imageUrl} />
           </div>
-          <div className="info">
+          <div className="info flex-column">
             <p className="symbol">{`${token.symbol}`}</p>
             <p className="network">{transNetworkText(token.chainId, !isMainnet)}</p>
           </div>
-          <div className="amount">
+          <div className="amount flex-column">
             <p className="quantity">
-              {formatAmountShow(divDecimals(token.tokenInfo?.balance, token.tokenInfo?.decimals))}
+              {formatAmountShow(
+                divDecimals(token.tokenInfo?.balance, token.tokenInfo?.decimals),
+                token.tokenInfo?.decimals,
+              )}
             </p>
-            <p className="convert">{isMainnet ? `$ ${formatAmountShow(token.tokenInfo?.balanceInUsd ?? 0, 2)}` : ''}</p>
+            <p className="convert">{isMainnet ? formatAmountUSDShow(token.tokenInfo?.balanceInUsd ?? 0) : ''}</p>
           </div>
         </div>
       );

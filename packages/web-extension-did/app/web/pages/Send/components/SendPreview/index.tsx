@@ -29,11 +29,13 @@ export interface ISendPreviewProps {
   tokenId: string;
   isSeed?: boolean;
   seedType?: SeedTypeEnum;
+  decimals?: number;
 }
 
 export default function SendPreview(props: ISendPreviewProps) {
-  const { amount, symbol, alias, toAccount, transactionFee, type, imageUrl, chainId, isCross, tokenId } = props;
   const userInfo = useCurrentUserInfo();
+  const { amount, symbol, alias, toAccount, transactionFee, type, imageUrl, chainId, isCross, tokenId, decimals } =
+    props;
   const wallet = useCurrentWalletInfo();
   const isMainnet = useIsMainnet();
   const amountInUsdShow = useAmountInUsdShow();
@@ -78,7 +80,7 @@ export default function SendPreview(props: ISendPreviewProps) {
       {type !== 'nft' ? (
         <div className="amount-preview">
           <p className="amount">
-            -{formatAmountShow(amount)} {symbol}
+            -{formatAmountShow(amount, decimals)} {symbol}
           </p>
           <p className="convert">{isMainnet && amountInUsdShow(amount, 0, symbol)}</p>
         </div>

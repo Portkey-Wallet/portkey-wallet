@@ -3,7 +3,7 @@ import ActivityList from 'pages/components/ActivityList';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getActivityListAsync } from '@portkey-wallet/store/store-ca/activity/action';
-import { useCaAddressInfoList, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useLoading, useUserInfo } from 'store/Provider/hooks';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
@@ -34,11 +34,6 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
 
   const dispatch = useAppCommonDispatch();
   const { passwordSeed } = useUserInfo();
-  const currentWallet = useCurrentWallet();
-  const {
-    walletInfo,
-    walletInfo: { caAddressList },
-  } = currentWallet;
 
   const { setLoading } = useLoading();
   const setL = useCallback(() => {
@@ -69,7 +64,7 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
       };
       dispatch(getActivityListAsync(params));
     }
-  }, [caAddressInfos, caAddressList, chainId, dispatch, passwordSeed, symbol, walletInfo]);
+  }, [caAddressInfos, chainId, dispatch, passwordSeed, symbol]);
 
   const loadMoreActivities = useCallback(() => {
     const { data, maxResultCount, skipCount, totalRecordCount } = currentActivity;

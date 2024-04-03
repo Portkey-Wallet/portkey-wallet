@@ -21,7 +21,9 @@ export type ActivityItemType = {
   amount: string;
   symbol: string;
   decimals?: string;
-  priceInUsd?: string;
+  priceInUsd?: string; // The unit price at that time
+  currentPriceInUsd?: string; // Real-time unit price
+  currentTxPriceInUsd?: string; // Real-time tx price
   nftInfo?: NftInfo;
   transactionFees: TransactionFees[];
   listIcon?: string;

@@ -28,15 +28,15 @@ import { NO_LONGER_IN_GROUP } from '@portkey-wallet/constants/constants-ca/chat'
 import { Message, MessageTypeEnum, ParsedImage } from '@portkey-wallet/im';
 import ChatBoxPinnedMsg from 'pages/IMChat/components/ChatBoxPinnedMsg';
 import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
-import { useWalletInfo } from 'store/Provider/hooks';
 import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
 import { TViewContactLocationState } from 'types/router';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
   const { t } = useTranslation();
-  const { userInfo } = useWalletInfo();
+  const userInfo = useCurrentUserInfo();
   const navigate = useNavigateState<TViewContactLocationState>();
   const [showBookmark, setShowBookmark] = useState(false);
   const messageRef = useRef<any>(null);

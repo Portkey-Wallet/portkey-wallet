@@ -26,7 +26,7 @@ import s3Instance, { getThumbSize, UploadFileType } from '@portkey-wallet/utils/
 import { messageParser } from '@portkey-wallet/im/utils';
 import { useContactRelationIdMap } from '../contact';
 import { request } from '@portkey-wallet/api/api-did';
-import { useWallet } from '../wallet';
+import { useCurrentUserInfo } from '../wallet';
 import { IMServiceCommon, SendMessageResult } from '@portkey-wallet/im/types/service';
 import useLockCallback from '../../useLockCallback';
 import { useIMPin } from './pin';
@@ -62,7 +62,7 @@ export const useSendChannelMessage = () => {
   const dispatch = useAppCommonDispatch();
   const { networkType } = useCurrentNetworkInfo();
   const { relationId, getRelationId } = useRelationId();
-  const { walletName } = useWallet();
+  const { nickName = '' } = useCurrentUserInfo() || {};
 
   const sendMessageToPeople = useCallback(
     async ({
@@ -172,7 +172,7 @@ export const useSendChannelMessage = () => {
         ...msgParams,
         from: _relationId,
         fromAvatar: '',
-        fromName: walletName,
+        fromName: nickName,
         createAt: `${Date.now()}`,
       });
       msgObj.quote = quoteMessage;
@@ -213,7 +213,7 @@ export const useSendChannelMessage = () => {
         throw error;
       }
     },
-    [dispatch, getRelationId, networkType, relationId, walletName],
+    [dispatch, getRelationId, networkType, nickName, relationId],
   );
   const sendChannelImageByS3Result = useCallback(
     async ({

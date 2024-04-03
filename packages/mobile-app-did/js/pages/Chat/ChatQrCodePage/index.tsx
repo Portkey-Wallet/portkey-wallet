@@ -5,7 +5,7 @@ import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import PageContainer from 'components/PageContainer';
 import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
-import { useUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import CommonAvatar from 'components/CommonAvatar';
 import { TextL, TextM, TextXXXL } from 'components/CommonText';
 import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
@@ -15,7 +15,7 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 const ChatQrCodePage: React.FC = () => {
   const isMainnet = useIsMainnet();
-  const { avatar = '', userId = '', nickName = '' } = useUserInfo() || {};
+  const { avatar = '', userId = '', nickName = '' } = useCurrentUserInfo() || {};
 
   const qrCodeData = useMemo(() => `${LinkPortkeyPath.addContact}${userId}`, [userId]);
 

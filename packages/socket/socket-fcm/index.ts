@@ -53,7 +53,6 @@ class SignalrFCM extends BaseSignalr {
     if (!this.openStateMap[url]) await this.doOpen({ url });
 
     await sleep(1000);
-
     return this.signalr?.invoke('reportAppStatus', { status, unReadCount });
   };
 

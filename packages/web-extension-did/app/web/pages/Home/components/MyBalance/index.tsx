@@ -7,8 +7,13 @@ import TokenList from '../Tokens';
 import Activity from '../Activity/index';
 import { Transaction } from '@portkey-wallet/types/types-ca/trade';
 import NFT from '../NFT/NFT';
-import { useAppDispatch, useUserInfo, useWalletInfo, useCommonState, useLoading } from 'store/Provider/hooks';
-import { useCaAddressInfoList, useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useAppDispatch, useUserInfo, useCommonState, useLoading } from 'store/Provider/hooks';
+import {
+  useCaAddressInfoList,
+  useCurrentUserInfo,
+  useCurrentWallet,
+  useOriginChainId,
+} from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import CustomTokenModal from 'pages/components/CustomTokenModal';
@@ -55,7 +60,7 @@ export type TMyBalanceState = {
 };
 
 export default function MyBalance() {
-  const { userInfo } = useWalletInfo();
+  const userInfo = useCurrentUserInfo();
   const { t } = useTranslation();
   const [activeKey, setActiveKey] = useState<string>(BalanceTab.TOKEN);
   const [navTarget, setNavTarget] = useState<'send' | 'receive'>('send');

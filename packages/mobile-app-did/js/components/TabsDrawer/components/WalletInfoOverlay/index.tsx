@@ -7,7 +7,7 @@ import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { ModalBody } from 'components/ModalBody';
 import { TextL, TextM, TextS } from 'components/CommonText';
-import { useCurrentCaInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentCaInfo, useCurrentUserInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
@@ -36,7 +36,8 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
   const checkDapp = useIsInCurrentDappList();
   const dispatch = useAppDispatch();
   const caInfo = useCurrentCaInfo();
-  const { userInfo, currentNetwork } = useWallet();
+  const { currentNetwork } = useWallet();
+  const userInfo = useCurrentUserInfo();
   const defaultToken = useDefaultToken();
   const { accountTokenList } = useAccountTokenInfo();
 

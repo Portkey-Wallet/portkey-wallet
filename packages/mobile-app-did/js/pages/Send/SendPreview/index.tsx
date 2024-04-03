@@ -456,16 +456,13 @@ const SendPreview: React.FC = () => {
             <TextL numberOfLines={1} style={[styles.nftTitle, fonts.mediumFont]}>
               {`${assetInfo.alias} #${assetInfo?.tokenId}  `}
             </TextL>
-            <TextS style={[FontStyles.font3]}>{`Amount：${formatTokenAmountShowWithDecimals(
-              sendNumber,
-              assetInfo.decimals,
-            )}`}</TextS>
+            <TextS style={[FontStyles.font3]}>{`Amount: ${formatAmountShow(sendNumber, assetInfo.decimals)}`}</TextS>
           </View>
         </View>
       ) : (
         <>
           <Text style={[styles.tokenCount, FontStyles.font5, fonts.mediumFont]}>
-            {`- ${formatTokenAmountShowWithDecimals(sendNumber, assetInfo.decimals)} ${assetInfo?.symbol}`}
+            {`- ${formatAmountShow(sendNumber, assetInfo.decimals)} ${assetInfo?.symbol}`}
           </Text>
           {isMainnet && isTokenHasPrice && (
             <TextM style={styles.tokenUSD}>{`- ${formatAmountUSDShow(
@@ -577,9 +574,9 @@ const SendPreview: React.FC = () => {
                     {defaultToken.symbol}
                   </TextM>
                   {isMainnet ? (
-                    <TextS style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`$ ${
+                    <TextS style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`${
                       ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(crossDefaultFee))
-                        ? '0'
+                        ? '$ 0'
                         : formatAmountUSDShow(
                             ZERO.plus(sendNumber)
                               .minus(ZERO.plus(crossDefaultFee))

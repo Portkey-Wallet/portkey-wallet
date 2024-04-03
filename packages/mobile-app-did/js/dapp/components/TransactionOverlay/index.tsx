@@ -225,7 +225,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
                       <TextM style={transferGroupStyle.fontBold}>
                         {isFetchingFee
                           ? defaultToken.symbol
-                          : `${formatTokenAmountShowWithDecimals(fee, decimals)} ${symbol}`}
+                          : `${formatTokenAmountShowWithDecimals(fee, defaultToken.decimals)} ${symbol}`}
                       </TextM>
                     </View>
                   </View>

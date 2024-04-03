@@ -8,13 +8,7 @@ import { formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/ut
 import { pTd } from 'utils/unit';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
-import {
-  AmountSign,
-  divDecimals,
-  divDecimalsStr,
-  formatAmountShow,
-  formatAmountUSDShow,
-} from '@portkey-wallet/utils/converter';
+import { AmountSign, divDecimalsStr, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import CommonButton from 'components/CommonButton';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import Loading from 'components/Loading';
@@ -128,11 +122,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
 
         <Text style={itemStyle.usdtBalance}>
           {isMainnet && !item?.nftInfo && (isTokenHasPrice || item?.symbol === null)
-            ? `$ ${formatAmountUSDShow(
-                divDecimals(item?.amount, Number(item?.decimals)).multipliedBy(
-                  item ? tokenPriceObject[item?.symbol] : 0,
-                ),
-              )}`
+            ? formatAmountUSDShow(item?.currentTxPriceInUsd ?? 0)
             : ''}
         </Text>
         <Text style={itemStyle.usdtBalance} />
@@ -148,7 +138,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
         )}
       </View>
     );
-  }, [amountString, isMainnet, isTokenHasPrice, item, tokenPriceObject]);
+  }, [amountString, isMainnet, isTokenHasPrice, item]);
 
   return (
     <Touchable style={itemStyle.itemWrap} onPress={() => onPress?.(item)}>

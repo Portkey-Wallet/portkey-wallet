@@ -6,9 +6,7 @@ import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
 import { addressFormat, formatChainInfoToShow, getExploreLink, handleLoopFetch } from '@portkey-wallet/utils';
 import {
-  divDecimals,
   divDecimalsStr,
-  formatAmountShow,
   formatAmountUSDShow,
   formatTokenAmountShowWithDecimals,
 } from '@portkey-wallet/utils/converter';
@@ -166,9 +164,7 @@ const ActivityDetail = () => {
           {activityItem?.isDelegated ? (
             <View style={[styles.transactionFeeItemWrap]}>
               <TextM style={[styles.blackFontColor, styles.fontBold]}>{`0 ${defaultToken.symbol}`}</TextM>
-              {isMainnet && (
-                <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{`$ ${formatAmountShow(0, 4)}`}</TextS>
-              )}
+              {isMainnet && <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{`$ 0`}</TextS>}
             </View>
           ) : (
             <View>

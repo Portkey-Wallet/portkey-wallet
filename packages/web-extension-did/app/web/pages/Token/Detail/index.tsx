@@ -139,13 +139,15 @@ function TokenDetail() {
         </div>
         <div className="token-detail-content">
           <div className="balance-amount flex-column-center">
-            <div className="flex-center amount">
-              <div className="amount-number">
-                {formatAmountShow(divDecimals(currentToken.balance, currentToken.decimals), currentToken.decimals)}
+            <div className="flex-column amount-detail">
+              <div className="flex-center amount">
+                <div className="amount-number">
+                  {formatAmountShow(divDecimals(currentToken.balance, currentToken.decimals), currentToken.decimals)}
+                </div>
+                <div className="amount-symbol">{currentToken.symbol}</div>
               </div>
-              <div className="amount-symbol">{currentToken.symbol}</div>
+              {isMainNet && <div className="convert">{formatAmountUSDShow(currentToken.balanceInUsd ?? 0)}</div>}
             </div>
-            {isMainNet && <div className="convert">{formatAmountUSDShow(currentToken.balanceInUsd ?? 0)}</div>}
             <BalanceCard
               isShowDepositUSDT={isShowDepositUSDT}
               onClickDepositUSDT={() => handleClickETrans(ETransType.Deposit)}

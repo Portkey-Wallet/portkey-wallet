@@ -3,7 +3,7 @@ import CustomSvg from 'components/CustomSvg';
 import DropdownSearch from 'components/DropdownSearch';
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { divDecimals, formatAmountShow, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
+import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
@@ -159,10 +159,7 @@ export default function CustomTokenList({
           </div>
           <div className="amount flex-column">
             <p className="quantity">
-              {formatAmountShow(
-                divDecimals(token.tokenInfo?.balance, token.tokenInfo?.decimals),
-                token.tokenInfo?.decimals,
-              )}
+              {formatTokenAmountShowWithDecimals(token.tokenInfo?.balance, token.tokenInfo?.decimals)}
             </p>
             <p className="convert">{isMainnet ? formatAmountUSDShow(token.tokenInfo?.balanceInUsd ?? 0) : ''}</p>
           </div>
@@ -224,7 +221,7 @@ export default function CustomTokenList({
           </div>
           <div className="amount">
             <div className="balance">
-              {formatAmountShow(divDecimals(token.nftInfo?.balance, token.nftInfo?.decimals || 0))}
+              {formatTokenAmountShowWithDecimals(token.nftInfo?.balance, token.nftInfo?.decimals || 0)}
             </div>
           </div>
         </div>

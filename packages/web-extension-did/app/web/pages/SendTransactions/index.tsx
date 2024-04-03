@@ -2,7 +2,7 @@ import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca
 import { useCurrentUserInfo, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ChainId } from '@portkey-wallet/types';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimals, formatAmountShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { formatChainInfoToShow, handleErrorMessage } from '@portkey-wallet/utils';
 import { Button } from 'antd';
 import CustomSvg from 'components/CustomSvg';
@@ -182,13 +182,7 @@ export default function SendTransactions() {
           <div>Amount</div>
           <div className="amount-number flex-between-center">
             <div className="value">
-              <span>
-                {loading ? (
-                  <CircleLoading />
-                ) : (
-                  `${formatAmountShow(divDecimals(amount, decimals), defaultToken.decimals)}`
-                )}
-              </span>
+              <span>{loading ? <CircleLoading /> : `${formatTokenAmountShowWithDecimals(amount, decimals)}`}</span>
               <span>&nbsp;{symbol}</span>
             </div>
             {isMainnet && <div>{formatAmountInUsdShow(amount, decimals, symbol)}</div>}
@@ -233,13 +227,7 @@ export default function SendTransactions() {
               </div>
               <div className="amount-show flex-between-center">
                 <div className="value">
-                  <span>
-                    {loading ? (
-                      <CircleLoading />
-                    ) : (
-                      `${formatAmountShow(divDecimals(amount, decimals), defaultToken.decimals)}`
-                    )}
-                  </span>
+                  <span>{loading ? <CircleLoading /> : `${formatTokenAmountShowWithDecimals(amount, decimals)}`}</span>
                   <span>&nbsp;{symbol}</span>
                 </div>
                 {isMainnet && <div>{formatAmountInUsdShow(amount, 0, symbol)}</div>}

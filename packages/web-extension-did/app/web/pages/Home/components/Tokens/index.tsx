@@ -1,6 +1,6 @@
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import CustomSvg from 'components/CustomSvg';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -53,16 +53,19 @@ export default function TokenList() {
     <>
       <ul className="token-list">
         {accountTokenList.map((item) => (
-          <li className="token-list-item" key={`${item.chainId}_${item.symbol}`} onClick={() => onNavigate(item)}>
+          <li
+            className="token-list-item flex-row-center"
+            key={`${item.chainId}_${item.symbol}`}
+            onClick={() => onNavigate(item)}>
             <TokenImageDisplay className="custom-logo" symbol={item.symbol} src={item.imageUrl} />
             <div className="desc">
-              <div className="info">
+              <div className="info flex-between">
                 <span>{item.symbol}</span>
-                <span>{formatAmountShow(divDecimals(item.balance, item.decimals))}</span>
+                <span>{formatTokenAmountShowWithDecimals(item.balance, item.decimals)}</span>
               </div>
-              <div className="amount">
-                <p>{transNetworkText(item.chainId, !isMainnet)}</p>
-                {isMainnet && <p className="convert">{`$ ${formatAmountShow(item.balanceInUsd ?? 0, 2)}`}</p>}
+              <div className="amount flex-between">
+                <span>{transNetworkText(item.chainId, !isMainnet)}</span>
+                {isMainnet && <span className="convert">{formatAmountUSDShow(item.balanceInUsd ?? 0)}</span>}
               </div>
             </div>
           </li>

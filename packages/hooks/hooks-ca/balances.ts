@@ -21,6 +21,10 @@ export function useAccountCryptoBoxAssetList() {
 }
 
 export const useAccountBalanceUSD = () => {
+  const { networkType = 'MAINNET' } = useCurrentNetwork();
   const assetsState = useAssets();
-  return useMemo(() => assetsState.accountBalance, [assetsState.accountBalance]);
+  return useMemo(
+    () => assetsState?.accountBalance?.accountBalanceInfo?.[networkType] || '',
+    [assetsState?.accountBalance?.accountBalanceInfo, networkType],
+  );
 };

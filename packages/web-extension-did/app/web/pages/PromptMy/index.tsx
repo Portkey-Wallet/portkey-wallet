@@ -68,11 +68,6 @@ export default function PromptMy() {
       });
   }, [curMenuInfo, navigate, settingList]);
 
-  const handleLock = useCallback(() => {
-    lockWallet();
-    navigate('/unlock');
-  }, [navigate]);
-
   const backCb = useCallback(() => {
     navigate('/');
   }, [navigate]);
@@ -121,7 +116,7 @@ export default function PromptMy() {
                 <div className="referral-tag flex-center">New</div>
               </div>
             </MenuItem>
-            <div className="lock-row flex-center" onClick={handleLock}>
+            <div className="lock-row flex-center" onClick={lockWallet}>
               {/* eslint-disable-next-line no-inline-styles/no-inline-styles */}
               <CustomSvg type={'Lock'} style={{ width: 16, height: 16 }} />
               <span className="lock-text">{t('Lock')}</span>

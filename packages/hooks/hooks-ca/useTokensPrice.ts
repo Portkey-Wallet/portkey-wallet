@@ -1,6 +1,6 @@
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { fetchTokensPriceAsync } from '@portkey-wallet/store/store-ca/assets/slice';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimals, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import { useCallback, useEffect, useRef } from 'react';
 import { useAppCASelector, useAppCommonDispatch } from '../index';
 import { useIsMainnet } from './network';
@@ -65,7 +65,7 @@ export function useAmountInUsdShow() {
     (balance: string | number, decimals: number | string, symbol: string) =>
       tokenPriceObject[symbol] === 0
         ? ''
-        : `$ ${formatAmountShow(divDecimals(balance, decimals).times(tokenPriceObject[symbol]), 2)}`,
+        : formatAmountUSDShow(divDecimals(balance, decimals).times(tokenPriceObject[symbol])),
     [tokenPriceObject],
   );
 }

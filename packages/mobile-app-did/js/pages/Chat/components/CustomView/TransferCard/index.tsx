@@ -13,11 +13,11 @@ import fonts from 'assets/theme/fonts';
 import { divDecimalsToShow } from '@portkey-wallet/utils/converter';
 import { ParsedTransfer } from '@portkey-wallet/im';
 import navigationService from 'utils/navigationService';
-import { useUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ActivityTypeEnum } from '@portkey-wallet/store/store-ca/activity/type';
 
 function TransferCard(props: MessageProps<ChatMessage>) {
-  const { userId } = useUserInfo() || {};
+  const { userId } = useCurrentUserInfo() || {};
 
   const { currentMessage } = props;
   const { parsedContent } = currentMessage || {};

@@ -3,12 +3,11 @@ import { useMemo, useCallback, useState, useEffect } from 'react';
 import { WalletInfoType } from '@portkey-wallet/types/wallet';
 import { CAInfoType } from '@portkey-wallet/types/types-ca/wallet';
 import { WalletState } from '@portkey-wallet/store/store-ca/wallet/type';
-import { useCurrentNetworkInfo } from './network';
+import { useCurrentNetwork, useCurrentNetworkInfo } from './network';
 import { useCurrentChain, useCurrentChainList } from './chainList';
 import { request } from '@portkey-wallet/api/api-did';
 import { useAppCommonDispatch } from '../index';
 import {
-  setWalletNameAction,
   setUserInfoAction,
   getCaHolderInfoAsync,
   setCheckManagerExceed,
@@ -24,6 +23,7 @@ import { ManagerInfo, Maybe } from '@portkey-wallet/graphql/contract/__generated
 export interface CurrentWalletType extends WalletInfoType, CAInfoType {
   caHash?: string;
   caAddressList?: string[];
+  caAddress?: string;
 }
 
 export interface IDeviceItem {
@@ -47,6 +47,7 @@ export function getCurrentWalletInfo(
 
   const tmpWalletInfo: any = Object.assign({}, walletInfo, currentCAInfo, {
     caHash: currentCAInfo?.[originChainId]?.caHash,
+    caAddress: currentCAInfo?.[originChainId]?.caAddress,
     caAddressList: Object.values(currentCAInfo || {})
       ?.filter((info: any) => !!info?.caAddress)
       ?.map((i: any) => i?.caAddress),
@@ -59,16 +60,17 @@ export function getCurrentWalletInfo(
 
 export const useWallet = () => useAppCASelector(state => state.wallet);
 
-export const useUserInfo = (forceUpdate?: boolean) => {
+export const useCurrentUserInfo = (forceUpdate?: boolean) => {
   const { userInfo } = useWallet();
+  const currentNetwork = useCurrentNetwork();
   const dispatch = useAppCommonDispatch();
 
   useEffect(() => {
-    if (!userInfo?.userId) dispatch(getCaHolderInfoAsync());
+    if (!userInfo?.[currentNetwork]?.userId) dispatch(getCaHolderInfoAsync());
     if (forceUpdate) dispatch(getCaHolderInfoAsync());
-  }, [dispatch, forceUpdate, userInfo]);
+  }, [currentNetwork, dispatch, forceUpdate, userInfo]);
 
-  return userInfo;
+  return userInfo?.[currentNetwork] || { nickName: '', userId: '', avatar: '' };
 };
 
 export const useCurrentWalletInfo = () => {
@@ -188,23 +190,6 @@ export const useDeviceList = (config?: IUseDeviceListConfig) => {
   return { refresh, deviceList, deviceAmount, loading };
 };
 
-export const useSetWalletName = () => {
-  const dispatch = useAppCommonDispatch();
-  const networkInfo = useCurrentNetworkInfo();
-  return useCallback(
-    async (nickName: string) => {
-      await request.wallet.editWalletName({
-        baseURL: networkInfo.apiUrl,
-        params: {
-          nickName,
-        },
-      });
-      dispatch(setWalletNameAction(nickName));
-    },
-    [dispatch, networkInfo],
-  );
-};
-
 export const useSetUserInfo = () => {
   const dispatch = useAppCommonDispatch();
   const networkInfo = useCurrentNetworkInfo();
@@ -214,7 +199,7 @@ export const useSetUserInfo = () => {
         baseURL: networkInfo.apiUrl,
         params,
       });
-      dispatch(setUserInfoAction(params));
+      dispatch(setUserInfoAction({ ...params, networkType: networkInfo.networkType }));
     },
     [dispatch, networkInfo],
   );

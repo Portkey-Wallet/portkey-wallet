@@ -15,7 +15,7 @@ import fonts from 'assets/theme/fonts';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { usePin } from 'hooks/store';
-import { useCaAddressInfoList, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList, useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getManagerAccount } from 'utils/redux';
 import crossChainTransfer, {
   CrossChainTransferIntervalParams,
@@ -23,7 +23,13 @@ import crossChainTransfer, {
 } from 'utils/transfer/crossChainTransfer';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { formatAmountShow, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
+import {
+  formatAmountShow,
+  formatAmountUSDShow,
+  formatTokenAmountShowWithDecimals,
+  timesDecimals,
+  unitConverter,
+} from '@portkey-wallet/utils/converter';
 import sameChainTransfer from 'utils/transfer/sameChainTransfer';
 import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
 import { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
@@ -91,7 +97,7 @@ const SendPreview: React.FC = () => {
   const currentNetwork = useCurrentNetworkInfo();
   const caAddressInfos = useCaAddressInfoList();
   const wallet = useCurrentWalletInfo();
-  const { userInfo } = useWallet();
+  const userInfo = useCurrentUserInfo();
   const contractRef = useRef<ContractBasic>();
   const tokenContractRef = useRef<ContractBasic>();
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
@@ -450,18 +456,17 @@ const SendPreview: React.FC = () => {
             <TextL numberOfLines={1} style={[styles.nftTitle, fonts.mediumFont]}>
               {`${assetInfo.alias} #${assetInfo?.tokenId}  `}
             </TextL>
-            <TextS style={[FontStyles.font3]}>{`Amount：${formatAmountShow(sendNumber)}`}</TextS>
+            <TextS style={[FontStyles.font3]}>{`Amount: ${formatAmountShow(sendNumber, assetInfo.decimals)}`}</TextS>
           </View>
         </View>
       ) : (
         <>
           <Text style={[styles.tokenCount, FontStyles.font5, fonts.mediumFont]}>
-            {`- ${formatAmountShow(sendNumber)} ${assetInfo?.symbol}`}
+            {`- ${formatAmountShow(sendNumber, assetInfo.decimals)} ${assetInfo?.symbol}`}
           </Text>
           {isMainnet && isTokenHasPrice && (
-            <TextM style={styles.tokenUSD}>{`-$ ${formatAmountShow(
+            <TextM style={styles.tokenUSD}>{`- ${formatAmountUSDShow(
               ZERO.plus(sendNumber).multipliedBy(tokenPriceObject[assetInfo.symbol]),
-              2,
             )}`}</TextM>
           )}
         </>
@@ -569,14 +574,13 @@ const SendPreview: React.FC = () => {
                     {defaultToken.symbol}
                   </TextM>
                   {isMainnet ? (
-                    <TextS style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`$ ${
+                    <TextS style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`${
                       ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(crossDefaultFee))
-                        ? '0'
-                        : formatAmountShow(
+                        ? '$ 0'
+                        : formatAmountUSDShow(
                             ZERO.plus(sendNumber)
                               .minus(ZERO.plus(crossDefaultFee))
                               .times(tokenPriceObject[defaultToken.symbol]),
-                            2,
                           )
                     }`}</TextS>
                   ) : (

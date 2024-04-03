@@ -5,7 +5,7 @@ import fonts from 'assets/theme/fonts';
 import { useLanguage } from 'i18n/hooks';
 import { ModalBody } from 'components/ModalBody';
 import { TextM, TextS } from 'components/CommonText';
-import { useCurrentWalletInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr, sleep } from '@portkey-wallet/utils';
 import { divDecimals, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import GStyles from 'assets/theme/GStyles';
@@ -50,7 +50,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
   const isMainnet = useIsMainnet();
   const defaultToken = useDefaultToken();
   const pin = usePin();
-  const { walletName } = useWallet();
+  const { nickName = '' } = useCurrentUserInfo() || {};
   const wallet = useCurrentWalletInfo();
   const checkManagerSyncState = useCheckManagerSyncState();
   const amountInUsdShow = useAmountInUsdShow();
@@ -148,7 +148,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
           <View style={transferGroupStyle.section}>
             <View style={[transferGroupStyle.flexSpaceBetween]}>
               <TextM style={transferGroupStyle.lightGrayFontColor}>{t('From')}</TextM>
-              <TextM style={transferGroupStyle.blackFontColor}>{walletName}</TextM>
+              <TextM style={transferGroupStyle.blackFontColor}>{nickName}</TextM>
             </View>
             <View style={[transferGroupStyle.flexSpaceBetween]}>
               <TextM style={transferGroupStyle.lightGrayFontColor} />
@@ -314,12 +314,12 @@ const ConnectModal = (props: TransactionModalPropsType) => {
     isFetchingFee,
     isMainnet,
     isTransfer,
+    nickName,
     t,
     tokenDecimal,
     transactionInfo.chainId,
     transactionInfo?.params?.paramsOption,
     wallet,
-    walletName,
   ]);
 
   // get  fee

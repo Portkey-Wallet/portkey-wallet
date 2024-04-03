@@ -1,10 +1,9 @@
 import { ZERO } from '@portkey-wallet/constants/misc';
 import clsx from 'clsx';
 import { useMemo } from 'react';
-import { useWalletInfo } from 'store/Provider/hooks';
 // import { useTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import './index.less';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { getEntireDIDAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
@@ -34,9 +33,9 @@ export interface ISendPreviewProps {
 }
 
 export default function SendPreview(props: ISendPreviewProps) {
+  const userInfo = useCurrentUserInfo();
   const { amount, symbol, alias, toAccount, transactionFee, type, imageUrl, chainId, isCross, tokenId, decimals } =
     props;
-  const { userInfo } = useWalletInfo();
   const wallet = useCurrentWalletInfo();
   const isMainnet = useIsMainnet();
   const amountInUsdShow = useAmountInUsdShow();

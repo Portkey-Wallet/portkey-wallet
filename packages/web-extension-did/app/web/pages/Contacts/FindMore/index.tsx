@@ -1,7 +1,7 @@
 import { ChangeEvent, ChangeEventHandler, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router';
 import CustomModal from 'pages/components/CustomModal';
-import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
+import { useCommonState } from 'store/Provider/hooks';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import FindMorePrompt from './Prompt';
 import FindMorePopup from './Popup';
@@ -16,6 +16,7 @@ import { getAddressInfo } from '@portkey-wallet/utils/aelf';
 import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useLocationState } from 'hooks/router';
 import { FromPageEnum, TFindMoreLocationState } from 'types/router';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 export interface IContactItemRes extends Partial<ContactItemType> {
   isAdded?: boolean;
@@ -38,7 +39,7 @@ export default function FindMore() {
   const { isPrompt, isNotLessThan768 } = useCommonState();
   const { state } = useLocationState<TFindMoreLocationState>();
   const showChat = useIsChatShow();
-  const { userInfo } = useWalletInfo();
+  const userInfo = useCurrentUserInfo();
   const contactRelationIdMap = useContactRelationIdMap();
   const [isSearch, setIsSearch] = useState(false);
   const createChannel = useCreateP2pChannel();

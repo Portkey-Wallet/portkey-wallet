@@ -389,14 +389,25 @@ export const assetsSlice = createSlice({
         };
         state.accountNFT.isFetching = false;
       })
-      // .addCase(fetchNFTAsync.pending, state => {
-      //   state.accountNFT.isFetching = true;
-      // })
-      .addCase(fetchNFTAsync.fulfilled, (state, action) => {
-        if (!action.payload) return;
-        const { list, totalRecordCount, symbol, chainId, skipCount, currentNetwork } = action.payload;
+      .addCase(fetchNFTAsync.pending, (state, action) => {
+        if (!action.meta.arg) return;
+        const { symbol, chainId, currentNetwork = 'MAINNET' } = action.meta.arg;
         const preNFTCollection = state.accountNFT.accountNFTInfo?.[currentNetwork]?.accountNFTList;
         const currentNFTSeriesItem = preNFTCollection?.find(ele => ele.symbol === symbol && ele.chainId === chainId);
+        if (currentNFTSeriesItem) {
+          currentNFTSeriesItem.isFetching = true;
+        }
+      })
+      .addCase(fetchNFTAsync.fulfilled, (state, action) => {
+        if (!action.meta.arg) return;
+        const { symbol, chainId, currentNetwork = 'MAINNET' } = action.meta.arg;
+        const preNFTCollection = state.accountNFT.accountNFTInfo?.[currentNetwork]?.accountNFTList;
+        const currentNFTSeriesItem = preNFTCollection?.find(ele => ele.symbol === symbol && ele.chainId === chainId);
+        if (currentNFTSeriesItem) {
+          currentNFTSeriesItem.isFetching = false;
+        }
+        if (!action.payload) return;
+        const { list, totalRecordCount, skipCount } = action.payload;
         if (currentNFTSeriesItem) {
           if (currentNFTSeriesItem?.children?.length > skipCount) return;
           currentNFTSeriesItem.children = [...currentNFTSeriesItem.children, ...list];

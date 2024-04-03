@@ -15,7 +15,7 @@ import fonts from 'assets/theme/fonts';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { usePin } from 'hooks/store';
-import { useCaAddressInfoList, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList, useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getManagerAccount } from 'utils/redux';
 import crossChainTransfer, {
   CrossChainTransferIntervalParams,
@@ -97,7 +97,7 @@ const SendPreview: React.FC = () => {
   const currentNetwork = useCurrentNetworkInfo();
   const caAddressInfos = useCaAddressInfoList();
   const wallet = useCurrentWalletInfo();
-  const { userInfo } = useWallet();
+  const userInfo = useCurrentUserInfo();
   const contractRef = useRef<ContractBasic>();
   const tokenContractRef = useRef<ContractBasic>();
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();

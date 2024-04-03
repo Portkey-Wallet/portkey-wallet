@@ -1,5 +1,5 @@
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ChainId } from '@portkey-wallet/types';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { divDecimals, formatAmountShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
@@ -44,7 +44,8 @@ export default function SendTransactions() {
   }>();
   const chainInfo = useCurrentChain(payload?.chainId);
   const wallet = useCurrentWalletInfo();
-  const { currentNetwork, userInfo } = useWalletInfo();
+  const { currentNetwork } = useWalletInfo();
+  const userInfo = useCurrentUserInfo();
   const isMainnet = useIsMainnet();
   const { t } = useTranslation();
   const amountInUsdShow = useAmountInUsdShow();

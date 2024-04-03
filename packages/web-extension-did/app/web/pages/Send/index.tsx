@@ -1,6 +1,6 @@
 import { useCurrentChain, useDefaultToken, useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
 import { IClickAddressProps } from '@portkey-wallet/types/types-ca/contact';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
@@ -13,7 +13,7 @@ import TitleWrapper from 'components/TitleWrapper';
 import { ReactElement, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
-import { useAppDispatch, useCommonState, useLoading, useWalletInfo } from 'store/Provider/hooks';
+import { useAppDispatch, useCommonState, useLoading } from 'store/Provider/hooks';
 import crossChainTransfer, { intervalCrossChainTransfer } from 'utils/sandboxUtil/crossChainTransfer';
 import sameChainTransfer from 'utils/sandboxUtil/sameChainTransfer';
 import AddressSelector from './components/AddressSelector';
@@ -67,7 +67,7 @@ type TypeStageObj = {
 
 export default function Send() {
   const navigate = useNavigate();
-  const { userInfo } = useWalletInfo();
+  const userInfo = useCurrentUserInfo();
   // TODO need get data from state and wait for BE data structure
   const { type, symbol } = useParams();
   const { locationParams: state } = usePromptLocationParams<TSendLocationState, TSendLocationState>();

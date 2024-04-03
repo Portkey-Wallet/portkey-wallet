@@ -86,7 +86,6 @@ export const setCAInfoType = createAction<{
 export const resetWallet = createAction('wallet/resetWallet');
 export const setCheckManagerExceed = createAction<{ network: NetworkType }>('wallet/setCheckManagerExceed');
 export const reSetCheckManagerExceed = createAction<NetworkType | undefined>('wallet/reSetCheckManagerExceed');
-export const resetUserInfo = createAction('wallet/resetUserInfo');
 export const resetCaInfo = createAction<NetworkType>('wallet/resetCaInfo');
 export const changePin = createAction<{ pin: string; newPin: string }>('wallet/changePin');
 
@@ -116,6 +115,7 @@ export const getCaHolderInfoAsync = createAsyncThunk<
       nickName: string;
       userId: string;
       avatar?: string;
+      currentNetwork?: NetworkType;
     }
   | undefined
 >('wallet/getCaHolderInfoAsync', async (_, thunkAPI) => {
@@ -144,10 +144,13 @@ export const getCaHolderInfoAsync = createAsyncThunk<
     nickName: caHolder.nickName,
     userId: caHolder.userId,
     avatar: caHolder.avatar,
+    currentNetwork,
   };
 });
 
-export const setWalletNameAction = createAction<string>('wallet/setWalletName');
+export const resetCurrentUserInfoAction = createAction<NetworkType>('wallet/resetCurrentUserInfoAction');
+
 export const setUserInfoAction =
-  createAction<RequireAtLeastOne<{ nickName: string; avatar: string }>>('wallet/setUserInfo');
+  createAction<RequireAtLeastOne<{ nickName: string; avatar: string; networkType: NetworkType }>>('wallet/setUserInfo');
+
 export const setOriginChainId = createAction<ChainId>('wallet/setOriginChainId');

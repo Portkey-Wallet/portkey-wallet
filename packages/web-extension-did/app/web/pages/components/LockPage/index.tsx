@@ -39,9 +39,11 @@ export default function LockPage({ header, onUnLockHandler, ...props }: LockPage
       if (privateKey) {
         setIsPassword(1);
         dispatch(setPasswordSeed(password));
+        await setTokenConfig(password);
+
         InternalMessage.payload(InternalMessageTypes.SET_SEED, password).send();
         await sleep(100);
-        setTokenConfig();
+
         onUnLockHandler?.(password);
       } else {
         setIsPassword(0);

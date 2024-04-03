@@ -22,8 +22,7 @@ import securityApi from '@portkey-wallet/api/api-did/security';
 import guideApi from '@portkey-wallet/api/api-did/guide';
 import managerApi from '@portkey-wallet/api/api-did/manager';
 import referralApi from '@portkey-wallet/api/api-did/referral';
-import { CLIENT_TYPE } from '@portkey-wallet/api/api-did/types';
-import { SDKFetch } from './request';
+import { RNDidService } from './request';
 
 export const DEFAULT_METHOD = 'POST';
 
@@ -71,7 +70,7 @@ export type BASE_REQ_TYPES = {
 
 export type EXPAND_REQ_TYPES = {
   [X in keyof typeof EXPAND_APIS]: {
-    [K in keyof typeof EXPAND_APIS[X]]: API_REQ_FUNCTION;
+    [K in keyof (typeof EXPAND_APIS)[X]]: API_REQ_FUNCTION;
   };
 };
 
@@ -81,7 +80,7 @@ export interface IRequest extends BASE_REQ_TYPES, EXPAND_REQ_TYPES {
   es: ES_REQ_TYPES;
 }
 
-const rnSDKServer = new DidService(new SDKFetch());
+const rnSDKServer = new RNDidService();
 rnSDKServer.parseRouter('es', esApi as any);
 rnSDKServer.parseRouter('base', BASE_APIS);
 Object.entries(EXPAND_APIS).forEach(([key, value]) => {

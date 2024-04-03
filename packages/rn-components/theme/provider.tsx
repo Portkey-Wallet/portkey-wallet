@@ -1,7 +1,7 @@
 import React from 'react';
 import { ThemeContext } from './context';
 import { Theme, ThemeType } from './type';
-import { defaultTheme, getTheme } from '.';
+import { defaultTheme, getTheme, setTheme } from '.';
 import ThemeInitializer from '../components/ThemeInitializer';
 
 const CommonThemeProvider = ({ children, value }: { children: any; value?: ThemeType }) => {
@@ -14,7 +14,7 @@ const CommonThemeProvider = ({ children, value }: { children: any; value?: Theme
   const dark = { ...defaultDark, ...customDark } as Theme;
   const light = { ...defaultLight, ...customLight } as Theme;
   const isDark = customIsDark ?? defaultIsDark;
-
+  setTheme({ dark, light, isDark });
   return (
     <ThemeContext.Provider value={{ dark, light, isDark }}>
       <ThemeInitializer />

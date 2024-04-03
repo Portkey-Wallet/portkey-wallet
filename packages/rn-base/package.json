@@ -1,0 +1,15 @@
+{
+  "name": "@portkey-wallet/rn-base",
+  "version": "1.0.0",
+  "description": "contain the code required for both rn-sdk and mobile-did-app ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.17.6",
+    "react-native-localize": "^2.2.1"
+  },
+  "author": "",
+  "license": "ISC"
+}

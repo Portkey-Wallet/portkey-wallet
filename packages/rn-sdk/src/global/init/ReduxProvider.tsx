@@ -6,6 +6,7 @@ import { StatusBar, StatusBarProps, Text, View } from 'react-native';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import RouterProvider from 'core/router/provider';
 import { defaultRouterParams } from 'core/router/context';
+import { useLatestRef } from '@portkey-wallet/hooks';
 // import { PersistGate } from 'redux-persist/integration/react';
 // import persistStore from 'redux-persist/es/persistStore';
 // import { TextTitle } from '@portkey-wallet/rn-components/components/CommonText';
@@ -25,8 +26,10 @@ const ProviderComponent: HigherOrderComponent = (
     statusBarProps.backgroundColor = 'transparent';
   }
   // const persistor = persistStore(store);
-  const routerP = extraProps?.routerParams?.from ? { from: extraProps?.routerParams?.from } : defaultRouterParams;
   const component = (props: any) => {
+    const routerP = extraProps?.routerParams?.from
+      ? { from: extraProps?.routerParams?.from, params: props }
+      : defaultRouterParams;
     return (
       <Provider store={store}>
         {/* <PersistGate
@@ -39,7 +42,7 @@ const ProviderComponent: HigherOrderComponent = (
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <TextTitle>正在加载</TextTitle>
+              <TextTitle>loading...</TextTitle>
             </View>
           }
           persistor={persistor}> */}

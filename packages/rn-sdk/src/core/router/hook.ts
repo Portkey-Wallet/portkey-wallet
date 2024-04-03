@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useRef } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { COMMON_RESULT_DATA, RouterContext } from './context';
 import router from '.';
 import { EntryResult, PortkeyDeviceEventEmitter } from 'service/native-modules';
@@ -34,3 +34,9 @@ export function useNewIntent<T>(onNewIntent: (params: T) => void) {
     };
   }, [onNewIntent]);
 }
+export function useRouterParams<T extends object>() {
+  const { params } = useContext(RouterContext);
+  const [stateParams] = useState(params);
+  return stateParams || ({} as T);
+}
+export const useRoute = useRouterParams;

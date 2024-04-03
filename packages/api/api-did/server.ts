@@ -7,21 +7,15 @@ import { isValidRefreshTokenConfig, queryAuthorization, RefreshTokenConfig } fro
 import { sleep } from '@portkey-wallet/utils';
 import im from '@portkey-wallet/im';
 import { IM_TOKEN_ERROR_ARRAY } from '@portkey-wallet/im/constant';
-import signalrFCM from '@portkey-wallet/socket/socket-fcm';
-import { stringify } from 'query-string';
-import { CLIENT_TYPE, IFetch, TypedUrlParams } from './types';
 
 const C_T_EVENT_NAME = 'connectTokenChange';
 export class DidService extends ServiceInit {
   protected refreshTokenConfig?: RefreshTokenConfig;
   protected onLockApp?: (expired?: boolean) => void;
-  // private clientType: CLIENT_TYPE;
-  private fetchInstance?: IFetch;
   locked?: boolean;
   exceptionManager?: IExceptionManager;
-  constructor(fetchInstance?: IFetch) {
+  constructor() {
     super();
-    this.fetchInstance = fetchInstance;
   }
 
   public emitConnectTokenChange = (authorization: string) => {
@@ -106,51 +100,15 @@ export class DidService extends ServiceInit {
       throw fetchResult;
     }
   };
+  protected async fetchData(URL: string, fetchConfig: any, method: string) {
+    return await customFetch(URL, {
+      ...fetchConfig,
+      method,
+    });
+  }
   sendOrigin = async (base: BaseConfig, config?: RequestConfig, reCount = 0): Promise<any> => {
     const { URL, fetchConfig, method } = this.getConfig(base, config);
-    let fetchResult: {
-      status: number;
-      result?: any;
-      code: string;
-      message?: string;
-    };
-    if (this.fetchInstance) {
-      const requestConfig = {
-        ...fetchConfig,
-        url: URL,
-      };
-      const { url, params = {}, headers, resourceUrl, stringifyOptions } = requestConfig;
-      let uri = url;
-      // handle body & url & method
-      let myBody = undefined;
-      const _method = method.toUpperCase();
-      if (_method === 'GET' || _method === 'DELETE') {
-        uri = Object.keys(params).length > 0 ? `${uri}?${stringify(params, stringifyOptions)}` : uri;
-        myBody = undefined;
-      } else {
-        if (requestConfig.body) {
-          myBody = JSON.parse(requestConfig.body as string);
-        }
-      }
-      if (resourceUrl !== undefined) {
-        uri += `/${resourceUrl}`;
-      }
-      // handle headers
-      const defaultHeaders = {
-        Accept: 'text/plain;v=1.0',
-        'Content-Type': 'application/json',
-      };
-      const myHeaders: TypedUrlParams = {};
-      Object.entries({ ...defaultHeaders, ...headers }).forEach(([headerItem, value]) => {
-        myHeaders[headerItem] = value as string | number | boolean | null | undefined;
-      });
-      fetchResult = await this.fetchInstance.fetch(uri, _method, myBody, myHeaders);
-    } else {
-      fetchResult = await customFetch(URL, {
-        ...fetchConfig,
-        method,
-      });
-    }
+    const fetchResult = await this.fetchData(URL, fetchConfig, method);
     if (fetchResult && fetchResult.status === 401 && fetchResult.message === 'unauthorized') {
       if (!this.refreshTokenConfig) throw fetchResult;
       if (reCount > 5) throw fetchResult;

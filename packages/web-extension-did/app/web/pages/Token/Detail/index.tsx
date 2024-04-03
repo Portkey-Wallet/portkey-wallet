@@ -166,24 +166,6 @@ function TokenDetail() {
               isShowFaucet={isShowFaucet}
             />
           </div>
-          <BalanceCard
-            isShowDepositUSDT={isShowDepositUSDT}
-            onClickDepositUSDT={() => handleClickETrans(ETransType.Deposit)}
-            onClickWithdrawUSDT={() => handleClickETrans(ETransType.Withdraw)}
-            isShowWithdrawUSDT={isShowWithdrawUSDT}
-            isShowBuyEntry={isShowBuy}
-            onBuy={handleBuy}
-            onSend={async () => {
-              navigate(`/send/token/${currentToken?.symbol}`, {
-                state: { ...currentToken, address: currentToken?.tokenContractAddress },
-              });
-            }}
-            onReceive={() =>
-              navigate(`/receive/token/${currentToken?.symbol}`, {
-                state: { ...currentToken, address: currentToken.tokenContractAddress },
-              })
-            }
-          />
         </div>
         <div className="token-detail-history">
           <Activity chainId={currentToken.chainId} symbol={currentToken.symbol} />

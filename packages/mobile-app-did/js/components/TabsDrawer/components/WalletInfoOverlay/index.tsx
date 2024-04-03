@@ -11,7 +11,7 @@ import { useCurrentCaInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wall
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import GStyles from 'assets/theme/GStyles';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
@@ -88,7 +88,7 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
 
               <View>
                 <TextS>
-                  {`${formatAmountShow(divDecimals(item?.balance, item?.decimals))} ${item?.symbol || '0'}`}
+                  {`${formatTokenAmountShowWithDecimals(item?.balance, item?.decimals)} ${item?.symbol || '0'}`}
                 </TextS>
                 <TextS style={styles.itemChainInfo} />
               </View>

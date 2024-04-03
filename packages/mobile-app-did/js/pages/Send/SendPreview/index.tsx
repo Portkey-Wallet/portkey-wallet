@@ -23,7 +23,13 @@ import crossChainTransfer, {
 } from 'utils/transfer/crossChainTransfer';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { formatAmountShow, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
+import {
+  formatAmountShow,
+  formatAmountUSDShow,
+  formatTokenAmountShowWithDecimals,
+  timesDecimals,
+  unitConverter,
+} from '@portkey-wallet/utils/converter';
 import sameChainTransfer from 'utils/transfer/sameChainTransfer';
 import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
 import { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
@@ -450,18 +456,20 @@ const SendPreview: React.FC = () => {
             <TextL numberOfLines={1} style={[styles.nftTitle, fonts.mediumFont]}>
               {`${assetInfo.alias} #${assetInfo?.tokenId}  `}
             </TextL>
-            <TextS style={[FontStyles.font3]}>{`Amount：${formatAmountShow(sendNumber)}`}</TextS>
+            <TextS style={[FontStyles.font3]}>{`Amount：${formatTokenAmountShowWithDecimals(
+              sendNumber,
+              assetInfo.decimals,
+            )}`}</TextS>
           </View>
         </View>
       ) : (
         <>
           <Text style={[styles.tokenCount, FontStyles.font5, fonts.mediumFont]}>
-            {`- ${formatAmountShow(sendNumber)} ${assetInfo?.symbol}`}
+            {`- ${formatTokenAmountShowWithDecimals(sendNumber, assetInfo.decimals)} ${assetInfo?.symbol}`}
           </Text>
           {isMainnet && isTokenHasPrice && (
-            <TextM style={styles.tokenUSD}>{`-$ ${formatAmountShow(
+            <TextM style={styles.tokenUSD}>{`- ${formatAmountUSDShow(
               ZERO.plus(sendNumber).multipliedBy(tokenPriceObject[assetInfo.symbol]),
-              2,
             )}`}</TextM>
           )}
         </>
@@ -572,11 +580,10 @@ const SendPreview: React.FC = () => {
                     <TextS style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`$ ${
                       ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(crossDefaultFee))
                         ? '0'
-                        : formatAmountShow(
+                        : formatAmountUSDShow(
                             ZERO.plus(sendNumber)
                               .minus(ZERO.plus(crossDefaultFee))
                               .times(tokenPriceObject[defaultToken.symbol]),
-                            2,
                           )
                     }`}</TextS>
                   ) : (

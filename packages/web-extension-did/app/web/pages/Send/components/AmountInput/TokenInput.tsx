@@ -1,6 +1,6 @@
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimals, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { Button, Input } from 'antd';
 import clsx from 'clsx';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -140,8 +140,8 @@ export default function TokenInput({
             </div>
             <div className="center">
               <p className="symbol">{token?.symbol}</p>
-              <p className="amount">{`${t('Balance_with_colon')} ${formatAmountShow(
-                divDecimals(balance, token.decimals),
+              <p className="amount">{`${t('Balance_with_colon')} ${formatTokenAmountShowWithDecimals(
+                balance,
                 token.decimals,
               )} ${token?.symbol}`}</p>
             </div>

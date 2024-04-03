@@ -125,13 +125,13 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
         <Text style={[itemStyle.tokenBalance, fonts.regularFont]}>
           {item?.nftInfo?.nftId ? `#${item?.nftInfo?.nftId}` : amountString}
         </Text>
+
         <Text style={itemStyle.usdtBalance}>
           {isMainnet && !item?.nftInfo && (isTokenHasPrice || item?.symbol === null)
-            ? `$ ${formatAmountShow(
+            ? `$ ${formatAmountUSDShow(
                 divDecimals(item?.amount, Number(item?.decimals)).multipliedBy(
                   item ? tokenPriceObject[item?.symbol] : 0,
                 ),
-                2,
               )}`
             : ''}
         </Text>
@@ -143,7 +143,6 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
           {item?.nftInfo?.nftId ? `#${item?.nftInfo?.nftId}` : amountString}
         </Text>
 
-        {/* TODO : change func formatAmountShow */}
         {isMainnet && !item?.nftInfo && (isTokenHasPrice || item?.symbol === null) && (
           <Text style={itemStyle.usdtBalance}>{formatAmountUSDShow(item?.currentTxPriceInUsd || '')}</Text>
         )}

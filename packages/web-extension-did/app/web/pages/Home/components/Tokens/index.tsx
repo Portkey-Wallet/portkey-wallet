@@ -1,6 +1,6 @@
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { divDecimals, formatAmountShow, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
+import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import CustomSvg from 'components/CustomSvg';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -61,7 +61,7 @@ export default function TokenList() {
             <div className="desc">
               <div className="info flex-between">
                 <span>{item.symbol}</span>
-                <span>{formatAmountShow(divDecimals(item.balance, item.decimals), item.decimals)}</span>
+                <span>{formatTokenAmountShowWithDecimals(item.balance, item.decimals)}</span>
               </div>
               <div className="amount flex-between">
                 <span>{transNetworkText(item.chainId, !isMainnet)}</span>

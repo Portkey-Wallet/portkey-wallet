@@ -7,7 +7,7 @@ import { ModalBody } from 'components/ModalBody';
 import { TextM, TextS } from 'components/CommonText';
 import { useCurrentWalletInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr, sleep } from '@portkey-wallet/utils';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimals, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
@@ -135,7 +135,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
                 />
               )}
               <Text style={[transferGroupStyle.tokenCount, FontStyles.font5, fonts.mediumFont]}>
-                {isFetchingDecimal ? symbol : `${formatAmountShow(divDecimals(amount, decimals), 8)} ${symbol}`}
+                {isFetchingDecimal ? symbol : `${formatTokenAmountShowWithDecimals(amount, decimals)} ${symbol}`}
               </Text>
             </View>
             {isMainnet && (
@@ -188,9 +188,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
                 <TextM style={transferGroupStyle.fontBold}>
                   {isFetchingFee
                     ? defaultToken.symbol
-                    : `${formatAmountShow(divDecimals(fee, defaultToken.decimals), defaultToken.decimals)} ${
-                        defaultToken.symbol
-                      }`}
+                    : `${formatTokenAmountShowWithDecimals(fee, defaultToken.decimals)} ${defaultToken.symbol}`}
                 </TextM>
               </View>
             </View>
@@ -227,7 +225,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
                       <TextM style={transferGroupStyle.fontBold}>
                         {isFetchingFee
                           ? defaultToken.symbol
-                          : `${formatAmountShow(divDecimals(ZERO.plus(amount).plus(fee), decimals), 8)} ${symbol}`}
+                          : `${formatTokenAmountShowWithDecimals(fee, decimals)} ${symbol}`}
                       </TextM>
                     </View>
                   </View>
@@ -260,9 +258,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
                       <TextM style={transferGroupStyle.fontBold}>
                         {isFetchingFee
                           ? defaultToken.symbol
-                          : `${formatAmountShow(divDecimals(ZERO.plus(fee), defaultToken.decimals), 8)} ${
-                              defaultToken.symbol
-                            }`}
+                          : `${formatTokenAmountShowWithDecimals(fee, defaultToken.decimals)} ${defaultToken.symbol}`}
                       </TextM>
                     </View>
                   </View>
@@ -270,13 +266,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
                     <View style={[transferGroupStyle.flexSpaceBetween]}>
                       <TextM />
                       <TextS style={transferGroupStyle.lightGrayFontColor}>
-                        {fee === '0'
-                          ? '$ 0'
-                          : formatAmountInUsdShow(
-                              divDecimals(fee, defaultToken.decimals).toNumber(),
-                              0,
-                              defaultToken.symbol,
-                            )}
+                        {fee === '0' ? '$ 0' : formatTokenAmountShowWithDecimals(fee, defaultToken.decimals)}
                       </TextS>
                     </View>
                   )}
@@ -294,7 +284,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
                       <TextM style={transferGroupStyle.fontBold}>
                         {isFetchingDecimal
                           ? symbol
-                          : `${formatAmountShow(divDecimals(ZERO.plus(amount), decimals), 8)} ${symbol}`}
+                          : `${formatTokenAmountShowWithDecimals(amount, decimals)} ${symbol}`}
                       </TextM>
                     </View>
                   </View>

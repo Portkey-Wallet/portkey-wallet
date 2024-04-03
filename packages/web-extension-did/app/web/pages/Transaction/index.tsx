@@ -9,9 +9,8 @@ import {
   formatStr2EllipsisStr,
   AmountSign,
   formatWithCommas,
-  formatAmountShow,
-  divDecimals,
   formatAmountUSDShow,
+  formatTokenAmountShowWithDecimals,
 } from '@portkey-wallet/utils/converter';
 import clsx from 'clsx';
 import Copy from 'components/Copy';
@@ -115,7 +114,7 @@ export default function Transaction() {
             <span>{nftInfo?.alias}</span>
             <span className="token-id">#{nftInfo?.nftId}</span>
           </p>
-          <p className="quantity">{`Amount: ${formatAmountShow(divDecimals(amount, decimals || 0), decimals)}`}</p>
+          <p className="quantity">{`Amount: ${formatTokenAmountShowWithDecimals(amount, decimals)}`}</p>
         </div>
       </div>
     );

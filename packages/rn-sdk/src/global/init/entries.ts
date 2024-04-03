@@ -1,4 +1,4 @@
-import 'react-native-get-random-values'; // if delete this import, it will cause a big bug,
+// import 'react-native-get-random-values'; // if delete this import, it will cause a big bug,
 import GuardianApprovalEntryPage from 'pages/Entries/GuardianApproval';
 import SignInEntryPage from 'pages/Entries/SignIn';
 import SelectCountryPage from 'pages/Entries/SelectCountry';

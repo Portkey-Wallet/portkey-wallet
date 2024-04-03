@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import 'react-native-get-random-values';
 import { initEntries } from './src/global/init/entries';
 import { initJsMethodService } from './src/global/init/services';
 import { initLanguage } from './src/i18n/index';

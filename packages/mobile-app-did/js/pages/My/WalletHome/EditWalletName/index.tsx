@@ -7,7 +7,7 @@ import { INIT_HAS_ERROR, ErrorType } from '@portkey-wallet/constants/constants-c
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
 import navigationService from 'utils/navigationService';
 import CommonToast from 'components/CommonToast';
-import { useCurrentCaInfo, useSetUserInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentCaInfo, useCurrentUserInfo, useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Loading from 'components/Loading';
 import FormItem from 'components/FormItem';
 import { ScrollView, StyleSheet, TextInput } from 'react-native';
@@ -24,7 +24,6 @@ import { TextL } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { sleep } from '@portkey-wallet/utils';
 
 const EditWalletName: React.FC = () => {
@@ -33,7 +32,7 @@ const EditWalletName: React.FC = () => {
   const uploadRef = useRef<ImageWithUploadFuncInstance>(null);
 
   const { t } = useLanguage();
-  const { userInfo } = useWallet();
+  const userInfo = useCurrentUserInfo();
   const [nameValue, setNameValue] = useState<string>(userInfo?.nickName || '');
   const [avatar, setAvatar] = useState<string>(userInfo?.avatar || '');
 

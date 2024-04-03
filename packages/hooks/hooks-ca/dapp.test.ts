@@ -27,7 +27,6 @@ describe('useCurrentDappList', () => {
       currentNetwork: 'TESTNET',
       walletAvatar: '',
       walletType: 'aelf',
-      walletName: '',
       chainList: [],
     });
     const { result } = renderHookWithProvider(useCurrentDappList, setupStore(DappState));
@@ -39,7 +38,6 @@ describe('useCurrentDappList', () => {
       currentNetwork: 'MAINNET',
       walletAvatar: '',
       walletType: 'aelf',
-      walletName: '',
       chainList: [],
     });
     const { result } = renderHookWithProvider(useCurrentDappList, setupStore(DappState));

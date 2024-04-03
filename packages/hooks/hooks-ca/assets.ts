@@ -10,9 +10,9 @@ import {
   fetchNFTAsync,
   fetchNFTCollectionsAsync,
   fetchTokenListAsync,
-  initAccountAssetsInfo,
-  initAccountNFTInfo,
-  initAccountTokenInfo,
+  INIT_ACCOUNT_ASSETS_INFO,
+  INIT_ACCOUNT_NFT_INFO,
+  INIT_ACCOUNT_TOKEN_INFO,
 } from '@portkey-wallet/store/store-ca/assets/slice';
 
 export const useAssets = () => useAppCASelector(state => state.assets);
@@ -34,18 +34,18 @@ export const useAccountAssetsInfo = () => {
   const currentNetworkInfo = useCurrentNetworkInfo();
   const assetsState = useAssets();
   const accountAssetsInfo = useMemo(
-    () => assetsState.accountAssets.accountAssetsInfo?.[currentNetworkInfo.networkType] || initAccountAssetsInfo,
+    () => assetsState.accountAssets.accountAssetsInfo?.[currentNetworkInfo.networkType] || INIT_ACCOUNT_ASSETS_INFO,
     [assetsState.accountAssets.accountAssetsInfo, currentNetworkInfo.networkType],
   );
 
   const fetchAccountAssetsInfoList = useCallback(
-    async (params: {
+    (params: {
       keyword: string;
       caAddressInfos: { chainId: ChainId; caAddress: string }[];
       skipCount?: number;
       maxResultCount?: number;
     }) => {
-      await dispatch(
+      return dispatch(
         fetchAssetAsync({
           ...params,
           currentNetwork: currentNetworkInfo.networkType,
@@ -63,17 +63,18 @@ export const useAccountTokenInfo = () => {
   const currentNetworkInfo = useCurrentNetworkInfo();
   const assetsState = useAssets();
   const accountTokenInfo = useMemo(
-    () => assetsState.accountToken.accountTokenInfo?.[currentNetworkInfo.networkType] || initAccountTokenInfo,
+    () => assetsState.accountToken.accountTokenInfo?.[currentNetworkInfo.networkType] || INIT_ACCOUNT_TOKEN_INFO,
     [assetsState.accountToken.accountTokenInfo, currentNetworkInfo.networkType],
   );
 
   const fetchAccountTokenInfoList = useCallback(
-    async (params: {
+    (params: {
       caAddressInfos: { chainId: ChainId; caAddress: string }[];
       skipCount?: number;
       maxResultCount?: number;
+      isInit?: boolean;
     }) => {
-      await dispatch(
+      return dispatch(
         fetchTokenListAsync({
           ...params,
           currentNetwork: currentNetworkInfo.networkType,
@@ -91,18 +92,18 @@ export const useAccountNFTCollectionInfo = () => {
   const currentNetworkInfo = useCurrentNetworkInfo();
   const assetsState = useAssets();
   const accountNFTCollectionInfo = useMemo(
-    () => assetsState.accountNFT.accountNFTInfo?.[currentNetworkInfo.networkType] || initAccountNFTInfo,
+    () => assetsState.accountNFT.accountNFTInfo?.[currentNetworkInfo.networkType] || INIT_ACCOUNT_NFT_INFO,
     [assetsState.accountNFT.accountNFTInfo, currentNetworkInfo.networkType],
   );
 
   const fetchAccountNFTCollectionInfoList = useCallback(
-    async (params: {
+    (params: {
       caAddressInfos: { chainId: ChainId; caAddress: string }[];
       maxNFTCount?: number;
       skipCount?: number;
       maxResultCount?: number;
     }) => {
-      await dispatch(
+      return dispatch(
         fetchNFTCollectionsAsync({
           ...params,
           currentNetwork: currentNetworkInfo.networkType,
@@ -113,13 +114,13 @@ export const useAccountNFTCollectionInfo = () => {
   );
 
   const fetchAccountNFTItem = useCallback(
-    async (params: {
+    (params: {
       symbol: string;
       caAddressInfos: { chainId: ChainId; caAddress: string }[];
       chainId: ChainId;
       pageNum: number;
     }) => {
-      await dispatch(
+      return dispatch(
         fetchNFTAsync({
           ...params,
           currentNetwork: currentNetworkInfo.networkType,

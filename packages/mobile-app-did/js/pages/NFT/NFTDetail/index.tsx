@@ -20,7 +20,7 @@ import { copyText } from 'utils';
 import { formatTransferTime } from '@portkey-wallet/utils/time';
 import Touchable from 'components/Touchable';
 import NFTAvatar from 'components/NFTAvatar';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { SeedTypeEnum, NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useNFTItemDetail } from '@portkey-wallet/hooks/hooks-ca/assets';
@@ -166,7 +166,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
               <TextM style={[styles.leftTitle, FontStyles.font3, GStyles.flex(2)]}>{t('Total supply')}</TextM>
               <View style={styles.blank} />
               <TextM style={[styles.rightValue, FontStyles.font5, GStyles.flex(3)]}>
-                {formatAmountShow(divDecimals(totalSupply, decimals))}
+                {formatTokenAmountShowWithDecimals(totalSupply, decimals)}
               </TextM>
             </View>
           </View>
@@ -252,8 +252,10 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
       </ScrollView>
 
       <View style={[GStyles.flexCol, styles.bottomSection]}>
-        <TextM style={[styles.balance, FontStyles.font5, fonts.mediumFont]}>{`You have: ${formatAmountShow(
-          divDecimals(balance, decimals),
+        <TextM
+          style={[styles.balance, FontStyles.font5, fonts.mediumFont]}>{`You have: ${formatTokenAmountShowWithDecimals(
+          balance,
+          decimals,
         )}`}</TextM>
         <CommonButton
           title={t('Send')}

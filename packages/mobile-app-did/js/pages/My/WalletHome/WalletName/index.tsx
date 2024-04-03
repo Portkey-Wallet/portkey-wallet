@@ -4,7 +4,7 @@ import React, { useMemo } from 'react';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
 import { View, StyleSheet } from 'react-native';
-import { useCurrentCaInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentCaInfo, useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import ProfilePortkeyIDSection from 'pages/My/components/ProfileIDSection';
 import ProfileHeaderSection from 'pages/My/components/ProfileHeaderSection';
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
@@ -22,8 +22,7 @@ const PageHeight = windowHeight - headerHeight;
 
 const WalletName: React.FC = () => {
   const { t } = useLanguage();
-
-  const { userInfo } = useWallet();
+  const userInfo = useCurrentUserInfo();
   const caInfo = useCurrentCaInfo();
   const showDeletion = useIsShowDeletion();
 

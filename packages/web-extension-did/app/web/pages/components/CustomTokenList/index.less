@@ -122,8 +122,6 @@
       }
       .info {
         flex: 1;
-        display: flex;
-        flex-direction: column;
         gap: 2px;
         .symbol {
           font-size: 16px;
@@ -136,8 +134,6 @@
         }
       }
       .amount {
-        display: flex;
-        flex-direction: column;
         gap: 2px;
         text-align: right;
         justify-content: flex-start;
@@ -145,11 +141,15 @@
           line-height: 20px;
           font-size: 16px;
           color: @font-11;
+          word-break: break-all;
+          .text-overflow(2);
         }
         .convert {
           line-height: 20px;
           font-size: 14px;
           color: @font-13;
+          word-break: break-all;
+          .text-overflow(2);
         }
       }
     }

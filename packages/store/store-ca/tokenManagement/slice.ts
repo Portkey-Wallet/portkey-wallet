@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { TokenItemShowType, TokenState } from '@portkey-wallet/types/types-ca/token';
 import { fetchAllTokenListAsync, getSymbolImagesAsync, resetTokenInfo } from './action';
 
-export const initialTokenInfo = {
+export const INITIAL_TOKEN_INFO = {
   tokenDataShowInMarket: [],
   skipCount: 0,
   maxResultCount: 1000,
@@ -10,7 +10,7 @@ export const initialTokenInfo = {
 };
 
 const initialState: TokenState = {
-  ...initialTokenInfo,
+  ...INITIAL_TOKEN_INFO,
   isFetching: false,
   symbolImages: {},
 };

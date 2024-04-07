@@ -96,7 +96,7 @@ export default function SendPreview(props: ISendPreviewProps) {
               <p className="token-id">{`#${tokenId}`}</p>
             </div>
             <p className="quantity">
-              Amount: <span>{formatAmountShow(amount)}</span>
+              Amount: <span>{formatAmountShow(amount, decimals)}</span>
             </p>
           </div>
         </div>

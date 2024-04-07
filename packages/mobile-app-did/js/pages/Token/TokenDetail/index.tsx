@@ -23,7 +23,7 @@ import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { getActivityListAsync } from '@portkey-wallet/store/store-ca/activity/action';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimals, formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import fonts from 'assets/theme/fonts';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import BuyButton from 'components/BuyButton';
@@ -74,7 +74,7 @@ const TokenDetail: React.FC = () => {
   const currentToken = useMemo(() => tokenInfo || currentTokenInfo, [currentTokenInfo, tokenInfo]);
 
   const balanceShow = useMemo(
-    () => `${formatAmountShow(divDecimals(currentToken?.balance || '0', currentToken?.decimals))}`,
+    () => `${formatTokenAmountShowWithDecimals(currentToken?.balance || '0', currentToken?.decimals)}`,
     [currentToken?.balance, currentToken?.decimals],
   );
 
@@ -198,12 +198,13 @@ const TokenDetail: React.FC = () => {
       <View style={styles.card}>
         <Text style={styles.tokenBalance}>{`${balanceShow} ${currentToken?.symbol}`}</Text>
         {isMainnet && isTokenHasPrice && (
-          <Text style={styles.dollarBalance}>{`$ ${formatAmountShow(
-            divDecimals(currentToken?.balance, currentToken?.decimals).multipliedBy(
-              currentToken ? tokenPriceObject?.[currentToken?.symbol] : 0,
-            ),
-            2,
-          )}`}</Text>
+          <Text style={styles.dollarBalance}>
+            {formatAmountUSDShow(
+              divDecimals(currentToken?.balance, currentToken?.decimals).multipliedBy(
+                currentToken ? tokenPriceObject?.[currentToken?.symbol] : 0,
+              ),
+            )}
+          </Text>
         )}
         <View style={[styles.buttonGroupWrap, buttonGroupWrapStyle]}>
           {isBuyButtonShow && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}

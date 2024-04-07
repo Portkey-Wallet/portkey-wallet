@@ -11,7 +11,7 @@ import { useCurrentCaInfo, useCurrentUserInfo, useWallet } from '@portkey-wallet
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr, sleep } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
@@ -122,9 +122,8 @@ const ConnectModal = (props: ConnectModalType) => {
                   <Svg icon="copy" size={pTd(16)} />
                 </Touchable>
               </View>
-
               <View>
-                <TextS>{`${formatAmountShow(divDecimals(item?.balance, item?.decimals))} ${item?.symbol}`}</TextS>
+                <TextS>{`${formatTokenAmountShowWithDecimals(item?.balance, item?.decimals)} ${item?.symbol}`}</TextS>
                 <TextS style={styles.itemChainInfo} />
               </View>
             </View>

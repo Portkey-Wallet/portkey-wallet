@@ -5,7 +5,11 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
 import { addressFormat, formatChainInfoToShow, getExploreLink, handleLoopFetch } from '@portkey-wallet/utils';
-import { divDecimals, divDecimalsStr, formatAmountShow, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
+import {
+  divDecimalsStr,
+  formatAmountUSDShow,
+  formatTokenAmountShowWithDecimals,
+} from '@portkey-wallet/utils/converter';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
@@ -160,9 +164,7 @@ const ActivityDetail = () => {
           {activityItem?.isDelegated ? (
             <View style={[styles.transactionFeeItemWrap]}>
               <TextM style={[styles.blackFontColor, styles.fontBold]}>{`0 ${defaultToken.symbol}`}</TextM>
-              {isMainnet && (
-                <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{`$ ${formatAmountShow(0, 2)}`}</TextS>
-              )}
+              {isMainnet && <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{`$ 0`}</TextS>}
             </View>
           ) : (
             <View>
@@ -243,8 +245,11 @@ const ActivityDetail = () => {
                 <TextL numberOfLines={1} style={styles.nftTitle}>{`${activityItem?.nftInfo?.alias || ''} #${
                   activityItem?.nftInfo?.nftId || ''
                 }  `}</TextL>
-                <TextS numberOfLines={1} style={[FontStyles.font3, styles.marginTop4]}>{`Amount: ${formatAmountShow(
-                  divDecimals(activityItem?.amount, activityItem?.decimals),
+                <TextS
+                  numberOfLines={1}
+                  style={[FontStyles.font3, styles.marginTop4]}>{`Amount: ${formatTokenAmountShowWithDecimals(
+                  activityItem?.amount,
+                  activityItem?.decimals,
                 )}`}</TextS>
               </View>
             </View>

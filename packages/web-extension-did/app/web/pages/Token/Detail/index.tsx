@@ -1,6 +1,6 @@
 import SettingHeader from 'pages/components/SettingHeader';
 import BalanceCard from 'pages/components/BalanceCard';
-import { divDecimals, formatAmountShow, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
+import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import Activity from 'pages/Home/components/Activity';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useCallback, useMemo, useRef, useState } from 'react';
@@ -142,7 +142,7 @@ function TokenDetail() {
             <div className="flex-column amount-detail">
               <div className="flex-center amount">
                 <div className="amount-number">
-                  {formatAmountShow(divDecimals(currentToken.balance, currentToken.decimals), currentToken.decimals)}
+                  {formatTokenAmountShowWithDecimals(currentToken.balance, currentToken.decimals)}
                 </div>
                 <div className="amount-symbol">{currentToken.symbol}</div>
               </div>

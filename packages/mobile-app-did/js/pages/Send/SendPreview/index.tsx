@@ -570,7 +570,10 @@ const SendPreview: React.FC = () => {
                   <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>
                     {ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(crossDefaultFee))
                       ? '0'
-                      : formatAmountShow(ZERO.plus(sendNumber).minus(ZERO.plus(crossDefaultFee)))}{' '}
+                      : formatAmountShow(
+                          ZERO.plus(sendNumber).minus(ZERO.plus(crossDefaultFee)),
+                          defaultToken.decimals,
+                        )}{' '}
                     {defaultToken.symbol}
                   </TextM>
                   {isMainnet ? (

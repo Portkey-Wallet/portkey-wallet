@@ -5,17 +5,15 @@ import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import PinContainer from '@portkey-wallet/rn-components/components/PinContainer';
 import { StyleSheet } from 'react-native';
 import { PinErrorMessage } from '@portkey-wallet/utils/wallet/types';
-import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { checkPin, unLockTempWallet } from 'model/verify/core';
 import { touchAuth } from '../SetBiometrics';
 import Loading from '@portkey-wallet/rn-components/components/Loading';
-import useEffectOnce from 'hooks/useEffectOnce';
 import myEvents from 'utils/deviceEvent';
 import { UnlockedWallet, getUnlockedWallet } from 'model/wallet';
 import { useUser } from 'store/hook';
 import useBiometricsReady from 'hooks/useBiometrics';
-import useNavigation from 'core/router/hook';
+import useNavigation from '@portkey-wallet/rn-core/router/hook';
 
 export default function CheckPin(props: CheckPinProps) {
   const { targetScene, openBiometrics } = props;

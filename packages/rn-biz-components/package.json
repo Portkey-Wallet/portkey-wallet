@@ -6,6 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "dependencies": {
+    "react-native": "~0.72.4"
+  },
   "author": "",
   "license": "ISC"
 }

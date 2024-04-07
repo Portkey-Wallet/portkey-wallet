@@ -1,4 +1,4 @@
-import { PortkeyEntries } from '../../../config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import BaseContainer, { BaseContainerProps, BaseContainerState } from '../../../model/container/BaseContainer';
 import SignInPortkey from 'pages/Login/LoginPortkey';
 import React from 'react';

@@ -5,9 +5,9 @@ import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
 import { VerificationType } from '@portkey-wallet/types/verifier';
 import PinContainer from '@portkey-wallet/rn-components/components/PinContainer';
 import { StyleSheet } from 'react-native';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
-import useNavigation from 'core/router/hook';
+import useNavigation from '@portkey-wallet/rn-core/router/hook';
 
 const scrollViewProps = {
   disabled: true,

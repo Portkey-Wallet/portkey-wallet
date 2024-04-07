@@ -4,7 +4,7 @@ import SignInEntryPage from 'pages/Entries/SignIn';
 import SelectCountryPage from 'pages/Entries/SelectCountry';
 import SignUpEntryPage from 'pages/Entries/SignUp';
 import VerifierDetailsEntryPage from 'pages/Entries/VerifierDetails';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries, registerLaunchMode } from '@portkey-wallet/rn-core/router/types';
 import ViewOnWebView from 'pages/Activity/ViewOnWebView';
 import AccountSettings from 'pages/My/AccountSettings';
 import ScanLogin from 'pages/Login/ScanLogin';
@@ -65,6 +65,7 @@ const initEntries = () => {
   // config stage
   entryConfig.set(PortkeyEntries.CHECK_PIN, () =>
     ReduxProvider(CheckPin as React.ComponentType<any>, {
+      statusbarColor: 'white',
       routerParams: {
         from: PortkeyEntries.CHECK_PIN,
       },
@@ -72,6 +73,7 @@ const initEntries = () => {
   );
   entryConfig.set(PortkeyEntries.SET_PIN, () =>
     ReduxProvider(SetPin as React.ComponentType<any>, {
+      statusbarColor: 'white',
       routerParams: {
         from: PortkeyEntries.SET_PIN,
       },
@@ -79,6 +81,7 @@ const initEntries = () => {
   );
   entryConfig.set(PortkeyEntries.CONFIRM_PIN, () =>
     ReduxProvider(ConfirmPin as React.ComponentType<any>, {
+      statusbarColor: 'white',
       routerParams: {
         from: PortkeyEntries.SET_PIN,
       },
@@ -86,6 +89,7 @@ const initEntries = () => {
   );
   entryConfig.set(PortkeyEntries.SET_BIO, () =>
     ReduxProvider(SetBiometrics as React.ComponentType<any>, {
+      statusbarColor: 'white',
       routerParams: {
         from: PortkeyEntries.SET_BIO,
       },
@@ -154,16 +158,16 @@ const initEntries = () => {
   }
   registerLaunchMode();
 };
-export enum LaunchMode {
-  STANDARD = 'standard',
-  SINGLE_TASK = 'single_task',
-  SINGLE_TOP = 'single_top',
-}
-export const LaunchModeSet = new Map<string, string>();
-const registerLaunchMode = () => {
-  LaunchModeSet.set(PortkeyEntries.ACCOUNT_SETTING_ENTRY, LaunchMode.SINGLE_TASK);
-  LaunchModeSet.set(PortkeyEntries.PAYMENT_SECURITY_HOME_ENTRY, LaunchMode.SINGLE_TASK);
-  LaunchModeSet.set(PortkeyEntries.ASSETS_HOME_ENTRY, LaunchMode.SINGLE_TASK);
-  LaunchModeSet.set(PortkeyEntries.RAMP_HOME_ENTRY, LaunchMode.SINGLE_TASK);
-};
+// export enum LaunchMode {
+//   STANDARD = 'standard',
+//   SINGLE_TASK = 'single_task',
+//   SINGLE_TOP = 'single_top',
+// }
+// export const LaunchModeSet = new Map<string, string>();
+// const registerLaunchMode = () => {
+//   LaunchModeSet.set(PortkeyEntries.ACCOUNT_SETTING_ENTRY, LaunchMode.SINGLE_TASK);
+//   LaunchModeSet.set(PortkeyEntries.PAYMENT_SECURITY_HOME_ENTRY, LaunchMode.SINGLE_TASK);
+//   LaunchModeSet.set(PortkeyEntries.ASSETS_HOME_ENTRY, LaunchMode.SINGLE_TASK);
+//   LaunchModeSet.set(PortkeyEntries.RAMP_HOME_ENTRY, LaunchMode.SINGLE_TASK);
+// };
 export { initEntries };

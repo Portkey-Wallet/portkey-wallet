@@ -11,7 +11,7 @@ import Touchable from '@portkey-wallet/rn-components/components/Touchable';
 import { dashBoardBtnStyle } from '../SendButton/style';
 import { innerPageStyles } from './style';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { RampType } from '@portkey-wallet/ramp';
 
 interface SendButtonType {

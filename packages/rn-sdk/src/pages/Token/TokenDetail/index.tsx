@@ -26,7 +26,7 @@ import { useCommonNetworkInfo } from 'components/TokenOverlay/hooks';
 import { TokenPriceItem } from 'network/dto/token';
 import { useAccountTokenBalanceList } from 'model/hooks/balance';
 import { ActivityItemType } from 'network/dto/query';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { getUnlockedWallet, useUnlockedWallet } from 'model/wallet';
 import { useSDKRampEntryShow } from 'pages/Ramp/RampPreview/hook';
 

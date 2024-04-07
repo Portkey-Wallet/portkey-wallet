@@ -1,5 +1,5 @@
 import { CountryCodeDataDTO, CountryCodeItem, defaultCountryCode } from 'types/wallet';
-import { PortkeyEntries } from '../../../config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import BaseContainer, { BaseContainerProps } from '../../../model/container/BaseContainer';
 import { COUNTRY_CODE_DATA_KEY, CURRENT_USING_COUNTRY_CODE } from '../../../model/global';
 import SelectCountry, { SelectCountryResult } from 'pages/Login/SelectCountry';

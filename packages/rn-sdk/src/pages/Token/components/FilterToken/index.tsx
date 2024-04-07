@@ -12,7 +12,7 @@ import Svg from '@portkey-wallet/rn-components/components/Svg';
 import { useCurrentNetworkType } from 'model/hooks/network';
 import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 
 enum TipsEnum {
   NO_RESULT = 'There is no search result.',

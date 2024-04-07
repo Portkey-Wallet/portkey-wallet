@@ -17,7 +17,7 @@ import { NetworkController } from 'network/controller';
 import { verifyHumanMachine } from '@portkey-wallet/rn-components/components/VerifyHumanMachine';
 import Loading from '@portkey-wallet/rn-components/components/Loading';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { CheckVerifyCodeResultDTO } from 'network/dto/guardian';
 import GuardianItem from '../components/GuardianItem';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';

@@ -7,7 +7,7 @@ import styles from '../styles';
 import { OfficialWebsite } from '@portkey-wallet/constants/constants-ca/network';
 import { FontStyles } from 'assets/theme/styles';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { GlobalStorage } from 'service/storage';
 import useEffectOnce from 'hooks/useEffectOnce';
 

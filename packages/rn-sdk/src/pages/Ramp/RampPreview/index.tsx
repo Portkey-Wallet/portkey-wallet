@@ -34,7 +34,7 @@ import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import useEffectOnce from 'hooks/useEffectOnce';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { useSDKRampEntryShow, useCurrentWalletInfo, useDefaultToken, useGuardiansInfo } from './hook';
 import { t } from 'i18next';
 import { getBottomSpace } from 'utils/screen';

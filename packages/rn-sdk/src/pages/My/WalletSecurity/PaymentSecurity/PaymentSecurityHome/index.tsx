@@ -19,7 +19,7 @@ import { useTransferLimitList } from 'model/hooks/payment';
 import { useCurrentNetworkInfo } from 'hooks/network';
 import { useCommonNetworkInfo, useSymbolImages } from 'components/TokenOverlay/hooks';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { PaymentSecurityDetailProps } from '../PaymentSecurityDetail';
 import { GuardiansApprovalIntent } from 'pages/GuardianManage/GuardianHome';
 import { useInitCaches } from 'global/init/caches';

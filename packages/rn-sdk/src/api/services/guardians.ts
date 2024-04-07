@@ -1,7 +1,7 @@
 import { IGuardianService } from 'api/types/guardians';
 import { injectable } from 'inversify';
 import { BaseService } from '.';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { CheckWalletUnlocked } from 'api/decorate';
 
 @injectable()

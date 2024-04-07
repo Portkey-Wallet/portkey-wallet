@@ -5,9 +5,9 @@ import {
   RouterOptions,
   PortkeyModulesEntity,
 } from '../../service/native-modules';
-import { PortkeyEntries } from '../../config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { VoidResult } from './UseBaseContainer';
-import { LaunchMode, LaunchModeSet } from 'global/init/entries';
+import { LaunchMode, LaunchModeSet } from '@portkey-wallet/rn-core/router/types';
 import { wrapEntry } from 'utils/commonUtil';
 
 export default abstract class BaseContainer<

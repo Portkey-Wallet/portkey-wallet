@@ -2,12 +2,10 @@ import { View, ViewStyle, StyleProp } from 'react-native';
 import React, { ReactNode, useEffect, useMemo } from 'react';
 import Svg from '../Svg';
 import { blueStyles, hideTitleStyles, whitStyles } from './style/index.style';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import navigationService from 'utils/navigationService';
+import { useIsFocused, useNavigation } from '@portkey-wallet/rn-inject-app';
 import { pTd } from '../../utils/unit';
 import GStyles from '../../theme/GStyles';
 import { TextL } from '../CommonText';
-// import type { SafeAreaColorMapKeyUnit } from '../PageContainer';
 import { useLanguage } from '@portkey-wallet/rn-base/i18n/hooks';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import Touchable from '../Touchable';
@@ -98,7 +96,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
     if (noLeftDom) return null;
     if (leftDom) return leftDom;
     if (!isCanGoBack && !leftCallback) return null;
-    const onPress = leftCallback ? leftCallback : () => navigationService.goBack();
+    const onPress = leftCallback ? leftCallback : () => navigation.goBack();
     if (type === 'leftBack') {
       return (
         <Touchable style={[GStyles.flexRow, GStyles.itemCenter, styles.leftTitle]} onPress={onPress}>

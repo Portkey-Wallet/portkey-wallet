@@ -7,7 +7,7 @@ import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import dashBoardBtnStyle, { innerPageStyles } from 'components/FaucetButton/style';
 
 interface ActivityButtonProps {

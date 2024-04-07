@@ -34,7 +34,7 @@ import { useGetTxFee, useTokenPrices } from 'model/hooks/balance';
 import { getContractInstanceOnParticularChain, getTokenContract } from 'model/contract/handler';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { getBottomSpace } from 'utils/screen';
 
 const SendPreview = (props: IToSendPreviewParamsType) => {

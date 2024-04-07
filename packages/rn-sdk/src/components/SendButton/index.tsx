@@ -7,7 +7,7 @@ import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import { commonButtonStyle } from './style';
 import AssetsOverlay from 'pages/Assets/Home/AssetsOverlay';

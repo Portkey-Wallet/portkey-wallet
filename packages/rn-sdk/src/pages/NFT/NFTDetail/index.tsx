@@ -18,7 +18,7 @@ import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
 import { copyText } from 'utils/commonUtil';
 import { getStatusBarHeight } from 'utils/screen';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 
 export interface TokenDetailProps {

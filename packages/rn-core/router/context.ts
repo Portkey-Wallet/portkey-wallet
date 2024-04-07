@@ -1,6 +1,6 @@
 import { createContext } from 'react';
-import { EntryResult } from 'service/native-modules';
-export const COMMON_ROUTER_FROM = 'portkey_rn-sdk';
+import { EntryResult } from './types';
+export const COMMON_ROUTER_FROM = 'portkeyInner';
 
 export const COMMON_RESULT_DATA: EntryResult<any> = {
   status: 'cancel',

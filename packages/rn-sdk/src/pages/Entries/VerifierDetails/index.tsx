@@ -1,5 +1,5 @@
 import { OperationTypeEnum, VerificationType } from '@portkey-wallet/types/verifier';
-import { PortkeyEntries } from '../../../config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import BaseContainer, { BaseContainerProps } from '../../../model/container/BaseContainer';
 import VerifierDetails from 'pages/Guardian/VerifierDetails';
 import React from 'react';

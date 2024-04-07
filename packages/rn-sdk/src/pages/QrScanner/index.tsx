@@ -19,7 +19,7 @@ import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import { QRData } from '@portkey-wallet/types/types-ca/qrcode';
 import { isAelfAddress } from '@portkey-wallet/utils/aelf';
 import useBaseContainer, { VoidResult } from 'model/container/UseBaseContainer';
-import { PortkeyEntries, isPortkeyEntries } from 'config/entries';
+import { PortkeyEntries, isPortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { EntryResult, PermissionType, chooseImageAndroid, PortkeyModulesEntity } from 'service/native-modules';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { ScanToLoginProps } from 'pages/Login/ScanLogin';

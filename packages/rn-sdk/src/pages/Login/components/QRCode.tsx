@@ -16,7 +16,7 @@ import { usePreventScreenCapture } from 'expo-screen-capture';
 import NetworkContext from '../context/NetworkContext';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { SetPinPageResult, SetPinPageProps } from 'pages/Pin/SetPin';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { AfterVerifiedConfig } from 'model/verify/core';
 import { AElfWeb3SDK, ManagerInfo } from 'network/dto/wallet';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';

@@ -3,7 +3,7 @@ import { EmitterSubscription } from 'react-native';
 import { EntryResult, PortkeyDeviceEventEmitter, RouterOptions, PortkeyModulesEntity } from 'service/native-modules';
 import { AcceptableValueType } from './BaseContainer';
 import BaseContainerContext from './BaseContainerContext';
-import { LaunchMode, LaunchModeSet } from 'global/init/entries';
+import { LaunchMode, LaunchModeSet } from '@portkey-wallet/rn-core/router/types';
 import { wrapEntry } from 'utils/commonUtil';
 
 const useBaseContainer = (props: BaseContainerHookedProps = {}): BaseContainerHooks => {

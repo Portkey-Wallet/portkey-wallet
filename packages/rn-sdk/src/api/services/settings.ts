@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 import { BaseService } from '.';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { ISettingsService } from 'api/types/settings';
 import { CheckWalletUnlocked } from 'api/decorate';
 

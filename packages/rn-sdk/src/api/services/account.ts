@@ -3,7 +3,7 @@ import { IAccountService } from 'api/types/account';
 import { injectable } from 'inversify';
 import { BaseService } from '.';
 import { LoginResult } from 'model/verify/entry';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { AccountError } from 'api/error';
 import { callRemoveManagerMethod } from 'model/contract/handler';
 import { exitWallet as exitInternalWallet, lockWallet as lockInternalWallet } from 'model/verify/core';

@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { IconName } from '@portkey-wallet/rn-components/components/Svg';
 import { useSDKRampEntryShow } from 'pages/Ramp/RampPreview/hook';
 import { simple_navigateTo_func } from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 const navigateTo = simple_navigateTo_func();
 export type DepositItem = {
   title: string;

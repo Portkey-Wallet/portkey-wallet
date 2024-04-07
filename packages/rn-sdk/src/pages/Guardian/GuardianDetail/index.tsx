@@ -29,7 +29,7 @@ import { NetworkController } from 'network/controller';
 import { ModifyGuardianProps, checkIsTheLastLoginGuardian } from '../GuardianManage/ModifyGuardian';
 import { handlePhoneOrEmailGuardianVerify } from 'model/verify/entry/hooks';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { verifyHumanMachine } from '@portkey-wallet/rn-components/components/VerifyHumanMachine';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 

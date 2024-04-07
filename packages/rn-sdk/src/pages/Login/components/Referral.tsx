@@ -8,7 +8,7 @@ import { TextL } from '@portkey-wallet/rn-components/components/CommonText';
 import CommonSvg from '@portkey-wallet/rn-components/components/Svg';
 import { pTd } from 'utils/unit';
 import CommonButton from '@portkey-wallet/rn-components/components/CommonButton';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { AccountOriginalType, isWalletExists, isWalletUnlocked } from 'model/verify/core';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';

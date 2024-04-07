@@ -9,7 +9,7 @@ import { REFRESH_TIME } from '@portkey-wallet/constants/constants-ca/assets';
 import { useCommonNetworkInfo } from 'components/TokenOverlay/hooks';
 import AssetsContext, { AssetsContextType } from 'global/context/assets/AssetsContext';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import Svg from '@portkey-wallet/rn-components/components/Svg';
 import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import { useLanguage } from 'i18n/hooks';

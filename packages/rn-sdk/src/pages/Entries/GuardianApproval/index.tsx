@@ -1,5 +1,5 @@
 import { GuardianVerifyConfig, GuardianVerifyType } from 'model/verify/social-recovery';
-import { PortkeyEntries } from '../../../config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import BaseContainer, { BaseContainerProps } from '../../../model/container/BaseContainer';
 import GuardianApproval from 'pages/Guardian/GuardianApproval';
 import React from 'react';

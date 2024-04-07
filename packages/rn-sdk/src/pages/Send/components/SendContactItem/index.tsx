@@ -13,7 +13,7 @@ import { addressFormat, formatStr2EllipsisStr, formatChainInfoToShow } from '@po
 import { useCurrentNetworkType } from 'model/hooks/network';
 import { RecentContactItemType } from 'network/dto/query';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 
 export interface ItemType {
   fromChainId?: ChainId;

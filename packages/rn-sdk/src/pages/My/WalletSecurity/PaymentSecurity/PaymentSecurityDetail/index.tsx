@@ -13,7 +13,7 @@ import { ITransferLimitItem } from 'model/security';
 import { callGetTransferLimitMethod } from 'model/contract/handler';
 import Loading from '@portkey-wallet/rn-components/components/Loading';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { PaymentSecurityEditProps } from '../PaymentSecurityEdit';
 import { GuardiansApprovalIntent } from 'pages/GuardianManage/GuardianHome';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';

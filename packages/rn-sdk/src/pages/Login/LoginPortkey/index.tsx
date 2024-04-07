@@ -18,7 +18,7 @@ import { defaultColors } from 'assets/theme';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { checkForCountryCodeCached } from 'model/global';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import NetworkContext from '../context/NetworkContext';
 import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
 import { PortkeyConfig, setEndPointUrl } from 'global/constants';

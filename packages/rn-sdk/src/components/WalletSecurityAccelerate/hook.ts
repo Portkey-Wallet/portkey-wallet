@@ -11,7 +11,7 @@ import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
 import BigNumber from 'bignumber.js';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PaymentSecurityEditProps } from 'pages/My/WalletSecurity/PaymentSecurity/PaymentSecurityEdit';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { callGetDefaultTransferLimitMethod, callGetTransferLimitMethod } from 'model/contract/handler';
 
 interface WalletInfo {

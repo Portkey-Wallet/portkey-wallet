@@ -24,7 +24,7 @@ import CommonAvatar from '@portkey-wallet/rn-components/components/CommonAvatar'
 import { NetworkController } from 'network/controller';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { getStatusBarHeight } from 'utils/screen';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { ActivityDetailPropsType } from 'pages/Activity/ActivityDetail';
 import { ViewOnWebViewProps } from 'pages/Activity/ViewOnWebView';
 import { useCommonNetworkInfo } from 'components/TokenOverlay/hooks';

@@ -10,7 +10,7 @@ import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca
 import TransferItem from 'components/TransferList/components/TransferItem';
 import { getUnlockedWallet, useUnlockedWallet } from 'model/wallet';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { NetworkController } from 'network/controller';
 import { ActivityDetailPropsType } from '../ActivityDetail';
 

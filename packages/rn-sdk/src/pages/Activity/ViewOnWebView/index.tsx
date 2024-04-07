@@ -11,7 +11,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import GStyles from 'assets/theme/GStyles';
 import { RAMP_BUY_URL, RAMP_SELL_URL } from 'pages/Ramp/constants';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { useHandleRampSell } from './hooks/useHandleRampSell';
 import { GuardiansApprovedType } from 'types/guardians';
 

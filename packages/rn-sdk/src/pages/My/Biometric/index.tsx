@@ -11,10 +11,10 @@ import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
 import myEvents from 'utils/deviceEvent';
 import { checkPin, rememberSimpleBiometric } from 'model/verify/core';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import BaseContainerContext from 'model/container/BaseContainerContext';
 import { authenticateBioAsync, authenticateBioReady } from 'service/biometric';
-import useNavigation from 'core/router/hook';
+import useNavigation from '@portkey-wallet/rn-core/router/hook';
 import { useUser } from 'store/hook';
 import useBiometricsReady, { useSetBiometrics } from 'hooks/useBiometrics';
 

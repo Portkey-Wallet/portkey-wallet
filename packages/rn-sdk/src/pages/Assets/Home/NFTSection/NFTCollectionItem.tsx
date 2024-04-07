@@ -16,7 +16,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { useCurrentNetworkType } from 'model/hooks/network';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 
 export enum NoDataMessage {
   CustomNetWorkNoData = 'No transaction records accessible from the current custom network',

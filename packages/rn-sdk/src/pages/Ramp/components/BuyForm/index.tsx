@@ -28,7 +28,7 @@ import CommonAvatar from '@portkey-wallet/rn-components/components/CommonAvatar'
 import { ErrorType, INIT_HAS_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/constants/constants-ca/common';
 import { isPotentialNumber } from '@portkey-wallet/utils/reg';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { useSDKRampEntryShow } from 'pages/Ramp/RampPreview/hook';
 import { useLanguage } from 'i18n/hooks';
 

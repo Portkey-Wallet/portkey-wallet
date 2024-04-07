@@ -16,7 +16,7 @@ import { sleep } from '@portkey-wallet/utils';
 // import { useAppCASelector } from '@portkey-wallet/hooks';
 import { ChainId } from '@portkey/provider-types';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { TargetScene } from 'pages/Guardian/GuardianManage/type';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 

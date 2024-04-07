@@ -10,7 +10,7 @@ import CommonSvg from '@portkey-wallet/rn-components/components/Svg';
 import { defaultColors } from 'assets/theme';
 import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import { EntryResult, RouterOptions } from 'service/native-modules';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { SelectCountryResult } from 'pages/Login/SelectCountry';
 import { AcceptableValueType } from 'model/container/BaseContainer';
 import { useInputFocus } from 'hooks/useInputFocus';

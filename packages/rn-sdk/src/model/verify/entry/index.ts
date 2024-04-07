@@ -2,7 +2,7 @@ import { handleErrorMessage } from '@portkey-wallet/utils';
 import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
 import Loading from '@portkey-wallet/rn-components/components/Loading';
 import { verifyHumanMachine } from '@portkey-wallet/rn-components/components/VerifyHumanMachine';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import {
   attemptAccountCheck,
   getSocialRecoveryPageData,

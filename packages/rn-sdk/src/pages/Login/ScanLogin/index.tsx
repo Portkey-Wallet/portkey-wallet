@@ -13,7 +13,7 @@ import socket from '@portkey-wallet/socket/socket-did';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { NetworkController } from 'network/controller';
 import { extraDataEncode, getDeviceInfoFromQR } from '@portkey-wallet/utils/device';
 import { PortkeyConfig } from 'global/constants';

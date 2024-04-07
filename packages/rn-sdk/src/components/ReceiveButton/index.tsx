@@ -6,7 +6,7 @@ import TokenOverlay from 'components/TokenOverlay';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { useUnlockedWallet } from 'model/wallet';
 import { useCommonNetworkInfo } from '../TokenOverlay/hooks';

@@ -47,7 +47,7 @@ import {
 } from 'model/global';
 import { GuardianConfig } from 'model/verify/guardian';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { CountryCodeItem, defaultCountryCode } from 'types/wallet';
 import CommonButton from '@portkey-wallet/rn-components/components/CommonButton';
 import { verifyHumanMachine } from '@portkey-wallet/rn-components/components/VerifyHumanMachine';

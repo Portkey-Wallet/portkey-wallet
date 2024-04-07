@@ -5,13 +5,13 @@ import React, { useCallback, useRef, useState } from 'react';
 import myEvents from 'utils/deviceEvent';
 import PinContainer from '@portkey-wallet/rn-components/components/PinContainer';
 import { StyleSheet } from 'react-native';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { changePin, getVerifiedAndLockWallet } from 'model/verify/core';
 import Loading from '@portkey-wallet/rn-components/components/Loading';
 import { touchAuth } from '../SetBiometrics';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import { authenticateBioReady, isBiometricsCanUse } from 'service/biometric';
-import useNavigation from 'core/router/hook';
+import useNavigation from '@portkey-wallet/rn-core/router/hook';
 import { useUser } from 'store/hook';
 
 export default function ConfirmPin({ oldPin, pin, deliveredSetPinInfo }: ConfirmPinPageProps) {

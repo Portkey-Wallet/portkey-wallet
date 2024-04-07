@@ -14,7 +14,7 @@ import { getBottomSpace } from 'utils/screen';
 import { GuardianInfo } from 'network/dto/guardian';
 import { guardianTypeStrToEnum, parseGuardianInfo } from 'model/global';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { GuardianVerifyType } from 'model/verify/social-recovery';
 import useEffectOnce from 'hooks/useEffectOnce';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';

@@ -14,7 +14,7 @@ import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { getVerifiedAndLockWallet } from 'model/verify/core';
 import Loading from '@portkey-wallet/rn-components/components/Loading';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { authenticateAsync, LocalAuthenticationResult } from 'expo-local-authentication';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';

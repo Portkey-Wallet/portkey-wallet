@@ -1,5 +1,5 @@
-import { PortkeyEntries } from 'config/entries';
-import { LaunchModeSet, LaunchMode } from 'global/init/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
+import { LaunchModeSet, LaunchMode } from '@portkey-wallet/rn-core/router/types';
 import { EntryResult, PortkeyModulesEntity } from 'service/native-modules';
 import { GuardianVerifyConfig, GuardianVerifyType } from '../social-recovery';
 import { NetworkController } from 'network/controller';

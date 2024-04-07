@@ -1,7 +1,7 @@
 import { injectable } from 'inversify';
 import { BaseService } from '.';
 import { ActivityDetailPropsType, IActivityService } from 'api/types/activity';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { CheckWalletUnlocked, HANDLE_WAY } from 'api/decorate';
 
 @injectable()

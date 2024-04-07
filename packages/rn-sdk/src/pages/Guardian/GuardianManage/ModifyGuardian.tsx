@@ -29,7 +29,7 @@ import { guardianTypeStrToEnum, parseGuardianInfo } from 'model/global';
 import { AccountOriginalType } from 'model/verify/core';
 import { getUnlockedWallet } from 'model/wallet';
 import { NetworkController } from 'network/controller';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { handleGuardiansApproval } from 'model/verify/entry/hooks';
 import { GuardianVerifyType } from 'model/verify/social-recovery';

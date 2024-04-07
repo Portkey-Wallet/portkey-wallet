@@ -26,7 +26,7 @@ import { formatTransferTime } from '@portkey-wallet/utils/time';
 import { formatAmountShow, divDecimalsStr, divDecimals, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import { useCommonNetworkInfo } from 'components/TokenOverlay/hooks';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { useTokenPrices } from 'model/hooks/balance';
 import { NetworkController } from 'network/controller';
 

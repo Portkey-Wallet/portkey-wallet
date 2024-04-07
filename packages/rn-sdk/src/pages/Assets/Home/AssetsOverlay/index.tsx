@@ -22,7 +22,7 @@ import { IAssetItemType } from 'network/dto/query';
 import { useCommonNetworkInfo } from 'components/TokenOverlay/hooks';
 import { useCurrentNetworkType } from 'model/hooks/network';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { useGStyles } from 'assets/theme/useGStyles';
 
 const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: IAssetItemType }) => {

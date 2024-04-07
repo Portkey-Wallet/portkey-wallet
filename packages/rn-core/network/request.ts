@@ -1,5 +1,7 @@
-import { IFetch, NetworkResult, TypedUrlParams } from '@portkey-wallet/api/api-did/types';
+import { DidService } from '@portkey-wallet/api/api-did/server';
+import { IFetch, NetworkResult, TypedUrlParams } from './types';
 import { NativeModules } from 'react-native';
+import { stringify } from 'query-string';
 interface NetworkOptions {
   maxWaitingTime: number;
 }
@@ -48,7 +50,7 @@ const nativeFetch = async <T>(
   throw new Error('fetch failed');
 };
 
-export class SDKFetch implements IFetch {
+class SDKFetch implements IFetch {
   fetch(
     url: string,
     method: 'GET' | 'POST' | 'PUT',
@@ -62,5 +64,45 @@ export class SDKFetch implements IFetch {
     message?: string | undefined;
   }> {
     return nativeFetch(url, method, params, headers, extraOptions);
+  }
+}
+
+export class RNDidService extends DidService {
+  private fetchInstance: IFetch;
+  constructor() {
+    super();
+    this.fetchInstance = new SDKFetch();
+  }
+  protected async fetchData(URL: string, fetchConfig: any, method: string) {
+    const requestConfig = {
+      ...fetchConfig,
+      url: URL,
+    };
+    const { url, params = {}, headers, resourceUrl, stringifyOptions } = requestConfig;
+    let uri = url;
+    // handle body & url & method
+    let myBody;
+    const _method = method.toUpperCase();
+    if (_method === 'GET' || _method === 'DELETE') {
+      uri = Object.keys(params).length > 0 ? `${uri}?${stringify(params, stringifyOptions)}` : uri;
+      myBody = undefined;
+    } else {
+      if (requestConfig.body) {
+        myBody = JSON.parse(requestConfig.body as string);
+      }
+    }
+    if (resourceUrl !== undefined) {
+      uri += `/${resourceUrl}`;
+    }
+    // handle headers
+    const defaultHeaders = {
+      Accept: 'text/plain;v=1.0',
+      'Content-Type': 'application/json',
+    };
+    const myHeaders: TypedUrlParams = {};
+    Object.entries({ ...defaultHeaders, ...headers }).forEach(([headerItem, value]) => {
+      myHeaders[headerItem] = value as string | number | boolean | null | undefined;
+    });
+    return await this.fetchInstance.fetch(uri, _method, myBody, myHeaders);
   }
 }

@@ -1,7 +1,7 @@
 import { IAssetsService } from 'api/types/assets';
 import { BaseService } from '.';
 import { injectable } from 'inversify';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { IToSendHomeParamsType } from 'api/types';
 import { CheckWalletUnlocked } from 'api/decorate';
 

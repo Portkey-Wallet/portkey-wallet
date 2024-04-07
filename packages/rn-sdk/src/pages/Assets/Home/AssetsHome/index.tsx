@@ -14,7 +14,7 @@ import useBaseContainer from 'model/container/UseBaseContainer';
 import AssetsContext, { AssetsContextType } from 'global/context/assets/AssetsContext';
 import BigNumber from 'bignumber.js';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import ActivityButton from '../ActivityButton';
 import { defaultColors } from 'assets/theme';
 import CommonSvg from '@portkey-wallet/rn-components/components/Svg';

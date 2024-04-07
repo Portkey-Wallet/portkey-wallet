@@ -39,7 +39,7 @@ import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { isPotentialNumber } from '@portkey-wallet/utils/reg';
 import { getCachedNetworkConfig } from 'model/chain';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { useLanguage } from 'i18n/hooks';
 

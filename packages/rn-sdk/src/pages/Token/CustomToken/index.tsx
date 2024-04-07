@@ -21,7 +21,7 @@ import FormItem from '@portkey-wallet/rn-components/components/FormItem';
 import SelectChain from 'components/SelectChain';
 import { useChainsNetworkInfo, useCurrentNetworkType } from 'model/hooks/network';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from 'config/entries';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { NetworkController } from 'network/controller';
 import { getBottomSpace } from 'utils/screen';
 

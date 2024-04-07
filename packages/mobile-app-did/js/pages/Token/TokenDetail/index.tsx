@@ -10,7 +10,6 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import navigationService from 'utils/navigationService';
 import NoData from 'components/NoData';
 import { useLanguage } from 'i18n/hooks';
-import TransferItem from 'components/TransferList/components/TransferItem';
 import { FlashList } from '@shopify/flash-list';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
@@ -42,6 +41,7 @@ import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ra
 import { useTokenInfoFromStore } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { PAGE_SIZE_IN_ACCOUNT_TOKEN } from '@portkey-wallet/constants/constants-ca/assets';
+import ActivityItem from 'components/ActivityItem';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -79,9 +79,11 @@ const TokenDetail: React.FC = () => {
   );
 
   const currentActivity = useMemo(
-    () => activity?.activityMap?.[getCurrentActivityMapKey(tokenInfo.chainId, tokenInfo.symbol)] ?? {},
+    () => activity?.activityMap?.[getCurrentActivityMapKey(tokenInfo.chainId, tokenInfo.symbol)],
     [activity?.activityMap, tokenInfo.chainId, tokenInfo.symbol],
   );
+  const currentActivityRef = useRef(currentActivity);
+  currentActivityRef.current = currentActivity;
 
   const fixedParamObj = useMemo(
     () => ({
@@ -97,7 +99,7 @@ const TokenDetail: React.FC = () => {
 
   const getActivityList = useCallback(
     async (isInit = false) => {
-      const { data, maxResultCount = 10, skipCount = 0, totalRecordCount = 0 } = currentActivity || {};
+      const { data = [], maxResultCount = 10, skipCount = 0, totalRecordCount = 0 } = currentActivity || {};
       if (!isInit && data?.length >= totalRecordCount) return;
       if (pageInfoRef.current.isLoading) return;
       pageInfoRef.current.isLoading = true;
@@ -178,6 +180,18 @@ const TokenDetail: React.FC = () => {
       return styles.buttonWrapStyle1;
     }
   }, [buttonCount]);
+
+  const renderItem = useCallback(({ item, index }: { item: ActivityItemType; index: number }) => {
+    const preItem = currentActivityRef.current?.data[index - 1];
+    return (
+      <ActivityItem
+        preItem={preItem}
+        item={item}
+        index={index}
+        onPress={() => navigationService.navigate('ActivityDetail', item)}
+      />
+    );
+  }, []);
 
   return (
     <PageContainer
@@ -261,9 +275,7 @@ const TokenDetail: React.FC = () => {
         data={currentActivity?.data || []}
         keyExtractor={(_item, index) => `${index}`}
         ListEmptyComponent={<NoData noPic message="You have no transactions." />}
-        renderItem={({ item }: { item: ActivityItemType }) => {
-          return <TransferItem item={item} onPress={() => navigationService.navigate('ActivityDetail', item)} />;
-        }}
+        renderItem={renderItem}
         onRefresh={() => {
           onRefreshList();
         }}

@@ -1,11 +1,10 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useMemo } from 'react';
 import { StyleSheet, FlatList } from 'react-native';
 import navigationService from 'utils/navigationService';
 import PageContainer from 'components/PageContainer';
 import { pTd } from 'utils/unit';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useLanguage } from 'i18n/hooks';
-import TransferItem from 'components/TransferList/components/TransferItem';
 
 import { getActivityListAsync } from '@portkey-wallet/store/store-ca/activity/action';
 import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
@@ -17,6 +16,8 @@ import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
+import ActivityItem from 'components/ActivityItem';
+import { sleep } from '@portkey-wallet/utils';
 
 interface RouterParams {
   chainId?: string;
@@ -29,38 +30,57 @@ const ActivityListPage = () => {
   const dispatch = useAppCommonDispatch();
   const caAddressInfos = useCaAddressInfoList();
   const activity = useAppCASelector(state => state.activity);
-  const currentActivity = activity?.activityMap?.[getCurrentActivityMapKey(chainId, symbol)] || {};
+  const currentActivity = useMemo(
+    () => activity?.activityMap?.[getCurrentActivityMapKey(chainId, symbol)],
+    [activity?.activityMap, chainId, symbol],
+  );
+  const currentActivityRef = useRef(currentActivity);
+  currentActivityRef.current = currentActivity;
+
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
 
   const isLoadingRef = useRef(false);
-  const getActivityList = async (isInit: boolean) => {
-    const { data, skipCount = 0, totalRecordCount = 0 } = currentActivity;
-    const maxResultCount = 30;
-    if (!isInit && data?.length >= totalRecordCount) return;
-    if (isLoadingRef.current) return;
-    isLoadingRef.current = true;
-    setRefreshing(true);
-    const params: IActivitiesApiParams = {
-      maxResultCount: maxResultCount,
-      skipCount: isInit ? 0 : skipCount + maxResultCount,
-      caAddressInfos,
-      // managerAddresses: address,
-      chainId: chainId,
-      symbol: symbol,
-    };
+  const getActivityList = useCallback(
+    async (isInit: boolean) => {
+      await sleep(100);
+      const { data = [], skipCount = 0, totalRecordCount = 0 } = currentActivity || {};
+      const maxResultCount = 30;
+      if (!isInit && data?.length >= totalRecordCount) return;
+      if (isLoadingRef.current) return;
+      isLoadingRef.current = true;
 
-    await dispatch(getActivityListAsync(params));
-    setRefreshing(false);
-    isLoadingRef.current = false;
-  };
+      setRefreshing(true);
+      const params: IActivitiesApiParams = {
+        maxResultCount: maxResultCount,
+        skipCount: isInit ? 0 : skipCount + maxResultCount,
+        caAddressInfos,
+        // managerAddresses: address,
+        chainId: chainId,
+        symbol: symbol,
+      };
+
+      await dispatch(getActivityListAsync(params));
+      setRefreshing(false);
+      isLoadingRef.current = false;
+    },
+    [caAddressInfos, chainId, currentActivity, dispatch, symbol],
+  );
 
   useEffectOnce(() => {
     getActivityList(true);
     getTokenPrice();
   });
 
-  const renderItem = useCallback(({ item }: { item: ActivityItemType }) => {
-    return <TransferItem item={item} onPress={() => navigationService.navigate('ActivityDetail', item)} />;
+  const renderItem = useCallback(({ item, index }: { item: ActivityItemType; index: number }) => {
+    const preItem = currentActivityRef.current?.data[index - 1];
+    return (
+      <ActivityItem
+        preItem={preItem}
+        item={item}
+        index={index}
+        onPress={() => navigationService.navigate('ActivityDetail', item)}
+      />
+    );
   }, []);
 
   const [refreshing, setRefreshing] = useState(false);

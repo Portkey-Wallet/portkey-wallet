@@ -10,11 +10,10 @@ import PageContainer from 'components/PageContainer';
 import Svg from 'components/Svg';
 import { setStringAsync } from 'expo-clipboard';
 import { useLanguage } from 'i18n/hooks';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, View, StyleSheet } from 'react-native';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
-import TransferItem from 'components/TransferList/components/TransferItem';
 import NoData from 'components/NoData';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
@@ -26,6 +25,7 @@ import { IActivityListWithAddressApiParams } from '@portkey-wallet/store/store-c
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 import CommonAvatar from 'components/CommonAvatar';
 import Touchable from 'components/Touchable';
+import ActivityItem from 'components/ActivityItem';
 
 interface ParamsType {
   fromChainId: ChainId;
@@ -52,6 +52,8 @@ const ContactActivity: React.FC = () => {
   const [isFetching, setIsFetching] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   const [activityList, setActivityList] = useState<ActivityItemType[]>([]);
+  const activityListRef = useRef(activityList);
+  activityListRef.current = activityList;
 
   const params: IActivityListWithAddressApiParams = useMemo(
     () => ({
@@ -104,8 +106,16 @@ const ContactActivity: React.FC = () => {
     [t],
   );
 
-  const renderItem = useCallback(({ item }: { item: ActivityItemType }) => {
-    return <TransferItem item={item} onPress={() => navigationService.navigate('ActivityDetail', item)} />;
+  const renderItem = useCallback(({ item, index }: { item: ActivityItemType; index: number }) => {
+    const preItem = activityListRef.current?.[index - 1];
+    return (
+      <ActivityItem
+        preItem={preItem}
+        index={index}
+        item={item}
+        onPress={() => navigationService.navigate('ActivityDetail', item)}
+      />
+    );
   }, []);
 
   const navToAddContact = useCallback(() => {

@@ -114,7 +114,7 @@ const SendPreview: React.FC = () => {
   const showRetry = useCallback(
     (retryFunc: () => void) => {
       ActionSheet.alert({
-        title: t('Transaction failed ！'),
+        title: t('Transaction failed !'),
         buttons: [
           {
             title: t('Resend'),

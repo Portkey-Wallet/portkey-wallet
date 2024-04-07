@@ -8,7 +8,7 @@ import { useCurrentChain, useCurrentChainList } from './chainList';
 import { request } from '@portkey-wallet/api/api-did';
 import { useAppCommonDispatch } from '../index';
 import {
-  setUserInfoAction,
+  setNickNameAndAvatarAction,
   getCaHolderInfoAsync,
   setCheckManagerExceed,
 } from '@portkey-wallet/store/store-ca/wallet/actions';
@@ -199,7 +199,7 @@ export const useSetUserInfo = () => {
         baseURL: networkInfo.apiUrl,
         params,
       });
-      dispatch(setUserInfoAction({ ...params, networkType: networkInfo.networkType }));
+      dispatch(setNickNameAndAvatarAction({ ...params, networkType: networkInfo.networkType }));
     },
     [dispatch, networkInfo],
   );

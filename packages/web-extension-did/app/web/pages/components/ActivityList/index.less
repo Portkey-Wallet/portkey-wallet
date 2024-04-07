@@ -2,121 +2,109 @@
 @import '../../../assets/theme/constants.less';
 
 .activity-list {
+  .adm-list-body-inner {
+    padding-top: 16px;
+  }
+  .activity-date-item {
+    margin-bottom: 4px;
+    padding: 0 16px;
+    font-size: 12px;
+    line-height: 18px;
+    color: @font-13;
+  }
   .adm-list-item {
     padding-left: 0;
     .adm-list-item-content {
       padding-right: 0;
-    }
-  }
-  .activity-item {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 4px 16px;
-    .time {
-      line-height: 16px;
-      color: @font-13;
-      font-size: 12px;
-    }
-    .info {
-      display: flex;
-      gap: 16px;
-      .custom-list-icon {
-        width: 28px;
-        height: 28px;
-        margin-top: 7px;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: contain;
-      }
-      .custom-svg {
-        margin-top: 7px;
-      }
-      .custom-svg,
-      svg {
-        width: 28px;
-        height: 28px;
-      }
-      .right {
-        flex: 1;
-        .row-1 {
-          line-height: 22px;
-          color: @font-11;
-          font-size: 16px;
-          .row-1-left {
-            flex-grow: 1;
-            gap: 10px;
-            span {
+      border-top: none;
+      .adm-list-item-content-main {
+        padding: 0;
+        .activity-item {
+          height: 76px;
+          padding: 0 16px;
+          justify-content: center;
+          gap: 8px;
+          &.activity-item-resend {
+            height: 106px;
+          }
+          .activity-item-content {
+            flex-direction: row;
+            gap: 8px;
+            .custom-list-icon {
+              width: 32px;
+              height: 32px;
+              background-position: center;
+              background-repeat: no-repeat;
+              background-size: contain;
+            }
+            .custom-svg,
+            svg {
+              width: 32px;
+              height: 32px;
+            }
+            .custom-list-icon,
+            .custom-svg {
+              flex-shrink: 0;
+            }
+            .activity-item-detail {
               flex: 1;
-              overflow: hidden;
-              text-overflow: ellipsis;
-              /* stylelint-disable-next-line value-no-vendor-prefix */
-              display: -webkit-box;
-              -webkit-box-orient: vertical;
-              line-clamp: 1;
-              -webkit-line-clamp: 1;
-              word-break: break-all;
+              gap: 8px;
+              .activity-item-title {
+                width: 156px;
+                font-size: 12px;
+                line-height: 18px;
+                color: @font-13;
+                .transaction-name {
+                  font-size: 16px;
+                  line-height: 24px;
+                  font-weight: 500;
+                  color: @font-1;
+                }
+              }
+              .activity-item-amount {
+                flex: 1;
+                font-size: 12px;
+                line-height: 18px;
+                color: @font-13;
+                text-align: right;
+                .transaction-amount {
+                  font-size: 16px;
+                  line-height: 24px;
+                  color: @font-1;
+                  word-break: break-all;
+                  .text-overflow(1);
+                  &.received-amount {
+                    color: @font-15;
+                  }
+                }
+                .transaction-nft-symbol,
+                .transaction-convert {
+                  word-break: break-all;
+                  .text-overflow(1);
+                }
+                .hidden-transaction-convert {
+                  overflow: hidden;
+                }
+              }
             }
-            .nft-id-show,
-            .amount-show {
-              text-align: right;
+            .activity-item-system-detail {
+              flex: 1;
+              font-size: 16px;
+              line-height: 24px;
+              font-weight: 500;
+              color: @font-1;
             }
           }
-          .amount-symbol {
-            margin-left: 4px;
-          }
-        }
-        .row-2 {
-          gap: 6px;
-          line-height: 16px;
-          font-size: 12px;
-          color: @font-13;
-          margin-top: 4px;
-          overflow: hidden;
-          .nft-name,
-          .convert {
-            flex: 1;
-            word-break: break-all;
-            text-align: right;
-            .text-overflow(1);
-          }
-        }
-        .row-3 {
-          line-height: 16px;
-          font-size: 12px;
-          color: @font-13;
-          left: 60px;
-          width: 217px;
-          word-break: break-word;
-          margin-top: 2px;
-        }
-        .row-4 {
-          margin-top: 8px;
-          text-align: right;
-          .resend-btn {
-            display: inline-block;
-            width: 61px;
-            height: 24px;
-            font-size: 12px;
-            font-weight: 400;
-          }
-        }
-      }
-      .right-not-from {
-        height: 42px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        .right-not-from-amount {
-          text-align: end;
-          div {
-            line-height: 22px;
-          }
-          .usd {
-            line-height: 16px;
-            font-size: 12px;
-            color: @font-13;
-            margin-top: 4px;
+          .activity-item-resend-btn {
+            margin-left: 40px;
+            .resend-btn {
+              display: inline-block;
+              width: 65px;
+              height: 24px;
+              font-size: 12px;
+              line-height: 16px;
+              font-weight: 400;
+            }
           }
         }
       }
@@ -124,9 +112,6 @@
   }
 
   @media screen and (min-width: 768px) {
-    .activity-item {
-      padding: 4px 24px;
-    }
     .load-more {
       padding-bottom: 12px;
     }

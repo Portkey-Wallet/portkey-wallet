@@ -1,3 +1,4 @@
-export { useIsFocused } from '@portkey-wallet/rn-core/router/hook';
-import useNavigation from '@portkey-wallet/rn-core/router/hook';
-export { useNavigation };
+export { useIsFocused, useNavigation, useFocusEffect } from '@portkey-wallet/rn-core/router/hook';
+export { request } from '@portkey-wallet/rn-core/network/index';
+import navigationService from './navigationService';
+export default navigationService;

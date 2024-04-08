@@ -1,7 +1,9 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { IAssetItemType } from './type';
-import { NFT_SMALL_SIZE, NFT_MIDDLE_SIZE } from '@portkey-wallet/constants/constants-ca/assets';
+import { NFT_SMALL_SIZE, NFT_MIDDLE_SIZE, NFT_LARGE_SIZE } from '@portkey-wallet/constants/constants-ca/assets';
+import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
+import { NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
 
 type ITokenItemResponse = Omit<TokenItemShowType, 'name' | 'address'>;
 
@@ -9,20 +11,18 @@ export function fetchTokenList({
   // todo maybe remote tokenList change
   skipCount = 0,
   maxResultCount = 1000,
-  caAddresses,
   caAddressInfos,
 }: {
   skipCount?: number;
   maxResultCount?: number;
-  caAddresses: string[];
   caAddressInfos: { chainId: string; caAddress: string }[];
 }): Promise<{
   data: ITokenItemResponse[];
   totalRecordCount: number;
+  totalBalanceInUsd?: string;
 }> {
   return request.assets.fetchAccountTokenList({
     params: {
-      caAddresses,
       caAddressInfos,
       skipCount,
       maxResultCount,
@@ -31,13 +31,11 @@ export function fetchTokenList({
 }
 
 export function fetchAssetList({
-  caAddresses,
   caAddressInfos,
   maxResultCount,
   skipCount,
   keyword = '',
 }: {
-  caAddresses: string[];
   maxResultCount: number;
   skipCount: number;
   keyword: string;
@@ -45,11 +43,33 @@ export function fetchAssetList({
 }): Promise<{ data: IAssetItemType[]; totalRecordCount: number }> {
   return request.assets.fetchAccountAssetsByKeywords({
     params: {
-      CaAddresses: caAddresses,
       caAddressInfos,
-      SkipCount: skipCount,
-      MaxResultCount: maxResultCount,
-      Keyword: keyword,
+      skipCount,
+      maxResultCount,
+      keyword,
+      width: NFT_SMALL_SIZE,
+      height: -1,
+    },
+  });
+}
+
+export function fetchCryptoBoxAssetList({
+  caAddressInfos,
+  maxResultCount,
+  skipCount,
+  keyword = '',
+}: {
+  maxResultCount: number;
+  skipCount: number;
+  keyword: string;
+  caAddressInfos: { chainId: string; caAddress: string }[];
+}): Promise<{ data: ICryptoBoxAssetItemType[]; totalRecordCount: number }> {
+  return request.assets.fetchCryptoBoxAccountAssetsByKeywords({
+    params: {
+      caAddressInfos,
+      keyword,
+      skipCount,
+      maxResultCount,
       width: NFT_SMALL_SIZE,
       height: -1,
     },
@@ -57,19 +77,16 @@ export function fetchAssetList({
 }
 
 export function fetchNFTSeriesList({
-  caAddresses = [],
   caAddressInfos,
   skipCount = 0,
   maxResultCount = 1000,
 }: {
-  caAddresses: string[];
   skipCount: number;
   maxResultCount?: number;
   caAddressInfos: { chainId: string; caAddress: string }[];
 }): Promise<{ data: any[]; totalRecordCount: number }> {
   return request.assets.fetchAccountNftCollectionList({
     params: {
-      caAddresses,
       caAddressInfos,
       skipCount,
       maxResultCount,
@@ -81,19 +98,29 @@ export function fetchNFTSeriesList({
 
 export function fetchNFTList({
   symbol,
-  caAddresses,
   caAddressInfos,
   skipCount = 0,
   maxResultCount = 1000,
 }: {
   symbol: string;
-  caAddresses: string[];
   caAddressInfos: { chainId: string; caAddress: string }[];
   skipCount: number;
   maxResultCount: number;
-}): Promise<{ data: any[]; totalRecordCount: number }> {
+}): Promise<{ data: NFTItemBaseType[]; totalRecordCount: number }> {
   return request.assets.fetchAccountNftCollectionItemList({
-    params: { caAddresses, caAddressInfos, symbol, skipCount, maxResultCount, width: NFT_MIDDLE_SIZE, height: -1 },
+    params: { caAddressInfos, symbol, skipCount, maxResultCount, width: NFT_MIDDLE_SIZE, height: -1 },
+  });
+}
+
+export function fetchNFTItem({
+  symbol,
+  caAddressInfos,
+}: {
+  symbol: string;
+  caAddressInfos: { chainId: string; caAddress: string }[];
+}): Promise<{ data: NFTItemBaseType }> {
+  return request.assets.fetchAccountNftCollectionItem({
+    params: { caAddressInfos, symbol, width: NFT_LARGE_SIZE, height: -1 },
   });
 }
 

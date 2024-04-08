@@ -1,22 +1,24 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import { BGStyles } from 'assets/theme/styles';
-import Loading from 'components/Loading';
-import useEffectOnce from 'hooks/useEffectOnce';
-import { useLanguage } from 'i18n/hooks';
-import myEvents from 'utils/deviceEvent';
+// import { BGStyles } from 'assets/theme/styles';
+import Loading from '@portkey-wallet/rn-components/components/Loading';
+import useEffectOnce from '../../../hooks/useEffectOnce';
+import { useLanguage } from '@portkey-wallet/rn-base/i18n/hooks';
+import myEvents from '@portkey-wallet/rn-base/utils/deviceEvent';
 import styles from '../styles';
-import CommonButton from 'components/CommonButton';
-import GStyles from 'assets/theme/GStyles';
+import CommonButton from '@portkey-wallet/rn-components/components/CommonButton';
+// import GStyles from 'assets/theme/GStyles';
 import { PageLoginType, PageType } from '../types';
 import TermsServiceButton from './TermsServiceButton';
 import TabButton from './TabButton';
-import { useOnLogin } from 'hooks/login';
-import PhoneInput from 'components/PhoneInput';
+import { useOnLogin } from '@portkey-wallet/rn-base/hooks/login';
+// import PhoneInput from '@portkey-wallet/rn-components/components/PhoneInput';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { BGStyles } from '@portkey-wallet/rn-components/theme/styles';
+import GStyles from '@portkey-wallet/rn-components/theme/GStyles';
 
 const TitleMap = {
   [PageType.login]: {
@@ -64,37 +66,39 @@ export default function Phone({
       listener.remove();
     };
   });
-  return (
-    <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter]}>
-      <View style={GStyles.width100}>
-        <View style={[GStyles.flexRowWrap, GStyles.marginBottom(20)]}>
-          {/* <TabButton
-            title="Phone"
-            isActive
-            style={GStyles.marginRight(8)}
-            onPress={() => setLoginType(PageLoginType.phone)}
-          /> */}
-          <TabButton title="Email" onPress={() => setLoginType(PageLoginType.email)} />
-        </View>
+  console.error('phone component is invalid!');
+  return null;
+  // return (
+  //   <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter]}>
+  //     <View style={GStyles.width100}>
+  //       <View style={[GStyles.flexRowWrap, GStyles.marginBottom(20)]}>
+  //         {/* <TabButton
+  //           title="Phone"
+  //           isActive
+  //           style={GStyles.marginRight(8)}
+  //           onPress={() => setLoginType(PageLoginType.phone)}
+  //         /> */}
+  //         <TabButton title="Email" onPress={() => setLoginType(PageLoginType.email)} />
+  //       </View>
 
-        <PhoneInput
-          value={loginAccount}
-          errorMessage={errorMessage}
-          containerStyle={styles.inputContainerStyle}
-          onChangeText={setLoginAccount}
-          selectCountry={country}
-        />
+  //       <PhoneInput
+  //         value={loginAccount}
+  //         errorMessage={errorMessage}
+  //         containerStyle={styles.inputContainerStyle}
+  //         onChangeText={setLoginAccount}
+  //         selectCountry={country}
+  //       />
 
-        <CommonButton
-          containerStyle={GStyles.marginTop(16)}
-          disabled={!loginAccount}
-          type="primary"
-          loading={loading}
-          onPress={onPageLogin}>
-          {t(TitleMap[type].button)}
-        </CommonButton>
-      </View>
-      <TermsServiceButton />
-    </View>
-  );
+  //       <CommonButton
+  //         containerStyle={GStyles.marginTop(16)}
+  //         disabled={!loginAccount}
+  //         type="primary"
+  //         loading={loading}
+  //         onPress={onPageLogin}>
+  //         {t(TitleMap[type].button)}
+  //       </CommonButton>
+  //     </View>
+  //     <TermsServiceButton />
+  //   </View>
+  // );
 }

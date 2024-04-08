@@ -12,7 +12,7 @@ import {
   LayoutChangeEvent,
   EmitterSubscription,
 } from 'react-native';
-import myEvents from '../../utils/deviceEvent';
+import myEvents from '@portkey-wallet/rn-base/utils/deviceEvent';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { ViewStyleType } from '../../theme/type';
 

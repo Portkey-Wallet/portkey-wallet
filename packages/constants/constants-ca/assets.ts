@@ -5,7 +5,6 @@ export enum TransactionError {
   NFT_NOT_ENOUGH = 'Insufficient quantity',
   FEE_NOT_ENOUGH = 'Insufficient funds for transaction fee',
   CROSS_NOT_ENOUGH = 'Insufficient funds for cross-chain transaction fee',
-  SYNCHRONIZING = 'Synchronizing on-chain account information...',
 }
 
 export const REFRESH_TIME = 5 * 60 * 1000; // 5min refresh
@@ -26,6 +25,14 @@ export const NEW_CLIENT_MOCK_ELF_LIST: TokenItemShowType[] = [
 
 export const PAGE_SIZE_IN_NFT_ITEM = 9;
 
+export const PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION = 20;
+
+export const PAGE_SIZE_IN_ACCOUNT_TOKEN = 20;
+
+export const PAGE_SIZE_IN_ACCOUNT_ASSETS = 20;
+
+export const PAGE_SIZE_DEFAULT = 50;
+
 export const ELF_SYMBOL = 'ELF';
 
 export const NFT_SMALL_SIZE = 144;
@@ -41,4 +48,9 @@ export enum BalanceTab {
 export enum ContactsTab {
   ALL = 'All',
   Chats = 'Chats',
+}
+
+export enum AssetType {
+  ft = 1,
+  nft = 2,
 }

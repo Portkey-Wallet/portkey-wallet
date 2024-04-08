@@ -1,6 +1,7 @@
-import { ChainId } from '..';
+import { ChainId, NetworkType } from '..';
 import { ChainItemType } from '../chain';
 import { AccountType } from '../wallet';
+import { SeedTypeEnum } from './assets';
 
 export interface BaseToken {
   id?: string; // id
@@ -12,7 +13,12 @@ export interface BaseToken {
   imageUrl?: string;
   alias?: string;
   tokenId?: string; // nft tokenId
-  tokenContractAddress?: string; // used for cross chain transfer
+  isSeed?: boolean;
+  seedType?: SeedTypeEnum;
+  inscriptionName?: string;
+  limitPerMint?: number;
+  expires?: string;
+  seedOwnedSymbol?: string;
 }
 
 export interface TokenItemType extends BaseToken {
@@ -50,36 +56,17 @@ export type TokenListShowInMarketType = TokenItemShowType[];
 // add-token list
 export type UserTokenListType = UserTokenItemType[];
 
-// assets token+nft
-export interface TokenInfo {
-  id: string;
-  balance?: string;
-  decimals: string;
-  balanceInUsd?: string;
-  tokenContractAddress: string;
-  imageUrl?: string;
-}
-
-export interface NftInfo {
-  imageUrl: string;
-  alias: string;
-  tokenId: string;
-  protocolName: string;
-  quantity: string;
-  balance?: string;
-  decimals: string;
-  tokenContractAddress: string;
-}
-
-export interface AccountAssetItem {
+export interface IAccountCryptoBoxAssetItem {
   chainId: ChainId;
-  symbol: string;
   address: string;
-  tokenInfo?: TokenInfo;
-  nftInfo?: NftInfo;
+  symbol: string;
+  imageUrl: string;
+  decimals: number | string;
+  alias?: string;
+  tokenId?: string;
+  balance?: string;
+  tokenContractAddress?: string;
 }
-
-export type AccountAssets = AccountAssetItem[];
 
 export type UseTokenListAddType = (
   currentChain: ChainItemType,
@@ -93,14 +80,19 @@ export type UseTokenDeleteType = (
 
 export type FilterTokenList = (token_name: string, address: string) => TokenItemShowType;
 
-export interface TokenState {
+export interface ITokenInfo {
   isFetching: boolean;
-  // addedTokenData: AddedTokenData;
   tokenDataShowInMarket: TokenItemShowType[];
   skipCount: number;
   maxResultCount: number;
   totalRecordCount: number;
+}
+
+export interface TokenState extends ITokenInfo {
   symbolImages: Record<string, string>;
+  tokenInfo?: {
+    [key in NetworkType]?: ITokenInfo;
+  };
 }
 
 export interface AccountItemType {

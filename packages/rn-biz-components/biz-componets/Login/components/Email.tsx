@@ -4,19 +4,20 @@ import { handleErrorMessage } from '@portkey-wallet/utils';
 import { checkEmail } from '@portkey-wallet/utils/check';
 import { BGStyles } from '@portkey-wallet/rn-components/theme/styles';
 import Loading from '@portkey-wallet/rn-components/components/Loading';
-import useEffectOnce from '@portkey-wallet/rn-base/utils/hooks/useEffectOnce';
+import { useEffectOnce } from '@portkey-wallet/hooks/index';
 import { useLanguage } from '@portkey-wallet/rn-base/i18n/hooks';
-import myEvents from 'utils/deviceEvent';
+import myEvents from '@portkey-wallet/rn-base/utils/deviceEvent';
 import styles from '../styles';
-import CommonInput from 'components/CommonInput';
-import CommonButton from 'components/CommonButton';
-import GStyles from 'assets/theme/GStyles';
+import CommonInput from '@portkey-wallet/rn-components/components/CommonInput';
+import CommonButton from '@portkey-wallet/rn-components/components/CommonButton';
+// import GStyles from 'assets/theme/GStyles';
 import { PageLoginType, PageType } from '../types';
-import { useOnLogin } from 'hooks/login';
+import { useOnLogin } from '@portkey-wallet/rn-base/hooks/login';
 import TermsServiceButton from './TermsServiceButton';
 import TabButton from './TabButton';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { useInputFocus } from 'hooks/useInputFocus';
+import { useInputFocus } from '@portkey-wallet/rn-base/hooks/useInputFocus';
+import GStyles from '@portkey-wallet/rn-components/theme/GStyles';
 
 const TitleMap = {
   [PageType.login]: {

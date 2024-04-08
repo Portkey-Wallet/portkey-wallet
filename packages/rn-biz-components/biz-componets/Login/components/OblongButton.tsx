@@ -1,12 +1,14 @@
-import { defaultColors } from 'assets/theme';
-import fonts from 'assets/theme/fonts';
-import { FontStyles } from 'assets/theme/styles';
-import { TextL } from 'components/CommonText';
-import Svg, { IconName } from 'components/Svg';
-import Touchable from 'components/Touchable';
+import { defaultCss } from '@portkey-wallet/rn-components/theme/default';
+import fonts from '@portkey-wallet/rn-components/theme/fonts';
+import { FontStyles } from '@portkey-wallet/rn-components/theme/styles';
+// import fonts from 'assets/theme/fonts';
+// import { FontStyles } from 'assets/theme/styles';
+import { TextL } from '@portkey-wallet/rn-components/components/CommonText';
+import Svg, { IconName } from '@portkey-wallet/rn-components/components/Svg';
+import Touchable from '@portkey-wallet/rn-components/components/Touchable';
 import React, { useMemo } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
-import { pTd } from 'utils/unit';
+import { pTd } from '@portkey-wallet/rn-components/utils/unit';
 
 export interface IOblongButton {
   title: string;
@@ -50,7 +52,7 @@ const styles = StyleSheet.create({
     height: pTd(48),
     borderRadius: pTd(6),
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border1,
+    borderColor: defaultCss.border1,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

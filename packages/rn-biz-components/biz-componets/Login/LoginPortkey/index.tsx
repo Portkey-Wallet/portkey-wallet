@@ -15,13 +15,16 @@ import Phone from '../components/Phone';
 import Referral from '../components/Referral';
 import { PageLoginType } from '../types';
 import SwitchNetwork from '../components/SwitchNetwork';
-import GStyles from 'assets/theme/GStyles';
+// import GStyles from 'assets/theme/GStyles';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import fonts from 'assets/theme/fonts';
-import { defaultColors } from 'assets/theme';
-import { request } from 'reac';
+// import fonts from 'assets/theme/fonts';
+// import { defaultColors } from 'assets/theme';
+// import { request } from 'reac';
 import { SafeAreaColorMapKeyUnit } from '@portkey-wallet/rn-components/components/CustomHeader';
 import { BGStyles, FontStyles } from '@portkey-wallet/rn-components/theme/styles';
+import GStyles from '@portkey-wallet/rn-components/theme/GStyles';
+import fonts from '@portkey-wallet/rn-components/theme/fonts';
+import { defaultCss } from '@portkey-wallet/rn-components/theme/default';
 // import { request } from '@portkey-wallet/api/api-did';
 const scrollViewProps = { extraHeight: 120 };
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['transparent', 'transparent'];
@@ -57,7 +60,7 @@ export default function LoginPortkey() {
         safeAreaColor={safeAreaColor}
         scrollViewProps={scrollViewProps}
         leftCallback={BackType[loginType] ? () => setLoginType(PageLoginType.referral) : undefined}>
-        <Svg icon="logo-icon" size={pTd(60)} iconStyle={styles.logoIconStyle} color={defaultColors.bg1} />
+        <Svg icon="logo-icon" size={pTd(60)} iconStyle={styles.logoIconStyle} color={defaultCss.bg1} />
         <View style={GStyles.center}>
           {!isMainnet && (
             <View style={styles.labelBox}>

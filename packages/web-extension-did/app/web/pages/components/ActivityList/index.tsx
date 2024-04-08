@@ -1,4 +1,4 @@
-import { SHOW_FROM_TRANSACTION_TYPES, TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
+import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
 import { ActivityItemType, the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import {
   AmountSign,
@@ -14,7 +14,7 @@ import './index.less';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { Button, Modal } from 'antd';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
-import { formatTransferTime, isSameDay } from '@portkey-wallet/utils/time';
+import { formatActivityTime, isSameDay } from '@portkey-wallet/utils/time';
 import { useTranslation } from 'react-i18next';
 import { intervalCrossChainTransfer } from 'utils/sandboxUtil/crossChainTransfer';
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
@@ -27,6 +27,9 @@ import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks
 import getSeed from 'utils/getSeed';
 import { ITransactionLocationState } from 'types/router';
 import clsx from 'clsx';
+import NFTImageDisplay from '../NFTImageDisplay';
+import TokenImageDisplay from '../TokenImageDisplay';
+import dayjs from 'dayjs';
 
 export interface IActivityListProps {
   data?: ActivityItemType[];
@@ -44,11 +47,6 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   const chainList = useCurrentChainList();
   useFreshTokenPrice();
   const currentNetwork = useCurrentNetworkInfo();
-
-  const activityListLeftIcon = (type: TransactionTypes) => {
-    return SHOW_FROM_TRANSACTION_TYPES.includes(type) ? 'Transfer' : 'SystemActivity';
-  };
-
   const nav = useNavigateState<ITransactionLocationState>();
   const navToDetail = useCallback(
     (item: ActivityItemType) => {
@@ -112,6 +110,11 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
     [activity.failedActivityMap, retryCrossChain],
   );
 
+  const formatActivityTimeShow = useCallback(
+    (timestamp: string) => formatActivityTime(dayjs.unix(Number(timestamp || 0))),
+    [],
+  );
+
   const renderResendBtn = useCallback(
     (item: ActivityItemType) => {
       if (!activity.failedActivityMap[item.transactionId]) return;
@@ -127,21 +130,19 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
     [activity.failedActivityMap, handleResend],
   );
 
-  const dividerUI = useMemo(() => <div className="divider-center" />, []);
-
   const renderActivityTitle = useCallback(
     (item: ActivityItemType) => {
       const { transactionName, transactionType, isReceived, fromAddress, fromChainId, toAddress, toChainId } = item;
       const transAddress = isReceived
         ? addressFormat(fromAddress, fromChainId, currentNetwork.walletType)
         : addressFormat(toAddress, toChainId, currentNetwork.walletType);
-      const showAddress = `${isReceived ? 'From' : 'To'} ${formatStr2EllipsisStr(transAddress, [8, 9])}`;
+      const showAddress = `${isReceived ? 'From' : 'To'} ${formatStr2EllipsisStr(transAddress, [7, 9])}`;
       return (
         <div className="activity-item-title">
           <div className="transaction-name">{transactionName}</div>
           <div className="transaction-address">{showAddress}</div>
           {TransactionTypes.CROSS_CHAIN_TRANSFER === transactionType && (
-            <div className="cross-chain-transfer">Cross Chain Transfer</div>
+            <div className="cross-chain-transfer">Cross-Chain Transfer</div>
           )}
         </div>
       );
@@ -186,15 +187,28 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   }, []);
 
   const renderActivityIcon = useCallback((item: ActivityItemType) => {
-    return item.listIcon ? (
-      <div
-        className="custom-list-icon"
-        style={{
-          backgroundImage: `url(${item.listIcon})`,
-        }}
+    if (item.isSystem) {
+      return item.listIcon ? (
+        <div
+          className="system-activity-icon"
+          style={{
+            backgroundImage: `url(${item.listIcon})`,
+          }}
+        />
+      ) : (
+        <CustomSvg type="SystemActivity" />
+      );
+    }
+    return item.nftInfo ? (
+      <NFTImageDisplay
+        src={item.listIcon}
+        isSeed={item.nftInfo.isSeed}
+        seedType={item.nftInfo.seedType}
+        alias={item.nftInfo.alias}
+        className="nft-activity-icon"
       />
     ) : (
-      <CustomSvg type={activityListLeftIcon(item.transactionType)} />
+      <TokenImageDisplay className="token-activity-icon" src={item.listIcon} symbol={item.symbol} />
     );
   }, []);
 
@@ -241,7 +255,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
             return (
               <>
                 <div key={`activityList_date_${index}`} className="activity-date-item">
-                  {formatTransferTime(item.timestamp)}
+                  {formatActivityTimeShow(item?.timestamp)}
                 </div>
                 {renderActivityItem(item, index)}
               </>
@@ -253,8 +267,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
               return (
                 <>
                   <div key={`activityList_date_${index}`} className="activity-date-item">
-                    {dividerUI}
-                    {formatTransferTime(item.timestamp)}
+                    {formatActivityTimeShow(item?.timestamp)}
                   </div>
                   {renderActivityItem(item, index)}
                 </>
@@ -264,7 +277,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         })}
       </List>
     );
-  }, [data, dividerUI, renderActivityItem]);
+  }, [data, formatActivityTimeShow, renderActivityItem]);
 
   return (
     <div className="activity-list">

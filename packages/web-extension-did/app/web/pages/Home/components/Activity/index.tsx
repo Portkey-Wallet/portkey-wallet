@@ -21,7 +21,7 @@ export enum EmptyTipMessage {
   NETWORK_NO_TRANSACTIONS = 'No transaction records accessible from the current custom network',
 }
 
-const MAX_RESULT_COUNT = 10;
+const MAX_RESULT_COUNT = 20;
 const SKIP_COUNT = 0;
 
 export default function Activity({ chainId, symbol }: ActivityProps) {
@@ -29,7 +29,14 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
   const activity = useAppCASelector((state) => state.activity);
   const caAddressInfos = useCaAddressInfoList();
   const currentActivity = useMemo(() => {
-    return activity.activityMap[getCurrentActivityMapKey(chainId, symbol)] || {};
+    return (
+      activity.activityMap[getCurrentActivityMapKey(chainId, symbol)] || {
+        data: [],
+        maxResultCount: 0,
+        skipCount: 0,
+        totalRecordCount: 0,
+      }
+    );
   }, [activity.activityMap, chainId, symbol]);
 
   const dispatch = useAppCommonDispatch();

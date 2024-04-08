@@ -2,15 +2,23 @@
 @import '../../../assets/theme/constants.less';
 
 .activity-list {
-  .adm-list-body-inner {
-    padding-top: 16px;
+  .adm-list {
+    --border-bottom: solid 0.5px @border-2;
+
+    margin: 0 16px;
   }
   .activity-date-item {
-    margin-bottom: 4px;
-    padding: 0 16px;
+    margin: 4px 0;
+    padding-top: 20px;
     font-size: 12px;
     line-height: 18px;
-    color: @font-13;
+    color: @font-21;
+    border-top: 0.5px solid @border-2;
+    &:first-of-type {
+      margin-top: 0;
+      padding-top: 16px;
+      border-top: none;
+  }
   }
   .adm-list-item {
     padding-left: 0;
@@ -21,7 +29,7 @@
         padding: 0;
         .activity-item {
           height: 76px;
-          padding: 0 16px;
+          padding: 0;
           justify-content: center;
           gap: 8px;
           &.activity-item-resend {
@@ -30,19 +38,29 @@
           .activity-item-content {
             flex-direction: row;
             gap: 8px;
-            .custom-list-icon {
+            .system-activity-icon,
+            .token-activity-icon {
               width: 32px;
               height: 32px;
               background-position: center;
               background-repeat: no-repeat;
               background-size: contain;
+              svg {
+                width: 32px;
+                height: 32px;
+              }
             }
-            .custom-svg,
-            svg {
+            .systemactivity-icon {
               width: 32px;
               height: 32px;
+              svg {
+                width: 32px;
+                height: 32px;
+              }
             }
-            .custom-list-icon,
+            .system-activity-icon,
+            .token-activity-icon,
+            .nft-activity-icon,
             .custom-svg {
               flex-shrink: 0;
             }
@@ -50,22 +68,24 @@
               flex: 1;
               gap: 8px;
               .activity-item-title {
-                width: 156px;
-                font-size: 12px;
+                width: 160px;
+                font-size: 11px;
                 line-height: 18px;
-                color: @font-13;
+                color: @font-21;
                 .transaction-name {
                   font-size: 16px;
                   line-height: 24px;
                   font-weight: 500;
                   color: @font-1;
+                  word-break: break-all;
+                  .text-overflow(1);
                 }
               }
               .activity-item-amount {
                 flex: 1;
                 font-size: 12px;
                 line-height: 18px;
-                color: @font-13;
+                color: @font-21;
                 text-align: right;
                 .transaction-amount {
                   font-size: 16px;
@@ -93,6 +113,8 @@
               line-height: 24px;
               font-weight: 500;
               color: @font-1;
+              word-break: break-all;
+              .text-overflow(1);
             }
           }
           .activity-item-resend-btn {
@@ -136,7 +158,7 @@
       text-align: center;
       line-height: 22px;
       font-size: 18px;
-      color: @font-13;
+      color: @font-21;
     }
     .@{app-prefix}-modal-confirm-btns {
       padding: 15px 16px 17px;

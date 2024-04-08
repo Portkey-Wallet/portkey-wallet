@@ -55,14 +55,10 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
   const ExtraDom = useMemo(() => {
     return (
       <Text numberOfLines={1} ellipsizeMode="tail" style={itemStyle.usdtBalance}>
-        {item?.nftInfo
-          ? item?.nftInfo?.alias
-          : isMainnet && item?.symbol === null
-          ? formatAmountUSDShow(item?.currentTxPriceInUsd ?? 0)
-          : ''}
+        {item?.nftInfo ? item?.nftInfo?.alias : isMainnet ? formatAmountUSDShow(item?.currentTxPriceInUsd ?? 0) : ''}
       </Text>
     );
-  }, [isMainnet, item?.currentTxPriceInUsd, item?.nftInfo, item?.symbol]);
+  }, [isMainnet, item?.currentTxPriceInUsd, item?.nftInfo]);
 
   return (
     <Touchable style={[itemStyle.itemWrap, isLineShow && itemStyle.itemBorder]} onPress={() => onPress?.(item)}>
@@ -98,7 +94,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
                     8,
                   )}`}
                 </Text>
-                {item?.transactionType !== TransactionTypes.CROSS_CHAIN_TRANSFER && (
+                {item?.transactionType === TransactionTypes.CROSS_CHAIN_TRANSFER && (
                   <Text style={itemStyle.centerStatus}>Cross Chain Transfer</Text>
                 )}
               </>
@@ -147,7 +143,7 @@ const itemStyle = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: pTd(58),
+    height: pTd(60),
   },
   left: {
     marginRight: pTd(8),
@@ -158,8 +154,9 @@ const itemStyle = StyleSheet.create({
   },
 
   center: {
-    flex: 1,
+    width: pTd(160),
     marginRight: pTd(8),
+    justifyContent: 'center',
   },
   centerType: {
     color: defaultColors.font5,
@@ -170,12 +167,11 @@ const itemStyle = StyleSheet.create({
     color: defaultColors.font3,
     marginTop: StyleSheet.hairlineWidth,
     fontSize: pTd(10),
-    lineHeight: pTd(18),
+    lineHeight: pTd(16),
   },
-
   right: {
     display: 'flex',
-    width: pTd(139),
+    flex: 1,
     alignItems: 'flex-end',
     justifyContent: 'center',
   },
@@ -196,6 +192,6 @@ const itemStyle = StyleSheet.create({
     flex: 1,
   },
   resendContainer: {
-    marginBottom: pTd(8),
+    marginVertical: pTd(8),
   },
 });

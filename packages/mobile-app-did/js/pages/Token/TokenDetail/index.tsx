@@ -24,7 +24,7 @@ import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import { divDecimals, formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import fonts from 'assets/theme/fonts';
-import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { formatChainInfoToShow, sleep } from '@portkey-wallet/utils';
 import BuyButton from 'components/BuyButton';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
@@ -42,6 +42,9 @@ import { useTokenInfoFromStore } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { PAGE_SIZE_IN_ACCOUNT_TOKEN } from '@portkey-wallet/constants/constants-ca/assets';
 import ActivityItem from 'components/ActivityItem';
+import { FlatListFooterLoading } from 'components/FlatListFooterLoading';
+import { ListLoadingEnum } from 'constants/misc';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -50,7 +53,6 @@ interface RouterParams {
 const INIT_PAGE_INFO = {
   curPage: 0,
   total: 0,
-  isLoading: false,
 };
 
 const TokenDetail: React.FC = () => {
@@ -68,8 +70,6 @@ const TokenDetail: React.FC = () => {
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const { isRampShow } = useAppRampEntryShow();
   const { fetchAccountTokenInfoList } = useAccountTokenInfo();
-
-  const [reFreshing, setFreshing] = useState(false);
 
   const currentToken = useMemo(() => tokenInfo || currentTokenInfo, [currentTokenInfo, tokenInfo]);
 
@@ -97,19 +97,21 @@ const TokenDetail: React.FC = () => {
     ...INIT_PAGE_INFO,
   });
 
-  const getActivityList = useCallback(
+  const [isLoading, setIsLoading] = useState(ListLoadingEnum.hide);
+  const getActivityList = useLockCallback(
     async (isInit = false) => {
       const { data = [], maxResultCount = 10, skipCount = 0, totalRecordCount = 0 } = currentActivity || {};
       if (!isInit && data?.length >= totalRecordCount) return;
-      if (pageInfoRef.current.isLoading) return;
-      pageInfoRef.current.isLoading = true;
+
+      setIsLoading(isInit ? ListLoadingEnum.header : ListLoadingEnum.footer);
       const params: IActivitiesApiParams = {
         ...fixedParamObj,
         skipCount: isInit ? 0 : skipCount + maxResultCount,
         maxResultCount,
       };
       await dispatch(getActivityListAsync(params));
-      pageInfoRef.current.isLoading = false;
+      setIsLoading(ListLoadingEnum.hide);
+      if (!isInit) await sleep(500);
     },
     [currentActivity, dispatch, fixedParamObj],
   );
@@ -118,14 +120,17 @@ const TokenDetail: React.FC = () => {
     pageInfoRef.current = {
       ...INIT_PAGE_INFO,
     };
-    setFreshing(true);
     getTokenPrice(tokenInfo?.symbol);
     await getActivityList(true);
-    setFreshing(false);
   }, [getActivityList, getTokenPrice, tokenInfo?.symbol]);
 
-  useEffectOnce(() => {
+  const init = useCallback(async () => {
+    await sleep(100);
     getActivityList(true);
+  }, [getActivityList]);
+
+  useEffectOnce(() => {
+    init();
   });
 
   // refresh token List
@@ -271,18 +276,17 @@ const TokenDetail: React.FC = () => {
       </View>
 
       <FlashList
-        refreshing={reFreshing}
+        refreshing={isLoading === ListLoadingEnum.header}
         data={currentActivity?.data || []}
         keyExtractor={(_item, index) => `${index}`}
         ListEmptyComponent={<NoData noPic message="You have no transactions." />}
         renderItem={renderItem}
-        onRefresh={() => {
-          onRefreshList();
-        }}
+        onRefresh={onRefreshList}
         onEndReached={() => {
           getActivityList();
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
+        ListFooterComponent={<FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}
       />
     </PageContainer>
   );

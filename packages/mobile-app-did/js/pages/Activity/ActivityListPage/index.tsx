@@ -18,6 +18,9 @@ import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/u
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 import ActivityItem from 'components/ActivityItem';
 import { sleep } from '@portkey-wallet/utils';
+import { FlatListFooterLoading } from 'components/FlatListFooterLoading';
+import { ListLoadingEnum } from 'constants/misc';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 interface RouterParams {
   chainId?: string;
@@ -39,17 +42,14 @@ const ActivityListPage = () => {
 
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
 
-  const isLoadingRef = useRef(false);
-  const getActivityList = useCallback(
+  const [isLoading, setIsLoading] = useState(ListLoadingEnum.hide);
+  const getActivityList = useLockCallback(
     async (isInit: boolean) => {
-      await sleep(100);
       const { data = [], skipCount = 0, totalRecordCount = 0 } = currentActivity || {};
       const maxResultCount = 30;
       if (!isInit && data?.length >= totalRecordCount) return;
-      if (isLoadingRef.current) return;
-      isLoadingRef.current = true;
 
-      setRefreshing(true);
+      setIsLoading(isInit ? ListLoadingEnum.header : ListLoadingEnum.footer);
       const params: IActivitiesApiParams = {
         maxResultCount: maxResultCount,
         skipCount: isInit ? 0 : skipCount + maxResultCount,
@@ -60,15 +60,20 @@ const ActivityListPage = () => {
       };
 
       await dispatch(getActivityListAsync(params));
-      setRefreshing(false);
-      isLoadingRef.current = false;
+      setIsLoading(ListLoadingEnum.hide);
+      if (!isInit) await sleep(500);
     },
     [caAddressInfos, chainId, currentActivity, dispatch, symbol],
   );
 
-  useEffectOnce(() => {
+  const init = useCallback(async () => {
+    await sleep(100);
     getActivityList(true);
     getTokenPrice();
+  }, [getActivityList, getTokenPrice]);
+
+  useEffectOnce(() => {
+    init();
   });
 
   const renderItem = useCallback(({ item, index }: { item: ActivityItemType; index: number }) => {
@@ -83,8 +88,6 @@ const ActivityListPage = () => {
     );
   }, []);
 
-  const [refreshing, setRefreshing] = useState(false);
-
   return (
     <PageContainer
       titleDom={t('Activity')}
@@ -93,7 +96,7 @@ const ActivityListPage = () => {
       scrollViewProps={{ disabled: true }}>
       <FlatList
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
-        refreshing={refreshing}
+        refreshing={isLoading === ListLoadingEnum.header}
         data={currentActivity?.data || []}
         keyExtractor={(_item: ActivityItemType, index: number) => `${index}`}
         renderItem={renderItem}
@@ -103,6 +106,7 @@ const ActivityListPage = () => {
         maxToRenderPerBatch={10}
         initialNumToRender={20}
         ListEmptyComponent={<NoData message={t('You have no transactions.')} topDistance={pTd(160)} />}
+        ListFooterComponent={<FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}
       />
     </PageContainer>
   );

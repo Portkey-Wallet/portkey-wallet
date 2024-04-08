@@ -8,15 +8,25 @@ import { defaultColors } from 'assets/theme';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const animation = require('assets/lottieFiles/loading.json') as AnimationObject;
-const whiteColorFilters = animation.layers.map((layer: any) => {
-  return {
-    keypath: layer.nm,
-    color: defaultColors.bg2,
-  };
-});
+
+const COLOR_FILTER_MAP = {
+  white: animation.layers.map((layer: any) => {
+    return {
+      keypath: layer.nm,
+      color: defaultColors.bg2,
+    };
+  }),
+  grey: animation.layers.map((layer: any) => {
+    return {
+      keypath: layer.nm,
+      color: defaultColors.bg31,
+    };
+  }),
+  blue: undefined,
+};
 
 type LottieLoadingPropsType = {
-  color?: 'white' | 'blue';
+  color?: 'white' | 'blue' | 'grey';
   type?: 'custom' | 'innerPage';
   lottieStyle?: any;
   lottieWrapStyle?: ViewStyleType;
@@ -38,7 +48,7 @@ const LottieLoading = (props: LottieLoadingPropsType) => {
         autoPlay
         loop
         source={source}
-        colorFilters={color === 'white' ? whiteColorFilters : undefined}
+        colorFilters={COLOR_FILTER_MAP[color]}
         {...LottieProps}
       />
     );
@@ -49,7 +59,7 @@ const LottieLoading = (props: LottieLoadingPropsType) => {
         autoPlay
         loop
         source={source}
-        colorFilters={color === 'white' ? whiteColorFilters : undefined}
+        colorFilters={COLOR_FILTER_MAP[color]}
         style={[styles.loadingStyle, lottieStyle]}
         {...LottieProps}
       />

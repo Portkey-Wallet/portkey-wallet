@@ -17,7 +17,7 @@ import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { formatActivityTime, isSameDay } from '@portkey-wallet/utils/time';
 import { useTranslation } from 'react-i18next';
 import { intervalCrossChainTransfer } from 'utils/sandboxUtil/crossChainTransfer';
-import { useAppDispatch, useLoading } from 'store/Provider/hooks';
+import { useAppDispatch, useCommonState, useLoading } from 'store/Provider/hooks';
 import { removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
 import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { addressFormat } from '@portkey-wallet/utils';
@@ -48,6 +48,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   useFreshTokenPrice();
   const currentNetwork = useCurrentNetworkInfo();
   const nav = useNavigateState<ITransactionLocationState>();
+  const { isPrompt } = useCommonState();
   const navToDetail = useCallback(
     (item: ActivityItemType) => {
       nav('/transaction', { state: { item, chainId, previousPage: chainId ? '' : BalanceTab.ACTIVITY } });
@@ -138,7 +139,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         : addressFormat(toAddress, toChainId, currentNetwork.walletType);
       const showAddress = `${isReceived ? 'From' : 'To'} ${formatStr2EllipsisStr(transAddress, [7, 9])}`;
       return (
-        <div className="activity-item-title">
+        <div className={clsx('activity-item-title', isPrompt && 'prompt-activity-item-title')}>
           <div className="transaction-name">{transactionName}</div>
           <div className="transaction-address">{showAddress}</div>
           {TransactionTypes.CROSS_CHAIN_TRANSFER === transactionType && (
@@ -147,7 +148,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         </div>
       );
     },
-    [currentNetwork.walletType],
+    [currentNetwork.walletType, isPrompt],
   );
 
   const renderActivityAmount = useCallback(
@@ -155,7 +156,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
       const { isReceived, amount, decimals, symbol, currentTxPriceInUsd, nftInfo } = item;
       const sign = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
       return (
-        <div className="activity-item-amount">
+        <div className={clsx('activity-item-amount', isPrompt && 'prompt-activity-item-amount')}>
           <div className={clsx('transaction-amount', isReceived && 'received-amount')}>
             <span className="amount-show">{`${formatWithCommas({
               sign,

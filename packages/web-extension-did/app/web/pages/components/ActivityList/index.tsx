@@ -170,13 +170,13 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
             <div className="transaction-nft-symbol">{nftInfo.alias}</div>
           ) : (
             <div className={clsx('transaction-convert', !isMainnet && 'hidden-transaction-convert')}>
-              {formatAmountUSDShow(currentTxPriceInUsd ?? 0)}
+              {formatAmountUSDShow(currentTxPriceInUsd)}
             </div>
           )}
         </div>
       );
     },
-    [isMainnet],
+    [isMainnet, isPrompt],
   );
 
   const renderSystemActivityItem = useCallback((item: ActivityItemType) => {

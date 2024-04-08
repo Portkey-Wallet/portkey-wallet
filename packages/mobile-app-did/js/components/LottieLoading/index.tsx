@@ -19,7 +19,7 @@ const COLOR_FILTER_MAP = {
   grey: animation.layers.map((layer: any) => {
     return {
       keypath: layer.nm,
-      color: defaultColors.bg31,
+      color: defaultColors.bg30,
     };
   }),
   blue: undefined,

@@ -161,7 +161,7 @@ export default function CustomTokenList({
             <p className="quantity">
               {formatTokenAmountShowWithDecimals(token.tokenInfo?.balance, token.tokenInfo?.decimals)}
             </p>
-            <p className="convert">{isMainnet ? formatAmountUSDShow(token.tokenInfo?.balanceInUsd ?? 0) : ''}</p>
+            <p className="convert">{isMainnet && formatAmountUSDShow(token.tokenInfo?.balanceInUsd)}</p>
           </div>
         </div>
       );

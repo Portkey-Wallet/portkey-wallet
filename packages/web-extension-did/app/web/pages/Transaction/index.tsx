@@ -244,7 +244,7 @@ export default function Transaction() {
                     decimals: item.decimals || defaultToken.decimals,
                     digits: Number(item.decimals),
                   })} ${item.symbol ?? ''}`}</span>
-                  {isMainnet && <span className="right-usd">{formatAmountUSDShow(item?.feeInUsd ?? 0)}</span>}
+                  {isMainnet && <span className="right-usd">{formatAmountUSDShow(item?.feeInUsd)}</span>}
                 </div>
               );
             })}

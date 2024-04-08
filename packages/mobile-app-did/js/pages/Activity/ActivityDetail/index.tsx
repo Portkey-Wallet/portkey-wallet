@@ -176,7 +176,7 @@ const ActivityDetail = () => {
                   )} ${item.symbol}`}</TextM>
                   {isMainnet && (
                     <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>
-                      {formatAmountUSDShow(item?.feeInUsd)}
+                      {formatAmountUSDShow(item?.feeInUsd ?? 0)}
                     </TextS>
                   )}
                 </View>

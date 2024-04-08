@@ -81,7 +81,7 @@ export default function OfficialChatGroup() {
           </TextL>
         </View>
         <Touchable style={styles.chatButton} onPress={chatInOfficialGroup}>
-          <TextS style={[FontStyles.font11, styles.chatText]}>Chat</TextS>
+          <TextS style={[FontStyles.font2, styles.chatText]}>Chat</TextS>
         </Touchable>
       </View>
     </View>

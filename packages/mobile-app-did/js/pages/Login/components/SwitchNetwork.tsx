@@ -17,8 +17,8 @@ export default function SwitchNetwork() {
     <Touchable
       onPress={() => NetworkOverlay.showSwitchNetwork(route)}
       style={[GStyles.flexRowWrap, GStyles.itemCenter, styles.networkRow]}>
-      <TextM style={[FontStyles.font11, styles.networkTip]}>{currentNetworkInfo.name}</TextM>
-      <Svg size={pTd(16)} icon="down-arrow" color={FontStyles.font11.color} />
+      <TextM style={[FontStyles.font2, styles.networkTip]}>{currentNetworkInfo.name}</TextM>
+      <Svg size={pTd(16)} icon="down-arrow" color={FontStyles.font2.color} />
     </Touchable>
   );
 }

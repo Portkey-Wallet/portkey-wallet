@@ -10,7 +10,6 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import navigationService from 'utils/navigationService';
 import NoData from 'components/NoData';
 import { useLanguage } from 'i18n/hooks';
-import TransferItem from 'components/TransferList/components/TransferItem';
 import { FlashList } from '@shopify/flash-list';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
@@ -25,7 +24,7 @@ import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import fonts from 'assets/theme/fonts';
-import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { formatChainInfoToShow, sleep } from '@portkey-wallet/utils';
 import BuyButton from 'components/BuyButton';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import FaucetButton from 'components/FaucetButton';
@@ -41,6 +40,10 @@ import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ra
 import { useTokenInfoFromStore } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { PAGE_SIZE_IN_ACCOUNT_TOKEN } from '@portkey-wallet/constants/constants-ca/assets';
+import ActivityItem from 'components/ActivityItem';
+import { FlatListFooterLoading } from 'components/FlatListFooterLoading';
+import { ListLoadingEnum } from 'constants/misc';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useBalance } from '@portkey-wallet/hooks/hooks-ca/balances';
 
 interface RouterParams {
@@ -50,7 +53,6 @@ interface RouterParams {
 const INIT_PAGE_INFO = {
   curPage: 0,
   total: 0,
-  isLoading: false,
 };
 
 const TokenDetail: React.FC = () => {
@@ -68,17 +70,17 @@ const TokenDetail: React.FC = () => {
   const { isRampShow } = useAppRampEntryShow();
   const { fetchAccountTokenInfoList } = useAccountTokenInfo();
 
-  const [reFreshing, setFreshing] = useState(false);
-
   const balanceShow = useMemo(
     () => `${formatTokenAmountShowWithDecimals(currentTokenInfo?.balance || '0', currentTokenInfo?.decimals)}`,
     [currentTokenInfo?.balance, currentTokenInfo?.decimals],
   );
 
   const currentActivity = useMemo(
-    () => activity?.activityMap?.[getCurrentActivityMapKey(tokenInfo.chainId, tokenInfo.symbol)] ?? {},
+    () => activity?.activityMap?.[getCurrentActivityMapKey(tokenInfo.chainId, tokenInfo.symbol)],
     [activity?.activityMap, tokenInfo.chainId, tokenInfo.symbol],
   );
+  const currentActivityRef = useRef(currentActivity);
+  currentActivityRef.current = currentActivity;
 
   const fixedParamObj = useMemo(
     () => ({
@@ -92,19 +94,21 @@ const TokenDetail: React.FC = () => {
     ...INIT_PAGE_INFO,
   });
 
-  const getActivityList = useCallback(
+  const [isLoading, setIsLoading] = useState(ListLoadingEnum.hide);
+  const getActivityList = useLockCallback(
     async (isInit = false) => {
-      const { data, maxResultCount = 10, skipCount = 0, totalRecordCount = 0 } = currentActivity || {};
+      const { data = [], maxResultCount = 10, skipCount = 0, totalRecordCount = 0 } = currentActivity || {};
       if (!isInit && data?.length >= totalRecordCount) return;
-      if (pageInfoRef.current.isLoading) return;
-      pageInfoRef.current.isLoading = true;
+
+      setIsLoading(isInit ? ListLoadingEnum.header : ListLoadingEnum.footer);
       const params: IActivitiesApiParams = {
         ...fixedParamObj,
         skipCount: isInit ? 0 : skipCount + maxResultCount,
         maxResultCount,
       };
       await dispatch(getActivityListAsync(params));
-      pageInfoRef.current.isLoading = false;
+      setIsLoading(ListLoadingEnum.hide);
+      if (!isInit) await sleep(500);
     },
     [currentActivity, dispatch, fixedParamObj],
   );
@@ -113,15 +117,17 @@ const TokenDetail: React.FC = () => {
     pageInfoRef.current = {
       ...INIT_PAGE_INFO,
     };
-    setFreshing(true);
     getAndUpdateTargetBalance(tokenInfo.chainId, tokenInfo.symbol);
     await getActivityList(true);
-
-    setFreshing(false);
   }, [getActivityList, getAndUpdateTargetBalance, tokenInfo.chainId, tokenInfo.symbol]);
 
-  useEffectOnce(() => {
+  const init = useCallback(async () => {
+    await sleep(100);
     getActivityList(true);
+  }, [getActivityList]);
+
+  useEffectOnce(() => {
+    init();
   });
 
   // refresh token List
@@ -176,6 +182,18 @@ const TokenDetail: React.FC = () => {
       return styles.buttonWrapStyle1;
     }
   }, [buttonCount]);
+
+  const renderItem = useCallback(({ item, index }: { item: ActivityItemType; index: number }) => {
+    const preItem = currentActivityRef.current?.data[index - 1];
+    return (
+      <ActivityItem
+        preItem={preItem}
+        item={item}
+        index={index}
+        onPress={() => navigationService.navigate('ActivityDetail', item)}
+      />
+    );
+  }, []);
 
   return (
     <PageContainer
@@ -247,20 +265,17 @@ const TokenDetail: React.FC = () => {
       </View>
 
       <FlashList
-        refreshing={reFreshing}
+        refreshing={isLoading === ListLoadingEnum.header}
         data={currentActivity?.data || []}
         keyExtractor={(_item, index) => `${index}`}
         ListEmptyComponent={<NoData noPic message="You have no transactions." />}
-        renderItem={({ item }: { item: ActivityItemType }) => {
-          return <TransferItem item={item} onPress={() => navigationService.navigate('ActivityDetail', item)} />;
-        }}
-        onRefresh={() => {
-          onRefreshList();
-        }}
+        renderItem={renderItem}
+        onRefresh={onRefreshList}
         onEndReached={() => {
           getActivityList();
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
+        ListFooterComponent={<FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}
       />
     </PageContainer>
   );

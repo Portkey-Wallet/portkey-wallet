@@ -269,8 +269,8 @@ const ActivityDetail = () => {
             <Text style={[styles.tokenCount, styles.fontBold]}>
               {SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType as TransactionTypes) && amountShow}
             </Text>
-            {isMainnet && isTokenHasPrice && (
-              <Text style={styles.usdtCount}>{formatAmountUSDShow(activityItem?.currentTxPriceInUsd ?? 0)}</Text>
+            {isMainnet && (
+              <Text style={styles.usdtCount}>{formatAmountUSDShow(activityItem?.currentTxPriceInUsd)}</Text>
             )}
           </>
         ))}

@@ -22,12 +22,11 @@ import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { getActivityListAsync } from '@portkey-wallet/store/store-ca/activity/action';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
-import { divDecimals, formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
+import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import fonts from 'assets/theme/fonts';
 import { formatChainInfoToShow, sleep } from '@portkey-wallet/utils';
 import BuyButton from 'components/BuyButton';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import FaucetButton from 'components/FaucetButton';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useAppETransShow } from 'hooks/cms';
@@ -45,6 +44,7 @@ import ActivityItem from 'components/ActivityItem';
 import { FlatListFooterLoading } from 'components/FlatListFooterLoading';
 import { ListLoadingEnum } from 'constants/misc';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { useBalance } from '@portkey-wallet/hooks/hooks-ca/balances';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -58,6 +58,7 @@ const INIT_PAGE_INFO = {
 const TokenDetail: React.FC = () => {
   const { t } = useLanguage();
   const { tokenInfo } = useRouterParams<RouterParams>();
+  const { getAndUpdateTargetBalance } = useBalance();
   const { isETransDepositShow, isETransWithdrawShow } = useAppETransShow();
   const defaultToken = useDefaultToken();
   const currentTokenInfo = useTokenInfoFromStore(tokenInfo.symbol, tokenInfo.chainId);
@@ -66,16 +67,12 @@ const TokenDetail: React.FC = () => {
   const navigation = useNavigation();
   const dispatch = useAppCommonDispatch();
   const activity = useAppCASelector(state => state.activity);
-  const isTokenHasPrice = useIsTokenHasPrice(tokenInfo.symbol);
-  const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const { isRampShow } = useAppRampEntryShow();
   const { fetchAccountTokenInfoList } = useAccountTokenInfo();
 
-  const currentToken = useMemo(() => tokenInfo || currentTokenInfo, [currentTokenInfo, tokenInfo]);
-
   const balanceShow = useMemo(
-    () => `${formatTokenAmountShowWithDecimals(currentToken?.balance || '0', currentToken?.decimals)}`,
-    [currentToken?.balance, currentToken?.decimals],
+    () => `${formatTokenAmountShowWithDecimals(currentTokenInfo?.balance || '0', currentTokenInfo?.decimals)}`,
+    [currentTokenInfo?.balance, currentTokenInfo?.decimals],
   );
 
   const currentActivity = useMemo(
@@ -120,9 +117,9 @@ const TokenDetail: React.FC = () => {
     pageInfoRef.current = {
       ...INIT_PAGE_INFO,
     };
-    getTokenPrice(tokenInfo?.symbol);
+    getAndUpdateTargetBalance(tokenInfo.chainId, tokenInfo.symbol);
     await getActivityList(true);
-  }, [getActivityList, getTokenPrice, tokenInfo?.symbol]);
+  }, [getActivityList, getAndUpdateTargetBalance, tokenInfo.chainId, tokenInfo.symbol]);
 
   const init = useCallback(async () => {
     await sleep(100);
@@ -215,20 +212,12 @@ const TokenDetail: React.FC = () => {
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View style={styles.card}>
-        <Text style={styles.tokenBalance}>{`${balanceShow} ${currentToken?.symbol}`}</Text>
-        {isMainnet && isTokenHasPrice && (
-          <Text style={styles.dollarBalance}>
-            {formatAmountUSDShow(
-              divDecimals(currentToken?.balance, currentToken?.decimals).multipliedBy(
-                currentToken ? tokenPriceObject?.[currentToken?.symbol] : 0,
-              ),
-            )}
-          </Text>
-        )}
+        <Text style={styles.tokenBalance}>{`${balanceShow} ${currentTokenInfo?.symbol}`}</Text>
+        {isMainnet && <Text style={styles.dollarBalance}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</Text>}
         <View style={[styles.buttonGroupWrap, buttonGroupWrapStyle]}>
           {isBuyButtonShow && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
-          <SendButton themeType="innerPage" sentToken={currentToken} wrapStyle={buttonWrapStyle} />
-          <ReceiveButton currentTokenInfo={currentToken} themeType="innerPage" wrapStyle={buttonWrapStyle} />
+          <SendButton themeType="innerPage" sentToken={currentTokenInfo} wrapStyle={buttonWrapStyle} />
+          <ReceiveButton currentTokenInfo={currentTokenInfo} themeType="innerPage" wrapStyle={buttonWrapStyle} />
           {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}
           {isDepositShow && (
             <CommonToolButton

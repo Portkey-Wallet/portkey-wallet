@@ -65,7 +65,7 @@ export default function TokenList() {
               </div>
               <div className="amount flex-between">
                 <span>{transNetworkText(item.chainId, !isMainnet)}</span>
-                {isMainnet && <span className="convert">{formatAmountUSDShow(item.balanceInUsd ?? 0)}</span>}
+                {isMainnet && <span className="convert">{formatAmountUSDShow(item?.balanceInUsd)}</span>}
               </div>
             </div>
           </li>

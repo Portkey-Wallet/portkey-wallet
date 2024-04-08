@@ -110,6 +110,8 @@ export default class ServiceWorkerInstantiate {
         // reset lockout timer
         console.log(message, 'LocalStream.watch message');
         if (message.type === InternalMessageTypes.ACTIVE_LOCK_STATUS) return sendResponse(errorHandler(0));
+        // SET_BADGE
+        if (message.type === PortkeyMessageTypes.SET_BADGE) return this.badgeController.setBadge(message.payload);
         // process events
         if (SWEventController.check(message.type, message.payload?.data)) {
           const payload = message.payload;

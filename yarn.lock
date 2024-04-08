@@ -15412,12 +15412,12 @@ expo-splash-screen@^0.16.2:
     "@expo/configure-splash-screen" "^0.6.0"
     "@expo/prebuild-config" "~5.0.0"
 
-expo-task-manager@^11.7.2:
-  version "11.7.2"
-  resolved "https://registry.yarnpkg.com/expo-task-manager/-/expo-task-manager-11.7.2.tgz#db09ee5ed4adf1ea586c131a60196cb387a7eb4a"
-  integrity sha512-cmn7xg8+mGP7gX6deYZhvrCkKMkoBRJ+E4o5aL17Z/4ihXMfo/PFcQsrpuSYRLXzgidEw0kpppxhmYm21Jswwg==
+expo-task-manager@11.1.1:
+  version "11.1.1"
+  resolved "https://registry.yarnpkg.com/expo-task-manager/-/expo-task-manager-11.1.1.tgz#1a9adcf5439afafcd1a5beb5cfa427708a016c64"
+  integrity sha512-Ot4wq0fVd8+I1W7MsJz0rNdX0ma/zdnBvAppxDX1Oo0o0exo4qs1FmgrTnh3OBnn18aB4cX3wBJoXIatIgNMZQ==
   dependencies:
-    unimodules-app-loader "~4.5.0"
+    unimodules-app-loader "~4.1.0"
 
 expo-web-browser@^11.0.0, expo-web-browser@~11.0.0:
   version "11.0.0"
@@ -28432,10 +28432,10 @@ unicode-property-aliases-ecmascript@^2.0.0:
   resolved "https://registry.npmmirror.com/unicode-property-aliases-ecmascript/-/unicode-property-aliases-ecmascript-2.1.0.tgz#43d41e3be698bd493ef911077c9b131f827e8ccd"
   integrity sha512-6t3foTQI9qne+OZoVQB/8x8rk2k1eVy1gRXhV3oFQ5T6R1dqQ1xtin3XqSlx3+ATBkliTaR/hHyJBm+LVPNM8w==
 
-unimodules-app-loader@~4.5.0:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/unimodules-app-loader/-/unimodules-app-loader-4.5.0.tgz#5ec66088d740bd17dc5c94b88c91f21249d9f0ba"
-  integrity sha512-q/Xug4K6/20876Xac+tjOLOOAeHEu2zF66LNN/5c8EV4WPEe/+RYZEljN/woQt17KPIB2eyel9dc+d6qUMjUOg==
+unimodules-app-loader@~4.1.0:
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/unimodules-app-loader/-/unimodules-app-loader-4.1.2.tgz#e53e1dce78e4a51c46f9972d0a76a6bb3c6dca75"
+  integrity sha512-DLYUCjNpguFhNpxNsBf47NWZi2OjIfWCVQY4f+r4/bwIqFfR7qQd6lXwCFA8EhHS1ti87CBzjMSbIC5bB0J/0Q==
 
 union-value@^1.0.0:
   version "1.0.1"

@@ -14,7 +14,6 @@ import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
-import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 import ActivityItem from 'components/ActivityItem';
 import { sleep } from '@portkey-wallet/utils';
@@ -39,8 +38,6 @@ const ActivityListPage = () => {
   );
   const currentActivityRef = useRef(currentActivity);
   currentActivityRef.current = currentActivity;
-
-  const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
 
   const [isLoading, setIsLoading] = useState(ListLoadingEnum.hide);
   const getActivityList = useLockCallback(
@@ -69,8 +66,7 @@ const ActivityListPage = () => {
   const init = useCallback(async () => {
     await sleep(100);
     getActivityList(true);
-    getTokenPrice();
-  }, [getActivityList, getTokenPrice]);
+  }, [getActivityList]);
 
   useEffectOnce(() => {
     init();

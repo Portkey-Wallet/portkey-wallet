@@ -7,7 +7,7 @@ import React, { useCallback } from 'react';
 import ActionSheet from 'components/ActionSheet';
 import { CrossChainTransferParamsType, intervalCrossChainTransfer } from 'utils/transfer/crossChainTransfer';
 import Loading from 'components/Loading';
-import { useGetCAContract } from 'hooks/contract';
+import { useGetTokenContract } from 'hooks/contract';
 import { useAppDispatch } from 'store/hooks';
 import { removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
 import CommonToast from 'components/CommonToast';
@@ -21,7 +21,7 @@ interface IResendProps {
 
 export const Resend = ({ item, containerStyle, buttonStyle, titleStyle }: IResendProps) => {
   const activity = useAppCASelector(state => state.activity);
-  const getCAContract = useGetCAContract();
+  const getTokenContract = useGetTokenContract();
   const dispatch = useAppDispatch();
 
   const showRetry = useCallback((retryFunc: () => void) => {
@@ -43,8 +43,8 @@ export const Resend = ({ item, containerStyle, buttonStyle, titleStyle }: IResen
     async (managerTransferTxId: string, data: CrossChainTransferParamsType & { issueChainId: number }) => {
       Loading.show();
       try {
-        const caContract = await getCAContract(data.tokenInfo.chainId);
-        await intervalCrossChainTransfer(caContract, data);
+        const tokenContract = await getTokenContract(data.tokenInfo.chainId);
+        await intervalCrossChainTransfer(tokenContract, data);
         dispatch(removeFailedActivity(managerTransferTxId));
         CommonToast.success('success');
       } catch (error) {
@@ -54,7 +54,7 @@ export const Resend = ({ item, containerStyle, buttonStyle, titleStyle }: IResen
       }
       Loading.hide();
     },
-    [dispatch, getCAContract, showRetry],
+    [dispatch, getTokenContract, showRetry],
   );
 
   const onResend = useCallback(() => {

@@ -79,7 +79,7 @@ export const Resend = ({ item, containerStyle, buttonStyle, titleStyle }: IResen
 
 const itemStyle = StyleSheet.create({
   btnWrap: {
-    alignItems: 'flex-end',
+    marginLeft: pTd(40),
   },
   resendWrap: {
     height: pTd(24),

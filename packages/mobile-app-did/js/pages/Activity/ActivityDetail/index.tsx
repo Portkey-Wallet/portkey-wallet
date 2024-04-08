@@ -152,6 +152,8 @@ const ActivityDetail = () => {
   }, [CopyIconUI, activityItem, currentNetwork, t, transactionId]);
 
   const feeUI = useMemo(() => {
+    if (activityItem?.isReceived) return <></>;
+
     const transactionFees =
       activityItem?.transactionFees?.length === 0
         ? [{ fee: 0, symbol: defaultToken.symbol, feeInUsd: 0 }]
@@ -186,7 +188,14 @@ const ActivityDetail = () => {
         </View>
       </View>
     );
-  }, [activityItem?.isDelegated, activityItem?.transactionFees, defaultToken.symbol, isMainnet, t]);
+  }, [
+    activityItem?.isDelegated,
+    activityItem?.isReceived,
+    activityItem?.transactionFees,
+    defaultToken.symbol,
+    isMainnet,
+    t,
+  ]);
 
   const amountShow = useMemo(() => {
     return `${activityItem?.isReceived ? '+' : '-'} ${divDecimalsStr(activityItem?.amount, activityItem?.decimals)} ${

@@ -1,5 +1,5 @@
 import { ChainId } from '@portkey-wallet/types';
-import { addressFormat, formatChainInfoToShow, getExploreLink } from '@portkey-wallet/utils';
+import { addressFormat, formatChainInfoToShow, getExploreLink, sleep } from '@portkey-wallet/utils';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
@@ -26,6 +26,9 @@ import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca
 import CommonAvatar from 'components/CommonAvatar';
 import Touchable from 'components/Touchable';
 import ActivityItem from 'components/ActivityItem';
+import { ListLoadingEnum } from 'constants/misc';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { FlatListFooterLoading } from 'components/FlatListFooterLoading';
 
 interface ParamsType {
   fromChainId: ChainId;
@@ -49,7 +52,6 @@ const ContactActivity: React.FC = () => {
   const [addressName, setAddressName] = useState<string | undefined>(contactName);
   const [addressAvatar, setAddressAvatar] = useState<string | undefined>(avatar);
 
-  const [isFetching, setIsFetching] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   const [activityList, setActivityList] = useState<ActivityItemType[]>([]);
   const activityListRef = useRef(activityList);
@@ -73,15 +75,15 @@ const ContactActivity: React.FC = () => {
     [activityList.length, address, caAddressInfos, chainId, fromChainId],
   );
 
-  const fetchActivityList = useCallback(
+  const [isLoading, setIsLoading] = useState(ListLoadingEnum.hide);
+  const fetchActivityList = useLockCallback(
     async (skipActivityNumber = 0) => {
-      if (isFetching) return;
       const newParams = {
         ...params,
         skipCount: skipActivityNumber,
       };
 
-      setIsFetching(true);
+      setIsLoading(skipActivityNumber === 0 ? ListLoadingEnum.header : ListLoadingEnum.footer);
 
       const result = await request.activity.activityListWithAddress({ params: newParams });
 
@@ -93,9 +95,10 @@ const ContactActivity: React.FC = () => {
       }
 
       setTotalCount(result.totalRecordCount);
-      setIsFetching(false);
+      setIsLoading(ListLoadingEnum.hide);
+      if (skipActivityNumber !== 0) await sleep(500);
     },
-    [activityList, isFetching, params],
+    [activityList, params],
   );
 
   const copyAddress = useCallback(
@@ -146,7 +149,8 @@ const ContactActivity: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const init = useCallback(() => {
+  const init = useCallback(async () => {
+    await sleep(100);
     fetchActivityList(0);
   }, [fetchActivityList]);
 
@@ -199,17 +203,17 @@ const ContactActivity: React.FC = () => {
 
       <FlatList
         style={styles.flatListWrap}
-        refreshing={false}
+        refreshing={isLoading === ListLoadingEnum.header}
         onRefresh={() => init()}
         data={activityList ?? []}
         renderItem={renderItem}
         onEndReached={() => {
-          if (isFetching) return;
           if (activityList?.length >= totalCount) return;
           fetchActivityList(activityList?.length);
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListEmptyComponent={<NoData noPic message="" />}
+        ListFooterComponent={<FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}
       />
     </PageContainer>
   );

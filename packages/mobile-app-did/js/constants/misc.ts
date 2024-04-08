@@ -54,3 +54,9 @@ export const LOGIN_TYPE_LIST: T_LOGIN_TYPE_LIST_ITEM[] = [
     icon: LOGIN_GUARDIAN_TYPE_ICON[LoginType.Facebook],
   },
 ];
+
+export enum ListLoadingEnum {
+  hide = 0,
+  header,
+  footer,
+}

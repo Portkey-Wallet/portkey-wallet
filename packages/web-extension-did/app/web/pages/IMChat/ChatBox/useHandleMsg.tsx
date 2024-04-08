@@ -32,7 +32,11 @@ export const useHandle = ({
     async (item: MessageContentType) => {
       const msg = list.find((temp) => temp.id === item.id);
       try {
-        await deleteMessage(msg as Message, isAdmin);
+        if (item.position === 'right') {
+          await deleteMessage(msg as Message);
+        } else {
+          await deleteMessage(msg as Message, isAdmin);
+        }
         await sleep(200);
         refreshAllPinList?.();
       } catch (e) {

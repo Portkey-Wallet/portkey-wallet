@@ -150,7 +150,8 @@ export const getCaHolderInfoAsync = createAsyncThunk<
 
 export const resetCurrentUserInfoAction = createAction<NetworkType>('wallet/resetCurrentUserInfoAction');
 
-export const setUserInfoAction =
-  createAction<RequireAtLeastOne<{ nickName: string; avatar: string; networkType: NetworkType }>>('wallet/setUserInfo');
+export const setNickNameAndAvatarAction = createAction<
+  RequireAtLeastOne<{ nickName: string; avatar: string; networkType: NetworkType }>
+>('wallet/setUserNameAndAvatarAction');
 
 export const setOriginChainId = createAction<ChainId>('wallet/setOriginChainId');

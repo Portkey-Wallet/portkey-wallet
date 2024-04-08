@@ -130,7 +130,7 @@ const itemStyle = StyleSheet.create({
   },
   time: {
     fontSize: pTd(12),
-    color: defaultColors.font16,
+    color: defaultColors.font11,
     lineHeight: pTd(18),
     marginTop: pTd(16),
     marginBottom: pTd(4),
@@ -164,7 +164,7 @@ const itemStyle = StyleSheet.create({
     lineHeight: pTd(24),
   },
   centerStatus: {
-    color: defaultColors.font16,
+    color: defaultColors.font11,
     marginTop: StyleSheet.hairlineWidth,
     fontSize: pTd(10),
     lineHeight: pTd(16),
@@ -185,7 +185,7 @@ const itemStyle = StyleSheet.create({
     textAlign: 'right',
     fontSize: pTd(12),
     lineHeight: pTd(18),
-    color: defaultColors.font16,
+    color: defaultColors.font11,
     height: pTd(16),
   },
   tokenName: {

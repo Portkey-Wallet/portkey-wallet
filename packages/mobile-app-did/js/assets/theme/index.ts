@@ -48,12 +48,11 @@ export const defaultColors = {
   font8: '#252525',
   font9: '#000000',
   font10: '#00B75F',
-  font11: '#ffffff',
+  font11: '#979AA1',
   font12: '#B34B4B',
   font13: '#EA4F45',
   font14: '#FFE4C5',
   font15: '#C6A05A',
-  font16: '#979AA1',
 
   icon1: '#515A62',
   icon2: '#ffffff',

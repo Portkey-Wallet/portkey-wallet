@@ -47,7 +47,10 @@ export function useGetCurrentCAContract(_chainId?: ChainId) {
   const pin = usePin();
   const { AESEncryptPrivateKey, address } = useCurrentWalletInfo();
   const [{ caContracts }, dispatch] = useInterface();
-  const key = useMemo(() => address + '_' + chainInfo?.caContractAddress, [address, chainInfo?.caContractAddress]);
+  const key = useMemo(
+    () => `${address}_${chainInfo?.caContractAddress}_${chainInfo?.chainId}`,
+    [address, chainInfo?.caContractAddress, chainInfo?.chainId],
+  );
   const caContract = useMemo(() => {
     return caContracts?.[chainId]?.[key];
   }, [caContracts, chainId, key]);
@@ -82,7 +85,7 @@ export function useGetCAContract() {
     async (chainId: ChainId) => {
       const chainInfo = getChain(chainId);
       if (!chainInfo) throw Error('Could not find chain information');
-      const key = address + '_' + chainInfo?.caContractAddress;
+      const key = `${address}_${chainInfo.caContractAddress}_${chainInfo.chainId}`;
       const caContract = caContracts?.[chainId]?.[key];
       if (caContract) return caContract;
 
@@ -114,7 +117,8 @@ export function useGetTokenContract() {
     async (chainId: ChainId) => {
       const chainInfo = getChain(chainId);
       if (!chainInfo) throw Error('Could not find chain information');
-      const key = address + '_' + chainInfo.defaultToken.address;
+      const key = `${address}_${chainInfo.defaultToken.address}_${chainInfo.chainId}`;
+
       const tokenContract = tokenContracts?.[chainId]?.[key];
       if (tokenContract) return tokenContract;
 

@@ -7,7 +7,6 @@ import Collapsible from '@portkey-wallet/rn-components/components/Collapsible';
 import CommonAvatar from '@portkey-wallet/rn-components/components/CommonAvatar';
 import { TextL, TextM, TextS } from '@portkey-wallet/rn-components/components/CommonText';
 import CommonSvg from '@portkey-wallet/rn-components/components/Svg';
-import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { useCurrentNetworkType } from 'model/hooks/network';
 import { RecentContactItemType } from 'network/dto/query';
@@ -15,6 +14,7 @@ import { addressFormat, formatStr2EllipsisStr, formatChainInfoToShow } from '@po
 import { useState, memo } from 'react';
 import { TouchableOpacity, View, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 
 export interface ItemType {
   fromChainId?: ChainId;

@@ -60,19 +60,26 @@
           font-weight: 500;
           line-height: 24px;
         }
-        .amount {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
+        .token-amount {
           gap: 4px;
           color: @font-11;
           line-height: 22px;
           font-size: 18px;
           margin-bottom: 15px;
+          .token-amount-text {
+            gap: 4px;
+            .token-amount-number {
+              flex: 1;
+              word-break: break-all;
+              text-align: center
+            }
+          }
           .usd {
             line-height: 16px;
             font-size: 12px;
             color: @font-13;
+            word-break: break-all;
+            text-align: center;
           }
         }
         .no-amount {
@@ -90,17 +97,24 @@
           border-bottom: 1px solid @border-2;
           margin-bottom: 15px;
           .assets {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            position: relative;
             width: 64px;
             height: 64px;
             border-radius: 6px;
             background: @bg-15;
-            left: 48px;
             font-size: 24px;
             color: @font-12;
             overflow: hidden;
+            .tokentagmedium-icon,
+            .tokentagmedium-icon svg,
+            .nfttagmedium-icon,
+            .nfttagmedium-icon svg{
+              position: absolute;
+              width: 32px;
+              height: 16px;
+              top: 0;
+              right: 4px;
+            }
             .assets-img {
               width: 100%;
               height: 100%;
@@ -116,8 +130,6 @@
             padding: 5px 0;
             width: 100%;
             .index {
-              display: flex;
-              gap: 4px;
               line-height: 22px;
               font-size: 16px;
               font-weight: 500;
@@ -125,6 +137,7 @@
               word-wrap: break-word;
               word-break: break-all;
               .token-id {
+                margin-left: 4px;
                 font-weight: 400;
               }
             }
@@ -202,6 +215,7 @@
             transform: translateX(-16px) translateY(-16px);
             width: 32px;
             height: 32px;
+            /* stylelint-disable-next-line no-descending-specificity */
             svg {
               width: 32px;
               height: 32px;
@@ -236,13 +250,16 @@
               font-weight: 500;
               .right-item {
                 margin-bottom: 8px;
-              }
-              .right-usd {
-                display: block;
-                text-align: right;
-                color: @font-13;
-                font-size: 12px;
-                font-weight: 400;
+                span {
+                  text-align: right;
+                  flex-wrap: wrap;
+                  word-break: break-all;
+                }
+                .right-usd {
+                  color: @font-13;
+                  font-size: 12px;
+                  font-weight: 400;
+                }
               }
             }
             .tx-id {

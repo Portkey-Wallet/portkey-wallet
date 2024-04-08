@@ -1,10 +1,9 @@
 import { ZERO } from '@portkey-wallet/constants/misc';
 import clsx from 'clsx';
 import { useMemo } from 'react';
-import { useWalletInfo } from 'store/Provider/hooks';
 // import { useTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import './index.less';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { getEntireDIDAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
@@ -13,19 +12,11 @@ import { chainShowText } from '@portkey-wallet/utils';
 import { useAmountInUsdShow, useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { getSeedTypeTag } from 'utils/assets';
+import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
+import CustomSvg from 'components/CustomSvg';
 
-export default function SendPreview({
-  amount,
-  symbol,
-  alias,
-  toAccount,
-  transactionFee,
-  type,
-  imageUrl,
-  chainId,
-  isCross,
-  tokenId,
-}: {
+export interface ISendPreviewProps {
   amount: string;
   symbol: string;
   alias: string;
@@ -36,14 +27,22 @@ export default function SendPreview({
   chainId: ChainId;
   isCross: boolean;
   tokenId: string;
-}) {
-  const { userInfo } = useWalletInfo();
+  isSeed?: boolean;
+  seedType?: SeedTypeEnum;
+  decimals?: number;
+}
+
+export default function SendPreview(props: ISendPreviewProps) {
+  const userInfo = useCurrentUserInfo();
+  const { amount, symbol, alias, toAccount, transactionFee, type, imageUrl, chainId, isCross, tokenId, decimals } =
+    props;
   const wallet = useCurrentWalletInfo();
   const isMainnet = useIsMainnet();
   const amountInUsdShow = useAmountInUsdShow();
   useFreshTokenPrice();
   const { crossChain: crossChainFee } = useGetTxFee(chainId);
   const defaultToken = useDefaultToken(chainId);
+  const seedTypeTag = useMemo(() => getSeedTypeTag(props), [props]);
 
   const toChain = useMemo(() => {
     const arr = toAccount.address.split('_');
@@ -81,20 +80,23 @@ export default function SendPreview({
       {type !== 'nft' ? (
         <div className="amount-preview">
           <p className="amount">
-            -{formatAmountShow(amount)} {symbol}
+            -{formatAmountShow(amount, decimals)} {symbol}
           </p>
           <p className="convert">{isMainnet && amountInUsdShow(amount, 0, symbol)}</p>
         </div>
       ) : (
         <div className="amount-preview nft">
-          <div className="avatar">{imageUrl ? <img src={imageUrl} /> : <p>{symbol?.slice(0, 1)}</p>}</div>
+          <div className="avatar flex-center">
+            {seedTypeTag && <CustomSvg type={seedTypeTag} />}
+            {imageUrl ? <img src={imageUrl} /> : <p>{symbol?.slice(0, 1)}</p>}
+          </div>
           <div className="info">
-            <p className="index flex">
+            <div className="index flex">
               <p className="alias">{alias}</p>
               <p className="token-id">{`#${tokenId}`}</p>
-            </p>
+            </div>
             <p className="quantity">
-              Amount: <span>{formatAmountShow(amount)}</span>
+              Amount: <span>{formatAmountShow(amount, decimals)}</span>
             </p>
           </div>
         </div>

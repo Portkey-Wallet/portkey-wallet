@@ -5,7 +5,6 @@ import useUpdateRedux from './useUpdateRedux';
 import { useChainListFetch } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCaInfoOnChain } from 'hooks/useCaInfoOnChain';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useRefreshTokenConfig } from '@portkey-wallet/hooks/hooks-ca/api';
 import { request } from '@portkey-wallet/api/api-did';
 import useLocking from 'hooks/useLocking';
 import { useActiveLockStatus } from 'hooks/useActiveLockStatus';
@@ -25,9 +24,11 @@ import initIm from 'hooks/im';
 import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useExtensionEntrance } from 'hooks/cms';
 import { useEffectOnce } from '@portkey-wallet/hooks';
-import { initConfig, initDidReactSDKToken, initRequest } from './initConfig';
+import { initConfig, initRequest } from './initConfig';
 import useFCM from 'hooks/useFCM';
-import { getPin } from 'utils/getSeed';
+import { useSetTokenConfig } from 'hooks/useSetTokenConfig';
+import { useInitLoginModeList } from 'hooks/loginModal';
+import { useUserInfo } from './hooks';
 
 keepAliveOnPages({});
 request.setExceptionManager(exceptionManager);
@@ -36,8 +37,10 @@ export default function Updater() {
   const onLocking = useLocking();
   const { pathname } = useLocation();
   const checkManagerOnLogout = useCheckManagerOnLogout();
-
+  const setTokenConfig = useSetTokenConfig();
   const isMainnet = useIsMainnet();
+  const initLoginModeList = useInitLoginModeList();
+  const { passwordSeed } = useUserInfo();
 
   const { apiUrl, imApiUrl, imWsUrl, imS3Bucket } = useCurrentNetworkInfo();
   useMemo(async () => {
@@ -59,19 +62,14 @@ export default function Updater() {
       key: s3_key || '',
     });
   }, [imS3Bucket, isMainnet]);
-
+  useEffect(() => {
+    setTokenConfig(passwordSeed);
+  }, [passwordSeed, setTokenConfig]);
   initIm();
   useVerifierList();
   useUpdateRedux();
   useLocationChange();
   useChainListFetch();
-
-  const refreshToken = useRefreshTokenConfig();
-  useMemo(async () => {
-    const pin = await getPin();
-    const token = await refreshToken(pin);
-    initDidReactSDKToken(token);
-  }, [refreshToken]);
 
   const checkUpdate = useCheckUpdate();
   useFCM();
@@ -104,6 +102,7 @@ export default function Updater() {
   useEffectOnce(() => {
     initConfig();
     initRequest();
+    initLoginModeList();
   });
   return null;
 }

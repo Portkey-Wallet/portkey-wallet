@@ -1,9 +1,9 @@
+import React, { memo } from 'react';
 import { defaultColors } from 'assets/theme';
 import { TextL, TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import CommonSvg, { IconName } from '@portkey-wallet/rn-components/components/Svg';
 import SvgUri from '@portkey-wallet/rn-components/components/Svg/SvgUri';
 
-import React, { memo } from 'react';
 import { TouchableOpacity, StyleSheet, StyleProp, ViewStyle, TextProps, View } from 'react-native';
 import { pTd } from 'utils/unit';
 

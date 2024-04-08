@@ -31,6 +31,11 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
   const currentNetwork = useCurrentNetworkType();
   const commonInfo = useCommonNetworkInfo(item.chainId);
 
+  const nftAliasAndId = useMemo(
+    () => `${item?.nftInfo?.alias} #${item?.nftInfo?.tokenId}`,
+    [item?.nftInfo?.alias, item?.nftInfo?.tokenId],
+  );
+
   if (item.tokenInfo)
     return (
       <TokenListItem
@@ -41,9 +46,6 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
     );
 
   if (item.nftInfo) {
-    const {
-      nftInfo: { tokenId },
-    } = item;
     return (
       <TouchableOpacity style={itemStyle.wrap} onPress={() => onPress?.(item)}>
         {item.nftInfo.imageUrl ? (
@@ -63,20 +65,16 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
           </View>
 
           <View style={itemStyle.balanceWrap}>
-            <TextL style={[itemStyle.token, FontStyles.font5]}>{item?.nftInfo?.balance}</TextL>
+            <TextL style={[itemStyle.token, FontStyles.font5]}>
+              {formatTokenAmountShowWithDecimals(item?.nftInfo?.balance, item.nftInfo.decimals)}
+            </TextL>
             <TextS style={itemStyle.dollar} />
           </View>
         </View>
-      </TouchableOpacity>
+      </Touchable>
     );
   }
   return null;
-};
-const MAX_RESULT_COUNT = 10;
-const INIT_PAGE_INFO = {
-  curPage: 0,
-  total: 0,
-  isLoading: false,
 };
 
 const AssetList = ({ toAddress }: { toAddress: string }) => {
@@ -93,11 +91,20 @@ const AssetList = ({ toAddress }: { toAddress: string }) => {
 
   const { navigateTo } = useBaseContainer();
 
-  const getList = useCallback(
-    async (_keyword = '', isInit = false) => {
-      if (!isInit && listShow.length > 0 && listShow.length >= pageInfoRef.current.total) return;
-      if (pageInfoRef.current.isLoading) return;
-      pageInfoRef.current.isLoading = true;
+  const assetListShow = useMemo(() => {
+    if (debounceKeyword) {
+      return filterList(filteredListShow);
+    } else {
+      return filterList(accountAssetsList);
+    }
+  }, [accountAssetsList, debounceKeyword, filterList, filteredListShow]);
+
+  const getAssetsList = useLockCallback(
+    async (isInit: boolean) => {
+      if (debounceKeyword.trim()) return;
+
+      if (totalRecordCount && accountAssetsList.length >= totalRecordCount && !isInit) return;
+
       try {
         const { multiCaAddresses } = await getUnlockedWallet({ getMultiCaAddresses: true });
         const response = await NetworkController.searchUserAssets({
@@ -125,29 +132,35 @@ const AssetList = ({ toAddress }: { toAddress: string }) => {
       } catch (err) {
         console.log('fetchAccountAssetsByKeywords err:', err);
       }
-      pageInfoRef.current.isLoading = false;
     },
     [listShow.length],
   );
 
-  const onKeywordChange = useCallback(() => {
-    pageInfoRef.current = {
-      ...INIT_PAGE_INFO,
-    };
-    getList(debounceKeyword, true);
-  }, [getList, debounceKeyword]);
+  const getFilteredAssetsList = useLockCallback(async () => {
+    if (!debounceKeyword.trim()) return;
+
+    try {
+      const response = await fetchAssetList({
+        caAddressInfos,
+        maxResultCount: PAGE_SIZE_DEFAULT,
+        skipCount: 0,
+        keyword: debounceKeyword,
+      });
+      setFilteredListShow(response.data);
+    } catch (err) {
+      console.log('fetchAccountAssetsByKeywords err:', err);
+    }
+  }, [caAddressInfos, debounceKeyword]);
 
   useEffect(() => {
-    onKeywordChange();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debounceKeyword]);
+    getFilteredAssetsList();
+  }, [getFilteredAssetsList]);
 
   const renderItem = useCallback(
     ({ item }: { item: IAssetItemType }) => {
       return (
         <AssetItem
           symbol={item.symbol || ''}
-          // icon={'aelf-avatar'}
           item={item}
           onPress={() => {
             OverlayModal.hide();
@@ -179,6 +192,7 @@ const AssetList = ({ toAddress }: { toAddress: string }) => {
       <NoData noPic message={t('There are currently no assets to send.')} />
     );
   }, [debounceKeyword, t]);
+
   return (
     <ModalBody modalBodyType="bottom" title={t('Select Assets')} style={gStyles.overlayStyle}>
       {/* no assets in this account  */}
@@ -212,9 +226,7 @@ const AssetList = ({ toAddress }: { toAddress: string }) => {
         keyExtractor={(_item, index) => `${index}`}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListEmptyComponent={noData}
-        onEndReached={() => {
-          getList();
-        }}
+        onEndReached={() => getAssetsList()}
       />
     </ModalBody>
   );
@@ -268,8 +280,6 @@ const itemStyle = StyleSheet.create({
   },
   left: {
     marginLeft: pTd(16),
-    width: pTd(48),
-    height: pTd(48),
     borderRadius: pTd(6),
     overflow: 'hidden',
   },
@@ -312,5 +322,8 @@ const itemStyle = StyleSheet.create({
   },
   nftItemInfo: {
     marginTop: pTd(2),
+  },
+  font14: {
+    fontSize: pTd(14),
   },
 });

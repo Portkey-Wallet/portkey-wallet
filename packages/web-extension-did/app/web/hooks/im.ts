@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { useHideChannel, useInitIM, useJoinGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
-import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getWallet } from '@portkey-wallet/utils/aelf';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import im, { ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
@@ -8,7 +8,7 @@ import { LinkPortkeyType } from 'types/im';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { parseLinkPortkeyUrl } from 'utils/imChat';
 import { useNavigate } from 'react-router';
-import { useLoading, useWalletInfo } from 'store/Provider/hooks';
+import { useLoading } from 'store/Provider/hooks';
 import { IChatItemProps } from '@portkey-wallet/im-ui-web';
 import CustomModal from 'pages/components/CustomModal';
 import WarnTip from 'pages/IMChat/components/WarnTip';
@@ -24,8 +24,8 @@ export default function useInit() {
   const { walletInfo } = useCurrentWallet();
   const init = useCallback(async () => {
     const { privateKey } = await getSeed();
-
-    const account = getWallet(privateKey || '');
+    if (!privateKey) return;
+    const account = getWallet(privateKey);
     if (!account || !walletInfo.caHash) return;
 
     try {
@@ -75,7 +75,7 @@ export interface IClickChatUrlProps {
 
 export function useClickChatUrl({ fromChannelUuid = '', isGroup = false }: IClickUrlProps) {
   const isShowChat = useIsChatShow();
-  const { userId: myPortkeyId } = useWalletInfo();
+  const { userId: myPortkeyId } = useCurrentUserInfo();
   const navigate = useNavigateState<TViewContactLocationState | TWalletNameLocationState>();
   const joinGroupChannel = useJoinGroupChannel();
   const fromType = useMemo(() => (isGroup ? 'chat-box-group' : 'chat-box'), [isGroup]);

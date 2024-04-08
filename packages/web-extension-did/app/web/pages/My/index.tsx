@@ -1,12 +1,12 @@
 import { Button } from 'antd';
-import { useMemo, useCallback } from 'react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import MenuItem from 'components/MenuItem';
 import CustomSvg from 'components/CustomSvg';
 import BackHeader from 'components/BackHeader';
 import PortKeyHeader from 'pages/components/PortKeyHeader';
-import { useLockWallet } from 'utils/lib/serviceWorkerAction';
+import { lockWallet } from 'utils/lib/serviceWorkerAction';
 import { IconType } from 'types/icon';
 import { useCommonState } from 'store/Provider/hooks';
 import './index.less';
@@ -27,7 +27,6 @@ interface MenuItemInfo {
 export default function My() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const lockWallet = useLockWallet();
   const { isPrompt } = useCommonState();
   const isImputation = useIsImputation();
   const { viewReferralStatus } = useReferral();
@@ -63,11 +62,6 @@ export default function My() {
     [],
   );
 
-  const handleLock = useCallback(() => {
-    lockWallet();
-    navigate('/unlock');
-  }, [lockWallet, navigate]);
-
   const handleExpandView = () => {
     InternalMessage.payload(PortkeyMessageTypes.SETTING).send();
   };
@@ -94,7 +88,7 @@ export default function My() {
         leftCallBack={() => {
           navigate('/');
         }}
-        rightElement={<Button onClick={handleLock}>{t('Lock')}</Button>}
+        rightElement={<Button onClick={lockWallet}>{t('Lock')}</Button>}
       />
       <div className="flex my-content">
         <div className="menu-list">

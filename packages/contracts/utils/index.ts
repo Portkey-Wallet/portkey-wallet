@@ -44,6 +44,16 @@ class TXError extends Error {
     this.transactionId = id;
   }
 }
+
+export function handleContractErrorMessage(error?: any) {
+  if (typeof error === 'string') return error;
+  if (error?.message) return error.message;
+  if (error.Error) {
+    return error.Error.Details || error.Error.Message || error.Error;
+  }
+  return `Transaction: ${error.Status}`;
+}
+
 export async function getTxResult(
   instance: any,
   TransactionId: string,
@@ -51,13 +61,22 @@ export async function getTxResult(
   notExistedReGetCount = 0,
 ): Promise<any> {
   const txFun = instance.chain.getTxResult;
-  const txResult = await txFun(TransactionId);
-  if (txResult.error && txResult.errorMessage) {
-    throw Error(txResult.errorMessage.message || txResult.errorMessage.Message);
+  let txResult;
+  try {
+    txResult = await txFun(TransactionId);
+  } catch (error) {
+    throw new TXError(handleContractErrorMessage(error), TransactionId);
   }
+
+  if (txResult?.error && txResult?.errorMessage) {
+    throw new TXError(txResult.errorMessage.message || txResult.errorMessage.Message, TransactionId);
+  }
+
   const result = txResult?.result || txResult;
-  if (!result) throw Error('Can not get transaction result.');
+  if (!result) throw new TXError('Can not get transaction result.', TransactionId);
+
   const lowerCaseStatus = result.Status.toLowerCase();
+
   if (lowerCaseStatus === 'notexisted') {
     if (notExistedReGetCount > 5) throw new TXError(result.Error || `Transaction: ${result.Status}`, TransactionId);
     await sleep(1000);

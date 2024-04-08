@@ -1,10 +1,11 @@
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { fetchTokensPriceAsync } from '@portkey-wallet/store/store-ca/assets/slice';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
-import { useMemo, useCallback, useEffect } from 'react';
+import { divDecimals, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
+import { useCallback, useEffect, useRef } from 'react';
 import { useAppCASelector, useAppCommonDispatch } from '../index';
 import { useIsMainnet } from './network';
 import { useDefaultToken } from './chainList';
+import { useSymbolList } from './useToken';
 
 export function useDefaultTokenPrice() {
   const defaultToken = useDefaultToken();
@@ -19,17 +20,17 @@ export function useGetCurrentAccountTokenPrice(): [
 ] {
   const {
     tokenPrices: { tokenPriceObject },
-    accountToken,
   } = useAppCASelector(state => state.assets);
   const dispatch = useAppCommonDispatch();
+  const symbols = useSymbolList();
 
-  const symbols = useMemo(() => {
-    return Array.from(new Set(accountToken?.accountTokenList?.map(item => item.symbol)));
-  }, [accountToken.accountTokenList]);
+  const symbolsRef = useRef<string[]>([]);
 
   const getTokenPrice = useCallback(
     (symbol?: string) => {
       if (symbols.length === 0) return;
+      if (symbolsRef.current.toString() === symbols.toString()) return;
+      symbolsRef.current = symbols;
       dispatch(fetchTokensPriceAsync({ symbols: symbol ? [symbol] : symbols }));
     },
     [dispatch, symbols],
@@ -46,13 +47,9 @@ export function useGetCurrentAccountTokenPrice(): [
 }
 
 export function useFreshTokenPrice() {
-  const { accountToken } = useAppCASelector(state => state.assets);
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const isMainnet = useIsMainnet();
-
-  const symbols = useMemo(() => {
-    return Array.from(new Set(accountToken?.accountTokenList?.map(item => item.symbol)));
-  }, [accountToken.accountTokenList]);
+  const symbols = useSymbolList();
 
   useEffect(() => {
     if (isMainnet) {
@@ -68,7 +65,7 @@ export function useAmountInUsdShow() {
     (balance: string | number, decimals: number | string, symbol: string) =>
       tokenPriceObject[symbol] === 0
         ? ''
-        : `$ ${formatAmountShow(divDecimals(balance, decimals).times(tokenPriceObject[symbol]), 2)}`,
+        : formatAmountUSDShow(divDecimals(balance, decimals).times(tokenPriceObject[symbol])),
     [tokenPriceObject],
   );
 }

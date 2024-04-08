@@ -1,8 +1,7 @@
 import { useCurrentNetwork } from '../network';
 import { useMemo } from 'react';
 import { useAppCASelector } from '.';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
-import { ZERO } from '@portkey-wallet/constants/misc';
+import { useAssets } from './assets';
 
 export function useAllBalances() {
   return useAppCASelector(state => state.tokenBalance.balances);
@@ -17,29 +16,15 @@ export function useCurrentNetworkBalances() {
   }, [balances, currentNetwork.rpcUrl]);
 }
 
-export function useAccountTokenList() {
-  return useAppCASelector(state => state.assets?.accountToken.accountTokenList);
-}
-
-export function useAllTokenInfoList() {
-  return useAppCASelector(state => state.tokenManagement.tokenDataShowInMarket);
+export function useAccountCryptoBoxAssetList() {
+  return useAppCASelector(state => state.assets?.accountCryptoBoxAssets.accountAssetsList);
 }
 
 export const useAccountBalanceUSD = () => {
-  const {
-    accountToken: { accountTokenList },
-    tokenPrices: { tokenPriceObject },
-  } = useAppCASelector(state => state.assets);
-
-  const accountBalanceUSD = useMemo(() => {
-    const result = accountTokenList.reduce((acc, item) => {
-      const { symbol, balance, decimals } = item;
-      const price = tokenPriceObject[symbol];
-      return acc.plus(divDecimals(balance, decimals).times(price));
-    }, ZERO);
-
-    return formatAmountShow(result, 2);
-  }, [accountTokenList, tokenPriceObject]);
-
-  return accountBalanceUSD;
+  const { networkType = 'MAINNET' } = useCurrentNetwork();
+  const assetsState = useAssets();
+  return useMemo(
+    () => assetsState?.accountBalance?.accountBalanceInfo?.[networkType] || '',
+    [assetsState?.accountBalance?.accountBalanceInfo, networkType],
+  );
 };

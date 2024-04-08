@@ -23,6 +23,10 @@ export abstract class DappManager<T extends CACommonState = CACommonState>
   extends BaseDappManager<IDappManagerStore<T>>
   implements IDappManager<T>
 {
+  async caHash(): Promise<string> {
+    const currentCAInfo = await this.getCurrentCAInfo();
+    return Object.values<CAInfo>(currentCAInfo as any).filter(i => i?.caHash)[0]?.caHash || '';
+  }
   async getState(): Promise<T> {
     return this.store.getState();
   }
@@ -32,7 +36,9 @@ export abstract class DappManager<T extends CACommonState = CACommonState>
     return (await this.getState()).wallet;
   }
   async walletName(): Promise<string> {
-    return (await this.getWallet()).walletName;
+    const { currentNetwork } = await this.getWallet();
+
+    return (await this.getWallet()).userInfo?.[currentNetwork]?.nickName || '';
   }
   async walletInfo(): Promise<CAWalletInfoType | undefined> {
     return (await this.getWallet()).walletInfo;

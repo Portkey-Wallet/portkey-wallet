@@ -1,9 +1,6 @@
 import { useCallback } from 'react';
 import { useAppDispatch, useCommonState } from 'store/Provider/hooks';
-import { resetSettings } from '@portkey-wallet/store/settings/slice';
-import { resetNetwork } from '@portkey-wallet/store/network/actions';
-import { reSetCheckManagerExceed, resetCaInfo, resetWallet } from '@portkey-wallet/store/store-ca/wallet/actions';
-import { resetToken } from '@portkey-wallet/store/token/slice';
+import { reSetCheckManagerExceed } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { resetLoginInfoAction } from 'store/reducers/loginCache/actions';
 import { request } from '@portkey-wallet/api/api-did';
 import {
@@ -18,7 +15,7 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ManagerInfo } from '@portkey-wallet/graphql/contract/__generated__/types';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
-import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
+import { useLogoutResetStore, useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes, { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useNavigate } from 'react-router';
@@ -35,15 +32,18 @@ import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import singleMessage from 'utils/singleMessage';
 import { ChainId } from '@portkey/provider-types';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import { useMiscSetting } from '@portkey-wallet/hooks/hooks-ca/misc';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
   const { currentNetwork } = useWallet();
   const resetStore = useResetStore();
+  const logoutResetStore = useLogoutResetStore();
   const { isPrompt } = useCommonState();
   const navigate = useNavigate();
   const otherNetworkLogged = useOtherNetworkLogged();
   const isShowChat = useIsChatShow();
+  const { resetCurrentNetworkSetting } = useMiscSetting();
 
   return useCallback(async () => {
     try {
@@ -57,13 +57,9 @@ export default function useLogOut() {
       dispatch(resetSecurity(currentNetwork));
       dispatch(reSetCheckManagerExceed(currentNetwork));
       signalrFCM.exitWallet();
-      if (otherNetworkLogged) {
-        dispatch(resetCaInfo(currentNetwork));
-      } else {
-        dispatch(resetWallet());
-        dispatch(resetToken());
-        dispatch(resetSettings());
-        dispatch(resetNetwork());
+      resetCurrentNetworkSetting();
+      logoutResetStore();
+      if (!otherNetworkLogged) {
         dispatch(resetLoginInfoAction());
         InternalMessage.payload(InternalMessageTypes.CLEAR_SEED).send();
       }
@@ -83,7 +79,17 @@ export default function useLogOut() {
     } catch (error) {
       console.log(error, '====error');
     }
-  }, [currentNetwork, dispatch, isPrompt, isShowChat, navigate, otherNetworkLogged, resetStore]);
+  }, [
+    currentNetwork,
+    dispatch,
+    isPrompt,
+    isShowChat,
+    navigate,
+    otherNetworkLogged,
+    resetStore,
+    resetCurrentNetworkSetting,
+    logoutResetStore,
+  ]);
 }
 
 export function useCheckManager() {

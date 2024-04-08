@@ -1,6 +1,6 @@
 import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
 import { useOtherNetworkLogged } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { changeNetworkType, setWalletNameAction } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { changeNetworkType } from '@portkey-wallet/store/store-ca/wallet/actions';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useCallback } from 'react';
@@ -24,7 +24,6 @@ export function useChangeNetwork() {
       resetStore();
       im.destroy();
       signalrFCM.switchNetwork();
-      dispatch(setWalletNameAction(''));
       dispatch(changeNetworkType(network.networkType));
       if (otherNetworkLogged) {
         if (!isPrompt) {
@@ -38,7 +37,7 @@ export function useChangeNetwork() {
       } else {
         if (!isPrompt) {
           await sleep(500);
-          InternalMessage.payload(PortkeyMessageTypes.REGISTER_START_WALLET).send();
+          await InternalMessage.payload(PortkeyMessageTypes.REGISTER_START_WALLET).send();
         } else {
           await OpenNewTabController.closeOpenTabs(true);
           navigate('/register/start');

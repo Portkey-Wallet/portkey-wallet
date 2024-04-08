@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import PageContainer from 'components/PageContainer';
+import PageContainer from '@portkey-wallet/rn-components/components/PageContainer';
 import CommonSvg from '@portkey-wallet/rn-components/components/Svg';
 import From from '../From';
 import To from '../To';
@@ -40,9 +40,10 @@ import { checkManagerSyncState, useGetTransferFee } from 'model/contract/handler
 import { useUnlockedWallet } from 'model/wallet';
 import { useSecuritySafeCheckAndToast, useCheckTransferLimitWithJump } from 'components/WalletSecurityAccelerate/hook';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
+// import { PortkeyEntries } from 'config/entries';
 import { ScanQRCodeProps, ScanQRCodeResult } from 'pages/QrScanner';
 import { isArray } from 'lodash';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 
 const SendHome = (props: IToSendHomeParamsType) => {
   const {

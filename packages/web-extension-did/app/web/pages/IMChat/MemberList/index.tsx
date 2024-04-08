@@ -16,28 +16,52 @@ import {
   TWalletNameLocationState,
 } from 'types/router';
 import './index.less';
+import LoadingMore from 'components/LoadingMore/LoadingMore';
+import { searchChannelMembers } from '../utils';
+import { useLoading } from 'store/Provider/hooks';
 
 export default function MemberList() {
   const { channelUuid } = useParams();
   const { relationId: myRelationId } = useRelationId();
-  const { groupInfo, refresh } = useGroupChannelInfo(`${channelUuid}`);
+  const { groupInfo, refresh, refreshChannelMembersInfo } = useGroupChannelInfo(`${channelUuid}`);
   const { t } = useTranslation();
   const { state } = useLocationState<TMemberListLocationState>();
   const [filterWord, setFilterWord] = useState<string>('');
   const [inputValue, setInputValue] = useState<string>('');
+  const { setLoading } = useLoading();
+  const [isFetching, setIsFetching] = useState(false);
   const navigate = useNavigateState<TWalletNameLocationState | TViewContactLocationState>();
   const [showMemberList, setShowMemberList] = useState<ChannelMemberInfo[]>(groupInfo?.members || []);
+  const hasMoreMember = useMemo(
+    () => (groupInfo?.members?.length ?? 0) < (groupInfo?.totalCount ?? 0),
+    [groupInfo?.members?.length, groupInfo?.totalCount],
+  );
 
+  useEffect(() => {
+    if (!filterWord) {
+      setShowMemberList(groupInfo?.members || []);
+    }
+  }, [groupInfo?.members, filterWord]);
+  const fetchMoreMembers = useCallback(async () => {
+    if ((groupInfo?.members?.length ?? 0) === (groupInfo?.totalCount ?? 0)) return;
+    await refreshChannelMembersInfo(groupInfo?.members?.length);
+  }, [groupInfo?.members?.length, groupInfo?.totalCount, refreshChannelMembersInfo]);
   const handleSearch = useCallback(
-    (keyword: string) => {
-      keyword = keyword.trim();
-      let _res = groupInfo?.members || [];
-      if (keyword) {
-        _res = (groupInfo?.members || []).filter((item) => item.name.toLowerCase().includes(keyword.toLowerCase()));
+    async (keyword: string) => {
+      setIsFetching(true);
+      setLoading(true);
+      try {
+        const { data } = await searchChannelMembers({ channelUuid: `${channelUuid}`, keyword });
+        setIsFetching(false);
+        setLoading(false);
+        setShowMemberList(data.members);
+      } catch (error) {
+        setIsFetching(false);
+        setLoading(false);
+        console.log('===searchChannelMembers error', error);
       }
-      setShowMemberList(_res);
     },
-    [groupInfo?.members],
+    [channelUuid, setLoading],
   );
   const searchDebounce = useDebounceCallback(
     (params) => {
@@ -79,9 +103,10 @@ export default function MemberList() {
             {m.isAdmin && <div className="admin-icon flex-center">Owner</div>}
           </div>
         ))}
+        {!filterWord && <LoadingMore hasMore={hasMoreMember} loadMore={fetchMoreMembers} className="load-more" />}
       </div>
     ),
-    [handleGoProfile, showMemberList],
+    [fetchMoreMembers, filterWord, handleGoProfile, hasMoreMember, showMemberList],
   );
   const handleInputChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -97,6 +122,7 @@ export default function MemberList() {
       setFilterWord(_v);
       setInputValue(_v);
       handleSearch(_v);
+      setShowMemberList([]);
     }
   }, [handleSearch, state?.search]);
   useEffectOnce(() => {
@@ -124,7 +150,7 @@ export default function MemberList() {
         {showMemberList.length !== 0 ? (
           renderMemberList
         ) : (
-          <div className="empty flex-center">{filterWord ? 'No search result' : 'No members'}</div>
+          <div className="empty flex-center">{isFetching ? '' : filterWord ? 'No search result' : 'No members'}</div>
         )}
       </div>
     </div>

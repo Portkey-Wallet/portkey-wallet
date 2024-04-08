@@ -99,6 +99,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
         <Text style={[itemStyle.tokenBalance, fonts.regularFont]}>
           {item?.nftInfo?.nftId ? `#${item?.nftInfo?.nftId}` : amountString}
         </Text>
+
         <Text style={itemStyle.usdtBalance}>
           {isMainnet && !item?.nftInfo && (isTokenHasPrice || item?.symbol === null)
             ? `$ ${formatAmountShow(
@@ -130,7 +131,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
 
   return (
     <TouchableOpacity style={itemStyle.itemWrap} onPress={() => onPress?.(item)}>
-      <Text style={itemStyle.time}>{formatTransferTime(Number(item?.timestamp) * 1000)}</Text>
+      <Text style={itemStyle.time}>{formatTransferTime(item?.timestamp)}</Text>
       <View style={[itemStyle.contentWrap]}>
         <CommonAvatar
           style={itemStyle.left}

@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import svgsList from 'assets/svgs';
-import { useLockWallet } from 'utils/lib/serviceWorkerAction';
+import { lockWallet } from 'utils/lib/serviceWorkerAction';
 import PortKeyHeader from 'pages/components/PortKeyHeader';
 import SettingHeader from 'pages/components/SettingHeader';
 import './index.less';
@@ -68,12 +68,6 @@ export default function PromptMy() {
       });
   }, [curMenuInfo, navigate, settingList]);
 
-  const lockWallet = useLockWallet();
-  const handleLock = useCallback(() => {
-    lockWallet();
-    navigate('/unlock');
-  }, [lockWallet, navigate]);
-
   const backCb = useCallback(() => {
     navigate('/');
   }, [navigate]);
@@ -122,7 +116,7 @@ export default function PromptMy() {
                 <div className="referral-tag flex-center">New</div>
               </div>
             </MenuItem>
-            <div className="lock-row flex-center" onClick={handleLock}>
+            <div className="lock-row flex-center" onClick={lockWallet}>
               {/* eslint-disable-next-line no-inline-styles/no-inline-styles */}
               <CustomSvg type={'Lock'} style={{ width: 16, height: 16 }} />
               <span className="lock-text">{t('Lock')}</span>

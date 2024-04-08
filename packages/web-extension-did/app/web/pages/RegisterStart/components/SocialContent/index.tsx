@@ -1,28 +1,24 @@
-import { ISocialLogin } from '@portkey-wallet/types/types-ca/wallet';
 import { Button } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import { RegisterType } from 'types/wallet';
+import { LoginGuardianListType } from '../SocialLogin';
 import './index.less';
 
 interface GoogleBtnProps {
-  onSocialChange: (guardianType: ISocialLogin) => Promise<void>;
+  showLoginModeListToRecommend: LoginGuardianListType[];
   type: RegisterType;
 }
 
-export default function SocialContent({ type, onSocialChange }: GoogleBtnProps) {
+export default function SocialContent({ type, showLoginModeListToRecommend }: GoogleBtnProps) {
   return (
-    <div className="social-content-wrapper">
-      <Button onClick={() => onSocialChange('Google')}>
-        <CustomSvg type="Google" />
-        <span>{`${type} with Google`}</span>
-        <span className="empty"></span>
-      </Button>
-
-      <Button onClick={() => onSocialChange('Telegram')}>
-        <CustomSvg type="Telegram" />
-        <span>{`${type} with Telegram`}</span>
-        <span className="empty"></span>
-      </Button>
+    <div className="social-content-wrapper flex-column-between">
+      {showLoginModeListToRecommend.map((i) => (
+        <Button key={`recommend_${i.value}`} onClick={i.onClick}>
+          <CustomSvg type={i.icon} />
+          <span>{`${type} with ${i.type}`}</span>
+          <span className="empty"></span>
+        </Button>
+      ))}
     </div>
   );
 }

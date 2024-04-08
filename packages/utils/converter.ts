@@ -146,6 +146,13 @@ export const formatAmountShow = (
   return bigCount.decimalPlaces(typeof decimal !== 'number' ? Number(decimal) : decimal, roundingMode).toFormat();
 };
 
+export const formatTokenAmountShowWithDecimals = (
+  amount?: number | BigNumber.Value | string,
+  decimal: string | number = 4,
+) => {
+  return formatAmountShow(divDecimals(amount, decimal), decimal);
+};
+
 export const formatAmountUSDShow = (
   count: number | BigNumber | string,
   decimal: string | number = 4,

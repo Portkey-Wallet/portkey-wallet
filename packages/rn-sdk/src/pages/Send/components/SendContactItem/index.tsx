@@ -30,7 +30,7 @@ const SendContactItem: React.FC<ItemType> = props => {
   const [collapsed, setCollapsed] = useState(true);
 
   return (
-    <TouchableOpacity style={styles.itemWrap}>
+    <View style={styles.itemWrap}>
       <TouchableOpacity style={styles.topWrap} onPress={() => setCollapsed(!collapsed)}>
         <CommonAvatar
           hasBorder
@@ -110,7 +110,7 @@ const SendContactItem: React.FC<ItemType> = props => {
           ),
         )}
       </Collapsible>
-    </TouchableOpacity>
+    </View>
   );
 };
 

@@ -1,6 +1,7 @@
 import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
 import { ChainId, ChainType } from '..';
 import { BaseToken } from './token';
+import { SeedTypeEnum } from './assets';
 
 export type ActivityItemType = {
   chainId: string;
@@ -20,7 +21,9 @@ export type ActivityItemType = {
   amount: string;
   symbol: string;
   decimals?: string;
-  priceInUsd?: string;
+  priceInUsd?: string; // The unit price at that time
+  currentPriceInUsd?: string; // Real-time unit price
+  currentTxPriceInUsd?: string; // Real-time tx price
   nftInfo?: NftInfo;
   transactionFees: TransactionFees[];
   listIcon?: string;
@@ -31,6 +34,8 @@ export type NftInfo = {
   imageUrl: string;
   alias: string;
   nftId: string;
+  isSeed?: boolean;
+  seedType?: SeedTypeEnum;
 };
 
 export type TransactionFees = {

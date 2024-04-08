@@ -18,8 +18,9 @@ import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
 import { copyText } from 'utils/commonUtil';
 import { getStatusBarHeight } from 'utils/screen';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
+// import { PortkeyEntries } from 'config/entries';
 import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 
 export interface TokenDetailProps {
   nftItem: NftItemType;
@@ -39,6 +40,7 @@ interface NftItemType {
     imageUrl: string;
     collectionName: string;
   };
+  decimals: string;
 }
 
 const NFTDetail: React.FC<TokenDetailProps> = ({ nftItem }: TokenDetailProps) => {

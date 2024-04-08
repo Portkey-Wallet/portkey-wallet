@@ -9,11 +9,12 @@ import im, {
   RedPackageTypeEnum,
 } from '@portkey-wallet/im';
 import { ChainId } from '@portkey-wallet/types';
+import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import { handleLoopFetch } from '@portkey-wallet/utils';
 import { useRedPackageConfigMapState, useRelationId } from '.';
 import { RedPackageCreationStatusEnum } from '@portkey-wallet/im/types';
 import { messageParser } from '@portkey-wallet/im/utils';
-import { useCurrentWalletInfo, useUserInfo, useWallet } from '../wallet';
+import { useCurrentWalletInfo, useCurrentUserInfo } from '../wallet';
 import { useAppCommonDispatch, useEffectOnce } from '../../index';
 import {
   addChannelMessage,
@@ -26,6 +27,7 @@ import { useCurrentNetworkInfo } from '../network';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { generateRedPackageRawTransaction, getSendUuid } from '@portkey-wallet/utils/chat';
 import useLockCallback from '../../useLockCallback';
+import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 
 export interface ICreateRedPacketParams {
   id: string;
@@ -38,28 +40,29 @@ export interface ICreateRedPacketParams {
   publicKey: string;
   signature: string;
 }
+
 export interface ISendRedPackageHookParams {
   channelId: string;
-  chainId: ChainId;
-  symbol: string;
   totalAmount: string;
-  decimal: string | number;
   type: RedPackageTypeEnum;
   count: number;
   memo: string;
   caContract: ContractBasic;
   image?: string;
+  token: ICryptoBoxAssetItemType;
 }
+
 export const useSendRedPackage = () => {
   const { relationId, getRelationId } = useRelationId();
   const { networkType } = useCurrentNetworkInfo();
-  const userInfo = useUserInfo();
+  const userInfo = useCurrentUserInfo();
   const wallet = useCurrentWalletInfo();
   const dispatch = useAppCommonDispatch();
 
   return useCallback(
     async (params: ISendRedPackageHookParams) => {
-      const { channelId, chainId, symbol, totalAmount, image = '', memo, type, count, caContract } = params;
+      const { channelId, totalAmount, image = '', memo, type, count, caContract, token } = params;
+      const { chainId, symbol, assetType = AssetType.ft, alias, tokenId } = token;
 
       const caHash = wallet.caHash;
       const caAddress = wallet[chainId]?.caAddress;
@@ -104,6 +107,9 @@ export const useSendRedPackage = () => {
           id,
           senderId: userInfo.userId,
           memo,
+          assetType,
+          alias,
+          tokenId,
         },
       };
       const message = {
@@ -126,6 +132,7 @@ export const useSendRedPackage = () => {
         channelUuid: channelId,
         rawTransaction,
         message: JSON.stringify(message),
+        assetType,
       });
 
       const { data: creationStatus } = await handleLoopFetch({
@@ -390,9 +397,9 @@ export const useGetRedPackageConfig = (isAutoFetch = false, isInit = false) => {
 };
 
 export const useIsMyRedPacket = (senderId: string): boolean => {
-  const { userInfo } = useWallet();
+  const { userId } = useCurrentUserInfo() || {};
 
-  return userInfo?.userId === senderId;
+  return userId === senderId;
 };
 
 export const useGetCurrentRedPacketId = (currentMessage?: Message): string => {

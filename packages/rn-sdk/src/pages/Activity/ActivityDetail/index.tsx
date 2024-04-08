@@ -195,10 +195,15 @@ const ActivityDetail = ({ item, caAddressInfos }: ActivityDetailPropsType) => {
                 <Text style={styles.noImg}>{activityItem?.nftInfo?.alias?.slice(0, 1)}</Text>
               )}
               <View style={styles.nftInfo}>
-                <TextL style={styles.nftTitle}>{`${activityItem?.nftInfo?.alias || ''} #${
+                <TextL numberOfLines={1} style={styles.nftTitle}>{`${activityItem?.nftInfo?.alias || ''} #${
                   activityItem?.nftInfo?.nftId || ''
-                }`}</TextL>
-                <TextS style={[FontStyles.font3, styles.marginTop4]}>Amount: {activityItem?.amount || ''}</TextS>
+                }  `}</TextL>
+                <TextS
+                  numberOfLines={1}
+                  style={[FontStyles.font3, styles.marginTop4]}>{`Amount: ${formatTokenAmountShowWithDecimals(
+                  activityItem?.amount,
+                  activityItem?.decimals,
+                )}`}</TextS>
               </View>
             </View>
             <View style={styles.divider} />
@@ -225,7 +230,7 @@ const ActivityDetail = ({ item, caAddressInfos }: ActivityDetailPropsType) => {
       <View style={[styles.flexSpaceBetween, styles.values1]}>
         <TextM style={styles.greenFontColor}>{t(status.text)}</TextM>
         <TextM style={styles.blackFontColor}>
-          {activityItem && activityItem.timestamp ? formatTransferTime(Number(activityItem?.timestamp) * 1000) : ''}
+          {activityItem && activityItem.timestamp ? formatTransferTime(activityItem?.timestamp) : ''}
         </TextM>
       </View>
       <View style={styles.card}>
@@ -336,7 +341,6 @@ export const styles = StyleSheet.create({
   },
   topWrap: {
     width: '100%',
-    marginTop: pTd(40),
     display: 'flex',
     flexDirection: 'row',
     minWidth: '100%',
@@ -371,6 +375,7 @@ export const styles = StyleSheet.create({
     ...fonts.mediumFont,
     color: defaultColors.font5,
     marginBottom: pTd(4),
+    maxWidth: pTd(230),
     flexDirection: 'row',
     display: 'flex',
     flexWrap: 'wrap',

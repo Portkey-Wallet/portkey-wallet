@@ -5,6 +5,7 @@ import {
   ChannelItem,
   ChannelMemberInfo,
   ChannelTypeEnum,
+  IChannelContactItem,
   Message,
   MessageCount,
   RedPackageConfigType,
@@ -19,6 +20,7 @@ import {
 } from '.';
 import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 import { IM_PIN_LIST_SORT_TYPE_ENUM } from '../constant';
+import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 
 export type IMServiceCommon<T> = Promise<{
   code: string;
@@ -88,9 +90,17 @@ export type CreateChannelResult = {
 
 export type GetChannelInfoParams = {
   channelUuid: string;
+  skipCount?: number;
+  maxResultCount?: number;
 };
 
 export type GetChannelMembersParams = GetChannelInfoParams;
+export type getCannelContactsParams = {
+  channelUuid: string;
+  skipCount?: number;
+  maxResultCount?: number;
+  keyword?: string;
+};
 
 export type SendMessageParams = {
   channelUuid?: string;
@@ -106,6 +116,16 @@ export type SendMessageResult = {
   id: string;
   channelUuid: string;
 };
+
+export type SearchChannelMembersParams = {
+  channelUuid?: string;
+  keyword?: string;
+  skipCount?: number;
+  maxResultCount?: number;
+  filteredMember?: string;
+};
+
+export type SearchChannelMembersResult = { members: ChannelMemberInfo[]; totalCount: number };
 
 export type ReadMessageParams = {
   channelUuid: string;
@@ -232,6 +252,7 @@ export type SendRedPackageParams = {
   channelUuid: string;
   rawTransaction: string;
   message: string;
+  assetType: AssetType;
 };
 
 export type SendRedPackageResult = {
@@ -342,8 +363,22 @@ export interface IIMService {
   getUserInfoList<T = GetUserInfoDefaultResult>(params?: GetUserInfoListParams): IMServiceCommon<T[]>;
 
   createChannel(params: CreateChannelParams): IMServiceCommon<CreateChannelResult>;
-  getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<ChannelInfo>;
+  getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<
+    Omit<ChannelInfo, 'members' | 'totalCount'> & {
+      memberInfos: {
+        members: ChannelMemberInfo[];
+        totalCount: number;
+      };
+    }
+  >;
+
   getChannelMembers(params: GetChannelMembersParams): IMServiceCommon<ChannelMemberInfo[]>;
+  getChannelContacts(params: getCannelContactsParams): IMServiceCommon<{
+    contacts: IChannelContactItem[];
+    totalCount: number;
+  }>;
+
+  searchChannelMembers(params: SearchChannelMembersParams): IMServiceCommon<SearchChannelMembersResult>;
 
   sendMessage(params: SendMessageParams): IMServiceCommon<SendMessageResult>;
   readMessage(params: ReadMessageParams): IMServiceCommon<number>;

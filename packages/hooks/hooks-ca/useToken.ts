@@ -1,78 +1,34 @@
 import { useAppCASelector, useAppCommonDispatch } from '../index';
 import { fetchAllTokenListAsync, getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
-import { TokenState, TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { useMemo, useCallback, useEffect } from 'react';
 import { useCurrentNetworkInfo } from './network';
-import { request } from '@portkey-wallet/api/api-did';
+import { INITIAL_TOKEN_INFO } from '@portkey-wallet/store/store-ca/tokenManagement/slice';
+import { useAccountTokenInfo } from './assets';
 
-export interface TokenFuncsType {
-  fetchTokenList: (params: { keyword: string; chainIdArray: string[] }) => void;
-  displayUserToken: (params: {
-    tokenItem: TokenItemShowType;
-    keyword: string;
-    chainIdArray: string[];
-  }) => Promise<void>;
-}
-
-export const useToken = (): [TokenState, TokenFuncsType] => {
+export const useToken = () => {
   const dispatch = useAppCommonDispatch();
   const currentNetworkInfo = useCurrentNetworkInfo();
 
   const tokenState = useAppCASelector(state => state.tokenManagement);
 
-  const fetchTokenList = useCallback(
-    (params: { keyword: string; chainIdArray: string[] }) => {
-      dispatch(
+  const tokenInfo = useMemo(
+    () => tokenState?.tokenInfo?.[currentNetworkInfo.networkType] || INITIAL_TOKEN_INFO,
+    [currentNetworkInfo.networkType, tokenState?.tokenInfo],
+  );
+
+  const fetchTokenInfoList = useCallback(
+    (params: { keyword: string; chainIdArray: string[]; skipCount?: number; maxResultCount?: number }) => {
+      return dispatch(
         fetchAllTokenListAsync({
           ...params,
+          currentNetwork: currentNetworkInfo.networkType,
         }),
       );
     },
-    [dispatch],
+    [currentNetworkInfo.networkType, dispatch],
   );
 
-  const displayUserToken = useCallback(
-    async ({
-      tokenItem,
-      keyword,
-      chainIdArray,
-    }: {
-      tokenItem: TokenItemShowType;
-      keyword: string;
-      chainIdArray: string[];
-    }) => {
-      await request.token.displayUserToken({
-        baseURL: currentNetworkInfo.apiUrl,
-        resourceUrl: `${tokenItem.userTokenId}/display`,
-        params: {
-          isDisplay: !tokenItem.isAdded,
-        },
-      });
-      setTimeout(() => {
-        dispatch(fetchAllTokenListAsync({ keyword, chainIdArray }));
-      }, 1000);
-    },
-    [currentNetworkInfo.apiUrl, dispatch],
-  );
-
-  const tokenStoreFuncs = {
-    fetchTokenList,
-    displayUserToken,
-  };
-
-  return [tokenState, tokenStoreFuncs];
-};
-
-export const useMarketTokenListInCurrentChain = (): TokenItemShowType[] => {
-  const { tokenDataShowInMarket } = useAppCASelector(state => state.tokenManagement);
-
-  return useMemo(() => tokenDataShowInMarket, [tokenDataShowInMarket]);
-};
-
-export const useIsFetchingTokenList = (): Boolean => {
-  const { isFetching } = useAppCASelector(state => state.tokenManagement);
-
-  return useMemo(() => isFetching, [isFetching]);
+  return { ...tokenInfo, fetchTokenInfoList, isFetching: tokenState.isFetching };
 };
 
 export const useFetchSymbolImages = () => {
@@ -87,5 +43,13 @@ export const useSymbolImages = () => {
   const { symbolImages } = useAppCASelector(state => state.tokenManagement);
   return useMemo(() => symbolImages, [symbolImages]);
 };
+
+export function useSymbolList(): string[] {
+  const { accountTokenList } = useAccountTokenInfo();
+
+  return useMemo(() => {
+    return Array.from(new Set(accountTokenList?.map(item => item.symbol)));
+  }, [accountTokenList]);
+}
 
 export default useToken;

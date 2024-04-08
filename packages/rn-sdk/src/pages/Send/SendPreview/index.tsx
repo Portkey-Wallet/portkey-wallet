@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Text, View, StyleSheet, ScrollView } from 'react-native';
-import PageContainer from 'components/PageContainer';
+import PageContainer from '@portkey-wallet/rn-components/components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { TextM, TextS, TextL } from '@portkey-wallet/rn-components/components/CommonText';
@@ -17,7 +17,7 @@ import { useCheckTransferLimitWithJump } from 'components/WalletSecurityAccelera
 import { useLanguage } from 'i18n/hooks';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { IToSendPreviewParamsType } from '@portkey-wallet/types/types-ca/routeParams';
-import { BaseToken } from '@portkey-wallet/types/types-ca/token';
+import { BaseToken } from '@portkey-wallet/types/types-eoa/token';
 import { sleep, formatChainInfoToShow, formatStr2EllipsisStr, addressFormat } from '@portkey-wallet/utils';
 import { isCrossChain } from '@portkey-wallet/utils/aelf';
 import { timesDecimals, formatAmountShow, unitConverter } from '@portkey-wallet/utils/converter';
@@ -34,8 +34,8 @@ import { useGetTxFee, useTokenPrices } from 'model/hooks/balance';
 import { getContractInstanceOnParticularChain, getTokenContract } from 'model/contract/handler';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { getBottomSpace } from 'utils/screen';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 
 const SendPreview = (props: IToSendPreviewParamsType) => {
   const { navigateTo } = useBaseContainer({ entryName: PortkeyEntries.SEND_TOKEN_CONFIRM_ENTRY });

@@ -15,9 +15,9 @@ import Svg from '@portkey-wallet/rn-components/components/Svg';
 import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 import { useChainsNetworkInfo } from 'model/hooks/network';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 import { NetworkController } from 'network/controller';
 import { useSearchTokenList } from 'model/hooks/balance';
+import { PortkeyEntries } from '@portkey-wallet/rn-core/router/types';
 
 interface ManageTokenListProps {
   route?: any;
@@ -163,7 +163,6 @@ const ManageTokenList: React.FC<ManageTokenListProps> = ({ containerId }: Manage
           onChangeText={v => {
             setKeyword(v.trim());
           }}
-          t={t}
         />
       </View>
 

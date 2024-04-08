@@ -7,26 +7,17 @@ import TokenList from '../Tokens';
 import Activity from '../Activity/index';
 import { Transaction } from '@portkey-wallet/types/types-ca/trade';
 import NFT from '../NFT/NFT';
+import { useAppDispatch, useUserInfo, useCommonState, useLoading } from 'store/Provider/hooks';
 import {
-  useAppDispatch,
-  useUserInfo,
-  useWalletInfo,
-  useAssetInfo,
-  useCommonState,
-  useLoading,
-} from 'store/Provider/hooks';
-import {
-  useCaAddresses,
   useCaAddressInfoList,
-  useChainIdList,
+  useCurrentUserInfo,
   useCurrentWallet,
   useOriginChainId,
 } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
-import { fetchAllTokenListAsync, getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
+import { getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import CustomTokenModal from 'pages/components/CustomTokenModal';
-import { AccountAssetItem } from '@portkey-wallet/types/types-ca/token';
+import { IAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
 import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import useVerifierList from 'hooks/useVerifierList';
@@ -55,6 +46,9 @@ import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { TSendLocationState } from 'types/router';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
+import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
+import { clsx } from 'clsx';
+import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 
 export interface TransactionResult {
   total: number;
@@ -66,22 +60,16 @@ export type TMyBalanceState = {
 };
 
 export default function MyBalance() {
-  const { userInfo } = useWalletInfo();
+  const userInfo = useCurrentUserInfo();
   const { t } = useTranslation();
   const [activeKey, setActiveKey] = useState<string>(BalanceTab.TOKEN);
   const [navTarget, setNavTarget] = useState<'send' | 'receive'>('send');
   const [tokenOpen, setTokenOpen] = useState(false);
   const [depositOpen, setDepositOpen] = useState(false);
-  const {
-    accountToken: { accountTokenList },
-    accountBalance,
-  } = useAssetInfo();
   const navigate = useNavigateState<TSendLocationState>();
   const { state } = useLocationState<TMyBalanceState>();
   const { passwordSeed } = useUserInfo();
   const appDispatch = useAppDispatch();
-  const caAddresses = useCaAddresses();
-  const chainIdArray = useChainIdList();
   const isMainNet = useIsMainnet();
   const { walletInfo } = useCurrentWallet();
   const caAddressInfos = useCaAddressInfoList();
@@ -94,7 +82,7 @@ export default function MyBalance() {
       {
         label: t('Tokens'),
         key: BalanceTab.TOKEN,
-        children: <TokenList tokenList={accountTokenList} />,
+        children: <TokenList />,
       },
       {
         label: t('NFTs'),
@@ -107,7 +95,7 @@ export default function MyBalance() {
         children: <Activity />,
       },
     ],
-    [accountTokenList, t],
+    [t],
   );
   const accountBalanceUSD = useAccountBalanceUSD();
   const getGuardianList = useGuardianList();
@@ -125,17 +113,16 @@ export default function MyBalance() {
   const { isBridgeShow } = useExtensionBridgeButtonShow();
   const { isETransShow } = useExtensionETransShow();
   const reportFCMStatus = useReportFCMStatus();
+  const { isNotLessThan768, isPrompt } = useCommonState();
 
   useEffect(() => {
     if (state?.key) {
       setActiveKey(state.key);
     }
     if (!passwordSeed) return;
-    appDispatch(fetchTokenListAsync({ caAddresses, caAddressInfos }));
-    appDispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray }));
     appDispatch(getCaHolderInfoAsync());
     appDispatch(getSymbolImagesAsync());
-  }, [passwordSeed, appDispatch, caAddresses, chainIdArray, caAddressInfos, isMainNet, state?.key, isRampShow]);
+  }, [passwordSeed, appDispatch, isRampShow, state?.key, caAddressInfos]);
 
   useEffect(() => {
     getGuardianList({ caHash: walletInfo?.caHash });
@@ -149,25 +136,26 @@ export default function MyBalance() {
   }, []);
 
   const onSelectedToken = useCallback(
-    (v: AccountAssetItem, type: 'token' | 'nft') => {
+    (v: IAssetItemType, type: 'token' | 'nft') => {
       setTokenOpen(false);
       const isNFT = type === 'nft';
       const state = {
         chainId: v.chainId,
-        decimals: isNFT ? 0 : Number(v.tokenInfo?.decimals ?? 8),
+        decimals: Number(isNFT ? v.nftInfo?.decimals : v.tokenInfo?.decimals ?? 8),
         address: isNFT ? `${v?.nftInfo?.tokenContractAddress}` : `${v?.tokenInfo?.tokenContractAddress}`,
         symbol: v.symbol,
         name: v.symbol,
         imageUrl: isNFT ? v.nftInfo?.imageUrl : v.tokenInfo?.imageUrl,
         alias: isNFT ? v.nftInfo?.alias : '',
         tokenId: isNFT ? v.nftInfo?.tokenId : '',
+        isSeed: isNFT ? v.nftInfo?.isSeed : false,
+        seedType: isNFT ? v.nftInfo?.seedType : SeedTypeEnum.None,
       };
       navigate(`/${navTarget}/${type}/${v.symbol}`, { state });
     },
     [navTarget, navigate],
   );
 
-  const { isNotLessThan768, isPrompt } = useCommonState();
   const SelectTokenELe = useMemo(() => {
     const title = navTarget === 'receive' ? 'Select Token' : 'Select Assets';
     const searchPlaceHolder = navTarget === 'receive' ? 'Search Token' : 'Search Assets';
@@ -254,7 +242,6 @@ export default function MyBalance() {
       const targetUrl = stringifyETrans({
         url: eTransferUrl,
         query: {
-          tokenSymbol: 'USDT',
           type: eTransType,
         },
       });
@@ -303,19 +290,18 @@ export default function MyBalance() {
           <ChatEntry unread={unreadCount} />
         </div>
       )}
-      <div className="wallet-name">
+      <div className="wallet-name flex-center">
         {!isPrompt && <AccountConnect />}
-        {userInfo?.nickName}
+        <div className={clsx('wallet-name-text', !isPrompt && 'wallet-name-small-screen')}>{userInfo?.nickName}</div>
       </div>
-      <div className="balance-amount">
+      <div className="balance-amount flex-column-center">
         {isMainNet ? (
-          <span className="amount">{`$ ${accountBalanceUSD}`}</span>
+          <span className="amount">{formatAmountUSDShow(accountBalanceUSD)}</span>
         ) : (
           <span className="dev-mode amount">Dev Mode</span>
         )}
       </div>
       <BalanceCard
-        amount={accountBalance}
         isShowDeposit={isShowDepositEntry}
         onClickDeposit={() => setDepositOpen(true)}
         onSend={async () => {

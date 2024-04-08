@@ -1,9 +1,8 @@
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimals, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { Button, Input } from 'antd';
 import clsx from 'clsx';
-import { handleKeyDown } from 'pages/Send/utils/util.keyDown';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getBalance } from 'utils/sandboxUtil/getBalance';
@@ -14,6 +13,7 @@ import { useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
+import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 
 export default function TokenInput({
   fromAccount,
@@ -50,7 +50,10 @@ export default function TokenInput({
     () => amountInUsdShow(value || amount, 0, token.symbol),
     [amount, amountInUsdShow, token.symbol, value],
   );
-
+  const needConvert = useMemo(
+    () => isMainnet && token.symbol === defaultToken.symbol,
+    [defaultToken.symbol, isMainnet, token.symbol],
+  );
   useEffect(() => {
     getTokenPrice(token.symbol);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -111,20 +114,6 @@ export default function TokenInput({
   }, [getMaxAmount, getTokenBalance]);
 
   const handleAmountBlur = useCallback(() => {
-    // setAmount((v) => {
-    // const reg = new RegExp(`.+\\.\\d{0,${token?.decimals || 8}}|.+`);
-    // const valueProcessed = v
-    //   ?.replace(/\.+$/, '')
-    //   .replace(/^0+\./, '0.')
-    //   .replace(/^0+/, '')
-    //   .replace(/^\.+/, '0.')
-    //   .match(reg)
-    //   ?.toString();
-    // const valueString = valueProcessed ? `${parseInputChange(valueProcessed, ZERO, token?.decimals) || 0}` : '';
-    // onChange(valueString);
-
-    // return valueString.length ? `${valueString} ${token.symbol}` : '';
-    // });
     onChange({ amount, balance });
   }, [amount, balance, onChange]);
 
@@ -151,8 +140,9 @@ export default function TokenInput({
             </div>
             <div className="center">
               <p className="symbol">{token?.symbol}</p>
-              <p className="amount">{`${t('Balance_with_colon')} ${formatAmountShow(
-                divDecimals(balance, token.decimals),
+              <p className="amount">{`${t('Balance_with_colon')} ${formatTokenAmountShowWithDecimals(
+                balance,
+                token.decimals,
               )} ${token?.symbol}`}</p>
             </div>
           </div>
@@ -164,21 +154,20 @@ export default function TokenInput({
           <Button onClick={handleMax}>Max</Button>
         </div>
         <div className="control">
-          <div className="amount-input">
+          <div className={clsx('amount-input', needConvert ? 'need-convert' : '')}>
             <Input
               type="text"
               placeholder={`0`}
-              className={clsx(isMainnet && token.symbol === defaultToken.symbol && 'need-convert')}
+              className={clsx(needConvert ? 'need-convert' : '')}
               value={amount}
-              maxLength={18}
-              onKeyDown={handleKeyDown}
               onFocus={() => {
                 setAmount((v) => v?.replace(` ${token?.symbol}`, ''));
               }}
               onBlur={handleAmountBlur}
               onChange={(e) => {
-                setAmount(e.target.value);
-                onChange({ amount: e.target.value, balance });
+                const _v = parseInputNumberChange(e.target.value, undefined, token.decimals);
+                setAmount(_v);
+                onChange({ amount: _v, balance });
               }}
             />
             {isMainnet && <span className="convert">{amountInUsd}</span>}

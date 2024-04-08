@@ -189,4 +189,10 @@ export default {
   marginRight: function (n: number) {
     return { marginRight: pTd(n) };
   },
+  maxWidth: function (n: number) {
+    return { maxWidth: pTd(n) };
+  },
+  flex: function (n: number) {
+    return { flex: n };
+  },
 } as const;

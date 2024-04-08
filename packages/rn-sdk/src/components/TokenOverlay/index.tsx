@@ -41,11 +41,12 @@ const TokenList = ({ onFinishSelectToken }: TokenListProps) => {
   });
 
   const [keyword, setKeyword] = useState('');
-
   const debounceKeyword = useDebounce(keyword, 800);
 
+  const [filteredShowList, setFilteredShowList] = useState<TokenItemShowType[]>([]);
+
   const renderItem = useCallback(
-    ({ item }: { item: any }) => (
+    ({ item }: { item: TokenItemShowType }) => (
       <TokenListItem
         noBalanceShow
         key={`${item.symbol}${item.chainId}`}
@@ -69,6 +70,38 @@ const TokenList = ({ onFinishSelectToken }: TokenListProps) => {
     ),
     [commonInfo, wallet, onFinishSelectToken],
   );
+
+  const getTokenList = useLockCallback(
+    async (init?: boolean) => {
+      if (debounceKeyword.trim()) return;
+      if (totalRecordCount && tokenDataShowInMarket?.length >= totalRecordCount && !init) return;
+
+      await fetchTokenInfoList({
+        keyword: '',
+        chainIdArray: chainIdList,
+        skipCount: init ? 0 : tokenDataShowInMarket?.length,
+        maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+      });
+    },
+    [chainIdList, debounceKeyword, fetchTokenInfoList, tokenDataShowInMarket?.length, totalRecordCount],
+  );
+  const getTokenListLatest = useLatestRef(getTokenList);
+
+  const getTokenListWithKeyword = useLockCallback(async () => {
+    if (!debounceKeyword) return;
+    try {
+      const result = await fetchAllTokenList({
+        keyword: debounceKeyword,
+        chainIdArray: chainIdList,
+        skipCount: 0,
+        maxResultCount: PAGE_SIZE_DEFAULT,
+      });
+
+      setFilteredShowList(result?.items?.map(item => item.token));
+    } catch (error) {
+      console.log('fetchTokenListByFilter error', error);
+    }
+  }, [chainIdList, debounceKeyword]);
 
   useEffect(() => {
     Loading.show();
@@ -124,10 +157,11 @@ const TokenList = ({ onFinishSelectToken }: TokenListProps) => {
             myEvents.nestScrollViewScrolledTop.emit();
           }
         }}
-        data={tokenDataShowInMarket || []}
+        data={debounceKeyword ? filteredShowList : tokenDataShowInMarket}
         renderItem={renderItem}
         ListEmptyComponent={noData}
         keyExtractor={(item: any) => item.id || ''}
+        onEndReached={() => getTokenListLatest.current()}
       />
     </ModalBody>
   );

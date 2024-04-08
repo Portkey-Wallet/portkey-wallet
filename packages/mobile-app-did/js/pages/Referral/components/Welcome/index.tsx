@@ -25,11 +25,11 @@ const styles = StyleSheet.create({
   title: {
     marginTop: windowHeight * 0.08,
     fontWeight: '400',
-    color: defaultColors.font11,
+    color: defaultColors.font2,
   },
   tip: {
     marginTop: 8,
-    color: defaultColors.font11,
+    color: defaultColors.font2,
     opacity: 0.8,
   },
 });

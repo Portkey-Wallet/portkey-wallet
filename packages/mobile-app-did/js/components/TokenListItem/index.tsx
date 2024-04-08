@@ -58,7 +58,7 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
               {formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
             </TextL>
             <TextS numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.dollar}>
-              {isMainnet && item.balanceInUsd && formatAmountUSDShow(item.balanceInUsd)}
+              {isMainnet && formatAmountUSDShow(item.balanceInUsd)}
             </TextS>
           </View>
         )}

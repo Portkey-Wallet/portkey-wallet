@@ -134,7 +134,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
         </Text>
 
         {isMainnet && !item?.nftInfo && (isTokenHasPrice || item?.symbol === null) && (
-          <Text style={itemStyle.usdtBalance}>{formatAmountUSDShow(item?.currentTxPriceInUsd || '')}</Text>
+          <Text style={itemStyle.usdtBalance}>{formatAmountUSDShow(item?.currentTxPriceInUsd)}</Text>
         )}
       </View>
     );

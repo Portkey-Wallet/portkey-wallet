@@ -69,7 +69,15 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
         chainId: chainId,
         symbol: symbol,
       };
-      dispatch(getActivityListAsync(params));
+      dispatch(getActivityListAsync(params)).then((res: any) => {
+        if (res.payload) {
+          if (res.payload.data?.length + res.payload.skipCount === res.payload.totalRecordCount) {
+            setHasMore(false);
+          } else {
+            setHasMore(true);
+          }
+        }
+      });
     }
   }, [caAddressInfos, chainId, dispatch, passwordSeed, symbol]);
 
@@ -85,7 +93,7 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
       };
       const res = await dispatch(getActivityListAsync(params));
       if (res.payload) {
-        if (res.payload.data?.length + res.payload.skipCount === totalRecordCount) {
+        if (res.payload.data?.length + res.payload.skipCount === res.payload.totalRecordCount) {
           setHasMore(false);
         }
       } else {

@@ -95,7 +95,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
                   )}`}
                 </Text>
                 {item?.transactionType === TransactionTypes.CROSS_CHAIN_TRANSFER && (
-                  <Text style={itemStyle.centerStatus}>Cross Chain Transfer</Text>
+                  <Text style={itemStyle.centerStatus}>Cross-Chain Transfer</Text>
                 )}
               </>
             )}

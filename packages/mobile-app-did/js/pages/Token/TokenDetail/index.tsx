@@ -97,7 +97,8 @@ const TokenDetail: React.FC = () => {
   const [isLoading, setIsLoading] = useState(ListLoadingEnum.hide);
   const getActivityList = useLockCallback(
     async (isInit = false) => {
-      const { data = [], maxResultCount = 10, skipCount = 0, totalRecordCount = 0 } = currentActivity || {};
+      const maxResultCount = 20;
+      const { data = [], skipCount = 0, totalRecordCount = 0 } = currentActivity || {};
       if (!isInit && data?.length >= totalRecordCount) return;
 
       setIsLoading(isInit ? ListLoadingEnum.header : ListLoadingEnum.footer);
@@ -108,7 +109,7 @@ const TokenDetail: React.FC = () => {
       };
       await dispatch(getActivityListAsync(params));
       setIsLoading(ListLoadingEnum.hide);
-      if (!isInit) await sleep(500);
+      if (!isInit) await sleep(250);
     },
     [currentActivity, dispatch, fixedParamObj],
   );
@@ -195,6 +196,8 @@ const TokenDetail: React.FC = () => {
     );
   }, []);
 
+  const isEmpty = useMemo(() => (currentActivity?.data || []).length === 0, [currentActivity?.data]);
+
   return (
     <PageContainer
       type="leftBack"
@@ -275,7 +278,9 @@ const TokenDetail: React.FC = () => {
           getActivityList();
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
-        ListFooterComponent={<FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}
+        ListFooterComponent={
+          <>{!isEmpty && <FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}</>
+        }
       />
     </PageContainer>
   );

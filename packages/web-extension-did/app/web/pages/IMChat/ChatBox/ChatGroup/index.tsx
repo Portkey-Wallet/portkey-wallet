@@ -134,6 +134,7 @@ export default function ChatBox() {
     list,
     pinMsg,
     unPinMsg,
+    isAdmin,
   });
   const handleDeleteBox = useCallback(() => {
     CustomModalConfirm({

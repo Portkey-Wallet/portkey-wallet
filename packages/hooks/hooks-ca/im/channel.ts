@@ -310,15 +310,22 @@ export const useDeleteMessage = (channelId: string) => {
   const list = useCurrentChannelMessageList(channelId);
   const listRef = useLatestRef(list);
   return useCallback(
-    async (message: Message) => {
+    async (message: Message, isGroupOwner = false) => {
       const { id } = message;
       if (!id) {
         throw new Error('no message id');
       }
       try {
-        await im.service.deleteMessage({
-          id,
-        });
+        if (isGroupOwner) {
+          await im.service.deleteMessageByGroupOwner({
+            channelUuid: channelId,
+            messageId: id,
+          });
+        } else {
+          await im.service.deleteMessage({
+            id,
+          });
+        }
 
         const list = listRef.current || [];
         if (list.length <= 0) return;

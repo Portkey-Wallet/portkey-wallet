@@ -59,7 +59,7 @@ const ImageMessage: React.FC<IMessage> = (props) => {
   );
   const popListFilter = useMemo(() => {
     let _popList: string[] = [];
-    const isMine = position === 'right';
+    const hasDelAuth = position === 'right' || isAdmin;
     if (showPageType === MessageShowPageEnum['MSG-PAGE']) {
       if (isGroup) {
         _popList = isAdmin ? ['pin', 'reply'] : ['reply'];
@@ -68,7 +68,7 @@ const ImageMessage: React.FC<IMessage> = (props) => {
     if (showPageType === MessageShowPageEnum['PIN-PAGE']) {
       _popList = isAdmin ? ['pin'] : [];
     }
-    if (isMine) {
+    if (hasDelAuth) {
       _popList.unshift('delete');
     }
     return popAllList.filter((t) => _popList.includes(t.key));

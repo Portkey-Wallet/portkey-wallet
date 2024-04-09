@@ -46,7 +46,7 @@ import { TransferTypeEnum } from '@portkey-wallet/im';
 import { useJumpToChatDetails, useJumpToChatGroupDetails } from 'hooks/chat';
 import { useFocusEffect } from '@react-navigation/native';
 import NFTAvatar from 'components/NFTAvatar';
-import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-mainnet-v2';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import { useAccountNFTCollectionInfo, useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import {
   PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,

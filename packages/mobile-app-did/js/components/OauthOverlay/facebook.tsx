@@ -14,7 +14,7 @@ import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
 import { WebViewMessageEvent } from 'react-native-webview';
 import { InjectFacebookOpenJavaScript, FBAuthPush, FB_FUN, PATHS } from './config';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { OpenLogin } from '@portkey-wallet/constants/constants-ca/network-test4-v2';
+import { OpenLogin } from '@portkey-wallet/constants/constants-ca/network';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { parseFacebookToken } from '@portkey-wallet/utils/authentication';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';

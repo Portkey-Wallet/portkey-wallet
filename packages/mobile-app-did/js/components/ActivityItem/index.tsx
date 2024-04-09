@@ -5,7 +5,7 @@ import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
-import { AmountSign, divDecimalsStr, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
+import { AmountSign, formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { addressFormat } from '@portkey-wallet/utils';
 import CommonAvatar from 'components/CommonAvatar';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -47,7 +47,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
 
     return (
       <Text numberOfLines={1} ellipsizeMode="tail" style={[itemStyle.tokenBalance, isReceived && FontStyles.font10]}>
-        {`${prefix} ${divDecimalsStr(item?.amount, decimals)} ${symbol}`}
+        {`${prefix} ${formatTokenAmountShowWithDecimals(item?.amount, decimals)}${item?.nftInfo ? '' : ' ' + symbol}`}
       </Text>
     );
   }, [item]);
@@ -118,9 +118,9 @@ export default memo(ActivityItem);
 
 const itemStyle = StyleSheet.create({
   itemWrap: {
-    width: '100%',
+    flex: 1,
     backgroundColor: defaultColors.bg1,
-    paddingHorizontal: pTd(16),
+    marginHorizontal: pTd(16),
   },
   itemBorder: {
     marginTop: pTd(4),
@@ -192,6 +192,6 @@ const itemStyle = StyleSheet.create({
     flex: 1,
   },
   resendContainer: {
-    marginVertical: pTd(8),
+    marginBottom: pTd(8),
   },
 });

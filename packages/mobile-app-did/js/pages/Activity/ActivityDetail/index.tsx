@@ -197,9 +197,10 @@ const ActivityDetail = () => {
   ]);
 
   const amountShow = useMemo(() => {
-    return `${activityItem?.isReceived ? '+' : '-'} ${divDecimalsStr(activityItem?.amount, activityItem?.decimals)} ${
-      activityItem?.symbol || ''
-    }`;
+    return `${activityItem?.isReceived ? '+' : '-'} ${formatTokenAmountShowWithDecimals(
+      activityItem?.amount,
+      activityItem?.decimals,
+    )} ${activityItem?.symbol || ''}`;
   }, [activityItem?.amount, activityItem?.decimals, activityItem?.isReceived, activityItem?.symbol]);
 
   useEffectOnce(() => {

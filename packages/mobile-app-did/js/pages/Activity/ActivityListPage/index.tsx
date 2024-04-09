@@ -58,7 +58,7 @@ const ActivityListPage = () => {
 
       await dispatch(getActivityListAsync(params));
       setIsLoading(ListLoadingEnum.hide);
-      if (!isInit) await sleep(500);
+      if (!isInit) await sleep(250);
     },
     [caAddressInfos, chainId, currentActivity, dispatch, symbol],
   );
@@ -84,6 +84,8 @@ const ActivityListPage = () => {
     );
   }, []);
 
+  const isEmpty = useMemo(() => (currentActivity?.data || []).length === 0, [currentActivity?.data]);
+
   return (
     <PageContainer
       titleDom={t('Activity')}
@@ -101,8 +103,12 @@ const ActivityListPage = () => {
         windowSize={50}
         maxToRenderPerBatch={10}
         initialNumToRender={20}
-        ListEmptyComponent={<NoData message={t('You have no transactions.')} topDistance={pTd(160)} />}
-        ListFooterComponent={<FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}
+        ListEmptyComponent={
+          <NoData message={'You have no transactions.'} topDistance={pTd(160)} oblongSize={[pTd(96), pTd(84)]} />
+        }
+        ListFooterComponent={
+          <>{!isEmpty && <FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}</>
+        }
       />
     </PageContainer>
   );

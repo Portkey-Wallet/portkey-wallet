@@ -6,6 +6,7 @@ platform :ios, '13.3'
 install! 'cocoapods', :deterministic_uuids => false
 
 production = ENV["PRODUCTION"] == "1"
+includeFlipper = ENV["INCLUDE_FLIPPER"] == "true"
 
 target 'Portkey' do
 
@@ -47,10 +48,8 @@ target 'Portkey' do
   # pod 'RNFBMessaging', :modular_headers => true
   # pod 'RNFBPerf', :modular_headers => true
   pod 'nanopb', :modular_headers => true
-
   # use_frameworks! :linkage => :static
   # $RNFirebaseAsStaticFramework = true
-
   use_react_native!(
     :path => config[:reactNativePath],
     # to enable hermes on iOS, change `false` to `true` and then install pods
@@ -58,10 +57,16 @@ target 'Portkey' do
     # enabled hermes
     :hermes_enabled => true,
     :fabric_enabled => flags[:fabric_enabled],
-    :flipper_configuration => FlipperConfiguration.disabled,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.." 
   )
+
+  if includeFlipper 
+    use_react_native!(
+      :flipper_configuration => FlipperConfiguration.enabled(["Debug"], { 'Flipper' => '0.174.0' }),
+    )
+  end
+
   target 'PortkeyTests' do
     inherit! :complete
     # Pods for testing

@@ -55,7 +55,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
   const ExtraDom = useMemo(() => {
     return (
       <Text numberOfLines={1} ellipsizeMode="tail" style={itemStyle.usdtBalance}>
-        {item?.nftInfo ? item?.nftInfo?.alias : isMainnet ? formatAmountUSDShow(item?.currentTxPriceInUsd ?? 0) : ''}
+        {item?.nftInfo ? item?.nftInfo?.alias : formatAmountUSDShow(isMainnet ? item?.currentTxPriceInUsd : '')}
       </Text>
     );
   }, [isMainnet, item?.currentTxPriceInUsd, item?.nftInfo]);

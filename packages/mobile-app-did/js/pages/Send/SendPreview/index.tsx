@@ -23,13 +23,7 @@ import crossChainTransfer, {
 } from 'utils/transfer/crossChainTransfer';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import {
-  formatAmountShow,
-  formatAmountUSDShow,
-  formatTokenAmountShowWithDecimals,
-  timesDecimals,
-  unitConverter,
-} from '@portkey-wallet/utils/converter';
+import { formatAmountShow, formatAmountUSDShow, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
 import sameChainTransfer from 'utils/transfer/sameChainTransfer';
 import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
 import { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';

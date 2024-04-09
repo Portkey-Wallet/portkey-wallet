@@ -170,5 +170,7 @@ export const formatAmountUSDShow = (
 };
 
 export const convertAmountUSDShow = (count: BigNumber.Value, price?: BigNumber.Value) => {
+  if (!price) return;
+
   return formatAmountUSDShow(ZERO.plus(count).times(price ?? 0));
 };

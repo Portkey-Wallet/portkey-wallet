@@ -38,7 +38,7 @@ interface ParamsType {
   avatar?: string;
 }
 
-const MAX_RESULT_COUNT = 10;
+const MAX_RESULT_COUNT = 20;
 
 const ContactActivity: React.FC = () => {
   const {
@@ -96,7 +96,7 @@ const ContactActivity: React.FC = () => {
 
       setTotalCount(result.totalRecordCount);
       setIsLoading(ListLoadingEnum.hide);
-      if (skipActivityNumber !== 0) await sleep(500);
+      if (skipActivityNumber !== 0) await sleep(250);
     },
     [activityList, params],
   );
@@ -153,6 +153,8 @@ const ContactActivity: React.FC = () => {
     await sleep(100);
     fetchActivityList(0);
   }, [fetchActivityList]);
+
+  const isEmpty = useMemo(() => activityList.length === 0, [activityList.length]);
 
   return (
     <PageContainer
@@ -213,7 +215,9 @@ const ContactActivity: React.FC = () => {
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListEmptyComponent={<NoData noPic message="" />}
-        ListFooterComponent={<FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}
+        ListFooterComponent={
+          <>{!isEmpty && <FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}</>
+        }
       />
     </PageContainer>
   );

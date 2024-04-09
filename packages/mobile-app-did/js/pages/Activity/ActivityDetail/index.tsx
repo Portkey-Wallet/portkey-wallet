@@ -30,6 +30,7 @@ import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
+import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { IActivityApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import Lottie from 'lottie-react-native';
 import Touchable from 'components/Touchable';

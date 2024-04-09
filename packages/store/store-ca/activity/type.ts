@@ -11,7 +11,7 @@ export type ActivityStateType = {
 };
 
 export type ActivityStateMap = {
-  [key: string]: ActivityStateMapAttributes;
+  [key: string]: ActivityStateMapAttributes | undefined;
 };
 
 export type ActivityStateMapAttributes = {

@@ -270,6 +270,6 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg5,
   },
   indexTextSelectStyle: {
-    color: defaultColors.font11,
+    color: defaultColors.font2,
   },
 });

@@ -1,13 +1,11 @@
 import { act } from '@testing-library/react';
 import { WalletType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
-import { request } from '@portkey-wallet/api/api-did';
 import { useCurrentNetworkInfo } from './network';
 import {
   useCurrentWalletInfo,
   useCurrentWallet,
   useDeviceList,
-  useSetWalletName,
   useCaAddresses,
   useCaAddressInfoList,
   useChainIdList,
@@ -250,19 +248,6 @@ describe('useCaAddressInfoList', () => {
   test('no caInfo.[currentNetwork] data, and return []', () => {
     const { result } = renderHookWithProvider(useCaAddressInfoList, setupStore(INCOMPLETE_WALLET_STATE));
     expect(result.current).toHaveLength(0);
-  });
-});
-
-describe('useSetWalletName', () => {
-  test('the useSetWalletName method was successfully called', async () => {
-    jest.mocked(useCurrentNetworkInfo).mockReturnValue(TestnetNetworkInfo);
-    jest.mocked(request.wallet.editWalletName).mockReturnValue(Promise.resolve(() => jest.fn()));
-
-    const { result } = renderHookWithProvider(useSetWalletName, setupStore(COMPLETE_WALLET_STATE));
-    expect(result.current).toBeDefined();
-
-    await result.current('newName');
-    expect(result.current).toHaveBeenCalled;
   });
 });
 

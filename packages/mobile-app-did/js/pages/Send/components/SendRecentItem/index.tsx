@@ -61,7 +61,8 @@ const SendRecentItem: React.FC<ItemType> = props => {
                   style={[styles.address, styles.chainInfo, !isContacts && !ele?.transactionTime && FontStyles.font7]}>
                   {formatChainInfoToShow(ele?.chainId as ChainId, currentNetwork)}
                 </TextS>
-                <TextS
+                <Touchable
+                  hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
                   style={[styles.contactActivity, styles.moreIconWrapStyle]}
                   onPress={() =>
                     navigationService.navigate('ContactActivity', {
@@ -73,7 +74,7 @@ const SendRecentItem: React.FC<ItemType> = props => {
                     })
                   }>
                   <Svg icon="more-info" size={pTd(20)} />
-                </TextS>
+                </Touchable>
               </Touchable>
             ) : (
               <View style={[index !== 0 && styles.addressItemWrap]} key={`${ele?.address}${ele?.chainId}`}>

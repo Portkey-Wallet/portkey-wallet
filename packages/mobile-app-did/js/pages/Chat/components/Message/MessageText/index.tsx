@@ -179,6 +179,21 @@ function MessageText(
         });
       }
 
+      if (isGroupChat && isAdmin && position === 'left') {
+        list.push({
+          title: 'Delete',
+          iconName: 'chat-delete',
+          onPress: async () => {
+            try {
+              if (!currentMessage) return;
+              await deleteMessage(currentMessage, true);
+            } catch (error) {
+              CommonToast.fail('Failed to delete message');
+            }
+          },
+        });
+      }
+
       if (currentMessage)
         if (position === 'right')
           list.push({

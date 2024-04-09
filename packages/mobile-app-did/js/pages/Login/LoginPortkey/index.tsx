@@ -56,10 +56,10 @@ export default function LoginPortkey() {
         <View style={GStyles.center}>
           {!isMainnet && (
             <View style={styles.labelBox}>
-              <TextM style={[FontStyles.font11, fonts.mediumFont]}>TEST</TextM>
+              <TextM style={[FontStyles.font2, fonts.mediumFont]}>TEST</TextM>
             </View>
           )}
-          <TextXXXL style={[styles.titleStyle, FontStyles.font11]}>{t('Log In To Portkey ')}</TextXXXL>
+          <TextXXXL style={[styles.titleStyle, FontStyles.font2]}>{t('Log In To Portkey ')}</TextXXXL>
         </View>
         {loginMap[loginType]}
         <SwitchNetwork />

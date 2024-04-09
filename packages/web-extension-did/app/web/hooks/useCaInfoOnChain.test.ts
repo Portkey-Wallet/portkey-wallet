@@ -53,7 +53,6 @@ describe('useCaInfoOnChain', () => {
       chainList: chainList,
       walletAvatar: '',
       walletType: 'aelf',
-      walletName: '',
       currentNetwork: 'TESTNET',
     });
     jest.mocked(useCurrentNetworkInfo).mockReturnValue(currentNetwork);
@@ -97,7 +96,6 @@ describe('useCaInfoOnChain', () => {
       chainList: chainList,
       walletAvatar: '',
       walletType: 'aelf',
-      walletName: '',
       currentNetwork: 'TESTNET',
     });
     const getSeedResult = {
@@ -152,7 +150,6 @@ describe('useCaInfoOnChain', () => {
       chainList: chainList,
       walletAvatar: '',
       walletType: 'aelf',
-      walletName: '',
       currentNetwork: 'TESTNET',
     });
     const getSeedResult = {
@@ -199,7 +196,6 @@ describe('useCaInfoOnChain', () => {
       chainList: chainList,
       walletAvatar: '',
       walletType: 'aelf',
-      walletName: '',
       currentNetwork: 'TESTNET',
     });
     jest.mocked(useCurrentNetworkInfo).mockReturnValue(currentNetwork);

@@ -62,6 +62,7 @@ import {
   Message,
   MessageCount,
   RedPackageConfigType,
+  TDeleteMessageByGroupOwnerParams,
 } from '../types';
 import { sleep } from '@portkey-wallet/utils';
 import { ContactItemType, IContactProfile } from '@portkey-wallet/types/types-ca/contact';
@@ -214,6 +215,13 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
   deleteMessage(params: DeleteMessageParams): IMServiceCommon<null> {
     return this._request.send({
       url: '/api/v1/message/hide',
+      params,
+      method: 'POST',
+    });
+  }
+  deleteMessageByGroupOwner(params: TDeleteMessageByGroupOwnerParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/message/hideByLeader',
       params,
       method: 'POST',
     });

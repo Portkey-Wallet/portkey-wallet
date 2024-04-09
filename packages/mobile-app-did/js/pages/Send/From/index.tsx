@@ -1,4 +1,4 @@
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -8,12 +8,12 @@ import { useLanguage } from 'i18n/hooks';
 
 export default function From() {
   const { t } = useLanguage();
-  const { walletName } = useWallet();
+  const { nickName = '' } = useCurrentUserInfo() || {};
 
   return (
     <View style={styles.fromWrap}>
       <TextM style={styles.leftTitle}>{t('From')}</TextM>
-      <TextM style={styles.middle}>{walletName}</TextM>
+      <TextM style={styles.middle}>{nickName}</TextM>
     </View>
   );
 }

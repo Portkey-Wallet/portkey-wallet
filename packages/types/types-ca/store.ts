@@ -6,7 +6,7 @@ import { recentSlice, RecentStateType } from '@portkey-wallet/store/store-ca/rec
 import { TokenState } from './token';
 import { TokenBalanceState } from './tokenBalance';
 import { assetsSlice } from '@portkey-wallet/store/store-ca/assets/slice';
-import { AssetsStateType } from '@portkey-wallet/store/store-ca/assets/type';
+import { TAssetsState } from '@portkey-wallet/store/store-ca/assets/type';
 import { activitySlice } from '@portkey-wallet/store/store-ca/activity/slice';
 import { walletSlice } from '@portkey-wallet/store/store-ca/wallet/slice';
 import { WalletState } from '@portkey-wallet/store/store-ca/wallet/type';
@@ -38,7 +38,7 @@ export type CACommonState = RootCommonState & {
   [tokenManagementSlice.name]: TokenState;
   [tokenBalanceSlice.name]: TokenBalanceState;
   [recentSlice.name]: RecentStateType;
-  [assetsSlice.name]: AssetsStateType;
+  [assetsSlice.name]: TAssetsState;
   [activitySlice.name]: ActivityStateType;
   [walletSlice.name]: WalletState;
   [contactSlice.name]: ContactState;

@@ -15,4 +15,8 @@ export default {
     target: '/api/app/user/assets/symbolImages',
     config: { method: 'GET' },
   },
+  getTokenBalance: {
+    target: '/api/app/user/assets/tokenBalance',
+    config: { method: 'GET' },
+  },
 } as const;

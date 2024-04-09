@@ -15,7 +15,7 @@ import fonts from 'assets/theme/fonts';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { usePin } from 'hooks/store';
-import { useCaAddressInfoList, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList, useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getManagerAccount } from 'utils/redux';
 import crossChainTransfer, {
   CrossChainTransferIntervalParams,
@@ -23,7 +23,7 @@ import crossChainTransfer, {
 } from 'utils/transfer/crossChainTransfer';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { formatAmountShow, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
+import { formatAmountShow, formatAmountUSDShow, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
 import sameChainTransfer from 'utils/transfer/sameChainTransfer';
 import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
 import { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
@@ -34,11 +34,6 @@ import { IToSendPreviewParamsType } from '@portkey-wallet/types/types-ca/routePa
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import {
-  clearNftCollection,
-  fetchNFTCollectionsAsync,
-  fetchTokenListAsync,
-} from '@portkey-wallet/store/store-ca/assets/slice';
 import { sleep } from '@portkey-wallet/utils';
 import { FontStyles } from 'assets/theme/styles';
 import { ChainId } from '@portkey-wallet/types';
@@ -51,7 +46,12 @@ import { TransferTypeEnum } from '@portkey-wallet/im';
 import { useJumpToChatDetails, useJumpToChatGroupDetails } from 'hooks/chat';
 import { useFocusEffect } from '@react-navigation/native';
 import NFTAvatar from 'components/NFTAvatar';
-import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-mainnet-v2';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
+import { useAccountNFTCollectionInfo, useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import {
+  PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
+  PAGE_SIZE_IN_ACCOUNT_TOKEN,
+} from '@portkey-wallet/constants/constants-ca/assets';
 
 const SendPreview: React.FC = () => {
   const { t } = useLanguage();
@@ -80,6 +80,9 @@ const SendPreview: React.FC = () => {
   const pin = usePin();
   const chainInfo = useCurrentChain(assetInfo.chainId);
 
+  const { fetchAccountNFTCollectionInfoList } = useAccountNFTCollectionInfo();
+  const { fetchAccountTokenInfoList } = useAccountTokenInfo();
+
   const sendIMTransfer = useSendIMTransfer();
   const jumpToChatDetails = useJumpToChatDetails();
   const jumpToChatGroupDetails = useJumpToChatGroupDetails();
@@ -88,7 +91,7 @@ const SendPreview: React.FC = () => {
   const currentNetwork = useCurrentNetworkInfo();
   const caAddressInfos = useCaAddressInfoList();
   const wallet = useCurrentWalletInfo();
-  const { userInfo } = useWallet();
+  const userInfo = useCurrentUserInfo();
   const contractRef = useRef<ContractBasic>();
   const tokenContractRef = useRef<ContractBasic>();
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
@@ -105,7 +108,7 @@ const SendPreview: React.FC = () => {
   const showRetry = useCallback(
     (retryFunc: () => void) => {
       ActionSheet.alert({
-        title: t('Transaction failed ！'),
+        title: t('Transaction failed !'),
         buttons: [
           {
             title: t('Resend'),
@@ -208,10 +211,17 @@ const SendPreview: React.FC = () => {
     await sleep(1500);
 
     if (sendType === 'nft') {
-      dispatch(clearNftCollection());
-      dispatch(fetchNFTCollectionsAsync({ caAddressInfos }));
+      fetchAccountNFTCollectionInfoList({
+        caAddressInfos,
+        skipCount: 0,
+        maxResultCount: PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
+      });
     } else {
-      dispatch(fetchTokenListAsync({ caAddressInfos }));
+      fetchAccountTokenInfoList({
+        caAddressInfos,
+        skipCount: 0,
+        maxResultCount: PAGE_SIZE_IN_ACCOUNT_TOKEN,
+      });
     }
     if (successNavigateName) {
       navigationService.navigate(successNavigateName);
@@ -227,7 +237,8 @@ const SendPreview: React.FC = () => {
     checkTransferLimitWithJump,
     crossDefaultFee,
     currentNetwork.walletType,
-    dispatch,
+    fetchAccountNFTCollectionInfoList,
+    fetchAccountTokenInfoList,
     guardiansApproved,
     isApproved,
     isCrossChainTransfer,
@@ -439,18 +450,17 @@ const SendPreview: React.FC = () => {
             <TextL numberOfLines={1} style={[styles.nftTitle, fonts.mediumFont]}>
               {`${assetInfo.alias} #${assetInfo?.tokenId}  `}
             </TextL>
-            <TextS style={[FontStyles.font3]}>{`Amount：${formatAmountShow(sendNumber)}`}</TextS>
+            <TextS style={[FontStyles.font3]}>{`Amount: ${formatAmountShow(sendNumber, assetInfo.decimals)}`}</TextS>
           </View>
         </View>
       ) : (
         <>
           <Text style={[styles.tokenCount, FontStyles.font5, fonts.mediumFont]}>
-            {`- ${formatAmountShow(sendNumber)} ${assetInfo?.symbol}`}
+            {`- ${formatAmountShow(sendNumber, assetInfo.decimals)} ${assetInfo?.symbol}`}
           </Text>
           {isMainnet && isTokenHasPrice && (
-            <TextM style={styles.tokenUSD}>{`-$ ${formatAmountShow(
+            <TextM style={styles.tokenUSD}>{`- ${formatAmountUSDShow(
               ZERO.plus(sendNumber).multipliedBy(tokenPriceObject[assetInfo.symbol]),
-              2,
             )}`}</TextM>
           )}
         </>
@@ -554,18 +564,20 @@ const SendPreview: React.FC = () => {
                   <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>
                     {ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(crossDefaultFee))
                       ? '0'
-                      : formatAmountShow(ZERO.plus(sendNumber).minus(ZERO.plus(crossDefaultFee)))}{' '}
+                      : formatAmountShow(
+                          ZERO.plus(sendNumber).minus(ZERO.plus(crossDefaultFee)),
+                          defaultToken.decimals,
+                        )}{' '}
                     {defaultToken.symbol}
                   </TextM>
                   {isMainnet ? (
-                    <TextS style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`$ ${
+                    <TextS style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`${
                       ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(crossDefaultFee))
-                        ? '0'
-                        : formatAmountShow(
+                        ? '$ 0'
+                        : formatAmountUSDShow(
                             ZERO.plus(sendNumber)
                               .minus(ZERO.plus(crossDefaultFee))
                               .times(tokenPriceObject[defaultToken.symbol]),
-                            2,
                           )
                     }`}</TextS>
                   ) : (

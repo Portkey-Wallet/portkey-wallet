@@ -159,6 +159,24 @@
           }
         }
       }
+      .nft-item-skeleton.@{app-prefix}-skeleton-element {
+        .@{app-prefix}-skeleton-avatar {
+          width: 96px;
+          height: 96px;
+          border-radius: 6px;
+          background-color: @bg-31;
+          .@{app-prefix}-skeleton-element {
+            .@{app-prefix}-skeleton-active {
+              .@{app-prefix}-skeleton-avatar {
+                &::after {
+                  /* stylelint-disable-next-line color-function-notation */
+                  background: linear-gradient(90deg, hsla(0deg, 0%, 96%, 20%) 25%,hsla(0deg, 0%, 92%, 24%) 37%,hsla(0deg, 0%, 96%, 20%) 63%);
+                }
+              }
+            }
+          }
+        }
+      }
 
       .load-more {
         cursor: pointer;
@@ -198,6 +216,12 @@
           height: 120px;
           .mask {
             padding: 18px 8px 8px;
+          }
+        }
+        .nft-item-skeleton.@{app-prefix}-skeleton-element {
+          .@{app-prefix}-skeleton-avatar {
+            width: 120px;
+            height: 120px;
           }
         }
       }

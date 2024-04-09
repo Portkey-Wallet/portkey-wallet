@@ -7,12 +7,12 @@ import {
   fetchNFTList,
   fetchTokenList,
   fetchTokenPrices,
+  fetchTokenBalance,
 } from './api';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { TAssetsState } from './type';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
 import { NEW_CLIENT_MOCK_ELF_LIST, PAGE_SIZE_IN_NFT_ITEM } from '@portkey-wallet/constants/constants-ca/assets';
-import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { WalletState } from '../wallet/type';
 
 export const INIT_ACCOUNT_TOKEN_INFO = {
@@ -60,7 +60,7 @@ const initialState: TAssetsState = {
     isFetching: false,
     tokenPriceObject: {},
   },
-  accountBalance: 0,
+  accountBalance: {},
 };
 
 // fetch tokenList on Dashboard
@@ -249,15 +249,29 @@ export const fetchTokensPriceAsync = createAsyncThunk(
         accountToken: { accountTokenList },
       },
     } = getState() as { assets: TAssetsState };
-    // const {
-    //   accountAssets: { totalRecordCount, accountAssetsList },
-    // } = assets;
 
     const response = await fetchTokenPrices({ symbols: symbols || accountTokenList.map(ele => ele.symbol) });
 
     return { list: response.items };
+  },
+);
 
-    // return { list: [], totalRecordCount };
+// fetch tokenBalance
+export const fetchTargetTokenBalanceAsync = createAsyncThunk(
+  'fetchTargetTokenBalanceAsync',
+  async ({
+    symbol,
+    chainId,
+    currentCaAddress = '',
+    currentNetwork,
+  }: {
+    symbol: string;
+    chainId: ChainId;
+    currentCaAddress: string;
+    currentNetwork?: NetworkType;
+  }) => {
+    const response = await fetchTokenBalance({ symbol, chainId, currentCaAddress });
+    return { symbol, chainId, response, currentNetwork };
   },
 );
 
@@ -335,7 +349,14 @@ export const assetsSlice = createSlice({
         list.forEach(ele => {
           if (ele.symbol) priceObj[ele.symbol] = ele.price ?? 0;
         });
-        state.accountBalance = formatAmountShow(totalBalanceInUsd, 2);
+
+        state.accountBalance = {
+          accountBalanceInfo: {
+            ...(state.accountBalance?.accountBalanceInfo || {}),
+            [currentNetwork]: totalBalanceInUsd,
+          },
+        };
+
         const newTokenList = skipCount === 0 ? list : [...preAccountTokenList, ...list];
         state.tokenPrices.tokenPriceObject = { ...state.tokenPrices.tokenPriceObject, ...priceObj };
 
@@ -383,14 +404,25 @@ export const assetsSlice = createSlice({
         };
         state.accountNFT.isFetching = false;
       })
-      // .addCase(fetchNFTAsync.pending, state => {
-      //   state.accountNFT.isFetching = true;
-      // })
-      .addCase(fetchNFTAsync.fulfilled, (state, action) => {
-        if (!action.payload) return;
-        const { list, totalRecordCount, symbol, chainId, skipCount, currentNetwork } = action.payload;
+      .addCase(fetchNFTAsync.pending, (state, action) => {
+        if (!action.meta.arg) return;
+        const { symbol, chainId, currentNetwork = 'MAINNET' } = action.meta.arg;
         const preNFTCollection = state.accountNFT.accountNFTInfo?.[currentNetwork]?.accountNFTList;
         const currentNFTSeriesItem = preNFTCollection?.find(ele => ele.symbol === symbol && ele.chainId === chainId);
+        if (currentNFTSeriesItem) {
+          currentNFTSeriesItem.isFetching = true;
+        }
+      })
+      .addCase(fetchNFTAsync.fulfilled, (state, action) => {
+        if (!action.meta.arg) return;
+        const { symbol, chainId, currentNetwork = 'MAINNET' } = action.meta.arg;
+        const preNFTCollection = state.accountNFT.accountNFTInfo?.[currentNetwork]?.accountNFTList;
+        const currentNFTSeriesItem = preNFTCollection?.find(ele => ele.symbol === symbol && ele.chainId === chainId);
+        if (currentNFTSeriesItem) {
+          currentNFTSeriesItem.isFetching = false;
+        }
+        if (!action.payload) return;
+        const { list, totalRecordCount, skipCount } = action.payload;
         if (currentNFTSeriesItem) {
           if (currentNFTSeriesItem?.children?.length > skipCount) return;
           currentNFTSeriesItem.children = [...currentNFTSeriesItem.children, ...list];
@@ -454,6 +486,30 @@ export const assetsSlice = createSlice({
       })
       .addCase(fetchTokensPriceAsync.rejected, state => {
         state.accountToken.isFetching = false;
+      })
+      .addCase(fetchTargetTokenBalanceAsync.fulfilled, (state, action) => {
+        const { chainId, symbol, response, currentNetwork = 'MAINNET' } = action.payload;
+
+        const tmpList = state.accountToken?.accountTokenInfo?.[currentNetwork]?.accountTokenList.map(ele =>
+          ele.chainId === chainId && ele.symbol === symbol
+            ? { ...ele, balance: response.balance, balanceInUsd: response.balanceInUsd }
+            : ele,
+        );
+
+        if (!state?.accountToken?.accountTokenInfo?.[currentNetwork]) {
+          state.accountToken.accountTokenInfo = {
+            ...(state.accountToken.accountTokenInfo || {}),
+            [currentNetwork]: {},
+          };
+        }
+
+        state.accountToken.accountTokenInfo = {
+          ...(state.accountToken.accountTokenInfo || {}),
+          [currentNetwork]: {
+            ...(state.accountToken.accountTokenInfo[currentNetwork] || {}),
+            accountTokenList: tmpList,
+          },
+        };
       });
   },
 });

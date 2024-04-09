@@ -9,7 +9,7 @@ import ActivityButton from 'pages/DashBoard/ActivityButton';
 import { TextM } from 'components/CommonText';
 import navigationService from 'utils/navigationService';
 import { defaultColors } from 'assets/theme';
-import { useUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
@@ -18,10 +18,11 @@ import GStyles from 'assets/theme/GStyles';
 import DepositButton from 'components/DepositButton';
 import { DepositItem, useDepositList } from 'hooks/deposit';
 import Touchable from 'components/Touchable';
+import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 
 const Card: React.FC = () => {
   const isMainnet = useIsMainnet();
-  const userInfo = useUserInfo();
+  const userInfo = useCurrentUserInfo();
   const accountBalanceUSD = useAccountBalanceUSD();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const depositList = useDepositList();
@@ -56,7 +57,7 @@ const Card: React.FC = () => {
           <Svg icon="scan" size={22} color={defaultColors.font2} />
         </Touchable>
       </View>
-      <Text style={styles.usdtBalance}>{isMainnet ? `$${accountBalanceUSD}` : 'Dev Mode'}</Text>
+      <Text style={styles.usdtBalance}>{isMainnet ? formatAmountUSDShow(accountBalanceUSD) : 'Dev Mode'}</Text>
       <TextM style={styles.accountName}>{userInfo?.nickName}</TextM>
       <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.buttonGroupWrap, buttonGroupWrapStyle]}>
         {isDepositShow && <DepositButton wrapStyle={buttonWrapStyle} list={depositList as DepositItem[]} />}

@@ -1,5 +1,5 @@
 import { RedPackageGrabInfoItem } from '@portkey-wallet/im';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
@@ -46,7 +46,7 @@ const RedPacketReceiverItem: React.FC<IReceiverItemProps> = props => {
 
         <View style={itemStyle.balanceWrap}>
           <TextL style={itemStyle.amount} numberOfLines={1} ellipsizeMode={'tail'}>
-            {getEllipsisTokenShow(formatAmountShow(divDecimals(item.amount, decimals)), symbol)}
+            {getEllipsisTokenShow(formatTokenAmountShowWithDecimals(item.amount, decimals), symbol)}
           </TextL>
           <View style={itemStyle.blank} />
           {item.isLuckyKing || isLuckyKing ? (

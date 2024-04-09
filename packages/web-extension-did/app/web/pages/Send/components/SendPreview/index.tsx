@@ -1,10 +1,9 @@
 import { ZERO } from '@portkey-wallet/constants/misc';
 import clsx from 'clsx';
 import { useMemo } from 'react';
-import { useWalletInfo } from 'store/Provider/hooks';
 // import { useTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import './index.less';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { getEntireDIDAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
@@ -30,11 +29,13 @@ export interface ISendPreviewProps {
   tokenId: string;
   isSeed?: boolean;
   seedType?: SeedTypeEnum;
+  decimals?: number;
 }
 
 export default function SendPreview(props: ISendPreviewProps) {
-  const { amount, symbol, alias, toAccount, transactionFee, type, imageUrl, chainId, isCross, tokenId } = props;
-  const { userInfo } = useWalletInfo();
+  const userInfo = useCurrentUserInfo();
+  const { amount, symbol, alias, toAccount, transactionFee, type, imageUrl, chainId, isCross, tokenId, decimals } =
+    props;
   const wallet = useCurrentWalletInfo();
   const isMainnet = useIsMainnet();
   const amountInUsdShow = useAmountInUsdShow();
@@ -79,7 +80,7 @@ export default function SendPreview(props: ISendPreviewProps) {
       {type !== 'nft' ? (
         <div className="amount-preview">
           <p className="amount">
-            -{formatAmountShow(amount)} {symbol}
+            -{formatAmountShow(amount, decimals)} {symbol}
           </p>
           <p className="convert">{isMainnet && amountInUsdShow(amount, 0, symbol)}</p>
         </div>
@@ -95,7 +96,7 @@ export default function SendPreview(props: ISendPreviewProps) {
               <p className="token-id">{`#${tokenId}`}</p>
             </div>
             <p className="quantity">
-              Amount: <span>{formatAmountShow(amount)}</span>
+              Amount: <span>{formatAmountShow(amount, decimals)}</span>
             </p>
           </div>
         </div>

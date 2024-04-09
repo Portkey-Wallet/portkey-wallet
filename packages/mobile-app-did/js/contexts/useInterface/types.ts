@@ -6,6 +6,7 @@ export type State = {
   currentInterface?: AElfInterface;
   viewContracts?: { [key: string]: ContractBasic };
   caContracts?: { [key in ChainId]?: { [key: string]: ContractBasic } };
+  tokenContracts?: { [key in ChainId]?: { [key: string]: ContractBasic } };
 
   googleRequest: any | null;
   response: AuthSessionResult | null;

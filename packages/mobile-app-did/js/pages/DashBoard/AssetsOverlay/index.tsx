@@ -26,7 +26,7 @@ import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca
 import { useAccountAssetsInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import Touchable from 'components/Touchable';
 import NFTAvatar from 'components/NFTAvatar';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { PAGE_SIZE_DEFAULT, PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
 import GStyles from 'assets/theme/GStyles';
@@ -90,7 +90,7 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
 
           <View style={itemStyle.balanceWrap}>
             <TextL style={[itemStyle.token, FontStyles.font5]}>
-              {formatAmountShow(divDecimals(item?.nftInfo?.balance, item.nftInfo.decimals))}
+              {formatTokenAmountShowWithDecimals(item?.nftInfo?.balance, item.nftInfo.decimals)}
             </TextL>
             <TextS style={itemStyle.dollar} />
           </View>

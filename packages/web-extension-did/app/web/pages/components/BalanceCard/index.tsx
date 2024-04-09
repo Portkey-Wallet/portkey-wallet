@@ -9,7 +9,6 @@ import './index.less';
 
 export interface BalanceCardProps {
   accountInfo?: any;
-  amount?: string | number;
   isShowFaucet?: boolean;
   isShowBuyEntry?: boolean;
   isShowDeposit?: boolean;

@@ -12,19 +12,20 @@ import { useGroupChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ChannelMemberInfo } from '@portkey-wallet/im/types/index';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { showAssetList } from 'pages/DashBoard/AssetsOverlay';
-import { useUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import im from '@portkey-wallet/im';
 import LottieLoading from 'components/LottieLoading';
 import { pTd } from 'utils/unit';
 import { SEARCH_MEMBER_LIST_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 const SelectGroupMembersToTransferPage = () => {
+  // todo: walletName is not used
   const currentChannelId = useCurrentChannelId();
   const { groupInfo, refreshChannelMembersInfo } = useGroupChannelInfo(currentChannelId || '', false);
 
   const channelId = useCurrentChannelId();
-  const { userId: myUserId } = useUserInfo() || {};
+  const { userId: myUserId } = useCurrentUserInfo() || {};
   const { members = [], totalCount } = groupInfo || {};
   const [keyword, setKeyword] = useState('');
   const debounceKeyword = useDebounce(keyword, 800);

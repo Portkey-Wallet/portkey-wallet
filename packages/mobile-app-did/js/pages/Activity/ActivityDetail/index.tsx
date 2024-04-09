@@ -5,7 +5,11 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
 import { addressFormat, formatChainInfoToShow, getExploreLink, handleLoopFetch } from '@portkey-wallet/utils';
-import { divDecimals, divDecimalsStr, formatAmountShow, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
+import {
+  divDecimalsStr,
+  formatAmountUSDShow,
+  formatTokenAmountShowWithDecimals,
+} from '@portkey-wallet/utils/converter';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
@@ -26,7 +30,7 @@ import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
-import { useIsTokenHasPrice, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { IActivityApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import Lottie from 'lottie-react-native';
 import Touchable from 'components/Touchable';
@@ -44,8 +48,7 @@ const ActivityDetail = () => {
     return result?.length > 0 ? result : caAddressesInfoList;
   }, [activityItemFromRoute?.fromChainId, caAddressesInfoList]);
 
-  const isTokenHasPrice = useIsTokenHasPrice(activityItemFromRoute?.symbol);
-  const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
+  const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const { currentNetwork } = useCurrentWallet();
   const [initializing, setInitializing] = useState(true);
 
@@ -148,6 +151,8 @@ const ActivityDetail = () => {
   }, [CopyIconUI, activityItem, currentNetwork, t, transactionId]);
 
   const feeUI = useMemo(() => {
+    if (activityItem?.isReceived) return <></>;
+
     const transactionFees =
       activityItem?.transactionFees?.length === 0
         ? [{ fee: 0, symbol: defaultToken.symbol, feeInUsd: 0 }]
@@ -160,9 +165,7 @@ const ActivityDetail = () => {
           {activityItem?.isDelegated ? (
             <View style={[styles.transactionFeeItemWrap]}>
               <TextM style={[styles.blackFontColor, styles.fontBold]}>{`0 ${defaultToken.symbol}`}</TextM>
-              {isMainnet && (
-                <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{`$ ${formatAmountShow(0, 2)}`}</TextS>
-              )}
+              {isMainnet && <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{`$ 0`}</TextS>}
             </View>
           ) : (
             <View>
@@ -174,7 +177,7 @@ const ActivityDetail = () => {
                   )} ${item.symbol}`}</TextM>
                   {isMainnet && (
                     <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>
-                      {formatAmountUSDShow(item?.feeInUsd ?? 0)}
+                      {formatAmountUSDShow(item?.feeInUsd)}
                     </TextS>
                   )}
                 </View>
@@ -184,7 +187,14 @@ const ActivityDetail = () => {
         </View>
       </View>
     );
-  }, [activityItem?.isDelegated, activityItem?.transactionFees, defaultToken.symbol, isMainnet, t]);
+  }, [
+    activityItem?.isDelegated,
+    activityItem?.isReceived,
+    activityItem?.transactionFees,
+    defaultToken.symbol,
+    isMainnet,
+    t,
+  ]);
 
   const amountShow = useMemo(() => {
     return `${activityItem?.isReceived ? '+' : '-'} ${divDecimalsStr(activityItem?.amount, activityItem?.decimals)} ${
@@ -243,8 +253,11 @@ const ActivityDetail = () => {
                 <TextL numberOfLines={1} style={styles.nftTitle}>{`${activityItem?.nftInfo?.alias || ''} #${
                   activityItem?.nftInfo?.nftId || ''
                 }  `}</TextL>
-                <TextS numberOfLines={1} style={[FontStyles.font3, styles.marginTop4]}>{`Amount: ${formatAmountShow(
-                  divDecimals(activityItem?.amount, activityItem?.decimals),
+                <TextS
+                  numberOfLines={1}
+                  style={[FontStyles.font3, styles.marginTop4]}>{`Amount: ${formatTokenAmountShowWithDecimals(
+                  activityItem?.amount,
+                  activityItem?.decimals,
                 )}`}</TextS>
               </View>
             </View>
@@ -255,13 +268,8 @@ const ActivityDetail = () => {
             <Text style={[styles.tokenCount, styles.fontBold]}>
               {SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType as TransactionTypes) && amountShow}
             </Text>
-            {isMainnet && isTokenHasPrice && (
-              <Text style={styles.usdtCount}>{`$ ${formatAmountShow(
-                divDecimals(activityItem?.amount, activityItem?.decimals).multipliedBy(
-                  tokenPriceObject[activityItem.symbol],
-                ),
-                2,
-              )}`}</Text>
+            {isMainnet && (
+              <Text style={styles.usdtCount}>{formatAmountUSDShow(activityItem?.currentTxPriceInUsd)}</Text>
             )}
           </>
         ))}

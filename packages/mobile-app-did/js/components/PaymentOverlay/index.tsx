@@ -13,7 +13,7 @@ import { useAsync } from 'react-use';
 import LottieLoading from 'components/LottieLoading';
 import GStyles from 'assets/theme/GStyles';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { convertAmountUSDShow, divDecimals, divDecimalsStr, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { convertAmountUSDShow, divDecimals, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { IAccountCryptoBoxAssetItem } from '@portkey-wallet/types/types-ca/token';
 import { TextS } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';
@@ -144,9 +144,7 @@ const PaymentModal = ({
                   {fee?.loading ? (
                     <LottieLoading lottieWrapStyle={styles.lottieWrapStyle} lottieStyle={styles.lottieStyle} />
                   ) : (
-                    <TextM>
-                      {formatAmountShow(divDecimals(fee.value, defaultToken.decimals), defaultToken.decimals)}
-                    </TextM>
+                    <TextM>{formatTokenAmountShowWithDecimals(fee.value, defaultToken.decimals)}</TextM>
                   )}
                   <TextM>{` ${defaultToken.symbol}`}</TextM>
                 </View>
@@ -213,7 +211,7 @@ const PaymentModal = ({
     if (!buttonTitle) return;
     return (
       <Touchable onPress={onPress} style={styles.getButtonRow}>
-        <TextS style={FontStyles.font11}>{buttonTitle}</TextS>
+        <TextS style={FontStyles.font2}>{buttonTitle}</TextS>
       </Touchable>
     );
   }, [
@@ -294,7 +292,7 @@ const PaymentModal = ({
       return (
         <Text style={styles.marginTop4}>
           <TextS style={FontStyles.font3}>
-            {formatAmountShow(divDecimalsStr(currentNft?.balance, currentNft?.decimals))}
+            {formatTokenAmountShowWithDecimals(currentNft?.balance, currentNft?.decimals)}
           </TextS>
         </Text>
       );
@@ -302,10 +300,7 @@ const PaymentModal = ({
     return (
       <Text style={styles.marginTop4}>
         <TextS style={FontStyles.font3}>
-          {formatAmountShow(
-            divDecimals(currentAssetInfo?.balance, currentAssetInfo?.decimals),
-            currentAssetInfo?.decimals,
-          )}
+          {formatTokenAmountShowWithDecimals(currentAssetInfo?.balance, currentAssetInfo?.decimals)}
         </TextS>
         <TextS style={FontStyles.font3}>{` ${currentAssetInfo?.symbol}`}</TextS>
         {!!tokenPriceObject[currentAssetInfo?.symbol || ''] && (

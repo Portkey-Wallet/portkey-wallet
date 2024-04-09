@@ -192,6 +192,6 @@ const itemStyle = StyleSheet.create({
     flex: 1,
   },
   resendContainer: {
-    marginVertical: pTd(8),
+    marginBottom: pTd(8),
   },
 });

@@ -118,9 +118,9 @@ export default memo(ActivityItem);
 
 const itemStyle = StyleSheet.create({
   itemWrap: {
-    width: '100%',
+    flex: 1,
     backgroundColor: defaultColors.bg1,
-    paddingHorizontal: pTd(16),
+    marginHorizontal: pTd(16),
   },
   itemBorder: {
     marginTop: pTd(4),
@@ -192,6 +192,6 @@ const itemStyle = StyleSheet.create({
     flex: 1,
   },
   resendContainer: {
-    marginVertical: pTd(8),
+    marginBottom: pTd(8),
   },
 });

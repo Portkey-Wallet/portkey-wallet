@@ -47,7 +47,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
 
     return (
       <Text numberOfLines={1} ellipsizeMode="tail" style={[itemStyle.tokenBalance, isReceived && FontStyles.font10]}>
-        {`${prefix} ${formatTokenAmountShowWithDecimals(item?.amount, decimals)} ${symbol}`}
+        {`${prefix} ${formatTokenAmountShowWithDecimals(item?.amount, decimals)}${item?.nftInfo ? '' : ' ' + symbol}`}
       </Text>
     );
   }, [item]);

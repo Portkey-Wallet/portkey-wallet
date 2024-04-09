@@ -30,7 +30,6 @@ import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
-import { useIsTokenHasPrice, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { IActivityApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import Lottie from 'lottie-react-native';
 import Touchable from 'components/Touchable';
@@ -48,8 +47,7 @@ const ActivityDetail = () => {
     return result?.length > 0 ? result : caAddressesInfoList;
   }, [activityItemFromRoute?.fromChainId, caAddressesInfoList]);
 
-  const isTokenHasPrice = useIsTokenHasPrice(activityItemFromRoute?.symbol);
-  const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
+  const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const { currentNetwork } = useCurrentWallet();
   const [initializing, setInitializing] = useState(true);
 
@@ -178,7 +176,7 @@ const ActivityDetail = () => {
                   )} ${item.symbol}`}</TextM>
                   {isMainnet && (
                     <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>
-                      {formatAmountUSDShow(item?.feeInUsd ?? 0)}
+                      {formatAmountUSDShow(item?.feeInUsd)}
                     </TextS>
                   )}
                 </View>

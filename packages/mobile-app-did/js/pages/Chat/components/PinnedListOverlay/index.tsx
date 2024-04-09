@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: pTd(18),
-    color: defaultColors.font11,
+    color: defaultColors.font2,
     textAlign: 'center',
   },
   closeWrap: {

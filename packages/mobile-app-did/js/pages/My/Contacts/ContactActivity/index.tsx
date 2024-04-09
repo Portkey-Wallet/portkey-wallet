@@ -1,5 +1,5 @@
 import { ChainId } from '@portkey-wallet/types';
-import { addressFormat, formatChainInfoToShow, getExploreLink } from '@portkey-wallet/utils';
+import { addressFormat, formatChainInfoToShow, getExploreLink, sleep } from '@portkey-wallet/utils';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
@@ -10,11 +10,10 @@ import PageContainer from 'components/PageContainer';
 import Svg from 'components/Svg';
 import { setStringAsync } from 'expo-clipboard';
 import { useLanguage } from 'i18n/hooks';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, View, StyleSheet } from 'react-native';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
-import TransferItem from 'components/TransferList/components/TransferItem';
 import NoData from 'components/NoData';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
@@ -26,6 +25,10 @@ import { IActivityListWithAddressApiParams } from '@portkey-wallet/store/store-c
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 import CommonAvatar from 'components/CommonAvatar';
 import Touchable from 'components/Touchable';
+import ActivityItem from 'components/ActivityItem';
+import { ListLoadingEnum } from 'constants/misc';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { FlatListFooterLoading } from 'components/FlatListFooterLoading';
 
 interface ParamsType {
   fromChainId: ChainId;
@@ -35,7 +38,7 @@ interface ParamsType {
   avatar?: string;
 }
 
-const MAX_RESULT_COUNT = 10;
+const MAX_RESULT_COUNT = 20;
 
 const ContactActivity: React.FC = () => {
   const {
@@ -49,9 +52,10 @@ const ContactActivity: React.FC = () => {
   const [addressName, setAddressName] = useState<string | undefined>(contactName);
   const [addressAvatar, setAddressAvatar] = useState<string | undefined>(avatar);
 
-  const [isFetching, setIsFetching] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   const [activityList, setActivityList] = useState<ActivityItemType[]>([]);
+  const activityListRef = useRef(activityList);
+  activityListRef.current = activityList;
 
   const params: IActivityListWithAddressApiParams = useMemo(
     () => ({
@@ -71,15 +75,15 @@ const ContactActivity: React.FC = () => {
     [activityList.length, address, caAddressInfos, chainId, fromChainId],
   );
 
-  const fetchActivityList = useCallback(
+  const [isLoading, setIsLoading] = useState(ListLoadingEnum.hide);
+  const fetchActivityList = useLockCallback(
     async (skipActivityNumber = 0) => {
-      if (isFetching) return;
       const newParams = {
         ...params,
         skipCount: skipActivityNumber,
       };
 
-      setIsFetching(true);
+      setIsLoading(skipActivityNumber === 0 ? ListLoadingEnum.header : ListLoadingEnum.footer);
 
       const result = await request.activity.activityListWithAddress({ params: newParams });
 
@@ -91,9 +95,10 @@ const ContactActivity: React.FC = () => {
       }
 
       setTotalCount(result.totalRecordCount);
-      setIsFetching(false);
+      setIsLoading(ListLoadingEnum.hide);
+      if (skipActivityNumber !== 0) await sleep(250);
     },
-    [activityList, isFetching, params],
+    [activityList, params],
   );
 
   const copyAddress = useCallback(
@@ -104,8 +109,16 @@ const ContactActivity: React.FC = () => {
     [t],
   );
 
-  const renderItem = useCallback(({ item }: { item: ActivityItemType }) => {
-    return <TransferItem item={item} onPress={() => navigationService.navigate('ActivityDetail', item)} />;
+  const renderItem = useCallback(({ item, index }: { item: ActivityItemType; index: number }) => {
+    const preItem = activityListRef.current?.[index - 1];
+    return (
+      <ActivityItem
+        preItem={preItem}
+        index={index}
+        item={item}
+        onPress={() => navigationService.navigate('ActivityDetail', item)}
+      />
+    );
   }, []);
 
   const navToAddContact = useCallback(() => {
@@ -136,9 +149,12 @@ const ContactActivity: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const init = useCallback(() => {
+  const init = useCallback(async () => {
+    await sleep(100);
     fetchActivityList(0);
   }, [fetchActivityList]);
+
+  const isEmpty = useMemo(() => activityList.length === 0, [activityList.length]);
 
   return (
     <PageContainer
@@ -189,17 +205,19 @@ const ContactActivity: React.FC = () => {
 
       <FlatList
         style={styles.flatListWrap}
-        refreshing={false}
+        refreshing={isLoading === ListLoadingEnum.header}
         onRefresh={() => init()}
         data={activityList ?? []}
         renderItem={renderItem}
         onEndReached={() => {
-          if (isFetching) return;
           if (activityList?.length >= totalCount) return;
           fetchActivityList(activityList?.length);
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListEmptyComponent={<NoData noPic message="" />}
+        ListFooterComponent={
+          <>{!isEmpty && <FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}</>
+        }
       />
     </PageContainer>
   );

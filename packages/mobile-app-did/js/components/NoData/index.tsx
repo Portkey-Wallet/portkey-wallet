@@ -12,6 +12,7 @@ export type NoDataPropsType = {
   type?: 'center' | 'top';
   topDistance?: number | string;
   style?: ViewStyle;
+  oblongSize?: [string | number, string | number] | undefined;
 };
 
 const NoData: React.FC<NoDataPropsType> = props => {
@@ -22,6 +23,7 @@ const NoData: React.FC<NoDataPropsType> = props => {
     topDistance = pTd(89),
     noPic = false,
     style = {},
+    oblongSize = [pTd(160), pTd(140)],
   } = props;
 
   let topStyle: ViewStyle = {};
@@ -35,7 +37,7 @@ const NoData: React.FC<NoDataPropsType> = props => {
 
   return (
     <View style={[styles.wrap, topStyle, style]}>
-      {!noPic && <Svg icon={icon} oblongSize={[pTd(160), pTd(140)]} iconStyle={styles.img} />}
+      {!noPic && <Svg icon={icon} oblongSize={oblongSize} iconStyle={styles.img} />}
       <TextL style={styles.message}>{message}</TextL>
     </View>
   );

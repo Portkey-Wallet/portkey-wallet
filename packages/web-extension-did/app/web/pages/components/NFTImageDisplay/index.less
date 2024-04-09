@@ -1,0 +1,29 @@
+@import '../../../assets/theme/constants.less';
+
+.nft-img-wrapper {
+  position: relative;
+  font-size: 20px;
+  line-height: 24px;
+  color: @font-21;
+  background-color: @bg-10;
+  border-radius: 4px;
+  .tokentagsmall-icon,
+  .nfttagsmall-icon {
+    position: absolute;
+    display: flex;
+    width: 24px;
+    height: 12px;
+    top: 0;
+    right: 1px;
+    svg {
+      width: 24px;
+      height: 12px;
+    }
+  }
+  .show-image {
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    object-fit: cover;
+  }
+}

@@ -30,7 +30,7 @@ import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
-import { useIsTokenHasPrice, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { IActivityApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import Lottie from 'lottie-react-native';
 import Touchable from 'components/Touchable';
@@ -48,8 +48,7 @@ const ActivityDetail = () => {
     return result?.length > 0 ? result : caAddressesInfoList;
   }, [activityItemFromRoute?.fromChainId, caAddressesInfoList]);
 
-  const isTokenHasPrice = useIsTokenHasPrice(activityItemFromRoute?.symbol);
-  const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
+  const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const { currentNetwork } = useCurrentWallet();
   const [initializing, setInitializing] = useState(true);
 
@@ -152,6 +151,8 @@ const ActivityDetail = () => {
   }, [CopyIconUI, activityItem, currentNetwork, t, transactionId]);
 
   const feeUI = useMemo(() => {
+    if (activityItem?.isReceived) return <></>;
+
     const transactionFees =
       activityItem?.transactionFees?.length === 0
         ? [{ fee: 0, symbol: defaultToken.symbol, feeInUsd: 0 }]
@@ -176,7 +177,7 @@ const ActivityDetail = () => {
                   )} ${item.symbol}`}</TextM>
                   {isMainnet && (
                     <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>
-                      {formatAmountUSDShow(item?.feeInUsd ?? 0)}
+                      {formatAmountUSDShow(item?.feeInUsd)}
                     </TextS>
                   )}
                 </View>
@@ -186,12 +187,20 @@ const ActivityDetail = () => {
         </View>
       </View>
     );
-  }, [activityItem?.isDelegated, activityItem?.transactionFees, defaultToken.symbol, isMainnet, t]);
+  }, [
+    activityItem?.isDelegated,
+    activityItem?.isReceived,
+    activityItem?.transactionFees,
+    defaultToken.symbol,
+    isMainnet,
+    t,
+  ]);
 
   const amountShow = useMemo(() => {
-    return `${activityItem?.isReceived ? '+' : '-'} ${divDecimalsStr(activityItem?.amount, activityItem?.decimals)} ${
-      activityItem?.symbol || ''
-    }`;
+    return `${activityItem?.isReceived ? '+' : '-'} ${formatTokenAmountShowWithDecimals(
+      activityItem?.amount,
+      activityItem?.decimals,
+    )} ${activityItem?.symbol || ''}`;
   }, [activityItem?.amount, activityItem?.decimals, activityItem?.isReceived, activityItem?.symbol]);
 
   useEffectOnce(() => {
@@ -260,8 +269,8 @@ const ActivityDetail = () => {
             <Text style={[styles.tokenCount, styles.fontBold]}>
               {SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType as TransactionTypes) && amountShow}
             </Text>
-            {isMainnet && isTokenHasPrice && (
-              <Text style={styles.usdtCount}>{formatAmountUSDShow(activityItem?.currentTxPriceInUsd ?? 0)}</Text>
+            {isMainnet && (
+              <Text style={styles.usdtCount}>{formatAmountUSDShow(activityItem?.currentTxPriceInUsd)}</Text>
             )}
           </>
         ))}

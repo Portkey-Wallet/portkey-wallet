@@ -19,6 +19,7 @@ import { useAccountAssetsInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { fetchAssetsListByFilter, fetchTokenListByFilter } from './utils';
 import { useCommonState } from 'store/Provider/hooks';
 import clsx from 'clsx';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import './index.less';
 
 export interface ICustomTokenListProps {
@@ -50,13 +51,16 @@ export default function CustomTokenList({
   const [assetList, setAssetList] = useState<TokenItemShowType[] | IAssetItemType[]>([]);
   const chainIdArray = useChainIdList();
   const caAddressInfos = useCaAddressInfoList();
+  const [initData, setInitData] = useState(false);
   const hasMoreData = useMemo(() => {
+    if (!initData) return false;
     if (drawerType === 'send') {
       return accountAssetsList.length < assetsTotalRecordCount;
     } else {
       return tokenDataShowInMarket.length < tokenTotalRecordCount;
     }
   }, [
+    initData,
     drawerType,
     accountAssetsList.length,
     assetsTotalRecordCount,
@@ -65,23 +69,32 @@ export default function CustomTokenList({
   ]);
   useFreshTokenPrice();
 
+  const getInitData = useCallback(async () => {
+    try {
+      if (drawerType === 'send') {
+        await fetchAccountAssetsInfoList({
+          keyword: '',
+          caAddressInfos,
+          skipCount: 0,
+          maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+        });
+      } else {
+        await fetchTokenInfoList({
+          chainIdArray,
+          keyword: '',
+          skipCount: 0,
+          maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+        });
+      }
+      setInitData(true);
+    } catch (error) {
+      console.log('===getInitData error', error);
+    }
+  }, [caAddressInfos, chainIdArray, drawerType, fetchAccountAssetsInfoList, fetchTokenInfoList]);
+
   useEffectOnce(() => {
     setFilterWord('');
-    if (drawerType === 'send') {
-      fetchAccountAssetsInfoList({
-        keyword: '',
-        caAddressInfos,
-        skipCount: 0,
-        maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
-      });
-    } else {
-      fetchTokenInfoList({
-        chainIdArray,
-        keyword: '',
-        skipCount: 0,
-        maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
-      });
-    }
+    getInitData();
   });
 
   const setData = useCallback(() => {
@@ -111,7 +124,7 @@ export default function CustomTokenList({
     500,
   );
 
-  const getMoreData = useCallback(async () => {
+  const getMoreData = useLockCallback(async () => {
     if (drawerType === 'send') {
       if (accountAssetsList.length && accountAssetsList.length < assetsTotalRecordCount) {
         await fetchAccountAssetsInfoList({
@@ -161,7 +174,7 @@ export default function CustomTokenList({
             <p className="quantity">
               {formatTokenAmountShowWithDecimals(token.tokenInfo?.balance, token.tokenInfo?.decimals)}
             </p>
-            <p className="convert">{isMainnet ? formatAmountUSDShow(token.tokenInfo?.balanceInUsd ?? 0) : ''}</p>
+            <p className="convert">{isMainnet && formatAmountUSDShow(token.tokenInfo?.balanceInUsd)}</p>
           </div>
         </div>
       );

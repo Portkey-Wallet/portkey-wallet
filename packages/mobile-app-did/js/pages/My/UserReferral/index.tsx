@@ -51,7 +51,7 @@ const UserReferral = () => {
           <Touchable onPress={navigationService.goBack} style={GStyles.flex1}>
             <Svg icon="left-arrow" color={defaultColors.bg1} size={pTd(20)} />
           </Touchable>
-          <TextL style={[GStyles.textAlignCenter, fonts.mediumFont, FontStyles.font11, styles.title]}>
+          <TextL style={[GStyles.textAlignCenter, fonts.mediumFont, FontStyles.font2, styles.title]}>
             Portkey Referral Program
           </TextL>
           <View style={GStyles.flex1} />
@@ -81,7 +81,7 @@ const UserReferral = () => {
 
         <Touchable onPress={onPressInvite} disabled={!referralLink && hasClicked}>
           <ImageBackground source={button} style={[GStyles.flexRow, GStyles.center, styles.btn]}>
-            <TextL style={[fonts.mediumFont, FontStyles.font11]}>Invite Friends</TextL>
+            <TextL style={[fonts.mediumFont, FontStyles.font2]}>Invite Friends</TextL>
             {!referralLink && hasClicked && (
               <LottieLoading type="custom" color="white" lottieStyle={styles.lottieLoading} />
             )}

@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import navigationService from 'utils/navigationService';
@@ -82,7 +82,6 @@ const SendHome: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<any[]>([]);
 
   const checkManagerSyncState = useCheckManagerSyncState();
-  const contractRef = useRef<ContractBasic>();
   const getCAContract = useGetCAContract();
 
   useEffect(() => {
@@ -94,20 +93,13 @@ const SendHome: React.FC = () => {
   const getTransactionFee = useCallback(
     async (isCross: boolean, sendAmount?: string) => {
       if (!chainInfo) return;
-      if (!contractRef.current) {
-        try {
-          contractRef.current = await getCAContract(chainInfo.chainId);
-        } catch (error) {
-          return;
-        }
-      }
-
+      const caContract = await getCAContract(chainInfo.chainId);
       return getTransferFee({
         isCross,
         sendAmount: sendAmount ?? debounceSendNumber,
         decimals: assetInfo.decimals,
         symbol: assetInfo.symbol,
-        caContract: contractRef.current,
+        caContract,
         tokenContractAddress: assetInfo.tokenContractAddress,
         toAddress: getEntireDIDAelfAddress(selectedToContact.address, undefined, assetInfo.chainId),
         chainId: assetInfo.chainId,
@@ -368,21 +360,22 @@ const SendHome: React.FC = () => {
     } catch (err) {
       CommonToast.failError(err);
       Loading.hide();
+      return { status: false };
     }
 
     // checkTransferLimitResult
-    if (!contractRef.current) {
-      try {
-        contractRef.current = await getCAContract(chainInfo.chainId);
-      } catch (error) {
-        return { status: false };
-      }
+
+    let caContract: ContractBasic;
+    try {
+      caContract = await getCAContract(chainInfo.chainId);
+    } catch (error) {
+      Loading.hide();
+      return { status: false };
     }
 
     try {
-      const contract = contractRef.current;
       const checkTransferLimitResult = await checkTransferLimitWithJump({
-        caContract: contract,
+        caContract,
         symbol: assetInfo.symbol,
         decimals: assetInfo.decimals,
         amount: sendNumber,

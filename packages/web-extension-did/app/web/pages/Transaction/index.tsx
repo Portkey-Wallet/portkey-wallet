@@ -254,6 +254,7 @@ export default function Transaction() {
   }, [activityItem.isDelegated, defaultToken.decimals, feeInfo, isMainnet, noFeeUI, t]);
 
   const transactionUI = useCallback(() => {
+    const { isReceived } = activityItem;
     return (
       <div className="money-wrap">
         <p className="label">
@@ -267,11 +268,11 @@ export default function Transaction() {
               <Copy toCopy={activityItem.transactionId} />
             </span>
           </div>
-          {feeUI()}
+          {isReceived ? null : feeUI()}
         </div>
       </div>
     );
-  }, [activityItem.transactionId, feeUI, t]);
+  }, [activityItem, feeUI, t]);
 
   const openOnExplorer = useCallback(() => {
     return getExploreLink(chainInfo?.explorerUrl || '', activityItem.transactionId || '', 'transaction');

@@ -154,10 +154,12 @@ export const formatTokenAmountShowWithDecimals = (
 };
 
 export const formatAmountUSDShow = (
-  count: number | BigNumber | string,
+  count: number | BigNumber | string | null | undefined,
   decimal: string | number = 4,
   roundingMode: BigNumber.RoundingMode = BigNumber.ROUND_DOWN,
 ) => {
+  if (count === undefined || count === null || count === '') return '';
+
   const min = divDecimals(1, decimal);
   const bigCount = BigNumber.isBigNumber(count) ? count : new BigNumber(count || '');
   if (bigCount.isNaN() || bigCount.eq(0)) return '$ 0';
@@ -168,5 +170,7 @@ export const formatAmountUSDShow = (
 };
 
 export const convertAmountUSDShow = (count: BigNumber.Value, price?: BigNumber.Value) => {
+  if (!price) return;
+
   return formatAmountUSDShow(ZERO.plus(count).times(price ?? 0));
 };

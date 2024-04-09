@@ -211,7 +211,7 @@ const PaymentModal = ({
     if (!buttonTitle) return;
     return (
       <Touchable onPress={onPress} style={styles.getButtonRow}>
-        <TextS style={FontStyles.font11}>{buttonTitle}</TextS>
+        <TextS style={FontStyles.font2}>{buttonTitle}</TextS>
       </Touchable>
     );
   }, [

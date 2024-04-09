@@ -143,6 +143,11 @@ export type DeleteMessageParams = {
   id: string;
 };
 
+export type TDeleteMessageByGroupOwnerParams = {
+  channelUuid: string;
+  messageId: string;
+};
+
 export type TriggerMessageEvent = {
   channelUuid?: string;
   toRelationId?: string;
@@ -384,6 +389,7 @@ export interface IIMService {
   readMessage(params: ReadMessageParams): IMServiceCommon<number>;
   getMessageList(params: GetMessageListParams): IMServiceCommon<Message[]>;
   deleteMessage(params: DeleteMessageParams): IMServiceCommon<null>;
+  deleteMessageByGroupOwner(params: TDeleteMessageByGroupOwnerParams): IMServiceCommon<null>;
   getUnreadCount(): IMServiceCommon<MessageCount>;
   triggerMessageEvent(params: TriggerMessageEvent): IMServiceCommon<null>;
 

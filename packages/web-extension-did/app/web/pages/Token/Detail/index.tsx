@@ -146,7 +146,7 @@ function TokenDetail() {
                 </div>
                 <div className="amount-symbol">{currentToken.symbol}</div>
               </div>
-              {isMainNet && <div className="convert">{formatAmountUSDShow(currentToken.balanceInUsd ?? 0)}</div>}
+              {isMainNet && <div className="convert">{formatAmountUSDShow(currentToken?.balanceInUsd)}</div>}
             </div>
             <BalanceCard
               isShowDepositUSDT={isShowDepositUSDT}

@@ -83,22 +83,25 @@ const TextMessage: React.FC<IMessage> = (props) => {
     ],
     [parsedContent, pinInfo, props, setCopied],
   );
-  const popListFilter = useMemo(() => {
+  const popoverShowList = useMemo(() => {
+    let _popList: Array<string> = [];
+    const hasDelAuth = position === 'right' || isAdmin;
     if (showPageType === MessageShowPageEnum['MSG-PAGE']) {
       if (isGroup) {
-        return isAdmin ? ['copy', 'delete', 'pin', 'reply'] : ['copy', 'delete', 'reply'];
+        _popList = isAdmin ? ['copy', 'pin', 'reply'] : ['copy', 'reply'];
+      } else {
+        _popList = ['copy'];
       }
-      return ['copy', 'delete'];
     }
     if (showPageType === MessageShowPageEnum['PIN-PAGE']) {
-      return isAdmin ? ['copy', 'delete', 'pin'] : ['copy', 'delete'];
+      _popList = isAdmin ? ['copy', 'pin'] : ['copy'];
     }
-    return [];
-  }, [isAdmin, isGroup, showPageType]);
-  const popoverShowList = useMemo(
-    () => popoverAllList.filter((item) => popListFilter.includes(item.key)),
-    [popListFilter, popoverAllList],
-  );
+    if (hasDelAuth) {
+      _popList.push('delete');
+    }
+    return popoverAllList.filter((item) => _popList.includes(item.key));
+  }, [isAdmin, isGroup, popoverAllList, position, showPageType]);
+
   const renderReplyMsg = useMemo(() => {
     if (!quote) {
       return <></>;
@@ -159,13 +162,7 @@ const TextMessage: React.FC<IMessage> = (props) => {
           trigger="contextMenu"
           onOpenChange={(visible) => setPopVisible(visible)}
           showArrow={false}
-          content={
-            <PopoverMenuList
-              data={popoverShowList.filter(
-                (pop) => position === 'right' || (position === 'left' && pop.key !== 'delete'),
-              )}
-            />
-          }>
+          content={<PopoverMenuList data={popoverShowList} />}>
           <div className={clsx(['text-body', 'flex', position])}>
             <div className="text-container flex-column">
               {renderReplyMsg}

@@ -9,6 +9,7 @@ export enum InterfaceActions {
   setViewContracts = 'setViewContracts',
   setViewContract = 'setViewContract',
   setCAContract = 'setCAContract',
+  setTokenContract = 'setTokenContract',
   destroy = 'DESTROY',
 }
 
@@ -21,8 +22,16 @@ export const basicInterfaceActions = {
     basicActions(InterfaceActions.setViewContract, { viewContract }),
   setCAContract: (caContract: { [key: string]: ContractBasic }, chainId: ChainId) =>
     basicActions(InterfaceActions.setCAContract, { caContract, chainId }),
+  setTokenContract: (tokenContract: { [key: string]: ContractBasic }, chainId: ChainId) =>
+    basicActions(InterfaceActions.setTokenContract, { tokenContract, chainId }),
   interfaceDestroy: () => basicActions(InterfaceActions.destroy),
 };
 
-export const { interfaceDestroy, setCurrentInterface, setViewContracts, setViewContract, setCAContract } =
-  basicInterfaceActions;
+export const {
+  interfaceDestroy,
+  setCurrentInterface,
+  setViewContracts,
+  setViewContract,
+  setCAContract,
+  setTokenContract,
+} = basicInterfaceActions;

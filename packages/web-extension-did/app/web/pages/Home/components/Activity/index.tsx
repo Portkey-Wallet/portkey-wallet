@@ -1,6 +1,6 @@
 import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
 import ActivityList from 'pages/components/ActivityList';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getActivityListAsync } from '@portkey-wallet/store/store-ca/activity/action';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -38,7 +38,7 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
       }
     );
   }, [activity.activityMap, chainId, symbol]);
-
+  const [hasMore, setHasMore] = useState(currentActivity.data.length < currentActivity?.totalRecordCount);
   const dispatch = useAppCommonDispatch();
   const { passwordSeed } = useUserInfo();
 
@@ -73,7 +73,7 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
     }
   }, [caAddressInfos, chainId, dispatch, passwordSeed, symbol]);
 
-  const loadMoreActivities = useCallback(() => {
+  const loadMoreActivities = useCallback(async () => {
     const { data, maxResultCount, skipCount, totalRecordCount } = currentActivity;
     if (data.length < totalRecordCount) {
       const params = {
@@ -83,19 +83,23 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
         chainId: chainId,
         symbol: symbol,
       };
-      return dispatch(getActivityListAsync(params));
+      const res = await dispatch(getActivityListAsync(params));
+      if (res.payload) {
+        if (res.payload.data?.length + res.payload.skipCount === totalRecordCount) {
+          setHasMore(false);
+        }
+      } else {
+        if (res.error?.message === 'No data') {
+          setHasMore(false);
+        }
+      }
     }
   }, [currentActivity, chainId, caAddressInfos, symbol, dispatch]);
 
   return (
     <div className="activity-wrapper">
       {currentActivity?.totalRecordCount ? (
-        <ActivityList
-          data={currentActivity.data}
-          chainId={chainId}
-          hasMore={currentActivity.data.length < currentActivity?.totalRecordCount}
-          loadMore={loadMoreActivities}
-        />
+        <ActivityList data={currentActivity.data} chainId={chainId} hasMore={hasMore} loadMore={loadMoreActivities} />
       ) : (
         <p className="empty">{t(EmptyTipMessage.NO_TRANSACTIONS)}</p>
       )}

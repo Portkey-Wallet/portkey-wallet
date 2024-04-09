@@ -210,10 +210,11 @@ export default function GuardianApproval() {
     };
   });
   const isFocused = useIsFocused();
+  const latestIsFocused = useLatestRef(isFocused);
   useEffect(() => {
-    if (isSuccess && isFocused && !isExpired) onFinish();
+    if (isSuccess && latestIsFocused.current && !isExpired) onFinish();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSuccess, isFocused, isExpired]);
+  }, [isSuccess, isExpired]);
   const onBack = useCallback(() => {
     lastOnEmitDapp.current();
     switch (approvalType) {

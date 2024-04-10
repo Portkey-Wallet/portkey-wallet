@@ -1,10 +1,10 @@
-import { BGStyles, FontStyles } from 'assets/theme/styles';
-import { TextM } from 'components/CommonText';
-import Touchable from 'components/Touchable';
+import { BGStyles, FontStyles } from '@portkey-wallet/rn-components/theme/styles';
+import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
+import Touchable from '@portkey-wallet/rn-components/components/Touchable';
 import React from 'react';
 import { StyleSheet, TouchableOpacityProps } from 'react-native';
-import { TextStyleType, ViewStyleType } from 'types/styles';
-import { pTd } from 'utils/unit';
+import { pTd } from '@portkey-wallet/rn-components/utils/unit';
+import { TextStyleType, ViewStyleType } from '@portkey-wallet/rn-components/theme/type';
 
 export default function TabButton({
   onPress,

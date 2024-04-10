@@ -42,6 +42,7 @@ import RampPreview from 'pages/Ramp/RampPreview';
 import ManageTokenList from 'pages/Token/ManageTokenList';
 import CustomToken from 'pages/Token/CustomToken';
 import TestComp from 'apiTest/TestComp';
+import LogInPortKey from '@portkey-wallet/rn-biz-components/biz-componets/Login/LoginPortkey';
 
 type AcceptableComponentType = ComponentProvider;
 
@@ -54,7 +55,8 @@ const initEntries = () => {
   }
 
   // entry stage
-  entryConfig.set(PortkeyEntries.SIGN_IN_ENTRY, () => ReduxProvider(SignInEntryPage as React.ComponentType<any>));
+  // entryConfig.set(PortkeyEntries.SIGN_IN_ENTRY, () => ReduxProvider(SignInEntryPage as React.ComponentType<any>));
+  entryConfig.set(PortkeyEntries.SIGN_IN_ENTRY, () => ReduxProvider(LogInPortKey as React.ComponentType<any>));
   entryConfig.set(PortkeyEntries.SELECT_COUNTRY_ENTRY, () => SelectCountryPage);
   entryConfig.set(PortkeyEntries.SIGN_UP_ENTRY, () => SignUpEntryPage);
 

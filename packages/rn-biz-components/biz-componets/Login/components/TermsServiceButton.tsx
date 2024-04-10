@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
-import GStyles from 'assets/theme/GStyles';
-import navigationService from 'utils/navigationService';
+import GStyles from '@portkey-wallet/rn-components/theme/GStyles';
+import navigationService from '@portkey-wallet/rn-inject-app';
 import styles from '../styles';
 import { OfficialWebsite } from '@portkey-wallet/constants/constants-ca/network';
-import { FontStyles } from 'assets/theme/styles';
-import { TextS } from 'components/CommonText';
+import { FontStyles } from '@portkey-wallet/rn-components/theme/styles';
+import { TextS } from '@portkey-wallet/rn-components/components/CommonText';
 export default function TermsServiceButton() {
   const onJump = useCallback((type: 'Privacy Policy' | 'Terms of Service') => {
     const url = type === 'Privacy Policy' ? `${OfficialWebsite}/privacy-policy` : `${OfficialWebsite}/terms-of-service`;

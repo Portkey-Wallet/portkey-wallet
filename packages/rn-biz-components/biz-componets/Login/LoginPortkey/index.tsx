@@ -7,7 +7,6 @@ import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { useLanguage } from '@portkey-wallet/rn-base/i18n/hooks';
 import background from '../img/background.png';
 import Svg from '@portkey-wallet/rn-components/components/Svg';
-// import { BGStyles, FontStyles } from 'assets/theme/styles';
 import styles from '../styles';
 import Email from '../components/Email';
 import QRCode from '../components/QRCode';

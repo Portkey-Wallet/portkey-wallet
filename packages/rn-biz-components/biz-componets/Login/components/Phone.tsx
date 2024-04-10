@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 // import { BGStyles } from 'assets/theme/styles';
 import Loading from '@portkey-wallet/rn-components/components/Loading';
-import useEffectOnce from '../../../hooks/useEffectOnce';
+import useEffectOnce from '@portkey-wallet/rn-base/hooks/useEffectOnce';
 import { useLanguage } from '@portkey-wallet/rn-base/i18n/hooks';
 import myEvents from '@portkey-wallet/rn-base/utils/deviceEvent';
 import styles from '../styles';

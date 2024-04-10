@@ -1,11 +1,11 @@
-import { defaultColors } from 'assets/theme';
-import GStyles from 'assets/theme/GStyles';
-import Svg, { IconName } from 'components/Svg';
-import Touchable from 'components/Touchable';
+import GStyles from '@portkey-wallet/rn-components/theme/GStyles';
+import { defaultCss } from '@portkey-wallet/rn-components/theme/default';
+import Svg, { IconName } from '@portkey-wallet/rn-components/components/Svg';
+import Touchable from '@portkey-wallet/rn-components/components/Touchable';
 import React from 'react';
 import { StyleSheet, TouchableOpacityProps } from 'react-native';
-import { ViewStyleType } from 'types/styles';
-import { pTd } from 'utils/unit';
+import { pTd } from '@portkey-wallet/rn-components/utils/unit';
+import { ViewStyleType } from '@portkey-wallet/rn-components/theme/type';
 
 export default function RoundButton({
   onPress,
@@ -29,6 +29,6 @@ const styles = StyleSheet.create({
     height: pTd(48),
     borderRadius: pTd(24),
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border1,
+    borderColor: defaultCss.border1,
   },
 });

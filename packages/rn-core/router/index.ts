@@ -26,11 +26,13 @@ class RNSDKRouter implements Router {
   }
 
   back<R>(res: EntryResult<R>, params: any): void {
+    router.listenersFunc()[params.from]['blur'].forEach(item => item());
     this.pop();
     NativeModules.RouterModule.navigateBack(res, params?.from ?? COMMON_ROUTER_FROM);
   }
 
   navigate(target: string, params: any) {
+    router.listenersFunc()[params.from]['blur'].forEach(item => item());
     NativeModules.RouterModule.navigateTo(
       wrapEntry(target),
       LaunchModeSet.get(target) || LaunchMode.STANDARD,
@@ -42,6 +44,7 @@ class RNSDKRouter implements Router {
   }
 
   navigateByResult(target: string, params: any, callback: (result: any) => void) {
+    router.listenersFunc()[params.from]['blur'].forEach(item => item());
     NativeModules.RouterModule.navigateToWithOptions(
       wrapEntry(target),
       LaunchModeSet.get(target) || LaunchMode.STANDARD,

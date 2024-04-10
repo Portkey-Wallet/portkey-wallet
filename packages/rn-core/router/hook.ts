@@ -9,15 +9,12 @@ export function useNavigation() {
   return useMemo(() => {
     return {
       navigate: (target: string, params?: any) => {
-        router.listenersFunc()[from]['blur'].forEach(item => item());
         router.navigate(target, { ...params, from });
       },
       navigateByResult: (target: string, callback: (res: EntryResult<any>) => void, params?: any) => {
-        router.listenersFunc()[from]['blur'].forEach(item => item());
         router.navigateByResult(target, { ...params, from }, callback);
       },
       goBack: (result?: EntryResult<any>) => {
-        router.listenersFunc()[from]['blur'].forEach(item => item());
         router.back(result ?? COMMON_RESULT_DATA, { from });
       },
       canGoBack: () => {

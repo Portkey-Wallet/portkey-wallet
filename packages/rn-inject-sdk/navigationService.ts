@@ -7,9 +7,13 @@ function getCurrentRouteAndRoutes() {}
 
 function getMultiLevelParams() {}
 
-function navigate(name: any, params?: any) {}
+function navigate(name: any, params?: any) {
+  router.navigate(name, { ...params, from: COMMON_ROUTER_FROM });
+}
 
-function navigateByMultiLevelParams(name: any, multiLevelOptions: any) {}
+function navigateByMultiLevelParams(name: any, multiLevelOptions: any) {
+  router.navigate(name, { ...multiLevelOptions, from: COMMON_ROUTER_FROM });
+}
 
 function goBack() {
   router.back(COMMON_RESULT_DATA, { from: COMMON_ROUTER_FROM });

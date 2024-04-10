@@ -6,7 +6,7 @@
   "dependencies": {
     "react": "~18.2.0",
     "react-native": "~0.72.4",
-    "rn-teaset": "^0.1.2-alpha.1",
+    "rn-teaset": "0.1.2-alpha.1",
     "@portkey-wallet/hooks": "^1.3.0",
     "@portkey-wallet/utils": "^1.3.0",
     "@rneui/base": "^4.0.0-rc.6",
@@ -23,7 +23,8 @@
     "react-native-largelist": "3.1.0-rc.2",
     "react-native-progress": "^5.0.1",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
-    "rn-minimizer": "1.0.0"
+    "rn-minimizer": "1.0.0",
+    "@portkey-wallet/rn-base": "1.0.0"
   },
   "devDependencies": {
     "@types/react-native": "~0.72.4",

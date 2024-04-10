@@ -1,13 +1,13 @@
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useRoute } from '@react-navigation/native';
-import GStyles from 'assets/theme/GStyles';
-import { FontStyles } from 'assets/theme/styles';
-import { TextM } from 'components/CommonText';
-import NetworkOverlay from 'components/NetworkOverlay';
-import Svg from 'components/Svg';
-import Touchable from 'components/Touchable';
+import GStyles from '@portkey-wallet/rn-components/theme/GStyles';
+import { FontStyles } from '@portkey-wallet/rn-components/theme/styles';
+import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
+import NetworkOverlay from '@portkey-wallet/rn-components/components/NetworkOverlay';
+import Svg from '@portkey-wallet/rn-components/components/Svg';
+import Touchable from '@portkey-wallet/rn-components/components/Touchable';
 import React from 'react';
-import { pTd } from 'utils/unit';
+import { pTd } from '@portkey-wallet/rn-components/utils/unit';
 import styles from '../styles';
 
 export default function SwitchNetwork() {

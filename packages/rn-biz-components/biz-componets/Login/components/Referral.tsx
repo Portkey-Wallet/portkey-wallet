@@ -1,33 +1,33 @@
 import React, { useMemo, Fragment, useCallback } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
-import navigationService from 'utils/navigationService';
+import { BGStyles, FontStyles } from '@portkey-wallet/rn-components/theme/styles';
+import navigationService from '@portkey-wallet/rn-inject-app';
 import styles from '../styles';
-import Touchable from 'components/Touchable';
-import GStyles from 'assets/theme/GStyles';
-import { TextM } from 'components/CommonText';
-import Svg, { IconName } from 'components/Svg';
-import { pTd } from 'utils/unit';
+import Touchable from '@portkey-wallet/rn-components/components/Touchable';
+import GStyles from '@portkey-wallet/rn-components/theme/GStyles';
+import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
+import Svg, { IconName } from '@portkey-wallet/rn-components/components/Svg';
+import { pTd } from '@portkey-wallet/rn-components/utils/unit';
 import qrCode from 'assets/image/pngs/QR-code.png';
 import { PageLoginType, PageType } from '../types';
 import TermsServiceButton from './TermsServiceButton';
-import Divider from 'components/Divider';
-import CommonToast from 'components/CommonToast';
-import { useAuthenticationSign } from 'hooks/authentication';
-import { LoginParams, useOnLogin } from 'hooks/login';
+import Divider from '@portkey-wallet/rn-components/components/Divider';
+import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
+import { useAuthenticationSign } from '@portkey-wallet/rn-base/hooks/authentication';
+import { LoginParams, useOnLogin } from '@portkey-wallet/rn-base/hooks/login';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import Loading from 'components/Loading';
+import Loading from '@portkey-wallet/rn-components/components/Loading';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import RoundButton from './RoundButton';
 import { checkIsUserCancel } from '@portkey-wallet/utils';
 import OblongButton from './OblongButton';
-import { useEntranceConfig } from 'hooks/cms';
+import { useEntranceConfig } from '@portkey-wallet/rn-base/hooks/cms';
 import { useGetFormattedLoginModeList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
 import { TLoginMode } from '@portkey-wallet/types/types-ca/cms';
-import { LOGIN_GUARDIAN_TYPE_ICON } from 'constants/misc';
+import { LOGIN_GUARDIAN_TYPE_ICON } from '@portkey-wallet/rn-base/constants/misc';
 
 const TitlePrefix = {
   [PageType.login]: 'Login with',

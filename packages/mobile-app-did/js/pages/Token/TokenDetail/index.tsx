@@ -122,14 +122,12 @@ const TokenDetail: React.FC = () => {
     await getActivityList(true);
   }, [getActivityList, getAndUpdateTargetBalance, tokenInfo.chainId, tokenInfo.symbol]);
 
+  const isInitRef = useRef(false);
   const init = useCallback(async () => {
-    await sleep(100);
-    getActivityList(true);
+    await sleep(250);
+    await getActivityList(true);
+    isInitRef.current = true;
   }, [getActivityList]);
-
-  useEffectOnce(() => {
-    init();
-  });
 
   // refresh token List
   useEffectOnce(() => {
@@ -165,7 +163,6 @@ const TokenDetail: React.FC = () => {
     if (isFaucetButtonShow) count++;
     return count;
   }, [isBuyButtonShow, isDepositShow, isFaucetButtonShow, isWithdrawShow]);
-  console.log(buttonCount, '====buttonCount');
 
   const buttonGroupWrapStyle = useMemo(() => {
     if (buttonCount >= 5) {
@@ -275,12 +272,17 @@ const TokenDetail: React.FC = () => {
         renderItem={renderItem}
         onRefresh={onRefreshList}
         onEndReached={() => {
+          if (!isInitRef.current) return;
           getActivityList();
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListFooterComponent={
           <>{!isEmpty && <FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}</>
         }
+        onLoad={() => {
+          if (isInitRef.current) return;
+          init();
+        }}
       />
     </PageContainer>
   );

@@ -22,9 +22,13 @@ export default function TokenImageDisplay({ src, symbol = 'ELF', width = 32, cla
   const isShowDefault = useMemo(() => isError || !tokenSrc, [isError, tokenSrc]);
 
   return symbol === ELF_SYMBOL ? (
-    <CustomSvg className={clsx('token-logo', className)} type="elf-icon" />
+    <CustomSvg
+      style={{ width, height: width }}
+      className={clsx('token-logo', 'elf-token-logo', className)}
+      type="elf-icon"
+    />
   ) : (
-    <div className={clsx('token-img-loading-wrapper flex-center', className)} style={{ width, height: width }}>
+    <div className={clsx('token-img-wrapper flex-center', className)} style={{ width, height: width }}>
       {isShowDefault ? (
         <div className="show-name-index flex-center" style={{ width, height: width }}>
           {symbol?.slice(0, 1)}

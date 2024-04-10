@@ -264,7 +264,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         {data?.map((item, index) => {
           if (index === 0) {
             return (
-              <div key={`activityList_date_${index}`}>
+              <div key={`activityList_date_${index}`} className="activity-date-wrap">
                 <div className="activity-date-item">{formatActivityTimeShow(item?.timestamp)}</div>
                 {renderActivityItem(item)}
               </div>
@@ -274,7 +274,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
               return <div key={`activityList_${item.transactionId}_${index}`}>{renderActivityItem(item)}</div>;
             } else {
               return (
-                <div key={`activityList_date_${index}`}>
+                <div key={`activityList_date_${index}`} className="activity-date-wrap">
                   <div className="activity-date-item">{formatActivityTimeShow(item?.timestamp)}</div>
                   {renderActivityItem(item)}
                 </div>

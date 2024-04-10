@@ -245,6 +245,8 @@ const PaymentModal = ({
             hasBorder
             shapeType={'circular'}
             style={styles.avatar}
+            titleStyle={styles.avatarTitle}
+            borderStyle={GStyles.hairlineBorder}
             title={assetInfo.symbol}
             avatarSize={pTd(24)}
             imageUrl={assetInfo?.imageUrl}
@@ -466,9 +468,11 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatar: {
-    fontSize: pTd(14),
     marginRight: pTd(8),
-    borderRadius: pTd(4),
+  },
+  avatarTitle: {
+    fontSize: pTd(14),
+    color: defaultColors.font11,
   },
   marginTop4: {
     marginTop: pTd(4),

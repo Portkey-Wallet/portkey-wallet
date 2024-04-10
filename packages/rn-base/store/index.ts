@@ -7,11 +7,12 @@ import { DappMiddle } from '@portkey-wallet/utils/dapp/middle';
 const persistedReducer = persistReducer(storeConfig.reduxPersistConfig, rootReducer);
 
 const middlewareList: any[] = [];
-if (__DEV__) {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const createDebugger = require('redux-flipper').default;
-  middlewareList.push(createDebugger());
-}
+// todo_wade: add redux-flipper
+// if (__DEV__) {
+//   // eslint-disable-next-line @typescript-eslint/no-var-requires
+//   const createDebugger = require('redux-flipper').default;
+//   middlewareList.push(createDebugger());
+// }
 middlewareList.push(rateApi.middleware);
 
 // dapp middle

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		379965F6D55E5BFD355DFCC8 /* Pods_PortkeySDKExample_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4309FEAD594FF4BCCCDCC3AB /* Pods_PortkeySDKExample_Example.framework */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
@@ -16,6 +15,11 @@
 		6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
+		BDAB47D359AC2AAB9911C596 /* Pods_PortkeySDKExample_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DEDFCD22761992DF0F44EF9 /* Pods_PortkeySDKExample_Tests.framework */; };
+		D5E8FF817A11343466E0CB03 /* Pods_PortkeySDKExample_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD727FC86C3577083C046133 /* Pods_PortkeySDKExample_Example.framework */; };
+		EA4B90FE2BC6979F005EB59D /* FBAEMKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA4B90FD2BC6979F005EB59D /* FBAEMKit.xcframework */; };
+		EA4B91002BC697C8005EB59D /* FBSDKCoreKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA4B90FF2BC697C8005EB59D /* FBSDKCoreKit.xcframework */; };
+		EA4B91022BC697EA005EB59D /* FBSDKCoreKit_Basics.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA4B91012BC697EA005EB59D /* FBSDKCoreKit_Basics.xcframework */; };
 		EAA3A8DD2AE8B892001D1CE0 /* TermsOfServiceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EAA3A8DC2AE8B892001D1CE0 /* TermsOfServiceViewController.m */; };
 		EAD432A92ABC29ED00EEA69D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = EAD4329B2ABC29ED00EEA69D /* InfoPlist.strings */; };
 		EAD432AA2ABC29ED00EEA69D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EAD4329E2ABC29ED00EEA69D /* AppDelegate.m */; };
@@ -27,7 +31,6 @@
 		EAD432B02ABC29ED00EEA69D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EAD432A72ABC29ED00EEA69D /* ViewController.m */; };
 		EADF94572AF3847F00B07C1D /* BundleConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EADF94562AF3847F00B07C1D /* BundleConfigViewController.m */; };
 		EDE868D741F47F2FD227CA24 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB237CBC0EF8A113646C992 /* ExpoModulesProvider.swift */; };
-		F3F50471043C8974F9A0CC49 /* Pods_PortkeySDKExample_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 059DB1ABAA48E398AC16B0AA /* Pods_PortkeySDKExample_Tests.framework */; };
 		FB9C76A798DED3DBCC764D3F /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4B7F65653A1041B86DF8CB /* ExpoModulesProvider.swift */; };
 /* End PBXBuildFile section */
 
@@ -42,11 +45,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		059DB1ABAA48E398AC16B0AA /* Pods_PortkeySDKExample_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PortkeySDKExample_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		120D60A7502DCA5E5DB2F3DC /* Pods-PortkeySDKExample_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortkeySDKExample_Tests.debug.xcconfig"; path = "Target Support Files/Pods-PortkeySDKExample_Tests/Pods-PortkeySDKExample_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		196E2FEA8BA5B37F74410ACE /* Pods-AelfPortkey_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AelfPortkey_Example.release.xcconfig"; path = "Target Support Files/Pods-AelfPortkey_Example/Pods-AelfPortkey_Example.release.xcconfig"; sourceTree = "<group>"; };
 		1FB237CBC0EF8A113646C992 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-PortkeySDKExample_Example/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		4309FEAD594FF4BCCCDCC3AB /* Pods_PortkeySDKExample_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PortkeySDKExample_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3DEDFCD22761992DF0F44EF9 /* Pods_PortkeySDKExample_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PortkeySDKExample_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		58B8649AAAEF2C57C9DAB9AD /* Pods-PortkeySDKExample_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortkeySDKExample_Example.release.xcconfig"; path = "Target Support Files/Pods-PortkeySDKExample_Example/Pods-PortkeySDKExample_Example.release.xcconfig"; sourceTree = "<group>"; };
 		6003F58A195388D20070C39A /* PortkeySDKExample_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PortkeySDKExample_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -63,7 +65,11 @@
 		868DF6131B624D1805049FD9 /* Pods-AelfPortkey_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AelfPortkey_Example.debug.xcconfig"; path = "Target Support Files/Pods-AelfPortkey_Example/Pods-AelfPortkey_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		903BDF27E1D312AFA5748B17 /* Pods-PortkeySDKExample_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortkeySDKExample_Example.debug.xcconfig"; path = "Target Support Files/Pods-PortkeySDKExample_Example/Pods-PortkeySDKExample_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		AB4B7F65653A1041B86DF8CB /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-PortkeySDKExample_Tests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		CD727FC86C3577083C046133 /* Pods_PortkeySDKExample_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PortkeySDKExample_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D626B180E2AD432D67A0B86A /* Pods-AelfPortkey_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AelfPortkey_Tests.release.xcconfig"; path = "Target Support Files/Pods-AelfPortkey_Tests/Pods-AelfPortkey_Tests.release.xcconfig"; sourceTree = "<group>"; };
+		EA4B90FD2BC6979F005EB59D /* FBAEMKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = FBAEMKit.xcframework; path = Pods/FBAEMKit/XCFrameworks/FBAEMKit.xcframework; sourceTree = "<group>"; };
+		EA4B90FF2BC697C8005EB59D /* FBSDKCoreKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = FBSDKCoreKit.xcframework; path = Pods/FBSDKCoreKit/XCFrameworks/FBSDKCoreKit.xcframework; sourceTree = "<group>"; };
+		EA4B91012BC697EA005EB59D /* FBSDKCoreKit_Basics.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = FBSDKCoreKit_Basics.xcframework; path = Pods/FBSDKCoreKit_Basics/XCFrameworks/FBSDKCoreKit_Basics.xcframework; sourceTree = "<group>"; };
 		EAA3A8DB2AE8B892001D1CE0 /* TermsOfServiceViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermsOfServiceViewController.h; sourceTree = "<group>"; };
 		EAA3A8DC2AE8B892001D1CE0 /* TermsOfServiceViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TermsOfServiceViewController.m; sourceTree = "<group>"; };
 		EAD4329C2ABC29ED00EEA69D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -87,10 +93,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EA4B91022BC697EA005EB59D /* FBSDKCoreKit_Basics.xcframework in Frameworks */,
+				EA4B91002BC697C8005EB59D /* FBSDKCoreKit.xcframework in Frameworks */,
+				EA4B90FE2BC6979F005EB59D /* FBAEMKit.xcframework in Frameworks */,
 				6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */,
 				6003F592195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F58E195388D20070C39A /* Foundation.framework in Frameworks */,
-				379965F6D55E5BFD355DFCC8 /* Pods_PortkeySDKExample_Example.framework in Frameworks */,
+				D5E8FF817A11343466E0CB03 /* Pods_PortkeySDKExample_Example.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,7 +110,7 @@
 				6003F5B0195388D20070C39A /* XCTest.framework in Frameworks */,
 				6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F5B1195388D20070C39A /* Foundation.framework in Frameworks */,
-				F3F50471043C8974F9A0CC49 /* Pods_PortkeySDKExample_Tests.framework in Frameworks */,
+				BDAB47D359AC2AAB9911C596 /* Pods_PortkeySDKExample_Tests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -158,12 +167,15 @@
 		6003F58C195388D20070C39A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				EA4B91012BC697EA005EB59D /* FBSDKCoreKit_Basics.xcframework */,
+				EA4B90FF2BC697C8005EB59D /* FBSDKCoreKit.xcframework */,
+				EA4B90FD2BC6979F005EB59D /* FBAEMKit.xcframework */,
 				6003F58D195388D20070C39A /* Foundation.framework */,
 				6003F58F195388D20070C39A /* CoreGraphics.framework */,
 				6003F591195388D20070C39A /* UIKit.framework */,
 				6003F5AF195388D20070C39A /* XCTest.framework */,
-				4309FEAD594FF4BCCCDCC3AB /* Pods_PortkeySDKExample_Example.framework */,
-				059DB1ABAA48E398AC16B0AA /* Pods_PortkeySDKExample_Tests.framework */,
+				CD727FC86C3577083C046133 /* Pods_PortkeySDKExample_Example.framework */,
+				3DEDFCD22761992DF0F44EF9 /* Pods_PortkeySDKExample_Tests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -254,6 +266,7 @@
 				6003F588195388D20070C39A /* Resources */,
 				6A582D2C5C7FE5B1DC95747A /* [CP] Copy Pods Resources */,
 				EAF1224A2AEA1AFE00C60025 /* ShellScript */,
+				CC88C708E1442F5C8A8C1D32 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -410,6 +423,7 @@
 				"${PODS_ROOT}/../../ios/Assets/assets/src/assets/image/pngs/securityWarning.png",
 				"${PODS_ROOT}/../../ios/Assets/assets/src/pages/Login/img/background.png",
 				"${PODS_CONFIGURATION_BUILD_DIR}/PortkeySDK/JSBundle.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/RNCAsyncStorage/RNCAsyncStorage_resources.bundle",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Entypo.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf",
@@ -445,6 +459,7 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/background.png",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/securityWarning.png",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/JSBundle.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNCAsyncStorage_resources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AntDesign.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Entypo.ttf",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EvilIcons.ttf",
@@ -510,6 +525,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-PortkeySDKExample_Tests/expo-configure-project.sh\"\n";
+		};
+		CC88C708E1442F5C8A8C1D32 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PortkeySDKExample_Example/Pods-PortkeySDKExample_Example-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/FBAEMKit/FBAEMKit.framework/FBAEMKit",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/FBSDKCoreKit/FBSDKCoreKit.framework/FBSDKCoreKit",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/FBSDKCoreKit_Basics/FBSDKCoreKit_Basics.framework/FBSDKCoreKit_Basics",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBAEMKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKCoreKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKCoreKit_Basics.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PortkeySDKExample_Example/Pods-PortkeySDKExample_Example-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 		EAF1224A2AEA1AFE00C60025 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -644,14 +681,8 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					" ",
-				);
-				OTHER_CPLUSPLUSFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_CFLAGS = "$(inherited)  ";
+				OTHER_CPLUSPLUSFLAGS = "$(inherited)  ";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-Wl",
@@ -703,14 +734,8 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					" ",
-				);
-				OTHER_CPLUSPLUSFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_CFLAGS = "$(inherited)  ";
+				OTHER_CPLUSPLUSFLAGS = "$(inherited)  ";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-Wl",

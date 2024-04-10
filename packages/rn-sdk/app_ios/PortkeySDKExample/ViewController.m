@@ -126,12 +126,12 @@
     self.openPageButton.top = self.termsButton.bottom + 5;
     [self.openPageButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
         @strongify(self)
-        NSString *walletConfig = [PortkeySDKMMKVStorage readTempString:@"walletConfig"];
-        if ([walletConfig isKindOfClass:NSString.class] && walletConfig.length) {
+//        NSString *walletConfig = [PortkeySDKMMKVStorage readTempString:@"walletConfig"];
+//        if ([walletConfig isKindOfClass:NSString.class] && walletConfig.length) {
             [self presentViewController:[self createOpenPageAlertController] animated:YES completion:nil];
-        } else {
-            [self.view makeToast:@"Please login or unlock first"];
-        }
+//        } else {
+//            [self.view makeToast:@"Please login or unlock first"];
+//        }
     }];
     [self.view addSubview:self.openPageButton];
     

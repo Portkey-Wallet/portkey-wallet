@@ -87,7 +87,6 @@
     "react-native-background-timer": "^2.4.1",
     "react-native-config": "^1.4.6",
     "react-native-fast-image": "^8.6.3",
-    "react-native-flipper": "^0.161.0",
     "react-native-gesture-handler": "2.9.0",
     "react-native-get-random-values": "1.8.0",
     "react-native-gradle-plugin": "^0.71.19",

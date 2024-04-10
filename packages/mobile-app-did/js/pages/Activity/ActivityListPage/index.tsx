@@ -66,7 +66,7 @@ const ActivityListPage = () => {
   const isInitRef = useRef(false);
   const init = useCallback(async () => {
     await sleep(250);
-    getActivityList(true);
+    await getActivityList(true);
     isInitRef.current = true;
   }, [getActivityList]);
 

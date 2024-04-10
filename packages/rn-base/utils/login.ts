@@ -3,7 +3,7 @@ import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
 import OverlayModal from '@portkey-wallet/rn-components/components/OverlayModal';
 import { GuardiansStatus } from '../types/guardian';
-import navigationService from '@portkey-wallet/rn-inject-app';
+import navigationService from '@portkey-wallet/rn-inject-sdk';
 
 export function queryFailAlert(callBack: () => void, isRecovery?: boolean, isReset?: boolean) {
   OverlayModal.hide();

@@ -3,7 +3,7 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import { changeCanLock } from '../utils/LockManager';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useCurrentUserInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import navigationService from '@portkey-wallet/rn-inject-app';
+import navigationService from '@portkey-wallet/rn-inject-sdk';
 import im from '@portkey-wallet/im';
 import { GetOtherUserInfoDefaultResult } from '@portkey-wallet/im/types/service';
 import Loading from '@portkey-wallet/rn-components/components/Loading';
@@ -18,7 +18,7 @@ import {
   handlePortkeyQRCodeData,
   invalidQRCode,
 } from '@portkey-wallet/rn-base/utils/qrcode';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@portkey-wallet/rn-inject-sdk';
 import { parseLinkPortkeyUrl } from '@portkey-wallet/rn-base/utils/scheme';
 import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
 import { useLanguage } from 'i18n/hooks';

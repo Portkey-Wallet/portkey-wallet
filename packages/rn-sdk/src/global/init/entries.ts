@@ -42,7 +42,7 @@ import RampPreview from 'pages/Ramp/RampPreview';
 import ManageTokenList from 'pages/Token/ManageTokenList';
 import CustomToken from 'pages/Token/CustomToken';
 import TestComp from 'apiTest/TestComp';
-import LogInPortKey from '@portkey-wallet/rn-biz-components/biz-componets/Login/LoginPortkey';
+import LogInPortKey from '@portkey-wallet/rn-biz-components/biz-components/Login/LoginPortkey';
 
 type AcceptableComponentType = ComponentProvider;
 

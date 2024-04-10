@@ -1,7 +1,7 @@
 import OverlayModal from '@portkey-wallet/rn-components/components/OverlayModal';
 import { AppState, AppStateStatus, NativeEventSubscription } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
-import navigationService from '@portkey-wallet/rn-inject-app';
+import navigationService from '@portkey-wallet/rn-inject-sdk';
 import { getDispatch, getWalletAddress } from './redux';
 import { setCredentials } from '../store/user/actions';
 

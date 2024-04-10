@@ -1,8 +1,8 @@
 import { windowHeight } from '@portkey-wallet/utils/mobile/device';
 import { isIOS } from '@rneui/base';
-import { makeStyles } from '@rneui/themed';
-import { pTd } from 'utils/unit';
+import { pTd } from '../../utils/unit';
 import gSTyles from './GStyles';
+import { makeStyles } from '@rneui/themed';
 
 export const useGStyles = makeStyles(theme => {
   return {

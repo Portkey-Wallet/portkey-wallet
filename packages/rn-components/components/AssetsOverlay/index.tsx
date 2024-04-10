@@ -13,7 +13,7 @@ import TokenListItem from '../TokenListItem';
 import { FontStyles } from 'assets/theme/styles';
 import { fetchAssetList } from '@portkey-wallet/store/store-ca/assets/api';
 import { IAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
-import navigationService from '@portkey-wallet/rn-inject-app';
+import navigationService from '@portkey-wallet/rn-inject-sdk';
 import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import { addressFormat, formatChainInfoToShow } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';

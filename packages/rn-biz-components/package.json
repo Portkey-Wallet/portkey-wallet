@@ -9,7 +9,8 @@
   "dependencies": {
     "react-native": "~0.72.4",
     "expo-screen-capture": "^4.3.0",
-    "@portkey-wallet/rn-base": "1.0.0"
+    "@portkey-wallet/rn-base": "1.0.0",
+    "@portkey-wallet/rn-inject-sdk": "1.0.0"
   },
   "author": "",
   "license": "ISC"

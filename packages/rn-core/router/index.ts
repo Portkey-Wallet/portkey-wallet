@@ -79,6 +79,16 @@ class RNSDKRouter implements Router {
     return !this.pages.isEmpty;
   }
   addListener(page: PortkeyEntries, type: EventName, callback: () => void) {
+    console.log('this.listeners', this.listeners);
+    if (!this.listeners[page]) {
+      this.listeners[page] = {
+        focus: [],
+        blur: [],
+      };
+    }
+    if (!this.listeners[page][type]) {
+      this.listeners[page][type] = [];
+    }
     this.listeners[page][type].push(callback);
     return () => {
       this.removeListener(page, type, callback);

@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useAppDispatch } from '../store/hooks';
 
-import navigationService from '@portkey-wallet/rn-inject-app';
+import navigationService from '@portkey-wallet/rn-inject-sdk';
 
 import { reSetCheckManagerExceed } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { resetUser } from '../store/user/actions';

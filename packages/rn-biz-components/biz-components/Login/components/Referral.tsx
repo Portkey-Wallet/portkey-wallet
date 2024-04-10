@@ -1,7 +1,7 @@
 import React, { useMemo, Fragment, useCallback } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { BGStyles, FontStyles } from '@portkey-wallet/rn-components/theme/styles';
-import navigationService from '@portkey-wallet/rn-inject-app';
+import navigationService from '@portkey-wallet/rn-inject-sdk';
 import styles from '../styles';
 import Touchable from '@portkey-wallet/rn-components/components/Touchable';
 import GStyles from '@portkey-wallet/rn-components/theme/GStyles';
@@ -178,13 +178,14 @@ export default function Referral({
     isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android,
   );
   console.log(loginModeListToRecommend, loginModeListToOther, '====loginModeListToRecommend, loginModeListToOther ');
+  console.log(loginModeListToRecommend);
+  console.log(loginModeListToOther);
 
   const loginModeMap = useLoginModeMap(
     onLogin,
     useCallback(() => setLoginType(PageLoginType.email), [setLoginType]),
     useCallback(() => setLoginType(PageLoginType.phone), [setLoginType]),
   );
-
   return (
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter, GStyles.spaceBetween]}>
       {type === PageType.login && (

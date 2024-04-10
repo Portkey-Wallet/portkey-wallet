@@ -6,6 +6,8 @@ declare class Inject {
   private config: Config;
   inject(config: { environment: 'APP' | 'SDK' }): void;
   getConfig(): Config;
+  isAPP(): boolean;
+  isSDK(): boolean;
 }
 declare const _default: Inject;
 export default _default;

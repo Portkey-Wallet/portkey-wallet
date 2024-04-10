@@ -4,7 +4,7 @@ import { changeNetworkType } from '@portkey-wallet/store/store-ca/wallet/actions
 import { ParamListBase, RouteProp } from '@react-navigation/native';
 // import { RootStackParamList } from 'navigation';
 import { useAppDispatch } from '../store/hooks';
-import navigationService from '@portkey-wallet/rn-inject-app';
+import navigationService from '@portkey-wallet/rn-inject-sdk';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import { useLanguage } from '../i18n/hooks';

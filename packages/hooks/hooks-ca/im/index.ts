@@ -21,15 +21,15 @@ import { handleLoopFetch } from '@portkey-wallet/utils';
 import { messageContentParser } from '@portkey-wallet/im/utils';
 
 export const useIMState = () => useAppCASelector(state => state.im);
-export const useIMHasNextNetMapState = () => useAppCASelector(state => state.im.hasNextNetMap);
-export const useIMChannelListNetMapState = () => useAppCASelector(state => state.im.channelListNetMap);
-export const useIMChannelMessageListNetMapState = () => useAppCASelector(state => state.im.channelMessageListNetMap);
-export const useIMRelationIdNetMapNetMapState = () => useAppCASelector(state => state.im.relationIdNetMap);
-export const useIMRelationTokenNetMapNetMapState = () => useAppCASelector(state => state.im.relationTokenNetMap);
-export const useIMGroupInfoMapNetMapState = () => useAppCASelector(state => state.im.groupInfoMapNetMap);
-export const useRedPackageConfigMapState = () => useAppCASelector(state => state.im.redPackageConfigMap);
-export const useIMPinListNetMapState = () => useAppCASelector(state => state.im.pinListNetMap);
-export const useIMLastPinNetMapState = () => useAppCASelector(state => state.im.lastPinNetMap);
+export const useIMHasNextNetMapState = () => useAppCASelector(state => state.im?.hasNextNetMap);
+export const useIMChannelListNetMapState = () => useAppCASelector(state => state.im?.channelListNetMap);
+export const useIMChannelMessageListNetMapState = () => useAppCASelector(state => state.im?.channelMessageListNetMap);
+export const useIMRelationIdNetMapNetMapState = () => useAppCASelector(state => state.im?.relationIdNetMap);
+export const useIMRelationTokenNetMapNetMapState = () => useAppCASelector(state => state.im?.relationTokenNetMap);
+export const useIMGroupInfoMapNetMapState = () => useAppCASelector(state => state.im?.groupInfoMapNetMap);
+export const useRedPackageConfigMapState = () => useAppCASelector(state => state.im?.redPackageConfigMap);
+export const useIMPinListNetMapState = () => useAppCASelector(state => state.im?.pinListNetMap);
+export const useIMLastPinNetMapState = () => useAppCASelector(state => state.im?.lastPinNetMap);
 
 export const useUnreadCount = () => {
   const [unreadCount, setUnreadCount] = useState(0);

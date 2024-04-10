@@ -79,9 +79,6 @@ PODS:
   - EXSplashScreen (0.16.2):
     - ExpoModulesCore
     - React-Core
-  - EXTaskManager (11.1.1):
-    - ExpoModulesCore
-    - UMAppLoader
   - FBAEMKit (16.3.1):
     - FBSDKCoreKit_Basics (= 16.3.1)
   - FBLazyVector (0.69.7)
@@ -799,7 +796,6 @@ PODS:
   - Sentry/HybridSDK (7.31.5)
   - SocketRocket (0.6.1)
   - SSZipArchive (2.2.3)
-  - UMAppLoader (4.1.2)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -840,7 +836,6 @@ DEPENDENCIES:
   - EXScreenOrientation (from `../node_modules/expo-screen-orientation/ios`)
   - EXSecureStore (from `../node_modules/expo-secure-store/ios`)
   - EXSplashScreen (from `../node_modules/expo-splash-screen/ios`)
-  - EXTaskManager (from `../node_modules/expo-task-manager/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
   - Firebase
@@ -945,7 +940,6 @@ DEPENDENCIES:
   - RNSpringScrollView (from `../node_modules/react-native-spring-scrollview`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
-  - UMAppLoader (from `../node_modules/unimodules-app-loader/ios`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -1065,8 +1059,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-secure-store/ios"
   EXSplashScreen:
     :path: "../node_modules/expo-splash-screen/ios"
-  EXTaskManager:
-    :path: "../node_modules/expo-task-manager/ios"
   FBLazyVector:
     :path: "../node_modules/react-native/Libraries/FBLazyVector"
   FBReactNativeSpec:
@@ -1201,8 +1193,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-svg"
   RNVectorIcons:
     :path: "../node_modules/react-native-vector-icons"
-  UMAppLoader:
-    :path: "../node_modules/unimodules-app-loader/ios"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -1240,7 +1230,6 @@ SPEC CHECKSUMS:
   EXScreenOrientation: c309fed5399e482c6adebe14f41a7fd9001d7bde
   EXSecureStore: ac4b3c89dd5810528074d9422d5fed5a9e684467
   EXSplashScreen: 799bece80089219b2c989c1082d70f3b00995cda
-  EXTaskManager: f8257faa4c20acfc3f31e21ab82a62544d70db85
   FBAEMKit: 6c7b5eb77c96861bb59e040842c6e55bf39512ce
   FBLazyVector: 6b7f5692909b4300d50e7359cdefbcd09dd30faa
   FBReactNativeSpec: affcf71d996f6b0c01f68883482588297b9d5e6e
@@ -1356,11 +1345,10 @@ SPEC CHECKSUMS:
   Sentry: 4c9babff9034785067c896fd580b1f7de44da020
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
-  UMAppLoader: d1cd37524ea948f9e695722994496784a6d6213c
   Yoga: 0b84a956f7393ef1f37f3bb213c516184e4a689d
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 784952d28c984e4f276b31dd0d6728e2005bae78
+PODFILE CHECKSUM: 237af73937293ab6cbfc5de95abdce6ac78d0641
 
 COCOAPODS: 1.15.2

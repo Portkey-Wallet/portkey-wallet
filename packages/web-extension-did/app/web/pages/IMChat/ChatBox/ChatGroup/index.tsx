@@ -211,7 +211,7 @@ export default function ChatBox() {
   );
   const handleSendMsgError = useCallback(
     (e: any) => {
-      if (`${e.code}` === NO_LONGER_IN_GROUP) {
+      if (`${e?.code}` === NO_LONGER_IN_GROUP) {
         hideChannel(`${channelUuid}`, true);
         CustomModal({
           content: `You can't send messages to this group because you are no longer in it.`,

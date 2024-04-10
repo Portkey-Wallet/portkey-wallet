@@ -10,7 +10,13 @@ Inject.prototype.inject = function (config) {
   this.config = config;
 };
 Inject.prototype.getConfig = function () {
-  return this.config == null ? 'SDK' : this.config;
+  return this.config == null ? { environment: 'APP' } : this.config;
 };
-
+Inject.prototype.isAPP = function () {
+  const isAPP = this.config == null || this.config.environment === 'APP';
+  return isAPP;
+};
+Inject.prototype.isSDK = function () {
+  return !this.isAPP();
+};
 export default new Inject();

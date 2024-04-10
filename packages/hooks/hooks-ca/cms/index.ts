@@ -305,11 +305,14 @@ export const useCheckSiteIsInBlackList = () => {
 };
 
 export const useIsChatShow = () => {
-  const { tabMenuListNetMap } = useCMS();
+  const { tabMenuListNetMap } = useCMS() || {};
   const { networkType } = useCurrentNetworkInfo();
   const isIMServiceExist = useIsIMServiceExist();
 
   const IsChatShow = useMemo(() => {
+    if (!tabMenuListNetMap) {
+      return false;
+    }
     const tabMenuList = tabMenuListNetMap[networkType];
     if (!tabMenuList) return false;
     return isIMServiceExist && !!tabMenuList.find(item => item.type.value === ChatTabName);
@@ -355,7 +358,7 @@ export const useGetLoginControlListAsync = () => {
 };
 
 export const useLoginModeControlList = (forceUpdate?: boolean) => {
-  const { loginModeListMap } = useCMS();
+  const { loginModeListMap } = useCMS() || {};
   const { networkType } = useCurrentNetworkInfo();
 
   const getLoginControlListAsync = useGetLoginControlListAsync();

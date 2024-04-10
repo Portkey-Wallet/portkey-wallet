@@ -24,6 +24,7 @@ import { BGStyles, FontStyles } from '@portkey-wallet/rn-components/theme/styles
 import GStyles from '@portkey-wallet/rn-components/theme/GStyles';
 import fonts from '@portkey-wallet/rn-components/theme/fonts';
 import { defaultCss } from '@portkey-wallet/rn-components/theme/default';
+import Environment from '@portkey-wallet/rn-inject';
 // import { request } from '@portkey-wallet/api/api-did';
 const scrollViewProps = { extraHeight: 120 };
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['transparent', 'transparent'];
@@ -69,7 +70,7 @@ export default function LoginPortkey() {
           <TextXXXL style={[styles.titleStyle, FontStyles.font11]}>{t('Log In To Portkey ')}</TextXXXL>
         </View>
         {loginMap[loginType]}
-        <SwitchNetwork />
+        {Environment.isAPP() && <SwitchNetwork />}
       </PageContainer>
     </ImageBackground>
   );

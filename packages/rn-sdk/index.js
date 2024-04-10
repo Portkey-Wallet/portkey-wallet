@@ -6,10 +6,14 @@ import { initLanguage } from './src/i18n/index';
 import { registerTestModule } from './src/tests/index';
 import { store } from './src/store';
 import persistStore from 'redux-persist/es/persistStore';
+import Environment from '@portkey-wallet/rn-inject';
+Environment.inject({ environment: 'SDK' });
+
 const persistor = persistStore(store);
 persistor.subscribe(() => {
   console.log('persist store init success!');
 });
+
 // we use i18n to translate
 initLanguage();
 

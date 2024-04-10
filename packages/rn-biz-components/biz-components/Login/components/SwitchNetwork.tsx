@@ -1,5 +1,5 @@
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useRoute } from '@react-navigation/native';
+import { useRoute } from '@portkey-wallet/rn-inject-sdk';
 import GStyles from '@portkey-wallet/rn-components/theme/GStyles';
 import { FontStyles } from '@portkey-wallet/rn-components/theme/styles';
 import { TextM } from '@portkey-wallet/rn-components/components/CommonText';

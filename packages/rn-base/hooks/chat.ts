@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { setCurrentChannel, setReplyMessageInfo } from '../contexts/chat/chatsContext';
 import { useChatsDispatch } from '../contexts/chat/hooks';
-import navigationService from '@portkey-wallet/rn-inject-app';
+import navigationService from '@portkey-wallet/rn-inject-sdk';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import myEvents from '../utils/deviceEvent';
 import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';

@@ -2,7 +2,7 @@ import { View, ViewStyle, StyleProp } from 'react-native';
 import React, { ReactNode, useEffect, useMemo } from 'react';
 import Svg from '../Svg';
 import { blueStyles, hideTitleStyles, whitStyles } from './style/index.style';
-import { useIsFocused, useNavigation } from '@portkey-wallet/rn-inject-app';
+import { useIsFocused, useNavigation } from '@portkey-wallet/rn-inject-sdk';
 import { pTd } from '../../utils/unit';
 import GStyles from '../../theme/GStyles';
 import { TextL } from '../CommonText';

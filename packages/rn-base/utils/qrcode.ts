@@ -1,7 +1,7 @@
 import { LoginQRData, QRData, SendTokenQRDataType } from '@portkey-wallet/types/types-ca/qrcode';
 import { isAddress } from '@portkey-wallet/utils';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
-import navigationService from '@portkey-wallet/rn-inject-app';
+import navigationService from '@portkey-wallet/rn-inject-sdk';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import AssetsOverlay from '@portkey-wallet/rn-components/components/AssetsOverlay';
 import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';

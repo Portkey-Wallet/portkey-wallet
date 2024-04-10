@@ -94,6 +94,9 @@ export const useNotify = () => {
   );
 
   useEffect(() => {
+    if (!global.isRNSDK) {
+      return;
+    }
     messaging().onNotificationOpenedApp(remoteMessage => {
       if (!lastLogged.current && !lastOtherNetworkLogged.current) return;
 

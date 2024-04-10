@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import GStyles from '@portkey-wallet/rn-components/theme/GStyles';
-import navigationService from '@portkey-wallet/rn-inject-app';
+import navigationService from '@portkey-wallet/rn-inject-sdk';
 import styles from '../styles';
 import { OfficialWebsite } from '@portkey-wallet/constants/constants-ca/network';
 import { FontStyles } from '@portkey-wallet/rn-components/theme/styles';

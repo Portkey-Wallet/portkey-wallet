@@ -6,7 +6,7 @@ import { setCAInfoType, setOriginChainId } from '@portkey-wallet/store/store-ca/
 import useEffectOnce from '@portkey-wallet/rn-base/hooks/useEffectOnce';
 import { useAppDispatch } from '@portkey-wallet/rn-base/store/hooks';
 import myEvents from '@portkey-wallet/rn-base/utils/deviceEvent';
-import navigationService from '@portkey-wallet/rn-inject-app';
+import navigationService from '@portkey-wallet/rn-inject-sdk';
 import styles from '../styles';
 import Touchable from '@portkey-wallet/rn-components/components/Touchable';
 // import GStyles from 'assets/theme/GStyles';
@@ -20,7 +20,7 @@ import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import { handleWalletInfo } from '@portkey-wallet/utils/wallet';
 import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
 import phone from 'assets/image/pngs/phone.png';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from '@portkey-wallet/rn-inject-sdk';
 import { useGetDeviceInfo } from '@portkey-wallet/rn-base/hooks/device';
 import { DEVICE_INFO_VERSION } from '@portkey-wallet/constants/constants-ca/device';
 import CommonQRCodeStyled from '@portkey-wallet/rn-components/components/CommonQRCodeStyled';

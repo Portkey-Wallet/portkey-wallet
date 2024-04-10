@@ -1,20 +1,24 @@
-# Xcode
-# Build, test, and archive an Xcode workspace on macOS.
-# Add steps that install certificates, test, sign, and distribute an app, save build artifacts, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/xcode
-
 trigger:
-- dev
+  - master
 
 pool:
   vmImage: 'macos-latest'
 
+name: $(Environment)_$(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
 steps:
-- task: Xcode@5
+- task: NodeTool@0
   inputs:
-    actions: 'build'
-    scheme: ''
-    sdk: 'iphoneos'
-    configuration: 'Release'
-    xcWorkspacePath: '**/*.xcodeproj/project.xcworkspace'
-    xcodeVersion: 'default' # Options: 8, 9, 10, 11, 12, default, specifyPath
+    versionSpec: '18.x'
+  displayName: 'Install Node'
+
+- script: npm install --global yarn
+  displayName: 'Install yarn'
+
+- script: yarn
+  displayName: 'Install dependencies'
+
+- task: CocoaPods@0
+  displayName: "Install CocoaPods dependencies"
+  inputs:
+    workingDirectory: packages/mobile-app-did/ios
+    forceRepoUpdate: false

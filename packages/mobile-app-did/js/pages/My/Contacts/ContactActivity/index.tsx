@@ -11,7 +11,7 @@ import Svg from 'components/Svg';
 import { setStringAsync } from 'expo-clipboard';
 import { useLanguage } from 'i18n/hooks';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, View, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 import NoData from 'components/NoData';
@@ -29,6 +29,7 @@ import ActivityItem from 'components/ActivityItem';
 import { ListLoadingEnum } from 'constants/misc';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { FlatListFooterLoading } from 'components/FlatListFooterLoading';
+import { FlashList } from '@shopify/flash-list';
 
 interface ParamsType {
   fromChainId: ChainId;
@@ -140,7 +141,6 @@ const ContactActivity: React.FC = () => {
   );
 
   useEffect(() => {
-    init();
     const listener = myEvents.refreshMyContactDetailInfo.addListener(({ contactName: name, contactAvatar }) => {
       setAddressName(name);
       setAddressAvatar(contactAvatar);
@@ -149,9 +149,11 @@ const ContactActivity: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const isInitRef = useRef(false);
   const init = useCallback(async () => {
-    await sleep(100);
-    fetchActivityList(0);
+    await sleep(250);
+    await fetchActivityList(0);
+    isInitRef.current = true;
   }, [fetchActivityList]);
 
   const isEmpty = useMemo(() => activityList.length === 0, [activityList.length]);
@@ -161,7 +163,7 @@ const ContactActivity: React.FC = () => {
       titleDom={t('Details')}
       safeAreaColor={['blue', 'white']}
       scrollViewProps={{ disabled: true }}
-      containerStyles={[styles.container, BGStyles.bg4]}>
+      containerStyles={[styles.container, BGStyles.bg1]}>
       <View style={styles.topSection}>
         {!!addressName && (
           <>
@@ -203,21 +205,26 @@ const ContactActivity: React.FC = () => {
         </>
       </View>
 
-      <FlatList
-        style={styles.flatListWrap}
+      <FlashList
         refreshing={isLoading === ListLoadingEnum.header}
-        onRefresh={() => init()}
         data={activityList ?? []}
+        keyExtractor={(_item, index) => `${index}`}
+        ListEmptyComponent={<NoData noPic message="" />}
         renderItem={renderItem}
+        onRefresh={() => init()}
         onEndReached={() => {
+          if (!isInitRef.current) return;
           if (activityList?.length >= totalCount) return;
           fetchActivityList(activityList?.length);
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
-        ListEmptyComponent={<NoData noPic message="" />}
         ListFooterComponent={
           <>{!isEmpty && <FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}</>
         }
+        onLoad={() => {
+          if (isInitRef.current) return;
+          init();
+        }}
       />
     </PageContainer>
   );
@@ -234,6 +241,7 @@ const styles = StyleSheet.create({
   },
   topSection: {
     ...GStyles.paddingArg(24, 20),
+    backgroundColor: defaultColors.bg4,
   },
   nameSection: {
     marginTop: pTd(8),
@@ -263,9 +271,5 @@ const styles = StyleSheet.create({
   },
   handleIconItem: {
     marginLeft: pTd(40),
-  },
-  flatListWrap: {
-    flex: 1,
-    backgroundColor: defaultColors.bg1,
   },
 });

@@ -5,8 +5,6 @@ import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
 import { styles } from './style';
 import { useNavigation } from '@react-navigation/native';
-import useEffectOnce from 'hooks/useEffectOnce';
-
 import navigationService from 'utils/navigationService';
 import NoData from 'components/NoData';
 import { useLanguage } from 'i18n/hooks';
@@ -119,14 +117,12 @@ const TokenDetail: React.FC = () => {
     await getActivityList(true);
   }, [getActivityList, getAndUpdateTargetBalance, tokenInfo.chainId, tokenInfo.symbol]);
 
+  const isInitRef = useRef(false);
   const init = useCallback(async () => {
-    await sleep(100);
-    getActivityList(true);
+    await sleep(250);
+    await getActivityList(true);
+    isInitRef.current = true;
   }, [getActivityList]);
-
-  useEffectOnce(() => {
-    init();
-  });
 
   const isBuyButtonShow = useMemo(
     () => SHOW_RAMP_SYMBOL_LIST.includes(tokenInfo.symbol) && tokenInfo.chainId === 'AELF' && isRampShow,
@@ -153,7 +149,6 @@ const TokenDetail: React.FC = () => {
     if (isFaucetButtonShow) count++;
     return count;
   }, [isBuyButtonShow, isDepositShow, isFaucetButtonShow, isWithdrawShow]);
-  console.log(buttonCount, '====buttonCount');
 
   const buttonGroupWrapStyle = useMemo(() => {
     if (buttonCount >= 5) {
@@ -263,12 +258,17 @@ const TokenDetail: React.FC = () => {
         renderItem={renderItem}
         onRefresh={onRefreshList}
         onEndReached={() => {
+          if (!isInitRef.current) return;
           getActivityList();
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListFooterComponent={
           <>{!isEmpty && <FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}</>
         }
+        onLoad={() => {
+          if (isInitRef.current) return;
+          init();
+        }}
       />
     </PageContainer>
   );

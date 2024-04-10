@@ -490,7 +490,7 @@ export const assetsSlice = createSlice({
       .addCase(fetchTargetTokenBalanceAsync.fulfilled, (state, action) => {
         const { chainId, symbol, response, currentNetwork = 'MAINNET' } = action.payload;
 
-        const tmpList = state.accountToken?.accountTokenInfo?.[currentNetwork]?.accountTokenList.map(ele =>
+        const tmpList = state.accountToken?.accountTokenInfo?.[currentNetwork]?.accountTokenList?.map(ele =>
           ele.chainId === chainId && ele.symbol === symbol
             ? { ...ele, balance: response.balance, balanceInUsd: response.balanceInUsd }
             : ele,

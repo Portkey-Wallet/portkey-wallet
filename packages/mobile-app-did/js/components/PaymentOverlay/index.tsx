@@ -302,7 +302,7 @@ const PaymentModal = ({
         <TextS style={FontStyles.font3}>
           {formatTokenAmountShowWithDecimals(currentAssetInfo?.balance, currentAssetInfo?.decimals)}
         </TextS>
-        <TextS style={FontStyles.font3}>{` ${currentAssetInfo?.symbol}`}</TextS>
+        <TextS style={FontStyles.font3}>{` ${currentAssetInfo?.symbol || ''}`}</TextS>
         {!!tokenPriceObject[currentAssetInfo?.symbol || ''] && (
           <TextS style={FontStyles.font3}>
             {`  ${convertAmountUSDShow(

@@ -17,10 +17,10 @@ import {
   handleAelfQrCode,
   handlePortkeyQRCodeData,
   invalidQRCode,
-} from 'utils/qrcode';
+} from '@portkey-wallet/rn-base/utils/qrcode';
 import { useNavigation } from '@react-navigation/native';
-import { parseLinkPortkeyUrl } from 'utils/scheme';
-import ActionSheet from 'components/ActionSheet';
+import { parseLinkPortkeyUrl } from '@portkey-wallet/rn-base/utils/scheme';
+import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
 import { useLanguage } from 'i18n/hooks';
 import { useJoinGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useJumpToChatGroupDetails } from './chat';

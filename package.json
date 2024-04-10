@@ -14,7 +14,10 @@
       "**/expo-**",
       "**/expo",
       "**/@expo/**",
-      "**/@sentry/**"
+      "**/@sentry/**",
+      "**/web3",
+      "**/web3-**",
+      "**/web3-**/**"
     ]
   },
   "scripts": {
@@ -77,5 +80,8 @@
       "pre-commit": "yarn run test && istanbul-badges-readme && git add 'README.md'"
     }
   },
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "resolutions": {
+    "@portkey/types": "2.4.3"
+  }
 }

@@ -13,6 +13,7 @@ import { FontStyles } from 'assets/theme/styles';
 import { NetworkType } from '@portkey-wallet/types';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import Touchable from 'components/Touchable';
+import GStyles from 'assets/theme/GStyles';
 
 type TokenItemProps = {
   networkType: NetworkType;
@@ -36,6 +37,8 @@ const TokenItem = ({ networkType, item, onHandleToken }: TokenItemProps) => {
         imageUrl={item.imageUrl || symbolImages[item.symbol]}
         avatarSize={pTd(48)}
         style={itemStyle.left}
+        titleStyle={FontStyles.font11}
+        borderStyle={GStyles.hairlineBorder}
       />
 
       <View style={itemStyle.right}>

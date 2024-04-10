@@ -14,6 +14,7 @@ import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wal
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import { parseInputNumberChange } from '@portkey-wallet/utils/input';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 
 export default function TokenInput({
   fromAccount,
@@ -50,14 +51,10 @@ export default function TokenInput({
     () => amountInUsdShow(value || amount, 0, token.symbol),
     [amount, amountInUsdShow, token.symbol, value],
   );
-  const needConvert = useMemo(
-    () => isMainnet && token.symbol === defaultToken.symbol,
-    [defaultToken.symbol, isMainnet, token.symbol],
-  );
-  useEffect(() => {
+  const needConvert = useMemo(() => isMainnet && amountInUsd, [amountInUsd, isMainnet]);
+  useEffectOnce(() => {
     getTokenPrice(token.symbol);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   const getTokenBalance = useCallback(async () => {
     if (!currentChain) return;
@@ -170,7 +167,7 @@ export default function TokenInput({
                 onChange({ amount: _v, balance });
               }}
             />
-            {isMainnet && <span className="convert">{amountInUsd}</span>}
+            {needConvert && <span className="convert">{amountInUsd}</span>}
           </div>
         </div>
       </div>

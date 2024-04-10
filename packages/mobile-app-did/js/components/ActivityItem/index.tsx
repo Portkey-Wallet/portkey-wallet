@@ -16,6 +16,7 @@ import { Resend } from 'components/Resend';
 import dayjs from 'dayjs';
 import { FontStyles } from 'assets/theme/styles';
 import NFTAvatar from 'components/NFTAvatar';
+import GStyles from 'assets/theme/GStyles';
 
 interface ActivityItemPropsType {
   preItem?: ActivityItemType;
@@ -40,22 +41,41 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
     return formatActivityTime(dayjs.unix(Number(item?.timestamp || 0)));
   }, [isDaySame, item?.timestamp]);
 
+  const AddressDom = useMemo(() => {
+    if (!item) return <></>;
+    const address = item.isReceived ? item.fromAddress : item.toAddress;
+    const chainId = item.isReceived ? item.fromChainId : item.toChainId;
+    if (!address || !chainId) return <></>;
+
+    return (
+      <Text style={itemStyle.centerStatus}>
+        {`${item?.isReceived ? 'From' : 'To'} ${formatStr2EllipsisStr(addressFormat(address, chainId), 8)}`}
+      </Text>
+    );
+  }, [item]);
+
   const AmountDom = useMemo(() => {
     const { amount = '', isReceived, decimals = 8, symbol } = item || {};
     let prefix = ' ';
     if (amount && !ZERO.isEqualTo(amount)) prefix = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
+    const suffix = item?.nftInfo || !symbol ? '' : ' ' + symbol;
 
     return (
       <Text numberOfLines={1} ellipsizeMode="tail" style={[itemStyle.tokenBalance, isReceived && FontStyles.font10]}>
-        {`${prefix} ${formatTokenAmountShowWithDecimals(item?.amount, decimals)}${item?.nftInfo ? '' : ' ' + symbol}`}
+        {`${prefix} ${formatTokenAmountShowWithDecimals(item?.amount, decimals)}${suffix}`}
       </Text>
     );
   }, [item]);
 
   const ExtraDom = useMemo(() => {
+    const extraContent = item?.nftInfo
+      ? item?.nftInfo?.alias
+      : formatAmountUSDShow(isMainnet ? item?.currentTxPriceInUsd : '');
+    if (!extraContent) return <></>;
+
     return (
       <Text numberOfLines={1} ellipsizeMode="tail" style={itemStyle.usdtBalance}>
-        {item?.nftInfo ? item?.nftInfo?.alias : formatAmountUSDShow(isMainnet ? item?.currentTxPriceInUsd : '')}
+        {extraContent}
       </Text>
     );
   }, [isMainnet, item?.currentTxPriceInUsd, item?.nftInfo]);
@@ -77,23 +97,22 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
             />
           ) : (
             <CommonAvatar
+              title={item?.symbol}
               style={itemStyle.left}
               svgName={item?.listIcon ? undefined : 'transfer'}
               imageUrl={item?.listIcon || ''}
               avatarSize={pTd(32)}
+              hasBorder
+              titleStyle={itemStyle.avatarTitleStyle}
+              borderStyle={GStyles.hairlineBorder}
             />
           )}
 
-          <View style={itemStyle.center}>
+          <View style={[itemStyle.center, item?.isSystem && itemStyle.systemCenter]}>
             <Text style={itemStyle.centerType}>{item?.transactionName}</Text>
             {!item?.isSystem && (
               <>
-                <Text style={itemStyle.centerStatus}>
-                  {`${item?.isReceived ? 'From' : 'To'} ${formatStr2EllipsisStr(
-                    addressFormat(item?.fromAddress, item?.fromChainId),
-                    8,
-                  )}`}
-                </Text>
+                {AddressDom}
                 {item?.transactionType === TransactionTypes.CROSS_CHAIN_TRANSFER && (
                   <Text style={itemStyle.centerStatus}>Cross-Chain Transfer</Text>
                 )}
@@ -147,16 +166,18 @@ const itemStyle = StyleSheet.create({
   },
   left: {
     marginRight: pTd(8),
-    width: pTd(32),
-    height: pTd(32),
-    borderWidth: 0,
-    backgroundColor: defaultColors.bg1,
   },
-
+  avatarTitleStyle: {
+    fontSize: pTd(16),
+    color: defaultColors.font11,
+  },
   center: {
     width: pTd(160),
     marginRight: pTd(8),
     justifyContent: 'center',
+  },
+  systemCenter: {
+    flex: 1,
   },
   centerType: {
     color: defaultColors.font5,

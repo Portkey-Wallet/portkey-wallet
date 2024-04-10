@@ -15,6 +15,7 @@ import { ChainId } from '@portkey-wallet/types';
 import Svg from 'components/Svg';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import Touchable from 'components/Touchable';
+import GStyles from 'assets/theme/GStyles';
 interface TokenListItemType {
   currentSymbol?: string;
   currentChainId?: ChainId;
@@ -41,6 +42,8 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
         // elf token icon is fixed , only use white background color
         svgName={item?.symbol === defaultToken.symbol ? 'testnet' : undefined}
         imageUrl={item?.imageUrl || symbolImages[item?.symbol]}
+        titleStyle={FontStyles.font11}
+        borderStyle={GStyles.hairlineBorder}
       />
       <View style={itemStyle.right}>
         <View style={itemStyle.infoWrap}>

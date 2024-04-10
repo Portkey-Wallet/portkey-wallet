@@ -98,7 +98,7 @@ export default function Receive() {
             <div className="name">My Wallet Address to Receive</div>
           </div>
           <div className="token-info">
-            <TokenImageDisplay width={32} className="icon" symbol={symbol} src={state?.imageUrl} />
+            <TokenImageDisplay className="token-icon" symbol={symbol} src={state?.imageUrl} />
             <p className="symbol">{symbol}</p>
             <p className="network">{transNetworkText(state.chainId, !isMainnet)}</p>
           </div>

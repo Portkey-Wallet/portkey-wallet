@@ -1,6 +1,7 @@
 package com.portkey.finance;
 import expo.modules.ReactActivityDelegateWrapper;
 
+import com.PortkeyApp.native_modules.PortkeyHeadlessJsTaskService;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
@@ -19,6 +20,19 @@ public class MainActivity extends ReactActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(null);
   }
+
+    @Override
+  protected void onStop() {
+    super.onStop();
+    android.content.Intent service = new android.content.Intent(getApplicationContext(), PortkeyHeadlessJsTaskService.class);
+    Bundle bundle = new Bundle();
+
+    bundle.putString("portkey", "finance");
+    service.putExtras(bundle);
+    getApplicationContext().startService(service);
+  }
+
+
   /**
    * Returns the name of the main component registered from JavaScript. This is used to schedule
    * rendering of the component.

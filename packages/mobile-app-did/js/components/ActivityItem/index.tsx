@@ -41,22 +41,41 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
     return formatActivityTime(dayjs.unix(Number(item?.timestamp || 0)));
   }, [isDaySame, item?.timestamp]);
 
+  const AddressDom = useMemo(() => {
+    if (!item) return <></>;
+    const address = item.isReceived ? item.fromAddress : item.toAddress;
+    const chainId = item.isReceived ? item.fromChainId : item.toChainId;
+    if (!address || !chainId) return <></>;
+
+    return (
+      <Text style={itemStyle.centerStatus}>
+        {`${item?.isReceived ? 'From' : 'To'} ${formatStr2EllipsisStr(addressFormat(address, chainId), 8)}`}
+      </Text>
+    );
+  }, [item]);
+
   const AmountDom = useMemo(() => {
     const { amount = '', isReceived, decimals = 8, symbol } = item || {};
     let prefix = ' ';
     if (amount && !ZERO.isEqualTo(amount)) prefix = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
+    const suffix = item?.nftInfo || !symbol ? '' : ' ' + symbol;
 
     return (
       <Text numberOfLines={1} ellipsizeMode="tail" style={[itemStyle.tokenBalance, isReceived && FontStyles.font10]}>
-        {`${prefix} ${formatTokenAmountShowWithDecimals(item?.amount, decimals)}${item?.nftInfo ? '' : ' ' + symbol}`}
+        {`${prefix} ${formatTokenAmountShowWithDecimals(item?.amount, decimals)}${suffix}`}
       </Text>
     );
   }, [item]);
 
   const ExtraDom = useMemo(() => {
+    const extraContent = item?.nftInfo
+      ? item?.nftInfo?.alias
+      : formatAmountUSDShow(isMainnet ? item?.currentTxPriceInUsd : '');
+    if (!extraContent) return <></>;
+
     return (
       <Text numberOfLines={1} ellipsizeMode="tail" style={itemStyle.usdtBalance}>
-        {item?.nftInfo ? item?.nftInfo?.alias : formatAmountUSDShow(isMainnet ? item?.currentTxPriceInUsd : '')}
+        {extraContent}
       </Text>
     );
   }, [isMainnet, item?.currentTxPriceInUsd, item?.nftInfo]);
@@ -93,12 +112,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
             <Text style={itemStyle.centerType}>{item?.transactionName}</Text>
             {!item?.isSystem && (
               <>
-                <Text style={itemStyle.centerStatus}>
-                  {`${item?.isReceived ? 'From' : 'To'} ${formatStr2EllipsisStr(
-                    addressFormat(item?.fromAddress, item?.fromChainId),
-                    8,
-                  )}`}
-                </Text>
+                {AddressDom}
                 {item?.transactionType === TransactionTypes.CROSS_CHAIN_TRANSFER && (
                   <Text style={itemStyle.centerStatus}>Cross-Chain Transfer</Text>
                 )}

@@ -410,8 +410,6 @@ export default function SellForm() {
               {fiat?.icon && (
                 <CommonAvatar
                   avatarSize={pTd(24)}
-                  width={pTd(24)}
-                  height={pTd(24)}
                   hasBorder
                   title={fiat?.symbol || ''}
                   style={styles.unitIconStyle}
@@ -473,8 +471,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   unitIconStyle: {
-    width: pTd(24),
-    height: pTd(24),
     marginRight: pTd(8),
   },
   rateWrap: {

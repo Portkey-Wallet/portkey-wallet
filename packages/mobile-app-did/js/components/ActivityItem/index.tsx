@@ -16,6 +16,7 @@ import { Resend } from 'components/Resend';
 import dayjs from 'dayjs';
 import { FontStyles } from 'assets/theme/styles';
 import NFTAvatar from 'components/NFTAvatar';
+import GStyles from 'assets/theme/GStyles';
 
 interface ActivityItemPropsType {
   preItem?: ActivityItemType;
@@ -77,14 +78,18 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
             />
           ) : (
             <CommonAvatar
+              title={item?.symbol}
               style={itemStyle.left}
               svgName={item?.listIcon ? undefined : 'transfer'}
               imageUrl={item?.listIcon || ''}
               avatarSize={pTd(32)}
+              hasBorder
+              titleStyle={itemStyle.avatarTitleStyle}
+              borderStyle={GStyles.hairlineBorder}
             />
           )}
 
-          <View style={itemStyle.center}>
+          <View style={[itemStyle.center, item?.isSystem && itemStyle.systemCenter]}>
             <Text style={itemStyle.centerType}>{item?.transactionName}</Text>
             {!item?.isSystem && (
               <>
@@ -147,16 +152,18 @@ const itemStyle = StyleSheet.create({
   },
   left: {
     marginRight: pTd(8),
-    width: pTd(32),
-    height: pTd(32),
-    borderWidth: 0,
-    backgroundColor: defaultColors.bg1,
   },
-
+  avatarTitleStyle: {
+    fontSize: pTd(16),
+    color: defaultColors.font11,
+  },
   center: {
     width: pTd(160),
     marginRight: pTd(8),
     justifyContent: 'center',
+  },
+  systemCenter: {
+    flex: 1,
   },
   centerType: {
     color: defaultColors.font5,

@@ -107,8 +107,12 @@ class RouterModule(reactContext: ReactApplicationContext) :
               targetScene: String = "",
               params: ReadableMap = Arguments.createMap()
     ) {
-//        val activity = NavigationHolder.getTopComponent()
-//        activity?.navigateBackWithResult(result)
-//        println("navigateBack invoke, from is $from")
+        currentActivity?.navigateToAnotherReactActivity(
+            entryName = targetEntry,
+            params = params.getMap("params"),
+            targetScene = targetScene,
+            from = from,
+        )
+        NavigationHolder.clear();
     }
 }

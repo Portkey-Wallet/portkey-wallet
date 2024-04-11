@@ -41,7 +41,7 @@ export default function LoginPortkey() {
     () => ({
       [PageLoginType.email]: <Email setLoginType={setLoginType} />,
       [PageLoginType.qrCode]: <QRCode setLoginType={setLoginType} />,
-      // [PageLoginType.phone]: <Phone setLoginType={setLoginType} />,
+      [PageLoginType.phone]: <Phone setLoginType={setLoginType} />,
       [PageLoginType.referral]: <Referral setLoginType={setLoginType} />,
     }),
     [],

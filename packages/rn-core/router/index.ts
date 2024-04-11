@@ -13,13 +13,17 @@ interface Router {
   back<R>(res: EntryResult<R>, params: any): void;
 }
 export type EventName = 'focus' | 'blur';
+export type Route = {
+  name: PortkeyEntries;
+  params: any;
+};
 class RNSDKRouter implements Router {
-  private pages = new Stack<PortkeyEntries>();
+  private pages = new Stack<Route>();
   private listeners: Record<string, Record<EventName, ((...args: any[]) => void)[]>> = {};
-  private singleTask_push(item: PortkeyEntries) {
-    if (LaunchModeSet.get(item) === LaunchMode.SINGLE_TASK && router.contains(item)) {
-      while (!this.pages.isEmpty() && this.pages.peek() !== item) {
-        this.pages.pop();
+  private singleTask_push(item: Route) {
+    if (LaunchModeSet.get(item.name) === LaunchMode.SINGLE_TASK && router.contains(item)) {
+      while (this.canGoBack() && this.peek()?.name !== item.name) {
+        this.pop();
       }
       return true;
     }
@@ -37,7 +41,7 @@ class RNSDKRouter implements Router {
     // throttle
     if (ThrottleMap[key] && Date.now() - ThrottleMap[key] < 2000) return;
     ThrottleMap[key] = Date.now();
-
+    this.clear();
     if (Array.isArray(name)) {
       NativeModules.RouterModule.reset(
         wrapEntry(mapRoute(name[0].name)),
@@ -94,7 +98,7 @@ class RNSDKRouter implements Router {
     );
   }
 
-  push(item: PortkeyEntries) {
+  push(item: Route) {
     if (this.singleTask_push(item)) {
       return;
     }
@@ -110,12 +114,14 @@ class RNSDKRouter implements Router {
   allItem() {
     return this.pages.allItem();
   }
-  contains(item: PortkeyEntries) {
-    return this.pages.contains(item);
+  contains(item: Route) {
+    return this.allItem().some(it => it.name === item.name);
   }
-
+  clear() {
+    this.pages.clear();
+  }
   canGoBack() {
-    return !this.pages.isEmpty;
+    return !this.pages.isEmpty();
   }
   addListener(page: PortkeyEntries, type: EventName, callback: () => void) {
     console.log('this.listeners', this.listeners);

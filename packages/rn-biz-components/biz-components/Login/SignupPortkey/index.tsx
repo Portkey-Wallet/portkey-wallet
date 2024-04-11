@@ -22,6 +22,7 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import fonts from '@portkey-wallet/rn-base/assets/theme/fonts';
 import { defaultColors } from '@portkey-wallet/rn-base/assets/theme';
 import { SafeAreaColorMapKeyUnit } from '@portkey-wallet/rn-components/components/CustomHeader';
+import Environment from '@portkey-wallet/rn-inject';
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['transparent', 'transparent'];
 
 const scrollViewProps = { extraHeight: 120 };
@@ -74,7 +75,7 @@ export default function SignupPortkey() {
         </View>
 
         {signupMap[loginType]}
-        <SwitchNetwork />
+        {Environment.isAPP() && <SwitchNetwork />}
       </PageContainer>
     </ImageBackground>
   );

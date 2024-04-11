@@ -7,6 +7,7 @@ import { reverseMapRoute } from './map';
 
 export function useNavigation() {
   const { from } = useContext(RouterContext) as { from: PortkeyEntries };
+  const params = useRoute();
   return useMemo(() => {
     return {
       navigate: (target: string, params?: any) => {
@@ -25,7 +26,7 @@ export function useNavigation() {
         return router.canGoBack();
       },
       isFocused: () => {
-        return router.peek() === from;
+        return router.peek()?.name === from;
       },
       addListener: (type: EventName, callback: () => void) => {
         return router.addListener(from, type, callback);
@@ -34,7 +35,8 @@ export function useNavigation() {
         return {
           routes: router.allItem().map(item => {
             return {
-              name: reverseMapRoute(item),
+              name: reverseMapRoute(item.name),
+              params: item.params,
             };
           }),
         };

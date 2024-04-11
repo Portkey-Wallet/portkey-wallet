@@ -52,6 +52,7 @@ import ChatPrivacy from 'pages/AccountSetting/ChatPrivacy';
 import ChatPrivacyEdit from 'pages/AccountSetting/ChatPrivacyEdit';
 import GroupQRCode from 'pages/IMChat/GroupQRCode';
 import PinnedMsg from 'pages/IMChat/PinnedMsgPage';
+import ChatSettings from 'pages/IMChat/ChatSettings';
 
 export const PageRouter = () =>
   useRoutes([
@@ -290,6 +291,10 @@ export const PageRouter = () =>
     {
       path: '/create-chat-group',
       element: <CreateChatGroup />,
+    },
+    {
+      path: '/chat-settings',
+      element: <ChatSettings />,
     },
     {
       path: '/unlock',

@@ -65,6 +65,14 @@ export default function ChatList() {
           navigate(`/setting/contacts/find-more`, { state: { previousPage: FromPageEnum.chatList } });
         },
       },
+      {
+        key: 'chat-settings',
+        leftIcon: <CustomSvg type="Setting" />,
+        children: 'Settings',
+        onClick: () => {
+          navigate('/chat-settings');
+        },
+      },
     ],
     [navigate],
   );

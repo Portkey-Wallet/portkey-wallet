@@ -3,7 +3,7 @@
   "version": "2.0.1",
   "author": "Carbon.lv <130360750+carbon-portkey@users.noreply.github.com>",
   "license": "MIT",
-  "main": "./dist/index.js",
+  "main": "./index.js",
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"

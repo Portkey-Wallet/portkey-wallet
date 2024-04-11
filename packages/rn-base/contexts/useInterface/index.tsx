@@ -8,7 +8,7 @@ import { State } from './types';
 import * as Google from 'expo-auth-session/providers/google';
 import Config from 'react-native-config';
 import useScheme from '../../hooks/useScheme';
-import useNotify from '../../hooks/useNotifyAction';
+// import useNotify from '../../hooks/useNotifyAction';
 
 const INITIAL_STATE = {};
 const InterfaceContext = createContext<any>(INITIAL_STATE);

@@ -13,7 +13,8 @@ import ConfirmPin from 'pages/Pin/ConfirmPin';
 import SetBiometrics from 'pages/Pin/SetBiometrics';
 import SetPin from 'pages/Pin/SetPin';
 import QrScanner from 'pages/QrScanner';
-import GuardianHome from 'pages/GuardianManage/GuardianHome';
+// import GuardianHome from 'pages/GuardianManage/GuardianHome';
+import GuardianHome from '@portkey-wallet/rn-biz-components/biz-components/My/Guardian/GuardianHome';
 import { AppRegistry, ComponentProvider } from 'react-native';
 import Biometric from 'pages/My/Biometric';
 import AddGuardian from 'pages/Guardian/GuardianManage/AddGuardian';
@@ -103,7 +104,7 @@ const initEntries = () => {
   entryConfig.set(PortkeyEntries.SCAN_LOG_IN, () => ScanLogin);
 
   // guardian manage
-  entryConfig.set(PortkeyEntries.GUARDIAN_HOME_ENTRY, () => GuardianHome);
+  entryConfig.set(PortkeyEntries.GUARDIAN_HOME_ENTRY, () => ReduxProvider(GuardianHome as React.ComponentType<any>));
   entryConfig.set(PortkeyEntries.GUARDIAN_DETAIL_ENTRY, () => GuardianDetail);
   entryConfig.set(PortkeyEntries.ADD_GUARDIAN_ENTRY, () => AddGuardian);
   entryConfig.set(PortkeyEntries.MODIFY_GUARDIAN_ENTRY, () => ModifyGuardian);

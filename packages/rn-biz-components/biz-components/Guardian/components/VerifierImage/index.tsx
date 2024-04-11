@@ -34,7 +34,7 @@ export function VerifierImage({
         }}
         source={{ uri }}
         style={[iconStyle, imgLoading && styles.hiddenStyle]}
-        loadingIndicatorSource={require('../../../../assets/image/pngs/phone.png')}
+        // loadingIndicatorSource={require('../../../../assets/image/pngs/phone.png')} // todo_wade
       />
     </View>
   );

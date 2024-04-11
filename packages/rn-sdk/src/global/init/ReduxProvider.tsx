@@ -1,8 +1,7 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { store } from 'store';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { StatusBar, StatusBarProps } from 'react-native';
+import { StatusBar, StatusBarProps, SafeAreaView, Text } from 'react-native';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import RouterProvider from '@portkey-wallet/rn-core/router/provider';
 import { defaultRouterParams } from '@portkey-wallet/rn-core/router/context';

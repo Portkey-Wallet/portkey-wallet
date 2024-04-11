@@ -85,7 +85,7 @@ const AssetItem = (props: {
             <TextL numberOfLines={1} ellipsizeMode={'tail'} style={[itemStyle.nftNameShow, FontStyles.font5]}>
               {`${alias} #${tokenId}`}
             </TextL>
-            <TextS numberOfLines={1} style={[FontStyles.font3, itemStyle.nftItemInfo]}>
+            <TextS numberOfLines={1} style={[FontStyles.font11, itemStyle.nftItemInfo]}>
               {formatChainInfoToShow(chainId as ChainId, currentNetwork)}
             </TextS>
           </View>

@@ -29,7 +29,6 @@ import { useAppDispatch } from '@portkey-wallet/rn-base/store/hooks';
 import { setPreGuardianAction } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { VerifierImage } from '../../../Guardian/components/VerifierImage';
 import { verification } from '@portkey-wallet/rn-base/utils/api';
-import PhoneInput from '@portkey-wallet/rn-components/components/PhoneInput';
 import {
   useAppleAuthentication,
   useFacebookAuthentication,
@@ -566,17 +565,6 @@ const GuardianEdit: React.FC = () => {
             onChangeText={onAccountChange}
             errorMessage={guardianAccountError.isError ? guardianAccountError.errorMsg : ''}
             keyboardType="email-address"
-          />
-        );
-      case LoginType.Phone:
-        return (
-          <PhoneInput
-            label={'Guardian Phone'}
-            theme="white-bg"
-            value={account}
-            errorMessage={guardianAccountError.isError ? guardianAccountError.errorMsg : ''}
-            onChangeText={onAccountChange}
-            selectCountry={country}
           />
         );
       case LoginType.Google:

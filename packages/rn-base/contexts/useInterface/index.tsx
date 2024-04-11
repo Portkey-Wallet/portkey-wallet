@@ -51,7 +51,7 @@ export default function Provider({ children }: { children: React.ReactNode }) {
     shouldAutoExchangeCode: false,
   });
   useScheme();
-  useNotify();
+  // useNotify(); // todo_wade
   useEffect(() => {
     if (currentNetwork.chainType === 'aelf') {
       if (prevRpcUrl !== currentNetwork.rpcUrl) dispatch(setCurrentInterface(getAelfInstance(currentNetwork.rpcUrl)));

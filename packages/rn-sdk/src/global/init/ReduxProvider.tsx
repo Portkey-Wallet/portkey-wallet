@@ -11,11 +11,12 @@ import { myTheme } from 'assets/theme';
 import InterfaceProvider from '@portkey-wallet/rn-base/contexts/useInterface';
 import TopView from 'rn-teaset/components/Overlay/TopView';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import Initializer from './Initializer';
 // import { PersistGate } from 'redux-persist/integration/react';
 // import persistStore from 'redux-persist/es/persistStore';
 // import { TextTitle } from '@portkey-wallet/rn-components/components/CommonText';
 // let persistStoreSuccess = false;
-type HigherOrderComponent<T = unknown> = (
+type HigherOrderComponent<T = any> = (
   WrappedComponent: React.ComponentType<T>,
   extraProps?: { statusbarColor?: string; routerParams?: { from?: string } },
 ) => React.ComponentType<T>;
@@ -36,20 +37,7 @@ const ProviderComponent: HigherOrderComponent = (
       : defaultRouterParams;
     return (
       <Provider store={store}>
-        {/* <PersistGate
-          loading={
-            <View
-              style={{
-                backgroundColor: 'white',
-                width: '100%',
-                height: '100%',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              <TextTitle>loading...</TextTitle>
-            </View>
-          }
-          persistor={persistor}> */}
+        <Initializer />
         <ThemeProvider theme={myTheme}>
           <InterfaceProvider>
             <RouterProvider value={routerP}>
@@ -64,7 +52,6 @@ const ProviderComponent: HigherOrderComponent = (
             </RouterProvider>
           </InterfaceProvider>
         </ThemeProvider>
-        {/* </PersistGate> */}
       </Provider>
     );
   };

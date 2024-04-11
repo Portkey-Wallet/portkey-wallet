@@ -3,6 +3,7 @@ import { COMMON_RESULT_DATA, RouterContext } from './context';
 import router, { EventName } from '.';
 import { EmitterSubscription } from 'react-native';
 import { EntryResult, PortkeyDeviceEventEmitter, PortkeyEntries } from './types';
+import { reverseMapRoute } from './map';
 
 export function useNavigation() {
   const { from } = useContext(RouterContext) as { from: PortkeyEntries };
@@ -17,6 +18,9 @@ export function useNavigation() {
       goBack: (result?: EntryResult<any>) => {
         router.back(result ?? COMMON_RESULT_DATA, { from });
       },
+      reset: (name: any | { name: any; params?: any }[], params?: any) => {
+        router.reset(name, params, from);
+      },
       canGoBack: () => {
         return router.canGoBack();
       },
@@ -25,6 +29,15 @@ export function useNavigation() {
       },
       addListener: (type: EventName, callback: () => void) => {
         return router.addListener(from, type, callback);
+      },
+      getState: () => {
+        return {
+          routes: router.allItem().map(item => {
+            return {
+              name: reverseMapRoute(item),
+            };
+          }),
+        };
       },
     };
   }, [from]);

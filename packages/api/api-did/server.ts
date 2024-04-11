@@ -118,6 +118,7 @@ export class DidService extends ServiceInit {
       await im.refreshToken();
       return this.send(base, config, ++reCount);
     }
+    console.log(URL, 'resultresultresult', fetchResult);
     return fetchResult;
   };
   setLockCallBack = (callBack: (expired?: boolean) => void) => {

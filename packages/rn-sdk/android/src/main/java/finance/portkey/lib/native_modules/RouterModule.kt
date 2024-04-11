@@ -101,4 +101,14 @@ class RouterModule(reactContext: ReactApplicationContext) :
         activity?.navigateBackWithResult(result)
         println("navigateBack invoke, from is $from")
     }
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    fun reset(targetEntry: String,
+              from: String,
+              targetScene: String = "",
+              params: ReadableMap = Arguments.createMap()
+    ) {
+//        val activity = NavigationHolder.getTopComponent()
+//        activity?.navigateBackWithResult(result)
+//        println("navigateBack invoke, from is $from")
+    }
 }

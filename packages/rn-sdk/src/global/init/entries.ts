@@ -7,11 +7,11 @@ import VerifierDetailsEntryPage from 'pages/Entries/VerifierDetails';
 import { PortkeyEntries, registerLaunchMode } from '@portkey-wallet/rn-core/router/types';
 import ViewOnWebView from 'pages/Activity/ViewOnWebView';
 import AccountSettings from 'pages/My/AccountSettings';
-import ScanLogin from 'pages/Login/ScanLogin';
-import CheckPin from 'pages/Pin/CheckPin';
-import ConfirmPin from 'pages/Pin/ConfirmPin';
-import SetBiometrics from 'pages/Pin/SetBiometrics';
-import SetPin from 'pages/Pin/SetPin';
+// import ScanLogin from 'pages/Login/ScanLogin';
+// import CheckPin from 'pages/Pin/CheckPin';
+// import ConfirmPin from 'pages/Pin/ConfirmPin';
+// import SetBiometrics from 'pages/Pin/SetBiometrics';
+// import SetPin from 'pages/Pin/SetPin';
 import QrScanner from 'pages/QrScanner';
 // import GuardianHome from 'pages/GuardianManage/GuardianHome';
 import GuardianHome from '@portkey-wallet/rn-biz-components/biz-components/My/Guardian/GuardianHome';
@@ -44,6 +44,12 @@ import ManageTokenList from 'pages/Token/ManageTokenList';
 import CustomToken from 'pages/Token/CustomToken';
 import TestComp from 'apiTest/TestComp';
 import LogInPortKey from '@portkey-wallet/rn-biz-components/biz-components/Login/LoginPortkey';
+import SignupPortkey from '@portkey-wallet/rn-biz-components/biz-components/Login/SignupPortkey';
+import ScanLogin from '@portkey-wallet/rn-biz-components/biz-components/Login/ScanLogin';
+import CheckPin from '@portkey-wallet/rn-biz-components/biz-components/Pin/CheckPin';
+import ConfirmPin from '@portkey-wallet/rn-biz-components/biz-components/Pin/ConfirmPin';
+import SetBiometrics from '@portkey-wallet/rn-biz-components/biz-components/Pin/SetBiometrics';
+import SetPin from '@portkey-wallet/rn-biz-components/biz-components/Pin/SetPin';
 
 type AcceptableComponentType = ComponentProvider;
 
@@ -59,7 +65,7 @@ const initEntries = () => {
   // entryConfig.set(PortkeyEntries.SIGN_IN_ENTRY, () => ReduxProvider(SignInEntryPage as React.ComponentType<any>));
   entryConfig.set(PortkeyEntries.SIGN_IN_ENTRY, () => ReduxProvider(LogInPortKey as React.ComponentType<any>));
   entryConfig.set(PortkeyEntries.SELECT_COUNTRY_ENTRY, () => SelectCountryPage);
-  entryConfig.set(PortkeyEntries.SIGN_UP_ENTRY, () => SignUpEntryPage);
+  entryConfig.set(PortkeyEntries.SIGN_UP_ENTRY, () => ReduxProvider(SignupPortkey as React.ComponentType<any>));
 
   // verify stage
   entryConfig.set(PortkeyEntries.VERIFIER_DETAIL_ENTRY, () => VerifierDetailsEntryPage);
@@ -101,7 +107,14 @@ const initEntries = () => {
 
   // scan QR code
   entryConfig.set(PortkeyEntries.SCAN_QR_CODE, () => QrScanner);
-  entryConfig.set(PortkeyEntries.SCAN_LOG_IN, () => ScanLogin);
+  // entryConfig.set(PortkeyEntries.SCAN_LOG_IN, () => ScanLogin);
+  entryConfig.set(PortkeyEntries.SCAN_LOG_IN, () =>
+    ReduxProvider(ScanLogin as React.ComponentType<any>, {
+      routerParams: {
+        from: PortkeyEntries.SCAN_LOG_IN,
+      },
+    }),
+  );
 
   // guardian manage
   entryConfig.set(PortkeyEntries.GUARDIAN_HOME_ENTRY, () => ReduxProvider(GuardianHome as React.ComponentType<any>));

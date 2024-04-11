@@ -101,4 +101,18 @@ class RouterModule(reactContext: ReactApplicationContext) :
         activity?.navigateBackWithResult(result)
         println("navigateBack invoke, from is $from")
     }
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    fun reset(targetEntry: String,
+              from: String,
+              targetScene: String = "",
+              params: ReadableMap = Arguments.createMap()
+    ) {
+        currentActivity?.navigateToAnotherReactActivity(
+            entryName = targetEntry,
+            params = params.getMap("params"),
+            targetScene = targetScene,
+            from = from,
+        )
+        NavigationHolder.clear();
+    }
 }

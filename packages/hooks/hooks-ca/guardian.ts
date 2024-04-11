@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { request } from '@portkey-wallet/api/api-did';
+import { request } from '@portkey-wallet/rn-inject-sdk';
 import { checkHolderError } from '@portkey-wallet/utils/check';
 import { handleErrorCode, handleErrorMessage } from '@portkey-wallet/utils';
 import { useAppCASelector } from '.';
@@ -10,10 +10,12 @@ export const useGetRegisterInfo = () => {
       if (info.loginGuardianIdentifier) {
         info.loginGuardianIdentifier = info.loginGuardianIdentifier.replaceAll(' ', '');
       }
+      console.log('getRegisterInfo info', info);
       return await request.wallet.getRegisterInfo({
         params: info,
       });
     } catch (error: any) {
+      console.log('getRegisterInfo info error', error);
       const code = handleErrorCode(error);
       const message = handleErrorMessage(error);
       throw { message: checkHolderError(message, code), code };

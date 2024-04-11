@@ -10,7 +10,7 @@ import { LoginInfo } from '../types/wallet';
 import { checkHolderError } from '@portkey-wallet/utils/check';
 import { VerifierItem } from '@portkey-wallet/types/verifier';
 import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
-import { request } from '@portkey-wallet/api/api-did';
+import { request } from '@portkey-wallet/rn-inject-sdk';
 import { handleErrorMessage, handleErrorCode } from '@portkey-wallet/utils';
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import myEvents from '../utils/deviceEvent';
@@ -52,7 +52,9 @@ export const useGetGuardiansInfo = () => {
   return useCallback(
     async (loginInfo: LoginInfo, chainInfo?: ChainItemType) => {
       try {
+        console.log('getHolderInfo');
         const res = await getHolderInfo(loginInfo, chainInfo);
+        console.log('getHolderInfo end', res);
         if (res && !res.error) return res?.data || res;
         throw new Error(checkHolderError(res.error?.message));
       } catch (error: any) {

@@ -29,6 +29,13 @@ internal object NavigationHolder {
     private val callbackMap: MutableMap<String, Callback> = mutableMapOf()
     private val nativeCallbackMap: MutableMap<String, (WritableMap) -> Unit> = mutableMapOf()
 
+    fun clear(){
+        naviStack.forEach {
+            it.get()?.finish()
+        }
+        naviStack.clear()
+        entryMap.clear()
+    }
     fun pushNewComponent(activity: BasePortkeyReactActivity, pageEntry: String) {
         val wrfActivity = WeakReference(activity)
         naviStack.push(wrfActivity)

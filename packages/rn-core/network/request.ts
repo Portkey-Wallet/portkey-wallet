@@ -29,8 +29,10 @@ const nativeFetch = async <T>(
   headers?: TypedUrlParams,
   extraOptions?: NetworkOptions,
 ): Promise<ResultWrapper<T>> => {
+  console.log('invoke nativeFetch');
   // it is not recommended to use this fetch() method directly, so NetworkModule isn't declared in portkeyModulesEntity
-  const networkModule = (PortkeyModulesEntity as any).NetworkModule as NetworkModule;
+  const networkModule = PortkeyModulesEntity;
+  console.log('networkModule', Object.keys(networkModule));
   const res = await networkModule.fetch(
     url,
     method,
@@ -42,7 +44,7 @@ const nativeFetch = async <T>(
     try {
       const t = JSON.parse(res) as ResultWrapper<T>;
       if (t?.result && typeof t.result === 'string') {
-        t.result = JSON.parse(t.result);
+        return JSON.parse(t.result);
       }
       return t;
     } catch (e) {}
@@ -74,6 +76,7 @@ export class RNDidService extends DidService {
     this.fetchInstance = new SDKFetch();
   }
   protected async fetchData(URL: string, fetchConfig: any, method: string) {
+    console.log('URLURLURL', URL, 'fetchConfig', fetchConfig);
     const requestConfig = {
       ...fetchConfig,
       url: URL,
@@ -87,8 +90,9 @@ export class RNDidService extends DidService {
       uri = Object.keys(params).length > 0 ? `${uri}?${stringify(params, stringifyOptions)}` : uri;
       myBody = undefined;
     } else {
-      if (requestConfig.body) {
-        myBody = JSON.parse(requestConfig.body as string);
+      console.log('URLURLURL', URL, 'requestConfig.params', typeof requestConfig.params);
+      if (requestConfig.params) {
+        myBody = typeof requestConfig.params === 'string' ? JSON.parse(requestConfig.params) : requestConfig.params;
       }
     }
     if (resourceUrl !== undefined) {
@@ -103,6 +107,7 @@ export class RNDidService extends DidService {
     Object.entries({ ...defaultHeaders, ...headers }).forEach(([headerItem, value]) => {
       myHeaders[headerItem] = value as string | number | boolean | null | undefined;
     });
+    console.log('uri', uri, 'this.fetchInstance.fetch myBody', myBody);
     return await this.fetchInstance.fetch(uri, _method, myBody, myHeaders);
   }
 }

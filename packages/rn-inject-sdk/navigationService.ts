@@ -19,7 +19,9 @@ function goBack() {
   router.back(COMMON_RESULT_DATA, { from: COMMON_ROUTER_FROM });
 }
 
-function reset(name: any | { name: any; params?: any }[], params?: object) {}
+function reset(name: any | { name: any; params?: any }[], params?: object) {
+  router.reset(name, params);
+}
 
 function push(routeName: string, params?: object) {}
 

@@ -14,6 +14,7 @@ import { useCurrentNetwork, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/
 import { ChannelTypeEnum } from '@portkey-wallet/im';
 import { useChangeNetwork } from './network';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import Environment from '@portkey-wallet/rn-inject';
 
 export const useNotifyAction = () => {
   const jumpToChatGroupDetails = useJumpToChatGroupDetails();
@@ -94,7 +95,7 @@ export const useNotify = () => {
   );
 
   useEffect(() => {
-    if (!global.isRNSDK) {
+    if (Environment.isSDK()) {
       return;
     }
     messaging().onNotificationOpenedApp(remoteMessage => {
@@ -110,7 +111,6 @@ export const useNotify = () => {
         console.log('--remoteMessage getInitialNotification', remoteMessage);
         setRemoteData(remoteMessage?.data);
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

@@ -24,6 +24,10 @@ export class Stack<T> {
     return this.items.length;
   }
 
+  allItem(): T[] {
+    return this.items;
+  }
+
   clear(): void {
     this.items = [];
   }

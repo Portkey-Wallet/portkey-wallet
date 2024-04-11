@@ -28,6 +28,13 @@ export interface RouterModule {
     callback: (res: EntryResult<R>) => void,
   ) => void;
   navigateBack: <R>(result: EntryResult<R>, from: string) => void;
+
+  reset: <T = { [x: string]: AcceptableValueType }>(
+    targetEntry: string,
+    from: string,
+    targetScene: string,
+    params: Partial<T>,
+  ) => void;
 }
 
 export interface EntryResult<R> {

@@ -100,7 +100,9 @@ export const getChainListAsync = createAsyncThunk(
     const {
       wallet: { currentNetwork, originChainId },
     } = getState() as { wallet: WalletState };
+    console.log('currentNetwork', currentNetwork);
     const _networkType = type ? type : currentNetwork;
+    console.log('_networkType', _networkType);
     const baseUrl = NetworkList.find(item => item.networkType === _networkType)?.apiUrl;
     if (!baseUrl) throw Error('Unable to obtain the corresponding network');
     const response = await getChainList({ baseUrl });

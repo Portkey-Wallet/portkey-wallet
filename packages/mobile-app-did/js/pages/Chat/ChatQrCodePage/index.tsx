@@ -32,6 +32,7 @@ const ChatQrCodePage: React.FC = () => {
         title={nickName}
         avatarSize={pTd(80)}
         style={PageStyle.avatar}
+        titleStyle={PageStyle.avatarTitleStyle}
         imageUrl={avatar}
       />
       <TextXXXL numberOfLines={1} style={GStyles.marginTop(pTd(8))}>
@@ -69,6 +70,8 @@ export const PageStyle = StyleSheet.create({
   },
   avatar: {
     marginTop: pTd(24),
+  },
+  avatarTitleStyle: {
     fontSize: pTd(40),
   },
   qrCodeWrap: {

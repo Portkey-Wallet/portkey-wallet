@@ -5,8 +5,6 @@ import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
 import { styles } from './style';
 import { useNavigation } from '@react-navigation/native';
-import useEffectOnce from 'hooks/useEffectOnce';
-
 import navigationService from 'utils/navigationService';
 import NoData from 'components/NoData';
 import { useLanguage } from 'i18n/hooks';
@@ -38,8 +36,6 @@ import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useTokenInfoFromStore } from '@portkey-wallet/hooks/hooks-ca/assets';
-import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
-import { PAGE_SIZE_IN_ACCOUNT_TOKEN } from '@portkey-wallet/constants/constants-ca/assets';
 import ActivityItem from 'components/ActivityItem';
 import { FlatListFooterLoading } from 'components/FlatListFooterLoading';
 import { ListLoadingEnum } from 'constants/misc';
@@ -61,14 +57,13 @@ const TokenDetail: React.FC = () => {
   const { getAndUpdateTargetBalance } = useBalance();
   const { isETransDepositShow, isETransWithdrawShow } = useAppETransShow();
   const defaultToken = useDefaultToken();
-  const currentTokenInfo = useTokenInfoFromStore(tokenInfo.symbol, tokenInfo.chainId);
+  const currentTokenInfo = useTokenInfoFromStore(tokenInfo.symbol, tokenInfo.chainId) || tokenInfo;
   const isMainnet = useIsMainnet();
   const caAddressInfos = useCaAddressInfoList();
   const navigation = useNavigation();
   const dispatch = useAppCommonDispatch();
   const activity = useAppCASelector(state => state.activity);
   const { isRampShow } = useAppRampEntryShow();
-  const { fetchAccountTokenInfoList } = useAccountTokenInfo();
 
   const balanceShow = useMemo(
     () => `${formatTokenAmountShowWithDecimals(currentTokenInfo?.balance || '0', currentTokenInfo?.decimals)}`,
@@ -97,7 +92,8 @@ const TokenDetail: React.FC = () => {
   const [isLoading, setIsLoading] = useState(ListLoadingEnum.hide);
   const getActivityList = useLockCallback(
     async (isInit = false) => {
-      const { data = [], maxResultCount = 10, skipCount = 0, totalRecordCount = 0 } = currentActivity || {};
+      const maxResultCount = 20;
+      const { data = [], skipCount = 0, totalRecordCount = 0 } = currentActivity || {};
       if (!isInit && data?.length >= totalRecordCount) return;
 
       setIsLoading(isInit ? ListLoadingEnum.header : ListLoadingEnum.footer);
@@ -108,7 +104,7 @@ const TokenDetail: React.FC = () => {
       };
       await dispatch(getActivityListAsync(params));
       setIsLoading(ListLoadingEnum.hide);
-      if (!isInit) await sleep(500);
+      if (!isInit) await sleep(250);
     },
     [currentActivity, dispatch, fixedParamObj],
   );
@@ -121,23 +117,12 @@ const TokenDetail: React.FC = () => {
     await getActivityList(true);
   }, [getActivityList, getAndUpdateTargetBalance, tokenInfo.chainId, tokenInfo.symbol]);
 
+  const isInitRef = useRef(false);
   const init = useCallback(async () => {
-    await sleep(100);
-    getActivityList(true);
+    await sleep(250);
+    await getActivityList(true);
+    isInitRef.current = true;
   }, [getActivityList]);
-
-  useEffectOnce(() => {
-    init();
-  });
-
-  // refresh token List
-  useEffectOnce(() => {
-    fetchAccountTokenInfoList({
-      caAddressInfos,
-      skipCount: 0,
-      maxResultCount: PAGE_SIZE_IN_ACCOUNT_TOKEN,
-    });
-  });
 
   const isBuyButtonShow = useMemo(
     () => SHOW_RAMP_SYMBOL_LIST.includes(tokenInfo.symbol) && tokenInfo.chainId === 'AELF' && isRampShow,
@@ -164,7 +149,6 @@ const TokenDetail: React.FC = () => {
     if (isFaucetButtonShow) count++;
     return count;
   }, [isBuyButtonShow, isDepositShow, isFaucetButtonShow, isWithdrawShow]);
-  console.log(buttonCount, '====buttonCount');
 
   const buttonGroupWrapStyle = useMemo(() => {
     if (buttonCount >= 5) {
@@ -195,6 +179,8 @@ const TokenDetail: React.FC = () => {
     );
   }, []);
 
+  const isEmpty = useMemo(() => (currentActivity?.data || []).length === 0, [currentActivity?.data]);
+
   return (
     <PageContainer
       type="leftBack"
@@ -212,7 +198,7 @@ const TokenDetail: React.FC = () => {
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View style={styles.card}>
-        <Text style={styles.tokenBalance}>{`${balanceShow} ${currentTokenInfo?.symbol}`}</Text>
+        <Text style={styles.tokenBalance}>{`${balanceShow} ${currentTokenInfo?.symbol || ''}`}</Text>
         {isMainnet && <Text style={styles.dollarBalance}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</Text>}
         <View style={[styles.buttonGroupWrap, buttonGroupWrapStyle]}>
           {isBuyButtonShow && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
@@ -272,10 +258,17 @@ const TokenDetail: React.FC = () => {
         renderItem={renderItem}
         onRefresh={onRefreshList}
         onEndReached={() => {
+          if (!isInitRef.current) return;
           getActivityList();
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
-        ListFooterComponent={<FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}
+        ListFooterComponent={
+          <>{!isEmpty && <FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}</>
+        }
+        onLoad={() => {
+          if (isInitRef.current) return;
+          init();
+        }}
       />
     </PageContainer>
   );

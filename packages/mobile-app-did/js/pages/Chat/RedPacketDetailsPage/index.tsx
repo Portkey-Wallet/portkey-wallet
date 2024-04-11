@@ -155,6 +155,7 @@ export const RedPacketDetails = () => {
             resizeMode="cover"
             avatarSize={pTd(24)}
             style={styles.sendAvatar}
+            titleStyle={FontStyles.size14}
             title={redPacketData?.senderName}
             imageUrl={redPacketData?.senderAvatar}
           />
@@ -316,7 +317,6 @@ const styles = StyleSheet.create({
   },
   sendAvatar: {
     marginRight: pTd(8),
-    fontSize: pTd(14),
   },
   memo: {
     textAlign: 'center',

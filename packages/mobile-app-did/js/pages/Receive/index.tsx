@@ -59,6 +59,8 @@ export default function Receive() {
           avatarSize={pTd(40)}
           svgName={symbol === defaultToken.symbol ? 'testnet' : undefined}
           imageUrl={imageUrl || symbolImages?.[symbol] || ''}
+          titleStyle={FontStyles.font11}
+          borderStyle={GStyles.hairlineBorder}
         />
         <View>
           <TextL>{symbol}</TextL>

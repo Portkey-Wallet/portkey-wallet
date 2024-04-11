@@ -81,7 +81,8 @@ export default function AmountToken({
             svgName={selectedToken.symbol === defaultToken.symbol ? 'testnet' : undefined}
             imageUrl={selectedToken.imageUrl || symbolImages[selectedToken.symbol]}
             avatarSize={pTd(28)}
-            style={styles.avatarStyle}
+            titleStyle={styles.avatarTitle}
+            borderStyle={GStyles.hairlineBorder}
           />
           <Text style={styles.symbolName}>{formattedTokenNameToSuffix}</Text>
         </View>
@@ -149,8 +150,9 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  avatarStyle: {
+  avatarTitle: {
     fontSize: pTd(16),
+    color: defaultColors.font11,
   },
   symbolName: {
     flex: 1,

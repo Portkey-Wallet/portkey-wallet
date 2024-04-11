@@ -1,4 +1,4 @@
-import { useCurrentNetwork } from '../network';
+import { useCurrentNetworkInfo } from './network';
 import { useMemo, useCallback } from 'react';
 import { useAppCASelector } from '.';
 import { useAssets } from './assets';
@@ -11,21 +11,12 @@ export function useAllBalances() {
   return useAppCASelector(state => state.tokenBalance.balances);
 }
 
-export function useCurrentNetworkBalances() {
-  const balances = useAllBalances();
-  const currentNetwork = useCurrentNetwork();
-  return useMemo(() => {
-    if (!currentNetwork.rpcUrl) return;
-    return balances?.[currentNetwork.rpcUrl];
-  }, [balances, currentNetwork.rpcUrl]);
-}
-
 export function useAccountCryptoBoxAssetList() {
   return useAppCASelector(state => state.assets?.accountCryptoBoxAssets.accountAssetsList);
 }
 
 export const useAccountBalanceUSD = () => {
-  const { networkType = 'MAINNET' } = useCurrentNetwork();
+  const { networkType = 'MAINNET' } = useCurrentNetworkInfo();
   const assetsState = useAssets();
   return useMemo(
     () => assetsState?.accountBalance?.accountBalanceInfo?.[networkType] || '',
@@ -34,7 +25,7 @@ export const useAccountBalanceUSD = () => {
 };
 
 export function useBalance() {
-  const { networkType: currentNetwork } = useCurrentNetwork();
+  const { networkType: currentNetwork } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
   const caAddressInfoList = useCaAddressInfoList();
 

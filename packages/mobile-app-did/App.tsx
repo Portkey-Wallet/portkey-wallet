@@ -28,6 +28,7 @@ import 'utils/sentryInit';
 import 'utils/logBox';
 import 'utils/initExceptionManager';
 import 'utils/initRequest';
+import './js/headlessTask';
 import { initFCMSignalR } from 'utils/FCM';
 import { initNotifications } from 'utils/notifee';
 import { logBoxTextColorSaver } from 'utils/textColor';

@@ -1,9 +1,8 @@
 import React, { useState, useCallback, useRef, useMemo } from 'react';
-import { StyleSheet, FlatList } from 'react-native';
+import { StyleSheet } from 'react-native';
 import navigationService from 'utils/navigationService';
 import PageContainer from 'components/PageContainer';
 import { pTd } from 'utils/unit';
-import useEffectOnce from 'hooks/useEffectOnce';
 import { useLanguage } from 'i18n/hooks';
 
 import { getActivityListAsync } from '@portkey-wallet/store/store-ca/activity/action';
@@ -20,6 +19,7 @@ import { sleep } from '@portkey-wallet/utils';
 import { FlatListFooterLoading } from 'components/FlatListFooterLoading';
 import { ListLoadingEnum } from 'constants/misc';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { FlashList } from '@shopify/flash-list';
 
 interface RouterParams {
   chainId?: string;
@@ -63,14 +63,12 @@ const ActivityListPage = () => {
     [caAddressInfos, chainId, currentActivity, dispatch, symbol],
   );
 
+  const isInitRef = useRef(false);
   const init = useCallback(async () => {
-    await sleep(100);
-    getActivityList(true);
+    await sleep(250);
+    await getActivityList(true);
+    isInitRef.current = true;
   }, [getActivityList]);
-
-  useEffectOnce(() => {
-    init();
-  });
 
   const renderItem = useCallback(({ item, index }: { item: ActivityItemType; index: number }) => {
     const preItem = currentActivityRef.current?.data[index - 1];
@@ -92,23 +90,27 @@ const ActivityListPage = () => {
       safeAreaColor={['blue', 'white']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
-      <FlatList
-        onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
+      <FlashList
         refreshing={isLoading === ListLoadingEnum.header}
         data={currentActivity?.data || []}
-        keyExtractor={(_item: ActivityItemType, index: number) => `${index}`}
-        renderItem={renderItem}
-        onRefresh={() => getActivityList(true)}
-        onEndReached={() => getActivityList(false)}
-        windowSize={50}
-        maxToRenderPerBatch={10}
-        initialNumToRender={20}
+        keyExtractor={(_item, index) => `${index}`}
         ListEmptyComponent={
           <NoData message={'You have no transactions.'} topDistance={pTd(160)} oblongSize={[pTd(96), pTd(84)]} />
         }
+        renderItem={renderItem}
+        onRefresh={() => getActivityList(true)}
+        onEndReached={() => {
+          if (!isInitRef.current) return;
+          getActivityList(false);
+        }}
+        onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListFooterComponent={
           <>{!isEmpty && <FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}</>
         }
+        onLoad={() => {
+          if (isInitRef.current) return;
+          init();
+        }}
       />
     </PageContainer>
   );

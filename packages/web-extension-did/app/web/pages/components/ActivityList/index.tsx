@@ -131,24 +131,34 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
     [activity.failedActivityMap, handleResend],
   );
 
+  const formatAddressShow = useCallback(
+    (item: ActivityItemType) => {
+      const { isReceived, fromAddress, fromChainId, toAddress, toChainId } = item;
+      let transAddress = '';
+      if (isReceived) {
+        transAddress = fromAddress ? addressFormat(fromAddress, fromChainId, currentNetwork.walletType) : '';
+      } else {
+        transAddress = toAddress ? addressFormat(toAddress, toChainId, currentNetwork.walletType) : '';
+      }
+      return transAddress ? `${isReceived ? 'From' : 'To'} ${formatStr2EllipsisStr(transAddress, [7, 9])}` : '';
+    },
+    [currentNetwork.walletType],
+  );
+
   const renderActivityTitle = useCallback(
     (item: ActivityItemType) => {
-      const { transactionName, transactionType, isReceived, fromAddress, fromChainId, toAddress, toChainId } = item;
-      const transAddress = isReceived
-        ? addressFormat(fromAddress, fromChainId, currentNetwork.walletType)
-        : addressFormat(toAddress, toChainId, currentNetwork.walletType);
-      const showAddress = `${isReceived ? 'From' : 'To'} ${formatStr2EllipsisStr(transAddress, [7, 9])}`;
+      const { transactionName, transactionType } = item;
       return (
         <div className={clsx('activity-item-title', isPrompt && 'prompt-activity-item-title')}>
           <div className="transaction-name">{transactionName}</div>
-          <div className="transaction-address">{showAddress}</div>
+          <div className="transaction-address">{formatAddressShow(item)}</div>
           {TransactionTypes.CROSS_CHAIN_TRANSFER === transactionType && (
             <div className="cross-chain-transfer">Cross-Chain Transfer</div>
           )}
         </div>
       );
     },
-    [currentNetwork.walletType, isPrompt],
+    [formatAddressShow, isPrompt],
   );
 
   const renderActivityAmount = useCallback(
@@ -214,8 +224,8 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   }, []);
 
   const renderActivityItem = useCallback(
-    (item: ActivityItemType, index: number) => (
-      <List.Item key={`activityList_${item.transactionId}_${index}`}>
+    (item: ActivityItemType) => (
+      <List.Item>
         <div
           className={clsx(
             'activity-item',
@@ -254,24 +264,20 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         {data?.map((item, index) => {
           if (index === 0) {
             return (
-              <>
-                <div key={`activityList_date_${index}`} className="activity-date-item">
-                  {formatActivityTimeShow(item?.timestamp)}
-                </div>
-                {renderActivityItem(item, index)}
-              </>
+              <div key={`activityList_date_${index}`} className="activity-date-wrap">
+                <div className="activity-date-item">{formatActivityTimeShow(item?.timestamp)}</div>
+                {renderActivityItem(item)}
+              </div>
             );
           } else {
             if (isSameDay(data[index - 1].timestamp, item.timestamp)) {
-              return renderActivityItem(item, index);
+              return <div key={`activityList_${item.transactionId}_${index}`}>{renderActivityItem(item)}</div>;
             } else {
               return (
-                <>
-                  <div key={`activityList_date_${index}`} className="activity-date-item">
-                    {formatActivityTimeShow(item?.timestamp)}
-                  </div>
-                  {renderActivityItem(item, index)}
-                </>
+                <div key={`activityList_date_${index}`} className="activity-date-wrap">
+                  <div className="activity-date-item">{formatActivityTimeShow(item?.timestamp)}</div>
+                  {renderActivityItem(item)}
+                </div>
               );
             }
           }

@@ -72,9 +72,7 @@ export const Resend = ({ item, containerStyle, buttonStyle, titleStyle }: IResen
         onPress={onResend}
       />
     </View>
-  ) : (
-    <></>
-  );
+  ) : null;
 };
 
 const itemStyle = StyleSheet.create({

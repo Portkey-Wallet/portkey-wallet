@@ -25,7 +25,7 @@ const SelectGroupMembersToTransferPage = () => {
   const { groupInfo, refreshChannelMembersInfo } = useGroupChannelInfo(currentChannelId || '', false);
 
   const channelId = useCurrentChannelId();
-  const { userId: myUserId } = useCurrentUserInfo() || {};
+  const { userId: myUserId } = useCurrentUserInfo();
   const { members = [], totalCount } = groupInfo || {};
   const [keyword, setKeyword] = useState('');
   const debounceKeyword = useDebounce(keyword, 800);

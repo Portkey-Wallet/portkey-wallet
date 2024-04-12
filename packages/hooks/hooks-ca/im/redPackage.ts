@@ -397,7 +397,7 @@ export const useGetRedPackageConfig = (isAutoFetch = false, isInit = false) => {
 };
 
 export const useIsMyRedPacket = (senderId: string): boolean => {
-  const { userId } = useCurrentUserInfo() || {};
+  const { userId } = useCurrentUserInfo();
 
   return userId === senderId;
 };

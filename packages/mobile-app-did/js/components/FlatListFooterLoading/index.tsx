@@ -12,7 +12,7 @@ export interface IFlatListFooterLoadingProps {
 
 export const FlatListFooterLoading = ({ refreshing }: IFlatListFooterLoadingProps) => {
   return (
-    <View style={[styles.container, refreshing && styles.containerLoading]}>
+    <View style={styles.container}>
       <View style={styles.content}>
         {refreshing && (
           <>
@@ -37,7 +37,6 @@ const styles = StyleSheet.create({
     paddingTop: pTd(20),
     marginBottom: pTd(24),
   },
-  containerLoading: {},
   content: {
     height: pTd(18),
     width: '100%',

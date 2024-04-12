@@ -78,9 +78,9 @@ export default function InputBar({
           />
         );
       }
-      return <></>;
+      return null;
     }
-    return <></>;
+    return null;
   }, [onCloseReply, replyMsg]);
   useEffect(() => {
     document.addEventListener('click', hidePop);
@@ -126,9 +126,7 @@ export default function InputBar({
                 <CustomSvg className={clsx([popVisible && 'has-show-more-icon'])} type="File" />
               </div>
             </Popover>
-          ) : (
-            <></>
-          )}
+          ) : null}
           <div className="input-text">
             <CustomInput
               autofocus

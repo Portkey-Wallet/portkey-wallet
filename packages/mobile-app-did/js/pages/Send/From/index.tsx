@@ -8,7 +8,7 @@ import { useLanguage } from 'i18n/hooks';
 
 export default function From() {
   const { t } = useLanguage();
-  const { nickName = '' } = useCurrentUserInfo() || {};
+  const { nickName = '' } = useCurrentUserInfo();
 
   return (
     <View style={styles.fromWrap}>

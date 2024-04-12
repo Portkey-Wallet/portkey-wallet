@@ -50,7 +50,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
   const isMainnet = useIsMainnet();
   const defaultToken = useDefaultToken();
   const pin = usePin();
-  const { nickName = '' } = useCurrentUserInfo() || {};
+  const { nickName = '' } = useCurrentUserInfo();
   const wallet = useCurrentWalletInfo();
   const checkManagerSyncState = useCheckManagerSyncState();
   const amountInUsdShow = useAmountInUsdShow();

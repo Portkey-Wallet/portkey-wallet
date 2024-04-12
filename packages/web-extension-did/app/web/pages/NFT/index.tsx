@@ -111,9 +111,7 @@ export default function NFT() {
           <div>{formatTransferTime(expires ?? '')}</div>
         </div>
       </div>
-    ) : (
-      <></>
-    );
+    ) : null;
   }, [nftDetail]);
 
   const renderInscriptionInfo = useMemo(() => {
@@ -132,9 +130,7 @@ export default function NFT() {
           </div>
         )}
       </div>
-    ) : (
-      <></>
-    );
+    ) : null;
   }, [nftDetail]);
 
   const renderTraitsInfo = useMemo(() => {
@@ -152,9 +148,7 @@ export default function NFT() {
           </div>
         ))}
       </div>
-    ) : (
-      <></>
-    );
+    ) : null;
   }, [nftDetail]);
 
   const renderGenerationInfo = useMemo(() => {
@@ -167,9 +161,7 @@ export default function NFT() {
           <div>{generation}</div>
         </div>
       </div>
-    ) : (
-      <></>
-    );
+    ) : null;
   }, [nftDetail]);
 
   const mainContent = useCallback(() => {

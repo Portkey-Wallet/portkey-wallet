@@ -177,7 +177,7 @@ export const styles = StyleSheet.create({
   },
   chainInfo1: {
     marginTop: pTd(4),
-    color: defaultColors.font3,
+    color: defaultColors.font11,
   },
   contactActivity: {
     position: 'absolute',

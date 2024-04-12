@@ -15,7 +15,7 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 const ChatQrCodePage: React.FC = () => {
   const isMainnet = useIsMainnet();
-  const { avatar = '', userId = '', nickName = '' } = useCurrentUserInfo() || {};
+  const { avatar = '', userId = '', nickName = '' } = useCurrentUserInfo();
 
   const qrCodeData = useMemo(() => `${LinkPortkeyPath.addContact}${userId}`, [userId]);
 

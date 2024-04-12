@@ -496,17 +496,10 @@ export const assetsSlice = createSlice({
             : ele,
         );
 
-        if (!state?.accountToken?.accountTokenInfo?.[currentNetwork]) {
-          state.accountToken.accountTokenInfo = {
-            ...(state.accountToken.accountTokenInfo || {}),
-            [currentNetwork]: {},
-          };
-        }
-
         state.accountToken.accountTokenInfo = {
           ...(state.accountToken.accountTokenInfo || {}),
           [currentNetwork]: {
-            ...(state.accountToken.accountTokenInfo[currentNetwork] || {}),
+            ...(state?.accountToken?.accountTokenInfo?.[currentNetwork] || {}),
             accountTokenList: tmpList,
           },
         };

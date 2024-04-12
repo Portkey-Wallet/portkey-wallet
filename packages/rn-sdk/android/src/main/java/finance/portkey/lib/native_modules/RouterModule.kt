@@ -105,11 +105,11 @@ class RouterModule(reactContext: ReactApplicationContext) :
     fun reset(targetEntry: String,
               from: String,
               targetScene: String = "",
-              params: ReadableMap = Arguments.createMap()
+              params: ReadableMap? = Arguments.createMap()
     ) {
         currentActivity?.navigateToAnotherReactActivity(
             entryName = targetEntry,
-            params = params.getMap("params"),
+            params = params?.getMap("params"),
             targetScene = targetScene,
             from = from,
         )

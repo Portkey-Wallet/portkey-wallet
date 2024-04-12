@@ -60,10 +60,8 @@ class RNSDKRouter implements Router {
     } else {
       NativeModules.RouterModule.reset(
         wrapEntry(mapRoute(name)),
-        LaunchMode.STANDARD,
         from ?? 'ThirdParty',
         params?.targetScene ?? 'none',
-        false,
         params as any,
       );
     }

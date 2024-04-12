@@ -2,7 +2,7 @@ import React, { useCallback, useRef } from 'react';
 import PageContainer from '@portkey-wallet/rn-components/components/PageContainer';
 import { DigitInputInterface } from '@portkey-wallet/rn-components/components/DigitInput';
 import navigationService from '@portkey-wallet/rn-inject-sdk';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { useRouterParams } from '@portkey-wallet/rn-inject-sdk';
 import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
 import useEffectOnce from '@portkey-wallet/rn-base/hooks/useEffectOnce';
 import { CAInfoType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';

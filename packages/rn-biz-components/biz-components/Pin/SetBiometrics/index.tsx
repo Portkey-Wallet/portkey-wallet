@@ -3,7 +3,7 @@ import { TextL, TextS } from '@portkey-wallet/rn-components/components/CommonTex
 import PageContainer from '@portkey-wallet/rn-components/components/PageContainer';
 import CommonButton from '@portkey-wallet/rn-components/components/CommonButton';
 import { setSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { useRouterParams } from '@portkey-wallet/rn-inject-sdk';
 import { Image, StyleSheet } from 'react-native';
 import GStyles from '@portkey-wallet/rn-base/assets/theme/GStyles';
 import { defaultColors } from '@portkey-wallet/rn-base/assets/theme';

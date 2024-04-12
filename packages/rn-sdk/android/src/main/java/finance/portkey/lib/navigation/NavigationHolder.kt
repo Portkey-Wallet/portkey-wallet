@@ -33,8 +33,8 @@ internal object NavigationHolder {
         naviStack.forEach {
             it.get()?.finish()
         }
-        naviStack.clear()
-        entryMap.clear()
+//        naviStack.clear()
+//        entryMap.clear()
     }
     fun pushNewComponent(activity: BasePortkeyReactActivity, pageEntry: String) {
         val wrfActivity = WeakReference(activity)

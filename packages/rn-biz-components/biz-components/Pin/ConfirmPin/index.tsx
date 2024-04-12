@@ -1,7 +1,7 @@
 import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import PageContainer from '@portkey-wallet/rn-components/components/PageContainer';
 import { DigitInputInterface } from '@portkey-wallet/rn-components/components/DigitInput';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { useRouterParams } from '@portkey-wallet/rn-inject-sdk';
 import React, { useCallback, useRef } from 'react';
 import navigationService from '@portkey-wallet/rn-inject-sdk';
 import { useAppDispatch } from '@portkey-wallet/rn-base/store/hooks';

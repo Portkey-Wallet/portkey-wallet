@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import MessageItem from '../MessageItem';
 import CustomSvg from '../components/CustomSvg';
 import CircleLoading from '../components/CircleLoading';
-import { ExtraMessageTypeEnum, IMessageListProps, MessageContentType } from '../type';
+import { ExtraMessageTypeEnum, IMessageListProps, MessageContentType, MessagePositionEnum } from '../type';
 import { SupportSysMsgType } from '../constants';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import './index.less';
@@ -92,10 +92,10 @@ const MessageList: FC<IMessageListProps> = ({
       if (prev?.position !== x.position) {
         isShowMargin = true;
       } else {
-        if (x.position === 'left') {
+        if (x.position === MessagePositionEnum.left) {
           isShowMargin = x.from !== prev?.from;
         }
-        if (x.position === 'center') {
+        if (x.position === MessagePositionEnum.center) {
           isShowMargin =
             x.subType === ExtraMessageTypeEnum['DATE-SYS-MSG'] || prev.subType === ExtraMessageTypeEnum['DATE-SYS-MSG'];
         }

@@ -4,6 +4,7 @@ import {
   ExtraMessageTypeEnum,
   IMessageShowPage,
   MessageContentType,
+  MessagePositionEnum,
   SupportSysMsgType,
 } from '@portkey-wallet/im-ui-web';
 import { formatMessageTime } from '@portkey-wallet/utils/chat';
@@ -56,7 +57,11 @@ export const formatMessageList = ({
         ...item,
         key: item.sendUuid,
         showAvatar: isGroup && !SupportSysMsgType.includes(item.type) && item.from !== ownerRelationId,
-        position: supportSysMsgType.includes(item.type) ? 'center' : item.from === ownerRelationId ? 'right' : 'left',
+        position: supportSysMsgType.includes(item.type)
+          ? MessagePositionEnum.center
+          : item.from === ownerRelationId
+          ? MessagePositionEnum.right
+          : MessagePositionEnum.left,
         isGroup,
         isAdmin,
         showPageType,
@@ -67,7 +72,7 @@ export const formatMessageList = ({
         id: `${item.createAt}`,
         fromName: item.fromName,
         from: item.from,
-        position: item.from === ownerRelationId ? 'right' : 'left',
+        position: item.from === ownerRelationId ? MessagePositionEnum.right : MessagePositionEnum.left,
         showAvatar: item.from !== ownerRelationId && isGroup,
         createAt: item.createAt,
         type: MessageTypeEnum.TEXT,
@@ -80,7 +85,7 @@ export const formatMessageList = ({
         {
           key: `${item.createAt}`,
           id: `${item.createAt}`,
-          position: 'center',
+          position: MessagePositionEnum.center,
           createAt: item.createAt,
           type: MessageTypeEnum.SYS,
           parsedContent: formatMessageTime(item.createAt),
@@ -96,7 +101,7 @@ export const formatMessageList = ({
           {
             key: `${item.createAt}`,
             id: `${item.createAt}`,
-            position: 'center',
+            position: MessagePositionEnum.center,
             createAt: item.createAt,
             type: MessageTypeEnum.SYS,
             parsedContent: formatMessageTime(item.createAt),

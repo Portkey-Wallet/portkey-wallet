@@ -34,6 +34,20 @@ export enum ExtraMessageTypeEnum {
   'DATE-SYS-MSG' = 'DATE-SYS-MSG',
 }
 
+export enum MessagePositionEnum {
+  left = 'left',
+  right = 'right',
+  center = 'center',
+  other = 'other',
+}
+
+export enum OpMsgEnum {
+  copy = 'copy',
+  pin = 'pin',
+  reply = 'reply',
+  delete = 'delete',
+}
+
 export interface ICustomMessage {
   key: string;
   id: string;
@@ -41,7 +55,7 @@ export interface ICustomMessage {
   fromName?: string;
   fromAvatar?: string;
   letter?: string;
-  position: string;
+  position: MessagePositionEnum;
   showAvatar?: boolean;
   createAt: string;
   type: MessageType;
@@ -74,7 +88,7 @@ export enum MessageShowPageEnum {
 }
 export interface IMessage extends Message, IMessageEvent {
   key: string;
-  position: string;
+  position: MessagePositionEnum;
   showAvatar?: boolean;
   dateString?: string;
   className?: string;

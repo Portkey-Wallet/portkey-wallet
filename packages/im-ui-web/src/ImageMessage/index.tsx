@@ -6,7 +6,7 @@ import CustomSvg from '../components/CustomSvg';
 import { formatImageSize } from '@portkey-wallet/utils/img';
 import PopoverMenuList from '../PopoverMenuList';
 import { ParsedImage } from '@portkey-wallet/im';
-import { IMessage, MessageShowPageEnum } from '../type';
+import { IMessage, MessagePositionEnum, MessageShowPageEnum, OpMsgEnum } from '../type';
 import './index.less';
 
 const ImageMessage: React.FC<IMessage> = (props) => {
@@ -30,26 +30,26 @@ const ImageMessage: React.FC<IMessage> = (props) => {
   const popAllList = useMemo(
     () => [
       {
-        key: 'reply',
+        key: OpMsgEnum.reply,
         leftIcon: <CustomSvg type="Reply" />,
         children: 'Reply',
         onClick: () => props?.onReplyMsg?.(props),
       },
       pinInfo
         ? {
-            key: 'pin',
+            key: OpMsgEnum.pin,
             leftIcon: <CustomSvg type="UnPin" />,
             children: 'Unpin',
             onClick: () => props?.onPinMsg?.(props),
           }
         : {
-            key: 'pin',
+            key: OpMsgEnum.pin,
             leftIcon: <CustomSvg type="Pin" />,
             children: 'Pin',
             onClick: () => props?.onPinMsg?.(props),
           },
       {
-        key: 'delete',
+        key: OpMsgEnum.delete,
         leftIcon: <CustomSvg type="Delete" />,
         children: 'Delete',
         onClick: () => props?.onDeleteMsg?.(props),
@@ -58,18 +58,18 @@ const ImageMessage: React.FC<IMessage> = (props) => {
     [pinInfo, props],
   );
   const popListFilter = useMemo(() => {
-    let _popList: string[] = [];
-    const hasDelAuth = position === 'right' || isAdmin;
+    let _popList: OpMsgEnum[] = [];
+    const hasDelAuth = position === MessagePositionEnum.right || isAdmin;
     if (showPageType === MessageShowPageEnum['MSG-PAGE']) {
       if (isGroup) {
-        _popList = isAdmin ? ['pin', 'reply'] : ['reply'];
+        _popList = isAdmin ? [OpMsgEnum.pin, OpMsgEnum.reply] : [OpMsgEnum.reply];
       }
     }
     if (showPageType === MessageShowPageEnum['PIN-PAGE']) {
-      _popList = isAdmin ? ['pin'] : [];
+      _popList = isAdmin ? [OpMsgEnum.pin] : [];
     }
     if (hasDelAuth) {
-      _popList.unshift('delete');
+      _popList.unshift(OpMsgEnum.delete);
     }
     return popAllList.filter((t) => _popList.includes(t.key));
   }, [isAdmin, isGroup, popAllList, position, showPageType]);

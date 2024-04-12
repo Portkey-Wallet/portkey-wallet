@@ -3,7 +3,7 @@ import { Popover } from 'antd';
 import { useCopyToClipboard } from 'react-use';
 import { ParsedText, ParseShape } from 'react-parsed-text';
 import clsx from 'clsx';
-import { ExtraMessageTypeEnum, IMessage, MessageShowPageEnum } from '../type';
+import { ExtraMessageTypeEnum, IMessage, MessagePositionEnum, MessageShowPageEnum, OpMsgEnum } from '../type';
 import { formatImageData, formatTime } from '../utils';
 import PopoverMenuList from '../PopoverMenuList';
 import CustomSvg from '../components/CustomSvg';
@@ -47,7 +47,7 @@ const TextMessage: React.FC<IMessage> = (props) => {
   const popoverAllList = useMemo(
     () => [
       {
-        key: 'copy',
+        key: OpMsgEnum.copy,
         leftIcon: <CustomSvg type="Copy" />,
         children: 'Copy',
         onClick: () => {
@@ -56,26 +56,26 @@ const TextMessage: React.FC<IMessage> = (props) => {
         },
       },
       {
-        key: 'reply',
+        key: OpMsgEnum.reply,
         leftIcon: <CustomSvg type="Reply" />,
         children: 'Reply',
         onClick: () => props?.onReplyMsg?.(props),
       },
       pinInfo
         ? {
-            key: 'pin',
+            key: OpMsgEnum.pin,
             leftIcon: <CustomSvg type="UnPin" />,
             children: 'Unpin',
             onClick: () => props?.onPinMsg?.(props),
           }
         : {
-            key: 'pin',
+            key: OpMsgEnum.pin,
             leftIcon: <CustomSvg type="Pin" />,
             children: 'Pin',
             onClick: () => props?.onPinMsg?.(props),
           },
       {
-        key: 'delete',
+        key: OpMsgEnum.delete,
         leftIcon: <CustomSvg type="Delete" />,
         children: 'Delete',
         onClick: () => props?.onDeleteMsg?.(props),
@@ -84,20 +84,20 @@ const TextMessage: React.FC<IMessage> = (props) => {
     [parsedContent, pinInfo, props, setCopied],
   );
   const popoverShowList = useMemo(() => {
-    let _popList: Array<string> = [];
-    const hasDelAuth = position === 'right' || isAdmin;
+    let _popList: Array<OpMsgEnum> = [];
+    const hasDelAuth = position === MessagePositionEnum.right || isAdmin;
     if (showPageType === MessageShowPageEnum['MSG-PAGE']) {
       if (isGroup) {
-        _popList = isAdmin ? ['copy', 'pin', 'reply'] : ['copy', 'reply'];
+        _popList = isAdmin ? [OpMsgEnum.copy, OpMsgEnum.pin, OpMsgEnum.reply] : [OpMsgEnum.copy, OpMsgEnum.reply];
       } else {
-        _popList = ['copy'];
+        _popList = [OpMsgEnum.copy];
       }
     }
     if (showPageType === MessageShowPageEnum['PIN-PAGE']) {
-      _popList = isAdmin ? ['copy', 'pin'] : ['copy'];
+      _popList = isAdmin ? [OpMsgEnum.copy, OpMsgEnum.pin] : [OpMsgEnum.copy];
     }
     if (hasDelAuth) {
-      _popList.push('delete');
+      _popList.push(OpMsgEnum.delete);
     }
     return popoverAllList.filter((item) => _popList.includes(item.key));
   }, [isAdmin, isGroup, popoverAllList, position, showPageType]);

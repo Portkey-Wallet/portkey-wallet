@@ -1,7 +1,13 @@
 import { useDeleteMessage, useGroupChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import SettingHeader from 'pages/components/SettingHeader';
 import { useParams } from 'react-router';
-import { MessageList, MessageContentType, StyleProvider, MessageShowPageEnum } from '@portkey-wallet/im-ui-web';
+import {
+  MessageList,
+  MessageContentType,
+  StyleProvider,
+  MessageShowPageEnum,
+  MessagePositionEnum,
+} from '@portkey-wallet/im-ui-web';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
@@ -95,7 +101,7 @@ const PinnedMsg = () => {
     async (item: MessageContentType) => {
       const msg = pinList.find((temp) => temp.id === item.id);
       try {
-        if (item.position === 'right') {
+        if (item.position === MessagePositionEnum.right) {
           await deleteMsg(msg as Message);
         } else {
           await deleteMsg(msg as Message, isAdmin);

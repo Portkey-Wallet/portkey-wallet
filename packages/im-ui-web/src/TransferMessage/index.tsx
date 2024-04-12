@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import clsx from 'clsx';
-import { IMessage } from '../type';
+import { IMessage, MessagePositionEnum } from '../type';
 import { formatTime } from '../utils';
 import { TransferTextByMine, TransferTextToMe, TransferTextToOther } from '../constants';
 import { ParsedTransfer } from '@portkey-wallet/im';
@@ -11,7 +11,7 @@ const TransferMessage: React.FC<IMessage> = (props) => {
   const { data } = (parsedContent as ParsedTransfer) || {};
   const showDateStr = useMemo(() => dateString || formatTime(createAt), [createAt, dateString]);
   const transferText = useMemo(() => {
-    if (position === 'right') return TransferTextByMine;
+    if (position === MessagePositionEnum.right) return TransferTextByMine;
     if (isGroup) {
       if (data?.toUserId === myPortkeyId) {
         return TransferTextToMe;

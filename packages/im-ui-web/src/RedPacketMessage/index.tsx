@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import clsx from 'clsx';
-import { IMessage } from '../type';
+import { IMessage, MessagePositionEnum } from '../type';
 import { formatTime } from '../utils';
 import { RedPacketTextByMine, RedPacketTextByOthers } from '../constants';
 import './index.less';
@@ -12,7 +12,7 @@ const RedPacketMessage: React.FC<IMessage> = (props) => {
     [createAt, props.dateString],
   );
   const renderContainer = useMemo(() => {
-    const redPacketText = props.position === 'right' ? RedPacketTextByMine : RedPacketTextByOthers;
+    const redPacketText = props.position === MessagePositionEnum.right ? RedPacketTextByMine : RedPacketTextByOthers;
     return (
       <div className={clsx(['red-packet-body', 'flex', props.position])}>
         <div className="text-red-packet">

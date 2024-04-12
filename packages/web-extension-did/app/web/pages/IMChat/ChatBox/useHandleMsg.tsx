@@ -1,6 +1,6 @@
 import { PIN_LIMIT_EXCEED } from '@portkey-wallet/constants/constants-ca/chat';
 import { ChannelItem, Message } from '@portkey-wallet/im';
-import { MessageContentType } from '@portkey-wallet/im-ui-web';
+import { MessageContentType, MessagePositionEnum } from '@portkey-wallet/im-ui-web';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 import { useCallback } from 'react';
@@ -32,7 +32,7 @@ export const useHandle = ({
     async (item: MessageContentType) => {
       const msg = list.find((temp) => temp.id === item.id);
       try {
-        if (item.position === 'right') {
+        if (item.position === MessagePositionEnum.right) {
           await deleteMessage(msg as Message);
         } else {
           await deleteMessage(msg as Message, isAdmin);

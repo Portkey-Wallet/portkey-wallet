@@ -17,13 +17,12 @@ import { IM_PIN_LIST_SORT_TYPE_ENUM } from '@portkey-wallet/im/constant';
 import { PIN_OPERATION_TYPE_ENUM } from '@portkey-wallet/im/types/pin';
 import { getSendUuid } from '@portkey-wallet/utils/chat';
 import { messageParser } from '@portkey-wallet/im/utils';
-import { useWallet } from '../wallet';
+import { useCurrentUserInfo } from '../wallet';
 
 export const useIMPin = (channelId: string, isRegister = false) => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
-  const { userInfo } = useWallet();
-
+  const userInfo = useCurrentUserInfo();
   const pinListNetMap = useIMPinListNetMapState();
   const list = useMemo(
     () => pinListNetMap?.[networkType]?.[channelId]?.list || [],

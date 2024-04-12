@@ -6,7 +6,7 @@ import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
 import { getBalance } from 'utils/sandboxUtil/getBalance';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { getSeedTypeTag } from 'utils/assets';
 import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 import CustomSvg from 'components/CustomSvg';
@@ -68,7 +68,7 @@ export default function NftInput({
             <p className="token-id">#{token.tokenId}</p>
           </div>
           <p className="quantity">
-            Balance: <span>{`${formatAmountShow(divDecimals(balance, token.decimals))}`}</span>
+            Balance: <span>{`${formatTokenAmountShowWithDecimals(balance, token.decimals)}`}</span>
           </p>
         </div>
       </div>

@@ -1,10 +1,9 @@
 import { ZERO } from '@portkey-wallet/constants/misc';
 import clsx from 'clsx';
 import { useMemo } from 'react';
-import { useWalletInfo } from 'store/Provider/hooks';
 // import { useTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import './index.less';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { getEntireDIDAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
@@ -30,11 +29,13 @@ export interface ISendPreviewProps {
   tokenId: string;
   isSeed?: boolean;
   seedType?: SeedTypeEnum;
+  decimals?: number;
 }
 
 export default function SendPreview(props: ISendPreviewProps) {
-  const { amount, symbol, alias, toAccount, transactionFee, type, imageUrl, chainId, isCross, tokenId } = props;
-  const { userInfo } = useWalletInfo();
+  const userInfo = useCurrentUserInfo();
+  const { amount, symbol, alias, toAccount, transactionFee, type, imageUrl, chainId, isCross, tokenId, decimals } =
+    props;
   const wallet = useCurrentWalletInfo();
   const isMainnet = useIsMainnet();
   const amountInUsdShow = useAmountInUsdShow();
@@ -58,17 +59,20 @@ export default function SendPreview(props: ISendPreviewProps) {
     if (ZERO.plus(amount).isLessThanOrEqualTo(crossChainFee)) {
       return (
         <>
-          <span className="usd">{isMainnet && '$0'}</span>
-          {`0 ${symbol}`}
+          <div className="amount">{`0 ${symbol}`}</div>
+          <div className="usd">{isMainnet && '$ 0'}</div>
         </>
       );
     } else {
       return (
         <>
-          <span className="usd">
+          <div className="amount">{`${formatAmountShow(
+            ZERO.plus(amount).minus(crossChainFee),
+            Number(defaultToken.decimals),
+          )} ${symbol}`}</div>
+          <div className="usd">
             {isMainnet && amountInUsdShow(ZERO.plus(amount).minus(crossChainFee).toFixed(), 0, symbol)}
-          </span>
-          {`${formatAmountShow(ZERO.plus(amount).minus(crossChainFee), Number(defaultToken.decimals))} ${symbol}`}
+          </div>
         </>
       );
     }
@@ -79,7 +83,7 @@ export default function SendPreview(props: ISendPreviewProps) {
       {type !== 'nft' ? (
         <div className="amount-preview">
           <p className="amount">
-            -{formatAmountShow(amount)} {symbol}
+            -{formatAmountShow(amount, decimals)} {symbol}
           </p>
           <p className="convert">{isMainnet && amountInUsdShow(amount, 0, symbol)}</p>
         </div>
@@ -95,7 +99,7 @@ export default function SendPreview(props: ISendPreviewProps) {
               <p className="token-id">{`#${tokenId}`}</p>
             </div>
             <p className="quantity">
-              Amount: <span>{formatAmountShow(amount)}</span>
+              Amount: <span>{formatAmountShow(amount, decimals)}</span>
             </p>
           </div>
         </div>
@@ -128,32 +132,30 @@ export default function SendPreview(props: ISendPreviewProps) {
           </div>
         </div>
       </div>
-      <div className="fee-preview">
+      <div className="fee-preview flex-between">
         <span className="label">Transaction fee</span>
-        <p className="value">
-          <span className="symbol">
-            <span className="usd">{isMainnet && amountInUsdShow(transactionFee, 0, defaultToken.symbol)}</span>
-            {` ${formatAmountShow(transactionFee, Number(defaultToken.decimals))} ${defaultToken.symbol}`}
-          </span>
-        </p>
+        <div className="value flex-column">
+          <div className="amount">{`${formatAmountShow(transactionFee, Number(defaultToken.decimals))} ${
+            defaultToken.symbol
+          }`}</div>
+          <div className="usd">{isMainnet && amountInUsdShow(transactionFee, 0, defaultToken.symbol)}</div>
+        </div>
       </div>
       {isCross && (
-        <div className="fee-preview">
+        <div className="fee-preview flex-between">
           <span className="label">Estimated CrossChain Transfer</span>
-          <p className="value">
-            <span className="symbol">
-              <span className="usd">{isMainnet && amountInUsdShow(crossChainFee, 0, defaultToken.symbol)}</span>
-              {` ${formatAmountShow(crossChainFee, Number(defaultToken.decimals))} ${defaultToken.symbol}`}
-            </span>
-          </p>
+          <div className="value flex-column">
+            <div className="amount">{`${formatAmountShow(crossChainFee, Number(defaultToken.decimals))} ${
+              defaultToken.symbol
+            }`}</div>
+            <div className="usd">{isMainnet && amountInUsdShow(crossChainFee, 0, defaultToken.symbol)}</div>
+          </div>
         </div>
       )}
       {isCross && symbol === defaultToken.symbol && (
-        <div className="fee-preview">
+        <div className="fee-preview flex-between">
           <span className="label">Estimated amount received</span>
-          <p className="value">
-            <span className="symbol">{renderEstimateAmount}</span>
-          </p>
+          <div className="value flex-column">{renderEstimateAmount}</div>
         </div>
       )}
     </div>

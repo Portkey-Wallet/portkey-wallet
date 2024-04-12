@@ -1,5 +1,5 @@
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { defaultColors } from 'assets/theme';
 import { FontStyles } from 'assets/theme/styles';
 import CommonAvatar from 'components/CommonAvatar';
@@ -15,7 +15,7 @@ import { ChainId } from '@portkey-wallet/types';
 import Svg from 'components/Svg';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import Touchable from 'components/Touchable';
-import { ZERO } from '@portkey-wallet/constants/misc';
+import GStyles from 'assets/theme/GStyles';
 interface TokenListItemType {
   currentSymbol?: string;
   currentChainId?: ChainId;
@@ -42,13 +42,15 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
         // elf token icon is fixed , only use white background color
         svgName={item?.symbol === defaultToken.symbol ? 'testnet' : undefined}
         imageUrl={item?.imageUrl || symbolImages[item?.symbol]}
+        titleStyle={FontStyles.font11}
+        borderStyle={GStyles.hairlineBorder}
       />
       <View style={itemStyle.right}>
         <View style={itemStyle.infoWrap}>
           <TextL numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.tokenName}>
             {item?.symbol}
           </TextL>
-          <TextS numberOfLines={1} style={[FontStyles.font3, itemStyle.chainInfo]}>
+          <TextS numberOfLines={1} style={[FontStyles.font11, itemStyle.chainInfo]}>
             {formatChainInfoToShow(item?.chainId, currentNetwork)}
           </TextS>
         </View>
@@ -56,12 +58,10 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
         {!noBalanceShow && (
           <View style={itemStyle.balanceWrap}>
             <TextL style={itemStyle.token} numberOfLines={1} ellipsizeMode={'tail'}>
-              {formatAmountShow(divDecimals(item?.balance, item.decimals))}
+              {formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
             </TextL>
             <TextS numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.dollar}>
-              {isMainnet && item.balanceInUsd && !ZERO.isEqualTo(item.balanceInUsd) && item.balanceInUsd
-                ? `$ ${formatAmountShow(item.balanceInUsd, 2)}`
-                : ''}
+              {isMainnet && formatAmountUSDShow(item.balanceInUsd)}
             </TextS>
           </View>
         )}

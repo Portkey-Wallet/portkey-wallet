@@ -41,13 +41,13 @@
       align-items: center;
       .avatar {
         position: relative;
-        width: 36px;
-        height: 36px;
+        width: 32px;
+        height: 32px;
         border-radius: 6px;
         background-color: @bg-15;
         font-size: 20px;
         color: @font-12;
-        margin-right: 12px;
+        margin-right: 8px;
         flex-shrink: 0;
         .tokentagsmall-icon,
         .nfttagsmall-icon {
@@ -109,21 +109,11 @@
       .icon {
         width: 32px;
         height: 32px;
-        margin-right: 16px;
+        margin-right: 8px;
         flex-shrink: 0;
-        .custom-svg {
-          width: 32px;
-          height: 32px;
-          svg {
-            width: 32px;
-            height: 32px;
-          }
-        }
       }
       .info {
         flex: 1;
-        display: flex;
-        flex-direction: column;
         gap: 2px;
         .symbol {
           font-size: 16px;
@@ -136,8 +126,6 @@
         }
       }
       .amount {
-        display: flex;
-        flex-direction: column;
         gap: 2px;
         text-align: right;
         justify-content: flex-start;
@@ -145,11 +133,15 @@
           line-height: 20px;
           font-size: 16px;
           color: @font-11;
+          word-break: break-all;
+          .text-overflow(2);
         }
         .convert {
           line-height: 20px;
           font-size: 14px;
           color: @font-13;
+          word-break: break-all;
+          .text-overflow(2);
         }
       }
     }

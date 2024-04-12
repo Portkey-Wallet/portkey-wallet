@@ -5,12 +5,9 @@ import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
 import { styles } from './style';
 import { useNavigation } from '@react-navigation/native';
-import useEffectOnce from 'hooks/useEffectOnce';
-
 import navigationService from 'utils/navigationService';
 import NoData from 'components/NoData';
 import { useLanguage } from 'i18n/hooks';
-import TransferItem from 'components/TransferList/components/TransferItem';
 import { FlashList } from '@shopify/flash-list';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
@@ -23,12 +20,11 @@ import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { getActivityListAsync } from '@portkey-wallet/store/store-ca/activity/action';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import fonts from 'assets/theme/fonts';
-import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { formatChainInfoToShow, sleep } from '@portkey-wallet/utils';
 import BuyButton from 'components/BuyButton';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import FaucetButton from 'components/FaucetButton';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useAppETransShow } from 'hooks/cms';
@@ -40,8 +36,11 @@ import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useTokenInfoFromStore } from '@portkey-wallet/hooks/hooks-ca/assets';
-import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
-import { PAGE_SIZE_IN_ACCOUNT_TOKEN } from '@portkey-wallet/constants/constants-ca/assets';
+import ActivityItem from 'components/ActivityItem';
+import { FlatListFooterLoading } from 'components/FlatListFooterLoading';
+import { ListLoadingEnum } from 'constants/misc';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { useBalance } from '@portkey-wallet/hooks/hooks-ca/balances';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -50,38 +49,33 @@ interface RouterParams {
 const INIT_PAGE_INFO = {
   curPage: 0,
   total: 0,
-  isLoading: false,
 };
 
 const TokenDetail: React.FC = () => {
   const { t } = useLanguage();
   const { tokenInfo } = useRouterParams<RouterParams>();
+  const { getAndUpdateTargetBalance } = useBalance();
   const { isETransDepositShow, isETransWithdrawShow } = useAppETransShow();
   const defaultToken = useDefaultToken();
-  const currentTokenInfo = useTokenInfoFromStore(tokenInfo.symbol, tokenInfo.chainId);
+  const currentTokenInfo = useTokenInfoFromStore(tokenInfo.symbol, tokenInfo.chainId) || tokenInfo;
   const isMainnet = useIsMainnet();
   const caAddressInfos = useCaAddressInfoList();
   const navigation = useNavigation();
   const dispatch = useAppCommonDispatch();
   const activity = useAppCASelector(state => state.activity);
-  const isTokenHasPrice = useIsTokenHasPrice(tokenInfo.symbol);
-  const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const { isRampShow } = useAppRampEntryShow();
-  const { fetchAccountTokenInfoList } = useAccountTokenInfo();
-
-  const [reFreshing, setFreshing] = useState(false);
-
-  const currentToken = useMemo(() => tokenInfo || currentTokenInfo, [currentTokenInfo, tokenInfo]);
 
   const balanceShow = useMemo(
-    () => `${formatAmountShow(divDecimals(currentToken?.balance || '0', currentToken?.decimals))}`,
-    [currentToken?.balance, currentToken?.decimals],
+    () => `${formatTokenAmountShowWithDecimals(currentTokenInfo?.balance || '0', currentTokenInfo?.decimals)}`,
+    [currentTokenInfo?.balance, currentTokenInfo?.decimals],
   );
 
   const currentActivity = useMemo(
-    () => activity?.activityMap?.[getCurrentActivityMapKey(tokenInfo.chainId, tokenInfo.symbol)] ?? {},
+    () => activity?.activityMap?.[getCurrentActivityMapKey(tokenInfo.chainId, tokenInfo.symbol)],
     [activity?.activityMap, tokenInfo.chainId, tokenInfo.symbol],
   );
+  const currentActivityRef = useRef(currentActivity);
+  currentActivityRef.current = currentActivity;
 
   const fixedParamObj = useMemo(
     () => ({
@@ -95,19 +89,22 @@ const TokenDetail: React.FC = () => {
     ...INIT_PAGE_INFO,
   });
 
-  const getActivityList = useCallback(
+  const [isLoading, setIsLoading] = useState(ListLoadingEnum.hide);
+  const getActivityList = useLockCallback(
     async (isInit = false) => {
-      const { data, maxResultCount = 10, skipCount = 0, totalRecordCount = 0 } = currentActivity || {};
+      const maxResultCount = 20;
+      const { data = [], skipCount = 0, totalRecordCount = 0 } = currentActivity || {};
       if (!isInit && data?.length >= totalRecordCount) return;
-      if (pageInfoRef.current.isLoading) return;
-      pageInfoRef.current.isLoading = true;
+
+      setIsLoading(isInit ? ListLoadingEnum.header : ListLoadingEnum.footer);
       const params: IActivitiesApiParams = {
         ...fixedParamObj,
         skipCount: isInit ? 0 : skipCount + maxResultCount,
         maxResultCount,
       };
       await dispatch(getActivityListAsync(params));
-      pageInfoRef.current.isLoading = false;
+      setIsLoading(ListLoadingEnum.hide);
+      if (!isInit) await sleep(250);
     },
     [currentActivity, dispatch, fixedParamObj],
   );
@@ -116,24 +113,16 @@ const TokenDetail: React.FC = () => {
     pageInfoRef.current = {
       ...INIT_PAGE_INFO,
     };
-    setFreshing(true);
-    getTokenPrice(tokenInfo?.symbol);
+    getAndUpdateTargetBalance(tokenInfo.chainId, tokenInfo.symbol);
     await getActivityList(true);
-    setFreshing(false);
-  }, [getActivityList, getTokenPrice, tokenInfo?.symbol]);
+  }, [getActivityList, getAndUpdateTargetBalance, tokenInfo.chainId, tokenInfo.symbol]);
 
-  useEffectOnce(() => {
-    getActivityList(true);
-  });
-
-  // refresh token List
-  useEffectOnce(() => {
-    fetchAccountTokenInfoList({
-      caAddressInfos,
-      skipCount: 0,
-      maxResultCount: PAGE_SIZE_IN_ACCOUNT_TOKEN,
-    });
-  });
+  const isInitRef = useRef(false);
+  const init = useCallback(async () => {
+    await sleep(250);
+    await getActivityList(true);
+    isInitRef.current = true;
+  }, [getActivityList]);
 
   const isBuyButtonShow = useMemo(
     () => SHOW_RAMP_SYMBOL_LIST.includes(tokenInfo.symbol) && tokenInfo.chainId === 'AELF' && isRampShow,
@@ -160,7 +149,6 @@ const TokenDetail: React.FC = () => {
     if (isFaucetButtonShow) count++;
     return count;
   }, [isBuyButtonShow, isDepositShow, isFaucetButtonShow, isWithdrawShow]);
-  console.log(buttonCount, '====buttonCount');
 
   const buttonGroupWrapStyle = useMemo(() => {
     if (buttonCount >= 5) {
@@ -179,6 +167,20 @@ const TokenDetail: React.FC = () => {
     }
   }, [buttonCount]);
 
+  const renderItem = useCallback(({ item, index }: { item: ActivityItemType; index: number }) => {
+    const preItem = currentActivityRef.current?.data[index - 1];
+    return (
+      <ActivityItem
+        preItem={preItem}
+        item={item}
+        index={index}
+        onPress={() => navigationService.navigate('ActivityDetail', item)}
+      />
+    );
+  }, []);
+
+  const isEmpty = useMemo(() => (currentActivity?.data || []).length === 0, [currentActivity?.data]);
+
   return (
     <PageContainer
       type="leftBack"
@@ -196,19 +198,12 @@ const TokenDetail: React.FC = () => {
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View style={styles.card}>
-        <Text style={styles.tokenBalance}>{`${balanceShow} ${currentToken?.symbol}`}</Text>
-        {isMainnet && isTokenHasPrice && (
-          <Text style={styles.dollarBalance}>{`$ ${formatAmountShow(
-            divDecimals(currentToken?.balance, currentToken?.decimals).multipliedBy(
-              currentToken ? tokenPriceObject?.[currentToken?.symbol] : 0,
-            ),
-            2,
-          )}`}</Text>
-        )}
+        <Text style={styles.tokenBalance}>{`${balanceShow} ${currentTokenInfo?.symbol || ''}`}</Text>
+        {isMainnet && <Text style={styles.dollarBalance}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</Text>}
         <View style={[styles.buttonGroupWrap, buttonGroupWrapStyle]}>
           {isBuyButtonShow && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
-          <SendButton themeType="innerPage" sentToken={currentToken} wrapStyle={buttonWrapStyle} />
-          <ReceiveButton currentTokenInfo={currentToken} themeType="innerPage" wrapStyle={buttonWrapStyle} />
+          <SendButton themeType="innerPage" sentToken={currentTokenInfo} wrapStyle={buttonWrapStyle} />
+          <ReceiveButton currentTokenInfo={currentTokenInfo} themeType="innerPage" wrapStyle={buttonWrapStyle} />
           {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}
           {isDepositShow && (
             <CommonToolButton
@@ -256,20 +251,24 @@ const TokenDetail: React.FC = () => {
       </View>
 
       <FlashList
-        refreshing={reFreshing}
+        refreshing={isLoading === ListLoadingEnum.header}
         data={currentActivity?.data || []}
         keyExtractor={(_item, index) => `${index}`}
         ListEmptyComponent={<NoData noPic message="You have no transactions." />}
-        renderItem={({ item }: { item: ActivityItemType }) => {
-          return <TransferItem item={item} onPress={() => navigationService.navigate('ActivityDetail', item)} />;
-        }}
-        onRefresh={() => {
-          onRefreshList();
-        }}
+        renderItem={renderItem}
+        onRefresh={onRefreshList}
         onEndReached={() => {
+          if (!isInitRef.current) return;
           getActivityList();
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
+        ListFooterComponent={
+          <>{!isEmpty && <FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}</>
+        }
+        onLoad={() => {
+          if (isInitRef.current) return;
+          init();
+        }}
       />
     </PageContainer>
   );

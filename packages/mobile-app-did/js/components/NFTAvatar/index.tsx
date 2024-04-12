@@ -83,7 +83,7 @@ const NFTAvatar: React.FC<NoDataPropsType> = props => {
         />
       )}
       {!imageUrl && !showNftDetailInfo && <Text style={[FontStyles.font7, fontSizeStyle]}>{alias?.[0]}</Text>}
-      {imageUrl && <CommonAvatar avatarSize={nftSize} shapeType="square" imageUrl={imageUrl} style={[styles.img]} />}
+      {imageUrl && <CommonAvatar avatarSize={nftSize} shapeType="square" imageUrl={imageUrl} style={styles.img} />}
       {showNftDetailInfo && (
         <>
           <TextM

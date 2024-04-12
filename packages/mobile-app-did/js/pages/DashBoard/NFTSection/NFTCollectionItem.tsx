@@ -86,13 +86,7 @@ export default function NFTItem(props: NFTItemPropsType) {
           color={defaultColors.font3}
           iconStyle={styles.touchIcon}
         />
-        <CommonAvatar
-          avatarSize={pTd(36)}
-          imageUrl={imageUrl}
-          title={collectionName}
-          shapeType={'square'}
-          style={styles.avatarStyle}
-        />
+        <CommonAvatar avatarSize={pTd(36)} imageUrl={imageUrl} title={collectionName} shapeType={'square'} />
         <View style={styles.topSeriesCenter}>
           <TextL style={styles.nftSeriesName} ellipsizeMode="tail">
             {collectionName}
@@ -164,11 +158,6 @@ const styles = StyleSheet.create({
   touchIcon: {
     marginRight: pTd(10),
   },
-  avatarStyle: {
-    width: pTd(36),
-    height: pTd(36),
-    lineHeight: pTd(36),
-  },
   topSeriesCenter: {
     flex: 1,
     paddingLeft: pTd(12),
@@ -179,6 +168,7 @@ const styles = StyleSheet.create({
   nftSeriesChainInfo: {
     marginTop: pTd(4),
     lineHeight: pTd(16),
+    color: defaultColors.font11,
   },
   itemAvatarStyle: {
     marginRight: pTd(8) - StyleSheet.hairlineWidth,

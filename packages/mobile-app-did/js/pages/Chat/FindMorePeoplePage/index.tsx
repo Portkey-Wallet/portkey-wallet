@@ -12,7 +12,7 @@ import Svg from 'components/Svg';
 import ContactItem from 'components/ContactItem';
 import im from '@portkey-wallet/im';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getAelfAddress } from '@portkey-wallet/utils/aelf';
 import { GetUserInfoDefaultResult } from '@portkey-wallet/im/types/service';
 import navigationService from 'utils/navigationService';
@@ -30,8 +30,7 @@ import OfficialChatGroup from '../components/OfficialChatGroup';
 const FindMorePeople = () => {
   const iptRef = useRef<TextInput>(null);
   useInputFocus(iptRef);
-
-  const { userId } = useWallet();
+  const { userId = '' } = useCurrentUserInfo();
   const navToChatDetails = useJumpToChatDetails();
   const [keyword, setKeyword] = useState('');
   const [loading, setLoading] = useState(false);

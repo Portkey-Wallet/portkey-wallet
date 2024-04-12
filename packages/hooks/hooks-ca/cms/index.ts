@@ -389,7 +389,7 @@ export const useGetFormattedLoginModeList = (
       const loginModeList = parseLoginModeList(currentNetworkLoginModeList, matchValueMap, deviceType);
 
       return {
-        loginModeList,
+        loginModeList: sortLoginModeListToAll(loginModeList, deviceType),
         loginModeListToRecommend: filterLoginModeListToRecommend(loginModeList, deviceType),
         loginModeListToOther: filterLoginModeListToOther(loginModeList, deviceType),
       };

@@ -7,7 +7,7 @@ import { INIT_HAS_ERROR, ErrorType } from '@portkey-wallet/constants/constants-c
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
 import navigationService from 'utils/navigationService';
 import CommonToast from 'components/CommonToast';
-import { useCurrentCaInfo, useSetUserInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentCaInfo, useCurrentUserInfo, useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Loading from 'components/Loading';
 import FormItem from 'components/FormItem';
 import { ScrollView, StyleSheet, TextInput } from 'react-native';
@@ -32,7 +32,7 @@ const EditWalletName: React.FC = () => {
   const uploadRef = useRef<ImageWithUploadFuncInstance>(null);
 
   const { t } = useLanguage();
-  const { userInfo } = useWallet();
+  const userInfo = useCurrentUserInfo();
   const [nameValue, setNameValue] = useState<string>(userInfo?.nickName || '');
   const [avatar, setAvatar] = useState<string>(userInfo?.avatar || '');
 

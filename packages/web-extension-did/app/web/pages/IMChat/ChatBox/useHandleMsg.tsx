@@ -8,8 +8,9 @@ import singleMessage from 'utils/singleMessage';
 
 export interface HandleProps {
   info?: ChannelItem;
+  isAdmin?: boolean;
   list: Message[];
-  deleteMessage: (message: Message) => Promise<void>;
+  deleteMessage: (message: Message, isGroupOwner?: boolean) => Promise<void>;
   pin: (value: boolean) => Promise<void>;
   mute: (value: boolean) => Promise<void>;
   pinMsg?: (message: Message) => Promise<void>;
@@ -20,6 +21,7 @@ export const useHandle = ({
   deleteMessage,
   pin,
   info,
+  isAdmin,
   mute,
   list,
   pinMsg,
@@ -30,7 +32,11 @@ export const useHandle = ({
     async (item: MessageContentType) => {
       const msg = list.find((temp) => temp.id === item.id);
       try {
-        await deleteMessage(msg as Message);
+        if (item.position === 'right') {
+          await deleteMessage(msg as Message);
+        } else {
+          await deleteMessage(msg as Message, isAdmin);
+        }
         await sleep(200);
         refreshAllPinList?.();
       } catch (e) {
@@ -38,7 +44,7 @@ export const useHandle = ({
         console.log('===handle delete message error', e);
       }
     },
-    [deleteMessage, list, refreshAllPinList],
+    [deleteMessage, isAdmin, list, refreshAllPinList],
   );
   const handlePin = useCallback(async () => {
     try {

@@ -3,7 +3,7 @@ import CustomSvg from 'components/CustomSvg';
 import DropdownSearch from 'components/DropdownSearch';
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
@@ -19,6 +19,7 @@ import { useAccountAssetsInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { fetchAssetsListByFilter, fetchTokenListByFilter } from './utils';
 import { useCommonState } from 'store/Provider/hooks';
 import clsx from 'clsx';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import './index.less';
 
 export interface ICustomTokenListProps {
@@ -50,13 +51,16 @@ export default function CustomTokenList({
   const [assetList, setAssetList] = useState<TokenItemShowType[] | IAssetItemType[]>([]);
   const chainIdArray = useChainIdList();
   const caAddressInfos = useCaAddressInfoList();
+  const [initData, setInitData] = useState(false);
   const hasMoreData = useMemo(() => {
+    if (!initData) return false;
     if (drawerType === 'send') {
       return accountAssetsList.length < assetsTotalRecordCount;
     } else {
       return tokenDataShowInMarket.length < tokenTotalRecordCount;
     }
   }, [
+    initData,
     drawerType,
     accountAssetsList.length,
     assetsTotalRecordCount,
@@ -65,23 +69,32 @@ export default function CustomTokenList({
   ]);
   useFreshTokenPrice();
 
+  const getInitData = useCallback(async () => {
+    try {
+      if (drawerType === 'send') {
+        await fetchAccountAssetsInfoList({
+          keyword: '',
+          caAddressInfos,
+          skipCount: 0,
+          maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+        });
+      } else {
+        await fetchTokenInfoList({
+          chainIdArray,
+          keyword: '',
+          skipCount: 0,
+          maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+        });
+      }
+      setInitData(true);
+    } catch (error) {
+      console.log('===getInitData error', error);
+    }
+  }, [caAddressInfos, chainIdArray, drawerType, fetchAccountAssetsInfoList, fetchTokenInfoList]);
+
   useEffectOnce(() => {
     setFilterWord('');
-    if (drawerType === 'send') {
-      fetchAccountAssetsInfoList({
-        keyword: '',
-        caAddressInfos,
-        skipCount: 0,
-        maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
-      });
-    } else {
-      fetchTokenInfoList({
-        chainIdArray,
-        keyword: '',
-        skipCount: 0,
-        maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
-      });
-    }
+    getInitData();
   });
 
   const setData = useCallback(() => {
@@ -111,7 +124,7 @@ export default function CustomTokenList({
     500,
   );
 
-  const getMoreData = useCallback(async () => {
+  const getMoreData = useLockCallback(async () => {
     if (drawerType === 'send') {
       if (accountAssetsList.length && accountAssetsList.length < assetsTotalRecordCount) {
         await fetchAccountAssetsInfoList({
@@ -153,15 +166,15 @@ export default function CustomTokenList({
           <div className="icon flex-center">
             <TokenImageDisplay symbol={token?.symbol} src={token.tokenInfo?.imageUrl} />
           </div>
-          <div className="info">
+          <div className="info flex-column">
             <p className="symbol">{`${token.symbol}`}</p>
             <p className="network">{transNetworkText(token.chainId, !isMainnet)}</p>
           </div>
-          <div className="amount">
+          <div className="amount flex-column">
             <p className="quantity">
-              {formatAmountShow(divDecimals(token.tokenInfo?.balance, token.tokenInfo?.decimals))}
+              {formatTokenAmountShowWithDecimals(token.tokenInfo?.balance, token.tokenInfo?.decimals)}
             </p>
-            <p className="convert">{isMainnet ? `$ ${formatAmountShow(token.tokenInfo?.balanceInUsd ?? 0, 2)}` : ''}</p>
+            <p className="convert">{isMainnet && formatAmountUSDShow(token.tokenInfo?.balanceInUsd)}</p>
           </div>
         </div>
       );
@@ -221,7 +234,7 @@ export default function CustomTokenList({
           </div>
           <div className="amount">
             <div className="balance">
-              {formatAmountShow(divDecimals(token.nftInfo?.balance, token.nftInfo?.decimals || 0))}
+              {formatTokenAmountShowWithDecimals(token.nftInfo?.balance, token.nftInfo?.decimals || 0)}
             </div>
           </div>
         </div>

@@ -66,10 +66,10 @@ export default function SignupPortkey() {
         <View style={GStyles.center}>
           {!isMainnet && (
             <View style={styles.labelBox}>
-              <TextM style={[FontStyles.font11, fonts.mediumFont]}>TEST</TextM>
+              <TextM style={[FontStyles.font2, fonts.mediumFont]}>TEST</TextM>
             </View>
           )}
-          <TextXXXL style={[styles.titleStyle, FontStyles.font11]}>{t('Sign up Portkey ')}</TextXXXL>
+          <TextXXXL style={[styles.titleStyle, FontStyles.font2]}>{t('Sign up Portkey ')}</TextXXXL>
         </View>
 
         {signupMap[loginType]}

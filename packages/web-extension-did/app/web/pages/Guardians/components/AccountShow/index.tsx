@@ -19,6 +19,6 @@ export default function AccountShow({ guardian }: { guardian: StoreUserGuardianI
         </div>
       );
     default:
-      return <></>;
+      return null;
   }
 }

@@ -1,125 +1,143 @@
 @import '../../../assets/theme/color.less';
+@import '../../../assets/theme/constants.less';
+
 .activity-list {
+  .adm-list {
+    --border-bottom: solid 0.5px @border-2;
+
+    margin: 0 16px;
+  }
+  .activity-date-wrap {
+    margin-top: 4px;
+    padding-top: 20px;
+    border-top: 0.5px solid @border-2;
+    &:first-of-type {
+      margin-top: 0;
+      padding-top: 16px;
+      border-top: none;
+    }
+  }
+  .activity-date-item {
+    margin: 0 0 4px;
+    font-size: 12px;
+    line-height: 18px;
+    color: @font-21;
+  }
   .adm-list-item {
     padding-left: 0;
     .adm-list-item-content {
       padding-right: 0;
-    }
-  }
-  .activity-item {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 4px 16px;
-    .time {
-      line-height: 16px;
-      color: @font-13;
-      font-size: 12px;
-    }
-    .info {
-      display: flex;
-      gap: 16px;
-      .custom-list-icon {
-        width: 28px;
-        height: 28px;
-        margin-top: 7px;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: contain;
-      }
-      .custom-svg {
-        margin-top: 7px;
-      }
-      .custom-svg,
-      svg {
-        width: 28px;
-        height: 28px;
-      }
-      .right {
-        flex: 1;
-        .row-1 {
-          line-height: 22px;
-          color: @font-11;
-          font-size: 16px;
-          .row-1-left {
-            flex-grow: 1;
-            gap: 10px;
-            span {
+      border-top: none;
+      .adm-list-item-content-main {
+        padding: 0;
+        .activity-item {
+          height: 76px;
+          padding: 0;
+          justify-content: center;
+          gap: 8px;
+          &.activity-item-resend {
+            height: 106px;
+          }
+          .activity-item-content {
+            flex-direction: row;
+            gap: 8px;
+            .system-activity-icon,
+            .token-activity-icon {
+              width: 32px;
+              height: 32px;
+              background-position: center;
+              background-repeat: no-repeat;
+              background-size: contain;
+              svg {
+                width: 32px;
+                height: 32px;
+              }
+            }
+            .systemactivity-icon {
+              width: 32px;
+              height: 32px;
+              svg {
+                width: 32px;
+                height: 32px;
+              }
+            }
+            .system-activity-icon,
+            .token-activity-icon,
+            .nft-activity-icon,
+            .custom-svg {
+              flex-shrink: 0;
+            }
+            .activity-item-detail {
               flex: 1;
-              overflow: hidden;
-              text-overflow: ellipsis;
-              /* stylelint-disable-next-line value-no-vendor-prefix */
-              display: -webkit-box;
-              -webkit-box-orient: vertical;
-              line-clamp: 1;
-              -webkit-line-clamp: 1;
+              gap: 8px;
+              .activity-item-title {
+                width: 160px;
+                font-size: 11px;
+                line-height: 18px;
+                color: @font-21;
+                .transaction-name {
+                  font-size: 16px;
+                  line-height: 24px;
+                  font-weight: 500;
+                  color: @font-1;
+                  word-break: break-all;
+                  .text-overflow(1);
+                }
+                &.prompt-activity-item-title {
+                  flex: 2;
+                  min-width: 160px;
+                }
+              }
+              .activity-item-amount {
+                flex: 1;
+                font-size: 12px;
+                line-height: 18px;
+                color: @font-21;
+                text-align: right;
+                .transaction-amount {
+                  font-size: 16px;
+                  line-height: 24px;
+                  color: @font-1;
+                  word-break: break-all;
+                  .text-overflow(1);
+                  &.received-amount {
+                    color: @font-15;
+                  }
+                }
+                .transaction-nft-symbol,
+                .transaction-convert {
+                  word-break: break-all;
+                  .text-overflow(1);
+                }
+                .hidden-transaction-convert {
+                  overflow: hidden;
+                }
+                &.prompt-activity-item-amount {
+                  flex: 3;
+                  min-width: 120px;
+                }
+              }
+            }
+            .activity-item-system-detail {
+              flex: 1;
+              font-size: 16px;
+              line-height: 24px;
+              font-weight: 500;
+              color: @font-1;
               word-break: break-all;
-            }
-            .nft-id-show,
-            .amount-show {
-              text-align: right;
+              .text-overflow(1);
             }
           }
-          .amount-symbol {
-            margin-left: 4px;
-          }
-        }
-        .row-2 {
-          display: flex;
-          justify-content: space-between;
-          line-height: 16px;
-          font-size: 12px;
-          color: @font-13;
-          margin-top: 4px;
-          .nft-name {
-            width: 100px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            /* stylelint-disable-next-line value-no-vendor-prefix */
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
-            line-clamp: 1;
-            -webkit-line-clamp: 1;
-            word-break: break-all;
-            text-align: right;
-          }
-        }
-        .row-3 {
-          line-height: 16px;
-          font-size: 12px;
-          color: @font-13;
-          left: 60px;
-          width: 217px;
-          word-break: break-word;
-          margin-top: 2px;
-        }
-        .row-4 {
-          margin-top: 8px;
-          text-align: right;
-          .resend-btn {
-            display: inline-block;
-            width: 61px;
-            height: 24px;
-            font-size: 12px;
-            font-weight: 400;
-          }
-        }
-      }
-      .right-not-from {
-        height: 42px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        .right-not-from-amount {
-          text-align: end;
-          div {
-            line-height: 22px;
-          }
-          .usd {
-            line-height: 16px;
-            font-size: 12px;
-            color: @font-13;
-            margin-top: 4px;
+          .activity-item-resend-btn {
+            margin-left: 40px;
+            .resend-btn {
+              display: inline-block;
+              width: 65px;
+              height: 24px;
+              font-size: 12px;
+              line-height: 16px;
+              font-weight: 400;
+            }
           }
         }
       }
@@ -127,9 +145,6 @@
   }
 
   @media screen and (min-width: 768px) {
-    .activity-item {
-      padding: 4px 24px;
-    }
     .load-more {
       padding-bottom: 12px;
     }
@@ -154,7 +169,7 @@
       text-align: center;
       line-height: 22px;
       font-size: 18px;
-      color: @font-13;
+      color: @font-21;
     }
     .@{app-prefix}-modal-confirm-btns {
       padding: 15px 16px 17px;

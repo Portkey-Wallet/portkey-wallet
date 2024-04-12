@@ -85,6 +85,11 @@ export type TAssetsState = {
       [key in NetworkType]?: TAccountAssetsInfo;
     };
   };
+  accountBalance: {
+    accountBalanceInfo?: {
+      [key in NetworkType]?: string;
+    };
+  };
   accountCryptoBoxAssets: {
     isFetching: boolean;
     skipCount: number;
@@ -92,5 +97,4 @@ export type TAssetsState = {
     accountAssetsList: IAccountCryptoBoxAssetItem[];
     totalRecordCount: number;
   };
-  accountBalance: number | string;
 };

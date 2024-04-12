@@ -7,7 +7,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { addressFormat } from '@portkey-wallet/utils';
 import Copy from 'components/Copy';
-import { formatAmountShow, divDecimals } from '@portkey-wallet/utils/converter';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -87,7 +87,7 @@ export default function NFT() {
         </div>
         <div className="total-supply info-item flex-between">
           <div className="label">Total Supply</div>
-          <div>{formatAmountShow(divDecimals(nftDetail.totalSupply, nftDetail.decimals || 0))}</div>
+          <div>{formatTokenAmountShowWithDecimals(nftDetail.totalSupply, nftDetail.decimals || 0)}</div>
         </div>
       </div>
     );
@@ -111,9 +111,7 @@ export default function NFT() {
           <div>{formatTransferTime(expires ?? '')}</div>
         </div>
       </div>
-    ) : (
-      <></>
-    );
+    ) : null;
   }, [nftDetail]);
 
   const renderInscriptionInfo = useMemo(() => {
@@ -132,9 +130,7 @@ export default function NFT() {
           </div>
         )}
       </div>
-    ) : (
-      <></>
-    );
+    ) : null;
   }, [nftDetail]);
 
   const renderTraitsInfo = useMemo(() => {
@@ -152,9 +148,7 @@ export default function NFT() {
           </div>
         ))}
       </div>
-    ) : (
-      <></>
-    );
+    ) : null;
   }, [nftDetail]);
 
   const renderGenerationInfo = useMemo(() => {
@@ -167,9 +161,7 @@ export default function NFT() {
           <div>{generation}</div>
         </div>
       </div>
-    ) : (
-      <></>
-    );
+    ) : null;
   }, [nftDetail]);
 
   const mainContent = useCallback(() => {
@@ -209,7 +201,7 @@ export default function NFT() {
         </div>
         <div>
           <div className="btn-wrap flex-column-center">
-            <div className="balance">{`You have: ${formatAmountShow(divDecimals(balance, decimals))}`}</div>
+            <div className="balance">{`You have: ${formatTokenAmountShowWithDecimals(balance, decimals)}`}</div>
             <Button
               type="primary"
               onClick={() =>

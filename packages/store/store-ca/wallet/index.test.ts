@@ -7,7 +7,6 @@ import {
   setCAInfo,
   changePin,
   setCAInfoType,
-  setWalletNameAction,
   setOriginChainId,
   resetCaInfo,
   getCaHolderInfoAsync,
@@ -58,7 +57,6 @@ describe('resetWallet', () => {
   });
   test('WalletInfo will be reset', () => {
     const res = reducer(curState, resetWallet());
-    expect(res.walletName).toEqual('Wallet 01');
     expect(res.currentNetwork).toEqual('MAINNET');
   });
 });
@@ -427,19 +425,10 @@ describe('getCaHolderInfoAsync', () => {
   const store = configureStore({ reducer, preloadedState: preloadedState as any });
   test('Update walletName resolved', async () => {
     jest.mocked(getCaHolder).mockResolvedValue({
-      items: [
-        {
-          userId: 'userId',
-          caAddress: 'caAddress',
-          caHash: 'caHash',
-          id: 'id',
-          nickName: 'nickName',
-        },
-      ],
+      items: [],
     });
     await store.dispatch(getCaHolderInfoAsync());
     expect(getCaHolder).toBeCalled();
-    expect(store.getState().walletName).toEqual('nickName');
   });
   test('Update walletName rejected', async () => {
     jest.mocked(getCaHolder).mockRejectedValue({
@@ -447,19 +436,6 @@ describe('getCaHolderInfoAsync', () => {
     });
     await store.dispatch(getCaHolderInfoAsync());
     expect(getCaHolder).toBeCalled();
-  });
-});
-
-describe('setWalletNameAction', () => {
-  test('Update walletName', () => {
-    const mockState = {
-      walletAvatar: 'master1',
-      walletType: 'aelf' as WalletType,
-      walletName: 'Wallet 02',
-      currentNetwork: 'TESTNET' as NetworkType,
-      chainList: [],
-    };
-    expect(reducer(mockState, setWalletNameAction('new WalletName')).walletName).toEqual('new WalletName');
   });
 });
 

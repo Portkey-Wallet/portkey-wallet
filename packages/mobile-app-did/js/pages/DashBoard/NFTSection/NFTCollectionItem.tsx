@@ -168,6 +168,7 @@ const styles = StyleSheet.create({
   nftSeriesChainInfo: {
     marginTop: pTd(4),
     lineHeight: pTd(16),
+    color: defaultColors.font11,
   },
   itemAvatarStyle: {
     marginRight: pTd(8) - StyleSheet.hairlineWidth,

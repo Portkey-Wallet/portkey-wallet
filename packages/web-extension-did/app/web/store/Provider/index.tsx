@@ -14,7 +14,7 @@ import { Integrations } from '@sentry/tracing';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import { PortkeyProvider } from '@portkey/did-ui-react';
 import '@portkey/did-ui-react/dist/assets/index.css';
-import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 
 let childrenNode: any = undefined;
 
@@ -47,7 +47,7 @@ const UIElement = ({ children, pageType = 'Popup' }: BasePorviderProps) => {
   const currentNetwork = useCurrentNetwork();
 
   return (
-    <PortkeyProvider networkType={currentNetwork.networkType || 'MAINNET'}>
+    <PortkeyProvider networkType={currentNetwork || 'MAINNET'}>
       <Modals />
       <Updater />
       <PermissionCheck pageType={pageType}>{children}</PermissionCheck>

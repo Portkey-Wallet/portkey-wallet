@@ -1,7 +1,6 @@
 import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
 import { ScreenWidth } from '@rneui/base';
 import { defaultColors } from 'assets/theme';
-import { TextM } from 'components/CommonText';
 import React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';

@@ -7,18 +7,18 @@ import RegisterHeader from 'pages/components/RegisterHeader';
 import { useCallback } from 'react';
 import errorHandler from 'utils/errorHandler';
 import { reportUserCurrentNetwork } from 'utils/analysisReport';
-import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export default function Permission() {
   const detail = usePromptSearch<{ type: string }>();
-  const { networkType } = useCurrentNetwork();
+  const currentNetwork = useCurrentNetwork();
   const onUnLockHandler = useCallback(async () => {
     InternalMessage.payload(InternalMessageTypes.CLOSE_PROMPT, {
       closeParams: { ...errorHandler(0), data: detail },
     }).send();
   }, [detail]);
   useEffect(() => {
-    reportUserCurrentNetwork(networkType);
-  }, [networkType]);
+    reportUserCurrentNetwork(currentNetwork);
+  }, [currentNetwork]);
   return <LockPage header={<RegisterHeader />} onUnLockHandler={onUnLockHandler} />;
 }

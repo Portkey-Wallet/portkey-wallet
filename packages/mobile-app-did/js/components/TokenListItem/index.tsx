@@ -50,7 +50,7 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
           <TextL numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.tokenName}>
             {item?.symbol}
           </TextL>
-          <TextS numberOfLines={1} style={[FontStyles.font3, itemStyle.chainInfo]}>
+          <TextS numberOfLines={1} style={[FontStyles.font11, itemStyle.chainInfo]}>
             {formatChainInfoToShow(item?.chainId, currentNetwork)}
           </TextS>
         </View>

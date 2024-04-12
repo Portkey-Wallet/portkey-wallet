@@ -64,7 +64,7 @@ export default function Receive() {
         />
         <View>
           <TextL>{symbol}</TextL>
-          <TextS>{formatChainInfoToShow(chainId, currentNetwork)}</TextS>
+          <TextS style={FontStyles.font11}>{formatChainInfoToShow(chainId, currentNetwork)}</TextS>
         </View>
       </View>
 

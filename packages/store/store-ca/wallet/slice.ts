@@ -19,8 +19,14 @@ import {
   resetCurrentUserInfoAction,
   updateCASyncState,
 } from './actions';
-import { WalletError, WalletState } from './type';
+import { UserInfoType, WalletError, WalletState } from './type';
 import { changeEncryptStr } from '../../wallet/utils';
+
+export const DEFAULT_USER_INFO: UserInfoType = {
+  nickName: '',
+  userId: '',
+  avatar: '',
+};
 
 const initialState: WalletState = {
   walletAvatar: `master${(Math.floor(Math.random() * 10000) % 6) + 1}`, // to be scrapped, please use userInfo.avatar
@@ -140,11 +146,7 @@ export const walletSlice = createSlice({
         const networkType = action.payload;
         state.userInfo = {
           ...(state.userInfo || {}),
-          [networkType]: {
-            nickName: '',
-            avatar: '',
-            userId: '',
-          },
+          [networkType]: DEFAULT_USER_INFO,
         };
       })
       .addCase(setOriginChainId, (state, action) => {

@@ -104,7 +104,7 @@ const TextMessage: React.FC<IMessage> = (props) => {
 
   const renderReplyMsg = useMemo(() => {
     if (!quote) {
-      return <></>;
+      return null;
     }
     if (quote.type === MessageTypeEnum.IMAGE) {
       const { thumbImgUrl, imgUrl } = formatImageData(quote.parsedContent as ParsedImage);
@@ -128,7 +128,7 @@ const TextMessage: React.FC<IMessage> = (props) => {
         />
       );
     }
-    return <></>;
+    return null;
   }, [position, quote]);
   const handleUrlPress: ParseShape['onClick'] = useCallback(
     (url: string) => {

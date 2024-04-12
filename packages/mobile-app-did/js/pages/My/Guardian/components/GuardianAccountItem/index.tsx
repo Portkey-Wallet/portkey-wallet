@@ -26,7 +26,7 @@ const GuardianAccountItem = ({ guardian }: GuardianAccountItemProps) => {
   }, [guardian]);
 
   const renderGuardianAccount = useCallback(() => {
-    if (!guardian) return <></>;
+    if (!guardian) return null;
     if (!guardian.firstName) {
       return (
         <TextM numberOfLines={AuthTypes.includes(guardian.guardianType) ? 1 : 2} style={GStyles.flex1}>

@@ -151,7 +151,7 @@ const ActivityDetail = () => {
   }, [CopyIconUI, activityItem, currentNetwork, t, transactionId]);
 
   const feeUI = useMemo(() => {
-    if (activityItem?.isReceived) return <></>;
+    if (activityItem?.isReceived) return null;
 
     const transactionFees =
       activityItem?.transactionFees?.length === 0

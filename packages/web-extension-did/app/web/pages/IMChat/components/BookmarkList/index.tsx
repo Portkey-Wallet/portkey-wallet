@@ -88,7 +88,7 @@ export default function BookmarkList({ onClick, onClose }: IBookmarkListProps) {
         {isFirstLoading && <CircleLoading />}
         {showBookmarkList.length === 0 ? (
           <div className="empty-content flex-center">
-            {isFirstLoading ? <></> : <p className="empty-text">No Bookmarks</p>}
+            {isFirstLoading ? null : <p className="empty-text">No Bookmarks</p>}
           </div>
         ) : (
           <MenuList list={showBookmarkList} showEnterIcon={false} height={72} />

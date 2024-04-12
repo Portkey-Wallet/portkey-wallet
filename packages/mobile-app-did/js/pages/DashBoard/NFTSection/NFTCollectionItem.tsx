@@ -15,7 +15,10 @@ import { NFTCollectionItemShowType } from '@portkey-wallet/types/types-ca/assets
 import Touchable from 'components/Touchable';
 import { OpenCollectionObjType } from './index';
 import { ChainId } from '@portkey-wallet/types';
+
+import { Skeleton } from '@rneui/base';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { PortkeyLinearGradient } from 'components/PortkeyLinearGradient';
 
 export enum NoDataMessage {
   CustomNetWorkNoData = 'No transaction records accessible from the current custom network',
@@ -23,6 +26,7 @@ export enum NoDataMessage {
 }
 
 export type NFTItemPropsType = NFTCollectionItemShowType & {
+  isFetching?: boolean;
   collapsed?: boolean;
   openCollectionObj: OpenCollectionObjType;
   setOpenCollectionObj: any;
@@ -33,6 +37,7 @@ export type NFTItemPropsType = NFTCollectionItemShowType & {
 
 export default function NFTItem(props: NFTItemPropsType) {
   const {
+    isFetching,
     chainId,
     collectionName,
     imageUrl,
@@ -55,8 +60,8 @@ export default function NFTItem(props: NFTItemPropsType) {
   );
 
   useEffect(() => {
-    setOpen(!!children?.length && !collapsed);
-  }, [children, collapsed, openCollectionInfo]);
+    setOpen(!collapsed);
+  }, [collapsed]);
 
   const showChildren = useMemo(
     () => (children.length > 9 ? children.slice(0, ((openCollectionInfo?.pageNum ?? 0) + 1) * 9) : children),
@@ -68,10 +73,17 @@ export default function NFTItem(props: NFTItemPropsType) {
     [itemCount, showChildren?.length],
   );
 
+  const skeletonList = useMemo(() => {
+    if (!isFetching) return [];
+
+    const count = itemCount - showChildren?.length >= 9 ? 9 : itemCount - showChildren?.length;
+    return new Array(count).fill('-');
+  }, [isFetching, itemCount, showChildren?.length]);
+
   return (
     <View style={styles.wrap}>
       <Touchable
-        onPressWithSecond={500}
+        onPressWithSecond={0}
         style={[styles.topSeries]}
         onPress={() => {
           if (openCollectionObj?.[`${symbol}${chainId}`]) {
@@ -118,6 +130,23 @@ export default function NFTItem(props: NFTItemPropsType) {
               }}
             />
           ))}
+          {skeletonList.map((ele, i) => {
+            return (
+              <Skeleton
+                key={i}
+                animation="wave"
+                LinearGradientComponent={() => <PortkeyLinearGradient />}
+                style={[
+                  { borderRadius: pTd(8) },
+                  styles.itemAvatarStyle,
+                  i + showChildren.length < 3 ? styles.marginTop0 : {},
+                  (i + showChildren.length) % 3 === 2 ? styles.marginRight0 : {},
+                ]}
+                height={pTd(98)}
+                width={pTd(98)}
+              />
+            );
+          })}
         </View>
         {hasMore && (
           <Touchable

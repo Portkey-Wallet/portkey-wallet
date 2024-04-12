@@ -83,7 +83,7 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
               {nftAliasAndId}
             </TextL>
 
-            <TextS numberOfLines={1} style={[FontStyles.font3, itemStyle.nftItemInfo]}>
+            <TextS numberOfLines={1} style={[FontStyles.font11, itemStyle.nftItemInfo]}>
               {formatChainInfoToShow(item.chainId as ChainId, currentNetwork)}
             </TextS>
           </View>

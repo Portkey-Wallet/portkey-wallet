@@ -44,7 +44,7 @@ const ConnectModal = (props: ConnectModalType) => {
   const defaultToken = useDefaultToken();
   const caInfo = useCurrentCaInfo();
   const { currentNetwork } = useWallet();
-  const { nickName = '' } = useCurrentUserInfo() || {};
+  const { nickName = '' } = useCurrentUserInfo();
   const gStyles = useGStyles();
   const updateSessionInfo = useUpdateSessionInfo();
 

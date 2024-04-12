@@ -84,9 +84,7 @@ export default function OfficialGroupGuide(props: IOfficialGroupGuide) {
     checkIsOfficialMember();
   }, [checkIsOfficialMember]);
 
-  return officialGroupGuideMapShow?.length === 0 ? (
-    <></>
-  ) : (
+  return officialGroupGuideMapShow?.length === 0 ? null : (
     <div className="official-group-guide-component flex-column">
       <div className="official-group-guide-title">Official Group</div>
       <div className="official-group-guide-container">

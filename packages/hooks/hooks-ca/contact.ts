@@ -346,7 +346,7 @@ export const useChatContactFlatList = () => {
 export const useIsMyContact = () => {
   const contactRelationIdMap = useContactRelationIdMap();
   const contactIdMap = useContactIdMap();
-  const { userId } = useCurrentUserInfo() || {};
+  const { userId } = useCurrentUserInfo();
 
   return useCallback(
     ({ relationId, contactId }: { relationId?: string; contactId?: string }): boolean => {

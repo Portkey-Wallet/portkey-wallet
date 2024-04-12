@@ -551,7 +551,7 @@ const GuardianEdit: React.FC = () => {
       );
     }
 
-    if (!selectedType) return <></>;
+    if (!selectedType) return null;
 
     switch (selectedType.value) {
       case LoginType.Email:
@@ -638,7 +638,7 @@ const GuardianEdit: React.FC = () => {
       default:
         break;
     }
-    return <></>;
+    return null;
   }, [
     account,
     clearAccount,

@@ -42,10 +42,10 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
   }, [isDaySame, item?.timestamp]);
 
   const AddressDom = useMemo(() => {
-    if (!item) return <></>;
+    if (!item) return null;
     const address = item.isReceived ? item.fromAddress : item.toAddress;
     const chainId = item.isReceived ? item.fromChainId : item.toChainId;
-    if (!address || !chainId) return <></>;
+    if (!address || !chainId) return null;
 
     return (
       <Text style={itemStyle.centerStatus}>
@@ -62,7 +62,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
 
     return (
       <Text numberOfLines={1} ellipsizeMode="tail" style={[itemStyle.tokenBalance, isReceived && FontStyles.font10]}>
-        {`${prefix} ${formatTokenAmountShowWithDecimals(item?.amount, decimals)}${suffix}`}
+        {`${prefix}${formatTokenAmountShowWithDecimals(item?.amount, decimals)}${suffix}`}
       </Text>
     );
   }, [item]);
@@ -71,7 +71,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
     const extraContent = item?.nftInfo
       ? item?.nftInfo?.alias
       : formatAmountUSDShow(isMainnet ? item?.currentTxPriceInUsd : '');
-    if (!extraContent) return <></>;
+    if (!extraContent) return null;
 
     return (
       <Text numberOfLines={1} ellipsizeMode="tail" style={itemStyle.usdtBalance}>
@@ -93,7 +93,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
               nftSize={pTd(32)}
               badgeSizeType="small"
               data={item.nftInfo}
-              style={itemStyle.left}
+              style={[itemStyle.left, itemStyle.nftAvatarWrap]}
             />
           ) : (
             <CommonAvatar
@@ -166,6 +166,9 @@ const itemStyle = StyleSheet.create({
   },
   left: {
     marginRight: pTd(8),
+  },
+  nftAvatarWrap: {
+    borderRadius: pTd(4),
   },
   avatarTitleStyle: {
     fontSize: pTd(16),

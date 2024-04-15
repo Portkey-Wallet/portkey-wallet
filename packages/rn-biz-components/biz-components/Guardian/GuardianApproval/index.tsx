@@ -1,6 +1,6 @@
 import { TextM, TextXXXL } from '@portkey-wallet/rn-components/components/CommonText';
 import PageContainer from '@portkey-wallet/rn-components/components/PageContainer';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { useRouterParams } from '@portkey-wallet/rn-inject-sdk';
 import { useLanguage } from '@portkey-wallet/rn-base/i18n/hooks';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { GUARDIAN_EXPIRED_TIME, VERIFIER_EXPIRATION } from '@portkey-wallet/constants/misc';
@@ -55,7 +55,7 @@ import { useUpdateTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security'
 import { useCheckRouteExistInRouteStack } from '@portkey-wallet/rn-base/hooks/route';
 import { useRefreshGuardianList } from '@portkey-wallet/rn-base/hooks/guardian';
 import { SendResult } from '@portkey-wallet/contracts/types';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from '@portkey-wallet/rn-inject-sdk';
 import { NavigateMultiLevelParams } from '@portkey-wallet/rn-base/types/navigate';
 import { isCrossChain } from '@portkey-wallet/utils/aelf';
 import { useGetTransferFee } from '@portkey-wallet/rn-base/hooks/transfer';

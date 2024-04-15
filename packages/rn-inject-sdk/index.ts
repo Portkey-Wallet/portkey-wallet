@@ -6,5 +6,6 @@ export {
   useRouterParams,
 } from '@portkey-wallet/rn-core/router/hook';
 export { request } from '@portkey-wallet/rn-core/network/index';
+export { exceptionManager } from './errorHandler/ExceptionHandler';
 import navigationService from './navigationService';
 export default navigationService;

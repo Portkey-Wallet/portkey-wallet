@@ -1,4 +1,4 @@
-import { request } from '@portkey-wallet/api/api-did';
+import { request } from '@portkey-wallet/rn-inject-sdk';
 import {
   IntervalErrorMessage,
   SendVerificationConfig,
@@ -22,7 +22,7 @@ class MobileVerification extends Verification {
 
     try {
       const item = this.get(key);
-
+      console.log('item', item);
       if (item) {
         return item;
       } else {

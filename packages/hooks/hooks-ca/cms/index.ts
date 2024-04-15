@@ -38,8 +38,9 @@ import {
 } from '@portkey-wallet/types/types-ca/cms';
 import { NetworkType } from '@portkey-wallet/types';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { DEFAULT_OBJ } from '@portkey-wallet/constants';
 
-export const useCMS = () => useAppCASelector(state => state.cms);
+export const useCMS = () => useAppCASelector(state => state.cms || {});
 
 export function useTabMenuList(isInit = false) {
   const dispatch = useAppCommonDispatch();
@@ -305,7 +306,7 @@ export const useCheckSiteIsInBlackList = () => {
 };
 
 export const useIsChatShow = () => {
-  const { tabMenuListNetMap } = useCMS() || {};
+  const { tabMenuListNetMap } = useCMS() || DEFAULT_OBJ;
   const { networkType } = useCurrentNetworkInfo();
   const isIMServiceExist = useIsIMServiceExist();
 
@@ -358,7 +359,7 @@ export const useGetLoginControlListAsync = () => {
 };
 
 export const useLoginModeControlList = (forceUpdate?: boolean) => {
-  const { loginModeListMap } = useCMS() || {};
+  const { loginModeListMap } = useCMS() || DEFAULT_OBJ;
   const { networkType } = useCurrentNetworkInfo();
 
   const getLoginControlListAsync = useGetLoginControlListAsync();

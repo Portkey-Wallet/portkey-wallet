@@ -8,7 +8,7 @@ import PageContainer from '@portkey-wallet/rn-components/components/PageContaine
 import DigitInput, { DigitInputInterface } from '@portkey-wallet/rn-components/components/DigitInput';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { useRouterParams } from '@portkey-wallet/rn-inject-sdk';
 import { VerificationType, OperationTypeEnum, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
 import GuardianItem from '../components/GuardianItem';
 import { FontStyles } from '@portkey-wallet/rn-base/assets/theme/styles';
@@ -141,6 +141,7 @@ export default function VerifierDetails() {
       digitInput.current?.lockInput();
       const loadingKey = Loading.show(isRequestResult ? { text: CreateAddressLoading } : undefined, true);
       try {
+        console.log('checkVerificationCode');
         const rst = await verification.checkVerificationCode({
           params: {
             type: LoginType[guardianItem?.guardianType as LoginType],
@@ -154,13 +155,14 @@ export default function VerifierDetails() {
             operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
           },
         });
+        console.log('checkVerificationCode end', rst);
         !isRequestResult && CommonToast.success('Verified Successfully');
 
         const verifierInfo: VerifierInfo = {
           ...rst,
           verifierId: guardianItem?.verifier?.id,
         };
-
+        console.log('verificationType', verificationType, 'verifierInfo', verifierInfo);
         switch (verificationType) {
           case VerificationType.register:
             onRequestOrSetPin({
@@ -205,6 +207,7 @@ export default function VerifierDetails() {
             break;
         }
       } catch (error) {
+        console.log('error123', error);
         const _isInvalidCode = checkVerifierIsInvalidCode(error);
         if (_isInvalidCode) {
           setCodeError('', VERIFY_INVALID_TIME);

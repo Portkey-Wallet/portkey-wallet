@@ -1,8 +1,8 @@
 // import 'react-native-get-random-values'; // if delete this import, it will cause a big bug,
-import GuardianApprovalEntryPage from 'pages/Entries/GuardianApproval';
-import SignInEntryPage from 'pages/Entries/SignIn';
+// import GuardianApprovalEntryPage from 'pages/Entries/GuardianApproval';
+// import SignInEntryPage from 'pages/Entries/SignIn';
 import SelectCountryPage from 'pages/Entries/SelectCountry';
-import SignUpEntryPage from 'pages/Entries/SignUp';
+// import SignUpEntryPage from 'pages/Entries/SignUp';
 import VerifierDetailsEntryPage from 'pages/Entries/VerifierDetails';
 import { PortkeyEntries, registerLaunchMode } from '@portkey-wallet/rn-core/router/types';
 import ViewOnWebView from 'pages/Activity/ViewOnWebView';
@@ -21,7 +21,7 @@ import AddGuardian from 'pages/Guardian/GuardianManage/AddGuardian';
 import ModifyGuardian from 'pages/Guardian/GuardianManage/ModifyGuardian';
 import GuardianDetail from 'pages/Guardian/GuardianDetail';
 import ReceiveTokenPage from 'pages/Assets/ReceiveToken';
-import AssetsHome from 'pages/Assets/Home/AssetsHome';
+// import AssetsHome from 'pages/Assets/Home/AssetsHome';
 import PaymentSecurityList from 'pages/My/WalletSecurity/PaymentSecurity/PaymentSecurityHome';
 import PaymentSecurityDetail from 'pages/My/WalletSecurity/PaymentSecurity/PaymentSecurityDetail';
 import PaymentSecurityEdit from 'pages/My/WalletSecurity/PaymentSecurity/PaymentSecurityEdit';
@@ -50,6 +50,9 @@ import CheckPin from '@portkey-wallet/rn-biz-components/biz-components/Pin/Check
 import ConfirmPin from '@portkey-wallet/rn-biz-components/biz-components/Pin/ConfirmPin';
 import SetBiometrics from '@portkey-wallet/rn-biz-components/biz-components/Pin/SetBiometrics';
 import SetPin from '@portkey-wallet/rn-biz-components/biz-components/Pin/SetPin';
+import GuardianApproval from '@portkey-wallet/rn-biz-components/biz-components/Guardian/GuardianApproval';
+import VerifierDetails from '@portkey-wallet/rn-biz-components/biz-components/Guardian/VerifierDetails';
+import DashBoard from '@portkey-wallet/rn-biz-components/biz-components/DashBoard';
 
 type AcceptableComponentType = ComponentProvider;
 
@@ -67,9 +70,22 @@ const initEntries = () => {
   entryConfig.set(PortkeyEntries.SELECT_COUNTRY_ENTRY, () => SelectCountryPage);
   entryConfig.set(PortkeyEntries.SIGN_UP_ENTRY, () => ReduxProvider(SignupPortkey as React.ComponentType<any>));
 
-  // verify stage
-  entryConfig.set(PortkeyEntries.VERIFIER_DETAIL_ENTRY, () => VerifierDetailsEntryPage);
-  entryConfig.set(PortkeyEntries.GUARDIAN_APPROVAL_ENTRY, () => GuardianApprovalEntryPage);
+  // verify stage VerifierDetails
+  // entryConfig.set(PortkeyEntries.VERIFIER_DETAIL_ENTRY, () => VerifierDetailsEntryPage);
+  entryConfig.set(PortkeyEntries.VERIFIER_DETAIL_ENTRY, () =>
+    ReduxProvider(VerifierDetails as React.ComponentType<any>, {
+      routerParams: {
+        from: PortkeyEntries.VERIFIER_DETAIL_ENTRY,
+      },
+    }),
+  );
+  entryConfig.set(PortkeyEntries.GUARDIAN_APPROVAL_ENTRY, () =>
+    ReduxProvider(GuardianApproval as React.ComponentType<any>, {
+      routerParams: {
+        from: PortkeyEntries.GUARDIAN_APPROVAL_ENTRY,
+      },
+    }),
+  );
 
   // config stage
   entryConfig.set(PortkeyEntries.CHECK_PIN, () =>
@@ -140,9 +156,15 @@ const initEntries = () => {
       },
     }),
   );
-
   // assets module
-  entryConfig.set(PortkeyEntries.ASSETS_HOME_ENTRY, () => ReduxProvider(AssetsHome as React.ComponentType<any>));
+  // entryConfig.set(PortkeyEntries.ASSETS_HOME_ENTRY, () => ReduxProvider(AssetsHome as React.ComponentType<any>));
+  entryConfig.set(PortkeyEntries.ASSETS_HOME_ENTRY, () =>
+    ReduxProvider(DashBoard, {
+      routerParams: {
+        from: PortkeyEntries.ASSETS_HOME_ENTRY,
+      },
+    }),
+  );
   entryConfig.set(PortkeyEntries.RECEIVE_TOKEN_ENTRY, () => ReceiveTokenPage);
   entryConfig.set(PortkeyEntries.ACTIVITY_LIST_ENTRY, () => ActivityListPage);
   entryConfig.set(PortkeyEntries.ACTIVITY_DETAIL_ENTRY, () => ActivityDetail);

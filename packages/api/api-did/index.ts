@@ -24,6 +24,8 @@ import managerApi from './manager';
 import referralApi from './referral';
 import im from '@portkey-wallet/im';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
+import Environment from '@portkey-wallet/rn-inject';
+import { request as sdkRequest } from '@portkey-wallet/rn-inject-sdk';
 
 export const DEFAULT_METHOD = 'POST';
 
@@ -104,6 +106,7 @@ export interface IRequest extends BASE_REQ_TYPES, EXPAND_REQ_TYPES {
   es: ES_REQ_TYPES;
 }
 
-const request = myServer as unknown as IRequest & DidService;
+let request = Environment.isSDK() ? sdkRequest : (myServer as unknown as IRequest & DidService);
+// let request = myServer as unknown as IRequest & DidService;
 
 export { request };

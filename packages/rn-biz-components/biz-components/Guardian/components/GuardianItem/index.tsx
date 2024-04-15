@@ -6,7 +6,7 @@ import Svg from '@portkey-wallet/rn-components/components/Svg';
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { pTd } from '@portkey-wallet/rn-base/utils/unit';
-import navigationService from '@portkey-wallet/rn-inject-sdk';
+import navigationService, { useNavigation } from '@portkey-wallet/rn-inject-sdk';
 import fonts from '@portkey-wallet/rn-base/assets/theme/fonts';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import Loading from '@portkey-wallet/rn-components/components/Loading';
@@ -37,6 +37,7 @@ import {
 } from '@portkey-wallet/constants/constants-ca/verifier';
 import { ChainId } from '@portkey-wallet/types';
 import { AuthTypes } from '@portkey-wallet/rn-base/constants/guardian';
+import Environment from '@portkey-wallet/rn-inject';
 
 interface GuardianAccountItemProps {
   guardianItem: UserGuardianItem;
@@ -64,6 +65,7 @@ function GuardianItemButton({
 }: GuardianAccountItemProps & {
   disabled?: boolean;
 }) {
+  const navigation = useNavigation();
   const itemStatus = useMemo(() => guardiansStatus?.[guardianItem.key], [guardianItem.key, guardiansStatus]);
 
   const { status, requestCodeResult } = itemStatus || {};
@@ -90,6 +92,7 @@ function GuardianItemButton({
   const originChainId = useOriginChainId();
 
   const onSendCode = useThrottleCallback(async () => {
+    console.log('onSendCode invoke');
     try {
       Loading.show();
       const req = await verification.sendVerificationCode({
@@ -102,6 +105,7 @@ function GuardianItemButton({
           targetChainId,
         },
       });
+      console.log('sendVerificationCode end', req);
       if (req.verifierSessionId) {
         Loading.hide();
         await sleep(200);
@@ -109,11 +113,19 @@ function GuardianItemButton({
           requestCodeResult: req,
           status: VerifyStatus.Verifying,
         });
-        navigationService.push('VerifierDetails', {
-          ...guardianInfo,
-          requestCodeResult: req,
-          targetChainId,
-        });
+        if (Environment.isSDK()) {
+          navigation.navigate('VerifierDetails', {
+            ...guardianInfo,
+            requestCodeResult: req,
+            targetChainId,
+          });
+        } else {
+          navigationService.push('VerifierDetails', {
+            ...guardianInfo,
+            requestCodeResult: req,
+            targetChainId,
+          });
+        }
       } else {
         throw new Error('send fail');
       }

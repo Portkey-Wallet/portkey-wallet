@@ -3,7 +3,7 @@ import { VerificationType } from '@portkey-wallet/types/verifier';
 import { clearTimeoutInterval, setTimeoutInterval } from '@portkey-wallet/utils/interval';
 
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
-import { request } from '@portkey-wallet/api/api-did';
+import { request } from '@portkey-wallet/rn-inject-sdk';
 import socket from '@portkey-wallet/socket/socket-did';
 import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
 import { contractQueries } from '@portkey-wallet/graphql';
@@ -102,9 +102,10 @@ export function intervalGetResult({ managerInfo, onPass, onFail }: IntervalGetRe
       const req = await fetch({
         params: { filter: `_id:${managerInfo.managerUniqueId}` },
       });
+      console.log('setTimeoutInterval req', req, 'managerInfo.managerUniqueId', managerInfo);
       sendResult(req.items[0]);
     } catch (error) {
-      console.debug(error, '=====error');
+      console.debug(error, '123=====error');
     }
   }, 3000);
   return { remove };

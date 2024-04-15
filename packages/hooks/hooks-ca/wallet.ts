@@ -76,7 +76,8 @@ export const useCurrentUserInfo = (forceUpdate?: boolean) => {
 export const useCurrentWalletInfo = () => {
   const { currentNetwork, walletInfo } = useWallet();
   const originChainId = useOriginChainId();
-
+  // console.log('{ currentNetwork, walletInfo }', { currentNetwork, walletInfo });
+  // console.log('{ currentNetwork, walletInfo } originChainId', originChainId);
   return useMemo(() => {
     return getCurrentWalletInfo(walletInfo, currentNetwork, originChainId);
   }, [walletInfo, currentNetwork, originChainId]);

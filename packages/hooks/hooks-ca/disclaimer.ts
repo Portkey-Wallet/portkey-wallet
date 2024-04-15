@@ -4,7 +4,7 @@ import { useCurrentWalletInfo, useWallet } from './wallet';
 import { useAppCASelector, useAppCommonDispatch } from '../index';
 import { addDisclaimerConfirmedDapp } from '@portkey-wallet/store/store-ca/discover/slice';
 
-export const useDiscover = () => useAppCASelector(state => state.discover);
+export const useDiscover = () => useAppCASelector(state => state.discover || {});
 
 export const useDisclaimer = () => {
   const { caHash, address } = useCurrentWalletInfo();

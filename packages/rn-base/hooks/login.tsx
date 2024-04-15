@@ -174,7 +174,8 @@ export function useOnManagerAddressAndQueryResult() {
             ...data,
           };
         }
-        const req = await fetch({ data });
+        const req = await fetch({ params: data });
+        // const req = await fetch({ data });
         // whether there is wallet information
         const _managerInfo = {
           ...managerInfo,

@@ -27,9 +27,9 @@ import NFTAvatar from '../NFTAvatar';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { PAGE_SIZE_DEFAULT, PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
-import GStyles from 'assets/theme/GStyles';
 import { makeStyles, useGStyles } from '../../theme';
 import { Theme } from '../../theme/type';
+import GStyles from '../../theme/GStyles';
 
 export type ImTransferInfoType = {
   isGroupChat?: boolean;

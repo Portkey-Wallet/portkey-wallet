@@ -8,7 +8,8 @@ export type AppRouteName =
   | 'SetBiometrics'
   | 'CheckPin'
   | 'AssetsHome'
-  | 'GuardianApproval';
+  | 'GuardianApproval'
+  | 'VerifierDetails';
 
 const RouteNameMapping: Record<AppRouteName, PortkeyEntries> = {
   LoginPortkey: PortkeyEntries.SIGN_IN_ENTRY,
@@ -20,6 +21,7 @@ const RouteNameMapping: Record<AppRouteName, PortkeyEntries> = {
   CheckPin: PortkeyEntries.CHECK_PIN,
   AssetsHome: PortkeyEntries.ASSETS_HOME_ENTRY,
   GuardianApproval: PortkeyEntries.GUARDIAN_APPROVAL_ENTRY,
+  VerifierDetails: PortkeyEntries.VERIFIER_DETAIL_ENTRY,
 };
 
 export function mapRoute(appRouteName: AppRouteName) {

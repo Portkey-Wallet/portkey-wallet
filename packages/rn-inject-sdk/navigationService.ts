@@ -23,7 +23,9 @@ function reset(name: any | { name: any; params?: any }[], params?: object) {
   router.reset(name, params);
 }
 
-function push(routeName: string, params?: object) {}
+function push(routeName: string, params?: object) {
+  router.navigate(routeName, { ...params, from: COMMON_ROUTER_FROM });
+}
 
 function pop(count: number) {}
 

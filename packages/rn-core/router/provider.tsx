@@ -7,7 +7,7 @@ const RouterProvider = ({ children, value }: { children: any; value?: RouterPara
   useEffect(() => {
     const currentPage = value?.from as PortkeyEntries;
     router.push({ name: currentPage, params: value?.params });
-    router.listenersFunc()[currentPage]['focus'].forEach(item => item());
+    router.listenersFunc()[currentPage]?.['focus'].forEach(item => item());
   }, []);
   return <RouterContext.Provider value={value ?? defaultRouterParams}>{children}</RouterContext.Provider>;
 };

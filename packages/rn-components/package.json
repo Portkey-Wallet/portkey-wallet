@@ -24,7 +24,9 @@
     "react-native-progress": "^5.0.1",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "rn-minimizer": "1.0.0",
-    "@portkey-wallet/rn-base": "1.0.0"
+    "@portkey-wallet/rn-base": "1.0.0",
+    "react-native-tab-view": "^3.5.2",
+    "@react-navigation/material-top-tabs": "^6.2.4"
   },
   "devDependencies": {
     "@types/react-native": "~0.72.4",

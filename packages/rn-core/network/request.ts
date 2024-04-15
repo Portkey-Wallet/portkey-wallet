@@ -8,8 +8,8 @@ interface NetworkOptions {
 interface ResultWrapper<T> {
   status: NetworkResult;
   result?: T;
-  code: string;
-  message?: string;
+  errCode: string;
+  errMessage?: string;
 }
 interface NetworkModule {
   fetch: (
@@ -45,6 +45,9 @@ const nativeFetch = async <T>(
       const t = JSON.parse(res) as ResultWrapper<T>;
       if (t?.result && typeof t.result === 'string') {
         return JSON.parse(t.result);
+      }
+      if (t.errCode === '401') {
+        return { message: 'unauthorized', status: 401 };
       }
       return t;
     } catch (e) {}

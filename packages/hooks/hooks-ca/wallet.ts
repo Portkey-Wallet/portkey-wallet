@@ -222,6 +222,7 @@ export const useCaAddresses = () => {
 
 export const useCaAddressInfoList = (): ICaAddressInfoListItemType[] => {
   const { walletInfo, currentNetwork } = useWallet();
+  console.log('walletInfowalletInfowalletInfo', walletInfo, 'Object.entries(currentCAInfo || {})', Object.entries(walletInfo?.caInfo?.[currentNetwork] || {}));
   const list = useChainIdList();
   const currentCAInfo = walletInfo?.caInfo?.[currentNetwork];
 

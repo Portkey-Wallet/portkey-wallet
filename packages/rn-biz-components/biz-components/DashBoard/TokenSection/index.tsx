@@ -44,7 +44,7 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
   const getAccountTokenList = useLockCallback(
     async (isInit: boolean) => {
       if (totalRecordCount && accountTokenList.length >= totalRecordCount && !isInit) return;
-      console.log('fetchAccountTokenList start');
+      console.log('fetchAccountTokenList start', caAddressInfosList.current);
       try {
         await fetchAccountTokenInfoList({
           caAddressInfos: caAddressInfosList.current || [],

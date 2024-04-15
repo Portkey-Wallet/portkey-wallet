@@ -16,6 +16,8 @@ export function useGetCurrentCAViewContract(_chainId?: ChainId) {
   const originChainId = useOriginChainId();
   const chainId = useMemo(() => _chainId || originChainId, [_chainId, originChainId]);
   const chainInfo = useCurrentChain(chainId);
+  const t = useInterface();
+  console.log('ttttttt', t);
   const [{ viewContracts }, dispatch] = useInterface();
 
   return useCallback(

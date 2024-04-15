@@ -40,7 +40,7 @@ import { NetworkType } from '@portkey-wallet/types';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 import { DEFAULT_OBJ } from '@portkey-wallet/constants';
 
-export const useCMS = () => useAppCASelector(state => state.cms || {});
+export const useCMS = () => useAppCASelector(state => state.cms || DEFAULT_OBJ);
 
 export function useTabMenuList(isInit = false) {
   const dispatch = useAppCommonDispatch();

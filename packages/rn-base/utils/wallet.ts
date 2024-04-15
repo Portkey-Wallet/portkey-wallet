@@ -82,6 +82,7 @@ export function intervalGetResult({ managerInfo, onPass, onFail }: IntervalGetRe
     clientId,
   });
   let fetch: any;
+  console.log('wfs managerInfomanagerInfo', managerInfo);
   if (managerInfo.verificationType !== VerificationType.register) {
     fetch = request.es.getRecoverResult;
     listenerList.push(

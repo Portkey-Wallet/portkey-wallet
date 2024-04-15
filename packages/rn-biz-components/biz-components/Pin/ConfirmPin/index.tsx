@@ -74,6 +74,8 @@ export default function ConfirmPin() {
   const onFinish = useCallback(
     async (confirmPin: string) => {
       if (managerInfo?.verificationType === VerificationType.addManager) {
+        console.log('createWallet caInfo 2', caInfo);
+
         dispatch(createWallet({ walletInfo: paramsWalletInfo, caInfo, pin: confirmPin }));
         dispatch(setCredentials({ pin: confirmPin }));
         paramsWalletInfo?.address && sendScanLoginSuccess({ targetClientId: paramsWalletInfo.address });

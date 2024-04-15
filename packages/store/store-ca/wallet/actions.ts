@@ -31,6 +31,7 @@ export const createWallet =
     const walletObj = formatWalletInfo(walletInfo, pin, 'walletName');
     if (walletObj) {
       const { walletInfo: newWalletInfo } = walletObj;
+      console.log('createWalletAction', { walletInfo: newWalletInfo, networkType, caInfo });
       dispatch(createWalletAction({ walletInfo: newWalletInfo, networkType, caInfo }));
       return true;
     }

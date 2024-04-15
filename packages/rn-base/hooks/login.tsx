@@ -187,6 +187,10 @@ export function useOnManagerAddressAndQueryResult() {
         if (walletInfo?.address) {
           dispatch(setManagerInfo({ managerInfo: _managerInfo, pin: confirmPin }));
         } else {
+          console.log('createWallet caInfo 1', {
+            managerInfo: _managerInfo,
+            originChainId: latestOriginChainId.current,
+          });
           dispatch(
             createWallet({
               walletInfo: tmpWalletInfo,

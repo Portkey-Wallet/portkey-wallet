@@ -54,6 +54,7 @@ export const walletSlice = createSlice({
           ...action.payload.walletInfo,
           caInfo: { [currentNetwork]: caInfo } as any,
         };
+        console.log('wfs state.walletInfo', state.walletInfo);
       })
       .addCase(createNewTmpWalletAction, (state, action) => {
         state.tmpWalletInfo = {
@@ -70,6 +71,12 @@ export const walletSlice = createSlice({
           ...state.walletInfo.caInfo[currentNetwork],
           [chainId]: caInfo,
         } as any;
+        console.log('wfs setCAInfo', state, 'action', action);
+        console.log('wfs setCAInfo currentNetwork', currentNetwork);
+        console.log('wfs setCAInfo cainfo', {
+          ...state.walletInfo.caInfo[currentNetwork],
+          [chainId]: caInfo,
+        });
       })
       .addCase(updateCASyncState, (state, action) => {
         const { chainId, networkType } = action.payload;
@@ -79,6 +86,10 @@ export const walletSlice = createSlice({
         const caInfo = state.walletInfo.caInfo[currentNetwork][chainId];
         if (!caInfo) throw new Error(WalletError.caAccountNotExists);
         state.walletInfo.caInfo[currentNetwork][chainId] = { ...caInfo, isSync: true };
+        console.log('wfs updateCASyncState', state, 'action', action);
+        console.log('wfs updateCASyncState currentNetwork', currentNetwork);
+        console.log('wfs updateCASyncState chainId', chainId);
+        console.log('wfs updateCASyncState cainfo', { ...caInfo, isSync: true });
       })
 
       .addCase(setManagerInfo, (state, action) => {
@@ -89,6 +100,10 @@ export const walletSlice = createSlice({
         if (!state.walletInfo?.AESEncryptMnemonic) throw new Error(WalletError.noCreateWallet);
         if (state.walletInfo.caInfo[currentNetwork]?.managerInfo) throw new Error(WalletError.caAccountExists);
         state.walletInfo.caInfo[currentNetwork] = { originChainId: state.originChainId, managerInfo };
+        console.log('wfs setManagerInfo', state, 'action', action);
+        console.log('wfs setManagerInfo currentNetwork', currentNetwork);
+        // console.log('setManagerInfo chainId', chainId);
+        console.log('wfs setManagerInfo cainfo', { originChainId: state.originChainId, managerInfo });
       })
       .addCase(changePin, (state, action) => {
         const { pin, newPin } = action.payload;
@@ -110,6 +125,10 @@ export const walletSlice = createSlice({
         checkPassword(state.walletInfo?.AESEncryptMnemonic, pin);
         if (!state.walletInfo?.AESEncryptMnemonic) throw new Error(WalletError.noCreateWallet);
         state.walletInfo.caInfo = { ...state.walletInfo.caInfo, [currentNetwork]: caInfo };
+        console.log('wfs setCAInfoType', state, 'action', action);
+        console.log('wfs setCAInfoType currentNetwork', currentNetwork);
+        // console.log('setCAInfoType chainId', chainId);
+        console.log('wfs setCAInfoType cainfo', { ...state.walletInfo.caInfo, [currentNetwork]: caInfo });
       })
       .addCase(getCaHolderInfoAsync.fulfilled, (state, action) => {
         const { nickName, userId, avatar, currentNetwork = 'MAINNET' } = action.payload || {};
@@ -155,6 +174,10 @@ export const walletSlice = createSlice({
         const caInfo = state.walletInfo.caInfo;
         if (caInfo?.[action.payload]) delete caInfo[action.payload];
         state.walletInfo.caInfo = caInfo;
+        console.log('wfs resetCaInfo', state, 'action', action);
+        // console.log('wfs resetCaInfo currentNetwork', currentNetwork);
+        // console.log('resetCaInfo chainId', chainId);
+        console.log('wfs resetCaInfo cainfo', caInfo);
       })
       .addCase(setCheckManagerExceed, (state, { payload }) => {
         const { network } = payload;

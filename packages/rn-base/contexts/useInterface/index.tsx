@@ -10,7 +10,7 @@ import Config from 'react-native-config';
 import useScheme from '../../hooks/useScheme';
 // import useNotify from '../../hooks/useNotifyAction';
 
-const INITIAL_STATE = {};
+const INITIAL_STATE = [{}, () => {}];
 const InterfaceContext = createContext<any>(INITIAL_STATE);
 
 export function useInterface(): [State, any] {

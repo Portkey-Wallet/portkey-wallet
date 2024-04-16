@@ -75,6 +75,11 @@ export default function DiscoverHome() {
               navigationService.navigate('QrScanner');
             },
           },
+          {
+            title: 'Chat Settings',
+            iconName: 'setting3',
+            onPress: () => navigationService.navigate('ChatSettingsPage'),
+          },
         ],
         formatType: 'dynamicWidth',
         customPosition: { right: pTd(8), top: (top || pageY) + 30 },

@@ -19,6 +19,7 @@ import SendPacketGroupPage from './SendPacketGroupPage';
 import RedPacketDetails from './RedPacketDetailsPage';
 import { Animated } from 'react-native';
 import SelectGroupMembersToTransferPage from './SelectGroupMembersToTransferPage';
+import ChatSettingsPage from './ChatSettingsPage';
 
 const RedPacketDetailsPageOptions = {
   transitionSpec: {
@@ -45,15 +46,10 @@ const RedPacketDetailsPageOptions = {
 const stackNav = [
   { name: 'ChatHomePage', component: ChatHomePage },
   { name: 'ChatCameraPage', component: ChatCameraPage },
-  {
-    name: 'ChatDetailsPage',
-    component: ChatDetailsPage,
-  },
-  {
-    name: 'ChatGroupDetailsPage',
-    component: ChatGroupDetailsPage,
-  },
+  { name: 'ChatDetailsPage', component: ChatDetailsPage },
+  { name: 'ChatGroupDetailsPage', component: ChatGroupDetailsPage },
   { name: 'CreateGroupPage', component: CreateGroupPage },
+  { name: 'ChatSettingsPage', component: ChatSettingsPage },
   { name: 'SearchPeoplePage', component: SearchPeoplePage },
   { name: 'NewChatHomePage', component: NewChatHomePage },
   { name: 'FindMorePeoplePage', component: FindMorePeoplePage },

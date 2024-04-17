@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import PageContainer from '@portkey-wallet/rn-components/components/PageContainer';
 import { TextM, TextXXXL } from '@portkey-wallet/rn-components/components/CommonText';
 import { pTd } from '@portkey-wallet/rn-components/utils/unit';
@@ -24,6 +24,7 @@ import GStyles from '@portkey-wallet/rn-components/theme/GStyles';
 import fonts from '@portkey-wallet/rn-components/theme/fonts';
 import { defaultCss } from '@portkey-wallet/rn-components/theme/default';
 import Environment from '@portkey-wallet/rn-inject';
+import navigationService from '@portkey-wallet/rn-inject-sdk';
 // import { request } from '@portkey-wallet/api/api-did';
 const scrollViewProps = { extraHeight: 120 };
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['transparent', 'transparent'];
@@ -47,6 +48,14 @@ export default function LoginPortkey() {
     [],
   );
 
+  const sdkLeftCallback = useCallback(() => {
+    if (BackType[loginType]) {
+      setLoginType(PageLoginType.referral);
+    } else {
+      navigationService.goBack();
+    }
+  }, [loginType]);
+
   return (
     <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={background}>
       <PageContainer
@@ -58,7 +67,13 @@ export default function LoginPortkey() {
         containerStyles={styles.containerStyles}
         safeAreaColor={safeAreaColor}
         scrollViewProps={scrollViewProps}
-        leftCallback={BackType[loginType] ? () => setLoginType(PageLoginType.referral) : undefined}>
+        leftCallback={
+          Environment.isAPP()
+            ? BackType[loginType]
+              ? () => setLoginType(PageLoginType.referral)
+              : undefined
+            : sdkLeftCallback
+        }>
         <Svg icon="logo-icon" size={pTd(60)} iconStyle={styles.logoIconStyle} color={defaultCss.bg1} />
         <View style={GStyles.center}>
           {!isMainnet && (

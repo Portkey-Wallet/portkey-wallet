@@ -9,7 +9,9 @@ export type AppRouteName =
   | 'CheckPin'
   | 'AssetsHome'
   | 'GuardianApproval'
-  | 'VerifierDetails';
+  | 'VerifierDetails'
+  | 'GuardianEdit'
+  | 'GuardianDetail';
 
 const RouteNameMapping: Record<AppRouteName, PortkeyEntries> = {
   LoginPortkey: PortkeyEntries.SIGN_IN_ENTRY,
@@ -22,6 +24,8 @@ const RouteNameMapping: Record<AppRouteName, PortkeyEntries> = {
   AssetsHome: PortkeyEntries.ASSETS_HOME_ENTRY,
   GuardianApproval: PortkeyEntries.GUARDIAN_APPROVAL_ENTRY,
   VerifierDetails: PortkeyEntries.VERIFIER_DETAIL_ENTRY,
+  GuardianDetail: PortkeyEntries.GUARDIAN_DETAIL_ENTRY,
+  GuardianEdit: PortkeyEntries.ADD_GUARDIAN_ENTRY,
 };
 
 export function mapRoute(appRouteName: AppRouteName) {

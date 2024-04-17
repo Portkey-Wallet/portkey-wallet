@@ -29,6 +29,7 @@ import { usePreventScreenCapture } from 'expo-screen-capture';
 import { pTd } from '@portkey-wallet/rn-components/utils/unit';
 import { BGStyles, FontStyles } from '@portkey-wallet/rn-components/theme/styles';
 import GStyles from '@portkey-wallet/rn-components/theme/GStyles';
+import Environment from '@portkey-wallet/rn-inject';
 
 // When wallet does not exist, DEFAULT_WALLET is populated as the default data
 const DEFAULT_WALLET: LoginQRData = {
@@ -62,7 +63,11 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
       if (pin) {
         try {
           dispatch(setCAInfoType({ caInfo, pin }));
-          navigationService.reset('Tab');
+          if (Environment.isSDK()) {
+            return navigationService.goBack();
+          } else {
+            return navigationService.reset('Tab');
+          }
         } catch (error) {
           CommonToast.failError(error);
         }

@@ -17,9 +17,10 @@ import QrScanner from 'pages/QrScanner';
 import GuardianHome from '@portkey-wallet/rn-biz-components/biz-components/My/Guardian/GuardianHome';
 import { AppRegistry, ComponentProvider } from 'react-native';
 import Biometric from 'pages/My/Biometric';
-import AddGuardian from 'pages/Guardian/GuardianManage/AddGuardian';
+// import AddGuardian from 'pages/Guardian/GuardianManage/AddGuardian';
+import AddGuardian from '@portkey-wallet/rn-biz-components/biz-components/My/Guardian/GuardianEdit';
 import ModifyGuardian from 'pages/Guardian/GuardianManage/ModifyGuardian';
-import GuardianDetail from 'pages/Guardian/GuardianDetail';
+import GuardianDetail from '@portkey-wallet/rn-biz-components/biz-components/My/Guardian/GuardianDetail';
 import ReceiveTokenPage from 'pages/Assets/ReceiveToken';
 // import AssetsHome from 'pages/Assets/Home/AssetsHome';
 import PaymentSecurityList from 'pages/My/WalletSecurity/PaymentSecurity/PaymentSecurityHome';
@@ -133,9 +134,21 @@ const initEntries = () => {
   );
 
   // guardian manage
-  entryConfig.set(PortkeyEntries.GUARDIAN_HOME_ENTRY, () => ReduxProvider(GuardianHome as React.ComponentType<any>));
-  entryConfig.set(PortkeyEntries.GUARDIAN_DETAIL_ENTRY, () => GuardianDetail);
-  entryConfig.set(PortkeyEntries.ADD_GUARDIAN_ENTRY, () => AddGuardian);
+  entryConfig.set(PortkeyEntries.GUARDIAN_HOME_ENTRY, () =>
+    ReduxProvider(GuardianHome as React.ComponentType<any>, {
+      routerParams: { from: PortkeyEntries.GUARDIAN_HOME_ENTRY },
+    }),
+  );
+  entryConfig.set(PortkeyEntries.GUARDIAN_DETAIL_ENTRY, () =>
+    ReduxProvider(GuardianDetail as React.ComponentType<any>, {
+      routerParams: { from: PortkeyEntries.GUARDIAN_HOME_ENTRY },
+    }),
+  );
+  entryConfig.set(PortkeyEntries.ADD_GUARDIAN_ENTRY, () =>
+    ReduxProvider(AddGuardian as React.ComponentType<any>, {
+      routerParams: { from: PortkeyEntries.GUARDIAN_HOME_ENTRY },
+    }),
+  );
   entryConfig.set(PortkeyEntries.MODIFY_GUARDIAN_ENTRY, () => ModifyGuardian);
 
   // webview

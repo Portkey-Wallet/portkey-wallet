@@ -43,8 +43,11 @@ const nativeFetch = async <T>(
   if (res?.length > 0) {
     try {
       const t = JSON.parse(res) as ResultWrapper<T>;
-      if (t?.result && typeof t.result === 'string') {
-        return JSON.parse(t.result);
+      if (t?.result) {
+        if (typeof t.result === 'string') {
+          return JSON.parse(t.result);
+        }
+        return t.result;
       }
       if (t.errCode === '401') {
         return { message: 'unauthorized', status: 401 };

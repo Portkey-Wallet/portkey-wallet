@@ -23,7 +23,8 @@ import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type'
 import { FontStyles } from '@portkey-wallet/rn-base/assets/theme/styles';
 import Loading from '@portkey-wallet/rn-components/components/Loading';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
-import useRouterParams, { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
+// import useRouterParams, { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
+import { useRouterParams } from '@portkey-wallet/rn-inject-sdk';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { useAppDispatch } from '@portkey-wallet/rn-base/store/hooks';
 import { setPreGuardianAction } from '@portkey-wallet/store/store-ca/guardians/actions';
@@ -41,7 +42,6 @@ import GuardianAccountItem from '../components/GuardianAccountItem';
 import { request } from '@portkey-wallet/api/api-did';
 import verificationApiConfig from '@portkey-wallet/api/api-did/verification';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { checkIsLastLoginAccount } from '@portkey-wallet/utils/guardian';
 import { ChainId } from '@portkey-wallet/types';
 import { useRefreshGuardiansList } from '@portkey-wallet/rn-base/hooks/guardian';
@@ -55,6 +55,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { TAppleAuthentication } from '@portkey-wallet/rn-base/types/authentication';
 import { useLoginModeList } from '@portkey-wallet/rn-base/hooks/loginMode';
 import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
+import Environment from '@portkey-wallet/rn-inject';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
@@ -74,11 +75,12 @@ const GuardianEdit: React.FC = () => {
   const originChainId = useOriginChainId();
   const refreshGuardiansList = useRefreshGuardiansList();
 
-  const {
-    guardian: editGuardian,
-    isEdit = false,
-    accelerateChainId = originChainId,
-  } = useRouterEffectParams<RouterParams>();
+  // const {
+  //   guardian: editGuardian,
+  //   isEdit = false,
+  //   accelerateChainId = originChainId,
+  // } = useRouterEffectParams<RouterParams>();
+  const { guardian: editGuardian, isEdit = false, accelerateChainId = originChainId } = useRouterParams();
 
   const { verifierMap, userGuardiansList } = useGuardiansInfo();
   const verifierList = useMemo(() => (verifierMap ? Object.values(verifierMap) : []), [verifierMap]);
@@ -88,7 +90,6 @@ const GuardianEdit: React.FC = () => {
   const [account, setAccount] = useState<string>();
   const [guardianAccountError, setGuardianAccountError] = useState<ErrorType>({ ...INIT_HAS_ERROR });
   const [verifierError, setVerifierError] = useState<ErrorType>({ ...INIT_NONE_ERROR });
-  const { localPhoneCountryCode: country } = usePhoneCountryCode();
   const { appleSign } = useAppleAuthentication();
   const { googleSign } = useGoogleAuthentication();
   const { telegramSign } = useTelegramAuthentication();
@@ -101,7 +102,7 @@ const GuardianEdit: React.FC = () => {
 
   const thirdPartyInfoRef = useRef<thirdPartyInfoType>();
   const { approveParams } = useRouterParams<NavigateMultiLevelParams>();
-  const isFocused = useIsFocused();
+  const isFocused = Environment.isAPP() ? useIsFocused() : false;
   const onEmitDapp = useCallback(() => {
     if (!isFocused) return;
     approveParams?.isDiscover && dispatch(changeDrawerOpenStatus(true));
@@ -145,12 +146,8 @@ const GuardianEdit: React.FC = () => {
       }
       let isValid = true;
       let guardianAccount: string | undefined;
-      if ([LoginType.Email, LoginType.Phone].includes(selectedType.value)) {
-        if (selectedType.value === LoginType.Phone && !isEdit) {
-          guardianAccount = `+${country?.code}${account}`;
-        } else {
-          guardianAccount = account;
-        }
+      if (LoginType.Email == selectedType.value) {
+        guardianAccount = account;
       } else {
         // LoginType.Apple & LoginType.Google & LoginType.Telegram
         guardianAccount = isEdit ? editGuardian?.guardianAccount : thirdPartyInfoRef.current?.id;
@@ -179,7 +176,7 @@ const GuardianEdit: React.FC = () => {
 
       return isValid;
     },
-    [account, country?.code, editGuardian, isEdit, selectedType, selectedVerifier?.id],
+    [account, editGuardian, isEdit, selectedType, selectedVerifier?.id],
   );
 
   const thirdPartyConfirm = useCallback(
@@ -224,10 +221,6 @@ const GuardianEdit: React.FC = () => {
     const guardianType = selectedType.value;
     let guardianAccount = account;
     let showGuardianAccount;
-    if (guardianType === LoginType.Phone) {
-      guardianAccount = `+${country.code}${account}`;
-      showGuardianAccount = `+${country.code} ${account}`;
-    }
     if (guardianType === LoginType.Email) {
       const guardianErrorMsg = checkEmail(account);
       if (guardianErrorMsg) {
@@ -327,7 +320,6 @@ const GuardianEdit: React.FC = () => {
     checkCurGuardianRepeat,
     userGuardiansList,
     refreshGuardiansList,
-    country.code,
     thirdPartyConfirm,
     originChainId,
     accelerateChainId,
@@ -630,7 +622,6 @@ const GuardianEdit: React.FC = () => {
   }, [
     account,
     clearAccount,
-    country,
     editGuardian,
     firstName,
     guardianAccountError,

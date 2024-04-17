@@ -55,6 +55,31 @@ RCT_EXPORT_METHOD(navigateTo:(NSString *)entry
     });
 }
 
+RCT_EXPORT_METHOD(reset:(NSString *)targetEntry
+                  from:(NSString *)from
+                  targetScene:(NSString *)targetScene
+                  params:(NSDictionary *)params)
+{
+    if (targetEntry.length <= 0) return;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString *containerId = [[NSUUID UUID] UUIDString] ?: @"";
+        NSMutableDictionary *props = [[NSMutableDictionary alloc] initWithDictionary:@{
+            @"from": from ?: @"",
+            @"targetScene": targetScene ?: @"",
+            @"containerId": containerId,
+        }];
+        if (params) {
+            [props addEntriesFromDictionary:params];
+        }
+        PortkeySDKRNViewController *vc = [[PortkeySDKRNViewController alloc] initWithModuleName:targetEntry initialProperties:props];
+        vc.containerId = containerId;
+        
+        UIViewController *topViewController = [self topViewController];
+        UINavigationController *navigationController = topViewController.navigationController;
+        navigationController.viewControllers = @[vc];
+    });
+}
+
 RCT_EXPORT_METHOD(navigateToWithOptions:(NSString *)entry
                              launchMode:(NSString *)launchMode
                                    from:(NSString *)from

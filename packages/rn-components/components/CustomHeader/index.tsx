@@ -10,6 +10,7 @@ import { useLanguage } from '@portkey-wallet/rn-base/i18n/hooks';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import Touchable from '../Touchable';
 import { ViewStyleType } from '../../theme/type';
+import Environment from '@portkey-wallet/rn-inject';
 export const SafeAreaColorMapType = {
   white: '',
   blue: '',
@@ -60,7 +61,9 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
   const navigation = useNavigation();
 
   // if can go back
-  const isCanGoBack = useMemo(() => navigation.canGoBack(), [navigation]);
+  const isCanGoBack = useMemo(() => {
+    return Environment.isAPP() ? navigation.canGoBack() : true;
+  }, [navigation]);
 
   const leftIcon = useMemo(() => {
     const isClose = leftIconType === 'close';

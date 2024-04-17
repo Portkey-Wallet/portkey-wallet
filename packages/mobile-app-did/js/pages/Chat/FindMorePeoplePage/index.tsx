@@ -30,7 +30,7 @@ import OfficialChatGroup from '../components/OfficialChatGroup';
 const FindMorePeople = () => {
   const iptRef = useRef<TextInput>(null);
   useInputFocus(iptRef);
-  const { userId = '' } = useCurrentUserInfo() || {};
+  const { userId = '' } = useCurrentUserInfo();
   const navToChatDetails = useJumpToChatDetails();
   const [keyword, setKeyword] = useState('');
   const [loading, setLoading] = useState(false);

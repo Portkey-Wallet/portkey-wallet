@@ -158,7 +158,7 @@ export default function SendTransactions() {
   }, [getTokenPrice, getTokensPrice, payload, isMainnet, txParams.paramsOption?.symbol, defaultToken.symbol]);
 
   const renderAccountInfo = useMemo(() => {
-    if (payload?.contractAddress || typeof payload?.contractAddress !== 'string') return <></>;
+    if (payload?.contractAddress || typeof payload?.contractAddress !== 'string') return null;
     return (
       <div className="account flex">
         <div className="name">{userInfo?.nickName}</div>

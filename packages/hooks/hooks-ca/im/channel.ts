@@ -62,7 +62,7 @@ export const useSendChannelMessage = () => {
   const dispatch = useAppCommonDispatch();
   const { networkType } = useCurrentNetworkInfo();
   const { relationId, getRelationId } = useRelationId();
-  const { nickName = '' } = useCurrentUserInfo() || {};
+  const { nickName = '' } = useCurrentUserInfo();
 
   const sendMessageToPeople = useCallback(
     async ({

@@ -19,6 +19,7 @@ import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 import { getCAHolderManagerInfo } from '@portkey-wallet/graphql/contract/queries';
 import { ManagerInfo, Maybe } from '@portkey-wallet/graphql/contract/__generated__/types';
+import { DEFAULT_USER_INFO } from '@portkey-wallet/store/store-ca/wallet/slice';
 
 export interface CurrentWalletType extends WalletInfoType, CAInfoType {
   caHash?: string;
@@ -70,7 +71,7 @@ export const useCurrentUserInfo = (forceUpdate?: boolean) => {
     if (forceUpdate) dispatch(getCaHolderInfoAsync());
   }, [currentNetwork, dispatch, forceUpdate, userInfo]);
 
-  return userInfo?.[currentNetwork] || { nickName: '', userId: '', avatar: '' };
+  return userInfo?.[currentNetwork] || DEFAULT_USER_INFO;
 };
 
 export const useCurrentWalletInfo = () => {

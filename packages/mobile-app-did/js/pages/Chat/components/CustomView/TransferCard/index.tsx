@@ -17,7 +17,7 @@ import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ActivityTypeEnum } from '@portkey-wallet/store/store-ca/activity/type';
 
 function TransferCard(props: MessageProps<ChatMessage>) {
-  const { userId } = useCurrentUserInfo() || {};
+  const { userId } = useCurrentUserInfo();
 
   const { currentMessage } = props;
   const { parsedContent } = currentMessage || {};

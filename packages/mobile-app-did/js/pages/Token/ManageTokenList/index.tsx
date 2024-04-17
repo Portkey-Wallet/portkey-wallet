@@ -119,6 +119,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
 
   // search token with keyword
   useEffect(() => {
+    if (!debounceWord) setFilterTokenList([]);
     searchToken();
   }, [debounceWord, searchToken]);
 

@@ -8,14 +8,14 @@ import { useCurrentCaInfo, useCurrentUserInfo } from '@portkey-wallet/hooks/hook
 import ProfilePortkeyIDSection from 'pages/My/components/ProfileIDSection';
 import ProfileHeaderSection from 'pages/My/components/ProfileHeaderSection';
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
-
+import { useIsShowDeletion } from '@portkey-wallet/hooks/hooks-ca/account';
 import { defaultColors } from 'assets/theme';
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { ChainId } from '@portkey-wallet/types';
 import { windowHeight } from '@portkey-wallet/utils/mobile/device';
 import { headerHeight } from 'components/CustomHeader/style/index.style';
 import { FontStyles } from 'assets/theme/styles';
-import { useIsShowDeletion } from 'hooks/account';
+
 import { isIOS } from '@rneui/base';
 import { pTd } from 'utils/unit';
 const PageHeight = windowHeight - headerHeight;

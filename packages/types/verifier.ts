@@ -56,6 +56,7 @@ export enum OperationTypeEnum {
   modifyTransferLimit = 9,
   transferApprove = 10,
   unsetLoginAccount = 11,
+  revokeAccount = 12,
 }
 
 export interface VerifierInfo {

@@ -18,7 +18,7 @@ import useLogOut from 'hooks/useLogOut';
 import React, { useCallback } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import { View } from 'react-native';
-import { removeManager } from 'utils/guardian';
+import { removeManager } from '@portkey-wallet/utils/guardian';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['blue', 'gray'];

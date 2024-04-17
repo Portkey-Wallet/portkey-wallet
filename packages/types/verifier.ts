@@ -27,6 +27,7 @@ export enum VerificationType {
   setLoginAccountByApprove,
   unsetLoginAccount,
   unsetLoginAccountByApprove,
+  revokeAccount,
 }
 
 export enum ApprovalType {

@@ -21,6 +21,7 @@ import { View } from 'react-native';
 import { removeManager } from '@portkey-wallet/utils/guardian';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
+import { useGetCurrentLoginAccountVerifyFunc } from 'hooks/verification';
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['blue', 'gray'];
 
 const TipMap = {
@@ -44,6 +45,7 @@ const ScrollViewProps = { disabled: true };
 export default function AccountCancelation() {
   const { caHash, address: managerAddress, managerInfo } = useCurrentWalletInfo();
   const getCurrentCAContract = useGetCurrentCAContract();
+  const currentLoginAccountVerifyFunc = useGetCurrentLoginAccountVerifyFunc();
   const { appleSign } = useAppleAuthentication();
   const logout = useLogOut();
 

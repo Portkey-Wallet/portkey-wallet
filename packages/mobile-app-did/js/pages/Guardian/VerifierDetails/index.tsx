@@ -186,12 +186,19 @@ export default function VerifierDetails() {
             }
             break;
 
+          case VerificationType.revokeAccount: {
+            //TODO: CHANGE ACTION
+            console.log('revokeAccount!!');
+            break;
+          }
+
           case VerificationType.communityRecovery: {
             if (autoLogin) {
               registerAccount({ verifierInfo, codeResult: requestCodeResult });
               break;
             }
           }
+
           // eslint-disable-next-line no-fallthrough
           default:
             setGuardianStatus({

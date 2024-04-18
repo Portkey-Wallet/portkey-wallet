@@ -4,23 +4,16 @@ import { ChainId } from '@portkey-wallet/types';
 import { removeManager } from '@portkey-wallet/utils/guardian';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { SendOptions } from '@portkey-wallet/contracts/types';
-
-const AlertMap = {
-  Asset:
-    'There are remaining assets in your account. To proceed, please first transfer all assets out of your account.',
-  Guardian: `Your Apple ID is set as a guardian by other accounts. To proceed, please first remove your Apple ID's linked guardian.`,
-  'Login Device':
-    'Your account is logged in on other devices. To proceed, please first log out there or remove the login device.',
-};
+import { ACCOUNT_CANCELATION_ALERT_MAP } from '@portkey-wallet/constants/constants-ca/wallet';
 
 // TODO: type change
 export async function checkIsValidateDeletionAccount(): Promise<string[]> {
   const req = await request.wallet.deletionCheck();
   const { validatedAssets, validatedDevice, validatedGuardian } = req || {};
   const list: string[] = [];
-  if (!validatedAssets) list.push(AlertMap.Asset);
-  if (!validatedDevice) list.push(AlertMap['Login Device']);
-  if (!validatedGuardian) list.push(AlertMap.Guardian);
+  if (!validatedAssets) list.push(ACCOUNT_CANCELATION_ALERT_MAP.Asset);
+  if (!validatedDevice) list.push(ACCOUNT_CANCELATION_ALERT_MAP['Login Device']);
+  if (!validatedGuardian) list.push(ACCOUNT_CANCELATION_ALERT_MAP.Guardian);
   return list;
 }
 
@@ -44,7 +37,7 @@ export async function sendRevokeVerifyCodeAsync(params: {
   chainId: string;
   type: keyof typeof LoginType;
 }) {
-  await request.wallet.sendRevokeVerifyCode({ params });
+  return request.wallet.sendRevokeVerifyCode({ params });
 }
 
 export async function deleteLoginAccount({

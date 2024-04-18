@@ -45,3 +45,11 @@ export const CONTACT_PERMISSION_LIST = [
     value: ContactPermissionEnum.NOBODY,
   },
 ];
+
+export const SOCIAL_GUARDIAN_TYPE: LoginType[] = [
+  LoginType.Apple,
+  LoginType.Google,
+  LoginType.Telegram,
+  LoginType.Twitter,
+  LoginType.Facebook,
+];

@@ -36,19 +36,24 @@ type TelegramSignProps = {
 };
 
 function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
+  // console.log('Telegram Buffer')
   const [loading, setLoading] = useState(true);
   const { networkType, apiUrl } = useCurrentNetworkInfo();
   const [uri, go] = useState(`${OpenLogin}${PATHS.Load}&network=${networkType}`);
   const ref = useRef<WebView>();
   const onLoadStart = useCallback(
     ({ nativeEvent }: WebViewNavigationEvent) => {
+      console.log('Telegram onLoadStart', nativeEvent.url);
       try {
         if (nativeEvent.url.includes(TGAuthPush)) {
+          console.log('Telegram onLoadStart 1');
           setLoading(true);
         } else if (nativeEvent.url.includes(TGAuthResult)) {
+          console.log('Telegram onLoadStart 2');
           setLoading(true);
           go(`${apiUrl}${PATHS.CallPortkey}?${parseTGAuthResult(nativeEvent.url)}`);
         } else if (nativeEvent.url.includes(TGAuthCallBack)) {
+          console.log('Telegram onLoadStart 3');
           try {
             if (nativeEvent.url.includes(TGAuthCallBack)) {
               const parseData = parseUrl(nativeEvent.url);
@@ -70,6 +75,7 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
           }
         }
       } catch (error) {
+        console.error('Telegram onLoadStart error', error);
         onReject(error);
         OverlayModal.hide(false);
       }

@@ -12,7 +12,7 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { isWalletUnlocked } from 'model/verify/core';
 import { PortkeyModulesEntity } from 'service/native-modules';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
-import useNavigation, { useNewIntent } from '@portkey-wallet/rn-core/router/hook';
+import { useNavigation, useNewIntent } from '@portkey-wallet/rn-core/router/hook';
 
 export default function AccountSettings() {
   const biometricsReady = useBiometricsReady();

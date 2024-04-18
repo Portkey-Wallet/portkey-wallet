@@ -248,12 +248,9 @@ export default function GuardianApproval() {
         }
         break;
       default:
-        console.log('wfs goBack 8');
         navigationService.goBack();
         break;
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [approvalType, guardianItem, approveParams]);
   const onRequestOrSetPin = useOnRequestOrSetPin();
 
@@ -264,9 +261,7 @@ export default function GuardianApproval() {
         userGuardiansList as UserGuardianItem[],
       ) as GuardiansApproved,
     );
-    console.log('wfs goBack 9');
     navigationService.goBack();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guardiansStatus, userGuardiansList]);
   const registerAccount = useCallback(() => {
     onRequestOrSetPin({

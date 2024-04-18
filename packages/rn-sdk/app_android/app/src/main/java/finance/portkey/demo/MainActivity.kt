@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import finance.portkey.aar.PortKeySDKHolder
 import finance.portkey.aar.wallet.PortkeyWallet
 import finance.portkey.aar.wallet.callCaContractMethodTest
 import finance.portkey.aar.wallet.runTestCases
@@ -39,6 +40,7 @@ import finance.portkey.demo.ui.composable.PortkeyDialogController.PortkeyDialog
 import finance.portkey.demo.ui.composable.SimpleChoiceMaker
 import finance.portkey.demo.ui.theme.MyRNApplicationTheme
 import finance.portkey.demo.ui.theme.Purple40
+import finance.portkey.lib.BuildConfig
 import finance.portkey.lib.components.logic.PORTKEY_CONFIG_ENDPOINT_URL
 import finance.portkey.lib.components.logic.PortkeyMMKVStorage
 import finance.portkey.lib.entry.usePortkeyEntryWithParams
@@ -255,16 +257,30 @@ class MainActivity : ComponentActivity() {
         entryName: String = finance.portkey.core.PortkeyEntries.SIGN_IN_ENTRY.entryName,
         params: Bundle? = null
     ) {
-        if (entryName != finance.portkey.core.PortkeyEntries.SIGN_IN_ENTRY.entryName && entryName != finance.portkey.core.PortkeyEntries.TEST.entryName) {
-            if (!PortkeyWallet.isWalletUnlocked()) {
-                showWarnDialog(
-                    mainTitle = "Error 😅",
-                    subTitle = "this operation needs wallet unlocked, and it seems that you did not unlock your wallet yet, click button below to enter login page.",
-                ) {
-                    jumpToActivity()
-                }
-                return
-            }
+//        if (entryName != finance.portkey.core.PortkeyEntries.SIGN_IN_ENTRY.entryName && entryName != finance.portkey.core.PortkeyEntries.TEST.entryName) {
+//            if (!PortkeyWallet.isWalletUnlocked()) {
+//                showWarnDialog(
+//                    mainTitle = "Error 😅",
+//                    subTitle = "this operation needs wallet unlocked, and it seems that you did not unlock your wallet yet, click button below to enter login page.",
+//                ) {
+//                    jumpToActivity()
+//                }
+//                return
+//            }
+//        }
+        if(!PortKeySDKHolder.initialized){
+            showWarnDialog(
+                mainTitle = "Error 😅",
+                subTitle = "sdk is initializing... please try again later.",
+                positiveText = "Ok",
+            )
+//            if(BuildConfig.DEBUG)
+//                Toast.makeText(
+//                    applicationContext,
+//                    "sdk is initializing...",
+//                    Toast.LENGTH_LONG
+//                ).show()
+            return
         }
         usePortkeyEntryWithParams(entryName, params) {
             if (it.getString("status") != "cancel") {
@@ -286,12 +302,16 @@ class MainActivity : ComponentActivity() {
     private fun showWarnDialog(
         mainTitle: String = "Warning",
         subTitle: String = "",
+        positiveText: String = "",
         then: () -> Unit = {}
     ) {
         PortkeyDialogController.show(
             DialogProps().apply {
                 this.mainTitle = mainTitle
                 this.subTitle = subTitle
+                if(positiveText != "") {
+                    this.positiveText = positiveText
+                }
                 this.useSingleConfirmButton = true
                 positiveCallback = then
             }

@@ -18,7 +18,7 @@ const ThrottleMap: { [key: string]: number } = {};
 function setTopLevelNavigator(navigatorRef: NavigationContainerRef<any>) {
   _navigator = navigatorRef;
 }
-
+function setRouteName(routeName: any) {}
 function getCurrentRouteAndRoutes() {
   const { routes } = _navigator.getState();
   let currentRoute;

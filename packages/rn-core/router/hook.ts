@@ -69,7 +69,6 @@ export function useIsFocused(): boolean {
   const [isFocused, setIsFocused] = useState(navigation.isFocused());
 
   const valueToReturn = navigation.isFocused();
-
   if (isFocused !== valueToReturn) {
     // If the value has changed since the last render, we need to update it.
     // This could happen if we missed an update from the event listeners during re-render.
@@ -80,9 +79,13 @@ export function useIsFocused(): boolean {
   }
 
   useEffect(() => {
-    const unsubscribeFocus = navigation.addListener('focus', () => setIsFocused(true));
+    const unsubscribeFocus = navigation.addListener('focus', () => {
+      setIsFocused(true);
+    });
 
-    const unsubscribeBlur = navigation.addListener('blur', () => setIsFocused(false));
+    const unsubscribeBlur = navigation.addListener('blur', () => {
+      setIsFocused(false);
+    });
 
     return () => {
       unsubscribeFocus();

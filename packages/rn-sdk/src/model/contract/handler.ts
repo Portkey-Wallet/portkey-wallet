@@ -477,6 +477,7 @@ export const callRemoveManagerMethod = async () => {
     console.log('logout success', resp);
     resetStore();
   } else {
+    console.error(resp);
     throw resp?.error?.message || '';
   }
   return await removeManager(caContract, managerAddress, caHash);

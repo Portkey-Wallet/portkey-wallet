@@ -1,13 +1,15 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { RouterContext, RouterParams, defaultRouterParams } from './context';
 import router from '.';
 import { PortkeyEntries } from './types';
+import { initRouter } from './util';
+import { styles } from './styles';
 import { useCredentials } from '@portkey-wallet/rn-base/hooks/store';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { sleep } from '@portkey-wallet/utils';
-import navigationService, { useNavigation } from '@portkey-wallet/rn-inject-sdk';
-import { isNeedPinPage, mapRoute } from './map';
+import navigationService, { useFocusEffect, useNavigation } from '@portkey-wallet/rn-inject-sdk';
+import { isNeedUnlockPage, mapRoute } from './map';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 
 const RouterProvider = ({ children, value }: { children: any; value?: RouterParams }) => {
@@ -19,52 +21,52 @@ const RouterProvider = ({ children, value }: { children: any; value?: RouterPara
 
   return (
     <RouterContext.Provider value={value ?? defaultRouterParams}>
-      <BackHandler>{children}</BackHandler>
+      <ViewStub>{children}</ViewStub>
     </RouterContext.Provider>
   );
 };
-function BackHandler({ children }: { children: any }) {
+function ViewStub({ children }: { children: any }) {
   const navigation = useNavigation();
-
   const { from } = useContext(RouterContext) as { from: PortkeyEntries };
-  const isNeedPinRoute = useRef(isNeedPinPage(from));
-  const isLoginPage = useRef(from === mapRoute('LoginPortkey'));
+  const isNeedUnlockRoute = useRef(isNeedUnlockPage(from));
+  const isLoginPage = useRef(from === mapRoute('LoginPortkey') || from === mapRoute('SignupPortkey'));
   const isSecurityLockPage = useRef(from === mapRoute('SecurityLock'));
   const [isInteractionDisabled, setIsInteractionDisabled] = useState(false);
   const credentials = useCredentials();
   const wallet = useCurrentWalletInfo();
+
   const { address, caHash } = wallet;
   const init = useCallback(async () => {
     try {
       if (address) {
-        // have pin, do nothing
+        // wallet is available and unlocked
         if (credentials && caHash) {
           console.log('wallet!->unlocked', 'from', from, 'router pages', router.pages);
           // login/signUp/scanCode...，go back.
-          if (!isNeedPinRoute.current) {
+          if (isLoginPage.current) {
             setIsInteractionDisabled(true);
             CommonToast.success('Already Login!');
             await sleep(800);
-            console.log('wfs goBack 17', navigation.isFocused(), 'from', from, router.peek()?.name);
-            console.log('wfs goBack 17 pages', router.pages);
             if (navigation.isFocused()) {
               navigationService.goBack();
             }
             return;
           }
+          // wallet is available, but locked
         } else {
           console.log('wallet!->locked', 'from', from, 'router pages', router.pages);
           // no pin, goto security lock.
-          if (isNeedPinRoute.current || isLoginPage.current) {
+          if (isNeedUnlockRoute.current || isLoginPage.current) {
             console.log('goto SecurityLock 2');
             navigationService.navigate('SecurityLock');
           }
         }
+        // wallet is unavailable
       } else {
         console.log('no wallet', 'from', from, 'router pages', router.pages);
         // no wallet, so goto login page
-        // (but signUp page/scanQrcode page don't need goto login page)
-        if (isNeedPinRoute.current) {
+        // (but signUp page/scanQrcode etc page don't need goto login page)
+        if (isNeedUnlockRoute.current || isSecurityLockPage.current) {
           navigationService.reset('LoginPortkey');
         }
       }
@@ -72,32 +74,20 @@ function BackHandler({ children }: { children: any }) {
       console.log('route init', e);
     }
   }, [address, credentials, caHash]);
+
+  useEffect(() => {
+    // check if wallet is available. check if wallet is unlock.
+    init();
+  }, [init]);
+
   useEffect(() => {
     // set current route name for navigationService instance
-    console.log('init timing', 'from', from, 'router pages', router.pages);
-    if (navigation.isFocused()) {
-      console.log('init timing, set current route');
-      navigationService.setRouteName(from);
-    }
-    init();
+    navigationService.setRouteName(from);
     return () => {
-      console.log('destroy timing, set current route', 'from', from, 'router pages', router.pages);
       navigationService.setRouteName(router.peek()?.name);
     };
-  }, [init]);
-  useEffect(() => {
-    const unsubscribeFocus = navigation.addListener('focus', () => {
-      console.log('wfs listener1 focus call', from);
-    });
-
-    const unsubscribeBlur = navigation.addListener('blur', () => {
-      console.log('wfs listener1 blur call', from);
-    });
-    return () => {
-      unsubscribeFocus();
-      unsubscribeBlur();
-    };
   }, []);
+
   return (
     <View style={styles.container}>
       {children}
@@ -105,18 +95,5 @@ function BackHandler({ children }: { children: any }) {
     </View>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'transparent',
-  },
-});
-function initRouter(value: { from: string; params: any } | undefined) {
-  const currentPage = value?.from as PortkeyEntries;
-  router.push({ name: currentPage, params: value?.params });
-  console.log('wfs current route list', router.pages);
-}
+
 export default RouterProvider;

@@ -86,8 +86,8 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         navigateBackWithResult(thenFinish = false)
+        super.onDestroy()
     }
 
     private fun getCallbackId(): String = callbackId

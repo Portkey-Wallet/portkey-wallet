@@ -24,14 +24,17 @@ private fun generateSystemCallbackData(): WritableMap {
     }
 }
 internal object NavigationHolder {
-    private val naviStack = LinkedList<WeakReference<BasePortkeyReactActivity>>()
-    private val entryMap = HashMap<String, WeakReference<BasePortkeyReactActivity>>();
+    val naviStack = LinkedList<WeakReference<BasePortkeyReactActivity>>()
+    val entryMap = HashMap<String, WeakReference<BasePortkeyReactActivity>>();
     private val callbackMap: MutableMap<String, Callback> = mutableMapOf()
     private val nativeCallbackMap: MutableMap<String, (WritableMap) -> Unit> = mutableMapOf()
 
     fun clear(){
         naviStack.forEach {
-            it.get()?.finish()
+            it.get()?.let {act->
+                act.finish()
+            }
+
         }
 //        naviStack.clear()
 //        entryMap.clear()

@@ -27,6 +27,8 @@ import GStyles from '@portkey-wallet/rn-base/assets/theme/GStyles';
 import useLatestIsFocusedRef from '@portkey-wallet/rn-base/hooks/useLatestIsFocusedRef';
 import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
+import Environment from '@portkey-wallet/rn-inject';
+
 export default function SecurityLock() {
   const { biometrics } = useUser();
   const biometricsReady = useBiometricsReady();
@@ -58,7 +60,6 @@ export default function SecurityLock() {
         }
       }, 100);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSyncCAInfo]);
   const handleRouter = useThrottleCallback(
     (pinInput: string) => {
@@ -161,12 +162,19 @@ export default function SecurityLock() {
     [verifyBiometrics],
   );
   useEffectOnce(() => {
+    if (Environment.isSDK()) {
+      verifyBiometrics();
+      return;
+    }
     if (!navigation.canGoBack()) {
       console.log('invoke canGoBack');
       verifyBiometrics();
     }
   });
   useEffect(() => {
+    if (Environment.isSDK()) {
+      return;
+    }
     const listener = AppState.addEventListener('change', handleAppStateChange);
     return () => {
       timer.current?.remove();

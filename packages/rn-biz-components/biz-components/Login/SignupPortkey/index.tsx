@@ -61,7 +61,6 @@ export default function SignupPortkey() {
             ? () => setLoginType(PageLoginType.referral)
             : () => {
                 myEvents.clearLoginInput.emit();
-                console.log('wfs goBack 12');
                 navigationService.goBack();
               }
         }>

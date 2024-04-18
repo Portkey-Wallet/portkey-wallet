@@ -57,6 +57,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
 
   // theme change
   const styles = themeType === 'blue' ? blueStyles : whitStyles;
+  console.log('useIsFocused2');
   const isFocused = useIsFocused();
   const navigation = useNavigation();
 

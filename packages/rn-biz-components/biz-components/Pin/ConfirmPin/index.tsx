@@ -140,7 +140,6 @@ export default function ConfirmPin() {
       }}
       leftCallback={() => {
         myEvents.clearSetPin.emit('clearSetPin');
-        console.log('wfs goBack 15');
         navigationService.goBack();
       }}
       containerStyles={styles.container}

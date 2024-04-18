@@ -78,7 +78,6 @@ export default function SetPin() {
 
     if (!autoLogin && managerInfo && MessageMap[managerInfo.verificationType])
       return navigationService.navigate(RouterMap[managerInfo.verificationType]);
-    console.log('wfs goBack 16');
     navigationService.goBack();
   }, [autoLogin, checkRouteExistInRouteStack, managerInfo, oldPin]);
   return (

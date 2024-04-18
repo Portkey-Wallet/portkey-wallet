@@ -1,4 +1,5 @@
 import { stringify } from 'query-string';
+import { Buffer } from 'buffer';
 
 export enum TG_FUN {
   LoginCancel = 'tg_loginCancel',
@@ -73,6 +74,7 @@ export const TGAuthCallBack = 'auth-callback';
 
 export function parseTGAuthResult(url: string) {
   const tgAuthResult = Buffer.from(url.split(TGAuthResult)[1], 'base64').toString('utf8');
+  console.log('Telegram parseTGAuthResult', stringify(JSON.parse(tgAuthResult)));
   return stringify(JSON.parse(tgAuthResult));
 }
 

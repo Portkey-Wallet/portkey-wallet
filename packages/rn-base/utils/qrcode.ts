@@ -18,7 +18,6 @@ export enum InvalidQRCodeText {
 
 export function invalidQRCode(text: InvalidQRCodeText, isBack?: boolean) {
   CommonToast.fail(text);
-  console.log('wfs goBack 6');
   isBack && navigationService.goBack();
 }
 
@@ -61,7 +60,6 @@ export function handleAelfQrCode(data: string, previousRouteInfo: RouteInfoType)
     };
     navigationService.navigate('SendHome', params);
   } else {
-    console.log('wfs goBack 7');
     navigationService.goBack();
     AssetsOverlay.showAssetList({ toAddress: data });
   }

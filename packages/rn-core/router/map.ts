@@ -52,7 +52,7 @@ export function reverseMapRoute(sdkRouteName: PortkeyEntries) {
 /**
  * if {@sdkRouteName} need pin to unlock, return true. otherwise false.
  */
-export function isNeedPinPage(sdkRouteName: PortkeyEntries) {
+export function isNeedUnlockPage(sdkRouteName: PortkeyEntries) {
   return !beforeWalletLoginPageArray.includes(sdkRouteName);
 }
 /**

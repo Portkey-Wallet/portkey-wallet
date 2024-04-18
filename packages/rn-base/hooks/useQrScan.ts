@@ -87,7 +87,6 @@ export const useHandleGroupId = () => {
         if (showLoading) Loading.show();
         await joinGroup(channelId);
         if (goBack) {
-          console.log('wfs goBack 1');
           navigationService.goBack();
         }
         jumpToGroup({ channelUuid: channelId || '' });
@@ -95,7 +94,6 @@ export const useHandleGroupId = () => {
         console.log('error', error);
         if (error.code === ALREADY_JOINED_GROUP_CODE) {
           if (goBack) {
-            console.log('wfs goBack 2');
             navigationService.goBack();
           }
           return jumpToGroup({ channelUuid: channelId || '' });
@@ -122,7 +120,6 @@ export const useHandlePortkeyId = () => {
         // myself
         if (userId === portkeyId) {
           if (goBack) {
-            console.log('wfs goBack 3');
             navigationService.goBack();
           }
           return navigationService.navigate('WalletName'); // my did
@@ -134,7 +131,6 @@ export const useHandlePortkeyId = () => {
           fields: ['ADDRESS_WITH_CHAIN'],
         });
         if (goBack) {
-          console.log('wfs goBack 4');
           navigationService.goBack();
         }
         // data standard
@@ -175,7 +171,6 @@ export const useHandleUrl = () => {
           url: prefixUrlWithProtocol(str),
         },
       });
-      console.log('wfs goBack 5');
       navigationService.goBack();
     },
     [handleGroupId, handlePortkeyId, isChatShow, jumpToWebview],

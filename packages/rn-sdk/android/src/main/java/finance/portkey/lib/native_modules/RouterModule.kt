@@ -28,21 +28,26 @@ class RouterModule(reactContext: ReactApplicationContext) :
         closeCurrentScreen: Boolean = false,
         params: ReadableMap = Arguments.createMap()
     ) {
-        val activity = NavigationHolder.getTopComponent()
-        if(closeCurrentScreen) {
-            NavigationHolder.popAndFinish(activity)
-        }
-        val bundle = params.toBundle()
-        if(startLaunchModeActivity(launchMode, targetEntry, bundle)){
-            return
+        currentActivity?.let {
+            it.runOnUiThread {
+                val activity = NavigationHolder.getTopComponent()
+                if(closeCurrentScreen) {
+                    NavigationHolder.popAndFinish(activity)
+                }
+                val bundle = params.toBundle()
+                if(startLaunchModeActivity(launchMode, targetEntry, bundle)){
+                    return@runOnUiThread
+                }
+
+                it.navigateToAnotherReactActivity(
+                    entryName = targetEntry,
+                    targetScene = targetScene,
+                    from = from,
+                    params = params
+                )
+            }
         }
 
-        currentActivity?.navigateToAnotherReactActivity(
-            entryName = targetEntry,
-            targetScene = targetScene,
-            from = from,
-            params = params
-        )
     }
 
     private fun startLaunchModeActivity(launchMode: String, targetEntry: String, bundle: Bundle): Boolean {
@@ -107,12 +112,20 @@ class RouterModule(reactContext: ReactApplicationContext) :
               targetScene: String = "",
               params: ReadableMap? = Arguments.createMap()
     ) {
-        currentActivity?.navigateToAnotherReactActivity(
-            entryName = targetEntry,
-            params = params?.getMap("params"),
-            targetScene = targetScene,
-            from = from,
-        )
-        NavigationHolder.clear();
+        currentActivity?.let {
+            it.runOnUiThread {
+                it.navigateToAnotherReactActivity(
+                    entryName = targetEntry,
+                    params = params?.getMap("params"),
+                    targetScene = targetScene,
+                    from = from,
+                )
+                NavigationHolder.clear();
+            }
+        }
+        currentActivity?.runOnUiThread {
+
+        }
+
     }
 }

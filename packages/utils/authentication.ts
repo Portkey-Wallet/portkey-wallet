@@ -1,4 +1,5 @@
 import { customFetch } from './fetch';
+import { Buffer } from 'buffer';
 
 export type AppleUserInfo = {
   isExpired: boolean;

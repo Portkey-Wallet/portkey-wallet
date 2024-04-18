@@ -74,13 +74,16 @@ export function useLoginModeMap(
   const onTelegramSign = useLockCallback(async () => {
     const loadingKey = Loading.show();
     try {
+      console.log('Telegram onTelegramSign');
       const userInfo = await authenticationSign(LoginType.Telegram);
+      console.log('Telegram onTelegramSign end', userInfo);
       await onLogin({
         loginAccount: userInfo.user.id,
         loginType: LoginType.Telegram,
         authenticationInfo: { [userInfo.user.id]: userInfo.accessToken },
       });
     } catch (error) {
+      console.error('Telegram error', error);
       if (!checkIsUserCancel(error)) CommonToast.failError(error);
     }
     Loading.hide(loadingKey);

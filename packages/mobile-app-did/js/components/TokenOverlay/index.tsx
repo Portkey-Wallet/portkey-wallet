@@ -95,6 +95,7 @@ const TokenList = ({ title = 'Select Token', onFinishSelectToken, currentSymbol,
   }, [chainIdList, debounceKeyword]);
 
   useEffect(() => {
+    if (!debounceKeyword) setFilteredShowList([]);
     getTokenListWithKeyword();
   }, [chainIdList, debounceKeyword, dispatch, getTokenListWithKeyword]);
 

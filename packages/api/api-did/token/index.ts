@@ -3,12 +3,16 @@ export default {
     target: '/api/app/tokens/prices',
     config: { method: 'GET' },
   },
+  fetchPopularToken: {
+    target: '/api/app/userTokens',
+    config: { method: 'Get' },
+  },
   displayUserToken: {
     target: '/api/app/userTokens',
     config: { method: 'PUT' },
   },
   fetchTokenListBySearch: {
-    target: 'api/app/tokens/list',
+    target: '/api/app/tokens/list',
     config: { method: 'GET' },
   },
   fetchTokenItemBySearch: {

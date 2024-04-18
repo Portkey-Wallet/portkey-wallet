@@ -248,8 +248,8 @@
 }
 
 - (void)exitWallet {
-    NSString *walletConfig = [PortkeySDKMMKVStorage readTempString:@"walletConfig"];
-    if ([walletConfig isKindOfClass:NSString.class] && walletConfig.length) {
+//    NSString *walletConfig = [PortkeySDKMMKVStorage readTempString:@"walletConfig"];
+//    if ([walletConfig isKindOfClass:NSString.class] && walletConfig.length) {
         [SVProgressHUD show];
         [[PortkeySDKPortkey portkey].wallet exitWallet:^(BOOL success, NSString * _Nullable errorMsg) {
             [SVProgressHUD dismiss];
@@ -261,9 +261,9 @@
                 [self.view makeToast:errorMsg];
             }
         }];
-    } else {
-        [self.view makeToast:@"Please login or unlock first"];
-    }
+//    } else {
+//        [self.view makeToast:@"Please login or unlock first"];
+//    }
 }
 
 - (void)configTermsOfService {

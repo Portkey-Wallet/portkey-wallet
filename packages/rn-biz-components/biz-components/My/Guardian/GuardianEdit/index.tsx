@@ -26,7 +26,7 @@ import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 // import useRouterParams, { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
 import { useRouterParams } from '@portkey-wallet/rn-inject-sdk';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { useAppDispatch } from '@portkey-wallet/rn-base/store/hooks';
+import { useAppDispatch } from '@portkey-wallet/rn-base/store-app/hooks';
 import { setPreGuardianAction } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { VerifierImage } from '../../../Guardian/components/VerifierImage';
 import { verification } from '@portkey-wallet/rn-base/utils/api';

@@ -25,7 +25,7 @@ export function fetchAllTokenList({
   }[];
   totalCount: number;
 }> {
-  return request.token.fetchPapularToken({
+  return request.token.fetchPopularToken({
     params: {
       chainIds: chainIdArray,
       keyword,

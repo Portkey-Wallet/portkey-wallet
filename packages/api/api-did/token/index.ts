@@ -3,7 +3,7 @@ export default {
     target: '/api/app/tokens/prices',
     config: { method: 'GET' },
   },
-  fetchPapularToken: {
+  fetchPopularToken: {
     target: '/api/app/userTokens',
     config: { method: 'Get' },
   },

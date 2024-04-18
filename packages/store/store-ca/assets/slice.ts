@@ -85,16 +85,16 @@ export const fetchTokenListAsync = createAsyncThunk(
     const response = await fetchTokenList({ caAddressInfos, skipCount, maxResultCount });
 
     // // mock data fro new account
-    // if (response.data.length === 0) {
-    //   return {
-    //     list: NEW_CLIENT_MOCK_ELF_LIST,
-    //     totalRecordCount: NEW_CLIENT_MOCK_ELF_LIST.length,
-    //     skipCount,
-    //     maxResultCount,
-    //     currentNetwork,
-    //     totalBalanceInUsd: '',
-    //   };
-    // }
+    if (response.data.length === 0) {
+      return {
+        list: NEW_CLIENT_MOCK_ELF_LIST,
+        totalRecordCount: NEW_CLIENT_MOCK_ELF_LIST.length,
+        skipCount,
+        maxResultCount,
+        currentNetwork,
+        totalBalanceInUsd: '',
+      };
+    }
 
     return {
       list: response.data,

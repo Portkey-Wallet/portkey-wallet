@@ -1,6 +1,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { store } from 'store';
+import { store } from '@portkey-wallet/rn-base/store-sdk';
 import { StatusBar, StatusBarProps, SafeAreaView, Text } from 'react-native';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import RouterProvider from '@portkey-wallet/rn-core/router/provider';
@@ -9,7 +9,6 @@ import { ThemeProvider } from '@rneui/themed';
 import { myTheme } from 'assets/theme';
 import InterfaceProvider from '@portkey-wallet/rn-base/contexts/useInterface';
 import TopView from 'rn-teaset/components/Overlay/TopView';
-import { useLatestRef } from '@portkey-wallet/hooks';
 import Initializer from './Initializer';
 // import { PersistGate } from 'redux-persist/integration/react';
 // import persistStore from 'redux-persist/es/persistStore';
@@ -29,6 +28,7 @@ const ProviderComponent: HigherOrderComponent = (
     statusBarProps.translucent = true;
     statusBarProps.backgroundColor = 'transparent';
   }
+  console.log('wfs store user', store.getState().user);
   // const persistor = persistStore(store);
   const component = (props: any) => {
     const routerP = extraProps?.routerParams?.from

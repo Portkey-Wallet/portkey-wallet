@@ -6,19 +6,14 @@ import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { ChainId, ChainType } from '@portkey-wallet/types';
 import { isAddress } from '@portkey-wallet/utils';
 import { useCallback } from 'react';
-import { useAppDispatch } from '../store/hooks';
+import { useAppDispatch } from '../store-app/hooks';
 import { useGetHolderInfoByViewContract } from './guardian';
 import { usePin } from './store';
 export const useCaInfoOnChain = () => {
-  console.log('wfs useCaInfoOnChain1');
   const { walletInfo, chainList } = useCurrentWallet();
-  console.log('wfs useCaInfoOnChain2');
   const currentNetwork = useCurrentNetworkInfo();
-  console.log('wfs useCaInfoOnChain3');
   const dispatch = useAppDispatch();
-  console.log('wfs useCaInfoOnChain4');
   const getHolderInfo = useGetHolderInfoByViewContract();
-  console.log('wfs useCaInfoOnChain5');
   const pin = usePin();
   const originChainId = useOriginChainId();
   const getHolderInfoByChainId = useCallback(

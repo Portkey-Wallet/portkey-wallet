@@ -30,7 +30,7 @@ import Loading from '@portkey-wallet/rn-components/components/Loading';
 import { useGuardiansInfo } from '@portkey-wallet/rn-base/hooks/store';
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
-import { useAppDispatch } from '@portkey-wallet/rn-base/store/hooks';
+import { useAppDispatch } from '@portkey-wallet/rn-base/store-app/hooks';
 import { setPreGuardianAction } from '@portkey-wallet/store/store-ca/guardians/actions';
 import {
   addGuardian,
@@ -248,6 +248,7 @@ export default function GuardianApproval() {
         }
         break;
       default:
+        console.log('wfs goBack 8');
         navigationService.goBack();
         break;
     }
@@ -263,6 +264,7 @@ export default function GuardianApproval() {
         userGuardiansList as UserGuardianItem[],
       ) as GuardiansApproved,
     );
+    console.log('wfs goBack 9');
     navigationService.goBack();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guardiansStatus, userGuardiansList]);

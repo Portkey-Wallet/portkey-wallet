@@ -201,6 +201,7 @@ export enum PortkeyEntries {
   SET_PIN = 'set_pin_entry',
   CONFIRM_PIN = 'confirm_pin_entry',
   SET_BIO = 'set_bio_entry',
+  SECURITY_LOCK_ENTRY = 'security_lock_entry',
 
   // account setting
   ACCOUNT_SETTING_ENTRY = 'account_setting_entry',

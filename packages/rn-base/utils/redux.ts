@@ -37,7 +37,11 @@ export const getWalletMnemonic = (password: string) => {
 
 export const checkPin = (pin: string) => {
   const { AESEncryptPrivateKey } = getWalletInfo() || {};
+  console.log('pin1', pin, 'AESEncryptPrivateKey1', AESEncryptPrivateKey, 'getWalletInfo()', getWalletInfo());
   if (!AESEncryptPrivateKey) return false;
+  console.log('pin', pin, 'AESEncryptPrivateKey', AESEncryptPrivateKey);
+  console.log('result', aes.decrypt(AESEncryptPrivateKey, pin));
+
   return !!aes.decrypt(AESEncryptPrivateKey, pin);
 };
 

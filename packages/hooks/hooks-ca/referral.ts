@@ -6,8 +6,9 @@ import { request } from '@portkey-wallet/api/api-did';
 import { setViewReferralStatusLocal, setReferralLinkLocal } from '@portkey-wallet/store/store-ca/referral/slice';
 import { ReferralStatusEnum } from '@portkey-wallet/store/store-ca/referral/type';
 import { PORTKEY_PROJECT_CODE } from '@portkey-wallet/constants/constants-ca/wallet';
+import { DEFAULT_OBJ } from '@portkey-wallet/constants';
 
-export const useReferralState = () => useAppCASelector(state => state.referral || {});
+export const useReferralState = () => useAppCASelector(state => state.referral || DEFAULT_OBJ);
 
 export function useReferral() {
   const dispatch = useAppCommonDispatch();

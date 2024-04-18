@@ -7,6 +7,7 @@ import { useCaInfoOnChain } from '@portkey-wallet/rn-base/hooks/useCaInfoOnChain
 // import { usePin } from 'store/hook';
 import { usePin } from '@portkey-wallet/rn-base/hooks/store';
 import { useMemo } from 'react';
+
 export default function Initializer() {
   const { apiUrl } = useCurrentNetworkInfo();
   const refreshTokenConfig = useRefreshTokenConfig();

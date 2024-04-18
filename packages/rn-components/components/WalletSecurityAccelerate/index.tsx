@@ -8,7 +8,7 @@ import { defaultColors } from '@portkey-wallet/rn-base/assets/theme';
 import { TextM, TextXL } from '../CommonText';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from '@portkey-wallet/rn-base/utils/unit';
-import { useAppDispatch } from '@portkey-wallet/rn-base/store/hooks';
+import { useAppDispatch } from '@portkey-wallet/rn-base/store-app/hooks';
 import { sleep } from '@portkey-wallet/utils';
 import { useAppCASelector } from '@portkey-wallet/hooks';
 import { ChainId } from '@portkey/provider-types';

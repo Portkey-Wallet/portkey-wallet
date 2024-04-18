@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { useAppDispatch } from '../store/hooks';
+import { useAppDispatch } from '../store-app/hooks';
 import { useGetCurrentCAViewContract } from './contract';
 import {
   setGuardianListAction,

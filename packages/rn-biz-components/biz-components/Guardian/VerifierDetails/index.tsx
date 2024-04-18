@@ -162,7 +162,7 @@ export default function VerifierDetails() {
           ...rst,
           verifierId: guardianItem?.verifier?.id,
         };
-        console.log('verificationType', verificationType, 'verifierInfo', verifierInfo);
+        console.log('verificationType', verificationType, 'verifierInfo', verifierInfo, 'autoLogin', autoLogin);
         switch (verificationType) {
           case VerificationType.register:
             onRequestOrSetPin({
@@ -203,6 +203,8 @@ export default function VerifierDetails() {
               status: VerifyStatus.Verified,
               verifierInfo,
             });
+            console.log('invoke default status, goBack!!');
+            console.log('wfs goBack 10');
             navigationService.goBack();
             break;
         }

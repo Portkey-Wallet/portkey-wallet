@@ -1,6 +1,10 @@
 export class Stack<T> {
   private items: T[] = [];
-
+  constructor(elements?: T[]) {
+    if (elements) {
+      this.items = elements;
+    }
+  }
   push(item: T): void {
     this.items.push(item);
   }
@@ -12,6 +16,11 @@ export class Stack<T> {
   peek(): T | undefined {
     return this.items[this.items.length - 1];
   }
+  peekSecond(): T | undefined {
+    if (this.size() >= 2) return this.items[this.items.length - 2];
+    return;
+  }
+
   contains(item: T): boolean {
     return this.items.includes(item);
   }

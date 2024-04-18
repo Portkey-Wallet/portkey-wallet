@@ -13,7 +13,7 @@ import myEvents from 'utils/deviceEvent';
 import { UnlockedWallet, getUnlockedWallet } from 'model/wallet';
 import { useUser } from 'store/hook';
 import useBiometricsReady from 'hooks/useBiometrics';
-import useNavigation from '@portkey-wallet/rn-core/router/hook';
+import { useNavigation } from '@portkey-wallet/rn-core/router/hook';
 
 export default function CheckPin(props: CheckPinProps) {
   const { targetScene, openBiometrics } = props;

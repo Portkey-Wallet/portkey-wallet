@@ -645,6 +645,7 @@ const GuardianEdit: React.FC = () => {
   ]);
   const goBack = useCallback(() => {
     if (isEdit) return navigationService.navigate('GuardianHome');
+    console.log('wfs goBack 13');
     navigationService.goBack();
   }, [isEdit]);
 

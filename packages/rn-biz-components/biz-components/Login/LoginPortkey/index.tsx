@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PageContainer from '@portkey-wallet/rn-components/components/PageContainer';
 import { TextM, TextXXXL } from '@portkey-wallet/rn-components/components/CommonText';
 import { pTd } from '@portkey-wallet/rn-components/utils/unit';
@@ -24,6 +24,8 @@ import GStyles from '@portkey-wallet/rn-components/theme/GStyles';
 import fonts from '@portkey-wallet/rn-components/theme/fonts';
 import { defaultCss } from '@portkey-wallet/rn-components/theme/default';
 import Environment from '@portkey-wallet/rn-inject';
+import myEvents from '@portkey-wallet/rn-base/utils/deviceEvent';
+import navigationService from '@portkey-wallet/rn-inject-sdk';
 // import { request } from '@portkey-wallet/api/api-did';
 const scrollViewProps = { extraHeight: 120 };
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['transparent', 'transparent'];
@@ -58,7 +60,15 @@ export default function LoginPortkey() {
         containerStyles={styles.containerStyles}
         safeAreaColor={safeAreaColor}
         scrollViewProps={scrollViewProps}
-        leftCallback={BackType[loginType] ? () => setLoginType(PageLoginType.referral) : undefined}>
+        leftCallback={
+          BackType[loginType]
+            ? () => setLoginType(PageLoginType.referral)
+            : () => {
+                myEvents.clearLoginInput.emit();
+                console.log('wfs goBack 11');
+                navigationService.goBack();
+              }
+        }>
         <Svg icon="logo-icon" size={pTd(60)} iconStyle={styles.logoIconStyle} color={defaultCss.bg1} />
         <View style={GStyles.center}>
           {!isMainnet && (

@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react';
 import { authenticationReady } from '@portkey-wallet/utils/mobile/authentication';
 import useEffectOnce from './useEffectOnce';
-import { useAppDispatch } from '../store/hooks';
-import { setBiometrics } from '../store/user/actions';
+import { useAppDispatch } from '../store-app/hooks';
+import { setBiometrics } from '../store-app/user/actions';
 
 export default function useBiometricsReady() {
   const [biometricsReady, setBiometricsReady] = useState<boolean>();

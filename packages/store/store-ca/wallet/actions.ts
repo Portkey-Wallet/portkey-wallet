@@ -135,7 +135,6 @@ export const getCaHolderInfoAsync = createAsyncThunk<
     const response = await getCaHolder(baseUrl, {
       caHash,
     });
-    console.log('getCaHolderEs', response);
     if (response.items && response.items.length > 0) {
       caHolder = response.items[0];
     }

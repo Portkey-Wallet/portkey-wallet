@@ -449,9 +449,9 @@ export const checkManagerSyncState = async (chainId: string): Promise<boolean> =
 export const callRemoveManagerMethod = async () => {
   // const contractInstance = await getCAContractInstance();
   const { credentials } = store.getState().user;
-  // if (!credentials) throw 'wallet is not unlocked';
+  if (!credentials) throw 'wallet is not unlocked';
 
-  const { pin } = { pin: '111111' };
+  const { pin } = credentials;
 
   // const {
   //   address,

@@ -10,7 +10,6 @@ export const useGetRegisterInfo = () => {
       if (info.loginGuardianIdentifier) {
         info.loginGuardianIdentifier = info.loginGuardianIdentifier.replaceAll(' ', '');
       }
-      console.log('getRegisterInfo info', info);
       return await request.wallet.getRegisterInfo({
         params: info,
       });

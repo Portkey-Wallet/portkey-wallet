@@ -187,10 +187,6 @@ export function useOnManagerAddressAndQueryResult() {
         if (walletInfo?.address) {
           dispatch(setManagerInfo({ managerInfo: _managerInfo, pin: confirmPin }));
         } else {
-          console.log('createWallet caInfo 1', {
-            managerInfo: _managerInfo,
-            originChainId: latestOriginChainId.current,
-          });
           dispatch(
             createWallet({
               walletInfo: tmpWalletInfo,
@@ -199,8 +195,6 @@ export function useOnManagerAddressAndQueryResult() {
             }),
           );
         }
-        console.log(_managerInfo, '=======_managerInfo');
-
         dispatch(setCredentials({ pin: confirmPin }));
 
         if (biometricsReady && biometrics === undefined) {
@@ -341,9 +335,7 @@ export function useGoGuardianApproval(isLogin?: boolean) {
           if (Array.isArray(list) && list.length > 0) {
             await Promise.all(
               list.map(async guardianItem => {
-                console.log('onVerifierAuth', guardianItem);
                 const req = await onVerifierAuth({ guardianItem, originChainId, authenticationInfo });
-                console.log('onVerifierAuth end', req);
                 if (req?.signature) {
                   const status = VerifyStatus.Verified as any;
                   const verifierInfo = { ...req, verifierId: guardianItem?.verifier?.id };
@@ -577,51 +569,33 @@ export function useOnLogin(isLogin?: boolean) {
 
   return useCallback(
     async (params: LoginParams) => {
-      console.log('onLogin params', params);
       const { loginAccount, loginType = LoginType.Email, authenticationInfo, showLoginAccount } = params;
       try {
         await sleep(500);
-        console.log('onLogin dispatch createNewTmpWallet');
         dispatch(createNewTmpWallet());
-        console.log('onLogin getChainInfo');
         let chainInfo = await getChainInfo(DefaultChainId);
-        console.log('onLogin getChainInfo end', chainInfo);
-        console.log('onLogin getVerifierServers');
         let verifierServers = await getVerifierServers(chainInfo);
-        console.log('onLogin getVerifierServers end', verifierServers);
-        console.log('onLogin getRegisterInfo');
         const { originChainId } = await getRegisterInfo({ loginGuardianIdentifier: loginAccount });
-        console.log('onLogin getRegisterInfo end', originChainId);
         if (originChainId !== DefaultChainId) {
-          console.log('onLogin getChainInfo again');
           chainInfo = await getChainInfo(originChainId);
-          console.log('onLogin getChainInfo again end', chainInfo);
-          console.log('onLogin getVerifierServers again');
           verifierServers = await getVerifierServers(chainInfo);
-          console.log('onLogin getVerifierServers again end', verifierServers);
         }
-        console.log('onLogin getGuardiansInfo');
         const holderInfo = await getGuardiansInfo({ guardianIdentifier: loginAccount }, chainInfo);
-        console.log('onLogin getGuardiansInfo end', holderInfo);
         const { guardianList, guardianAccounts } = holderInfo || {};
         if (guardianAccounts || guardianList) {
-          console.log('onLogin goGuardianApproval');
           await goGuardianApproval({
             originChainId,
             loginAccount,
             userGuardiansList: handleUserGuardiansList(holderInfo, verifierServers),
             authenticationInfo,
           });
-          console.log('onLogin goGuardianApproval end');
         } else {
-          console.log('onLogin goSelectVerifier');
           await goSelectVerifier({
             showLoginAccount: showLoginAccount || loginAccount,
             loginAccount,
             loginType,
             authenticationInfo,
           });
-          console.log('onLogin goSelectVerifier end');
         }
       } catch (error) {
         if (handleErrorCode(error) === '3002') {
@@ -677,7 +651,6 @@ export function useOnRequestOrSetPin() {
         });
       } else {
         Loading.hide();
-        console.log('go to setPin');
         navigationService.navigate('SetPin', {
           managerInfo,
           guardiansApproved,

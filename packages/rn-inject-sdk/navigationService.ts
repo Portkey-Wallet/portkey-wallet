@@ -3,15 +3,16 @@ import { COMMON_RESULT_DATA, COMMON_ROUTER_FROM } from '@portkey-wallet/rn-core/
 let route: string | undefined;
 function setTopLevelNavigator(navigatorRef) {}
 function setRouteName(routeName?: string) {
-  route = routeName;
-  console.log('wfs current route', route);
+  if (routeName !== route) {
+    route = routeName;
+    console.log('wfs current route', route);
+  }
 }
 function getCurrentRouteAndRoutes() {}
 
 function getMultiLevelParams() {}
 
 function navigate(name: any, params?: any) {
-  console.log('wfs route', route);
   router.navigate(name, { ...params, from: route ?? COMMON_ROUTER_FROM });
 }
 

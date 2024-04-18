@@ -6,6 +6,7 @@ import { EntryResult } from 'service/native-modules';
 import { PortkeyEntries } from './types';
 import { mapRoute, AppRouteName } from './map';
 import { Stack } from './stack';
+import navigationService from '@portkey-wallet/rn-inject-sdk';
 const ThrottleMap: { [key: string]: number } = {};
 interface Router {
   navigate(target: string, params: any): void;
@@ -18,7 +19,7 @@ export type Route = {
   params: any;
 };
 class RNSDKRouter implements Router {
-  private pages = new Stack<Route>();
+  pages = new Stack<Route>();
   private listeners: Record<string, Record<EventName, ((...args: any[]) => void)[]>> = {};
   private singleTask_push(item: Route) {
     if (LaunchModeSet.get(item.name) === LaunchMode.SINGLE_TASK && router.contains(item)) {
@@ -31,13 +32,21 @@ class RNSDKRouter implements Router {
   }
 
   back<R>(res: EntryResult<R>, params: any): void {
-    router.listenersFunc()[params.from]['blur'].forEach(item => item());
+    router.listenersFunc()[params.from]?.['blur'].forEach(item => item());
     this.pop();
     NativeModules.RouterModule.navigateBack(res, params?.from ?? COMMON_ROUTER_FROM);
+    const lastPageName = this.peek()?.name;
+    if (lastPageName) {
+      router.listenersFunc()[lastPageName]?.['focus'].forEach(item => item());
+    }
+    console.log('page route', 'from', params.from, 'back to', lastPageName);
   }
 
   reset(name: any | { name: any; params?: any }[], params?: any, from?: string) {
     const key = JSON.stringify(name);
+    if (from) {
+      router.listenersFunc()[from]?.['blur'].forEach(item => item());
+    }
     // throttle
     if (ThrottleMap[key] && Date.now() - ThrottleMap[key] < 2000) return;
     ThrottleMap[key] = Date.now();
@@ -65,11 +74,12 @@ class RNSDKRouter implements Router {
         params as any,
       );
     }
+    console.log('page route', 'from', from, 'reset to', name);
   }
 
   navigate(target: string, params: any) {
     const sdkRouteName = mapRoute(target as AppRouteName);
-    router.listenersFunc()[params.from]['blur'].forEach(item => item());
+    router.listenersFunc()[params.from]?.['blur'].forEach(item => item());
     NativeModules.RouterModule.navigateTo(
       wrapEntry(sdkRouteName),
       LaunchModeSet.get(sdkRouteName) || LaunchMode.STANDARD,
@@ -78,11 +88,12 @@ class RNSDKRouter implements Router {
       params?.closeSelf ?? false,
       params as any,
     );
+    console.log('page route', 'from', params.from, 'reset to', target);
   }
 
   navigateByResult(target: string, params: any, callback: (result: any) => void) {
     const sdkRouteName = mapRoute(target as AppRouteName);
-    router.listenersFunc()[params.from]['blur'].forEach(item => item());
+    router.listenersFunc()?.[params.from]['blur'].forEach(item => item());
     NativeModules.RouterModule.navigateToWithOptions(
       wrapEntry(sdkRouteName),
       LaunchModeSet.get(sdkRouteName) || LaunchMode.STANDARD,
@@ -94,13 +105,16 @@ class RNSDKRouter implements Router {
       },
       callback,
     );
+    console.log('page route', 'from', params.from, 'reset to', target);
   }
 
   push(item: Route) {
     if (this.singleTask_push(item)) {
       return;
     }
-    this.pages.push(item);
+    const elements = [...this.pages.allItem(), item];
+    this.pages = new Stack(elements);
+    // this.pages.push(item);
   }
 
   pop() {
@@ -119,10 +133,12 @@ class RNSDKRouter implements Router {
     this.pages.clear();
   }
   canGoBack() {
-    return !this.pages.isEmpty();
+    return this.pages.size() > 1;
   }
   addListener(page: PortkeyEntries, type: EventName, callback: () => void) {
-    console.log('this.listeners', this.listeners);
+    if (type === 'focus') {
+      callback();
+    }
     if (!this.listeners[page]) {
       this.listeners[page] = {
         focus: [],

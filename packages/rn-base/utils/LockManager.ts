@@ -3,7 +3,7 @@ import { AppState, AppStateStatus, NativeEventSubscription } from 'react-native'
 import BackgroundTimer from 'react-native-background-timer';
 import navigationService from '@portkey-wallet/rn-inject-sdk';
 import { getDispatch, getWalletAddress } from './redux';
-import { setCredentials } from '../store/user/actions';
+import { setCredentials } from '../store-app/user/actions';
 
 export let canLock = true;
 
@@ -57,6 +57,7 @@ export default class LockManager {
     if (!getWalletAddress()) navigationService.reset('Referral');
     else {
       getDispatch()(setCredentials(undefined));
+      console.log('goto SecurityLock 1');
       navigationService.navigate('SecurityLock');
     }
     this.locked = true;

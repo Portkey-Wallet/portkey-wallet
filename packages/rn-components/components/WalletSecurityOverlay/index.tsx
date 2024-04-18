@@ -9,7 +9,7 @@ import { TextM, TextXL } from '../CommonText';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from '@portkey-wallet/rn-base/utils/unit';
 import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
-import { useAppDispatch } from '@portkey-wallet/rn-base/store/hooks';
+import { useAppDispatch } from '@portkey-wallet/rn-base/store-app/hooks';
 import { sleep } from '@portkey-wallet/utils';
 import { useAppCASelector } from '@portkey-wallet/hooks';
 import { ChainId } from '@portkey/provider-types';

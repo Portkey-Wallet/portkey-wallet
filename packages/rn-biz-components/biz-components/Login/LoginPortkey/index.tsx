@@ -24,6 +24,7 @@ import GStyles from '@portkey-wallet/rn-components/theme/GStyles';
 import fonts from '@portkey-wallet/rn-components/theme/fonts';
 import { defaultCss } from '@portkey-wallet/rn-components/theme/default';
 import Environment from '@portkey-wallet/rn-inject';
+import myEvents from '@portkey-wallet/rn-base/utils/deviceEvent';
 import navigationService from '@portkey-wallet/rn-inject-sdk';
 // import { request } from '@portkey-wallet/api/api-did';
 const scrollViewProps = { extraHeight: 120 };
@@ -52,6 +53,7 @@ export default function LoginPortkey() {
     if (BackType[loginType]) {
       setLoginType(PageLoginType.referral);
     } else {
+      myEvents.clearLoginInput.emit();
       navigationService.goBack();
     }
   }, [loginType]);

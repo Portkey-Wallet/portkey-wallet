@@ -11,7 +11,8 @@ export type AppRouteName =
   | 'GuardianApproval'
   | 'VerifierDetails'
   | 'GuardianEdit'
-  | 'GuardianDetail';
+  | 'GuardianDetail'
+  | 'SecurityLock';
 
 const RouteNameMapping: Record<AppRouteName, PortkeyEntries> = {
   LoginPortkey: PortkeyEntries.SIGN_IN_ENTRY,
@@ -26,7 +27,19 @@ const RouteNameMapping: Record<AppRouteName, PortkeyEntries> = {
   VerifierDetails: PortkeyEntries.VERIFIER_DETAIL_ENTRY,
   GuardianDetail: PortkeyEntries.GUARDIAN_DETAIL_ENTRY,
   GuardianEdit: PortkeyEntries.ADD_GUARDIAN_ENTRY,
+  SecurityLock: PortkeyEntries.SECURITY_LOCK_ENTRY,
 };
+const beforeWalletLoginPageArray = [
+  PortkeyEntries.SIGN_IN_ENTRY,
+  PortkeyEntries.SIGN_UP_ENTRY,
+  PortkeyEntries.SCAN_LOG_IN,
+  PortkeyEntries.SET_PIN,
+  PortkeyEntries.CONFIRM_PIN,
+  PortkeyEntries.SET_BIO,
+  PortkeyEntries.GUARDIAN_APPROVAL_ENTRY,
+  PortkeyEntries.VERIFIER_DETAIL_ENTRY,
+  PortkeyEntries.SECURITY_LOCK_ENTRY,
+];
 
 export function mapRoute(appRouteName: AppRouteName) {
   return RouteNameMapping[appRouteName];
@@ -35,4 +48,16 @@ export function mapRoute(appRouteName: AppRouteName) {
 export function reverseMapRoute(sdkRouteName: PortkeyEntries) {
   const entry = Object.entries(RouteNameMapping).find(([key, val]) => val === sdkRouteName);
   return entry ? (entry[0] as AppRouteName) : undefined;
+}
+/**
+ * if {@sdkRouteName} need pin to unlock, return true. otherwise false.
+ */
+export function isNeedPinPage(sdkRouteName: PortkeyEntries) {
+  return !beforeWalletLoginPageArray.includes(sdkRouteName);
+}
+/**
+ * if {@sdkRouteName} need pin to unlock, return true. otherwise false.
+ */
+export function isAlReadyLoginPage(sdkRouteName: PortkeyEntries) {
+  return !beforeWalletLoginPageArray.includes(sdkRouteName);
 }

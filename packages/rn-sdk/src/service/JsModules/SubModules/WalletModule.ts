@@ -80,12 +80,12 @@ const WalletModule: BaseJSModule = {
   exitWallet: async (props: BaseMethodParams) => {
     const { eventId = '' } = props;
     console.log('exitWallet called ', 'eventId: ', eventId);
-    if (!(await isWalletUnlocked())) {
-      return emitJSMethodResult(eventId, {
-        status: 'fail',
-        error: 'wallet is not unlocked or created! You have to unlock wallet before trying to exit.',
-      });
-    }
+    // if (!(await isWalletUnlocked())) {
+    //   return emitJSMethodResult(eventId, {
+    //     status: 'fail',
+    //     error: 'wallet is not unlocked or created! You have to unlock wallet before trying to exit.',
+    //   });
+    // }
     try {
       const res = await callRemoveManagerMethod();
       if (!res.error) {

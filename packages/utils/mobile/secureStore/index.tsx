@@ -44,9 +44,12 @@ export default {
     return instance;
   },
   async getItemAsync(key: typeof SecureKeys[number]) {
+    console.log('instance', instance);
     if (instance) {
+      console.log('instance.isAuthenticating', instance.isAuthenticating);
       instance.isAuthenticating = true;
       const item = await SecureStore.getItemAsync(key, secureOptions);
+      console.log('instance.isAuthenticating item', item, 'key', key);
       if (item) {
         return instance.decryptStr(item);
       }

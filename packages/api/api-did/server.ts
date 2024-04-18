@@ -90,10 +90,8 @@ export class DidService extends ServiceInit {
     };
   };
   handleConnectToken = async (fetchResult: any) => {
-    console.log('handleConnectToken', this.defaultConfig);
     // this.defaultConfig
     const token = await this.getConnectToken();
-    console.log('handleConnectToken end', token, 'this.defaultConfig', this.defaultConfig);
     if (!token) {
       if (this.refreshTokenConfig && !isValidRefreshTokenConfig(this.refreshTokenConfig)) {
         this.onLockApp?.(true);
@@ -112,9 +110,7 @@ export class DidService extends ServiceInit {
   sendOrigin = async (base: BaseConfig, config?: RequestConfig, reCount = 0): Promise<any> => {
     const { URL, fetchConfig, method } = this.getConfig(base, config);
     const fetchResult = await this.fetchData(URL, fetchConfig, method);
-    console.log('sendOrigin URL', URL, 'fetchResult', fetchResult, 'reCount', reCount);
     if (fetchResult && fetchResult.status === 401 && fetchResult.message === 'unauthorized') {
-      console.log('if this.refreshTokenConfig', this.refreshTokenConfig);
       if (!this.refreshTokenConfig) throw fetchResult;
       if (reCount > 5) throw fetchResult;
       await this.handleConnectToken(fetchResult);
@@ -123,7 +119,6 @@ export class DidService extends ServiceInit {
       await im.refreshToken();
       return this.send(base, config, ++reCount);
     }
-    console.log(URL, 'resultresultresult', fetchResult);
     return fetchResult;
   };
   setLockCallBack = (callBack: (expired?: boolean) => void) => {

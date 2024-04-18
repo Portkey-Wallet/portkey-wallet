@@ -86,12 +86,18 @@ export const useHandleGroupId = () => {
       try {
         if (showLoading) Loading.show();
         await joinGroup(channelId);
-        if (goBack) navigationService.goBack();
+        if (goBack) {
+          console.log('wfs goBack 1');
+          navigationService.goBack();
+        }
         jumpToGroup({ channelUuid: channelId || '' });
       } catch (error: any) {
         console.log('error', error);
         if (error.code === ALREADY_JOINED_GROUP_CODE) {
-          if (goBack) navigationService.goBack();
+          if (goBack) {
+            console.log('wfs goBack 2');
+            navigationService.goBack();
+          }
           return jumpToGroup({ channelUuid: channelId || '' });
         } else {
           CommonToast.fail("This group doesn't exist. Please check the Portkey group ID/QR code before you try again.");
@@ -115,7 +121,10 @@ export const useHandlePortkeyId = () => {
       try {
         // myself
         if (userId === portkeyId) {
-          if (goBack) navigationService.goBack();
+          if (goBack) {
+            console.log('wfs goBack 3');
+            navigationService.goBack();
+          }
           return navigationService.navigate('WalletName'); // my did
         }
 
@@ -124,7 +133,10 @@ export const useHandlePortkeyId = () => {
           address: portkeyId,
           fields: ['ADDRESS_WITH_CHAIN'],
         });
-        if (goBack) navigationService.goBack();
+        if (goBack) {
+          console.log('wfs goBack 4');
+          navigationService.goBack();
+        }
         // data standard
         if (data)
           return navigationService.navigate('ChatContactProfile', { contact: data, relationId: data.relationId });
@@ -163,6 +175,7 @@ export const useHandleUrl = () => {
           url: prefixUrlWithProtocol(str),
         },
       });
+      console.log('wfs goBack 5');
       navigationService.goBack();
     },
     [handleGroupId, handlePortkeyId, isChatShow, jumpToWebview],

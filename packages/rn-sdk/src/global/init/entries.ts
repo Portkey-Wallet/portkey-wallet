@@ -54,6 +54,7 @@ import SetPin from '@portkey-wallet/rn-biz-components/biz-components/Pin/SetPin'
 import GuardianApproval from '@portkey-wallet/rn-biz-components/biz-components/Guardian/GuardianApproval';
 import VerifierDetails from '@portkey-wallet/rn-biz-components/biz-components/Guardian/VerifierDetails';
 import DashBoard from '@portkey-wallet/rn-biz-components/biz-components/DashBoard';
+import SecurityLock from '@portkey-wallet/rn-biz-components/biz-components/SecurityLock';
 
 type AcceptableComponentType = ComponentProvider;
 
@@ -67,9 +68,21 @@ const initEntries = () => {
 
   // entry stage
   // entryConfig.set(PortkeyEntries.SIGN_IN_ENTRY, () => ReduxProvider(SignInEntryPage as React.ComponentType<any>));
-  entryConfig.set(PortkeyEntries.SIGN_IN_ENTRY, () => ReduxProvider(LogInPortKey as React.ComponentType<any>));
+  entryConfig.set(PortkeyEntries.SIGN_IN_ENTRY, () =>
+    ReduxProvider(LogInPortKey as React.ComponentType<any>, {
+      routerParams: {
+        from: PortkeyEntries.SIGN_IN_ENTRY,
+      },
+    }),
+  );
+  entryConfig.set(PortkeyEntries.SIGN_UP_ENTRY, () =>
+    ReduxProvider(SignupPortkey as React.ComponentType<any>, {
+      routerParams: {
+        from: PortkeyEntries.SIGN_UP_ENTRY,
+      },
+    }),
+  );
   entryConfig.set(PortkeyEntries.SELECT_COUNTRY_ENTRY, () => SelectCountryPage);
-  entryConfig.set(PortkeyEntries.SIGN_UP_ENTRY, () => ReduxProvider(SignupPortkey as React.ComponentType<any>));
 
   // verify stage VerifierDetails
   // entryConfig.set(PortkeyEntries.VERIFIER_DETAIL_ENTRY, () => VerifierDetailsEntryPage);
@@ -77,6 +90,13 @@ const initEntries = () => {
     ReduxProvider(VerifierDetails as React.ComponentType<any>, {
       routerParams: {
         from: PortkeyEntries.VERIFIER_DETAIL_ENTRY,
+      },
+    }),
+  );
+  entryConfig.set(PortkeyEntries.SECURITY_LOCK_ENTRY, () =>
+    ReduxProvider(SecurityLock as React.ComponentType<any>, {
+      routerParams: {
+        from: PortkeyEntries.SECURITY_LOCK_ENTRY,
       },
     }),
   );
@@ -109,7 +129,7 @@ const initEntries = () => {
     ReduxProvider(ConfirmPin as React.ComponentType<any>, {
       statusbarColor: 'white',
       routerParams: {
-        from: PortkeyEntries.SET_PIN,
+        from: PortkeyEntries.CONFIRM_PIN,
       },
     }),
   );

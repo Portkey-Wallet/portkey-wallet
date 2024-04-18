@@ -1,6 +1,6 @@
 import { useLatestRef } from '@portkey-wallet/hooks';
-import { ChatBottomBarStatus } from '../../store/chat/slice';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { ChatBottomBarStatus } from '../../store-app/chat/slice';
+import { useAppDispatch, useAppSelector } from '../../store-app/hooks';
 
 export function useBottomBarStatus() {
   return useAppSelector(state => state.chats.bottomBarStatus);

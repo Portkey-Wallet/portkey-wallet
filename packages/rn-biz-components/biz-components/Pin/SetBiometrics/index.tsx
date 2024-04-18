@@ -10,7 +10,7 @@ import { defaultColors } from '@portkey-wallet/rn-base/assets/theme';
 import { BGStyles } from '@portkey-wallet/rn-base/assets/theme/styles';
 import navigationService, { useNavigation } from '@portkey-wallet/rn-inject-sdk';
 import Touchable from '@portkey-wallet/rn-components/components/Touchable';
-import { useAppDispatch } from '@portkey-wallet/rn-base/store/hooks';
+import { useAppDispatch } from '@portkey-wallet/rn-base/store-app/hooks';
 import { usePreventHardwareBack } from '@portkey-wallet/hooks/mobile';
 import biometric from 'assets/image/pngs/biometric.png';
 import { pTd } from '@portkey-wallet/rn-base/utils/unit';
@@ -61,15 +61,22 @@ export default function SetBiometrics() {
     }
   }, [isSyncCAInfo]);
   const getResult = useCallback(async () => {
-    if (!pin) return;
+    if (!pin) {
+      console.log('SetBiometrics 1');
+      return;
+    }
     if (!isSyncCAInfo) {
+      console.log('SetBiometrics 2');
       if (Environment.isSDK()) {
+        console.log('SetBiometrics 3');
         return navigation.reset('AssetsHome');
       } else {
+        console.log('SetBiometrics 4');
         return navigationService.reset('Tab');
       }
     }
     if (caInfo) {
+      console.log('SetBiometrics 5');
       dispatch(
         setCAInfo({
           caInfo,
@@ -78,12 +85,15 @@ export default function SetBiometrics() {
         }),
       );
       if (Environment.isSDK()) {
+        console.log('SetBiometrics 6');
         return navigation.reset('AssetsHome');
       } else {
+        console.log('SetBiometrics 7');
         return navigationService.reset('Tab');
       }
     }
     if (managerInfo) {
+      console.log('SetBiometrics 8');
       timer.current?.remove();
       const isRecovery = managerInfo?.verificationType === VerificationType.communityRecovery;
       Loading.show({
@@ -101,8 +111,10 @@ export default function SetBiometrics() {
           );
           Loading.hide();
           if (Environment.isSDK()) {
+            console.log('SetBiometrics 9');
             navigation.reset('AssetsHome');
           } else {
+            console.log('SetBiometrics 10');
             navigationService.reset('Tab');
           }
         },

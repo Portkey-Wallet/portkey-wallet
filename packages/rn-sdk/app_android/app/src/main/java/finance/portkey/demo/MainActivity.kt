@@ -55,7 +55,6 @@ val environment = mapOf(
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        lifecycle.addObserver()
         setContent {
             MyRNApplicationTheme {
                 var devModeStatus by remember {
@@ -113,15 +112,15 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                         BigButton(text = "Exit Wallet") {
-                            if (!PortkeyWallet.isWalletUnlocked()) {
-                                Toast.makeText(
-                                    this@MainActivity,
-                                    "❌ Unlock your wallet first.",
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
-                                return@BigButton
-                            }
+//                            if (!PortkeyWallet.isWalletUnlocked()) {
+//                                Toast.makeText(
+//                                    this@MainActivity,
+//                                    "❌ Unlock your wallet first.",
+//                                    Toast.LENGTH_SHORT
+//                                )
+//                                    .show()
+//                                return@BigButton
+//                            }
                             PortkeyDialogController.show(
                                 DialogProps().apply {
                                     mainTitle = "Warning"

@@ -29,13 +29,13 @@ import Loading from '@portkey-wallet/rn-components/components/Loading';
 import AElf from 'aelf-sdk';
 // import { request } from 'api';
 import React, { useCallback, useRef } from 'react';
-import { useAppDispatch } from '../store/hooks';
+import { useAppDispatch } from '../store-app/hooks';
 import useBiometricsReady from './useBiometrics';
 import navigationService from '@portkey-wallet/rn-inject-sdk';
 import { TimerResult, IntervalGetResultParams, intervalGetResult } from '../utils/wallet';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import useEffectOnce from './useEffectOnce';
-import { resetUser, setCredentials } from '../store/user/actions';
+import { resetUser, setCredentials } from '../store-app/user/actions';
 import { DigitInputInterface } from '@portkey-wallet/rn-components/components/DigitInput';
 import { GuardiansApproved, GuardiansStatus } from '../types/guardian';
 import { useGetDeviceInfo } from './device';
@@ -677,6 +677,7 @@ export function useOnRequestOrSetPin() {
         });
       } else {
         Loading.hide();
+        console.log('go to setPin');
         navigationService.navigate('SetPin', {
           managerInfo,
           guardiansApproved,

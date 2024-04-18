@@ -33,6 +33,7 @@ export default function CheckPin() {
         }
         if (openBiometrics) {
           myEvents.openBiometrics.emit(pin);
+          console.log('wfs goBack 14');
           navigationService.goBack();
         } else {
           navigationService.navigate('SetPin', { oldPin: pin });

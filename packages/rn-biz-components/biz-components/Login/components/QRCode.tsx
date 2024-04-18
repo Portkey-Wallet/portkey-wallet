@@ -4,7 +4,7 @@ import AElf from 'aelf-sdk';
 import { setCAInfoType, setOriginChainId } from '@portkey-wallet/store/store-ca/wallet/actions';
 // import { BGStyles, FontStyles } from 'assets/theme/styles';
 import useEffectOnce from '@portkey-wallet/rn-base/hooks/useEffectOnce';
-import { useAppDispatch } from '@portkey-wallet/rn-base/store/hooks';
+import { useAppDispatch } from '@portkey-wallet/rn-base/store-app/hooks';
 import myEvents from '@portkey-wallet/rn-base/utils/deviceEvent';
 import navigationService from '@portkey-wallet/rn-inject-sdk';
 import styles from '../styles';

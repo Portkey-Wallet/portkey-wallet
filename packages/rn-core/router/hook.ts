@@ -7,7 +7,7 @@ import { reverseMapRoute } from './map';
 
 export function useNavigation() {
   const { from } = useContext(RouterContext) as { from: PortkeyEntries };
-  const params = useRoute();
+  // const params = useRoute();
   return useMemo(() => {
     return {
       navigate: (target: string, params?: any) => {
@@ -26,9 +26,12 @@ export function useNavigation() {
         return router.canGoBack();
       },
       isFocused: () => {
+        console.log('router.peek()?.name', router.peek()?.name);
+        console.log('from', from);
         return router.peek()?.name === from;
       },
       addListener: (type: EventName, callback: () => void) => {
+        console.log('wfs addListener', from, type);
         return router.addListener(from, type, callback);
       },
       getState: () => {
@@ -66,7 +69,7 @@ export function useRouterParams<T extends object>() {
 
 export function useIsFocused(): boolean {
   const navigation = useNavigation();
-  const [isFocused, setIsFocused] = useState(navigation.isFocused);
+  const [isFocused, setIsFocused] = useState(navigation.isFocused());
 
   const valueToReturn = navigation.isFocused();
 

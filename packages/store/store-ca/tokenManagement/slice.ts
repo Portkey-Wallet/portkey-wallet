@@ -41,15 +41,15 @@ export const tokenManagementSlice = createSlice({
         const tmpToken: TokenItemShowType[] = list.map(item => ({
           isAdded: item.isDisplay,
           isDefault: item.isDefault,
-          userTokenId: item.id,
-          chainId: item.token.chainId,
-          decimals: item.token.decimals,
-          address: item.token.address,
-          symbol: item.token.symbol,
-          tokenName: item.token.symbol,
-          id: item.token.id,
-          name: item.token.symbol,
-          imageUrl: item.token.imageUrl,
+          userTokenId: item?.id,
+          chainId: item.chainId,
+          decimals: item.decimals,
+          address: item.address,
+          symbol: item.symbol,
+          tokenName: item.symbol,
+          id: item?.id,
+          name: item?.symbol,
+          imageUrl: item.imageUrl,
         }));
         const newList = skipCount === 0 ? tmpToken : [...preTokenDataShowInMarket, ...tmpToken];
         if (!state.tokenInfo) state.tokenInfo = {};

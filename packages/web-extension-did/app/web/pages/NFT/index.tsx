@@ -210,7 +210,6 @@ export default function NFT() {
                     ...nftDetail,
                     address: nftDetail.tokenContractAddress,
                     decimals: Number(nftDetail.decimals),
-                    name: nftDetail.symbol,
                   },
                 })
               }>

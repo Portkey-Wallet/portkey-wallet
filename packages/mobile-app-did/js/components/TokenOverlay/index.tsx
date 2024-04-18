@@ -88,7 +88,7 @@ const TokenList = ({ title = 'Select Token', onFinishSelectToken, currentSymbol,
         maxResultCount: PAGE_SIZE_DEFAULT,
       });
 
-      setFilteredShowList(result?.items?.map(item => item.token));
+      setFilteredShowList(result?.items);
     } catch (error) {
       console.log('fetchTokenListByFilter error', error);
     }

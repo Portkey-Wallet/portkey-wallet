@@ -8,12 +8,9 @@ const userSlice = createSlice({
   reducers: {
     setCredentials: (state, action: PayloadAction<UserStoreState['credentials']>) => {
       state.credentials = action.payload;
-      console.log('wfs setCredentials state', state);
-      console.log('wfs setCredentials', action.payload);
     },
     setBiometrics: (state, action: PayloadAction<UserStoreState['biometrics']>) => {
       state.biometrics = action.payload;
-      console.log('state biometrics is', state.biometrics);
     },
     resetUser: () => initialState,
   },

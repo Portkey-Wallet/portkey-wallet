@@ -88,7 +88,7 @@ class RNSDKRouter implements Router {
       params?.closeSelf ?? false,
       params as any,
     );
-    console.log('page route', 'from', params.from, 'reset to', target);
+    console.log('page route', 'from', params.from, 'navigate to', target);
   }
 
   navigateByResult(target: string, params: any, callback: (result: any) => void) {
@@ -105,16 +105,16 @@ class RNSDKRouter implements Router {
       },
       callback,
     );
-    console.log('page route', 'from', params.from, 'reset to', target);
+    console.log('page route', 'from', params.from, 'navigateByResult to', target);
   }
 
   push(item: Route) {
     if (this.singleTask_push(item)) {
       return;
     }
-    const elements = [...this.pages.allItem(), item];
-    this.pages = new Stack(elements);
-    // this.pages.push(item);
+    // const elements = [...this.pages.allItem(), item];
+    // this.pages = new Stack(elements);
+    this.pages.push(item);
   }
 
   pop() {

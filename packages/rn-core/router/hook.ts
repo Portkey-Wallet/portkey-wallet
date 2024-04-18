@@ -26,12 +26,9 @@ export function useNavigation() {
         return router.canGoBack();
       },
       isFocused: () => {
-        console.log('router.peek()?.name', router.peek()?.name);
-        console.log('from', from);
         return router.peek()?.name === from;
       },
       addListener: (type: EventName, callback: () => void) => {
-        console.log('wfs addListener', from, type);
         return router.addListener(from, type, callback);
       },
       getState: () => {

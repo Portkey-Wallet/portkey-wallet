@@ -47,13 +47,11 @@ export function useGetChainInfo() {
   return useCallback(
     async (originChainId: ChainId) => {
       let _chainInfo;
-      console.log('currentChainList', currentChainList);
       if (currentChainList) {
         _chainInfo = currentChainList.find(item => item.chainId === originChainId);
       }
       if (!_chainInfo) {
         const chainList = await dispatch(getChainListAsync());
-        console.log('chainList', chainList);
         if (Array.isArray(chainList.payload)) {
           _chainInfo = chainList.payload[0].find((item: any) => item.chainId === originChainId);
         }

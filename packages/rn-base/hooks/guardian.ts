@@ -39,7 +39,6 @@ export const useGetHolderInfo = () => {
   return useCallback(
     async (loginInfo: LoginInfo, chainInfo?: ChainItemType) => {
       if (!loginInfo) throw new Error('Could not find accountInfo');
-      console.log('guardianIdentifiers!!!!!', { chainId: chainInfo?.chainId || originChainId, ...loginInfo });
       return request.wallet.guardianIdentifiers({
         params: { chainId: chainInfo?.chainId || originChainId, ...loginInfo },
       });
@@ -53,9 +52,7 @@ export const useGetGuardiansInfo = () => {
   return useCallback(
     async (loginInfo: LoginInfo, chainInfo?: ChainItemType) => {
       try {
-        console.log('getHolderInfo');
         const res = await getHolderInfo(loginInfo, chainInfo);
-        console.log('getHolderInfo end', res);
         if (res && !res.error) return res?.data || res;
         throw new Error(checkHolderError(res.error?.message));
       } catch (error: any) {
@@ -77,7 +74,6 @@ export const useGetGuardiansInfoWriteStore = () => {
   return useCallback(
     async (loginInfo: LoginInfo, chainInfo?: ChainItemType) => {
       const guardiansInfo: GuardiansInfo = await getGetGuardiansInfo(loginInfo, chainInfo);
-      console.log('getGetGuardiansInfo guardiansInfo', guardiansInfo);
       const _verifierMap = verifierMapRef.current;
       const _guardianList: UserGuardianItem[] = guardiansInfo.guardianList.guardians.map(item => {
         const key = `${item.guardianIdentifier}&${item.verifierId}`;

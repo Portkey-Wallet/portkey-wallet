@@ -63,16 +63,12 @@ export default function SecurityLock() {
   const handleRouter = useThrottleCallback(
     (pinInput: string) => {
       Loading.hide();
-      console.log('wfs isFocusedRef', isFocusedRef.current);
       if (!isFocusedRef.current) return;
       locked.current = true;
-      console.log('wfs managerInfo', managerInfo);
       if (!managerInfo) return navigationService.reset('LoginPortkey');
       if (navigation.canGoBack()) {
-        console.log('wfs if');
         navigation.goBack();
       } else {
-        console.log('wfs else', biometrics, 'biometricsReady', biometricsReady);
         if (biometrics === undefined && biometricsReady) {
           navigationService.reset('SetBiometrics', { pin: pinInput });
         } else {
@@ -86,12 +82,10 @@ export default function SecurityLock() {
   const handlePassword = useCallback(
     (pwd: string) => {
       dispatch(setCredentials({ pin: pwd }));
-      console.log('wfs managerInfo', managerInfo);
       if (!managerInfo) {
         if (address) handleRouter(pwd);
         return;
       }
-      console.log('wfs isSyncCAInfo', isSyncCAInfo, 'caInfo', caInfo);
       if (isSyncCAInfo && !caInfo) {
         timer.current?.remove();
         Loading.show();

@@ -58,15 +58,12 @@ export function useLoginModeMap(
   const onGoogleSign = useLockCallback(async () => {
     const loadingKey = Loading.show();
     try {
-      console.log('google sign start');
       const userInfo = await authenticationSign(LoginType.Google);
-      console.log('google sign userInfo', userInfo);
       await onLogin({
         loginAccount: userInfo.user.id,
         loginType: LoginType.Google,
         authenticationInfo: { [userInfo.user.id]: userInfo.accessToken },
       });
-      console.log('google sign onLogin');
     } catch (error) {
       console.log('google sign error', error);
       CommonToast.failError(error);

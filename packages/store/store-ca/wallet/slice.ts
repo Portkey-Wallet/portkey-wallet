@@ -71,12 +71,6 @@ export const walletSlice = createSlice({
           ...state.walletInfo.caInfo[currentNetwork],
           [chainId]: caInfo,
         } as any;
-        console.log('wfs setCAInfo', state, 'action', action);
-        console.log('wfs setCAInfo currentNetwork', currentNetwork);
-        console.log('wfs setCAInfo cainfo', {
-          ...state.walletInfo.caInfo[currentNetwork],
-          [chainId]: caInfo,
-        });
       })
       .addCase(updateCASyncState, (state, action) => {
         const { chainId, networkType } = action.payload;

@@ -306,32 +306,24 @@ export function useVerifyGoogleToken() {
   const { googleSign } = useGoogleAuthentication();
   return useCallback(
     async (params: VerifyTokenParams) => {
-      console.log('VerifyGoogleToke invoke');
       let accessToken = params.accessToken;
       let isRequest = !accessToken;
       if (accessToken) {
         try {
-          console.log('getGoogleUserInfo params', params);
           const { id } = await getGoogleUserInfo(accessToken);
-          console.log('getGoogleUserInfo end', id);
           if (!id || id !== params.id) isRequest = true;
         } catch (error) {
           isRequest = true;
         }
       }
-      console.log('isRequest googleSign', isRequest);
       if (isRequest) {
-        console.log('googleSign');
         const userInfo = await googleSign();
-        console.log('googleSign end', userInfo);
         accessToken = userInfo?.accessToken;
         if (userInfo.user.id !== params.id) throw new Error('Account does not match your guardian');
       }
-      console.log('verifyGoogleToken', { ...params, accessToken });
       const rst = await request.verify.verifyGoogleToken({
         params: { ...params, accessToken },
       });
-      console.log('verifyGoogleToken end', rst);
       return {
         ...rst,
         accessToken,

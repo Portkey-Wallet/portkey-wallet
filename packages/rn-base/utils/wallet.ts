@@ -82,7 +82,6 @@ export function intervalGetResult({ managerInfo, onPass, onFail }: IntervalGetRe
     clientId,
   });
   let fetch: any;
-  console.log('wfs managerInfomanagerInfo', managerInfo);
   if (managerInfo.verificationType !== VerificationType.register) {
     fetch = request.es.getRecoverResult;
     listenerList.push(
@@ -103,7 +102,6 @@ export function intervalGetResult({ managerInfo, onPass, onFail }: IntervalGetRe
       const req = await fetch({
         params: { filter: `_id:${managerInfo.managerUniqueId}` },
       });
-      console.log('setTimeoutInterval req', req, 'managerInfo.managerUniqueId', managerInfo);
       sendResult(req.items[0]);
     } catch (error) {
       console.debug(error, '123=====error');

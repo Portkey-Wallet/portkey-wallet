@@ -28,7 +28,6 @@ const ProviderComponent: HigherOrderComponent = (
     statusBarProps.translucent = true;
     statusBarProps.backgroundColor = 'transparent';
   }
-  console.log('wfs store user', store.getState().user);
   // const persistor = persistStore(store);
   const component = (props: any) => {
     const routerP = extraProps?.routerParams?.from

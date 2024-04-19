@@ -4,7 +4,7 @@ import { BaseJSModule, BaseMethodParams, BaseMethodResult } from '../types';
 import { callRemoveManagerMethod, getCAContractInstance } from 'model/contract/handler';
 import { exitWallet, isWalletUnlocked, lockWallet } from 'model/verify/core';
 import { getUnlockedWallet } from 'model/wallet';
-import resetStore from 'store/resetStore';
+import resetStore from '@portkey-wallet/rn-base/store-sdk/resetStore';
 
 const WalletModule: BaseJSModule = {
   callCaContractMethod: async (props: CallCaMethodProps) => {
@@ -93,7 +93,7 @@ const WalletModule: BaseJSModule = {
     // }if (resp && !resp.error) {
     try {
       const res = await callRemoveManagerMethod();
-      console.log('res', res);
+      console.log('res is:', res);
       if (!res || !res.error) {
         console.log('logout success', res);
         resetStore();

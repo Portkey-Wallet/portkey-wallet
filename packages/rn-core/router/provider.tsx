@@ -58,7 +58,9 @@ function ViewStub({ children }: { children: any }) {
           // no pin, goto security lock.
           if (isNeedUnlockRoute.current || isLoginPage.current) {
             console.log('goto SecurityLock 2');
-            navigationService.navigate('SecurityLock');
+            if (navigation.isFocused()) {
+              navigationService.navigate('SecurityLock');
+            }
           }
         }
         // wallet is unavailable
@@ -67,7 +69,9 @@ function ViewStub({ children }: { children: any }) {
         // no wallet, so goto login page
         // (but signUp page/scanQrcode etc page don't need goto login page)
         if (isNeedUnlockRoute.current || isSecurityLockPage.current) {
-          navigationService.reset('LoginPortkey');
+          if (navigation.isFocused()) {
+            navigationService.reset('LoginPortkey');
+          }
         }
       }
     } catch (e) {

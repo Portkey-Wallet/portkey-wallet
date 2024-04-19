@@ -30,7 +30,15 @@ object PortkeyWallet {
             }
         )
     }
-
+    fun releaseStore(context: Context, callback: (succeed: Boolean, reason: String?) -> Unit) {
+        callJsMethod(
+            applicationContext = context,
+            taskName = "releaseStore",
+            callback = {
+                callback(it.status == "success", it.error?.toString())
+            }
+        )
+    }
     fun isWalletExists(): Boolean {
         val walletConfig = PortkeyMMKVStorage.readString("walletConfig")
         return walletConfig?.isNotEmpty() ?: false

@@ -81,6 +81,7 @@ export class AElfContractBasic {
     if (!this.aelfContract) return { error: { code: 401, message: 'Contract init error' } };
 
     console.log('paramsOption', paramsOption);
+    console.log('sendOptions', sendOptions);
 
     try {
       const { onMethod = 'receipt' } = sendOptions || {};

@@ -7,6 +7,9 @@ buildscript {
         targetSdkVersion = 33
         minSdkVersion = 26
         reactNativeDir = '../../node_modules/react-native'
+        react = [
+                nodeExecutableAndArgs:  ["/usr/local/bin/node"],
+        ]
     }
     repositories {
         google()

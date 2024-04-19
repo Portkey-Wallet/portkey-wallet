@@ -129,7 +129,7 @@ class MainActivity : ComponentActivity() {
                                     subTitle =
                                         "Are you sure to exit wallet? This process can not be undone and you have to start over again."
                                     positiveCallback = {
-                                        Loading.showLoading("Exiting Wallet...")
+                                        Loading.showLoading("Exiting Wallet...", 5*60*1000)
                                         PortkeyWallet.exitWallet(this@MainActivity) { succeed, reason ->
                                             Loading.hideLoading()
                                             if (succeed) {

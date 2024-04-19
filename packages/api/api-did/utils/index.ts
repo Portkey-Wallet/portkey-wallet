@@ -1,5 +1,6 @@
 import { AElfWallet } from '@portkey-wallet/types/aelf';
 import { customFetch } from '@portkey-wallet/utils/fetch';
+import { Buffer } from 'buffer';
 import { stringify } from 'query-string';
 import AElf from 'aelf-sdk';
 import { request } from '../index';
@@ -56,7 +57,6 @@ export function setRefreshTokenConfig({
   const signature = AElf.wallet.sign(message, account.keyPair).toString('hex');
   const pubkey = (account.keyPair as any).getPublic('hex');
   const ca_hash = caHash;
-
   return request.setRefreshTokenConfig({
     grant_type: 'signature',
     client_id: 'CAServer_App',

@@ -224,10 +224,8 @@ export default function GuardianApproval() {
     };
   });
   const isFocused = useIsFocused();
-  console.log('wfs ::isFocused', isFocused);
   useEffect(() => {
     if (isSuccess && isFocused && !isExpired) onFinish();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccess, isFocused, isExpired]);
   const onBack = useCallback(() => {
     lastOnEmitDapp.current();

@@ -27,6 +27,7 @@ export function fetchTokenList({
       caAddressInfos,
       skipCount,
       maxResultCount,
+      version: '1.11.1',
     },
   });
 }
@@ -73,6 +74,7 @@ export function fetchCryptoBoxAssetList({
       maxResultCount,
       width: NFT_SMALL_SIZE,
       height: -1,
+      version: '1.11.1',
     },
   });
 }

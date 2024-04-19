@@ -34,10 +34,12 @@ export default {
     target: '/api/app/account/revoke/check',
     config: { method: 'GET' },
   },
-  deletionCheckV2: '/api/app/account/revoke/validate',
-  sendRevokeVerifyCode: '/api/app/account/SendRevokeVerifyCodeAsync',
+  deletionCheckV2: {
+    target: '/api/app/account/revoke/validate',
+    config: { method: 'GET' },
+  },
   deletionAccount: '/api/app/account/revoke/request',
-  deletionAccountV2: '/api/app/account/revoke/request',
+  deletionAccountV2: '/api/app/account/revoke/account',
   getTwitterUserInfo: {
     target: '/api/app/account/revoke/account',
     config: { method: 'GET' },

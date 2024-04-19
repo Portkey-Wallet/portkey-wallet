@@ -7,8 +7,10 @@ import { SendOptions } from '@portkey-wallet/contracts/types';
 import { ACCOUNT_CANCELATION_ALERT_MAP } from '@portkey-wallet/constants/constants-ca/wallet';
 
 // TODO: type change
-export async function checkIsValidateDeletionAccount(): Promise<string[]> {
-  const req = await request.wallet.deletionCheck();
+export async function checkIsValidateDeletionAccount(type: string): Promise<string[]> {
+  const req = await request.wallet.deletionCheckV2({
+    params: { type },
+  });
   const { validatedAssets, validatedDevice, validatedGuardian } = req || {};
   const list: string[] = [];
   if (!validatedAssets) list.push(ACCOUNT_CANCELATION_ALERT_MAP.Asset);
@@ -32,14 +34,6 @@ export async function getSocialLoginAccountToken({
   return userInfo?.user?.id;
 }
 
-export async function sendRevokeVerifyCodeAsync(params: {
-  guardianIdentifier: string;
-  chainId: string;
-  type: keyof typeof LoginType;
-}) {
-  return request.wallet.sendRevokeVerifyCode({ params });
-}
-
 export async function deleteLoginAccount({
   removeManagerParams,
   deleteParams,
@@ -52,7 +46,7 @@ export async function deleteLoginAccount({
     sendOptions?: SendOptions;
   };
   deleteParams: {
-    type: keyof typeof LoginType;
+    type: LoginType;
     chainId: ChainId;
     token: string;
     guardianIdentifier?: string;

@@ -34,6 +34,8 @@ import { checkVerifierIsInvalidCode } from '@portkey-wallet/utils/guardian';
 import { pTd } from 'utils/unit';
 import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import { deleteLoginAccount } from '@portkey-wallet/utils/deleteAccount';
+import { useGetCurrentCAContract } from 'hooks/contract';
 
 type RouterParams = {
   guardianItem?: UserGuardianItem;
@@ -72,6 +74,7 @@ export default function VerifierDetails() {
     accelerateChainId,
     autoLogin,
   } = useRouterParams<RouterParams>();
+
   const originChainId = useOriginChainId();
   const countdown = useRef<VerifierCountdownInterface>();
   useEffectOnce(() => {
@@ -80,7 +83,8 @@ export default function VerifierDetails() {
   const [requestCodeResult, setRequestCodeResult] =
     useState<RouterParams['requestCodeResult']>(paramsRequestCodeResult);
   const digitInput = useRef<DigitInputInterface>();
-  const { address: managerAddress } = useCurrentWalletInfo();
+  const { caHash, address: managerAddress } = useCurrentWalletInfo();
+  const getCurrentCAContract = useGetCurrentCAContract();
   const pin = usePin();
   const onRequestOrSetPin = useOnRequestOrSetPin();
 
@@ -189,6 +193,33 @@ export default function VerifierDetails() {
           case VerificationType.revokeAccount: {
             //TODO: CHANGE ACTION
             console.log('revokeAccount!!');
+            const caContract = await getCurrentCAContract();
+            const removeManagerParams = {
+              caContract,
+              managerAddress,
+              caHash: caHash || '',
+            };
+            const deleteParams = {
+              type: guardianItem.guardianType,
+              chainId: originChainId,
+              token: code,
+              guardianIdentifier: guardianItem.guardianAccount,
+              ...requestCodeResult,
+              verifierId: guardianItem?.verifier?.id,
+            };
+
+            try {
+              await deleteLoginAccount({
+                removeManagerParams,
+                deleteParams,
+              });
+              await logout();
+            } catch (error) {
+              CommonToast.failError(error);
+            } finally {
+              Loading.hide();
+            }
+
             break;
           }
 
@@ -236,6 +267,8 @@ export default function VerifierDetails() {
       onRequestOrSetPin,
       setGuardianStatus,
       accelerateChainId,
+      getCurrentCAContract,
+      caHash,
       autoLogin,
       registerAccount,
       setCodeError,
@@ -304,3 +337,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: pTd(20),
   },
 });
+function logout() {
+  throw new Error('Function not implemented.');
+}

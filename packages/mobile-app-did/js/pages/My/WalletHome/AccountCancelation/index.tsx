@@ -1,5 +1,4 @@
-import { request } from '@portkey-wallet/api/api-did';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
@@ -11,17 +10,23 @@ import Loading from 'components/Loading';
 import PageContainer from 'components/PageContainer';
 import { SafeAreaColorMapKeyUnit } from 'components/PageContainer';
 import Svg from 'components/Svg';
-import { useAppleAuthentication } from 'hooks/authentication';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import useEffectOnce from 'hooks/useEffectOnce';
 import useLogOut from 'hooks/useLogOut';
 import React, { useCallback } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import { View } from 'react-native';
-import { removeManager } from '@portkey-wallet/utils/guardian';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 import { useGetCurrentLoginAccountVerifyFunc } from 'hooks/verification';
+import { useGuardiansInfo } from 'hooks/store';
+import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import {
+  getSocialLoginAccountToken,
+  deleteLoginAccount,
+  checkIsValidateDeletionAccount,
+} from '@portkey-wallet/utils/deleteAccount';
+
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['blue', 'gray'];
 
 const TipMap = {
@@ -32,53 +37,68 @@ const TipMap = {
 
 const TipList = Object.entries(TipMap).map(([title, tip]) => ({ title, tip }));
 
-const AlertMap = {
-  Asset:
-    'There are remaining assets in your account. To proceed, please first transfer all assets out of your account.',
-  Guardian: `Your Apple ID is set as a guardian by other accounts. To proceed, please first remove your Apple ID's linked guardian.`,
-  'Login Device':
-    'Your account is logged in on other devices. To proceed, please first log out there or remove the login device.',
-};
-
 const ScrollViewProps = { disabled: true };
 
 export default function AccountCancelation() {
   const { caHash, address: managerAddress, managerInfo } = useCurrentWalletInfo();
   const getCurrentCAContract = useGetCurrentCAContract();
   const currentLoginAccountVerifyFunc = useGetCurrentLoginAccountVerifyFunc();
-  const { appleSign } = useAppleAuthentication();
   const logout = useLogOut();
+  const { userGuardiansList } = useGuardiansInfo();
+  const guardianType = userGuardiansList?.[0]?.guardianType;
+  const originChainId = useOriginChainId();
 
   const onDeletion = useCallback(async () => {
     if (!caHash || !managerAddress) return;
-    let appleToken;
+    if (guardianType === undefined) return;
     Loading.show();
-    try {
-      const userInfo = await appleSign();
-      if (userInfo?.user?.id !== managerInfo?.loginAccount) {
-        Loading.hide();
-        return CommonToast.fail('Account does not match');
-      }
-      appleToken = userInfo.identityToken;
-    } catch (error) {
-      // error
-    }
-    if (!appleToken) return Loading.hide();
-    const caContract = await getCurrentCAContract();
-    const req = await removeManager(caContract, managerAddress, caHash);
-    if (req && !req.error) {
+
+    let socialLoginToken = '';
+    if (guardianType === LoginType.Email) {
       try {
-        await request.wallet.deletionAccount({ params: { appleToken } });
+        const userInfo = await getSocialLoginAccountToken({
+          currentLoginAccount: managerInfo?.loginAccount || '',
+          getAccountUserInfoFunc: currentLoginAccountVerifyFunc,
+        });
+        socialLoginToken = userInfo.identityToken;
       } catch (error) {
-        console.log(error);
-      } finally {
-        logout();
+        CommonToast.failError(error);
       }
     } else {
-      CommonToast.failError(req?.error);
+      Loading.hide();
+      return currentLoginAccountVerifyFunc();
     }
-    Loading.hide();
-  }, [appleSign, caHash, getCurrentCAContract, logout, managerAddress, managerInfo?.loginAccount]);
+
+    if (!socialLoginToken) return Loading.hide();
+    const caContract = await getCurrentCAContract();
+    const removeManagerParams = {
+      caContract,
+      managerAddress,
+      caHash,
+    };
+    const deleteParams = { type: guardianType, chainId: originChainId, token: socialLoginToken };
+
+    try {
+      await deleteLoginAccount({
+        removeManagerParams,
+        deleteParams,
+      });
+      await logout();
+    } catch (error) {
+      CommonToast.failError(error);
+    } finally {
+      Loading.hide();
+    }
+  }, [
+    caHash,
+    currentLoginAccountVerifyFunc,
+    getCurrentCAContract,
+    guardianType,
+    logout,
+    managerAddress,
+    managerInfo?.loginAccount,
+    originChainId,
+  ]);
 
   const AlertWaring = useCallback(
     (pass?: boolean) => {
@@ -104,13 +124,16 @@ export default function AccountCancelation() {
     if (!caHash || !managerAddress) return;
     Loading.show();
     try {
+      const list = await checkIsValidateDeletionAccount(LoginType[guardianType || 0]);
+
       // deletion check
-      const req = await request.wallet.deletionCheck();
-      const { validatedAssets, validatedDevice, validatedGuardian } = req || {};
-      const list: string[] = [];
-      if (!validatedAssets) list.push(AlertMap.Asset);
-      if (!validatedDevice) list.push(AlertMap['Login Device']);
-      if (!validatedGuardian) list.push(AlertMap.Guardian);
+      // const req = await request.wallet.deletionCheck();
+      // const { validatedAssets, validatedDevice, validatedGuardian } = req || {};
+
+      // const list: string[] = [];
+      // if (!validatedAssets) list.push(AlertMap.Asset);
+      // if (!validatedDevice) list.push(AlertMap['Login Device']);
+      // if (!validatedGuardian) list.push(AlertMap.Guardian);
       if (list.length > 0) {
         const messageList = list.map((tip, index) => (
           <TextM key={index} style={styles.alertMessage}>
@@ -130,7 +153,7 @@ export default function AccountCancelation() {
     } finally {
       Loading.hide();
     }
-  }, [AlertWaring, caHash, managerAddress]);
+  }, [AlertWaring, caHash, guardianType, managerAddress]);
   return (
     <PageContainer
       scrollViewProps={ScrollViewProps}

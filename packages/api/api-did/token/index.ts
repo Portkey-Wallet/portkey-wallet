@@ -5,7 +5,7 @@ export default {
   },
   fetchPopularToken: {
     target: '/api/app/userTokens',
-    config: { method: 'Get' },
+    config: { method: 'GET' },
   },
   displayUserToken: {
     target: '/api/app/userTokens',

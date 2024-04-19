@@ -2,7 +2,6 @@ import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ChainId } from '@portkey-wallet/types';
 import { NFTCollectionItemShowType, NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
 import { Collapse, Skeleton } from 'antd';
-import { List } from 'antd-mobile';
 import CustomSvg from 'components/CustomSvg';
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router';
@@ -190,16 +189,19 @@ export default function NFT() {
   return (
     <div className="tab-nft">
       {accountNFTList.length === 0 ? (
-        <p className="empty-text">No NFTs yet</p>
+        <p className="empty-nft-list">No NFTs yet</p>
       ) : (
-        <List className="nft-list">
-          <List.Item>
-            <Collapse collapsible={isFetching ? 'disabled' : undefined} onChange={handleChange}>
-              {accountNFTList.map((item) => renderItem(item))}
-            </Collapse>
+        <div className="nft-list">
+          <Collapse
+            collapsible={isFetching ? 'disabled' : undefined}
+            onChange={handleChange}
+            expandIcon={() => <CustomSvg type="Right" />}>
+            {accountNFTList.map((item) => renderItem(item))}
+          </Collapse>
+          {hasMoreNFTCollection && (
             <LoadingMore hasMore={hasMoreNFTCollection} loadMore={getMoreNFTCollection} className="load-more" />
-          </List.Item>
-        </List>
+          )}
+        </div>
       )}
     </div>
   );

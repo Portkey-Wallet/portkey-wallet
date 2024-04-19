@@ -6,7 +6,7 @@ import { LINK_TWITTER_URL, SCHEME } from '../constants/authentication';
 import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
 import { request } from '@portkey-wallet/api/api-did';
 import { parse } from 'query-string';
-import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
+// import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
 import { parseAppleIdentityToken, parseFacebookToken } from '@portkey-wallet/utils/authentication';
 import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
 import { TAppleAuthentication, TFacebookAuthentication, TTwitterAuthentication } from '../types/authentication';
@@ -117,30 +117,32 @@ export async function onTwitterAuthentication() {
   }
 }
 
+// todo_wade: facebook login
 export function onAndroidFacebookAuthentication() {
   return new Promise<TFacebookAuthentication>((resolve, reject) => {
-    LoginManager.logInWithPermissions(['public_profile']).then(function (result) {
-      if (result.isCancelled) {
-        reject(Error(USER_CANCELED));
-      } else {
-        AccessToken.getCurrentAccessToken()
-          .then(async data => {
-            if (data) {
-              const expiredTime = Math.ceil(data.expirationTime / 1000);
-              const token = data.accessToken;
-              const userId = data.userID;
-              data.accessToken = JSON.stringify({ expiredTime, token, userId });
-              const fbInfo = await parseFacebookToken(data.accessToken);
+    reject(Error(USER_CANCELED));
+    // LoginManager.logInWithPermissions(['public_profile']).then(function (result) {
+    //   if (result.isCancelled) {
+    //     reject(Error(USER_CANCELED));
+    //   } else {
+    //     AccessToken.getCurrentAccessToken()
+    //       .then(async data => {
+    //         if (data) {
+    //           const expiredTime = Math.ceil(data.expirationTime / 1000);
+    //           const token = data.accessToken;
+    //           const userId = data.userID;
+    //           data.accessToken = JSON.stringify({ expiredTime, token, userId });
+    //           const fbInfo = await parseFacebookToken(data.accessToken);
 
-              const info = { accessToken: data?.accessToken, user: fbInfo } as TFacebookAuthentication;
-              resolve(info);
-            } else {
-              reject(Error(USER_CANCELED));
-            }
-          })
-          .catch(reject);
-      }
-    }, reject);
+    //           const info = { accessToken: data?.accessToken, user: fbInfo } as TFacebookAuthentication;
+    //           resolve(info);
+    //         } else {
+    //           reject(Error(USER_CANCELED));
+    //         }
+    //       })
+    //       .catch(reject);
+    //   }
+    // }, reject);
   });
 }
 

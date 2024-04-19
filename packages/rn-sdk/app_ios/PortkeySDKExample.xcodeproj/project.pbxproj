@@ -17,9 +17,6 @@
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
 		BDAB47D359AC2AAB9911C596 /* Pods_PortkeySDKExample_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DEDFCD22761992DF0F44EF9 /* Pods_PortkeySDKExample_Tests.framework */; };
 		D5E8FF817A11343466E0CB03 /* Pods_PortkeySDKExample_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD727FC86C3577083C046133 /* Pods_PortkeySDKExample_Example.framework */; };
-		EA4B90FE2BC6979F005EB59D /* FBAEMKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA4B90FD2BC6979F005EB59D /* FBAEMKit.xcframework */; };
-		EA4B91002BC697C8005EB59D /* FBSDKCoreKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA4B90FF2BC697C8005EB59D /* FBSDKCoreKit.xcframework */; };
-		EA4B91022BC697EA005EB59D /* FBSDKCoreKit_Basics.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA4B91012BC697EA005EB59D /* FBSDKCoreKit_Basics.xcframework */; };
 		EAA3A8DD2AE8B892001D1CE0 /* TermsOfServiceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EAA3A8DC2AE8B892001D1CE0 /* TermsOfServiceViewController.m */; };
 		EAD432A92ABC29ED00EEA69D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = EAD4329B2ABC29ED00EEA69D /* InfoPlist.strings */; };
 		EAD432AA2ABC29ED00EEA69D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EAD4329E2ABC29ED00EEA69D /* AppDelegate.m */; };
@@ -93,9 +90,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EA4B91022BC697EA005EB59D /* FBSDKCoreKit_Basics.xcframework in Frameworks */,
-				EA4B91002BC697C8005EB59D /* FBSDKCoreKit.xcframework in Frameworks */,
-				EA4B90FE2BC6979F005EB59D /* FBAEMKit.xcframework in Frameworks */,
 				6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */,
 				6003F592195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F58E195388D20070C39A /* Foundation.framework in Frameworks */,
@@ -266,7 +260,6 @@
 				6003F588195388D20070C39A /* Resources */,
 				6A582D2C5C7FE5B1DC95747A /* [CP] Copy Pods Resources */,
 				EAF1224A2AEA1AFE00C60025 /* ShellScript */,
-				CC88C708E1442F5C8A8C1D32 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -526,28 +519,6 @@
 			shellPath = /bin/sh;
 			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-PortkeySDKExample_Tests/expo-configure-project.sh\"\n";
 		};
-		CC88C708E1442F5C8A8C1D32 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PortkeySDKExample_Example/Pods-PortkeySDKExample_Example-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/FBAEMKit/FBAEMKit.framework/FBAEMKit",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/FBSDKCoreKit/FBSDKCoreKit.framework/FBSDKCoreKit",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/FBSDKCoreKit_Basics/FBSDKCoreKit_Basics.framework/FBSDKCoreKit_Basics",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBAEMKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKCoreKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKCoreKit_Basics.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PortkeySDKExample_Example/Pods-PortkeySDKExample_Example-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		EAF1224A2AEA1AFE00C60025 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -681,14 +652,8 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					" ",
-				);
-				OTHER_CPLUSPLUSFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_CFLAGS = "$(inherited)  ";
+				OTHER_CPLUSPLUSFLAGS = "$(inherited)  ";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-Wl",
@@ -740,14 +705,8 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					" ",
-				);
-				OTHER_CPLUSPLUSFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_CFLAGS = "$(inherited)  ";
+				OTHER_CPLUSPLUSFLAGS = "$(inherited)  ";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-Wl",

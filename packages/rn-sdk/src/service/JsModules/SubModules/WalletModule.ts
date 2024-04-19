@@ -90,18 +90,22 @@ const WalletModule: BaseJSModule = {
     //     status: 'fail',
     //     error: 'wallet is not unlocked or created! You have to unlock wallet before trying to exit.',
     //   });
-    // }
+    // }if (resp && !resp.error) {
     try {
       const res = await callRemoveManagerMethod();
-      if (!res.error) {
+      console.log('res', res);
+      if (!res || !res.error) {
+        console.log('logout success', res);
         resetStore();
+        // todo wfs, need delete this code
         exitWallet();
       } else {
+        console.error('logout failed', res);
         throw res.error;
       }
       return emitJSMethodResult(eventId, {
-        status: !res.error ? 'success' : 'fail',
-        data: { result: res.data },
+        status: !res || !res.error ? 'success' : 'fail',
+        data: { result: res ? res.data : '' },
       });
     } catch (e) {
       console.error('error when callRemoveManagerMethod', e);

@@ -3,6 +3,10 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'com.facebook.react'
 }
+//apply plugin: 'com.facebook.react'
+react {
+    nodeExecutableAndArgs = ["/usr/local/bin/node"]
+}
 preBuild.doFirst {
     Properties properties = new Properties()
     properties.load(project.rootProject.file('local.properties').newDataInputStream())

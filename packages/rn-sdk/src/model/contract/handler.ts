@@ -472,17 +472,12 @@ export const callRemoveManagerMethod = async () => {
     account: account,
   });
   console.log('caHash is', caHash, 'address is', managerAddress);
-  const resp = await removeManager(caContract, managerAddress, caHash);
-  if (resp && !resp.error) {
-    console.log('logout success', resp);
-    resetStore();
-  } else {
-    console.error(resp);
-    throw resp?.error?.message || '';
-  }
   return await removeManager(caContract, managerAddress, caHash, {
     onMethod: 'transactionHash',
   });
+  // return await removeManager(caContract, managerAddress, caHash, {
+  //   onMethod: 'transactionHash',
+  // });
   // return;
   // return await contractInstance.callSendMethod('RemoveManagerInfo', address, {
   //   caHash,

@@ -67,6 +67,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
         params: {
           symbol: keyword,
           chainIds: chainIdArray,
+          version: '1.11.1',
         },
       });
       const _target = (res || []).map((item: any) => ({

@@ -1,4 +1,5 @@
 import { request } from '@portkey-wallet/api/api-did';
+import { ChainId } from '@portkey-wallet/types';
 
 export function fetchAllTokenList({
   keyword,
@@ -10,18 +11,24 @@ export function fetchAllTokenList({
   chainIdArray: string[];
   skipCount?: number;
   maxResultCount?: number;
-}): Promise<{ items: any[]; totalCount: number }> {
-  const chainIdSearchLanguage = chainIdArray.map(chainId => `token.chainId:${chainId}`).join(' OR ');
-
-  const filterKeywords =
-    keyword?.length < 10 ? `token.symbol: *${keyword.toUpperCase().trim()}*` : `token.address:${keyword}`;
-
-  return request.es.getUserTokenList({
+}): Promise<{
+  items: {
+    id: string;
+    chainId: ChainId;
+    symbol: string;
+    decimals: number;
+    isDefault: boolean;
+    isDisplay: boolean;
+    address: string;
+    imageUrl?: string;
+    name?: string;
+  }[];
+  totalCount: number;
+}> {
+  return request.token.fetchPopularToken({
     params: {
-      filter: `${filterKeywords} AND (${chainIdSearchLanguage})`,
-      // filter: `${filterKeywords}`,
-
-      sort: 'sortWeight desc,isDisplay  desc,token.symbol  acs,token.chainId acs',
+      chainIds: chainIdArray,
+      keyword,
       skipCount,
       maxResultCount,
     },

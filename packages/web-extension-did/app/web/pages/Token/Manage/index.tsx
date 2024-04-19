@@ -76,6 +76,7 @@ export default function AddToken() {
             chainIds: chainIdArray,
             skipCount: 0,
             maxResultCount: PAGE_SIZE_DEFAULT,
+            version: '1.11.1',
           },
         });
         const _target = (res || []).map((item: any) => ({

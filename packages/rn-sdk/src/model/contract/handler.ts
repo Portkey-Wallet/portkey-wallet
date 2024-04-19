@@ -480,7 +480,9 @@ export const callRemoveManagerMethod = async () => {
     console.error(resp);
     throw resp?.error?.message || '';
   }
-  return await removeManager(caContract, managerAddress, caHash);
+  return await removeManager(caContract, managerAddress, caHash, {
+    onMethod: 'transactionHash',
+  });
   // return;
   // return await contractInstance.callSendMethod('RemoveManagerInfo', address, {
   //   caHash,

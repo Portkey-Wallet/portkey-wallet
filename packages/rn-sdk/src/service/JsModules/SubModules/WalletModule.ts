@@ -76,10 +76,15 @@ const WalletModule: BaseJSModule = {
       data: { succeed: true },
     });
   },
+  releaseStore: async (props: BaseMethodParams) => {
+    const { eventId = '' } = props;
+    console.log('releaseStore called ', 'eventId: ', eventId);
+    resetStore();
+  },
 
   exitWallet: async (props: BaseMethodParams) => {
     const { eventId = '' } = props;
-    console.log('exitWallet called ', 'eventId: ', eventId);
+    console.log('exitWallet called', 'eventId: ', eventId);
     // if (!(await isWalletUnlocked())) {
     //   return emitJSMethodResult(eventId, {
     //     status: 'fail',

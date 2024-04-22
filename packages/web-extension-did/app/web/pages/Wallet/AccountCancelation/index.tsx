@@ -151,7 +151,7 @@ export default function AccountCancelation() {
           caHash: caHash as string,
         },
         deleteParams: {
-          type: uniqueGuardianType as keyof typeof LoginType,
+          type: uniqueGuardianType,
           chainId: originChainId,
           token: access_token,
           verifierId: uniqueGuardian?.verifier?.id ?? '',

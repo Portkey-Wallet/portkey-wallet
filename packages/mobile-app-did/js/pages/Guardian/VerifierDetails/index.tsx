@@ -194,7 +194,7 @@ export default function VerifierDetails() {
 
           case VerificationType.revokeAccount: {
             //TODO: CHANGE ACTION
-            console.log('revokeAccount!!');
+
             const caContract = await getCurrentCAContract();
             const removeManagerParams = {
               caContract,

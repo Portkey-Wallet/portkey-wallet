@@ -60,7 +60,7 @@ export default function VerifyAccountCancelation() {
             caHash: caHash as string,
           },
           deleteParams: {
-            type: _type as keyof typeof LoginType,
+            type: _type,
             chainId: originChainId,
             token: code,
             guardianIdentifier: managerInfo?.loginAccount,

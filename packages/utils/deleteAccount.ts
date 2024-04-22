@@ -1,4 +1,4 @@
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { LoginKeyType, LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { request } from '@portkey-wallet/api/api-did';
 import { ChainId } from '@portkey-wallet/types';
 import { removeManager } from '@portkey-wallet/utils/guardian';
@@ -6,7 +6,6 @@ import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { SendOptions } from '@portkey-wallet/contracts/types';
 import { ACCOUNT_CANCELATION_ALERT_MAP } from '@portkey-wallet/constants/constants-ca/wallet';
 
-// TODO: type change
 export async function checkIsValidateDeletionAccount(type: string): Promise<string[]> {
   const req = await request.wallet.deletionCheckV2({
     params: { type },
@@ -45,7 +44,7 @@ export async function deleteLoginAccount({
     sendOptions?: SendOptions;
   };
   deleteParams: {
-    type: keyof typeof LoginType;
+    type: LoginKeyType;
     chainId: ChainId;
     token: string;
     guardianIdentifier?: string;

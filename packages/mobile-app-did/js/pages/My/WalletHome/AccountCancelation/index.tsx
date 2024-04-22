@@ -13,7 +13,7 @@ import Svg from 'components/Svg';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import useEffectOnce from 'hooks/useEffectOnce';
 import useLogOut from 'hooks/useLogOut';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import { View } from 'react-native';
 import navigationService from 'utils/navigationService';
@@ -26,16 +26,15 @@ import {
   deleteLoginAccount,
   checkIsValidateDeletionAccount,
 } from '@portkey-wallet/utils/deleteAccount';
+import {
+  ACCOUNT_CANCELATION_CONDITIONS,
+  ACCOUNT_CANCELATION_NOTE,
+  ACCOUNT_CANCELATION_TIP,
+  ACCOUNT_CANCELATION_WARNING,
+} from '@portkey-wallet/constants/constants-ca/wallet';
+import { CONTACT_PRIVACY_TYPE_LABEL_MAP } from '@portkey-wallet/constants/constants-ca/contact';
 
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['blue', 'gray'];
-
-const TipMap = {
-  Asset: 'Your account has no balance, including tokens and NFTs.',
-  Guardian: 'Your Apple ID is not set as a guardian by any other accounts.',
-  'Login Device': 'Your account is only logged in on this device.',
-};
-
-const TipList = Object.entries(TipMap).map(([title, tip]) => ({ title, tip }));
 
 const ScrollViewProps = { disabled: true };
 
@@ -45,7 +44,9 @@ export default function AccountCancelation() {
   const currentLoginAccountVerifyFunc = useGetCurrentLoginAccountVerifyFunc();
   const logout = useLogOut();
   const { userGuardiansList } = useGuardiansInfo();
-  const guardianType = userGuardiansList?.[0]?.guardianType;
+  const guardianItem = useMemo(() => userGuardiansList?.[0], [userGuardiansList]);
+  const { guardianType, verifier } = guardianItem || {};
+
   const originChainId = useOriginChainId();
 
   const onDeletion = useCallback(async () => {
@@ -55,18 +56,18 @@ export default function AccountCancelation() {
 
     let socialLoginToken = '';
     if (guardianType === LoginType.Email) {
+      Loading.hide();
+      return currentLoginAccountVerifyFunc?.();
+    } else {
       try {
-        const userInfo = await getSocialLoginAccountToken({
+        const token = await getSocialLoginAccountToken({
           currentLoginAccount: managerInfo?.loginAccount || '',
           getAccountUserInfoFunc: currentLoginAccountVerifyFunc,
         });
-        socialLoginToken = userInfo.identityToken;
+        socialLoginToken = token;
       } catch (error) {
         CommonToast.failError(error);
       }
-    } else {
-      Loading.hide();
-      return currentLoginAccountVerifyFunc();
     }
 
     if (!socialLoginToken) return Loading.hide();
@@ -76,7 +77,12 @@ export default function AccountCancelation() {
       managerAddress,
       caHash,
     };
-    const deleteParams = { type: guardianType, chainId: originChainId, token: socialLoginToken };
+    const deleteParams = {
+      type: LoginType[guardianType],
+      chainId: originChainId,
+      token: socialLoginToken,
+      verifierId: verifier?.id || '',
+    };
 
     try {
       await deleteLoginAccount({
@@ -98,13 +104,14 @@ export default function AccountCancelation() {
     managerAddress,
     managerInfo?.loginAccount,
     originChainId,
+    verifier?.id,
   ]);
 
   const AlertWaring = useCallback(
     (pass?: boolean) => {
       ActionSheet.alert({
         title: 'Warning',
-        message: `Are you sure you want to delete your account? Please note that you won't be able to recover your account once it's deleted. `,
+        message: ACCOUNT_CANCELATION_WARNING,
         buttons: [
           { title: 'Cancel', onPress: pass ? undefined : navigationService.goBack, type: 'outline' },
           { title: 'Continue', onPress: pass ? onDeletion : undefined },
@@ -126,24 +133,12 @@ export default function AccountCancelation() {
     try {
       const list = await checkIsValidateDeletionAccount(LoginType[guardianType || 0]);
 
-      // deletion check
-      // const req = await request.wallet.deletionCheck();
-      // const { validatedAssets, validatedDevice, validatedGuardian } = req || {};
-
-      // const list: string[] = [];
-      // if (!validatedAssets) list.push(AlertMap.Asset);
-      // if (!validatedDevice) list.push(AlertMap['Login Device']);
-      // if (!validatedGuardian) list.push(AlertMap.Guardian);
       if (list.length > 0) {
-        const messageList = list.map((tip, index) => (
-          <TextM key={index} style={styles.alertMessage}>
-            {list.length > 1 ? `${index + 1}. ` : ''}
-            {tip}
-          </TextM>
-        ));
         return ActionSheet.alert({
           title: 'Unable to Delete Account',
-          messageList: messageList,
+          messageList: list.map(ele =>
+            ele.replace(/LOGIN_ACCOUNT/g, CONTACT_PRIVACY_TYPE_LABEL_MAP[guardianType || 0]),
+          ),
           buttons: [{ title: 'OK' }],
         });
       }
@@ -163,21 +158,18 @@ export default function AccountCancelation() {
       <ScrollView>
         <View style={styles.containerStyle}>
           <Svg icon="warning" color={FontStyles.font13.color} size={pTd(42)} />
-          <TextM style={styles.tipText}>
-            Account deletion is an irreversible operation. Once deleted, your account cannot be recovered. Please
-            carefully consider this before continuing.
-          </TextM>
+          <TextM style={styles.tipText}>{ACCOUNT_CANCELATION_TIP}</TextM>
           <View style={styles.boxStyle}>
-            <TextM style={FontStyles.font3}>
-              Please note that your account can only be deleted if it meets the following conditions:
-            </TextM>
-            {TipList.map(({ title, tip }, index) => {
+            <TextM style={FontStyles.font3}>{ACCOUNT_CANCELATION_NOTE}</TextM>
+            {ACCOUNT_CANCELATION_CONDITIONS.map(({ title, content }, index) => {
               return (
                 <View style={styles.tipItem} key={index}>
                   <TextL style={styles.titleStyle}>
                     {index + 1}. {title}
                   </TextL>
-                  <TextM style={FontStyles.font3}>{tip}</TextM>
+                  <TextM style={FontStyles.font3}>
+                    {content.replace(/LOGIN_ACCOUNT/g, CONTACT_PRIVACY_TYPE_LABEL_MAP[guardianType || 0])}
+                  </TextM>
                 </View>
               );
             })}

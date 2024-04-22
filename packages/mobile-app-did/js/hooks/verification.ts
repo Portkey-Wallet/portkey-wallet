@@ -7,11 +7,14 @@ import {
   useTwitterAuthentication,
 } from './authentication';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { verification } from 'utils/api';
 import { OperationTypeEnum, VerificationType } from '@portkey-wallet/types/verifier';
 import { useGuardiansInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
 import navigationService from 'utils/navigationService';
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const noop = () => {};
 
 export const useGetCurrentLoginAccountVerifyFunc = () => {
   const { appleSign } = useAppleAuthentication();
@@ -21,7 +24,7 @@ export const useGetCurrentLoginAccountVerifyFunc = () => {
   const { facebookSign } = useFacebookAuthentication();
   const originChainId = useOriginChainId();
   const { userGuardiansList } = useGuardiansInfo();
-  const guardianType = userGuardiansList?.[0].guardianType;
+  const guardianType = useMemo(() => userGuardiansList?.[0].guardianType, [userGuardiansList]);
 
   const emailSign = useCallback(async () => {
     const req = await verification.sendVerificationCode({
@@ -47,6 +50,8 @@ export const useGetCurrentLoginAccountVerifyFunc = () => {
     }
   }, [originChainId, userGuardiansList]);
 
+  console.log('guardianType', guardianType);
+
   switch (guardianType) {
     case LoginType.Apple:
       return appleSign;
@@ -61,6 +66,6 @@ export const useGetCurrentLoginAccountVerifyFunc = () => {
     case LoginType.Email:
       return emailSign;
     default:
-      throw 'no verify func ';
+      return noop;
   }
 };

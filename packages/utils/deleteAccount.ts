@@ -14,9 +14,10 @@ export async function checkIsValidateDeletionAccount(type: string): Promise<stri
   const { validatedAssets, validatedDevice, validatedGuardian } = req || {};
   const list: string[] = [];
   if (!validatedAssets) list.push(ACCOUNT_CANCELATION_ALERT_MAP.Asset);
-  if (!validatedDevice) list.push(ACCOUNT_CANCELATION_ALERT_MAP['Login Device']);
   if (!validatedGuardian) list.push(ACCOUNT_CANCELATION_ALERT_MAP.Guardian);
-  return list;
+  if (!validatedDevice) list.push(ACCOUNT_CANCELATION_ALERT_MAP.LoginDevice);
+
+  return list.length > 1 ? list.map((ele, index) => `${index + 1}. ${ele}`) : list;
 }
 
 export async function getSocialLoginAccountToken({
@@ -25,13 +26,13 @@ export async function getSocialLoginAccountToken({
 }: {
   currentLoginAccount: string;
   // todo: change type
-  getAccountUserInfoFunc: () => Promise<any>;
-}) {
+  getAccountUserInfoFunc: () => Promise<any> | void;
+}): Promise<string> {
   const userInfo = await getAccountUserInfoFunc();
   if (userInfo?.user?.id !== currentLoginAccount) {
     throw 'Account does not match';
   }
-  return userInfo?.user?.id;
+  return userInfo?.user?.id || '';
 }
 
 export async function deleteLoginAccount({
@@ -46,12 +47,12 @@ export async function deleteLoginAccount({
     sendOptions?: SendOptions;
   };
   deleteParams: {
-    type: LoginType;
+    type: string;
     chainId: ChainId;
     token: string;
     guardianIdentifier?: string;
     verifierSessionId?: string;
-    verifierId?: string;
+    verifierId: string;
   };
 }) {
   const { caContract, managerAddress, caHash, sendOptions } = removeManagerParams;

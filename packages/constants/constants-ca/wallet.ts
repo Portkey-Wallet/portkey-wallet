@@ -2,9 +2,7 @@ export const CROSS_FEE = '0.35';
 export const DEFAULT_FEE = '0.39';
 
 export const CreateAddressLoading = 'Creating a wallet address on the blockchain...';
-
 export const CheckAccountLoading = 'Checking account info on the blockchain...';
-
 export const AssignVerifierLoading = 'Assigning a verifier on the blockchain...';
 
 export const InitLoginLoading = 'Initiating social recovery';
@@ -30,29 +28,25 @@ export const FAUCET_URL = 'https://testnet-faucet.aelf.io/';
 export const MAX_TRANSACTION_FEE = '0.1';
 export const PORTKEY_PROJECT_CODE = '10000';
 
-export const ACCOUNT_CANCELATION_TIP = `Account cancellation is a highly risky operation, and once canceled, it cannot be retrieved permanently. Please carefully confirm this again.`;
-
-export const ACCOUNT_CANCELATION_NOTE = `Please note that the cancellation of the account requires the following conditions.`;
-
+export const ACCOUNT_CANCELATION_TIP = `Account deletion is an irreversible operation. Once deleted, your account cannot be recovered. Please carefully consider this before continuing.`;
+export const ACCOUNT_CANCELATION_NOTE = `Please note that your account can only be deleted if it meets the following conditions:`;
 export const ACCOUNT_CANCELATION_CONDITIONS = [
   {
     title: `Asset`,
     content: `Please transfer all of your assets out of your account, including Tokens and NFTs.`,
   },
   {
-    title: `Guardians`,
-    content: `Please ensure that other users have already disassociated the Guardian from your current Apple ID.`,
+    title: `Guardian`,
+    content: `Please ensure that other users have already disassociated the Guardian from your current LOGIN_ACCOUNT.`,
   },
   {
-    title: `Login Devices`,
-    content: `Please remove other login devices.`,
+    title: `Login Device`,
+    content: `Your account is only logged in on this device.`,
   },
 ];
-
 export const ACCOUNT_CANCELATION_ALERT_MAP = {
-  Asset: `There are still remaining assets in your account. Please transfer all assets out of your account.`,
-  Guardian: `Your LOGIN_ACCOUNT has been used by other users to bind Guardian. Please release these binding relationships.`,
-  'Login Device': `Your account has been logged in on another device. Please remove the other device.`,
+  Asset: `There are remaining assets in your account. To proceed, please first transfer all assets out of your account.`,
+  Guardian: `Your LOGIN_ACCOUNT is set as a guardian by other accounts. To proceed, please first remove your Apple ID's linked guardian.`,
+  LoginDevice: `Your account is logged in on other devices. To proceed, please first log out there or remove the login device.`,
 };
-
-export const ACCOUNT_CANCELATION_WARNING = `Please note that once you cancel your account, it cannot be recovered. Are you still want to proceed with the account cancellation?`;
+export const ACCOUNT_CANCELATION_WARNING = `Are you sure you want to delete your account? Please note that you won't be able to recover your account once it's deleted.`;

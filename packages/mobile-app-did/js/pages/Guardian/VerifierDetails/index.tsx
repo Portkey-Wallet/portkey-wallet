@@ -36,6 +36,7 @@ import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { deleteLoginAccount } from '@portkey-wallet/utils/deleteAccount';
 import { useGetCurrentCAContract } from 'hooks/contract';
+import useLogOut from 'hooks/useLogOut';
 
 type RouterParams = {
   guardianItem?: UserGuardianItem;
@@ -87,6 +88,7 @@ export default function VerifierDetails() {
   const getCurrentCAContract = useGetCurrentCAContract();
   const pin = usePin();
   const onRequestOrSetPin = useOnRequestOrSetPin();
+  const logout = useLogOut();
 
   const setGuardianStatus = useCallback(
     (status: GuardiansStatusItem) => {
@@ -200,12 +202,12 @@ export default function VerifierDetails() {
               caHash: caHash || '',
             };
             const deleteParams = {
-              type: guardianItem.guardianType,
+              type: LoginType[guardianItem.guardianType],
               chainId: originChainId,
               token: code,
               guardianIdentifier: guardianItem.guardianAccount,
               ...requestCodeResult,
-              verifierId: guardianItem?.verifier?.id,
+              verifierId: guardianItem?.verifier?.id || '',
             };
 
             try {
@@ -269,6 +271,7 @@ export default function VerifierDetails() {
       accelerateChainId,
       getCurrentCAContract,
       caHash,
+      logout,
       autoLogin,
       registerAccount,
       setCodeError,
@@ -337,6 +340,3 @@ const styles = StyleSheet.create({
     paddingHorizontal: pTd(20),
   },
 });
-function logout() {
-  throw new Error('Function not implemented.');
-}

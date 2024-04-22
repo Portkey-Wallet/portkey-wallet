@@ -25,7 +25,6 @@ export async function getSocialLoginAccountToken({
   getAccountUserInfoFunc,
 }: {
   currentLoginAccount: string;
-  // todo: change type
   getAccountUserInfoFunc: () => Promise<any> | void;
 }): Promise<string> {
   const userInfo = await getAccountUserInfoFunc();
@@ -43,7 +42,6 @@ export async function deleteLoginAccount({
     caContract: ContractBasic;
     managerAddress: string;
     caHash: string;
-    // TODO: change
     sendOptions?: SendOptions;
   };
   deleteParams: {

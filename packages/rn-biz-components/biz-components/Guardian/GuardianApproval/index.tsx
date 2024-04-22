@@ -59,6 +59,7 @@ import { useIsFocused } from '@portkey-wallet/rn-inject-sdk';
 import { NavigateMultiLevelParams } from '@portkey-wallet/rn-base/types/navigate';
 import { isCrossChain } from '@portkey-wallet/utils/aelf';
 import { useGetTransferFee } from '@portkey-wallet/rn-base/hooks/transfer';
+import Environment from '@portkey-wallet/rn-inject';
 
 export type ApproveInfo = {
   symbol: string;
@@ -234,7 +235,7 @@ export default function GuardianApproval() {
         if (approveParams?.isDiscover) {
           navigationService.navigate('Tab');
         } else {
-          navigationService.navigate('GuardianEdit');
+          Environment.isAPP() ? navigationService.navigate('GuardianEdit') : navigationService.goBack();
         }
         break;
       case ApprovalType.setLoginAccount:
@@ -320,7 +321,11 @@ export default function GuardianApproval() {
       CommonToast.success('Guardians Added');
       myEvents.refreshGuardiansList.emit();
       if (!accelerateChainId) {
-        navigationService.navigate('GuardianHome');
+        if (Environment.isAPP()) {
+          navigationService.navigate('GuardianHome');
+        } else {
+          navigationService.reset('GuardianHome');
+        }
       } else {
         if ([LoginType.Email, LoginType.Phone].includes(guardianItem.guardianType)) {
           navigationService.pop(3);
@@ -388,7 +393,11 @@ export default function GuardianApproval() {
       if (req && !req.error) {
         dispatch(setPreGuardianAction(undefined));
         myEvents.refreshGuardiansList.emit();
-        navigationService.navigate('GuardianHome');
+        if (Environment.isAPP()) {
+          navigationService.navigate('GuardianHome');
+        } else {
+          navigationService.reset('GuardianHome');
+        }
       } else {
         CommonToast.fail(req?.error?.message || '');
       }

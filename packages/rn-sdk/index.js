@@ -11,6 +11,8 @@ import persistStore from 'redux-persist/es/persistStore';
 import Environment from '@portkey-wallet/rn-inject';
 import Config from 'react-native-config';
 import secureStore from '@portkey-wallet/utils/mobile/secureStore';
+import { Buffer } from 'buffer';
+global.Buffer = Buffer;
 
 Environment.inject({ environment: 'SDK' });
 secureStore.init(Config.PORT_KEY_CODE || 'EXAMPLE_PORT_KEY_CODE');

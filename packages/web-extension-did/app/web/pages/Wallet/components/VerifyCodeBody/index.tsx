@@ -3,13 +3,14 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { useCommonState, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { sendRevokeVerifyCodeAsync } from '@portkey-wallet/utils/deleteAccount';
 import { AccountType } from '@portkey/services';
 import singleMessage from 'utils/singleMessage';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { ICodeFinishParams } from 'pages/Wallet/VerifyAccountCancelation';
 import { useLocationState } from 'hooks/router';
 import { TVerifyAccountCancelLocationState } from 'types/router';
+import { verification } from 'utils/api';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 
 const MAX_TIMER = 60;
 interface ICodeVerifyUIInterface {
@@ -38,10 +39,14 @@ export default function VerifyCodeBody({ onCodeFinish }: IVerifyCodeBody) {
     try {
       setLoading(true);
       const _type = LoginType[uniqueGuardian?.guardianType as LoginType];
-      const res = await sendRevokeVerifyCodeAsync({
-        guardianIdentifier: uniqueGuardian?.guardianAccount ?? '',
-        chainId: originChainId,
-        type: _type as keyof typeof LoginType,
+      const res = await verification.sendVerificationCode({
+        params: {
+          guardianIdentifier: uniqueGuardian?.guardianAccount ?? '',
+          type: _type,
+          verifierId: uniqueGuardian?.verifier?.id,
+          chainId: originChainId,
+          operationType: OperationTypeEnum.revokeAccount,
+        },
       });
       setLoading(false);
       if (res.verifierSessionId) {
@@ -53,7 +58,13 @@ export default function VerifyCodeBody({ onCodeFinish }: IVerifyCodeBody) {
       setLoading(false);
       singleMessage.error(handleErrorMessage(error));
     }
-  }, [setLoading, uniqueGuardian?.guardianType, uniqueGuardian?.guardianAccount, originChainId]);
+  }, [
+    setLoading,
+    uniqueGuardian?.guardianType,
+    uniqueGuardian?.guardianAccount,
+    uniqueGuardian?.verifier?.id,
+    originChainId,
+  ]);
 
   const handleCodeFinish = useCallback(
     (code: string) => {
@@ -70,11 +81,10 @@ export default function VerifyCodeBody({ onCodeFinish }: IVerifyCodeBody) {
           className={isNotLessThan768 ? '' : 'popup-page'}
           verifier={uniqueGuardian?.verifier as any}
           guardianIdentifier={managerInfo?.loginAccount ?? ''}
-          // isCountdownNow={isInitStatus}
+          isCountdownNow={true}
           isLoginGuardian={uniqueGuardian?.isLoginAccount}
           accountType={LoginType[uniqueGuardian?.guardianType as LoginType] as AccountType}
           code={code}
-          // tipExtra={!isFromLoginOrRegister && 'Please contact your guardians, and enter '}
           onReSend={onReSend}
           onCodeFinish={handleCodeFinish}
           onCodeChange={setCode}

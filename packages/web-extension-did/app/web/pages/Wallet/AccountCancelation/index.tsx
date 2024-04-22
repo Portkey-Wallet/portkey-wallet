@@ -7,8 +7,8 @@ import { ACCOUNT_CANCELATION_WARNING } from '@portkey-wallet/constants/constants
 import singleMessage from 'utils/singleMessage';
 import {
   checkIsValidateDeletionAccount,
-  sendRevokeVerifyCodeAsync,
   deleteLoginAccount,
+  getSocialLoginAccountToken,
 } from '@portkey-wallet/utils/deleteAccount';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import CustomModal from 'pages/components/CustomModal';
@@ -17,14 +17,15 @@ import useGuardianList from 'hooks/useGuardianList';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { SOCIAL_GUARDIAN_TYPE } from '@portkey-wallet/constants/constants-ca/contact';
 import { ISocialLogin, LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
-import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import getSeed from 'utils/getSeed';
 import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
 import useLogOut from 'hooks/useLogout';
 import { FromPageEnum, TVerifyAccountCancelLocationState } from 'types/router';
 import CancelBody from '../components/AccountCancelationBody';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
+import { verification } from 'utils/api';
+import { useAuthSocialAccountInfo } from 'hooks/authentication';
 import './index.less';
 
 export interface IAccountCancelationProps {
@@ -36,15 +37,26 @@ export interface IAccountCancelationProps {
 export default function AccountCancelation() {
   const navigate = useNavigateState<TVerifyAccountCancelLocationState>();
   const { isNotLessThan768 } = useCommonState();
-  const { caHash, address: managerAddress, managerInfo } = useCurrentWalletInfo();
+  const { caHash, address: managerAddress } = useCurrentWalletInfo();
   const { setLoading } = useLoading();
   const getGuardianList = useGuardianList();
   const { userGuardiansList } = useGuardiansInfo();
   const uniqueGuardian = useMemo(() => userGuardiansList?.[0], [userGuardiansList]);
-  const currentNetwork = useCurrentNetwork();
+  const uniqueGuardianType = useMemo(
+    () => LoginType[uniqueGuardian?.guardianType ?? '0'],
+    [uniqueGuardian?.guardianType],
+  );
   const originChainId = useOriginChainId();
   const originChainInfo = useCurrentChain(originChainId);
+  const getAuthSocialAccountInfo = useAuthSocialAccountInfo(uniqueGuardianType as ISocialLogin);
   const logout = useLogOut();
+  const showGuardianType = useMemo(
+    () =>
+      SOCIAL_GUARDIAN_TYPE.includes(uniqueGuardian?.guardianType ?? LoginType.Email)
+        ? `${uniqueGuardianType} account`
+        : uniqueGuardianType,
+    [uniqueGuardian?.guardianType, uniqueGuardianType],
+  );
 
   useEffectOnce(() => {
     getGuardianList({ caHash });
@@ -53,7 +65,7 @@ export default function AccountCancelation() {
   const handleCheck = useCallback(async () => {
     try {
       if (!caHash || !managerAddress) return false;
-      const list = await checkIsValidateDeletionAccount();
+      const list = await checkIsValidateDeletionAccount(uniqueGuardianType);
       if (list.length > 0) {
         const showList = list.length > 1 ? list.map((item, index) => `${index + 1}. ${item}`) : list;
         CustomModal({
@@ -63,7 +75,7 @@ export default function AccountCancelation() {
               <div className="content condition-content flex-column">
                 {showList.map((item, i) => (
                   <div className="condition-item" key={`condition_${i}`}>
-                    {item}
+                    {item.replace(/LOGIN_ACCOUNT/g, showGuardianType)}
                   </div>
                 ))}
               </div>
@@ -72,6 +84,7 @@ export default function AccountCancelation() {
           onCancel: () => false,
           onOk: () => false,
         });
+        return false;
       }
       return true;
     } catch (error) {
@@ -79,16 +92,19 @@ export default function AccountCancelation() {
       singleMessage.error(handleErrorMessage(error));
       return false;
     }
-  }, [caHash, managerAddress]);
+  }, [caHash, managerAddress, showGuardianType, uniqueGuardianType]);
 
   const handleSendCode = useCallback(async () => {
     try {
-      const _type = LoginType[uniqueGuardian?.guardianType as LoginType];
-
-      const res = await sendRevokeVerifyCodeAsync({
-        guardianIdentifier: uniqueGuardian?.guardianAccount ?? '',
-        chainId: originChainId,
-        type: _type as keyof typeof LoginType,
+      setLoading(true);
+      const res = await verification.sendVerificationCode({
+        params: {
+          guardianIdentifier: uniqueGuardian?.guardianAccount ?? '',
+          type: uniqueGuardianType,
+          verifierId: uniqueGuardian?.verifier?.id,
+          chainId: originChainId,
+          operationType: OperationTypeEnum.revokeAccount,
+        },
       });
       if (res.verifierSessionId) {
         navigate('/setting/wallet/account-cancelation-code', {
@@ -101,26 +117,32 @@ export default function AccountCancelation() {
     } catch (error) {
       console.log('===deletion account send code error', error);
       singleMessage.error(handleErrorMessage(error));
+    } finally {
+      setLoading(false);
     }
-  }, [navigate, originChainId, uniqueGuardian?.guardianAccount, uniqueGuardian?.guardianType]);
+  }, [
+    navigate,
+    originChainId,
+    setLoading,
+    uniqueGuardian?.guardianAccount,
+    uniqueGuardian?.verifier?.id,
+    uniqueGuardianType,
+  ]);
 
   const handleSocialAccountCancel = useCallback(async () => {
     try {
       setLoading(true);
-      const _type = LoginType[uniqueGuardian?.guardianType as LoginType];
-      const result = await socialLoginAction(_type as ISocialLogin, currentNetwork);
-      const access_token = result?.data?.access_token;
-      if (!access_token) throw 'Auth Error';
-      if (access_token !== managerInfo?.loginAccount) {
-        throw 'Account does not match';
-      }
+      const access_token = await getSocialLoginAccountToken({
+        currentLoginAccount: uniqueGuardian?.guardianAccount ?? '',
+        getAccountUserInfoFunc: getAuthSocialAccountInfo,
+      });
       if (!originChainInfo) throw 'Missing chainInfo, please check';
       const { privateKey } = await getSeed();
       if (!privateKey) throw 'Missing pin, please check';
       const contract = new ExtensionContractBasic({
         privateKey,
         rpcUrl: originChainInfo.endPoint,
-        contractAddress: originChainInfo.defaultToken.address,
+        contractAddress: originChainInfo.caContractAddress,
       });
       await deleteLoginAccount({
         removeManagerParams: {
@@ -129,27 +151,30 @@ export default function AccountCancelation() {
           caHash: caHash as string,
         },
         deleteParams: {
-          type: _type as keyof typeof LoginType,
+          type: uniqueGuardianType as keyof typeof LoginType,
           chainId: originChainId,
           token: access_token,
+          verifierId: uniqueGuardian?.verifier?.id ?? '',
         },
       });
       logout();
     } catch (error) {
-      setLoading(false);
       console.log('===account cancelation error', error);
-      singleMessage.error(handleErrorMessage(error));
+      singleMessage.error(handleErrorMessage(error ?? 'Account cancelation error'));
+    } finally {
+      setLoading(false);
     }
   }, [
     caHash,
-    currentNetwork,
+    getAuthSocialAccountInfo,
     logout,
     managerAddress,
-    managerInfo?.loginAccount,
     originChainId,
     originChainInfo,
     setLoading,
-    uniqueGuardian?.guardianType,
+    uniqueGuardian?.guardianAccount,
+    uniqueGuardian?.verifier?.id,
+    uniqueGuardianType,
   ]);
 
   const handleAccountCancel = useCallback(() => {
@@ -203,9 +228,9 @@ export default function AccountCancelation() {
     () => ({
       headerTitle: 'Account Cancelation',
       goBack: () => navigate('/setting/wallet/wallet-name'),
-      renderContent: <CancelBody onConfirm={onConfirm} />,
+      renderContent: <CancelBody onConfirm={onConfirm} showGuardianType={showGuardianType} />,
     }),
-    [navigate, onConfirm],
+    [navigate, onConfirm, showGuardianType],
   );
 
   return isNotLessThan768 ? <AccountCancelationPrompt {...props} /> : <AccountCancelationPopup {...props} />;

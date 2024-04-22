@@ -9,9 +9,10 @@ import './index.less';
 
 interface IAccountCancelationBody {
   onConfirm: () => Promise<void>;
+  showGuardianType: string;
 }
 
-export default function AccountCancelationBody({ onConfirm }: IAccountCancelationBody) {
+export default function AccountCancelationBody({ onConfirm, showGuardianType }: IAccountCancelationBody) {
   return (
     <div className="account-cancelation-body flex-column-between">
       <div className="account-cancelation-container flex-column-center">
@@ -21,8 +22,8 @@ export default function AccountCancelationBody({ onConfirm }: IAccountCancelatio
           <div className="container-content-tip">{ACCOUNT_CANCELATION_NOTE}</div>
           {ACCOUNT_CANCELATION_CONDITIONS.map((note, index) => (
             <div className="container-content-note" key={`note_${index}`}>
-              <div className="note-title">{note.title}</div>
-              <div>{note.content}</div>
+              <div className="note-title">{`${index + 1}. ${note.title}`}</div>
+              <div>{note.content.replace(/LOGIN_ACCOUNT/g, showGuardianType)}</div>
             </div>
           ))}
         </div>

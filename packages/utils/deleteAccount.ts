@@ -45,7 +45,7 @@ export async function deleteLoginAccount({
     sendOptions?: SendOptions;
   };
   deleteParams: {
-    type: string;
+    type: keyof typeof LoginType;
     chainId: ChainId;
     token: string;
     guardianIdentifier?: string;

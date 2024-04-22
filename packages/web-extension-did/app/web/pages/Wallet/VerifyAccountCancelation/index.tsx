@@ -11,7 +11,7 @@ import singleMessage from 'utils/singleMessage';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { useNavigateState } from 'hooks/router';
 import VerifyCodeBody from '../components/VerifyCodeBody';
-import { useCommonState } from 'store/Provider/hooks';
+import { useCommonState, useLoading } from 'store/Provider/hooks';
 import VerifyAccountCancelPopup from './Popup';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 
@@ -29,6 +29,7 @@ export interface IVerifyAccountCancel {
 export default function VerifyAccountCancelation() {
   const logout = useLogOut();
   const navigate = useNavigateState();
+  const { setLoading } = useLoading();
   const { isNotLessThan768 } = useCommonState();
   const originChainId = useOriginChainId();
   const { caHash, address: managerAddress, managerInfo } = useCurrentWalletInfo();
@@ -48,9 +49,10 @@ export default function VerifyAccountCancelation() {
         const contract = new ExtensionContractBasic({
           privateKey,
           rpcUrl: originChainInfo.endPoint,
-          contractAddress: originChainInfo.defaultToken.address,
+          contractAddress: originChainInfo.caContractAddress,
         });
         const _type = LoginType[uniqueGuardian?.guardianType as LoginType];
+        setLoading(true);
         await deleteLoginAccount({
           removeManagerParams: {
             caContract: contract,
@@ -63,13 +65,15 @@ export default function VerifyAccountCancelation() {
             token: code,
             guardianIdentifier: managerInfo?.loginAccount,
             verifierSessionId,
-            verifierId: uniqueGuardian?.verifier?.id,
+            verifierId: uniqueGuardian?.verifier?.id ?? '',
           },
         });
         logout();
       } catch (error) {
         console.log('===onCodeFinish error', error);
-        singleMessage.error(handleErrorMessage(error));
+        singleMessage.error(handleErrorMessage(error ?? 'Account Cancelation error'));
+      } finally {
+        setLoading(false);
       }
     },
     [
@@ -79,6 +83,7 @@ export default function VerifyAccountCancelation() {
       managerInfo?.loginAccount,
       originChainId,
       originChainInfo,
+      setLoading,
       uniqueGuardian?.guardianType,
       uniqueGuardian?.verifier?.id,
     ],

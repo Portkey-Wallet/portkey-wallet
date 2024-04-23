@@ -1,5 +1,6 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, { memo, ReactElement } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
@@ -26,15 +27,10 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
     <Tab.Navigator
       initialRouteName={initialRouteName}
       initialLayout={{ width: screenWidth }}
+      tabBar={prop => <CustomizedTopTabBar {...prop} hasTabBarBorderRadius={hasTabBarBorderRadius} />}
       screenOptions={{
-        swipeEnabled: false,
+        swipeEnabled: true,
         tabBarScrollEnabled: false,
-        tabBarStyle: [hasTabBarBorderRadius ? styles.radiusTarBarStyle : {}, styles.tabBarStyle], // tabWrap
-        tabBarLabelStyle: styles.tabBarLabelStyle,
-        tabBarInactiveTintColor: defaultColors.font3, // active
-        tabBarActiveTintColor: defaultColors.font4, // inactive
-        tabBarIndicatorStyle: { borderWidth: StyleSheet.hairlineWidth, borderColor: defaultColors.bg5 }, // active border
-        tabBarPressColor: defaultColors.bg1,
       }}>
       {tabList.map(ele => (
         <Tab.Screen key={ele.name} name={ele.name}>
@@ -44,13 +40,72 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
     </Tab.Navigator>
   );
 };
+
+const CustomizedTopTabBar = ({
+  state,
+  descriptors,
+  navigation,
+  hasTabBarBorderRadius = false,
+}: {
+  state: { routes: any[]; index: number };
+  descriptors: any;
+  navigation: any;
+  hasTabBarBorderRadius?: boolean;
+}) => {
+  return (
+    <View style={[toolBarStyle.container, hasTabBarBorderRadius ? styles.radiusTarBarStyle : {}]}>
+      {state.routes.map((route, index) => {
+        const { options } = descriptors[route.key];
+        const label =
+          options.tabBarLabel !== undefined
+            ? options.tabBarLabel
+            : options.title !== undefined
+            ? options.title
+            : route.name;
+
+        const isFocused = state.index === index;
+
+        const onPress = () => {
+          navigation.navigate(route.name, route.params);
+        };
+
+        return (
+          <TouchableOpacity
+            testID={options.tabBarTestID}
+            onPress={onPress}
+            disabled={isFocused}
+            key={label}
+            style={[toolBarStyle.label, { paddingRight: index !== state.routes.length - 1 ? pTd(32) : 0 }]}>
+            <Text
+              style={[
+                toolBarStyle.labelText,
+                {
+                  color: isFocused ? defaultColors.font16 : defaultColors.font11,
+                },
+                isFocused
+                  ? {
+                      borderBottomColor: defaultColors.primaryColor,
+                      borderBottomWidth: pTd(2),
+                    }
+                  : {},
+              ]}>
+              {label}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+};
+
 export default memo(CommonTopTab);
 
 const styles = StyleSheet.create({
   tabBarStyle: {
     elevation: 1,
-    shadowColor: defaultColors.border1,
-    shadowOffset: { width: 0, height: pTd(3) },
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
   },
   radiusTarBarStyle: {
     borderTopLeftRadius: pTd(8),
@@ -59,5 +114,21 @@ const styles = StyleSheet.create({
   tabBarLabelStyle: {
     textTransform: 'none',
     fontSize: pTd(14),
+  },
+});
+
+const toolBarStyle = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    paddingHorizontal: pTd(16),
+    borderBottomWidth: pTd(0.5),
+    borderBottomColor: defaultColors.border6,
+  },
+  label: {},
+  labelText: {
+    fontSize: pTd(16),
+    lineHeight: pTd(24),
+    fontWeight: '600',
+    paddingVertical: pTd(8),
   },
 });

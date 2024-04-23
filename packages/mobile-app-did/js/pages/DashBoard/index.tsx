@@ -41,7 +41,7 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
   }, []);
 
   return (
-    <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.bg5]}>
+    <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.white]}>
       <Card />
       <DashBoardTab />
     </SafeAreaBox>

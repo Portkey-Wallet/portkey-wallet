@@ -24,6 +24,6 @@ const DashBoardTab: React.FC<DashBoardTabProps> = (props: DashBoardTabProps) => 
     ];
   }, [props, t]);
 
-  return <CommonTopTab hasTabBarBorderRadius tabList={tabList} />;
+  return <CommonTopTab hasTabBarBorderRadius swipeEnabled tabList={tabList} />;
 };
 export default DashBoardTab;

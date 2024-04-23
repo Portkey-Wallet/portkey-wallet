@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Text, StyleProp, ViewProps } from 'react-native';
+import { View, Text, StyleProp, ViewProps, LayoutChangeEvent } from 'react-native';
 import Svg from 'components/Svg';
 import { styles } from './style';
 import SendButton from 'components/SendButton';
@@ -20,7 +20,7 @@ import { DepositItem, useDepositList } from 'hooks/deposit';
 import Touchable from 'components/Touchable';
 import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 
-const Card: React.FC = () => {
+const Card = ({ onLayout }: { onLayout?: ((event: LayoutChangeEvent) => void) | undefined }) => {
   const isMainnet = useIsMainnet();
   const userInfo = useCurrentUserInfo();
   const accountBalanceUSD = useAccountBalanceUSD();
@@ -45,7 +45,7 @@ const Card: React.FC = () => {
   );
 
   return (
-    <View style={[styles.cardWrap]}>
+    <View style={[styles.cardWrap]} onLayout={onLayout}>
       <View style={styles.refreshWrap}>
         <Text style={styles.block} />
         <Touchable

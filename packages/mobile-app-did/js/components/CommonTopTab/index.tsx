@@ -14,20 +14,21 @@ export type CommonTopTabProps = {
   hasTabBarBorderRadius?: boolean;
   initialRouteName?: string;
   tabItemStyleProps?: any;
+  swipeEnabled?: boolean;
   tabList: TabItemTypes[];
 };
 
 const Tab = createMaterialTopTabNavigator();
 
 const CommonTopTab: React.FC<CommonTopTabProps> = props => {
-  const { tabList, initialRouteName, hasTabBarBorderRadius } = props;
+  const { tabList, initialRouteName, hasTabBarBorderRadius, swipeEnabled = false } = props;
 
   return (
     <Tab.Navigator
       initialRouteName={initialRouteName}
       initialLayout={{ width: screenWidth }}
       screenOptions={{
-        swipeEnabled: false,
+        swipeEnabled,
         tabBarScrollEnabled: false,
         tabBarStyle: [hasTabBarBorderRadius ? styles.radiusTarBarStyle : {}, styles.tabBarStyle], // tabWrap
         tabBarLabelStyle: styles.tabBarLabelStyle,

@@ -25,6 +25,8 @@ import { changeCanLock } from '@portkey-wallet/rn-base/utils/LockManager';
 import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { GuardiansApproved } from '@portkey-wallet/rn-base/types/guardian';
+import Environment from '@portkey-wallet/rn-inject';
+
 type RouterParams = {
   oldPin?: string;
   pin?: string;
@@ -82,7 +84,11 @@ export default function ConfirmPin() {
         if (biometricsReady) {
           navigationService.navigate('SetBiometrics', { pin: confirmPin });
         } else {
-          navigationService.reset('Tab');
+          if (Environment.isSDK()) {
+            navigationService.reset('AssetsHome');
+          } else {
+            navigationService.reset('Tab');
+          }
         }
       } else {
         onManagerAddressAndQueryResult({

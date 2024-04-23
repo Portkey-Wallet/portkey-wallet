@@ -34,6 +34,8 @@ import {
   TVerifierAuthParams,
 } from '../types/authentication';
 import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
+import { appleLogin } from './apple-login';
+import Environment from '@portkey-wallet/rn-inject';
 
 if (!isIOS) {
   GoogleSignin.configure({
@@ -128,39 +130,60 @@ export function useAppleAuthentication() {
 
   useEffect(() => {
     if (isIOS) return;
-    appleAuthAndroid.configure({
-      clientId: Config.APPLE_CLIENT_ID,
-      redirectUri: isMainnet ? Config.APPLE_MAIN_REDIRECT_URI : Config.APPLE_TESTNET_REDIRECT_URI,
-      scope: appleAuthAndroid.Scope.ALL,
-      responseType: appleAuthAndroid.ResponseType.ALL,
-    });
+    if (Environment.isAPP()) {
+      appleAuthAndroid.configure({
+        clientId: Config.APPLE_CLIENT_ID,
+        redirectUri: isMainnet ? Config.APPLE_MAIN_REDIRECT_URI : Config.APPLE_TESTNET_REDIRECT_URI,
+        scope: appleAuthAndroid.Scope.ALL,
+        responseType: appleAuthAndroid.ResponseType.ALL,
+      });
+    } else {
+      appleAuthAndroid.configure({
+        clientId: 'com.portkey.did.extension.service',
+        redirectUri: isMainnet
+          ? 'https://aa-portkey.portkey.finance/api/app/AppleAuth/receive'
+          : 'https://aa-portkey-test.portkey.finance/api/app/AppleAuth/receive',
+        scope: appleAuthAndroid.Scope.ALL,
+        responseType: appleAuthAndroid.ResponseType.ALL,
+      });
+    }
   }, [isMainnet]);
 
   const iosPromptAsync = useCallback(async () => {
     setResponse(undefined);
     try {
-      const appleInfo = await appleAuth.performRequest({
-        requestedOperation: appleAuth.Operation.LOGIN,
-        requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
-      });
+      let user = undefined;
+      let appleInfo = undefined;
+      if (Environment.isSDK()) {
+        const appleLoginToken = await appleLogin();
+        appleInfo = {
+          identityToken: appleLoginToken as string,
+        };
+        user = parseAppleIdentityToken(appleInfo.identityToken);
+      } else {
+        appleInfo = await appleAuth.performRequest({
+          requestedOperation: appleAuth.Operation.LOGIN,
+          requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+        });
 
-      const user = parseAppleIdentityToken(appleInfo.identityToken);
-      if (appleInfo.fullName?.familyName) {
-        try {
-          await request.verify.sendAppleUserExtraInfo({
-            params: {
-              identityToken: appleInfo.identityToken,
-              userInfo: {
-                name: {
-                  firstName: appleInfo.fullName?.givenName,
-                  lastName: appleInfo.fullName?.familyName,
+        let user = parseAppleIdentityToken(appleInfo.identityToken);
+        if (appleInfo.fullName?.familyName) {
+          try {
+            await request.verify.sendAppleUserExtraInfo({
+              params: {
+                identityToken: appleInfo.identityToken,
+                userInfo: {
+                  name: {
+                    firstName: appleInfo.fullName?.givenName,
+                    lastName: appleInfo.fullName?.familyName,
+                  },
+                  email: user?.email || appleInfo.email,
                 },
-                email: user?.email || appleInfo.email,
               },
-            },
-          });
-        } catch (error) {
-          console.log(error, '======error');
+            });
+          } catch (error) {
+            console.log(error, '======error');
+          }
         }
       }
       const userInfo = { ...appleInfo, user: { ...user, id: user?.userId } } as TAppleAuthentication;

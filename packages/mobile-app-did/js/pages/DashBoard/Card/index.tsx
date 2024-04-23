@@ -54,11 +54,13 @@ const Card: React.FC = () => {
             if (!(await qrScanPermissionAndToast())) return;
             navigationService.navigate('QrScanner');
           }}>
-          <Svg icon="scan" size={22} color={defaultColors.font2} />
+          <Svg icon="scan" size={22} color={defaultColors.black} />
         </Touchable>
       </View>
-      <Text style={styles.usdtBalance}>{isMainnet ? formatAmountUSDShow(accountBalanceUSD) : 'Dev Mode'}</Text>
-      <TextM style={styles.accountName}>{userInfo?.nickName}</TextM>
+      <View style={styles.textColumn}>
+        <TextM style={styles.accountName}>{userInfo?.nickName}</TextM>
+        <Text style={styles.usdtBalance}>{isMainnet ? formatAmountUSDShow(accountBalanceUSD) : 'Dev Mode'}</Text>
+      </View>
       <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.buttonGroupWrap, buttonGroupWrapStyle]}>
         {isDepositShow && <DepositButton wrapStyle={buttonWrapStyle} list={depositList as DepositItem[]} />}
         <SendButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />

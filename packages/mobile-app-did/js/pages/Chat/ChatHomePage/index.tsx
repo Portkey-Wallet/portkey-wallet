@@ -93,10 +93,10 @@ export default function DiscoverHome() {
             myEvents.chatHomeListCloseSwiped.emit(Math.random());
             navigationService.navigate('SearchPeoplePage');
           }}>
-          <Svg icon="search" color={defaultColors.bg1} size={pTd(20)} />
+          <Svg icon="search" color={defaultColors.bg31} size={pTd(20)} />
         </Touchable>
         <Touchable style={styles.addIcon} onPress={onRightPress}>
-          <Svg size={pTd(20)} icon="chat-add" />
+          <Svg color={defaultColors.bg31} size={pTd(20)} icon="chat-add" />
         </Touchable>
       </View>
     );
@@ -127,9 +127,9 @@ export default function DiscoverHome() {
   );
 
   return (
-    <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.bg5]}>
+    <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.white]}>
       <Touchable activeOpacity={1} onPressIn={emitCloseSwiped}>
-        <CustomHeader noLeftDom themeType="blue" titleDom="Chats" rightDom={RightDom} />
+        <CustomHeader noLeftDom themeType="white" titleDom="Chats" rightDom={RightDom} />
       </Touchable>
       {
         <View style={[BGStyles.bg1, GStyles.flex1]}>

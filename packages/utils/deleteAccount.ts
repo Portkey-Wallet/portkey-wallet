@@ -27,10 +27,11 @@ export async function getSocialLoginAccountToken({
   getAccountUserInfoFunc: () => Promise<any> | void;
 }): Promise<string> {
   const userInfo = await getAccountUserInfoFunc();
+
   if (userInfo?.user?.id !== currentLoginAccount) {
     throw 'Account does not match';
   }
-  return userInfo?.identityToken || '';
+  return userInfo?.identityToken || userInfo?.accessToken || '';
 }
 
 export async function deleteLoginAccount({

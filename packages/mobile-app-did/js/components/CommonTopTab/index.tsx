@@ -76,21 +76,17 @@ const CustomizedTopTabBar = ({
             disabled={isFocused}
             key={label}
             style={[toolBarStyle.label, { paddingRight: index !== state.routes.length - 1 ? pTd(32) : 0 }]}>
-            <Text
-              style={[
-                toolBarStyle.labelText,
-                {
-                  color: isFocused ? defaultColors.font16 : defaultColors.font11,
-                },
-                isFocused
-                  ? {
-                      borderBottomColor: defaultColors.primaryColor,
-                      borderBottomWidth: pTd(2),
-                    }
-                  : {},
-              ]}>
-              {label}
-            </Text>
+            <View style={isFocused ? { borderBottomColor: defaultColors.primaryColor, borderBottomWidth: pTd(2) } : {}}>
+              <Text
+                style={[
+                  toolBarStyle.labelText,
+                  {
+                    color: isFocused ? defaultColors.font16 : defaultColors.font11,
+                  },
+                ]}>
+                {label}
+              </Text>
+            </View>
           </TouchableOpacity>
         );
       })}

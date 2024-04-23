@@ -27,7 +27,7 @@ import { removeManager } from '@portkey-wallet/rn-base/utils/guardian';
 import aes from '@portkey-wallet/utils/aes';
 import { resetRamp } from '@portkey-wallet/store/store-ca/ramp/slice';
 import resetStore from '@portkey-wallet/rn-base/store-sdk/resetStore';
-
+import { getCurrentCAContract, getCurrentWallet, getOriginChainId } from '.';
 export interface Verifier {
   id: string;
   name: string;
@@ -447,41 +447,16 @@ export const checkManagerSyncState = async (chainId: string): Promise<boolean> =
  * hope you know what you are doing.
  */
 export const callRemoveManagerMethod = async () => {
-  // const contractInstance = await getCAContractInstance();
   const { credentials } = store.getState().user;
   if (!credentials) throw 'wallet is not unlocked';
-
-  const { pin } = credentials;
-
-  // const {
-  //   address,
-  //   caInfo: { caHash },
-  // } = (await getUnlockedWallet()) || {};
-  // useCurrentNetwork
-  const { walletInfo, originChainId, currentNetwork, chainInfo } = store.getState().wallet;
-  const { caHash } = walletInfo.caInfo[currentNetwork][originChainId];
-  const { address: managerAddress, AESEncryptPrivateKey } = walletInfo;
-
-  const privateKey = aes.decrypt(AESEncryptPrivateKey, pin);
-  const account = AElf.wallet.getWalletByPrivateKey(privateKey);
-  const itemChainInfo = chainInfo[currentNetwork].find((chain: any) => chain.chainId === originChainId);
-
-  const caContract = await getContractBasic({
-    contractAddress: itemChainInfo.caContractAddress,
-    rpcUrl: itemChainInfo.endPoint,
-    account: account,
-  });
-  console.log('caHash is', caHash, 'address is', managerAddress);
+  console.log('wallet is unlocked!!');
+  const {
+    walletInfo: { caHash, address: managerAddress },
+  } = getCurrentWallet();
+  const caContract = await getCurrentCAContract();
   return await removeManager(caContract, managerAddress, caHash, {
     onMethod: 'transactionHash',
   });
-  // return await removeManager(caContract, managerAddress, caHash, {
-  //   onMethod: 'transactionHash',
-  // });
-  // return;
-  // return await contractInstance.callSendMethod('RemoveManagerInfo', address, {
-  //   caHash,
-  // });
 };
 
 const parseGuardianConfigInfoToCaType = (guardianConfig: GuardianConfig, withoutVerifyData = false) => {

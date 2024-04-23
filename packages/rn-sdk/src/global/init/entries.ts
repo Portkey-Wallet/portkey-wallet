@@ -55,6 +55,7 @@ import GuardianApproval from '@portkey-wallet/rn-biz-components/biz-components/G
 import VerifierDetails from '@portkey-wallet/rn-biz-components/biz-components/Guardian/VerifierDetails';
 import DashBoard from '@portkey-wallet/rn-biz-components/biz-components/DashBoard';
 import SecurityLock from '@portkey-wallet/rn-biz-components/biz-components/SecurityLock';
+import EndPointChange from 'apiTest/EndPointChange';
 
 type AcceptableComponentType = ComponentProvider;
 
@@ -63,7 +64,14 @@ const initEntries = () => {
   if (__DEV__) {
     // test only
     // entryConfig.set(PortkeyTestEntries.TEST, () => TestEntry);
-    entryConfig.set(PortkeyTestEntries.TEST, () => ReduxProvider(TestComp));
+    entryConfig.set(PortkeyTestEntries.TEST, () => ReduxProvider(TestEntry));
+    entryConfig.set(PortkeyTestEntries.ENDPOINT_CHANGE_ENTRY, () =>
+      ReduxProvider(EndPointChange as React.ComponentType<any>, {
+        routerParams: {
+          from: PortkeyTestEntries.ENDPOINT_CHANGE_ENTRY,
+        },
+      }),
+    );
   }
 
   // entry stage

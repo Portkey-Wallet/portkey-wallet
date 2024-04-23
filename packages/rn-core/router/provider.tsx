@@ -80,6 +80,10 @@ function ViewStub({ children }: { children: any }) {
   }, [address, credentials, caHash]);
 
   useEffect(() => {
+    // test page, ignore init function.
+    if (from === 'endpoint_change_entry') {
+      return;
+    }
     // check if wallet is available. check if wallet is unlock.
     init();
   }, [init]);

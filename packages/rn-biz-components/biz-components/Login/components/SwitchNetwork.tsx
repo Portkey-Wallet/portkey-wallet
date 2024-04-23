@@ -9,13 +9,15 @@ import Touchable from '@portkey-wallet/rn-components/components/Touchable';
 import React from 'react';
 import { pTd } from '@portkey-wallet/rn-components/utils/unit';
 import styles from '../styles';
+import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
 
-export default function SwitchNetwork() {
+export default function SwitchNetwork(props: { onPress?: (network: NetworkItem) => void }) {
+  const { onPress } = props;
   const route = useRoute();
   const currentNetworkInfo = useCurrentNetworkInfo();
   return (
     <Touchable
-      onPress={() => NetworkOverlay.showSwitchNetwork(route)}
+      onPress={() => NetworkOverlay.showSwitchNetwork(route, onPress)}
       style={[GStyles.flexRowWrap, GStyles.itemCenter, styles.networkRow]}>
       <TextM style={[FontStyles.font11, styles.networkTip]}>{currentNetworkInfo.name}</TextM>
       <Svg size={pTd(16)} icon="down-arrow" color={FontStyles.font11.color} />

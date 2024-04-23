@@ -20,10 +20,12 @@ function Network({
   network,
   hideBorder,
   route,
+  onPress,
 }: {
   network: NetworkItem;
   hideBorder?: boolean;
   route: RouteProp<ParamListBase>;
+  onPress?: (network: NetworkItem) => void;
 }) {
   const currentNetworkInfo = useCurrentNetworkInfo();
   const changeNetwork = useChangeNetwork(route);
@@ -34,6 +36,10 @@ function Network({
       onPress={async () => {
         OverlayModal.hide();
         if (isSelect) return;
+        if (onPress) {
+          onPress(network);
+          return;
+        }
         changeNetwork(network);
       }}
       style={[styles.itemRow, !network.isActive ? styles.disableItem : undefined]}
@@ -50,20 +56,32 @@ function Network({
   );
 }
 
-function SwitchNetwork({ route }: { route: RouteProp<ParamListBase> }) {
+function SwitchNetwork({
+  route,
+  onPress,
+}: {
+  route: RouteProp<ParamListBase>;
+  onPress?: (network: NetworkItem) => void;
+}) {
   const networkList = useNetworkList();
   return (
     <ModalBody modalBodyType="bottom" title={'Switch Networks'}>
       {networkList.map((network, index) => (
-        <Network route={route} hideBorder={index === networkList.length - 1} network={network} key={network.name} />
+        <Network
+          route={route}
+          hideBorder={index === networkList.length - 1}
+          network={network}
+          key={network.name}
+          onPress={onPress}
+        />
       ))}
     </ModalBody>
   );
 }
 
-const showSwitchNetwork = (route: RouteProp<ParamListBase>) => {
+const showSwitchNetwork = (route: RouteProp<ParamListBase>, onPress?: (network: NetworkItem) => void) => {
   Keyboard.dismiss();
-  OverlayModal.show(<SwitchNetwork route={route} />, {
+  OverlayModal.show(<SwitchNetwork route={route} onPress={onPress} />, {
     position: 'bottom',
   });
 };

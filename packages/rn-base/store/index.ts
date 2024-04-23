@@ -10,4 +10,4 @@ if (Environment.isSDK()) {
 } else {
   store = appStore;
 }
-export { store };
+export { store, resetStore };

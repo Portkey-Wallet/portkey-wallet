@@ -132,7 +132,7 @@ class MainActivity : ComponentActivity() {
                                         Loading.showLoading("Exiting Wallet...", 5*60*1000)
                                         PortkeyWallet.exitWallet(this@MainActivity) { succeed, reason ->
                                             Loading.hideLoading()
-                                            if (succeed) {
+                                              if (succeed) {
                                                 Toast.makeText(
                                                     this@MainActivity,
                                                     "Wallet exited",
@@ -196,13 +196,8 @@ class MainActivity : ComponentActivity() {
                             jumpToActivity(finance.portkey.core.PortkeyEntries.TEST.entryName)
                         }
                         TitleLine(text = "Environment Settings")
-                        ChoiceMaker(
-                            title = "Choose EndPointUrl",
-                            choicesList = environment.keys.toList(),
-                            useExitWallet = true,
-                            defaultChoice = cachedEndPointName
-                        ) {
-                            changeEndPointUrl(it)
+                        BigButton(text = "Change EndPointUrl") {
+                            jumpToActivity(finance.portkey.core.PortkeyEntries.ENDPOINT_CHANGE_ENTRY.entryName)
                         }
                         BigButton(if (devModeStatus) "DevMode On" else "DevMode Off") {
 

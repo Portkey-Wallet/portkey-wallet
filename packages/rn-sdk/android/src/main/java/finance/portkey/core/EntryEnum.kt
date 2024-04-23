@@ -7,6 +7,7 @@ enum class PortkeyEntries {
     GUARDIAN_HOME_ENTRY,
     ASSETS_HOME_ENTRY,
     PAYMENT_SECURITY_HOME_ENTRY,
+    ENDPOINT_CHANGE_ENTRY,
     TEST;
 
     val entryName: String

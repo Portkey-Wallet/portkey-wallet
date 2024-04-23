@@ -67,13 +67,12 @@ export default function AccountCancelation() {
       if (!caHash || !managerAddress) return false;
       const list = await checkIsValidateDeletionAccount(uniqueGuardianType);
       if (list.length > 0) {
-        const showList = list.length > 1 ? list.map((item, index) => `${index + 1}. ${item}`) : list;
         CustomModal({
           content: (
             <div className="account-cancelation-alert-modal">
               <div className="title">Account Detection</div>
               <div className="content condition-content flex-column">
-                {showList.map((item, i) => (
+                {list.map((item, i) => (
                   <div className="condition-item" key={`condition_${i}`}>
                     {item.replace(/LOGIN_ACCOUNT/g, showGuardianType)}
                   </div>
@@ -155,6 +154,7 @@ export default function AccountCancelation() {
           chainId: originChainId,
           token: access_token,
           verifierId: uniqueGuardian?.verifier?.id ?? '',
+          guardianIdentifier: uniqueGuardian?.guardianAccount,
         },
       });
       logout();

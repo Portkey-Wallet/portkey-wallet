@@ -167,27 +167,28 @@ export function useAuthSocialAccountInfo(type: ISocialLogin) {
   const currentNetwork = useCurrentNetwork();
   return useCallback(async () => {
     const result = await socialLoginAction(type, currentNetwork);
-    const accessToken = result.data?.access_token ?? '';
-    let res;
+    const identityToken = result.data?.access_token ?? '';
+    let userInfo;
     if (type === 'Google') {
-      res = await getGoogleUserInfo(accessToken);
+      userInfo = await getGoogleUserInfo(identityToken);
     }
     if (type === 'Apple') {
-      res = parseAppleIdentityToken(accessToken) ?? {};
+      userInfo = parseAppleIdentityToken(identityToken) ?? {};
     }
     if (type === 'Telegram') {
-      res = parseTelegramToken(accessToken) ?? {};
+      userInfo = parseTelegramToken(identityToken) ?? {};
     }
     if (type === 'Twitter') {
-      res = parseTwitterToken(accessToken) ?? {};
+      userInfo = parseTwitterToken(identityToken) ?? {};
     }
     if (type === 'Facebook') {
-      res = (await parseFacebookToken(accessToken)) ?? {};
+      userInfo = (await parseFacebookToken(identityToken)) ?? {};
     }
 
     return {
+      identityToken,
       user: {
-        id: res?.userId,
+        id: userInfo?.userId,
       },
     };
   }, [currentNetwork, type]);

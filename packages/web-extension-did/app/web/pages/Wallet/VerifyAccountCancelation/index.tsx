@@ -32,12 +32,9 @@ export default function VerifyAccountCancelation() {
   const { setLoading } = useLoading();
   const { isNotLessThan768 } = useCommonState();
   const originChainId = useOriginChainId();
-  const { caHash, address: managerAddress, managerInfo } = useCurrentWalletInfo();
+  const { caHash, address: managerAddress } = useCurrentWalletInfo();
   const { userGuardiansList } = useGuardiansInfo();
-  const uniqueGuardian = useMemo(
-    () => userGuardiansList?.find((item) => item.guardianAccount === managerInfo?.loginAccount),
-    [managerInfo?.loginAccount, userGuardiansList],
-  );
+  const uniqueGuardian = useMemo(() => userGuardiansList?.[0], [userGuardiansList]);
   const originChainInfo = useCurrentChain(originChainId);
 
   const onCodeFinish = useCallback(
@@ -63,7 +60,7 @@ export default function VerifyAccountCancelation() {
             type: _type,
             chainId: originChainId,
             token: code,
-            guardianIdentifier: managerInfo?.loginAccount,
+            guardianIdentifier: uniqueGuardian?.guardianAccount,
             verifierSessionId,
             verifierId: uniqueGuardian?.verifier?.id ?? '',
           },
@@ -80,10 +77,10 @@ export default function VerifyAccountCancelation() {
       caHash,
       logout,
       managerAddress,
-      managerInfo?.loginAccount,
       originChainId,
       originChainInfo,
       setLoading,
+      uniqueGuardian?.guardianAccount,
       uniqueGuardian?.guardianType,
       uniqueGuardian?.verifier?.id,
     ],

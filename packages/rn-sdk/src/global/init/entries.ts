@@ -65,15 +65,14 @@ const initEntries = () => {
     // test only
     // entryConfig.set(PortkeyTestEntries.TEST, () => TestEntry);
     entryConfig.set(PortkeyTestEntries.TEST, () => ReduxProvider(TestEntry));
-    entryConfig.set(PortkeyTestEntries.ENDPOINT_CHANGE_ENTRY, () =>
-      ReduxProvider(EndPointChange as React.ComponentType<any>, {
-        routerParams: {
-          from: PortkeyTestEntries.ENDPOINT_CHANGE_ENTRY,
-        },
-      }),
-    );
   }
-
+  entryConfig.set(PortkeyTestEntries.ENDPOINT_CHANGE_ENTRY, () =>
+    ReduxProvider(EndPointChange as React.ComponentType<any>, {
+      routerParams: {
+        from: PortkeyTestEntries.ENDPOINT_CHANGE_ENTRY,
+      },
+    }),
+  );
   // entry stage
   // entryConfig.set(PortkeyEntries.SIGN_IN_ENTRY, () => ReduxProvider(SignInEntryPage as React.ComponentType<any>));
   entryConfig.set(PortkeyEntries.SIGN_IN_ENTRY, () =>
@@ -169,12 +168,12 @@ const initEntries = () => {
   );
   entryConfig.set(PortkeyEntries.GUARDIAN_DETAIL_ENTRY, () =>
     ReduxProvider(GuardianDetail as React.ComponentType<any>, {
-      routerParams: { from: PortkeyEntries.GUARDIAN_HOME_ENTRY },
+      routerParams: { from: PortkeyEntries.GUARDIAN_DETAIL_ENTRY },
     }),
   );
   entryConfig.set(PortkeyEntries.ADD_GUARDIAN_ENTRY, () =>
     ReduxProvider(AddGuardian as React.ComponentType<any>, {
-      routerParams: { from: PortkeyEntries.GUARDIAN_HOME_ENTRY },
+      routerParams: { from: PortkeyEntries.ADD_GUARDIAN_ENTRY },
     }),
   );
   entryConfig.set(PortkeyEntries.MODIFY_GUARDIAN_ENTRY, () => ModifyGuardian);

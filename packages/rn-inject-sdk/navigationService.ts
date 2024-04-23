@@ -8,6 +8,9 @@ function setRouteName(routeName?: string) {
     console.log('wfs current route', route);
   }
 }
+function getCurrentRouteName() {
+  return route;
+}
 function getCurrentRouteAndRoutes() {}
 
 function getMultiLevelParams() {}
@@ -17,7 +20,8 @@ function navigate(name: any, params?: any) {
 }
 
 function navigateByMultiLevelParams(name: any, multiLevelOptions: any) {
-  router.navigate(name, { ...multiLevelOptions, from: route ?? COMMON_ROUTER_FROM });
+  const { params } = multiLevelOptions;
+  router.navigate(name, { ...params, from: route ?? COMMON_ROUTER_FROM });
 }
 
 function goBack() {
@@ -33,7 +37,9 @@ function push(routeName: string, params?: object) {
   router.navigate(routeName, { ...params, from: route ?? COMMON_ROUTER_FROM });
 }
 
-function pop(count: number) {}
+function pop(count: number) {
+  router.popRoute(count);
+}
 
 function getState() {}
 
@@ -47,4 +53,5 @@ export default {
   push,
   pop,
   setRouteName,
+  getCurrentRouteName,
 };

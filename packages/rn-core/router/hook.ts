@@ -61,6 +61,8 @@ export function useNewIntent<T>(onNewIntent: (params: T) => void) {
 export function useRouterParams<T extends object>() {
   const { params } = useContext(RouterContext);
   const [stateParams] = useState(params);
+  console.log('stateParamsstateParamsstateParams1', useContext(RouterContext).params.guardianItem);
+  console.log('stateParamsstateParamsstateParams2', stateParams);
   return stateParams || ({} as T);
 }
 

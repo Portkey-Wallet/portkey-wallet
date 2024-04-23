@@ -37,9 +37,11 @@ eventsServer.prototype.parseEvent = function (name: string, eventMap: string[]) 
 };
 
 eventsServer.prototype.emit = function (eventType: string, ...params: any[]) {
+  console.log('eventsServer emit eventType', eventType, 'params', params);
   DeviceEventEmitter.emit(eventType, ...params);
 };
 eventsServer.prototype.addListener = function (eventType: string, listener: (data: any) => void) {
+  console.log('eventsServer addListener eventType', eventType);
   return DeviceEventEmitter.addListener(eventType, listener);
 };
 
@@ -65,5 +67,4 @@ export type MyEventsTypes = {
 };
 
 const myEvents = { ...eventsServer.prototype.base, bookmark: eventsServer.prototype.bookmark };
-
 export default myEvents as unknown as MyEventsTypes;

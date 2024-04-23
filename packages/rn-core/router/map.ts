@@ -12,7 +12,8 @@ export type AppRouteName =
   | 'VerifierDetails'
   | 'GuardianEdit'
   | 'GuardianDetail'
-  | 'SecurityLock';
+  | 'SecurityLock'
+  | 'GuardianHome';
 
 const RouteNameMapping: Record<AppRouteName, PortkeyEntries> = {
   LoginPortkey: PortkeyEntries.SIGN_IN_ENTRY,
@@ -28,6 +29,7 @@ const RouteNameMapping: Record<AppRouteName, PortkeyEntries> = {
   GuardianDetail: PortkeyEntries.GUARDIAN_DETAIL_ENTRY,
   GuardianEdit: PortkeyEntries.ADD_GUARDIAN_ENTRY,
   SecurityLock: PortkeyEntries.SECURITY_LOCK_ENTRY,
+  GuardianHome: PortkeyEntries.GUARDIAN_HOME_ENTRY,
 };
 const beforeWalletLoginPageArray = [
   PortkeyEntries.SIGN_IN_ENTRY,

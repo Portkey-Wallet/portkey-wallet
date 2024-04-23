@@ -54,6 +54,7 @@ export default function GuardianDetail() {
 
   const onLoginAccountChange = useCallback(
     async (value: boolean) => {
+      console.log('guardian value', value);
       if (guardian === undefined || userGuardiansList === undefined) return;
 
       if (!value) {

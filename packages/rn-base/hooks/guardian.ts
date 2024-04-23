@@ -146,6 +146,7 @@ export const useRefreshGuardianList = (isInit = false) => {
   useEffect(() => {
     if (!isInit) return;
     const listener = myEvents.refreshGuardiansList.addListener(() => {
+      console.log('refreshGuardiansList invoked!!!!');
       refreshGuardiansList();
     });
     return () => {

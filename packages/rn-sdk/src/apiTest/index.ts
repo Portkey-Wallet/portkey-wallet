@@ -9,7 +9,6 @@ export enum PortkeyTestEntries {
 }
 export async function loadCurrentNetwork() {
   const currentNetwork = await AsyncStorage.getItem('network_init_key');
-  console.log('currentNetworkcurrentNetwork', currentNetwork);
   if (currentNetwork) {
     store.dispatch(changeNetworkType(currentNetwork as NetworkType));
   }

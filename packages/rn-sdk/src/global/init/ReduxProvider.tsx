@@ -33,6 +33,7 @@ const ProviderComponent: HigherOrderComponent = (
     const routerP = extraProps?.routerParams?.from
       ? { from: extraProps?.routerParams?.from, params: props }
       : defaultRouterParams;
+    console.log('routerP', routerP);
     return (
       <Provider store={store}>
         <Initializer />

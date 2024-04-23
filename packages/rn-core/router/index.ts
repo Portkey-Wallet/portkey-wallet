@@ -1,6 +1,6 @@
 import { LaunchMode, LaunchModeSet } from './types';
 import { NativeModules } from 'react-native';
-import { COMMON_ROUTER_FROM } from './context';
+import { COMMON_RESULT_DATA, COMMON_ROUTER_FROM } from './context';
 import { wrapEntry } from 'utils/commonUtil';
 import { EntryResult } from 'service/native-modules';
 import { PortkeyEntries } from './types';
@@ -31,7 +31,7 @@ class RNSDKRouter implements Router {
     return false;
   }
 
-  back<R>(res: EntryResult<R>, params: any): void {
+  back<R>(res: EntryResult<R>, params: any) {
     router.listenersFunc()[params.from]?.['blur'].forEach(item => item());
     this.pop();
     NativeModules.RouterModule.navigateBack(res, params?.from ?? COMMON_ROUTER_FROM);
@@ -40,6 +40,7 @@ class RNSDKRouter implements Router {
       router.listenersFunc()[lastPageName]?.['focus'].forEach(item => item());
     }
     console.log('page route', 'from', params.from, 'back to', lastPageName);
+    return lastPageName;
   }
 
   reset(name: any | { name: any; params?: any }[], params?: any, from?: string) {
@@ -107,6 +108,16 @@ class RNSDKRouter implements Router {
     );
     console.log('page route', 'from', params.from, 'navigateByResult to', target);
   }
+  popRoute(count: number) {
+    let currentRouteName = navigationService.getCurrentRouteName() as PortkeyEntries;
+    while (count > 0) {
+      console.log('popRoute currentRouteName is:', currentRouteName);
+      currentRouteName = this.back(COMMON_RESULT_DATA, {
+        from: currentRouteName ?? COMMON_ROUTER_FROM,
+      }) as PortkeyEntries;
+      count--;
+    }
+  }
 
   push(item: Route) {
     if (this.singleTask_push(item)) {
@@ -116,7 +127,6 @@ class RNSDKRouter implements Router {
     // this.pages = new Stack(elements);
     this.pages.push(item);
   }
-
   pop() {
     this.pages.pop();
   }

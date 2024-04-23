@@ -13,6 +13,7 @@ import { useRefreshGuardianList } from '@portkey-wallet/rn-base/hooks/guardian';
 import useEffectOnce from '@portkey-wallet/rn-base/hooks/useEffectOnce';
 import GStyles from '@portkey-wallet/rn-base/assets/theme/GStyles';
 import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
+import Environment from '@portkey-wallet/rn-inject';
 
 export default function GuardianHome() {
   const { t } = useLanguage();
@@ -23,7 +24,7 @@ export default function GuardianHome() {
     return [...userGuardiansList].reverse();
   }, [userGuardiansList]);
 
-  const { init } = useRefreshGuardianList();
+  const { init } = useRefreshGuardianList(Environment.isSDK() ? true : false);
   useEffectOnce(() => {
     init();
   });

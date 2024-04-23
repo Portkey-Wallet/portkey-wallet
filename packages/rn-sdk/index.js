@@ -22,8 +22,8 @@ persistor.subscribe(async () => {
   console.log('persist store init success!');
   console.log('wfs second store user', store.getState().user);
   loadCurrentNetwork();
+  // initLanguage();
 });
-
 // we use i18n to translate
 initLanguage();
 

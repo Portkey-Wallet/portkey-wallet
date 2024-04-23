@@ -30,7 +30,7 @@ export async function getSocialLoginAccountToken({
   if (userInfo?.user?.id !== currentLoginAccount) {
     throw 'Account does not match';
   }
-  return userInfo?.user?.id || '';
+  return userInfo?.identityToken || '';
 }
 
 export async function deleteLoginAccount({

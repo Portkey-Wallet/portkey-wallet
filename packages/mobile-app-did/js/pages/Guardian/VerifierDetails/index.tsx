@@ -295,9 +295,12 @@ export default function VerifierDetails() {
     ],
   );
 
-  const onFinish = useLockCallback(() => {
-    verificationType === VerificationType.revokeAccount ? onGeneralVerify() : onRevokeVerify();
-  }, [onGeneralVerify, onRevokeVerify, verificationType]);
+  const onFinish = useLockCallback(
+    (code: string) => {
+      verificationType === VerificationType.revokeAccount ? onRevokeVerify(code) : onGeneralVerify(code);
+    },
+    [onGeneralVerify, onRevokeVerify, verificationType],
+  );
 
   const resendCode = useLockCallback(async () => {
     digitInput.current?.lockInput();

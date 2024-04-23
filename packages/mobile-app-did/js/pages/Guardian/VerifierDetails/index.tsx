@@ -138,7 +138,7 @@ export default function VerifierDetails() {
   const verifyManagerAddress = useVerifyManagerAddress();
   const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
 
-  const onFinish = useLockCallback(
+  const onGeneralVerify = useLockCallback(
     async (code: string) => {
       if (!requestCodeResult || !guardianItem || !code) return;
       const isRequestResult = pin && verificationType === VerificationType.register && managerAddress;
@@ -190,40 +190,8 @@ export default function VerifierDetails() {
                 accelerateChainId,
               });
             }
-            break;
-
-          case VerificationType.revokeAccount: {
-            //TODO: CHANGE ACTION
-
-            const caContract = await getCurrentCAContract();
-            const removeManagerParams = {
-              caContract,
-              managerAddress,
-              caHash: caHash || '',
-            };
-            const deleteParams = {
-              type: LoginType[guardianItem.guardianType],
-              chainId: originChainId,
-              token: code,
-              guardianIdentifier: guardianItem.guardianAccount,
-              ...requestCodeResult,
-              verifierId: guardianItem?.verifier?.id || '',
-            };
-
-            try {
-              await deleteLoginAccount({
-                removeManagerParams,
-                deleteParams,
-              });
-              await logout();
-            } catch (error) {
-              CommonToast.failError(error);
-            } finally {
-              Loading.hide();
-            }
 
             break;
-          }
 
           case VerificationType.communityRecovery: {
             if (autoLogin) {
@@ -269,14 +237,67 @@ export default function VerifierDetails() {
       onRequestOrSetPin,
       setGuardianStatus,
       accelerateChainId,
-      getCurrentCAContract,
-      caHash,
-      logout,
       autoLogin,
       registerAccount,
       setCodeError,
     ],
   );
+
+  const onRevokeVerify = useLockCallback(
+    async (code: string) => {
+      if (!guardianItem || !code) return;
+      digitInput.current?.lockInput();
+      Loading.show();
+      try {
+        const caContract = await getCurrentCAContract();
+        const removeManagerParams = {
+          caContract,
+          managerAddress,
+          caHash: caHash || '',
+        };
+        const deleteParams = {
+          type: LoginType[guardianItem.guardianType],
+          chainId: originChainId,
+          token: code,
+          guardianIdentifier: guardianItem.guardianAccount,
+          ...requestCodeResult,
+          verifierId: guardianItem?.verifier?.id || '',
+        };
+        await deleteLoginAccount({
+          removeManagerParams,
+          deleteParams,
+        });
+        await logout();
+      } catch (error) {
+        const _isInvalidCode = checkVerifierIsInvalidCode(error);
+        if (_isInvalidCode) {
+          setCodeError('', VERIFY_INVALID_TIME);
+        } else {
+          CommonToast.failError(error, 'Verify Fail');
+        }
+
+        digitInput.current?.reset();
+        Loading.hide();
+      } finally {
+        digitInput.current?.unLockInput();
+        Loading.hide();
+      }
+    },
+    [
+      caHash,
+      getCurrentCAContract,
+      guardianItem,
+      logout,
+      managerAddress,
+      originChainId,
+      requestCodeResult,
+      setCodeError,
+    ],
+  );
+
+  const onFinish = useLockCallback(() => {
+    verificationType === VerificationType.revokeAccount ? onGeneralVerify() : onRevokeVerify();
+  }, [onGeneralVerify, onRevokeVerify, verificationType]);
 
   const resendCode = useLockCallback(async () => {
     digitInput.current?.lockInput();

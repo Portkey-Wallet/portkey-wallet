@@ -45,7 +45,7 @@ export default function AccountCancelation() {
   const logout = useLogOut();
   const { userGuardiansList } = useGuardiansInfo();
   const guardianItem = useMemo(() => userGuardiansList?.[0], [userGuardiansList]);
-  const { guardianType, verifier } = guardianItem || {};
+  const { guardianType, verifier, guardianAccount } = guardianItem || {};
 
   const originChainId = useOriginChainId();
 
@@ -82,6 +82,7 @@ export default function AccountCancelation() {
       chainId: originChainId,
       token: socialLoginToken,
       verifierId: verifier?.id || '',
+      guardianIdentifier: guardianAccount,
     };
 
     try {
@@ -99,6 +100,7 @@ export default function AccountCancelation() {
     caHash,
     currentLoginAccountVerifyFunc,
     getCurrentCAContract,
+    guardianAccount,
     guardianType,
     logout,
     managerAddress,

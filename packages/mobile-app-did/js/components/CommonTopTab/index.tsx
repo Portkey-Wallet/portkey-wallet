@@ -31,12 +31,6 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
       screenOptions={{
         swipeEnabled: true,
         tabBarScrollEnabled: false,
-        // tabBarStyle: [hasTabBarBorderRadius ? styles.radiusTarBarStyle : {}, styles.tabBarStyle], // tabWrap
-        // tabBarLabelStyle: styles.tabBarLabelStyle,
-        // tabBarInactiveTintColor: defaultColors.font3, // active
-        // tabBarActiveTintColor: defaultColors.font4, // inactive
-        // tabBarIndicatorStyle: { borderWidth: StyleSheet.hairlineWidth, borderColor: defaultColors.bg5 }, // active border
-        // tabBarPressColor: defaultColors.bg1,
       }}>
       {tabList.map(ele => (
         <Tab.Screen key={ele.name} name={ele.name}>
@@ -79,6 +73,7 @@ const CustomizedTopTabBar = ({
           <TouchableOpacity
             testID={options.tabBarTestID}
             onPress={onPress}
+            disabled={isFocused}
             key={label}
             style={[toolBarStyle.label, { paddingRight: index !== state.routes.length - 1 ? pTd(32) : 0 }]}>
             <Text
@@ -87,6 +82,12 @@ const CustomizedTopTabBar = ({
                 {
                   color: isFocused ? defaultColors.font16 : defaultColors.font11,
                 },
+                isFocused
+                  ? {
+                      borderBottomColor: defaultColors.primaryColor,
+                      borderBottomWidth: pTd(2),
+                    }
+                  : {},
               ]}>
               {label}
             </Text>
@@ -120,7 +121,6 @@ const toolBarStyle = StyleSheet.create({
   container: {
     flexDirection: 'row',
     paddingHorizontal: pTd(16),
-    paddingVertical: pTd(8),
     borderBottomWidth: pTd(0.5),
     borderBottomColor: defaultColors.border6,
   },
@@ -129,5 +129,6 @@ const toolBarStyle = StyleSheet.create({
     fontSize: pTd(16),
     lineHeight: pTd(24),
     fontWeight: '600',
+    paddingVertical: pTd(8),
   },
 });

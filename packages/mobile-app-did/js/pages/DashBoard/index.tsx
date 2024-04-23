@@ -17,6 +17,37 @@ import CustomHeader from 'components/CustomHeader';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
+import { NestedScrollView, NestedScrollViewHeader } from '@sdcx/nested-scroll';
+const App = () => {
+  return (
+    <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.bg1]}>
+      <CustomHeader
+        rightDom={
+          <Touchable
+            style={styles.svgWrap}
+            onPress={async () => {
+              //
+            }}>
+            <Svg icon="scan" size={22} color={defaultColors.font8} />
+          </Touchable>
+        }
+      />
+      <NestedScrollView>
+        <NestedScrollViewHeader stickyHeaderBeginIndex={1}>
+          {/* <View style={{width: '100%', height: 100}}>
+            <Text style={{ fontSize: 30 }}>header</Text>
+          </View> */}
+          <Card />
+        </NestedScrollViewHeader>
+        <DashBoardTab />
+        {/* <PagerView>
+          <FlatList nestedScrollEnabled />
+          <ScrollView nestedScrollEnabled />
+        </PagerView> */}
+      </NestedScrollView>
+    </SafeAreaBox>
+  );
+};
 
 function TabView1(props) {
   const data = new Array(200).fill({});
@@ -131,4 +162,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DashBoard;
+export default App;

@@ -76,6 +76,7 @@
     "@reduxjs/toolkit": "^1.8.5",
     "@rneui/base": "^4.0.0-rc.6",
     "@rneui/themed": "^4.0.0-rc.6",
+    "@sdcx/nested-scroll": "^0.14.0",
     "@sentry/react-native": "^4.13.0",
     "@shopify/flash-list": "^1.4.0",
     "aelf-bridge": "^0.0.10",

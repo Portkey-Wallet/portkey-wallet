@@ -93,10 +93,10 @@ export default function DiscoverHome() {
             myEvents.chatHomeListCloseSwiped.emit(Math.random());
             navigationService.navigate('SearchPeoplePage');
           }}>
-          <Svg icon="search" color={defaultColors.bg1} size={pTd(20)} />
+          <Svg icon="search" color={defaultColors.bg31} size={pTd(20)} />
         </Touchable>
         <Touchable style={styles.addIcon} onPress={onRightPress}>
-          <Svg size={pTd(20)} icon="chat-add" />
+          <Svg color={defaultColors.bg31} size={pTd(20)} icon="chat-add" />
         </Touchable>
       </View>
     );

@@ -3,7 +3,7 @@ import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 
-const { bg1, bg5, black } = defaultColors;
+const { bg1, bg5, bg31 } = defaultColors;
 
 export const headerHeight = pTd(52);
 
@@ -78,7 +78,7 @@ export const whitStyles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    color: black,
+    color: bg31,
     fontWeight: 'bold',
     ...fonts.mediumFont,
   },

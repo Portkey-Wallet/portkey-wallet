@@ -30,7 +30,7 @@ export default function DiscoverHome() {
           if (!(await qrScanPermissionAndToast())) return;
           navigationService.navigate('QrScanner');
         }}>
-        <Svg icon="scan" size={22} color={defaultColors.font2} />
+        <Svg icon="scan" size={22} color={defaultColors.bg31} />
       </Touchable>
     ),
     [qrScanPermissionAndToast],

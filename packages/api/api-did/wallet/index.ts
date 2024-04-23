@@ -41,7 +41,7 @@ export default {
   deletionAccount: '/api/app/account/revoke/request',
   deletionAccountV2: '/api/app/account/revoke/account',
   getTwitterUserInfo: {
-    target: '/api/app/account/revoke/account',
+    target: '/api/app/twitterAuth/userInfo',
     config: { method: 'GET' },
   },
 } as const;

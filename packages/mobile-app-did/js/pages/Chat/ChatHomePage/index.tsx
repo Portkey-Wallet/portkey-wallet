@@ -127,9 +127,9 @@ export default function DiscoverHome() {
   );
 
   return (
-    <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.bg5]}>
+    <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.white]}>
       <Touchable activeOpacity={1} onPressIn={emitCloseSwiped}>
-        <CustomHeader noLeftDom themeType="blue" titleDom="Chats" rightDom={RightDom} />
+        <CustomHeader noLeftDom themeType="white" titleDom="Chats" rightDom={RightDom} />
       </Touchable>
       {
         <View style={[BGStyles.bg1, GStyles.flex1]}>

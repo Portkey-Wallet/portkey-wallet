@@ -43,8 +43,8 @@ export default function DiscoverHome() {
   );
 
   return (
-    <SafeAreaBox edges={['top', 'right', 'left']} style={BGStyles.bg5}>
-      <CustomHeader noLeftDom rightDom={RightDom} themeType="blue" titleDom={'Discover'} />
+    <SafeAreaBox edges={['top', 'right', 'left']} style={BGStyles.white}>
+      <CustomHeader noLeftDom rightDom={RightDom} themeType="white" titleDom={'Discover'} />
       <SimulatedInputBox onClickInput={() => navigationService.navigate('DiscoverSearch')} />
       <ScrollView style={styles.container}>
         <DiscoverArchivedSection />

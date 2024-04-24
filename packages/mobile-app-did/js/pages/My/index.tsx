@@ -68,11 +68,7 @@ export default function MyMenu() {
   );
 
   return (
-    <PageContainer
-      leftDom={<TextM />}
-      titleDom={t('My')}
-      safeAreaColor={['blue', 'white']}
-      containerStyles={styles.container}>
+    <PageContainer leftDom={<TextM />} titleDom={t('My')} safeAreaColor={['white']} containerStyles={styles.container}>
       {MenuList.map(ele => {
         return (
           <MenuItem

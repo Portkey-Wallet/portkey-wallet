@@ -24,6 +24,7 @@ export interface OpenCollectionObjType {
 }
 
 type NFTCollectionProps = NFTCollectionItemShowType & {
+  isFetching?: boolean;
   isCollapsed: boolean;
   openCollectionObj: OpenCollectionObjType;
   setOpenCollectionObj: any;
@@ -36,7 +37,11 @@ function areEqual(prevProps: NFTCollectionProps, nextProps: NFTCollectionProps) 
   const prevNftObj = prevProps?.openCollectionObj?.[`${prevProps.symbol}${prevProps?.chainId}`];
   const nextNftObj = nextProps?.openCollectionObj?.[`${nextProps.symbol}${nextProps?.chainId}`];
 
-  return nextProps.isCollapsed === prevProps.isCollapsed && prevNftObj?.pageNum === nextNftObj?.pageNum;
+  return (
+    nextProps.isCollapsed === prevProps.isCollapsed &&
+    prevNftObj?.pageNum === nextNftObj?.pageNum &&
+    nextProps.isFetching === prevProps.isFetching
+  );
 }
 
 const NFTCollection: React.FC<NFTCollectionProps> = memo(function NFTCollection(props: NFTCollectionProps) {
@@ -90,13 +95,6 @@ export default function NFTSection() {
     async (symbol: string, chainId: ChainId, itemCount: number) => {
       const key = `${symbol}${chainId}`;
 
-      await fetchAccountNFTItem({
-        symbol,
-        chainId,
-        caAddressInfos: caAddressInfos.filter(item => item.chainId === chainId),
-        pageNum: 0,
-      });
-
       setOpenCollectionObj(pre => ({
         ...pre,
         [key]: {
@@ -105,6 +103,13 @@ export default function NFTSection() {
           itemCount,
         },
       }));
+
+      await fetchAccountNFTItem({
+        symbol,
+        chainId,
+        caAddressInfos: caAddressInfos.filter(item => item.chainId === chainId),
+        pageNum: 0,
+      });
     },
     [caAddressInfos, fetchAccountNFTItem],
   );

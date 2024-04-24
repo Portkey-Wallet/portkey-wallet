@@ -38,7 +38,7 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
         hasBorder
         style={itemStyle.left}
         title={item?.symbol}
-        avatarSize={pTd(48)}
+        avatarSize={pTd(36)}
         // elf token icon is fixed , only use white background color
         svgName={item?.symbol === defaultToken.symbol ? 'testnet' : undefined}
         imageUrl={item?.imageUrl || symbolImages[item?.symbol]}
@@ -77,7 +77,7 @@ export default memo(TokenListItem);
 
 const itemStyle = StyleSheet.create({
   wrap: {
-    height: pTd(72),
+    height: pTd(64),
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -88,15 +88,13 @@ const itemStyle = StyleSheet.create({
   },
   right: {
     height: pTd(72),
-    marginLeft: pTd(16),
+    marginLeft: pTd(10),
     paddingRight: pTd(16),
     flex: 1,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomColor: defaultColors.border6,
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   infoWrap: {
     flex: 1,
@@ -106,7 +104,7 @@ const itemStyle = StyleSheet.create({
     alignItems: 'flex-start',
   },
   tokenName: {
-    lineHeight: pTd(22),
+    lineHeight: pTd(24),
   },
   chainInfo: {
     lineHeight: pTd(16),
@@ -122,12 +120,12 @@ const itemStyle = StyleSheet.create({
   },
   token: {
     color: defaultColors.font5,
-    lineHeight: pTd(22),
+    lineHeight: pTd(24),
     overflow: 'hidden',
   },
   dollar: {
     marginTop: pTd(2),
     lineHeight: pTd(16),
-    color: defaultColors.font7,
+    color: defaultColors.font11,
   },
 });

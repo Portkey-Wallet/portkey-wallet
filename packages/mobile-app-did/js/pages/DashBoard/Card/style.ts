@@ -26,9 +26,12 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   svgWrap: {
-    marginTop: -pTd(33),
-    padding: pTd(16),
-    paddingTop: pTd(40),
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: pTd(16),
+    height: pTd(44),
   },
   textColumn: {
     display: 'flex',
@@ -53,7 +56,7 @@ export const styles = StyleSheet.create({
     paddingBottom: pTd(4),
   },
   buttonGroupWrap: {
-    marginTop: pTd(24),
+    marginTop: 32,
     width: ScreenWidth,
     paddingHorizontal: pTd(16),
   },

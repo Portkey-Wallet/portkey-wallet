@@ -51,7 +51,7 @@ const persistor = persistStore(store);
 
 const App = () => {
   const statusBarProps = useMemo(() => {
-    const barProps: StatusBarProps = { barStyle: 'light-content' };
+    const barProps: StatusBarProps = { barStyle: 'dark-content' };
     if (!isIOS) {
       barProps.translucent = true;
       barProps.backgroundColor = 'transparent';

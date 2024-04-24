@@ -22,7 +22,6 @@ import MyNav from 'pages/My/router';
 import RampNav from 'pages/Ramp';
 import DiscoverNav from 'pages/Discover/index';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
-import Discover from 'Test/Discover';
 
 import TabsDrawer from 'components/TabsDrawer';
 import ChatNav from 'pages/Chat/routes';
@@ -51,11 +50,7 @@ export const productionNav = [
 ] as const;
 
 // dev nav
-export const devNav = [
-  ...productionNav,
-  { name: 'Home', component: Home },
-  // { name: 'Discover', component: Discover },
-] as const;
+export const devNav = [...productionNav, { name: 'Home', component: Home }] as const;
 
 const stackNav = __DEV__ ? devNav : productionNav;
 

@@ -28,6 +28,7 @@ export const BGStyles = StyleSheet.create({
   bg22: { backgroundColor: defaultColors.bg22 },
   bg23: { backgroundColor: defaultColors.bg23 },
   bg24: { backgroundColor: defaultColors.bg24 },
+  white: { backgroundColor: defaultColors.white },
   transparent: { backgroundColor: 'transparent' },
 });
 

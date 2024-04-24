@@ -18,7 +18,11 @@ import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
-import { PAGE_SIZE_IN_ACCOUNT_ASSETS, PAGE_SIZE_IN_ACCOUNT_TOKEN } from '@portkey-wallet/constants/constants-ca/assets';
+import {
+  PAGE_SIZE_DEFAULT,
+  PAGE_SIZE_IN_ACCOUNT_ASSETS,
+  PAGE_SIZE_IN_ACCOUNT_TOKEN,
+} from '@portkey-wallet/constants/constants-ca/assets';
 import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
@@ -67,6 +71,9 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
         params: {
           symbol: keyword,
           chainIds: chainIdArray,
+          version: '1.11.1',
+          skipCount: 0,
+          maxResultCount: PAGE_SIZE_DEFAULT,
         },
       });
       const _target = (res || []).map((item: any) => ({

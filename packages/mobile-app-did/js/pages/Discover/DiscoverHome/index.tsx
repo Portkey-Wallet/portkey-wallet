@@ -30,7 +30,7 @@ export default function DiscoverHome() {
           if (!(await qrScanPermissionAndToast())) return;
           navigationService.navigate('QrScanner');
         }}>
-        <Svg icon="scan" size={22} color={defaultColors.bg31} />
+        <Svg icon="scan" size={pTd(22)} color={defaultColors.bg31} />
       </Touchable>
     ),
     [qrScanPermissionAndToast],
@@ -64,6 +64,11 @@ const styles = StyleSheet.create({
     ...GStyles.paddingArg(8, 20),
   },
   svgWrap: {
-    padding: pTd(16),
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: pTd(16),
+    height: pTd(44),
   },
 });

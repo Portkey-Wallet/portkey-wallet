@@ -3,7 +3,6 @@ import Svg from 'components/Svg';
 import { View, StyleProp, ViewProps } from 'react-native';
 import { TextM } from 'components/CommonText';
 import { useLanguage } from 'i18n/hooks';
-import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import { commonButtonStyle } from '../SendButton/style';
 import Touchable from 'components/Touchable';
@@ -28,7 +27,7 @@ const DepositButton = (props: DepositButtonPropsType) => {
           OverlayModal.hide();
           DepositOverlay.show({ list });
         }}>
-        <Svg icon="depositMain" size={pTd(46)} />
+        <Svg icon="depositMain" size={48} />
       </Touchable>
       <TextM style={[commonButtonStyle.commonTitleStyle, commonButtonStyle.dashBoardTitleColorStyle]}>
         {t('Deposit')}

@@ -57,7 +57,7 @@ export const blueStyles = StyleSheet.create({
 export const whitStyles = StyleSheet.create({
   ...styles,
   sectionContainer: {
-    height: pTd(52),
+    height: pTd(44),
     width: '100%',
     display: 'flex',
     flexDirection: 'row',

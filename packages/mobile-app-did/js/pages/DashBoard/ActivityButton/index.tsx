@@ -6,7 +6,6 @@ import { TextM } from 'components/CommonText';
 import { useLanguage } from 'i18n/hooks';
 import GStyles from 'assets/theme/GStyles';
 import Touchable from 'components/Touchable';
-import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 
 interface ActivityButtonProps {
@@ -33,7 +32,7 @@ const ActivityButton = (props: ActivityButtonProps) => {
         onPress={() => {
           return navigationService.navigate('ActivityListPage');
         }}>
-        <Svg icon={'activity'} size={pTd(46)} />
+        <Svg icon={'activity'} size={48} />
       </Touchable>
       <TextM style={[commonButtonStyle.commonTitleStyle, buttonTitleStyle]}>{t('Activity')}</TextM>
     </View>

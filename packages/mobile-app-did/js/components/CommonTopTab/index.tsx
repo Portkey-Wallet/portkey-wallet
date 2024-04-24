@@ -117,8 +117,8 @@ const toolBarStyle = StyleSheet.create({
   container: {
     flexDirection: 'row',
     paddingHorizontal: pTd(16),
-    borderBottomWidth: pTd(0.5),
     borderBottomColor: defaultColors.border6,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   label: {},
   labelText: {

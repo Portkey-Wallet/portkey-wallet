@@ -77,7 +77,7 @@ export default memo(TokenListItem);
 
 const itemStyle = StyleSheet.create({
   wrap: {
-    height: pTd(72),
+    height: pTd(64),
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -95,8 +95,6 @@ const itemStyle = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomColor: defaultColors.border6,
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   infoWrap: {
     flex: 1,
@@ -128,6 +126,6 @@ const itemStyle = StyleSheet.create({
   dollar: {
     marginTop: pTd(2),
     lineHeight: pTd(16),
-    color: defaultColors.font7,
+    color: defaultColors.font11,
   },
 });

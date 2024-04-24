@@ -30,7 +30,7 @@ export default function DiscoverHome() {
           if (!(await qrScanPermissionAndToast())) return;
           navigationService.navigate('QrScanner');
         }}>
-        <Svg icon="scan" size={22} color={defaultColors.font2} />
+        <Svg icon="scan" size={pTd(22)} color={defaultColors.bg31} />
       </Touchable>
     ),
     [qrScanPermissionAndToast],
@@ -43,8 +43,8 @@ export default function DiscoverHome() {
   );
 
   return (
-    <SafeAreaBox edges={['top', 'right', 'left']} style={BGStyles.bg5}>
-      <CustomHeader noLeftDom rightDom={RightDom} themeType="blue" titleDom={'Discover'} />
+    <SafeAreaBox edges={['top', 'right', 'left']} style={BGStyles.white}>
+      <CustomHeader noLeftDom rightDom={RightDom} themeType="white" titleDom={'Discover'} />
       <SimulatedInputBox onClickInput={() => navigationService.navigate('DiscoverSearch')} />
       <ScrollView style={styles.container}>
         <DiscoverArchivedSection />
@@ -64,6 +64,11 @@ const styles = StyleSheet.create({
     ...GStyles.paddingArg(8, 20),
   },
   svgWrap: {
-    padding: pTd(16),
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: pTd(16),
+    height: pTd(44),
   },
 });

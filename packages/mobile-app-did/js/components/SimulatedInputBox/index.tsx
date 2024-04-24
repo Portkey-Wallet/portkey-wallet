@@ -17,7 +17,7 @@ export default function SimulatedInputBox({
   onClickInput,
 }: ISimulatedInputBoxProps) {
   return (
-    <View style={[styles.wrap, BGStyles.bg5]}>
+    <View style={[styles.wrap, BGStyles.white]}>
       <TouchableWithoutFeedback onPress={() => onClickInput?.()}>
         <View style={styles.innerInput}>
           <Svg icon="search" size={pTd(16)} />

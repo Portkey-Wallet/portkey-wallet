@@ -6,7 +6,7 @@ const { font16, font4 } = defaultColors;
 
 export const commonButtonStyle = StyleSheet.create({
   buttonWrap: {
-    marginBottom: pTd(24),
+    marginBottom: 32,
     width: pTd(65),
   },
   iconWrapStyle: {
@@ -20,11 +20,13 @@ export const commonButtonStyle = StyleSheet.create({
     marginTop: pTd(4),
     textAlign: 'center',
     color: font16,
-    fontSize: pTd(14),
-    lineHeight: pTd(20),
+    fontSize: pTd(12),
+    lineHeight: pTd(16),
   },
   dashBoardTitleColorStyle: {
     color: font16,
+    lineHeight: pTd(16),
+    fontWeight: '400',
   },
   innerPageTitleColorStyle: {
     color: font4,

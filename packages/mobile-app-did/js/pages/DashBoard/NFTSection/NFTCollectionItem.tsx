@@ -69,8 +69,8 @@ export default function NFTItem(props: NFTItemPropsType) {
   );
 
   const hasMore = useMemo(
-    () => showChildren?.length !== 0 && showChildren?.length < itemCount,
-    [itemCount, showChildren?.length],
+    () => showChildren?.length !== 0 && showChildren?.length < itemCount && !isFetching,
+    [isFetching, itemCount, showChildren?.length],
   );
 
   const skeletonList = useMemo(() => {

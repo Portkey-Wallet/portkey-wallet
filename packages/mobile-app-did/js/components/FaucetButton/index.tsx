@@ -1,6 +1,4 @@
 import React, { memo, useCallback, useMemo, useRef } from 'react';
-import Svg from 'components/Svg';
-
 import { View, StyleProp, ViewProps } from 'react-native';
 import { TextM } from 'components/CommonText';
 import { useLanguage } from 'i18n/hooks';
@@ -14,6 +12,7 @@ import CommonToast from 'components/CommonToast';
 import { commonButtonStyle } from 'components/SendButton/style';
 import Touchable from 'components/Touchable';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
+import Svg from 'components/Svg';
 
 interface SendButtonType {
   themeType?: 'dashBoard' | 'innerPage';

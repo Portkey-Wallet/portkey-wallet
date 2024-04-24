@@ -7,6 +7,7 @@ import { useLanguage } from 'i18n/hooks';
 import GStyles from 'assets/theme/GStyles';
 import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
+import { pTd } from 'utils/unit';
 
 interface ActivityButtonProps {
   themeType?: 'dashBoard' | 'innerPage';
@@ -32,7 +33,7 @@ const ActivityButton = (props: ActivityButtonProps) => {
         onPress={() => {
           return navigationService.navigate('ActivityListPage');
         }}>
-        <Svg icon={'activity'} size={48} />
+        <Svg icon={'activity'} size={pTd(48)} />
       </Touchable>
       <TextM style={[commonButtonStyle.commonTitleStyle, buttonTitleStyle]}>{t('Activity')}</TextM>
     </View>

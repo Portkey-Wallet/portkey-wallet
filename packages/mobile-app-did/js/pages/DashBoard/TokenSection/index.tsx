@@ -117,6 +117,7 @@ const styles = StyleSheet.create({
   },
   addTokenText: {
     marginLeft: pTd(8),
+    marginBottom: pTd(16),
     color: defaultColors.font4,
   },
 });

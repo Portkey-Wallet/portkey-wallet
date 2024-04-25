@@ -205,11 +205,12 @@ export default function AccountCancelation() {
   ]);
 
   const onConfirm = useCallback(async () => {
-    // 1. check
     const checkValid = await handleCheck();
     if (!checkValid) return;
+    handleAccountCancel();
+  }, [handleAccountCancel, handleCheck]);
 
-    // 2. warn tip
+  useEffectOnce(() => {
     CustomModal({
       type: 'confirm',
       content: (
@@ -220,9 +221,9 @@ export default function AccountCancelation() {
       ),
       okText: 'Yes',
       cancelText: 'No',
-      onOk: handleAccountCancel,
+      onCancel: () => navigate('/setting/wallet/wallet-name'),
     });
-  }, [handleAccountCancel, handleCheck]);
+  });
 
   const props: IAccountCancelationProps = useMemo(
     () => ({

@@ -40,7 +40,7 @@ export default function WalletNamePopup({
         <div
           className="account-cancelation flex-center"
           onClick={() => navigate('/setting/wallet/account-cancelation')}>
-          Account Cancelation
+          Account Deletion
         </div>
       )}
     </div>

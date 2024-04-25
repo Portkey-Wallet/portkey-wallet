@@ -46,7 +46,7 @@ export const ACCOUNT_CANCELATION_CONDITIONS = [
 ];
 export const ACCOUNT_CANCELATION_ALERT_MAP = {
   Asset: `There are remaining assets in your account. To proceed, please first transfer all assets out of your account.`,
-  Guardian: `Your LOGIN_ACCOUNT is set as a guardian by other accounts. To proceed, please first remove your Apple ID's linked guardian.`,
+  Guardian: `Your LOGIN_ACCOUNT is set as a guardian by other accounts. To proceed, please first remove your LOGIN_ACCOUNT's linked guardian.`,
   LoginDevice: `Your account is logged in on other devices. To proceed, please first log out there or remove the login device.`,
 };
 export const ACCOUNT_CANCELATION_WARNING = `Are you sure you want to delete your account? Please note that you won't be able to recover your account once it's deleted.`;

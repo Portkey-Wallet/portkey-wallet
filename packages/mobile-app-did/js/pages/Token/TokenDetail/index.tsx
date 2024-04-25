@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useRef } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Image } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
@@ -11,7 +11,7 @@ import { useLanguage } from 'i18n/hooks';
 import { FlashList } from '@shopify/flash-list';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
-import { TextXL } from 'components/CommonText';
+import { TextL, TextS } from 'components/CommonText';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
@@ -25,16 +25,11 @@ import fonts from 'assets/theme/fonts';
 import { formatChainInfoToShow, sleep } from '@portkey-wallet/utils';
 import BuyButton from 'components/BuyButton';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import FaucetButton from 'components/FaucetButton';
-import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useAppETransShow } from 'hooks/cms';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
-import { ETransTokenList } from '@portkey-wallet/constants/constants-ca/dapp';
 import CommonToolButton from 'components/CommonToolButton';
 import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
 import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
-import { useAppRampEntryShow } from 'hooks/ramp';
-import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
+import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
 import { useTokenInfoFromStore } from '@portkey-wallet/hooks/hooks-ca/assets';
 import ActivityItem from 'components/ActivityItem';
 import { FlatListFooterLoading } from 'components/FlatListFooterLoading';
@@ -55,15 +50,14 @@ const TokenDetail: React.FC = () => {
   const { t } = useLanguage();
   const { tokenInfo } = useRouterParams<RouterParams>();
   const { getAndUpdateTargetBalance } = useBalance();
-  const { isETransDepositShow, isETransWithdrawShow } = useAppETransShow();
-  const defaultToken = useDefaultToken();
   const currentTokenInfo = useTokenInfoFromStore(tokenInfo.symbol, tokenInfo.chainId) || tokenInfo;
   const isMainnet = useIsMainnet();
   const caAddressInfos = useCaAddressInfoList();
   const navigation = useNavigation();
   const dispatch = useAppCommonDispatch();
   const activity = useAppCASelector(state => state.activity);
-  const { isRampShow } = useAppRampEntryShow();
+
+  const { buy, swap, deposit } = checkEnabledFunctionalTypes(tokenInfo.symbol, tokenInfo.chainId === 'AELF');
 
   const balanceShow = useMemo(
     () => `${formatTokenAmountShowWithDecimals(currentTokenInfo?.balance || '0', currentTokenInfo?.decimals)}`,
@@ -124,31 +118,27 @@ const TokenDetail: React.FC = () => {
     isInitRef.current = true;
   }, [getActivityList]);
 
-  const isBuyButtonShow = useMemo(
-    () => SHOW_RAMP_SYMBOL_LIST.includes(tokenInfo.symbol) && tokenInfo.chainId === 'AELF' && isRampShow,
-    [isRampShow, tokenInfo.chainId, tokenInfo.symbol],
-  );
+  // const isBuyButtonShow = useMemo(
+  //   () => SHOW_RAMP_SYMBOL_LIST.includes(tokenInfo.symbol) && tokenInfo.chainId === 'AELF' && isRampShow,
+  //   [isRampShow, tokenInfo.chainId, tokenInfo.symbol],
+  // );
 
-  const isFaucetButtonShow = useMemo(
-    () => !isMainnet && tokenInfo.symbol === defaultToken.symbol && tokenInfo.chainId === 'AELF',
-    [defaultToken.symbol, isMainnet, tokenInfo.chainId, tokenInfo.symbol],
-  );
+  // const isFaucetButtonShow = useMemo(
+  //   () => !isMainnet && tokenInfo.symbol === defaultToken.symbol && tokenInfo.chainId === 'AELF',
+  //   [defaultToken.symbol, isMainnet, tokenInfo.chainId, tokenInfo.symbol],
+  // );
 
-  const isETransToken = useMemo(() => ETransTokenList.includes(tokenInfo.symbol), [tokenInfo.symbol]);
-
-  const isDepositShow = useMemo(() => isETransToken && isETransDepositShow, [isETransToken, isETransDepositShow]);
-  const isWithdrawShow = useMemo(() => isETransToken && isETransWithdrawShow, [isETransToken, isETransWithdrawShow]);
   const { eTransferUrl } = useCurrentNetworkInfo();
   const onDisclaimerModalPress = useOnDisclaimerModalPress();
   const buttonCount = useMemo(() => {
-    let count = 3;
-    if (isBuyButtonShow) count++;
-    if (isDepositShow) count++;
-    if (isWithdrawShow) count++;
+    let count = 2;
+    if (buy) count++;
+    if (deposit) count++;
+    if (swap) count++;
     // FaucetButton
-    if (isFaucetButtonShow) count++;
+    // if (isFaucetButtonShow) count++;
     return count;
-  }, [isBuyButtonShow, isDepositShow, isFaucetButtonShow, isWithdrawShow]);
+  }, [buy, deposit, swap]);
 
   const buttonGroupWrapStyle = useMemo(() => {
     if (buttonCount >= 5) {
@@ -187,25 +177,39 @@ const TokenDetail: React.FC = () => {
       backTitle={t('')}
       titleDom={
         <View>
-          <TextXL style={[GStyles.textAlignCenter, FontStyles.font2, fonts.mediumFont]}>{tokenInfo.symbol}</TextXL>
-          <Text style={[GStyles.textAlignCenter, FontStyles.font2, styles.subTitle]}>
+          <TextL style={[GStyles.textAlignCenter, FontStyles.font16, fonts.mediumFont]}>
+            <Image source={{ uri: tokenInfo.imageUrl ?? '' }} style={styles.mainTitleIcon} />
+            {tokenInfo.symbol}
+          </TextL>
+          <TextS style={[GStyles.textAlignCenter, FontStyles.font11, styles.subTitle]}>
             {formatChainInfoToShow(tokenInfo.chainId)}
-          </Text>
+          </TextS>
         </View>
       }
-      safeAreaColor={['blue', 'white']}
+      safeAreaColor={['white']}
       leftCallback={() => navigation.goBack()}
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View style={styles.card}>
-        <Text style={styles.tokenBalance}>{`${balanceShow} ${currentTokenInfo?.symbol || ''}`}</Text>
+        <Text style={styles.tokenBalance}>{`${balanceShow}`}</Text>
         {isMainnet && <Text style={styles.dollarBalance}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</Text>}
         <View style={[styles.buttonGroupWrap, buttonGroupWrapStyle]}>
-          {isBuyButtonShow && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
           <SendButton themeType="innerPage" sentToken={currentTokenInfo} wrapStyle={buttonWrapStyle} />
           <ReceiveButton currentTokenInfo={currentTokenInfo} themeType="innerPage" wrapStyle={buttonWrapStyle} />
-          {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}
-          {isDepositShow && (
+          {buy && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
+          {/* {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />} */}
+          {swap && (
+            <CommonToolButton
+              title="Swap"
+              icon="swap"
+              onPress={() => {
+                console.log('swap');
+              }}
+              themeType="innerPage"
+              wrapStyle={buttonWrapStyle}
+            />
+          )}
+          {deposit && (
             <CommonToolButton
               title="Deposit"
               icon="deposit"
@@ -217,27 +221,6 @@ const TokenDetail: React.FC = () => {
                     query: {
                       tokenSymbol: tokenInfo?.symbol,
                       type: 'Deposit',
-                      chainId: tokenInfo?.chainId,
-                    },
-                  }),
-                )
-              }
-              themeType="innerPage"
-              wrapStyle={buttonWrapStyle}
-            />
-          )}
-          {isWithdrawShow && (
-            <CommonToolButton
-              title="Withdraw"
-              icon="withdraw"
-              onPress={() =>
-                onDisclaimerModalPress(
-                  DepositModalMap.withdrawUSDT,
-                  stringifyETrans({
-                    url: eTransferUrl || '',
-                    query: {
-                      tokenSymbol: tokenInfo?.symbol,
-                      type: 'Withdraw',
                       chainId: tokenInfo?.chainId,
                     },
                   }),
@@ -262,6 +245,11 @@ const TokenDetail: React.FC = () => {
           getActivityList();
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
+        ListHeaderComponent={
+          <View style={styles.divide}>
+            <TextL style={[FontStyles.font16, styles.listFront]}>{'Activity'}</TextL>
+          </View>
+        }
         ListFooterComponent={
           <>{!isEmpty && <FlatListFooterLoading refreshing={isLoading === ListLoadingEnum.footer} />}</>
         }

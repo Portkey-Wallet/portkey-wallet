@@ -12,6 +12,7 @@ export interface TabItemTypes {
 }
 
 export type CommonTopTabProps = {
+  swipeEnabled?: boolean;
   hasTabBarBorderRadius?: boolean;
   initialRouteName?: string;
   tabItemStyleProps?: any;
@@ -21,7 +22,7 @@ export type CommonTopTabProps = {
 const Tab = createMaterialTopTabNavigator();
 
 const CommonTopTab: React.FC<CommonTopTabProps> = props => {
-  const { tabList, initialRouteName, hasTabBarBorderRadius } = props;
+  const { tabList, initialRouteName, hasTabBarBorderRadius, swipeEnabled = false } = props;
 
   return (
     <Tab.Navigator
@@ -29,7 +30,7 @@ const CommonTopTab: React.FC<CommonTopTabProps> = props => {
       initialLayout={{ width: screenWidth }}
       tabBar={prop => <CustomizedTopTabBar {...prop} hasTabBarBorderRadius={hasTabBarBorderRadius} />}
       screenOptions={{
-        swipeEnabled: true,
+        swipeEnabled,
         tabBarScrollEnabled: false,
       }}>
       {tabList.map(ele => (
@@ -117,8 +118,8 @@ const toolBarStyle = StyleSheet.create({
   container: {
     flexDirection: 'row',
     paddingHorizontal: pTd(16),
-    borderBottomWidth: pTd(0.5),
     borderBottomColor: defaultColors.border6,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   label: {},
   labelText: {

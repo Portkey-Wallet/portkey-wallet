@@ -10,7 +10,7 @@ import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import ChatOverlay from '../components/ChatOverlay';
 import navigationService from 'utils/navigationService';
-import { ChatOperationsEnum, ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
+import { ChatOperationsEnum } from '@portkey-wallet/constants/constants-ca/chat';
 import CommonAvatar from 'components/CommonAvatar';
 import { FontStyles } from 'assets/theme/styles';
 import FloatingActionButton from '../components/FloatingActionButton';
@@ -31,10 +31,10 @@ import Loading from 'components/Loading';
 import { useAddStrangerContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import type { ListItemType } from '../components/ChatOverlay/chatPopover';
-import myEvents from 'utils/deviceEvent';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import { measurePageY } from 'utils/measure';
 import { useIsFocused } from '@react-navigation/native';
+import { TabRouteNameEnum } from 'types/navigate';
 
 const ChatDetailsPage = () => {
   const dispatch = useAppCommonDispatch();
@@ -162,7 +162,7 @@ const ChatDetailsPage = () => {
 
   const onBack = useCallback(() => {
     navigationService.navigate('Tab');
-    myEvents.navToBottomTab.emit({ tabName: ChatTabName });
+    navigationService.navToBottomTab(TabRouteNameEnum.CHAT);
   }, []);
 
   useHardwareBackPress(

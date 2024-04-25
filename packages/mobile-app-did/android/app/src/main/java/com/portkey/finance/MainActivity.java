@@ -1,14 +1,16 @@
 package com.portkey.finance;
 import expo.modules.ReactActivityDelegateWrapper;
 
-import com.PortkeyApp.native_modules.PortkeyHeadlessJsTaskService;
+import com.portkey.finance.native_modules.PortkeyHeadlessJsTaskService;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
+
 /**
  * react navigation
  * More on this on https://reactnavigation.org/docs/getting-started/
  */
+import android.os.Build;
 import android.os.Bundle;
 
 public class MainActivity extends ReactActivity {
@@ -29,7 +31,12 @@ public class MainActivity extends ReactActivity {
 
     bundle.putString("portkey", "finance");
     service.putExtras(bundle);
-    getApplicationContext().startService(service);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      // start the foreground service
+      getApplicationContext().startForegroundService(service);
+    } else {
+      getApplicationContext().startService(service);
+    }
   }
 
 

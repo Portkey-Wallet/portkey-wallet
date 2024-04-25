@@ -4,8 +4,6 @@ import { setCurrentChannel, setReplyMessageInfo } from 'pages/Chat/context/chats
 import { useChatsDispatch } from 'pages/Chat/context/hooks';
 import navigationService from 'utils/navigationService';
 import CommonToast from 'components/CommonToast';
-import myEvents from 'utils/deviceEvent';
-import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import { sleep } from '@portkey-wallet/utils';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { parseLinkPortkeyUrl } from 'utils/scheme';
@@ -13,6 +11,7 @@ import { useDiscoverJumpWithNetWork } from './discover';
 import { useHandlePortkeyId, useHandleGroupId } from './useQrScan';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
+import { TabRouteNameEnum } from 'types/navigate';
 
 export function useJumpToChatDetails() {
   const chatDispatch = useChatsDispatch();
@@ -47,7 +46,7 @@ export function useJumpToChatDetails() {
           navigationService.reset([{ name: 'Tab' }, { name: 'ChatDetailsPage' }]);
         }
         await sleep(1000);
-        myEvents.navToBottomTab.emit({ tabName: ChatTabName });
+        navigationService.navToBottomTab(TabRouteNameEnum.CHAT);
       } catch (error) {
         console.log(error);
         CommonToast.failError(error);
@@ -91,7 +90,7 @@ export function useJumpToChatGroupDetails() {
 
         chatDispatch(setReplyMessageInfo());
         await sleep(1000);
-        myEvents.navToBottomTab.emit({ tabName: ChatTabName });
+        navigationService.navToBottomTab(TabRouteNameEnum.CHAT);
       } catch (error) {
         console.log(error);
         CommonToast.failError(error);

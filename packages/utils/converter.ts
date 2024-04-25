@@ -163,7 +163,7 @@ export const formatAmountUSDShow = (
   const min = divDecimals(1, decimal);
   const bigCount = BigNumber.isBigNumber(count) ? count : new BigNumber(count || '');
   if (bigCount.isNaN() || bigCount.eq(0)) return '$0';
-  if (min.gt(bigCount)) return `<$${min.toFixed()}`;
+  if (min.gt(bigCount)) return `<$ ${min.toFixed()}`;
   return '$' + bigCount.decimalPlaces(typeof decimal !== 'number' ? Number(decimal) : decimal, roundingMode).toFormat();
 };
 

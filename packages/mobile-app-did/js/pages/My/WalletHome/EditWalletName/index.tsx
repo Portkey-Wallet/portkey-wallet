@@ -13,7 +13,6 @@ import FormItem from 'components/FormItem';
 import { ScrollView, StyleSheet, TextInput } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import gStyles from 'assets/theme/GStyles';
-import ProfilePortkeyIDSection from 'pages/My/components/ProfileIDSection';
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
 import { ChainId } from '@portkey/provider-types';
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
@@ -120,7 +119,6 @@ const EditWalletName: React.FC = () => {
             errorMessage={nameError.errorMsg}
           />
         </FormItem>
-        <ProfilePortkeyIDSection noMarginTop disable id={userInfo?.userId || ''} />
         <ProfileAddressSection isMySelf disable addressList={caInfoList} />
       </ScrollView>
 

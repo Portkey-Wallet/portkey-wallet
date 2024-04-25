@@ -36,6 +36,10 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useBalance } from '@portkey-wallet/hooks/hooks-ca/balances';
 import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import { pTd } from 'utils/unit';
+import { useAppRampEntryShow } from 'hooks/ramp';
+import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
+import { ETransTokenList } from '@portkey-wallet/constants/constants-ca/dapp';
+import { useAppETransShow } from 'hooks/cms';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -57,8 +61,19 @@ const TokenDetail: React.FC = () => {
   const dispatch = useAppCommonDispatch();
   const activity = useAppCASelector(state => state.activity);
   const { eTransferUrl = '', awakenUrl = 'https://awaken.finance/' } = useCurrentNetworkInfo();
+  const { isETransDepositShow } = useAppETransShow();
 
   const { buy, swap, deposit } = checkEnabledFunctionalTypes(tokenInfo.symbol, tokenInfo.chainId === 'AELF');
+  const { isRampShow } = useAppRampEntryShow();
+  const isBuyButtonShow = useMemo(
+    () => SHOW_RAMP_SYMBOL_LIST.includes(tokenInfo.symbol) && tokenInfo.chainId === 'AELF' && isRampShow && buy,
+    [buy, isRampShow, tokenInfo.chainId, tokenInfo.symbol],
+  );
+  const isETransToken = useMemo(() => ETransTokenList.includes(tokenInfo.symbol), [tokenInfo.symbol]);
+  const isDepositShow = useMemo(
+    () => isETransToken && isETransDepositShow && deposit,
+    [isETransToken, isETransDepositShow, deposit],
+  );
 
   const balanceShow = useMemo(
     () => `${formatTokenAmountShowWithDecimals(currentTokenInfo?.balance || '0', currentTokenInfo?.decimals)}`,
@@ -131,13 +146,13 @@ const TokenDetail: React.FC = () => {
 
   const buttonCount = useMemo(() => {
     let count = 3;
-    if (buy && isMainnet) count++;
-    if (deposit) count++;
+    if (isBuyButtonShow) count++;
+    if (isDepositShow) count++;
     if (swap) count++;
     // FaucetButton
     // if (isFaucetButtonShow) count++;
     return count;
-  }, [buy, deposit, isMainnet, swap]);
+  }, [isBuyButtonShow, isDepositShow, swap]);
 
   const buttonGroupWrapStyle = useMemo(() => {
     if (buttonCount >= 5) {

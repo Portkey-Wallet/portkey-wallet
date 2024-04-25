@@ -9,6 +9,7 @@ import Touchable from 'components/Touchable';
 import DepositOverlay from 'components/DepositOverlay';
 import OverlayModal from 'components/OverlayModal';
 import { DepositItem } from 'hooks/deposit';
+import { pTd } from 'utils/unit';
 
 type DepositButtonPropsType = {
   wrapStyle?: StyleProp<ViewProps>;
@@ -27,7 +28,7 @@ const DepositButton = (props: DepositButtonPropsType) => {
           OverlayModal.hide();
           DepositOverlay.show({ list });
         }}>
-        <Svg icon="depositMain" size={48} />
+        <Svg icon="depositMain" size={pTd(48)} />
       </Touchable>
       <TextM style={[commonButtonStyle.commonTitleStyle, commonButtonStyle.dashBoardTitleColorStyle]}>
         {t('Deposit')}

@@ -84,7 +84,7 @@ export const fetchTokenListAsync = createAsyncThunk(
     currentNetwork = currentNetwork || wallet.currentNetwork || 'MAINNET';
     const response = await fetchTokenList({ caAddressInfos, skipCount, maxResultCount });
 
-    // mock data fro new account
+    // // mock data fro new account
     if (response.data.length === 0) {
       return {
         list: NEW_CLIENT_MOCK_ELF_LIST,

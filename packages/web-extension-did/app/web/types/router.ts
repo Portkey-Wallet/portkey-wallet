@@ -255,6 +255,7 @@ export type TTokenDetailLocationState = {
   decimals: number;
   tokenContractAddress: string;
   balanceInUsd?: string;
+  imgUrl?: string;
 };
 
 export type TWalletNameFromPage =

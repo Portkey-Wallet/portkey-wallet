@@ -1,12 +1,12 @@
 import { useCallback, useMemo, useState } from 'react';
-import clsx from 'clsx';
-import { useTranslation } from 'react-i18next';
 import AccountConnectModal from '../AccountConnectModal';
 import useConnect from 'hooks/useConnect';
+import CustomSvg from 'components/CustomSvg';
+import { Tooltip } from 'antd';
+import clsx from 'clsx';
 import './index.less';
 
 export default function AccountConnect() {
-  const { t } = useTranslation();
   const { dapp } = useConnect();
   const [open, setOpen] = useState(false);
 
@@ -23,8 +23,16 @@ export default function AccountConnect() {
   return (
     <>
       <div className="account-connect flex-center" onClick={onClick}>
-        <span className={clsx('status', dapp && 'connected')} />
-        <span>{t(dapp ? 'Connected' : 'Not Connected')}</span>
+        <Tooltip
+          placement="bottom"
+          overlayClassName={clsx(dapp && 'account-connected')}
+          showArrow={false}
+          title={dapp ? 'Connected' : 'Not Connected'}>
+          <div className="account-connect-icon">
+            <CustomSvg type="AccountConnect" />
+            <CustomSvg type={dapp ? 'EllipseGreen' : 'EllipseGray'} />
+          </div>
+        </Tooltip>
       </div>
       <AccountConnectModal {...modalProps} />
     </>

@@ -1,39 +1,53 @@
 @import '../../../assets/theme/color.less';
 
 .account-connect {
-  padding: 8px;
-  max-width: fit-content;
-  font-size: 12px;
-  line-height: 16px;
-  font-weight: 400;
-  color: @font-13;
-  border-radius: 20px;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
   cursor: pointer;
   &:hover {
-    background-color: @bg-13;
+    background-color: @Neutral-4;
   }
-  .status {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin-right: 6px;
-    border: 1px solid @border-8;
-    &.connected {
-      position: relative;
-      border-color: @border-11;
-      background-color: @bg-11;
-      &::after {
-        position: absolute;
-        top: 1px;
-        left: 1px;
-        content: '';
-        display: inline-block;
-        width: 4px;
-        height: 4px;
-        border-radius: 50%;
-        background-color: @bg-21;
+  .account-connect-icon {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    .accountconnect-icon {
+      width: 20px;
+      height: 20px;
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .ellipsegreen-icon,
+    .ellipsegray-icon {
+      display: flex;
+      width: 6px;
+      height: 6px;
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+      svg {
+        width: 100%;
+        height: 100%;
       }
     }
   }
 }
+
+.portkey-tooltip-inner {
+  font-size: 12px;
+  line-height: 16px;
+  color: @font-5;
+  padding: 8px 12px;
+  background-color: @Neutral-8;
+  border-radius: 6px;
+}
+
+.account-connected {
+  .portkey-tooltip-inner {
+    opacity: 0.6;
+  }
+}
+

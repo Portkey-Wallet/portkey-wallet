@@ -8,6 +8,8 @@ import { useLoading, useUserInfo } from 'store/Provider/hooks';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { ChainId } from '@portkey-wallet/types';
+import CustomSvg from 'components/CustomSvg';
+import './index.less';
 
 export interface ActivityProps {
   appendData?: Function;
@@ -109,7 +111,10 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
       {currentActivity?.totalRecordCount ? (
         <ActivityList data={currentActivity.data} chainId={chainId} hasMore={hasMore} loadMore={loadMoreActivities} />
       ) : (
-        <p className="empty">{t(EmptyTipMessage.NO_TRANSACTIONS)}</p>
+        <div className="no-activity-data flex-column-center">
+          <CustomSvg type="NoActivity" />
+          {t(EmptyTipMessage.NO_TRANSACTIONS)}
+        </div>
       )}
     </div>
   );

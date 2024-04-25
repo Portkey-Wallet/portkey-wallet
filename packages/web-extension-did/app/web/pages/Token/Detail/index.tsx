@@ -1,5 +1,4 @@
-import SettingHeader from 'pages/components/SettingHeader';
-import BalanceCard from 'pages/components/BalanceCard';
+import MainCards from 'pages/components/BalanceCard';
 import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import Activity from 'pages/Home/components/Activity';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
@@ -11,7 +10,6 @@ import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPric
 import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useExtensionETransShow } from 'hooks/cms';
-import { ETransType } from 'types/eTrans';
 import { useCheckSecurity } from 'hooks/useSecurity';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from 'pages/components/DisclaimerModal';
@@ -23,6 +21,10 @@ import { useExtensionRampEntryShow } from 'hooks/ramp';
 import { SHOW_RAMP_CHAIN_ID_LIST, SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import TokenImageDisplay from 'pages/components/TokenImageDisplay';
+import CustomSvg from 'components/CustomSvg';
+import { TradeTypeEnum } from 'constants/trade';
+import { getDisclaimerData } from 'utils/disclaimer';
 
 export enum TokenTransferStatus {
   CONFIRMED = 'Confirmed',
@@ -51,14 +53,12 @@ function TokenDetail() {
       isRampShow,
     [currentToken.chainId, currentToken.symbol, isRampShow],
   );
-  const { isETransDepositShow, isETransWithdrawShow } = useExtensionETransShow();
-  const isShowDepositUSDT = useMemo(
-    () => currentToken.symbol === 'USDT' && isETransDepositShow,
-    [currentToken.symbol, isETransDepositShow],
-  );
-  const isShowWithdrawUSDT = useMemo(
-    () => currentToken.symbol === 'USDT' && isETransWithdrawShow,
-    [currentToken.symbol, isETransWithdrawShow],
+  // TODO
+  const isShowSwap = true;
+  const { isETransShow } = useExtensionETransShow();
+  const isShowDeposit = useMemo(
+    () => currentToken.symbol === 'USDT' && isETransShow,
+    [currentToken.symbol, isETransShow],
   );
   const defaultToken = useDefaultToken();
   const isShowFaucet = useMemo(
@@ -78,43 +78,50 @@ function TokenDetail() {
     }
   }, [currentToken, isMainNet, navigate]);
 
-  const handleClickETrans = useCallback(
-    async (eTransType: ETransType) => {
-      try {
-        setLoading(true);
-        const isSafe = await checkSecurity(currentToken.chainId);
-        setLoading(false);
-        if (!isSafe) return;
-      } catch (error) {
-        setLoading(false);
-        console.log('===handleClickETrans error', error);
-        return;
+  const handleCheckSecurity = useCallback(async () => {
+    try {
+      setLoading(true);
+      const isSafe = await checkSecurity(currentToken.chainId);
+      setLoading(false);
+      return isSafe;
+    } catch (error) {
+      setLoading(false);
+      console.log('===handleCheckSecurity error', error);
+      return false;
+    }
+  }, [checkSecurity, currentToken.chainId, setLoading]);
+
+  const handleClickTrade = useCallback(
+    async (type: TradeTypeEnum) => {
+      const isSecurity = await handleCheckSecurity();
+      if (!isSecurity) return;
+
+      let tradeLink = '';
+      switch (type) {
+        case TradeTypeEnum.Swap:
+          tradeLink = '';
+          break;
+        case TradeTypeEnum.ETrans:
+          tradeLink = stringifyETrans({
+            url: eTransferUrl || '',
+            query: {
+              tokenSymbol: currentToken.symbol,
+              chainId: currentToken.chainId,
+            },
+          });
+          break;
       }
-      const targetUrl = stringifyETrans({
-        url: eTransferUrl || '',
-        query: {
-          tokenSymbol: currentToken.symbol,
-          type: eTransType,
-          chainId: currentToken.chainId,
-        },
-      });
-      if (checkDappIsConfirmed(eTransferUrl)) {
-        const openWinder = window.open(targetUrl, '_blank');
+      if (checkDappIsConfirmed(tradeLink)) {
+        const openWinder = window.open(tradeLink, '_blank');
         if (openWinder) {
           openWinder.opener = null;
         }
       } else {
-        disclaimerData.current = {
-          targetUrl,
-          originUrl: eTransferUrl,
-          dappIcon: 'ETransFavicon',
-          originTitle: 'ETransfer',
-          titleText: 'You will be directed to a third-party DApp: ETransfer',
-        };
+        disclaimerData.current = getDisclaimerData(tradeLink, type);
         setDisclaimerOpen(true);
       }
     },
-    [checkDappIsConfirmed, checkSecurity, currentToken.chainId, currentToken.symbol, eTransferUrl, setLoading],
+    [checkDappIsConfirmed, currentToken.chainId, currentToken.symbol, eTransferUrl, handleCheckSecurity],
   );
 
   useEffectOnce(() => {
@@ -126,35 +133,28 @@ function TokenDetail() {
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['token-detail', isPrompt ? 'portkey-body' : ''])}>
-        <div className="token-detail-title">
-          <SettingHeader
-            title={
-              <div className="title">
-                <p className="symbol">{currentToken?.symbol}</p>
-                <p className="network">{transNetworkText(currentToken.chainId, !isMainNet)}</p>
-              </div>
-            }
-            leftCallBack={() => navigate('/')}
-          />
-        </div>
-        <div className="token-detail-content">
-          <div className="balance-amount flex-column-center">
-            <div className="flex-column amount-detail">
-              <div className="flex-center amount">
-                <div className="amount-number">
-                  {formatTokenAmountShowWithDecimals(currentToken.balance, currentToken.decimals)}
-                </div>
-                <div className="amount-symbol">{currentToken.symbol}</div>
-              </div>
-              {isMainNet && <div className="convert">{formatAmountUSDShow(currentToken?.balanceInUsd)}</div>}
+        <div className="token-detail-title flex">
+          <CustomSvg type="NewRightArrow" onClick={() => navigate('/')} />
+          <div className="title-center flex-column">
+            <div className="symbol flex-row-center">
+              <TokenImageDisplay symbol={currentToken.symbol} src={currentToken.imgUrl} width={20} />
+              <span>{currentToken?.symbol}</span>
             </div>
-            <BalanceCard
-              isShowDepositUSDT={isShowDepositUSDT}
-              onClickDepositUSDT={() => handleClickETrans(ETransType.Deposit)}
-              onClickWithdrawUSDT={() => handleClickETrans(ETransType.Withdraw)}
-              isShowWithdrawUSDT={isShowWithdrawUSDT}
-              isShowBuyEntry={isShowBuy}
-              onBuy={handleBuy}
+            <div className="network">{transNetworkText(currentToken.chainId, !isMainNet)}</div>
+          </div>
+        </div>
+        <div className={clsx('token-detail-content', isPrompt ? '' : 'token-detail-content-popup')}>
+          <div className="token-detail-balance flex-column">
+            <div className={clsx('balance-amount', 'flex-column', isPrompt && 'is-prompt')}>
+              <div className="amount-number">
+                {formatTokenAmountShowWithDecimals(currentToken.balance, currentToken.decimals)}
+              </div>
+              <div className={clsx('amount-convert', !isMainNet && 'hidden-amount-convert')}>
+                {formatAmountUSDShow(currentToken?.balanceInUsd)}
+              </div>
+            </div>
+            <MainCards
+              onBuy={isShowBuy ? handleBuy : undefined}
               onSend={async () => {
                 navigate(`/send/token/${currentToken?.symbol}`, {
                   state: { ...currentToken, address: currentToken?.tokenContractAddress },
@@ -165,12 +165,15 @@ function TokenDetail() {
                   state: { ...currentToken, address: currentToken.tokenContractAddress },
                 })
               }
+              onClickSwap={isShowSwap ? () => handleClickTrade(TradeTypeEnum.Swap) : undefined}
+              onClickDeposit={isShowDeposit ? () => handleClickTrade(TradeTypeEnum.ETrans) : undefined}
               isShowFaucet={isShowFaucet}
             />
           </div>
-        </div>
-        <div className="token-detail-history">
-          <Activity chainId={currentToken.chainId} symbol={currentToken.symbol} />
+          <div className="token-detail-activity">
+            <div className="token-detail-activity-title">Activity</div>
+            <Activity chainId={currentToken.chainId} symbol={currentToken.symbol} />
+          </div>
         </div>
       </div>
     );
@@ -178,13 +181,13 @@ function TokenDetail() {
     isPrompt,
     currentToken,
     isMainNet,
-    isShowDepositUSDT,
-    isShowWithdrawUSDT,
     isShowBuy,
     handleBuy,
+    isShowSwap,
+    isShowDeposit,
     isShowFaucet,
     navigate,
-    handleClickETrans,
+    handleClickTrade,
   ]);
 
   return (

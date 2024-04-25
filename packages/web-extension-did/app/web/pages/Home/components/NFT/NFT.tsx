@@ -189,13 +189,18 @@ export default function NFT() {
   return (
     <div className="tab-nft">
       {accountNFTList.length === 0 ? (
-        <p className="empty-nft-list">No NFTs yet</p>
+        <div className="empty-nft-list flex-column-center">
+          <CustomSvg type="NoNFTs" />
+          No NFTs yet
+        </div>
       ) : (
         <div className="nft-list">
           <Collapse
             collapsible={isFetching ? 'disabled' : undefined}
             onChange={handleChange}
-            expandIcon={() => <CustomSvg type="Right" />}>
+            expandIcon={(panelProps) => (
+              <CustomSvg className={panelProps.isActive ? 'is-active' : ''} type="NewRightArrow" />
+            )}>
             {accountNFTList.map((item) => renderItem(item))}
           </Collapse>
           {hasMoreNFTCollection && (

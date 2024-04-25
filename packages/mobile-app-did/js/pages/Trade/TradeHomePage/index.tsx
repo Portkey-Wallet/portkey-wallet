@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import PageContainer from 'components/PageContainer';
 import GStyles from 'assets/theme/GStyles';
 import { StyleSheet } from 'react-native';
@@ -6,17 +6,8 @@ import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { TextM } from 'components/CommonText';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
-import { useFocusEffect } from '@react-navigation/native';
-import myEvents from 'utils/deviceEvent';
 
-export default function TradeHomePage() {
-  useFocusEffect(
-    useCallback(() => {
-      myEvents.rotateTabTrade.emit();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []),
-  );
-
+export const TradeHomePage: React.FC = () => {
   return (
     <PageContainer
       titleDom="Send Crypto Box"
@@ -27,7 +18,9 @@ export default function TradeHomePage() {
       <TextM>TEST</TextM>
     </PageContainer>
   );
-}
+};
+
+export default TradeHomePage;
 
 const styles = StyleSheet.create({
   containerStyles: {

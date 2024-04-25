@@ -24,9 +24,7 @@ import { setBadge } from 'utils/notifee';
 import { ReferralStatusEnum } from '@portkey-wallet/store/store-ca/referral/type';
 import { SvgXml } from 'react-native-svg';
 import svgs from 'assets/image/svgs';
-import myEvents from 'utils/deviceEvent';
 import { TabRouteNameEnum } from 'types/navigate';
-import navigationService from 'utils/navigationService';
 
 const Tab = createBottomTabNavigator();
 
@@ -92,7 +90,7 @@ export default function TabRoot() {
   const isChatShow = useIsChatShow();
   const { viewReferralStatus } = useReferral();
   const rotateAnimate = useRef(new Animated.Value(0)).current;
-  const rotatedRef = useRef(false);
+  const rotatedActiveRef = useRef(false);
   const logOut = useLogOut();
 
   const tabMenuList = useMemo(() => {
@@ -116,16 +114,21 @@ export default function TabRoot() {
       .filter(item => item.component !== undefined);
   }, [tabMenuListStore]);
 
-  const rotateButton = useCallback(async () => {
-    const rotateToValue = rotatedRef.current ? 180 : 0;
-    await Animated.timing(rotateAnimate, {
-      toValue: rotateToValue,
-      duration: 100,
-      useNativeDriver: true,
-    }).start();
-    rotatedRef.current = !rotatedRef.current;
-    navigationService.navToBottomTab(TabRouteNameEnum.TRADE);
-  }, [rotateAnimate]);
+  const rotateButton = useCallback(
+    async (resetBack: boolean) => {
+      if (!rotatedActiveRef.current && resetBack) return;
+
+      const rotateToValue = rotatedActiveRef.current ? 0 : 180;
+      await Animated.timing(rotateAnimate, {
+        toValue: rotateToValue,
+        duration: 100,
+        useNativeDriver: true,
+      }).start();
+
+      rotatedActiveRef.current = !rotatedActiveRef.current;
+    },
+    [rotateAnimate],
+  );
 
   const rotateStyle = {
     transform: [
@@ -151,12 +154,6 @@ export default function TabRoot() {
     if (!isChatShow) return;
     setBadge(unreadCount);
   }, [isChatShow, unreadCount]);
-
-  // rotate btn
-  useEffect(() => {
-    const listener = myEvents.rotateTabTrade.addListener(rotateButton);
-    return () => listener.remove();
-  }, [rotateButton]);
 
   if (tabMenuList.length >= 5)
     return (
@@ -213,6 +210,25 @@ export default function TabRoot() {
         })}>
         {tabMenuList.map(ele => (
           <Tab.Screen
+            listeners={({ navigation }) => ({
+              tabPress: e => {
+                // rotate trade btn
+                const historyArr = navigation.getState()?.history;
+                const previousRoute = historyArr[historyArr.length - 1];
+
+                if (
+                  e.target?.startsWith(TabRouteNameEnum.TRADE) &&
+                  !previousRoute?.key?.startsWith(TabRouteNameEnum.TRADE)
+                ) {
+                  rotateButton(false);
+                } else if (
+                  !e.target?.startsWith(TabRouteNameEnum.TRADE) &&
+                  previousRoute?.key?.startsWith(TabRouteNameEnum.TRADE)
+                ) {
+                  rotateButton(true);
+                }
+              },
+            })}
             key={ele.name}
             name={ele.name}
             component={ele.component}

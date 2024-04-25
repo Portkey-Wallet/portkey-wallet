@@ -22,7 +22,6 @@ import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPric
 import useVerifierList from 'hooks/useVerifierList';
 import useGuardianList from 'hooks/useGuardianList';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
-import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
@@ -275,7 +274,6 @@ export default function MyBalance() {
       </div>
       {SelectTokenELe}
       <Tabs activeKey={activeKey} onChange={onChange} items={renderTabsData} className="balance-tab" />
-      {isPrompt && <PromptEmptyElement className="empty-element" />}
       <DisclaimerModal open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} {...disclaimerData.current} />
     </div>
   );

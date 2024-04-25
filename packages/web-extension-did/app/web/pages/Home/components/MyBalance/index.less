@@ -3,6 +3,7 @@
 
 .balance {
   overflow-y: overlay;
+  height: 100%;
 
   .main-content-wrap {
     gap: 24px;
@@ -29,12 +30,14 @@
   .@{app-prefix}-tabs {
     background-color: @bg-11;
     overflow: hidden;
+    height: 100%;
 
     .@{app-prefix}-tabs-nav {
       margin: 0;
       padding: 0 16px;
       z-index: 9;
       position: sticky;
+      top: 0;
       background: @bg-11;
 
       .@{app-prefix}-tabs-nav-wrap {
@@ -66,6 +69,9 @@
         }
       }
     }
+  }
+  .@{app-prefix}-tabs-content-holder {
+    overflow-y: scroll;
   }
 
   .empty-element {

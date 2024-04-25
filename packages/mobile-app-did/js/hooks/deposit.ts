@@ -4,7 +4,6 @@ import navigationService from 'utils/navigationService';
 import { useAppBridgeButtonShow, useAppETransShow } from './cms';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
-import { useSecuritySafeCheckAndToast } from './security';
 import Loading from 'components/Loading';
 import DisclaimerModal from 'components/DisclaimerModal';
 import CommonToast from 'components/CommonToast';

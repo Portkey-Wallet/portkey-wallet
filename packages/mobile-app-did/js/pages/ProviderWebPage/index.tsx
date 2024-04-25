@@ -14,15 +14,43 @@ import { IconName } from 'components/Svg';
 import Placeholder from './components/Placeholder';
 
 const ProviderWebPage = () => {
-  const webViewRef = useRef<IWebView | null>(null);
-  const progressbarRef = useRef<IProgressbar>(null);
-  const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
   const {
     url,
     title,
     needSecuritySafeCheck = false,
     icon,
   } = useRouterParams<{ url: string; title: string; needSecuritySafeCheck?: boolean; icon?: IconName }>();
+  return (
+    <SafeAreaBox edges={['top', 'right', 'left']} style={{ backgroundColor: SafeAreaColorMap.blue }}>
+      <View style={[GStyles.flex1, BGStyles.bg4]}>
+        <CustomHeader themeType={'blue'} titleDom={title} />
+        <ProviderWebPageComponent
+          url={url}
+          title={title}
+          needSecuritySafeCheck={needSecuritySafeCheck}
+          icon={icon}
+          needNavigationBar={true}
+        />
+      </View>
+    </SafeAreaBox>
+  );
+};
+
+export const ProviderWebPageComponent = ({
+  url,
+  title,
+  needSecuritySafeCheck = false,
+  icon,
+}: {
+  url: string;
+  title: string;
+  needSecuritySafeCheck?: boolean;
+  icon?: IconName;
+  needNavigationBar?: boolean;
+}) => {
+  const webViewRef = useRef<IWebView | null>(null);
+  const progressbarRef = useRef<IProgressbar>(null);
+  const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
 
   const [showPlaceholder, setShowPlaceholder] = useState(needSecuritySafeCheck);
 
@@ -39,21 +67,16 @@ const ProviderWebPage = () => {
   }, [needSecuritySafeCheck, securitySafeCheckAndToast, url]);
 
   return (
-    <SafeAreaBox edges={['top', 'right', 'left']} style={{ backgroundColor: SafeAreaColorMap.blue }}>
-      <View style={[GStyles.flex1, BGStyles.bg4]}>
-        <CustomHeader themeType={'blue'} titleDom={title} />
-        <View style={styles.contentWrap}>
-          <Progressbar ref={progressbarRef} />
-          <ProviderWebview
-            ref={webViewRef}
-            style={styles.webview}
-            source={{ uri: url }}
-            onLoadProgress={({ nativeEvent }) => progressbarRef.current?.changeInnerBarWidth(nativeEvent.progress)}
-          />
-          {showPlaceholder && <Placeholder dappName={title} icon={icon} />}
-        </View>
-      </View>
-    </SafeAreaBox>
+    <View style={styles.contentWrap}>
+      <Progressbar ref={progressbarRef} />
+      <ProviderWebview
+        ref={webViewRef}
+        style={styles.webview}
+        source={{ uri: url }}
+        onLoadProgress={({ nativeEvent }) => progressbarRef.current?.changeInnerBarWidth(nativeEvent.progress)}
+      />
+      {showPlaceholder && <Placeholder dappName={title} icon={icon} />}
+    </View>
   );
 };
 

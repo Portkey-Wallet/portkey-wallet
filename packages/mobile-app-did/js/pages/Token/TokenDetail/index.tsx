@@ -27,8 +27,6 @@ import BuyButton from 'components/BuyButton';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 import CommonToolButton from 'components/CommonToolButton';
-import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
-import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
 import { useTokenInfoFromStore } from '@portkey-wallet/hooks/hooks-ca/assets';
 import ActivityItem from 'components/ActivityItem';
@@ -36,6 +34,8 @@ import { FlatListFooterLoading } from 'components/FlatListFooterLoading';
 import { ListLoadingEnum } from 'constants/misc';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useBalance } from '@portkey-wallet/hooks/hooks-ca/balances';
+import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
+import { pTd } from 'utils/unit';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -56,6 +56,7 @@ const TokenDetail: React.FC = () => {
   const navigation = useNavigation();
   const dispatch = useAppCommonDispatch();
   const activity = useAppCASelector(state => state.activity);
+  const { eTransferUrl = '', awakenUrl = 'https://awaken.finance/' } = useCurrentNetworkInfo();
 
   const { buy, swap, deposit } = checkEnabledFunctionalTypes(tokenInfo.symbol, tokenInfo.chainId === 'AELF');
 
@@ -128,17 +129,15 @@ const TokenDetail: React.FC = () => {
   //   [defaultToken.symbol, isMainnet, tokenInfo.chainId, tokenInfo.symbol],
   // );
 
-  const { eTransferUrl } = useCurrentNetworkInfo();
-  const onDisclaimerModalPress = useOnDisclaimerModalPress();
   const buttonCount = useMemo(() => {
-    let count = 2;
-    if (buy) count++;
+    let count = 3;
+    if (buy && isMainnet) count++;
     if (deposit) count++;
     if (swap) count++;
     // FaucetButton
     // if (isFaucetButtonShow) count++;
     return count;
-  }, [buy, deposit, swap]);
+  }, [buy, deposit, isMainnet, swap]);
 
   const buttonGroupWrapStyle = useMemo(() => {
     if (buttonCount >= 5) {
@@ -196,14 +195,19 @@ const TokenDetail: React.FC = () => {
         <View style={[styles.buttonGroupWrap, buttonGroupWrapStyle]}>
           <SendButton themeType="innerPage" sentToken={currentTokenInfo} wrapStyle={buttonWrapStyle} />
           <ReceiveButton currentTokenInfo={currentTokenInfo} themeType="innerPage" wrapStyle={buttonWrapStyle} />
-          {buy && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
+          {buy && isMainnet && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
           {/* {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />} */}
           {swap && (
             <CommonToolButton
               title="Swap"
               icon="swap"
               onPress={() => {
-                console.log('swap');
+                navigationService.navigate('ProviderWebPage', {
+                  title: 'Awaken',
+                  // Current only ELF can use swap (Awaken)
+                  url: `${awakenUrl}/trading/ELF_USDT_0.05`,
+                  needSecuritySafeCheck: true,
+                });
               }}
               themeType="innerPage"
               wrapStyle={buttonWrapStyle}
@@ -214,9 +218,9 @@ const TokenDetail: React.FC = () => {
               title="Deposit"
               icon="deposit"
               onPress={() =>
-                onDisclaimerModalPress(
-                  DepositModalMap.depositUSDT,
-                  stringifyETrans({
+                navigationService.navigate('ProviderWebPage', {
+                  title: 'ETransfer',
+                  url: stringifyETrans({
                     url: eTransferUrl || '',
                     query: {
                       tokenSymbol: tokenInfo?.symbol,
@@ -224,7 +228,8 @@ const TokenDetail: React.FC = () => {
                       chainId: tokenInfo?.chainId,
                     },
                   }),
-                )
+                  needSecuritySafeCheck: true,
+                })
               }
               themeType="innerPage"
               wrapStyle={buttonWrapStyle}
@@ -237,7 +242,9 @@ const TokenDetail: React.FC = () => {
         refreshing={isLoading === ListLoadingEnum.header}
         data={currentActivity?.data || []}
         keyExtractor={(_item, index) => `${index}`}
-        ListEmptyComponent={<NoData noPic message="You have no transactions." />}
+        ListEmptyComponent={
+          <NoData icon={'no-data-detail'} message="No NFTs yet" topDistance={pTd(40)} oblongSize={[pTd(64), pTd(64)]} />
+        }
         renderItem={renderItem}
         onRefresh={onRefreshList}
         onEndReached={() => {

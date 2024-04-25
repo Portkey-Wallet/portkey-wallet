@@ -1,42 +1,31 @@
-import React from 'react';
-import PageContainer from 'components/PageContainer';
-import GStyles from 'assets/theme/GStyles';
-import { StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme';
-import { pTd } from 'utils/unit';
-import { TextM } from 'components/CommonText';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import React, { useMemo } from 'react';
+import SafeAreaBox from 'components/SafeAreaBox';
+import { BGStyles } from 'assets/theme/styles';
+import { ProviderWebPageComponent } from 'pages/ProviderWebPage';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import CommonTopTab from 'components/CommonTopTab';
 
 export const TradeHomePage: React.FC = () => {
+  const { awakenUrl = 'https://awaken.finance/', eBridgeUrl = 'https://ebridge.exchange' } = useCurrentNetworkInfo();
+
+  const tabList = useMemo(() => {
+    return [
+      {
+        name: 'Swap',
+        tabItemDom: <ProviderWebPageComponent title={'Swap'} url={awakenUrl} />,
+      },
+      {
+        name: 'Bridge',
+        tabItemDom: <ProviderWebPageComponent title={'Bridge'} url={eBridgeUrl} />,
+      },
+    ];
+  }, [awakenUrl, eBridgeUrl]);
+
   return (
-    <PageContainer
-      titleDom="Send Crypto Box"
-      hideTouchable
-      safeAreaColor={['white', 'gray']}
-      scrollViewProps={{ disabled: true }}
-      containerStyles={styles.containerStyles}>
-      <TextM>TEST</TextM>
-    </PageContainer>
+    <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.white]}>
+      <CommonTopTab hasTabBarBorderRadius={false} tabList={tabList} />
+    </SafeAreaBox>
   );
 };
 
 export default TradeHomePage;
-
-const styles = StyleSheet.create({
-  containerStyles: {
-    position: 'relative',
-    flex: 1,
-    backgroundColor: defaultColors.bg4,
-    ...GStyles.paddingArg(0, 0),
-  },
-  scrollStyle: {
-    minHeight: '100%',
-    ...GStyles.paddingArg(16, 20),
-  },
-  tips: {
-    marginTop: pTd(40),
-    textAlign: 'center',
-    color: defaultColors.font3,
-    marginBottom: isIOS ? 0 : pTd(16),
-  },
-});

@@ -84,7 +84,6 @@ export const DepositModalMap: { [key: string]: ModalDescribe } = {
 
 export function useOnDisclaimerModalPress() {
   const { checkDappIsConfirmed } = useDisclaimer();
-  const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
 
   return useCallback(
     async (modalDescribe: ModalDescribe, url: string) => {
@@ -93,20 +92,24 @@ export function useOnDisclaimerModalPress() {
       try {
         const { origin } = getUrlObj(url);
         Loading.show();
-        if (!(await securitySafeCheckAndToast())) return;
         if (!checkDappIsConfirmed(origin))
           return DisclaimerModal.showDisclaimerModal({
             ...modalDescribe,
             url,
           });
-        navigationService.navigate('ProviderWebPage', { title: modalDescribe.title, url });
+        navigationService.navigate('ProviderWebPage', {
+          title: modalDescribe.title,
+          url,
+          needSecuritySafeCheck: true,
+          icon: modalDescribe.icon,
+        });
       } catch (error) {
         CommonToast.failError(error);
       } finally {
         Loading.hide();
       }
     },
-    [checkDappIsConfirmed, securitySafeCheckAndToast],
+    [checkDappIsConfirmed],
   );
 }
 

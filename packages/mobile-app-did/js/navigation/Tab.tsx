@@ -130,16 +130,19 @@ export default function TabRoot() {
     [rotateAnimate],
   );
 
-  const rotateStyle = {
-    transform: [
-      {
-        rotate: rotateAnimate.interpolate({
-          inputRange: [0, 360],
-          outputRange: ['0deg', '180deg'],
-        }),
-      },
-    ],
-  };
+  const rotateStyle = useMemo(
+    () => ({
+      transform: [
+        {
+          rotate: rotateAnimate.interpolate({
+            inputRange: [0, 360],
+            outputRange: ['0deg', '180deg'],
+          }),
+        },
+      ],
+    }),
+    [rotateAnimate],
+  );
 
   // init data
   useInitData();

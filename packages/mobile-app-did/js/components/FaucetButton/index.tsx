@@ -1,10 +1,7 @@
 import React, { memo, useCallback, useMemo, useRef } from 'react';
-import Svg from 'components/Svg';
-
 import { View, StyleProp, ViewProps } from 'react-native';
 import { TextM } from 'components/CommonText';
 import { useLanguage } from 'i18n/hooks';
-import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -14,6 +11,8 @@ import CommonToast from 'components/CommonToast';
 import { commonButtonStyle } from 'components/SendButton/style';
 import Touchable from 'components/Touchable';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
+import Svg from 'components/Svg';
+import { pTd } from 'utils/unit';
 
 interface SendButtonType {
   themeType?: 'dashBoard' | 'innerPage';
@@ -74,7 +73,7 @@ const FaucetButton = (props: SendButtonType) => {
           if (isMainnet) return;
           claimToken();
         }}>
-        <Svg icon={themeType === 'dashBoard' ? 'faucet' : 'faucet1'} size={pTd(46)} />
+        <Svg icon={themeType === 'dashBoard' ? 'faucet' : 'faucet1'} size={pTd(48)} />
       </Touchable>
       <TextM style={[commonButtonStyle.commonTitleStyle, buttonTitleStyle]}>{t('Faucet')}</TextM>
     </View>

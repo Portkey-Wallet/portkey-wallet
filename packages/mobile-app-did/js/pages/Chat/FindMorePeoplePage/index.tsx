@@ -4,7 +4,6 @@ import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
-import { TextM } from 'components/CommonText';
 import CommonInput from 'components/CommonInput';
 import useDebounce from 'hooks/useDebounce';
 import { BGStyles } from 'assets/theme/styles';
@@ -12,7 +11,6 @@ import Svg from 'components/Svg';
 import ContactItem from 'components/ContactItem';
 import im from '@portkey-wallet/im';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getAelfAddress } from '@portkey-wallet/utils/aelf';
 import { GetUserInfoDefaultResult } from '@portkey-wallet/im/types/service';
 import navigationService from 'utils/navigationService';
@@ -21,7 +19,6 @@ import { useCheckIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
 import NoData from 'components/NoData';
 import Lottie from 'lottie-react-native';
 import Touchable from 'components/Touchable';
-import { copyText } from 'utils';
 import { useInputFocus } from 'hooks/useInputFocus';
 import CommonToast from 'components/CommonToast';
 import InviteFriendsSection from '../components/InviteFriendsSection';
@@ -30,7 +27,7 @@ import OfficialChatGroup from '../components/OfficialChatGroup';
 const FindMorePeople = () => {
   const iptRef = useRef<TextInput>(null);
   useInputFocus(iptRef);
-  const { userId = '' } = useCurrentUserInfo();
+  // const { userId = '' } = useCurrentUserInfo();
   const navToChatDetails = useJumpToChatDetails();
   const [keyword, setKeyword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -111,7 +108,7 @@ const FindMorePeople = () => {
           loading={loading}
           allowClear
           value={keyword}
-          placeholder="Address/Portkey ID/email"
+          placeholder="Address/email"
           onChangeText={setKeyword}
           rightIcon={IptRightIcon}
           rightIconContainerStyle={styles.rightIconContainerStyle}
@@ -119,7 +116,7 @@ const FindMorePeople = () => {
       </View>
       {!debounceWord && (
         <>
-          <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemEnd, styles.portkeyIdWrap]}>
+          {/* <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemEnd, styles.portkeyIdWrap]}>
             <View style={[GStyles.flex1, GStyles.paddingRight(16)]}>
               <TextM>{`My Portkey ID : `}</TextM>
               <TextM numberOfLines={1}>{userId}</TextM>
@@ -130,7 +127,7 @@ const FindMorePeople = () => {
             <Touchable style={GStyles.marginLeft(pTd(16))} onPress={() => navigationService.navigate('ChatQrCodePage')}>
               <Svg icon="chat-scan" size={pTd(16)} />
             </Touchable>
-          </View>
+          </View> */}
           <InviteFriendsSection />
           <OfficialChatGroup />
         </>

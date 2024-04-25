@@ -52,6 +52,7 @@ export const ProviderWebPageComponent = ({
   const progressbarRef = useRef<IProgressbar>(null);
   const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
 
+  const [isWebviewLoading, setWebviewLoading] = useState(true);
   const [showPlaceholder, setShowPlaceholder] = useState(needSecuritySafeCheck);
 
   useEffect(() => {
@@ -62,9 +63,11 @@ export const ProviderWebPageComponent = ({
         } else {
           setShowPlaceholder(false);
         }
+      } else {
+        setShowPlaceholder(isWebviewLoading);
       }
     })();
-  }, [needSecuritySafeCheck, securitySafeCheckAndToast, url]);
+  }, [needSecuritySafeCheck, securitySafeCheckAndToast, url, isWebviewLoading]);
 
   return (
     <View style={styles.contentWrap}>
@@ -74,6 +77,9 @@ export const ProviderWebPageComponent = ({
         style={styles.webview}
         source={{ uri: url }}
         onLoadProgress={({ nativeEvent }) => progressbarRef.current?.changeInnerBarWidth(nativeEvent.progress)}
+        onLoadEnd={() => {
+          setWebviewLoading(false);
+        }}
       />
       {showPlaceholder && <Placeholder dappName={title} icon={icon} />}
     </View>

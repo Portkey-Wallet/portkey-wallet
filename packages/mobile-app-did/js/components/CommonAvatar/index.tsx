@@ -51,7 +51,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     () => ({
       width: width || Number(avatarSize),
       height: height || Number(avatarSize),
-      borderRadius: shapeType === 'square' ? pTd(6) : Number(avatarSize) / 2,
+      borderRadius: shapeType === 'square' ? 4 : Number(avatarSize) / 2,
     }),
     [avatarSize, height, shapeType, width],
   );

@@ -143,6 +143,7 @@ export default function NFTSection() {
     <View style={styles.wrap}>
       <FlatList
         refreshing={reFreshing}
+        contentContainerStyle={styles.contentContainerStyle}
         data={totalRecordCount === 0 ? [] : accountNFTList || []}
         ListEmptyComponent={() => (
           <Touchable>
@@ -180,5 +181,8 @@ const styles = StyleSheet.create({
   itemWrap: {
     width: '100%',
     height: pTd(100),
+  },
+  contentContainerStyle: {
+    paddingBottom: pTd(16),
   },
 });

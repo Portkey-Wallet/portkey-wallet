@@ -9,14 +9,13 @@ export interface IWalletEntryProps {
   clickAvatar: () => void;
 }
 
-export default function WalletEntry({ walletAvatar, walletName, portkeyId, clickAvatar }: IWalletEntryProps) {
+export default function WalletEntry({ walletAvatar, walletName, clickAvatar }: IWalletEntryProps) {
   return (
     <MenuItem className="wallet-entry" height={108} onClick={clickAvatar}>
       <div className="flex-start-center wallet-entry-main">
         <Avatar avatarUrl={walletAvatar} nameIndex={walletName?.substring(0, 1).toLocaleUpperCase()} size="large" />
         <div className="wallet-info">
           <div className="wallet-info-name">{walletName}</div>
-          <div className="wallet-info-portkey-id">{`Portkey ID: ${portkeyId}`}</div>
         </div>
       </div>
     </MenuItem>

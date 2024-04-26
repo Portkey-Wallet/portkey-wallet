@@ -4,7 +4,7 @@ import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
 import CommonAvatar from 'components/CommonAvatar';
 import { CommonInputProps } from 'components/CommonInput';
-import { TextM, TextXXL } from 'components/CommonText';
+import { TextXXL } from 'components/CommonText';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import React, { memo } from 'react';
@@ -30,8 +30,6 @@ const WalletMenuItem: React.FC<CommonInputProps> = () => {
         <TextXXL numberOfLines={1} style={styles.nickName}>
           {userInfo?.nickName || ''}
         </TextXXL>
-        <View style={styles.blank} />
-        <TextM numberOfLines={1} style={styles.portkeyId}>{`Portkey ID: ${userInfo?.userId || ''}`}</TextM>
       </View>
       <Svg icon="right-arrow" size={pTd(20)} />
     </Touchable>

@@ -27,4 +27,5 @@ export type NetworkItem = {
   eBridgeUrl?: string;
   eTransferUrl?: string;
   awakenUrl?: string;
+  schrodingerUrl?: string;
 };

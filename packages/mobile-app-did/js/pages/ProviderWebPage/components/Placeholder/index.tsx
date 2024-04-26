@@ -9,9 +9,9 @@ const Placeholder = ({ dappName, icon }: { dappName: string; icon?: IconName }) 
   return (
     <View style={styles.container}>
       {icon ? <Svg icon={icon || 'eBridgeFavIcon'} size={64} iconStyle={styles.icon} /> : <View style={styles.icon} />}
-      <TextL style={styles.title}>{`Jumping to ${dappName} now...`}</TextL>
+      <TextL style={styles.title}>{`Redirecting to ${dappName} `}</TextL>
       <Text style={styles.desc}>
-        You are visiting a third-party application. Please pay attention to your asset security.
+        Please exercise caution and protect your asset security while navigating third-party dApps.
       </Text>
     </View>
   );

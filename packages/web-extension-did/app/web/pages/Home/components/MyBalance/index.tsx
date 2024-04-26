@@ -106,6 +106,8 @@ export default function MyBalance() {
   const { isNotLessThan768, isPrompt } = useCommonState();
   const userInfo = useCurrentUserInfo();
   const accountBalanceUSD = useAccountBalanceUSD();
+  const usdShow = useMemo(() => formatAmountUSDShow(accountBalanceUSD), [accountBalanceUSD]);
+  const [detailScroll, setDetailScroll] = useState(false);
 
   useEffect(() => {
     if (state?.key) {
@@ -236,17 +238,24 @@ export default function MyBalance() {
     }
   }, [isBuySectionShow, isRampShow, navigate]);
 
+  const onBalanceWrapScroll = useCallback(() => {
+    const height = isPrompt ? 72 : 60;
+    const targetEle = document.querySelector('.balance-tab');
+    const targetTop = targetEle?.getBoundingClientRect()?.top ?? 0;
+    if (targetTop <= height) {
+      setDetailScroll(true);
+    } else {
+      setDetailScroll(false);
+    }
+  }, [isPrompt]);
+
   return (
-    <div className="balance">
+    <div className={clsx('balance', detailScroll && 'detail-scroll')} onScroll={onBalanceWrapScroll}>
       <div className="main-content-wrap flex-column">
         <div className={clsx('balance-amount-wrap', 'flex-column', isPrompt && 'is-prompt')}>
           <div className="wallet-name">{userInfo.nickName}</div>
-          <div className="balance-amount">
-            {isMainNet ? (
-              <span className="amount">{formatAmountUSDShow(accountBalanceUSD)}</span>
-            ) : (
-              <span className="dev-mode">Dev Mode</span>
-            )}
+          <div className={clsx('balance-amount', usdShow.length > 18 && 'balance-amount-long')}>
+            {isMainNet ? <span className="amount">{usdShow}</span> : <span className="dev-mode">Dev Mode</span>}
           </div>
         </div>
         <MainCards

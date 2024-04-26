@@ -18,13 +18,14 @@ import './index.less';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { TSendLocationState, TTokenDetailLocationState } from 'types/router';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
-import { SHOW_RAMP_CHAIN_ID_LIST, SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import CustomSvg from 'components/CustomSvg';
 import { TradeTypeEnum } from 'constants/trade';
 import { getDisclaimerData } from 'utils/disclaimer';
+import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 
 export enum TokenTransferStatus {
   CONFIRMED = 'Confirmed',
@@ -42,24 +43,17 @@ function TokenDetail() {
   const { checkDappIsConfirmed } = useDisclaimer();
   const checkSecurity = useCheckSecurity();
   const [disclaimerOpen, setDisclaimerOpen] = useState<boolean>(false);
-  const { eTransferUrl = '' } = useCurrentNetworkInfo();
+  const { eTransferUrl = '', awakenUrl = '' } = useCurrentNetworkInfo();
   const { isPrompt } = useCommonState();
   const { isRampShow } = useExtensionRampEntryShow();
   const { setLoading } = useLoading();
-  const isShowBuy = useMemo(
-    () =>
-      SHOW_RAMP_SYMBOL_LIST.includes(currentToken.symbol) &&
-      SHOW_RAMP_CHAIN_ID_LIST.includes(currentToken.chainId) &&
-      isRampShow,
-    [currentToken.chainId, currentToken.symbol, isRampShow],
+  const cardShowFn = useMemo(
+    () => checkEnabledFunctionalTypes(currentToken.symbol, currentToken.chainId === MAIN_CHAIN_ID),
+    [currentToken.chainId, currentToken.symbol],
   );
-  // TODO
-  const isShowSwap = true;
+  const isShowBuy = useMemo(() => cardShowFn.buy && isRampShow, [cardShowFn.buy, isRampShow]);
   const { isETransShow } = useExtensionETransShow();
-  const isShowDeposit = useMemo(
-    () => currentToken.symbol === 'USDT' && isETransShow,
-    [currentToken.symbol, isETransShow],
-  );
+  const isShowDeposit = useMemo(() => cardShowFn.deposit && isETransShow, [cardShowFn.deposit, isETransShow]);
   const defaultToken = useDefaultToken();
   const isShowFaucet = useMemo(
     () => !isMainNet && currentToken.symbol === defaultToken.symbol && currentToken.chainId === 'AELF',
@@ -96,13 +90,16 @@ function TokenDetail() {
       const isSecurity = await handleCheckSecurity();
       if (!isSecurity) return;
 
-      let tradeLink = '';
+      let originUrl = '';
+      let targetUrl = '';
       switch (type) {
         case TradeTypeEnum.Swap:
-          tradeLink = '';
+          originUrl = awakenUrl;
+          targetUrl = `${awakenUrl}/trading/EFL_USDT_0.05`;
           break;
         case TradeTypeEnum.ETrans:
-          tradeLink = stringifyETrans({
+          originUrl = eTransferUrl;
+          targetUrl = stringifyETrans({
             url: eTransferUrl || '',
             query: {
               tokenSymbol: currentToken.symbol,
@@ -111,17 +108,26 @@ function TokenDetail() {
           });
           break;
       }
-      if (checkDappIsConfirmed(tradeLink)) {
-        const openWinder = window.open(tradeLink, '_blank');
+      if (checkDappIsConfirmed(originUrl)) {
+        const openWinder = window.open(targetUrl, '_blank');
         if (openWinder) {
           openWinder.opener = null;
         }
       } else {
-        disclaimerData.current = getDisclaimerData(tradeLink, type);
+        disclaimerData.current = getDisclaimerData({ type, originUrl, targetUrl });
         setDisclaimerOpen(true);
       }
     },
-    [checkDappIsConfirmed, currentToken.chainId, currentToken.symbol, eTransferUrl, handleCheckSecurity],
+    [awakenUrl, checkDappIsConfirmed, currentToken.chainId, currentToken.symbol, eTransferUrl, handleCheckSecurity],
+  );
+
+  const handleSendOrReceive = useCallback(
+    (type: 'send' | 'receive') => {
+      navigate(`/${type}/token/${currentToken?.symbol}`, {
+        state: { ...currentToken, address: currentToken?.tokenContractAddress },
+      });
+    },
+    [currentToken, navigate],
   );
 
   useEffectOnce(() => {
@@ -155,17 +161,9 @@ function TokenDetail() {
             </div>
             <MainCards
               onBuy={isShowBuy ? handleBuy : undefined}
-              onSend={async () => {
-                navigate(`/send/token/${currentToken?.symbol}`, {
-                  state: { ...currentToken, address: currentToken?.tokenContractAddress },
-                });
-              }}
-              onReceive={() =>
-                navigate(`/receive/token/${currentToken?.symbol}`, {
-                  state: { ...currentToken, address: currentToken.tokenContractAddress },
-                })
-              }
-              onClickSwap={isShowSwap ? () => handleClickTrade(TradeTypeEnum.Swap) : undefined}
+              onSend={cardShowFn.send ? () => handleSendOrReceive('send') : undefined}
+              onReceive={cardShowFn.receive ? () => handleSendOrReceive('receive') : undefined}
+              onClickSwap={cardShowFn.swap ? () => handleClickTrade(TradeTypeEnum.Swap) : undefined}
               onClickDeposit={isShowDeposit ? () => handleClickTrade(TradeTypeEnum.ETrans) : undefined}
               isShowFaucet={isShowFaucet}
             />
@@ -179,14 +177,22 @@ function TokenDetail() {
     );
   }, [
     isPrompt,
-    currentToken,
+    currentToken.symbol,
+    currentToken.imgUrl,
+    currentToken.chainId,
+    currentToken.balance,
+    currentToken.decimals,
+    currentToken?.balanceInUsd,
     isMainNet,
     isShowBuy,
     handleBuy,
-    isShowSwap,
+    cardShowFn.send,
+    cardShowFn.receive,
+    cardShowFn.swap,
     isShowDeposit,
     isShowFaucet,
     navigate,
+    handleSendOrReceive,
     handleClickTrade,
   ]);
 

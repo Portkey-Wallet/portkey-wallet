@@ -29,7 +29,6 @@ import { useCheckSecurity } from 'hooks/useSecurity';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import { useExtensionETransShow } from 'hooks/cms';
 import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from '../../../components/DisclaimerModal';
-import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import './index.less';
 import { useInitRamp } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { setBadge } from 'utils/FCM';
@@ -67,7 +66,7 @@ export default function MyBalance() {
   const isMainNet = useIsMainnet();
   const { walletInfo } = useCurrentWallet();
   const caAddressInfos = useCaAddressInfoList();
-  const { eBridgeUrl = '', eTransferUrl = '' } = useCurrentNetworkInfo();
+  const { eTransferUrl = '' } = useCurrentNetworkInfo();
   const isFCMEnable = useFCMEnable();
   const { setLoading } = useLoading();
 
@@ -211,16 +210,8 @@ export default function MyBalance() {
 
       let tradeLink = '';
       switch (type) {
-        case TradeTypeEnum.Swap:
-          tradeLink = '';
-          break;
-        case TradeTypeEnum.eBridge:
-          tradeLink = eBridgeUrl;
-          break;
         case TradeTypeEnum.ETrans:
-          tradeLink = stringifyETrans({
-            url: eTransferUrl,
-          });
+          tradeLink = eTransferUrl;
           break;
       }
       if (checkDappIsConfirmed(tradeLink)) {
@@ -229,11 +220,11 @@ export default function MyBalance() {
           openWinder.opener = null;
         }
       } else {
-        disclaimerData.current = getDisclaimerData(tradeLink, type);
+        disclaimerData.current = getDisclaimerData({ targetUrl: tradeLink, originUrl: tradeLink, type });
         setDisclaimerOpen(true);
       }
     },
-    [checkDappIsConfirmed, eBridgeUrl, eTransferUrl, handleCheckSecurity],
+    [checkDappIsConfirmed, eTransferUrl, handleCheckSecurity],
   );
 
   const handleClickBuy = useCallback(() => {

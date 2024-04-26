@@ -1,5 +1,9 @@
 @import '../../../assets/theme/color.less';
 
+.account-connect-wrap {
+  top: 36px !important;
+}
+
 .account-connect {
   width: 28px;
   height: 28px;
@@ -23,11 +27,11 @@
     .ellipsegreen-icon,
     .ellipsegray-icon {
       display: flex;
-      width: 6px;
-      height: 6px;
+      width: 8px;
+      height: 8px;
       position: absolute;
       bottom: -1px;
-      right: -1px;
+      right: -2px;
       svg {
         width: 100%;
         height: 100%;
@@ -43,11 +47,7 @@
   padding: 8px 12px;
   background-color: @Neutral-8;
   border-radius: 6px;
+  opacity: 0.6;
 }
 
-.account-connected {
-  .portkey-tooltip-inner {
-    opacity: 0.6;
-  }
-}
 

@@ -25,7 +25,7 @@ export default function AccountConnect() {
       <div className="account-connect flex-center" onClick={onClick}>
         <Tooltip
           placement="bottom"
-          overlayClassName={clsx(dapp && 'account-connected')}
+          overlayClassName={clsx(dapp && 'account-connected', 'account-connect-wrap')}
           showArrow={false}
           title={dapp ? 'Connected' : 'Not Connected'}>
           <div className="account-connect-icon">

@@ -21,7 +21,7 @@ export default function TradePage() {
   const checkSecurity = useCheckSecurity();
   const { setLoading } = useLoading();
   const originChainId = useOriginChainId();
-  const { eBridgeUrl = '' } = useCurrentNetworkInfo();
+  const { eBridgeUrl = '', awakenUrl = '' } = useCurrentNetworkInfo();
   const { checkDappIsConfirmed } = useDisclaimer();
   const tradeList = useMemo(
     () => [
@@ -68,11 +68,10 @@ export default function TradePage() {
     async (type: TradeTypeEnum) => {
       const isSecurity = await handleCheckSecurity();
       if (!isSecurity) return;
-
       let tradeLink = '';
       switch (type) {
         case TradeTypeEnum.Swap:
-          tradeLink = '';
+          tradeLink = awakenUrl;
           break;
         case TradeTypeEnum.eBridge:
           tradeLink = eBridgeUrl;
@@ -84,11 +83,11 @@ export default function TradePage() {
           openWinder.opener = null;
         }
       } else {
-        disclaimerData.current = getDisclaimerData(tradeLink, type);
+        disclaimerData.current = getDisclaimerData({ type, targetUrl: tradeLink, originUrl: tradeLink });
         setDisclaimerOpen(true);
       }
     },
-    [checkDappIsConfirmed, eBridgeUrl, handleCheckSecurity],
+    [awakenUrl, checkDappIsConfirmed, eBridgeUrl, handleCheckSecurity],
   );
 
   return (

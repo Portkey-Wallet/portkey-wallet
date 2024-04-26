@@ -1,13 +1,19 @@
 import { TradeTypeEnum } from 'constants/trade';
 import { IDisclaimerProps, initDisclaimerData } from 'pages/components/DisclaimerModal';
 
-export const getDisclaimerData = (dappUrl: string, type: TradeTypeEnum) => {
+export interface IGetDisclaimerData {
+  originUrl: string;
+  targetUrl: string;
+  type: TradeTypeEnum;
+}
+
+export const getDisclaimerData = ({ type, targetUrl, originUrl }: IGetDisclaimerData) => {
   let data: IDisclaimerProps = initDisclaimerData;
   switch (type) {
     case TradeTypeEnum.ETrans:
       data = {
-        targetUrl: dappUrl,
-        originUrl: dappUrl,
+        targetUrl,
+        originUrl,
         dappIcon: 'ETransFavicon',
         originTitle: 'ETransfer',
         titleText: 'You will be directed to a third-party DApp: ETransfer',
@@ -15,17 +21,17 @@ export const getDisclaimerData = (dappUrl: string, type: TradeTypeEnum) => {
       break;
     case TradeTypeEnum.Swap:
       data = {
-        targetUrl: dappUrl,
-        originUrl: dappUrl,
-        dappIcon: 'BridgeFavicon', // TODO
-        originTitle: 'eBridge', // TODO
-        titleText: 'You will be directed to a third-party DApp: Swap',
+        targetUrl,
+        originUrl,
+        dappIcon: 'SwapFavicon',
+        originTitle: 'AwakenSwap',
+        titleText: 'You will be directed to a third-party DApp: AwakenSwap',
       };
       break;
     case TradeTypeEnum.eBridge:
       data = {
-        targetUrl: dappUrl,
-        originUrl: dappUrl,
+        targetUrl,
+        originUrl,
         dappIcon: 'BridgeFavicon',
         originTitle: 'eBridge',
         titleText: 'You will be directed to a third-party DApp: eBridge',

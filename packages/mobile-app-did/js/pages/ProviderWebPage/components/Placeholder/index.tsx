@@ -8,7 +8,7 @@ import { defaultColors } from 'assets/theme';
 const Placeholder = ({ dappName, icon }: { dappName: string; icon?: IconName }) => {
   return (
     <View style={styles.container}>
-      <Svg icon={icon || 'eBridgeFavIcon'} size={pTd(64)} iconStyle={styles.icon} />
+      {icon ? <Svg icon={icon || 'eBridgeFavIcon'} size={64} iconStyle={styles.icon} /> : <View style={styles.icon} />}
       <TextL style={styles.title}>{`Jumping to ${dappName} now...`}</TextL>
       <Text style={styles.desc}>
         You are visiting a third-party application. Please pay attention to your asset security.
@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginTop: pTd(160),
+    borderRadius: 32,
   },
   title: {
     color: defaultColors.font16,

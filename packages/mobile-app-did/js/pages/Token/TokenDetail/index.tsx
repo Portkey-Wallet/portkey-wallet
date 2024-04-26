@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useRef } from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, Text } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
@@ -41,6 +41,9 @@ import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ra
 import { ETransTokenList } from '@portkey-wallet/constants/constants-ca/dapp';
 import { useAppETransShow } from 'hooks/cms';
 import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
+import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
+import CommonAvatar from 'components/CommonAvatar';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -87,6 +90,7 @@ const TokenDetail: React.FC = () => {
   );
   const currentActivityRef = useRef(currentActivity);
   currentActivityRef.current = currentActivity;
+  const symbolImages = useSymbolImages();
 
   const fixedParamObj = useMemo(
     () => ({
@@ -99,6 +103,10 @@ const TokenDetail: React.FC = () => {
   const pageInfoRef = useRef({
     ...INIT_PAGE_INFO,
   });
+
+  const iconImg = useMemo(() => {
+    return tokenInfo?.imageUrl ?? symbolImages[tokenInfo?.symbol] ?? '';
+  }, [symbolImages, tokenInfo?.imageUrl, tokenInfo?.symbol]);
 
   const [isLoading, setIsLoading] = useState(ListLoadingEnum.hide);
   const getActivityList = useLockCallback(
@@ -161,6 +169,7 @@ const TokenDetail: React.FC = () => {
       return styles.buttonWrapStyle1;
     }
   }, [buttonCount]);
+  const defaultToken = useDefaultToken();
 
   const renderItem = useCallback(({ item, index }: { item: ActivityItemType; index: number }) => {
     const preItem = currentActivityRef.current?.data[index - 1];
@@ -187,7 +196,16 @@ const TokenDetail: React.FC = () => {
       titleDom={
         <View>
           <View style={styles.mainTitleLine}>
-            <Image source={{ uri: tokenInfo.imageUrl ?? '' }} style={styles.mainTitleIcon} />
+            <CommonAvatar
+              hasBorder
+              style={styles.mainTitleIcon}
+              title={tokenInfo.symbol}
+              avatarSize={pTd(18)}
+              svgName={tokenInfo?.symbol === defaultToken.symbol ? 'testnet' : undefined}
+              imageUrl={iconImg}
+              titleStyle={Object.assign({}, FontStyles.font11, { fontSize: pTd(12) })}
+              borderStyle={GStyles.hairlineBorder}
+            />
             <TextL style={[GStyles.textAlignCenter, FontStyles.font16, fonts.mediumFont]}>{tokenInfo.symbol}</TextL>
           </View>
           <TextS style={[GStyles.textAlignCenter, FontStyles.font11, styles.subTitle]}>
@@ -214,12 +232,6 @@ const TokenDetail: React.FC = () => {
               title="Swap"
               icon="swap"
               onPress={() => {
-                // console.log(
-                //   stringifyETrans({
-                //     url: `${awakenUrl}/trading/ELF_USDT_0.05` || '',
-                //   }),
-                // );
-
                 onDisclaimerModalPress(
                   DepositModalMap.aWakenSwap,
                   stringifyETrans({

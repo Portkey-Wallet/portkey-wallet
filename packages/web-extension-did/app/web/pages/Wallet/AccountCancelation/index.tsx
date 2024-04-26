@@ -207,7 +207,18 @@ export default function AccountCancelation() {
   const onConfirm = useCallback(async () => {
     const checkValid = await handleCheck();
     if (!checkValid) return;
-    handleAccountCancel();
+    CustomModal({
+      type: 'confirm',
+      content: (
+        <div>
+          <div className="title">Warning</div>
+          <div className="content">{ACCOUNT_CANCELATION_WARNING}</div>
+        </div>
+      ),
+      okText: 'Yes',
+      cancelText: 'No',
+      onOk: handleAccountCancel,
+    });
   }, [handleAccountCancel, handleCheck]);
 
   useEffectOnce(() => {

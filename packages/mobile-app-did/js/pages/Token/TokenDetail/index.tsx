@@ -175,6 +175,10 @@ const TokenDetail: React.FC = () => {
 
   const isEmpty = useMemo(() => (currentActivity?.data || []).length === 0, [currentActivity?.data]);
 
+  const amountTextOverflow = useMemo(() => {
+    return balanceShow?.length > 18;
+  }, [balanceShow]);
+
   return (
     <PageContainer
       type="leftBack"
@@ -195,8 +199,10 @@ const TokenDetail: React.FC = () => {
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View style={styles.card}>
-        <Text style={styles.tokenBalance}>{`${balanceShow}`}</Text>
-        {isMainnet && <Text style={styles.dollarBalance}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</Text>}
+        <Text style={[styles.tokenBalance, amountTextOverflow ? styles.textOverflow : {}]}>{`${balanceShow}`}</Text>
+        {isMainnet && (
+          <TextS style={[styles.dollarBalance]}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</TextS>
+        )}
         <View style={[styles.buttonGroupWrap, buttonGroupWrapStyle]}>
           <SendButton themeType="innerPage" sentToken={currentTokenInfo} wrapStyle={buttonWrapStyle} />
           <ReceiveButton currentTokenInfo={currentTokenInfo} themeType="innerPage" wrapStyle={buttonWrapStyle} />

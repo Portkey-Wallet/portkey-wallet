@@ -34,14 +34,18 @@ export const styles = StyleSheet.create({
     ...fonts.mediumFont,
     paddingTop: pTd(32),
     color: font5,
-    fontSize: pTd(28),
-    lineHeight: pTd(28),
+    fontSize: pTd(32),
+    lineHeight: pTd(40),
   },
   dollarBalance: {
     marginTop: pTd(4),
     color: font11,
     fontSize: pTd(14),
     lineHeight: pTd(20),
+  },
+  textOverflow: {
+    fontSize: pTd(28),
+    lineHeight: pTd(40),
   },
   listFront: {
     textAlign: 'left',
@@ -53,7 +57,7 @@ export const styles = StyleSheet.create({
   },
   divide: {
     borderBottomColor: '#DEE2E8',
-    borderBottomWidth: StyleSheet.hairlineWidth * 1.5,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   buttonGroupWrap: {
     backgroundColor: white,

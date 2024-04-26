@@ -165,6 +165,7 @@ export default function TabRoot() {
       <Tab.Navigator
         initialRouteName="Wallet"
         screenOptions={({ route }) => ({
+          tabBarStyle: { paddingTop: 6 },
           tabBarLabelStyle: styles.tabBarLabelStyle,
           tabBarAllowFontScaling: false,
           header: () => null,
@@ -177,7 +178,7 @@ export default function TabRoot() {
                   <Svg
                     icon={tabMenu?.icon || 'my'}
                     size={pTd(24)}
-                    color={focused ? defaultColors.font4 : defaultColors.font7}
+                    color={focused ? defaultColors.font17 : defaultColors.font11}
                   />
                 </View>
               );
@@ -190,7 +191,7 @@ export default function TabRoot() {
                   <Svg
                     icon={tabMenu?.icon || 'my'}
                     size={pTd(24)}
-                    color={focused ? defaultColors.font4 : defaultColors.font7}
+                    color={focused ? defaultColors.font17 : defaultColors.font11}
                   />
                 </View>
               );
@@ -208,7 +209,7 @@ export default function TabRoot() {
               <Svg
                 icon={tabMenu?.icon || 'my'}
                 size={pTd(24)}
-                color={focused ? defaultColors.font4 : defaultColors.font7}
+                color={focused ? defaultColors.font17 : defaultColors.font11}
               />
             );
           },
@@ -341,6 +342,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   tabBarLabelStyle: {
-    paddingBottom: isIOS ? 0 : 5,
+    fontSize: pTd(10),
+    lineHeight: pTd(14),
+    paddingBottom: isIOS ? 0 : 2,
   },
 });

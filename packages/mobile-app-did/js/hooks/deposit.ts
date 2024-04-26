@@ -79,6 +79,16 @@ export const DepositModalMap: { [key: string]: ModalDescribe } = {
     description: 'You will be directed to a third-party DApp: ETransfer',
     icon: 'ETransfer',
   },
+  eTransfer: {
+    title: 'ETransfer',
+    description: 'You will be directed to a third-party DApp: ',
+    icon: 'ETransfer',
+  },
+  aWakenSwap: {
+    title: 'aWakenSwap',
+    description: 'You will be directed to a third-party DApp: Swap',
+    icon: 'swap',
+  },
 };
 
 export function useOnDisclaimerModalPress() {

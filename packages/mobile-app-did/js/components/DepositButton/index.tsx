@@ -27,6 +27,7 @@ const DepositButton = (props: DepositButtonPropsType) => {
             title: 'ETransfer',
             url: depositUrl,
             needSecuritySafeCheck: true,
+            icon: 'ETransfer',
           });
         }}>
         <Svg icon="depositMain" size={pTd(48)} />

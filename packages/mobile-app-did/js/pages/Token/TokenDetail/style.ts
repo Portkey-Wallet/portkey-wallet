@@ -19,9 +19,15 @@ export const styles = StyleSheet.create({
   tokenImage: {
     marginTop: pTd(40),
   },
+  mainTitleLine: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   mainTitleIcon: {
-    height: 24,
-    width: 24,
+    height: pTd(18),
+    width: pTd(18),
     marginRight: 4,
   },
   tokenBalance: {

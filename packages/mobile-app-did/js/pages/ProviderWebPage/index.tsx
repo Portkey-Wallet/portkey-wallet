@@ -67,7 +67,7 @@ export const ProviderWebPageComponent = ({
         setShowPlaceholder(isWebviewLoading);
       }
     })();
-  }, [needSecuritySafeCheck, securitySafeCheckAndToast, url, isWebviewLoading]);
+  }, [needSecuritySafeCheck, securitySafeCheckAndToast, isWebviewLoading]);
 
   return (
     <View style={styles.contentWrap}>
@@ -78,7 +78,9 @@ export const ProviderWebPageComponent = ({
         source={{ uri: url }}
         onLoadProgress={({ nativeEvent }) => progressbarRef.current?.changeInnerBarWidth(nativeEvent.progress)}
         onLoadEnd={() => {
-          setWebviewLoading(false);
+          if (!needSecuritySafeCheck) {
+            setWebviewLoading(false);
+          }
         }}
       />
       {showPlaceholder && <Placeholder dappName={title} icon={icon} />}

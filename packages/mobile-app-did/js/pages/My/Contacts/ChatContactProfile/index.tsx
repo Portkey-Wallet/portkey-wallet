@@ -88,8 +88,6 @@ const ContactProfile: React.FC = () => {
     }
   }, [checkImputationRef, contactInfo]);
 
-  // const isShowPortkeyId = useMemo(() => !!contactInfo?.caHolderInfo?.userId, [contactInfo?.caHolderInfo?.userId]);
-
   const navToChatDetail = useJumpToChatDetails();
 
   const getProfile = useCallback(async () => {
@@ -170,10 +168,6 @@ const ContactProfile: React.FC = () => {
             }
           }}
         />
-        {/* <ProfileIDSection
-          title={isShowPortkeyId ? 'Portkey ID' : 'ID'}
-          id={isShowPortkeyId ? contactInfo?.caHolderInfo?.userId : contactInfo?.imInfo?.relationId}
-        /> */}
         <ProfileAddressSection addressList={contactInfo?.addresses || []} />
         <ProfileLoginAccountsSection list={contactInfo?.loginAccounts || []} />
         <View style={pageStyles.blank} />

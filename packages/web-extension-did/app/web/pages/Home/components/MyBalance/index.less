@@ -3,230 +3,77 @@
 
 .balance {
   overflow-y: overlay;
+  height: 100%;
 
-  .chat-body {
-    position: absolute;
-    right: 16px;
-    bottom: 16px;
-    z-index: 999;
-  }
-
-  .wallet-name {
-    height: 65px;
-    position: relative;
-    line-height: 22px;
-    color: @font-11;
-    font-size: 16px;
-    text-align: center;
-    font-weight: 500;
-    padding: 21px 24px;
-    border-bottom: 1px solid @border-2;
-    .account-connect {
-      position: absolute;
-      top: 16px;
-      left: 8px;
-    }
-    .wallet-name-text {
-      word-break: break-all;
-      .text-overflow(1);
-      &.wallet-name-small-screen {
-        max-width: 124px;
+  .main-content-wrap {
+    gap: 24px;
+    padding: 8px 16px 24px;
+    .balance-amount-wrap {
+      gap: 4px;
+      .wallet-name {
+        font-size: 12px;
+        line-height: 16px;
+        color: @Neutral-3;
+        word-break: break-all;
       }
-    }
-  }
-  .balance-amount {
-    .amount {
-      font-size: 32px;
-      color: @font-11;
-      font-weight: 500;
-      margin: 32px 24px 48px;
-      line-height: 38px;
-      word-break: break-all;
-      text-align: center;
+      .balance-amount {
+        font-size: 32px;
+        line-height: 40px;
+        font-weight: 600;
+        color: @font-11;
+        word-break: break-all;
+      }
+      &.is-prompt {
+        align-items: center;
+      }
     }
   }
 
   .@{app-prefix}-tabs {
     background-color: @bg-11;
     overflow: hidden;
+    height: 100%;
 
     .@{app-prefix}-tabs-nav {
       margin: 0;
-      box-shadow: 0 2px 6px 0 @shadow-1;
+      padding: 0 16px;
       z-index: 9;
       position: sticky;
-      // top: 68px;
+      top: 0;
       background: @bg-11;
 
       .@{app-prefix}-tabs-nav-wrap {
-        min-width: 100%;
-        max-width: 100%;
-
         .@{app-prefix}-tabs-nav-list {
           flex: 1;
-          justify-content: space-between;
+          gap: 32px;
           .@{app-prefix}-tabs-tab {
-            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 18px 0;
+            padding: 10px 0;
             margin: 0;
 
             .@{app-prefix}-tabs-tab-btn {
-              width: 80px;
-              height: 20px;
-              line-height: 20px;
+              font-size: 16px;
+              line-height: 24px;
+              font-weight: 500;
               text-align: center;
-              color: @font-11;
+              color: @Neutral-3;
               text-shadow: unset;
             }
           }
 
           .@{app-prefix}-tabs-tab-active {
             .@{app-prefix}-tabs-tab-btn {
-              color: @font-9;
-            }
-          }
-
-          .@{app-prefix}-tabs-ink-bar {
-            width: 50%;
-          }
-        }
-      }
-    }
-  }
-
-  .token-list {
-    .token-list-item {
-      gap: 16px;
-      cursor: pointer;
-      padding: 24px 16px;
-      border-bottom: 1px solid @border-2;
-
-      @media screen and (min-width: 768px) {
-        padding: 24px;
-      }
-
-      .custom-logo {
-        flex-shrink: 0;
-      }
-
-      .desc {
-        width: 100%;
-        .info {
-          gap: 4px;
-          span {
-            font-size: 18px;
-            color: @font-11;
-            line-height: 22px;
-            word-break: break-all;
-            .text-overflow(1);
-          }
-        }
-        .amount {
-          margin-top: 2px;
-          gap: 4px;
-          span {
-            line-height: 20px;
-            font-size: 14px;
-            color: @font-13;
-            word-break: break-all;
-            .text-overflow(1);
-          }
-        }
-      }
-    }
-  }
-  .add-token-enter-btn {
-    margin: 25px 0 16px;
-    font-size: 14px;
-    height: 20px;
-    line-height: 20px;
-    color: @font-9;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    cursor: pointer;
-
-    @media screen and (min-width: 768px) {
-      margin-bottom: 40px;
-    }
-
-    div.custom-svg {
-      margin-right: 8px;
-      width: 20px;
-      height: 20px;
-    }
-  }
-  .activity-wrapper {
-    .empty {
-      margin: 32px auto;
-      font-size: 14px;
-      color: @font-12;
-      font-weight: 400;
-      width: 204px;
-      text-align: center;
-    }
-
-    .@{app-prefix}-list-item {
-      padding: 0;
-      border-bottom: 1px solid @border-2;
-      .tx-card {
-        width: 100%;
-        height: 89px;
-        display: flex;
-        justify-content: space-between;
-        padding: 0 19px 0 16px;
-        align-items: center;
-        .left {
-          display: flex;
-          gap: 16px;
-          align-items: center;
-          .custom-svg {
-            width: 28px;
-            height: 28px;
-            svg {
-              width: 28px;
-              height: 28px;
-            }
-          }
-          .info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            .name {
-              line-height: 22px;
-              font-size: 16px;
               color: @font-11;
             }
-            .status {
-              font-size: 12px;
-              color: @font-15;
-              line-height: 16px;
-            }
-          }
-        }
-        .right {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-          text-align: right;
-          .balance {
-            font-size: 16px;
-            color: @font-11;
-            line-height: 22px;
-          }
-          .convert {
-            color: @font-13;
-            font-size: 12px;
-            line-height: 16px;
-            height: 16px;
           }
         }
       }
     }
+  }
+  .@{app-prefix}-tabs-content-holder {
+    overflow-y: scroll;
   }
 
   .empty-element {

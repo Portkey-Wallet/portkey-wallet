@@ -20,14 +20,22 @@ import navigationService from 'utils/navigationService';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import BuyButton from 'components/BuyButton';
+import { useAppRampEntryShow } from 'hooks/ramp';
+import { useAppETransShow } from 'hooks/cms';
 
 const Card: React.FC = () => {
   const isMainnet = useIsMainnet();
   const userInfo = useCurrentUserInfo();
   const accountBalanceUSD = useAccountBalanceUSD();
+  const { isETransDepositShow } = useAppETransShow();
+  const { isRampShow } = useAppRampEntryShow();
   const buttonCount = useMemo(() => {
-    return 5;
-  }, []);
+    let count = 3;
+    if (isETransDepositShow) count++;
+    if (isRampShow) count++;
+    if (!isMainnet) count++; // faucet
+    return count;
+  }, [isETransDepositShow, isMainnet, isRampShow]);
 
   const buttonGroupWrapStyle = useMemo(
     () => (buttonCount < 5 ? (GStyles.flexCenter as StyleProp<ViewProps>) : undefined),
@@ -66,8 +74,8 @@ const Card: React.FC = () => {
       <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.buttonGroupWrap, buttonGroupWrapStyle]}>
         <SendButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
         <ReceiveButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
-        {isMainnet && <BuyButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
-        <DepositButton wrapStyle={buttonWrapStyle} depositUrl={eTransferUrl} />
+        {isRampShow && <BuyButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
+        {isETransDepositShow && <DepositButton wrapStyle={buttonWrapStyle} depositUrl={eTransferUrl} />}
         {!isMainnet && <FaucetButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
         <ActivityButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
       </View>

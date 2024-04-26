@@ -232,7 +232,7 @@ const TokenDetail: React.FC = () => {
               icon="swap"
               onPress={() => {
                 navigationService.navigate('ProviderWebPage', {
-                  title: 'Awaken',
+                  title: 'AwakenSwap',
                   // Current only ELF can use swap (Awaken)
                   url: `${awakenUrl}/trading/ELF_USDT_0.05`,
                   needSecuritySafeCheck: true,

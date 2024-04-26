@@ -21,7 +21,10 @@
         line-height: 40px;
         font-weight: 600;
         color: @font-11;
-        word-break: break-all;
+        &.balance-amount-long {
+          font-size: 28px;
+          line-height: 36px;
+        }
       }
       &.is-prompt {
         align-items: center;
@@ -72,8 +75,10 @@
       }
     }
   }
-  .@{app-prefix}-tabs-content-holder {
-    overflow-y: scroll;
+  &.detail-scroll {
+    .@{app-prefix}-tabs-content-holder {
+      overflow-y: scroll;
+    }
   }
 
   .empty-element {

@@ -167,7 +167,7 @@ export function useAuthSocialAccountInfo(type: ISocialLogin) {
   const currentNetwork = useCurrentNetwork();
   return useCallback(async () => {
     const result = await socialLoginAction(type, currentNetwork);
-    const identityToken = result.data?.access_token ?? '';
+    let identityToken = result.data?.access_token ?? '';
     let userInfo;
     if (type === 'Google') {
       userInfo = await getGoogleUserInfo(identityToken);
@@ -183,6 +183,7 @@ export function useAuthSocialAccountInfo(type: ISocialLogin) {
     }
     if (type === 'Facebook') {
       userInfo = (await parseFacebookToken(identityToken)) ?? {};
+      identityToken = userInfo.accessToken;
     }
 
     return {

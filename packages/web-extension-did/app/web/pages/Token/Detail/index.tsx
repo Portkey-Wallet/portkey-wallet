@@ -71,7 +71,10 @@ function TokenDetail() {
       }
     }
   }, [currentToken, isMainNet, navigate]);
-
+  const AmountShowWithDecimals = useMemo(
+    () => formatTokenAmountShowWithDecimals(currentToken.balance, currentToken.decimals),
+    [currentToken.balance, currentToken.decimals],
+  );
   const handleCheckSecurity = useCallback(async () => {
     try {
       setLoading(true);
@@ -152,8 +155,8 @@ function TokenDetail() {
         <div className={clsx('token-detail-content', isPrompt ? '' : 'token-detail-content-popup')}>
           <div className="token-detail-balance flex-column">
             <div className={clsx('balance-amount', 'flex-column', isPrompt && 'is-prompt')}>
-              <div className="amount-number">
-                {formatTokenAmountShowWithDecimals(currentToken.balance, currentToken.decimals)}
+              <div className={clsx('amount-number', AmountShowWithDecimals.length > 18 && 'amount-number-long')}>
+                {AmountShowWithDecimals}
               </div>
               <div className={clsx('amount-convert', !isMainNet && 'hidden-amount-convert')}>
                 {formatAmountUSDShow(currentToken?.balanceInUsd)}
@@ -180,10 +183,9 @@ function TokenDetail() {
     currentToken.symbol,
     currentToken.imgUrl,
     currentToken.chainId,
-    currentToken.balance,
-    currentToken.decimals,
     currentToken?.balanceInUsd,
     isMainNet,
+    AmountShowWithDecimals,
     isShowBuy,
     handleBuy,
     cardShowFn.send,

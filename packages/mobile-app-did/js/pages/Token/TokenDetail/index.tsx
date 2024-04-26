@@ -258,7 +258,12 @@ const TokenDetail: React.FC = () => {
         data={currentActivity?.data || []}
         keyExtractor={(_item, index) => `${index}`}
         ListEmptyComponent={
-          <NoData icon={'no-data-detail'} message="No NFTs yet" topDistance={pTd(40)} oblongSize={[pTd(64), pTd(64)]} />
+          <NoData
+            icon={'no-data-detail'}
+            message={t('You have no transactions')}
+            topDistance={pTd(40)}
+            oblongSize={[pTd(64), pTd(64)]}
+          />
         }
         renderItem={renderItem}
         onRefresh={onRefreshList}

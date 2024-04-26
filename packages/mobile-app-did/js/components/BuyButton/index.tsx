@@ -39,7 +39,7 @@ const BuyButton = (props: SendButtonType) => {
           if (!isMainnet) return;
           navigationService.navigate('RampHome', { symbol: tokenInfo ? tokenInfo.symbol : 'ELF' });
         }}>
-        <Svg icon={themeType === 'dashBoard' ? 'buy' : 'buy2'} size={pTd(46)} />
+        <Svg icon={themeType === 'dashBoard' ? 'buy' : 'buy2'} size={pTd(48)} />
       </Touchable>
       <TextM style={[commonButtonStyle.commonTitleStyle, buttonTitleStyle]}>{t('Buy')}</TextM>
     </View>

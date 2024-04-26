@@ -27,9 +27,18 @@ export type DisclaimerModalProps = {
   title: string;
   description: string;
   icon?: IconName;
+  disclaimerCheckFailCallBack?: () => void;
+  disclaimerCheckSuccessCallBack?: () => void;
 };
 
-const DisclaimerModal = ({ url, title, description, icon }: DisclaimerModalProps) => {
+const DisclaimerModal = ({
+  url,
+  title,
+  description,
+  icon,
+  disclaimerCheckFailCallBack,
+  disclaimerCheckSuccessCallBack,
+}: DisclaimerModalProps) => {
   const { t } = useLanguage();
   const { signPrivacyPolicy } = useDisclaimer();
   const [selected, setSelected] = useState(false);
@@ -40,15 +49,23 @@ const DisclaimerModal = ({ url, title, description, icon }: DisclaimerModalProps
       const { origin } = getUrlObj(url);
       await signPrivacyPolicy({ policyId: EBRIDGE_DISCLAIMER_TEXT_SHARE256_POLICY_ID, origin });
       OverlayModal.hide(false);
-      navigationService.navigate('ProviderWebPage', { title, url });
+
+      disclaimerCheckSuccessCallBack
+        ? disclaimerCheckSuccessCallBack()
+        : navigationService.navigate('ProviderWebPage', { title, url });
     } catch (error) {
       console.log('error', error);
     }
     Loading.hide();
-  }, [signPrivacyPolicy, title, url]);
+  }, [disclaimerCheckSuccessCallBack, signPrivacyPolicy, title, url]);
 
   return (
-    <ModalBody modalBodyType="bottom" title={t('Disclaimer')}>
+    <ModalBody
+      modalBodyType="bottom"
+      title={t('Disclaimer')}
+      onClose={() => {
+        disclaimerCheckFailCallBack ? disclaimerCheckFailCallBack() : OverlayModal.hide();
+      }}>
       <View style={styles.contentWrap}>
         <View style={[GStyles.flexRow, GStyles.itemCenter]}>
           <Svg icon={icon || 'eBridgeFavIcon'} size={pTd(24)} />

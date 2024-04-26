@@ -40,6 +40,7 @@ import { useAppRampEntryShow } from 'hooks/ramp';
 import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
 import { ETransTokenList } from '@portkey-wallet/constants/constants-ca/dapp';
 import { useAppETransShow } from 'hooks/cms';
+import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import CommonAvatar from 'components/CommonAvatar';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
@@ -65,7 +66,7 @@ const TokenDetail: React.FC = () => {
   const activity = useAppCASelector(state => state.activity);
   const { eTransferUrl = '', awakenUrl = 'https://awaken.finance/' } = useCurrentNetworkInfo();
   const { isETransDepositShow } = useAppETransShow();
-
+  const onDisclaimerModalPress = useOnDisclaimerModalPress();
   const { buy, swap, deposit } = checkEnabledFunctionalTypes(tokenInfo.symbol, tokenInfo.chainId === 'AELF');
   const { isRampShow } = useAppRampEntryShow();
   const isBuyButtonShow = useMemo(
@@ -231,12 +232,12 @@ const TokenDetail: React.FC = () => {
               title="Swap"
               icon="swap"
               onPress={() => {
-                navigationService.navigate('ProviderWebPage', {
-                  title: 'AwakenSwap',
-                  // Current only ELF can use swap (Awaken)
-                  url: `${awakenUrl}/trading/ELF_USDT_0.05`,
-                  needSecuritySafeCheck: true,
-                });
+                onDisclaimerModalPress(
+                  DepositModalMap.aWakenSwap,
+                  stringifyETrans({
+                    url: `${awakenUrl}/trading/ELF_USDT_0.05` || '',
+                  }),
+                );
               }}
               themeType="innerPage"
               wrapStyle={buttonWrapStyle}
@@ -247,9 +248,9 @@ const TokenDetail: React.FC = () => {
               title="Deposit"
               icon="deposit"
               onPress={() =>
-                navigationService.navigate('ProviderWebPage', {
-                  title: 'ETransfer',
-                  url: stringifyETrans({
+                onDisclaimerModalPress(
+                  DepositModalMap.eTransfer,
+                  stringifyETrans({
                     url: eTransferUrl || '',
                     query: {
                       tokenSymbol: tokenInfo?.symbol,
@@ -257,8 +258,7 @@ const TokenDetail: React.FC = () => {
                       chainId: tokenInfo?.chainId,
                     },
                   }),
-                  needSecuritySafeCheck: true,
-                })
+                )
               }
               themeType="innerPage"
               wrapStyle={buttonWrapStyle}

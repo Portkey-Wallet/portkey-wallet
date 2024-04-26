@@ -4,37 +4,55 @@ import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
 
-const { bg1, bg4, font3, font5, font7 } = defaultColors;
+const { white, font11, font5, font7 } = defaultColors;
 
 export const styles = StyleSheet.create({
   pageWrap: {
-    backgroundColor: bg1,
+    backgroundColor: white,
     ...GStyles.paddingArg(0),
   },
   card: {
-    backgroundColor: bg4,
+    backgroundColor: white,
     flexDirection: 'column',
     alignItems: 'center',
   },
   tokenImage: {
     marginTop: pTd(40),
   },
+  mainTitleIcon: {
+    height: 24,
+    width: 24,
+    marginRight: 4,
+  },
   tokenBalance: {
     ...fonts.mediumFont,
-    paddingTop: pTd(60),
+    paddingTop: pTd(32),
     color: font5,
     fontSize: pTd(28),
     lineHeight: pTd(28),
   },
   dollarBalance: {
     marginTop: pTd(4),
-    color: font3,
+    color: font11,
     fontSize: pTd(14),
     lineHeight: pTd(20),
   },
+  listFront: {
+    textAlign: 'left',
+    width: '100%',
+    paddingHorizontal: pTd(16),
+    fontWeight: '900',
+    lineHeight: pTd(24),
+    paddingVertical: pTd(8),
+  },
+  divide: {
+    borderBottomColor: '#DEE2E8',
+    borderBottomWidth: StyleSheet.hairlineWidth * 1.5,
+  },
   buttonGroupWrap: {
-    marginTop: pTd(40),
-    marginBottom: pTd(40),
+    backgroundColor: white,
+    marginTop: pTd(32),
+    marginBottom: pTd(32),
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
@@ -50,7 +68,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   noResultWrap: {
-    backgroundColor: bg1,
+    backgroundColor: white,
   },
   noResultText: {
     textAlign: 'center',

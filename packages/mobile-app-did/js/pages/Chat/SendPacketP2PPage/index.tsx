@@ -23,11 +23,10 @@ import navigationService from 'utils/navigationService';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { checkIsUserCancel, handleErrorMessage } from '@portkey-wallet/utils';
-import myEvents from 'utils/deviceEvent';
-import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
 import { createTimeRecorder } from '@portkey-wallet/utils/timeRecorder';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { TabRouteNameEnum } from 'types/navigate';
 
 export default function SendPacketP2PPage() {
   const currentChannelId = useCurrentChannelId();
@@ -123,7 +122,7 @@ export default function SendPacketP2PPage() {
         if (errorMessage === 'fetch exceed limit') {
           CommonToast.warn('You can view the crypto box you sent later in the chat window.');
           navigationService.navigate('Tab');
-          myEvents.navToBottomTab.emit({ tabName: ChatTabName });
+          navigationService.navToBottomTab(TabRouteNameEnum.CHAT);
         } else {
           CommonToast.failError('Crypto box failed to be sent. Please try again.');
         }

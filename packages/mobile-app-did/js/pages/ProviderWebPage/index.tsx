@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ProviderWebview, { IWebView } from 'components/ProviderWebview';
 import Progressbar, { IProgressbar } from 'components/Progressbar';
@@ -8,29 +8,24 @@ import { SafeAreaColorMap } from 'components/PageContainer';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import GStyles from 'assets/theme/GStyles';
 import { BGStyles } from 'assets/theme/styles';
-import { useSecuritySafeCheckAndToast } from 'hooks/security';
-import navigationService from 'utils/navigationService';
 import { IconName } from 'components/Svg';
 import Placeholder from './components/Placeholder';
+import { getUrlObj } from '@portkey-wallet/utils/dapp/browser';
+import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
+import DisclaimerModal from 'components/DisclaimerModal';
+import { useFocusEffect } from '@react-navigation/native';
 
 const ProviderWebPage = () => {
-  const {
-    url,
-    title,
-    needSecuritySafeCheck = false,
-    icon,
-  } = useRouterParams<{ url: string; title: string; needSecuritySafeCheck?: boolean; icon?: IconName }>();
+  const { url, title, icon } = useRouterParams<{
+    url: string;
+    title: string;
+    icon?: IconName;
+  }>();
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={{ backgroundColor: SafeAreaColorMap.blue }}>
       <View style={[GStyles.flex1, BGStyles.bg4]}>
         <CustomHeader themeType={'blue'} titleDom={title} />
-        <ProviderWebPageComponent
-          url={url}
-          title={title}
-          needSecuritySafeCheck={needSecuritySafeCheck}
-          icon={icon}
-          needNavigationBar={true}
-        />
+        <ProviderWebPageComponent url={url} title={title} icon={icon} />
       </View>
     </SafeAreaBox>
   );
@@ -38,36 +33,50 @@ const ProviderWebPage = () => {
 
 export const ProviderWebPageComponent = ({
   url,
-  title,
-  needSecuritySafeCheck = false,
   icon,
+  title,
+  disclaimerInfo,
+  needInnerDisclaimerCheck,
+  disclaimerCheckFailCallBack,
 }: {
   url: string;
   title: string;
-  needSecuritySafeCheck?: boolean;
+  disclaimerInfo?: {
+    title: string;
+    description: string;
+    icon?: IconName;
+  };
   icon?: IconName;
-  needNavigationBar?: boolean;
+  needInnerDisclaimerCheck?: boolean;
+  disclaimerCheckFailCallBack?: () => void;
 }) => {
+  const { checkDappIsConfirmed } = useDisclaimer();
   const webViewRef = useRef<IWebView | null>(null);
   const progressbarRef = useRef<IProgressbar>(null);
-  const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
+  const [showPlaceholder, setShowPlaceholder] = useState(true);
 
-  const [isWebviewLoading, setWebviewLoading] = useState(true);
-  const [showPlaceholder, setShowPlaceholder] = useState(needSecuritySafeCheck);
+  useFocusEffect(
+    useCallback(() => {
+      if (!disclaimerInfo) return;
 
-  useEffect(() => {
-    (async () => {
-      if (needSecuritySafeCheck) {
-        if (!(await securitySafeCheckAndToast())) {
-          navigationService.goBack();
-        } else {
+      if (needInnerDisclaimerCheck) {
+        try {
+          const { origin } = getUrlObj(url);
+          if (!checkDappIsConfirmed(origin))
+            return DisclaimerModal.showDisclaimerModal({
+              ...disclaimerInfo,
+              url,
+              disclaimerCheckFailCallBack,
+              disclaimerCheckSuccessCallBack: () => setShowPlaceholder(false),
+            });
+
           setShowPlaceholder(false);
+        } catch (error) {
+          console.log(error);
         }
-      } else {
-        setShowPlaceholder(isWebviewLoading);
       }
-    })();
-  }, [needSecuritySafeCheck, securitySafeCheckAndToast, isWebviewLoading]);
+    }, [checkDappIsConfirmed, disclaimerCheckFailCallBack, disclaimerInfo, needInnerDisclaimerCheck, url]),
+  );
 
   return (
     <View style={styles.contentWrap}>
@@ -78,8 +87,8 @@ export const ProviderWebPageComponent = ({
         source={{ uri: url }}
         onLoadProgress={({ nativeEvent }) => progressbarRef.current?.changeInnerBarWidth(nativeEvent.progress)}
         onLoadEnd={() => {
-          if (!needSecuritySafeCheck) {
-            setWebviewLoading(false);
+          if (!needInnerDisclaimerCheck) {
+            setShowPlaceholder(false);
           }
         }}
       />

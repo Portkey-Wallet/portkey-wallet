@@ -4,9 +4,7 @@ import navigationService from 'utils/navigationService';
 import { useAppBridgeButtonShow, useAppETransShow } from './cms';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
-import Loading from 'components/Loading';
 import DisclaimerModal from 'components/DisclaimerModal';
-import CommonToast from 'components/CommonToast';
 import { getUrlObj } from '@portkey-wallet/utils/dapp/browser';
 import { IconName } from 'components/Svg';
 import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
@@ -79,6 +77,16 @@ export const DepositModalMap: { [key: string]: ModalDescribe } = {
     description: 'You will be directed to a third-party DApp: ETransfer',
     icon: 'ETransfer',
   },
+  eTransfer: {
+    title: 'ETransfer',
+    description: 'You will be directed to a third-party DApp: ETransfer',
+    icon: 'ETransfer',
+  },
+  aWakenSwap: {
+    title: 'aWakenSwap',
+    description: 'You will be directed to a third-party DApp: aWakenSwap',
+    icon: 'swap',
+  },
 };
 
 export function useOnDisclaimerModalPress() {
@@ -86,11 +94,9 @@ export function useOnDisclaimerModalPress() {
 
   return useCallback(
     async (modalDescribe: ModalDescribe, url: string) => {
-      console.log(modalDescribe, url);
-
       try {
         const { origin } = getUrlObj(url);
-        Loading.show();
+
         if (!checkDappIsConfirmed(origin))
           return DisclaimerModal.showDisclaimerModal({
             ...modalDescribe,
@@ -99,13 +105,10 @@ export function useOnDisclaimerModalPress() {
         navigationService.navigate('ProviderWebPage', {
           title: modalDescribe.title,
           url,
-          needSecuritySafeCheck: true,
           icon: modalDescribe.icon,
         });
       } catch (error) {
-        CommonToast.failError(error);
-      } finally {
-        Loading.hide();
+        console.log(error);
       }
     },
     [checkDappIsConfirmed],

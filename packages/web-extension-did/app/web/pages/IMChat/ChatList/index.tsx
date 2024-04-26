@@ -74,14 +74,14 @@ export default function ChatList() {
   const headerRightEle = useMemo(
     () => (
       <div className="flex-center right-element">
-        <CustomSvg className="chat-list-top-icon" type="Search" onClick={() => navigate('/chat-list-search')} />
+        <CustomSvg className="chat-list-top-icon" type="CircleSearch" onClick={() => navigate('/chat-list-search')} />
         <Popover
           overlayClassName="chat-list-popover"
           placement="bottom"
           trigger="click"
           showArrow={false}
           content={<PopoverMenuList data={popList} />}>
-          <CustomSvg className="chat-list-top-icon" type="AddCircle" />
+          <CustomSvg className="chat-list-top-icon" type="CircleAdd" />
         </Popover>
       </div>
     ),

@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useRef } from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, Text } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
@@ -40,6 +40,10 @@ import { useAppRampEntryShow } from 'hooks/ramp';
 import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
 import { ETransTokenList } from '@portkey-wallet/constants/constants-ca/dapp';
 import { useAppETransShow } from 'hooks/cms';
+import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
+import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
+import CommonAvatar from 'components/CommonAvatar';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -62,7 +66,7 @@ const TokenDetail: React.FC = () => {
   const activity = useAppCASelector(state => state.activity);
   const { eTransferUrl = '', awakenUrl = 'https://awaken.finance/' } = useCurrentNetworkInfo();
   const { isETransDepositShow } = useAppETransShow();
-
+  const onDisclaimerModalPress = useOnDisclaimerModalPress();
   const { buy, swap, deposit } = checkEnabledFunctionalTypes(tokenInfo.symbol, tokenInfo.chainId === 'AELF');
   const { isRampShow } = useAppRampEntryShow();
   const isBuyButtonShow = useMemo(
@@ -86,6 +90,7 @@ const TokenDetail: React.FC = () => {
   );
   const currentActivityRef = useRef(currentActivity);
   currentActivityRef.current = currentActivity;
+  const symbolImages = useSymbolImages();
 
   const fixedParamObj = useMemo(
     () => ({
@@ -98,6 +103,10 @@ const TokenDetail: React.FC = () => {
   const pageInfoRef = useRef({
     ...INIT_PAGE_INFO,
   });
+
+  const iconImg = useMemo(() => {
+    return tokenInfo?.imageUrl ?? symbolImages[tokenInfo?.symbol] ?? '';
+  }, [symbolImages, tokenInfo?.imageUrl, tokenInfo?.symbol]);
 
   const [isLoading, setIsLoading] = useState(ListLoadingEnum.hide);
   const getActivityList = useLockCallback(
@@ -160,6 +169,7 @@ const TokenDetail: React.FC = () => {
       return styles.buttonWrapStyle1;
     }
   }, [buttonCount]);
+  const defaultToken = useDefaultToken();
 
   const renderItem = useCallback(({ item, index }: { item: ActivityItemType; index: number }) => {
     const preItem = currentActivityRef.current?.data[index - 1];
@@ -175,6 +185,10 @@ const TokenDetail: React.FC = () => {
 
   const isEmpty = useMemo(() => (currentActivity?.data || []).length === 0, [currentActivity?.data]);
 
+  const amountTextOverflow = useMemo(() => {
+    return balanceShow?.length > 18;
+  }, [balanceShow]);
+
   return (
     <PageContainer
       type="leftBack"
@@ -182,7 +196,16 @@ const TokenDetail: React.FC = () => {
       titleDom={
         <View>
           <View style={styles.mainTitleLine}>
-            <Image source={{ uri: tokenInfo.imageUrl ?? '' }} style={styles.mainTitleIcon} />
+            <CommonAvatar
+              hasBorder
+              style={styles.mainTitleIcon}
+              title={tokenInfo.symbol}
+              avatarSize={pTd(18)}
+              svgName={tokenInfo?.symbol === defaultToken.symbol ? 'testnet' : undefined}
+              imageUrl={iconImg}
+              titleStyle={Object.assign({}, FontStyles.font11, { fontSize: pTd(12) })}
+              borderStyle={GStyles.hairlineBorder}
+            />
             <TextL style={[GStyles.textAlignCenter, FontStyles.font16, fonts.mediumFont]}>{tokenInfo.symbol}</TextL>
           </View>
           <TextS style={[GStyles.textAlignCenter, FontStyles.font11, styles.subTitle]}>
@@ -195,8 +218,10 @@ const TokenDetail: React.FC = () => {
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View style={styles.card}>
-        <Text style={styles.tokenBalance}>{`${balanceShow}`}</Text>
-        {isMainnet && <Text style={styles.dollarBalance}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</Text>}
+        <Text style={[styles.tokenBalance, amountTextOverflow ? styles.textOverflow : {}]}>{`${balanceShow}`}</Text>
+        {isMainnet && (
+          <TextS style={[styles.dollarBalance]}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</TextS>
+        )}
         <View style={[styles.buttonGroupWrap, buttonGroupWrapStyle]}>
           <SendButton themeType="innerPage" sentToken={currentTokenInfo} wrapStyle={buttonWrapStyle} />
           <ReceiveButton currentTokenInfo={currentTokenInfo} themeType="innerPage" wrapStyle={buttonWrapStyle} />
@@ -207,12 +232,12 @@ const TokenDetail: React.FC = () => {
               title="Swap"
               icon="swap"
               onPress={() => {
-                navigationService.navigate('ProviderWebPage', {
-                  title: 'Awaken',
-                  // Current only ELF can use swap (Awaken)
-                  url: `${awakenUrl}/trading/ELF_USDT_0.05`,
-                  needSecuritySafeCheck: true,
-                });
+                onDisclaimerModalPress(
+                  DepositModalMap.aWakenSwap,
+                  stringifyETrans({
+                    url: `${awakenUrl}/trading/ELF_USDT_0.05` || '',
+                  }),
+                );
               }}
               themeType="innerPage"
               wrapStyle={buttonWrapStyle}
@@ -223,9 +248,9 @@ const TokenDetail: React.FC = () => {
               title="Deposit"
               icon="deposit"
               onPress={() =>
-                navigationService.navigate('ProviderWebPage', {
-                  title: 'ETransfer',
-                  url: stringifyETrans({
+                onDisclaimerModalPress(
+                  DepositModalMap.eTransfer,
+                  stringifyETrans({
                     url: eTransferUrl || '',
                     query: {
                       tokenSymbol: tokenInfo?.symbol,
@@ -233,8 +258,7 @@ const TokenDetail: React.FC = () => {
                       chainId: tokenInfo?.chainId,
                     },
                   }),
-                  needSecuritySafeCheck: true,
-                })
+                )
               }
               themeType="innerPage"
               wrapStyle={buttonWrapStyle}

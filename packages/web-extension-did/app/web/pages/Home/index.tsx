@@ -16,6 +16,8 @@ import { sleep } from '@portkey-wallet/utils';
 import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useManagerExceedTipModal } from 'hooks/useManagerExceedTip';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
+import HomeHeader from 'pages/components/HomeHeader';
+import BottomBar from 'pages/components/BottomBar';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -57,11 +59,16 @@ export default function Home() {
   initIm();
 
   return (
-    <div className={clsx(['portkey-home', isPrompt && 'portkey-prompt'])}>
-      <PortKeyHeader unReadShow={isImputation || !viewReferralStatus} onUserClick={onUserClick} />
-      <div className="portkey-body">
+    <div className={clsx(['portkey-home', 'flex-column', isPrompt && 'portkey-prompt'])}>
+      {isPrompt ? (
+        <PortKeyHeader unReadShow={isImputation || !viewReferralStatus} onUserClick={onUserClick} />
+      ) : (
+        <HomeHeader unReadShow={isImputation || !viewReferralStatus} onUserClick={onUserClick} />
+      )}
+      <div className={clsx('portkey-body', isPrompt ? '' : 'flex-1')}>
         <MyBalance />
       </div>
+      {!isPrompt && <BottomBar />}
     </div>
   );
 }

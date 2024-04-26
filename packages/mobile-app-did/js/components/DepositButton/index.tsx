@@ -7,7 +7,7 @@ import GStyles from 'assets/theme/GStyles';
 import { commonButtonStyle } from '../SendButton/style';
 import Touchable from 'components/Touchable';
 import { pTd } from 'utils/unit';
-import navigationService from 'utils/navigationService';
+import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
 
 type DepositButtonPropsType = {
   wrapStyle?: StyleProp<ViewProps>;
@@ -18,17 +18,14 @@ const DepositButton = (props: DepositButtonPropsType) => {
   const { t } = useLanguage();
   const { wrapStyle, depositUrl } = props;
 
+  const onDisclaimerModalPress = useOnDisclaimerModalPress();
+
   return (
     <View style={[commonButtonStyle.buttonWrap, wrapStyle]}>
       <Touchable
         style={[commonButtonStyle.iconWrapStyle, GStyles.alignCenter]}
         onPress={() => {
-          navigationService.navigate('ProviderWebPage', {
-            title: 'ETransfer',
-            url: depositUrl,
-            needSecuritySafeCheck: true,
-            icon: 'ETransfer',
-          });
+          onDisclaimerModalPress(DepositModalMap.eTransfer, depositUrl);
         }}>
         <Svg icon="depositMain" size={pTd(48)} />
       </Touchable>

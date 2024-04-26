@@ -46,7 +46,6 @@ const Card: React.FC = () => {
     [buttonCount],
   );
   const { eTransferUrl = '' } = useCurrentNetworkInfo();
-
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
 
   const RightDom = useMemo(

@@ -12,11 +12,11 @@ export const TradeHomePage: React.FC = () => {
     return [
       {
         name: 'Swap',
-        tabItemDom: <ProviderWebPageComponent title={'Swap'} url={awakenUrl} />,
+        tabItemDom: <ProviderWebPageComponent title={'Awaken'} url={awakenUrl} icon={'Awaken'} />,
       },
       {
         name: 'Bridge',
-        tabItemDom: <ProviderWebPageComponent title={'Bridge'} url={eBridgeUrl} />,
+        tabItemDom: <ProviderWebPageComponent title={'eBridge'} url={eBridgeUrl} icon={'eBridgeFavIcon'} />,
       },
     ];
   }, [awakenUrl, eBridgeUrl]);

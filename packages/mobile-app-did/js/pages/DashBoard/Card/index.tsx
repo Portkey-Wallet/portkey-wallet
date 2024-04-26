@@ -6,12 +6,11 @@ import ReceiveButton from 'components/ReceiveButton';
 import ActivityButton from 'pages/DashBoard/ActivityButton';
 import { TextM } from 'components/CommonText';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import FaucetButton from 'components/FaucetButton';
 import GStyles from 'assets/theme/GStyles';
 import DepositButton from 'components/DepositButton';
-import { DepositItem, useDepositList } from 'hooks/deposit';
 import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import CustomHeader from 'components/CustomHeader';
 import Touchable from 'components/Touchable';
@@ -20,20 +19,15 @@ import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import navigationService from 'utils/navigationService';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
+import BuyButton from 'components/BuyButton';
 
 const Card: React.FC = () => {
   const isMainnet = useIsMainnet();
   const userInfo = useCurrentUserInfo();
   const accountBalanceUSD = useAccountBalanceUSD();
-  const depositList = useDepositList();
-  const isDepositShow = useMemo(() => !!depositList.length, [depositList.length]);
   const buttonCount = useMemo(() => {
-    let count = 3;
-    if (isDepositShow) count++;
-    // FaucetButton
-    if (!isMainnet) count++;
-    return count;
-  }, [isDepositShow, isMainnet]);
+    return 5;
+  }, []);
 
   const buttonGroupWrapStyle = useMemo(
     () => (buttonCount < 5 ? (GStyles.flexCenter as StyleProp<ViewProps>) : undefined),
@@ -43,6 +37,7 @@ const Card: React.FC = () => {
     () => (buttonCount < 5 ? (styles.buttonWrapStyle1 as StyleProp<ViewProps>) : undefined),
     [buttonCount],
   );
+  const { eTransferUrl = '' } = useCurrentNetworkInfo();
 
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
 
@@ -69,9 +64,10 @@ const Card: React.FC = () => {
         <Text style={styles.usdtBalance}>{isMainnet ? formatAmountUSDShow(accountBalanceUSD) : 'Dev Mode'}</Text>
       </View>
       <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.buttonGroupWrap, buttonGroupWrapStyle]}>
-        {isDepositShow && <DepositButton wrapStyle={buttonWrapStyle} list={depositList as DepositItem[]} />}
         <SendButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
         <ReceiveButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
+        {isMainnet && <BuyButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
+        <DepositButton wrapStyle={buttonWrapStyle} depositUrl={eTransferUrl} />
         {!isMainnet && <FaucetButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
         <ActivityButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
       </View>

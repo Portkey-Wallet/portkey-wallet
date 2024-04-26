@@ -2,11 +2,11 @@ import { StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 
-const { font16, font4 } = defaultColors;
+const { font16 } = defaultColors;
 
 export const commonButtonStyle = StyleSheet.create({
   buttonWrap: {
-    marginBottom: 32,
+    // marginBottom: 32,
     width: pTd(65),
   },
   iconWrapStyle: {
@@ -29,6 +29,6 @@ export const commonButtonStyle = StyleSheet.create({
     fontWeight: '400',
   },
   innerPageTitleColorStyle: {
-    color: font4,
+    color: font16,
   },
 });

@@ -15,7 +15,7 @@ import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 interface SendButtonType {
   themeType?: 'dashBoard' | 'innerPage';
   wrapStyle?: StyleProp<ViewProps>;
-  tokenInfo: TokenItemShowType;
+  tokenInfo?: TokenItemShowType;
 }
 
 const BuyButton = (props: SendButtonType) => {
@@ -37,7 +37,7 @@ const BuyButton = (props: SendButtonType) => {
         style={[commonButtonStyle.iconWrapStyle, GStyles.alignCenter]}
         onPress={async () => {
           if (!isMainnet) return;
-          navigationService.navigate('RampHome', { symbol: tokenInfo.symbol });
+          navigationService.navigate('RampHome', { symbol: tokenInfo ? tokenInfo.symbol : 'ELF' });
         }}>
         <Svg icon={themeType === 'dashBoard' ? 'buy' : 'buy2'} size={pTd(46)} />
       </Touchable>

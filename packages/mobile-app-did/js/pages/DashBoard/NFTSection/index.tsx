@@ -147,7 +147,12 @@ export default function NFTSection() {
         data={totalRecordCount === 0 ? [] : accountNFTList || []}
         ListEmptyComponent={() => (
           <Touchable>
-            <NoData type="top" message={t('No NFTs yet ')} />
+            <NoData
+              icon={'no-data-nft'}
+              message={t('No NFTs yet ')}
+              topDistance={pTd(40)}
+              oblongSize={[pTd(64), pTd(64)]}
+            />
           </Touchable>
         )}
         renderItem={({ item }: { item: NFTCollectionItemShowType }) => (

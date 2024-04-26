@@ -134,16 +134,6 @@ const TokenDetail: React.FC = () => {
     isInitRef.current = true;
   }, [getActivityList]);
 
-  // const isBuyButtonShow = useMemo(
-  //   () => SHOW_RAMP_SYMBOL_LIST.includes(tokenInfo.symbol) && tokenInfo.chainId === 'AELF' && isRampShow,
-  //   [isRampShow, tokenInfo.chainId, tokenInfo.symbol],
-  // );
-
-  // const isFaucetButtonShow = useMemo(
-  //   () => !isMainnet && tokenInfo.symbol === defaultToken.symbol && tokenInfo.chainId === 'AELF',
-  //   [defaultToken.symbol, isMainnet, tokenInfo.chainId, tokenInfo.symbol],
-  // );
-
   const buttonCount = useMemo(() => {
     let count = 3;
     if (isBuyButtonShow) count++;
@@ -191,10 +181,10 @@ const TokenDetail: React.FC = () => {
       backTitle={t('')}
       titleDom={
         <View>
-          <TextL style={[GStyles.textAlignCenter, FontStyles.font16, fonts.mediumFont]}>
+          <View style={styles.mainTitleLine}>
             <Image source={{ uri: tokenInfo.imageUrl ?? '' }} style={styles.mainTitleIcon} />
-            {tokenInfo.symbol}
-          </TextL>
+            <TextL style={[GStyles.textAlignCenter, FontStyles.font16, fonts.mediumFont]}>{tokenInfo.symbol}</TextL>
+          </View>
           <TextS style={[GStyles.textAlignCenter, FontStyles.font11, styles.subTitle]}>
             {formatChainInfoToShow(tokenInfo.chainId)}
           </TextS>

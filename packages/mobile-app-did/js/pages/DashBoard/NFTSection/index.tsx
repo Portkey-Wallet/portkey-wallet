@@ -142,6 +142,7 @@ export default function NFTSection() {
   return (
     <View style={styles.wrap}>
       <FlatList
+        nestedScrollEnabled
         refreshing={reFreshing}
         contentContainerStyle={styles.contentContainerStyle}
         data={totalRecordCount === 0 ? [] : accountNFTList || []}

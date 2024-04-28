@@ -130,6 +130,7 @@ export const styles = StyleSheet.create({
     zIndex: 10000,
     width: pTd(20),
     height: pTd(20),
+    padding: pTd(8),
     justifyContent: 'center',
     alignItems: 'center',
   },

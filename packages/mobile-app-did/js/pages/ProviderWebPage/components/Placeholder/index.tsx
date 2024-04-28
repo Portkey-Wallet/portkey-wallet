@@ -4,12 +4,13 @@ import Svg, { IconName } from 'components/Svg';
 import { TextL } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
+import fonts from 'assets/theme/fonts';
 
 const Placeholder = ({ dappName, icon }: { dappName: string; icon?: IconName }) => {
   return (
     <View style={styles.container}>
       {icon ? <Svg icon={icon || 'eBridgeFavIcon'} size={64} iconStyle={styles.icon} /> : <View style={styles.icon} />}
-      <TextL style={styles.title}>{`Redirecting to ${dappName} `}</TextL>
+      <TextL style={[styles.title, fonts.mediumFont]}>{`Redirecting to ${dappName} `}</TextL>
       <Text style={styles.desc}>
         Please exercise caution and protect your asset security while navigating third-party dApps.
       </Text>

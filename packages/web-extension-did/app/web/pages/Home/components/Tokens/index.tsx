@@ -1,7 +1,6 @@
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
-import CustomSvg from 'components/CustomSvg';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
@@ -11,6 +10,7 @@ import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { PAGE_SIZE_IN_ACCOUNT_TOKEN } from '@portkey-wallet/constants/constants-ca/assets';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import './index.less';
 
 export default function TokenList() {
   const { t } = useTranslation();
@@ -50,15 +50,15 @@ export default function TokenList() {
   }, [navigate]);
 
   return (
-    <>
+    <div className="tab-token">
       <ul className="token-list">
         {accountTokenList.map((item) => (
           <li
             className="token-list-item flex-row-center"
             key={`${item.chainId}_${item.symbol}`}
             onClick={() => onNavigate(item)}>
-            <TokenImageDisplay className="custom-logo" symbol={item.symbol} src={item.imageUrl} />
-            <div className="desc">
+            <TokenImageDisplay width={36} className="token-icon" symbol={item.symbol} src={item.imageUrl} />
+            <div className="token-desc">
               <div className="info flex-between">
                 <span>{item.symbol}</span>
                 <span>{formatTokenAmountShowWithDecimals(item.balance, item.decimals)}</span>
@@ -71,14 +71,11 @@ export default function TokenList() {
           </li>
         ))}
       </ul>
-      <LoadingMore hasMore={hasMoreTokenList} loadMore={getMoreTokenList} className="load-more" />
+      {hasMoreTokenList && <LoadingMore hasMore={hasMoreTokenList} loadMore={getMoreTokenList} className="load-more" />}
 
-      <div>
-        <div className="add-token-enter-btn" onClick={handleAddToken}>
-          <CustomSvg type="PlusFilled" className="plus-filled" />
-          <span>{t('Add Tokens')}</span>
-        </div>
+      <div className="add-token-wrapper flex-center" onClick={handleAddToken}>
+        <span className="add-token-text">{t('Add Tokens')}</span>
       </div>
-    </>
+    </div>
   );
 }

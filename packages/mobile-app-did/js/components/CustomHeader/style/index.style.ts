@@ -3,7 +3,7 @@ import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 
-const { bg1, bg5, bg31 } = defaultColors;
+const { bg1, bg5, bg31, icon4 } = defaultColors;
 
 export const headerHeight = pTd(52);
 
@@ -89,7 +89,7 @@ export const whitStyles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   leftBackTitle: {
-    color: bg5,
+    color: icon4,
   },
 });
 

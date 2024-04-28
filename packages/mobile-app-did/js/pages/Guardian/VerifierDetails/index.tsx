@@ -34,6 +34,9 @@ import { checkVerifierIsInvalidCode } from '@portkey-wallet/utils/guardian';
 import { pTd } from 'utils/unit';
 import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import { deleteLoginAccount } from '@portkey-wallet/utils/deleteAccount';
+import { useGetCurrentCAContract } from 'hooks/contract';
+import useLogOut from 'hooks/useLogOut';
 
 type RouterParams = {
   guardianItem?: UserGuardianItem;
@@ -72,6 +75,7 @@ export default function VerifierDetails() {
     accelerateChainId,
     autoLogin,
   } = useRouterParams<RouterParams>();
+
   const originChainId = useOriginChainId();
   const countdown = useRef<VerifierCountdownInterface>();
   useEffectOnce(() => {
@@ -80,9 +84,11 @@ export default function VerifierDetails() {
   const [requestCodeResult, setRequestCodeResult] =
     useState<RouterParams['requestCodeResult']>(paramsRequestCodeResult);
   const digitInput = useRef<DigitInputInterface>();
-  const { address: managerAddress } = useCurrentWalletInfo();
+  const { caHash, address: managerAddress } = useCurrentWalletInfo();
+  const getCurrentCAContract = useGetCurrentCAContract();
   const pin = usePin();
   const onRequestOrSetPin = useOnRequestOrSetPin();
+  const logout = useLogOut();
 
   const setGuardianStatus = useCallback(
     (status: GuardiansStatusItem) => {
@@ -132,7 +138,7 @@ export default function VerifierDetails() {
   const verifyManagerAddress = useVerifyManagerAddress();
   const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
 
-  const onFinish = useLockCallback(
+  const onGeneralVerify = useLockCallback(
     async (code: string) => {
       if (!requestCodeResult || !guardianItem || !code) return;
       const isRequestResult = pin && verificationType === VerificationType.register && managerAddress;
@@ -184,6 +190,7 @@ export default function VerifierDetails() {
                 accelerateChainId,
               });
             }
+
             break;
 
           case VerificationType.communityRecovery: {
@@ -192,6 +199,7 @@ export default function VerifierDetails() {
               break;
             }
           }
+
           // eslint-disable-next-line no-fallthrough
           default:
             setGuardianStatus({
@@ -233,6 +241,65 @@ export default function VerifierDetails() {
       registerAccount,
       setCodeError,
     ],
+  );
+
+  const onRevokeVerify = useLockCallback(
+    async (code: string) => {
+      if (!guardianItem || !code) return;
+      digitInput.current?.lockInput();
+      Loading.show();
+      try {
+        const caContract = await getCurrentCAContract();
+        const removeManagerParams = {
+          caContract,
+          managerAddress,
+          caHash: caHash || '',
+        };
+        const deleteParams = {
+          type: LoginType[guardianItem.guardianType],
+          chainId: originChainId,
+          token: code,
+          guardianIdentifier: guardianItem.guardianAccount,
+          ...requestCodeResult,
+          verifierId: guardianItem?.verifier?.id || '',
+        };
+        await deleteLoginAccount({
+          removeManagerParams,
+          deleteParams,
+        });
+        await logout();
+      } catch (error) {
+        const _isInvalidCode = checkVerifierIsInvalidCode(error);
+        if (_isInvalidCode) {
+          setCodeError('', VERIFY_INVALID_TIME);
+        } else {
+          CommonToast.failError(error, 'Verify Fail');
+        }
+
+        digitInput.current?.reset();
+        Loading.hide();
+      } finally {
+        digitInput.current?.unLockInput();
+        Loading.hide();
+      }
+    },
+    [
+      caHash,
+      getCurrentCAContract,
+      guardianItem,
+      logout,
+      managerAddress,
+      originChainId,
+      requestCodeResult,
+      setCodeError,
+    ],
+  );
+
+  const onFinish = useLockCallback(
+    (code: string) => {
+      verificationType === VerificationType.revokeAccount ? onRevokeVerify(code) : onGeneralVerify(code);
+    },
+    [onGeneralVerify, onRevokeVerify, verificationType],
   );
 
   const resendCode = useLockCallback(async () => {

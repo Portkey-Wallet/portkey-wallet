@@ -62,7 +62,7 @@ export type ModalDescribe = {
   icon?: IconName;
 };
 
-export const DepositModalMap: { [key: string]: ModalDescribe } = {
+const DepositModalMapRaw = {
   bridge: {
     title: 'eBridge',
     description: 'You will be directed to a third-party DApp: eBridge',
@@ -88,6 +88,10 @@ export const DepositModalMap: { [key: string]: ModalDescribe } = {
     icon: 'awaken-swap-round',
   },
 };
+
+export type DepositModalMapType = { [key in keyof typeof DepositModalMapRaw]: ModalDescribe };
+
+export const DepositModalMap: DepositModalMapType = DepositModalMapRaw as any;
 
 export function useOnDisclaimerModalPress() {
   const { checkDappIsConfirmed } = useDisclaimer();

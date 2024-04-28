@@ -238,7 +238,7 @@ const TokenDetail: React.FC = () => {
               icon="swap"
               onPress={() => {
                 onDisclaimerModalPress(
-                  DepositModalMap.aWakenSwap,
+                  DepositModalMap.AwakenSwap,
                   stringifyETrans({
                     url: `${awakenUrl}/trading/ELF_USDT_0.05` || '',
                   }),

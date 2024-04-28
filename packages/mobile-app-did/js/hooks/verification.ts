@@ -12,9 +12,7 @@ import { verification } from 'utils/api';
 import { OperationTypeEnum, VerificationType } from '@portkey-wallet/types/verifier';
 import { useGuardiansInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
 import navigationService from 'utils/navigationService';
-
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const noop = () => {};
+import { parseTwitterToken } from '@portkey-wallet/utils/authentication';
 
 export const useGetCurrentLoginAccountVerifyFunc = () => {
   const { appleSign } = useAppleAuthentication();
@@ -50,22 +48,56 @@ export const useGetCurrentLoginAccountVerifyFunc = () => {
     }
   }, [originChainId, userGuardiansList]);
 
-  console.log('guardianType', guardianType);
+  const socialSign = useCallback(async () => {
+    let token = '';
+    let id = '';
+    switch (guardianType) {
+      case LoginType.Apple: {
+        const { identityToken, user } = await appleSign();
+        token = identityToken;
+        id = user.id;
+        break;
+      }
+      case LoginType.Google: {
+        const { accessToken, user } = await googleSign();
+        token = accessToken;
+        id = user.id;
 
-  switch (guardianType) {
-    case LoginType.Apple:
-      return appleSign;
-    case LoginType.Google:
-      return googleSign;
-    case LoginType.Facebook:
-      return facebookSign;
-    case LoginType.Telegram:
-      return telegramSign;
-    case LoginType.Twitter:
-      return twitterSign;
-    case LoginType.Email:
-      return emailSign;
-    default:
-      return noop;
-  }
+        break;
+      }
+      case LoginType.Facebook: {
+        const { user } = await facebookSign();
+        token = user.accessToken;
+        id = user.id;
+
+        break;
+      }
+      case LoginType.Telegram: {
+        const { accessToken, user } = await telegramSign();
+        token = accessToken;
+        id = user.id;
+
+        break;
+      }
+
+      case LoginType.Twitter: {
+        const { user, accessToken } = await twitterSign();
+        id = user.id;
+        const { accessToken: twitterToken } = parseTwitterToken(accessToken) ?? {};
+        token = twitterToken || '';
+        break;
+      }
+      default:
+        throw 'No target sign type';
+    }
+
+    return {
+      identityToken: token,
+      user: {
+        id,
+      },
+    };
+  }, [appleSign, facebookSign, googleSign, guardianType, telegramSign, twitterSign]);
+
+  return guardianType === LoginType.Email ? emailSign : socialSign;
 };

@@ -55,6 +55,7 @@ export const defaultColors = {
   font14: '#FFE4C5',
   font15: '#C6A05A',
   font16: '#25272A',
+  font17: '#547AFF',
 
   white: '#ffffff',
   black: '#000000',
@@ -62,6 +63,7 @@ export const defaultColors = {
   icon1: '#515A62',
   icon2: '#ffffff',
   icon3: '#333333',
+  icon4: '#757A85',
 
   border1: '#C5CBD5',
   border2: '#F7F8F9',

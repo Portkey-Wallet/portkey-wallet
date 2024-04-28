@@ -18,8 +18,10 @@ export const OpenLogin = `https://openlogin.portkey.finance`;
 
 const EBridgeList = NetworkList.map(i => i.eBridgeUrl).filter(i => !!i) as string[];
 const ETransferList = NetworkList.map(i => i.eTransferUrl).filter(i => !!i) as string[];
+const AwakenUrlList = NetworkList.map(i => i.awakenUrl).filter(i => !!i) as string[];
 const SchrodingerList = NetworkList.map(i => i.schrodingerUrl).filter(i => !!i) as string[];
-export const DAPP_WHITELIST: string[] = [...EBridgeList, ...ETransferList, ...SchrodingerList];
+
+export const DAPP_WHITELIST: string[] = [...EBridgeList, ...ETransferList, ...AwakenUrlList, ...SchrodingerList];
 
 export const LinkPortkeyWebsite = OfficialWebsite;
 

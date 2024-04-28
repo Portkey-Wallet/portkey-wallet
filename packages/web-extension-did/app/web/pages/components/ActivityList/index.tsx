@@ -6,7 +6,6 @@ import {
   formatStr2EllipsisStr,
   formatAmountUSDShow,
 } from '@portkey-wallet/utils/converter';
-import { List } from 'antd-mobile';
 import CustomSvg from 'components/CustomSvg';
 import { useCallback, useMemo } from 'react';
 import { useNavigateState } from 'hooks/router';
@@ -225,27 +224,25 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
 
   const renderActivityItem = useCallback(
     (item: ActivityItemType) => (
-      <List.Item>
-        <div
-          className={clsx(
-            'activity-item',
-            'flex-column',
-            activity.failedActivityMap[item.transactionId] && 'activity-item-resend',
-          )}>
-          <div className="activity-item-content flex-row-center" onClick={() => navToDetail(item)}>
-            {renderActivityIcon(item)}
-            {item.isSystem ? (
-              renderSystemActivityItem(item)
-            ) : (
-              <div className="activity-item-detail flex-between-center">
-                {renderActivityTitle(item)}
-                {renderActivityAmount(item)}
-              </div>
-            )}
-          </div>
-          {renderResendBtn(item)}
+      <div
+        className={clsx(
+          'activity-item',
+          'flex-column',
+          activity.failedActivityMap[item.transactionId] && 'activity-item-resend',
+        )}>
+        <div className="activity-item-content flex-row-center" onClick={() => navToDetail(item)}>
+          {renderActivityIcon(item)}
+          {item.isSystem ? (
+            renderSystemActivityItem(item)
+          ) : (
+            <div className="activity-item-detail flex-between-center">
+              {renderActivityTitle(item)}
+              {renderActivityAmount(item)}
+            </div>
+          )}
         </div>
-      </List.Item>
+        {renderResendBtn(item)}
+      </div>
     ),
     [
       activity.failedActivityMap,
@@ -260,7 +257,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
 
   const renderActivityList = useMemo(() => {
     return (
-      <List>
+      <div>
         {data?.map((item, index) => {
           if (index === 0) {
             return (
@@ -282,14 +279,14 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
             }
           }
         })}
-      </List>
+      </div>
     );
   }, [data, formatActivityTimeShow, renderActivityItem]);
 
   return (
     <div className="activity-list">
       {renderActivityList}
-      <LoadingMore hasMore={hasMore} loadMore={loadMore} className="load-more" />
+      {hasMore && <LoadingMore hasMore={hasMore} loadMore={loadMore} className="load-more" />}
     </div>
   );
 }

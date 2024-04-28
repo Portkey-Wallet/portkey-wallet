@@ -1,4 +1,4 @@
-package com.PortkeyApp.native_modules;
+package com.portkey.finance.native_modules;
 
 import androidx.annotation.NonNull;
 

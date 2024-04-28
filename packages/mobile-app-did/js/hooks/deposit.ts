@@ -85,7 +85,7 @@ export const DepositModalMap: { [key: string]: ModalDescribe } = {
   AwakenSwap: {
     title: 'AwakenSwap',
     description: 'You will be directed to a third-party DApp: AwakenSwap',
-    icon: 'awaken-round',
+    icon: 'awaken-swap-round',
   },
 };
 

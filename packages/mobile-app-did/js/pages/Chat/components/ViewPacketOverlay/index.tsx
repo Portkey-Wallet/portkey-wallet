@@ -16,7 +16,7 @@ import navigationService from 'utils/navigationService';
 import { ScreenHeight } from '@rneui/base';
 import { sleep } from '@portkey-wallet/utils';
 import { GetRedPackageDetailResult, GrabRedPackageResultEnum, RedPackageStatusEnum } from '@portkey-wallet/im';
-import { useCurrentWalletInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useGetRedPackageDetail, useGrabRedPackage } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useCurrentChannelId } from 'pages/Chat/context/hooks';
 import CommonToast from 'components/CommonToast';
@@ -33,7 +33,7 @@ const OVERLAY_MODAL_ANIMATED_TIME = 200;
 
 export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
   const { redPacketData, redPacketId } = props;
-  const { userInfo } = useWallet();
+  const userInfo = useCurrentUserInfo();
 
   const currentChannelId = useCurrentChannelId();
   const grabPacket = useGrabRedPackage();

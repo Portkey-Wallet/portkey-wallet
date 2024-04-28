@@ -95,14 +95,18 @@ const PinnedMsg = () => {
     async (item: MessageContentType) => {
       const msg = pinList.find((temp) => temp.id === item.id);
       try {
-        await deleteMsg(msg as Message);
+        if (item.position === 'right') {
+          await deleteMsg(msg as Message);
+        } else {
+          await deleteMsg(msg as Message, isAdmin);
+        }
         refreshPinList();
       } catch (e) {
         singleMessage.error('Failed to delete message');
         console.log('===handle delete message error', e);
       }
     },
-    [deleteMsg, pinList, refreshPinList],
+    [deleteMsg, pinList, refreshPinList, isAdmin],
   );
   return (
     <div className="group-pinned-message-page flex-column-between">

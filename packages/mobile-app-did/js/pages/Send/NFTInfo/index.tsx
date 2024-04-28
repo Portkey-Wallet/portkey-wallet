@@ -8,7 +8,7 @@ import { useLanguage } from 'i18n/hooks';
 import { TextL, TextS } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import NFTAvatar from 'components/NFTAvatar';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { IToSendAssetParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
 
@@ -47,9 +47,9 @@ export default function NFTInfo({
         <TextL numberOfLines={1} style={styles.nftTitle}>
           {`${nftItem?.alias || ''}  #${nftItem?.tokenId}`}
         </TextL>
-        <TextS numberOfLines={1} style={[styles.balance, FontStyles.font3]}>{`${t('Balance')}:  ${formatAmountShow(
-          divDecimals(nftItem?.balance, nftItem?.decimals),
-        )}`}</TextS>
+        <TextS numberOfLines={1} style={[styles.balance, FontStyles.font3]}>{`${t(
+          'Balance',
+        )}:  ${formatTokenAmountShowWithDecimals(nftItem?.balance, nftItem?.decimals)}`}</TextS>
       </View>
     </View>
   );

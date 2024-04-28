@@ -4,6 +4,7 @@
   border-left: 1px solid @border-2;
   position: relative;
   width: 100%;
+  overflow: auto;
 
   .view-contact-body {
     height: calc(100% - 73px);
@@ -14,5 +15,16 @@
     .form-content {
       padding: 14px 24px 0;
     }
+  }
+
+  .account-cancelation {
+    position: absolute;
+    bottom: -120px;
+    width: 100%;
+    padding-bottom: 16px;
+    font-size: 14px;
+    line-height: 20px;
+    color: @font-12;
+    cursor: pointer;
   }
 }

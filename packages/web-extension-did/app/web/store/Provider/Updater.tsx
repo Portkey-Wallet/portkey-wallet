@@ -27,6 +27,8 @@ import { useEffectOnce } from '@portkey-wallet/hooks';
 import { initConfig, initRequest } from './initConfig';
 import useFCM from 'hooks/useFCM';
 import { useSetTokenConfig } from 'hooks/useSetTokenConfig';
+import { useInitLoginModeList } from 'hooks/loginModal';
+import { useUserInfo } from './hooks';
 
 keepAliveOnPages({});
 request.setExceptionManager(exceptionManager);
@@ -37,6 +39,8 @@ export default function Updater() {
   const checkManagerOnLogout = useCheckManagerOnLogout();
   const setTokenConfig = useSetTokenConfig();
   const isMainnet = useIsMainnet();
+  const initLoginModeList = useInitLoginModeList();
+  const { passwordSeed } = useUserInfo();
 
   const { apiUrl, imApiUrl, imWsUrl, imS3Bucket } = useCurrentNetworkInfo();
   useMemo(async () => {
@@ -59,8 +63,8 @@ export default function Updater() {
     });
   }, [imS3Bucket, isMainnet]);
   useEffect(() => {
-    setTokenConfig();
-  }, [setTokenConfig]);
+    setTokenConfig(passwordSeed);
+  }, [passwordSeed, setTokenConfig]);
   initIm();
   useVerifierList();
   useUpdateRedux();
@@ -98,6 +102,7 @@ export default function Updater() {
   useEffectOnce(() => {
     initConfig();
     initRequest();
+    initLoginModeList();
   });
   return null;
 }

@@ -32,7 +32,7 @@ export const activitySlice = createSlice({
       if (!state.activityMap) state.activityMap = {};
 
       state.activityMap[currentMapKey] = {
-        data: skipCount === 0 ? data : [...state.activityMap[currentMapKey].data, ...data],
+        data: skipCount === 0 ? data : [...(state.activityMap[currentMapKey] ?? { data: [] }).data, ...data],
         totalRecordCount,
         skipCount,
         maxResultCount,

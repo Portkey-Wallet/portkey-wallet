@@ -14,7 +14,7 @@ interface TokenImageDisplayProps {
 }
 
 export default function TokenImageDisplay({ src, symbol = 'ELF', width = 32, className }: TokenImageDisplayProps) {
-  const [isError, setError] = useState<boolean>(false);
+  const [isError, setError] = useState<boolean>(true);
   const symbolImages = useSymbolImages();
 
   const tokenSrc = useMemo(() => src || symbolImages[symbol], [src, symbol, symbolImages]);
@@ -22,29 +22,32 @@ export default function TokenImageDisplay({ src, symbol = 'ELF', width = 32, cla
   const isShowDefault = useMemo(() => isError || !tokenSrc, [isError, tokenSrc]);
 
   return symbol === ELF_SYMBOL ? (
-    <CustomSvg className="token-logo" type="elf-icon" />
+    <CustomSvg
+      style={{ width, height: width }}
+      className={clsx('token-logo', 'elf-token-logo', className)}
+      type="elf-icon"
+    />
   ) : (
-    <div className={clsx('token-img-loading-wrapper flex-center', className)} style={{ width, height: width }}>
-      {isShowDefault ? (
-        <div className="show-name-index flex-center" style={{ width, height: width }}>
-          {symbol?.slice(0, 1)}
-        </div>
-      ) : (
-        <img
-          key={tokenSrc}
-          className="show-image"
-          src={tokenSrc}
-          onLoad={(e) => {
-            setError(false);
-            if (!(e.target as any).src.includes('brokenImg')) {
-              (e.target as HTMLElement).className = 'show-image';
-            }
-          }}
-          onError={() => {
-            setError(true);
-          }}
-        />
-      )}
+    <div className={clsx('token-img-wrapper flex-center', className)} style={{ width, height: width }}>
+      <div
+        className={clsx('show-name-index', 'flex-center', !isShowDefault && 'hidden')}
+        style={{ width, height: width }}>
+        {symbol?.slice(0, 1)}
+      </div>
+      <img
+        key={tokenSrc}
+        className={clsx('show-image', isShowDefault && 'hidden')}
+        src={tokenSrc}
+        onLoad={(e) => {
+          setError(false);
+          if (!(e.target as any).src.includes('brokenImg')) {
+            (e.target as HTMLElement).className = 'show-image';
+          }
+        }}
+        onError={() => {
+          setError(true);
+        }}
+      />
     </div>
   );
 }

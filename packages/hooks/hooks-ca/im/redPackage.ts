@@ -14,7 +14,7 @@ import { handleLoopFetch } from '@portkey-wallet/utils';
 import { useRedPackageConfigMapState, useRelationId } from '.';
 import { RedPackageCreationStatusEnum } from '@portkey-wallet/im/types';
 import { messageParser } from '@portkey-wallet/im/utils';
-import { useCurrentWalletInfo, useUserInfo, useWallet } from '../wallet';
+import { useCurrentWalletInfo, useCurrentUserInfo } from '../wallet';
 import { useAppCommonDispatch, useEffectOnce } from '../../index';
 import {
   addChannelMessage,
@@ -55,7 +55,7 @@ export interface ISendRedPackageHookParams {
 export const useSendRedPackage = () => {
   const { relationId, getRelationId } = useRelationId();
   const { networkType } = useCurrentNetworkInfo();
-  const userInfo = useUserInfo();
+  const userInfo = useCurrentUserInfo();
   const wallet = useCurrentWalletInfo();
   const dispatch = useAppCommonDispatch();
 
@@ -397,9 +397,9 @@ export const useGetRedPackageConfig = (isAutoFetch = false, isInit = false) => {
 };
 
 export const useIsMyRedPacket = (senderId: string): boolean => {
-  const { userInfo } = useWallet();
+  const { userId } = useCurrentUserInfo();
 
-  return userInfo?.userId === senderId;
+  return userId === senderId;
 };
 
 export const useGetCurrentRedPacketId = (currentMessage?: Message): string => {

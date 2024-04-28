@@ -4,26 +4,27 @@ import React, { useMemo } from 'react';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
 import { View, StyleSheet } from 'react-native';
-import { useCurrentCaInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import ProfilePortkeyIDSection from 'pages/My/components/ProfileIDSection';
+import { useCurrentCaInfo, useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import Svg from 'components/Svg';
+import Touchable from 'components/Touchable';
 import ProfileHeaderSection from 'pages/My/components/ProfileHeaderSection';
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
-
+import { useIsShowDeletion } from '@portkey-wallet/hooks/hooks-ca/account';
+import GStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { ChainId } from '@portkey-wallet/types';
 import { windowHeight } from '@portkey-wallet/utils/mobile/device';
 import { headerHeight } from 'components/CustomHeader/style/index.style';
 import { FontStyles } from 'assets/theme/styles';
-import { useIsShowDeletion } from 'hooks/account';
+
 import { isIOS } from '@rneui/base';
 import { pTd } from 'utils/unit';
 const PageHeight = windowHeight - headerHeight;
 
 const WalletName: React.FC = () => {
   const { t } = useLanguage();
-
-  const { userInfo } = useWallet();
+  const userInfo = useCurrentUserInfo();
   const caInfo = useCurrentCaInfo();
   const showDeletion = useIsShowDeletion();
 
@@ -81,12 +82,19 @@ const WalletName: React.FC = () => {
   // }, [nameValue, t, setUserInfo, userInfo?.avatar]);
 
   return (
-    <PageContainer titleDom={t('My Profile')} safeAreaColor={['blue', 'gray']} containerStyles={pageStyles.pageWrap}>
+    <PageContainer
+      titleDom={t('My Profile')}
+      safeAreaColor={['blue', 'gray']}
+      containerStyles={pageStyles.pageWrap}
+      rightDom={
+        <Touchable onPress={() => navigationService.navigate('ChatQrCodePage')} style={[GStyles.marginRight(pTd(24))]}>
+          <Svg icon="chat-scan-white" size={pTd(20)} color={defaultColors.white} />
+        </Touchable>
+      }>
       <View style={pageStyles.pageContainer}>
         <View>
           <>
             <ProfileHeaderSection name={userInfo?.nickName || ''} avatarUrl={userInfo?.avatar || ''} />
-            <ProfilePortkeyIDSection showQrCodeButton id={userInfo?.userId || ''} />
             <ProfileAddressSection isMySelf addressList={caInfoList} />
           </>
         </View>

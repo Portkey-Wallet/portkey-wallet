@@ -195,7 +195,7 @@ const ChatDetailsPage = () => {
           <CommonAvatar
             title={displayName}
             avatarSize={pTd(32)}
-            style={FontStyles.size16}
+            titleStyle={FontStyles.size16}
             imageUrl={avatar}
             resizeMode="cover"
           />

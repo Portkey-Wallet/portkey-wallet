@@ -1,4 +1,5 @@
 import { pTd } from 'utils/unit';
+import { StyleSheet } from 'react-native';
 
 export default {
   pwTip: {
@@ -69,6 +70,9 @@ export default {
   containerViewSpaceBetween: {
     justifyContent: 'space-between',
     paddingBottom: pTd(20),
+  },
+  hairlineBorder: {
+    borderWidth: StyleSheet.hairlineWidth,
   },
   //-------- margin -----------
   marginArg: function (...ags: number[]) {
@@ -189,5 +193,8 @@ export default {
   },
   maxWidth: function (n: number) {
     return { maxWidth: pTd(n) };
+  },
+  flex: function (n: number) {
+    return { flex: n };
   },
 } as const;

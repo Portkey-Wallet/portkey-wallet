@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -12,34 +12,32 @@ import { useGroupChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ChannelMemberInfo } from '@portkey-wallet/im/types/index';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { showAssetList } from 'pages/DashBoard/AssetsOverlay';
-import { useUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { isTargetMember } from '../utils';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import im from '@portkey-wallet/im';
+import LottieLoading from 'components/LottieLoading';
+import { pTd } from 'utils/unit';
+import { SEARCH_MEMBER_LIST_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 const SelectGroupMembersToTransferPage = () => {
+  // todo: walletName is not used
   const currentChannelId = useCurrentChannelId();
-  const { groupInfo } = useGroupChannelInfo(currentChannelId || '', false);
-
-  const { userId: myUserId } = useUserInfo() || {};
-  const { members = [] } = groupInfo || {};
-  const [rawMemberList, setRawMemberList] = useState<ChannelMemberInfo[]>([]);
-
-  const [keyword, setKeyword] = useState('');
-  const debounceKeyword = useDebounce(keyword, 200);
-  const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>([]);
+  const { groupInfo, refreshChannelMembersInfo } = useGroupChannelInfo(currentChannelId || '', false);
 
   const channelId = useCurrentChannelId();
+  const { userId: myUserId } = useCurrentUserInfo();
+  const { members = [], totalCount } = groupInfo || {};
+  const [keyword, setKeyword] = useState('');
+  const debounceKeyword = useDebounce(keyword, 800);
+  const [isSearching, setIsSearching] = useState(false);
 
-  useEffect(() => {
-    setFilterMembers(() => {
-      let result = [];
-      if (debounceKeyword) {
-        result = rawMemberList.filter(ele => isTargetMember(ele, debounceKeyword) && ele.userId !== myUserId);
-      } else {
-        result = rawMemberList.filter(ele => ele.userId !== myUserId);
-      }
-      return [...result];
-    });
-  }, [debounceKeyword, rawMemberList, myUserId]);
+  const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>([]);
+
+  // TODO: filter myself
+  const listShow = useMemo(() => {
+    const _list = debounceKeyword ? filterMembers : members;
+    return _list.filter(ele => ele.userId !== myUserId);
+  }, [debounceKeyword, filterMembers, members, myUserId]);
 
   const onPressItem = useCallback(
     (toRelationId: string, item: GroupMemberItemType) => {
@@ -56,8 +54,47 @@ const SelectGroupMembersToTransferPage = () => {
     [channelId],
   );
 
+  const searchMemberList = useLockCallback(async () => {
+    if (!debounceKeyword.trim()) return;
+    setIsSearching(true);
+    try {
+      const result = await im.service.searchChannelMembers({
+        channelUuid: currentChannelId,
+        keyword: debounceKeyword,
+        skipCount: 0,
+        maxResultCount: SEARCH_MEMBER_LIST_LIMIT,
+      });
+      setFilterMembers(result?.data.members || []);
+    } catch (error) {
+      // TODO: change
+      console.log('error', error);
+    } finally {
+      setIsSearching(false);
+    }
+  }, [currentChannelId, debounceKeyword]);
+
+  const fetchMemberList = useLockCallback(
+    async (isInit?: false) => {
+      if (debounceKeyword.trim()) return;
+
+      if (!isInit && totalCount && members?.length >= totalCount) return;
+
+      try {
+        await refreshChannelMembersInfo(isInit ? 0 : members?.length || 0);
+      } catch (error) {
+        console.log('fetchMoreData', error);
+      }
+    },
+    [debounceKeyword, members?.length, refreshChannelMembersInfo, totalCount],
+  );
+
+  // keyword search
+  useEffect(() => {
+    searchMemberList();
+  }, [debounceKeyword, members, searchMemberList]);
+
   useEffectOnce(() => {
-    setRawMemberList([...members]);
+    fetchMemberList(true);
   });
 
   return (
@@ -78,9 +115,15 @@ const SelectGroupMembersToTransferPage = () => {
       </View>
 
       <FlatList
-        data={filterMembers}
+        data={listShow || []}
         extraData={(item: ChannelMemberInfo) => item.relationId}
-        ListEmptyComponent={<NoData noPic message={debounceKeyword ? 'No search result' : 'No member'} />}
+        ListEmptyComponent={
+          isSearching ? (
+            <LottieLoading lottieWrapStyle={GStyles.marginTop(pTd(24))} />
+          ) : (
+            <NoData noPic message={debounceKeyword ? 'No search result' : 'No member'} />
+          )
+        }
         renderItem={({ item }) => (
           <GroupMemberItem
             key={item.relationId}
@@ -95,6 +138,7 @@ const SelectGroupMembersToTransferPage = () => {
             onPress={onPressItem}
           />
         )}
+        onEndReached={() => fetchMemberList()}
       />
     </PageContainer>
   );

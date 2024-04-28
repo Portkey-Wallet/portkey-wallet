@@ -14,7 +14,6 @@ import {
 import { useEffectOnce } from 'react-use';
 import { useHandleClickChatItem } from 'hooks/im';
 import { PIN_LIMIT_EXCEED } from '@portkey-wallet/constants/constants-ca/chat';
-import { useWalletInfo } from 'store/Provider/hooks';
 import { setBadge } from 'utils/FCM';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 import { useReportFCMStatus } from 'hooks/useFCM';
@@ -24,6 +23,7 @@ import { FromPageEnum, TFindMoreLocationState } from 'types/router';
 import { useJoinOfficialGroupTipModal } from 'hooks/useJoinOfficialGroupTip';
 import InviteGuideList from 'pages/components/InviteGuideList';
 import OfficialGroupGuide from 'pages/components/OfficialGroupGuide';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import './index.less';
 
 export default function ChatList() {
@@ -35,7 +35,7 @@ export default function ChatList() {
   const { list: chatList, init, next: nextChannelList, hasNext: hasNextChannelList } = useChannelList();
   const unreadCount = useUnreadCount();
   const reportFCMStatus = useReportFCMStatus();
-  const { userInfo } = useWalletInfo();
+  const userInfo = useCurrentUserInfo();
   const handleClickChatItem = useHandleClickChatItem();
   const joinOfficialGroupTip = useJoinOfficialGroupTipModal();
   const [showGuide, setShowGuide] = useState<boolean>(false);

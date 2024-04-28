@@ -1,10 +1,11 @@
 import { useLocation, useNavigate } from 'react-router';
-import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
+import { useCommonState } from 'store/Provider/hooks';
 import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
 import MyQRCodePopup from './Popup';
 import MyQRCodePrompt from './Prompt';
 import { useCallback, useMemo } from 'react';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 export interface IMyQRCodeProps {
   onBack: () => void;
@@ -20,7 +21,7 @@ const MyQRCode = () => {
   const navigate = useNavigate();
   const { pathname, state } = useLocation();
   const isShowChat = useIsChatShow();
-  const { userInfo } = useWalletInfo();
+  const userInfo = useCurrentUserInfo();
   const { isNotLessThan768 } = useCommonState();
   const shareLink = useMemo(() => LinkPortkeyPath.addContact + userInfo?.userId, [userInfo?.userId]);
   const showDesc = useMemo(() => (isShowChat ? qrCodeDesc : ''), [isShowChat]);

@@ -5,9 +5,12 @@ import { getPin } from 'utils/getSeed';
 
 export const useSetTokenConfig = () => {
   const refreshToken = useRefreshTokenConfig();
-  return useCallback(async () => {
-    const pin = await getPin();
-    const token = await refreshToken(pin);
-    initDidReactSDKToken(token);
-  }, [refreshToken]);
+  return useCallback(
+    async (password?: string) => {
+      const pin = await getPin();
+      const token = await refreshToken(password ?? pin);
+      initDidReactSDKToken(token);
+    },
+    [refreshToken],
+  );
 };

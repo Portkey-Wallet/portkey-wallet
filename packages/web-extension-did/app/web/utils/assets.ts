@@ -12,8 +12,13 @@ export enum NFTSizeEnum {
   small = 'small',
 }
 
+export type TSeedTypeTag = {
+  isSeed: boolean;
+  seedType?: SeedTypeEnum;
+};
+
 export const getSeedTypeTag = (
-  nft: NFTItemBaseType | TNFTLocationState | NftInfo | BaseToken | ISendPreviewProps | INftInfoType,
+  nft: NFTItemBaseType | TNFTLocationState | NftInfo | BaseToken | ISendPreviewProps | INftInfoType | TSeedTypeTag,
   size = NFTSizeEnum.medium,
 ): SvgType | '' => {
   if (nft.isSeed) {

@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
-import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
+import { useCommonState } from 'store/Provider/hooks';
 import WalletPopup from './Popup';
 import { MenuItemInfo } from 'pages/components/MenuList';
 import WalletPrompt from './Prompt';
 import { IExitWalletProps } from './components/ExitWallet';
 import { BaseHeaderProps } from 'types/UI';
 import { IWalletEntryProps } from './components/WalletEntry';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 export interface IWalletProps extends IExitWalletProps, BaseHeaderProps, IWalletEntryProps {
   menuList: MenuItemInfo[];
@@ -24,7 +25,7 @@ export default function Wallet() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { isPrompt, isNotLessThan768 } = useCommonState();
-  const { userInfo } = useWalletInfo();
+  const { nickName, avatar, userId } = useCurrentUserInfo();
   const [exitVisible, setExitVisible] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<string>('');
 
@@ -91,9 +92,9 @@ export default function Wallet() {
       exitText={exitText}
       exitVisible={exitVisible}
       select={selectedItem}
-      walletAvatar={userInfo?.avatar}
-      walletName={userInfo?.nickName || ''}
-      portkeyId={userInfo?.userId || ''}
+      walletAvatar={avatar || ''}
+      walletName={nickName || ''}
+      portkeyId={userId || ''}
       clickAvatar={clickAvatar}
       menuList={MenuList}
       onExit={onExit}
@@ -104,9 +105,9 @@ export default function Wallet() {
       headerTitle={title}
       exitText={exitText}
       exitVisible={exitVisible}
-      walletAvatar={userInfo?.avatar}
-      walletName={userInfo?.nickName || ''}
-      portkeyId={userInfo?.userId || ''}
+      walletAvatar={avatar || ''}
+      walletName={nickName || ''}
+      portkeyId={userId || ''}
       clickAvatar={clickAvatar}
       menuList={MenuList}
       goBack={goBack}

@@ -1,6 +1,6 @@
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimals, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { Button, Input } from 'antd';
 import clsx from 'clsx';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -14,6 +14,7 @@ import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wal
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import { parseInputNumberChange } from '@portkey-wallet/utils/input';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 
 export default function TokenInput({
   fromAccount,
@@ -50,11 +51,10 @@ export default function TokenInput({
     () => amountInUsdShow(value || amount, 0, token.symbol),
     [amount, amountInUsdShow, token.symbol, value],
   );
-
-  useEffect(() => {
+  const needConvert = useMemo(() => isMainnet && amountInUsd, [amountInUsd, isMainnet]);
+  useEffectOnce(() => {
     getTokenPrice(token.symbol);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   const getTokenBalance = useCallback(async () => {
     if (!currentChain) return;
@@ -137,8 +137,9 @@ export default function TokenInput({
             </div>
             <div className="center">
               <p className="symbol">{token?.symbol}</p>
-              <p className="amount">{`${t('Balance_with_colon')} ${formatAmountShow(
-                divDecimals(balance, token.decimals),
+              <p className="amount">{`${t('Balance_with_colon')} ${formatTokenAmountShowWithDecimals(
+                balance,
+                token.decimals,
               )} ${token?.symbol}`}</p>
             </div>
           </div>
@@ -150,11 +151,11 @@ export default function TokenInput({
           <Button onClick={handleMax}>Max</Button>
         </div>
         <div className="control">
-          <div className="amount-input">
+          <div className={clsx('amount-input', needConvert ? 'need-convert' : '')}>
             <Input
               type="text"
               placeholder={`0`}
-              className={clsx(isMainnet && token.symbol === defaultToken.symbol && 'need-convert')}
+              className={clsx(needConvert ? 'need-convert' : '')}
               value={amount}
               onFocus={() => {
                 setAmount((v) => v?.replace(` ${token?.symbol}`, ''));
@@ -166,7 +167,7 @@ export default function TokenInput({
                 onChange({ amount: _v, balance });
               }}
             />
-            {isMainnet && <span className="convert">{amountInUsd}</span>}
+            {needConvert && <span className="convert">{amountInUsd}</span>}
           </div>
         </div>
       </div>

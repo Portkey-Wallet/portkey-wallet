@@ -42,6 +42,7 @@ export const VERIFICATION_TO_OPERATION_MAP = {
   [VerificationType.managerApprove]: OperationTypeEnum.managerApprove,
   [VerificationType.modifyTransferLimit]: OperationTypeEnum.modifyTransferLimit,
   [VerificationType.transferApprove]: OperationTypeEnum.transferApprove,
+  [VerificationType.revokeAccount]: OperationTypeEnum.revokeAccount,
 };
 
 export const VERIFICATION_TO_APPROVAL_MAP = {

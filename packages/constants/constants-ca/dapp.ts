@@ -1,5 +1,5 @@
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
-import { MethodsBase } from '@portkey/provider-types';
+import { MethodsBase, MethodsWallet } from '@portkey/provider-types';
 import { DAPP_WHITELIST } from './network';
 
 export const SessionKeyMap = {
@@ -29,7 +29,11 @@ export enum ApproveMethod {
 
 export const CA_METHOD_WHITELIST = ['ManagerForwardCall', 'ManagerTransfer', ApproveMethod.ca];
 
-export const DAPP_WHITELIST_ACTION_WHITELIST: string[] = [MethodsBase.REQUEST_ACCOUNTS, MethodsBase.SEND_TRANSACTION];
+export const DAPP_WHITELIST_ACTION_WHITELIST: string[] = [
+  MethodsBase.REQUEST_ACCOUNTS,
+  MethodsBase.SEND_TRANSACTION,
+  MethodsWallet.GET_WALLET_SIGNATURE,
+];
 
 export { DAPP_WHITELIST };
 

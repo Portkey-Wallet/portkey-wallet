@@ -6,24 +6,26 @@ import ReceiveButton from 'components/ReceiveButton';
 import ActivityButton from 'pages/DashBoard/ActivityButton';
 import { TextM } from 'components/CommonText';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import FaucetButton from 'components/FaucetButton';
 import GStyles from 'assets/theme/GStyles';
 import DepositButton from 'components/DepositButton';
-import { DepositItem, useDepositList } from 'hooks/deposit';
+import BuyButton from 'components/BuyButton';
+import { useAppRampEntryShow } from 'hooks/ramp';
+import { useAppETransShow } from 'hooks/cms';
 
 const Card: React.FC<{ title: string }> = ({ title }) => {
   const isMainnet = useIsMainnet();
   const userInfo = useCurrentUserInfo();
-  const depositList = useDepositList();
-  const isDepositShow = useMemo(() => !!depositList.length, [depositList.length]);
+  const { isETransDepositShow } = useAppETransShow();
+  const { isRampShow } = useAppRampEntryShow();
   const buttonCount = useMemo(() => {
     let count = 3;
-    if (isDepositShow) count++;
-    // FaucetButton
-    if (!isMainnet) count++;
+    if (isETransDepositShow) count++;
+    if (isRampShow) count++;
+    if (!isMainnet) count++; // faucet
     return count;
-  }, [isDepositShow, isMainnet]);
+  }, [isETransDepositShow, isMainnet, isRampShow]);
 
   const buttonGroupWrapStyle = useMemo(
     () => (buttonCount < 5 ? (GStyles.flexCenter as StyleProp<ViewProps>) : undefined),
@@ -34,6 +36,8 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
     [buttonCount],
   );
 
+  const { eTransferUrl = '' } = useCurrentNetworkInfo();
+
   return (
     <View style={[styles.cardWrap]}>
       <View style={styles.textColumn}>
@@ -41,9 +45,10 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
         <Text style={styles.usdtBalance}>{title}</Text>
       </View>
       <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.buttonGroupWrap, buttonGroupWrapStyle]}>
-        {isDepositShow && <DepositButton wrapStyle={buttonWrapStyle} list={depositList as DepositItem[]} />}
         <SendButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
         <ReceiveButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
+        {isRampShow && <BuyButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
+        {isETransDepositShow && <DepositButton wrapStyle={buttonWrapStyle} depositUrl={eTransferUrl} />}
         {!isMainnet && <FaucetButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
         <ActivityButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
       </View>

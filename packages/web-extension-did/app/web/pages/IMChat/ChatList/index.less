@@ -7,29 +7,24 @@
     display: none;
   }
   .chat-list-top {
-    overflow: hidden;
-    padding-top: 16px;
-    flex-shrink: 0;
-    background-color: @bg-13;
-    z-index: 100;
-    .setting-header-wrapper {
-      .right-element {
-        gap: 16px;
-        .custom-svg {
-          width: 20px;
-          height: 20px;
-        }
-        .custom-svg.close2-icon {
-          display: flex;
-          width: 16px;
-          height: 16px;
-        }
+    &.has-pined-msg {
+      background-color: @Neutral-4;
+    }
+    .right-element {
+      gap: 12px;
+    }
+    .chat-list-top-icon.custom-svg {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      svg {
+        width: 100%;
+        height: 100%;
       }
     }
   }
   .chat-list-content {
-    overflow-y: auto;
-    height: calc(100% - 96px);
+    overflow-y: scroll;
     .no-message {
       margin-top: 100px;
       gap: 24px;
@@ -45,7 +40,7 @@
 }
 
 .chat-list-popover {
-  top: 60px !important;
+  top: 36px !important;
   left: 220px !important;
   .portkey-popover-inner {
     min-width: 120px;

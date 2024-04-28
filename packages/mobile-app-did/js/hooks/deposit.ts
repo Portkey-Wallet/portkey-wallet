@@ -4,10 +4,7 @@ import navigationService from 'utils/navigationService';
 import { useAppBridgeButtonShow, useAppETransShow } from './cms';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
-import { useSecuritySafeCheckAndToast } from './security';
-import Loading from 'components/Loading';
 import DisclaimerModal from 'components/DisclaimerModal';
-import CommonToast from 'components/CommonToast';
 import { getUrlObj } from '@portkey-wallet/utils/dapp/browser';
 import { IconName } from 'components/Svg';
 import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
@@ -65,7 +62,7 @@ export type ModalDescribe = {
   icon?: IconName;
 };
 
-export const DepositModalMap: { [key: string]: ModalDescribe } = {
+const DepositModalMapRaw = {
   bridge: {
     title: 'eBridge',
     description: 'You will be directed to a third-party DApp: eBridge',
@@ -80,33 +77,45 @@ export const DepositModalMap: { [key: string]: ModalDescribe } = {
     description: 'You will be directed to a third-party DApp: ETransfer',
     icon: 'ETransfer',
   },
+  eTransfer: {
+    title: 'ETransfer',
+    description: 'You will be directed to a third-party DApp: ETransfer',
+    icon: 'ETransfer',
+  },
+  AwakenSwap: {
+    title: 'AwakenSwap',
+    description: 'You will be directed to a third-party DApp: AwakenSwap',
+    icon: 'awaken-swap-round',
+  },
 };
+
+export type DepositModalMapType = { [key in keyof typeof DepositModalMapRaw]: ModalDescribe };
+
+export const DepositModalMap: DepositModalMapType = DepositModalMapRaw as any;
 
 export function useOnDisclaimerModalPress() {
   const { checkDappIsConfirmed } = useDisclaimer();
-  const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
 
   return useCallback(
     async (modalDescribe: ModalDescribe, url: string) => {
-      console.log(modalDescribe, url);
-
       try {
         const { origin } = getUrlObj(url);
-        Loading.show();
-        if (!(await securitySafeCheckAndToast())) return;
+
         if (!checkDappIsConfirmed(origin))
           return DisclaimerModal.showDisclaimerModal({
             ...modalDescribe,
             url,
           });
-        navigationService.navigate('ProviderWebPage', { title: modalDescribe.title, url });
+        navigationService.navigate('ProviderWebPage', {
+          title: modalDescribe.title,
+          url,
+          icon: modalDescribe.icon,
+        });
       } catch (error) {
-        CommonToast.failError(error);
-      } finally {
-        Loading.hide();
+        console.log(error);
       }
     },
-    [checkDappIsConfirmed, securitySafeCheckAndToast],
+    [checkDappIsConfirmed],
   );
 }
 

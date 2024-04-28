@@ -44,6 +44,7 @@ import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import CommonAvatar from 'components/CommonAvatar';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import FaucetButton from 'components/FaucetButton';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -64,6 +65,7 @@ const TokenDetail: React.FC = () => {
   const navigation = useNavigation();
   const dispatch = useAppCommonDispatch();
   const activity = useAppCASelector(state => state.activity);
+  const defaultToken = useDefaultToken();
   const { eTransferUrl = '', awakenUrl = 'https://awaken.finance/' } = useCurrentNetworkInfo();
   const { isETransDepositShow } = useAppETransShow();
   const onDisclaimerModalPress = useOnDisclaimerModalPress();
@@ -77,6 +79,10 @@ const TokenDetail: React.FC = () => {
   const isDepositShow = useMemo(
     () => isETransToken && isETransDepositShow && deposit,
     [isETransToken, isETransDepositShow, deposit],
+  );
+  const isFaucetButtonShow = useMemo(
+    () => !isMainnet && tokenInfo.symbol === defaultToken.symbol && tokenInfo.chainId === 'AELF',
+    [defaultToken.symbol, isMainnet, tokenInfo.chainId, tokenInfo.symbol],
   );
 
   const balanceShow = useMemo(
@@ -149,9 +155,9 @@ const TokenDetail: React.FC = () => {
     if (isDepositShow) count++;
     if (swap) count++;
     // FaucetButton
-    // if (isFaucetButtonShow) count++;
+    if (isFaucetButtonShow) count++;
     return count;
-  }, [isBuyButtonShow, isDepositShow, swap]);
+  }, [isBuyButtonShow, isDepositShow, isFaucetButtonShow, swap]);
 
   const buttonGroupWrapStyle = useMemo(() => {
     if (buttonCount >= 5) {
@@ -169,7 +175,6 @@ const TokenDetail: React.FC = () => {
       return styles.buttonWrapStyle1;
     }
   }, [buttonCount]);
-  const defaultToken = useDefaultToken();
 
   const renderItem = useCallback(({ item, index }: { item: ActivityItemType; index: number }) => {
     const preItem = currentActivityRef.current?.data[index - 1];
@@ -226,7 +231,7 @@ const TokenDetail: React.FC = () => {
           <SendButton themeType="innerPage" sentToken={currentTokenInfo} wrapStyle={buttonWrapStyle} />
           <ReceiveButton currentTokenInfo={currentTokenInfo} themeType="innerPage" wrapStyle={buttonWrapStyle} />
           {buy && isMainnet && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
-          {/* {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />} */}
+          {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}
           {swap && (
             <CommonToolButton
               title="Swap"

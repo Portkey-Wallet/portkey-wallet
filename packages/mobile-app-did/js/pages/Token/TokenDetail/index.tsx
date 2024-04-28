@@ -293,7 +293,7 @@ const TokenDetail: React.FC = () => {
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListHeaderComponent={
           <View style={styles.divide}>
-            <TextL style={[FontStyles.font16, styles.listFront]}>{'Activity'}</TextL>
+            <TextL style={[FontStyles.font16, styles.listFront, fonts.mediumFont]}>{'Activity'}</TextL>
           </View>
         }
         ListFooterComponent={

@@ -23,7 +23,10 @@ export const LinkPortkeyPath = {
 
 const EBridgeList = NetworkList.map(i => i.eBridgeUrl).filter(i => !!i) as string[];
 const ETransferList = NetworkList.map(i => i.eTransferUrl).filter(i => !!i) as string[];
-export const DAPP_WHITELIST: string[] = [...EBridgeList, ...ETransferList];
+const AwakenUrlList = NetworkList.map(i => i.awakenUrl).filter(i => !!i) as string[];
+const SchrodingerList = NetworkList.map(i => i.schrodingerUrl).filter(i => !!i) as string[];
+
+export const DAPP_WHITELIST: string[] = [...EBridgeList, ...ETransferList, ...AwakenUrlList, ...SchrodingerList];
 
 export enum DappMap {
   bridge = 'http://192.168.67.173:3000',

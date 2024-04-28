@@ -25,8 +25,8 @@ export const TradeHomePage: React.FC = () => {
             needInnerDisclaimerCheck
             title={'AwakenSwap'}
             url={awakenUrl}
-            icon={'Awaken'}
-            disclaimerInfo={DepositModalMap.aWakenSwap}
+            icon={'awaken'}
+            disclaimerInfo={DepositModalMap.AwakenSwap}
             disclaimerCheckFailCallBack={navBackToHome}
           />
         ),

@@ -1,3 +1,4 @@
+console.log('Babel config is being read');
 const plugins = [
   [
     'module-resolver',
@@ -7,6 +8,7 @@ const plugins = [
     },
   ],
   ['@babel/plugin-proposal-decorators', { legacy: true }],
+  ['../../plugins/babel-plugin-environment-inject.js', { environment: 'SDK' }],
   // ['./plugins/babel-plugin-replace-import.js', { from: './src/', to: './' }],
 ];
 module.exports = {
@@ -14,4 +16,3 @@ module.exports = {
   plugins: [...plugins],
   ignore: ['.babelignore'],
 };
-console.log('babel.config.js exe!!');

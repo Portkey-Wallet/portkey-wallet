@@ -7,4 +7,4 @@ fi
 if [ ! -f "android/src/main/assets/index.android.bundle" ]; then
   touch android/src/main/assets/index.android.bundle
 fi
-react-native bundle --platform android --entry-file index.js --bundle-output android/src/main/assets/index.android.bundle --assets-dest android/src/main/res  --dev true
+react-native bundle --platform android --entry-file index.js --bundle-output android/src/main/assets/index.android.bundle --assets-dest android/src/main/res  --dev true --reset-cache

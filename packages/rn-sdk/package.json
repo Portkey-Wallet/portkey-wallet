@@ -136,7 +136,7 @@
     "web3-utils": "^1.8.0"
   },
   "scripts": {
-    "start": "react-native start",
+    "start": "react-native start --reset-cache",
     "clean": "echo 'Cleaning dist/ directory...' && rm -rf dist/",
     "build:index": "echo 'Building index.js...' && babel index.js --config-file ./babel.npm.config.js --out-file dist/index.js --extensions \".js,.jsx,.ts,.tsx,.json\"",
     "build:src": "echo 'Building src/ directory...' && babel src --config-file ./babel.npm.config.js --out-dir dist --extensions \".js,.jsx,.ts,.tsx\"",

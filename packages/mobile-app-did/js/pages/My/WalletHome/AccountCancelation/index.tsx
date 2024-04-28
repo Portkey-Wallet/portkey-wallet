@@ -39,7 +39,7 @@ const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['blue', 'gray'];
 const ScrollViewProps = { disabled: true };
 
 export default function AccountCancelation() {
-  const { caHash, address: managerAddress, managerInfo } = useCurrentWalletInfo();
+  const { caHash, address: managerAddress } = useCurrentWalletInfo();
   const getCurrentCAContract = useGetCurrentCAContract();
   const currentLoginAccountVerifyFunc = useGetCurrentLoginAccountVerifyFunc();
   const logout = useLogOut();
@@ -61,7 +61,7 @@ export default function AccountCancelation() {
     } else {
       try {
         const token = await getSocialLoginAccountToken({
-          currentLoginAccount: managerInfo?.loginAccount || '',
+          currentLoginAccount: guardianAccount || '',
           getAccountUserInfoFunc: currentLoginAccountVerifyFunc,
         });
         socialLoginToken = token;
@@ -104,7 +104,6 @@ export default function AccountCancelation() {
     guardianType,
     logout,
     managerAddress,
-    managerInfo?.loginAccount,
     originChainId,
     verifier?.id,
   ]);

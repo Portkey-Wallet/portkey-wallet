@@ -53,7 +53,7 @@ export default function AccountCancelation() {
   const showGuardianType = useMemo(
     () =>
       SOCIAL_GUARDIAN_TYPE.includes(uniqueGuardian?.guardianType ?? LoginType.Email)
-        ? `${uniqueGuardianType} account`
+        ? `${uniqueGuardianType} Account`
         : uniqueGuardianType,
     [uniqueGuardian?.guardianType, uniqueGuardianType],
   );
@@ -70,7 +70,7 @@ export default function AccountCancelation() {
         CustomModal({
           content: (
             <div className="account-cancelation-alert-modal">
-              <div className="title">Account Detection</div>
+              <div className="title">Unable to Delete Account</div>
               <div className="content condition-content flex-column">
                 {list.map((item, i) => (
                   <div className="condition-item" key={`condition_${i}`}>

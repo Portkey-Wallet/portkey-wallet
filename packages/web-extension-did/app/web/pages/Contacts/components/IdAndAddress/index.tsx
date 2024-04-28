@@ -1,12 +1,9 @@
 import './index.less';
 import ContactAddressList from 'pages/Contacts/components/ContactAddressList';
-import CustomSvg from 'components/CustomSvg';
 import { AddressItem } from '@portkey-wallet/types/types-ca/contact';
 import clsx from 'clsx';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { useNavigate } from 'react-router';
 import Copy from 'components/Copy';
-import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 interface IIdAndAddressProps {
   portkeyId?: string;
@@ -22,35 +19,10 @@ export default function IdAndAddress({
   addressSectionLabel = 'Address',
 }: IIdAndAddressProps) {
   const showChat = useIsChatShow();
-  const userInfo = useCurrentUserInfo();
-  const navigate = useNavigate();
 
   return (
     <div className="id-and-address">
       {/* Section - ID - my - wallet */}
-      {portkeyId && portkeyId === userInfo?.userId && (
-        <div className="info-section section-border-bottom">
-          <div className="info-title">Portkey ID</div>
-          <div className="flex-row-between info-content">
-            <div className="info-desc-my-wallet">{portkeyId}</div>
-            <div className="info-icon flex">
-              <Copy toCopy={portkeyId} iconType="Copy4" />
-              <CustomSvg type="QRCode2" onClick={() => navigate('/setting/wallet/qrcode')} />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Section - ID - contact */}
-      {showChat && portkeyId && portkeyId !== userInfo?.userId && (
-        <div className="info-section section-border-bottom">
-          <div className="info-title">Portkey ID</div>
-          <div className="flex-row-between info-content">
-            <div className="info-desc">{portkeyId}</div>
-            <Copy toCopy={portkeyId} iconType="Copy4" iconClassName="id-copy-icon" />
-          </div>
-        </div>
-      )}
 
       {showChat && !portkeyId && relationId && (
         <div className="info-section section-border-bottom">

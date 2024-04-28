@@ -123,7 +123,7 @@ export default function ContactChatList({ onClose, onConfirm }: IContactChatList
           overlay={<></>}
           inputProps={{
             onChange: handleInputChange,
-            placeholder: 'Name/address/Portkey ID',
+            placeholder: 'Name/address',
           }}
         />
       </div>

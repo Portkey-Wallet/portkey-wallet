@@ -6303,6 +6303,11 @@
   resolved "https://registry.yarnpkg.com/@rushstack/eslint-patch/-/eslint-patch-1.2.0.tgz#8be36a1f66f3265389e90b5f9c9962146758f728"
   integrity sha512-sXo/qW2/pAcmT43VoRKOJbDOfV3cYpq3szSVfIThQXNt+E4DfKj361vaAt3c88U5tPUxzEswam7GW48PJqtKAg==
 
+"@sdcx/nested-scroll@^0.14.0":
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/@sdcx/nested-scroll/-/nested-scroll-0.14.0.tgz#d0f6f07f50eff64eb22aa2da6967e29494c00a97"
+  integrity sha512-sSjZ8apHCLZto3VQUHcOnV+dVq0hdQOcPWjmBNoe/0W1VxoDhujgW7OiRexTpsTUc3m7PfRzhPIx8IO8og7JjQ==
+
 "@segment/loosely-validate-event@^2.0.0":
   version "2.0.0"
   resolved "https://registry.npmmirror.com/@segment/loosely-validate-event/-/loosely-validate-event-2.0.0.tgz#87dfc979e5b4e7b82c5f1d8b722dfd5d77644681"

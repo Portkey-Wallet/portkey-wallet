@@ -7,7 +7,6 @@ export interface BaseToken {
   decimals: number; // 8
   address: string; // "ArPnUb5FtxG2oXTaWX2DxNZowDEruJLs2TEkhRCzDdrRDfg8B",        token address  contract address
   symbol: string; // "ELF"   the name showed
-  name: string;
 }
 
 export interface TokenItemType extends BaseToken {

@@ -54,12 +54,10 @@ export const ProviderWebPageComponent = ({
   const webViewRef = useRef<IWebView | null>(null);
   const progressbarRef = useRef<IProgressbar>(null);
   const [isWebviewLoading, setWebviewLoading] = useState(true);
-  const [showPlaceholder, setShowPlaceholder] = useState(true);
 
   useFocusEffect(
     useCallback(() => {
       if (!disclaimerInfo) {
-        setShowPlaceholder(isWebviewLoading);
         return;
       }
       if (needInnerDisclaimerCheck) {
@@ -70,23 +68,15 @@ export const ProviderWebPageComponent = ({
               ...disclaimerInfo,
               url,
               disclaimerCheckFailCallBack,
-              disclaimerCheckSuccessCallBack: () => setShowPlaceholder(false),
+              // eslint-disable-next-line @typescript-eslint/no-empty-function
+              disclaimerCheckSuccessCallBack: () => {},
             });
-          } else {
-            setShowPlaceholder(isWebviewLoading);
           }
         } catch (error) {
           console.log(error);
         }
       }
-    }, [
-      checkDappIsConfirmed,
-      disclaimerCheckFailCallBack,
-      disclaimerInfo,
-      isWebviewLoading,
-      needInnerDisclaimerCheck,
-      url,
-    ]),
+    }, [checkDappIsConfirmed, disclaimerCheckFailCallBack, disclaimerInfo, needInnerDisclaimerCheck, url]),
   );
 
   return (
@@ -101,7 +91,7 @@ export const ProviderWebPageComponent = ({
           setWebviewLoading(false);
         }}
       />
-      {showPlaceholder && <Placeholder dappName={title} icon={icon} />}
+      {isWebviewLoading && <Placeholder dappName={title} icon={icon} />}
     </View>
   );
 };

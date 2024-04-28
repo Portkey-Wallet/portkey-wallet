@@ -31,7 +31,7 @@ export const addCustomChainItem = createAsyncThunk('chain/addCustomChainItem', a
         const tokenAddress = await getELFTokenAddress(chain.rpcUrl, chainStatus.GenesisContractAddress);
         nativeCurrency = {
           id: '', // TODO
-          name: 'ELF',
+          // name: 'ELF',
           symbol: 'ELF',
           decimals: 8,
           address: tokenAddress,

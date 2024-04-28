@@ -76,7 +76,7 @@ const ContactsHome: React.FC = () => {
           <View style={[BGStyles.bg5, GStyles.paddingArg(8, 20, 8)]}>
             <CommonInput
               value={keyword}
-              placeholder={t('Name/address/Portkey ID')}
+              placeholder={t('Name/address')}
               onChangeText={value => setKeyword(value.trim())}
               rightIcon={
                 keyword ? (

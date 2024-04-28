@@ -57,7 +57,7 @@ const NewChatHome = () => {
       containerStyles={styles.containerStyles}
       titleDom="New Chat">
       <View style={[BGStyles.bg5, GStyles.paddingArg(8, 20, 8)]}>
-        <CommonInput value={keyword} placeholder="Name/address/Portkey ID" onChangeText={setKeyword} />
+        <CommonInput value={keyword} placeholder="Name/address" onChangeText={setKeyword} />
       </View>
       <FlatList
         data={filterList}

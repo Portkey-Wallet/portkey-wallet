@@ -4,13 +4,11 @@ import BackHeader from 'components/BackHeader';
 import CustomSvg from 'components/CustomSvg';
 import './index.less';
 import FindMoreItem from 'pages/Contacts/components/FindMoreItem';
-import Copy from 'components/Copy';
 import InviteGuideList from 'pages/components/InviteGuideList';
 import OfficialGroupGuide from 'pages/components/OfficialGroupGuide';
 
 export default function FindMorePopup({
   headerTitle,
-  myPortkeyId,
   contacts,
   showChat,
   isSearch,
@@ -18,7 +16,6 @@ export default function FindMorePopup({
   handleSearch,
   clickItem,
   clickChat,
-  clickQRCode,
 }: IFindMoreProps) {
   return (
     <div className="find-more-popup min-width-max-height flex-column">
@@ -28,21 +25,7 @@ export default function FindMorePopup({
           leftCallBack={goBack}
           rightElement={<CustomSvg type="Close2" onClick={goBack} />}
         />
-        <ContactsSearchInput placeholder="Address/Portkey ID/email" handleChange={handleSearch} />
-        {!isSearch && (
-          <div className="flex-column">
-            <div className="find-more-id flex-between">
-              <div className="my-portkey-id">
-                <div className="portkey-id-label">My Portkey ID:</div>
-                <div className="portkey-id-show">{myPortkeyId}</div>
-              </div>
-              <div className="show-icon flex">
-                <Copy iconType="Copy4" toCopy={myPortkeyId} />
-                <CustomSvg type="QRCode2" onClick={clickQRCode} />
-              </div>
-            </div>
-          </div>
-        )}
+        <ContactsSearchInput placeholder="Address/email" handleChange={handleSearch} />
       </div>
       <div className="find-more-body">
         {(!contacts || !Array.isArray(contacts) || contacts?.length === 0) && isSearch && (

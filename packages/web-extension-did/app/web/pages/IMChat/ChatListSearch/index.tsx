@@ -72,7 +72,7 @@ export default function ChatListSearch() {
 
   return (
     <div className="chat-list-search-page flex-column">
-      <div className="chat-list-header">
+      <div className="chat-list-search-header">
         <div className="chat-list-search">
           <SettingHeader
             title={t('Search')}

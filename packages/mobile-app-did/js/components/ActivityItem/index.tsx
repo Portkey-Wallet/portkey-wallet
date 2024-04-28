@@ -186,6 +186,7 @@ const itemStyle = StyleSheet.create({
     color: defaultColors.font5,
     fontSize: pTd(16),
     lineHeight: pTd(24),
+    fontWeight: '900',
   },
   centerStatus: {
     color: defaultColors.font11,
@@ -204,6 +205,7 @@ const itemStyle = StyleSheet.create({
     color: defaultColors.font5,
     fontSize: pTd(16),
     lineHeight: pTd(24),
+    width: pTd(135),
   },
   usdtBalance: {
     textAlign: 'right',

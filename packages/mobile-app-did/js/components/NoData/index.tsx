@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
-import { TextL } from 'components/CommonText';
+import { TextM } from 'components/CommonText';
 import { defaultColors } from 'assets/theme';
 import Svg, { IconName } from 'components/Svg';
 
@@ -38,7 +38,7 @@ const NoData: React.FC<NoDataPropsType> = props => {
   return (
     <View style={[styles.wrap, topStyle, style]}>
       {!noPic && <Svg icon={icon} oblongSize={oblongSize} iconStyle={styles.img} />}
-      <TextL style={styles.message}>{message}</TextL>
+      <TextM style={styles.message}>{message}</TextM>
     </View>
   );
 };

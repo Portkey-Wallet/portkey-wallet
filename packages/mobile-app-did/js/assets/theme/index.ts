@@ -37,6 +37,7 @@ export const defaultColors = {
   bg28: '#161630',
   bg29: '#111124',
   bg30: '#979AA1',
+  bg31: '#25272A',
 
   font1: '#464B53',
   font2: 'white',
@@ -53,10 +54,16 @@ export const defaultColors = {
   font13: '#EA4F45',
   font14: '#FFE4C5',
   font15: '#C6A05A',
+  font16: '#25272A',
+  font17: '#547AFF',
+
+  white: '#ffffff',
+  black: '#000000',
 
   icon1: '#515A62',
   icon2: '#ffffff',
   icon3: '#333333',
+  icon4: '#757A85',
 
   border1: '#C5CBD5',
   border2: '#F7F8F9',

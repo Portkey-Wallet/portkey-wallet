@@ -43,11 +43,7 @@ export default function TradePage() {
     [],
   );
   const tradeListShow = useMemo(
-    () =>
-      tradeList.filter((item) => {
-        if (item.key === TradeTypeEnum.eBridge) return isBridgeShow;
-        return true;
-      }),
+    () => tradeList.filter((item) => (item.key === TradeTypeEnum.eBridge ? isBridgeShow : true)),
     [isBridgeShow, tradeList],
   );
 

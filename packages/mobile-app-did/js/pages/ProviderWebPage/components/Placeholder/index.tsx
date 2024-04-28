@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   icon: {
+    backgroundColor: defaultColors.bg32,
     marginTop: pTd(160),
     borderRadius: 32,
   },

@@ -53,12 +53,12 @@ const DisclaimerModal = ({
 
       disclaimerCheckSuccessCallBack
         ? disclaimerCheckSuccessCallBack()
-        : navigationService.navigate('ProviderWebPage', { title, url });
+        : navigationService.navigate('ProviderWebPage', { title, url, icon });
     } catch (error) {
       console.log('error', error);
     }
     Loading.hide();
-  }, [disclaimerCheckSuccessCallBack, signPrivacyPolicy, title, tracer, url]);
+  }, [disclaimerCheckSuccessCallBack, icon, signPrivacyPolicy, title, tracer, url]);
 
   const onDisposal = () => {
     OverlayModal.hide();

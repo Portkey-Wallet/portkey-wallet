@@ -94,6 +94,8 @@ export default function TabRoot() {
   const logOut = useLogOut();
 
   const tabMenuList = useMemo(() => {
+    if (__DEV__) return Object.values(tabMenuTypeMap);
+
     const _tabMenuListStore = tabMenuListStore.reduce((acc: typeof tabMenuListStore, cur) => {
       if (!acc.find(item => item.type.value === cur.type.value)) {
         acc.push(cur);

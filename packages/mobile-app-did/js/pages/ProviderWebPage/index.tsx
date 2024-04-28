@@ -53,24 +53,25 @@ export const ProviderWebPageComponent = ({
   const { checkDappIsConfirmed } = useDisclaimer();
   const webViewRef = useRef<IWebView | null>(null);
   const progressbarRef = useRef<IProgressbar>(null);
-  const [showPlaceholder, setShowPlaceholder] = useState(true);
+  const [isWebviewLoading, setWebviewLoading] = useState(true);
 
   useFocusEffect(
     useCallback(() => {
-      if (!disclaimerInfo) return;
-
+      if (!disclaimerInfo) {
+        return;
+      }
       if (needInnerDisclaimerCheck) {
         try {
           const { origin } = getUrlObj(url);
-          if (!checkDappIsConfirmed(origin))
+          if (!checkDappIsConfirmed(origin)) {
             return DisclaimerModal.showDisclaimerModal({
               ...disclaimerInfo,
               url,
               disclaimerCheckFailCallBack,
-              disclaimerCheckSuccessCallBack: () => setShowPlaceholder(false),
+              // eslint-disable-next-line @typescript-eslint/no-empty-function
+              disclaimerCheckSuccessCallBack: () => {},
             });
-
-          setShowPlaceholder(false);
+          }
         } catch (error) {
           console.log(error);
         }
@@ -87,12 +88,10 @@ export const ProviderWebPageComponent = ({
         source={{ uri: url }}
         onLoadProgress={({ nativeEvent }) => progressbarRef.current?.changeInnerBarWidth(nativeEvent.progress)}
         onLoadEnd={() => {
-          if (!needInnerDisclaimerCheck) {
-            setShowPlaceholder(false);
-          }
+          setWebviewLoading(false);
         }}
       />
-      {showPlaceholder && <Placeholder dappName={title} icon={icon} />}
+      {isWebviewLoading && <Placeholder dappName={title} icon={icon} />}
     </View>
   );
 };

@@ -10,7 +10,7 @@ import navigationService from '@portkey-wallet/rn-inject-sdk';
 import { TextXXXL } from '@portkey-wallet/rn-components/components/CommonText';
 import GStyles from '@portkey-wallet/rn-base/assets/theme/GStyles';
 import CommonButton from '@portkey-wallet/rn-components/components/CommonButton';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { useRouterParams } from '@portkey-wallet/rn-inject-sdk';
 import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';

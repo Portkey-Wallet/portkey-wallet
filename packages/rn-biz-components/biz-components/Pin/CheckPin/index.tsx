@@ -3,11 +3,11 @@ import PageContainer from '@portkey-wallet/rn-components/components/PageContaine
 import { DigitInputInterface } from '@portkey-wallet/rn-components/components/DigitInput';
 import navigationService from '@portkey-wallet/rn-inject-sdk';
 import { PIN_SIZE } from '@portkey-wallet/constants/misc';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { useRouterParams } from '@portkey-wallet/rn-inject-sdk';
 import { checkPin } from '@portkey-wallet/rn-base/utils/redux';
 import { PinErrorMessage } from '@portkey-wallet/utils/wallet/types';
 import myEvents from '@portkey-wallet/rn-base/utils/deviceEvent';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from '@portkey-wallet/rn-inject-sdk';
 import PinContainer from '@portkey-wallet/rn-components/components/PinContainer';
 import { StyleSheet } from 'react-native';
 import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';

@@ -23,7 +23,6 @@ import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type'
 import { FontStyles } from '@portkey-wallet/rn-base/assets/theme/styles';
 import Loading from '@portkey-wallet/rn-components/components/Loading';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
-// import useRouterParams, { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
 import { useRouterParams } from '@portkey-wallet/rn-inject-sdk';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { useAppDispatch } from '@portkey-wallet/rn-base/store-app/hooks';
@@ -51,7 +50,7 @@ import { AuthTypes } from '@portkey-wallet/rn-base/constants/guardian';
 import { useEffectOnce, useLatestRef } from '@portkey-wallet/hooks';
 import { NavigateMultiLevelParams } from '@portkey-wallet/rn-base/types/navigate';
 import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from '@portkey-wallet/rn-inject-sdk';
 import { TAppleAuthentication } from '@portkey-wallet/rn-base/types/authentication';
 import { useLoginModeList } from '@portkey-wallet/rn-base/hooks/loginMode';
 import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';

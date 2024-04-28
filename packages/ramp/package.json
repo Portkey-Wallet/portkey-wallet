@@ -12,6 +12,7 @@
   "dependencies": {
     "@portkey-wallet/api": "^1.3.0",
     "@portkey-wallet/types": "^1.3.0",
-    "@portkey-wallet/utils": "^1.3.0"
+    "@portkey-wallet/utils": "^1.3.0",
+    "@portkey-wallet/rn-inject": "1.0.0"
   }
 }

@@ -3,7 +3,7 @@ import { AppState, AppStateStatus, NativeEventSubscription } from 'react-native'
 import BackgroundTimer from 'react-native-background-timer';
 import navigationService from '@portkey-wallet/rn-inject-sdk';
 import { getDispatch, getWalletAddress } from './redux';
-import { setCredentials } from '../store-app/user/actions';
+import { setCredentials } from '../store/user/actions';
 
 export let canLock = true;
 

@@ -10,7 +10,7 @@ import { LoginInfo } from '../types/wallet';
 import { checkHolderError } from '@portkey-wallet/utils/check';
 import { VerifierItem } from '@portkey-wallet/types/verifier';
 import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
-import { request } from '@portkey-wallet/rn-inject-sdk';
+import { request } from '@portkey-wallet/api/api-did';
 import { handleErrorMessage, handleErrorCode } from '@portkey-wallet/utils';
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import myEvents from '../utils/deviceEvent';

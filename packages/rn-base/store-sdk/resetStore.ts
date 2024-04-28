@@ -1,4 +1,4 @@
-import { resetUser } from './user/actions';
+import { resetUser } from '../store/user/actions';
 import { dispatch } from '.';
 import { resetRamp } from '@portkey-wallet/store/store-ca/ramp/slice';
 import { resetWallet } from '@portkey-wallet/store/store-ca/wallet/actions';

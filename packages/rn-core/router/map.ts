@@ -13,7 +13,26 @@ export type AppRouteName =
   | 'GuardianEdit'
   | 'GuardianDetail'
   | 'SecurityLock'
-  | 'GuardianHome';
+  | 'GuardianHome'
+  | 'Receive'
+  | 'ActivityListPage'
+  | 'ActivityDetail'
+  | 'ViewOnWebView'
+  | 'SendHome'
+  | 'SendPreview'
+  | 'ManageTokenList'
+  | 'TokenDetail'
+  | 'CustomToken'
+  | 'NFTDetail'
+  | 'RampHome'
+  | 'RampPreview'
+  | 'PaymentSecurityList'
+  | 'PaymentSecurityDetail'
+  | 'PaymentSecurityEdit'
+  | 'ContactActivity'
+  | 'QrScanner'
+  | 'QrCodeResult'
+  | 'Tab';
 
 const RouteNameMapping: Record<AppRouteName, PortkeyEntries> = {
   LoginPortkey: PortkeyEntries.SIGN_IN_ENTRY,
@@ -30,6 +49,27 @@ const RouteNameMapping: Record<AppRouteName, PortkeyEntries> = {
   GuardianEdit: PortkeyEntries.ADD_GUARDIAN_ENTRY,
   SecurityLock: PortkeyEntries.SECURITY_LOCK_ENTRY,
   GuardianHome: PortkeyEntries.GUARDIAN_HOME_ENTRY,
+
+  Receive: PortkeyEntries.RECEIVE_TOKEN_ENTRY,
+  ActivityListPage: PortkeyEntries.ACTIVITY_LIST_ENTRY,
+  ActivityDetail: PortkeyEntries.ACTIVITY_DETAIL_ENTRY,
+  ViewOnWebView: PortkeyEntries.VIEW_ON_WEBVIEW,
+  SendHome: PortkeyEntries.SEND_TOKEN_HOME_ENTRY,
+  SendPreview: PortkeyEntries.SEND_TOKEN_CONFIRM_ENTRY,
+  ManageTokenList: PortkeyEntries.TOKEN_MANAGE_LIST_ENTRY,
+  CustomToken: PortkeyEntries.TOKEN_MANAGE_ADD_ENTRY,
+  TokenDetail: PortkeyEntries.TOKEN_DETAIL_ENTRY,
+  NFTDetail: PortkeyEntries.NFT_DETAIL_ENTRY,
+  RampHome: PortkeyEntries.RAMP_HOME_ENTRY,
+  RampPreview: PortkeyEntries.RAMP_PREVIEW_ENTRY,
+  PaymentSecurityList: PortkeyEntries.PAYMENT_SECURITY_HOME_ENTRY,
+  PaymentSecurityDetail: PortkeyEntries.PAYMENT_SECURITY_DETAIL_ENTRY,
+  PaymentSecurityEdit: PortkeyEntries.PAYMENT_SECURITY_EDIT_ENTRY,
+  ContactActivity: PortkeyEntries.CONTACT_ACTIVITY_ENTRY,
+  QrScanner: PortkeyEntries.SCAN_QR_CODE,
+  QrCodeResult: PortkeyEntries.QR_CODE_RESULT,
+  Tab: PortkeyEntries.ASSETS_HOME_ENTRY,
+  // SelectContact: PortkeyEntries.CONTACT_DETAIL_ENTRY,
 };
 const beforeWalletLoginPageArray = [
   PortkeyEntries.SIGN_IN_ENTRY,

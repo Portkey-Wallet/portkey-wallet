@@ -6,7 +6,7 @@ import { ViewStyleType } from '../../theme/type';
 import { useTheme } from '../../theme';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const animation = require('../../image/lottieFiles/loading.json') as AnimationObject;
+const animation = require('../../lottieFiles/loading.json') as AnimationObject;
 
 type LottieLoadingPropsType = {
   color?: 'white' | 'blue';
@@ -18,7 +18,7 @@ const LottieLoading = (props: LottieLoadingPropsType) => {
   const {
     color = 'blue',
     type = 'innerPage',
-    source = require('../../image/lottieFiles/loading.json'),
+    source = require('../../lottieFiles/loading.json'),
     lottieStyle = {},
     lottieWrapStyle = {},
     ...LottieProps

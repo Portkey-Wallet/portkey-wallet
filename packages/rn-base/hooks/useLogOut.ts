@@ -4,7 +4,7 @@ import { useAppDispatch } from '../store-app/hooks';
 import navigationService from '@portkey-wallet/rn-inject-sdk';
 
 import { reSetCheckManagerExceed } from '@portkey-wallet/store/store-ca/wallet/actions';
-import { resetUser } from '../store-app/user/actions';
+import { resetUser } from '../store/user/actions';
 
 import { resetGuardians } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { request } from '@portkey-wallet/api/api-did';

@@ -6,7 +6,7 @@ import * as Google from 'expo-auth-session/providers/google';
 import Config from 'react-native-config';
 import * as Application from 'expo-application';
 import { AccessTokenRequest, makeRedirectUri } from 'expo-auth-session';
-import { request } from '@portkey-wallet/rn-inject-sdk';
+import { request } from '@portkey-wallet/api/api-did';
 import {
   getGoogleUserInfo,
   parseAppleIdentityToken,
@@ -155,6 +155,7 @@ export function useAppleAuthentication() {
       let user = undefined;
       let appleInfo = undefined;
       if (Environment.isSDK()) {
+        // use openLogin
         const appleLoginToken = await appleLogin();
         appleInfo = {
           identityToken: appleLoginToken as string,

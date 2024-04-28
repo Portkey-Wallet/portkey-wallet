@@ -57,7 +57,6 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
 
   // theme change
   const styles = themeType === 'blue' ? blueStyles : whitStyles;
-  console.log('useIsFocused2');
   const isFocused = useIsFocused();
   const navigation = useNavigation();
 
@@ -79,11 +78,21 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
   }, [leftIconType, styles.leftBackTitle.color]);
   useHardwareBackPress(
     useMemo(() => {
-      if (isFocused && leftCallback && !notHandleHardwareBackPress) {
-        return () => {
-          leftCallback();
-          return true;
-        };
+      if (Environment.isSDK()) {
+        const onPress = leftCallback ? leftCallback : () => navigation.goBack();
+        if (isFocused && onPress && !notHandleHardwareBackPress) {
+          return () => {
+            onPress();
+            return true;
+          };
+        }
+      } else {
+        if (isFocused && leftCallback && !notHandleHardwareBackPress) {
+          return () => {
+            leftCallback();
+            return true;
+          };
+        }
       }
     }, [isFocused, leftCallback, notHandleHardwareBackPress]),
   );

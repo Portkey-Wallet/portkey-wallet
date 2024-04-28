@@ -200,6 +200,7 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
             };
 
             if (imTransferInfo?.channelId) {
+              console.log('SendHome here1');
               navigationService.navigateByMultiLevelParams('SendHome', {
                 params: routeParams as unknown as IToSendHomeParamsType,
                 multiLevelParams: {
@@ -211,6 +212,7 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
                 },
               });
             } else {
+              console.log('SendHome here2');
               navigationService.navigate('SendHome', routeParams as unknown as IToSendHomeParamsType);
             }
           }}

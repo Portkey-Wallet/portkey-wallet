@@ -4,7 +4,7 @@ import { makeStyles } from '../../theme';
 export const useStyles = makeStyles(theme => {
   return {
     buttonWrap: {
-      marginBottom: pTd(24),
+      marginBottom: 32,
       width: pTd(65),
     },
     iconWrapStyle: {
@@ -17,12 +17,14 @@ export const useStyles = makeStyles(theme => {
       width: '100%',
       marginTop: pTd(4),
       textAlign: 'center',
-      color: theme.font2,
-      fontSize: pTd(14),
-      lineHeight: pTd(20),
+      color: theme.font16,
+      fontSize: pTd(12),
+      lineHeight: pTd(16),
     },
     dashBoardTitleColorStyle: {
-      color: theme.font2,
+      color: theme.font16,
+      lineHeight: pTd(16),
+      fontWeight: '400',
     },
     innerPageTitleColorStyle: {
       color: theme.font4,

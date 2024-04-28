@@ -15,6 +15,7 @@ import {
 } from './types';
 import { RampSignalr } from './signalr';
 import { randomId } from '@portkey-wallet/utils';
+import Environment from '@portkey-wallet/rn-inject';
 
 export interface IBaseRamp {
   // config: IRampConfig;
@@ -210,7 +211,7 @@ export class Ramp extends BaseRamp {
   }
 }
 
-const ramp = new Ramp({ request: request });
+const ramp = new Ramp({ request: request, clientType: Environment.isSDK() ? 'ThirdParty' : undefined });
 
 export default ramp;
 

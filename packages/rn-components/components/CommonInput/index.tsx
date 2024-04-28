@@ -6,13 +6,14 @@ import { pTd } from '../../utils/unit';
 import Touchable from '../Touchable';
 import Lottie from 'lottie-react-native';
 import { useTheme } from '../../theme';
+import { useLanguage } from '@portkey-wallet/rn-base/i18n/hooks';
 
 export type CommonInputProps = InputProps & {
   type?: 'search' | 'general';
   theme?: 'white-bg' | 'gray-bg';
   allowClear?: boolean;
   loading?: boolean;
-  t: (str: string) => string;
+  t?: (str: string) => string;
 };
 
 const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, forwardedRef: any) {
@@ -29,9 +30,9 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
     rightIconContainerStyle,
     leftIconContainerStyle,
     errorStyle,
-    t,
     ...inputProps
   } = props;
+  const { t } = useLanguage();
   const customTheme = useTheme();
   const searchStyles = getSearchStyles(customTheme);
   const generalStyles = getGeneralStyles(customTheme);
@@ -39,7 +40,7 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
   const rightIconDom = useMemo(() => {
     if (loading) {
       return (
-        <Lottie style={commonStyles.loadingStyle} source={require('assets/lottieFiles/loading.json')} autoPlay loop />
+        <Lottie style={commonStyles.loadingStyle} source={require('../../lottieFiles/loading.json')} autoPlay loop />
       );
     } else {
       return props.value && allowClear ? (

@@ -14,8 +14,8 @@ import { useGetGuardiansInfo } from '@portkey-wallet/rn-base/hooks/guardian';
 import Loading from '@portkey-wallet/rn-components/components/Loading';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
 import { VerifierImage } from '../../../Guardian/components/VerifierImage';
-// import { RouteProp, useRoute } from '@react-navigation/native';
-import { useRoute } from '@portkey-wallet/rn-inject-sdk';
+//  import { RouteProp, useRoute } from '@portkey-wallet/rn-inject-sdk';
+import { RouteProp, useRoute } from '@portkey-wallet/rn-inject-sdk';
 import GuardianAccountItem from '../components/GuardianAccountItem';
 import Divider from '@portkey-wallet/rn-components/components/Divider';
 import { checkIsLastLoginAccount } from '@portkey-wallet/utils/guardian';
@@ -27,7 +27,9 @@ type RouterParams = {
 };
 
 export default function GuardianDetail() {
-  const { guardian: guardianRouter } = useRoute();
+  const {
+    params: { guardian: guardianRouter },
+  } = useRoute<RouteProp<{ params: RouterParams }>>();
   const getGuardiansInfo = useGetGuardiansInfo();
   const { userGuardiansList } = useGuardiansInfo();
   const setLoginAccount = useSetLoginAccount();

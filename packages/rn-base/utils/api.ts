@@ -1,4 +1,4 @@
-import { request } from '@portkey-wallet/rn-inject-sdk';
+import { request } from '@portkey-wallet/api/api-did';
 import {
   IntervalErrorMessage,
   SendVerificationConfig,

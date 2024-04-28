@@ -5,7 +5,7 @@ import navigationService from '@portkey-wallet/rn-inject-sdk';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import { View, StyleProp, ViewProps } from 'react-native';
-import { TextM } from '../CommonText';
+import { TextS } from '../CommonText';
 import { useLanguage } from '@portkey-wallet/rn-base/i18n/hooks';
 import { pTd } from '@portkey-wallet/rn-base/utils/unit';
 import AssetsOverlay from '../AssetsOverlay';
@@ -22,7 +22,6 @@ const SendButton = (props: SendButtonType) => {
   const { t } = useLanguage();
   const { themeType = 'dashBoard', sentToken, wrapStyle = {} } = props;
   const commonButtonStyle = useStyles();
-
   const buttonTitleStyle = useMemo(
     () =>
       themeType === 'dashBoard'
@@ -43,13 +42,13 @@ const SendButton = (props: SendButtonType) => {
       } as unknown as IToSendHomeParamsType);
     AssetsOverlay.showAssetList();
   }, [sentToken, themeType]);
-
+console.log('themeTypethemeTypethemeType', themeType);
   return (
     <View style={[commonButtonStyle.buttonWrap, wrapStyle]}>
       <Touchable style={[commonButtonStyle.iconWrapStyle, GStyles.alignCenter, wrapStyle]} onPress={onPressButton}>
-        <Svg icon={themeType === 'dashBoard' ? 'send' : 'send1'} size={pTd(46)} />
+        <Svg icon={themeType === 'dashBoard' ? 'send' : 'send1'} size={pTd(48)} />
       </Touchable>
-      <TextM style={[commonButtonStyle.commonTitleStyle, buttonTitleStyle]}>{t('Send')}</TextM>
+      <TextS style={[commonButtonStyle.commonTitleStyle, buttonTitleStyle]}>{t('Send')}</TextS>
     </View>
   );
 };

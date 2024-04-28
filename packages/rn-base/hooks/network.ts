@@ -1,7 +1,7 @@
 import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { changeNetworkType } from '@portkey-wallet/store/store-ca/wallet/actions';
-import { ParamListBase, RouteProp } from '@react-navigation/native';
+import { ParamListBase, RouteProp } from '@portkey-wallet/rn-inject-sdk';
 // import { RootStackParamList } from 'navigation';
 import { useAppDispatch } from '../store-app/hooks';
 import navigationService from '@portkey-wallet/rn-inject-sdk';

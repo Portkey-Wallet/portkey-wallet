@@ -14,6 +14,7 @@ import secureStore from '@portkey-wallet/utils/mobile/secureStore';
 import { Buffer } from 'buffer';
 global.Buffer = Buffer;
 import { loadCurrentNetwork } from './src/apiTest';
+import { initFCMSignalR } from '@portkey-wallet/rn-base/utils/FCM';
 
 Environment.inject({ environment: 'SDK' });
 secureStore.init(Config.PORT_KEY_CODE || 'EXAMPLE_PORT_KEY_CODE');
@@ -21,7 +22,7 @@ const persistor = persistStore(store);
 persistor.subscribe(async () => {
   console.log('persist store init success!');
   console.log('wfs second store user', store.getState().user);
-  loadCurrentNetwork();
+  // loadCurrentNetwork();
   // initLanguage();
 });
 // we use i18n to translate
@@ -37,5 +38,6 @@ if (__DEV__) {
   // register test module
   registerTestModule();
 }
+initFCMSignalR();
 // export for npm
 export * from './src/api';

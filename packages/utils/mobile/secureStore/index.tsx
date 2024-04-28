@@ -44,7 +44,7 @@ export default {
     return instance;
   },
   async getItemAsync(key: typeof SecureKeys[number]) {
-    console.log('instance', instance);
+    console.log('instance', instance, 'key', key, 'secureOptions', secureOptions);
     if (instance) {
       console.log('instance.isAuthenticating', instance.isAuthenticating);
       instance.isAuthenticating = true;

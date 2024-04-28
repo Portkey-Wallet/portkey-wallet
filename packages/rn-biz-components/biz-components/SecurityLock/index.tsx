@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { useAppDispatch } from '@portkey-wallet/rn-base/store-app/hooks';
-import { setCredentials } from '@portkey-wallet/rn-base/store-app/user/actions';
+import { setCredentials } from '@portkey-wallet/rn-base/store/user/actions';
 import { useUser } from '@portkey-wallet/rn-base/hooks/store';
 import PageContainer from '@portkey-wallet/rn-components/components/PageContainer';
 import { DigitInputInterface } from '@portkey-wallet/rn-components/components/DigitInput';
@@ -135,6 +135,7 @@ export default function SecurityLock() {
       if (!biometrics) return;
       try {
         const securePassword = await getSecureStoreItem('Pin');
+        console.log('securePasswordsecurePasswordsecurePassword', securePassword);
         if (!securePassword) throw new Error('No password');
         handlePassword(securePassword);
       } catch (error: any) {
@@ -154,7 +155,6 @@ export default function SecurityLock() {
   const handleAppStateChange = useCallback(
     (nextAppState: AppStateStatus) => {
       if (nextAppState === 'active' && appStateRef.current !== 'active') {
-        console.log('invoke handleAppStateChange');
         verifyBiometrics();
         appStateRef.current = nextAppState;
       }
@@ -163,11 +163,12 @@ export default function SecurityLock() {
   );
   useEffectOnce(() => {
     if (Environment.isSDK()) {
-      verifyBiometrics();
+      const timer = setTimeout(() => {
+        verifyBiometrics();
+      }, 100);
       return;
     }
     if (!navigation.canGoBack()) {
-      console.log('invoke canGoBack');
       verifyBiometrics();
     }
   });

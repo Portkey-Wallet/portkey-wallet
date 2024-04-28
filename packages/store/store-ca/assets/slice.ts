@@ -7,6 +7,7 @@ import {
   fetchNFTList,
   fetchTokenList,
   fetchTokenPrices,
+  fetchTokenBalance,
 } from './api';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { TAssetsState } from './type';
@@ -83,7 +84,7 @@ export const fetchTokenListAsync = createAsyncThunk(
     currentNetwork = currentNetwork || wallet.currentNetwork || 'MAINNET';
     const response = await fetchTokenList({ caAddressInfos, skipCount, maxResultCount });
 
-    // mock data fro new account
+    // // mock data fro new account
     if (response.data.length === 0) {
       return {
         list: NEW_CLIENT_MOCK_ELF_LIST,
@@ -248,15 +249,29 @@ export const fetchTokensPriceAsync = createAsyncThunk(
         accountToken: { accountTokenList },
       },
     } = getState() as { assets: TAssetsState };
-    // const {
-    //   accountAssets: { totalRecordCount, accountAssetsList },
-    // } = assets;
 
     const response = await fetchTokenPrices({ symbols: symbols || accountTokenList.map(ele => ele.symbol) });
 
     return { list: response.items };
+  },
+);
 
-    // return { list: [], totalRecordCount };
+// fetch tokenBalance
+export const fetchTargetTokenBalanceAsync = createAsyncThunk(
+  'fetchTargetTokenBalanceAsync',
+  async ({
+    symbol,
+    chainId,
+    currentCaAddress = '',
+    currentNetwork,
+  }: {
+    symbol: string;
+    chainId: ChainId;
+    currentCaAddress: string;
+    currentNetwork?: NetworkType;
+  }) => {
+    const response = await fetchTokenBalance({ symbol, chainId, currentCaAddress });
+    return { symbol, chainId, response, currentNetwork };
   },
 );
 
@@ -471,6 +486,23 @@ export const assetsSlice = createSlice({
       })
       .addCase(fetchTokensPriceAsync.rejected, state => {
         state.accountToken.isFetching = false;
+      })
+      .addCase(fetchTargetTokenBalanceAsync.fulfilled, (state, action) => {
+        const { chainId, symbol, response, currentNetwork = 'MAINNET' } = action.payload;
+
+        const tmpList = state.accountToken?.accountTokenInfo?.[currentNetwork]?.accountTokenList?.map(ele =>
+          ele.chainId === chainId && ele.symbol === symbol
+            ? { ...ele, balance: response.balance, balanceInUsd: response.balanceInUsd }
+            : ele,
+        );
+
+        state.accountToken.accountTokenInfo = {
+          ...(state.accountToken.accountTokenInfo || {}),
+          [currentNetwork]: {
+            ...(state?.accountToken?.accountTokenInfo?.[currentNetwork] || {}),
+            accountTokenList: tmpList,
+          },
+        };
       });
   },
 });

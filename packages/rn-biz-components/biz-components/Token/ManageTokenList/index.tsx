@@ -1,0 +1,211 @@
+import PageContainer from '@portkey-wallet/rn-components/components/PageContainer';
+import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import CommonInput from '@portkey-wallet/rn-components/components/CommonInput';
+import { StyleSheet, View } from 'react-native';
+import gStyles from '@portkey-wallet/rn-base/assets/theme/GStyles';
+import { defaultColors } from '@portkey-wallet/rn-base/assets/theme';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
+import { useLanguage } from '@portkey-wallet/rn-base/i18n/hooks';
+import useDebounce from '@portkey-wallet/rn-base/hooks/useDebounce';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+import { request } from '@portkey-wallet/api/api-did';
+import { useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import Loading from '@portkey-wallet/rn-components/components/Loading';
+import FilterTokenSection from '../components/FilterToken';
+import PopularTokenSection from '../components/PopularToken';
+import { pTd } from '@portkey-wallet/rn-base/utils/unit';
+import navigationService from '@portkey-wallet/rn-inject-sdk';
+import Svg from '@portkey-wallet/rn-components/components/Svg';
+import Touchable from '@portkey-wallet/rn-components/components/Touchable';
+import {
+  PAGE_SIZE_DEFAULT,
+  PAGE_SIZE_IN_ACCOUNT_ASSETS,
+  PAGE_SIZE_IN_ACCOUNT_TOKEN,
+} from '@portkey-wallet/constants/constants-ca/assets';
+import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+
+interface ManageTokenListProps {
+  route?: any;
+}
+const ManageTokenList: React.FC<ManageTokenListProps> = () => {
+  const { t } = useLanguage();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+  const { tokenDataShowInMarket, totalRecordCount, fetchTokenInfoList } = useToken();
+  const chainIdArray = useChainIdList();
+  const caAddressInfos = useCaAddressInfoList();
+
+  const { fetchAccountTokenInfoList } = useAccountTokenInfo();
+
+  const [keyword, setKeyword] = useState<string>('');
+  const [filterTokenList, setFilterTokenList] = useState<TokenItemShowType[]>([]);
+
+  const debounceWord = useDebounce(keyword, 800);
+
+  const getTokenList = useLockCallback(
+    async (isInit?: boolean) => {
+      if (debounceWord) return;
+      if (totalRecordCount && tokenDataShowInMarket.length >= totalRecordCount && !isInit) return;
+
+      await fetchTokenInfoList({
+        keyword: '',
+        chainIdArray,
+        skipCount: isInit ? 0 : tokenDataShowInMarket.length,
+        maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+      });
+    },
+    [chainIdArray, debounceWord, fetchTokenInfoList, tokenDataShowInMarket, totalRecordCount],
+  );
+
+  const searchToken = useLockCallback(async () => {
+    if (!debounceWord) return;
+
+    try {
+      setIsSearching(true);
+
+      const res = await request.token.fetchTokenListBySearch({
+        params: {
+          symbol: keyword,
+          chainIds: chainIdArray,
+          version: '1.11.1',
+          skipCount: 0,
+          maxResultCount: PAGE_SIZE_DEFAULT,
+        },
+      });
+      const _target = (res || []).map((item: any) => ({
+        ...item,
+        isAdded: item.isDisplay,
+        userTokenId: item.id,
+      }));
+      setFilterTokenList(_target);
+    } catch (error) {
+      setFilterTokenList([]);
+      console.log('filter search error', error);
+    } finally {
+      setIsSearching(false);
+    }
+  }, [chainIdArray, debounceWord, keyword]);
+
+  const onHandleTokenItem = useCallback(
+    async (item: TokenItemShowType, isDisplay: boolean) => {
+      Loading.showOnce();
+
+      try {
+        await request.token.displayUserToken({
+          resourceUrl: `${item.userTokenId}/display`,
+          params: {
+            isDisplay,
+          },
+        });
+        timerRef.current = setTimeout(async () => {
+          fetchAccountTokenInfoList({
+            caAddressInfos,
+            skipCount: 0,
+            maxResultCount: PAGE_SIZE_IN_ACCOUNT_TOKEN,
+          });
+
+          if (debounceWord) {
+            await searchToken();
+          } else {
+            await getTokenList(true);
+          }
+          Loading.hide();
+          CommonToast.success('Success');
+        }, 800);
+      } catch (err) {
+        Loading.hide();
+        CommonToast.failError(err);
+      }
+    },
+    [caAddressInfos, debounceWord, fetchAccountTokenInfoList, getTokenList, searchToken],
+  );
+
+  // search token with keyword
+  useEffect(() => {
+    if (!debounceWord) setFilterTokenList([]);
+    searchToken();
+  }, [debounceWord, searchToken]);
+
+  // get token list
+  useEffectOnce(() => {
+    getTokenList(true);
+  });
+
+  // clear timer
+  useEffect(
+    () => () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    },
+    [],
+  );
+
+  const RightDom = useMemo(
+    () => (
+      <Touchable
+        style={pageStyles.rightIconStyle}
+        onPress={() => {
+          navigationService.navigate('CustomToken');
+        }}>
+        <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
+      </Touchable>
+    ),
+    [],
+  );
+
+  return (
+    <PageContainer
+      titleDom={t('Add Tokens')}
+      safeAreaColor={['blue', 'white']}
+      rightDom={RightDom}
+      containerStyles={pageStyles.pageWrap}
+      scrollViewProps={{ disabled: true }}>
+      <View style={pageStyles.inputWrap}>
+        <CommonInput
+          allowClear
+          loading={isSearching}
+          value={keyword}
+          placeholder={t('Token Name')}
+          onChangeText={v => {
+            setKeyword(v.trim());
+          }}
+        />
+      </View>
+
+      {debounceWord ? (
+        <FilterTokenSection tokenList={filterTokenList} onHandleTokenItem={onHandleTokenItem} />
+      ) : (
+        <PopularTokenSection
+          tokenDataShowInMarket={tokenDataShowInMarket}
+          getTokenList={getTokenList}
+          onHandleTokenItem={onHandleTokenItem}
+        />
+      )}
+    </PageContainer>
+  );
+};
+
+export default ManageTokenList;
+
+export const pageStyles = StyleSheet.create({
+  pageWrap: {
+    flex: 1,
+    ...gStyles.paddingArg(0),
+  },
+  inputWrap: {
+    backgroundColor: defaultColors.bg5,
+    ...gStyles.paddingArg(8, 20, 8),
+  },
+  list: {
+    flex: 1,
+  },
+  loadingIcon: {
+    width: pTd(20),
+  },
+  rightIconStyle: {
+    padding: pTd(16),
+  },
+});

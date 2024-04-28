@@ -52,6 +52,7 @@ export const defaultCss = {
   font13: '#EA4F45',
   font14: '#FFE4C5',
   font15: '#C6A05A',
+  font16: '#25272A',
 
   icon1: '#515A62',
   icon2: '#ffffff',

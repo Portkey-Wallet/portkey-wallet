@@ -25,7 +25,7 @@ import referralApi from './referral';
 import im from '@portkey-wallet/im';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 import Environment from '@portkey-wallet/rn-inject';
-import { request as sdkRequest } from '@portkey-wallet/rn-inject-sdk';
+import { request as sdkRequest } from '@portkey-wallet/rn-core/network/index';
 
 export const DEFAULT_METHOD = 'POST';
 

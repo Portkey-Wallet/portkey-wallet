@@ -42,7 +42,7 @@ export default function ReceiveButton(props: SendButtonType) {
             },
           });
         }}>
-        <Svg icon={themeType === 'dashBoard' ? 'receive' : 'receive1'} size={pTd(46)} />
+        <Svg icon={themeType === 'dashBoard' ? 'receive' : 'receive1'} size={pTd(48)} />
       </Touchable>
       <TextM style={[commonButtonStyle.commonTitleStyle, buttonTitleStyle]}>{t('Receive')}</TextM>
     </View>

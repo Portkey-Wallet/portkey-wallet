@@ -51,15 +51,19 @@ export const deleteFCMToken = () => {
 };
 
 export const initFCMSignalR = async () => {
-  const deviceInfo = await getDeviceInfo();
+  try {
+    const deviceInfo = await getDeviceInfo();
 
-  console.log('initFCMSignalR', deviceInfo);
+    console.log('initFCMSignalR', deviceInfo);
 
-  await signalrFCM.init({
-    deviceInfo,
-    deviceId: deviceInfo.deviceId,
-    getFCMTokenFunc: getFCMToken,
-  });
+    await signalrFCM.init({
+      deviceInfo,
+      deviceId: deviceInfo.deviceId,
+      getFCMTokenFunc: getFCMToken,
+    });
+  } catch (e) {
+    console.error('initFCMSignalR', e);
+  }
 };
 
 export const checkMessageIsFromMainnet = (message: FCMMessageData) => {

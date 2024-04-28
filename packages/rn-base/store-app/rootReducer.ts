@@ -7,7 +7,7 @@ import settingsSlice from '@portkey-wallet/store/settings/slice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { persistReducer } from 'redux-persist';
-import userSlice from './user/slice';
+import userSlice from '../store/user/slice';
 import { recentSlice } from '@portkey-wallet/store/store-ca/recent/slice';
 import { assetsSlice } from '@portkey-wallet/store/store-ca/assets/slice';
 import { tokenManagementSlice } from '@portkey-wallet/store/store-ca/tokenManagement/slice';

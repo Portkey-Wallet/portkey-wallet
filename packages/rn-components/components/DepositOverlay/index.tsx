@@ -37,6 +37,7 @@ function Item({ item }: { item: DepositItem }) {
 }
 
 function DepositList({ list }: DepositListProps) {
+  const styles = useStyles();
   return (
     <View style={styles.wrapStyle}>
       {list.map((item, index) => (

@@ -6,11 +6,24 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "workspaces": {
+    "nohoist": [
+      "@shopify/flash-list"
+    ]
+  },
   "dependencies": {
     "react-native": "~0.72.4",
     "expo-screen-capture": "^4.3.0",
     "@portkey-wallet/rn-base": "1.0.0",
-    "@portkey-wallet/rn-inject-sdk": "1.0.0"
+    "@portkey-wallet/rn-inject-sdk": "1.0.0",
+    "@shopify/flash-list": "^1.4.0",
+    "react-native-webview": "^13.8.1"
+  },
+  "peerDependencies": {
+    "expo-barcode-scanner": "^11.4.0",
+    "expo-screen-capture": "^4.3.0",
+    "expo-image-picker": "^13.2.1",
+    "expo-camera": "~12.3.0"
   },
   "author": "",
   "license": "ISC"

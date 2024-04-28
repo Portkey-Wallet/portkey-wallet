@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Svg, { IconName } from '../Svg';
 import { pTd } from '../../utils/unit';
-import { Text, View } from 'react-native';
+import { Text, View, TextStyle, ViewStyle } from 'react-native';
 import { checkIsSvgUrl } from '../../utils';
 import { SvgCssUri } from 'react-native-svg';
 import FastImage from '../FastImage';
+import { defaultColors } from 'assets/theme';
 import { ResizeMode } from 'react-native-fast-image';
 import { makeStyles } from '../../theme';
 
@@ -15,12 +16,14 @@ export interface CommonAvatarProps {
   svgName?: IconName;
   imageUrl?: string;
   shapeType?: 'square' | 'circular';
-  style?: any;
+  style?: ViewStyle & TextStyle;
   color?: string;
   resizeMode?: ResizeMode;
   width?: number | string;
   height?: number | string;
   preserveAspectRatio?: string;
+  titleStyle?: TextStyle;
+  borderStyle?: ViewStyle;
 }
 
 export default function CommonAvatar(props: CommonAvatarProps) {
@@ -37,6 +40,8 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     width,
     height,
     preserveAspectRatio,
+    titleStyle: titleStyleProp,
+    borderStyle: borderStyleProp,
   } = props;
 
   const [loadError, setLoadError] = useState(false);
@@ -47,10 +52,28 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     () => ({
       width: width || Number(avatarSize),
       height: height || Number(avatarSize),
-      lineHeight: hasBorder ? Number(avatarSize) - pTd(2) : Number(avatarSize),
-      borderRadius: shapeType === 'square' ? pTd(6) : Number(avatarSize) / 2,
+      borderRadius: shapeType === 'square' ? 4 : Number(avatarSize) / 2,
     }),
-    [avatarSize, hasBorder, height, shapeType, width],
+    [avatarSize, height, shapeType, width],
+  );
+
+  const titleStyle = useMemo(
+    () => ({
+      fontSize: style.fontSize || pTd(20),
+      color: color || style.color || defaultColors.font5,
+      lineHeight: style.lineHeight,
+      ...titleStyleProp,
+    }),
+    [color, style.color, style.fontSize, style.lineHeight, titleStyleProp],
+  );
+
+  const borderStyle = useMemo(
+    () => ({
+      borderWidth: pTd(1),
+      borderColor: defaultColors.border1,
+      ...borderStyleProp,
+    }),
+    [borderStyleProp],
   );
 
   // when change url ,reset loading error state
@@ -84,7 +107,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     ) : (
       <FastImage
         resizeMode={resizeMode}
-        style={[styles.avatarWrap, shapeType === 'square' && styles.squareStyle, sizeStyle, style]}
+        style={[styles.avatarWrap, shapeType === 'square' && styles.squareStyle, sizeStyle, style as any]}
         onError={() => setLoadError(true)}
         source={{
           uri: imageUrl,
@@ -94,16 +117,16 @@ export default function CommonAvatar(props: CommonAvatarProps) {
   }
 
   return (
-    <Text
+    <View
       style={[
         styles.avatarWrap,
         shapeType === 'square' && styles.squareStyle,
-        hasBorder && styles.hasBorder,
+        hasBorder && borderStyle,
         sizeStyle,
         style,
       ]}>
-      {initialsTitle}
-    </Text>
+      <Text style={titleStyle}>{initialsTitle}</Text>
+    </View>
   );
 }
 const useStyles = makeStyles(theme => {
@@ -112,23 +135,17 @@ const useStyles = makeStyles(theme => {
       width: pTd(48),
       height: pTd(48),
       borderRadius: pTd(48),
-      color: theme.font5,
-      backgroundColor: theme.bg4,
+      backgroundColor: defaultColors.bg6,
       display: 'flex',
-      fontSize: pTd(20),
-      lineHeight: '100%',
       overflow: 'hidden',
-      textAlign: 'center',
-    },
-    hasBorder: {
-      borderWidth: pTd(1),
-      borderColor: theme.border1,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     squareStyle: {
       borderRadius: pTd(6),
-      backgroundColor: theme.bg7,
+      backgroundColor: defaultColors.bg7,
       borderWidth: 0,
-      color: theme.font7,
+      color: defaultColors.font7,
     },
   };
 });

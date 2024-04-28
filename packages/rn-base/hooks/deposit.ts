@@ -12,6 +12,7 @@ import { getUrlObj } from '@portkey-wallet/utils/dapp/browser';
 import { IconName } from '@portkey-wallet/rn-components/components/Svg';
 import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import { useAppRampEntryShow } from './ramp';
+import Environment from '@portkey-wallet/rn-inject';
 
 export type DepositItem = {
   title: string;
@@ -122,6 +123,9 @@ export function useDepositList() {
     const list = [];
     if (isBuySectionShow) list.push(DepositMap.buy);
     if (isSellSectionShow) list.push(DepositMap.sell);
+    if (Environment.isSDK()) {
+      return list;
+    }
     if (isETransDepositShow)
       list.push({
         ...DepositMap.depositUSDT,

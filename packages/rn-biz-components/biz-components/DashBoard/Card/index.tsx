@@ -5,7 +5,7 @@ import { styles } from './style';
 import SendButton from '@portkey-wallet/rn-components/components/SendButton';
 import ReceiveButton from '@portkey-wallet/rn-components/components/ReceiveButton';
 import ActivityButton from '../ActivityButton';
-
+import { pTd } from '@portkey-wallet/rn-base/utils/unit';
 import { TextM } from '@portkey-wallet/rn-components/components/CommonText';
 import navigationService from '@portkey-wallet/rn-inject-sdk';
 import { defaultColors } from '@portkey-wallet/rn-base/assets/theme';
@@ -19,12 +19,12 @@ import DepositButton from '@portkey-wallet/rn-components/components/DepositButto
 import { DepositItem, useDepositList } from '@portkey-wallet/rn-base/hooks/deposit';
 import Touchable from '@portkey-wallet/rn-components/components/Touchable';
 import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
+import CustomHeader from '@portkey-wallet/rn-components/components/CustomHeader';
 
 const Card: React.FC = () => {
   const isMainnet = useIsMainnet();
   const userInfo = useCurrentUserInfo();
   const accountBalanceUSD = useAccountBalanceUSD();
-  const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const depositList = useDepositList();
   const isDepositShow = useMemo(() => !!depositList.length, [depositList.length]);
   const buttonCount = useMemo(() => {
@@ -44,21 +44,29 @@ const Card: React.FC = () => {
     [buttonCount],
   );
 
+  const qrScanPermissionAndToast = useQrScanPermissionAndToast();
+
+  const RightDom = useMemo(
+    () => (
+      <Touchable
+        style={styles.svgWrap}
+        onPress={async () => {
+          if (!(await qrScanPermissionAndToast())) return;
+          navigationService.navigate('QrScanner');
+        }}>
+        <Svg icon="scan" size={pTd(22)} color={defaultColors.bg31} />
+      </Touchable>
+    ),
+    [qrScanPermissionAndToast],
+  );
   return (
     <View style={[styles.cardWrap]}>
-      <View style={styles.refreshWrap}>
-        <Text style={styles.block} />
-        <Touchable
-          style={styles.svgWrap}
-          onPress={async () => {
-            if (!(await qrScanPermissionAndToast())) return;
-            navigationService.navigate('QrScanner');
-          }}>
-          <Svg icon="scan" size={22} color={defaultColors.font2} />
-        </Touchable>
+      <CustomHeader noLeftDom rightDom={RightDom} themeType="white" titleDom={''} />
+
+      <View style={styles.textColumn}>
+        <TextM style={styles.accountName}>{userInfo?.nickName}</TextM>
+        <Text style={styles.usdtBalance}>{isMainnet ? formatAmountUSDShow(accountBalanceUSD) : 'Dev Mode'}</Text>
       </View>
-      <Text style={styles.usdtBalance}>{isMainnet ? formatAmountUSDShow(accountBalanceUSD) : 'Dev Mode'}</Text>
-      <TextM style={styles.accountName}>{userInfo?.nickName}</TextM>
       <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.buttonGroupWrap, buttonGroupWrapStyle]}>
         {isDepositShow && <DepositButton wrapStyle={buttonWrapStyle} list={depositList as DepositItem[]} />}
         <SendButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />

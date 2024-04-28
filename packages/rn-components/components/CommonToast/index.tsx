@@ -67,9 +67,7 @@ const icons: any = {
   success: <Svg icon="success" size={pTd(22)} />,
   fail: <Svg icon="fail" size={pTd(22)} />,
   warning: <Svg icon="warning" size={pTd(22)} />,
-  loading: (
-    <Lottie source={require('../../image/lottieFiles/loading.json')} style={{ height: pTd(22) }} autoPlay loop />
-  ),
+  loading: <Lottie source={require('../../lottieFiles/loading.json')} style={{ height: pTd(22) }} autoPlay loop />,
 } as const;
 
 const show = (...args: TostProps) => {

@@ -183,8 +183,8 @@ export const useSideChainTokenReceiveTipSetting = () => {
   const dispatch = useAppCommonDispatch();
 
   const showSideChainTokenReceiveTip = useMemo(
-    () => !miscState.sideChainTokenReceiveTipMap?.[currentNetworkInfo.networkType],
-    [currentNetworkInfo.networkType, miscState.sideChainTokenReceiveTipMap],
+    () => !miscState?.sideChainTokenReceiveTipMap?.[currentNetworkInfo.networkType],
+    [currentNetworkInfo.networkType, miscState?.sideChainTokenReceiveTipMap],
   );
 
   const setSideChainTokenReceiveTip = useCallback(

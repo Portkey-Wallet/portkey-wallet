@@ -28,7 +28,7 @@ const DepositButton = (props: DepositButtonPropsType) => {
           OverlayModal.hide();
           DepositOverlay.show({ list });
         }}>
-        <Svg icon="depositMain" size={pTd(46)} />
+        <Svg icon="depositMain" size={pTd(48)} />
       </Touchable>
       <TextM style={[commonButtonStyle.commonTitleStyle, commonButtonStyle.dashBoardTitleColorStyle]}>
         {t('Deposit')}

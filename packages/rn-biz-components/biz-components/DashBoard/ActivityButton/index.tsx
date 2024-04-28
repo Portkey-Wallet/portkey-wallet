@@ -35,7 +35,7 @@ const ActivityButton = (props: ActivityButtonProps) => {
         onPress={() => {
           return navigationService.navigate('ActivityListPage');
         }}>
-        <Svg icon={'activity'} size={pTd(46)} />
+        <Svg icon={'activity'} size={pTd(48)} />
       </Touchable>
       <TextM style={[commonButtonStyle.commonTitleStyle, buttonTitleStyle]}>{t('Activity')}</TextM>
     </View>

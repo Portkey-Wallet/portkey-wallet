@@ -16,14 +16,22 @@ import Initializer from './Initializer';
 // let persistStoreSuccess = false;
 type HigherOrderComponent<T = any> = (
   WrappedComponent: React.ComponentType<T>,
-  extraProps?: { statusbarColor?: string; routerParams?: { from?: string } },
+  extraProps?: {
+    statusBarStyle?: 'default' | 'light-content' | 'dark-content';
+    statusbarColor?: string;
+    routerParams?: { from?: string };
+  },
 ) => React.ComponentType<T>;
 
 const ProviderComponent: HigherOrderComponent = (
   WrappedComponent,
-  extraProps: { statusbarColor?: string; routerParams?: { from?: string } } = {},
+  extraProps: {
+    statusBarStyle?: 'default' | 'light-content' | 'dark-content';
+    statusbarColor?: string;
+    routerParams?: { from?: string };
+  } = {},
 ) => {
-  const statusBarProps: StatusBarProps = { barStyle: 'light-content' };
+  const statusBarProps: StatusBarProps = { barStyle: extraProps?.statusBarStyle ?? 'light-content' };
   if (!isIOS) {
     statusBarProps.translucent = true;
     statusBarProps.backgroundColor = 'transparent';
@@ -33,7 +41,7 @@ const ProviderComponent: HigherOrderComponent = (
     const routerP = extraProps?.routerParams?.from
       ? { from: extraProps?.routerParams?.from, params: props }
       : defaultRouterParams;
-    console.log('routerP', routerP);
+    console.log('routerP', extraProps?.statusbarColor ?? '#5B8EF4');
     return (
       <Provider store={store}>
         <Initializer />

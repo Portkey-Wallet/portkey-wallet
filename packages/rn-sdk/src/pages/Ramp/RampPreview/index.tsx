@@ -9,7 +9,6 @@ import fonts from 'assets/theme/fonts';
 import { FontStyles } from 'assets/theme/styles';
 import CommonButton from '@portkey-wallet/rn-components/components/CommonButton';
 import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
-// import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useReceive } from '../hooks';
 // import navigationService from 'utils/navigationService';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';

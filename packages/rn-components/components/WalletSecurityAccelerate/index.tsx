@@ -3,7 +3,7 @@ import OverlayModal from '../OverlayModal';
 import { View, Keyboard, StyleSheet, Image } from 'react-native';
 import ButtonRow from '../ButtonRow';
 import { CommonButtonProps } from '../CommonButton';
-import securityWarning from '@portkey-wallet/rn-base/assets/image/pngs/securityWarning.png';
+import securityWarning from '../../image/pngs/securityWarning.png';
 import { defaultColors } from '@portkey-wallet/rn-base/assets/theme';
 import { TextM, TextXL } from '../CommonText';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';

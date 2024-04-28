@@ -12,7 +12,9 @@ import activitySlice from '@portkey-wallet/store/store-ca/activity/slice';
 import assetsSlice from '@portkey-wallet/store/store-ca/assets/slice';
 import settingsSlice from '@portkey-wallet/store/settings/slice';
 import { tokenManagementSlice } from '@portkey-wallet/store/store-ca/tokenManagement/slice';
-import userSlice from './user/slice';
+import { contactSlice } from '@portkey-wallet/store/store-ca/contact/slice';
+import { cmsSlice } from '@portkey-wallet/store/store-ca/cms/slice';
+import userSlice from '../store/user/slice';
 
 const userPersistConfig = {
   key: userSlice.name,
@@ -34,6 +36,8 @@ const rootReducer = combineReducers({
   [assetsSlice.name]: assetsSlice.reducer,
   [settingsSlice.name]: settingsSlice.reducer,
   [tokenManagementSlice.name]: tokenManagementSlice.reducer,
+  [contactSlice.name]: contactSlice.reducer,
+  [cmsSlice.name]: cmsSlice.reducer,
 });
 
 export default rootReducer;

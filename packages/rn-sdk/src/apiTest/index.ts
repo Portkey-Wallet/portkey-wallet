@@ -13,3 +13,35 @@ export async function loadCurrentNetwork() {
     store.dispatch(changeNetworkType(currentNetwork as NetworkType));
   }
 }
+
+// import Environment from '@portkey-wallet/rn-inject';
+// 写法1
+// let useCommon: () => string;
+// if (Environment.isSDK()) {
+//   useCommon = useSDK;
+// } else {
+//   useCommon = useApp;
+// }
+
+// 写法2
+// function useCommon() {
+//   return Environment.isSDK() ? useSDK() : useApp();
+// }
+
+//写法3
+// function useCommon() {
+//   const sdk = useSDK();
+//   const app = useApp();
+//   return Environment.isSDK() ? sdk : app;
+// }
+// export { useCommon };
+
+// import { useNavigation as useAppNavigation } from '@react-navigation/native';
+// import { useNavigation as useSDKNavigation } from '@portkey-wallet/rn-core/router/hook';
+
+// function useNavigation() {
+//   const sdkNavigation = useAppNavigation();
+//   const appNavigation = useSDKNavigation();
+//   return Environment.isSDK() ? sdkNavigation : appNavigation;
+// }
+// export { useNavigation };

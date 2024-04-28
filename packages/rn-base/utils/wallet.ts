@@ -3,7 +3,7 @@ import { VerificationType } from '@portkey-wallet/types/verifier';
 import { clearTimeoutInterval, setTimeoutInterval } from '@portkey-wallet/utils/interval';
 
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
-import { request } from '@portkey-wallet/rn-inject-sdk';
+import { request } from '@portkey-wallet/api/api-did';
 import socket from '@portkey-wallet/socket/socket-did';
 import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
 import { contractQueries } from '@portkey-wallet/graphql';

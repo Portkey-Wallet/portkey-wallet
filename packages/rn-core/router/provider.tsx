@@ -8,9 +8,10 @@ import { styles } from './styles';
 import { useCredentials } from '@portkey-wallet/rn-base/hooks/store';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { sleep } from '@portkey-wallet/utils';
-import navigationService, { useFocusEffect, useNavigation } from '@portkey-wallet/rn-inject-sdk';
 import { isNeedUnlockPage, mapRoute } from './map';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
+import navigationService from './navigationService';
+import { useNavigation } from './hook';
 
 const RouterProvider = ({ children, value }: { children: any; value?: RouterParams }) => {
   const hasRun = useRef(false);
@@ -54,7 +55,7 @@ function ViewStub({ children }: { children: any }) {
           }
           // wallet is available, but locked
         } else {
-          console.log('wallet!->locked', 'from', from, 'router pages', router.pages);
+          console.log('wallet!->locked', 'from', from, 'router pages', router.pages, 'credentials', credentials, 'caHash', caHash);
           // no pin, goto security lock.
           if (isNeedUnlockRoute.current || isLoginPage.current) {
             console.log('goto SecurityLock 2');

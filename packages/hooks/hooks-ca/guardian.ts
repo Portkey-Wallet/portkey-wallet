@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { request } from '@portkey-wallet/rn-inject-sdk';
+import { request } from '@portkey-wallet/api/api-did';
 import { checkHolderError } from '@portkey-wallet/utils/check';
 import { handleErrorCode, handleErrorMessage } from '@portkey-wallet/utils';
 import { useAppCASelector } from '.';

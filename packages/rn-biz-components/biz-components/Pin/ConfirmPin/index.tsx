@@ -7,7 +7,7 @@ import navigationService from '@portkey-wallet/rn-inject-sdk';
 import { useAppDispatch } from '@portkey-wallet/rn-base/store-app/hooks';
 import { changePin, createWallet } from '@portkey-wallet/store/store-ca/wallet/actions';
 import CommonToast from '@portkey-wallet/rn-components/components/CommonToast';
-import { setCredentials } from '@portkey-wallet/rn-base/store-app/user/actions';
+import { setCredentials } from '@portkey-wallet/rn-base/store/user/actions';
 import { useUser } from '@portkey-wallet/rn-base/hooks/store';
 import { setSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
 import { CAInfoType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';

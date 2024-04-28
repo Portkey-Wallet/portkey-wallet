@@ -150,11 +150,22 @@ class MainActivity : ComponentActivity() {
                                                             "devMode"
                                                         )
                                                     )
-                                                    Toast.makeText(
-                                                        this@MainActivity,
-                                                        "All data erased.",
-                                                        Toast.LENGTH_SHORT
-                                                    ).show()
+                                                    PortkeyWallet.releaseStore(this@MainActivity) { succeed, reason ->
+                                                        if (succeed) {
+                                                            Toast.makeText(
+                                                                this@MainActivity,
+                                                                "All data erased.",
+                                                                Toast.LENGTH_SHORT
+                                                            ).show()
+                                                        }else {
+                                                            Toast.makeText(
+                                                                this@MainActivity,
+                                                                reason,
+                                                                Toast.LENGTH_SHORT
+                                                            ).show()
+                                                        }
+
+                                                    }
                                                 }
                                             }
                                         }

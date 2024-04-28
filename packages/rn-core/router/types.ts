@@ -209,6 +209,7 @@ export enum PortkeyEntries {
 
   // tools and general settings
   SCAN_QR_CODE = 'scan_qr_code_entry',
+  QR_CODE_RESULT = 'qr_code_result_entry',
   SCAN_LOG_IN = 'scan_log_in_entry',
   VIEW_ON_WEBVIEW = 'view_on_webview',
 

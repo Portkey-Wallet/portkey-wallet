@@ -1,49 +1,17 @@
-// import 'react-native-get-random-values'; // if delete this import, it will cause a big bug,
-// import GuardianApprovalEntryPage from 'pages/Entries/GuardianApproval';
-// import SignInEntryPage from 'pages/Entries/SignIn';
-import SelectCountryPage from 'pages/Entries/SelectCountry';
-// import SignUpEntryPage from 'pages/Entries/SignUp';
-import VerifierDetailsEntryPage from 'pages/Entries/VerifierDetails';
+// import SelectCountryPage from 'pages/Entries/SelectCountry';
 import { PortkeyEntries, registerLaunchMode } from '@portkey-wallet/rn-core/router/types';
-import ViewOnWebView from 'pages/Activity/ViewOnWebView';
-import AccountSettings from 'pages/My/AccountSettings';
-// import ScanLogin from 'pages/Login/ScanLogin';
-// import CheckPin from 'pages/Pin/CheckPin';
-// import ConfirmPin from 'pages/Pin/ConfirmPin';
-// import SetBiometrics from 'pages/Pin/SetBiometrics';
-// import SetPin from 'pages/Pin/SetPin';
-import QrScanner from 'pages/QrScanner';
-// import GuardianHome from 'pages/GuardianManage/GuardianHome';
-import GuardianHome from '@portkey-wallet/rn-biz-components/biz-components/My/Guardian/GuardianHome';
 import { AppRegistry, ComponentProvider } from 'react-native';
-import Biometric from 'pages/My/Biometric';
-// import AddGuardian from 'pages/Guardian/GuardianManage/AddGuardian';
-import AddGuardian from '@portkey-wallet/rn-biz-components/biz-components/My/Guardian/GuardianEdit';
-import ModifyGuardian from 'pages/Guardian/GuardianManage/ModifyGuardian';
-import GuardianDetail from '@portkey-wallet/rn-biz-components/biz-components/My/Guardian/GuardianDetail';
-import ReceiveTokenPage from 'pages/Assets/ReceiveToken';
-// import AssetsHome from 'pages/Assets/Home/AssetsHome';
-import PaymentSecurityList from 'pages/My/WalletSecurity/PaymentSecurity/PaymentSecurityHome';
-import PaymentSecurityDetail from 'pages/My/WalletSecurity/PaymentSecurity/PaymentSecurityDetail';
-import PaymentSecurityEdit from 'pages/My/WalletSecurity/PaymentSecurity/PaymentSecurityEdit';
-import TokenDetail from 'pages/Token/TokenDetail';
-import NFTDetail from 'pages/NFT/NFTDetail';
 import { wrapEntry } from 'utils/commonUtil';
-import ActivityListPage from 'pages/Activity/ActivityListPage';
-import ActivityDetail from 'pages/Activity/ActivityDetail';
-import ContactDetail from 'pages/My/Contacts/ContactDetail';
-import ContactActivity from 'pages/My/Contacts/ContactActivity';
 import TestEntry from 'apiTest/TestEntry';
 import { PortkeyTestEntries } from 'apiTest';
-import SendHome from 'pages/Send/SendHome';
-import SendPreview from 'pages/Send/SendPreview';
-import RampHome from 'pages/Ramp/RampHome';
 import ReduxProvider from './ReduxProvider';
 import React from 'react';
-import RampPreview from 'pages/Ramp/RampPreview';
-import ManageTokenList from 'pages/Token/ManageTokenList';
-import CustomToken from 'pages/Token/CustomToken';
 import TestComp from 'apiTest/TestComp';
+import Biometric from 'pages/My/Biometric';
+import AccountSettings from 'pages/My/AccountSettings';
+import GuardianHome from '@portkey-wallet/rn-biz-components/biz-components/My/Guardian/GuardianHome';
+import AddGuardian from '@portkey-wallet/rn-biz-components/biz-components/My/Guardian/GuardianEdit';
+import GuardianDetail from '@portkey-wallet/rn-biz-components/biz-components/My/Guardian/GuardianDetail';
 import LogInPortKey from '@portkey-wallet/rn-biz-components/biz-components/Login/LoginPortkey';
 import SignupPortkey from '@portkey-wallet/rn-biz-components/biz-components/Login/SignupPortkey';
 import ScanLogin from '@portkey-wallet/rn-biz-components/biz-components/Login/ScanLogin';
@@ -55,6 +23,24 @@ import GuardianApproval from '@portkey-wallet/rn-biz-components/biz-components/G
 import VerifierDetails from '@portkey-wallet/rn-biz-components/biz-components/Guardian/VerifierDetails';
 import DashBoard from '@portkey-wallet/rn-biz-components/biz-components/DashBoard';
 import SecurityLock from '@portkey-wallet/rn-biz-components/biz-components/SecurityLock';
+import Receive from '@portkey-wallet/rn-biz-components/biz-components/Receive';
+import ActivityListPage from '@portkey-wallet/rn-biz-components/biz-components/Activity/ActivityListPage';
+import ActivityDetail from '@portkey-wallet/rn-biz-components/biz-components/Activity/ActivityDetail';
+import ViewOnWebView from '@portkey-wallet/rn-biz-components/biz-components/Activity/ViewOnWebView';
+import SendHome from '@portkey-wallet/rn-biz-components/biz-components/Send/SendHome';
+import SendPreview from '@portkey-wallet/rn-biz-components/biz-components/Send/SendPreview';
+import ManageTokenList from '@portkey-wallet/rn-biz-components/biz-components/Token/ManageTokenList';
+import CustomToken from '@portkey-wallet/rn-biz-components/biz-components/Token/CustomToken';
+import TokenDetail from '@portkey-wallet/rn-biz-components/biz-components/Token/TokenDetail';
+import NFTDetail from '@portkey-wallet/rn-biz-components/biz-components/NFT/NFTDetail';
+import RampHome from '@portkey-wallet/rn-biz-components/biz-components/Ramp/RampHome';
+import RampPreview from '@portkey-wallet/rn-biz-components/biz-components/Ramp/RampPreview';
+import PaymentSecurityList from '@portkey-wallet/rn-biz-components/biz-components/WalletSecurity/PaymentSecurity/index';
+import PaymentSecurityDetail from '@portkey-wallet/rn-biz-components/biz-components/WalletSecurity/PaymentSecurity/PaymentSecurityDetail';
+import PaymentSecurityEdit from '@portkey-wallet/rn-biz-components/biz-components/WalletSecurity/PaymentSecurity/PaymentSecurityEdit';
+import ContactActivity from '@portkey-wallet/rn-biz-components/biz-components/My/ContactActivity';
+import QrScanner from '@portkey-wallet/rn-biz-components/biz-components/QrCode/QrScanner';
+import QrCodeResult from '@portkey-wallet/rn-biz-components/biz-components/QrCode/QrCodeResult';
 import EndPointChange from 'apiTest/EndPointChange';
 
 type AcceptableComponentType = ComponentProvider;
@@ -74,7 +60,6 @@ const initEntries = () => {
     }),
   );
   // entry stage
-  // entryConfig.set(PortkeyEntries.SIGN_IN_ENTRY, () => ReduxProvider(SignInEntryPage as React.ComponentType<any>));
   entryConfig.set(PortkeyEntries.SIGN_IN_ENTRY, () =>
     ReduxProvider(LogInPortKey as React.ComponentType<any>, {
       routerParams: {
@@ -89,10 +74,9 @@ const initEntries = () => {
       },
     }),
   );
-  entryConfig.set(PortkeyEntries.SELECT_COUNTRY_ENTRY, () => SelectCountryPage);
+  // entryConfig.set(PortkeyEntries.SELECT_COUNTRY_ENTRY, () => SelectCountryPage);
 
   // verify stage VerifierDetails
-  // entryConfig.set(PortkeyEntries.VERIFIER_DETAIL_ENTRY, () => VerifierDetailsEntryPage);
   entryConfig.set(PortkeyEntries.VERIFIER_DETAIL_ENTRY, () =>
     ReduxProvider(VerifierDetails as React.ComponentType<any>, {
       routerParams: {
@@ -150,8 +134,20 @@ const initEntries = () => {
   );
 
   // scan QR code
-  entryConfig.set(PortkeyEntries.SCAN_QR_CODE, () => QrScanner);
-  // entryConfig.set(PortkeyEntries.SCAN_LOG_IN, () => ScanLogin);
+  entryConfig.set(PortkeyEntries.SCAN_QR_CODE, () =>
+    ReduxProvider(QrScanner as React.ComponentType<any>, {
+      routerParams: {
+        from: PortkeyEntries.SCAN_QR_CODE,
+      },
+    }),
+  );
+  entryConfig.set(PortkeyEntries.QR_CODE_RESULT, () =>
+    ReduxProvider(QrCodeResult as React.ComponentType<any>, {
+      routerParams: {
+        from: PortkeyEntries.QR_CODE_RESULT,
+      },
+    }),
+  );
   entryConfig.set(PortkeyEntries.SCAN_LOG_IN, () =>
     ReduxProvider(ScanLogin as React.ComponentType<any>, {
       routerParams: {
@@ -176,11 +172,13 @@ const initEntries = () => {
       routerParams: { from: PortkeyEntries.ADD_GUARDIAN_ENTRY },
     }),
   );
-  entryConfig.set(PortkeyEntries.MODIFY_GUARDIAN_ENTRY, () => ModifyGuardian);
 
   // webview
-  entryConfig.set(PortkeyEntries.VIEW_ON_WEBVIEW, () => ViewOnWebView);
-
+  entryConfig.set(PortkeyEntries.VIEW_ON_WEBVIEW, () =>
+    ReduxProvider(ViewOnWebView as React.ComponentType<any>, {
+      routerParams: { from: PortkeyEntries.VIEW_ON_WEBVIEW },
+    }),
+  );
   // account setting
   entryConfig.set(PortkeyEntries.ACCOUNT_SETTING_ENTRY, () =>
     ReduxProvider(AccountSettings, {
@@ -197,55 +195,125 @@ const initEntries = () => {
     }),
   );
   // assets module
-  // entryConfig.set(PortkeyEntries.ASSETS_HOME_ENTRY, () => ReduxProvider(AssetsHome as React.ComponentType<any>));
   entryConfig.set(PortkeyEntries.ASSETS_HOME_ENTRY, () =>
     ReduxProvider(DashBoard, {
+      statusBarStyle: 'dark-content',
       routerParams: {
         from: PortkeyEntries.ASSETS_HOME_ENTRY,
       },
     }),
   );
-  entryConfig.set(PortkeyEntries.RECEIVE_TOKEN_ENTRY, () => ReceiveTokenPage);
-  entryConfig.set(PortkeyEntries.ACTIVITY_LIST_ENTRY, () => ActivityListPage);
-  entryConfig.set(PortkeyEntries.ACTIVITY_DETAIL_ENTRY, () => ActivityDetail);
-  entryConfig.set(PortkeyEntries.TOKEN_MANAGE_LIST_ENTRY, () =>
-    ReduxProvider(ManageTokenList as React.ComponentType<any>),
+  entryConfig.set(PortkeyEntries.RECEIVE_TOKEN_ENTRY, () =>
+    ReduxProvider(Receive, {
+      routerParams: {
+        from: PortkeyEntries.RECEIVE_TOKEN_ENTRY,
+      },
+    }),
   );
-  entryConfig.set(PortkeyEntries.TOKEN_MANAGE_ADD_ENTRY, () => ReduxProvider(CustomToken as React.ComponentType<any>));
-
+  entryConfig.set(PortkeyEntries.ACTIVITY_LIST_ENTRY, () =>
+    ReduxProvider(ActivityListPage, {
+      routerParams: {
+        from: PortkeyEntries.ACTIVITY_LIST_ENTRY,
+      },
+    }),
+  );
+  entryConfig.set(PortkeyEntries.ACTIVITY_DETAIL_ENTRY, () =>
+    ReduxProvider(ActivityDetail, {
+      routerParams: {
+        from: PortkeyEntries.ACTIVITY_DETAIL_ENTRY,
+      },
+    }),
+  );
+  entryConfig.set(PortkeyEntries.TOKEN_MANAGE_LIST_ENTRY, () =>
+    ReduxProvider(ManageTokenList, {
+      routerParams: {
+        from: PortkeyEntries.TOKEN_MANAGE_LIST_ENTRY,
+      },
+    }),
+  );
+  entryConfig.set(PortkeyEntries.TOKEN_MANAGE_ADD_ENTRY, () =>
+    ReduxProvider(CustomToken, {
+      routerParams: {
+        from: PortkeyEntries.TOKEN_MANAGE_ADD_ENTRY,
+      },
+    }),
+  );
   // send service
-  entryConfig.set(PortkeyEntries.SEND_TOKEN_HOME_ENTRY, () => SendHome);
-  entryConfig.set(PortkeyEntries.SEND_TOKEN_CONFIRM_ENTRY, () => SendPreview);
-
+  entryConfig.set(PortkeyEntries.SEND_TOKEN_HOME_ENTRY, () =>
+    ReduxProvider(SendHome, {
+      routerParams: {
+        from: PortkeyEntries.SEND_TOKEN_HOME_ENTRY,
+      },
+    }),
+  );
+  entryConfig.set(PortkeyEntries.SEND_TOKEN_CONFIRM_ENTRY, () =>
+    ReduxProvider(SendPreview, {
+      routerParams: {
+        from: PortkeyEntries.SEND_TOKEN_CONFIRM_ENTRY,
+      },
+    }),
+  );
   // payment security module
-  entryConfig.set(PortkeyEntries.PAYMENT_SECURITY_HOME_ENTRY, () => PaymentSecurityList);
-  entryConfig.set(PortkeyEntries.PAYMENT_SECURITY_DETAIL_ENTRY, () => PaymentSecurityDetail);
-  entryConfig.set(PortkeyEntries.PAYMENT_SECURITY_EDIT_ENTRY, () => PaymentSecurityEdit);
+  entryConfig.set(PortkeyEntries.PAYMENT_SECURITY_HOME_ENTRY, () =>
+    ReduxProvider(PaymentSecurityList, {
+      routerParams: {
+        from: PortkeyEntries.PAYMENT_SECURITY_HOME_ENTRY,
+      },
+    }),
+  );
+  entryConfig.set(PortkeyEntries.PAYMENT_SECURITY_DETAIL_ENTRY, () =>
+    ReduxProvider(PaymentSecurityDetail, {
+      routerParams: {
+        from: PortkeyEntries.PAYMENT_SECURITY_DETAIL_ENTRY,
+      },
+    }),
+  );
+  entryConfig.set(PortkeyEntries.PAYMENT_SECURITY_EDIT_ENTRY, () =>
+    ReduxProvider(PaymentSecurityEdit, {
+      routerParams: {
+        from: PortkeyEntries.PAYMENT_SECURITY_EDIT_ENTRY,
+      },
+    }),
+  );
 
-  entryConfig.set(PortkeyEntries.TOKEN_DETAIL_ENTRY, () => TokenDetail);
-  entryConfig.set(PortkeyEntries.NFT_DETAIL_ENTRY, () => NFTDetail);
-
-  entryConfig.set(PortkeyEntries.CONTACT_DETAIL_ENTRY, () => ContactDetail);
-  entryConfig.set(PortkeyEntries.CONTACT_ACTIVITY_ENTRY, () => ContactActivity);
-
-  entryConfig.set(PortkeyEntries.RAMP_HOME_ENTRY, () => ReduxProvider(RampHome as React.ComponentType<any>));
-  entryConfig.set(PortkeyEntries.RAMP_PREVIEW_ENTRY, () => ReduxProvider(RampPreview as React.ComponentType<any>));
-
+  entryConfig.set(PortkeyEntries.TOKEN_DETAIL_ENTRY, () =>
+    ReduxProvider(TokenDetail, {
+      routerParams: {
+        from: PortkeyEntries.TOKEN_DETAIL_ENTRY,
+      },
+    }),
+  );
+  entryConfig.set(PortkeyEntries.NFT_DETAIL_ENTRY, () =>
+    ReduxProvider(NFTDetail, {
+      routerParams: {
+        from: PortkeyEntries.NFT_DETAIL_ENTRY,
+      },
+    }),
+  );
+  entryConfig.set(PortkeyEntries.CONTACT_ACTIVITY_ENTRY, () =>
+    ReduxProvider(ContactActivity, {
+      routerParams: {
+        from: PortkeyEntries.CONTACT_ACTIVITY_ENTRY,
+      },
+    }),
+  );
+  entryConfig.set(PortkeyEntries.RAMP_HOME_ENTRY, () =>
+    ReduxProvider(RampHome, {
+      routerParams: {
+        from: PortkeyEntries.RAMP_HOME_ENTRY,
+      },
+    }),
+  );
+  entryConfig.set(PortkeyEntries.RAMP_PREVIEW_ENTRY, () =>
+    ReduxProvider(RampPreview, {
+      routerParams: {
+        from: PortkeyEntries.RAMP_PREVIEW_ENTRY,
+      },
+    }),
+  );
   for (const [key, value] of entryConfig) {
     AppRegistry.registerComponent(wrapEntry(key), value);
   }
   registerLaunchMode();
 };
-// export enum LaunchMode {
-//   STANDARD = 'standard',
-//   SINGLE_TASK = 'single_task',
-//   SINGLE_TOP = 'single_top',
-// }
-// export const LaunchModeSet = new Map<string, string>();
-// const registerLaunchMode = () => {
-//   LaunchModeSet.set(PortkeyEntries.ACCOUNT_SETTING_ENTRY, LaunchMode.SINGLE_TASK);
-//   LaunchModeSet.set(PortkeyEntries.PAYMENT_SECURITY_HOME_ENTRY, LaunchMode.SINGLE_TASK);
-//   LaunchModeSet.set(PortkeyEntries.ASSETS_HOME_ENTRY, LaunchMode.SINGLE_TASK);
-//   LaunchModeSet.set(PortkeyEntries.RAMP_HOME_ENTRY, LaunchMode.SINGLE_TASK);
-// };
 export { initEntries };

@@ -17,9 +17,9 @@ import {
   handleAelfQrCode,
   handlePortkeyQRCodeData,
   invalidQRCode,
-} from '@portkey-wallet/rn-base/utils/qrcode';
+} from '../utils/qrcode';
 import { useNavigation } from '@portkey-wallet/rn-inject-sdk';
-import { parseLinkPortkeyUrl } from '@portkey-wallet/rn-base/utils/scheme';
+import { parseLinkPortkeyUrl } from '../utils/scheme';
 import ActionSheet from '@portkey-wallet/rn-components/components/ActionSheet';
 import { useLanguage } from 'i18n/hooks';
 import { useJoinGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';

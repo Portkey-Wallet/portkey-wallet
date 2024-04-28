@@ -8,6 +8,11 @@
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
+  "workspaces": {
+    "nohoist": [
+      "@shopify/flash-list"
+    ]
+  },
   "files": [
     "dist",
     "!dist/apiTest/**/*",
@@ -111,6 +116,7 @@
     "redux-flipper": "^2.0.2",
     "redux-persist": "^6.0.0",
     "reflect-metadata": "^0.1.9",
+    "recyclerlistview": "4.2.0",
     "@shopify/flash-list": "^1.4.0",
     "rn-teaset": "0.1.2-alpha.1",
     "rn-minimizer": "1.0.0",
@@ -126,6 +132,7 @@
     "@portkey-wallet/rn-inject-sdk": "1.0.0",
     "@portkey-wallet/rn-inject": "1.0.0",
     "@portkey-wallet/rn-biz-components": "1.0.0",
+    "react-native-device-info": "^10.11.0",
     "web3-utils": "^1.8.0"
   },
   "scripts": {

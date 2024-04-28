@@ -6,8 +6,8 @@ import CommonAvatar from '../CommonAvatar';
 import Touchable from '../Touchable';
 import { makeStyles } from '../../theme';
 import GStyles from '../../theme/GStyles';
-import nftBadge from '@portkey-wallet/rn-base/assets/image/pngs/nftBadge.png';
-import tokenBadge from '@portkey-wallet/rn-base/assets/image/pngs/tokenBadge.png';
+import nftBadge from '../../image/pngs/nftBadge.png';
+import tokenBadge from '../../image/pngs/tokenBadge.png';
 import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
 import { FontStyles } from '../../theme/styles';
 

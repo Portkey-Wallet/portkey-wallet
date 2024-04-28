@@ -65,28 +65,37 @@ export function useRouterParams<T extends object>() {
   console.log('stateParamsstateParamsstateParams2', stateParams);
   return stateParams || ({} as T);
 }
-
+export function useRouterEffectParams<T extends object>() {
+  const { params } = useContext(RouterContext);
+  return params || ({} as T);
+}
 export function useIsFocused(): boolean {
   const navigation = useNavigation();
   const [isFocused, setIsFocused] = useState(navigation.isFocused());
-
-  const valueToReturn = navigation.isFocused();
-  if (isFocused !== valueToReturn) {
-    // If the value has changed since the last render, we need to update it.
-    // This could happen if we missed an update from the event listeners during re-render.
-    // React will process this update immediately, so the old subscription value won't be committed.
-    // It is still nice to avoid returning a mismatched value though, so let's override the return value.
-    // This is the same logic as in https://github.com/facebook/react/tree/master/packages/use-subscription
-    setIsFocused(valueToReturn);
-  }
+  const { from } = useContext(RouterContext);
+  // const valueToReturn = navigation.isFocused();
+  // if (isFocused !== valueToReturn) {
+  //   // If the value has changed since the last render, we need to update it.
+  //   // This could happen if we missed an update from the event listeners during re-render.
+  //   // React will process this update immediately, so the old subscription value won't be committed.
+  //   // It is still nice to avoid returning a mismatched value though, so let's override the return value.
+  //   // This is the same logic as in https://github.com/facebook/react/tree/master/packages/use-subscription
+  //   setIsFocused(valueToReturn);
+  // }
 
   useEffect(() => {
     const unsubscribeFocus = navigation.addListener('focus', () => {
       setIsFocused(true);
+      if (from === PortkeyEntries.SCAN_QR_CODE) {
+        console.log('wfs test', from, 'focus');
+      }
     });
 
     const unsubscribeBlur = navigation.addListener('blur', () => {
       setIsFocused(false);
+      if (from === PortkeyEntries.SCAN_QR_CODE) {
+        console.log('wfs test', from, 'blur');
+      }
     });
 
     return () => {
@@ -97,7 +106,7 @@ export function useIsFocused(): boolean {
 
   // React.useDebugValue(valueToReturn);
 
-  return valueToReturn;
+  return isFocused;
 }
 
 export function useFocusEffect(effect: EffectCallback) {
@@ -191,4 +200,7 @@ export function useFocusEffect(effect: EffectCallback) {
     };
   }, [effect, navigation]);
 }
-export const useRoute = useRouterParams;
+export const useRoute = <T>() => {
+  const route = useContext(RouterContext);
+  return route as T;
+};

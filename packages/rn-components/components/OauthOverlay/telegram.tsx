@@ -1,20 +1,20 @@
 import React, { useCallback, useRef, useState } from 'react';
-import OverlayModal from '@portkey-wallet/rn-components/components/OverlayModal';
+import OverlayModal from '../OverlayModal';
 import { Keyboard, View } from 'react-native';
-import { ModalBody } from '@portkey-wallet/rn-components/components/ModalBody';
+import { ModalBody } from '../ModalBody';
 import WebView from 'react-native-webview';
 import Lottie from 'lottie-react-native';
-import { pTd } from '@portkey-wallet/rn-components/utils/unit';
+import { pTd } from '@portkey-wallet/rn-base/utils/unit';
 import { StyleSheet } from 'react-native';
-import GStyles from '@portkey-wallet/rn-components/theme/GStyles';
-import { BGStyles } from '@portkey-wallet/rn-components/theme/styles';
+import GStyles from '../../theme/GStyles';
+import { BGStyles } from '../../theme/styles';
 import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
 import { parseUrl } from 'query-string';
 import { parseTelegramToken } from '@portkey-wallet/utils/authentication';
 import { OpenLogin } from '@portkey-wallet/constants/constants-ca/network';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
-import { TelegramAuthentication } from '@portkey-wallet/rn-base/hooks/authentication';
+import { TelegramAuthentication } from '@portkey-wallet/rn-base/types/authentication';
 import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
 import { WebViewMessageEvent } from 'react-native-webview';
 import {

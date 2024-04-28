@@ -1,12 +1,11 @@
 import { LaunchMode, LaunchModeSet } from './types';
 import { NativeModules } from 'react-native';
-import { COMMON_RESULT_DATA, COMMON_ROUTER_FROM } from './context';
+import { COMMON_ROUTER_FROM } from './context';
 import { wrapEntry } from 'utils/commonUtil';
 import { EntryResult } from 'service/native-modules';
 import { PortkeyEntries } from './types';
 import { mapRoute, AppRouteName } from './map';
 import { Stack } from './stack';
-import navigationService from '@portkey-wallet/rn-inject-sdk';
 const ThrottleMap: { [key: string]: number } = {};
 interface Router {
   navigate(target: string, params: any): void;
@@ -78,10 +77,10 @@ class RNSDKRouter implements Router {
     console.log('page route', 'from', from, 'reset to', name);
   }
 
-  navigate(target: string, params: any) {
+  async navigate(target: string, params: any) {
     const sdkRouteName = mapRoute(target as AppRouteName);
     router.listenersFunc()[params.from]?.['blur'].forEach(item => item());
-    NativeModules.RouterModule.navigateTo(
+    await NativeModules.RouterModule.navigateTo(
       wrapEntry(sdkRouteName),
       LaunchModeSet.get(sdkRouteName) || LaunchMode.STANDARD,
       params?.from ?? 'ThirdParty',
@@ -108,16 +107,16 @@ class RNSDKRouter implements Router {
     );
     console.log('page route', 'from', params.from, 'navigateByResult to', target);
   }
-  popRoute(count: number) {
-    let currentRouteName = navigationService.getCurrentRouteName() as PortkeyEntries;
-    while (count > 0) {
-      console.log('popRoute currentRouteName is:', currentRouteName);
-      currentRouteName = this.back(COMMON_RESULT_DATA, {
-        from: currentRouteName ?? COMMON_ROUTER_FROM,
-      }) as PortkeyEntries;
-      count--;
-    }
-  }
+  // popRoute(count: number) {
+  //   let currentRouteName = navigationService.getCurrentRouteName() as PortkeyEntries;
+  //   while (count > 0) {
+  //     console.log('popRoute currentRouteName is:', currentRouteName);
+  //     currentRouteName = this.back(COMMON_RESULT_DATA, {
+  //       from: currentRouteName ?? COMMON_ROUTER_FROM,
+  //     }) as PortkeyEntries;
+  //     count--;
+  //   }
+  // }
 
   push(item: Route) {
     if (this.singleTask_push(item)) {
@@ -172,3 +171,6 @@ class RNSDKRouter implements Router {
 }
 const router = new RNSDKRouter();
 export default router;
+export type RouteProp<T> = T;
+// export declare type RouteProp<ParamList extends ParamListBase, RouteName extends keyof ParamList = Keyof<ParamList>> = Route<Extract<RouteName, string>, ParamList[RouteName]>;
+export type ParamListBase = Record<string, object | undefined>;

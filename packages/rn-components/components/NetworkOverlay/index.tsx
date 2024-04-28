@@ -8,7 +8,7 @@ import Svg from '../Svg';
 import { pTd } from '../../utils/unit';
 import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
 import { useChangeNetwork } from '@portkey-wallet/rn-base/hooks/network';
-import { ParamListBase, RouteProp } from '@react-navigation/native';
+import { ParamListBase, RouteProp } from '@portkey-wallet/rn-inject-sdk';
 import { ModalBody } from '../ModalBody';
 import { BorderStyles } from '../../theme/styles';
 

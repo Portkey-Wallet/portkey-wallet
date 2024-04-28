@@ -108,7 +108,7 @@ function AuthLogin({ loginData, domain, extraData: websiteInfo }: AuthLoginOverl
       <View style={[styles.topSection, GStyles.itemCenter]}>
         <View style={GStyles.flexRow}>
           <Image
-            source={require('@portkey-wallet/rn-base/assets/image/pngs/portkeyBlueBackground.png')}
+            source={require('../../image/pngs/portkeyBlueBackground.png')}
             style={[styles.baseImage, styles.portkeyImg]}
           />
           <ThirdAuthImage domain={domain} websiteIcon={websiteInfo.websiteIcon} style={styles.baseImage} />

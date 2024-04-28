@@ -5,13 +5,13 @@ import { useCallback } from 'react';
 import navigationService from '@portkey-wallet/rn-inject-sdk';
 import { useCurrentWallet, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { checkSecuritySafe } from '@portkey-wallet/rn-base/utils/security';
+import { checkSecuritySafe } from '../utils/security';
 import { useGetTokenViewContract } from './contract';
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { MAX_TRANSACTION_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
 import { ApprovalType } from '@portkey-wallet/types/verifier';
-import { NavigateMultiLevelParams } from '@portkey-wallet/rn-base/types/navigate';
+import { NavigateMultiLevelParams } from '../types/navigate';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 
 type CheckTransferLimitWithJumpParams = CheckTransferLimitParams & {

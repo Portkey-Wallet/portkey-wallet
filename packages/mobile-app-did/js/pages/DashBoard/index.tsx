@@ -63,33 +63,38 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
     return isMainnet ? formatAmountUSDShow(accountBalanceUSD) : 'Dev Mode';
   }, [isMainnet, accountBalanceUSD]);
 
+  const titleDom = useMemo(() => {
+    return (
+      <Animated.View
+        style={{
+          opacity: scrollY.interpolate({
+            inputRange: [0, pTd(60), pTd(80)],
+            outputRange: [0, 0, 1],
+          }),
+        }}>
+        <TextL numberOfLines={1} style={styles.title}>
+          {title}
+        </TextL>
+      </Animated.View>
+    );
+  }, [scrollY, title]);
+
+  const rightDom = useMemo(() => {
+    return (
+      <Touchable
+        style={styles.svgWrap}
+        onPress={async () => {
+          if (!(await qrScanPermissionAndToast())) return;
+          navigationService.navigate('QrScanner');
+        }}>
+        <Svg icon="scan" size={22} color={defaultColors.font8} />
+      </Touchable>
+    );
+  }, [qrScanPermissionAndToast]);
+
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.white]}>
-      <CustomHeader
-        titleDom={
-          <Animated.View
-            style={{
-              opacity: scrollY.interpolate({
-                inputRange: [0, pTd(60), pTd(80)],
-                outputRange: [0, 0, 1],
-              }),
-            }}>
-            <TextL numberOfLines={1} style={styles.title}>
-              {title}
-            </TextL>
-          </Animated.View>
-        }
-        rightDom={
-          <Touchable
-            style={styles.svgWrap}
-            onPress={async () => {
-              if (!(await qrScanPermissionAndToast())) return;
-              navigationService.navigate('QrScanner');
-            }}>
-            <Svg icon="scan" size={22} color={defaultColors.font8} />
-          </Touchable>
-        }
-      />
+      <CustomHeader titleDom={titleDom} rightDom={rightDom} />
       <NestedScrollView>
         <NestedScrollViewHeader
           stickyHeaderBeginIndex={1}

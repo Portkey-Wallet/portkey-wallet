@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import navigationService from 'utils/navigationService';
 import { View, FlatList } from 'react-native';
-import Svg from 'components/Svg';
+// import Svg from 'components/Svg';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { TextM } from 'components/CommonText';
 import { defaultColors } from 'assets/theme';
@@ -92,7 +92,7 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
             onPress={() => {
               navigationService.navigate('ManageTokenList');
             }}>
-            <Svg icon="add-token" size={20} />
+            {/* <Svg icon="add-token" size={20} /> */}
             <TextM style={styles.addTokenText}>{t('Add Tokens')}</TextM>
           </Touchable>
         }
@@ -117,6 +117,7 @@ const styles = StyleSheet.create({
   },
   addTokenText: {
     marginLeft: pTd(8),
+    marginBottom: pTd(16),
     color: defaultColors.font4,
   },
 });

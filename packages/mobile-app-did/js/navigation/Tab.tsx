@@ -79,7 +79,7 @@ export const tabMenuTypeMap: Record<TabRouteNameEnum, IRenderTabMenuItem> = {
   },
 };
 
-export const defaultTabMenuList = Object.values(tabMenuTypeMap).filter(item => !!item);
+export const defaultTabMenuList = Object.values(tabMenuTypeMap).filter(item => item.isDefault);
 
 export default function TabRoot() {
   const { t } = useLanguage();
@@ -94,8 +94,6 @@ export default function TabRoot() {
   const logOut = useLogOut();
 
   const tabMenuList = useMemo(() => {
-    return defaultTabMenuList;
-
     const _tabMenuListStore = tabMenuListStore.reduce((acc: typeof tabMenuListStore, cur) => {
       if (!acc.find(item => item.type.value === cur.type.value)) {
         acc.push(cur);

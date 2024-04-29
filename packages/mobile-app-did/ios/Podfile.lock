@@ -741,6 +741,8 @@ PODS:
     - React-Core
   - RNLocalize (2.2.4):
     - React-Core
+  - RNNestedScrollView (0.14.0):
+    - React-Core
   - RNNotifee (5.7.0):
     - React-Core
     - RNNotifee/NotifeeCore (= 5.7.0)
@@ -932,6 +934,7 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - "RNGoogleSignin (from `../node_modules/@react-native-google-signin/google-signin`)"
   - RNLocalize (from `../node_modules/react-native-localize`)
+  - "RNNestedScrollView (from `../../../node_modules/@sdcx/nested-scroll`)"
   - "RNNotifee (from `../node_modules/@notifee/react-native`)"
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
@@ -1177,6 +1180,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-google-signin/google-signin"
   RNLocalize:
     :path: "../node_modules/react-native-localize"
+  RNNestedScrollView:
+    :path: "../../../node_modules/@sdcx/nested-scroll"
   RNNotifee:
     :path: "../node_modules/@notifee/react-native"
   RNPermissions:
@@ -1332,6 +1337,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
   RNGoogleSignin: 81521697b2c8f97f9a586ac7257b1a1d9b51b115
   RNLocalize: 0df7970cfc60389f00eb62fd7c097dc75af3fb4f
+  RNNestedScrollView: b9a2ac8588c89dd671d571b1184a0af007e1bea3
   RNNotifee: 5155e0a5e0a97d0c839030d8192783cd63053999
   RNPermissions: 4e3714e18afe7141d000beae3755e5b5fb2f5e05
   RNReanimated: c6f8f70e96dd6ca21b65aef9b3e4efe4965db905

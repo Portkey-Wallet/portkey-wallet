@@ -13,7 +13,7 @@ import Loading from 'components/Loading';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import CommonToast from 'components/CommonToast';
 import useLogOut from 'hooks/useLogOut';
-import { removeManager } from 'utils/guardian';
+import { removeManager } from '@portkey-wallet/utils/guardian';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import { useAppDispatch } from 'store/hooks';
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';

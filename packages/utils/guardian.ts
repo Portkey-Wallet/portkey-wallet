@@ -5,6 +5,8 @@ import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { VerifierItem } from '@portkey-wallet/types/verifier';
 import BigNumber from 'bignumber.js';
 import { handleErrorMessage } from '.';
+import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import { SendOptions } from '@portkey-wallet/contracts/types';
 
 const APPROVAL_COUNT = ZERO.plus(3).div(5);
 export function getApprovalCount(length: number) {
@@ -52,4 +54,19 @@ export function checkIsLastLoginAccount(guardiansList: UserGuardianItem[], guard
 export function checkVerifierIsInvalidCode(error: any) {
   const text = handleErrorMessage(error);
   return !!text?.includes('Invalid code');
+}
+
+export function removeManager(contract: ContractBasic, address: string, caHash: string, sendOptions?: SendOptions) {
+  return contract?.callSendMethod(
+    'RemoveManagerInfo',
+    address,
+    {
+      caHash,
+      managerInfo: {
+        address,
+        extraData: Date.now(),
+      },
+    },
+    sendOptions,
+  );
 }

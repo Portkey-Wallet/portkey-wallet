@@ -59,6 +59,8 @@ import AllowanceApprove from 'pages/AllowanceApprove';
 import WalletSecurityApprove from 'pages/WalletSecurityApprove';
 import ChatPrivacy from 'pages/AccountSetting/ChatPrivacy';
 import ChatPrivacyEdit from 'pages/AccountSetting/ChatPrivacyEdit';
+import AccountCancelation from 'pages/Wallet/AccountCancelation';
+import VerifyAccountCancelation from 'pages/Wallet/VerifyAccountCancelation';
 
 export const PageRouter = () => {
   const { isNotLessThan768 } = useCommonState();
@@ -212,6 +214,14 @@ export const PageRouter = () => {
             {
               path: '/setting/wallet/wallet-name',
               element: <WalletName />,
+            },
+            {
+              path: '/setting/wallet/account-cancelation',
+              element: <AccountCancelation />,
+            },
+            {
+              path: '/setting/wallet/account-cancelation-code',
+              element: <VerifyAccountCancelation />,
             },
             {
               path: '/setting/wallet/auto-lock',
@@ -390,6 +400,14 @@ export const PageRouter = () => {
     {
       path: '/setting/wallet/wallet-name',
       element: <WalletName />,
+    },
+    {
+      path: '/setting/wallet/account-cancelation',
+      element: <AccountCancelation />,
+    },
+    {
+      path: '/setting/wallet/account-cancelation-code',
+      element: <VerifyAccountCancelation />,
     },
     {
       path: '/setting/wallet/auto-lock',

@@ -5,6 +5,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
+import fonts from 'assets/theme/fonts';
 
 export interface TabItemTypes {
   name: string;
@@ -77,7 +78,8 @@ const CustomizedTopTabBar = ({
             disabled={isFocused}
             key={label}
             style={[toolBarStyle.label, { paddingRight: index !== state.routes.length - 1 ? pTd(32) : 0 }]}>
-            <View style={isFocused ? { borderBottomColor: defaultColors.primaryColor, borderBottomWidth: pTd(2) } : {}}>
+            <View
+              style={isFocused ? { borderBottomColor: defaultColors.primaryColor, borderBottomWidth: pTd(2.5) } : {}}>
               <Text
                 style={[
                   toolBarStyle.labelText,
@@ -125,7 +127,7 @@ const toolBarStyle = StyleSheet.create({
   labelText: {
     fontSize: pTd(16),
     lineHeight: pTd(24),
-    fontWeight: '600',
     paddingVertical: pTd(8),
+    ...fonts.mediumFont,
   },
 });

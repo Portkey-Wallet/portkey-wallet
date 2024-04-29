@@ -8,12 +8,12 @@ import { getFcmMessageNetwork } from 'utils/FCM';
 import ActionSheet from 'components/ActionSheet';
 import { useLanguage } from 'i18n/hooks';
 import { useJumpToChatDetails, useJumpToChatGroupDetails } from './chat';
-import myEvents from 'utils/deviceEvent';
-import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import { useCurrentNetwork, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ChannelTypeEnum } from '@portkey-wallet/im';
 import { useChangeNetwork } from './network';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import { TabRouteNameEnum } from 'types/navigate';
+import navigationService from 'utils/navigationService';
 
 export const useNotifyAction = () => {
   const jumpToChatGroupDetails = useJumpToChatGroupDetails();
@@ -25,13 +25,10 @@ export const useNotifyAction = () => {
         switch (action) {
           case NOTIFY_ACTION.openChat: {
             if (!data) return;
-
             const { channelId = '', channelType } = data;
             if (channelType === ChannelTypeEnum.GROUP) await jumpToChatGroupDetails({ channelUuid: channelId });
             if (channelType === ChannelTypeEnum.P2P) await jumpToChatDetails({ channelUuid: channelId });
-
-            myEvents.navToBottomTab.emit({ tabName: ChatTabName });
-
+            navigationService.navToBottomTab(TabRouteNameEnum.CHAT);
             break;
           }
 

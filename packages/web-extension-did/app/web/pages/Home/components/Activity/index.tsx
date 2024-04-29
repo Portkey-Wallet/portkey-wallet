@@ -8,6 +8,8 @@ import { useLoading, useUserInfo } from 'store/Provider/hooks';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { ChainId } from '@portkey-wallet/types';
+import CustomSvg from 'components/CustomSvg';
+import './index.less';
 
 export interface ActivityProps {
   appendData?: Function;
@@ -41,24 +43,20 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
   const [hasMore, setHasMore] = useState(currentActivity.data.length < currentActivity?.totalRecordCount);
   const dispatch = useAppCommonDispatch();
   const { passwordSeed } = useUserInfo();
-
+  const [initLoading, setInitLoading] = useState(false);
   const { setLoading } = useLoading();
-  const setL = useCallback(() => {
+  const setNoDataLoading = useCallback(() => {
     // When there is no transaction and fetching, show loading.
-    if (
-      typeof activity.isLoading === 'boolean' &&
-      activity.isLoading &&
-      (!currentActivity?.data?.length || currentActivity?.data?.length === 0)
-    ) {
+    if (initLoading && (!currentActivity?.data?.length || currentActivity?.data?.length === 0)) {
       setLoading(true);
     } else {
       setLoading(false);
     }
-  }, [activity.isLoading, currentActivity?.data?.length, setLoading]);
+  }, [currentActivity?.data?.length, initLoading, setLoading]);
 
   useEffect(() => {
-    setL();
-  }, [setL]);
+    setNoDataLoading();
+  }, [setNoDataLoading]);
 
   useEffect(() => {
     if (passwordSeed) {
@@ -69,15 +67,20 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
         chainId: chainId,
         symbol: symbol,
       };
-      dispatch(getActivityListAsync(params)).then((res: any) => {
-        if (res.payload) {
-          if (res.payload.data?.length + res.payload.skipCount === res.payload.totalRecordCount) {
-            setHasMore(false);
-          } else {
-            setHasMore(true);
+      setInitLoading(true);
+      dispatch(getActivityListAsync(params))
+        .then((res: any) => {
+          if (res.payload) {
+            if (res.payload.data?.length + res.payload.skipCount === res.payload.totalRecordCount) {
+              setHasMore(false);
+            } else {
+              setHasMore(true);
+            }
           }
-        }
-      });
+        })
+        .finally(() => {
+          setInitLoading(false);
+        });
     }
   }, [caAddressInfos, chainId, dispatch, passwordSeed, symbol]);
 
@@ -109,7 +112,10 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
       {currentActivity?.totalRecordCount ? (
         <ActivityList data={currentActivity.data} chainId={chainId} hasMore={hasMore} loadMore={loadMoreActivities} />
       ) : (
-        <p className="empty">{t(EmptyTipMessage.NO_TRANSACTIONS)}</p>
+        <div className="no-activity-data flex-column-center">
+          <CustomSvg type="NoActivity" />
+          {t(EmptyTipMessage.NO_TRANSACTIONS)}
+        </div>
       )}
     </div>
   );

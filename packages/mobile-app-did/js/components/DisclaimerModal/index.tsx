@@ -27,28 +27,45 @@ export type DisclaimerModalProps = {
   title: string;
   description: string;
   icon?: IconName;
+  disclaimerCheckFailCallBack?: () => void;
+  disclaimerCheckSuccessCallBack?: () => void;
 };
 
-const DisclaimerModal = ({ url, title, description, icon }: DisclaimerModalProps) => {
+const DisclaimerModal = ({
+  url,
+  title,
+  description,
+  icon,
+  disclaimerCheckSuccessCallBack,
+  tracer,
+}: DisclaimerModalProps & { tracer: ModalCloseTracer }) => {
   const { t } = useLanguage();
   const { signPrivacyPolicy } = useDisclaimer();
   const [selected, setSelected] = useState(false);
 
   const onConfirm = useCallback(async () => {
+    tracer.reportModalCloseType(ModalCloseType.CONFIRMED);
     Loading.show();
     try {
       const { origin } = getUrlObj(url);
       await signPrivacyPolicy({ policyId: EBRIDGE_DISCLAIMER_TEXT_SHARE256_POLICY_ID, origin });
       OverlayModal.hide(false);
-      navigationService.navigate('ProviderWebPage', { title, url });
+
+      disclaimerCheckSuccessCallBack
+        ? disclaimerCheckSuccessCallBack()
+        : navigationService.navigate('ProviderWebPage', { title, url, icon });
     } catch (error) {
       console.log('error', error);
     }
     Loading.hide();
-  }, [signPrivacyPolicy, title, url]);
+  }, [disclaimerCheckSuccessCallBack, icon, signPrivacyPolicy, title, tracer, url]);
+
+  const onDisposal = () => {
+    OverlayModal.hide();
+  };
 
   return (
-    <ModalBody modalBodyType="bottom" title={t('Disclaimer')}>
+    <ModalBody modalBodyType="bottom" title={t('Disclaimer')} onClose={onDisposal}>
       <View style={styles.contentWrap}>
         <View style={[GStyles.flexRow, GStyles.itemCenter]}>
           <Svg icon={icon || 'eBridgeFavIcon'} size={pTd(24)} />
@@ -78,10 +95,34 @@ const DisclaimerModal = ({ url, title, description, icon }: DisclaimerModalProps
   );
 };
 
+class ModalCloseTracer {
+  private closeModalType: ModalCloseType = ModalCloseType.CLOSED;
+
+  public reportModalCloseType = (type: ModalCloseType) => {
+    this.closeModalType = type;
+  };
+
+  public getCloseModalType = () => {
+    return this.closeModalType;
+  };
+}
+
+enum ModalCloseType {
+  CONFIRMED = 1,
+  CLOSED = 2,
+}
+
 export const showDisclaimerModal = (props: DisclaimerModalProps) => {
-  OverlayModal.show(<DisclaimerModal {...props} />, {
+  const tracer = new ModalCloseTracer();
+  OverlayModal.show(<DisclaimerModal {...props} tracer={tracer} />, {
     position: 'bottom',
     enabledNestScrollView: true,
+    onDisappearCompleted: () => {
+      if (tracer.getCloseModalType() === ModalCloseType.CLOSED) {
+        const { disclaimerCheckFailCallBack } = props;
+        disclaimerCheckFailCallBack?.();
+      }
+    },
   });
 };
 

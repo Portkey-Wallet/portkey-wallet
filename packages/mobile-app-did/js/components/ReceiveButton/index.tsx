@@ -30,7 +30,8 @@ export default function ReceiveButton(props: SendButtonType) {
   );
 
   return (
-    <View style={[commonButtonStyle.buttonWrap, wrapStyle]}>
+    // eslint-disable-next-line react-native/no-inline-styles
+    <View style={[commonButtonStyle.buttonWrap, wrapStyle, themeType === 'dashBoard' ? { marginBottom: pTd(32) } : {}]}>
       <Touchable
         style={[commonButtonStyle.iconWrapStyle, GStyles.alignCenter]}
         onPress={() => {

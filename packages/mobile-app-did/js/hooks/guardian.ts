@@ -1,11 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useAppDispatch } from 'store/hooks';
 import { useGetCurrentCAViewContract } from './contract';
-import {
-  setGuardianListAction,
-  setGuardiansAction,
-  setVerifierListAction,
-} from '@portkey-wallet/store/store-ca/guardians/actions';
+import { setGuardianListAction, setVerifierListAction } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { LoginInfo } from 'types/wallet';
 import { checkHolderError } from '@portkey-wallet/utils/check';
 import { VerifierItem } from '@portkey-wallet/types/verifier';
@@ -158,4 +154,9 @@ export const useRefreshGuardianList = (isInit = false) => {
     refreshGuardiansList,
     getVerifierServers,
   };
+};
+
+export const useGetLoginGuardianItem = () => {
+  const { userGuardiansList } = useGuardiansInfo();
+  return userGuardiansList?.find(item => item.isLoginAccount);
 };

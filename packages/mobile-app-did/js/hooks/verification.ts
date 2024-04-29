@@ -7,12 +7,13 @@ import {
   useTwitterAuthentication,
 } from './authentication';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { verification } from 'utils/api';
 import { OperationTypeEnum, VerificationType } from '@portkey-wallet/types/verifier';
 import { useGuardiansInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
 import navigationService from 'utils/navigationService';
 import { parseTwitterToken } from '@portkey-wallet/utils/authentication';
+import { useGetLoginGuardianItem } from './guardian';
 
 export const useGetCurrentLoginAccountVerifyFunc = () => {
   const { appleSign } = useAppleAuthentication();
@@ -22,7 +23,7 @@ export const useGetCurrentLoginAccountVerifyFunc = () => {
   const { facebookSign } = useFacebookAuthentication();
   const originChainId = useOriginChainId();
   const { userGuardiansList } = useGuardiansInfo();
-  const guardianType = useMemo(() => userGuardiansList?.[0].guardianType, [userGuardiansList]);
+  const { guardianType } = useGetLoginGuardianItem() || {};
 
   const emailSign = useCallback(async () => {
     const req = await verification.sendVerificationCode({

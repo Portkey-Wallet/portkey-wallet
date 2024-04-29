@@ -13,13 +13,12 @@ import Svg from 'components/Svg';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import useEffectOnce from 'hooks/useEffectOnce';
 import useLogOut from 'hooks/useLogOut';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import { View } from 'react-native';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 import { useGetCurrentLoginAccountVerifyFunc } from 'hooks/verification';
-import { useGuardiansInfo } from 'hooks/store';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import {
   getSocialLoginAccountToken,
@@ -33,6 +32,7 @@ import {
   ACCOUNT_CANCELATION_WARNING,
 } from '@portkey-wallet/constants/constants-ca/wallet';
 import { CONTACT_PRIVACY_TYPE_LABEL_MAP } from '@portkey-wallet/constants/constants-ca/contact';
+import { useGetLoginGuardianItem } from 'hooks/guardian';
 
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['blue', 'gray'];
 
@@ -43,8 +43,8 @@ export default function AccountCancelation() {
   const getCurrentCAContract = useGetCurrentCAContract();
   const currentLoginAccountVerifyFunc = useGetCurrentLoginAccountVerifyFunc();
   const logout = useLogOut();
-  const { userGuardiansList } = useGuardiansInfo();
-  const guardianItem = useMemo(() => userGuardiansList?.[0], [userGuardiansList]);
+  const guardianItem = useGetLoginGuardianItem();
+
   const { guardianType, verifier, guardianAccount } = guardianItem || {};
 
   const originChainId = useOriginChainId();

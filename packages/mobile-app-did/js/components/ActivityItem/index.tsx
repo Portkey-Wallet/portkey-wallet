@@ -17,6 +17,7 @@ import dayjs from 'dayjs';
 import { FontStyles } from 'assets/theme/styles';
 import NFTAvatar from 'components/NFTAvatar';
 import GStyles from 'assets/theme/GStyles';
+import fonts from 'assets/theme/fonts';
 
 interface ActivityItemPropsType {
   preItem?: ActivityItemType;
@@ -109,7 +110,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
           )}
 
           <View style={[itemStyle.center, item?.isSystem && itemStyle.systemCenter]}>
-            <Text style={itemStyle.centerType}>{item?.transactionName}</Text>
+            <Text style={[itemStyle.centerType, fonts.mediumFont]}>{item?.transactionName}</Text>
             {!item?.isSystem && (
               <>
                 {AddressDom}
@@ -186,7 +187,6 @@ const itemStyle = StyleSheet.create({
     color: defaultColors.font5,
     fontSize: pTd(16),
     lineHeight: pTd(24),
-    fontWeight: '900',
   },
   centerStatus: {
     color: defaultColors.font11,

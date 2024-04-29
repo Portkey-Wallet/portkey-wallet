@@ -91,7 +91,7 @@ export const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg1,
   },
   subTitle: {
-    fontSize: pTd(10),
+    fontSize: pTd(12),
   },
   buttonWrapStyle1: {
     marginHorizontal: pTd(16),

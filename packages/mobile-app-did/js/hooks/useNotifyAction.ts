@@ -25,12 +25,9 @@ export const useNotifyAction = () => {
         switch (action) {
           case NOTIFY_ACTION.openChat: {
             if (!data) return;
-
             const { channelId = '', channelType } = data;
             if (channelType === ChannelTypeEnum.GROUP) await jumpToChatGroupDetails({ channelUuid: channelId });
             if (channelType === ChannelTypeEnum.P2P) await jumpToChatDetails({ channelUuid: channelId });
-
-            // TODO: check it
             navigationService.navToBottomTab(TabRouteNameEnum.CHAT);
             break;
           }

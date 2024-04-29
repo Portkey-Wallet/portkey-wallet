@@ -15,21 +15,26 @@ import {
   setCheckManagerExceed,
   setManagerInfo,
   setOriginChainId,
-  setUserInfoAction,
-  setWalletNameAction,
+  setNickNameAndAvatarAction,
+  resetCurrentUserInfoAction,
   updateCASyncState,
 } from './actions';
-import { WalletError, WalletState } from './type';
+import { UserInfoType, WalletError, WalletState } from './type';
 import { changeEncryptStr } from '../../wallet/utils';
+
+export const DEFAULT_USER_INFO: UserInfoType = {
+  nickName: '',
+  userId: '',
+  avatar: '',
+};
 
 const initialState: WalletState = {
   walletAvatar: `master${(Math.floor(Math.random() * 10000) % 6) + 1}`, // to be scrapped, please use userInfo.avatar
   walletType: 'aelf',
-  walletName: '',
-  userId: '',
   currentNetwork: 'MAINNET',
   chainList: [],
-  userInfo: { avatar: '', nickName: '', userId: '' },
+  chainInfo: {},
+  userInfo: {},
 };
 export const walletSlice = createSlice({
   name: 'wallet',
@@ -113,21 +118,36 @@ export const walletSlice = createSlice({
         state.walletInfo.caInfo = { ...state.walletInfo.caInfo, [currentNetwork]: caInfo };
       })
       .addCase(getCaHolderInfoAsync.fulfilled, (state, action) => {
-        if (action.payload) {
-          state.walletName = action.payload.nickName;
-          state.userId = action.payload.userId;
+        const { nickName, userId, avatar, currentNetwork = 'MAINNET' } = action.payload || {};
 
-          state.userInfo = action.payload;
+        if (nickName && userId) {
+          state.userInfo = {
+            ...state.userInfo,
+            [currentNetwork]: {
+              nickName,
+              userId,
+              avatar,
+            },
+          };
         }
       })
-      .addCase(setWalletNameAction, (state, action) => {
-        state.walletName = action.payload;
+      .addCase(setNickNameAndAvatarAction, (state, action) => {
+        const { avatar, nickName, networkType = 'MAINNET' } = action.payload;
+        state.userInfo = {
+          ...(state.userInfo || {}),
+          [networkType]: {
+            ...(state?.userInfo?.[networkType] || {}),
+            nickName,
+            avatar,
+          },
+        };
       })
-      .addCase(setUserInfoAction, (state, action) => {
-        // adjust walletName before
-        state.walletName = action.payload.nickName || '';
-
-        state.userInfo = { userId: '', nickName: '', ...state.userInfo, ...action.payload };
+      .addCase(resetCurrentUserInfoAction, (state, action) => {
+        const networkType = action.payload;
+        state.userInfo = {
+          ...(state.userInfo || {}),
+          [networkType]: DEFAULT_USER_INFO,
+        };
       })
       .addCase(setOriginChainId, (state, action) => {
         state.originChainId = action.payload;

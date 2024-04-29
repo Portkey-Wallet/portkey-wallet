@@ -21,7 +21,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow: auto;
 
     .single-account {
       text-align: center;
@@ -42,17 +41,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      .icon {
+      .token-icon {
         margin-bottom: 9px;
-      }
-      .custom-svg {
-        width: 32px;
-        height: 32px;
-        margin-bottom: 9px;
-        svg {
-          width: 32px;
-          height: 32px;
-        }
       }
       .symbol {
         line-height: 20px;
@@ -99,6 +89,7 @@
 
     .receive-tip {
       padding: 24px;
+      background: @bg-11;
 
       .info-icon {
         width: 16px;

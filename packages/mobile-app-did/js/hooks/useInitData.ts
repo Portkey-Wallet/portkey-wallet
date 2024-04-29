@@ -6,7 +6,7 @@ import { useAppDispatch } from 'store/hooks';
 import { useGetCurrentCAViewContract } from './contract';
 import { useRefreshGuardianList } from './guardian';
 import useEffectOnce from './useEffectOnce';
-import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { reportUserCurrentNetwork } from 'utils/analysisiReport';
 import { useCheckAndInitNetworkDiscoverMap } from './discover';
 import { usePin } from './store';
@@ -24,7 +24,7 @@ export default function useInitData() {
   const pin = usePin();
   const getCurrentCAViewContract = useGetCurrentCAViewContract();
   const wallet = useCurrentWalletInfo();
-  const { networkType } = useCurrentNetwork();
+  const { networkType } = useCurrentNetworkInfo();
 
   useCheckAndInitNetworkDiscoverMap();
   useGetRedPackageConfig(true, true);

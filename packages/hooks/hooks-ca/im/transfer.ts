@@ -7,7 +7,7 @@ import { handleLoopFetch } from '@portkey-wallet/utils';
 import { useRelationId } from '.';
 import { TransferStatusEnum } from '@portkey-wallet/im/types';
 import { messageParser } from '@portkey-wallet/im/utils';
-import { useCurrentWalletInfo, useWallet } from '../wallet';
+import { useCurrentUserInfo, useCurrentWalletInfo } from '../wallet';
 import { useAppCommonDispatch } from '../../index';
 import { addChannelMessage, updateChannelAttribute } from '@portkey-wallet/store/store-ca/im/actions';
 import { useCurrentNetworkInfo } from '../network';
@@ -33,7 +33,7 @@ export interface ISendIMTransferParams {
 export const useSendIMTransfer = () => {
   const { relationId, getRelationId } = useRelationId();
   const { networkType } = useCurrentNetworkInfo();
-  const { userInfo } = useWallet();
+  const userInfo = useCurrentUserInfo();
   const wallet = useCurrentWalletInfo();
   const dispatch = useAppCommonDispatch();
 
@@ -84,8 +84,8 @@ export const useSendIMTransfer = () => {
         link: '',
         data: {
           id: '',
-          senderId: userInfo.userId,
-          senderName: userInfo.nickName,
+          senderId: userInfo?.userId,
+          senderName: userInfo?.nickName,
           memo,
           transactionId: '',
           blockHash: '',

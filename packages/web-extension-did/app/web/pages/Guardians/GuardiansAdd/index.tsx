@@ -21,7 +21,7 @@ import { verification } from 'utils/api';
 import PhoneInput from '../components/PhoneInput';
 import { EmailError } from '@portkey-wallet/utils/check';
 import { guardianTypeList, phoneInit, socialInit } from 'constants/guardians';
-import { IPhoneInput, ISocialInput } from 'types/guardians';
+import { IGuardianType, IPhoneInput, ISocialInput } from 'types/guardians';
 import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
 import {
   getGoogleUserInfo,
@@ -55,6 +55,8 @@ import {
   TVerifierAccountLocationState,
 } from 'types/router';
 import BaseGuardianTypeIcon from 'components/BaseGuardianTypeIcon';
+import { useLoginModeList } from 'hooks/loginModal';
+import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
 import './index.less';
 
 export default function AddGuardian() {
@@ -90,6 +92,12 @@ export default function AddGuardian() {
     () => locationParams?.accelerateChainId || originChainId,
     [locationParams?.accelerateChainId, originChainId],
   );
+  const loginModeList = useLoginModeList();
+  const selectGuardianList = useMemo(() => {
+    return loginModeList
+      ?.map((i) => guardianTypeList.find((v) => LOGIN_TYPE_LABEL_MAP[v.value] === i.type?.value))
+      .filter((i) => !!i) as IGuardianType[];
+  }, [loginModeList]);
 
   const disabled = useMemo(() => {
     let check = true;
@@ -146,7 +154,7 @@ export default function AddGuardian() {
 
   const guardianTypeOptions = useMemo(
     () =>
-      guardianTypeList?.map((item) => ({
+      (selectGuardianList.length ? selectGuardianList : guardianTypeList)?.map((item) => ({
         value: item.value,
         children: (
           <div className="flex select-option">
@@ -155,7 +163,7 @@ export default function AddGuardian() {
           </div>
         ),
       })),
-    [],
+    [selectGuardianList],
   );
 
   const isPhoneType = useMemo(() => guardianType === LoginType.Phone, [guardianType]);

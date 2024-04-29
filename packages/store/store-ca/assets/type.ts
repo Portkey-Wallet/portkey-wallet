@@ -1,5 +1,6 @@
-import { ChainId } from '@portkey-wallet/types';
-import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
+import { ChainId, NetworkType } from '@portkey-wallet/types';
+import { NFTCollectionItemShowType, SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
+import { IAccountCryptoBoxAssetItem, TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 
 export interface ITokenInfoType {
   balance: string;
@@ -36,3 +37,64 @@ export enum AddressCheckError {
   recipientAddressIsInvalid = 'Recipient address is invalid',
   equalIsValid = 'The sender and recipient address are identical',
 }
+
+export type TAccountTokenInfo = {
+  skipCount: number;
+  maxResultCount: number;
+  accountTokenList: TokenItemShowType[];
+  totalRecordCount: number;
+};
+
+export type TAccountNFTInfo = {
+  skipCount: number;
+  maxResultCount: number;
+  accountNFTList: NFTCollectionItemShowType[];
+  totalRecordCount: number;
+};
+
+export type TAccountAssetsInfo = {
+  skipCount: number;
+  maxResultCount: number;
+  accountAssetsList: IAssetItemType[];
+  totalRecordCount: number;
+};
+
+// asset = token + nft
+export type TAssetsState = {
+  accountToken: TAccountTokenInfo & {
+    isFetching: boolean;
+    accountTokenInfo?: {
+      [key in NetworkType]?: TAccountTokenInfo;
+    };
+  };
+  accountNFT: TAccountNFTInfo & {
+    isFetching: boolean;
+    accountNFTInfo?: {
+      [key in NetworkType]?: TAccountNFTInfo;
+    };
+  };
+  tokenPrices: {
+    isFetching: boolean;
+    tokenPriceObject: {
+      [symbol: string]: number | string;
+    };
+  };
+  accountAssets: TAccountAssetsInfo & {
+    isFetching: boolean;
+    accountAssetsInfo?: {
+      [key in NetworkType]?: TAccountAssetsInfo;
+    };
+  };
+  accountBalance: {
+    accountBalanceInfo?: {
+      [key in NetworkType]?: string;
+    };
+  };
+  accountCryptoBoxAssets: {
+    isFetching: boolean;
+    skipCount: number;
+    maxResultCount: number;
+    accountAssetsList: IAccountCryptoBoxAssetItem[];
+    totalRecordCount: number;
+  };
+};

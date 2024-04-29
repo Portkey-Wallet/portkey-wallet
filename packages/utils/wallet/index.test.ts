@@ -14,7 +14,7 @@ import { AccountNameErrorMessage, PasswordErrorMessage, PinErrorMessage, WalletN
 import aes from '../aes';
 import AElf from 'aelf-sdk';
 import { isExtension } from '@portkey-wallet/utils';
-import { DefaultBIP44Path } from '@portkey-wallet/constants/wallet';
+import { DEFAULT_BIP44PATH } from '@portkey-wallet/constants/wallet';
 import { isValidPassword, isValidPin, isValidWalletName } from '@portkey-wallet/utils/reg';
 
 declare module 'aelf-sdk';
@@ -149,7 +149,7 @@ describe('formatAccountInfo', () => {
 describe('getAccountByMnemonic', () => {
   const AESEncryptMnemonic = 'AESEncryptMnemonic',
     password = '11111111',
-    BIP44Path = DefaultBIP44Path;
+    BIP44Path = DEFAULT_BIP44PATH;
   test('Valid input', () => {
     aes.decrypt = jest.fn().mockReturnValue(true);
     (AElf as any).wallet.getWalletByMnemonic = jest.fn();
@@ -171,7 +171,7 @@ describe('getAccountByMnemonic', () => {
 describe('getAccountByPrivateKey', () => {
   beforeEach(() => {
     (AElf as any).wallet.getWalletByPrivateKey = jest.fn().mockReturnValue({
-      BIP44Path: DefaultBIP44Path,
+      BIP44Path: DEFAULT_BIP44PATH,
     });
   });
   const privateKey = '1111';
@@ -190,7 +190,7 @@ describe('getNextBIP44Path', () => {
     expect(getNextBIP44Path("m/44'/1616'/0'/0/0")).toBe("m/44'/1616'/0'/0/1");
   });
   test('The input of BIP44Path is invalid', () => {
-    expect(getNextBIP44Path("m/44'/1616'/0'/0/a")).toBe(DefaultBIP44Path);
+    expect(getNextBIP44Path("m/44'/1616'/0'/0/a")).toBe(DEFAULT_BIP44PATH);
   });
 });
 

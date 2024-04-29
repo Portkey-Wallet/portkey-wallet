@@ -13,7 +13,7 @@ export const DefaultChain: ChainItemType = {
   isFixed: true,
   nativeCurrency: {
     id: '',
-    name: 'ELF',
+    // name: 'ELF',
     symbol: 'ELF',
     decimals: 8,
     address: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',

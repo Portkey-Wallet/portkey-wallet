@@ -5,7 +5,7 @@ import { pTd } from 'utils/unit';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
 import Svg from 'components/Svg';
-import { LoginGuardianTypeIcon } from 'constants/misc';
+import { LOGIN_GUARDIAN_TYPE_ICON } from 'constants/misc';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
@@ -26,7 +26,7 @@ const GuardianAccountItem = ({ guardian }: GuardianAccountItemProps) => {
   }, [guardian]);
 
   const renderGuardianAccount = useCallback(() => {
-    if (!guardian) return <></>;
+    if (!guardian) return null;
     if (!guardian.firstName) {
       return (
         <TextM numberOfLines={AuthTypes.includes(guardian.guardianType) ? 1 : 2} style={GStyles.flex1}>
@@ -51,7 +51,7 @@ const GuardianAccountItem = ({ guardian }: GuardianAccountItemProps) => {
       {guardian && (
         <>
           <View style={[GStyles.center, styles.loginTypeIconWrap]}>
-            <Svg icon={LoginGuardianTypeIcon[guardian.guardianType]} size={pTd(16)} />
+            <Svg icon={LOGIN_GUARDIAN_TYPE_ICON[guardian.guardianType]} size={pTd(16)} />
           </View>
 
           {renderGuardianAccount()}

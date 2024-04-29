@@ -7,12 +7,11 @@ import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { ModalBody } from 'components/ModalBody';
 import { TextL, TextM, TextS } from 'components/CommonText';
-import { useCurrentCaInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentCaInfo, useCurrentUserInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
-import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import GStyles from 'assets/theme/GStyles';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
@@ -26,6 +25,7 @@ import CommonButton from 'components/CommonButton';
 import Svg from 'components/Svg';
 import { copyText } from 'utils';
 import Touchable from 'components/Touchable';
+import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 
 type MyWalletModalType = {
   tabInfo: ITabItem;
@@ -36,12 +36,10 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
   const checkDapp = useIsInCurrentDappList();
   const dispatch = useAppDispatch();
   const caInfo = useCurrentCaInfo();
-  const { userInfo, currentNetwork } = useWallet();
+  const { currentNetwork } = useWallet();
+  const userInfo = useCurrentUserInfo();
   const defaultToken = useDefaultToken();
-
-  const {
-    accountToken: { accountTokenList },
-  } = useAppCASelector(state => state.assets);
+  const { accountTokenList } = useAccountTokenInfo();
 
   const caInfoList = useMemo(() => {
     return Object.entries(caInfo || {})
@@ -91,7 +89,7 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
 
               <View>
                 <TextS>
-                  {`${formatAmountShow(divDecimals(item?.balance, item?.decimals))} ${item?.symbol || '0'}`}
+                  {`${formatTokenAmountShowWithDecimals(item?.balance, item?.decimals)} ${item?.symbol || '0'}`}
                 </TextS>
                 <TextS style={styles.itemChainInfo} />
               </View>

@@ -22,7 +22,7 @@ import {
 } from '@portkey-wallet/hooks/hooks-ca/im';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { RedPackageTypeEnum } from '@portkey-wallet/im';
-import { divDecimals, divDecimalsStr, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimalsStr, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { formatRedPacketNoneLeftTime, getNumberWithUnit, getUnit } from '../utils/format';
 import NFTAvatar from 'components/NFTAvatar';
@@ -155,6 +155,7 @@ export const RedPacketDetails = () => {
             resizeMode="cover"
             avatarSize={pTd(24)}
             style={styles.sendAvatar}
+            titleStyle={FontStyles.size14}
             title={redPacketData?.senderName}
             imageUrl={redPacketData?.senderAvatar}
           />
@@ -191,8 +192,9 @@ export const RedPacketDetails = () => {
             <RedPacketAmountShow
               assetType={redPacketData?.assetType}
               componentType="packetDetailPage"
-              amountShow={formatAmountShow(
-                divDecimals(redPacketData?.currentUserGrabbedAmount, redPacketData?.decimal),
+              amountShow={formatTokenAmountShowWithDecimals(
+                redPacketData?.currentUserGrabbedAmount,
+                redPacketData?.decimal,
               )}
               symbol={redPacketData.assetType === AssetType.ft ? redPacketData?.symbol : ''}
             />
@@ -315,7 +317,6 @@ const styles = StyleSheet.create({
   },
   sendAvatar: {
     marginRight: pTd(8),
-    fontSize: pTd(14),
   },
   memo: {
     textAlign: 'center',

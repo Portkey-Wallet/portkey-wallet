@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { changeCanLock } from 'utils/LockManager';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import navigationService from 'utils/navigationService';
 import im from '@portkey-wallet/im';
 import { GetOtherUserInfoDefaultResult } from '@portkey-wallet/im/types/service';
@@ -105,7 +105,7 @@ export const useHandleGroupId = () => {
 };
 
 export const useHandlePortkeyId = () => {
-  const { userId } = useWallet();
+  const { userId } = useCurrentUserInfo();
 
   return useCallback(
     async (params: { portkeyId: string; showLoading?: boolean; goBack?: boolean }) => {

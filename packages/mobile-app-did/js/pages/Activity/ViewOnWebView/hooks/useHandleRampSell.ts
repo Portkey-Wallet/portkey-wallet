@@ -1,13 +1,13 @@
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
-import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
-import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useTokenInfoFromStore } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import CommonToast from 'components/CommonToast';
 import Loading from 'components/Loading';
 import { usePin } from 'hooks/store';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { getManagerAccount } from 'utils/redux';
 import AElf from 'aelf-sdk';
 import SparkMD5 from 'spark-md5';
@@ -16,11 +16,9 @@ import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
 
 export const useHandleRampSell = () => {
-  const { accountToken } = useAssets();
-  const aelfToken = useMemo(
-    () => accountToken.accountTokenList.find(item => item.symbol === 'ELF' && item.chainId === 'AELF'),
-    [accountToken],
-  );
+  const defaultToken = useDefaultToken();
+  const aelfToken = useTokenInfoFromStore(defaultToken.symbol, DefaultChainId);
+
   const chainInfo = useCurrentChain(DefaultChainId);
   const pin = usePin();
   const wallet = useCurrentWalletInfo();

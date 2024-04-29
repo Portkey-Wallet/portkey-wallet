@@ -1,41 +1,32 @@
 @import '../../../assets/theme/color.less';
 
-.balance-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding-bottom: 23px;
-
-  .balance-btn {
-    display: flex;
-    gap: 48px;
-    &.popup-card-num-more-than-3 {
-      gap: 24px;
+.main-card-list-wrap {
+  gap: 48px;
+  &.popup-card-num-more-than-or-equal-5 {
+    gap: 30px;
+  }
+  .card-item {
+    gap: 4px;
+    font-size: 12px;
+    line-height: 16px;
+    color: @font-11;
+    cursor: pointer;
+    &.receive-card {
+      svg {
+        transform: rotate(180deg);
+      }
     }
-    .btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      cursor: pointer;
-      .custom-svg {
-        margin-bottom: 4px;
+    .custom-svg {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background-color: @Neutral-5;
+      &:hover {
+        background-color: @Neutral-4;
       }
-      .deposit-icon,
-      .withdraw-icon {
-        svg {
-          width: 37px;
-          height: 36px;
-        }
-      }
-
-      .btn-name {
-        width: 56px;
-        font-size: 14px;
-        color: @font-9;
+      svg {
+        width: 20px;
         height: 20px;
-        line-height: 20px;
-        text-align: center;
       }
     }
   }

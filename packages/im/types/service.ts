@@ -5,6 +5,7 @@ import {
   ChannelItem,
   ChannelMemberInfo,
   ChannelTypeEnum,
+  IChannelContactItem,
   Message,
   MessageCount,
   RedPackageConfigType,
@@ -89,9 +90,17 @@ export type CreateChannelResult = {
 
 export type GetChannelInfoParams = {
   channelUuid: string;
+  skipCount?: number;
+  maxResultCount?: number;
 };
 
 export type GetChannelMembersParams = GetChannelInfoParams;
+export type getCannelContactsParams = {
+  channelUuid: string;
+  skipCount?: number;
+  maxResultCount?: number;
+  keyword?: string;
+};
 
 export type SendMessageParams = {
   channelUuid?: string;
@@ -108,6 +117,16 @@ export type SendMessageResult = {
   channelUuid: string;
 };
 
+export type SearchChannelMembersParams = {
+  channelUuid?: string;
+  keyword?: string;
+  skipCount?: number;
+  maxResultCount?: number;
+  filteredMember?: string;
+};
+
+export type SearchChannelMembersResult = { members: ChannelMemberInfo[]; totalCount: number };
+
 export type ReadMessageParams = {
   channelUuid: string;
   total: number;
@@ -122,6 +141,11 @@ export type GetMessageListParams = {
 
 export type DeleteMessageParams = {
   id: string;
+};
+
+export type TDeleteMessageByGroupOwnerParams = {
+  channelUuid: string;
+  messageId: string;
 };
 
 export type TriggerMessageEvent = {
@@ -344,13 +368,28 @@ export interface IIMService {
   getUserInfoList<T = GetUserInfoDefaultResult>(params?: GetUserInfoListParams): IMServiceCommon<T[]>;
 
   createChannel(params: CreateChannelParams): IMServiceCommon<CreateChannelResult>;
-  getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<ChannelInfo>;
+  getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<
+    Omit<ChannelInfo, 'members' | 'totalCount'> & {
+      memberInfos: {
+        members: ChannelMemberInfo[];
+        totalCount: number;
+      };
+    }
+  >;
+
   getChannelMembers(params: GetChannelMembersParams): IMServiceCommon<ChannelMemberInfo[]>;
+  getChannelContacts(params: getCannelContactsParams): IMServiceCommon<{
+    contacts: IChannelContactItem[];
+    totalCount: number;
+  }>;
+
+  searchChannelMembers(params: SearchChannelMembersParams): IMServiceCommon<SearchChannelMembersResult>;
 
   sendMessage(params: SendMessageParams): IMServiceCommon<SendMessageResult>;
   readMessage(params: ReadMessageParams): IMServiceCommon<number>;
   getMessageList(params: GetMessageListParams): IMServiceCommon<Message[]>;
   deleteMessage(params: DeleteMessageParams): IMServiceCommon<null>;
+  deleteMessageByGroupOwner(params: TDeleteMessageByGroupOwnerParams): IMServiceCommon<null>;
   getUnreadCount(): IMServiceCommon<MessageCount>;
   triggerMessageEvent(params: TriggerMessageEvent): IMServiceCommon<null>;
 

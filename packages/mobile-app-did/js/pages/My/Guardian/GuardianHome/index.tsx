@@ -75,7 +75,7 @@ export default function GuardianHome() {
           </Touchable>
         ))}
       </ScrollView>
-      {!isAddAllowed && (
+      {!isAddAllowed && guardianList?.length > 0 && (
         <View style={pageStyles.warnWrap}>
           <Svg icon="warning2" size={pTd(16)} color={defaultColors.icon1} />
           <TextM style={pageStyles.warnLabelWrap}>

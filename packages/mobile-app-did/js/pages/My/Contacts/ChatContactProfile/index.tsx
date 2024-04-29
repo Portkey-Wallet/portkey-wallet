@@ -10,7 +10,6 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { defaultColors } from 'assets/theme';
 import ProfileHeaderSection from 'pages/My/components/ProfileHeaderSection';
 import ProfileHandleSection from 'pages/My/components/ProfileHandleSection';
-import ProfileIDSection from 'pages/My/components/ProfileIDSection';
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
 import im from '@portkey-wallet/im';
 import { useIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
@@ -88,8 +87,6 @@ const ContactProfile: React.FC = () => {
       checkImputationRef.current(contactInfo);
     }
   }, [checkImputationRef, contactInfo]);
-
-  const isShowPortkeyId = useMemo(() => !!contactInfo?.caHolderInfo?.userId, [contactInfo?.caHolderInfo?.userId]);
 
   const navToChatDetail = useJumpToChatDetails();
 
@@ -170,10 +167,6 @@ const ContactProfile: React.FC = () => {
               CommonToast.failError(error);
             }
           }}
-        />
-        <ProfileIDSection
-          title={isShowPortkeyId ? 'Portkey ID' : 'ID'}
-          id={isShowPortkeyId ? contactInfo?.caHolderInfo?.userId : contactInfo?.imInfo?.relationId}
         />
         <ProfileAddressSection addressList={contactInfo?.addresses || []} />
         <ProfileLoginAccountsSection list={contactInfo?.loginAccounts || []} />

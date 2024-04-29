@@ -5,6 +5,7 @@ import { useAppEOASelector } from '.';
 import AElf from 'aelf-sdk';
 import { TokenItemType } from '@portkey-wallet/types/types-eoa/token';
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';
+import { getDefaultWallet } from '@portkey-wallet/utils/aelfUtils';
 
 const bigNAN = new BigNumber('');
 
@@ -15,8 +16,7 @@ interface useBalancesProps {
   delay?: number;
 }
 
-const privateKey1 = '96ab8ea91edbd17f80049daaa92949c1ef2356f1215fbc252e044c7b0b5a3e13';
-const wallet1 = AElf.wallet.getWalletByPrivateKey(privateKey1);
+const wallet1 = getDefaultWallet();
 
 const useBalances = ({ tokens, tokenAddress, rpcUrl, delay = 10000 }: useBalancesProps): [BigNumber[], () => void] => {
   const deArr = useMemo(() => (Array.isArray(tokens) ? tokens.map(() => bigNAN) : [bigNAN]), [tokens]);

@@ -283,7 +283,8 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
                   title={selectToken.symbol}
                   shapeType={'circular'}
                   resizeMode={'contain'}
-                  style={[styles.avatar]}
+                  titleStyle={styles.avatarTitleStyle}
+                  borderStyle={GStyles.hairlineBorder}
                   avatarSize={pTd(24)}
                   // elf token icon is fixed , only use white background color
                   svgName={selectToken?.symbol === defaultToken.symbol ? 'testnet' : undefined}
@@ -405,9 +406,9 @@ const styles = StyleSheet.create({
   btnStyle: {
     marginTop: pTd(24),
   },
-  avatar: {
+  avatarTitleStyle: {
     fontSize: pTd(12),
-    backgroundColor: defaultColors.bg4,
+    color: defaultColors.font11,
   },
   borderRadius4: {
     borderRadius: pTd(4),

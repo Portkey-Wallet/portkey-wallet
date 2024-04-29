@@ -190,6 +190,8 @@ export default function GuardianApproval() {
 
   const guardianCount = useMemo(() => getApprovalCount(userGuardiansList?.length || 0), [userGuardiansList?.length]);
   const isSuccess = useMemo(() => guardianCount <= approvedList.length, [guardianCount, approvedList.length]);
+  const hasAutoConfirmed = useRef<boolean>(false);
+
   const onSetGuardianStatus = useCallback(
     (data: { key: string; status: GuardiansStatusItem }) => {
       setGuardianStatus(data.key, data.status);
@@ -210,10 +212,14 @@ export default function GuardianApproval() {
     };
   });
   const isFocused = useIsFocused();
+  const latestIsFocused = useLatestRef(isFocused);
   useEffect(() => {
-    if (isSuccess && isFocused && !isExpired) onFinish();
+    if (isSuccess && !hasAutoConfirmed.current && latestIsFocused.current && !isExpired) {
+      hasAutoConfirmed.current = true;
+      onFinish();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSuccess, isFocused, isExpired]);
+  }, [isSuccess, isExpired, latestIsFocused.current]);
   const onBack = useCallback(() => {
     lastOnEmitDapp.current();
     switch (approvalType) {
@@ -252,24 +258,6 @@ export default function GuardianApproval() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guardiansStatus, userGuardiansList]);
   const registerAccount = useCallback(() => {
-    console.log(
-      {
-        managerInfo: {
-          verificationType: VerificationType.communityRecovery,
-          loginAccount,
-          type: loginType,
-        } as ManagerInfo,
-        guardiansApproved: handleGuardiansApproved(
-          guardiansStatus as GuardiansStatus,
-          userGuardiansList as UserGuardianItem[],
-        ) as GuardiansApproved,
-        verifierInfo,
-      },
-      guardiansStatus,
-      userGuardiansList,
-      '=====registerAccount',
-    );
-
     onRequestOrSetPin({
       managerInfo: {
         verificationType: VerificationType.communityRecovery,

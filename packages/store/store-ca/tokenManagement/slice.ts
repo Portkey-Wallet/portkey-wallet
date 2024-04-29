@@ -1,13 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { TokenItemShowType, TokenState } from '@portkey-wallet/types/types-ca/token';
-import { fetchAllTokenListAsync, getSymbolImagesAsync } from './action';
+import { fetchAllTokenListAsync, getSymbolImagesAsync, resetTokenInfo } from './action';
 
-const initialState: TokenState = {
+export const INITIAL_TOKEN_INFO = {
   tokenDataShowInMarket: [],
-  isFetching: false,
   skipCount: 0,
   maxResultCount: 1000,
   totalRecordCount: 0,
+};
+
+const initialState: TokenState = {
+  ...INITIAL_TOKEN_INFO,
+  isFetching: false,
   symbolImages: {},
 };
 
@@ -29,30 +33,42 @@ export const tokenManagementSlice = createSlice({
     builder
       .addCase(fetchAllTokenListAsync.pending, state => {
         state.isFetching = true;
-        // state.status = 'loading';
       })
       .addCase(fetchAllTokenListAsync.fulfilled, (state, action) => {
-        const { list } = action.payload;
+        const { list, totalRecordCount, skipCount, maxResultCount, currentNetwork = 'MAINNET' } = action.payload;
+        const preTokenDataShowInMarket = state.tokenInfo?.[currentNetwork]?.tokenDataShowInMarket || [];
+        if (skipCount !== 0 && preTokenDataShowInMarket?.length === totalRecordCount) return;
         const tmpToken: TokenItemShowType[] = list.map(item => ({
           isAdded: item.isDisplay,
           isDefault: item.isDefault,
-          userTokenId: item.id,
-          chainId: item.token.chainId,
-          decimals: item.token.decimals,
-          address: item.token.address,
-          symbol: item.token.symbol,
-          tokenName: item.token.symbol,
-          id: item.token.id,
-          name: item.token.symbol,
-          imageUrl: item.token.imageUrl,
+          userTokenId: item?.id,
+          chainId: item.chainId,
+          decimals: item.decimals,
+          address: item.address,
+          symbol: item.symbol,
+          tokenName: item.symbol,
+          id: item?.id,
+          name: item?.symbol,
+          imageUrl: item.imageUrl,
         }));
-
-        state.tokenDataShowInMarket = tmpToken;
+        const newList = skipCount === 0 ? tmpToken : [...preTokenDataShowInMarket, ...tmpToken];
+        if (!state.tokenInfo) state.tokenInfo = {};
+        state.tokenInfo[currentNetwork] = {
+          tokenDataShowInMarket: newList,
+          totalRecordCount,
+          skipCount,
+          maxResultCount,
+          isFetching: false,
+        };
         state.isFetching = false;
       })
       .addCase(fetchAllTokenListAsync.rejected, state => {
         state.isFetching = false;
-        // state.status = 'failed';
+      })
+      .addCase(resetTokenInfo, (state, action) => {
+        const tokenInfo = state.tokenInfo;
+        if (tokenInfo?.[action.payload]) delete tokenInfo[action.payload];
+        state.tokenInfo = tokenInfo;
       })
       .addCase(getSymbolImagesAsync.fulfilled, (state, action) => {
         state.symbolImages = {

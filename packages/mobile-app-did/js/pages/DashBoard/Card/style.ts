@@ -25,6 +25,9 @@ export const styles = StyleSheet.create({
   block: {
     flex: 1,
   },
+  skeletonStyle: {
+    backgroundColor: defaultColors.bg4,
+  },
   svgWrap: {
     display: 'flex',
     flexDirection: 'row',

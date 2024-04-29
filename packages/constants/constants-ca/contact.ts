@@ -23,7 +23,7 @@ export const CONTACT_PRIVACY_TYPE_LABEL_MAP: { [key in LoginType]: string } = {
 
 export const CONTACT_PRIVACY_TYPE_LOWER_LABEL_MAP: { [key in LoginType]: string } = {
   [LoginType.Email]: 'Email',
-  [LoginType.Phone]: 'Phone number',
+  [LoginType.Phone]: 'Phone Number',
   [LoginType.Apple]: 'Apple ID',
   [LoginType.Google]: 'Google Account',
   [LoginType.Telegram]: 'Telegram Account',
@@ -44,4 +44,12 @@ export const CONTACT_PERMISSION_LIST = [
     label: CONTACT_PERMISSION_LABEL_MAP[ContactPermissionEnum.NOBODY],
     value: ContactPermissionEnum.NOBODY,
   },
+];
+
+export const SOCIAL_GUARDIAN_TYPE: LoginType[] = [
+  LoginType.Apple,
+  LoginType.Google,
+  LoginType.Telegram,
+  LoginType.Twitter,
+  LoginType.Facebook,
 ];

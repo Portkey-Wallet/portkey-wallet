@@ -177,6 +177,8 @@ export const BackEndNetWorkMap: {
     portkeyOpenLoginUrl: 'https://openlogin.portkey.finance/',
     eBridgeUrl: 'https://test.ebridge.exchange',
     eTransferUrl: 'https://test.etransfer.exchange',
+    awakenUrl: 'https://test.awaken.finance',
+    schrodingerUrl: 'https://schrodingerai.com',
   },
   'back-end-testnet': {
     name: 'aelf Testnet',
@@ -194,6 +196,8 @@ export const BackEndNetWorkMap: {
     portkeyOpenLoginUrl: 'https://openlogin.portkey.finance/',
     eBridgeUrl: 'https://test.ebridge.exchange',
     eTransferUrl: 'https://test.etransfer.exchange',
+    awakenUrl: 'https://test.awaken.finance',
+    schrodingerUrl: 'https://schrodingerai.com',
   },
   'back-end-mainnet': {
     name: 'aelf Mainnet',
@@ -218,6 +222,8 @@ export const BackEndNetWorkMap: {
     imS3Bucket: 'portkey-im',
     eBridgeUrl: 'https://ebridge.exchange',
     eTransferUrl: 'https://etransfer.exchange',
+    awakenUrl: 'https://awaken.finance',
+    schrodingerUrl: 'https://schrodingernft.ai/',
   },
   'back-end-mainnet-v2': {
     name: 'aelf Mainnet',
@@ -243,5 +249,7 @@ export const BackEndNetWorkMap: {
     imS3Bucket: 'portkey-im',
     eBridgeUrl: 'https://ebridge.exchange',
     eTransferUrl: 'https://etransfer.exchange',
+    awakenUrl: 'https://awaken.finance',
+    schrodingerUrl: 'https://schrodingernft.ai',
   },
 };

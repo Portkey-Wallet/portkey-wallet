@@ -73,7 +73,7 @@ const FaucetButton = (props: SendButtonType) => {
           if (isMainnet) return;
           claimToken();
         }}>
-        <Svg icon={themeType === 'dashBoard' ? 'faucet' : 'faucet1'} size={pTd(48)} />
+        <Svg icon={'faucet'} size={pTd(48)} />
       </Touchable>
       <TextM style={[commonButtonStyle.commonTitleStyle, buttonTitleStyle]}>{t('Faucet')}</TextM>
     </View>

@@ -2,7 +2,8 @@ import { randomId } from '@portkey-wallet/utils';
 import { CommonActions, NavigationContainerRef, StackActions } from '@react-navigation/native';
 import { RootStackParamList, TabParamList } from 'navigation';
 import merge from 'lodash/merge';
-import { NavigateMultiLevelOptions } from 'types/navigate';
+import { NavigateMultiLevelOptions, TabRouteNameEnum } from 'types/navigate';
+import myEvents from './deviceEvent';
 
 type MultiLevelParamsIds = string[];
 let TempMultiLevelParams: {
@@ -128,6 +129,10 @@ function getState() {
   return _navigator?.getState();
 }
 
+function navToBottomTab(tabName: TabRouteNameEnum) {
+  myEvents.navToBottomTab.emit({ tabName });
+}
+
 export default {
   navigateByMultiLevelParams,
   setTopLevelNavigator,
@@ -137,4 +142,5 @@ export default {
   reset,
   push,
   pop,
+  navToBottomTab,
 };

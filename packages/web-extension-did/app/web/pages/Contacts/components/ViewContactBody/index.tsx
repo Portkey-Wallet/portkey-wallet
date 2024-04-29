@@ -9,6 +9,7 @@ import { useIndexAndName, useIsMyContact } from '@portkey-wallet/hooks/hooks-ca/
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import LoginAccountList from '../LoginAccountList';
 import Avatar from 'pages/components/Avatar';
+import { useNavigate } from 'react-router';
 
 export default function ViewContactBody({
   data,
@@ -21,6 +22,7 @@ export default function ViewContactBody({
   handleChat,
   handleAdd,
 }: IProfileDetailBodyProps) {
+  const navigate = useNavigate();
   const isMyContactFn = useIsMyContact();
   const showChat = useIsChatShow();
   const relationId = useMemo(
@@ -48,6 +50,9 @@ export default function ViewContactBody({
         <div className="info-section name-section">
           <Avatar avatarUrl={data?.avatar} nameIndex={index} size="large" />
           <div className="name">{transName}</div>
+          {data?.previousPage === 'my-did' && (
+            <CustomSvg type="QRCode2" onClick={() => navigate('/setting/wallet/qrcode')} />
+          )}
 
           {/* Section - Remark */}
           {showChat && relationId && isMyContact && isShowRemark && (

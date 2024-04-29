@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
@@ -12,7 +12,6 @@ import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { defaultColors } from 'assets/theme';
-import ProfilePortkeyIDSection from 'pages/My/components/ProfileIDSection';
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
 import ProfileRemarkSection from 'pages/My/components/ProfileRemarkSection';
 import FormItem from 'components/FormItem';
@@ -37,8 +36,6 @@ const ChatContactProfileEdit: React.FC = () => {
 
   const [remark, setRemark] = useState(contact?.name || '');
   const [error, setError] = useState('');
-
-  const isShowPortkeyId = useMemo(() => !!contact?.caHolderInfo?.userId, [contact?.caHolderInfo?.userId]);
 
   const onFinish = useCallback(async () => {
     if (remark && !isValidRemark(remark)) return setError('Only a-z, A-Z, 0-9 and "_"  allowed');
@@ -105,11 +102,6 @@ const ChatContactProfileEdit: React.FC = () => {
             setError('');
             setRemark(v);
           }}
-        />
-        <ProfilePortkeyIDSection
-          disable
-          title={isShowPortkeyId ? 'Portkey ID' : 'ID'}
-          id={isShowPortkeyId ? contact?.caHolderInfo?.userId : contact?.imInfo?.relationId}
         />
         <ProfileAddressSection disable addressList={contact?.addresses} />
         <ProfileLoginAccountsSection disable list={contact?.loginAccounts || []} />

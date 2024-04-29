@@ -25,6 +25,9 @@ export const styles = StyleSheet.create({
   block: {
     flex: 1,
   },
+  skeletonStyle: {
+    backgroundColor: defaultColors.bg4,
+  },
   svgWrap: {
     display: 'flex',
     flexDirection: 'row',
@@ -45,15 +48,16 @@ export const styles = StyleSheet.create({
     ...fonts.mediumFont,
     fontSize: pTd(32),
     lineHeight: pTd(40),
+    height: pTd(40),
     color: font16,
   },
   accountName: {
     color: font11,
     opacity: 0.8,
     fontSize: pTd(14),
-    fontWeight: '400',
     lineHeight: pTd(20),
-    paddingBottom: pTd(4),
+    height: pTd(20),
+    marginBottom: pTd(4),
   },
   buttonGroupWrap: {
     marginTop: 32,

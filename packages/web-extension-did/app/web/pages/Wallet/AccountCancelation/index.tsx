@@ -12,8 +12,8 @@ import {
 } from '@portkey-wallet/utils/deleteAccount';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import CustomModal from 'pages/components/CustomModal';
-import { useCommonState, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
-import useGuardianList from 'hooks/useGuardianList';
+import { useCommonState, useLoading } from 'store/Provider/hooks';
+import useGuardianList, { useGetLoginGuardianItem } from 'hooks/useGuardianList';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { SOCIAL_GUARDIAN_TYPE } from '@portkey-wallet/constants/constants-ca/contact';
 import { ISocialLogin, LoginType } from '@portkey-wallet/types/types-ca/wallet';
@@ -40,8 +40,7 @@ export default function AccountCancelation() {
   const { caHash, address: managerAddress } = useCurrentWalletInfo();
   const { setLoading } = useLoading();
   const getGuardianList = useGuardianList();
-  const { userGuardiansList } = useGuardiansInfo();
-  const uniqueGuardian = useMemo(() => userGuardiansList?.[0], [userGuardiansList]);
+  const uniqueGuardian = useGetLoginGuardianItem();
   const uniqueGuardianType = useMemo(
     () => LoginType[uniqueGuardian?.guardianType ?? '0'],
     [uniqueGuardian?.guardianType],

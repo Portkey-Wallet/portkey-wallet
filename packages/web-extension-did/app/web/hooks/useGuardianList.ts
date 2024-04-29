@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useAppDispatch } from 'store/Provider/hooks';
 import { setGuardiansAction, setVerifierListAction } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
-import { useGetRegisterInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
+import { useGetRegisterInfo, useGuardiansInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
 import { getVerifierList } from 'utils/sandboxUtil/getVerifierList';
 import { useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { handleErrorMessage } from '@portkey-wallet/utils';
@@ -45,6 +45,11 @@ const useGuardianList = () => {
   );
 
   return fetch;
+};
+
+export const useGetLoginGuardianItem = () => {
+  const { userGuardiansList = [] } = useGuardiansInfo();
+  return userGuardiansList.find((item) => item.isLoginAccount);
 };
 
 export default useGuardianList;

@@ -27,6 +27,7 @@ export enum FromPageEnum {
   chatBoxGroup = 'chat-box-group',
   chatGroupInfo = 'chat-group-info',
   chatMemberList = 'chat-member-list',
+  accountCancelation = 'accountCancelation',
 }
 
 // Guardians
@@ -108,6 +109,13 @@ export type TVerifierAccountLocationState = {
   targetChainId?: ChainId;
   accelerateChainId?: ChainId;
   extra?: string;
+};
+
+// Account Cancelation Verify Code
+export type TVerifyAccountCancelFromPage = FromPageEnum.accountCancelation;
+export type TVerifyAccountCancelLocationState = {
+  previousPage: TVerifyAccountCancelFromPage;
+  verifierSessionId: string;
 };
 
 // SetTransferLimit

@@ -1,6 +1,7 @@
 @import '../../../../assets/theme/color.less';
 
 .wallet-name-popup {
+  position: relative;
   .nav-header {
     padding-top: 16px;
     background-color: @bg-13;
@@ -28,5 +29,16 @@
     .form-btn{
       padding: 16px;
     }
+  }
+
+  .account-cancelation {
+    position: absolute;
+    bottom: -120px;
+    width: 100%;
+    padding-bottom: 16px;
+    font-size: 14px;
+    line-height: 20px;
+    color: @font-12;
+    cursor: pointer;
   }
 }

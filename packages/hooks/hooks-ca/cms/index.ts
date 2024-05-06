@@ -261,6 +261,15 @@ export const useBridgeButtonShow = (config: IEntranceMatchValueConfig) => {
   };
 };
 
+export const useSwapButtonShow = (config: IEntranceMatchValueConfig) => {
+  const { entrance } = useEntrance(config);
+  const isSwapShow = useMemo(() => entrance?.swap, [entrance.swap]);
+
+  return {
+    isSwapShow,
+  };
+};
+
 export const useRememberMeBlackList = (isInit = false) => {
   const dispatch = useAppCommonDispatch();
   const { rememberMeBlackListMap } = useCMS();

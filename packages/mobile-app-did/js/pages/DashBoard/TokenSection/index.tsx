@@ -76,6 +76,7 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
   return (
     <View style={styles.tokenListPageWrap}>
       <FlatList
+        nestedScrollEnabled
         refreshing={false}
         data={accountTokenList || []}
         renderItem={renderItem}

@@ -1,4 +1,4 @@
-import { useETransShow, useEntrance, useBridgeButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useETransShow, useEntrance, useBridgeButtonShow, useSwapButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { IEntranceMatchValueMap } from '@portkey-wallet/types/types-ca/cms';
 import { useMemo } from 'react';
 import MatchValueMap from 'utils/matchValueMap';
@@ -23,4 +23,9 @@ export const useAppETransShow = () => {
 export const useAppBridgeButtonShow = () => {
   const config = useEntranceConfig();
   return useBridgeButtonShow(config);
+};
+
+export const useAppSwapButtonShow = () => {
+  const config = useEntranceConfig();
+  return useSwapButtonShow(config);
 };

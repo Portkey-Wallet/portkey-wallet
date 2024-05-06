@@ -39,7 +39,7 @@ import { pTd } from 'utils/unit';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
 import { ETransTokenList } from '@portkey-wallet/constants/constants-ca/dapp';
-import { useAppETransShow } from 'hooks/cms';
+import { useAppETransShow, useAppSwapButtonShow } from 'hooks/cms';
 import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import CommonAvatar from 'components/CommonAvatar';
@@ -68,12 +68,18 @@ const TokenDetail: React.FC = () => {
   const defaultToken = useDefaultToken();
   const { eTransferUrl = '', awakenUrl = 'https://awaken.finance/' } = useCurrentNetworkInfo();
   const { isETransDepositShow } = useAppETransShow();
+  const { isSwapShow } = useAppSwapButtonShow();
   const onDisclaimerModalPress = useOnDisclaimerModalPress();
   const { buy, swap, deposit } = checkEnabledFunctionalTypes(tokenInfo.symbol, tokenInfo.chainId === 'AELF');
   const { isRampShow } = useAppRampEntryShow();
   const isBuyButtonShow = useMemo(
-    () => SHOW_RAMP_SYMBOL_LIST.includes(tokenInfo.symbol) && tokenInfo.chainId === 'AELF' && isRampShow && buy,
-    [buy, isRampShow, tokenInfo.chainId, tokenInfo.symbol],
+    () =>
+      SHOW_RAMP_SYMBOL_LIST.includes(tokenInfo.symbol) &&
+      tokenInfo.chainId === 'AELF' &&
+      isRampShow &&
+      isMainnet &&
+      buy,
+    [buy, isMainnet, isRampShow, tokenInfo.chainId, tokenInfo.symbol],
   );
   const isETransToken = useMemo(() => ETransTokenList.includes(tokenInfo.symbol), [tokenInfo.symbol]);
   const isDepositShow = useMemo(
@@ -153,11 +159,11 @@ const TokenDetail: React.FC = () => {
     let count = 3;
     if (isBuyButtonShow) count++;
     if (isDepositShow) count++;
-    if (swap) count++;
+    if (isSwapShow && swap) count++;
     // FaucetButton
     if (isFaucetButtonShow) count++;
     return count;
-  }, [isBuyButtonShow, isDepositShow, isFaucetButtonShow, swap]);
+  }, [isBuyButtonShow, isDepositShow, isFaucetButtonShow, isSwapShow, swap]);
 
   const buttonGroupWrapStyle = useMemo(() => {
     if (buttonCount >= 5) {
@@ -230,9 +236,9 @@ const TokenDetail: React.FC = () => {
         <View style={[styles.buttonGroupWrap, buttonGroupWrapStyle]}>
           <SendButton themeType="innerPage" sentToken={currentTokenInfo} wrapStyle={buttonWrapStyle} />
           <ReceiveButton currentTokenInfo={currentTokenInfo} themeType="innerPage" wrapStyle={buttonWrapStyle} />
-          {buy && isMainnet && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
+          {isBuyButtonShow && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
           {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}
-          {swap && (
+          {isSwapShow && swap && (
             <CommonToolButton
               title="Swap"
               icon="swap"

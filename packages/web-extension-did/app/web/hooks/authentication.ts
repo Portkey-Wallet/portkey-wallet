@@ -9,10 +9,11 @@ import {
 } from '@portkey-wallet/utils/authentication';
 import { request } from '@portkey-wallet/api/api-did';
 import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { ISocialLogin, LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { useWalletInfo } from 'store/Provider/hooks';
 import { useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export function useVerifyGoogleToken() {
   const { currentNetwork } = useWalletInfo();
@@ -160,4 +161,36 @@ export function useVerifyToken() {
     },
     [latestVerifyManagerAddress, verifyAppleToken, verifyFacebook, verifyGoogleToken, verifyTelegram, verifyTwitter],
   );
+}
+
+export function useAuthSocialAccountInfo(type: ISocialLogin) {
+  const currentNetwork = useCurrentNetwork();
+  return useCallback(async () => {
+    const result = await socialLoginAction(type, currentNetwork);
+    let identityToken = result.data?.access_token ?? '';
+    let userInfo;
+    if (type === 'Google') {
+      userInfo = await getGoogleUserInfo(identityToken);
+    }
+    if (type === 'Apple') {
+      userInfo = parseAppleIdentityToken(identityToken) ?? {};
+    }
+    if (type === 'Telegram') {
+      userInfo = parseTelegramToken(identityToken) ?? {};
+    }
+    if (type === 'Twitter') {
+      userInfo = parseTwitterToken(identityToken) ?? {};
+    }
+    if (type === 'Facebook') {
+      userInfo = (await parseFacebookToken(identityToken)) ?? {};
+      identityToken = userInfo.accessToken;
+    }
+
+    return {
+      identityToken,
+      user: {
+        id: userInfo?.userId,
+      },
+    };
+  }, [currentNetwork, type]);
 }

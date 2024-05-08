@@ -13,6 +13,10 @@ import DepositButton from 'components/DepositButton';
 import BuyButton from 'components/BuyButton';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { useAppETransShow } from 'hooks/cms';
+import { PortkeyLinearGradient } from 'components/PortkeyLinearGradient';
+import { pTd } from 'utils/unit';
+import { Skeleton } from '@rneui/base';
+import { defaultColors } from 'assets/theme';
 
 const Card: React.FC<{ title: string }> = ({ title }) => {
   const isMainnet = useIsMainnet();
@@ -41,8 +45,28 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
   return (
     <View style={[styles.cardWrap]}>
       <View style={styles.textColumn}>
-        <TextM style={styles.accountName}>{userInfo?.nickName}</TextM>
-        <Text style={styles.usdtBalance}>{title}</Text>
+        {userInfo?.nickName ? (
+          <TextM style={styles.accountName}>{userInfo?.nickName}</TextM>
+        ) : (
+          <Skeleton
+            animation="wave"
+            LinearGradientComponent={() => <PortkeyLinearGradient />}
+            style={[styles.skeletonStyle, GStyles.marginBottom(pTd(4))]}
+            height={pTd(20)}
+            width={pTd(80)}
+          />
+        )}
+        {title ? (
+          <Text style={styles.usdtBalance}>{title}</Text>
+        ) : (
+          <Skeleton
+            animation="wave"
+            LinearGradientComponent={() => <PortkeyLinearGradient />}
+            height={pTd(40)}
+            width={pTd(140)}
+            style={styles.skeletonStyle}
+          />
+        )}
       </View>
       <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.buttonGroupWrap, buttonGroupWrapStyle]}>
         <SendButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />

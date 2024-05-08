@@ -20,7 +20,6 @@ const DappList: React.FC = () => {
       scrollViewProps={{ disabled: false }}>
       {dappList?.map(item => (
         <DappListItem
-          isShowArrow
           key={item.origin}
           item={item}
           onPress={() => navigationService.navigate('DappDetail', { origin: item.origin })}

@@ -10,6 +10,7 @@ import nftBadge from 'assets/image/pngs/nftBadge.png';
 import tokenBadge from 'assets/image/pngs/tokenBadge.png';
 import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
 import { FontStyles } from 'assets/theme/styles';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 
 export type NoDataPropsType = {
   style?: ViewStyle | ViewStyle[];
@@ -23,6 +24,8 @@ export type NoDataPropsType = {
     alias?: string;
     imageUrl: string;
     tokenId?: string;
+    balance?: string;
+    decimals?: string;
   };
   onPress?: () => void;
 };
@@ -36,7 +39,7 @@ const NFTAvatar: React.FC<NoDataPropsType> = props => {
     nftSize = pTd(98),
     isSeed = false,
     badgeSizeType = 'small',
-    data: { imageUrl, tokenId, alias },
+    data: { imageUrl, alias, balance, decimals },
     onPress,
   } = props;
 
@@ -93,7 +96,9 @@ const NFTAvatar: React.FC<NoDataPropsType> = props => {
             {alias}
           </TextM>
 
-          <TextS style={[styles.id, !!imageUrl && styles.idNoPic]}>{`# ${tokenId}`}</TextS>
+          <TextS numberOfLines={1} style={[styles.id, !!imageUrl && styles.idNoPic]}>
+            {formatTokenAmountShowWithDecimals(balance, decimals)}
+          </TextS>
           {imageUrl && <View style={styles.mask} />}
         </>
       )}

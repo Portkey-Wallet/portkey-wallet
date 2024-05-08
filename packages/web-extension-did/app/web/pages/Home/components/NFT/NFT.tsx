@@ -19,11 +19,13 @@ import { getSeedTypeTag } from 'utils/assets';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { ZERO } from '@portkey-wallet/constants/misc';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 
 export default function NFT() {
   const nav = useNavigate();
   const [openPanel, setOpenPanel] = useState<string[]>([]);
   const [nftNum, setNftNum] = useState<Record<string, number>>({});
+  const [openOp, setOpenOp] = useState<boolean>(true);
   const isMainnet = useIsMainnet();
   const { accountNFTList, totalRecordCount, fetchAccountNFTCollectionInfoList, fetchAccountNFTItem, isFetching } =
     useAccountNFTCollectionInfo();
@@ -89,11 +91,13 @@ export default function NFT() {
       openPanel.forEach((prev: string) => {
         if (!openArr.some((cur: string) => cur === prev)) {
           setNftNum((pre) => ({ ...pre, [prev]: 0 }));
+          setOpenOp(false);
         }
       });
       openArr.forEach((cur: string) => {
         if (!openPanel.some((prev: string) => cur === prev)) {
           const curTmp = cur.split('_');
+          setOpenOp(true);
           fetchAccountNFTItem({
             symbol: curTmp[0],
             chainId: curTmp[1] as ChainId,
@@ -158,13 +162,16 @@ export default function NFT() {
                       {seedTypeTag && <CustomSvg type={seedTypeTag} />}
                       <div className="mask flex-column">
                         <p className="alias">{nftItem.alias}</p>
-                        <p className="token-id">#{nftItem.tokenId}</p>
+                        <p className="token-balance">
+                          {formatTokenAmountShowWithDecimals(nftItem.balance, nftItem.decimals)}
+                        </p>
                       </div>
                     </div>
                   )
                 );
               })}
             {nft.isFetching &&
+              openOp &&
               new Array(curNFTSkeletonLength)
                 .fill('')
                 .map((_item, index) => (
@@ -183,7 +190,7 @@ export default function NFT() {
         </Collapse.Panel>
       );
     },
-    [nftNum, calSkeletonLength, maxNftNum, isMainnet, nav, getMoreNFTItem],
+    [nftNum, calSkeletonLength, maxNftNum, isMainnet, openOp, nav, getMoreNFTItem],
   );
 
   return (

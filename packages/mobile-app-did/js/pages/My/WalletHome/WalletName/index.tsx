@@ -9,6 +9,7 @@ import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import ProfileHeaderSection from 'pages/My/components/ProfileHeaderSection';
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
+import { useIsShowDeletion } from '@portkey-wallet/hooks/hooks-ca/account';
 import GStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
@@ -16,7 +17,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { windowHeight } from '@portkey-wallet/utils/mobile/device';
 import { headerHeight } from 'components/CustomHeader/style/index.style';
 import { FontStyles } from 'assets/theme/styles';
-import { useIsShowDeletion } from 'hooks/account';
+
 import { isIOS } from '@rneui/base';
 import { pTd } from 'utils/unit';
 const PageHeight = windowHeight - headerHeight;

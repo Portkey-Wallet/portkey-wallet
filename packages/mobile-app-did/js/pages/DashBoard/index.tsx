@@ -96,16 +96,18 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.white]}>
       <CustomHeader titleDom={titleDom} rightDom={rightDom} />
       <NestedScrollView>
-        <NestedScrollViewHeader
-          stickyHeaderBeginIndex={1}
-          onScroll={({ nativeEvent }) => {
-            const {
-              contentOffset: { y },
-            } = nativeEvent;
-            setScrollY(new Animated.Value(y));
-          }}>
-          <Card title={title} />
-        </NestedScrollViewHeader>
+        {React.cloneElement(
+          <NestedScrollViewHeader
+            stickyHeaderBeginIndex={1}
+            onScroll={({ nativeEvent }) => {
+              const {
+                contentOffset: { y },
+              } = nativeEvent;
+              setScrollY(new Animated.Value(y));
+            }}
+          />,
+          { children: <Card title={title} /> },
+        )}
         <DashBoardTab />
       </NestedScrollView>
     </SafeAreaBox>

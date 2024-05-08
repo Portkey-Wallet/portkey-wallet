@@ -49,7 +49,15 @@ export default function AllowanceApprove() {
   }, [getInitState]);
 
   const onFinish = useDebounceCallback(
-    async ({ amount, guardiansApproved }: { amount: string; guardiansApproved: IGuardiansApproved[] }) => {
+    async ({
+      amount,
+      guardiansApproved,
+      batchApproveToken,
+    }: {
+      amount: string;
+      guardiansApproved: IGuardiansApproved[];
+      batchApproveToken: boolean;
+    }) => {
       try {
         if (!txParams) throw Error('invalid params(txParams)');
         if (method !== ApproveMethod.token && method !== ApproveMethod.ca) throw 'Please check method';
@@ -78,7 +86,7 @@ export default function AllowanceApprove() {
         const options = {
           caHash,
           spender: txParams.params.paramsOption.spender,
-          symbol: txParams.params.paramsOption.symbol,
+          symbol: batchApproveToken ? '*' : txParams.params.paramsOption.symbol,
           amount,
           guardiansApproved,
         };
@@ -130,7 +138,7 @@ export default function AllowanceApprove() {
   }, [getTxPayload]);
 
   return (
-    <div className="common-content1">
+    <div className="manager-approve-page">
       {txParams && (
         <ManagerApproveInner
           networkType={currentNetwork}

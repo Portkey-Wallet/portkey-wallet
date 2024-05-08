@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { Keyboard, StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -38,12 +38,21 @@ const ZERO_MESSAGE = 'Please enter a nonzero value';
 const ApproveModal = (props: SignModalPropsType) => {
   const { dappInfo, approveParams, onReject } = props;
   console.log(approveParams, '====approveInfo');
-  const { decimals, amount, targetChainId } = approveParams.approveInfo;
+  const { amount, targetChainId } = approveParams.approveInfo;
   const dispatch = useAppDispatch();
   const { t } = useLanguage();
 
   const [errorMessage, setErrorMessage] = useState('');
   const [symbolNum, setSymbolNum] = useState<string>('');
+  const [isBatchApproval, setIsBatchApproval] = useState<boolean>(false);
+  const decimals = useMemo(
+    () => (isBatchApproval ? 0 : approveParams.approveInfo.decimals),
+    [approveParams.approveInfo.decimals, isBatchApproval],
+  );
+  const symbol = useMemo(
+    () => (isBatchApproval ? '*' : approveParams.approveInfo.symbol),
+    [approveParams.approveInfo.symbol, isBatchApproval],
+  );
 
   const MAX_NUM = useMemo(
     () => divDecimals(LANG_MAX, approveParams.approveInfo.decimals),
@@ -84,6 +93,8 @@ const ApproveModal = (props: SignModalPropsType) => {
               eventName: approveParams.eventName,
               approveInfo: {
                 ...approveParams.approveInfo,
+                decimals,
+                symbol,
                 amount: (LANG_MAX.lt(tmpAmount) ? LANG_MAX : tmpAmount).toFixed(0),
               },
             } as ApproveParams,
@@ -99,8 +110,10 @@ const ApproveModal = (props: SignModalPropsType) => {
       approveParams.approveInfo,
       approveParams.eventName,
       approveParams.isDiscover,
+      decimals,
       dispatch,
       onReject,
+      symbol,
       symbolNum,
       t,
       targetChainId,
@@ -147,18 +160,14 @@ const ApproveModal = (props: SignModalPropsType) => {
               GStyles.textAlignCenter,
               GStyles.marginTop(pTd(8)),
               GStyles.marginBottom(pTd(8)),
-            ]}>{`${dappInfo.name || dappInfo.origin} is requesting access to your ${
-            approveParams.approveInfo.alias || approveParams.approveInfo.symbol
-          }`}</TextL>
+            ]}>{`${dappInfo.name || dappInfo.origin} is requesting access to your Token`}</TextL>
           <TextS style={[FontStyles.font7, GStyles.textAlignCenter]}>
             {`To ensure your assets' security while interacting with the DApp, please set a token allowance for this DApp. The DApp will notify you when its allowance is used up and you can modify the settings again.`}
           </TextS>
         </View>
 
         <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.inputTitle]}>
-          <TextM style={GStyles.flex1}>{`Set Allowance (${
-            approveParams.approveInfo.alias || approveParams.approveInfo.symbol
-          })`}</TextM>
+          <TextM style={GStyles.flex1}>Set Allowance</TextM>
           <Touchable onPress={onUseRecommendedValue}>
             <TextM style={FontStyles.font4}> Use Recommended Value</TextM>
           </Touchable>
@@ -177,6 +186,11 @@ const ApproveModal = (props: SignModalPropsType) => {
             </Touchable>
           }
         />
+        <Touchable style={styles.batchApprovalWrap} onPress={() => setIsBatchApproval(!isBatchApproval)}>
+          <Svg icon={isBatchApproval ? 'selected' : 'unselected'} size={pTd(20)} iconStyle={{ marginRight: pTd(8) }} />
+          <TextM>Approve other token at same time</TextM>
+        </Touchable>
+
         <TextM style={[FontStyles.font3]}>
           {`Transactions below the specified amount won't need your confirmation until the DApp exhausts its allowance.`}
         </TextM>
@@ -231,5 +245,11 @@ const styles = StyleSheet.create({
     marginTop: pTd(24),
     marginBottom: pTd(24),
     textAlign: 'center',
+  },
+  batchApprovalWrap: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: pTd(24),
   },
 });

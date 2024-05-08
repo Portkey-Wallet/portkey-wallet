@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { Keyboard, StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -32,11 +32,12 @@ type SignModalPropsType = {
   dappInfo: DappStoreItem;
   approveParams: ApproveParams;
   onReject: () => void;
+  isEditBatchApprovalInApp?: boolean;
 };
 
 const ZERO_MESSAGE = 'Please enter a nonzero value';
 const ApproveModal = (props: SignModalPropsType) => {
-  const { dappInfo, approveParams, onReject } = props;
+  const { dappInfo, approveParams, onReject, isEditBatchApprovalInApp } = props;
   console.log(approveParams, '====approveInfo');
   const { amount, targetChainId } = approveParams.approveInfo;
   const dispatch = useAppDispatch();
@@ -160,7 +161,12 @@ const ApproveModal = (props: SignModalPropsType) => {
               GStyles.textAlignCenter,
               GStyles.marginTop(pTd(8)),
               GStyles.marginBottom(pTd(8)),
-            ]}>{`${dappInfo.name || dappInfo.origin} is requesting access to your Token`}</TextL>
+            ]}>
+            {isEditBatchApprovalInApp
+              ? `Set access token amount`
+              : `${dappInfo.name || dappInfo.origin} is requesting access to your Token`}
+          </TextL>
+
           <TextS style={[FontStyles.font7, GStyles.textAlignCenter]}>
             {`To ensure your assets' security while interacting with the DApp, please set a token allowance for this DApp. The DApp will notify you when its allowance is used up and you can modify the settings again.`}
           </TextS>
@@ -168,9 +174,12 @@ const ApproveModal = (props: SignModalPropsType) => {
 
         <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.inputTitle]}>
           <TextM style={GStyles.flex1}>Set Allowance</TextM>
-          <Touchable onPress={onUseRecommendedValue}>
-            <TextM style={FontStyles.font4}> Use Recommended Value</TextM>
-          </Touchable>
+
+          {!isEditBatchApprovalInApp && (
+            <Touchable onPress={onUseRecommendedValue}>
+              <TextM style={FontStyles.font4}> Use Recommended Value</TextM>
+            </Touchable>
+          )}
         </View>
 
         <CommonInput
@@ -186,10 +195,17 @@ const ApproveModal = (props: SignModalPropsType) => {
             </Touchable>
           }
         />
-        <Touchable style={styles.batchApprovalWrap} onPress={() => setIsBatchApproval(!isBatchApproval)}>
-          <Svg icon={isBatchApproval ? 'selected' : 'unselected'} size={pTd(20)} iconStyle={{ marginRight: pTd(8) }} />
-          <TextM>Approve other token at same time</TextM>
-        </Touchable>
+
+        {!isEditBatchApprovalInApp && (
+          <Touchable style={styles.batchApprovalWrap} onPress={() => setIsBatchApproval(!isBatchApproval)}>
+            <Svg
+              icon={isBatchApproval ? 'selected' : 'unselected'}
+              size={pTd(20)}
+              iconStyle={{ marginRight: pTd(8) }}
+            />
+            <TextM>Approve other token at same time</TextM>
+          </Touchable>
+        )}
 
         <TextM style={[FontStyles.font3]}>
           {`Transactions below the specified amount won't need your confirmation until the DApp exhausts its allowance.`}

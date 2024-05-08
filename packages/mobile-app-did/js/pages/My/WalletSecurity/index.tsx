@@ -50,6 +50,13 @@ const WalletSecurity: React.FC = () => {
           navigationService.navigate('PaymentSecurityList');
         }}
       />
+      <MenuItem
+        style={pageStyles.menuStyle}
+        title="Token Allowance"
+        onPress={() => {
+          navigationService.navigate('TokenAllowanceHome');
+        }}
+      />
     </PageContainer>
   );
 };

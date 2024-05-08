@@ -523,6 +523,10 @@ export default class AELFMethodController {
       let result;
 
       if (isApprove) {
+        if (payload.params.paramsOption.symbol == '*') {
+          return sendResponse({ ...errorHandler(400001), data: { code: ResponseCode.ERROR_IN_PARAMS } });
+        }
+
         setLocalStorage({ txPayload: { [key]: JSON.stringify(payload) } });
         delete message.payload?.params;
 

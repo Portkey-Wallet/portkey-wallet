@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { Keyboard, StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -87,7 +87,7 @@ const ApproveModal = (props: SignModalPropsType) => {
             setErrorMessage('');
           }
 
-          const tmpAmount = timesDecimals(symbolNum, approveParams.approveInfo.decimals);
+          const tmpAmount = timesDecimals(symbolNum, decimals);
           navigationService.navigate('GuardianApproval', {
             approveParams: {
               isDiscover: approveParams.isDiscover,
@@ -138,8 +138,8 @@ const ApproveModal = (props: SignModalPropsType) => {
   const onUseRecommendedValue = useCallback(() => {
     setErrorMessage('');
     if (LANG_MAX.lt(amount)) return onPressMax();
-    setSymbolNum(parseInputNumberChange(divDecimalsStr(amount, decimals), MAX_NUM, decimals));
-  }, [MAX_NUM, amount, decimals, onPressMax]);
+    setSymbolNum(parseInputNumberChange(divDecimalsStr(amount, approveParams.approveInfo.decimals), MAX_NUM, decimals));
+  }, [MAX_NUM, amount, approveParams.approveInfo.decimals, decimals, onPressMax]);
 
   useEffectOnce(() => {
     onUseRecommendedValue();

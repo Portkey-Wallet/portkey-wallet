@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import navigationService from 'utils/navigationService';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -9,11 +9,64 @@ import GStyles from 'assets/theme/GStyles';
 import TokenAllowanceItem from './components/TokenAllowanceItem';
 import NoData from 'components/NoData';
 import Touchable from 'components/Touchable';
-
-const list = new Array(100).fill('');
+import { useFetchTokenAllowanceList } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { PAGE_SIZE_DEFAULT } from '@portkey-wallet/constants/constants-ca/assets';
+import { ITokenAllowance } from '@portkey-wallet/types/types-ca/allowance';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { BGStyles } from 'assets/theme/styles';
+import LottieLoading from 'components/LottieLoading';
+import myEvents from 'utils/deviceEvent';
 
 const TokenAllowanceHome: React.FC = () => {
   const { t } = useLanguage();
+
+  const [list, setList] = useState<ITokenAllowance[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [isFetching, setIsFetching] = useState(false);
+
+  const fetchTokenAllowanceList = useFetchTokenAllowanceList();
+
+  const fetchList = useLockCallback(
+    async (init?: boolean) => {
+      try {
+        setIsFetching(true);
+        const res = await fetchTokenAllowanceList({
+          skipCount: init ? 0 : list.length,
+          maxResultCount: PAGE_SIZE_DEFAULT,
+        });
+        setTotalCount(res.totalRecordCount);
+        if (init) {
+          setList(res.data);
+        } else {
+          setList(pre => [...pre, ...res.data]);
+        }
+      } catch (error) {
+        console.log('===fetchTokenAllowanceList error', error);
+      } finally {
+        setIsFetching(false);
+      }
+    },
+    [fetchTokenAllowanceList, list.length],
+  );
+
+  const onEndReached = useCallback(() => {
+    if (totalCount <= list.length) return;
+    if (isFetching) return;
+    fetchList(false);
+  }, [fetchList, isFetching, list.length, totalCount]);
+
+  useEffectOnce(() => {
+    fetchList(true);
+  });
+  useEffect(() => {
+    const listener = myEvents.refreshAllowanceList.addListener(() => {
+      fetchList(true);
+    });
+    return () => {
+      listener.remove();
+    };
+  }, [fetchList]);
 
   return (
     <PageContainer
@@ -26,25 +79,31 @@ const TokenAllowanceHome: React.FC = () => {
         nestedScrollEnabled
         contentContainerStyle={styles.contentContainerStyle}
         data={list || []}
-        ListEmptyComponent={() => (
-          <Touchable>
-            <NoData
-              icon={'no-data-nft'}
-              message={t('No NFTs yet ')}
-              topDistance={pTd(40)}
-              oblongSize={[pTd(64), pTd(64)]}
-            />
-          </Touchable>
-        )}
+        ListEmptyComponent={() =>
+          isFetching ? (
+            <LottieLoading />
+          ) : (
+            <Touchable>
+              <NoData
+                icon={'no-data-nft'}
+                style={BGStyles.bg4}
+                message={t('No Data')}
+                topDistance={pTd(40)}
+                oblongSize={[pTd(64), pTd(64)]}
+              />
+            </Touchable>
+          )
+        }
         renderItem={({ item }) => (
           <TokenAllowanceItem
             item={item}
             onPress={() => {
-              navigationService.navigate('TokenAllowanceDetail');
+              navigationService.navigate('TokenAllowanceDetail', { item });
             }}
           />
         )}
-        keyExtractor={item => item?.key}
+        keyExtractor={item => item?.contractAddress}
+        onEndReached={onEndReached}
       />
     </PageContainer>
   );
@@ -55,13 +114,16 @@ export default TokenAllowanceHome;
 export const styles = StyleSheet.create({
   pageWrap: {
     backgroundColor: defaultColors.bg4,
-    ...GStyles.paddingArg(24, 20, 18),
+    ...GStyles.paddingArg(0),
   },
+
   contactListStyle: {
     backgroundColor: defaultColors.bg1,
   },
   rightIconContainerStyle: {
     marginRight: pTd(10),
   },
-  contentContainerStyle: {},
+  contentContainerStyle: {
+    ...GStyles.paddingArg(24, 20, 18),
+  },
 });

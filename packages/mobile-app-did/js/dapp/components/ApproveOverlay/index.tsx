@@ -27,7 +27,11 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { isIOS } from '@rneui/base';
 import { isValidNumber } from '@portkey-wallet/utils/reg';
 import Svg, { IconName } from 'components/Svg';
-
+import {
+  ALLOWANCE_DESC,
+  SET_ALLOWANCE_BTN_TEXT,
+  SET_ALLOWANCE_MULTIPLY_TIP,
+} from '@portkey-wallet/constants/constants-ca/allowance';
 type SignModalPropsType = {
   dappInfo: DappStoreItem;
   approveParams: ApproveParams;
@@ -164,15 +168,11 @@ const ApproveModal = (props: SignModalPropsType) => {
               : `${dappInfo.name || dappInfo.origin} is requesting access to your Token`}
           </TextL>
 
-          <TextS style={[FontStyles.font7, GStyles.textAlignCenter]}>
-            {`To ensure your assets' security while interacting with the DApp, please set a token allowance for this DApp. The DApp will notify you when its allowance is used up and you can modify the settings again.`}
-          </TextS>
+          <TextS style={[FontStyles.font7, GStyles.textAlignCenter]}>{ALLOWANCE_DESC}</TextS>
         </View>
 
         <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.inputTitle]}>
           <TextM style={GStyles.flex1}>Set Allowance</TextM>
-          {/* TODO： back to showBatchApproveToken */}
-          {/* approveParams?.showBatchApproveToken */}
           {!isEditBatchApprovalInApp && (
             <Touchable onPress={onUseRecommendedValue}>
               <TextM style={FontStyles.font4}> Use Recommended Value</TextM>
@@ -194,20 +194,18 @@ const ApproveModal = (props: SignModalPropsType) => {
           }
         />
 
-        {!isEditBatchApprovalInApp && (
+        {approveParams?.showBatchApproveToken && !isEditBatchApprovalInApp && (
           <Touchable style={styles.batchApprovalWrap} onPress={() => setIsBatchApproval(!isBatchApproval)}>
             <Svg
               icon={isBatchApproval ? 'selected' : 'unselected'}
               size={pTd(20)}
               iconStyle={{ marginRight: pTd(8) }}
             />
-            <TextM>Approve other token at same time</TextM>
+            <TextM>{SET_ALLOWANCE_BTN_TEXT}</TextM>
           </Touchable>
         )}
 
-        <TextM style={[FontStyles.font3]}>
-          {`Transactions below the specified amount won't need your confirmation until the DApp exhausts its allowance.`}
-        </TextM>
+        <TextM style={[FontStyles.font3]}>{SET_ALLOWANCE_MULTIPLY_TIP}</TextM>
       </View>
       <OverlayBottomSection bottomButtonGroup={ButtonList} />
     </ModalBody>

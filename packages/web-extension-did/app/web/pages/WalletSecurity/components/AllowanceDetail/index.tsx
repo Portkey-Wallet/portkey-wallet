@@ -13,6 +13,7 @@ import getSeed from 'utils/getSeed';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentCaHash } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useLoading } from 'store/Provider/hooks';
+import { LANG_MAX } from '@portkey-wallet/constants/misc';
 import './index.less';
 
 export interface IAllowanceDetailProps {
@@ -40,14 +41,18 @@ export default function AllowanceDetail({ allowanceDetail }: IAllowanceDetailPro
         contractAddress: chainInfo.caContractAddress,
       });
       const options = {
-        caHash,
-        spender: allowanceDetail?.contractAddress,
-        symbol: '*',
-        amount: 0,
+        caHash: caHash,
+        contractAddress: chainInfo.defaultToken.address,
+        methodName: 'UnApprove',
+        args: {
+          spender: allowanceDetail.contractAddress,
+          symbol: '*',
+          amount: LANG_MAX.toFixed(0),
+        },
       };
       console.log('ManagerApprove==options====', options);
-      const result = await contract.callSendMethod('ManagerApprove', '', options, {
-        onMethod: 'transactionHash',
+      const result = await contract.callSendMethod('ManagerForwardCall', '', options, {
+        onMethod: 'receipt',
       });
       console.log('ManagerApprove==result====', result);
       setOpen(false);
@@ -58,7 +63,7 @@ export default function AllowanceDetail({ allowanceDetail }: IAllowanceDetailPro
     } finally {
       setLoading(false);
     }
-  }, [allowanceDetail?.contractAddress, caHash, chainInfo, open, setLoading]);
+  }, [allowanceDetail.contractAddress, caHash, chainInfo, open, setLoading]);
 
   return (
     <div className="token-allowance-detail">

@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { useAppCASelector } from '.';
 import { useCaAddressInfoList } from './wallet';
-import { fetchNFTItem } from '@portkey-wallet/store/store-ca/assets/api';
+import { fetchNFTItem, fetchTokenAllowanceList } from '@portkey-wallet/store/store-ca/assets/api';
 import { ChainId } from '@portkey-wallet/types';
 import { useAppCommonDispatch } from '../index';
 import { useCurrentNetworkInfo } from './network';
@@ -146,3 +146,14 @@ export const useTokenInfoFromStore = (symbol: string, chainId: ChainId) => {
     [accountTokenList, chainId, symbol],
   );
 };
+
+export function useFetchTokenAllowanceList() {
+  const caAddressInfos = useCaAddressInfoList();
+
+  return useCallback(
+    async ({ skipCount, maxResultCount }: { skipCount: number; maxResultCount: number }) => {
+      return fetchTokenAllowanceList({ skipCount, maxResultCount, caAddressInfos });
+    },
+    [caAddressInfos],
+  );
+}

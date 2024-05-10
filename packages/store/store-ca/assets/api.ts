@@ -5,6 +5,7 @@ import { NFT_SMALL_SIZE, NFT_MIDDLE_SIZE, NFT_LARGE_SIZE } from '@portkey-wallet
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import { NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
 import { ChainId } from '@portkey-wallet/types';
+import { ITokenAllowance } from '@portkey-wallet/types/types-ca/allowance';
 
 type ITokenItemResponse = Omit<TokenItemShowType, 'name' | 'address'>;
 
@@ -160,5 +161,19 @@ export function fetchTokenBalance({
       chainId,
       caAddress,
     },
+  });
+}
+
+export function fetchTokenAllowanceList({
+  skipCount = 0,
+  maxResultCount = 1000,
+  caAddressInfos,
+}: {
+  caAddressInfos: { chainId: string; caAddress: string }[];
+  skipCount: number;
+  maxResultCount: number;
+}): Promise<{ data: ITokenAllowance[]; totalRecordCount: number }> {
+  return request.assets.fetchTokenAllowanceList({
+    params: { caAddressInfos, skipCount, maxResultCount },
   });
 }

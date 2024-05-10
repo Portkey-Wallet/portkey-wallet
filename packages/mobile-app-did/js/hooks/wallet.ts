@@ -97,6 +97,7 @@ export const useCheckAllowanceAndApprove = () => {
             targetChainId: chainId,
             alias,
           },
+          showBatchApproveToken: true,
         },
       );
       if (!info) throw new Error(USER_CANCELED);

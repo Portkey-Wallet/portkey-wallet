@@ -31,6 +31,7 @@ export interface IManagerApproveInnerProps {
   dappInfo?: { icon?: string; href?: string; name?: string };
   symbol: string;
   networkType: NetworkType;
+  showBatchApproveToken: boolean;
   onCancel?: () => void;
   onError?: (error: Error) => void;
   onFinish?: (res: { amount: string; guardiansApproved: IGuardiansApproved[]; batchApproveToken: boolean }) => void;
@@ -43,6 +44,7 @@ export default function ManagerApproveInner({
   amount,
   dappInfo,
   symbol,
+  showBatchApproveToken,
   onCancel,
   onFinish,
   onError,
@@ -175,6 +177,7 @@ export default function ManagerApproveInner({
         <SetAllowance
           symbol={symbol}
           amount={allowance}
+          showBatchApproveToken={showBatchApproveToken}
           decimals={tokenInfo?.decimals ?? DEFAULT_SYMBOL_DECIMAL}
           recommendedAmount={divDecimals(amount, tokenInfo?.decimals ?? DEFAULT_SYMBOL_DECIMAL).toFixed()}
           max={divDecimals(LANG_MAX, tokenInfo?.decimals ?? DEFAULT_SYMBOL_DECIMAL).toFixed(0)}
@@ -204,9 +207,7 @@ export default function ManagerApproveInner({
               },
             }));
             onFinish?.({
-              amount: batchApproveTokenRef.current
-                ? allowance
-                : timesDecimals(allowance, tokenInfo?.decimals || DEFAULT_SYMBOL_DECIMAL).toFixed(0),
+              amount: timesDecimals(allowance, tokenInfo?.decimals || DEFAULT_SYMBOL_DECIMAL).toFixed(0),
               guardiansApproved: approved,
               batchApproveToken: batchApproveTokenRef.current,
             });

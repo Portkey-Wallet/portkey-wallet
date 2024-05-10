@@ -9,8 +9,10 @@ import ThrottleButton from 'components/ThrottleButton';
 import {
   ALLOWANCE_DESC,
   ALLOWANCE_HEADER,
+  ALLOWANCE_HEADER_NO_NAME,
   SET_ALLOWANCE_BTN_TEXT,
   SET_ALLOWANCE_MULTIPLY_TIP,
+  SET_ALLOWANCE_TIP,
 } from '@portkey-wallet/constants/constants-ca/allowance';
 import './index.less';
 
@@ -20,6 +22,7 @@ export interface IBaseSetAllowanceProps {
   amount: number | string;
   className?: string;
   max?: string | number;
+  showBatchApproveToken?: boolean;
   dappInfo?: { icon?: string; href?: string; name?: string };
 }
 
@@ -44,6 +47,7 @@ export default function SetAllowance({
   decimals,
   dappInfo,
   // symbol,
+  showBatchApproveToken,
   className,
   recommendedAmount = 0,
   onCancel,
@@ -85,7 +89,7 @@ export default function SetAllowance({
       </div>
       <div className="set-allowance-header flex-column">
         <div className="text-center set-allowance-title">
-          {ALLOWANCE_HEADER.replace(/DAPP_NAME/g, dappInfo?.name || 'App')}
+          {dappInfo?.name ? ALLOWANCE_HEADER.replace(/DAPP_NAME/g, dappInfo.name) : ALLOWANCE_HEADER_NO_NAME}
         </div>
         <div className="text-center set-allowance-description">{ALLOWANCE_DESC}</div>
       </div>
@@ -107,13 +111,17 @@ export default function SetAllowance({
           />
           {typeof error !== 'undefined' && <div className="error-text">{error}</div>}
         </div>
-        <div className="set-allowance-batch-approve-token flex-row-center">
-          <div onClick={() => setBatchApproveToken(!batchApproveToken)}>
-            {batchApproveToken ? <CustomSvg type="RadioSelect" /> : <CustomSvg type="RadioUnSelect" />}
+        {showBatchApproveToken && (
+          <div className="set-allowance-batch-approve-token flex-row-center">
+            <div onClick={() => setBatchApproveToken(!batchApproveToken)}>
+              {batchApproveToken ? <CustomSvg type="RadioSelect" /> : <CustomSvg type="RadioUnSelect" />}
+            </div>
+            <span className="check-box-text">{SET_ALLOWANCE_BTN_TEXT}</span>
           </div>
-          <span className="check-box-text">{SET_ALLOWANCE_BTN_TEXT}</span>
+        )}
+        <div className="set-allowance-notice">
+          {showBatchApproveToken ? SET_ALLOWANCE_MULTIPLY_TIP : SET_ALLOWANCE_TIP}
         </div>
-        <div className="set-allowance-notice">{SET_ALLOWANCE_MULTIPLY_TIP}</div>
       </div>
       <div className="set-allowance-btn-wrapper flex-row-between">
         <ThrottleButton onClick={onCancel}>Reject</ThrottleButton>

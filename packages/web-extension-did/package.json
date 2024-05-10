@@ -19,7 +19,7 @@
     "@portkey-wallet/im-ui-web": "^1.3.0",
     "@portkey/extension-provider": "2.1.0",
     "@portkey/provider-utils": "2.1.0",
-    "@portkey/provider-types": "2.1.0",
+    "@portkey/provider-types": "2.2.0",
     "@portkey/providers": "2.1.0",
     "@portkey/did-ui-react": "2.0.1-alpha.0 ",
     "@portkey/did": "2.0.1-alpha.0 ",

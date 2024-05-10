@@ -11,10 +11,13 @@ import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import Svg from 'components/Svg';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { ITokenAllowance } from '@portkey-wallet/types/types-ca/allowance';
+import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
+import { UNKNOWN } from '@portkey-wallet/constants/constants-ca/allowance';
 
 interface ITokenAllowanceItem {
   type?: 'home' | 'detail';
-  item?: any;
+  item?: ITokenAllowance;
   onPress?: (item?: any) => void;
 }
 
@@ -23,21 +26,21 @@ const TokenAllowanceItem: React.FC<ITokenAllowanceItem> = ({ item, type = 'home'
 
   if (type === 'detail') {
     return (
-      <View key={item?.name} style={itemStyles.itemWrap}>
+      <View key={item?.contractAddress} style={itemStyles.itemWrap}>
         <DiscoverWebsiteImage
           size={pTd(32)}
-          imageUrl={getCmsWebsiteInfoImageUrl(item?.origin || '')}
+          imageUrl={item?.icon || getCmsWebsiteInfoImageUrl(item?.url || '')}
           style={itemStyles.itemImage}
         />
         <View style={itemStyles.itemCenter}>
           <TextWithProtocolIcon
             textFontSize={pTd(16)}
-            title={getCmsWebsiteInfoName(item?.origin || '') || item?.name || getHost(item?.origin || '')}
-            url={item?.origin || ''}
+            title={item?.name || getCmsWebsiteInfoName(item?.name || '') || getHost(item?.url || '') || UNKNOWN}
+            url={item?.url || ''}
           />
           <Touchable onPress={() => onPress?.(item)}>
             <TextM numberOfLines={1} style={[FontStyles.font4, itemStyles.itemDappUrl]}>
-              {item?.origin}
+              {item?.url}
             </TextM>
           </Touchable>
         </View>
@@ -49,17 +52,17 @@ const TokenAllowanceItem: React.FC<ITokenAllowanceItem> = ({ item, type = 'home'
     <Touchable key={item?.name} style={itemStyles.itemWrap} onPress={() => onPress?.(item)}>
       <DiscoverWebsiteImage
         size={pTd(32)}
-        imageUrl={getCmsWebsiteInfoImageUrl(item?.origin || '')}
+        imageUrl={item?.icon || getCmsWebsiteInfoImageUrl(item?.url || '')}
         style={itemStyles.itemImage}
       />
       <View style={itemStyles.itemCenter}>
         <TextWithProtocolIcon
           textFontSize={pTd(16)}
-          title={getCmsWebsiteInfoName(item?.origin || '') || item?.name || getHost(item?.origin || '')}
-          url={item?.origin || ''}
+          title={item?.name || getCmsWebsiteInfoName(item?.name || '') || getHost(item?.url || '') || UNKNOWN}
+          url={item?.url || ''}
         />
         <TextM numberOfLines={1} style={[FontStyles.font7, itemStyles.itemDappUrl]}>
-          {item?.origin}
+          {`Contract Address: ${formatStr2EllipsisStr(item?.contractAddress, 4)}`}
         </TextM>
       </View>
       <Svg icon="right-arrow" size={pTd(20)} />

@@ -61,6 +61,8 @@ import ChatPrivacy from 'pages/AccountSetting/ChatPrivacy';
 import ChatPrivacyEdit from 'pages/AccountSetting/ChatPrivacyEdit';
 import AccountCancelation from 'pages/Wallet/AccountCancelation';
 import VerifyAccountCancelation from 'pages/Wallet/VerifyAccountCancelation';
+import TokenAllowance from 'pages/WalletSecurity/TokenAllowance';
+import TokenAllowanceDetail from 'pages/WalletSecurity/TokenAllowance/TokenAllowanceDetail';
 
 export const PageRouter = () => {
   const { isNotLessThan768 } = useCommonState();
@@ -359,6 +361,14 @@ export const PageRouter = () => {
               path: '/setting/wallet-security/payment-security/guardian-approval',
               element: <GuardianApproval />,
             },
+            {
+              path: '/setting/wallet-security/token-allowance',
+              element: <TokenAllowance />,
+            },
+            {
+              path: '/setting/wallet-security/token-allowance-detail',
+              element: <TokenAllowanceDetail />,
+            },
           ],
         },
       ],
@@ -512,6 +522,14 @@ export const PageRouter = () => {
     {
       path: '/setting/wallet-security/payment-security/guardian-approval',
       element: <GuardianApproval />,
+    },
+    {
+      path: '/setting/wallet-security/token-allowance',
+      element: <TokenAllowance />,
+    },
+    {
+      path: '/setting/wallet-security/token-allowance-detail',
+      element: <TokenAllowanceDetail />,
     },
   ];
 

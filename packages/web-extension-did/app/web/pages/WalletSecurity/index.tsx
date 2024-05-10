@@ -60,6 +60,17 @@ export default function WalletSecurity() {
           navigate('/setting/wallet-security/payment-security');
         },
       },
+      {
+        key: t('Token Allowance'),
+        element: (
+          <div className="flex token-allowance">
+            <span>{t('Token Allowance')}</span>
+          </div>
+        ),
+        click: () => {
+          navigate('/setting/wallet-security/token-allowance');
+        },
+      },
     ],
     [currentDapp?.length, deviceAmount, navigate, t],
   );

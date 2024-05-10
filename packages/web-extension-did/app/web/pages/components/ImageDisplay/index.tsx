@@ -11,6 +11,7 @@ interface ImageDisplayProps {
   key?: string;
   notReady?: boolean;
   defaultHeight?: number | string;
+  name?: string;
 }
 
 export default function ImageDisplay({
@@ -19,6 +20,7 @@ export default function ImageDisplay({
   backupSrc,
   notReady = false,
   defaultHeight = 'auto',
+  name = 'A',
 }: ImageDisplayProps) {
   const [isError, setError] = useState<boolean>();
 
@@ -27,7 +29,13 @@ export default function ImageDisplay({
   return (
     <div className={clsx('img-loading-wrapper', className)} style={{ height: defaultHeight || 'auto' }}>
       {isShowDefault ? (
-        <div className="flex-center">{backupSrc ? <CustomSvg type={backupSrc} /> : <>{/* default loading */}</>}</div>
+        backupSrc ? (
+          <div className="flex-center">
+            <CustomSvg type={backupSrc} />
+          </div>
+        ) : (
+          <div className="image-backup flex-center">{name?.[0]}</div>
+        )
       ) : (
         <img
           key={src}

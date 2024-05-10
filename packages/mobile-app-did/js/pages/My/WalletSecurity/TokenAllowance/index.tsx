@@ -40,7 +40,7 @@ const TokenAllowanceHome: React.FC = () => {
           <TokenAllowanceItem
             item={item}
             onPress={() => {
-              console.log('abc!');
+              navigationService.navigate('TokenAllowanceDetail');
             }}
           />
         )}

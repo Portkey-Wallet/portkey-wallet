@@ -46,10 +46,7 @@ const ApproveModal = (props: SignModalPropsType) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [symbolNum, setSymbolNum] = useState<string>('');
   const [isBatchApproval, setIsBatchApproval] = useState<boolean>(false);
-  const decimals = useMemo(
-    () => (isBatchApproval ? 0 : approveParams.approveInfo.decimals),
-    [approveParams.approveInfo.decimals, isBatchApproval],
-  );
+  const decimals = useMemo(() => approveParams.approveInfo.decimals, [approveParams.approveInfo.decimals]);
   const symbol = useMemo(
     () => (isBatchApproval ? '*' : approveParams.approveInfo.symbol),
     [approveParams.approveInfo.symbol, isBatchApproval],
@@ -174,7 +171,8 @@ const ApproveModal = (props: SignModalPropsType) => {
 
         <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.inputTitle]}>
           <TextM style={GStyles.flex1}>Set Allowance</TextM>
-
+          {/* TODO： back to showBatchApproveToken */}
+          {/* approveParams?.showBatchApproveToken */}
           {!isEditBatchApprovalInApp && (
             <Touchable onPress={onUseRecommendedValue}>
               <TextM style={FontStyles.font4}> Use Recommended Value</TextM>

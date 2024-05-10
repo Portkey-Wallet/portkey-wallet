@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
@@ -16,11 +16,15 @@ import Touchable from 'components/Touchable';
 import { copyText } from 'utils';
 import CommonSwitch from 'components/CommonSwitch';
 import MenuItem from 'pages/My/components/MenuItem';
-import { showApproveModal } from 'dapp/components/ApproveOverlay';
-import OverlayModal from 'components/OverlayModal';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 
 const TokenAllowanceDetail: React.FC = () => {
   const { t } = useLanguage();
+  const [switchDisable, setSwitchDisable] = useState(false);
+
+  useEffectOnce(() => {
+    setSwitchDisable(true);
+  });
 
   return (
     <PageContainer
@@ -50,46 +54,18 @@ const TokenAllowanceDetail: React.FC = () => {
         <Touchable
           style={pageStyles.approvalRight}
           onPress={() => {
-            console.log('Touchable');
+            if (!switchDisable) {
+              // XXXXX
+              setSwitchDisable(true);
+            }
           }}>
           <View pointerEvents="none">
-            <CommonSwitch value={true} />
+            <CommonSwitch disabled={switchDisable} value={!switchDisable} />
           </View>
         </Touchable>
       </View>
 
-      <MenuItem
-        title="Approve Amount"
-        suffix={1000}
-        onPress={() => {
-          showApproveModal({
-            isEditBatchApprovalInApp: true,
-            dappInfo: {
-              origin: '',
-              name: undefined,
-              icon: undefined,
-              svgIcon: undefined,
-              sessionInfo: undefined,
-              connectedTime: undefined,
-            },
-            approveParams: {
-              approveInfo: {
-                symbol: '',
-                amount: '',
-                spender: '',
-                decimals: 0,
-                targetChainId: 'AELF',
-                alias: undefined,
-              },
-              eventName: '',
-              isDiscover: undefined,
-            },
-            onReject: () => {
-              OverlayModal.hide();
-            },
-          });
-        }}
-      />
+      <MenuItem title="Approve Amount" suffix={100000000} />
     </PageContainer>
   );
 };

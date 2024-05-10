@@ -11,6 +11,7 @@ export default {
     target: '/api/app/tokens/prices',
     config: { method: 'GET' },
   },
+  fetchTokenAllowanceList: '/api/app/tokens/allowances',
   getSymbolImages: {
     target: '/api/app/user/assets/symbolImages',
     config: { method: 'GET' },

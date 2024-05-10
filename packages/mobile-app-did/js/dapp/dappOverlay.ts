@@ -22,6 +22,7 @@ export type ApproveParams = {
   approveInfo: ApproveInfo;
   eventName: string;
   isDiscover?: boolean;
+  showBatchApproveToken?: boolean;
 };
 
 export async function requestManagerApprove(
@@ -103,7 +104,11 @@ export class DappOverlay implements IDappOverlay {
       });
       ApproveOverlay.showApproveModal({
         dappInfo,
-        approveParams,
+        // todo: change it
+        approveParams: {
+          ...approveParams,
+          showBatchApproveToken: true,
+        },
         onReject: () => {
           listener.remove();
           resolve(false);

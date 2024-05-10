@@ -24,7 +24,7 @@ export default function MenuItem({
     <div className={clsx('menu-item', className)} style={{ height }} onClick={onClick}>
       {icon && <div className="icon-area">{icon}</div>}
       <span className="menu-item-title">{children}</span>
-      {showEnterIcon && <CustomSvg className="enter-btn" type="LeftArrow" style={{ width: 16, height: 16 }} />}
+      {showEnterIcon && <CustomSvg className="enter-btn" type="Arrow" />}
     </div>
   );
 }

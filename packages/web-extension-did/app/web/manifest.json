@@ -4,7 +4,7 @@
     "extension_pages": "script-src 'self'; object-src 'self'"
   },
   "name": "Portkey Wallet",
-  "version": "1.14.0",
+  "version": "1.14.1",
   "description": "A User-Friendly and Secure AA Wallet for Asset Management and Web3 Experience",
   "icons": {
     "16": "assets/images/extension_logo.png",

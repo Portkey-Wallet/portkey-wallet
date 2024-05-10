@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { Keyboard, StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -30,6 +30,7 @@ import Svg, { IconName } from 'components/Svg';
 import {
   ALLOWANCE_DESC,
   SET_ALLOWANCE_BTN_TEXT,
+  SET_ALLOWANCE_TIP,
   SET_ALLOWANCE_MULTIPLY_TIP,
 } from '@portkey-wallet/constants/constants-ca/allowance';
 type SignModalPropsType = {
@@ -205,7 +206,9 @@ const ApproveModal = (props: SignModalPropsType) => {
           </Touchable>
         )}
 
-        <TextM style={[FontStyles.font3]}>{SET_ALLOWANCE_MULTIPLY_TIP}</TextM>
+        <TextM style={[FontStyles.font3]}>
+          {approveParams?.showBatchApproveToken ? SET_ALLOWANCE_MULTIPLY_TIP : SET_ALLOWANCE_TIP}
+        </TextM>
       </View>
       <OverlayBottomSection bottomButtonGroup={ButtonList} />
     </ModalBody>

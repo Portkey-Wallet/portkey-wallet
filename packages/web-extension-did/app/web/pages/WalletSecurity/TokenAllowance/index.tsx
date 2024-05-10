@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import TokenAllowancePopup from './Popup';
 import TokenAllowancePrompt from './Prompt';
 import { useCommonState } from 'store/Provider/hooks';
@@ -12,6 +12,7 @@ import { useFetchTokenAllowanceList } from '@portkey-wallet/hooks/hooks-ca/asset
 import singleMessage from 'utils/singleMessage';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { PAGE_SIZE_DEFAULT } from '@portkey-wallet/constants/constants-ca/assets';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 import './index.less';
 
 export interface ITokenAllowanceProps {
@@ -48,9 +49,9 @@ export default function TokenAllowance() {
     }
   }, [fetchTokenAllowanceList, list.length]);
 
-  useEffect(() => {
+  useEffectOnce(() => {
     fetchList();
-  }, [fetchList]);
+  });
 
   const showDataList: MenuItemInfo[] = useMemo(
     () =>

@@ -6,6 +6,7 @@ import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
+import { useThrottleCallback } from '@portkey-wallet/hooks';
 
 export interface TabItemTypes {
   name: string;
@@ -54,6 +55,14 @@ const CustomizedTopTabBar = ({
   navigation: any;
   hasTabBarBorderRadius?: boolean;
 }) => {
+  const onPress = useThrottleCallback(
+    (name, params) => {
+      navigation.navigate(name, params);
+    },
+    [navigation],
+    600,
+  );
+
   return (
     <View style={[toolBarStyle.container, hasTabBarBorderRadius ? styles.radiusTarBarStyle : {}]}>
       {state.routes.map((route, index) => {
@@ -67,14 +76,10 @@ const CustomizedTopTabBar = ({
 
         const isFocused = state.index === index;
 
-        const onPress = () => {
-          navigation.navigate(route.name, route.params);
-        };
-
         return (
           <TouchableOpacity
             testID={options.tabBarTestID}
-            onPress={onPress}
+            onPress={() => onPress(route.name, route.params)}
             disabled={isFocused}
             key={label}
             style={[toolBarStyle.label, { paddingRight: index !== state.routes.length - 1 ? pTd(32) : 0 }]}>

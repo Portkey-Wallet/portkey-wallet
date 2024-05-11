@@ -104,11 +104,7 @@ export class DappOverlay implements IDappOverlay {
       });
       ApproveOverlay.showApproveModal({
         dappInfo,
-        // todo: change it
-        approveParams: {
-          ...approveParams,
-          showBatchApproveToken: true,
-        },
+        approveParams,
         onReject: () => {
           listener.remove();
           resolve(false);

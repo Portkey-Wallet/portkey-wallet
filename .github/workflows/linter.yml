@@ -1,0 +1,71 @@
+---
+#################################
+#################################
+## Super Linter GitHub Actions ##
+#################################
+#################################
+name: Lint Code Base
+
+#
+# Documentation:
+# https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions
+#
+
+#############################
+# Start the job on all push #
+#############################
+on:
+  push:
+    branches-ignore: [master]
+    # Remove the line above to run when pushing to master
+  pull_request:
+    branches: [master, dev]
+
+###############
+# Set the Job #
+###############
+jobs:
+  build:
+    # Name the Job
+    name: Lint Code Base
+    # Set the agent to run on
+    runs-on: ubuntu-latest
+
+    ##################
+    # Load all steps #
+    ##################
+    steps:
+      ##########################
+      # Checkout the code base #
+      ##########################
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          # Full git history is needed to get a proper list of changed files within `super-linter`
+          fetch-depth: 0
+
+      ################################
+      # Run Linter against code base #
+      ################################
+      - name: Lint Code Base
+        uses: github/super-linter/slim@v4
+        env:
+          VALIDATE_ALL_CODEBASE: false
+          # Change to 'master' if your main branch differs
+          DEFAULT_BRANCH: master
+          GITHUB_TOKEN: ${{ secrets.AWAKEN_GIT_TOKEN }}
+          ################# ESLint config #################
+          LINTER_RULES_PATH: /
+          JAVASCRIPT_ES_CONFIG_FILE: .eslintrc.json
+          TYPESCRIPT_ES_CONFIG_FILE: .eslintrc.json
+          # less Only support postcss-less
+          CSS_FILE_NAME: .stylelintrc.json
+          JSCPD_CONFIG_FILE: .jscpd.json
+          VALIDATE_CSS: false
+          VALIDATE_JAVASCRIPT_STANDARD: false
+          VALIDATE_TYPESCRIPT_STANDARD: false
+          VALIDATE_SHELL_SHFMT: false
+          VALIDATE_BASH: false
+          VALIDATE_JSCPD: false
+          FILTER_REGEX_EXCLUDE: .*(public/charting_library/|src/constants/platform).*
+          VALIDATE_TEKTON: false

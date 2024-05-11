@@ -178,7 +178,7 @@ const PaymentModal = ({
       onPress;
     const successNavigateName: NavigateName = currentChannelType === 'P2P' ? 'ChatDetailsPage' : 'ChatGroupDetailsPage';
     if (crossSufficientItem) {
-      buttonTitle = assetInfo.assetType === AssetType.ft ? 'Transfer ELF' : 'Transfer NFT';
+      buttonTitle = assetInfo.assetType === AssetType.ft ? 'Transfer Token' : 'Transfer NFT';
       onPress = async () => {
         OverlayModal.hide(false);
         navigationService.navigateByMultiLevelParams('SendHome', {

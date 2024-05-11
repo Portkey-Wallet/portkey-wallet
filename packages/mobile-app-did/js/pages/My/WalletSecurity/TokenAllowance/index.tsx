@@ -70,7 +70,6 @@ const TokenAllowanceHome: React.FC = () => {
 
   return (
     <PageContainer
-      leftCallback={() => navigationService.navigate('Tab')}
       titleDom={t('Token Allowance')}
       safeAreaColor={['blue', 'gray']}
       containerStyles={styles.pageWrap}

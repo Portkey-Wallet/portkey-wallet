@@ -25,6 +25,7 @@ import { managerForwardCall } from 'utils/transfer/managerForwardCall';
 import { useGetChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { LANG_MAX } from '@portkey-wallet/constants/misc';
 import myEvents from 'utils/deviceEvent';
+import { formatAmountShow } from '@portkey-wallet/utils/converter';
 
 const TokenAllowanceDetail: React.FC = () => {
   const {
@@ -42,6 +43,7 @@ const TokenAllowanceDetail: React.FC = () => {
   const unApprove = useCallback(async () => {
     try {
       Loading.show();
+      setSwitchDisable(true);
       const chainInfo = getChain(item.chainId);
       const caContract = await getCAContract(item.chainId);
 
@@ -59,7 +61,6 @@ const TokenAllowanceDetail: React.FC = () => {
         },
       });
 
-      console.log('unApproveReq', item, unApproveReq);
       if (unApproveReq?.error) throw unApproveReq?.error;
       // if (unApproveReq?.data) {
       //   const tokenContract = await getViewTokenContractByChainId(item.chainId);
@@ -74,6 +75,7 @@ const TokenAllowanceDetail: React.FC = () => {
       CommonToast.success('Multiple token approval disabled');
       myEvents.refreshAllowanceList.emit();
     } catch (error) {
+      setSwitchDisable(false);
       CommonToast.failError(error);
     } finally {
       Loading.hide();
@@ -112,9 +114,8 @@ const TokenAllowanceDetail: React.FC = () => {
           onPress={() => {
             if (!switchDisable) {
               unApprove();
-              setSwitchDisable(true);
             } else {
-              CommonToast.fail('Please interact with the dApp and initiate transaction again to enable this function.');
+              CommonToast.warn('Please interact with the dApp and initiate transaction again to enable this function.');
             }
           }}>
           <View pointerEvents="none">
@@ -123,7 +124,7 @@ const TokenAllowanceDetail: React.FC = () => {
         </Touchable>
       </View>
 
-      {!switchDisable && <MenuItem title="Amount approved" suffix={item.allowance} />}
+      {!switchDisable && <MenuItem hideArrow title="Amount approved" suffix={formatAmountShow(item.allowance, 0)} />}
     </PageContainer>
   );
 };
@@ -163,7 +164,7 @@ export const pageStyles = StyleSheet.create({
   },
   approvalLeft: {
     flex: 1,
-    paddingRight: pTd(8),
+    paddingRight: pTd(16),
   },
   approvalRight: {
     display: 'flex',

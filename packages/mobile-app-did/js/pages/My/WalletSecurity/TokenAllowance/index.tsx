@@ -85,7 +85,6 @@ const TokenAllowanceHome: React.FC = () => {
           ) : (
             <Touchable>
               <NoData
-                icon={'no-data-nft'}
                 style={BGStyles.bg4}
                 message={t('No Data')}
                 topDistance={pTd(40)}

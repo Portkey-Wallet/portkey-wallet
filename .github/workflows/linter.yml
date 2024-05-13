@@ -29,5 +29,5 @@ jobs:
       - name: Install Dependencies
         run: yarn
 
-      - name: Run ESLint
-        run: yarn workspace mobile-did lint
+      - name: Run ESLint web-extension-did
+        run: yarn workspace web-extension-did lint

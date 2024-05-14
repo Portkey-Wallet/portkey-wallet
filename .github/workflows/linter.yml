@@ -31,3 +31,6 @@ jobs:
 
       - name: Run ESLint web-extension-did
         run: yarn workspace web-extension-did lint
+
+      - name: Run ESLint mobile-did
+        run: yarn workspace mobile-did lint

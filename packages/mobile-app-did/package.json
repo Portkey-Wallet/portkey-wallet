@@ -12,7 +12,7 @@
     "devices": "xcrun simctl list devices",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx --ignore-pattern \"/**/InpageBridgeWeb3.js\"",
     "android-clean": "cd android && ./gradlew clean && cd ..",
     "ios-clean": "rm -rf ios/Pods && rm -rf ios/build",
     "pod-install": "cd ios && INCLUDE_FLIPPER=true pod install && cd ..",

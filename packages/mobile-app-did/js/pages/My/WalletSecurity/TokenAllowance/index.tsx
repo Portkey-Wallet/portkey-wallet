@@ -70,7 +70,6 @@ const TokenAllowanceHome: React.FC = () => {
 
   return (
     <PageContainer
-      leftCallback={() => navigationService.navigate('Tab')}
       titleDom={t('Token Allowance')}
       safeAreaColor={['blue', 'gray']}
       containerStyles={styles.pageWrap}
@@ -87,8 +86,8 @@ const TokenAllowanceHome: React.FC = () => {
               <NoData
                 style={BGStyles.bg4}
                 message={t('No Data')}
-                topDistance={pTd(40)}
-                oblongSize={[pTd(64), pTd(64)]}
+                topDistance={pTd(120)}
+                oblongSize={[pTd(160), pTd(140)]}
               />
             </Touchable>
           )

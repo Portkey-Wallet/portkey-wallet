@@ -197,4 +197,10 @@ export default {
   flex: function (n: number) {
     return { flex: n };
   },
+  width: function (n: number) {
+    return { width: n };
+  },
+  height: function (n: number) {
+    return { height: n };
+  },
 } as const;

@@ -12,6 +12,7 @@ export interface IMenuItemProps {
   icon?: IconName;
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
+  hideArrow?: boolean;
   size?: number;
   TextComponent?: React.FC<TextProps>;
   arrowSize?: number;
@@ -28,6 +29,7 @@ const MenuItem: React.FC<IMenuItemProps> = ({
   onPress,
   style,
   size = pTd(28),
+  hideArrow = false,
   arrowSize = pTd(20),
   suffix,
   iconColor,
@@ -64,7 +66,7 @@ const MenuItem: React.FC<IMenuItemProps> = ({
       )}
       <TextL style={styles.titleWrap}>{title}</TextL>
       {SuffixDom}
-      <Svg icon="right-arrow" size={arrowSize} color={defaultColors.icon1} />
+      {!hideArrow && <Svg icon="right-arrow" size={arrowSize} color={defaultColors.icon1} />}
     </Touchable>
   );
 };

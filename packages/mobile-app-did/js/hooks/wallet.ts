@@ -5,7 +5,7 @@ import { useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useGetHolderInfoByViewContract } from './guardian';
 import { useAppDispatch } from 'store/hooks';
 import { updateCASyncState } from '@portkey-wallet/store/store-ca/wallet/actions';
-import { getAllowance } from '@portkey-wallet/utils/contract';
+import { getAvailableAllowance } from '@portkey-wallet/utils/contract';
 import { getCurrentCaInfoByChainId, getViewTokenContractByChainId } from 'utils/redux';
 import BigNumber from 'bignumber.js';
 import { requestManagerApprove } from 'dapp/dappOverlay';
@@ -69,7 +69,7 @@ export const useCheckAllowanceAndApprove = () => {
     if (isShowOnceLoading) Loading.showOnce();
     const startTime = Date.now();
     try {
-      allowance = await getAllowance(tokenContract, {
+      allowance = await getAvailableAllowance(tokenContract, {
         owner: caInfo?.caAddress || '',
         spender,
         symbol,
@@ -97,6 +97,7 @@ export const useCheckAllowanceAndApprove = () => {
             targetChainId: chainId,
             alias,
           },
+          showBatchApproveToken: true,
         },
       );
       if (!info) throw new Error(USER_CANCELED);
@@ -112,7 +113,7 @@ export const useCheckAllowanceAndApprove = () => {
         });
         if (approveReq?.error) throw approveReq?.error;
         if (approveReq?.data) {
-          const confirmationAllowance = await getAllowance(tokenContract, {
+          const confirmationAllowance = await getAvailableAllowance(tokenContract, {
             owner: caInfo?.caAddress || '',
             spender,
             symbol,

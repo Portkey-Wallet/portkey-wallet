@@ -82,8 +82,8 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
   }, [fetchNftDetail, chainId, symbol]);
 
   useEffectOnce(() => {
+    fetchDetail();
     if (traitsPercentages && recommendedRefreshSeconds) {
-      fetchDetail();
       timerRef.current = setInterval(async () => {
         await fetchDetail();
       }, recommendedRefreshSeconds * 1000);

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, StatusBar, View, ScrollView } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import CommonButton from 'components/CommonButton';
@@ -25,6 +25,7 @@ import { SeedTypeEnum, NFTItemBaseType } from '@portkey-wallet/types/types-ca/as
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useNFTItemDetail } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { useEffectOnce } from '@portkey-wallet/hooks';
+import PortkeySkeleton from 'components/PortkeySkeleton';
 
 export interface TokenDetailProps {
   route?: any;
@@ -68,6 +69,8 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
     collectionInfo,
     traitsPercentages,
   } = nftDetailInfo;
+
+  const isFetchingTraits = useMemo(() => traitsPercentages && traitsPercentages?.length === 0, [traitsPercentages]);
 
   const fetchDetail = useLockCallback(async () => {
     try {
@@ -200,24 +203,40 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
           {traitsPercentages && (
             <View style={GStyles.marginTop(pTd(24))}>
               <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Traits')}</TextL>
-              {traitsPercentages.map((ele, idx) => (
-                <View
-                  key={idx}
-                  style={[
-                    GStyles.flexRow,
-                    GStyles.itemCenter,
-                    styles.rowWrap,
-                    idx === traitsPercentages.length - 1 && GStyles.marginBottom(0),
-                  ]}>
-                  <View style={GStyles.flex(3)}>
-                    <TextM style={[styles.leftTitle, FontStyles.font3]}>{t(ele?.traitType)}</TextM>
-                    <View style={styles.verticalBlank} />
-                    <TextM style={[styles.leftTitle, fonts.mediumFont]}>{ele?.value}</TextM>
-                  </View>
-                  <View style={styles.blank} />
-                  <TextM style={[styles.rightValue, FontStyles.font5, GStyles.flex(2)]}>{ele?.percent}</TextM>
-                </View>
-              ))}
+              <>
+                {isFetchingTraits ? (
+                  <>
+                    {[1, 2, 3].map((ele, idx) => (
+                      <View key={idx} style={[styles.rowWrap, idx === 2 && GStyles.marginBottom(0)]}>
+                        <PortkeySkeleton width={pTd(100)} height={pTd(20)} />
+                        <View style={styles.verticalBlank} />
+                        <PortkeySkeleton width={pTd(140)} height={pTd(20)} />
+                      </View>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    {traitsPercentages.map((ele, idx) => (
+                      <View
+                        key={idx}
+                        style={[
+                          GStyles.flexRow,
+                          GStyles.itemCenter,
+                          styles.rowWrap,
+                          idx === traitsPercentages.length - 1 && GStyles.marginBottom(0),
+                        ]}>
+                        <View style={GStyles.flex(3)}>
+                          <TextM style={[styles.leftTitle, FontStyles.font3]}>{t(ele?.traitType)}</TextM>
+                          <View style={styles.verticalBlank} />
+                          <TextM style={[styles.leftTitle, fonts.mediumFont]}>{ele?.value}</TextM>
+                        </View>
+                        <View style={styles.blank} />
+                        <TextM style={[styles.rightValue, FontStyles.font5, GStyles.flex(2)]}>{ele?.percent}</TextM>
+                      </View>
+                    ))}
+                  </>
+                )}
+              </>
             </View>
           )}
 

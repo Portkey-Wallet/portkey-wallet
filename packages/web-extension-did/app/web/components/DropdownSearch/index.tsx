@@ -24,6 +24,7 @@ export default function DropdownSearch({
           value={value}
           allowClear
           onPressEnter={onPressEnter}
+          // eslint-disable-next-line no-inline-styles/no-inline-styles
           prefix={<CustomSvg type="SearchBlur" style={{ width: 20, height: 20 }} />}
           {...inputProps}
         />

@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+import { Button, Skeleton } from 'antd';
 import PromptFrame from 'pages/components/PromptFrame';
 import SettingHeader from 'pages/components/SettingHeader';
 import { useCommonState } from 'store/Provider/hooks';
@@ -138,15 +138,22 @@ export default function NFT() {
     return traitsPercentages ? (
       <div className="info traits-info">
         <div className="info-title">Traits</div>
-        {traitsPercentages.map((trait, i) => (
-          <div key={`${trait.traitType}_${i}`} className="info-item flex-between-center">
-            <div className="label">
-              <div>{trait.traitType}</div>
-              <div className="label-bold">{trait.value}</div>
-            </div>
-            <div className="content">{trait.percent}</div>
-          </div>
-        ))}
+        {traitsPercentages.length === 0
+          ? new Array(3).fill('').map((_item, index) => (
+              <div key={`skeleton_${index}`} className="flex-column traits-info-skeleton">
+                <Skeleton.Avatar className="skeleton-title" shape="square" active />
+                <Skeleton.Avatar className="skeleton-desc" shape="square" active />
+              </div>
+            ))
+          : traitsPercentages.map((trait, i) => (
+              <div key={`${trait.traitType}_${i}`} className="info-item flex-between-center">
+                <div className="label">
+                  <div>{trait.traitType}</div>
+                  <div className="label-bold">{trait.value}</div>
+                </div>
+                <div className="content">{trait.percent}</div>
+              </div>
+            ))}
       </div>
     ) : null;
   }, [nftDetail]);

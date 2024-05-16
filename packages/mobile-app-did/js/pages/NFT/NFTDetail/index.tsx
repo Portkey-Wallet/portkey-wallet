@@ -70,7 +70,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
     traitsPercentages,
   } = nftDetailInfo;
 
-  const isFetchingTraits = useMemo(() => traitsPercentages?.length === 0, [traitsPercentages?.length]);
+  const isFetchingTraits = useMemo(() => traitsPercentages && traitsPercentages?.length === 0, [traitsPercentages]);
 
   const fetchDetail = useLockCallback(async () => {
     try {

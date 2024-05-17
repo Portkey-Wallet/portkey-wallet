@@ -18,8 +18,7 @@ export const styles = StyleSheet.create({
   group: {
     backgroundColor: defaultColors.bg1,
     marginTop: pTd(24),
-    marginLeft: pTd(20),
-    marginRight: pTd(20),
+    marginHorizontal: pTd(16),
     paddingLeft: pTd(16),
     paddingRight: pTd(16),
     borderRadius: pTd(6),
@@ -47,7 +46,7 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
   space: {
-    height: pTd(24),
+    height: pTd(16),
   },
   warningWrap: {
     marginTop: pTd(12),
@@ -96,5 +95,41 @@ export const thirdGroupStyle = StyleSheet.create({
     display: 'flex',
     justifyContent: 'flex-end',
     flexDirection: 'row',
+  },
+});
+
+export const otherChainWarningStyle = StyleSheet.create({
+  wrap: {
+    backgroundColor: defaultColors.bg33,
+    paddingHorizontal: pTd(12),
+    paddingVertical: pTd(8),
+    marginHorizontal: pTd(16),
+    marginTop: pTd(12),
+    borderRadius: pTd(6),
+    borderWidth: pTd(0.5),
+    borderColor: defaultColors.border8,
+  },
+  flex: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  text: {
+    flex: 20,
+    paddingLeft: pTd(4),
+  },
+  commonText: {
+    fontSize: pTd(14),
+    lineHeight: pTd(22),
+    color: defaultColors.font18,
+  },
+  linkText: {
+    fontSize: pTd(14),
+    lineHeight: pTd(22),
+    color: defaultColors.primaryColor,
+  },
+  icon: {
+    marginTop: pTd(4),
   },
 });

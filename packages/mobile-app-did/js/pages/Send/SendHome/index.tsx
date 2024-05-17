@@ -5,7 +5,7 @@ import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import From from '../From';
 import To from '../To';
-import { styles } from './style';
+import { otherChainWarningStyle, styles } from './style';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import ActionSheet from 'components/ActionSheet';
@@ -41,13 +41,20 @@ import { useCheckManagerSyncState } from 'hooks/wallet';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { useCheckTransferLimitWithJump, useSecuritySafeCheckAndToast } from 'hooks/security';
 import CommonToast from 'components/CommonToast';
-import { TextM } from 'components/CommonText';
-import GStyles from 'assets/theme/GStyles';
 import Touchable from 'components/Touchable';
-import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { useGetCAContract, useGetTokenViewContract } from 'hooks/contract';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useGetTransferFee } from 'hooks/transfer';
+import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { useAppETransShow } from 'hooks/cms';
+import GStyles from 'assets/theme/GStyles';
+import { TextM } from 'components/CommonText';
+import { checkIsValidEtransferAddress } from '@portkey-wallet/utils/check';
+import { RichText } from 'components/RichText';
+import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
+import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
 const SendHome: React.FC = () => {
   const {
@@ -83,6 +90,9 @@ const SendHome: React.FC = () => {
 
   const checkManagerSyncState = useCheckManagerSyncState();
   const getCAContract = useGetCAContract();
+  const { isETransDepositShow } = useAppETransShow();
+  const onDisclaimerModalPress = useOnDisclaimerModalPress();
+  const { eTransferUrl = '' } = useCurrentNetworkInfo();
 
   useEffect(() => {
     setSelectedToContact(toInfo);
@@ -183,6 +193,17 @@ const SendHome: React.FC = () => {
     initBalance();
   });
 
+  const enableEtransfer = useMemo(() => {
+    const { symbol, chainId } = assetInfo;
+    const { deposit } = checkEnabledFunctionalTypes(symbol, chainId === MAIN_CHAIN_ID);
+    return isETransDepositShow && deposit;
+  }, [assetInfo, isETransDepositShow]);
+
+  const isValidOtherChainAddress = useMemo(() => {
+    const { address } = selectedToContact || {};
+    return checkIsValidEtransferAddress(address) && !isAllowAelfAddress(address);
+  }, [selectedToContact]);
+
   // warning dialog
   const showDialog = useCallback(
     (type: 'clearAddress' | 'crossChain' | 'exchange', confirmCallBack?: () => void) => {
@@ -244,8 +265,12 @@ const SendHome: React.FC = () => {
 
   const nextDisable = useMemo(() => {
     if (!selectedToContact?.address) return true;
+    if (isValidOtherChainAddress && enableEtransfer) {
+      setErrorMessage([]);
+      return true;
+    }
     return false;
-  }, [selectedToContact.address]);
+  }, [enableEtransfer, isValidOtherChainAddress, selectedToContact?.address]);
 
   const previewDisable = useMemo(() => {
     if (!selectedToContact?.address) return true;
@@ -255,12 +280,6 @@ const SendHome: React.FC = () => {
 
   const checkCanNext = useCallback(() => {
     const suffix = getAddressChainId(selectedToContact.address, chainInfo?.chainId || 'AELF');
-
-    if (!isAllowAelfAddress(selectedToContact.address)) {
-      setErrorMessage([AddressError.INVALID_ADDRESS]);
-      return false;
-    }
-
     if (
       isSameAddresses(wallet?.[assetInfo?.chainId]?.caAddress || '', getAelfAddress(selectedToContact.address)) &&
       suffix === assetInfo?.chainId
@@ -282,8 +301,26 @@ const SendHome: React.FC = () => {
       return false;
     }
 
+    if (!isAllowAelfAddress(selectedToContact.address)) {
+      if (enableEtransfer && isValidOtherChainAddress) {
+        setErrorMessage([]);
+      } else {
+        setErrorMessage([AddressError.INVALID_ADDRESS]);
+      }
+      return false;
+    }
+
     return true;
-  }, [chainInfo?.chainId, selectedToContact.address, wallet, assetInfo?.chainId, isValidChainId, showDialog]);
+  }, [
+    selectedToContact.address,
+    chainInfo?.chainId,
+    wallet,
+    assetInfo.chainId,
+    isValidChainId,
+    showDialog,
+    enableEtransfer,
+    isValidOtherChainAddress,
+  ]);
 
   const nextStep = useCallback(() => {
     if (checkCanNext()) {
@@ -472,16 +509,72 @@ const SendHome: React.FC = () => {
             disabled={nextDisable}
             title={t('Next')}
             type="primary"
-            onPress={() => nextStep()}
+            onPress={nextStep}
           />
         )}
       </View>
     );
   }, [isLoading, nextDisable, nextStep, preview, previewDisable, step, t]);
 
+  const WarningUI = useMemo(() => {
+    if (enableEtransfer && isValidOtherChainAddress) {
+      return (
+        <View style={[otherChainWarningStyle.wrap, otherChainWarningStyle.flex]}>
+          <Svg icon="warning" size={pTd(16)} iconStyle={otherChainWarningStyle.icon} />
+          <RichText
+            text={AddressError.OTHER_CHAIN_ADDRESS}
+            commonTextStyle={otherChainWarningStyle.commonText}
+            links={[
+              {
+                linkSyntax: 'ETransfer.',
+                linkStyle: otherChainWarningStyle.linkText,
+                linkPress: () => {
+                  if (!eTransferUrl) return;
+                  onDisclaimerModalPress(
+                    DepositModalMap.eTransfer,
+                    stringifyETrans({
+                      url: eTransferUrl,
+                      query: {
+                        tokenSymbol: assetInfo?.symbol,
+                        type: 'Deposit',
+                        chainId: assetInfo?.chainId,
+                      },
+                    }),
+                  );
+                },
+              },
+            ]}
+            wrapperStyle={otherChainWarningStyle.text}
+            textDivider={'$'}
+          />
+        </View>
+      );
+    } else if (assetInfo?.chainId !== MAIN_CHAIN_ID) {
+      return (
+        <Touchable
+          style={[GStyles.flexRow, GStyles.itemCenter, styles.warningWrap]}
+          onPress={() => showDialog('exchange')}>
+          <Svg icon="warning1" size={pTd(16)} />
+          <TextM style={[GStyles.marginLeft(pTd(8)), GStyles.flex1, FontStyles.font3]}>Send to exchange account?</TextM>
+          <Svg icon="down-arrow" size={pTd(16)} />
+        </Touchable>
+      );
+    } else {
+      return null;
+    }
+  }, [
+    assetInfo?.chainId,
+    assetInfo?.symbol,
+    eTransferUrl,
+    enableEtransfer,
+    isValidOtherChainAddress,
+    onDisclaimerModalPress,
+    showDialog,
+  ]);
+
   return (
     <PageContainer
-      safeAreaColor={['blue', step === 1 ? 'white' : 'gray']}
+      safeAreaColor={['white']}
       titleDom={`${t('Send')}${sendType === 'token' ? ' ' + assetInfo.symbol : ''}`}
       rightDom={
         sendType === 'token' && !isFixedToContact ? (
@@ -489,7 +582,6 @@ const SendHome: React.FC = () => {
             onPress={async () => {
               if (selectedToContact?.address) return showDialog('clearAddress');
               if (!(await qrScanPermissionAndToast())) return;
-
               navigationService.navigate('QrScanner', { fromSendPage: true });
             }}>
             <Svg icon="scan" size={pTd(17.5)} color={defaultColors.font2} iconStyle={styles.iconStyle} />
@@ -516,15 +608,7 @@ const SendHome: React.FC = () => {
         </Text>
       ))}
 
-      {assetInfo?.chainId !== MAIN_CHAIN_ID && (
-        <Touchable
-          style={[GStyles.flexRow, GStyles.itemCenter, styles.warningWrap]}
-          onPress={() => showDialog('exchange')}>
-          <Svg icon="warning1" size={pTd(16)} />
-          <TextM style={[GStyles.marginLeft(pTd(8)), GStyles.flex1, FontStyles.font3]}>Send to exchange account?</TextM>
-          <Svg icon="down-arrow" size={pTd(16)} />
-        </Touchable>
-      )}
+      {WarningUI}
 
       {/* Group 2 token */}
       {sendType === 'token' && step === 2 && (

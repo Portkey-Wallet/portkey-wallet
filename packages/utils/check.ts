@@ -17,3 +17,7 @@ export function checkHolderError(message?: string, code?: string) {
   if (message?.includes('not exist')) return EmailError.noAccount;
   return message;
 }
+
+export function checkIsValidEtransferAddress(ads = '') {
+  return ads.length >= 32 && ads.length <= 59;
+}

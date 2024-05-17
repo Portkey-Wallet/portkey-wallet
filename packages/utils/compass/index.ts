@@ -9,11 +9,12 @@ export interface FunctionalType {
 export const checkEnabledFunctionalTypes = (symbol: string, isOnMainChain: boolean): FunctionalType => {
   const USDTSymbol = 'USDT';
   const ELFSymbol = 'ELF';
+  const SGRSymbol = 'SGR-';
   return {
     send: true,
     receive: true,
     buy: (symbol === USDTSymbol || symbol === ELFSymbol) && isOnMainChain,
     swap: (symbol === USDTSymbol || symbol === ELFSymbol) && !isOnMainChain,
-    deposit: symbol === USDTSymbol,
+    deposit: symbol === USDTSymbol || (symbol.startsWith(SGRSymbol) && !isOnMainChain),
   };
 };

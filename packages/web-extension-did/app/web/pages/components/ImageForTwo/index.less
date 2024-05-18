@@ -1,5 +1,13 @@
 .show-two-image-wrap {
   position: relative;
+  flex-shrink: 0;
+  .two-image-top,
+  .two-image-bottom {
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
   .two-image-bottom {
     position: absolute;
     right: 0;

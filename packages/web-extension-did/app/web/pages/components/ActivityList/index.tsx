@@ -153,16 +153,13 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
     [currentNetwork.walletType],
   );
 
-  const renderSystemTitleForDapp = useCallback(
-    (item: ActivityItemType) => {
-      const { transactionName, dappName } = item;
-      return (
-        <div className={clsx('activity-item-title', isPrompt && 'prompt-activity-item-title')}>
-          <div className="transaction-name">{transactionName}</div>
-          <div className="transaction-address">{dappName}</div>
-        </div>
-      );
-    },
+  const renderActivityTitleForDapp = useCallback(
+    (item: ActivityItemType) => (
+      <div className={clsx('activity-item-title', isPrompt && 'prompt-activity-item-title')}>
+        <div className="transaction-name">{item.transactionName}</div>
+        <div className="transaction-dapp-name">{item.dappName}</div>
+      </div>
+    ),
     [isPrompt],
   );
 
@@ -190,13 +187,17 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         <div
           className={clsx(
             'activity-item-amount',
-            sameDirection && 'same-direction',
+            sameDirection ? 'same-direction' : 'opposite-direction',
             isPrompt && 'prompt-activity-item-amount',
           )}>
           {item.map((_token, index) => (
             <div
               key={`transaction-mul-token-amount_${index}`}
-              className={clsx('transaction-amount', _token.isReceived && 'received-amount')}>
+              className={clsx(
+                'transaction-amount',
+                _token.isReceived && 'received-amount',
+                `transaction-amount-${index}`,
+              )}>
               <span className="amount-show">{`${formatWithCommas({
                 sign: _token.isReceived ? AmountSign.PLUS : AmountSign.MINUS,
                 amount: _token.amount,
@@ -211,6 +212,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
     },
     [isPrompt],
   );
+
   const renderActivityAmount = useCallback(
     (item: ActivityItemType) => {
       const { isReceived, amount, decimals, symbol, currentTxPriceInUsd, nftInfo } = item;
@@ -224,15 +226,11 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
               decimals,
               digits: Number(decimals),
             })}`}</span>
-            {!nftInfo?.nftId && symbol && <span className="amount-symbol">{` ${symbol}`}</span>}
+            {(nftInfo?.alias || symbol) && <span className="amount-symbol">{` ${nftInfo?.alias || symbol}`}</span>}
           </div>
-          {nftInfo?.nftId ? (
-            <div className="transaction-nft-symbol">{nftInfo.alias}</div>
-          ) : (
-            <div className={clsx('transaction-convert', !isMainnet && 'hidden-transaction-convert')}>
-              {formatAmountUSDShow(currentTxPriceInUsd)}
-            </div>
-          )}
+          <div className={clsx('transaction-convert', !isMainnet && 'hidden-transaction-convert')}>
+            {formatAmountUSDShow(currentTxPriceInUsd)}
+          </div>
         </div>
       );
     },
@@ -286,13 +284,13 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
             iconBottom={{ url: tokenBottom.url, symbol: tokenBottom.symbol }}
           />
           <div className="activity-item-detail flex-between-center">
-            {renderSystemTitleForDapp(item)}
+            {renderActivityTitleForDapp(item)}
             {renderActivityAmountForMulToken([tokenTop, tokenBottom])}
           </div>
         </>
       );
     },
-    [renderActivityAmountForMulToken, renderSystemTitleForDapp],
+    [renderActivityAmountForMulToken, renderActivityTitleForDapp],
   );
 
   const renderSingleTokenForDapp = useCallback(
@@ -301,7 +299,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         <>
           {item.nftInfo ? (
             <NFTImageDisplay
-              src={item.listIcon}
+              src={item.nftInfo.imageUrl}
               isSeed={item.nftInfo.isSeed}
               seedType={item.nftInfo.seedType}
               alias={item.nftInfo.alias}
@@ -311,13 +309,13 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
             <TokenImageDisplay className="token-activity-icon" src={item.listIcon} symbol={item.symbol} />
           )}
           <div className="activity-item-detail flex-between-center">
-            {renderSystemTitleForDapp(item)}
+            {renderActivityTitleForDapp(item)}
             {renderActivityAmount(item)}
           </div>
         </>
       );
     },
-    [renderActivityAmount, renderSystemTitleForDapp],
+    [renderActivityAmount, renderActivityTitleForDapp],
   );
 
   const renderTxActivityItem = useCallback(
@@ -330,7 +328,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
     [renderMulTokenForDapp, renderSingleTokenForDapp, renderTxActivityItemForDefault],
   );
 
-  const renderSystemActivityItemForDapp = useCallback(
+  const renderEmptyTokenForDapp = useCallback(
     (item: ActivityItemType) => {
       return (
         <>
@@ -340,50 +338,62 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
             defaultHeight={32}
             className="system-activity-icon"
           />
-          {renderSystemTitleForDapp(item)}
+          <div className="activity-item-detail flex-between-center">{renderActivityTitleForDapp(item)}</div>
         </>
       );
     },
-    [renderSystemTitleForDapp],
+    [renderActivityTitleForDapp],
   );
 
   const renderSystemActivityItem = useCallback(
-    (item: ActivityItemType) => {
-      if (item.dappName) {
-        return renderSystemActivityItemForDapp(item);
-      }
-      return (
-        <>
-          <ImageDisplay
-            src={item.listIcon}
-            backupSrc="SystemActivity"
-            defaultHeight={32}
-            className="system-activity-icon"
-          />
-          <div className="activity-item-system-detail">
-            <span>{item?.transactionName}</span>
-          </div>
-        </>
-      );
-    },
-    [renderSystemActivityItemForDapp],
+    (item: ActivityItemType) => (
+      <>
+        <ImageDisplay
+          src={item.listIcon}
+          backupSrc="SystemActivity"
+          defaultHeight={32}
+          className="system-activity-icon"
+        />
+        <div className="activity-item-system-detail">
+          <span>{item?.transactionName}</span>
+        </div>
+      </>
+    ),
+    [],
   );
 
   const renderActivityItem = useCallback(
-    (item: ActivityItemType) => (
-      <div
-        className={clsx(
-          'activity-item',
-          'flex-column',
-          activity.failedActivityMap[item.transactionId] && 'activity-item-resend',
-        )}>
-        <div className="activity-item-content flex-row-center" onClick={() => navToDetail(item)}>
-          {item.isSystem ? renderSystemActivityItem(item) : renderTxActivityItem(item)}
+    (item: ActivityItemType) => {
+      const isEmptyToken = !(item.nftInfo || item.symbol || item.operations?.length);
+      const isDappTx = !!item.dappName;
+      // show login
+      const isShowEmptyTokenForDapp = isEmptyToken && isDappTx;
+      const isShowSystemForDefault = isEmptyToken && !isDappTx;
+      const isShowTx = !isEmptyToken;
+      return (
+        <div
+          className={clsx(
+            'activity-item',
+            'flex-column',
+            activity.failedActivityMap[item.transactionId] && 'activity-item-resend',
+          )}>
+          <div className="activity-item-content flex-row-center" onClick={() => navToDetail(item)}>
+            {isShowEmptyTokenForDapp && renderEmptyTokenForDapp(item)}
+            {isShowSystemForDefault && renderSystemActivityItem(item)}
+            {isShowTx && renderTxActivityItem(item)}
+          </div>
+          {renderResendBtn(item)}
         </div>
-        {renderResendBtn(item)}
-      </div>
-    ),
-    [activity.failedActivityMap, renderSystemActivityItem, renderTxActivityItem, renderResendBtn, navToDetail],
+      );
+    },
+    [
+      activity.failedActivityMap,
+      renderEmptyTokenForDapp,
+      renderSystemActivityItem,
+      renderTxActivityItem,
+      renderResendBtn,
+      navToDetail,
+    ],
   );
 
   const renderActivityList = useMemo(() => {
@@ -415,9 +425,9 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   }, [data, formatActivityTimeShow, renderActivityItem]);
 
   return (
-    <div className="activity-list">
+    <div className={clsx('activity-list', !hasMore && 'hidden-loading-more')}>
       {renderActivityList}
-      {hasMore && <LoadingMore hasMore={hasMore} loadMore={loadMore} className="load-more" />}
+      <LoadingMore hasMore={true} loadMore={loadMore} className="load-more" />
     </div>
   );
 }

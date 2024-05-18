@@ -46,10 +46,21 @@
           width: 32px;
           height: 32px;
         }
+        .two-image-top,
+        .two-image-bottom {
+          width: 24px;
+          height: 24px;
+          /* stylelint-disable-next-line no-descending-specificity */
+          svg {
+            width: 100%;
+            height: 100%;
+          }
+        }
       }
       .systemactivity-icon {
         width: 32px;
         height: 32px;
+        /* stylelint-disable-next-line no-descending-specificity */
         svg {
           width: 32px;
           height: 32px;
@@ -100,11 +111,12 @@
           }
           .transaction-nft-symbol,
           .transaction-convert {
+            height: 16px;
             word-break: break-all;
             .text-overflow(1);
           }
           .hidden-transaction-convert {
-            overflow: hidden;
+            visibility: hidden;
           }
           &.prompt-activity-item-amount {
             flex: 3;
@@ -114,6 +126,13 @@
             .transaction-amount {
               font-size: 14px;
               line-height: 22px;
+            }
+          }
+          &.opposite-direction {
+            .transaction-amount-1 {
+              font-size: 12px;
+              line-height: 16px;
+              color: @Neutral-3;
             }
           }
         }
@@ -141,6 +160,11 @@
     }
   }
 
+  &.hidden-loading-more {
+    .adm-infinite-scroll {
+      display: none;
+    }
+  }
   @media screen and (min-width: 768px) {
     .load-more {
       padding-bottom: 12px;

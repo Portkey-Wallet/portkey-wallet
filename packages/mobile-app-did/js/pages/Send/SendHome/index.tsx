@@ -195,8 +195,8 @@ const SendHome: React.FC = () => {
 
   const enableEtransfer = useMemo(() => {
     const { symbol, chainId } = assetInfo;
-    const { deposit } = checkEnabledFunctionalTypes(symbol, chainId === MAIN_CHAIN_ID);
-    return isETransDepositShow && deposit;
+    const { withdraw } = checkEnabledFunctionalTypes(symbol, chainId === MAIN_CHAIN_ID);
+    return isETransDepositShow && withdraw;
   }, [assetInfo, isETransDepositShow]);
 
   const isValidOtherChainAddress = useMemo(() => {

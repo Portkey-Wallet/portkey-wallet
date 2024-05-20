@@ -5,7 +5,7 @@ import { QRCodeDataObjType, shrinkSendQrData } from '@portkey-wallet/utils/qrCod
 import clsx from 'clsx';
 import Copy from 'components/Copy';
 import CustomSvg from 'components/CustomSvg';
-import TitleWrapper from 'components/TitleWrapper';
+import CommonHeader from 'components/CommonHeader';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import PromptFrame from 'pages/components/PromptFrame';
 import QRCodeCommon from 'pages/components/QRCodeCommon';
@@ -56,13 +56,6 @@ export default function Receive() {
     [isMainChain],
   );
   const [showTip, setShowTip] = useState(!isMainChain);
-  const rightElement = useMemo(() => {
-    return (
-      <div>
-        <CustomSvg onClick={() => navigate(-1)} type="Close2" />
-      </div>
-    );
-  }, [navigate]);
 
   const value: QRCodeDataObjType = useMemo(
     () => ({
@@ -92,7 +85,7 @@ export default function Receive() {
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['receive-wrapper', isPrompt && 'detail-page-prompt'])}>
-        <TitleWrapper leftElement rightElement={rightElement} />
+        <CommonHeader onLeftBack={() => navigate(-1)} />
         <div className="receive-content">
           <div className={clsx(['single-account'])}>
             <div className="name">My Wallet Address to Receive</div>
@@ -129,7 +122,6 @@ export default function Receive() {
     );
   }, [
     isPrompt,
-    rightElement,
     symbol,
     state?.imageUrl,
     state.chainId,
@@ -140,6 +132,7 @@ export default function Receive() {
     tipContent,
     showSideChainTokenReceiveTip,
     showTip,
+    navigate,
     replaceSuffixShow,
   ]);
 

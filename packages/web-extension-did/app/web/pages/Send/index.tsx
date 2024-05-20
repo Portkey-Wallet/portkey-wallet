@@ -713,7 +713,7 @@ export default function Send() {
         type: 'Withdraw',
         tokenSymbol: state.symbol,
         chainId: state.chainId,
-        withDrawAddress: toAccount.address,
+        withdrawAddress: toAccount.address,
       },
     });
 

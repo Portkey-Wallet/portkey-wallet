@@ -158,11 +158,11 @@ export default function Send() {
 
   const isShowWithdrawTip = useMemo(
     () =>
-      dappShowFn.deposit &&
+      dappShowFn.withdraw &&
       isETransWithdrawShow &&
       !validateToAddress(toAccount, false) &&
       checkIsValidEtransferAddress(toAccount.address),
-    [dappShowFn.deposit, isETransWithdrawShow, toAccount, validateToAddress],
+    [dappShowFn.withdraw, isETransWithdrawShow, toAccount, validateToAddress],
   );
 
   const btnDisabled = useMemo(() => {

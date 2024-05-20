@@ -5,7 +5,7 @@ export const defaultColors = {
   primaryLight: 'red',
   bgColor: '#ffffff',
   bgColor1: 'rgba(242, 244, 246, 1)',
-  primaryColor: '#5B8EF4',
+  primaryColor: '#5D42FF',
 
   bg1: '#ffffff',
   bg2: '#FEF6E7',
@@ -39,6 +39,7 @@ export const defaultColors = {
   bg30: '#979AA1',
   bg31: '#25272A',
   bg32: '#EBEBEC',
+  bg33: '#FFF4E8',
 
   font1: '#464B53',
   font2: 'white',
@@ -57,6 +58,7 @@ export const defaultColors = {
   font15: '#C6A05A',
   font16: '#25272A',
   font17: '#547AFF',
+  font18: '#55585E',
 
   white: '#ffffff',
   black: '#000000',
@@ -73,6 +75,7 @@ export const defaultColors = {
   border5: '#F2F4F6',
   border6: '#DEE2E8',
   border7: '#C14247',
+  border8: '#FFD4A2',
 
   error: '#B34B4B',
   error1: '#FF4D4F',

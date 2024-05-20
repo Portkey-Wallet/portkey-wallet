@@ -1,7 +1,7 @@
 export enum AddressError {
   SAME_ADDRESS = 'The sender and recipient address are identical',
   INVALID_ADDRESS = 'Recipient address is invalid',
-  OTHER_CHAIN_ADDRESS = "It's not aelf address. If you want to withdraw assets to other chains, you can use $ETransfer$.",
+  OTHER_CHAIN_ADDRESS = 'The To address is not on the aelf network. If you intend to send assets cross-chain, please try using $ETransfer$.',
 }
 
 export enum TransactionError {

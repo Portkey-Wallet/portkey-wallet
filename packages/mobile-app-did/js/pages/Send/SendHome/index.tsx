@@ -526,7 +526,7 @@ const SendHome: React.FC = () => {
             commonTextStyle={otherChainWarningStyle.commonText}
             links={[
               {
-                linkSyntax: 'ETransfer.',
+                linkSyntax: 'ETransfer',
                 linkStyle: otherChainWarningStyle.linkText,
                 linkPress: () => {
                   if (!eTransferUrl) return;

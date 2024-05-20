@@ -128,6 +128,8 @@ export const otherChainWarningStyle = StyleSheet.create({
     fontSize: pTd(14),
     lineHeight: pTd(22),
     color: defaultColors.primaryColor,
+    textDecorationLine: 'underline',
+    textDecorationColor: defaultColors.primaryColor,
   },
   icon: {
     marginTop: pTd(4),

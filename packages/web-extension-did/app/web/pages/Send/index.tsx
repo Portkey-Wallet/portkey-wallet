@@ -52,6 +52,14 @@ import { usePromptLocationParams } from 'hooks/router';
 import { TSendLocationState, TSendPageType } from 'types/router';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
+import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
+import { useExtensionETransShow } from 'hooks/cms';
+import { checkIsValidEtransferAddress } from '@portkey-wallet/utils/check';
+import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
+import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
+import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from 'pages/components/DisclaimerModal';
+import { getDisclaimerData } from 'utils/disclaimer';
+import { TradeTypeEnum } from 'constants/trade';
 
 export type ToAccount = { address: string; name?: string };
 
@@ -91,6 +99,14 @@ export default function Send() {
   const checkManagerSyncState = useCheckManagerSyncState();
   const [txFee, setTxFee] = useState<string>();
   const currentChain = useCurrentChain(chainId);
+  const { checkDappIsConfirmed } = useDisclaimer();
+  const disclaimerData = useRef<IDisclaimerProps>(initDisclaimerData);
+  const [disclaimerOpen, setDisclaimerOpen] = useState<boolean>(false);
+  const dappShowFn = useMemo(
+    () => checkEnabledFunctionalTypes(state.symbol, state.chainId === MAIN_CHAIN_ID),
+    [state.chainId, state.symbol],
+  );
+  const { isETransWithdrawShow } = useExtensionETransShow();
   const isSideChainSend = useMemo(() => state.chainId !== MAIN_CHAIN_ID, [state.chainId]);
   useFetchTxFee();
   const { crossChain: crossChainFee } = useGetTxFee(chainId);
@@ -122,22 +138,31 @@ export default function Send() {
   const defaultToken = useDefaultToken(chainId);
 
   const validateToAddress = useCallback(
-    (value: { name?: string; address: string } | undefined) => {
+    (value: { name?: string; address: string } | undefined, showError = true) => {
       if (!value) return false;
       const suffix = getAddressChainId(toAccount.address, chainInfo?.chainId || 'AELF');
       if (!isDIDAddress(value.address) || !isValidSuffix(suffix)) {
-        setErrorMsg(AddressCheckError.recipientAddressIsInvalid);
+        showError && setErrorMsg(AddressCheckError.recipientAddressIsInvalid);
         return false;
       }
       const selfAddress = wallet?.[chainId]?.caAddress || '';
       if (isEqAddress(selfAddress, getAelfAddress(toAccount.address)) && suffix === chainId) {
-        setErrorMsg(AddressCheckError.equalIsValid);
+        showError && setErrorMsg(AddressCheckError.equalIsValid);
         return false;
       }
-      setErrorMsg('');
+      showError && setErrorMsg('');
       return true;
     },
     [chainId, chainInfo?.chainId, isValidSuffix, toAccount.address, wallet],
+  );
+
+  const isShowWithdrawTip = useMemo(
+    () =>
+      dappShowFn.deposit &&
+      isETransWithdrawShow &&
+      !validateToAddress(toAccount, false) &&
+      checkIsValidEtransferAddress(toAccount.address),
+    [dappShowFn.deposit, isETransWithdrawShow, toAccount, validateToAddress],
   );
 
   const btnDisabled = useMemo(() => {
@@ -680,6 +705,44 @@ export default function Send() {
     );
   }, [showSideChainModal, state.chainId]);
 
+  const goToWithDraw = useCallback(() => {
+    const originUrl = currentNetwork.eTransferUrl ?? '';
+    const targetUrl = stringifyETrans({
+      url: currentNetwork.eTransferUrl || '',
+      query: {
+        type: 'Withdraw',
+        tokenSymbol: state.symbol,
+        chainId: state.chainId,
+        withdrawAddress: toAccount.address,
+      },
+    });
+
+    if (checkDappIsConfirmed(originUrl)) {
+      const openWinder = window.open(targetUrl, '_blank');
+      if (openWinder) {
+        openWinder.opener = null;
+      }
+    } else {
+      disclaimerData.current = getDisclaimerData({ type: TradeTypeEnum.ETrans, originUrl, targetUrl });
+      setDisclaimerOpen(true);
+    }
+  }, [checkDappIsConfirmed, currentNetwork.eTransferUrl, state.chainId, state.symbol, toAccount.address]);
+
+  const renderWithdrawTip = useCallback(() => {
+    return (
+      <div className="flex etransfer-withdraw-tip">
+        <CustomSvg type="InfoNew" className="flex-1" />
+        <div className="tip-content">
+          {`The To address is not on the aelf network. If you intend to send assets cross-chain, please try using `}
+          <span onClick={goToWithDraw} className="tip-click-content">
+            ETransfer
+          </span>
+          {`.`}
+        </div>
+      </div>
+    );
+  }, [goToWithDraw]);
+
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['page-send', isPrompt && 'detail-page-prompt'])}>
@@ -692,7 +755,12 @@ export default function Send() {
           rightElement={<CustomSvg type="Close2" onClick={() => navigate('/')} />}
         />
         {stage !== SendStage.Preview && (
-          <div className={clsx(['address-form', state.chainId !== MAIN_CHAIN_ID && 'address-form-side-chain'])}>
+          <div
+            className={clsx([
+              'address-form',
+              state.chainId !== MAIN_CHAIN_ID && 'address-form-side-chain',
+              isShowWithdrawTip && 'etransfer-withdraw-tip-wrap',
+            ])}>
             <div className="address-wrap">
               <div className="item from">
                 <span className="label">{t('From_with_colon')}</span>
@@ -703,7 +771,14 @@ export default function Send() {
               <div className="item to">
                 <span className="label">{t('To_with_colon')}</span>
                 <div className="control">
-                  <ToAccount value={toAccount} onChange={(v) => setToAccount(v)} focus={stage !== SendStage.Amount} />
+                  <ToAccount
+                    value={toAccount}
+                    onChange={(v) => {
+                      setErrorMsg('');
+                      setToAccount(v);
+                    }}
+                    focus={stage !== SendStage.Amount}
+                  />
                   {toAccount.address && (
                     <CustomSvg
                       type="Close2"
@@ -717,9 +792,10 @@ export default function Send() {
               </div>
               {errorMsg && <span className="error-msg">{errorMsg}</span>}
             </div>
-            {renderSideChainTip()}
+            {!isShowWithdrawTip && renderSideChainTip()}
           </div>
         )}
+        {isShowWithdrawTip && renderWithdrawTip()}
         <div className="stage-ele">{StageObj[stage].element}</div>
         <div className="btn-wrap">
           <Button disabled={btnDisabled} className="stage-btn" type="primary" onClick={StageObj[stage].handler}>
@@ -734,6 +810,7 @@ export default function Send() {
           onClose={onCloseGuardianApprove}
           getApproveRes={getApproveRes}
         />
+        <DisclaimerModal open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} {...disclaimerData.current} />
 
         {isPrompt && <PromptEmptyElement />}
       </div>
@@ -741,13 +818,16 @@ export default function Send() {
   }, [
     StageObj,
     btnDisabled,
+    disclaimerOpen,
     errorMsg,
     getApproveRes,
     isPrompt,
+    isShowWithdrawTip,
     navigate,
     onCloseGuardianApprove,
     openGuardiansApprove,
     renderSideChainTip,
+    renderWithdrawTip,
     stage,
     state.chainId,
     symbol,

@@ -35,8 +35,6 @@ export default function To({
     setErrorMessage?.([]);
   }, [setErrorMessage, setSelectedToContact, setStep]);
 
-  console.log('isFixedToContact', isFixedToContact);
-
   return (
     <View style={styles.toWrap}>
       <TextM style={styles.leftTitle}>{t('To')}</TextM>

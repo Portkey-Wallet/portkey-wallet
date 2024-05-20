@@ -273,16 +273,18 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         amount: _token.amount,
         decimals: _token.decimals,
       }));
-      if (tokenTop.isReceived !== tokenBottom.isReceived && !tokenTop.isReceived) {
+      const sameDirection = tokenTop.isReceived === tokenBottom.isReceived;
+      if (!sameDirection && !tokenTop.isReceived) {
         [tokenBottom, tokenTop] = [tokenTop, tokenBottom];
+      }
+      let renderTopIconInfo = { url: tokenTop.url, symbol: tokenTop.symbol };
+      let renderBottomIconInfo = { url: tokenBottom.url, symbol: tokenBottom.symbol };
+      if (!sameDirection) {
+        [renderTopIconInfo, renderBottomIconInfo] = [renderBottomIconInfo, renderTopIconInfo];
       }
       return (
         <>
-          <ImageForTwo
-            className="token-activity-icon"
-            iconTop={{ url: tokenTop.url, symbol: tokenTop.symbol }}
-            iconBottom={{ url: tokenBottom.url, symbol: tokenBottom.symbol }}
-          />
+          <ImageForTwo className="token-activity-icon" iconTop={renderTopIconInfo} iconBottom={renderBottomIconInfo} />
           <div className="activity-item-detail flex-between-center">
             {renderActivityTitleForDapp(item)}
             {renderActivityAmountForMulToken([tokenTop, tokenBottom])}

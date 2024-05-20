@@ -156,6 +156,10 @@ export default class DappMobileOperator extends Operator {
 
     switch (method) {
       case MethodsBase.ACCOUNTS: {
+        if (DAPP_WHITELIST.includes(this.dapp.origin)) {
+          await this.autoApprove();
+        }
+
         return generateNormalResponse({
           eventName,
           data: await this.dappManager.accounts(this.dapp.origin),
@@ -187,6 +191,10 @@ export default class DappMobileOperator extends Operator {
         });
       }
       case MethodsWallet.GET_WALLET_STATE: {
+        if (DAPP_WHITELIST.includes(this.dapp.origin)) {
+          await this.autoApprove();
+        }
+
         const [isActive, isLocked] = await Promise.all([this.isActive(), this.dappManager.isLocked()]);
         const data: WalletState = { isConnected: isActive, isUnlocked: !isLocked };
         if (isActive) {

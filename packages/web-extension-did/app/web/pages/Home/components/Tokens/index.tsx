@@ -11,6 +11,7 @@ import { PAGE_SIZE_IN_ACCOUNT_TOKEN } from '@portkey-wallet/constants/constants-
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import './index.less';
+import clsx from 'clsx';
 
 export default function TokenList() {
   const { t } = useTranslation();
@@ -50,7 +51,7 @@ export default function TokenList() {
   }, [navigate]);
 
   return (
-    <div className="tab-token">
+    <div className={clsx('tab-token', !hasMoreTokenList && 'hidden-loading-more')}>
       <ul className="token-list">
         {accountTokenList.map((item) => (
           <li
@@ -71,7 +72,7 @@ export default function TokenList() {
           </li>
         ))}
       </ul>
-      {hasMoreTokenList && <LoadingMore hasMore={hasMoreTokenList} loadMore={getMoreTokenList} className="load-more" />}
+      <LoadingMore hasMore={hasMoreTokenList} loadMore={getMoreTokenList} className="load-more" />
 
       <div className="add-token-wrapper flex-center" onClick={handleAddToken}>
         <span className="add-token-text">{t('Add Tokens')}</span>

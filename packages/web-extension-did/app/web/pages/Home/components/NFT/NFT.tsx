@@ -201,7 +201,7 @@ export default function NFT() {
           No NFTs yet
         </div>
       ) : (
-        <div className="nft-list">
+        <div className={clsx('nft-list', !hasMoreNFTCollection && 'hidden-loading-more')}>
           <Collapse
             collapsible={isFetching ? 'disabled' : undefined}
             onChange={handleChange}
@@ -210,9 +210,7 @@ export default function NFT() {
             )}>
             {accountNFTList.map((item) => renderItem(item))}
           </Collapse>
-          {hasMoreNFTCollection && (
-            <LoadingMore hasMore={hasMoreNFTCollection} loadMore={getMoreNFTCollection} className="load-more" />
-          )}
+          <LoadingMore hasMore={hasMoreNFTCollection} loadMore={getMoreNFTCollection} className="load-more" />
         </div>
       )}
     </div>

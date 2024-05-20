@@ -1,15 +1,10 @@
 @import '../../../../assets/theme/color.less';
+@import '../../../../assets/theme/constants.less';
 
 .wallet-name-popup {
   position: relative;
-  .nav-header {
-    padding-top: 16px;
-    background-color: @bg-13;
-    border-bottom: 1px solid @border-2;
-  }
-
   .view-contact-body {
-    height: calc(100% - 97px);
+    height: calc(100% - @common-header-height);
 
     .footer {
       padding: 16px;

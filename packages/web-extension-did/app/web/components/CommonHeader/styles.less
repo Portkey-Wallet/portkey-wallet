@@ -1,9 +1,10 @@
 @import '../../assets/theme/color.less';
+@import '../../assets/theme/constants.less';
 
 .common-header {
   gap: 12px;
   width: 100%;
-  height: 60px;
+  height: @common-header-height;
   padding: 0 16px;
   background-color: @neutral-default-bg;
   &.common-header-bottom-border {
@@ -22,6 +23,9 @@
     line-height: 28px;
     font-weight: 500;
     color: @neutral-primary-text;
+    &.text-ellipsis {
+      .text-overflow(1);
+    }
   }
   .common-header-right-wrapper {
     gap: 12px;

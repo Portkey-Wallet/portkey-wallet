@@ -81,7 +81,9 @@ export default function CommonHeader({
           onClick={onLeftBack}
         />
       )}
-      <div className="common-header-title flex-1">{title}</div>
+      <div className={clsx('common-header-title', 'flex-1', { ['text-ellipsis']: typeof title === 'string' })}>
+        {title}
+      </div>
       {!!rightElementList?.length && (
         <div className="common-header-right-wrapper flex-row-center">
           {rightElementList.map((element, index) => renderRightElement(element, index))}

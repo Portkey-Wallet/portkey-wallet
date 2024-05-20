@@ -1,3 +1,4 @@
+/* eslint-disable no-inline-styles/no-inline-styles */
 import { Col, Modal, ModalProps, Row } from 'antd';
 import clsx from 'clsx';
 import { LeftOutlined } from '@ant-design/icons';

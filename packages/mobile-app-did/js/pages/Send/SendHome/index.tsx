@@ -536,8 +536,9 @@ const SendHome: React.FC = () => {
                       url: eTransferUrl,
                       query: {
                         tokenSymbol: assetInfo?.symbol,
-                        type: 'Deposit',
+                        type: 'Withdraw',
                         chainId: assetInfo?.chainId,
+                        withdrawAddress: selectedToContact.address,
                       },
                     }),
                   );
@@ -569,6 +570,7 @@ const SendHome: React.FC = () => {
     enableEtransfer,
     isValidOtherChainAddress,
     onDisclaimerModalPress,
+    selectedToContact.address,
     showDialog,
   ]);
 

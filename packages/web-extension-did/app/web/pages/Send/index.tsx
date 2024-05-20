@@ -733,7 +733,7 @@ export default function Send() {
       <div className="flex etransfer-withdraw-tip">
         <CustomSvg type="InfoNew" className="flex-1" />
         <div className="tip-content">
-          {`It's not aelf address. If you want to withdraw assets to other chains, you can use `}
+          {`The To address is not on the aelf network. If you intend to send assets cross-chain, please try using `}
           <span onClick={goToWithDraw} className="tip-click-content">
             ETransfer
           </span>

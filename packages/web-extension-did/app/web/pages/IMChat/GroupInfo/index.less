@@ -3,14 +3,11 @@
 .group-info-page {
   height: 100%;
   .group-info-header {
-    width: 100%;
-    padding-top: 16px;
-    background-color: @bg-13;
     z-index: 100;
   }
   .group-info-body {
     width: 100%;
-    height: calc(100% - 96px);
+    height: calc(100% - @common-header-height);
     overflow-y: auto;
     .group-info-container {
       .info-basic {

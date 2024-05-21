@@ -1,4 +1,5 @@
 @import '../../../assets/theme/color.less';
+@import '../../../assets/theme/constants.less';
 
 .create-chat-group {
   height: 100%;
@@ -10,7 +11,7 @@
   }
 
   .create-chat-body {
-    height: calc(100% - 96px);
+    height: calc(100% - @common-header-height);
   }
 
   .create-chat-form {

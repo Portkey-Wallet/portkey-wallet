@@ -52,7 +52,7 @@ const ProfileHandleSection: React.FC<ProfileHandleSectionPropsType> = props => {
         label: 'More',
         color: defaultColors.primaryColor,
         colorStyle: { color: defaultColors.primaryColor },
-        icon: 'chat-find-more',
+        icon: 'more',
         onPress: onPressMore,
       },
     ];

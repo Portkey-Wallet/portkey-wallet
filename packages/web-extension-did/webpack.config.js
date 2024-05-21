@@ -94,10 +94,10 @@ let config = {
             options: {
               lessOptions: {
                 modifyVars: {
-                  'primary-color': '#5b8ef4',
+                  'primary-color': '#5d42ff',
                   'error-color': '#FF4D4F',
                   'success-color': '#52C41A',
-                  'warning-color': '#FAAD14',
+                  'warning-color': '#ff9417',
                   '@ant-prefix': 'portkey',
                   '@app-prefix': 'portkey',
                 },

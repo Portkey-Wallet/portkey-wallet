@@ -2,12 +2,12 @@
 
 .chat-box-page {
   height: 600px;
-  background-color: @bg-11;;
+  background-color: @neutral-default-bg;;
   .chat-box-top {
     flex-shrink: 0;
     padding-top: 16px;
     background-color: @bg-13;
-    border-bottom: 1px solid @border-2;
+    border-bottom: 1px solid @neutral-divider;
     .title-element {
       align-items: center;
       .title-content {
@@ -21,7 +21,7 @@
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
-        color: @font-11;
+        color: @neutral-primary-text;
         cursor: pointer;
       }
       .custom-svg.mute-icon {
@@ -32,7 +32,7 @@
         align-items: center;
         svg {
           path {
-            fill: @border-13;
+            fill: @neutral-disable-text;
           }
         }
       }
@@ -49,10 +49,10 @@
     position: relative;
     flex-shrink: 0;
     height: 48px;
-    border-bottom: 1px solid @border-2;
+    border-bottom: 1px solid @neutral-divider;
     font-size: 16px;
     line-height: 22px;
-    color: @font-9;
+    color: @brand-normal;
     .content {
       height: 100%;
       gap: 16px;
@@ -64,7 +64,7 @@
         svg {
           /* stylelint-disable-next-line no-descending-specificity */
           path {
-            fill: @svg-1;
+            fill: @brand-normal;
           }
         }
       }
@@ -118,7 +118,7 @@
     }
   }
   .popover-menu-list .menu-item:hover .upload-text {
-    color: @font-9;
+    color: @brand-normal;
   }
 }
 
@@ -127,7 +127,7 @@
   font-size: 14px;
   line-height: 20px;
   font-weight: 400;
-  color: @font-11;
+  color: @neutral-primary-text;
   .unpin-content-title {
     font-size: 18px;
     line-height: 22px;

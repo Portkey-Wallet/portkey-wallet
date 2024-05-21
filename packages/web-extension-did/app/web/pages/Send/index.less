@@ -23,7 +23,7 @@
     .title-center {
       flex: 1;
       padding: 0 12px;
-      color: @font-11;
+      color: @neutral-primary-text;
       line-height: 28px;
       font-size: 24px;
     }
@@ -44,14 +44,14 @@
     flex-direction: column;
     flex: 1;
     overflow: hidden;
-    background-color: @bg-11;
+    background-color: @neutral-default-bg;
   }
 
   .address-wrap,
   .amount-wrap {
     display: flex;
     flex-direction: column;
-    border-bottom: 1px solid @border-2;
+    border-bottom: 1px solid @neutral-divider;
     padding: 0 16px 15px;
     gap: 8px;
     .item {
@@ -67,7 +67,7 @@
         line-height: 22px;
         // max-height: 22px;
         font-size: 16px;
-        color: @font-13;
+        color: @neutral-secondary-text;
         button {
           margin-top: 4px;
           border-radius: 16px;
@@ -76,9 +76,9 @@
       .control {
         position: relative;
         width: 250px;
-        background-color: @bg-11;
+        background-color: @neutral-default-bg;
         border-radius: 6px;
-        border: 1px solid @border-1;
+        border: 1px solid @neutral-border;
         overflow: hidden;
         flex: 1;
       }
@@ -89,7 +89,7 @@
         line-height: 22px;
         padding: 16px 15px;
         border-radius: 6px;
-        border: 1px solid @border-1;
+        border: 1px solid @neutral-border;
         .name {
           font-size: 16px;
           white-space: nowrap;
@@ -104,14 +104,14 @@
       }
       .@{app-prefix}-input {
         height: 56px;
-        color: @font-13;
+        color: @neutral-secondary-text;
         border-radius: 6px;
-        border: 1px solid @border-1;
+        border: 1px solid @neutral-border;
         padding: 16px 15px;
         background-color: transparent;
 
         &::placeholder {
-          color: @font-12;
+          color: @neutral-disable-text;
         }
       }
     }
@@ -122,7 +122,7 @@
       margin: -6px 0 9px 78px;
     }
     .error-msg.error-warning {
-      color: @font-8;
+      color: @functional-warning-default;
     }
   }
   .address-wrap {
@@ -144,7 +144,7 @@
     }
   }
   .amount-wrap {
-    background-color: @bg-11;
+    background-color: @neutral-default-bg;
     padding-top: 16px;
     border-bottom: none;
     .asset-selector {
@@ -168,7 +168,7 @@
         .amount {
           line-height: 16px;
           font-size: 12px;
-          color: @font-13;
+          color: @neutral-secondary-text;
           word-break: break-all;
         }
       }
@@ -180,7 +180,7 @@
       gap: 16px;
       margin-left: -16px;
       margin-right: -16px;
-      border-bottom: 1px solid @border-2;
+      border-bottom: 1px solid @neutral-divider;
       margin-bottom: 15px;
       .avatar {
         position: relative;
@@ -188,9 +188,9 @@
         height: 64px;
         flex-shrink: 0;
         border-radius: 6px;
-        background: @bg-15;
+        background: @neutral-divider;
         font-size: 24px;
-        color: @font-12;
+        color: @neutral-disable-text;
         .tokentagmedium-icon,
         .nfttagmedium-icon {
           display: flex;
@@ -221,7 +221,7 @@
           line-height: 22px;
           font-size: 16px;
           font-weight: 500;
-          color: @font-11;
+          color: @neutral-primary-text;
           .alias {
             overflow: hidden;
             -webkit-box-orient: vertical;
@@ -235,7 +235,7 @@
           }
         }
         .quantity {
-          color: @font-13;
+          color: @neutral-secondary-text;
           line-height: 20px;
           font-size: 14px;
           span {
@@ -280,7 +280,7 @@
         }
       }
       .convert {
-        color: @font-13;
+        color: @neutral-secondary-text;
         transform: translateY(-8px);
         line-height: 16px;
         font-size: 12px;
@@ -298,7 +298,7 @@
       padding: 12px 16px;
       background-color: @bg-22;
       border-radius: 6px;
-      color: @font-13;
+      color: @neutral-secondary-text;
       .info-icon {
         width: 16px;
         height: 16px;
@@ -309,7 +309,7 @@
           width: 16px;
           height: 16px;
           path {
-            fill: @bg-19;
+            fill: @neutral-secondary-text;
           }
         }
       }
@@ -319,9 +319,9 @@
     }
   }
   .btn-wrap {
-    background-color: @bg-11;
+    background-color: @neutral-default-bg;
     padding: 16px;
-    border-top: 1px solid @border-2;
+    border-top: 1px solid @neutral-divider;
     .stage-btn {
       border-radius: 100px;
       height: 48px;
@@ -352,11 +352,11 @@
 
       padding: 24px;
       margin: 0;
-      border-bottom: 1px solid @border-2;
+      border-bottom: 1px solid @neutral-divider;
       text-align: center;
       line-height: 22px;
       font-size: 18px;
-      color: @font-13;
+      color: @neutral-secondary-text;
     }
     .@{app-prefix}-modal-confirm-btns {
       padding: 15px 16px 17px;

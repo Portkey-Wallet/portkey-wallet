@@ -25,7 +25,7 @@ const UnBlockButton = (props: TUnBlockButtonPropsType) => {
     try {
       setIsLoading(true);
       await unBlock(blockedUserId);
-      CommonToast.success('Unblock success');
+      CommonToast.success('User unblocked');
     } catch (error) {
       CommonToast.fail('Unblock fail');
     } finally {

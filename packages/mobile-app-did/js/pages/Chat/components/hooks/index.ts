@@ -7,7 +7,7 @@ import { TextInput } from 'react-native';
 import { useBottomBarStatus, useChatsDispatch, useCurrentChannelId } from '../../context/hooks';
 import { ChatBottomBarStatus } from 'store/chat/slice';
 import { setBottomBarStatus } from '../../context/chatsContext';
-import { useHideChannel, useSendChannelMessage } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useChannelItemInfo, useHideChannel, useSendChannelMessage } from '@portkey-wallet/hooks/hooks-ca/im';
 import { Message, MessageType } from '@portkey-wallet/im';
 import { readFile } from 'utils/fs';
 import { formatRNImage } from '@portkey-wallet/utils/s3';
@@ -66,10 +66,18 @@ export function useKeyboardAnim({ textInputRef }: { textInputRef: React.RefObjec
 
 export function useSendCurrentChannelMessage() {
   const currentChannelId = useCurrentChannelId();
-  const { sendChannelMessage, sendChannelImageByS3Result } = useSendChannelMessage();
+  const currentChannelInfo = useChannelItemInfo(currentChannelId || '');
+  const { sendMessageToPeople, sendChannelMessage, sendChannelImageByS3Result } = useSendChannelMessage();
 
   return useMemo(
     () => ({
+      sendMessageToPeople: ({ type, content }: { content: string; type?: MessageType }) =>
+        sendMessageToPeople({
+          toRelationId: currentChannelInfo?.toRelationId,
+          channelId: currentChannelId || '',
+          content,
+          type,
+        }),
       sendChannelMessage: ({
         content,
         type,
@@ -95,12 +103,19 @@ export function useSendCurrentChannelMessage() {
         await bindUriToLocalImage(file.uri, s3Result.url);
 
         return sendChannelImageByS3Result({
+          toRelationId: currentChannelInfo?.toRelationId,
           channelId: currentChannelId || '',
           s3Result: { ...s3Result, ...data },
         });
       },
     }),
-    [currentChannelId, sendChannelImageByS3Result, sendChannelMessage],
+    [
+      currentChannelId,
+      currentChannelInfo?.toRelationId,
+      sendChannelImageByS3Result,
+      sendChannelMessage,
+      sendMessageToPeople,
+    ],
   );
 }
 

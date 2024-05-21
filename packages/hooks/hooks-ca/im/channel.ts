@@ -5,6 +5,7 @@ import im, {
   ChannelStatusEnum,
   MessageTypeEnum,
   RedPackageStatusEnum,
+  ChannelTypeEnum,
 } from '@portkey-wallet/im';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { sleep } from '@portkey-wallet/utils';
@@ -79,6 +80,7 @@ export const useSendChannelMessage = () => {
       if (!(toRelationId || channelId)) {
         throw new Error('No ID');
       }
+
       let _relationId = relationId;
       if (!_relationId) {
         try {
@@ -88,16 +90,37 @@ export const useSendChannelMessage = () => {
         }
       }
 
-      return im.service.sendMessage({
+      const msgParams = {
         channelUuid: channelId,
         toRelationId,
         type,
         content,
         sendUuid: getSendUuid(_relationId, toRelationId || ''),
-      });
+      };
+
+      if (channelId) {
+        const msgObj: Message = messageParser({
+          ...msgParams,
+          channelUuid: channelId || '',
+          from: _relationId,
+          fromAvatar: '',
+          fromName: nickName,
+          createAt: `${Date.now()}`,
+        });
+
+        dispatch(
+          addChannelMessage({
+            network: networkType,
+            channelId,
+            message: msgObj,
+          }),
+        );
+      }
+
+      return im.service.sendMessage(msgParams);
     },
 
-    [getRelationId, relationId],
+    [dispatch, getRelationId, networkType, nickName, relationId],
   );
 
   const sendMassMessage = useCallback(
@@ -217,11 +240,13 @@ export const useSendChannelMessage = () => {
   );
   const sendChannelImageByS3Result = useCallback(
     async ({
+      toRelationId,
       channelId,
       s3Result,
       quoteMessage,
     }: {
       channelId: string;
+      toRelationId?: string;
       s3Result: UploadFileType & ImageMessageFileType;
       quoteMessage?: Message;
     }) => {
@@ -251,18 +276,25 @@ export const useSendChannelMessage = () => {
 
         const content = `type:image;action:localImage;p1(Text):${p1Url},p2(Text):${p1Key},p3(Text):${p2Url},p4(Text):${p2Key},p5(Text):${s3Result.width},p6(Text):${s3Result.height}`;
 
-        return sendChannelMessage({
-          channelId,
-          content,
-          type: 'IMAGE',
-          quoteMessage,
-        });
+        return toRelationId
+          ? sendMessageToPeople({
+              channelId,
+              toRelationId,
+              content,
+              type: 'IMAGE',
+            })
+          : sendChannelMessage({
+              channelId,
+              content,
+              type: 'IMAGE',
+              quoteMessage,
+            });
       } catch (error) {
         console.log('sendChannelImage: error', error);
         throw error;
       }
     },
-    [sendChannelMessage],
+    [sendChannelMessage, sendMessageToPeople],
   );
   const sendChannelImage = useCallback(
     async ({
@@ -462,7 +494,7 @@ export const useChannelMessageList = (channelId: string) => {
   };
 };
 
-export const useChannel = (channelId: string) => {
+export const useChannel = (channelId: string, channelType?: ChannelTypeEnum) => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
 
@@ -505,7 +537,8 @@ export const useChannel = (channelId: string) => {
       if (listRef.current.findIndex(ele => ele.sendUuid === rawMsg.sendUuid) >= 0) return;
       const parsedMsg = messageParser(rawMsg);
 
-      if (checkIsBlocked(parsedMsg.from)) return;
+      if (checkIsBlocked(parsedMsg.from) && channelType === ChannelTypeEnum.P2P) return;
+
       if (parsedMsg.type === MessageTypeEnum.REDPACKAGE_CARD) {
         parsedMsg.redPackage = {
           viewStatus: RedPackageStatusEnum.UNOPENED,
@@ -532,7 +565,7 @@ export const useChannel = (channelId: string) => {
         }),
       );
     },
-    [channelId, checkIsBlocked, dispatch, networkType, read],
+    [channelId, channelType, checkIsBlocked, dispatch, networkType, read],
   );
   const updateListRef = useRef(updateList);
   updateListRef.current = updateList;

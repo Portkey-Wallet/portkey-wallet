@@ -39,6 +39,7 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 import CustomView from '../CustomView';
 import UnBlockButton from '../UnBlockButton';
+import { ChannelTypeEnum } from '@portkey-wallet/im';
 
 const ListViewProps = {
   // windowSize: 50,
@@ -55,7 +56,7 @@ export default function ChatsDetailContent() {
   const dispatch = useChatsDispatch();
   const messageContainerRef = useRef<FlatList>();
 
-  const { list, init, next, hasNext, loading, info } = useChannel(currentChannelId || '');
+  const { list, init, next, hasNext, loading, info } = useChannel(currentChannelId || '', ChannelTypeEnum.P2P);
   const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {

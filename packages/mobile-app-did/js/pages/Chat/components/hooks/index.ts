@@ -15,7 +15,7 @@ import { bindUriToLocalImage } from 'utils/fs/img';
 import s3Instance from '@portkey-wallet/utils/s3';
 import { pTd } from 'utils/unit';
 
-const TopSpacing = isIOS ? bottomBarHeight : isXiaoMi ? Math.max(-bottomBarHeight, -10) : 0;
+export const TopSpacing = isIOS ? bottomBarHeight : isXiaoMi ? Math.max(-bottomBarHeight, -10) : 0;
 
 const ToolsHeight = pTd(196);
 

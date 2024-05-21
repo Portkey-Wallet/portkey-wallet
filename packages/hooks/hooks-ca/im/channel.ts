@@ -21,7 +21,7 @@ import {
   addChannelMessage,
   updateChannelMessageAttribute,
 } from '@portkey-wallet/store/store-ca/im/actions';
-import { useChannelItemInfo, useIMChannelMessageListNetMapState, useRelationId } from '.';
+import { useBlockAndReport, useChannelItemInfo, useIMChannelMessageListNetMapState, useRelationId } from '.';
 import s3Instance, { getThumbSize, UploadFileType } from '@portkey-wallet/utils/s3';
 import { messageParser } from '@portkey-wallet/im/utils';
 import { useContactRelationIdMap } from '../contact';
@@ -467,6 +467,7 @@ export const useChannel = (channelId: string) => {
   const dispatch = useAppCommonDispatch();
 
   const { relationId } = useRelationId();
+  const { checkIsBlocked } = useBlockAndReport();
 
   const muteChannel = useMuteChannel();
   const pinChannel = usePinChannel();
@@ -503,11 +504,14 @@ export const useChannel = (channelId: string) => {
       if (rawMsg.channelUuid !== channelId) return;
       if (listRef.current.findIndex(ele => ele.sendUuid === rawMsg.sendUuid) >= 0) return;
       const parsedMsg = messageParser(rawMsg);
+
+      if (checkIsBlocked(parsedMsg.from)) return;
       if (parsedMsg.type === MessageTypeEnum.REDPACKAGE_CARD) {
         parsedMsg.redPackage = {
           viewStatus: RedPackageStatusEnum.UNOPENED,
         };
       }
+
       dispatch(
         addChannelMessage({
           network: networkType,
@@ -527,9 +531,8 @@ export const useChannel = (channelId: string) => {
           },
         }),
       );
-      console.log('result', parsedMsg);
     },
-    [channelId, dispatch, networkType, read],
+    [channelId, checkIsBlocked, dispatch, networkType, read],
   );
   const updateListRef = useRef(updateList);
   updateListRef.current = updateList;

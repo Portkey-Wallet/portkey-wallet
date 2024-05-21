@@ -50,6 +50,11 @@ export interface IMStateType {
       };
     };
   };
+  blockedUserListMap?: {
+    [T in NetworkType]?: {
+      [relationId: string]: string;
+    };
+  };
 }
 
 export enum UpdateChannelAttributeTypeEnum {

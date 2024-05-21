@@ -33,6 +33,7 @@ export const BGStyles = StyleSheet.create({
 });
 
 export const FontStyles = StyleSheet.create({
+  primaryColor1: { color: defaultColors.primaryColor1 },
   font1: { color: defaultColors.font1 },
   font2: { color: defaultColors.font2 },
   font3: { color: defaultColors.font3 },

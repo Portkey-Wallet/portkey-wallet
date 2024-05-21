@@ -1,22 +1,23 @@
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { FontStyles } from 'assets/theme/styles';
 import { TextM } from 'components/CommonText';
 import Svg, { IconName } from 'components/Svg';
 import Touchable from 'components/Touchable';
 
 import React, { memo, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { GestureResponderEvent, StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 
 type ProfileHandleSectionPropsType = {
   isAdded?: boolean;
+  isBlocked?: boolean;
   onPressAdded: () => void;
   onPressChat: () => void;
+  onPressMore: (event: GestureResponderEvent) => void;
 };
 
 const ProfileHandleSection: React.FC<ProfileHandleSectionPropsType> = props => {
-  const { isAdded, onPressAdded, onPressChat } = props;
+  const { isAdded, isBlocked, onPressAdded, onPressChat, onPressMore } = props;
 
   const handleList = useMemo((): {
     disabled?: boolean;
@@ -24,14 +25,14 @@ const ProfileHandleSection: React.FC<ProfileHandleSectionPropsType> = props => {
     color: string;
     colorStyle: { color: string };
     icon: IconName;
-    onPress: () => void;
+    onPress: (event: GestureResponderEvent) => void;
   }[] => {
     return [
       {
         disabled: isAdded,
         label: isAdded ? 'Added' : 'Add Contact',
-        color: isAdded ? defaultColors.font7 : defaultColors.font4,
-        colorStyle: isAdded ? FontStyles.font7 : FontStyles.font4,
+        color: isAdded ? defaultColors.font18 : defaultColors.primaryColor1,
+        colorStyle: { color: isAdded ? defaultColors.font18 : defaultColors.primaryColor1 },
         icon: isAdded ? 'chat-added' : 'chat-add-contact',
         onPress: () => {
           if (isAdded) return;
@@ -39,15 +40,23 @@ const ProfileHandleSection: React.FC<ProfileHandleSectionPropsType> = props => {
         },
       },
       {
-        disabled: false,
+        disabled: isBlocked,
         label: 'Chat',
-        color: defaultColors.font4,
-        colorStyle: FontStyles.font4,
+        color: isBlocked ? defaultColors.font18 : defaultColors.primaryColor1,
+        colorStyle: { color: isBlocked ? defaultColors.font18 : defaultColors.primaryColor1 },
         icon: 'chat-chat',
         onPress: onPressChat,
       },
+      {
+        disabled: false,
+        label: 'More',
+        color: defaultColors.primaryColor1,
+        colorStyle: { color: defaultColors.primaryColor1 },
+        icon: 'chat-find-more',
+        onPress: onPressMore,
+      },
     ];
-  }, [isAdded, onPressAdded, onPressChat]);
+  }, [isAdded, isBlocked, onPressAdded, onPressChat, onPressMore]);
 
   return (
     <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.wrap]}>
@@ -69,7 +78,7 @@ const styles = StyleSheet.create({
     marginBottom: pTd(24),
   },
   itemWrap: {
-    width: pTd(163.5),
+    width: pTd(109),
     padding: pTd(8),
     borderRadius: pTd(6),
     backgroundColor: defaultColors.bg1,

@@ -58,3 +58,49 @@ export const UN_SUPPORTED_FORMAT = '[Unsupported format]';
 export const ALREADY_JOINED_GROUP_CODE = '13302';
 export const NO_LONGER_IN_GROUP = '13108';
 export const PIN_LIMIT_EXCEED = '13310';
+
+export enum ReportMessageEnum {
+  Spam = 1,
+  Violence = 2,
+  Pornography = 3,
+  ChildAbuse = 4,
+  Copyright = 5,
+  IllegalDrugs = 6,
+  PersonalDetails = 7,
+  Other = 8,
+}
+
+export const ReportMessageList = [
+  {
+    title: 'Spam',
+    value: ReportMessageEnum.Spam,
+  },
+  {
+    title: 'Violence',
+    value: ReportMessageEnum.Violence,
+  },
+  {
+    title: 'Pornography',
+    value: ReportMessageEnum.Pornography,
+  },
+  {
+    title: 'Child Abuse',
+    value: ReportMessageEnum.ChildAbuse,
+  },
+  {
+    title: 'Copyright',
+    value: ReportMessageEnum.Copyright,
+  },
+  {
+    title: 'Illegal Drugs',
+    value: ReportMessageEnum.IllegalDrugs,
+  },
+  {
+    title: 'Personal Details',
+    value: ReportMessageEnum.PersonalDetails,
+  },
+  {
+    title: 'Other',
+    value: ReportMessageEnum.Other,
+  },
+] as const;

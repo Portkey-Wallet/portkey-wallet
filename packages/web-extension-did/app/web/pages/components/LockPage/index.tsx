@@ -6,7 +6,7 @@ import CustomSvg from 'components/CustomSvg';
 import CommonHeader from 'components/CommonHeader';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
-import { ReactNode, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { setPasswordSeed } from 'store/reducers/user/slice';
 import { useDispatch } from 'react-redux';
 import './index.less';

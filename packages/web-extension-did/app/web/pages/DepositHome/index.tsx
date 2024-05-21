@@ -171,7 +171,7 @@ export default function DepositHome() {
               text={'Next'}
               onClick={() => {
                 console.log('clicked next!!');
-                setStep(Step.FROM_NETWORK);
+                setStep(Step.DEPOSIT_ADDRESS);
               }}
             />
           </div>

@@ -10,6 +10,7 @@ import RadioTab from 'pages/components/RadioTab';
 import QRCodePage from './QRCodePage';
 import ExchangePage from './ExchangePage';
 import DepositPage from './DepositPage';
+import BuyPage from './BuyPage';
 import { TReceiveLocationState } from 'types/router';
 import { useLocationState } from 'hooks/router';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
@@ -67,7 +68,7 @@ export default function Receive() {
           {curTab === ReceiveTabEnum.QRCode && <QRCodePage />}
           {curTab === ReceiveTabEnum.Exchanges && <ExchangePage />}
           {curTab === ReceiveTabEnum.Deposit && <DepositPage />}
-          {curTab === ReceiveTabEnum.Buy && <></>}
+          {curTab === ReceiveTabEnum.Buy && <BuyPage />}
         </div>
         {isPrompt && <PromptEmptyElement />}
       </div>

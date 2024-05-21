@@ -31,8 +31,8 @@ const ProfileHandleSection: React.FC<ProfileHandleSectionPropsType> = props => {
       {
         disabled: isAdded,
         label: isAdded ? 'Added' : 'Add Contact',
-        color: isAdded ? defaultColors.font18 : defaultColors.primaryColor1,
-        colorStyle: { color: isAdded ? defaultColors.font18 : defaultColors.primaryColor1 },
+        color: isAdded ? defaultColors.font21 : defaultColors.primaryColor,
+        colorStyle: { color: isAdded ? defaultColors.font21 : defaultColors.primaryColor },
         icon: isAdded ? 'chat-added' : 'chat-add-contact',
         onPress: () => {
           if (isAdded) return;
@@ -42,16 +42,16 @@ const ProfileHandleSection: React.FC<ProfileHandleSectionPropsType> = props => {
       {
         disabled: isBlocked,
         label: 'Chat',
-        color: isBlocked ? defaultColors.font18 : defaultColors.primaryColor1,
-        colorStyle: { color: isBlocked ? defaultColors.font18 : defaultColors.primaryColor1 },
+        color: isBlocked ? defaultColors.font21 : defaultColors.primaryColor,
+        colorStyle: { color: isBlocked ? defaultColors.font21 : defaultColors.primaryColor },
         icon: 'chat-chat',
         onPress: onPressChat,
       },
       {
         disabled: false,
         label: 'More',
-        color: defaultColors.primaryColor1,
-        colorStyle: { color: defaultColors.primaryColor1 },
+        color: defaultColors.primaryColor,
+        colorStyle: { color: defaultColors.primaryColor },
         icon: 'chat-find-more',
         onPress: onPressMore,
       },

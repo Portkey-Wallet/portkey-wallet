@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     height: pTd(80),
     borderRadius: pTd(6),
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border8,
+    borderColor: defaultColors.border9,
     padding: pTd(12),
   },
   input: {

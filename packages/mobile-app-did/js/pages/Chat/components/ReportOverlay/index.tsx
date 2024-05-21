@@ -61,7 +61,9 @@ function ReportOverlay(props: ReportOverlayPropsTypes) {
               channelUuid: currentChannelId,
               description: selectedType === ReportMessageEnum.Other ? content : '',
             });
-            CommonToast.success('Report success');
+            CommonToast.success(
+              'Thank you for reporting this. Portkey will look into the matter and take appropriate action to handle it.',
+            );
           } catch (error) {
             console.log('error', error);
             CommonToast.failError(error);
@@ -87,7 +89,7 @@ function ReportOverlay(props: ReportOverlayPropsTypes) {
         <View style={styles.inputWrap}>
           <TextInput
             editable={selectedType === ReportMessageEnum.Other}
-            placeholder="Description"
+            placeholder="Please enter any additional details relevant to your report."
             multiline
             maxLength={500}
             value={content}

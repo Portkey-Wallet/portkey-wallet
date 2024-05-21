@@ -3,6 +3,7 @@ import { Button, Form, FormProps } from 'antd';
 import { FormItem } from 'components/BaseAntd';
 import CustomPassword from 'components/CustomPassword';
 import CustomSvg from 'components/CustomSvg';
+import CommonHeader from 'components/CommonHeader';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
 import { ReactNode, useCallback, useState } from 'react';
@@ -15,13 +16,15 @@ import { sleep } from '@portkey-wallet/utils';
 import { getWalletState } from 'utils/lib/SWGetReduxStore';
 import singleMessage from 'utils/singleMessage';
 import { useSetTokenConfig } from 'hooks/useSetTokenConfig';
+import { useCommonState } from 'store/Provider/hooks';
+import RegisterHeader from '../RegisterHeader';
 
 interface LockPageProps extends FormProps {
   onUnLockHandler?: (pwd: string) => void;
-  header?: ReactNode;
 }
 
-export default function LockPage({ header, onUnLockHandler, ...props }: LockPageProps) {
+export default function LockPage({ onUnLockHandler, ...props }: LockPageProps) {
+  const { isPrompt, isNotLessThan768 } = useCommonState();
   const { t } = useTranslation();
   const setTokenConfig = useSetTokenConfig();
   const [form] = Form.useForm();
@@ -55,12 +58,10 @@ export default function LockPage({ header, onUnLockHandler, ...props }: LockPage
   return (
     <>
       <div className="lock-page-wrapper">
-        {header ? (
-          header
+        {isPrompt && isNotLessThan768 ? (
+          <RegisterHeader />
         ) : (
-          <div className="lock-page-header">
-            <CustomSvg type="PortKey" />
-          </div>
+          <CommonHeader className="lock-page-header" title={<CustomSvg type="PortkeyLogoV2" />} />
         )}
         <div className="lock-page-content">
           <div className="logo-wrapper">

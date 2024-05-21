@@ -1,0 +1,68 @@
+@import './../../../assets/theme/color.less';
+@import './../../../assets/theme/constants.less';
+
+.deposit-page {
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  padding-top: 40px;
+  gap: 40px;
+  .deposit-page-logo {
+    gap: 24px;
+    .depositlogo-icon {
+      flex-shrink: 0;
+      width: 160px;
+      height: 160px;
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .deposit-logo-tip {
+      text-align: center;
+      font-size: 14px;
+      line-height: 22px;
+      color: @neutral-primary-text;
+    }
+  }
+  .deposit-page-operation-entry {
+    gap: 12px;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid @neutral-divider;
+    border-radius: 6px;
+    &:hover {
+      background-color: @neutral-hover-bg;
+    }
+    .directinright-icon {
+      width: 16px;
+      height: 16px;
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .direction-deposit-icon-wrap {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: @brand-light;
+      .directiondeposit-icon {
+        width: 20px;
+        height: 20px;
+        svg {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+    .operation-entry-text {
+      font-size: 14px;
+      line-height: 22px;
+      font-weight: 500;
+      color: @neutral-primary-text;
+      .text-overflow(1);
+    }
+  }
+}

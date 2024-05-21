@@ -9,6 +9,7 @@ import { useCommonState } from 'store/Provider/hooks';
 import RadioTab from 'pages/components/RadioTab';
 import QRCodePage from './QRCodePage';
 import ExchangePage from './ExchangePage';
+import DepositPage from './DepositPage';
 import { TReceiveLocationState } from 'types/router';
 import { useLocationState } from 'hooks/router';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
@@ -65,7 +66,7 @@ export default function Receive() {
           <div className="receive-content-page flex-1"></div>
           {curTab === ReceiveTabEnum.QRCode && <QRCodePage />}
           {curTab === ReceiveTabEnum.Exchanges && <ExchangePage />}
-          {curTab === ReceiveTabEnum.Deposit && <></>}
+          {curTab === ReceiveTabEnum.Deposit && <DepositPage />}
           {curTab === ReceiveTabEnum.Buy && <></>}
         </div>
         {isPrompt && <PromptEmptyElement />}

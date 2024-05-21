@@ -22,8 +22,8 @@ export type TTokenItem = {
   name: string;
   symbol: string;
   icon: string;
-  contractAddress: string;
-  decimals: number;
+  contractAddress?: string;
+  decimals?: number;
 };
 
 export type TGetDepositTokenListRequest = {
@@ -112,3 +112,23 @@ export type TConversionRate = {
   toAmount: string;
   minimumReceiveAmount: string;
 };
+
+export type TQueryTransferAuthTokenRequest = {
+  pubkey: string;
+  signature: string;
+  plain_text: string;
+  ca_hash: string;
+  chain_id: string;
+  managerAddress: string;
+  version: 'v1' | 'v2';
+};
+
+export interface IDepositService {
+  getTokenList(params: TGetTokenListRequest): Promise<TTokenItem[]>;
+  getTransferToken(params: TQueryTransferAuthTokenRequest): Promise<string>;
+  getTokenListByNetwork(params: TGetTokenListByNetworkRequest): Promise<TTokenItem[]>;
+  getDepositTokenList(params: TGetDepositTokenListRequest): Promise<TDepositTokenItem[]>;
+  getNetworkList({ chainId, symbol }: { chainId: ChainId; symbol: string }): Promise<TNetworkItem[]>;
+  getDepositInfo(params: TGetDepositInfoRequest): Promise<TDepositInfo>;
+  depositCalculator(params: TGetDepositCalculateRequest): Promise<TConversionRate>;
+}

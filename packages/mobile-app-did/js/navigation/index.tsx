@@ -21,6 +21,7 @@ import QrCodeNav from 'pages/QrCode';
 import MyNav from 'pages/My/router';
 import RampNav from 'pages/Ramp';
 import DiscoverNav from 'pages/Discover/index';
+import Deposit from 'pages/Deposit';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 import TabsDrawer from 'components/TabsDrawer';
@@ -35,6 +36,7 @@ export const productionNav = [
   { name: 'Receive', component: Receive },
   { name: 'NFTDetail', component: NFTDetail },
   { name: 'ProviderWebPage', component: ProviderWebPage },
+  { name: 'Deposit', component: Deposit },
 
   ...QrCodeNav,
   ...GuardianNav,

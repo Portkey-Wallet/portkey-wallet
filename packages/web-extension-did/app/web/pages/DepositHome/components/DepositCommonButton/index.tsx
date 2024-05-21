@@ -1,0 +1,16 @@
+import './index.less';
+export interface IDepositCommonButton {
+  text: string;
+  onClick?: () => void;
+}
+export default function DepositCommonButton(props: IDepositCommonButton) {
+  return (
+    <button
+      className="button"
+      onClick={() => {
+        props.onClick?.();
+      }}>
+      <span className="button-text">{props.text}</span>
+    </button>
+  );
+}

@@ -1,0 +1,36 @@
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  gap: 8px;
+  position: relative;
+  height: 48px;
+  padding: 0 28px;
+  cursor: pointer;
+  background: #5d42ff;
+  border: none;
+  z-index: 61;
+  border-radius: 6px;
+}
+.button:hover {
+  background-color: #6558FF;
+}
+.button:active {
+  background-color: #5137EE;
+}
+.button-text {
+  flex-shrink: 0;
+  position: relative;
+  height: 24px;
+  color: #fff;
+  font-family: Roboto, var(--default-font-family);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  text-align: left;
+  white-space: nowrap;
+  z-index: 62;
+}

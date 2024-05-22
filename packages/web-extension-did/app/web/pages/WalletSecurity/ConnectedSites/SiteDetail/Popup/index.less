@@ -1,16 +1,8 @@
-@import '../../../../../assets/theme/color.less';
+@import '../../../../../assets/theme/constants.less';
 
 .site-detail-popup {
-  .site-detail-header {
-    overflow: hidden;
-    width: 100%;
-    padding-top: 16px;
-    background-color: @bg-13;
-    border-bottom: 1px solid @neutral-divider;
-    z-index: 10;
-  }
   .site-item {
-    height: calc(100% - 97px);
+    height: calc(100% - @common-header-height);
     overflow: auto;
   }
 }

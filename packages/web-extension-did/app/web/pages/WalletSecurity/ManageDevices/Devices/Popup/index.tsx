@@ -1,5 +1,4 @@
-import BackHeader from 'components/BackHeader';
-import CustomSvg from 'components/CustomSvg';
+import CommonHeader from 'components/CommonHeader';
 import { useTranslation } from 'react-i18next';
 import DeviceList, { IDeviceListProps } from 'pages/WalletSecurity/components/DeviceList';
 import { BaseHeaderProps } from 'types/UI';
@@ -9,13 +8,7 @@ export default function DevicesPopup({ headerTitle, goBack, list, onClick }: Bas
   const { t } = useTranslation();
   return (
     <div className="devices-popup min-width-max-height">
-      <div className="devices-header">
-        <BackHeader
-          title={headerTitle}
-          leftCallBack={goBack}
-          rightElement={<CustomSvg type="Close2" onClick={goBack} />}
-        />
-      </div>
+      <CommonHeader className="popup-header-wrap" title={headerTitle} onLeftBack={goBack} />
       <div className="content">
         <div className="desc">
           {t(

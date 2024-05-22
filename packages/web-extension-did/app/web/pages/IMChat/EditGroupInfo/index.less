@@ -1,16 +1,13 @@
 @import '../../../assets/theme/color.less';
+@import '../../../assets/theme/constants.less';
 
 .group-info-edit-page {
   height: 100%;
   background-color: @neutral-default-bg;
   font-size: 16px;
   line-height: 22px;
-  .group-info-edit-header {
-    padding-top: 16px;
-    background-color: @bg-13;
-  }
   .edit-group-info-form {
-    height: calc(100% - 96px);
+    height: calc(100% - @common-header-height);
     .form-content {
       padding: 24px;
       .group-info-avatar {

@@ -1,5 +1,4 @@
-import BackHeader from 'components/BackHeader';
-import CustomSvg from 'components/CustomSvg';
+import CommonHeader from 'components/CommonHeader';
 import ViewContactBody from 'pages/Contacts/components/ViewContactBody';
 import { IProfileDetailProps, MyProfilePageType } from 'types/Profile';
 import './index.less';
@@ -24,13 +23,7 @@ export default function WalletNamePopup({
 
   return (
     <div className="wallet-name-popup min-width-max-height">
-      <div className="nav-header">
-        <BackHeader
-          title={headerTitle}
-          leftCallBack={goBack}
-          rightElement={<CustomSvg type="Close2" onClick={goBack} />}
-        />
-      </div>
+      <CommonHeader title={headerTitle} onLeftBack={goBack} />
       {type === MyProfilePageType.VIEW && (
         <ViewContactBody data={data} editText={editText} isShowRemark={isShowRemark} handleEdit={handleEdit} />
       )}

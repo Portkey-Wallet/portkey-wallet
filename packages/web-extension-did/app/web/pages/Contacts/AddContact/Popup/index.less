@@ -1,4 +1,4 @@
-@import '../../../../assets/theme/color.less';
+@import '../../../../assets/theme/constants.less';
 
 .add-contact-popup {
   height: 600px;
@@ -6,13 +6,8 @@
     font-size: 14px;
     line-height: 20px;
   }
-  .add-contact-title {
-    padding-top: 15px;
-    background-color: @bg-13;
-    border-bottom: 1px solid @neutral-divider;
-  }
   .add-contact-form {
     overflow-y: overlay;
-    height: calc(100% - 96px);
+    height: calc(100% - @common-header-height);
   }
 }

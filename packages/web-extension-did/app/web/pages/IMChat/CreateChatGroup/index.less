@@ -1,4 +1,5 @@
 @import '../../../assets/theme/color.less';
+@import '../../../assets/theme/constants.less';
 
 .create-chat-group {
   height: 100%;
@@ -6,14 +7,11 @@
 
   .create-chat-top {
     overflow: hidden;
-    padding-top: 16px;
-    flex-shrink: 0;
-    background-color: @bg-13;
     z-index: 100;
   }
 
   .create-chat-body {
-    height: calc(100% - 96px);
+    height: calc(100% - @common-header-height);
   }
 
   .create-chat-form {

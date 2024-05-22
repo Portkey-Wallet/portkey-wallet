@@ -124,5 +124,9 @@ export default function Guardians() {
     [headerTitle, renderAddBtn, renderGuardianList, renderGuardianTip],
   );
 
-  return isNotLessThan768 ? <GuardiansPrompt {...props} /> : <GuardiansPopup {...props} onBack={onBack} />;
+  return isNotLessThan768 ? (
+    <GuardiansPrompt {...props} />
+  ) : (
+    <GuardiansPopup {...props} showAddBtn={verifierEnableNum > 0} onAdd={onAdd} onBack={onBack} />
+  );
 }

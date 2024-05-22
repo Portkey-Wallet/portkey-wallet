@@ -60,7 +60,7 @@ export default function Home() {
 
   return (
     <div className={clsx(['portkey-home', 'flex-column', isPrompt && 'portkey-prompt'])}>
-      {isPrompt ? (
+      {isPrompt && isNotLessThan768 ? (
         <PortKeyHeader unReadShow={isImputation || !viewReferralStatus} onUserClick={onUserClick} />
       ) : (
         <HomeHeader unReadShow={isImputation || !viewReferralStatus} onUserClick={onUserClick} />

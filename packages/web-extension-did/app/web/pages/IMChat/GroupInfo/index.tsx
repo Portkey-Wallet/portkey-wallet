@@ -6,7 +6,7 @@ import {
 } from '@portkey-wallet/hooks/hooks-ca/im';
 import { Button } from 'antd';
 import CustomSvg from 'components/CustomSvg';
-import SettingHeader from 'pages/components/SettingHeader';
+import CommonHeader from 'components/CommonHeader';
 import { useParams } from 'react-router';
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -91,13 +91,11 @@ const GroupInfo = () => {
   }, []);
   return (
     <div className="group-info-page flex-column-between">
-      <div className="group-info-header">
-        <SettingHeader
-          title="Group Info"
-          leftCallBack={() => navigate(`/chat-box-group/${channelUuid}`)}
-          rightElement={<CustomSvg type="Close2" onClick={() => navigate(`/chat-box-group/${channelUuid}`)} />}
-        />
-      </div>
+      <CommonHeader
+        className="group-info-header"
+        title="Group Info"
+        onLeftBack={() => navigate(`/chat-box-group/${channelUuid}`)}
+      />
       <div className="group-info-body flex-column-between">
         <div className="group-info-container">
           <div className="info-basic flex-center">

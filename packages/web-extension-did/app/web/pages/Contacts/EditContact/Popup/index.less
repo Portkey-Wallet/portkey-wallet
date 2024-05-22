@@ -1,4 +1,4 @@
-@import '../../../../assets/theme/color.less';
+@import '../../../../assets/theme/constants.less';
 
 .edit-contact-popup {
   height: 600px;
@@ -6,14 +6,9 @@
     font-size: 14px;
     line-height: 20px;
   }
-  .edit-contact-title {
-    padding-top: 16px;
-    background-color: @bg-13;
-    border-bottom: 1px solid @neutral-divider;
-  }
   .edit-contact-form {
     overflow-y: overlay;
-    height: calc(100% - 97px);
+    height: calc(100% - @common-header-height);
 
     .id-and-address .info-section .title-did {
       margin-top: 24px;

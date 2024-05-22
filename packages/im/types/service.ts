@@ -21,6 +21,8 @@ import {
 import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 import { IM_PIN_LIST_SORT_TYPE_ENUM } from '../constant';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
+import { ReportMessageEnum } from '@portkey-wallet/constants/constants-ca/chat';
+import { ICaAddressInfoListItemType } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 export type IMServiceCommon<T> = Promise<{
   code: string;
@@ -351,6 +353,23 @@ export type UnPinAllParams = {
   channelUuid: string;
 };
 
+export type TBlockUserParams = {
+  relationId: string;
+};
+export type TUnBlockUserParams = TBlockUserParams;
+export type TCheckIsBlockedParams = TBlockUserParams;
+
+export type TReportMessageParams = {
+  userId: string;
+  reportedRelationId: string;
+  userCaAddressInfos: ICaAddressInfoListItemType[];
+  channelUuid?: string;
+  reportType: ReportMessageEnum;
+  message?: string;
+  messageId?: string;
+  description?: string; // if is other report type , this is required
+};
+
 export interface IIMService {
   verifySignature(params: VerifySignatureParams): IMServiceCommon<VerifySignatureResult>;
   verifySignatureLoop(
@@ -426,4 +445,9 @@ export interface IIMService {
   setPin(params: Message): IMServiceCommon<null>;
   unPin(params: UnPinParams): IMServiceCommon<null>;
   unPinAll(params: UnPinAllParams): IMServiceCommon<null>;
+  blockUser(params: TBlockUserParams): IMServiceCommon<null>;
+  unBlockUser(params: TUnBlockUserParams): IMServiceCommon<null>;
+  checkIsBlocked(params: TCheckIsBlockedParams): IMServiceCommon<null>;
+  fetchBlockedList(): IMServiceCommon<string[]>;
+  reportMessage(params: TReportMessageParams): IMServiceCommon<null>;
 }

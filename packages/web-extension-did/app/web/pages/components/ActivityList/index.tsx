@@ -29,12 +29,21 @@ import clsx from 'clsx';
 import NFTImageDisplay from '../NFTImageDisplay';
 import TokenImageDisplay from '../TokenImageDisplay';
 import dayjs from 'dayjs';
+import ImageForTwo from '../ImageForTwo';
+import ImageDisplay from '../ImageDisplay';
 
 export interface IActivityListProps {
   data?: ActivityItemType[];
   chainId?: string;
   hasMore: boolean;
   loadMore: (isRetry?: boolean) => Promise<void>;
+}
+export interface IActivityMultiplyToken {
+  symbol: string;
+  url?: string;
+  isReceived: boolean;
+  amount: string;
+  decimals: string;
 }
 
 export default function ActivityList({ data, chainId, hasMore, loadMore }: IActivityListProps) {
@@ -144,6 +153,16 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
     [currentNetwork.walletType],
   );
 
+  const renderActivityTitleForDapp = useCallback(
+    (item: ActivityItemType) => (
+      <div className={clsx('activity-item-title', isPrompt && 'prompt-activity-item-title')}>
+        <div className="transaction-name">{item.transactionName}</div>
+        <div className="transaction-dapp-name">{item.dappName}</div>
+      </div>
+    ),
+    [isPrompt],
+  );
+
   const renderActivityTitle = useCallback(
     (item: ActivityItemType) => {
       const { transactionName, transactionType } = item;
@@ -160,6 +179,40 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
     [formatAddressShow, isPrompt],
   );
 
+  const renderActivityAmountForMulToken = useCallback(
+    (item: IActivityMultiplyToken[]) => {
+      const [tokenTop, tokenBottom] = item;
+      const sameDirection = tokenTop.isReceived === tokenBottom.isReceived;
+      return (
+        <div
+          className={clsx(
+            'activity-item-amount',
+            sameDirection ? 'same-direction' : 'opposite-direction',
+            isPrompt && 'prompt-activity-item-amount',
+          )}>
+          {item.map((_token, index) => (
+            <div
+              key={`transaction-mul-token-amount_${index}`}
+              className={clsx(
+                'transaction-amount',
+                _token.isReceived && 'received-amount',
+                `transaction-amount-${index}`,
+              )}>
+              <span className="amount-show">{`${formatWithCommas({
+                sign: _token.isReceived ? AmountSign.PLUS : AmountSign.MINUS,
+                amount: _token.amount,
+                decimals: _token.decimals,
+                digits: Number(_token.decimals),
+              })}`}</span>
+              {_token.symbol && <span className="amount-symbol">{` ${_token.symbol}`}</span>}
+            </div>
+          ))}
+        </div>
+      );
+    },
+    [isPrompt],
+  );
+
   const renderActivityAmount = useCallback(
     (item: ActivityItemType) => {
       const { isReceived, amount, decimals, symbol, currentTxPriceInUsd, nftInfo } = item;
@@ -173,83 +226,173 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
               decimals,
               digits: Number(decimals),
             })}`}</span>
-            {!nftInfo?.nftId && symbol && <span className="amount-symbol">{` ${symbol}`}</span>}
+            {(nftInfo?.alias || symbol) && <span className="amount-symbol">{` ${nftInfo?.alias || symbol}`}</span>}
           </div>
-          {nftInfo?.nftId ? (
-            <div className="transaction-nft-symbol">{nftInfo.alias}</div>
-          ) : (
-            <div className={clsx('transaction-convert', !isMainnet && 'hidden-transaction-convert')}>
-              {formatAmountUSDShow(currentTxPriceInUsd)}
-            </div>
-          )}
+          <div className={clsx('transaction-convert', !isMainnet && 'hidden-transaction-convert')}>
+            {formatAmountUSDShow(currentTxPriceInUsd)}
+          </div>
         </div>
       );
     },
     [isMainnet, isPrompt],
   );
 
-  const renderSystemActivityItem = useCallback((item: ActivityItemType) => {
-    return (
-      <div className="activity-item-system-detail">
-        <span>{item?.transactionName}</span>
-      </div>
-    );
-  }, []);
-
-  const renderActivityIcon = useCallback((item: ActivityItemType) => {
-    if (item.isSystem) {
-      return item.listIcon ? (
-        <div
-          className="system-activity-icon"
-          style={{
-            backgroundImage: `url(${item.listIcon})`,
-          }}
-        />
-      ) : (
-        <CustomSvg type="SystemActivity" />
+  const renderTxActivityItemForDefault = useCallback(
+    (item: ActivityItemType) => {
+      return (
+        <>
+          {item.nftInfo ? (
+            <NFTImageDisplay
+              src={item.listIcon}
+              isSeed={item.nftInfo.isSeed}
+              seedType={item.nftInfo.seedType}
+              alias={item.nftInfo.alias}
+              className="nft-activity-icon"
+            />
+          ) : (
+            <TokenImageDisplay className="token-activity-icon" src={item.listIcon} symbol={item.symbol} />
+          )}
+          <div className="activity-item-detail flex-between-center">
+            {renderActivityTitle(item)}
+            {renderActivityAmount(item)}
+          </div>
+        </>
       );
-    }
-    return item.nftInfo ? (
-      <NFTImageDisplay
-        src={item.listIcon}
-        isSeed={item.nftInfo.isSeed}
-        seedType={item.nftInfo.seedType}
-        alias={item.nftInfo.alias}
-        className="nft-activity-icon"
-      />
-    ) : (
-      <TokenImageDisplay className="token-activity-icon" src={item.listIcon} symbol={item.symbol} />
-    );
-  }, []);
+    },
+    [renderActivityAmount, renderActivityTitle],
+  );
+
+  const renderMulTokenForDapp = useCallback(
+    (item: ActivityItemType) => {
+      const { operations = [] } = item;
+      if (operations.length < 2) return null;
+      let [tokenTop, tokenBottom] = operations.map((_token) => ({
+        symbol: _token.nftInfo ? _token.nftInfo.alias : _token.symbol,
+        url: _token.nftInfo ? _token.nftInfo.imageUrl : _token.icon,
+        isReceived: _token.isReceived,
+        amount: _token.amount,
+        decimals: _token.decimals,
+      }));
+      const sameDirection = tokenTop.isReceived === tokenBottom.isReceived;
+      if (!sameDirection && !tokenTop.isReceived) {
+        [tokenBottom, tokenTop] = [tokenTop, tokenBottom];
+      }
+      let renderTopIconInfo = { url: tokenTop.url, symbol: tokenTop.symbol };
+      let renderBottomIconInfo = { url: tokenBottom.url, symbol: tokenBottom.symbol };
+      if (!sameDirection) {
+        [renderTopIconInfo, renderBottomIconInfo] = [renderBottomIconInfo, renderTopIconInfo];
+      }
+      return (
+        <>
+          <ImageForTwo className="token-activity-icon" iconTop={renderTopIconInfo} iconBottom={renderBottomIconInfo} />
+          <div className="activity-item-detail flex-between-center">
+            {renderActivityTitleForDapp(item)}
+            {renderActivityAmountForMulToken([tokenTop, tokenBottom])}
+          </div>
+        </>
+      );
+    },
+    [renderActivityAmountForMulToken, renderActivityTitleForDapp],
+  );
+
+  const renderSingleTokenForDapp = useCallback(
+    (item: ActivityItemType) => {
+      return (
+        <>
+          {item.nftInfo ? (
+            <NFTImageDisplay
+              src={item.nftInfo.imageUrl}
+              isSeed={item.nftInfo.isSeed}
+              seedType={item.nftInfo.seedType}
+              alias={item.nftInfo.alias}
+              className="nft-activity-icon"
+            />
+          ) : (
+            <TokenImageDisplay className="token-activity-icon" src={item.listIcon} symbol={item.symbol} />
+          )}
+          <div className="activity-item-detail flex-between-center">
+            {renderActivityTitleForDapp(item)}
+            {renderActivityAmount(item)}
+          </div>
+        </>
+      );
+    },
+    [renderActivityAmount, renderActivityTitleForDapp],
+  );
+
+  const renderTxActivityItem = useCallback(
+    (item: ActivityItemType) => {
+      const { operations = [], dappName } = item;
+      if (operations.length !== 0) return renderMulTokenForDapp(item);
+      if (dappName) return renderSingleTokenForDapp(item);
+      return renderTxActivityItemForDefault(item);
+    },
+    [renderMulTokenForDapp, renderSingleTokenForDapp, renderTxActivityItemForDefault],
+  );
+
+  const renderEmptyTokenForDapp = useCallback(
+    (item: ActivityItemType) => {
+      return (
+        <>
+          <ImageDisplay
+            src={item.dappIcon}
+            name={item.dappName || 'Unknown'}
+            defaultHeight={32}
+            className="system-activity-icon"
+          />
+          <div className="activity-item-detail flex-between-center">{renderActivityTitleForDapp(item)}</div>
+        </>
+      );
+    },
+    [renderActivityTitleForDapp],
+  );
+
+  const renderSystemActivityItem = useCallback(
+    (item: ActivityItemType) => (
+      <>
+        <ImageDisplay
+          src={item.listIcon}
+          backupSrc="SystemActivity"
+          defaultHeight={32}
+          className="system-activity-icon"
+        />
+        <div className="activity-item-system-detail">
+          <span>{item?.transactionName}</span>
+        </div>
+      </>
+    ),
+    [],
+  );
 
   const renderActivityItem = useCallback(
-    (item: ActivityItemType) => (
-      <div
-        className={clsx(
-          'activity-item',
-          'flex-column',
-          activity.failedActivityMap[item.transactionId] && 'activity-item-resend',
-        )}>
-        <div className="activity-item-content flex-row-center" onClick={() => navToDetail(item)}>
-          {renderActivityIcon(item)}
-          {item.isSystem ? (
-            renderSystemActivityItem(item)
-          ) : (
-            <div className="activity-item-detail flex-between-center">
-              {renderActivityTitle(item)}
-              {renderActivityAmount(item)}
-            </div>
-          )}
+    (item: ActivityItemType) => {
+      const isEmptyToken = !(item.nftInfo || item.symbol || item.operations?.length);
+      const isDappTx = !!item.dappName;
+      // show login
+      const isShowEmptyTokenForDapp = isEmptyToken && isDappTx;
+      const isShowSystemForDefault = isEmptyToken && !isDappTx;
+      const isShowTx = !isEmptyToken;
+      return (
+        <div
+          className={clsx(
+            'activity-item',
+            'flex-column',
+            activity.failedActivityMap[item.transactionId] && 'activity-item-resend',
+          )}>
+          <div className="activity-item-content flex-row-center" onClick={() => navToDetail(item)}>
+            {isShowEmptyTokenForDapp && renderEmptyTokenForDapp(item)}
+            {isShowSystemForDefault && renderSystemActivityItem(item)}
+            {isShowTx && renderTxActivityItem(item)}
+          </div>
+          {renderResendBtn(item)}
         </div>
-        {renderResendBtn(item)}
-      </div>
-    ),
+      );
+    },
     [
       activity.failedActivityMap,
-      renderActivityIcon,
+      renderEmptyTokenForDapp,
       renderSystemActivityItem,
-      renderActivityTitle,
-      renderActivityAmount,
+      renderTxActivityItem,
       renderResendBtn,
       navToDetail,
     ],
@@ -284,9 +427,9 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   }, [data, formatActivityTimeShow, renderActivityItem]);
 
   return (
-    <div className="activity-list">
+    <div className={clsx('activity-list', !hasMore && 'hidden-loading-more')}>
       {renderActivityList}
-      {hasMore && <LoadingMore hasMore={hasMore} loadMore={loadMore} className="load-more" />}
+      <LoadingMore hasMore={true} loadMore={loadMore} className="load-more" />
     </div>
   );
 }

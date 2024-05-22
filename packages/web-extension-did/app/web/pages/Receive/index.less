@@ -3,8 +3,6 @@
 .receive-wrapper {
   background-color: @neutral-default-bg;
   height: 100%;
-  display: flex;
-  flex-direction: column;
 
   .close2-icon {
     width: 18px;
@@ -14,107 +12,9 @@
   .@{app-prefix}-row {
     padding: 24px 24px 6px;
   }
-
   .receive-content {
-    flex: 1;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    .single-account {
-      text-align: center;
-      .name {
-        font-size: 16px;
-        height: 22px;
-        line-height: 22px;
-        color: @neutral-primary-text;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 238px;
-      }
-    }
-
-    .token-info {
-      margin: 26px 0 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      .token-icon {
-        margin-bottom: 9px;
-      }
-      .symbol {
-        line-height: 20px;
-        font-size: 14px;
-        color: @neutral-primary-text;
-        margin-bottom: 2px;
-      }
-      .network {
-        line-height: 16px;
-        font-size: 12px;
-        color: @neutral-secondary-text;
-      }
-    }
-
-    .receive-address {
-      margin-left: 46px;
-      margin-right: 46px;
-      margin-top: 24px;
-      background-color: @bg-13;
-      border-radius: 6px;
-      padding: 10px;
-      position: relative;
-
-      .address {
-        font-size: 12px;
-        text-align: center;
-        word-break: break-all;
-        color: @neutral-primary-text;
-        line-height: 16px;
-      }
-
-      .copy-icon {
-        position: absolute;
-        top: 50%;
-        right: -26px;
-        transform: translateY(-50%);
-
-        .custom-svg {
-          width: 14px;
-          height: 14px;
-        }
-      }
-    }
-
-    .receive-tip {
-      padding: 24px;
-      background: @neutral-default-bg;
-
-      .info-icon {
-        width: 16px;
-        height: 16px;
-        transform: rotate(180deg);
-        svg {
-          width: 16px;
-          height: 16px;
-          path {
-            fill: @neutral-secondary-text;
-          }
-        }
-      }
-      .receive-tip-text {
-        margin-left: 8px;
-        font-size: 12px;
-        font-weight: 400;
-        line-height: 16px;
-      }
-      .receive-tip-title {
-        margin-bottom: 4px;
-      }
-      .receive-tip-content {
-        gap: 8px;
-      }
+    .receive-radio-tab {
+      padding: 8px 16px 0;
     }
   }
 }

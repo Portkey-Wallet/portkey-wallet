@@ -23,6 +23,10 @@ export default {
     target: '/api/app/transfer/deposit/calculator',
     config: { method: 'GET' },
   },
+  recordList: {
+    target: '/api/app/transfer/record/list',
+    config: { method: 'GET' },
+  },
   getTransferToken: {
     target: '/api/app/transfer/connect/token',
     config: { method: 'POST' },

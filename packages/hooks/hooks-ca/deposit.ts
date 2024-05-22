@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import AElf from 'aelf-sdk';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -216,6 +216,10 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
     })();
   }, [fromToken, toChainId]);
 
+  const isSameSymbol = useMemo(() => {
+    return fromToken && toToken && fromToken.symbol === toToken.symbol;
+  }, [fromToken, toToken]);
+
   return {
     fromNetwork,
     fromToken,
@@ -226,6 +230,7 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
     payAmount,
     receiveAmount,
     rateRefreshTime,
+    isSameSymbol,
     fetchDepositInfo,
     setPayAmount,
   };

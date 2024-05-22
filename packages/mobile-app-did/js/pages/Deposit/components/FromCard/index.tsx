@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, Image, StyleProp, ViewStyle, TextInput } from 'react-native';
+import { StyleSheet, View, Text, Image, StyleProp, ViewStyle, TextInput, TouchableOpacity } from 'react-native';
 import Svg from 'components/Svg';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
@@ -12,6 +12,8 @@ interface FromCardProps {
   tokenSymbol: string;
   tokenIcon: string;
   onChangeText: (text: string) => void;
+  onPress: () => void;
+  showAmount: boolean;
 }
 
 export const FromCard: React.FC<FromCardProps> = ({
@@ -21,6 +23,8 @@ export const FromCard: React.FC<FromCardProps> = ({
   tokenIcon,
   tokenSymbol,
   onChangeText,
+  onPress,
+  showAmount,
 }) => {
   return (
     <View style={[styles.container, wrapStyle]}>
@@ -30,21 +34,23 @@ export const FromCard: React.FC<FromCardProps> = ({
         <Text style={styles.chainNameText}>{networkName}</Text>
       </View>
       <View style={styles.contentWrapper}>
-        <View style={styles.tokenWrapper}>
+        <TouchableOpacity style={styles.tokenWrapper} onPress={onPress}>
           {tokenIcon && <Image style={styles.tokenIconImage} source={{ uri: tokenIcon }} />}
           <Text style={styles.tokenText}>{tokenSymbol}</Text>
           <Svg iconStyle={styles.arrowIcon} size={pTd(12)} icon={'down-arrow'} />
-        </View>
-        <View style={styles.mountWrapper}>
-          <Text style={styles.mountDesc}>{'You Pay'}</Text>
-          <TextInput
-            style={styles.mountTextInput}
-            keyboardType="decimal-pad"
-            placeholder="0.0"
-            placeholderTextColor={defaultColors.font11}
-            onChangeText={onChangeText}
-          />
-        </View>
+        </TouchableOpacity>
+        {showAmount && (
+          <View style={styles.mountWrapper}>
+            <Text style={styles.mountDesc}>{'You Pay'}</Text>
+            <TextInput
+              style={styles.mountTextInput}
+              keyboardType="decimal-pad"
+              placeholder="0.0"
+              placeholderTextColor={defaultColors.font11}
+              onChangeText={onChangeText}
+            />
+          </View>
+        )}
       </View>
     </View>
   );

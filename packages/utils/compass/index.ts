@@ -4,16 +4,19 @@ export interface FunctionalType {
   buy: boolean;
   swap: boolean;
   deposit: boolean;
+  withdraw: boolean;
 }
 
 export const checkEnabledFunctionalTypes = (symbol: string, isOnMainChain: boolean): FunctionalType => {
   const USDTSymbol = 'USDT';
   const ELFSymbol = 'ELF';
+  const SGRSymbol = 'SGR-';
   return {
     send: true,
     receive: true,
     buy: (symbol === USDTSymbol || symbol === ELFSymbol) && isOnMainChain,
     swap: (symbol === USDTSymbol || symbol === ELFSymbol) && !isOnMainChain,
-    deposit: symbol === USDTSymbol,
+    deposit: symbol === USDTSymbol || (symbol.startsWith(SGRSymbol) && !isOnMainChain),
+    withdraw: symbol === USDTSymbol || symbol.startsWith(SGRSymbol),
   };
 };

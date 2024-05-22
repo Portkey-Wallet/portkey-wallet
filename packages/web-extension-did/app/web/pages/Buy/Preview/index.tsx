@@ -184,8 +184,13 @@ export default function Preview() {
       ),
     });
   }, [providerSelected?.providerInfo.name]);
-
   const handleBack = useCallback(() => {
+    if (state.mainPageInfo?.pathname) {
+      navigate(state.mainPageInfo.pathname, {
+        state: { ...(state.mainPageInfo?.state || {}), receivePageSide: state.mainPageInfo?.receivePageSide },
+      });
+      return;
+    }
     navigate('/buy', { state: state });
   }, [navigate, state]);
 

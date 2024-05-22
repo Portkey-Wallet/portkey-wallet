@@ -184,6 +184,11 @@ export type TRampPreviewLocationState = {
   tokenInfo?: TTokenDetailLocationState;
   openGuardiansApprove?: boolean;
   approveList?: GuardianItem[];
+  mainPageInfo?: {
+    pathname: string;
+    state: any;
+    [key: string]: any;
+  };
 };
 
 // AddContact
@@ -230,6 +235,7 @@ export type TReceiveLocationState = {
   address: string;
   balanceInUsd: string;
   decimals: string | number;
+  [key: string]: any;
 };
 
 // Send

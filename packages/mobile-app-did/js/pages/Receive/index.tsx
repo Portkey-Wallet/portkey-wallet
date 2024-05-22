@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import PageContainer from 'components/PageContainer';
 import { TextL, TextM, TextS } from 'components/CommonText';
 import AccountCard from 'pages/Receive/components/AccountCard';

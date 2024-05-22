@@ -22,16 +22,12 @@ export default function Deposit() {
   const { t } = useLanguage();
   const { currentNetwork } = useWallet();
 
-  // const tokenItem = useRouterParams<TokenItemShowType>();
-  // const { chainId, symbol, imageUrl } = tokenItem;
-  const chainId = 'tDVW';
-  const symbol = 'SGR-1';
-  const imageUrl =
-    'https://dynamic-assets.coinbase.com/41f6a93a3a222078c939115fc304a67c384886b7a9e6c15dcbfa6519dc45f6bb4a586e9c48535d099efa596dbf8a9dd72b05815bcd32ac650c50abb5391a5bd0/asset_icons/1f8489bb280fb0a0fd643c1161312ba49655040e9aaaced5f9ad3eeaf868eadc.png';
+  const tokenItem = useRouterParams<TokenItemShowType>();
+  const { chainId, symbol, imageUrl } = tokenItem;
   const initToToken: TTokenItem = {
     name: '',
     symbol: symbol,
-    icon: imageUrl,
+    icon: imageUrl ?? '',
   };
 
   const {

@@ -31,6 +31,7 @@ import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ra
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { TokenTitle } from 'components/TokenTitle';
+import navigationService from 'utils/navigationService';
 
 enum ReceivePageTabType {
   QR_CODE = 'QR Code',
@@ -85,8 +86,8 @@ export default function Receive() {
   });
 
   const onClickDepositButton = useCallback(() => {
-    console.log('onClickDepositButton');
-  }, []);
+    navigationService.navigate('Deposit', tokenItem);
+  }, [tokenItem]);
 
   const copyId = useCallback(() => {
     copyText(`ELF_${currentCaAddress}_${chainId}`);

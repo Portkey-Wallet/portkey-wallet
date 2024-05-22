@@ -52,8 +52,10 @@ export default function Deposit() {
     try {
       Loading.show();
       const depositInfo = await fetchDepositInfo();
-      if (depositInfo) {
+      if (depositInfo && fromNetwork && fromToken) {
         showDepositAddress({
+          fromNetwork,
+          fromToken,
           depositInfo,
           contractAddress: fromNetwork?.contractAddress ?? '',
         });
@@ -63,7 +65,7 @@ export default function Deposit() {
     } finally {
       Loading.hide();
     }
-  }, [fetchDepositInfo, fromNetwork?.contractAddress]);
+  }, [fetchDepositInfo, fromNetwork, fromToken]);
 
   const showAmount = useMemo(() => {
     return fromToken && toToken && fromToken.symbol !== toToken.symbol;

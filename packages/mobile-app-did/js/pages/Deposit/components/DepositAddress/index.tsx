@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React from 'react';
 import { StyleSheet, View, Text, Image, ScrollView } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
 import OverlayModal from 'components/OverlayModal';
@@ -9,28 +9,27 @@ import { TDepositInfo } from '@portkey-wallet/types/types-ca/deposit';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
+import { TTokenItem, TNetworkItem } from '@portkey-wallet/types/types-ca/deposit';
 
 interface DepositAddressProps {
+  fromNetwork: TNetworkItem;
+  fromToken: TTokenItem;
   depositInfo: TDepositInfo;
   contractAddress: string;
 }
 
-const DepositAddress: React.FC<DepositAddressProps> = ({ depositInfo, contractAddress }) => {
+const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken, depositInfo, contractAddress }) => {
   const gStyles = useGStyles();
-  const chainName = 'BNB Smart Chain';
-  const tokenName = 'USDT';
-  const tokenIcon =
-    'https://dynamic-assets.coinbase.com/41f6a93a3a222078c939115fc304a67c384886b7a9e6c15dcbfa6519dc45f6bb4a586e9c48535d099efa596dbf8a9dd72b05815bcd32ac650c50abb5391a5bd0/asset_icons/1f8489bb280fb0a0fd643c1161312ba49655040e9aaaced5f9ad3eeaf868eadc.png';
 
   return (
     <ModalBody modalBodyType="bottom" title={'Deposit Address'} style={gStyles.overlayStyle}>
       <ScrollView>
         <View style={styles.container}>
           <View style={styles.tokenWrap}>
-            <Image style={styles.tokenImage} source={{ uri: tokenIcon }} />
-            <Text style={styles.tokenText}>{tokenName}</Text>
+            <Image style={styles.tokenImage} source={{ uri: fromToken.icon }} />
+            <Text style={styles.tokenText}>{fromToken.symbol}</Text>
           </View>
-          <Text style={styles.chainText}>{chainName}</Text>
+          <Text style={styles.chainText}>{fromNetwork.name}</Text>
           <CommonQRCodeStyled style={styles.qrcode} qrData={depositInfo.depositAddress} width={pTd(240)} />
           <View style={styles.addressCard}>
             <Text style={styles.addressLabelText}>Deposit Address</Text>
@@ -43,8 +42,8 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ depositInfo, contractAd
             <View style={styles.minimumDepositWrap}>
               <Text style={styles.minimumDepositText}>Minimum Deposit</Text>
               <View style={styles.minimumAmountWrap}>
-                <Text style={styles.minimumAmountText}>{depositInfo.minAmount}</Text>
-                <Text style={styles.minimumAmountUsdText}>{depositInfo.minAmountUsd}</Text>
+                <Text style={styles.minimumAmountText}>{depositInfo.minAmount + ' ' + fromToken.symbol}</Text>
+                <Text style={styles.minimumAmountUsdText}>{'$ ' + depositInfo.minAmountUsd}</Text>
               </View>
             </View>
           )}

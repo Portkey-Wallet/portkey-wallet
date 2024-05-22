@@ -1,11 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import { defaultColors } from 'assets/theme';
 import PageContainer from 'components/PageContainer';
 import CommonButton from 'components/CommonButton';
 import Loading from 'components/Loading';
-import { DepositCard } from './components/DepositCard';
+import Svg from 'components/Svg';
+import { FromCard } from './components/FromCard';
+import { ToCard } from './components/ToCard';
 import { showDepositAddress } from './components/DepositAddress';
 import { pTd } from 'utils/unit';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
@@ -41,6 +43,7 @@ export default function Deposit() {
     unitReceiveAmount,
     payAmount,
     receiveAmount,
+    rateRefreshTime,
     fetchDepositInfo,
     setPayAmount,
   } = useDeposit(initToToken, chainId, getManagerAccount(getPin() ?? ''));
@@ -49,8 +52,10 @@ export default function Deposit() {
     try {
       Loading.show();
       const depositInfo = await fetchDepositInfo();
-      if (depositInfo) {
+      if (depositInfo && fromNetwork && fromToken) {
         showDepositAddress({
+          fromNetwork,
+          fromToken,
           depositInfo,
           contractAddress: fromNetwork?.contractAddress ?? '',
         });
@@ -60,18 +65,23 @@ export default function Deposit() {
     } finally {
       Loading.hide();
     }
-  }, [fetchDepositInfo, fromNetwork?.contractAddress]);
+  }, [fetchDepositInfo, fromNetwork, fromToken]);
 
   const showAmount = useMemo(() => {
     return fromToken && toToken && fromToken.symbol !== toToken.symbol;
   }, [fromToken, toToken]);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const oneAmount = await calculateAmount(1);
-  //     console.log('aaaaoneAmount :', oneAmount);
-  //   })();
-  // }, [calculateAmount]);
+  const onPayAmountChanged = useCallback(
+    (text: string) => {
+      if (text.length === 0) {
+        setPayAmount(0);
+        return;
+      }
+      const amount = parseFloat(text);
+      setPayAmount(amount);
+    },
+    [setPayAmount],
+  );
 
   return (
     <PageContainer
@@ -79,26 +89,29 @@ export default function Deposit() {
       safeAreaColor={['blue', 'white']}
       containerStyles={styles.pageStyles}
       scrollViewProps={{ disabled: false }}>
-      <DepositCard
+      <FromCard
         wrapStyle={styles.fromCard}
-        type="From"
-        chainName={fromNetwork?.name ?? ''}
-        chainIcon="https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png"
+        networkName={fromNetwork?.name ?? ''}
+        networkIcon="https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png"
         tokenSymbol={fromToken?.symbol ?? ''}
         tokenIcon={fromToken?.icon ?? ''}
+        onChangeText={onPayAmountChanged}
       />
-      <DepositCard
+      <ToCard
         wrapStyle={styles.toCard}
-        type="To"
         chainName={formatChainInfoToShow(chainId, currentNetwork)}
         chainIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACXklEQVR4AcTWA6wlMRiG4Tlr27Zt27bN6ERrK1jbN1rbtm3bto3um810M+lRe08mO8kTjYqvf2tF5srWZomFDJiB1/iKjSgNDyzXLvvnsTAXXyActiEnXG9AUVyFUHxBZxh/0IOMaI0+6I0WSA8P1Oer4Q6EH17TBkRDFWzEawjbC6xCBURRGpAexyEUD1DftAFFcBLCj1/Yj7xQR6wt7kPY3mEUEpo2IAI/IQL4jDGwoAaxDPpgEOojKYxD9RS/IYI4hpTwl51YiI2oiFSqf0GE8BzdYcEk3DGRCEkQH9Hg8+CjkCMAnEQVxEKoHydAUXgxGwswFi2QGdHx74XpMgMabmIwaqEKmqIdCsGyZcRQJaDSD+xBY8TG3wYUxOEgq+AOlmIyInAET/EcP+1ndiAzUmEOvkAEcRetEUPWgXJYjjcQtmdYiHoy3YiB/BiL18r6bw4vPkBouIDCctiiIB3qojs6ozrSBKiEiTEZnx35aI7dEJp+YIz/sgyNoKVCFwxESTTARwhNv3Ep3E0pulwVaA9h6Mf/bsDPcKYgJTqFOQWXnSFMizqOENYIEsJEmOgI4Sm0wC7jENrLsAyWKUvrORahvrIM82GM8uxDtDJchhflMsyPg0GG6a5mIcqC1AaFqI0sRFMMSvEtDHWU4iaOUuxxHFaH4z5+65TiB5qb0WlU09yMEqIYvJiF+RiLln42I63ev0BPt7ZjnRE4jtRuHUhmhhiFLxjv5pGsMI4H2Y4PIb+bh9JoqIz1fo7lq1HF7WO57FEGtMKfIXdM5MjpmAx412wod07p3z0HAEmapjUsGtMuAAAAAElFTkSuQmCC"
         tokenSymbol={toToken?.symbol ?? ''}
         tokenIcon={toToken?.icon ?? ''}
+        receiveAmount={receiveAmount.toAmount}
+        minumumReceiveAmount={receiveAmount.minimumReceiveAmount}
       />
       {showAmount && unitReceiveAmount > 0 && (
         <View style={styles.rateWrap}>
-          <View>
+          <View style={styles.countDownWrap}>
             <Text style={styles.rateText}>{`1 ${fromToken?.symbol} ≈ ${unitReceiveAmount} ${toToken?.symbol}`}</Text>
+            <Svg size={14} icon="time" />
+            <Text style={styles.countDownText}>{`${rateRefreshTime}s`}</Text>
           </View>
           <Text style={styles.rateText}>Slippage: 5%</Text>
         </View>
@@ -126,7 +139,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  countDownWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   rateText: {
+    marginRight: pTd(8),
+    color: defaultColors.font18,
+    fontSize: pTd(12),
+  },
+  countDownText: {
+    marginLeft: pTd(2),
     color: defaultColors.font18,
     fontSize: pTd(12),
   },

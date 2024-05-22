@@ -6,7 +6,7 @@ export interface IDepositCommonButton {
 export default function DepositCommonButton(props: IDepositCommonButton) {
   return (
     <button
-      className="button"
+      className="deposit-button"
       onClick={() => {
         props.onClick?.();
       }}>

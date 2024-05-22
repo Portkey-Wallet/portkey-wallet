@@ -1,10 +1,12 @@
 import { BlockchainNetworkType } from 'constants/network';
-import '.index.less';
+import './index.less';
 import CustomSvg from 'components/CustomSvg';
 
-export default function NetworkLogo({ network }: { network: string; className?: string }) {
+export default function NetworkLogo({ network }: { network: string | undefined; className?: string }) {
   switch (network) {
     case BlockchainNetworkType.AELF:
+    case BlockchainNetworkType.tDVW:
+    case BlockchainNetworkType.tDVV:
       return <CustomSvg type="Aelf" />;
     case BlockchainNetworkType.Ethereum:
       return <CustomSvg type="Ethereum" />;
@@ -24,6 +26,6 @@ export default function NetworkLogo({ network }: { network: string; className?: 
       return <CustomSvg type="Avax" />;
     default:
       // when not match network's type, display first character and uppercase
-      return <div className={'network'}>{network?.charAt(0).toUpperCase()}</div>;
+      return <div className={'deposit-network'}>{network?.charAt(0).toUpperCase()}</div>;
   }
 }

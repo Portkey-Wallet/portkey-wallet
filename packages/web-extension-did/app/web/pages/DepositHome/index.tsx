@@ -1,15 +1,23 @@
 import CustomSvg from 'components/CustomSvg';
 import './index.less';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import DepositCommonButton from './components/DepositCommonButton';
 import { handleKeyDown } from 'utils/keyDown';
-import Calculator from './components/Calculator';
+import ExchangeRate from './components/ExchangeRate';
 import SelectNetwork from './components/SelectNetwork';
 import TokenNetworkList from './components/TokenNetworkList';
 import DepositAddress from './components/DepositAddress';
+import { useDeposit } from '@portkey-wallet/hooks/hooks-ca/deposit';
+import { ChainId } from '@portkey-wallet/types';
+import NetworkLogo from './components/NetworkLogo';
+import { getImageUrlBySymbol } from 'utils';
+import { TTokenItem } from '@portkey-wallet/types/types-ca/deposit';
+import getSeed from 'utils/getSeed';
+import { getWallet } from '@portkey-wallet/utils/aelf';
+
 enum Step {
   HOME,
   FROM_TOKEN,
@@ -18,40 +26,42 @@ enum Step {
   DEPOSIT_ADDRESS,
 }
 export default function DepositHome() {
+  const { chain, symbol } = useParams();
+  console.log('chain', chain, 'symbol', symbol);
+  const initToToken: TTokenItem = {
+    name: '',
+    symbol: symbol || '',
+    icon: getImageUrlBySymbol(symbol),
+  };
+  const [manager, setManager] = useState();
+  useEffect(() => {
+    const fetch = async () => {
+      const { privateKey } = await getSeed();
+      console.log('wfs useEffect', privateKey);
+      if (!privateKey) throw 'Invalid user information, please check';
+      const manager = getWallet(privateKey);
+      setManager(manager);
+    };
+    fetch();
+  }, []);
+  const {
+    fromNetwork,
+    fromToken,
+    toChainIdList,
+    toChainId,
+    toToken,
+    unitReceiveAmount,
+    payAmount,
+    receiveAmount,
+    fetchDepositInfo,
+    setPayAmount,
+  } = useDeposit(initToToken, chain as ChainId, manager);
+  console.log('wfs fromNetwork', fromNetwork);
+  console.log('wfs fromToken', fromToken);
+  console.log('wfs toChainId', toChainId);
+  console.log('wfs toToken', toToken);
   const navigate = useNavigate();
   const { isPrompt } = useCommonState();
-  const [showRateText, setShowRateText] = useState('1 USDT ≈ 1.12345678 SGR');
-  const [isFetchingRate, setIsFetchingRate] = useState(false);
-  const [updateTime, setUpdateTime] = useState(15);
-  const fetchNewRateText = useCallback(async () => {
-    try {
-      setIsFetchingRate(true);
-      const response = await fetch('https://api.example.com/rate');
-      const data = await response.json();
-      setShowRateText(`1 USDT ≈ ${data.rate} SGR`);
-    } catch (e) {
-      setShowRateText(`1 USDT ≈ 2 SGR`);
-      setUpdateTime(15);
-    } finally {
-      setIsFetchingRate(false);
-    }
-  }, []);
-  useEffect(() => {
-    let timer: string | number | NodeJS.Timeout | undefined;
-    if (!isFetchingRate) {
-      timer = setInterval(() => {
-        setUpdateTime((prev) => {
-          if (prev - 1 <= 0) {
-            fetchNewRateText();
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-    return () => {
-      clearInterval(timer);
-    };
-  }, [setUpdateTime, isFetchingRate, fetchNewRateText]);
 
   const [youReceive, setReceive] = useState<number | undefined>(undefined);
   useEffect(() => {
@@ -88,8 +98,8 @@ export default function DepositHome() {
               <div className="dropdown-trigger">
                 <span className="from-to-title">From</span>
                 <div className="network-info-wrapper">
-                  <div className="icons-network" />
-                  <span className="network-info-name">BNB Smart Chain</span>
+                  <NetworkLogo network={fromNetwork?.name} />
+                  <span className="network-info-name">{fromNetwork?.name}</span>
                 </div>
               </div>
             </div>
@@ -97,9 +107,9 @@ export default function DepositHome() {
               <div className="token-name-wrapper">
                 <div className="token-icon-name">
                   <div className="token">
-                    <img src="https://cdn.worldvectorlogo.com/logos/bitcoin.svg" className="token-img" />
+                    <img src={fromToken?.icon} className="token-img" />
                   </div>
-                  <span className="token-name">USDT</span>
+                  <span className="token-name">{fromToken?.symbol}</span>
                 </div>
                 <CustomSvg type="DownDeposit" />
                 {/* </div> */}
@@ -120,19 +130,23 @@ export default function DepositHome() {
           </div>
           <div className="card-container">
             <div className="card-info-wrapper">
-              <span className="from-to-title">To</span>
-              <div className="network-info-wrapper">
-                <div className="icons-network-16" />
-                <span className="network-info-name">SideChain tDVV</span>
+              <div className="dropdown-trigger">
+                <span className="from-to-title">To</span>
+                <div className="network-info-wrapper">
+                  <NetworkLogo network={'AELF'} />
+                  <span className="network-info-name">
+                    {toChainId === 'AELF' ? `MainChain ${toChainId}` : `SideChain ${toChainId}`}
+                  </span>
+                </div>
               </div>
             </div>
             <div className="token-wrapper">
               <div className="token-name-wrapper">
                 <div className="token-icon-name">
                   <div className="token">
-                    <img src="https://cdn.worldvectorlogo.com/logos/bitcoin.svg" className="token-img" />
+                    <img src={toToken?.icon} className="token-img" />
                   </div>
-                  <span className="token-name">SGR</span>
+                  <span className="token-name">{toToken?.symbol}</span>
                 </div>
                 <CustomSvg type="DownDeposit" />
               </div>
@@ -149,16 +163,24 @@ export default function DepositHome() {
                     console.log('onChange?.(e.target.value)', e.target.value);
                   }}
                 />
-                <span className="mini-receive">Minimum receive: 105.12345678</span>
               </div>
             </div>
+            <span className="mini-receive">Minimum receive: 105.12345678</span>
           </div>
           <CustomSvg type="DepositTransfer" className="transfer-icon" />
         </div>
-        <Calculator showRateText={showRateText} updateTime={updateTime} />
+        <ExchangeRate
+          fromSymbol={fromToken?.symbol || ''}
+          toSymbol={toToken?.symbol || ''}
+          toChainId={toChainId || 'AELF'}
+          slippage={'0.05'}
+          onFetchNewRate={() => {
+            console.log('onFetchNewRate!');
+          }}
+        />
       </div>
     );
-  }, [showRateText, updateTime, youReceive]);
+  }, [fromNetwork?.name, fromToken?.icon, fromToken?.symbol, toChainId, toToken?.icon, toToken?.symbol, youReceive]);
   const [step, setStep] = useState(Step.HOME);
   const homeEle = useMemo(() => {
     return (
@@ -171,7 +193,7 @@ export default function DepositHome() {
               text={'Next'}
               onClick={() => {
                 console.log('clicked next!!');
-                setStep(Step.DEPOSIT_ADDRESS);
+                setStep(Step.FROM_TOKEN);
               }}
             />
           </div>

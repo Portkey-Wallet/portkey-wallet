@@ -7,6 +7,8 @@ import { List } from 'antd';
 import usdt from '../assets/images/568656dc-ca4b-464f-b6df-6dcb3c406882.png';
 import bnb from '../assets/images/7d827072-15c9-4769-8067-a1be933bc2c3.png';
 import eth from '../assets/images/70b5df10-71d4-4f3c-b872-9f1ccaafca92.png';
+import NetworkLogo from '../NetworkLogo';
+import { BlockchainNetworkType } from 'constants/network';
 
 export interface ITokenNetworkListProps {
   onChange?: (item: any) => void;
@@ -142,7 +144,12 @@ export default function TokenNetworkList(pros: ITokenNetworkListProps) {
               }}>
               <div className="item-container">
                 <div className="item-wrapper">
-                  <img src={token.icon} alt="TokenSymbol" width="36" height="36" />
+                  <div className="icon-wrapper">
+                    <img src={token.icon} alt="TokenSymbol" width="36" height="36" />
+                    <div className="network-icon-container">
+                      <NetworkLogo network={BlockchainNetworkType.AELF} />
+                    </div>
+                  </div>
                   <div className="token-info-container">
                     <div className="token-info-name-container">
                       <span className="token-name">{token.name}</span>

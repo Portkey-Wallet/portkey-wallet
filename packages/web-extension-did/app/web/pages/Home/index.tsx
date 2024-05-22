@@ -67,7 +67,7 @@ export default function Home() {
       )}
       <button
         onClick={() => {
-          navigate('/token-detail/deposit-home', {
+          navigate('/token-detail/deposit-home/tDVW/USDT', {
             state: { params: 'a' },
           });
         }}>

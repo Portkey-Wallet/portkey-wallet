@@ -28,10 +28,79 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
     minimumReceiveAmount: 0,
   });
 
-  // const rateRefreshTimeRef = useRef(MAX_REFRESH_TIME);
-  // const [rateRefreshTime, setRateRefreshTime] = useState<number>(MAX_REFRESH_TIME);
-  // const refreshReceiveRef = useRef<() => void>();
-  // const refreshReceiveTimerRef = useRef<NodeJS.Timer>();
+  const rateRefreshTimeRef = useRef(MAX_REFRESH_TIME);
+  const [rateRefreshTime, setRateRefreshTime] = useState<number>(MAX_REFRESH_TIME);
+  const refreshReceiveRef = useRef<() => void>();
+  const refreshReceiveTimerRef = useRef<NodeJS.Timer>();
+
+  const clearRefreshReceive = useCallback(() => {
+    refreshReceiveTimerRef.current && clearInterval(refreshReceiveTimerRef.current);
+    refreshReceiveTimerRef.current = undefined;
+  }, []);
+
+  const calculateAmount = useCallback(
+    async (fromAmount: number) => {
+      if (!toChainId || !fromToken?.symbol || !toToken?.symbol || !fromAmount) {
+        throw new Error('Invalid params: toChainId, fromToken, toToken, fromAmount');
+      }
+      const result = await depositService.depositCalculator({
+        toChainId: toChainId,
+        fromSymbol: fromToken?.symbol,
+        toSymbol: toToken?.symbol,
+        fromAmount: fromAmount.toString(),
+      });
+      return result;
+    },
+    [fromToken?.symbol, toChainId, toToken?.symbol],
+  );
+
+  const fetchRate = useCallback(async () => {
+    if (!toChainId || !fromToken?.symbol || !toToken?.symbol) {
+      return;
+    }
+    const res = await calculateAmount(1);
+    console.log('calculateAmount res : ', res);
+    if (res.toAmount) {
+      seteUnitReceiveAmount(Number(res.toAmount));
+    }
+
+    if (payAmount <= 0) {
+      setReceiveAmount({ toAmount: 0, minimumReceiveAmount: 0 });
+      return;
+    }
+    const receiveAmountRes = await calculateAmount(payAmount);
+    setReceiveAmount({
+      toAmount: receiveAmountRes.toAmount,
+      minimumReceiveAmount: receiveAmountRes.minimumReceiveAmount,
+    });
+    console.log('calculateAmount receiveAmountRes : ', receiveAmountRes);
+  }, [calculateAmount, fromToken?.symbol, payAmount, toChainId, toToken?.symbol]);
+
+  useEffect(() => {
+    return () => {
+      clearRefreshReceive();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const registerRefreshReceive = useCallback(() => {
+    clearRefreshReceive();
+
+    rateRefreshTimeRef.current = MAX_REFRESH_TIME;
+    setRateRefreshTime(MAX_REFRESH_TIME);
+
+    const timer = setInterval(() => {
+      rateRefreshTimeRef.current = --rateRefreshTimeRef.current;
+      if (rateRefreshTimeRef.current === 0) {
+        refreshReceiveRef.current?.();
+        rateRefreshTimeRef.current = MAX_REFRESH_TIME;
+        fetchRate();
+      }
+      setRateRefreshTime(rateRefreshTimeRef.current);
+    }, 1000);
+
+    refreshReceiveTimerRef.current = timer;
+  }, [clearRefreshReceive, fetchRate]);
 
   const clearFromAndTo = useCallback(() => {
     setFromNetwork(undefined);
@@ -65,21 +134,21 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
   const fetchDepositTokenList = useCallback(async () => {
     const tokenList = await depositService.getDepositTokenList();
 
-    let findTartgetToken = false;
+    let findTargetToken = false;
     tokenList.forEach(token => {
       if (token.toTokenList) {
-        if (findTartgetToken) return;
-        token.toTokenList.forEach(toTokenItem => {
-          if (findTartgetToken) return;
-          if (toTokenItem.symbol === initToToken.symbol) {
-            findTartgetToken = true;
-            clearFromAndTo();
-            setToChainIdList(toTokenItem.chainIdList || []);
-            setFromToken(token);
-            setToToken(toTokenItem);
-            setToChainId(initChainId);
-          }
-        });
+        if (findTargetToken) return;
+        const targetToken = token.toTokenList.find(
+          toTokenItem => toTokenItem.symbol === initToToken.symbol && toTokenItem.chainIdList?.includes(initChainId),
+        );
+        if (targetToken) {
+          findTargetToken = true;
+          clearFromAndTo();
+          setToChainIdList(targetToken.chainIdList || []);
+          setFromToken(token);
+          setToToken(targetToken);
+          setToChainId(initChainId);
+        }
       }
     });
   }, [clearFromAndTo, initChainId, initToToken.symbol]);
@@ -98,23 +167,6 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
     return info;
   }, [fromNetwork?.network, fromToken?.symbol, toChainId, toToken?.symbol]);
 
-  //toChainId=tDVW&fromSymbol=USDT&toSymbol=SGR-1&fromAmount=100
-  const calculateAmount = useCallback(
-    async (fromAmount: number) => {
-      if (!toChainId || !fromToken?.symbol || !toToken?.symbol || !fromAmount) {
-        throw new Error('Invalid params: toChainId, fromToken, toToken, fromAmount');
-      }
-      const result = await depositService.depositCalculator({
-        toChainId: toChainId,
-        fromSymbol: fromToken?.symbol,
-        toSymbol: toToken?.symbol,
-        fromAmount: fromAmount.toString(),
-      });
-      return result;
-    },
-    [fromToken?.symbol, toChainId, toToken?.symbol],
-  );
-
   useEffect(() => {
     (async () => {
       await fetchTransferToken();
@@ -127,12 +179,28 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
       if (!toChainId || !fromToken?.symbol || !toToken?.symbol) {
         return;
       }
-      const res = await calculateAmount(1);
-      if (res.toAmount) {
-        seteUnitReceiveAmount(Number(res.toAmount));
-      }
+      console.log('registerRefreshReceive');
+      fetchRate();
+      registerRefreshReceive();
     })();
-  }, [calculateAmount, fromToken?.symbol, toChainId, toToken?.symbol]);
+  }, [calculateAmount, fetchRate, fromToken?.symbol, registerRefreshReceive, toChainId, toToken?.symbol]);
+
+  useEffect(() => {
+    (async () => {
+      if (!toChainId || !fromToken?.symbol || !toToken?.symbol) {
+        return;
+      }
+      if (payAmount <= 0) {
+        setReceiveAmount({ toAmount: 0, minimumReceiveAmount: 0 });
+        return;
+      }
+      const res = await calculateAmount(payAmount);
+      setReceiveAmount({
+        toAmount: res.toAmount,
+        minimumReceiveAmount: res.minimumReceiveAmount,
+      });
+    })();
+  }, [calculateAmount, fromToken?.symbol, payAmount, toChainId, toToken?.symbol]);
 
   useEffect(() => {
     (async () => {
@@ -157,6 +225,7 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
     unitReceiveAmount,
     payAmount,
     receiveAmount,
+    rateRefreshTime,
     fetchDepositInfo,
     setPayAmount,
   };

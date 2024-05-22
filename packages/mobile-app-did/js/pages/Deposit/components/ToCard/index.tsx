@@ -1,51 +1,52 @@
 import React from 'react';
-import { StyleSheet, View, Text, Image, StyleProp, ViewStyle, TextInput } from 'react-native';
+import { StyleSheet, View, Text, Image, StyleProp, ViewStyle } from 'react-native';
 import Svg from 'components/Svg';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
 
-type DepositCardType = 'From' | 'To';
-
-interface DepositCardProps {
+interface ToCardProps {
   wrapStyle?: StyleProp<ViewStyle>;
-  type: DepositCardType;
   chainName: string;
   chainIcon: string;
   tokenSymbol: string;
   tokenIcon: string;
+  receiveAmount: number;
+  minumumReceiveAmount: number;
 }
 
-export const DepositCard: React.FC<DepositCardProps> = ({
+export const ToCard: React.FC<ToCardProps> = ({
   wrapStyle,
-  type,
   chainIcon,
   chainName,
   tokenIcon,
-  tokenSymbol: tokenName,
+  tokenSymbol,
+  receiveAmount,
+  minumumReceiveAmount,
 }) => {
   return (
     <View style={[styles.container, wrapStyle]}>
       <View style={styles.chainWrapper}>
-        <Text style={styles.typeText}>{type}</Text>
+        <Text style={styles.typeText}>To</Text>
         <Image style={styles.chainIconImage} source={{ uri: chainIcon }} />
         <Text style={styles.chainNameText}>{chainName}</Text>
       </View>
       <View style={styles.contentWrapper}>
         <View style={styles.tokenWrapper}>
           {tokenIcon && <Image style={styles.tokenIconImage} source={{ uri: tokenIcon }} />}
-          <Text style={styles.tokenText}>{tokenName}</Text>
+          <Text style={styles.tokenText}>{tokenSymbol}</Text>
           <Svg iconStyle={styles.arrowIcon} size={pTd(12)} icon={'down-arrow'} />
         </View>
-        <View style={styles.mountWrapper}>
-          <Text style={styles.mountDesc}>{type === 'From' ? 'You Pay' : 'You Receive'}</Text>
-          {type === 'From' ? (
-            <TextInput style={styles.mountTextInput} keyboardType="decimal-pad" />
-          ) : (
-            <Text style={styles.mountText}>100</Text>
-          )}
+        <View style={styles.amountWrapper}>
+          <Text style={styles.amountDesc}>{'You Receive'}</Text>
+          <Text style={receiveAmount > 0 ? styles.amountText : styles.placeholderText}>
+            {receiveAmount > 0 ? receiveAmount : '0.0'}
+          </Text>
         </View>
       </View>
+      <Text style={styles.minimumAmountText}>
+        {minumumReceiveAmount > 0 ? `Minimum receive: ${minumumReceiveAmount}` : ''}
+      </Text>
     </View>
   );
 };
@@ -55,7 +56,7 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg33,
     borderRadius: pTd(6),
     paddingHorizontal: pTd(12),
-    paddingVertical: pTd(20),
+    paddingTop: pTd(20),
   },
   chainWrapper: {
     flexDirection: 'row',
@@ -101,26 +102,31 @@ const styles = StyleSheet.create({
   arrowIcon: {
     marginLeft: pTd(12),
   },
-  mountWrapper: {
+  amountWrapper: {
     alignItems: 'flex-end',
     flex: 1,
     marginLeft: pTd(20),
   },
-  mountText: {
+  amountText: {
     color: defaultColors.font5,
     fontSize: pTd(20),
     ...fonts.mediumFont,
   },
-  mountTextInput: {
-    marginTop: pTd(2),
-    width: '100%',
-    color: defaultColors.font5,
-    fontSize: pTd(20),
-    ...fonts.mediumFont,
-    textAlign: 'right',
-  },
-  mountDesc: {
+  amountDesc: {
     fontSize: pTd(12),
     color: defaultColors.font11,
+  },
+  minimumAmountText: {
+    width: '100%',
+    marginBottom: pTd(4),
+    color: defaultColors.font11,
+    lineHeight: pTd(16),
+    fontSize: pTd(12),
+    textAlign: 'right',
+  },
+  placeholderText: {
+    color: defaultColors.font11,
+    fontSize: pTd(20),
+    ...fonts.mediumFont,
   },
 });

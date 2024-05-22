@@ -17,20 +17,13 @@ import {
   BusinessType,
 } from '@portkey-wallet/types/types-ca/deposit';
 import { ChainId } from '@portkey-wallet/types';
+import { customFetch } from '@portkey-wallet/utils/fetch';
+import { stringify } from 'query-string';
 
 class DepositService implements IDepositService {
   private transferToken = '';
 
-  async requestTokenIfNeeded() {
-    if (!this.transferToken) {
-      const token = await this.getTransferToken({});
-      this.transferToken = token;
-    }
-    request.set('headers', { 'T-Authorization': this.transferToken });
-  }
-
   async getTokenList(params: TGetTokenListRequest): Promise<TTokenItem[]> {
-    await this.requestTokenIfNeeded();
     const {
       data: { tokenList },
     } = await request.deposit.getTokenList({
@@ -39,8 +32,22 @@ class DepositService implements IDepositService {
     return tokenList;
   }
 
-  async getTokenListByNetwork(params: TGetTokenListByNetworkRequest): Promise<TTokenItem[]> {
-    await this.requestTokenIfNeeded();
+  async getTokenListByNetwork({
+    type,
+    network,
+    chainId,
+  }: {
+    type: 'from' | 'to';
+    network?: string;
+    chainId: ChainId;
+  }): Promise<TTokenItem[]> {
+    request.set('headers', { 'T-Authorization': this.transferToken });
+    const params = network
+      ? {
+          type,
+          chainId,
+        }
+      : { type, chainId, network };
     const {
       data: { tokenList },
     } = await request.deposit.getTokenListByNetwork({
@@ -50,66 +57,7 @@ class DepositService implements IDepositService {
   }
 
   async getDepositTokenList(): Promise<TDepositTokenItem[]> {
-    return new Promise(resolve => {
-      const tokenList: TDepositTokenItem[] = [
-        {
-          name: 'Tether USD',
-          symbol: 'USDT',
-          decimals: 6,
-          icon: 'https://d.cobo.com/public/logos/USDT%403x.png',
-          contractAddress: '',
-          toTokenList: [
-            {
-              name: 'Tether USD',
-              symbol: 'USDT',
-              chainIdList: ['tDVW', 'AELF'],
-              decimals: 6,
-              icon: 'https://d.cobo.com/public/logos/USDT%403x.png',
-            },
-            {
-              name: 'SGR',
-              symbol: 'SGR-1',
-              chainIdList: ['tDVW'],
-              decimals: 8,
-              icon: 'https://raw.githubusercontent.com/Awaken-Finance/assets/main/blockchains/AELF/assets/SGR-1/logo24%403x.png',
-            },
-          ],
-        },
-        {
-          name: 'SGR',
-          symbol: 'SGR-1',
-          decimals: 8,
-          icon: 'https://raw.githubusercontent.com/Awaken-Finance/assets/main/blockchains/AELF/assets/SGR-1/logo24%403x.png',
-          contractAddress: '',
-          toTokenList: [
-            {
-              name: 'SGR',
-              symbol: 'SGR-1',
-              chainIdList: ['tDVW'],
-              decimals: 8,
-              icon: 'https://raw.githubusercontent.com/Awaken-Finance/assets/main/blockchains/AELF/assets/SGR-1/logo24%403x.png',
-            },
-          ],
-        },
-        {
-          name: 'ELF',
-          symbol: 'ELF',
-          decimals: 8,
-          icon: 'https://raw.githubusercontent.com/Awaken-Finance/assets/main/blockchains/AELF/assets/ELF/logo.png',
-          contractAddress: '',
-          toTokenList: [
-            {
-              name: 'ELF',
-              symbol: 'ELF',
-              chainIdList: ['tDVW', 'AELF'],
-              decimals: 8,
-              icon: 'https://raw.githubusercontent.com/Awaken-Finance/assets/main/blockchains/AELF/assets/ELF/logo.png',
-            },
-          ],
-        },
-      ];
-      resolve(tokenList);
-    });
+    request.set('headers', { 'T-Authorization': this.transferToken });
     const params: TGetDepositTokenListRequest = {
       type: BusinessType.Deposit,
     };
@@ -122,44 +70,7 @@ class DepositService implements IDepositService {
   }
 
   async getNetworkList({ chainId, symbol }: { chainId: ChainId; symbol: string }): Promise<TNetworkItem[]> {
-    return new Promise(resolve => {
-      const networkList: TNetworkItem[] = [
-        {
-          network: 'SETH',
-          name: 'SEthereum (ERC20)',
-          multiConfirm: '64 confirmations',
-          multiConfirmTime: '21mins',
-          contractAddress: '0xdac17f958d2ee523a2206206994597c13d831ec7',
-          explorerUrl: 'https://etherscan.io/address/0xdac17f958d2ee523a2206206994597c13d831ec7',
-          status: NetworkStatus.Health,
-          withdrawFee: undefined,
-          withdrawFeeUnit: undefined,
-        },
-        {
-          network: 'TRX',
-          name: 'TRON (TRC20)',
-          multiConfirm: '27 confirmations',
-          multiConfirmTime: '5mins',
-          contractAddress: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
-          explorerUrl: 'https://tronscan.io/#/contract/TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
-          status: NetworkStatus.Health,
-          withdrawFee: undefined,
-          withdrawFeeUnit: undefined,
-        },
-        {
-          network: 'BSC',
-          name: 'BNB Smart Chain (BEP20)',
-          multiConfirm: '15 confirmations',
-          multiConfirmTime: '4mins',
-          contractAddress: '0x3f280ee5876ce8b15081947e0f189e336bb740a5',
-          explorerUrl: 'https://testnet.bscscan.com/address/0x3f280ee5876ce8b15081947e0f189e336bb740a5',
-          status: NetworkStatus.Health,
-          withdrawFee: undefined,
-          withdrawFeeUnit: undefined,
-        },
-      ];
-      resolve(networkList);
-    });
+    request.set('headers', { 'T-Authorization': this.transferToken });
     const params: TGetNetworkListRequest = {
       type: BusinessType.Deposit,
       chainId,
@@ -174,18 +85,19 @@ class DepositService implements IDepositService {
   }
 
   async getDepositInfo(params: TGetDepositInfoRequest): Promise<TDepositInfo> {
-    return new Promise(resolve => {
-      const depositInfo: TDepositInfo = {
-        depositAddress: '0xb99e9c1367e3afda93b815c700e3d27b3b3bee7b',
-        minAmount: '0',
-        minAmountUsd: '0',
-        extraNotes: [
-          'Deposits will be unlocked and available for withdrawal/other activities after Bundle 2 confirmation.',
-          "To avoid potential losses, please don't deposit tokens other than USDT.",
-        ],
-      };
-      resolve(depositInfo);
-    });
+    // return new Promise(resolve => {
+    //   const depositInfo: TDepositInfo = {
+    //     depositAddress: '0xb99e9c1367e3afda93b815c700e3d27b3b3bee7b',
+    //     minAmount: '0',
+    //     minAmountUsd: '0',
+    //     extraNotes: [
+    //       'Deposits will be unlocked and available for withdrawal/other activities after Bundle 2 confirmation.',
+    //       "To avoid potential losses, please don't deposit tokens other than USDT.",
+    //     ],
+    //   };
+    //   resolve(depositInfo);
+    // });
+    request.set('headers', { 'T-Authorization': this.transferToken });
     const {
       data: { depositInfo },
     } = await request.deposit.getDepositInfo({
@@ -195,16 +107,17 @@ class DepositService implements IDepositService {
   }
 
   async depositCalculator(params: TGetDepositCalculateRequest): Promise<TConversionRate> {
-    return new Promise(resolve => {
-      const conversionRate: TConversionRate = {
-        fromSymbol: 'USDT',
-        toSymbol: 'SGR-1',
-        fromAmount: '1',
-        toAmount: '0.08256395',
-        minimumReceiveAmount: '0.07843575',
-      };
-      resolve(conversionRate);
-    });
+    // return new Promise(resolve => {
+    //   const conversionRate: TConversionRate = {
+    //     fromSymbol: 'USDT',
+    //     toSymbol: 'SGR-1',
+    //     fromAmount: '1',
+    //     toAmount: '0.08256395',
+    //     minimumReceiveAmount: '0.07843575',
+    //   };
+    //   resolve(conversionRate);
+    // });
+    request.set('headers', { 'T-Authorization': this.transferToken });
     const {
       data: { conversionRate },
     } = await request.deposit.depositCalculator({
@@ -213,10 +126,15 @@ class DepositService implements IDepositService {
     return conversionRate;
   }
 
-  getTransferToken(params: TQueryTransferAuthTokenRequest): Promise<string> {
-    return new Promise(resolve => {
-      resolve('hello world');
+  async getTransferToken(params: TQueryTransferAuthTokenRequest, apiUrl: string): Promise<string> {
+    const { access_token, token_type } = await customFetch(apiUrl + '/api/app/transfer/connect/token', {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      method: 'POST',
+      body: stringify(params),
     });
+    const token = `${token_type} ${access_token}`;
+    this.transferToken = token;
+    return token;
   }
 }
 

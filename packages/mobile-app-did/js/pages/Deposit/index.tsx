@@ -10,16 +10,19 @@ import { pTd } from 'utils/unit';
 import depositService from '@portkey-wallet/utils/deposit';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
-import { TTokenItem, TDepositTokenItem, TNetworkItem } from '@portkey-wallet/types/types-ca/deposit';
+import { TTokenItem, TDepositTokenItem, TNetworkItem, TDepositInfo } from '@portkey-wallet/types/types-ca/deposit';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { ChainId } from '@portkey-wallet/types';
+import { useDeposit } from '@portkey-wallet/hooks/hooks-ca/deposit';
+import { getCurrentCaHash, getManagerAccount, getPin } from 'utils/redux';
 
 export default function Deposit() {
   const { t } = useLanguage();
+  const { fetchTransferToken } = useDeposit();
 
   // const tokenItem = useRouterParams<TokenItemShowType>();
   // const { chainId, symbol, imageUrl } = tokenItem;
-  const chainId = 'tDVW';
+  const chainId = 'tDVV';
   const symbol = 'SGR-1';
   const imageUrl =
     'https://dynamic-assets.coinbase.com/41f6a93a3a222078c939115fc304a67c384886b7a9e6c15dcbfa6519dc45f6bb4a586e9c48535d099efa596dbf8a9dd72b05815bcd32ac650c50abb5391a5bd0/asset_icons/1f8489bb280fb0a0fd643c1161312ba49655040e9aaaced5f9ad3eeaf868eadc.png';
@@ -27,13 +30,23 @@ export default function Deposit() {
   const [depositTokenList, setDepositTokenList] = useState<TDepositTokenItem[] | undefined>();
   const [toChainIdList, setToChainIdList] = useState<ChainId[]>([]);
   const [toChainId, setToChainId] = useState<ChainId>('AELF');
+  const [toToken, setToToken] = useState<TTokenItem>();
 
   const [fromToken, setFromToken] = useState<TTokenItem>();
   const [fromNetwork, setFromNetwork] = useState<TNetworkItem>();
   const [fromNetworkList, setFromNetworkList] = useState<TNetworkItem[]>();
 
+  const [depositInfo, setDepositInfo] = useState<TDepositInfo>();
+
   useEffectOnce(() => {
-    fetchDepositTokenList();
+    (async () => {
+      const pin = getPin();
+      if (!pin) return;
+      const manager = getManagerAccount(pin);
+      if (!manager) return;
+      await fetchTransferToken(manager);
+      await fetchDepositTokenList();
+    })();
   });
 
   useEffect(() => {
@@ -42,8 +55,10 @@ export default function Deposit() {
         chainId: toChainId,
         symbol: fromToken?.symbol ?? 'USDT',
       });
-      setFromNetworkList(networkList);
-      console.log('networkList : ', networkList);
+      if (networkList && networkList.length > 0) {
+        setFromNetworkList(networkList);
+        setFromNetwork(networkList[0]);
+      }
     })();
   }, [fromToken, toChainId]);
 
@@ -55,10 +70,10 @@ export default function Deposit() {
     tokenList.forEach(token => {
       if (token.toTokenList) {
         if (findTartgetToken) return;
-        token.toTokenList.forEach(toToken => {
+        token.toTokenList.forEach(toTokenItem => {
           if (findTartgetToken) return;
-          if (toToken.symbol === symbol) {
-            setToChainIdList(toToken.chainIdList || []);
+          if (toTokenItem.symbol === symbol) {
+            setToChainIdList(toTokenItem.chainIdList || []);
             setFromToken(token);
             findTartgetToken = true;
           }
@@ -68,26 +83,76 @@ export default function Deposit() {
   }, []);
 
   const onNext = useCallback(async () => {
-    showDepositAddress({
-      depositInfo: {
-        depositAddress: 'U97UqZe52baDgmvdhgt6hcQnWBjiEKayeywLXiFEuH5LAEFhB',
-        minAmount: '1.23',
-        minAmountUsd: '1.24',
-        extraInfo: { slippage: '5%' },
-        extraNotes: [
-          'The swap will be in accordance to the actual amount of USDT deposited, hence please take note of the top-up value.',
-          'After topping up, the swap will factor in the slippage rate.',
-          'Failing which, the corresponding amount of USDT will be sent to your chain of choice.',
-        ],
-      },
-      contractAddress: '0xU97UqZe52baDgmvdhgt6hcQnWBjiEKayeywLXiFEuH5LAEFhB',
-    });
+    // showDepositAddress({
+    //   depositInfo: {
+    //     depositAddress: 'U97UqZe52baDgmvdhgt6hcQnWBjiEKayeywLXiFEuH5LAEFhB',
+    //     minAmount: '1.23',
+    //     minAmountUsd: '1.24',
+    //     extraInfo: { slippage: '5%' },
+    //     extraNotes: [
+    //       'The swap will be in accordance to the actual amount of USDT deposited, hence please take note of the top-up value.',
+    //       'After topping up, the swap will factor in the slippage rate.',
+    //       'Failing which, the corresponding amount of USDT will be sent to your chain of choice.',
+    //     ],
+    //   },
+    //   contractAddress: '0xU97UqZe52baDgmvdhgt6hcQnWBjiEKayeywLXiFEuH5LAEFhB',
+    // });
     // await getTransferToken({ chain_id: '' });
-  }, []);
+  }, [fetchTransferToken]);
 
-  const showRate = useMemo(() => {
-    return true;
-  }, []);
+  const showAmount = useMemo(() => {
+    return fromToken && toToken && fromToken.symbol === toToken.symbol;
+  }, [fromToken, toToken]);
+
+  useEffect(() => {
+    (async () => {
+      if (toChainId && toToken?.symbol && fromNetwork?.network && fromToken?.symbol) {
+        const params = {
+          chainId: toChainId,
+          toSymbol: toToken?.symbol,
+          network: fromNetwork?.network,
+          symbol: fromToken?.symbol,
+        };
+        const info = await depositService.getDepositInfo(params);
+        console.log('aaaa info : ', info);
+      }
+    })();
+  }, [fromNetwork, fromToken?.symbol, toChainId, toToken?.symbol]);
+
+  //toChainId=tDVW&fromSymbol=USDT&toSymbol=SGR-1&fromAmount=100
+  const calculateAmount = useCallback(
+    async (fromAmount: number) => {
+      if (toChainId && fromToken?.symbol && toToken?.symbol && fromAmount) {
+        const result = await depositService.depositCalculator({
+          toChainId: toChainId,
+          fromSymbol: fromToken?.symbol,
+          toSymbol: toToken?.symbol,
+          fromAmount: fromAmount.toString(),
+        });
+        return result;
+      }
+    },
+    [fromToken?.symbol, toChainId, toToken?.symbol],
+  );
+
+  useEffect(() => {
+    (async () => {
+      const oneAmount = await calculateAmount(1);
+      console.log('aaaaoneAmount :', oneAmount);
+    })();
+  }, [calculateAmount]);
+
+  useEffect(() => {
+    (async () => {
+      const params = {
+        chainId: toChainId ?? '',
+        network: fromNetwork?.network ?? '',
+        symbol: fromToken?.symbol,
+        toSymbol: toToken?.symbol,
+      };
+      const info = await depositService.getDepositInfo(params);
+    })();
+  }, [fromNetwork, fromToken?.symbol, toChainId, toToken?.symbol]);
 
   return (
     <PageContainer
@@ -113,7 +178,7 @@ export default function Deposit() {
         tokenName="SGR"
         tokenIcon="https://raw.githubusercontent.com/Awaken-Finance/assets/main/blockchains/AELF/assets/SGR-1/logo24@3x.png"
       />
-      {showRate && (
+      {showAmount && (
         <View style={styles.rateWrap}>
           <View>
             <Text style={styles.rateText}>1 USDT ≈ 1.12345678 SGR</Text>

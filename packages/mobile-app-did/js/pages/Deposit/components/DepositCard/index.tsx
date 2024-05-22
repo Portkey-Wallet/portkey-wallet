@@ -39,8 +39,8 @@ export const DepositCard: React.FC<DepositCardProps> = ({
           <Svg iconStyle={styles.arrowIcon} size={pTd(12)} icon={'down-arrow'} />
         </View>
         <View style={styles.mountWrapper}>
-          {type === 'From' ? <TextInput style={styles.mountTextInput} /> : <Text style={styles.mountText}>100</Text>}
           <Text style={styles.mountDesc}>{type === 'From' ? 'You Pay' : 'You Receive'}</Text>
+          {type === 'From' ? <TextInput style={styles.mountTextInput} /> : <Text style={styles.mountText}>100</Text>}
         </View>
       </View>
     </View>
@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
     ...fonts.mediumFont,
   },
   mountTextInput: {
+    marginTop: pTd(2),
     width: '100%',
     color: defaultColors.font5,
     fontSize: pTd(20),
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   mountDesc: {
+    fontSize: pTd(12),
     color: defaultColors.font11,
-    marginTop: pTd(2),
   },
 });

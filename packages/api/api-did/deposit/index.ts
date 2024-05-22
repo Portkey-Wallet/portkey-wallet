@@ -26,5 +26,6 @@ export default {
   getTransferToken: {
     target: '/api/app/transfer/connect/token',
     config: { method: 'POST' },
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
   },
 } as const;

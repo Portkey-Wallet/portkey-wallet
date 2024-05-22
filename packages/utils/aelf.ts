@@ -73,8 +73,13 @@ export function getEntireDIDAelfAddress(value: string, defaultPrefix = 'ELF', de
 }
 
 export function isAllowAelfAddress(value: string) {
-  const arr = value.split('_').filter(i => !!i);
-  if (arr.length === 3) return isAelfAddress(value);
+  const arr = value.split('_');
+  if (arr.length > 3 || arr.length === 0) return false;
+  if (arr.length === 3 || arr.length === 1) return isAelfAddress(value);
+  // arr.length === 2
+  for (let i = 0; i < arr.length; i++) {
+    if (isAelfAddress(arr[i])) return true;
+  }
   return false;
 }
 

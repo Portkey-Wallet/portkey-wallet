@@ -11,7 +11,7 @@ import { pTd } from 'utils/unit';
 import ActionSheet from 'components/ActionSheet';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { getAelfAddress, getEntireDIDAelfAddress, isAllowAelfAddress, isCrossChain } from '@portkey-wallet/utils/aelf';
+import { getAelfAddress, getEntireDIDAelfAddress, isAelfAddress, isCrossChain } from '@portkey-wallet/utils/aelf';
 import useDebounce from 'hooks/useDebounce';
 import { useLanguage } from 'i18n/hooks';
 import SelectContact from '../SelectContact';
@@ -97,6 +97,12 @@ const SendHome: React.FC = () => {
   useEffect(() => {
     setSelectedToContact(toInfo);
   }, [toInfo]);
+
+  const isAllowSendAddress = useCallback((address: string) => {
+    const arr = address.split('_').filter(i => !!i);
+    if (arr.length === 3) return isAelfAddress(address);
+    return false;
+  }, []);
 
   // get transfer fee
   const getTransferFee = useGetTransferFee();
@@ -203,9 +209,9 @@ const SendHome: React.FC = () => {
     const { address } = selectedToContact || {};
     return (
       checkIsValidEtransferAddress(address) &&
-      !(isAllowAelfAddress(address) && isValidChainId(getAddressChainId(selectedToContact.address, assetInfo.chainId)))
+      !(isAllowSendAddress(address) && isValidChainId(getAddressChainId(selectedToContact.address, assetInfo.chainId)))
     );
-  }, [assetInfo.chainId, isValidChainId, selectedToContact]);
+  }, [assetInfo.chainId, isAllowSendAddress, isValidChainId, selectedToContact]);
 
   // warning dialog
   const showDialog = useCallback(
@@ -304,7 +310,7 @@ const SendHome: React.FC = () => {
       return false;
     }
 
-    if (!isAllowAelfAddress(selectedToContact.address)) {
+    if (!isAllowSendAddress(selectedToContact.address)) {
       if (enableEtransfer && checkIsValidEtransferAddress(selectedToContact.address)) {
         setErrorMessage([]);
       } else {
@@ -320,6 +326,7 @@ const SendHome: React.FC = () => {
     wallet,
     assetInfo.chainId,
     isValidChainId,
+    isAllowSendAddress,
     showDialog,
     enableEtransfer,
   ]);

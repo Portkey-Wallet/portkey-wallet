@@ -56,7 +56,7 @@ export default function Receive() {
         <div className="receive-content flex-1 flex-column">
           {showTabData.length > 1 ? (
             <RadioTab
-              className="radio-tab-wrap"
+              className="receive-radio-tab"
               radioList={showTabData}
               onChange={(target) => {
                 setCurTab(target as ReceiveTabEnum);
@@ -64,11 +64,12 @@ export default function Receive() {
               defaultValue={curTab}
             />
           ) : null}
-          <div className="receive-content-page flex-1"></div>
-          {curTab === ReceiveTabEnum.QRCode && <QRCodePage />}
-          {curTab === ReceiveTabEnum.Exchanges && <ExchangePage />}
-          {curTab === ReceiveTabEnum.Deposit && <DepositPage />}
-          {curTab === ReceiveTabEnum.Buy && <BuyPage />}
+          <div className="receive-content-page flex-1">
+            {curTab === ReceiveTabEnum.QRCode && <QRCodePage />}
+            {curTab === ReceiveTabEnum.Exchanges && <ExchangePage />}
+            {curTab === ReceiveTabEnum.Deposit && <DepositPage />}
+            {curTab === ReceiveTabEnum.Buy && <BuyPage />}
+          </div>
         </div>
         {isPrompt && <PromptEmptyElement />}
       </div>

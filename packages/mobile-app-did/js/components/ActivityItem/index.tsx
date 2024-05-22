@@ -24,7 +24,6 @@ import NFTAvatar from 'components/NFTAvatar';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
 import DoubleAvatar from 'components/DoubleAvatar';
-import { title } from 'process';
 import { TextM } from 'components/CommonText';
 
 interface ActivityItemPropsType {

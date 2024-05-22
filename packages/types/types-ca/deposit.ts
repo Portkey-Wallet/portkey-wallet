@@ -108,9 +108,9 @@ export type TGetDepositCalculateResult = {
 export type TConversionRate = {
   fromSymbol: string;
   toSymbol: string;
-  fromAmount: string;
-  toAmount: string;
-  minimumReceiveAmount: string;
+  fromAmount: number;
+  toAmount: number;
+  minimumReceiveAmount: number;
 };
 
 export type TQueryTransferAuthTokenRequest = {

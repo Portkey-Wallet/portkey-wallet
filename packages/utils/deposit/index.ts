@@ -19,9 +19,52 @@ import {
 import { ChainId } from '@portkey-wallet/types';
 import { customFetch } from '@portkey-wallet/utils/fetch';
 import { stringify } from 'query-string';
+import { AElfWallet } from '@portkey-wallet/types/aelf';
 
 class DepositService implements IDepositService {
-  private transferToken = '';
+  private transferToken: string | null = null;
+
+  /*
+  private manager: AElfWallet | null = null;
+  private caHash: string | null = null;
+  private apiUrl: string | null = null;
+
+  setTokenRequestData({ manager, caHash, apiUrl }: { manager: AElfWallet; caHash: string; apiUrl: string }) {
+    this.manager = manager;
+    this.caHash = caHash;
+    this.apiUrl = apiUrl;
+  }
+
+  async checkTransferToken() {
+    if (this.transferToken) return;
+    if (!this.manager) {
+      throw new Error('Manager is not set');
+    }
+    if (!this.caHash) {
+      throw new Error('CaHash is not set');
+    }
+    if (!this.apiUrl) {
+      throw new Error
+    }
+
+    const plainTextOrigin = `Nonce:${Date.now()}`;
+    const plainTextHex = Buffer.from(plainTextOrigin).toString('hex').replace('0x', '');
+    const plainTextHexSignature = Buffer.from(plainTextHex).toString('hex');
+
+    const signature = AElf.wallet.sign(plainTextHexSignature, manager.keyPair).toString('hex');
+    const pubkey = (manager.keyPair as any).getPublic('hex');
+
+    const params: TQueryTransferAuthTokenRequest = {
+      pubkey: pubkey,
+      signature: signature,
+      plain_text: plainTextHex,
+      ca_hash: caHash ?? '',
+      chain_id: 'AELF', // todo_wade: fix the chain_id
+      managerAddress: this.manager.address,
+    };
+    const token = await this.getTransferToken(params);
+  }
+  */
 
   async getTokenList(params: TGetTokenListRequest): Promise<TTokenItem[]> {
     const {
@@ -85,18 +128,6 @@ class DepositService implements IDepositService {
   }
 
   async getDepositInfo(params: TGetDepositInfoRequest): Promise<TDepositInfo> {
-    // return new Promise(resolve => {
-    //   const depositInfo: TDepositInfo = {
-    //     depositAddress: '0xb99e9c1367e3afda93b815c700e3d27b3b3bee7b',
-    //     minAmount: '0',
-    //     minAmountUsd: '0',
-    //     extraNotes: [
-    //       'Deposits will be unlocked and available for withdrawal/other activities after Bundle 2 confirmation.',
-    //       "To avoid potential losses, please don't deposit tokens other than USDT.",
-    //     ],
-    //   };
-    //   resolve(depositInfo);
-    // });
     request.set('headers', { 'T-Authorization': this.transferToken });
     const {
       data: { depositInfo },
@@ -107,16 +138,6 @@ class DepositService implements IDepositService {
   }
 
   async depositCalculator(params: TGetDepositCalculateRequest): Promise<TConversionRate> {
-    // return new Promise(resolve => {
-    //   const conversionRate: TConversionRate = {
-    //     fromSymbol: 'USDT',
-    //     toSymbol: 'SGR-1',
-    //     fromAmount: '1',
-    //     toAmount: '0.08256395',
-    //     minimumReceiveAmount: '0.07843575',
-    //   };
-    //   resolve(conversionRate);
-    // });
     request.set('headers', { 'T-Authorization': this.transferToken });
     const {
       data: { conversionRate },
@@ -134,78 +155,10 @@ class DepositService implements IDepositService {
     });
     const token = `${token_type} ${access_token}`;
     this.transferToken = token;
+    request.set('headers', { 'T-Authorization': this.transferToken });
     return token;
   }
 }
 
 const depositService = new DepositService();
 export default depositService;
-
-export const getTokenList = async (params: TGetTokenListRequest): Promise<TTokenItem[]> => {
-  const {
-    data: { tokenList },
-  } = await request.deposit.getTokenList({
-    params,
-  });
-  return tokenList;
-};
-
-export const getTokenListByNetwork = async (params: TGetTokenListByNetworkRequest): Promise<TTokenItem[]> => {
-  const {
-    data: { tokenList },
-  } = await request.deposit.getTokenListByNetwork({
-    params,
-  });
-  return tokenList;
-};
-
-export const getDepositTokenList = async (params: TGetDepositTokenListRequest): Promise<TDepositTokenItem[]> => {
-  const {
-    data: { tokenList },
-  } = await request.deposit.getDepositTokenList({
-    params,
-  });
-  return tokenList;
-};
-
-export const getNetworkList = async (params: TGetNetworkListRequest): Promise<TNetworkItem[]> => {
-  const {
-    data: { networkList },
-  } = await request.deposit.getNetworkList({
-    params,
-  });
-  return networkList;
-};
-
-export const getDepositInfo = async (params: TGetDepositInfoRequest): Promise<TDepositInfo> => {
-  const {
-    data: { depositInfo },
-  } = await request.deposit.getDepositInfo({
-    params,
-  });
-  return depositInfo;
-};
-
-export const depositCalculator = async (params: TGetDepositCalculateRequest): Promise<TConversionRate> => {
-  const {
-    data: { conversionRate },
-  } = await request.deposit.depositCalculator({
-    params,
-  });
-  return conversionRate;
-};
-
-// todo_wade: fix the type
-export const getTransferToken = async (params: { chain_id: string }): Promise<string> => {
-  // console.log('aaaaaa request.headers : ', request.headers);
-  request.set('headers', { 'T-Authorization': 'T-authorization-TEST' });
-  console.log('aaaaaa request.defaultConfig : ', request.defaultConfig);
-  // const {
-  //   data: { access_token },
-  // } = await request.deposit.getTransferToken({
-  //   params,
-  // });
-  const access_token = '';
-  console.log('aaaaaa access_token : ', access_token);
-  return access_token;
-};

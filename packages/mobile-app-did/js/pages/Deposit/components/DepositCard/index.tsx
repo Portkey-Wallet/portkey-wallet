@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React from 'react';
 import { StyleSheet, View, Text, Image, StyleProp, ViewStyle, TextInput } from 'react-native';
 import Svg from 'components/Svg';
 import { defaultColors } from 'assets/theme';
@@ -10,10 +10,9 @@ type DepositCardType = 'From' | 'To';
 interface DepositCardProps {
   wrapStyle?: StyleProp<ViewStyle>;
   type: DepositCardType;
-  chainId: string;
   chainName: string;
   chainIcon: string;
-  tokenName: string;
+  tokenSymbol: string;
   tokenIcon: string;
 }
 
@@ -23,7 +22,7 @@ export const DepositCard: React.FC<DepositCardProps> = ({
   chainIcon,
   chainName,
   tokenIcon,
-  tokenName,
+  tokenSymbol: tokenName,
 }) => {
   return (
     <View style={[styles.container, wrapStyle]}>
@@ -34,13 +33,17 @@ export const DepositCard: React.FC<DepositCardProps> = ({
       </View>
       <View style={styles.contentWrapper}>
         <View style={styles.tokenWrapper}>
-          <Image style={styles.tokenIconImage} source={{ uri: tokenIcon }} />
+          {tokenIcon && <Image style={styles.tokenIconImage} source={{ uri: tokenIcon }} />}
           <Text style={styles.tokenText}>{tokenName}</Text>
           <Svg iconStyle={styles.arrowIcon} size={pTd(12)} icon={'down-arrow'} />
         </View>
         <View style={styles.mountWrapper}>
           <Text style={styles.mountDesc}>{type === 'From' ? 'You Pay' : 'You Receive'}</Text>
-          {type === 'From' ? <TextInput style={styles.mountTextInput} /> : <Text style={styles.mountText}>100</Text>}
+          {type === 'From' ? (
+            <TextInput style={styles.mountTextInput} keyboardType="decimal-pad" />
+          ) : (
+            <Text style={styles.mountText}>100</Text>
+          )}
         </View>
       </View>
     </View>

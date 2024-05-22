@@ -1,7 +1,6 @@
 import { useDisbandChannel, useGroupChannelInfo, useUpdateChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
 import { Button, Form, Input } from 'antd';
-import CustomSvg from 'components/CustomSvg';
-import SettingHeader from 'pages/components/SettingHeader';
+import CommonHeader from 'components/CommonHeader';
 import { useParams } from 'react-router';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -78,13 +77,7 @@ export default function EditGroupInfo() {
   }, [disbandGroup, navigate, t]);
   return (
     <div className="group-info-edit-page flex-column">
-      <div className="group-info-edit-header">
-        <SettingHeader
-          title="Edit Group"
-          leftCallBack={() => navigate(`/chat-group-info/${channelUuid}`)}
-          rightElement={<CustomSvg type="Close2" onClick={() => navigate(`/chat-group-info/${channelUuid}`)} />}
-        />
-      </div>
+      <CommonHeader title="Edit Group" onLeftBack={() => navigate(`/chat-group-info/${channelUuid}`)} />
       <Form
         form={form}
         autoComplete="off"

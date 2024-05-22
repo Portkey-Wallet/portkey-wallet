@@ -1,16 +1,13 @@
 @import '../../../assets/theme/color.less';
+@import '../../../assets/theme/constants.less';
 
 .group-info-edit-page {
   height: 100%;
-  background-color: @bg-11;
+  background-color: @neutral-default-bg;
   font-size: 16px;
   line-height: 22px;
-  .group-info-edit-header {
-    padding-top: 16px;
-    background-color: @bg-13;
-  }
   .edit-group-info-form {
-    height: calc(100% - 96px);
+    height: calc(100% - @common-header-height);
     .form-content {
       padding: 24px;
       .group-info-avatar {
@@ -30,7 +27,7 @@
       height: 80px;
       padding: 16px;
       gap: 16px;
-      border-top: 1px solid @border-2;
+      border-top: 1px solid @neutral-divider;
       .portkey-btn {
         height: 48px;
         border-radius: 22px;
@@ -42,8 +39,8 @@
         border: 1px solid @border-7;
       }
       .portkey-btn-primary {
-        color: @font-5;
-        background-color: @bg-7;
+        color: @neutral-white-text;
+        background-color: @brand-normal;
       }
     }
   }

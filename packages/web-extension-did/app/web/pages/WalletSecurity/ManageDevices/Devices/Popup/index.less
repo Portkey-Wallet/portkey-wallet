@@ -1,23 +1,16 @@
 @import '../../../../../assets/theme/color.less';
+@import '../../../../../assets/theme/constants.less';
 
 .devices-popup {
-  .devices-header {
-    overflow: hidden;
-    width: 100%;
-    padding-top: 16px;
-    background-color: @bg-13;
-    border-bottom: 1px solid @border-2;
-    z-index: 10;
-  }
   .content {
     overflow-y: auto;
-    height: calc(100% - 96px);
+    height: calc(100% - @common-header-height);
     .desc {
       padding: 24px;
       font-size: 14px;
       line-height: 20px;
-      color: @font-13;
-      border-bottom: 1px solid @border-2;
+      color: @neutral-secondary-text;
+      border-bottom: 1px solid @neutral-divider;
     }
   }
 }

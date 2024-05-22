@@ -6,6 +6,7 @@ import '../index.less';
 import { IRampCryptoItem } from '@portkey-wallet/ramp';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
+import CommonHeader, { CustomSvgPlaceholderSize } from 'components/CommonHeader';
 
 export interface ISelectCryptoListProps {
   onChange?: (v: IRampCryptoItem) => void;
@@ -69,10 +70,17 @@ export default function SelectCryptoList({
 
   return (
     <div className="custom-list">
-      <div className="header">
-        <p>{title || 'Select'}</p>
-        <CustomSvg type="Close2" onClick={onClose} />
-      </div>
+      <CommonHeader
+        className="header"
+        title={title || 'Select'}
+        rightElementList={[
+          {
+            customSvgType: 'SuggestClose',
+            customSvgPlaceholderSize: CustomSvgPlaceholderSize.MD,
+            onClick: onClose,
+          },
+        ]}
+      />
       <DropdownSearch
         overlayClassName="empty-dropdown"
         open={openDrop}

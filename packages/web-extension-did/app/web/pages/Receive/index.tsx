@@ -1,6 +1,5 @@
 import clsx from 'clsx';
-import CustomSvg from 'components/CustomSvg';
-import TitleWrapper from 'components/TitleWrapper';
+import CommonHeader from 'components/CommonHeader';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import PromptFrame from 'pages/components/PromptFrame';
 import { useCallback, useMemo, useState } from 'react';
@@ -40,19 +39,11 @@ export default function Receive() {
   });
   const [curTab, setCurTab] = useState<ReceiveTabEnum>(showTabData[0].value);
 
-  const rightElement = useMemo(() => {
-    return (
-      <div>
-        <CustomSvg onClick={() => navigate(-1)} type="Close2" />
-      </div>
-    );
-  }, [navigate]);
-
   const { isPrompt } = useCommonState();
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['receive-wrapper flex-column', isPrompt && 'detail-page-prompt'])}>
-        <TitleWrapper leftElement rightElement={rightElement} />
+        <CommonHeader onLeftBack={() => navigate(-1)} />
         <div className="receive-content flex-1 flex-column">
           {showTabData.length > 1 ? (
             <RadioTab
@@ -74,7 +65,7 @@ export default function Receive() {
         {isPrompt && <PromptEmptyElement />}
       </div>
     );
-  }, [curTab, isPrompt, rightElement, showTabData]);
+  }, [curTab, isPrompt, navigate, showTabData]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

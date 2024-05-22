@@ -1,6 +1,4 @@
-import BackHeader from 'components/BackHeader';
-import CustomSvg from 'components/CustomSvg';
-import { useNavigate } from 'react-router';
+import CommonHeader from 'components/CommonHeader';
 import './index.less';
 import { IConfirmPinProps } from '..';
 import SubmitPinButton from 'pages/AccountSetting/components/SubmitPinButton';
@@ -19,7 +17,6 @@ export default function ConfirmPinPopup({
   handleNext,
   goBack,
 }: IConfirmPinProps) {
-  const navigate = useNavigate();
   const [form] = Form.useForm();
 
   return (
@@ -31,20 +28,7 @@ export default function ConfirmPinPopup({
         onFinish={handleNext}
         className="flex-column-between confirm-pin-form">
         <div>
-          <div className="confirm-pin-title">
-            <BackHeader
-              title={headerTitle}
-              leftCallBack={goBack}
-              rightElement={
-                <CustomSvg
-                  type="Close2"
-                  onClick={() => {
-                    navigate('/setting/account-setting');
-                  }}
-                />
-              }
-            />
-          </div>
+          <CommonHeader title={headerTitle} onLeftBack={goBack} />
           <InputPin label={pinLabel} value={pin} placeholder={placeholder} errMsg={errMsg} onChange={onChangePin} />
         </div>
         <SubmitPinButton text={btnText} disable={submitDisable} className="confirm-pin-btn" />

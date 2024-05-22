@@ -4,7 +4,7 @@
   position: absolute;
   width: 100%;
   margin-top: 9px;
-  background: @bg-11;
+  background: @neutral-default-bg;
   border-radius: 6px;
   z-index: 99;
   height: 260px;
@@ -27,7 +27,7 @@
     }
     .search-svg {
       path {
-        fill: @font-13;
+        fill: @neutral-secondary-text;
       }
     }
   }
@@ -41,7 +41,7 @@
       border-radius: 5px;
     }
     &::-webkit-scrollbar-thumb {
-      background-color: @bg-18;
+      background-color: @neutral-border;
       border-radius: 8px;
     }
   }
@@ -50,32 +50,32 @@
     padding-right: 10px;
     cursor: pointer;
     & > span:first-child {
-      color: @font-11;
+      color: @neutral-primary-text;
       font-size: 16px;
       line-height: 22px;
     }
     & > span:last-child {
       font-size: 14px;
       line-height: 20px;
-      color: @font-13;
+      color: @neutral-secondary-text;
       text-align: right;
     }
     &:hover {
       & > span {
-        color: @font-9;
+        color: @brand-normal;
       }
     }
   }
   // .area-code-item.active-item {
   //   background-color: @bg-9;
   //   & > span {
-  //     color: @font-9;
+  //     color: @brand-normal;
   //   }
   // }
   .no-search-result {
     margin-top: 72px;
     font-size: 14px;
     line-height: 20px;
-    color: @font-12;
+    color: @neutral-disable-text;
   }
 }

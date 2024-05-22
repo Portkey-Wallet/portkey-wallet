@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
-import BackHeader from 'components/BackHeader';
+import CommonHeader from 'components/CommonHeader';
 import CustomSvg from 'components/CustomSvg';
 import { useNavigate } from 'react-router';
 import { InitProviderSelected, MAX_UPDATE_TIME } from '../const';
@@ -245,13 +245,10 @@ export default function Preview() {
   const mainContent = useMemo(
     () => (
       <div className={clsx(['preview-frame flex-column', isPrompt ? 'detail-page-prompt' : ''])}>
-        <div className="preview-title">
-          <BackHeader
-            title={`${data.side === RampType.BUY ? 'Buy' : 'Sell'} ${state.crypto}`}
-            leftCallBack={handleBack}
-            rightElement={<CustomSvg type="Close2" onClick={handleBack} />}
-          />
-        </div>
+        <CommonHeader
+          title={`${data.side === RampType.BUY ? 'Buy' : 'Sell'} ${state.crypto}`}
+          onLeftBack={handleBack}
+        />
 
         <div className="preview-content">
           <div className="transaction flex-column-center">

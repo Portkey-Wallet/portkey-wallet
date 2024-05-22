@@ -1,5 +1,5 @@
 import { useDeleteMessage, useGroupChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
-import SettingHeader from 'pages/components/SettingHeader';
+import CommonHeader from 'components/CommonHeader';
 import { useParams } from 'react-router';
 import { MessageList, MessageContentType, StyleProvider, MessageShowPageEnum } from '@portkey-wallet/im-ui-web';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
@@ -110,12 +110,11 @@ const PinnedMsg = () => {
   );
   return (
     <div className="group-pinned-message-page flex-column-between">
-      <div className="pinned-message-header">
-        <SettingHeader
-          title={`${pinList.length} Pinned Messages`}
-          leftCallBack={() => navigate(`/chat-box-group/${channelUuid}`)}
-        />
-      </div>
+      <CommonHeader
+        className="pinned-message-header"
+        title={`${pinList.length} Pinned Messages`}
+        onLeftBack={() => navigate(`/chat-box-group/${channelUuid}`)}
+      />
       <div className="pinned-message-container flex">
         {isAdmin && (
           <div className="pinned-message-footer flex-center">

@@ -89,11 +89,11 @@ class DepositService implements IDepositService {
   }): Promise<TTokenItem[]> {
     request.set('headers', { 'T-Authorization': this.transferToken });
     const params = network
-      ? {
+      ? { type, chainId, network }
+      : {
           type,
           chainId,
-        }
-      : { type, chainId, network };
+        };
     const {
       data: { tokenList },
     } = await request.deposit.getTokenListByNetwork({

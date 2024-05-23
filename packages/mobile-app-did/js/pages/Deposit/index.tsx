@@ -114,27 +114,31 @@ export default function Deposit() {
       safeAreaColor={['white']}
       containerStyles={styles.pageStyles}
       scrollViewProps={{ disabled: false }}>
-      <FromCard
-        wrapStyle={styles.fromCard}
-        networkName={fromNetwork?.name ?? ''}
-        networkIcon="https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png"
-        tokenSymbol={fromToken?.symbol ?? ''}
-        tokenIcon={fromToken?.icon ?? ''}
-        onChangeText={onPayAmountChanged}
-        showAmount={!isSameSymbol}
-        onPress={onSelectPayToken}
-      />
-      <ToCard
-        wrapStyle={styles.toCard}
-        chainName={formatChainInfoToShow(chainId, currentNetwork)}
-        chainIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACXklEQVR4AcTWA6wlMRiG4Tlr27Zt27bN6ERrK1jbN1rbtm3bto3um810M+lRe08mO8kTjYqvf2tF5srWZomFDJiB1/iKjSgNDyzXLvvnsTAXXyActiEnXG9AUVyFUHxBZxh/0IOMaI0+6I0WSA8P1Oer4Q6EH17TBkRDFWzEawjbC6xCBURRGpAexyEUD1DftAFFcBLCj1/Yj7xQR6wt7kPY3mEUEpo2IAI/IQL4jDGwoAaxDPpgEOojKYxD9RS/IYI4hpTwl51YiI2oiFSqf0GE8BzdYcEk3DGRCEkQH9Hg8+CjkCMAnEQVxEKoHydAUXgxGwswFi2QGdHx74XpMgMabmIwaqEKmqIdCsGyZcRQJaDSD+xBY8TG3wYUxOEgq+AOlmIyInAET/EcP+1ndiAzUmEOvkAEcRetEUPWgXJYjjcQtmdYiHoy3YiB/BiL18r6bw4vPkBouIDCctiiIB3qojs6ozrSBKiEiTEZnx35aI7dEJp+YIz/sgyNoKVCFwxESTTARwhNv3Ep3E0pulwVaA9h6Mf/bsDPcKYgJTqFOQWXnSFMizqOENYIEsJEmOgI4Sm0wC7jENrLsAyWKUvrORahvrIM82GM8uxDtDJchhflMsyPg0GG6a5mIcqC1AaFqI0sRFMMSvEtDHWU4iaOUuxxHFaH4z5+65TiB5qb0WlU09yMEqIYvJiF+RiLln42I63ev0BPt7ZjnRE4jtRuHUhmhhiFLxjv5pGsMI4H2Y4PIb+bh9JoqIz1fo7lq1HF7WO57FEGtMKfIXdM5MjpmAx412wod07p3z0HAEmapjUsGtMuAAAAAElFTkSuQmCC"
-        tokenSymbol={toToken?.symbol ?? ''}
-        tokenIcon={toToken?.icon ?? ''}
-        receiveAmount={receiveAmount.toAmount}
-        minumumReceiveAmount={receiveAmount.minimumReceiveAmount}
-        showAmount={!isSameSymbol}
-        onPress={onSelectReceiveToken}
-      />
+      <View style={styles.cardWrap}>
+        <FromCard
+          networkName={fromNetwork?.name ?? ''}
+          networkIcon="https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png"
+          tokenSymbol={fromToken?.symbol ?? ''}
+          tokenIcon={fromToken?.icon ?? ''}
+          onChangeText={onPayAmountChanged}
+          showAmount={!isSameSymbol}
+          onPress={onSelectPayToken}
+        />
+        <ToCard
+          wrapStyle={styles.toCard}
+          chainName={formatChainInfoToShow(chainId, currentNetwork)}
+          chainIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACXklEQVR4AcTWA6wlMRiG4Tlr27Zt27bN6ERrK1jbN1rbtm3bto3um810M+lRe08mO8kTjYqvf2tF5srWZomFDJiB1/iKjSgNDyzXLvvnsTAXXyActiEnXG9AUVyFUHxBZxh/0IOMaI0+6I0WSA8P1Oer4Q6EH17TBkRDFWzEawjbC6xCBURRGpAexyEUD1DftAFFcBLCj1/Yj7xQR6wt7kPY3mEUEpo2IAI/IQL4jDGwoAaxDPpgEOojKYxD9RS/IYI4hpTwl51YiI2oiFSqf0GE8BzdYcEk3DGRCEkQH9Hg8+CjkCMAnEQVxEKoHydAUXgxGwswFi2QGdHx74XpMgMabmIwaqEKmqIdCsGyZcRQJaDSD+xBY8TG3wYUxOEgq+AOlmIyInAET/EcP+1ndiAzUmEOvkAEcRetEUPWgXJYjjcQtmdYiHoy3YiB/BiL18r6bw4vPkBouIDCctiiIB3qojs6ozrSBKiEiTEZnx35aI7dEJp+YIz/sgyNoKVCFwxESTTARwhNv3Ep3E0pulwVaA9h6Mf/bsDPcKYgJTqFOQWXnSFMizqOENYIEsJEmOgI4Sm0wC7jENrLsAyWKUvrORahvrIM82GM8uxDtDJchhflMsyPg0GG6a5mIcqC1AaFqI0sRFMMSvEtDHWU4iaOUuxxHFaH4z5+65TiB5qb0WlU09yMEqIYvJiF+RiLln42I63ev0BPt7ZjnRE4jtRuHUhmhhiFLxjv5pGsMI4H2Y4PIb+bh9JoqIz1fo7lq1HF7WO57FEGtMKfIXdM5MjpmAx412wod07p3z0HAEmapjUsGtMuAAAAAElFTkSuQmCC"
+          tokenSymbol={toToken?.symbol ?? ''}
+          tokenIcon={toToken?.icon ?? ''}
+          receiveAmount={receiveAmount.toAmount}
+          minumumReceiveAmount={receiveAmount.minimumReceiveAmount}
+          showAmount={!isSameSymbol}
+          onPress={onSelectReceiveToken}
+        />
+        <View style={styles.directionIconWrap} pointerEvents="none">
+          <Svg size={pTd(32)} icon={'direction_down'} />
+        </View>
+      </View>
       {!isSameSymbol && unitReceiveAmount > 0 && (
         <View style={styles.rateWrap}>
           <View style={styles.countDownWrap}>
@@ -157,11 +161,18 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg1,
     flex: 1,
   },
-  fromCard: {
+  cardWrap: {
     marginTop: pTd(16),
   },
   toCard: {
     marginTop: pTd(4),
+  },
+  directionIconWrap: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   rateWrap: {
     marginTop: pTd(24),

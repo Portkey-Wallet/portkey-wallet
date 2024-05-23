@@ -127,6 +127,7 @@ export const RememberMe = (props: RememberMeProps) => {
       <Touchable onPress={() => setRememberMeInfo(pre => ({ ...pre, isRemember: !pre.isRemember }))}>
         <Svg
           icon={rememberInfo?.isRemember ? 'selected' : 'unselected'}
+          color={rememberInfo?.isRemember ? defaultColors.primaryColor : undefined}
           size={pTd(20)}
           iconStyle={styles.selectedIcon}
         />

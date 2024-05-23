@@ -283,62 +283,6 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
         {isShowEmptyTokenForDapp && EmptyTokenForDapp}
         {isShowSystemForDefault && SystemActivityItem}
         {isShowTx && TxActivityItem}
-
-        {/* <View style={itemStyle.contentWrap}>
-          {item?.nftInfo ? (
-            <NFTAvatar
-              disabled
-              isSeed={item.nftInfo.isSeed}
-              seedType={item.nftInfo.seedType}
-              nftSize={pTd(32)}
-              badgeSizeType="small"
-              data={item.nftInfo}
-              style={[itemStyle.left, itemStyle.nftAvatarWrap]}
-            />
-          ) : (
-            <CommonAvatar
-              title={item?.symbol}
-              style={itemStyle.left}
-              svgName={item?.listIcon ? undefined : 'transfer'}
-              imageUrl={item?.listIcon || ''}
-              avatarSize={pTd(32)}
-              hasBorder
-              titleStyle={itemStyle.avatarTitleStyle}
-              borderStyle={GStyles.hairlineBorder}
-            />
-          )}
-          {isShowSystemForDefault && (
-            <CommonAvatar
-              title={item?.symbol}
-              style={itemStyle.left}
-              svgName={item?.listIcon ? undefined : 'transfer'}
-              imageUrl={item?.dappIcon || ''}
-              avatarSize={pTd(32)}
-              hasBorder
-              titleStyle={itemStyle.avatarTitleStyle}
-              borderStyle={GStyles.hairlineBorder}
-            />
-          )}
-
-          <View style={[itemStyle.center, item?.isSystem && itemStyle.systemCenter]}>
-            <Text style={[itemStyle.centerType, fonts.mediumFont]}>{item?.transactionName}</Text>
-            {!item?.isSystem && (
-              <>
-                {AddressDom}
-                {item?.transactionType === TransactionTypes.CROSS_CHAIN_TRANSFER && (
-                  <Text style={itemStyle.centerStatus}>Cross-Chain Transfer</Text>
-                )}
-              </>
-            )}
-          </View>
-
-          {!isShowSystemForDefault && (
-            <View style={itemStyle.right}>
-              {AmountDom}
-              {ExtraDom}
-            </View>
-          )}
-        </View> */}
         <Resend containerStyle={itemStyle.resendContainer} item={item} />
       </View>
     </Touchable>

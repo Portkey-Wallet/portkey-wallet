@@ -38,7 +38,11 @@ const SwitchNetworks: React.FC = () => {
               {item.name}
             </TextM>
             {item.isActive && (
-              <Svg icon={item.networkType !== currentNetwork ? 'unselected' : 'selected'} size={pTd(20)} />
+              <Svg
+                icon={item.networkType !== currentNetwork ? 'unselected' : 'selected'}
+                size={pTd(20)}
+                color={item.networkType === currentNetwork ? defaultColors.primaryColor : undefined}
+              />
             )}
           </View>
         </Touchable>

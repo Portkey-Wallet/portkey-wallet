@@ -1,6 +1,7 @@
 import { ChainId } from '@portkey-wallet/im';
 import { TNetworkItem, TTokenItem } from '@portkey-wallet/types/types-ca/deposit';
 import depositService from '@portkey-wallet/utils/deposit';
+import Loading from 'components/Loading';
 import { useCallback, useRef, useState } from 'react';
 
 export type NetworkAndTokenShowType = Array<TokenWithNetwork>;
@@ -10,10 +11,10 @@ export type TokenWithNetwork = {
   network: TNetworkItem;
 };
 
-type RequestNetworkTokenDataProps = {
+export type RequestNetworkTokenDataProps = {
   type: 'from' | 'to';
   network?: string;
-  chainId: ChainId;
+  chainId?: ChainId;
 };
 
 export const useMemoNetworkAndTokenData = () => {
@@ -28,9 +29,17 @@ export const useMemoNetworkAndTokenData = () => {
       ) {
         return;
       }
-      const res = await depositService.getTokenListByNetwork(props);
-      setNetworkAndTokenData(dealWithNetworkAndTokenData(res, networkList));
-      pastProps.current = props;
+      Loading.show();
+      try {
+        const res = await depositService.getTokenListByNetwork(props);
+        console.log('res', res);
+        setNetworkAndTokenData(dealWithNetworkAndTokenData(res, networkList));
+        pastProps.current = props;
+      } catch (ignored) {
+        console.log('ignored', ignored);
+      } finally {
+        Loading.hide();
+      }
     },
     [],
   );
@@ -52,7 +61,7 @@ const dealWithNetworkAndTokenData = (tokens: TTokenItem[], networkList: TNetwork
   return arr;
 };
 
-const sortTokens = (tokens: TTokenItem[]) => {
+export const sortTokens = (tokens: TTokenItem[]) => {
   return tokens.sort((a, b) => {
     return getTokenPriority(b) - getTokenPriority(a);
   });

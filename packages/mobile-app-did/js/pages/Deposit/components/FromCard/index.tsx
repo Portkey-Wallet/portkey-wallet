@@ -7,8 +7,8 @@ import { pTd } from 'utils/unit';
 
 interface FromCardProps {
   wrapStyle?: StyleProp<ViewStyle>;
+  network: string;
   networkName: string;
-  networkIcon: string;
   tokenSymbol: string;
   tokenIcon: string;
   onChangeText: (text: string) => void;
@@ -18,7 +18,7 @@ interface FromCardProps {
 
 export const FromCard: React.FC<FromCardProps> = ({
   wrapStyle,
-  networkIcon,
+  network,
   networkName,
   tokenIcon,
   tokenSymbol,
@@ -26,11 +26,35 @@ export const FromCard: React.FC<FromCardProps> = ({
   onPress,
   showAmount,
 }) => {
+  const getNetworkImagePath = () => {
+    switch (network) {
+      case 'ETH':
+        return require('assets/image/pngs/third-party-ethereum.png');
+      case 'BSC':
+        return require('assets/image/pngs/third-party-bnb.png');
+      case 'TRX':
+        return require('assets/image/pngs/third-party-tron.png');
+      case 'ARBITRUM':
+        return require('assets/image/pngs/third-party-arb.png');
+      case 'Solana':
+        return require('assets/image/pngs/third-party-solana.png');
+      case 'MATIC':
+        return require('assets/image/pngs/third-party-polygon.png');
+      case 'OPTIMISM':
+        return require('assets/image/pngs/third-party-op.png');
+      case 'AVAXC':
+        return require('assets/image/pngs/third-party-avax.png');
+      default: {
+        return require('assets/image/pngs/third-party-solana.png');
+      }
+    }
+  };
+
   return (
     <View style={[styles.container, wrapStyle]}>
       <View style={styles.chainWrapper}>
         <Text style={styles.typeText}>From</Text>
-        <Image style={styles.chainIconImage} source={{ uri: networkIcon }} />
+        <Image style={styles.chainIconImage} source={getNetworkImagePath()} />
         <Text style={styles.chainNameText}>{networkName}</Text>
       </View>
       <View style={styles.contentWrapper}>

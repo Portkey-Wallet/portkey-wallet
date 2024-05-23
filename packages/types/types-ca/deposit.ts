@@ -61,7 +61,7 @@ export type TNetworkItem = {
   multiConfirmTime: string;
   contractAddress: string;
   explorerUrl: string;
-  status: NetworkStatus;
+  status?: NetworkStatus;
   withdrawFee?: string;
   withdrawFeeUnit?: string;
 };

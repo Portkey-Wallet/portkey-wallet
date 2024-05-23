@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, Image, StyleProp, ViewStyle } from 'react-native';
+import { StyleSheet, View, Text, Image, StyleProp, ViewStyle, TouchableOpacity } from 'react-native';
 import Svg from 'components/Svg';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
@@ -13,6 +13,8 @@ interface ToCardProps {
   tokenIcon: string;
   receiveAmount: number;
   minumumReceiveAmount: number;
+  showAmount: boolean;
+  onPress: () => void;
 }
 
 export const ToCard: React.FC<ToCardProps> = ({
@@ -23,6 +25,8 @@ export const ToCard: React.FC<ToCardProps> = ({
   tokenSymbol,
   receiveAmount,
   minumumReceiveAmount,
+  showAmount,
+  onPress,
 }) => {
   return (
     <View style={[styles.container, wrapStyle]}>
@@ -32,20 +36,22 @@ export const ToCard: React.FC<ToCardProps> = ({
         <Text style={styles.chainNameText}>{chainName}</Text>
       </View>
       <View style={styles.contentWrapper}>
-        <View style={styles.tokenWrapper}>
+        <TouchableOpacity style={styles.tokenWrapper} onPress={onPress}>
           {tokenIcon && <Image style={styles.tokenIconImage} source={{ uri: tokenIcon }} />}
           <Text style={styles.tokenText}>{tokenSymbol}</Text>
           <Svg iconStyle={styles.arrowIcon} size={pTd(12)} icon={'down-arrow'} />
-        </View>
-        <View style={styles.amountWrapper}>
-          <Text style={styles.amountDesc}>{'You Receive'}</Text>
-          <Text style={receiveAmount > 0 ? styles.amountText : styles.placeholderText}>
-            {receiveAmount > 0 ? receiveAmount : '0.0'}
-          </Text>
-        </View>
+        </TouchableOpacity>
+        {showAmount && (
+          <View style={styles.amountWrapper}>
+            <Text style={styles.amountDesc}>{'You Receive'}</Text>
+            <Text style={receiveAmount > 0 ? styles.amountText : styles.placeholderText}>
+              {receiveAmount > 0 ? receiveAmount : '0.0'}
+            </Text>
+          </View>
+        )}
       </View>
       <Text style={styles.minimumAmountText}>
-        {minumumReceiveAmount > 0 ? `Minimum receive: ${minumumReceiveAmount}` : ''}
+        {showAmount && minumumReceiveAmount > 0 ? `Minimum receive: ${minumumReceiveAmount}` : ''}
       </Text>
     </View>
   );

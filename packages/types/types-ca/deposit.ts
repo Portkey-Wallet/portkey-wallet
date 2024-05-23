@@ -123,6 +123,58 @@ export type TQueryTransferAuthTokenRequest = {
   managerAddress: string;
 };
 
+export interface TGetRecordsListRequest {
+  type: number; // 1
+  status: number; // 0
+  startTimestamp?: number | null; // current time - 30 minutes
+  endTimestamp?: number | null; // current time
+  skipCount: number; // 0
+  maxResultCount: number; // 1
+}
+
+export type TGetRecordsListResult = {
+  totalCount: number;
+  items: TRecordsListItem[];
+};
+
+export enum TRecordsStatus {
+  Processing = 'Processing',
+  Succeed = 'Succeed',
+  Failed = 'Failed',
+}
+
+export type TRecordsListItem = {
+  id: string;
+  orderType: string;
+  status: string;
+  arrivalTime?: number;
+  fromTransfer?: TFromTransfer;
+  toTransfer?: TToTransfer;
+};
+export type TFromTransfer = {
+  network: string;
+  chainId: ChainId;
+  fromAddress: string;
+  toAddress: string;
+  amount: string;
+  symbol: string;
+};
+
+export type TFeeInfo = {
+  symbol: string;
+  amount: string;
+};
+
+export type TToTransfer = {
+  network: string;
+  chainId: ChainId;
+  fromAddress: string;
+  toAddress: string;
+  amount: string;
+  symbol: string;
+  feeInfo: TFeeInfo[];
+};
+
 export interface IDepositService {
   getTokenList(params: TGetTokenListRequest): Promise<TTokenItem[]>;
   getTransferToken(params: TQueryTransferAuthTokenRequest, apiUrl: string): Promise<string>;
@@ -131,4 +183,5 @@ export interface IDepositService {
   getNetworkList({ chainId, symbol }: { chainId: ChainId; symbol: string }): Promise<TNetworkItem[]>;
   getDepositInfo(params: TGetDepositInfoRequest): Promise<TDepositInfo>;
   depositCalculator(params: TGetDepositCalculateRequest): Promise<TConversionRate>;
+  getLastRecordsList(): Promise<TRecordsListItem>;
 }

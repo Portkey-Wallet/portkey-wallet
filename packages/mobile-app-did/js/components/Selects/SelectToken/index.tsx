@@ -445,7 +445,7 @@ const styles = StyleSheet.create({
     borderColor: defaultColors.primaryColor,
   },
   wrap: {
-    backgroundColor: defaultColors.bg36,
+    backgroundColor: defaultColors.bg39,
     padding: pTd(12),
   },
   flex: {

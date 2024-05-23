@@ -44,6 +44,7 @@ export default function Deposit() {
     isSameSymbol,
     fetchDepositInfo,
     setPayAmount,
+    setFrom,
   } = useDeposit(initToToken, chainId, getManagerAccount(getPin() ?? ''));
 
   const onNext = useCallback(async () => {
@@ -77,9 +78,9 @@ export default function Deposit() {
     [setPayAmount],
   );
 
-  const onSelectPayToken = useCallback(() => {
+  const onSelectPayToken = useCallback(async () => {
     if (fromToken && fromNetwork && allNetworkList) {
-      selectPayToken({
+      const res = await selectPayToken({
         networkList: allNetworkList,
         currentToken: fromToken,
         currentNetwork: fromNetwork,
@@ -90,8 +91,14 @@ export default function Deposit() {
           console.log('select pay reject: ', reason);
         },
       });
+      if (res.network && res.token) {
+        setFrom({
+          newFromNetwork: res.network,
+          newFromToken: res.token,
+        });
+      }
     }
-  }, [allNetworkList, fromNetwork, fromToken]);
+  }, [allNetworkList, fromNetwork, fromToken, setFrom]);
 
   /*
   export type IReceiveSelectTokenProps = {
@@ -116,8 +123,8 @@ export default function Deposit() {
       scrollViewProps={{ disabled: false }}>
       <View style={styles.cardWrap}>
         <FromCard
+          network={fromNetwork?.network ?? ''}
           networkName={fromNetwork?.name ?? ''}
-          networkIcon="https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png"
           tokenSymbol={fromToken?.symbol ?? ''}
           tokenIcon={fromToken?.icon ?? ''}
           onChangeText={onPayAmountChanged}

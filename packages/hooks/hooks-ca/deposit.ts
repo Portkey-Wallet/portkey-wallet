@@ -257,6 +257,57 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
     })();
   }, [fromToken, toChainId]);
 
+  const setFrom = useCallback(
+    ({ newFromNetwork, newFromToken }: { newFromNetwork: TNetworkItem; newFromToken: TTokenItem }) => {
+      if (newFromNetwork.network === fromNetwork?.network && newFromToken.symbol === fromToken?.symbol) {
+        return;
+      }
+      if (newFromNetwork.network !== fromNetwork?.network && newFromToken.symbol === fromToken?.symbol) {
+        setFromNetwork(newFromNetwork);
+        return;
+      }
+
+      let toTokenValid = false;
+      depoistTokenList.forEach(token => {
+        if (token.toTokenList) {
+          if (toTokenValid) return;
+          if (token.symbol === newFromToken.symbol) {
+            const targetToken = token.toTokenList.find(
+              toTokenItem =>
+                toTokenItem.symbol === toToken?.symbol && toTokenItem.chainIdList?.includes(toChainId ?? 'AELF'),
+            );
+            if (targetToken) {
+              toTokenValid = true;
+            }
+          }
+        }
+      });
+
+      if (toTokenValid) {
+        setFromNetwork(undefined);
+        setFromToken(undefined);
+        setFromNetwork(newFromNetwork);
+        setFromToken(newFromToken);
+      } else {
+        let findTargetToken = false;
+        depoistTokenList.forEach(token => {
+          if (token.toTokenList) {
+            if (findTargetToken) return;
+            if (token.symbol === newFromToken.symbol) {
+              findTargetToken = true;
+              clearFromAndTo();
+              setFromNetwork(newFromNetwork);
+              setFromToken(newFromToken);
+              setToToken(token.toTokenList?.[0]);
+              setToChainId(token.toTokenList?.[0]?.chainIdList?.[0]);
+            }
+          }
+        });
+      }
+    },
+    [clearFromAndTo, depoistTokenList, fromNetwork, fromToken, toChainId, toToken?.symbol],
+  );
+
   return {
     allNetworkList,
     fromNetwork,
@@ -271,5 +322,6 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
     isSameSymbol,
     fetchDepositInfo,
     setPayAmount,
+    setFrom,
   };
 };

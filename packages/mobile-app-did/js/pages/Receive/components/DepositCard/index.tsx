@@ -1,9 +1,9 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
-import Svg, { IconName } from 'components/Svg';
+import Svg from 'components/Svg';
 import { TextM, TextS } from 'components/CommonText';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { copyText } from 'utils';
@@ -21,7 +21,32 @@ export interface IDepositCardProps {
   onClickDepositButton?: () => void; //only available when DEPOSIT
 }
 
-const thirdPartyServiceIcons: IconName[] = ['third-party-gate-io'];
+const thirdPartyServiceIcons = [
+  {
+    name: 'binance',
+    icon: require('../../../../assets/image/pngs/third-party-binance.png'),
+  },
+  {
+    name: 'bitthumb',
+    icon: require('../../../../assets/image/pngs/third-party-bithumb.png'),
+  },
+  {
+    name: 'upbit',
+    icon: require('../../../../assets/image/pngs/third-party-upbit.png'),
+  },
+  {
+    name: 'huobi',
+    icon: require('../../../../assets/image/pngs/third-party-huobi.png'),
+  },
+  {
+    name: 'okx',
+    icon: require('../../../../assets/image/pngs/third-party-okx.png'),
+  },
+  {
+    name: 'gate.io',
+    icon: require('../../../../assets/image/pngs/third-party-gate.io.png'),
+  },
+];
 
 export default function DepositCard(props: IDepositCardProps) {
   const { token, mode, onClickDepositButton } = props;
@@ -62,8 +87,8 @@ export default function DepositCard(props: IDepositCardProps) {
         {mode === DepositMode.EXCHANGE && (
           <View>
             <View style={styles.candiedHawsIcon}>
-              {thirdPartyServiceIcons.map((icon, index) => (
-                <Svg key={index} icon={icon} size={pTd(40)} iconStyle={styles.candiedHawsItem} />
+              {thirdPartyServiceIcons.map((item, index) => (
+                <Image source={item.icon} key={index} style={[styles.candiedHawsItem, { zIndex: -1 * index }]} />
               ))}
             </View>
             <View style={styles.copyButton}>

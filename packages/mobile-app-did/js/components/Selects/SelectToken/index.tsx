@@ -10,7 +10,7 @@ import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
 import { ModalBody } from 'components/ModalBody';
 import { useGStyles } from 'assets/theme/useGStyles';
-import { useMemoNetworkAndTokenData } from '../Entry/model';
+import { NetworkAndTokenShowType, sortTokens, useMemoNetworkAndTokenData } from '../Entry/model';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { RichText } from 'components/RichText';
 import Svg from 'components/Svg';
@@ -62,8 +62,31 @@ export const SelectNetworkModal = (props: IReceiveSelectTokenProps | IPaySelectT
     }
   }, []);
   const { networkAndTokenData, updateNetworkAndTokenData } = useMemoNetworkAndTokenData();
+  const preparedNetworkAndTokenData = useMemo(() => {
+    if (networkDataList) {
+      const res: NetworkAndTokenShowType = [];
+      if (focusedOn === FocusedOnType.All) {
+        networkDataList.forEach(it => {
+          sortTokens(it.tokenList).forEach(token => {
+            res.push({ network: it.network, token });
+          });
+        });
+      } else {
+        const target = networkDataList.find(it => it.network.network === currentChoosingNetwork.network);
+        if (target) {
+          sortTokens(target.tokenList).forEach(token => {
+            res.push({ network: target.network, token });
+          });
+        }
+      }
+      return res;
+    } else {
+      return networkAndTokenData;
+    }
+  }, [currentChoosingNetwork.network, focusedOn, networkAndTokenData, networkDataList]);
 
   useEffect(() => {
+    if (!networkList) return;
     const type = networkList ? 'from' : 'to';
     if (focusedOn === FocusedOnType.All) {
       updateNetworkAndTokenData({ type, chainId: MAIN_CHAIN_ID }, networkList);
@@ -149,7 +172,7 @@ export const SelectNetworkModal = (props: IReceiveSelectTokenProps | IPaySelectT
           <View style={styles.layerBlock}>
             <Text style={styles.layerBlockTitle}>{'Select a token'}</Text>
             <FlatList
-              data={networkAndTokenData}
+              data={preparedNetworkAndTokenData}
               keyExtractor={(item, index) => `${item.network.network}-${index}`}
               renderItem={({ item }) => (
                 <TokenListItem
@@ -221,7 +244,7 @@ const NetworkTopBtn = (props: {
   const text = useMemo(() => {
     if (isAll) return 'ALL';
     if (isTopTwo) return networkItem?.network;
-    return `+${networkOverflowNum}`;
+    return `${networkOverflowNum}+`;
   }, [isAll, isTopTwo, networkItem, networkOverflowNum]);
 
   return (
@@ -237,24 +260,24 @@ const NetworkTopBtn = (props: {
 
 const getNetworkImagePath = (network: string) => {
   switch (network) {
-    case 'Ethereum (ERC20)':
+    case 'ETH':
       return require('../../../assets/image/pngs/third-party-ethereum.png');
-    case 'BNB Smart Chain (BEP20)':
+    case 'BSC':
       return require('../../../assets/image/pngs/third-party-bnb.png');
-    case 'Tron (TRC20)':
+    case 'TRX':
       return require('../../../assets/image/pngs/third-party-tron.png');
-    case 'Arbitrum One':
+    case 'ARBITRUM':
       return require('../../../assets/image/pngs/third-party-arb.png');
     case 'Solana':
       return require('../../../assets/image/pngs/third-party-solana.png');
-    case 'Polygon':
+    case 'MATIC':
       return require('../../../assets/image/pngs/third-party-polygon.png');
-    case 'Optimism':
+    case 'OPTIMISM':
       return require('../../../assets/image/pngs/third-party-op.png');
-    case 'AVAX C-Chain':
+    case 'AVAXC':
       return require('../../../assets/image/pngs/third-party-avax.png');
     default: {
-      throw new Error('Invalid network');
+      return require('../../../assets/image/pngs/third-party-solana.png');
     }
   }
 };
@@ -282,22 +305,13 @@ const TokenListItem = (props: {
       <View style={styles.tokenIconBox}>
         <CommonAvatar
           hasBorder
-          style={styles.subIcon}
-          avatarSize={pTd(18)}
+          style={styles.tokenIconMain}
+          avatarSize={pTd(36)}
           imageUrl={icon}
           borderStyle={GStyles.hairlineBorder}
         />
         <View style={styles.subIcon}>
-          <CommonAvatar
-            hasBorder
-            style={styles.subIcon}
-            avatarSize={pTd(18)}
-            imageUrl={icon}
-            borderStyle={GStyles.hairlineBorder}
-          />
-        </View>
-        <View style={styles.subIcon}>
-          <Text style={{ color: defaultColors.font2 }}>{networkName}</Text>
+          <Image style={styles.subIcon} source={getNetworkImagePath(underNetwork.network)} resizeMode={'contain'} />
         </View>
       </View>
       <View style={styles.tokenTextLines}>
@@ -334,7 +348,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    padding: pTd(16),
+    paddingVertical: pTd(16),
   },
   networkItem: {
     flexDirection: 'row',

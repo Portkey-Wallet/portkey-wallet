@@ -27,18 +27,38 @@ export type ISelectTokenResult = {
 export const selectPayToken = (props: IPaySelectTokenProps): Promise<ISelectTokenResult> => {
   return new Promise((resolve, reject) => {
     Keyboard.dismiss();
-    OverlayModal.show(<SelectNetworkModal {...props} onResolve={resolve} onReject={reject} />, {
-      position: 'bottom',
-    });
+    OverlayModal.show(
+      <SelectNetworkModal
+        {...props}
+        onResolve={data => {
+          resolve(data);
+          OverlayModal.hide();
+        }}
+        onReject={reject}
+      />,
+      {
+        position: 'bottom',
+      },
+    );
   });
 };
 
 export const selectReceiveToken = (props: IReceiveSelectTokenProps): Promise<ISelectTokenResult> => {
   return new Promise((resolve, reject) => {
     Keyboard.dismiss();
-    OverlayModal.show(<SelectNetworkModal {...props} onResolve={resolve} onReject={reject} />, {
-      position: 'bottom',
-    });
+    OverlayModal.show(
+      <SelectNetworkModal
+        {...props}
+        onResolve={data => {
+          resolve(data);
+          OverlayModal.hide();
+        }}
+        onReject={reject}
+      />,
+      {
+        position: 'bottom',
+      },
+    );
   });
 };
 

@@ -3,7 +3,7 @@ import AElf from 'aelf-sdk';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
-import { TQueryTransferAuthTokenRequest } from '@portkey-wallet/types/types-ca/deposit';
+import { TDepositTokenItem, TQueryTransferAuthTokenRequest } from '@portkey-wallet/types/types-ca/deposit';
 import { TTokenItem, TNetworkItem } from '@portkey-wallet/types/types-ca/deposit';
 import { ChainId } from '@portkey-wallet/types';
 import depositService from '@portkey-wallet/utils/deposit';
@@ -15,6 +15,8 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
   const { apiUrl } = useCurrentNetworkInfo();
 
   const [allNetworkList, setAllNetworkList] = useState<TNetworkItem[]>([]);
+
+  const [depoistTokenList, setDepositTokenList] = useState<TDepositTokenItem[]>([]);
 
   const [fromNetwork, setFromNetwork] = useState<TNetworkItem>();
   const [fromToken, setFromToken] = useState<TTokenItem>();
@@ -135,6 +137,9 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
 
   const fetchDepositTokenList = useCallback(async () => {
     const tokenList = await depositService.getDepositTokenList();
+    if (!tokenList || tokenList.length <= 0) return;
+
+    setDepositTokenList(tokenList);
 
     let findTargetToken = false;
     tokenList.forEach(token => {
@@ -146,13 +151,26 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
         if (targetToken) {
           findTargetToken = true;
           clearFromAndTo();
-          setToChainIdList(targetToken.chainIdList || []);
           setFromToken(token);
           setToToken(targetToken);
           setToChainId(initChainId);
         }
       }
     });
+
+    const toChainIdSet = new Set<ChainId>();
+    tokenList.forEach(token => {
+      if (token.toTokenList) {
+        token.toTokenList.forEach(toTokenItem => {
+          if (toTokenItem.chainIdList) {
+            toTokenItem.chainIdList.forEach(chainId => {
+              toChainIdSet.add(chainId);
+            });
+          }
+        });
+      }
+    });
+    setToChainIdList(Array.from(toChainIdSet));
   }, [clearFromAndTo, initChainId, initToToken.symbol]);
 
   const fetchAllNetworkList = useCallback(async () => {
@@ -182,16 +200,31 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
     })();
   }, [fetchAllNetworkList, fetchDepositTokenList, fetchTransferToken]);
 
+  const isSameSymbol = useMemo(() => {
+    return fromToken && toToken && fromToken.symbol === toToken.symbol;
+  }, [fromToken, toToken]);
+
   useEffect(() => {
     (async () => {
       if (!toChainId || !fromToken?.symbol || !toToken?.symbol) {
         return;
       }
-      console.log('registerRefreshReceive');
-      fetchRate();
-      registerRefreshReceive();
+      clearRefreshReceive();
+      if (!isSameSymbol) {
+        fetchRate();
+        registerRefreshReceive();
+      }
     })();
-  }, [calculateAmount, fetchRate, fromToken?.symbol, registerRefreshReceive, toChainId, toToken?.symbol]);
+  }, [
+    calculateAmount,
+    clearRefreshReceive,
+    fetchRate,
+    fromToken?.symbol,
+    isSameSymbol,
+    registerRefreshReceive,
+    toChainId,
+    toToken?.symbol,
+  ]);
 
   useEffect(() => {
     (async () => {
@@ -224,9 +257,56 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
     })();
   }, [fromToken, toChainId]);
 
-  const isSameSymbol = useMemo(() => {
-    return fromToken && toToken && fromToken.symbol === toToken.symbol;
-  }, [fromToken, toToken]);
+  const setFrom = useCallback(
+    ({ newFromNetwork, newFromToken }: { newFromNetwork: TNetworkItem; newFromToken: TTokenItem }) => {
+      if (newFromNetwork.network === fromNetwork?.network && newFromToken.symbol === fromToken?.symbol) {
+        return;
+      }
+      if (newFromNetwork.network !== fromNetwork?.network && newFromToken.symbol === fromToken?.symbol) {
+        setFromNetwork(newFromNetwork);
+        return;
+      }
+
+      let toTokenValid = false;
+      depoistTokenList.forEach(token => {
+        if (token.toTokenList) {
+          if (toTokenValid) return;
+          if (token.symbol === newFromToken.symbol) {
+            const targetToken = token.toTokenList.find(
+              toTokenItem =>
+                toTokenItem.symbol === toToken?.symbol && toTokenItem.chainIdList?.includes(toChainId ?? 'AELF'),
+            );
+            if (targetToken) {
+              toTokenValid = true;
+            }
+          }
+        }
+      });
+
+      if (toTokenValid) {
+        setFromNetwork(undefined);
+        setFromToken(undefined);
+        setFromNetwork(newFromNetwork);
+        setFromToken(newFromToken);
+      } else {
+        let findTargetToken = false;
+        depoistTokenList.forEach(token => {
+          if (token.toTokenList) {
+            if (findTargetToken) return;
+            if (token.symbol === newFromToken.symbol) {
+              findTargetToken = true;
+              clearFromAndTo();
+              setFromNetwork(newFromNetwork);
+              setFromToken(newFromToken);
+              setToToken(token.toTokenList?.[0]);
+              setToChainId(token.toTokenList?.[0]?.chainIdList?.[0]);
+            }
+          }
+        });
+      }
+    },
+    [clearFromAndTo, depoistTokenList, fromNetwork, fromToken, toChainId, toToken?.symbol],
+  );
 
   return {
     allNetworkList,
@@ -242,5 +322,6 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
     isSameSymbol,
     fetchDepositInfo,
     setPayAmount,
+    setFrom,
   };
 };

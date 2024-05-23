@@ -80,9 +80,12 @@ export default function DepositHome() {
     // payAmount,
     receiveAmount,
     rateRefreshTime,
+    isSameSymbol,
+    setFrom,
     fetchDepositInfo,
     setPayAmount,
   } = useDeposit(initToToken, chain as ChainId, manager);
+  console.log('wfs isSameSymbol===', isSameSymbol);
   const handleOnNext = useCallback(async () => {
     console.log('wfs click next!!');
     try {
@@ -202,19 +205,21 @@ export default function DepositHome() {
                 <CustomSvg type="DownDeposit" />
                 {/* </div> */}
               </div>
-              <div className="token-amount-container">
-                <span className="token-amount-title">You Pay</span>
-                <input
-                  type="number"
-                  className="deposit-input"
-                  placeholder="0.00"
-                  onKeyDown={handleKeyDown}
-                  onChange={(e) => {
-                    setPayAmount(Number(e.target.value));
-                    console.log('onChange?.(e.target.value)', e.target.value);
-                  }}
-                />
-              </div>
+              {!isSameSymbol && (
+                <div className="token-amount-container">
+                  <span className="token-amount-title">You Pay</span>
+                  <input
+                    type="number"
+                    className="deposit-input"
+                    placeholder="0.00"
+                    onKeyDown={handleKeyDown}
+                    onChange={(e) => {
+                      setPayAmount(Number(e.target.value));
+                      console.log('onChange?.(e.target.value)', e.target.value);
+                    }}
+                  />
+                </div>
+              )}
             </div>
           </div>
           <div className="card-container">
@@ -239,41 +244,48 @@ export default function DepositHome() {
                 </div>
                 <CustomSvg type="DownDeposit" />
               </div>
-              <div className="token-amount-container">
-                <span className="token-amount-title">You Receive</span>
-                <input
-                  value={receiveAmount.toAmount}
-                  type="number"
-                  className="deposit-input"
-                  placeholder="0.00"
-                  onKeyDown={handleKeyDown}
-                  readOnly
-                  onChange={(e) => {
-                    console.log('onChange?.(e.target.value)', e.target.value);
-                  }}
-                />
-              </div>
+              {!isSameSymbol && (
+                <div className="token-amount-container">
+                  <span className="token-amount-title">You Receive</span>
+                  <input
+                    value={receiveAmount.toAmount}
+                    type="number"
+                    className="deposit-input"
+                    placeholder="0.00"
+                    onKeyDown={handleKeyDown}
+                    readOnly
+                    onChange={(e) => {
+                      console.log('onChange?.(e.target.value)', e.target.value);
+                    }}
+                  />
+                </div>
+              )}
             </div>
-            <span className="mini-receive">Minimum receive: {receiveAmount.minimumReceiveAmount}</span>
+            {!isSameSymbol && (
+              <span className="mini-receive">Minimum receive: {receiveAmount.minimumReceiveAmount}</span>
+            )}
           </div>
           <CustomSvg type="DepositTransfer" className="transfer-icon" />
         </div>
-        <ExchangeSimpleRate
-          fromSymbol={fromToken?.symbol || ''}
-          toSymbol={toToken?.symbol || ''}
-          unitReceiveAmount={unitReceiveAmount}
-          rateRefreshTime={rateRefreshTime}
-          slippage={'0.05'}
-          // onFetchNewRate={() => {
-          //   console.log('onFetchNewRate!');
-          // }}
-        />
+        {!isSameSymbol && (
+          <ExchangeSimpleRate
+            fromSymbol={fromToken?.symbol || ''}
+            toSymbol={toToken?.symbol || ''}
+            unitReceiveAmount={unitReceiveAmount}
+            rateRefreshTime={rateRefreshTime}
+            slippage={'0.05'}
+            // onFetchNewRate={() => {
+            //   console.log('onFetchNewRate!');
+            // }}
+          />
+        )}
       </div>
     );
   }, [
     fromNetwork?.name,
     fromToken?.icon,
     fromToken?.symbol,
+    isSameSymbol,
     onClickFrom,
     onClickTo,
     rateRefreshTime,
@@ -342,6 +354,10 @@ export default function DepositHome() {
             onMoreClicked={() => {
               setStep(Step.FROM_NETWORK);
             }}
+            onItemClicked={(token) => {
+              console.log('token', token);
+              setFrom({ newFromNetwork: token.network!, newFromToken: token });
+            }}
           />
         )}
         {step === Step.TO_TOKEN && (
@@ -352,6 +368,9 @@ export default function DepositHome() {
             drawerType={'to'}
             onClose={() => {
               setStep(Step.HOME);
+            }}
+            onItemClicked={(token) => {
+              console.log('token', token);
             }}
           />
         )}
@@ -368,6 +387,6 @@ export default function DepositHome() {
         )}
       </>
     );
-  }, [homeEle, step, toChainId]);
+  }, [homeEle, setFrom, step, toChainId]);
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

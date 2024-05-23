@@ -4,8 +4,7 @@ import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import { List } from 'antd';
 import NetworkLogo from '../NetworkLogo';
-import { BlockchainNetworkType } from 'constants/network';
-import { NetworkStatus, TNetworkItem, TTokenItem } from '@portkey-wallet/types/types-ca/deposit';
+import { NetworkStatus, TExtendedTokenItem, TNetworkItem, TTokenItem } from '@portkey-wallet/types/types-ca/deposit';
 import { ChainId } from '@portkey/provider-types';
 import depositService from '@portkey-wallet/utils/deposit';
 import { useLoading } from 'store/Provider/hooks';
@@ -15,7 +14,7 @@ import { handleErrorMessage } from '@portkey-wallet/utils';
 export interface ITokenNetworkListProps {
   onClose?: () => void;
   onMoreClicked?: () => void;
-  onItemClicked?: (item: any) => void;
+  onItemClicked?: (item: TExtendedTokenItem) => void;
   drawerType: 'from' | 'to';
   type?: 'component' | 'page';
   networkList?: TNetworkItem[];
@@ -46,7 +45,7 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
   );
   const { setLoading } = useLoading();
   const [selectedNetworkIndex, setSelectedNetworkIndex] = useState<number>(-1);
-  const [currentTokenList, setCurrentTokenList] = useState<TTokenItem[]>([]);
+  const [currentTokenList, setCurrentTokenList] = useState<TExtendedTokenItem[]>([]);
   const showNetworkList = useMemo(() => {
     if (drawerType === 'from') {
       let copiedNetworkList = [...networkList];
@@ -120,7 +119,10 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
           network: drawerType === 'from' ? network?.network : toChainId,
           chainId: toChainId || 'AELF',
         });
-        setCurrentTokenList(tokenList);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const tempUpdatedTokenList = tokenList.map(({ networkList, ...rest }) => rest);
+        const updatedTokenList = { ...tempUpdatedTokenList, network: { ...network } };
+        setCurrentTokenList(updatedTokenList);
       } catch (error) {
         console.log('aaaa error : ', error);
         singleMessage.error(handleErrorMessage(error));
@@ -128,7 +130,7 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
         setLoading(false);
       }
     })();
-  }, [drawerType, network?.network, setLoading, toChainId]);
+  }, [drawerType, network, network?.network, setLoading, toChainId]);
   const handleNetworkChange = useCallback(
     async (item: TNetworkItem, index: number) => {
       try {
@@ -136,13 +138,23 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
         const tokenList = await depositService.getTokenListByNetwork({
           type: drawerType,
           network: item.network === ALL_MARK ? undefined : item.network,
-          chainId: toChainId || 'AELF',
+          chainId: item.network === ALL_MARK ? undefined : toChainId || 'AELF',
         });
         setSelectedNetworkIndex(index);
-        // if (item.network === ALL_MARK) {
-
-        // }
-        setCurrentTokenList(tokenList);
+        if (item.network === ALL_MARK) {
+          const tokenListForAll: TExtendedTokenItem[] = [];
+          tokenList.forEach((item) => {
+            const { networkList, ...rest } = item;
+            const divideArray = networkList?.map((item) => ({ ...rest, network: { ...item } })) || [];
+            tokenListForAll.push(...divideArray);
+          });
+          setCurrentTokenList(tokenListForAll);
+        } else {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const tempUpdatedTokenList = tokenList.map(({ networkList, ...rest }) => rest);
+          const updatedTokenList = { ...tempUpdatedTokenList, network: { ...item } };
+          setCurrentTokenList(updatedTokenList);
+        }
       } catch (error) {
         console.log('aaaa error : ', error);
         singleMessage.error(handleErrorMessage(error));
@@ -199,25 +211,26 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
             <List.Item
               onClick={() => {
                 console.log('click item!!', token);
-                onItemClicked?.({
-                  selectedNetworkIndex,
-                  token,
-                });
+                onItemClicked?.(token);
               }}>
               <div className="item-container">
                 <div className="item-wrapper">
                   <div className="icon-wrapper">
                     <img src={token.icon} alt="TokenSymbol" width="36" height="36" />
-                    <div className="network-icon-container">
-                      <NetworkLogo network={BlockchainNetworkType.AELF} />
-                    </div>
+                    {token.network && (
+                      <div className="network-icon-container">
+                        <NetworkLogo network={token.network.network} />
+                      </div>
+                    )}
                   </div>
                   <div className="token-info-container">
                     <div className="token-info-name-container">
                       <span className="token-name">{token.symbol}</span>
                       <span className="token-full-name">{token.name}</span>
                     </div>
-                    <span className="token-address">{token.contractAddress}</span>
+                    <span className="token-address">
+                      {token.network ? token.network.contractAddress : token.contractAddress}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -226,7 +239,7 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
         />
       </div>
     );
-  }, [currentTokenList, onItemClicked, selectedNetworkIndex]);
+  }, [currentTokenList, onItemClicked]);
   const mainContent = useCallback(() => {
     return (
       <div className="select-token-network-list">

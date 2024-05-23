@@ -25,7 +25,15 @@ import { useLocationState } from 'hooks/router';
 import { TRampLocationState } from 'types/router';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
 
-export default function BuyForm() {
+export interface IBuyFormProps {
+  mainPageInfo?: {
+    pathname: string;
+    state: any;
+    [key: string]: any;
+  };
+}
+
+export default function BuyForm({ mainPageInfo }: IBuyFormProps) {
   const { t } = useTranslation();
   const { setLoading } = useLoading();
   const navigate = useNavigate();
@@ -174,6 +182,7 @@ export default function BuyForm() {
           amount: fiatAmountRef.current,
           side: RampType.BUY,
           tokenInfo: state ? state.tokenInfo : null,
+          mainPageInfo,
         },
       });
     } catch (error) {
@@ -181,7 +190,7 @@ export default function BuyForm() {
     } finally {
       setLoading(false);
     }
-  }, [navigate, refreshRampShow, setLoading, state]);
+  }, [mainPageInfo, navigate, refreshRampShow, setLoading, state]);
 
   return (
     <>

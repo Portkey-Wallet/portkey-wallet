@@ -3,14 +3,18 @@
 .receive-wrapper {
   background-color: @neutral-default-bg;
   height: 100%;
-
-  .close2-icon {
-    width: 18px;
-    height: 18;
-    cursor: 'pointer';
-  }
-  .@{app-prefix}-row {
-    padding: 24px 24px 6px;
+  .common-header-title {
+    .top-header {
+      gap: 6px;
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 500px;
+    }
+    .bottom-header {
+      font-size: 12px;
+      line-height: 16px;
+      color: @neutral-tertiary-text;
+    }
   }
   .receive-content {
     .receive-radio-tab {

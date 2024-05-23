@@ -13,11 +13,12 @@ import { showDepositAddress } from './components/DepositAddress';
 import { pTd } from 'utils/unit';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
-import { TTokenItem } from '@portkey-wallet/types/types-ca/deposit';
+import { TNetworkItem, TTokenItem } from '@portkey-wallet/types/types-ca/deposit';
 import { useDeposit } from '@portkey-wallet/hooks/hooks-ca/deposit';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getManagerAccount, getPin } from 'utils/redux';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { ChainId } from '@portkey-wallet/types';
 
 export default function Deposit() {
   const { t } = useLanguage();
@@ -78,6 +79,18 @@ export default function Deposit() {
     [setPayAmount],
   );
 
+  const mapChainToNetwork = useCallback((chainid: ChainId) => {
+    const network: TNetworkItem = {
+      network: 'AELF',
+      name: chainid,
+      multiConfirm: '',
+      multiConfirmTime: '',
+      contractAddress: '',
+      explorerUrl: '',
+    };
+    return network;
+  }, []);
+
   const onSelectPayToken = useCallback(async () => {
     if (fromToken && fromNetwork && allNetworkList) {
       const res = await selectPayToken({
@@ -100,20 +113,23 @@ export default function Deposit() {
     }
   }, [allNetworkList, fromNetwork, fromToken, setFrom]);
 
-  /*
-  export type IReceiveSelectTokenProps = {
-    networkDataList: { network: TNetworkItem; tokenList: TTokenItem[] }[];
-  } & ISelectBaseProps;
-  
-  export interface ISelectBaseProps {
-    currentToken: TTokenItem;
-    currentNetwork: TNetworkItem;
-    onResolve: OnSelectFinishCallback;
-    onReject: (reason?: any) => void;
-  }*/
-  const onSelectReceiveToken = useCallback(() => {
+  const onSelectReceiveToken = useCallback(async () => {
     console.log('select receive');
-  }, []);
+    if (toToken && toChainId && toChainIdList && toChainIdList.length > 0) {
+      const res = await selectReceiveToken({
+        networkList: toChainIdList.map(chainid => mapChainToNetwork(chainid)),
+        currentToken: toToken,
+        currentNetwork: mapChainToNetwork(toChainId),
+        onResolve: (data: ISelectTokenResult) => {
+          console.log('select receive: ', data);
+        },
+        onReject: reason => {
+          console.log('select receive reject: ', reason);
+        },
+      });
+      console.log('res : ', res);
+    }
+  }, [mapChainToNetwork, toChainId, toChainIdList, toToken]);
 
   return (
     <PageContainer

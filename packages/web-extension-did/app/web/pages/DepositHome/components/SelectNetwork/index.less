@@ -26,7 +26,7 @@ button {
   height: calc(100vh - 72px);
   max-height: 884px;
   min-height: 624px;
-  background: #fff;
+  background: @neutral-default-bg;
   overflow: hidden;
   .group {
     display: flex;
@@ -38,7 +38,7 @@ button {
     width: 375px;
     height: 60px;
     padding: 0 16px;
-    background: #fff;
+    background: @neutral-default-bg;
   }
   .body {
     overflow: hidden;
@@ -61,7 +61,7 @@ button {
       position: relative;
       margin: 0 16px;
       padding: 12px;
-      background: #f9f9fa;
+      background: @neutral-hover-bg;
       z-index: 9;
       border-radius: 6px;
       .info-icon {
@@ -85,7 +85,7 @@ button {
         position: relative;
         width: 297px;
         height: 48px;
-        color: #55585e;
+        color: @neutral-secondary-text;
         font-size: 12px;
         font-weight: 400;
         line-height: 16px;
@@ -113,7 +113,7 @@ button {
         width: 100%;
         padding: 0;
         :hover {
-          background-color: #F9F9FA;
+          background-color: @neutral-hover-bg;
           cursor: pointer;
         }
       }
@@ -125,7 +125,7 @@ button {
         flex-basis: auto;
         position: relative;
         height: 22px;
-        color: #1a1a1a;
+        color: @neutral-primary-text;
         font-size: 14px;
         font-weight: 500;
         line-height: 22px;
@@ -147,7 +147,7 @@ button {
           align-self: stretch;
           flex-shrink: 0;
           flex-basis: auto;
-          color: #808080;
+          color: @neutral-tertiary-text;
           font-size: 12px;
           font-weight: 400;
           line-height: 16px;
@@ -160,7 +160,7 @@ button {
           align-self: stretch;
           flex-shrink: 0;
           flex-basis: auto;
-          color: #808080;
+          color: @neutral-tertiary-text;
           font-size: 12px;
           font-weight: 400;
           line-height: 16px;
@@ -201,7 +201,7 @@ button {
     flex-basis: auto;
     position: relative;
     height: 28px;
-    color: #101114;
+    color: @neutral-primary-text;
     font-size: 20px;
     font-weight: 500;
     line-height: 28px;

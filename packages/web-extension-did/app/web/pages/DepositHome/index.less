@@ -1,3 +1,4 @@
+@import '../../assets/theme/color.less';
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   appearance: none;
@@ -31,7 +32,7 @@ button {
   min-height: 624px;
   padding: 0 0 50px;
   margin: 0 auto;
-  background: #fff;
+  background: @neutral-default-bg;
   overflow: hidden;
   .deposit-home-wrapper {
     display: flex;
@@ -73,7 +74,7 @@ button {
             flex-shrink: 0;
             position: relative;
             height: 16px;
-            color: #979aa1;
+            color: @neutral-tertiary-text;
             font-size: 12px;
             font-weight: 400;
             line-height: 16px;
@@ -93,7 +94,7 @@ button {
               flex-shrink: 0;
               position: relative;
               height: 16px;
-              color: #101114;
+              color: @neutral-primary-text;
               font-size: 12px;
               font-weight: 400;
               line-height: 16px;
@@ -131,7 +132,7 @@ button {
                   flex-shrink: 0;
                   position: relative;
                   height: 28px;
-                  color: #101114;
+                  color: @neutral-primary-text;
                   font-size: 20px;
                   font-weight: 500;
                   line-height: 28px;
@@ -154,7 +155,7 @@ button {
                 flex-shrink: 0;
                 position: relative;
                 height: 16px;
-                color: #979aa1;
+                color: @neutral-tertiary-text;
                 font-size: 12px;
                 font-weight: 400;
                 line-height: 16px;
@@ -174,7 +175,7 @@ button {
             gap: 20px;
             position: relative;
             padding: 20px 12px;
-            background: #f9f9fa;
+            background: @neutral-hover-bg;
             z-index: 11;
             border-radius: 6px;
             .card-info-wrapper {
@@ -230,11 +231,8 @@ button {
     }
   }
   .deposit-input {
-    color: var(--light-mode-neutral-01-primary-text, #101114);
+    color: @neutral-primary-text;
     text-align: right;
-    // font-size: var(--20enmedium-font-size, 20px);
-    // line-height: var(--20enmedium-line-height, 28px);
-    // font-weight: var(--20enmedium-font-weight, 500);
     font-size: 20px;
     line-height: 28px;
     font-weight: 500;
@@ -249,13 +247,13 @@ button {
     z-index: 30;
   }
   .deposit-input::placeholder{
-    color: #979aa1;
+    color: @neutral-tertiary-text;
   }
   .mini-receive {
     flex-shrink: 0;
     position: absolute;
     height: 16px;
-    color: #979aa1;
+    color: @neutral-tertiary-text;
     font-size: 12px;
     font-weight: 400;
     line-height: 16px;
@@ -278,7 +276,7 @@ button {
     width: 100%;
     height: 60px;
     padding: 0 16px;
-    background: #fff;
+    background: @neutral-default-bg;
     z-index: 1;
   }
   .frame-1 {
@@ -321,7 +319,7 @@ button {
     flex-shrink: 0;
     position: relative;
     height: 28px;
-    color: #101114;
+    color: @neutral-primary-text;
     font-size: 20px;
     font-weight: 500;
     line-height: 28px;

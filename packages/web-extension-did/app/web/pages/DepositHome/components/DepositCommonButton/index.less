@@ -1,3 +1,4 @@
+@import '../../../../assets/theme/color.less';
 .deposit-button {
   display: flex;
   align-items: center;
@@ -10,7 +11,7 @@
   height: 48px;
   padding: 0 28px;
   cursor: pointer;
-  background: #5d42ff;
+  background: @brand-normal;
   border: none;
   z-index: 61;
   border-radius: 6px;
@@ -18,7 +19,7 @@
     flex-shrink: 0;
     position: relative;
     height: 24px;
-    color: #fff;
+    color: @neutral-default-bg;
     font-size: 16px;
     font-weight: 500;
     line-height: 24px;
@@ -31,5 +32,5 @@
   background-color: @brand-hover;
 }
 .deposit-button:active {
-  background-color: #5137EE;
+  background-color: @brand-click;
 }

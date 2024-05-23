@@ -33,8 +33,17 @@ import { useAppRampEntryShow } from 'hooks/ramp';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 
-export default function BuyForm() {
-  const { symbol } = useRouterParams<{ symbol?: string }>();
+export interface IBuyFormProps {
+  symbol?: string;
+}
+
+export default function BuyForm(props: IBuyFormProps) {
+  const { symbol: routerSymbol } = useRouterParams<IBuyFormProps>();
+  const { symbol: propSymbol } = props;
+  const symbol = useMemo(() => {
+    return propSymbol || routerSymbol;
+  }, [propSymbol, routerSymbol]);
+
   const {
     buyFiatList: fiatListState,
     buyDefaultFiat: defaultFiat,
@@ -370,7 +379,7 @@ export default function BuyForm() {
 
 const styles = StyleSheet.create({
   formContainer: {
-    height: '100%',
+    flex: 1,
     justifyContent: 'space-between',
   },
   inputContainerStyle: {

@@ -14,8 +14,8 @@ export const commonStyles = StyleSheet.create({
   },
   inputContainerGrayBorderStyle: {
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border10,
-    borderBottomColor: defaultColors.border10,
+    borderColor: defaultColors.border8,
+    borderBottomColor: defaultColors.border8,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
 });

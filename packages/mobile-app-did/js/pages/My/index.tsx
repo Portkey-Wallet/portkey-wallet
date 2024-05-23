@@ -54,11 +54,6 @@ export default function MyMenu() {
         icon: 'wallet-security',
       },
       {
-        name: 'Deposit',
-        label: 'Deposit Test',
-        icon: 'referral',
-      },
-      {
         name: 'UserReferral',
         label: 'Referral',
         icon: 'referral',

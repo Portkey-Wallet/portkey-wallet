@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import AElf from 'aelf-sdk';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -13,6 +13,8 @@ const MAX_REFRESH_TIME = 15;
 export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manager?: AElfWallet) => {
   const { caHash, address } = useCurrentWalletInfo();
   const { apiUrl } = useCurrentNetworkInfo();
+
+  const [allNetworkList, setAllNetworkList] = useState<TNetworkItem[]>([]);
 
   const [fromNetwork, setFromNetwork] = useState<TNetworkItem>();
   const [fromToken, setFromToken] = useState<TTokenItem>();
@@ -153,6 +155,11 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
     });
   }, [clearFromAndTo, initChainId, initToToken.symbol]);
 
+  const fetchAllNetworkList = useCallback(async () => {
+    const networkList = await depositService.getNetworkList({ chainId: initChainId });
+    setAllNetworkList(networkList);
+  }, [initChainId]);
+
   const fetchDepositInfo = useCallback(async () => {
     if (!toChainId || !fromNetwork?.network || !fromToken?.symbol || !toToken?.symbol) {
       throw new Error('Invalid params: toChainId, fromNetwork, fromToken, toToken');
@@ -171,8 +178,9 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
     (async () => {
       await fetchTransferToken();
       await fetchDepositTokenList();
+      await fetchAllNetworkList();
     })();
-  }, [fetchDepositTokenList, fetchTransferToken]);
+  }, [fetchAllNetworkList, fetchDepositTokenList, fetchTransferToken]);
 
   useEffect(() => {
     (async () => {
@@ -216,7 +224,12 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
     })();
   }, [fromToken, toChainId]);
 
+  const isSameSymbol = useMemo(() => {
+    return fromToken && toToken && fromToken.symbol === toToken.symbol;
+  }, [fromToken, toToken]);
+
   return {
+    allNetworkList,
     fromNetwork,
     fromToken,
     toChainIdList,
@@ -226,6 +239,7 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
     payAmount,
     receiveAmount,
     rateRefreshTime,
+    isSameSymbol,
     fetchDepositInfo,
     setPayAmount,
   };

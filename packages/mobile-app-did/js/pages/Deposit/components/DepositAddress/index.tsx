@@ -1,15 +1,18 @@
-import React from 'react';
-import { StyleSheet, View, Text, Image, ScrollView } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { StyleSheet, View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
 import OverlayModal from 'components/OverlayModal';
+import Svg from 'components/Svg';
 import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
 import { useGStyles } from 'assets/theme/useGStyles';
 import fonts from 'assets/theme/fonts';
 import { TDepositInfo } from '@portkey-wallet/types/types-ca/deposit';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
+import { copyText } from 'utils';
 import { defaultColors } from 'assets/theme';
-import { TTokenItem, TNetworkItem } from '@portkey-wallet/types/types-ca/deposit';
+import { TTokenItem, TNetworkItem, TRecordsListItem, TRecordsStatus } from '@portkey-wallet/types/types-ca/deposit';
+import depositService from '@portkey-wallet/utils/deposit';
 
 interface DepositAddressProps {
   fromNetwork: TNetworkItem;
@@ -21,10 +24,47 @@ interface DepositAddressProps {
 const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken, depositInfo, contractAddress }) => {
   const gStyles = useGStyles();
 
+  const [lastRecord, setLastRecord] = useState<TRecordsListItem>();
+
+  const fetchRecentlyRecord = useCallback(async () => {
+    const res = await depositService.getLastRecordsList();
+    if (res) setLastRecord(res);
+  }, []);
+
+  useEffect(() => {
+    fetchRecentlyRecord();
+    const interval = setInterval(() => {
+      fetchRecentlyRecord();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [fetchRecentlyRecord]);
+
+  const onCopyAddress = useCallback(() => {
+    copyText(contractAddress);
+  }, [contractAddress]);
+
+  const recordBgColor = useMemo(() => {
+    if (lastRecord?.status === TRecordsStatus.Succeed) {
+      return defaultColors.bg36;
+    } else if (lastRecord?.status === TRecordsStatus.Failed) {
+      return defaultColors.bg37;
+    } else {
+      // default is TRecordsStatus.Processing
+      return defaultColors.bg38;
+    }
+  }, [lastRecord?.status]);
+
   return (
     <ModalBody modalBodyType="bottom" title={'Deposit Address'} style={gStyles.overlayStyle}>
       <ScrollView>
         <View style={styles.container}>
+          {lastRecord && (
+            <View style={[styles.recordWrap, { backgroundColor: recordBgColor }]}>
+              <View style={styles.recordIcon} />
+              <Text style={styles.recordText}>{lastRecord.status}</Text>
+            </View>
+          )}
           <View style={styles.tokenWrap}>
             <Image style={styles.tokenImage} source={{ uri: fromToken.icon }} />
             <Text style={styles.tokenText}>{fromToken.symbol}</Text>
@@ -35,7 +75,9 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken,
             <Text style={styles.addressLabelText}>Deposit Address</Text>
             <View style={styles.addressWrap}>
               <Text style={styles.addressText}>{depositInfo.depositAddress}</Text>
-              <View style={styles.copyButton} />
+              <TouchableOpacity onPress={onCopyAddress}>
+                <Svg icon={'copy1'} size={pTd(32)} iconStyle={styles.copyButton} />
+              </TouchableOpacity>
             </View>
           </View>
           {depositInfo.minAmount && (
@@ -86,6 +128,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: pTd(16),
     alignItems: 'center',
     paddingBottom: pTd(24),
+  },
+  recordWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    height: pTd(40),
+    borderRadius: pTd(6),
+  },
+  recordIcon: {
+    width: pTd(16),
+    height: pTd(16),
+    marginLeft: pTd(8),
+    borderRadius: pTd(8),
+    backgroundColor: '#00B75F',
+  },
+  recordText: {
+    marginLeft: pTd(8),
+    color: defaultColors.font1,
+    fontSize: pTd(12),
   },
   tokenWrap: {
     marginTop: pTd(16),

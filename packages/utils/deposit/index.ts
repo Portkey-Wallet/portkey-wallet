@@ -13,6 +13,9 @@ import {
   IDepositService,
   TQueryTransferAuthTokenRequest,
   BusinessType,
+  TGetRecordsListRequest,
+  TRecordsListItem,
+  TRecordsStatus,
 } from '@portkey-wallet/types/types-ca/deposit';
 import { ChainId } from '@portkey-wallet/types';
 import { customFetch } from '@portkey-wallet/utils/fetch';
@@ -142,6 +145,29 @@ class DepositService implements IDepositService {
       params,
     });
     return conversionRate;
+  }
+
+  async getLastRecordsList(): Promise<TRecordsListItem> {
+    return new Promise(resolve => {
+      resolve({
+        id: '',
+        orderType: '',
+        status: TRecordsStatus.Failed,
+      });
+    });
+    request.set('headers', { 'T-Authorization': this.transferToken });
+    const params: TGetRecordsListRequest = {
+      type: 1,
+      status: 0,
+      skipCount: 0,
+      maxResultCount: 1,
+    };
+    const {
+      data: { recordsList },
+    } = await request.deposit.recordList({
+      params,
+    });
+    return recordsList;
   }
 
   async getTransferToken(params: TQueryTransferAuthTokenRequest, apiUrl: string): Promise<string> {

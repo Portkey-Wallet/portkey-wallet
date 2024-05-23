@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import { defaultColors } from 'assets/theme';
@@ -6,6 +6,7 @@ import PageContainer from 'components/PageContainer';
 import CommonButton from 'components/CommonButton';
 import Loading from 'components/Loading';
 import Svg from 'components/Svg';
+import { selectPayToken, selectReceiveToken, ISelectTokenResult } from 'components/Selects/Entry';
 import { FromCard } from './components/FromCard';
 import { ToCard } from './components/ToCard';
 import { showDepositAddress } from './components/DepositAddress';
@@ -22,28 +23,25 @@ export default function Deposit() {
   const { t } = useLanguage();
   const { currentNetwork } = useWallet();
 
-  // const tokenItem = useRouterParams<TokenItemShowType>();
-  // const { chainId, symbol, imageUrl } = tokenItem;
-  const chainId = 'tDVW';
-  const symbol = 'SGR-1';
-  const imageUrl =
-    'https://dynamic-assets.coinbase.com/41f6a93a3a222078c939115fc304a67c384886b7a9e6c15dcbfa6519dc45f6bb4a586e9c48535d099efa596dbf8a9dd72b05815bcd32ac650c50abb5391a5bd0/asset_icons/1f8489bb280fb0a0fd643c1161312ba49655040e9aaaced5f9ad3eeaf868eadc.png';
+  const tokenItem = useRouterParams<TokenItemShowType>();
+  const { chainId, symbol, imageUrl } = tokenItem;
   const initToToken: TTokenItem = {
     name: '',
     symbol: symbol,
-    icon: imageUrl,
+    icon: imageUrl ?? '',
   };
 
   const {
+    allNetworkList,
     fromNetwork,
     fromToken,
     toChainId,
     toChainIdList,
     toToken,
     unitReceiveAmount,
-    payAmount,
     receiveAmount,
     rateRefreshTime,
+    isSameSymbol,
     fetchDepositInfo,
     setPayAmount,
   } = useDeposit(initToToken, chainId, getManagerAccount(getPin() ?? ''));
@@ -67,10 +65,6 @@ export default function Deposit() {
     }
   }, [fetchDepositInfo, fromNetwork, fromToken]);
 
-  const showAmount = useMemo(() => {
-    return fromToken && toToken && fromToken.symbol !== toToken.symbol;
-  }, [fromToken, toToken]);
-
   const onPayAmountChanged = useCallback(
     (text: string) => {
       if (text.length === 0) {
@@ -83,10 +77,41 @@ export default function Deposit() {
     [setPayAmount],
   );
 
+  const onSelectPayToken = useCallback(() => {
+    if (fromToken && fromNetwork && allNetworkList) {
+      selectPayToken({
+        networkList: allNetworkList,
+        currentToken: fromToken,
+        currentNetwork: fromNetwork,
+        onResolve: (data: ISelectTokenResult) => {
+          console.log('select pay: ', data);
+        },
+        onReject: reason => {
+          console.log('select pay reject: ', reason);
+        },
+      });
+    }
+  }, [allNetworkList, fromNetwork, fromToken]);
+
+  /*
+  export type IReceiveSelectTokenProps = {
+    networkDataList: { network: TNetworkItem; tokenList: TTokenItem[] }[];
+  } & ISelectBaseProps;
+  
+  export interface ISelectBaseProps {
+    currentToken: TTokenItem;
+    currentNetwork: TNetworkItem;
+    onResolve: OnSelectFinishCallback;
+    onReject: (reason?: any) => void;
+  }*/
+  const onSelectReceiveToken = useCallback(() => {
+    console.log('select receive');
+  }, []);
+
   return (
     <PageContainer
       titleDom={t('Deposit Assets')}
-      safeAreaColor={['blue', 'white']}
+      safeAreaColor={['white']}
       containerStyles={styles.pageStyles}
       scrollViewProps={{ disabled: false }}>
       <FromCard
@@ -96,6 +121,8 @@ export default function Deposit() {
         tokenSymbol={fromToken?.symbol ?? ''}
         tokenIcon={fromToken?.icon ?? ''}
         onChangeText={onPayAmountChanged}
+        showAmount={!isSameSymbol}
+        onPress={onSelectPayToken}
       />
       <ToCard
         wrapStyle={styles.toCard}
@@ -105,8 +132,10 @@ export default function Deposit() {
         tokenIcon={toToken?.icon ?? ''}
         receiveAmount={receiveAmount.toAmount}
         minumumReceiveAmount={receiveAmount.minimumReceiveAmount}
+        showAmount={!isSameSymbol}
+        onPress={onSelectReceiveToken}
       />
-      {showAmount && unitReceiveAmount > 0 && (
+      {!isSameSymbol && unitReceiveAmount > 0 && (
         <View style={styles.rateWrap}>
           <View style={styles.countDownWrap}>
             <Text style={styles.rateText}>{`1 ${fromToken?.symbol} ≈ ${unitReceiveAmount} ${toToken?.symbol}`}</Text>

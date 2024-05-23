@@ -109,7 +109,6 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
   const clearFromAndTo = useCallback(() => {
     setFromNetwork(undefined);
     setFromToken(undefined);
-    setToChainIdList([]);
     setToChainId(undefined);
     setToToken(undefined);
   }, []);
@@ -308,6 +307,62 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
     [clearFromAndTo, depoistTokenList, fromNetwork, fromToken, toChainId, toToken?.symbol],
   );
 
+  const setTo = useCallback(
+    ({ newToChainId, newToToken }: { newToChainId: ChainId; newToToken: TTokenItem }) => {
+      console.log('newToChainId : ', newToChainId);
+      console.log('newToToken : ', newToToken);
+      if (newToChainId === toChainId && newToToken.symbol === toToken?.symbol) {
+        return;
+      }
+      // 先看一下当前的fromToken是否支持这个toToken。
+      // 支持的话，直接设置toToken；否则找到第一个支持的fromToken，然后同时更新fromToken和toToken
+      let isFromTokenValid = false;
+      depoistTokenList.forEach(token => {
+        if (token.toTokenList) {
+          if (isFromTokenValid) return;
+          token.toTokenList.forEach(toTokenItem => {
+            if (
+              toTokenItem.symbol == newToToken.symbol &&
+              toTokenItem.chainIdList?.includes(newToChainId) &&
+              token.symbol === fromToken?.symbol
+            ) {
+              isFromTokenValid = true;
+              return;
+            }
+          });
+        }
+      });
+
+      if (isFromTokenValid) {
+        // fromToken is valid, only set toChainId and toToken
+        setToChainId(undefined);
+        setToToken(undefined);
+        setToChainId(newToChainId);
+        setToToken(newToToken);
+      } else {
+        // fromToken is not valid, find the first valid fromToken and set both fromToken and toToken
+        let findTargetToken = false;
+        depoistTokenList.forEach(token => {
+          if (token.toTokenList) {
+            if (findTargetToken) return;
+            token.toTokenList.forEach(toTokenItem => {
+              if (toTokenItem.symbol == newToToken.symbol && toTokenItem.chainIdList?.includes(newToChainId)) {
+                console.log('target token: ', JSON.stringify(token));
+                findTargetToken = true;
+                clearFromAndTo();
+                // setFromNetwork(newFromNetwork); // todo_wade: request network list
+                setFromToken(token);
+                setToToken(newToToken);
+                setToChainId(newToChainId);
+              }
+            });
+          }
+        });
+      }
+    },
+    [clearFromAndTo, depoistTokenList, fromToken?.symbol, toChainId, toToken?.symbol],
+  );
+
   return {
     allNetworkList,
     fromNetwork,
@@ -323,5 +378,6 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
     fetchDepositInfo,
     setPayAmount,
     setFrom,
+    setTo,
   };
 };

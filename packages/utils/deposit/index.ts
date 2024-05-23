@@ -38,7 +38,7 @@ class DepositService implements IDepositService {
   async getTokenListByNetwork({
     type,
     network,
-    chainId,
+    chainId = 'AELF', // todo_wade: remove default value
   }: {
     type: 'from' | 'to';
     network?: string;
@@ -108,13 +108,6 @@ class DepositService implements IDepositService {
   }
 
   async getLastRecordsList(): Promise<TRecordsListItem> {
-    return new Promise(resolve => {
-      resolve({
-        id: '',
-        orderType: '',
-        status: TRecordsStatus.Failed,
-      });
-    });
     request.set('headers', { 'T-Authorization': this.transferToken });
     const params: TGetRecordsListRequest = {
       type: 1,

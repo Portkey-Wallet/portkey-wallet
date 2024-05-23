@@ -244,7 +244,7 @@ const NetworkTopBtn = (props: {
   const text = useMemo(() => {
     if (isAll) return 'ALL';
     if (isTopTwo) return networkItem?.network;
-    return `+${networkOverflowNum}`;
+    return `${networkOverflowNum}+`;
   }, [isAll, isTopTwo, networkItem, networkOverflowNum]);
 
   return (
@@ -260,24 +260,24 @@ const NetworkTopBtn = (props: {
 
 const getNetworkImagePath = (network: string) => {
   switch (network) {
-    case 'Ethereum (ERC20)':
+    case 'ETH':
       return require('../../../assets/image/pngs/third-party-ethereum.png');
-    case 'BNB Smart Chain (BEP20)':
+    case 'BSC':
       return require('../../../assets/image/pngs/third-party-bnb.png');
-    case 'Tron (TRC20)':
+    case 'TRX':
       return require('../../../assets/image/pngs/third-party-tron.png');
-    case 'Arbitrum One':
+    case 'ARBITRUM':
       return require('../../../assets/image/pngs/third-party-arb.png');
     case 'Solana':
       return require('../../../assets/image/pngs/third-party-solana.png');
-    case 'Polygon':
+    case 'MATIC':
       return require('../../../assets/image/pngs/third-party-polygon.png');
-    case 'Optimism':
+    case 'OPTIMISM':
       return require('../../../assets/image/pngs/third-party-op.png');
-    case 'AVAX C-Chain':
+    case 'AVAXC':
       return require('../../../assets/image/pngs/third-party-avax.png');
     default: {
-      throw new Error('Invalid network');
+      return require('../../../assets/image/pngs/third-party-solana.png');
     }
   }
 };
@@ -305,22 +305,13 @@ const TokenListItem = (props: {
       <View style={styles.tokenIconBox}>
         <CommonAvatar
           hasBorder
-          style={styles.subIcon}
-          avatarSize={pTd(18)}
+          style={styles.tokenIconMain}
+          avatarSize={pTd(36)}
           imageUrl={icon}
           borderStyle={GStyles.hairlineBorder}
         />
         <View style={styles.subIcon}>
-          <CommonAvatar
-            hasBorder
-            style={styles.subIcon}
-            avatarSize={pTd(18)}
-            imageUrl={icon}
-            borderStyle={GStyles.hairlineBorder}
-          />
-        </View>
-        <View style={styles.subIcon}>
-          <Text style={{ color: defaultColors.font2 }}>{networkName}</Text>
+          <Image style={styles.subIcon} source={getNetworkImagePath(underNetwork.network)} resizeMode={'contain'} />
         </View>
       </View>
       <View style={styles.tokenTextLines}>
@@ -357,7 +348,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    padding: pTd(16),
+    paddingVertical: pTd(16),
   },
   networkItem: {
     flexDirection: 'row',

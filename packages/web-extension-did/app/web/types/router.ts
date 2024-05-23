@@ -11,6 +11,7 @@ import { ToAccount, SendStage } from 'pages/Send';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { GuardianItem } from './guardians';
 import { NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
+import { ReceiveTabEnum } from '@portkey-wallet/constants/constants-ca/send';
 
 export enum FromPageEnum {
   register = 'register',
@@ -185,9 +186,7 @@ export type TRampPreviewLocationState = {
   openGuardiansApprove?: boolean;
   approveList?: GuardianItem[];
   mainPageInfo?: {
-    pathname: string;
-    state: any;
-    [key: string]: any;
+    pageName: string;
   };
 };
 
@@ -233,9 +232,10 @@ export type TReceiveLocationState = {
   balance: string;
   imageUrl: string;
   address: string;
-  balanceInUsd: string;
+  balanceInUsd?: string;
   decimals: string | number;
-  [key: string]: any;
+  pageSide?: ReceiveTabEnum;
+  extraData?: any;
 };
 
 // Send

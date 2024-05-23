@@ -45,6 +45,7 @@ export const defaultColors = {
   bg36: '#EAF9EF',
   bg37: '#EFECFF',
   bg38: '#FFEEEE',
+  bg39: '#F8F8F8',
 
   font1: '#464B53',
   font2: 'white',

@@ -24,6 +24,7 @@ export type TTokenItem = {
   icon: string;
   contractAddress?: string;
   decimals?: number;
+  networkList?: TNetworkItem[]; // only available in "ALL" mode
 };
 
 export type TGetDepositTokenListRequest = {

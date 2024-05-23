@@ -15,10 +15,6 @@ import { addressFormat, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { copyText } from 'utils';
 import Touchable from 'components/Touchable';
 import fonts from 'assets/theme/fonts';
-import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
-import { useAfterTransitionEffectOnce } from 'hooks/afterTransition';
-import ReceiveTip from './components/ReceiveTip';
-import { useSideChainTokenReceiveTipSetting } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { RichText } from 'components/RichText';
 import CommonTouchableTabs, { TabItemType } from 'components/CommonTouchableTabs';
@@ -91,12 +87,6 @@ export default function Receive() {
       copyForwarder.current = null;
     }, 2000);
   }, [chainId, currentCaAddress]);
-
-  const isMainChain = useMemo(() => chainId === DefaultChainId, [chainId]);
-  const { showSideChainTokenReceiveTip } = useSideChainTokenReceiveTipSetting();
-  useAfterTransitionEffectOnce(() => {
-    if (!isMainChain && showSideChainTokenReceiveTip) ReceiveTip.showReceiveTip({ chainId });
-  });
 
   const OriginalQrCodePage = useCallback(() => {
     return (

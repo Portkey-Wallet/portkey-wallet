@@ -28,7 +28,9 @@ enum FocusedOnType {
 
 type OnSelectNetworkCallback = (network: TNetworkItem) => void;
 
-export const SelectNetworkModal = (props: ISelectBaseProps & { isPay?: boolean }) => {
+export const SelectNetworkModal = (
+  props: ISelectBaseProps & { isPay?: boolean; onResolve: OnSelectFinishCallback; onReject: (reason?: any) => void },
+) => {
   const { networkList, currentToken, currentNetwork, onResolve, onReject, isPay = false } = props;
   const [layer, setLayer] = useState(Layers.LAYER1);
   const { symbol } = currentToken;
@@ -294,8 +296,9 @@ const TokenListItem = (props: {
   isShowAll: boolean;
 }) => {
   const { item, onSelect, underNetwork, isReceive, isShowAll } = props;
-  const { symbol, name, icon, contractAddress } = item;
-  const { name: networkName } = underNetwork;
+  const { symbol, name, icon, contractAddress: itemContractAddress } = item;
+  const { name: networkName, contractAddress: networkContractAddress } = underNetwork;
+  const contractAddress = isShowAll ? networkContractAddress : itemContractAddress;
 
   return (
     <TouchableOpacity

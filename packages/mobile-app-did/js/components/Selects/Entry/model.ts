@@ -52,7 +52,7 @@ const dealWithNetworkAndTokenData = (tokens: TTokenItem[], networkList: TNetwork
   return arr;
 };
 
-const sortTokens = (tokens: TTokenItem[]) => {
+export const sortTokens = (tokens: TTokenItem[]) => {
   return tokens.sort((a, b) => {
     return getTokenPriority(b) - getTokenPriority(a);
   });

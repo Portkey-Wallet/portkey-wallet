@@ -10,7 +10,7 @@ import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
 import { ModalBody } from 'components/ModalBody';
 import { useGStyles } from 'assets/theme/useGStyles';
-import { useMemoNetworkAndTokenData } from '../Entry/model';
+import { NetworkAndTokenShowType, sortTokens, useMemoNetworkAndTokenData } from '../Entry/model';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { RichText } from 'components/RichText';
 import Svg from 'components/Svg';
@@ -62,8 +62,31 @@ export const SelectNetworkModal = (props: IReceiveSelectTokenProps | IPaySelectT
     }
   }, []);
   const { networkAndTokenData, updateNetworkAndTokenData } = useMemoNetworkAndTokenData();
+  const preparedNetworkAndTokenData = useMemo(() => {
+    if (networkDataList) {
+      const res: NetworkAndTokenShowType = [];
+      if (focusedOn === FocusedOnType.All) {
+        networkDataList.forEach(it => {
+          sortTokens(it.tokenList).forEach(token => {
+            res.push({ network: it.network, token });
+          });
+        });
+      } else {
+        const target = networkDataList.find(it => it.network.network === currentChoosingNetwork.network);
+        if (target) {
+          sortTokens(target.tokenList).forEach(token => {
+            res.push({ network: target.network, token });
+          });
+        }
+      }
+      return res;
+    } else {
+      return networkAndTokenData;
+    }
+  }, [currentChoosingNetwork.network, focusedOn, networkAndTokenData, networkDataList]);
 
   useEffect(() => {
+    if (!networkList) return;
     const type = networkList ? 'from' : 'to';
     if (focusedOn === FocusedOnType.All) {
       updateNetworkAndTokenData({ type, chainId: MAIN_CHAIN_ID }, networkList);
@@ -149,7 +172,7 @@ export const SelectNetworkModal = (props: IReceiveSelectTokenProps | IPaySelectT
           <View style={styles.layerBlock}>
             <Text style={styles.layerBlockTitle}>{'Select a token'}</Text>
             <FlatList
-              data={networkAndTokenData}
+              data={preparedNetworkAndTokenData}
               keyExtractor={(item, index) => `${item.network.network}-${index}`}
               renderItem={({ item }) => (
                 <TokenListItem

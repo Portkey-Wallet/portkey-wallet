@@ -27,7 +27,7 @@ export default function ShowQRCode({
     <div className="show-qrcode-wrapper flex-column">
       {showHeader && (
         <div className="show-qrcode-header">
-          <CustomSvg onClick={onBack} type="Close2" />
+          <CustomSvg onClick={onBack} type="SuggestClose" />
         </div>
       )}
       <div className="show-qrcode-content flex-column-center">

@@ -247,7 +247,7 @@ export default function CustomTokenList({
     <div className="custom-token-list">
       <div className="header">
         <p>{title || 'Select Assets'}</p>
-        <CustomSvg type="Close2" onClick={onClose} />
+        <CustomSvg type="SuggestClose" onClick={onClose} />
       </div>
       <DropdownSearch
         overlayClassName="empty-dropdown"

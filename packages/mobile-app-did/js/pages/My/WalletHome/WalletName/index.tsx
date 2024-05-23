@@ -98,7 +98,7 @@ const WalletName: React.FC = () => {
             <ProfileAddressSection isMySelf addressList={caInfoList} />
           </>
         </View>
-        <CommonButton title={'Edit'} type="solid" onPress={() => navigationService.navigate('EditWalletName')} />
+        <CommonButton title={'Edit'} type="primary" onPress={() => navigationService.navigate('EditWalletName')} />
       </View>
 
       {showDeletion && (

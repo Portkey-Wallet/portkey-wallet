@@ -366,7 +366,7 @@ const ContactEdit: React.FC = () => {
         </TouchableWithoutFeedback>
       </KeyboardAwareScrollView>
       <View style={pageStyles.btnContainer}>
-        <CommonButton onPress={onFinish} disabled={isSaveDisable} type="solid">
+        <CommonButton onPress={onFinish} disabled={isSaveDisable} type="primary">
           {isEdit ? t('Save') : t('Add')}
         </CommonButton>
         {isEdit && (

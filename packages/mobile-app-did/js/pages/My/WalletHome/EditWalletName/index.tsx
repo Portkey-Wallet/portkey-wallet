@@ -122,7 +122,7 @@ const EditWalletName: React.FC = () => {
         <ProfileAddressSection isMySelf disable addressList={caInfoList} />
       </ScrollView>
 
-      <CommonButton disabled={nameValue === ''} type="solid" onPress={onSave}>
+      <CommonButton disabled={nameValue === ''} type="primary" onPress={onSave}>
         {t('Save')}
       </CommonButton>
     </PageContainer>

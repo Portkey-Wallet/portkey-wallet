@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet, ViewStyle } from 'react-native';
-import { IPaySelectTokenProps, IReceiveSelectTokenProps, OnSelectFinishCallback } from '../Entry';
+import { ISelectBaseProps, OnSelectFinishCallback } from '../Entry';
 import { TNetworkItem, TTokenItem } from '@portkey-wallet/types/types-ca/deposit';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
@@ -10,10 +10,11 @@ import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
 import { ModalBody } from 'components/ModalBody';
 import { useGStyles } from 'assets/theme/useGStyles';
-import { NetworkAndTokenShowType, sortTokens, useMemoNetworkAndTokenData } from '../Entry/model';
-import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { RequestNetworkTokenDataProps, useMemoNetworkAndTokenData } from '../Entry/model';
 import { RichText } from 'components/RichText';
 import Svg from 'components/Svg';
+import fonts from 'assets/theme/fonts';
+import { ChainId } from '@portkey-wallet/types';
 
 enum Layers {
   LAYER1,
@@ -28,72 +29,63 @@ enum FocusedOnType {
 
 type OnSelectNetworkCallback = (network: TNetworkItem) => void;
 
-export const SelectNetworkModal = (props: IReceiveSelectTokenProps | IPaySelectTokenProps) => {
-  const { networkList, networkDataList, currentToken, currentNetwork, onResolve, onReject } =
-    props as IReceiveSelectTokenProps & IPaySelectTokenProps;
+export const SelectNetworkModal = (props: ISelectBaseProps & { isPay?: boolean }) => {
+  const { networkList, currentToken, currentNetwork, onResolve, onReject, isPay } = props;
   const [layer, setLayer] = useState(Layers.LAYER1);
   const { symbol } = currentToken;
   const [currentChoosingNetwork, setCurrentChoosingNetwork] = useState(currentNetwork);
+  const [lastTimeTargetNetwork, setLastTimeTargetNetwork] = useState<TNetworkItem | undefined>();
   const gStyle = useGStyles();
   const [focusedOn, setFocusedOn] = useState(FocusedOnType.TopTwo);
   const networkOverflowNum = useMemo(() => {
-    if (networkDataList) {
-      return -1;
-    } else {
-      return networkList.length - 2;
-    }
-  }, [networkDataList, networkList]);
+    return networkList.length - 2;
+  }, [networkList]);
   const topTwoNetworks = useMemo(() => {
-    if (networkDataList) return networkDataList.map(it => it.network);
     const arr: TNetworkItem[] = [];
-    if (currentChoosingNetwork !== currentNetwork) {
-      arr.push(currentChoosingNetwork);
-      arr.push(currentNetwork);
+    if (lastTimeTargetNetwork) {
+      if (isNetworkItemEqual(lastTimeTargetNetwork, currentNetwork)) {
+        arr.push(currentNetwork);
+        arr.push(networkList.find(it => !isNetworkItemEqual(it, currentNetwork)) || networkList[0]);
+      } else {
+        arr.push(lastTimeTargetNetwork);
+        arr.push(currentNetwork);
+      }
     } else {
       arr.push(currentNetwork);
-      const nextOne = networkList.find(it => it !== currentNetwork);
-      nextOne && arr.push(nextOne);
+      arr.push(networkList.find(it => !isNetworkItemEqual(it, currentNetwork)) || networkList[0]);
     }
-  }, [currentChoosingNetwork, currentNetwork, networkDataList, networkList]);
+    return arr;
+  }, [currentNetwork, lastTimeTargetNetwork, networkList]);
   const onNetworkBtnClick = useCallback((type: FocusedOnType, networkItem?: TNetworkItem) => {
     setFocusedOn(type);
     if (type === FocusedOnType.TopTwo) {
       networkItem && setCurrentChoosingNetwork(networkItem);
+    } else if (type === FocusedOnType.More) {
+      setLayer(Layers.LAYER2);
     }
   }, []);
   const { networkAndTokenData, updateNetworkAndTokenData } = useMemoNetworkAndTokenData();
-  const preparedNetworkAndTokenData = useMemo(() => {
-    if (networkDataList) {
-      const res: NetworkAndTokenShowType = [];
-      if (focusedOn === FocusedOnType.All) {
-        networkDataList.forEach(it => {
-          sortTokens(it.tokenList).forEach(token => {
-            res.push({ network: it.network, token });
-          });
-        });
-      } else {
-        const target = networkDataList.find(it => it.network.network === currentChoosingNetwork.network);
-        if (target) {
-          sortTokens(target.tokenList).forEach(token => {
-            res.push({ network: target.network, token });
-          });
-        }
-      }
-      return res;
-    } else {
-      return networkAndTokenData;
-    }
-  }, [currentChoosingNetwork.network, focusedOn, networkAndTokenData, networkDataList]);
 
   useEffect(() => {
     if (!networkList) return;
     const type = networkList ? 'from' : 'to';
-    if (focusedOn === FocusedOnType.All) {
-      updateNetworkAndTokenData({ type, chainId: MAIN_CHAIN_ID }, networkList);
-    } else {
-      updateNetworkAndTokenData({ type, chainId: MAIN_CHAIN_ID, network: currentChoosingNetwork.network }, networkList);
+    const prep: RequestNetworkTokenDataProps = { type };
+    if (focusedOn === FocusedOnType.TopTwo && isPay) {
+      prep.network = currentChoosingNetwork.network;
     }
-  }, [currentChoosingNetwork.network, currentNetwork, focusedOn, networkList, updateNetworkAndTokenData]);
+    if (!isPay) {
+      prep.chainId = (currentChoosingNetwork.name || 'AELF') as ChainId;
+    }
+    updateNetworkAndTokenData({ type, network: currentChoosingNetwork.network }, networkList);
+  }, [
+    currentChoosingNetwork.name,
+    currentChoosingNetwork.network,
+    currentNetwork,
+    focusedOn,
+    isPay,
+    networkList,
+    updateNetworkAndTokenData,
+  ]);
 
   const networkBtns = useMemo<Array<JSX.Element>>(() => {
     const array: Array<JSX.Element> = [];
@@ -105,27 +97,14 @@ export const SelectNetworkModal = (props: IReceiveSelectTokenProps | IPaySelectT
         networkOverflowNum={networkOverflowNum}
       />,
     );
-    if (networkDataList) {
-      networkDataList.forEach(networkItem => {
-        array.push(
-          <NetworkTopBtn
-            reportPress={onNetworkBtnClick}
-            type={FocusedOnType.TopTwo}
-            focused={focusedOn === FocusedOnType.TopTwo && currentChoosingNetwork === networkItem.network}
-            networkItem={currentNetwork}
-            containerStyle={{ marginLeft: pTd(8) }}
-            networkOverflowNum={networkOverflowNum}
-          />,
-        );
-      });
-    } else if (topTwoNetworks) {
+    if (topTwoNetworks) {
       topTwoNetworks.forEach(networkItem => {
         array.push(
           <NetworkTopBtn
             reportPress={onNetworkBtnClick}
             type={FocusedOnType.TopTwo}
-            focused={focusedOn === FocusedOnType.TopTwo && currentChoosingNetwork === networkItem}
-            networkItem={currentNetwork}
+            focused={focusedOn === FocusedOnType.TopTwo && isNetworkItemEqual(networkItem, currentChoosingNetwork)}
+            networkItem={networkItem}
             containerStyle={{ marginLeft: pTd(8) }}
             networkOverflowNum={networkOverflowNum}
           />,
@@ -139,29 +118,23 @@ export const SelectNetworkModal = (props: IReceiveSelectTokenProps | IPaySelectT
           type={FocusedOnType.More}
           focused={focusedOn === FocusedOnType.More}
           networkOverflowNum={networkOverflowNum}
+          containerStyle={{ marginLeft: pTd(8) }}
         />,
       );
     }
     return array;
-  }, [
-    currentChoosingNetwork,
-    currentNetwork,
-    focusedOn,
-    networkDataList,
-    networkOverflowNum,
-    onNetworkBtnClick,
-    topTwoNetworks,
-  ]);
+  }, [currentChoosingNetwork, focusedOn, networkOverflowNum, onNetworkBtnClick, topTwoNetworks]);
   return (
     <ModalBody
       isShowLeftBackIcon={layer === Layers.LAYER2}
       isShowRightCloseIcon={layer === Layers.LAYER1}
+      preventBack
       onBack={() => setLayer(Layers.LAYER1)}
       onClose={() => {
         onReject?.('user canceled');
       }}
       style={gStyle.overlayStyle}
-      title={layer === Layers.LAYER1 ? (networkDataList ? 'Receive' : 'Pay') : 'Select Network'}
+      title={layer === Layers.LAYER1 ? (isPay ? 'Pay' : 'Receive') : 'Select Network'}
       modalBodyType="bottom">
       {layer === Layers.LAYER1 && (
         <View style={styles.container}>
@@ -172,14 +145,14 @@ export const SelectNetworkModal = (props: IReceiveSelectTokenProps | IPaySelectT
           <View style={styles.layerBlock}>
             <Text style={styles.layerBlockTitle}>{'Select a token'}</Text>
             <FlatList
-              data={preparedNetworkAndTokenData}
+              data={networkAndTokenData}
               keyExtractor={(item, index) => `${item.network.network}-${index}`}
               renderItem={({ item }) => (
                 <TokenListItem
                   item={item.token}
                   onSelect={onResolve}
                   underNetwork={item.network}
-                  isReceive={!!networkDataList}
+                  isReceive={!isPay}
                   isShowAll={focusedOn === FocusedOnType.All}
                 />
               )}
@@ -188,7 +161,7 @@ export const SelectNetworkModal = (props: IReceiveSelectTokenProps | IPaySelectT
         </View>
       )}
       {layer === Layers.LAYER2 && (
-        <View style={styles.container}>
+        <View>
           <View style={[styles.wrap, styles.flex]}>
             <Svg icon="more-info" size={pTd(16)} iconStyle={styles.icon} color={defaultColors.bg30} />
             <RichText
@@ -200,7 +173,16 @@ export const SelectNetworkModal = (props: IReceiveSelectTokenProps | IPaySelectT
             data={networkList}
             keyExtractor={(item, index) => `${item.network}-${index}`}
             renderItem={({ item }) => (
-              <NetworkListItem item={item} onSelect={network => setCurrentChoosingNetwork(network)} />
+              <NetworkListItem
+                item={item}
+                onSelect={network => {
+                  console.log('choosing network', network);
+                  setCurrentChoosingNetwork(network);
+                  setLastTimeTargetNetwork(network);
+                  setFocusedOn(FocusedOnType.TopTwo);
+                  setLayer(Layers.LAYER1);
+                }}
+              />
             )}
           />
         </View>
@@ -243,7 +225,7 @@ const NetworkTopBtn = (props: {
 
   const text = useMemo(() => {
     if (isAll) return 'ALL';
-    if (isTopTwo) return networkItem?.network;
+    if (isTopTwo) return removeQuoteFromStr(networkItem?.name || 'ETH');
     return `${networkOverflowNum}+`;
   }, [isAll, isTopTwo, networkItem, networkOverflowNum]);
 
@@ -253,7 +235,16 @@ const NetworkTopBtn = (props: {
       onPress={() => {
         reportPress(type, networkItem);
       }}>
-      <TextM>{text}</TextM>
+      {isTopTwo && (
+        <Image
+          style={styles.networkBtnIcon}
+          source={getNetworkImagePath(networkItem?.network || 'ETH')}
+          resizeMode={'contain'}
+        />
+      )}
+      <TextM style={[styles.networkBtnText, fonts.mediumFont]} numberOfLines={1} ellipsizeMode={'tail'}>
+        {text}
+      </TextM>
     </TouchableOpacity>
   );
 };
@@ -262,6 +253,8 @@ const getNetworkImagePath = (network: string) => {
   switch (network) {
     case 'ETH':
       return require('../../../assets/image/pngs/third-party-ethereum.png');
+    case 'AELF':
+      return require('../../../assets/image/pngs/aelf.png');
     case 'BSC':
       return require('../../../assets/image/pngs/third-party-bnb.png');
     case 'TRX':
@@ -323,6 +316,14 @@ const TokenListItem = (props: {
       </View>
     </TouchableOpacity>
   );
+};
+
+const removeQuoteFromStr = (str: string) => {
+  return str.replace(/\(.*\)/g, '');
+};
+
+const isNetworkItemEqual = (a: TNetworkItem, b: TNetworkItem) => {
+  return a.network === b.network && a.name === b.name;
 };
 
 const styles = StyleSheet.create({
@@ -427,7 +428,21 @@ const styles = StyleSheet.create({
   networkBtn: {
     paddingHorizontal: pTd(8),
     paddingVertical: pTd(5),
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 0.5,
+    borderRadius: pTd(6),
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  networkBtnIcon: {
+    height: pTd(20),
+    width: pTd(20),
+    marginRight: pTd(6),
+  },
+  networkBtnText: {
+    lineHeight: pTd(22),
+    color: defaultColors.font5,
+    maxWidth: pTd(90),
   },
   networkBtnNotFocused: {
     borderColor: defaultColors.bg30,
@@ -437,7 +452,10 @@ const styles = StyleSheet.create({
   },
   wrap: {
     backgroundColor: defaultColors.bg39,
-    padding: pTd(12),
+    paddingVertical: pTd(12),
+    paddingHorizontal: pTd(8),
+    marginHorizontal: pTd(16),
+    borderRadius: pTd(6),
   },
   flex: {
     display: 'flex',
@@ -446,7 +464,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   wrapperText: {
-    flex: 22,
+    flex: 1,
     paddingLeft: pTd(6),
   },
   commonText: {
@@ -456,5 +474,6 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginTop: pTd(2),
+    marginRight: pTd(6),
   },
 });

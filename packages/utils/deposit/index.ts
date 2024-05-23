@@ -42,7 +42,7 @@ class DepositService implements IDepositService {
   }: {
     type: 'from' | 'to';
     network?: string;
-    chainId: ChainId;
+    chainId?: ChainId;
   }): Promise<TTokenItem[]> {
     request.set('headers', { 'T-Authorization': this.transferToken });
     const params = network

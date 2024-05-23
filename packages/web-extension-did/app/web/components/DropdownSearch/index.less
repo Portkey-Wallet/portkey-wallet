@@ -7,10 +7,10 @@
 
   .@{app-prefix}-input-affix-wrapper {
     border-radius: 6px;
-    border: 1px solid @border-1;
+    border: 1px solid @neutral-border;
     padding: 12px 16px;
     line-height: 16px;
-    color: @font-11;
+    color: @neutral-primary-text;
     font-size: 16px;
 
     .@{app-prefix}-input-prefix {
@@ -40,13 +40,13 @@
     }
 
     .@{app-prefix}-input::placeholder {
-      color: @font-12;
+      color: @neutral-disable-text;
     }
   }
 
   .@{app-prefix}-input-affix-wrapper-focused {
     box-shadow: none;
-    border-color: @border-3 !important;
+    border-color: @brand-normal !important;
     .@{app-prefix}-input-prefix {
       .custom-svg {
         background: url('../../assets/svgIcon/Search.svg') center no-repeat;

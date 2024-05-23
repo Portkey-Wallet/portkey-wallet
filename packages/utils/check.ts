@@ -18,6 +18,20 @@ export function checkHolderError(message?: string, code?: string) {
   return message;
 }
 
+export const CHAIN_ADDRESS_RULE: Array<{ syntax: RegExp; chainName: Array<string> }> = [
+  {
+    syntax: /^0x[a-fA-F0-9]{40}$/,
+    chainName: ['ETH', 'BSC', 'ARBITRUM', 'MATIC', 'OPTIMISM', 'AVAXC'],
+  },
+  {
+    syntax: /^T[1-9A-HJ-NP-Za-km-z]{33}$/,
+    chainName: ['TRX'],
+  },
+  {
+    syntax: /^[1-9A-HJ-NP-Za-km-z]{32,44}$/,
+    chainName: ['Solana'],
+  },
+];
 export function checkIsValidEtransferAddress(ads = '') {
-  return ads.length >= 32 && ads.length <= 59;
+  return CHAIN_ADDRESS_RULE.some(item => item.syntax.test(ads));
 }

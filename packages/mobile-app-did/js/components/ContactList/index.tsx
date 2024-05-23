@@ -189,8 +189,10 @@ const ContactsList: React.FC<ContactsListProps> = ({
   return (
     <View style={[contactListStyles.listWrap, style]}>
       {isSearchShow && (
-        <View style={[BGStyles.bg5, GStyles.paddingArg(8, 20, 8)]}>
+        <View style={[BGStyles.bg1, GStyles.paddingArg(0, 20, 8)]}>
           <CommonInput
+            grayBorder
+            theme="white-bg"
             value={keyWord}
             placeholder={t('Name/address')}
             onChangeText={value => {
@@ -219,7 +221,7 @@ const ContactsList: React.FC<ContactsListProps> = ({
 
       {!isExistContact && !keyWord && !isReadOnly && (
         <CommonButton
-          type="solid"
+          type="primary"
           containerStyle={contactListStyles.addButtonWrap}
           buttonStyle={[contactListStyles.addButton]}
           onPress={() => navigationService.navigate('NoChatContactProfileEdit')}>

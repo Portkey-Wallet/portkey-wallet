@@ -85,7 +85,7 @@ const TokenAllowanceDetail: React.FC = () => {
   return (
     <PageContainer
       titleDom={t('Token Allowance')}
-      safeAreaColor={['blue', 'white']}
+      safeAreaColor={['white', 'white']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <TokenAllowanceItem type="detail" item={item} />

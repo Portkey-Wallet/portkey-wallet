@@ -41,7 +41,7 @@ const TextWithProtocolIcon = ({
           icon="httpsLock"
           size={iconSize}
           iconStyle={styles.iconStyle}
-          color={location === 'header' ? defaultColors.font2 : defaultColors.font7}
+          color={location === 'header' ? defaultColors.font11 : defaultColors.font7}
         />
       );
     }
@@ -82,6 +82,6 @@ const styles = StyleSheet.create({
     marginLeft: pTd(4),
   },
   headerTextColor: {
-    color: defaultColors.bg1,
+    color: defaultColors.font5,
   },
 });

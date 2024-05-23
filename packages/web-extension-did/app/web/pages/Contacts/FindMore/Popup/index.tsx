@@ -1,7 +1,6 @@
 import ContactsSearchInput from 'pages/Contacts/components/ContactsSearchInput';
 import { IFindMoreProps } from '..';
-import BackHeader from 'components/BackHeader';
-import CustomSvg from 'components/CustomSvg';
+import CommonHeader from 'components/CommonHeader';
 import './index.less';
 import FindMoreItem from 'pages/Contacts/components/FindMoreItem';
 import InviteGuideList from 'pages/components/InviteGuideList';
@@ -20,11 +19,7 @@ export default function FindMorePopup({
   return (
     <div className="find-more-popup min-width-max-height flex-column">
       <div className="flex-column find-more-top">
-        <BackHeader
-          title={headerTitle}
-          leftCallBack={goBack}
-          rightElement={<CustomSvg type="Close2" onClick={goBack} />}
-        />
+        <CommonHeader title={headerTitle} onLeftBack={goBack} />
         <ContactsSearchInput placeholder="Address/email" handleChange={handleSearch} />
       </div>
       <div className="find-more-body">

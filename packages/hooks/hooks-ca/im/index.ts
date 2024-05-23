@@ -19,6 +19,7 @@ import { request } from '@portkey-wallet/api/api-did';
 import useLockCallback from '../../useLockCallback';
 import { handleLoopFetch } from '@portkey-wallet/utils';
 import { messageContentParser } from '@portkey-wallet/im/utils';
+import useBlockAndReport from './blockAndReport';
 
 export const useIMState = () => useAppCASelector(state => state.im);
 export const useIMHasNextNetMapState = () => useAppCASelector(state => state.im.hasNextNetMap);
@@ -30,6 +31,7 @@ export const useIMGroupInfoMapNetMapState = () => useAppCASelector(state => stat
 export const useRedPackageConfigMapState = () => useAppCASelector(state => state.im.redPackageConfigMap);
 export const useIMPinListNetMapState = () => useAppCASelector(state => state.im.pinListNetMap);
 export const useIMLastPinNetMapState = () => useAppCASelector(state => state.im.lastPinNetMap);
+export const useImBlockedMapState = () => useAppCASelector(state => state.im.blockedUserListMap);
 
 export const useUnreadCount = () => {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -81,6 +83,8 @@ export const useInitIM = () => {
   const dispatch = useAppCommonDispatch();
   const { getRelationId } = useRelationId();
   const channelListNetMap = useIMChannelListNetMapState();
+  const { fetchAndSetBlockList } = useBlockAndReport();
+
   const list = useMemo(() => channelListNetMap?.[networkType]?.list || [], [channelListNetMap, networkType]);
   const listRef = useRef(list);
   listRef.current = list;
@@ -229,6 +233,7 @@ export const useInitIM = () => {
 
       await im.init(account, caHash, relationToken);
       dispatch(fetchContactListAsync());
+      fetchAndSetBlockList();
 
       await request.es.getCaHolder({
         params: {
@@ -243,7 +248,7 @@ export const useInitIM = () => {
         console.log('initIm getRelationId error', error);
       });
     },
-    [dispatch, getRelationId, relationToken],
+    [dispatch, fetchAndSetBlockList, getRelationId, relationToken],
   );
   return initIm;
 };
@@ -285,3 +290,4 @@ export * from './channelList';
 export * from './channel';
 export * from './group';
 export * from './redPackage';
+export * from './blockAndReport';

@@ -1,3 +1,4 @@
+import CommonHeader from 'components/CommonHeader';
 import CustomSvg from 'components/CustomSvg';
 import Avatar from '../Avatar';
 import AccountConnect from '../AccountConnect';
@@ -12,13 +13,12 @@ export interface IHomeHeaderProps {
 export default function HomeHeader({ onUserClick, unReadShow }: IHomeHeaderProps) {
   const userInfo = useCurrentUserInfo();
   return (
-    <div className="portkey-home-header flex-between">
-      <div className="home-header-left">
-        <CustomSvg type="PortkeyLogoV2" />
-      </div>
-      <div className="home-header-right flex">
-        <AccountConnect />
-        <div className="user-avatar-wrap">
+    <CommonHeader
+      className="portkey-home-header"
+      title={<CustomSvg type="PortkeyLogoV2" />}
+      rightElementList={[
+        <AccountConnect key="accountConnect" />,
+        <div key="userAvatar" className="user-avatar-wrap">
           <Avatar
             size="small"
             avatarUrl={userInfo?.avatar}
@@ -26,8 +26,8 @@ export default function HomeHeader({ onUserClick, unReadShow }: IHomeHeaderProps
             onClick={onUserClick}
           />
           {unReadShow && <UnReadBadge />}
-        </div>
-      </div>
-    </div>
+        </div>,
+      ]}
+    />
   );
 }

@@ -1,6 +1,6 @@
 import { Button, Skeleton } from 'antd';
 import PromptFrame from 'pages/components/PromptFrame';
-import SettingHeader from 'pages/components/SettingHeader';
+import CommonHeader from 'components/CommonHeader';
 import { useCommonState } from 'store/Provider/hooks';
 import clsx from 'clsx';
 import { useCallback, useMemo, useState } from 'react';
@@ -178,7 +178,7 @@ export default function NFT() {
     return (
       <div id="nft-detail" className={clsx(['nft-detail', isPrompt && 'detail-page-prompt'])}>
         <div className="nft-detail-body">
-          <SettingHeader leftCallBack={() => navigate('/', { state: { key: BalanceTab.NFT } })} />
+          <CommonHeader onLeftBack={() => navigate('/', { state: { key: BalanceTab.NFT } })} />
           <div className="collection flex-start-center">
             <div className="img">
               {collectionImageUrl ? (

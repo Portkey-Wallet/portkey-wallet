@@ -2,57 +2,15 @@
 
 .chat-box-page {
   height: 600px;
-  background-color: @bg-11;;
-  .chat-box-top {
-    flex-shrink: 0;
-    padding-top: 16px;
-    background-color: @bg-13;
-    border-bottom: 1px solid @border-2;
-    .title-element {
-      align-items: center;
-      .title-content {
-        gap: 8px;
-        cursor: pointer;
-      }
-      .title-name {
-        max-width: 150px;
-        font-size: 24px;
-        line-height: 28px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        color: @font-11;
-        cursor: pointer;
-      }
-      .custom-svg.mute-icon {
-        margin-left: 4px;
-        width: 12px;
-        height: 12px;
-        display: flex;
-        align-items: center;
-        svg {
-          path {
-            fill: @border-13;
-          }
-        }
-      }
-    }
-    .setting-header-wrapper {
-      border: none;
-      background-color: @bg-13;
-      .right-element {
-        gap: 16px;
-      }
-    }
-  }
+  background-color: @neutral-default-bg;
   .chat-box-inner-tip {
     position: relative;
     flex-shrink: 0;
     height: 48px;
-    border-bottom: 1px solid @border-2;
+    border-bottom: 1px solid @neutral-divider;
     font-size: 16px;
     line-height: 22px;
-    color: @font-9;
+    color: @brand-normal;
     .content {
       height: 100%;
       gap: 16px;
@@ -64,7 +22,7 @@
         svg {
           /* stylelint-disable-next-line no-descending-specificity */
           path {
-            fill: @svg-1;
+            fill: @brand-normal;
           }
         }
       }
@@ -91,19 +49,6 @@
   }
 }
 
-.chat-box-popover {
-  top: 60px !important;
-  left: 220px !important;
-  .portkey-popover-inner {
-    min-width: 120px;
-    border-radius: 6px;
-    box-shadow: 0 2px 12px 0 @shadow-1;
-    .portkey-popover-inner-content {
-      padding: 0 12px;
-    }
-  }
-}
-
 .portkey-input-more-popover {
   .portkey-upload {
     display: flex;
@@ -118,7 +63,7 @@
     }
   }
   .popover-menu-list .menu-item:hover .upload-text {
-    color: @font-9;
+    color: @brand-normal;
   }
 }
 
@@ -127,7 +72,7 @@
   font-size: 14px;
   line-height: 20px;
   font-weight: 400;
-  color: @font-11;
+  color: @neutral-primary-text;
   .unpin-content-title {
     font-size: 18px;
     line-height: 22px;

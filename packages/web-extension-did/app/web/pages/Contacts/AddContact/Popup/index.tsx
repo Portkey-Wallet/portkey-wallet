@@ -1,7 +1,6 @@
 import './index.less';
-import CustomSvg from 'components/CustomSvg';
 import NetworkDrawer from '../../NetworkDrawer';
-import BackHeader from 'components/BackHeader';
+import CommonHeader from 'components/CommonHeader';
 import AddContactForm from '../../components/AddContactForm';
 import { IAddContactProps } from '..';
 
@@ -24,13 +23,7 @@ export default function AddContactPopup({
 }: IAddContactProps) {
   return (
     <div className="add-contact-popup min-width-max-height">
-      <div className="add-contact-title">
-        <BackHeader
-          title={headerTitle}
-          leftCallBack={goBack}
-          rightElement={<CustomSvg type="Close2" onClick={goBack} />}
-        />
-      </div>
+      <CommonHeader title={headerTitle} onLeftBack={goBack} />
       <AddContactForm
         form={form}
         isDisable={isDisable}

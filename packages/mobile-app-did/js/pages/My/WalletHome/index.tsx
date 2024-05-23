@@ -67,7 +67,7 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
   return (
     <PageContainer
       titleDom={t('Wallet')}
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       containerStyles={[pageStyles.pageWrap]}
       scrollViewProps={{ disabled: true }}>
       <ScrollView alwaysBounceVertical={false}>

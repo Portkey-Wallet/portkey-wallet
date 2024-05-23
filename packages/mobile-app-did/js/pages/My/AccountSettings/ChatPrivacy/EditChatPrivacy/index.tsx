@@ -72,7 +72,7 @@ const EditChatPrivacy: React.FC = () => {
   return (
     <PageContainer
       titleDom={CONTACT_PRIVACY_TYPE_LABEL_MAP[detail.privacyType]}
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <TextM style={[FontStyles.font3, pageStyles.title]}>{`My login ${

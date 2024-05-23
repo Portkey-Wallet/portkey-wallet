@@ -6,7 +6,7 @@
   min-width: 240px;
   font-size: 12px;
   line-height: 16px;
-  color: @font-6;
+  color: @neutral-disable-text;
   .chat-item {
     position: relative;
     height: 64px;
@@ -15,7 +15,7 @@
     user-select: none;
     overflow: hidden;
     cursor: pointer;
-    background: @bg-3;
+    background: @neutral-default-bg;
     &.chat-item-pin {
       background: @bg-4;
     }
@@ -26,8 +26,8 @@
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        border: 1px solid @border-2;
-        background-color: @bg-2;
+        border: 1px solid @neutral-divider;
+        background-color: @neutral-container-bg;
         .custom-svg {
           width: 20px;
           height: 20px;
@@ -44,7 +44,7 @@
       justify-content: center;
       gap: 4px;
       padding-right: 15px;
-      border-bottom: 1px solid @Neutral-6;
+      border-bottom: 1px solid @neutral-divider;
       .body-top {
         .body-top-title {
           align-items: center;
@@ -52,7 +52,7 @@
           font-size: 16px;
           line-height: 22px;
           font-weight: 500;
-          color: @font-5;
+          color: @neutral-primary-text;
           .body-top-title-text {
             max-width: 220px;
             white-space: nowrap;
@@ -68,7 +68,7 @@
               width: 12px;
               height: 12px;
               path {
-                fill: @bg-8;
+                fill: @neutral-disable-text;
               }
             }
           }
@@ -83,7 +83,7 @@
           .transaction {
             gap: 2px;
             .transaction-tag-highlight {
-              color: @font-9;
+              color: @functional-warning-default;
             }
             .transaction-subtitle {
               flex: 1;
@@ -103,7 +103,7 @@
               width: 12px;
               height: 12px;
               path {
-                fill: @bg-8;
+                fill: @neutral-disable-text;
               }
             }
           }

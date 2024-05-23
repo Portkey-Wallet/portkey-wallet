@@ -4,8 +4,7 @@ import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import MenuItem from 'components/MenuItem';
 import CustomSvg from 'components/CustomSvg';
-import BackHeader from 'components/BackHeader';
-import PortKeyHeader from 'pages/components/PortKeyHeader';
+import CommonHeader from 'components/CommonHeader';
 import { lockWallet } from 'utils/lib/serviceWorkerAction';
 import { IconType } from 'types/icon';
 import { useCommonState } from 'store/Provider/hooks';
@@ -15,7 +14,6 @@ import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import svgsList from 'assets/svgs';
 import UnReadBadge from 'pages/components/UnReadBadge';
-import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 import { useClickReferral } from 'hooks/referral';
 
 interface MenuItemInfo {
@@ -29,7 +27,6 @@ export default function My() {
   const navigate = useNavigate();
   const { isPrompt } = useCommonState();
   const isImputation = useIsImputation();
-  const { viewReferralStatus } = useReferral();
   const clickReferral = useClickReferral();
   const MenuList: MenuItemInfo[] = useMemo(
     () => [
@@ -77,18 +74,18 @@ export default function My() {
 
   return (
     <div className="flex-column my-frame">
-      <PortKeyHeader
-        unReadShow={isImputation || !viewReferralStatus}
-        onUserClick={() => {
-          navigate('/');
-        }}
-      />
-      <BackHeader
+      <CommonHeader
+        className="my-header"
         title={t('My')}
-        leftCallBack={() => {
+        rightElementList={[
+          <div key="lock" className="lock-wrap flex-center cursor-pointer" onClick={lockWallet}>
+            <CustomSvg className="lock-icon" type="LockOutlined" />
+            <span className="lock-text">{t('Lock')}</span>
+          </div>,
+        ]}
+        onLeftBack={() => {
           navigate('/');
         }}
-        rightElement={<Button onClick={lockWallet}>{t('Lock')}</Button>}
       />
       <div className="flex my-content">
         <div className="menu-list">

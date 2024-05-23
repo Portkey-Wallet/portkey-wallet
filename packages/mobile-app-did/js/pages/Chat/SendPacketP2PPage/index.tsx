@@ -151,7 +151,7 @@ export default function SendPacketP2PPage() {
     <PageContainer
       titleDom="Send Crypto Box"
       hideTouchable
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
       <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.scrollStyle}>

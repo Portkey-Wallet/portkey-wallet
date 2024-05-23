@@ -44,7 +44,7 @@ export default function GuardianHome() {
 
   return (
     <PageContainer
-      safeAreaColor={['blue', 'white']}
+      safeAreaColor={['white', 'white']}
       titleDom={t('Guardians')}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}

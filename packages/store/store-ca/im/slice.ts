@@ -29,6 +29,8 @@ import {
   updateChannelRedPackageAttribute,
   setRedPackageConfig,
   cleanALLChannelMessagePin,
+  setBlockedUserList,
+  changeBlockedMap,
 } from './actions';
 import { formatChannelList } from './util';
 import { MessageTypeEnum, ParsedRedPackage } from '@portkey-wallet/im';
@@ -43,6 +45,7 @@ const initialState: IMStateType = {
   redPackageConfigMap: {},
   pinListNetMap: {},
   lastPinNetMap: {},
+  blockedUserListMap: {},
 };
 export const imSlice = createSlice({
   name: 'im',
@@ -527,6 +530,43 @@ export const imSlice = createSlice({
           },
         };
       })
+      .addCase(setBlockedUserList, (state, action) => {
+        const { network, blockedUserList } = action.payload;
+        const tmpBlockedUserListMap: { [relationId: string]: string } = {};
+        blockedUserList.forEach(ele => (tmpBlockedUserListMap[ele] = ele));
+
+        return {
+          ...state,
+          blockedUserListMap: {
+            ...state.blockedUserListMap,
+            [network]: tmpBlockedUserListMap,
+          },
+        };
+      })
+      .addCase(changeBlockedMap, (state, action) => {
+        const { network, targetRelationId, isBlock } = action.payload;
+
+        const targetBlockedUserListMap: { [relationId: string]: string } = state.blockedUserListMap?.[network] || {};
+
+        let tmpMap: { [relationId: string]: string } = { ...targetBlockedUserListMap };
+
+        if (isBlock) {
+          tmpMap = {
+            ...targetBlockedUserListMap,
+            [targetRelationId]: targetRelationId,
+          };
+        } else {
+          delete tmpMap?.[targetRelationId];
+        }
+
+        return {
+          ...state,
+          blockedUserListMap: {
+            ...state.blockedUserListMap,
+            [network]: tmpMap,
+          },
+        };
+      })
 
       .addCase(resetIm, (state, action) => {
         return {
@@ -561,6 +601,10 @@ export const imSlice = createSlice({
           },
           lastPinNetMap: {
             ...state.lastPinNetMap,
+            [action.payload]: undefined,
+          },
+          blockedUserListMap: {
+            ...state.blockedUserListMap,
             [action.payload]: undefined,
           },
         };

@@ -216,11 +216,11 @@ const styles = StyleSheet.create({
   },
   minimumDepositText: {
     fontSize: pTd(12),
-    color: defaultColors.font19,
+    color: defaultColors.font23,
   },
   minimumAmountWrap: {},
   minimumAmountText: {
-    color: defaultColors.font20,
+    color: defaultColors.font24,
     fontSize: pTd(12),
   },
   minimumAmountUsdText: {
@@ -235,11 +235,11 @@ const styles = StyleSheet.create({
   },
   contractAddressLabel: {
     fontSize: pTd(12),
-    color: defaultColors.font19,
+    color: defaultColors.font23,
   },
   contractAddressText: {
     fontSize: pTd(12),
-    color: defaultColors.font20,
+    color: defaultColors.font24,
   },
   noteWrap: {
     width: '100%',

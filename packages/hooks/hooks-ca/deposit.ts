@@ -14,6 +14,8 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
   const { caHash, address } = useCurrentWalletInfo();
   const { apiUrl } = useCurrentNetworkInfo();
 
+  const [allNetworkList, setAllNetworkList] = useState<TNetworkItem[]>([]);
+
   const [fromNetwork, setFromNetwork] = useState<TNetworkItem>();
   const [fromToken, setFromToken] = useState<TTokenItem>();
 
@@ -153,6 +155,11 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
     });
   }, [clearFromAndTo, initChainId, initToToken.symbol]);
 
+  const fetchAllNetworkList = useCallback(async () => {
+    const networkList = await depositService.getNetworkList({ chainId: initChainId });
+    setAllNetworkList(networkList);
+  }, [initChainId]);
+
   const fetchDepositInfo = useCallback(async () => {
     if (!toChainId || !fromNetwork?.network || !fromToken?.symbol || !toToken?.symbol) {
       throw new Error('Invalid params: toChainId, fromNetwork, fromToken, toToken');
@@ -171,8 +178,9 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
     (async () => {
       await fetchTransferToken();
       await fetchDepositTokenList();
+      await fetchAllNetworkList();
     })();
-  }, [fetchDepositTokenList, fetchTransferToken]);
+  }, [fetchAllNetworkList, fetchDepositTokenList, fetchTransferToken]);
 
   useEffect(() => {
     (async () => {
@@ -221,6 +229,7 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
   }, [fromToken, toToken]);
 
   return {
+    allNetworkList,
     fromNetwork,
     fromToken,
     toChainIdList,

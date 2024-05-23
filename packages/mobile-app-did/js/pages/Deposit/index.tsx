@@ -6,7 +6,7 @@ import PageContainer from 'components/PageContainer';
 import CommonButton from 'components/CommonButton';
 import Loading from 'components/Loading';
 import Svg from 'components/Svg';
-import { selectPayToken, selectReceiveToken } from 'components/Selects/Entry';
+import { selectPayToken, selectReceiveToken, ISelectTokenResult } from 'components/Selects/Entry';
 import { FromCard } from './components/FromCard';
 import { ToCard } from './components/ToCard';
 import { showDepositAddress } from './components/DepositAddress';
@@ -32,6 +32,7 @@ export default function Deposit() {
   };
 
   const {
+    allNetworkList,
     fromNetwork,
     fromToken,
     toChainId,
@@ -77,8 +78,32 @@ export default function Deposit() {
   );
 
   const onSelectPayToken = useCallback(() => {
-    console.log('select pay');
-  }, []);
+    if (fromToken && fromNetwork && allNetworkList) {
+      selectPayToken({
+        networkList: allNetworkList,
+        currentToken: fromToken,
+        currentNetwork: fromNetwork,
+        onResolve: (data: ISelectTokenResult) => {
+          console.log('select pay: ', data);
+        },
+        onReject: reason => {
+          console.log('select pay reject: ', reason);
+        },
+      });
+    }
+  }, [allNetworkList, fromNetwork, fromToken]);
+
+  /*
+  export type IReceiveSelectTokenProps = {
+    networkDataList: { network: TNetworkItem; tokenList: TTokenItem[] }[];
+  } & ISelectBaseProps;
+  
+  export interface ISelectBaseProps {
+    currentToken: TTokenItem;
+    currentNetwork: TNetworkItem;
+    onResolve: OnSelectFinishCallback;
+    onReject: (reason?: any) => void;
+  }*/
   const onSelectReceiveToken = useCallback(() => {
     console.log('select receive');
   }, []);

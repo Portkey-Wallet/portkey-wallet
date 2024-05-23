@@ -262,7 +262,7 @@ export default function RampPreview() {
 
   return (
     <PageContainer
-      safeAreaColor={['blue', 'white']}
+      safeAreaColor={['white', 'white']}
       titleDom={`${isBuy ? 'Buy' : 'Sell'} ${defaultToken.symbol} `}
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>

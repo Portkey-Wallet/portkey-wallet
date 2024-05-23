@@ -92,7 +92,7 @@ const EditWalletName: React.FC = () => {
   return (
     <PageContainer
       titleDom={t('Edit')}
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <ScrollView>

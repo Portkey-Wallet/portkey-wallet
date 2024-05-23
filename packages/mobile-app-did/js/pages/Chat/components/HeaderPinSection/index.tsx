@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     shadowColor: defaultColors.shadow1,
     shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 20 },
     shadowRadius: 10,
     elevation: 2,
   },

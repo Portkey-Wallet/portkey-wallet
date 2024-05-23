@@ -60,7 +60,7 @@ export default function Referral() {
       <SafeAreaBox pageSafeBottomPadding={!isIOS} style={[gStyles.container, BGStyles.transparent]}>
         {isSplashScreen && (
           <View style={[GStyles.flex1, GStyles.flexEnd, GStyles.itemCenter]}>
-            <TextM style={[FontStyles.font3, styles.versionStyle]}>{`V${Application.nativeApplicationVersion}`}</TextM>
+            <TextM style={[FontStyles.font22, styles.versionStyle]}>{`V${Application.nativeApplicationVersion}`}</TextM>
           </View>
         )}
         {!isSplashScreen && !address ? (
@@ -68,7 +68,7 @@ export default function Referral() {
             <Welcome />
             <CommonButton
               buttonStyle={[styles.buttonStyle, BGStyles.bg1]}
-              titleStyle={FontStyles.font4}
+              titleStyle={FontStyles.primaryColor}
               type="primary"
               title={t('Get Started')}
               onPress={() => navigationService.reset('LoginPortkey')}

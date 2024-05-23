@@ -10,8 +10,7 @@ import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
 import { ModalBody } from 'components/ModalBody';
 import { useGStyles } from 'assets/theme/useGStyles';
-import { RequestNetworkTokenDataProps, useMemoNetworkAndTokenData } from '../Entry/model';
-import { RichText } from 'components/RichText';
+import { RequestNetworkTokenDataProps, getFixedChainIdName, useMemoNetworkAndTokenData } from '../Entry/model';
 import Svg from 'components/Svg';
 import fonts from 'assets/theme/fonts';
 import { ChainId } from '@portkey-wallet/types';
@@ -29,8 +28,10 @@ enum FocusedOnType {
 
 type OnSelectNetworkCallback = (network: TNetworkItem) => void;
 
-export const SelectNetworkModal = (props: ISelectBaseProps & { isPay?: boolean }) => {
-  const { networkList, currentToken, currentNetwork, onResolve, onReject, isPay } = props;
+export const SelectNetworkModal = (
+  props: ISelectBaseProps & { isPay?: boolean; onResolve: OnSelectFinishCallback; onReject: (reason?: any) => void },
+) => {
+  const { networkList, currentToken, currentNetwork, onResolve, onReject, isPay = false } = props;
   const [layer, setLayer] = useState(Layers.LAYER1);
   const { symbol } = currentToken;
   const [currentChoosingNetwork, setCurrentChoosingNetwork] = useState(currentNetwork);
@@ -68,16 +69,18 @@ export const SelectNetworkModal = (props: ISelectBaseProps & { isPay?: boolean }
 
   useEffect(() => {
     if (!networkList) return;
-    const type = networkList ? 'from' : 'to';
+    const type = isPay ? 'from' : 'to';
+    const isShowAll = focusedOn === FocusedOnType.All;
     const prep: RequestNetworkTokenDataProps = { type };
-    if (focusedOn === FocusedOnType.TopTwo && isPay) {
+    if (!isShowAll && isPay) {
       prep.network = currentChoosingNetwork.network;
     }
-    if (!isPay) {
+    if (!isPay && !isShowAll) {
       prep.chainId = (currentChoosingNetwork.name || 'AELF') as ChainId;
     }
-    updateNetworkAndTokenData({ type, network: currentChoosingNetwork.network }, networkList);
+    updateNetworkAndTokenData(prep, isShowAll ? networkList : [currentChoosingNetwork], isShowAll && !isPay);
   }, [
+    currentChoosingNetwork,
     currentChoosingNetwork.name,
     currentChoosingNetwork.network,
     currentNetwork,
@@ -95,6 +98,7 @@ export const SelectNetworkModal = (props: ISelectBaseProps & { isPay?: boolean }
         type={FocusedOnType.All}
         focused={focusedOn === FocusedOnType.All}
         networkOverflowNum={networkOverflowNum}
+        isPay={isPay}
       />,
     );
     if (topTwoNetworks) {
@@ -107,6 +111,7 @@ export const SelectNetworkModal = (props: ISelectBaseProps & { isPay?: boolean }
             networkItem={networkItem}
             containerStyle={{ marginLeft: pTd(8) }}
             networkOverflowNum={networkOverflowNum}
+            isPay={isPay}
           />,
         );
       });
@@ -119,11 +124,12 @@ export const SelectNetworkModal = (props: ISelectBaseProps & { isPay?: boolean }
           focused={focusedOn === FocusedOnType.More}
           networkOverflowNum={networkOverflowNum}
           containerStyle={{ marginLeft: pTd(8) }}
+          isPay={isPay}
         />,
       );
     }
     return array;
-  }, [currentChoosingNetwork, focusedOn, networkOverflowNum, onNetworkBtnClick, topTwoNetworks]);
+  }, [currentChoosingNetwork, focusedOn, isPay, networkOverflowNum, onNetworkBtnClick, topTwoNetworks]);
   return (
     <ModalBody
       isShowLeftBackIcon={layer === Layers.LAYER2}
@@ -164,10 +170,10 @@ export const SelectNetworkModal = (props: ISelectBaseProps & { isPay?: boolean }
         <View>
           <View style={[styles.wrap, styles.flex]}>
             <Svg icon="more-info" size={pTd(16)} iconStyle={styles.icon} color={defaultColors.bg30} />
-            <RichText
-              text={`Note: Please select from the supported networks listed below. Sending ${symbol} from other networks may result in the loss of your assets.`}
-              commonTextStyle={styles.commonText}
-            />
+            <Text
+              style={
+                styles.commonText
+              }>{`Note: Please select from the supported networks listed below. Sending ${symbol} from other networks may result in the loss of your assets.`}</Text>
           </View>
           <FlatList
             data={networkList}
@@ -193,7 +199,7 @@ export const SelectNetworkModal = (props: ISelectBaseProps & { isPay?: boolean }
 
 const NetworkListItem = (props: { item: TNetworkItem; onSelect: OnSelectNetworkCallback }) => {
   const { item, onSelect } = props;
-  const { network, multiConfirm, multiConfirmTime } = item;
+  const { network, name, multiConfirm, multiConfirmTime } = item;
 
   return (
     <TouchableOpacity
@@ -203,7 +209,7 @@ const NetworkListItem = (props: { item: TNetworkItem; onSelect: OnSelectNetworkC
       }}>
       <Image style={styles.networkIcon} source={getNetworkImagePath(network)} resizeMode={'contain'} />
       <View style={styles.networkTextLines}>
-        <Text style={styles.networkTextMain}>{network}</Text>
+        <Text style={[styles.networkTextMain, fonts.mediumFont]}>{name}</Text>
         <Text style={styles.networkTextSub}>{`Arrival Time ≈ ${multiConfirmTime}`}</Text>
         <Text style={styles.networkTextSub}>{multiConfirm}</Text>
       </View>
@@ -218,16 +224,20 @@ const NetworkTopBtn = (props: {
   networkItem?: TNetworkItem;
   networkOverflowNum: number;
   containerStyle?: ViewStyle;
+  isPay?: boolean;
 }) => {
-  const { reportPress, type, focused, networkItem, networkOverflowNum, containerStyle } = props;
+  const { reportPress, type, focused, networkItem, networkOverflowNum, containerStyle, isPay = false } = props;
   const isTopTwo = type === FocusedOnType.TopTwo;
   const isAll = type === FocusedOnType.All;
 
   const text = useMemo(() => {
-    if (isAll) return 'ALL';
-    if (isTopTwo) return removeQuoteFromStr(networkItem?.name || 'ETH');
+    if (isAll) return 'All';
+    if (isTopTwo) {
+      const name = removeQuoteFromStr(networkItem?.name || 'ETH');
+      return isPay ? name : getFixedChainIdName(name);
+    }
     return `${networkOverflowNum}+`;
-  }, [isAll, isTopTwo, networkItem, networkOverflowNum]);
+  }, [isAll, isPay, isTopTwo, networkItem?.name, networkOverflowNum]);
 
   return (
     <TouchableOpacity
@@ -242,7 +252,10 @@ const NetworkTopBtn = (props: {
           resizeMode={'contain'}
         />
       )}
-      <TextM style={[styles.networkBtnText, fonts.mediumFont]} numberOfLines={1} ellipsizeMode={'tail'}>
+      <TextM
+        style={[styles.networkBtnText, fonts.mediumFont, isPay ? { maxWidth: pTd(95) } : undefined]}
+        numberOfLines={1}
+        ellipsizeMode={'tail'}>
         {text}
       </TextM>
     </TouchableOpacity>
@@ -283,8 +296,9 @@ const TokenListItem = (props: {
   isShowAll: boolean;
 }) => {
   const { item, onSelect, underNetwork, isReceive, isShowAll } = props;
-  const { symbol, name, icon, contractAddress } = item;
-  const { name: networkName } = underNetwork;
+  const { symbol, name, icon, contractAddress: itemContractAddress } = item;
+  const { name: networkName, contractAddress: networkContractAddress } = underNetwork;
+  const contractAddress = isShowAll ? networkContractAddress : itemContractAddress;
 
   return (
     <TouchableOpacity
@@ -303,16 +317,20 @@ const TokenListItem = (props: {
           imageUrl={icon}
           borderStyle={GStyles.hairlineBorder}
         />
-        <View style={styles.subIcon}>
-          <Image style={styles.subIcon} source={getNetworkImagePath(underNetwork.network)} resizeMode={'contain'} />
-        </View>
+        {isShowAll && (
+          <View style={styles.subIcon}>
+            <Image style={styles.subIcon} source={getNetworkImagePath(underNetwork.network)} resizeMode={'contain'} />
+          </View>
+        )}
       </View>
       <View style={styles.tokenTextLines}>
         <View style={styles.tokenTextMain}>
-          <Text style={styles.tokenSymbol}>{symbol}</Text>
+          <Text style={[styles.tokenSymbol, fonts.mediumFont]}>{symbol}</Text>
           <Text style={styles.tokenDetail}>{name}</Text>
         </View>
-        {isShowAll && <Text style={styles.tokenTextSub}>{isReceive ? networkName : contractAddress}</Text>}
+        {isShowAll && (
+          <Text style={styles.tokenTextSub}>{isReceive ? getFixedChainIdName(networkName) : contractAddress}</Text>
+        )}
       </View>
     </TouchableOpacity>
   );
@@ -411,6 +429,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
+    marginLeft: pTd(10),
   },
   networkTextMain: {
     lineHeight: pTd(22),
@@ -426,7 +445,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   networkBtn: {
-    paddingHorizontal: pTd(8),
+    paddingHorizontal: pTd(6),
     paddingVertical: pTd(5),
     borderWidth: 0.5,
     borderRadius: pTd(6),
@@ -440,14 +459,15 @@ const styles = StyleSheet.create({
     marginRight: pTd(6),
   },
   networkBtnText: {
+    fontFamily: 'Roboto-Regular',
     lineHeight: pTd(22),
     color: defaultColors.font5,
-    maxWidth: pTd(90),
   },
   networkBtnNotFocused: {
     borderColor: defaultColors.bg30,
   },
   networkBtnFocused: {
+    backgroundColor: defaultColors.bg33,
     borderColor: defaultColors.primaryColor,
   },
   wrap: {
@@ -471,6 +491,7 @@ const styles = StyleSheet.create({
     fontSize: pTd(12),
     lineHeight: pTd(16),
     color: defaultColors.font11,
+    paddingRight: pTd(16),
   },
   icon: {
     marginTop: pTd(2),

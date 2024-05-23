@@ -379,7 +379,7 @@ export default function BuyForm(props: IBuyFormProps) {
 
 const styles = StyleSheet.create({
   formContainer: {
-    height: '100%',
+    flex: 1,
     justifyContent: 'space-between',
   },
   inputContainerStyle: {

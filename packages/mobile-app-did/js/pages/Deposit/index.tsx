@@ -46,6 +46,7 @@ export default function Deposit() {
     fetchDepositInfo,
     setPayAmount,
     setFrom,
+    setTo,
   } = useDeposit(initToToken, chainId, getManagerAccount(getPin() ?? ''));
 
   const onNext = useCallback(async () => {
@@ -114,7 +115,9 @@ export default function Deposit() {
   }, [allNetworkList, fromNetwork, fromToken, setFrom]);
 
   const onSelectReceiveToken = useCallback(async () => {
-    console.log('select receive');
+    console.log('toToken: ', toToken);
+    console.log('toChainId: ', toChainId);
+    console.log('toChainIdList: ', toChainIdList);
     if (toToken && toChainId && toChainIdList && toChainIdList.length > 0) {
       const res = await selectReceiveToken({
         networkList: toChainIdList.map(chainid => mapChainToNetwork(chainid)),
@@ -127,9 +130,14 @@ export default function Deposit() {
           console.log('select receive reject: ', reason);
         },
       });
-      console.log('res : ', res);
+      if (res.network.name && res.token) {
+        setTo({
+          newToChainId: res.network.name as unknown as ChainId,
+          newToToken: res.token,
+        });
+      }
     }
-  }, [mapChainToNetwork, toChainId, toChainIdList, toToken]);
+  }, [mapChainToNetwork, setTo, toChainId, toChainIdList, toToken]);
 
   return (
     <PageContainer

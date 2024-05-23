@@ -32,22 +32,16 @@ import { useAppRampEntryShow } from 'hooks/ramp';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { TokenTitle } from 'components/TokenTitle';
 import navigationService from 'utils/navigationService';
-
-enum ReceivePageTabType {
-  QR_CODE = 'QR Code',
-  EXCHANGES = 'Exchanges',
-  DEPOSIT = 'Deposit',
-  BUY = 'Buy',
-}
+import { ReceivePageTabType } from './types';
 
 export default function Receive() {
   const { t } = useLanguage();
-  const tokenItem = useRouterParams<TokenItemShowType>();
-  const { chainId, symbol } = tokenItem;
+  const tokenItem = useRouterParams<TokenItemShowType & { targetScene: ReceivePageTabType }>();
+  const { chainId, symbol, targetScene } = tokenItem;
   const currentWallet = useCurrentWalletInfo();
   const [copyChecked, setCopyChecked] = useState(false);
   const copyForwarder = useRef<NodeJS.Timeout | null>(null);
-  const [selectTab, setSelectTab] = useState<ReceivePageTabType>(ReceivePageTabType.QR_CODE);
+  const [selectTab, setSelectTab] = useState<ReceivePageTabType>(targetScene || ReceivePageTabType.QR_CODE);
   const { buy, deposit } = checkEnabledFunctionalTypes(symbol, chainId === 'AELF');
   const isETransToken = useMemo(() => ETransTokenList.includes(symbol), [symbol]);
   const isMainnet = useIsMainnet();
@@ -64,16 +58,16 @@ export default function Receive() {
 
   const tabs: TabItemType<ReceivePageTabType>[] = useMemo(() => {
     const tabList: TabItemType<ReceivePageTabType>[] = [{ name: t('QR Code'), type: ReceivePageTabType.QR_CODE }];
-    if (isDepositShow) {
+    if (isDepositShow || targetScene === ReceivePageTabType.DEPOSIT) {
       tabList.push({ name: t('Deposit'), type: ReceivePageTabType.DEPOSIT });
     } else {
       tabList.push({ name: t('Exchanges'), type: ReceivePageTabType.EXCHANGES });
     }
-    if (isBuyButtonShow) {
+    if (isBuyButtonShow || targetScene === ReceivePageTabType.BUY) {
       tabList.push({ name: t('Buy'), type: ReceivePageTabType.BUY });
     }
     return tabList;
-  }, [isBuyButtonShow, isDepositShow, t]);
+  }, [isBuyButtonShow, isDepositShow, t, targetScene]);
 
   const currentCaAddress = currentWallet?.[chainId]?.caAddress;
 
@@ -145,7 +139,7 @@ export default function Receive() {
       titleDom={<TokenTitle tokenInfo={tokenItem} />}
       safeAreaColor={['white']}
       containerStyles={styles.containerStyles}
-      scrollViewProps={{ disabled: false }}>
+      scrollViewProps={{ disabled: true }}>
       <CommonTouchableTabs
         tabList={tabs}
         selectTab={selectTab}
@@ -160,7 +154,11 @@ export default function Receive() {
           onClickDepositButton={onClickDepositButton}
         />
       )}
-      {selectTab === ReceivePageTabType.BUY && <BuyForm symbol={symbol} />}
+      {selectTab === ReceivePageTabType.BUY && (
+        <View style={GStyles.flex1}>
+          <BuyForm symbol={symbol} />
+        </View>
+      )}
     </PageContainer>
   );
 }
@@ -169,6 +167,9 @@ const styles = StyleSheet.create({
   containerStyles: {
     backgroundColor: defaultColors.bg1,
     flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    paddingBottom: pTd(16),
   },
   aelfAddressTitle: {
     color: defaultColors.font11,

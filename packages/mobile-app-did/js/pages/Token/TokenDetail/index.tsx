@@ -44,6 +44,7 @@ import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import FaucetButton from 'components/FaucetButton';
 import { TokenTitle } from 'components/TokenTitle';
+import { ReceivePageTabType } from 'pages/Receive/types';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -65,7 +66,7 @@ const TokenDetail: React.FC = () => {
   const dispatch = useAppCommonDispatch();
   const activity = useAppCASelector(state => state.activity);
   const defaultToken = useDefaultToken(tokenInfo.chainId);
-  const { eTransferUrl = '', awakenUrl = 'https://awaken.finance/' } = useCurrentNetworkInfo();
+  const { awakenUrl = 'https://awaken.finance/' } = useCurrentNetworkInfo();
   const { isETransDepositShow } = useAppETransShow();
   const { isSwapShow } = useAppSwapButtonShow();
   const onDisclaimerModalPress = useOnDisclaimerModalPress();
@@ -234,16 +235,9 @@ const TokenDetail: React.FC = () => {
               title="Deposit"
               icon="deposit"
               onPress={() =>
-                onDisclaimerModalPress(
-                  DepositModalMap.eTransfer,
-                  stringifyETrans({
-                    url: eTransferUrl || '',
-                    query: {
-                      tokenSymbol: tokenInfo?.symbol,
-                      type: 'Deposit',
-                      chainId: tokenInfo?.chainId,
-                    },
-                  }),
+                navigationService.navigate(
+                  'Receive',
+                  Object.assign({}, tokenInfo, { targetScene: ReceivePageTabType.DEPOSIT }),
                 )
               }
               themeType="innerPage"

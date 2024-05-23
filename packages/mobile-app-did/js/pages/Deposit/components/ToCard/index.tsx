@@ -45,7 +45,7 @@ export const ToCard: React.FC<ToCardProps> = ({
           <View style={styles.amountWrapper}>
             <Text style={styles.amountDesc}>{'You Receive'}</Text>
             <Text style={receiveAmount > 0 ? styles.amountText : styles.placeholderText}>
-              {receiveAmount > 0 ? receiveAmount : '0.0'}
+              {receiveAmount > 0 ? receiveAmount : '0.00'}
             </Text>
           </View>
         )}

@@ -69,7 +69,7 @@ export const FromCard: React.FC<FromCardProps> = ({
             <TextInput
               style={styles.mountTextInput}
               keyboardType="decimal-pad"
-              placeholder="0.0"
+              placeholder="0.00"
               placeholderTextColor={defaultColors.font11}
               onChangeText={onChangeText}
             />

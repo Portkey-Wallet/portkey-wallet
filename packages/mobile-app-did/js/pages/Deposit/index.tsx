@@ -109,9 +109,6 @@ export default function Deposit() {
   }, [allNetworkList, fromNetwork, fromToken, setFrom]);
 
   const onSelectReceiveToken = useCallback(async () => {
-    console.log('toToken: ', toToken);
-    console.log('toChainId: ', toChainId);
-    console.log('toChainIdList: ', toChainIdList);
     if (toToken && toChainId && toChainIdList && toChainIdList.length > 0) {
       const res = await selectReceiveToken({
         networkList: toChainIdList.map(chainid => mapChainToNetwork(chainid)),
@@ -129,7 +126,7 @@ export default function Deposit() {
 
   return (
     <PageContainer
-      titleDom={t('Deposit Assets')}
+      titleDom={t('Deposit Asset')}
       safeAreaColor={['white']}
       containerStyles={styles.pageStyles}
       scrollViewProps={{ disabled: false }}>

@@ -67,7 +67,6 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
       return;
     }
     const res = await calculateAmount(1);
-    console.log('calculateAmount res : ', res);
     if (res.toAmount) {
       seteUnitReceiveAmount(Number(res.toAmount));
     }
@@ -81,7 +80,6 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
       toAmount: receiveAmountRes.toAmount,
       minimumReceiveAmount: receiveAmountRes.minimumReceiveAmount,
     });
-    console.log('calculateAmount receiveAmountRes : ', receiveAmountRes);
   }, [calculateAmount, fromToken?.symbol, payAmount, toChainId, toToken?.symbol]);
 
   useEffect(() => {
@@ -386,7 +384,7 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
   };
 };
 
-const FETCH_DEPOSIT_RECORD_DURATION = 5000; // todo_wade: confirm the duration
+const FETCH_DEPOSIT_RECORD_DURATION = 20000;
 
 export const useDepositRecord = () => {
   const [lastRecord, setLastRecord] = useState<TRecordsListItem>();

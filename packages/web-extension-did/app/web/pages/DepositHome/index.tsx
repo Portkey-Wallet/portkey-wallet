@@ -82,6 +82,7 @@ export default function DepositHome() {
     rateRefreshTime,
     isSameSymbol,
     setFrom,
+    setTo,
     fetchDepositInfo,
     setPayAmount,
   } = useDeposit(initToToken, chain as ChainId, manager);
@@ -274,9 +275,6 @@ export default function DepositHome() {
             unitReceiveAmount={unitReceiveAmount}
             rateRefreshTime={rateRefreshTime}
             slippage={'0.05'}
-            // onFetchNewRate={() => {
-            //   console.log('onFetchNewRate!');
-            // }}
           />
         )}
       </div>
@@ -371,6 +369,10 @@ export default function DepositHome() {
             }}
             onItemClicked={(token) => {
               console.log('token', token);
+              setTo({
+                newToChainId: token.network?.network as ChainId,
+                newToToken: token,
+              });
             }}
           />
         )}
@@ -387,6 +389,6 @@ export default function DepositHome() {
         )}
       </>
     );
-  }, [homeEle, setFrom, step, toChainId]);
+  }, [homeEle, setFrom, setTo, step, toChainId]);
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

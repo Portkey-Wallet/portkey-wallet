@@ -145,7 +145,7 @@ export default function Receive() {
       titleDom={<TokenTitle tokenInfo={tokenItem} />}
       safeAreaColor={['white']}
       containerStyles={styles.containerStyles}
-      scrollViewProps={{ disabled: false }}>
+      scrollViewProps={{ disabled: true }}>
       <CommonTouchableTabs
         tabList={tabs}
         selectTab={selectTab}
@@ -160,7 +160,11 @@ export default function Receive() {
           onClickDepositButton={onClickDepositButton}
         />
       )}
-      {selectTab === ReceivePageTabType.BUY && <BuyForm symbol={symbol} />}
+      {selectTab === ReceivePageTabType.BUY && (
+        <View style={GStyles.flex1}>
+          <BuyForm symbol={symbol} />
+        </View>
+      )}
     </PageContainer>
   );
 }
@@ -169,6 +173,9 @@ const styles = StyleSheet.create({
   containerStyles: {
     backgroundColor: defaultColors.bg1,
     flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    paddingBottom: pTd(16),
   },
   aelfAddressTitle: {
     color: defaultColors.font11,

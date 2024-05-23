@@ -16,26 +16,14 @@ export type ISelectTokenResult = {
 };
 
 export const selectPayToken = (props: ISelectBaseProps): Promise<ISelectTokenResult> => {
-  return new Promise((resolve, reject) => {
-    Keyboard.dismiss();
-    OverlayModal.show(
-      <SelectNetworkModal
-        {...props}
-        onResolve={data => {
-          resolve(data);
-          OverlayModal.hide();
-        }}
-        onReject={reject}
-        isPay={true}
-      />,
-      {
-        position: 'bottom',
-      },
-    );
-  });
+  return selectToken(props, true);
 };
 
 export const selectReceiveToken = (props: ISelectBaseProps): Promise<ISelectTokenResult> => {
+  return selectToken(props, false);
+};
+
+const selectToken = (props: ISelectBaseProps, isPay: boolean): Promise<ISelectTokenResult> => {
   return new Promise((resolve, reject) => {
     Keyboard.dismiss();
     OverlayModal.show(
@@ -46,7 +34,7 @@ export const selectReceiveToken = (props: ISelectBaseProps): Promise<ISelectToke
           OverlayModal.hide();
         }}
         onReject={reject}
-        isPay={false}
+        isPay={isPay}
       />,
       {
         position: 'bottom',

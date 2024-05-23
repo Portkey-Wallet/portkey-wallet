@@ -1,94 +1,100 @@
-import { useCallback, useMemo } from 'react';
-import CustomSvg from 'components/CustomSvg';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import './index.less';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import { List } from 'antd';
-import usdt from '../assets/images/568656dc-ca4b-464f-b6df-6dcb3c406882.png';
-import bnb from '../assets/images/7d827072-15c9-4769-8067-a1be933bc2c3.png';
-import eth from '../assets/images/70b5df10-71d4-4f3c-b872-9f1ccaafca92.png';
 import NetworkLogo from '../NetworkLogo';
 import { BlockchainNetworkType } from 'constants/network';
+import { NetworkStatus, TNetworkItem, TTokenItem } from '@portkey-wallet/types/types-ca/deposit';
+import { ChainId } from '@portkey/provider-types';
+import depositService from '@portkey-wallet/utils/deposit';
+import { useLoading } from 'store/Provider/hooks';
+import { singleMessage } from '@portkey/did-ui-react';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 
 export interface ITokenNetworkListProps {
-  onChange?: (item: any) => void;
   onClose?: () => void;
+  onMoreClicked?: () => void;
+  onItemClicked?: (item: any) => void;
   drawerType: 'from' | 'to';
   type?: 'component' | 'page';
+  networkList?: TNetworkItem[];
+  network?: TNetworkItem | undefined;
+  networkListSize?: number;
+  toChainIdList?: ChainId[];
+  toChainId?: ChainId | undefined;
+  token?: TTokenItem | undefined;
 }
-const tokens = [
-  {
-    name: 'USDT',
-    fullName: 'Tether USD',
-    address: '0xh7jl...zh74x6',
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    icon: usdt,
-  },
-  {
-    name: 'BNB',
-    fullName: 'Binance Coin',
-    address: '0xh7jl...zh74x6',
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    icon: bnb,
-  },
-  {
-    name: 'ETH',
-    fullName: 'Ethereum',
-    address: '0xh7jl...zh74x6',
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    icon: eth,
-  },
-  {
-    name: 'USDT',
-    fullName: 'Tether USD',
-    address: '0xh7jl...zh74x6',
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    icon: usdt,
-  },
-  {
-    name: 'BNB',
-    fullName: 'Binance Coin',
-    address: '0xh7jl...zh74x6',
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    icon: bnb,
-  },
-  {
-    name: 'ETH',
-    fullName: 'Ethereum',
-    address: '0xh7jl...zh74x6',
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    icon: eth,
-  },
-  {
-    name: 'USDT',
-    fullName: 'Tether USD',
-    address: '0xh7jl...zh74x6',
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    icon: usdt,
-  },
-  {
-    name: 'BNB',
-    fullName: 'Binance Coin',
-    address: '0xh7jl...zh74x6',
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    icon: bnb,
-  },
-  {
-    name: 'SETH',
-    fullName: 'SEthereum',
-    address: '0xh7jl...zh74x6',
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    icon: eth,
-  },
-];
-export default function TokenNetworkList(pros: ITokenNetworkListProps) {
+const ALL_MARK = 'All';
+function TokenNetworkList(pros: ITokenNetworkListProps) {
   console.log(pros);
-  const { drawerType, type = 'component', onClose } = pros;
-  // const { state } = useLocationState<ITokenNetworkListProps>();
+  const {
+    drawerType,
+    type = 'component',
+    networkList = [],
+    network,
+    networkListSize = 0,
+    toChainIdList = [],
+    toChainId,
+    onItemClicked,
+    onMoreClicked,
+    onClose,
+  } = pros;
   const headerTitle = useMemo(
     () => (drawerType === 'from' ? 'Select Pay Token' : 'Select Receive Token'),
     [drawerType],
   );
+  const { setLoading } = useLoading();
+  const [selectedNetworkIndex, setSelectedNetworkIndex] = useState<number>(-1);
+  const [currentTokenList, setCurrentTokenList] = useState<TTokenItem[]>([]);
+  const showNetworkList = useMemo(() => {
+    if (drawerType === 'from') {
+      let copiedNetworkList = [...networkList];
+      copiedNetworkList?.unshift({
+        network: ALL_MARK,
+        name: ALL_MARK,
+        multiConfirm: '',
+        multiConfirmTime: '',
+        contractAddress: '',
+        explorerUrl: '',
+        status: NetworkStatus.Health,
+      });
+      // const selectedIndex = copiedNetworkList.findIndex((item) => item.name === network?.name);
+      // setSelectedNetworkIndex(selectedIndex);
+      copiedNetworkList = copiedNetworkList.map((item) => ({
+        ...item,
+        name: item.name.replace(/\(.*?\)/g, '').trim(),
+      }));
+      return copiedNetworkList;
+    } else {
+      const copiedToChainIdList = toChainIdList.map((item) => ({
+        name: `${item === 'AELF' ? 'MainChain' : 'SideChain'} ${item}`,
+        network: item as string,
+        multiConfirm: '',
+        multiConfirmTime: '',
+        contractAddress: '',
+        explorerUrl: '',
+        status: NetworkStatus.Health,
+      }));
+      copiedToChainIdList?.unshift({
+        network: ALL_MARK,
+        name: ALL_MARK,
+        multiConfirm: '',
+        multiConfirmTime: '',
+        contractAddress: '',
+        explorerUrl: '',
+        status: NetworkStatus.Health,
+      });
+      return copiedToChainIdList;
+    }
+  }, [drawerType, networkList, toChainIdList]);
+  useEffect(() => {
+    const selectedIndex = showNetworkList.findIndex(
+      (item) => item.network === (drawerType === 'from' ? network?.network : toChainId),
+    );
+    setSelectedNetworkIndex(selectedIndex);
+  }, [drawerType, toChainId, showNetworkList, network?.network]);
+  console.log('wfs showNetworkList===', showNetworkList);
   const { isPrompt } = useCommonState();
   console.log('isPrompt====', isPrompt);
   const headerEle = useMemo(() => {
@@ -105,29 +111,81 @@ export default function TokenNetworkList(pros: ITokenNetworkListProps) {
       </div>
     );
   }, [headerTitle, onClose]);
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        const tokenList = await depositService.getTokenListByNetwork({
+          type: drawerType,
+          network: drawerType === 'from' ? network?.network : toChainId,
+          chainId: toChainId || 'AELF',
+        });
+        setCurrentTokenList(tokenList);
+      } catch (error) {
+        console.log('aaaa error : ', error);
+        singleMessage.error(handleErrorMessage(error));
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [drawerType, network?.network, setLoading, toChainId]);
+  const handleNetworkChange = useCallback(
+    async (item: TNetworkItem, index: number) => {
+      try {
+        setLoading(true);
+        const tokenList = await depositService.getTokenListByNetwork({
+          type: drawerType,
+          network: item.network === ALL_MARK ? undefined : item.network,
+          chainId: toChainId || 'AELF',
+        });
+        setSelectedNetworkIndex(index);
+        // if (item.network === ALL_MARK) {
+
+        // }
+        setCurrentTokenList(tokenList);
+      } catch (error) {
+        console.log('aaaa error : ', error);
+        singleMessage.error(handleErrorMessage(error));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [drawerType, setLoading, toChainId],
+  );
   const selectNetworkEle = useMemo(() => {
     return (
       <div className="select-network-container">
         <span className="select-network">Select Network</span>
         <div className="all">
-          <button className="all-button network-button network-button-unselected">
-            <span className="all-span">All</span>
-          </button>
-          <button className="network-1-button network-button network-button-selected">
-            <CustomSvg type="Binance" />
-            <span className="network-1-name">BNB Smart Chain</span>
-          </button>
-          <button className="network-2-button network-button network-button-unselected">
-            <CustomSvg type="Ethereum" />
-            <span className="network-2-name">Ethereum</span>
-          </button>
-          <button className="network-more-button network-button network-button-unselected">
-            <span className="network-more-count">6+</span>
-          </button>
+          {showNetworkList.map((item, index) => (
+            <button
+              key={index}
+              className={`all-button network-button ${
+                selectedNetworkIndex === index ? 'network-button-selected' : 'network-button-unselected'
+              }`}
+              onClick={() => {
+                console.log('wfs click showNetworkList', item, index);
+                handleNetworkChange(item, index);
+              }}>
+              {item.name !== ALL_MARK && <NetworkLogo network={item.network} />}
+              <span className="all-span">{item.name}</span>
+            </button>
+          ))}
+          {/* <div className="divider"></div> */}
+          {drawerType === 'from' && networkListSize > 2 && (
+            <button
+              className="network-more-button network-button network-button-unselected"
+              onClick={() => {
+                console.log('wfs onMoreClicked===');
+                onMoreClicked?.();
+              }}>
+              <span className="network-more-count">{networkListSize - 2}+</span>
+            </button>
+          )}
         </div>
       </div>
     );
-  }, []);
+  }, [showNetworkList, drawerType, networkListSize, selectedNetworkIndex, handleNetworkChange, onMoreClicked]);
   const selectTokenEle = useMemo(() => {
     return (
       <div className="select-token-container">
@@ -136,11 +194,15 @@ export default function TokenNetworkList(pros: ITokenNetworkListProps) {
         </div>
         <List
           className="token-list"
-          dataSource={tokens}
+          dataSource={currentTokenList}
           renderItem={(token) => (
             <List.Item
               onClick={() => {
                 console.log('click item!!', token);
+                onItemClicked?.({
+                  selectedNetworkIndex,
+                  token,
+                });
               }}>
               <div className="item-container">
                 <div className="item-wrapper">
@@ -152,10 +214,10 @@ export default function TokenNetworkList(pros: ITokenNetworkListProps) {
                   </div>
                   <div className="token-info-container">
                     <div className="token-info-name-container">
-                      <span className="token-name">{token.name}</span>
-                      <span className="token-full-name">{token.fullName}</span>
+                      <span className="token-name">{token.symbol}</span>
+                      <span className="token-full-name">{token.name}</span>
                     </div>
-                    <span className="token-address">{token.address}</span>
+                    <span className="token-address">{token.contractAddress}</span>
                   </div>
                 </div>
               </div>
@@ -164,7 +226,7 @@ export default function TokenNetworkList(pros: ITokenNetworkListProps) {
         />
       </div>
     );
-  }, []);
+  }, [currentTokenList, onItemClicked, selectedNetworkIndex]);
   const mainContent = useCallback(() => {
     return (
       <div className="select-token-network-list">
@@ -178,3 +240,12 @@ export default function TokenNetworkList(pros: ITokenNetworkListProps) {
   }, [headerEle, selectNetworkEle, selectTokenEle]);
   return <>{isPrompt && type === 'page' ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }
+export default memo(TokenNetworkList, (prev, next) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { onClose, onItemClicked, onMoreClicked, ...resetPrev } = prev;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { onClose: onClose2, onItemClicked: onItemClicked2, onMoreClicked: onMoreClicked2, ...resetNext } = next;
+  console.log('resetPrev', JSON.stringify(resetPrev));
+  console.log('resetNext', JSON.stringify(resetNext));
+  return JSON.stringify(resetPrev) === JSON.stringify(resetNext);
+});

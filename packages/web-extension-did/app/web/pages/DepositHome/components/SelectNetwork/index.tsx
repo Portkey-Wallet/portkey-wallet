@@ -4,14 +4,17 @@ import CustomSvg from 'components/CustomSvg';
 import { List } from 'antd';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
+import { TNetworkItem } from '@portkey-wallet/types/types-ca/deposit';
+import NetworkLogo from '../NetworkLogo';
 export interface ISelectNetworkProps {
   onClose?: () => void;
+  onClickItem?: (network: TNetworkItem) => void;
+  networkList?: TNetworkItem[];
   type?: 'component' | 'page';
 }
 export default function SelectNetwork(props: ISelectNetworkProps) {
-  // const navigate = useNavigate();
   const { isPrompt } = useCommonState();
-  const { type = 'component', onClose } = props || {};
+  const { type = 'component', networkList, onClickItem, onClose } = props || {};
   const renderNotice = useMemo(() => {
     return (
       <div className="notice-container">
@@ -23,91 +26,27 @@ export default function SelectNetwork(props: ISelectNetworkProps) {
       </div>
     );
   }, []);
-  const data = useMemo(
-    () => [
-      {
-        img: 'img',
-        text: 'Ethereum (ERC20)',
-        arrivalTime: '21mins',
-        confirmations: '64 Confirmations',
-      },
-      {
-        img: 'img',
-        text: 'Ethereum (ERC20)',
-        arrivalTime: '21mins',
-        confirmations: '64 Confirmations',
-      },
-      {
-        img: 'img',
-        text: 'Ethereum (ERC20)',
-        arrivalTime: '21mins',
-        confirmations: '64 Confirmations',
-      },
-      {
-        img: 'img',
-        text: 'Ethereum (ERC20)',
-        arrivalTime: '21mins',
-        confirmations: '64 Confirmations',
-      },
-      {
-        img: 'img',
-        text: 'Ethereum (ERC20)',
-        arrivalTime: '21mins',
-        confirmations: '64 Confirmations',
-      },
-      {
-        img: 'img',
-        text: 'Ethereum (ERC20)',
-        arrivalTime: '21mins',
-        confirmations: '64 Confirmations',
-      },
-      {
-        img: 'img',
-        text: 'Ethereum (ERC20)',
-        arrivalTime: '21mins',
-        confirmations: '64 Confirmations',
-      },
-      {
-        img: 'img',
-        text: 'Ethereum (ERC20)',
-        arrivalTime: '21mins',
-        confirmations: '64 Confirmations',
-      },
-      {
-        img: 'img',
-        text: 'Ethereum (ERC20)',
-        arrivalTime: '21mins',
-        confirmations: '64 Confirmations',
-      },
-      {
-        img: 'img',
-        text: 'WEthereum (ERC20)',
-        arrivalTime: '121mins',
-        confirmations: '64 Confirmations',
-      },
-    ],
-    [],
-  );
+
   const renderList = useMemo(() => {
     return (
       <List
         className="network-list"
         // itemLayout="horizontal"
-        dataSource={data}
+        dataSource={networkList}
         renderItem={(item) => (
           <List.Item
             className="select-network-list-item"
             onClick={() => {
-              console.log('click item', item);
+              onClickItem?.(item);
             }}>
             <List.Item.Meta
               className="select-network-list-item-meta"
-              avatar={<div className={item.img} />}
-              title={<span className="network-name">{item.text}</span>}
+              avatar={<NetworkLogo network={item.network} />}
+              title={<span className="network-name">{item.name}</span>}
               description={
                 <div className="item-wrapper-text">
-                  <span className="arrive-time">{`Arrival Time ≈ ${item.arrivalTime}`}</span>
-                  <span className="confirm-times">{item.confirmations}</span>
+                  <span className="arrive-time">{`Arrival Time ≈ ${item.multiConfirmTime}`}</span>
+                  <span className="confirm-times">{item.multiConfirm}</span>
                 </div>
               }
             />
@@ -115,7 +54,7 @@ export default function SelectNetwork(props: ISelectNetworkProps) {
         )}
       />
     );
-  }, [data]);
+  }, [networkList, onClickItem]);
   const mainContent = useCallback(() => {
     return (
       <div className="deposit-select-network-container">

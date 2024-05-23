@@ -2,7 +2,6 @@ import { request } from '@portkey-wallet/api/api-did';
 import {
   TGetTokenListRequest,
   TTokenItem,
-  TGetTokenListByNetworkRequest,
   TGetDepositTokenListRequest,
   TDepositTokenItem,
   TGetNetworkListRequest,
@@ -13,13 +12,11 @@ import {
   TConversionRate,
   IDepositService,
   TQueryTransferAuthTokenRequest,
-  NetworkStatus,
   BusinessType,
 } from '@portkey-wallet/types/types-ca/deposit';
 import { ChainId } from '@portkey-wallet/types';
 import { customFetch } from '@portkey-wallet/utils/fetch';
 import { stringify } from 'query-string';
-import { AElfWallet } from '@portkey-wallet/types/aelf';
 
 class DepositService implements IDepositService {
   private transferToken: string | null = null;
@@ -112,7 +109,7 @@ class DepositService implements IDepositService {
     return tokenList;
   }
 
-  async getNetworkList({ chainId, symbol }: { chainId: ChainId; symbol: string }): Promise<TNetworkItem[]> {
+  async getNetworkList({ chainId, symbol }: { chainId: ChainId; symbol?: string }): Promise<TNetworkItem[]> {
     request.set('headers', { 'T-Authorization': this.transferToken });
     const params: TGetNetworkListRequest = {
       type: BusinessType.Deposit,

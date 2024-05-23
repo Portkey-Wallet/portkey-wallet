@@ -1,12 +1,13 @@
 import CustomSvg from 'components/CustomSvg';
 import './index.less';
 import { useNavigate, useParams } from 'react-router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import DepositCommonButton from './components/DepositCommonButton';
 import { handleKeyDown } from 'utils/keyDown';
-import ExchangeRate from './components/ExchangeRate';
+// import ExchangeRate from './components/ExchangeRate';
+import ExchangeSimpleRate from './components/ExchangeSimpleRate';
 import SelectNetwork from './components/SelectNetwork';
 import TokenNetworkList from './components/TokenNetworkList';
 import DepositAddress from './components/DepositAddress';
@@ -14,9 +15,13 @@ import { useDeposit } from '@portkey-wallet/hooks/hooks-ca/deposit';
 import { ChainId } from '@portkey-wallet/types';
 import NetworkLogo from './components/NetworkLogo';
 import { getImageUrlBySymbol } from 'utils';
-import { TTokenItem } from '@portkey-wallet/types/types-ca/deposit';
+import { TDepositInfo, TNetworkItem, TTokenItem } from '@portkey-wallet/types/types-ca/deposit';
 import getSeed from 'utils/getSeed';
 import { getWallet } from '@portkey-wallet/utils/aelf';
+import { useLoading } from 'store/Provider/hooks';
+import { singleMessage } from '@portkey/did-ui-react';
+import { handleErrorMessage } from '@portkey-wallet/utils';
+import depositService from '@portkey-wallet/utils/deposit';
 
 enum Step {
   HOME,
@@ -27,22 +32,43 @@ enum Step {
 }
 export default function DepositHome() {
   const { chain, symbol } = useParams();
-  console.log('chain', chain, 'symbol', symbol);
   const initToToken: TTokenItem = {
     name: '',
     symbol: symbol || '',
     icon: getImageUrlBySymbol(symbol),
   };
   const [manager, setManager] = useState();
+  const { setLoading } = useLoading();
+  const navigate = useNavigate();
+  const { isPrompt } = useCommonState();
+  const depositAddressRef = useRef<{
+    depositInfo: TDepositInfo;
+    fromNetwork: TNetworkItem | undefined;
+    fromToken: TTokenItem | undefined;
+    toToken: TTokenItem | undefined;
+  }>();
+  const fromTokenNetworkRef = useRef<{
+    networkList: TNetworkItem[];
+    fromNetwork: TNetworkItem | undefined;
+    fromToken: TTokenItem | undefined;
+    networkListSize: number;
+    toChainId: ChainId;
+  }>();
+  const toTokenNetworkRef = useRef<{
+    toChainIdList: ChainId[];
+    toChainId: ChainId | undefined;
+    toToken: TTokenItem | undefined;
+  }>();
+  const allNetworkListRef = useRef<{
+    networkList: TNetworkItem[];
+  }>();
   useEffect(() => {
-    const fetch = async () => {
+    (async () => {
       const { privateKey } = await getSeed();
-      console.log('wfs useEffect', privateKey);
       if (!privateKey) throw 'Invalid user information, please check';
       const manager = getWallet(privateKey);
       setManager(manager);
-    };
-    fetch();
+    })();
   }, []);
   const {
     fromNetwork,
@@ -51,25 +77,87 @@ export default function DepositHome() {
     toChainId,
     toToken,
     unitReceiveAmount,
-    payAmount,
+    // payAmount,
     receiveAmount,
+    rateRefreshTime,
     fetchDepositInfo,
     setPayAmount,
   } = useDeposit(initToToken, chain as ChainId, manager);
-  console.log('wfs fromNetwork', fromNetwork);
-  console.log('wfs fromToken', fromToken);
-  console.log('wfs toChainId', toChainId);
-  console.log('wfs toToken', toToken);
-  const navigate = useNavigate();
-  const { isPrompt } = useCommonState();
+  const handleOnNext = useCallback(async () => {
+    console.log('wfs click next!!');
+    try {
+      setLoading(true);
+      const depositInfo = await fetchDepositInfo();
+      if (depositInfo && fromNetwork && fromToken && toToken) {
+        depositAddressRef.current = {
+          depositInfo,
+          fromNetwork,
+          fromToken,
+          toToken,
+        };
+        setStep(Step.DEPOSIT_ADDRESS);
+      }
+    } catch (error) {
+      console.log('aaaa error : ', error);
+      singleMessage.error(handleErrorMessage(error));
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchDepositInfo, fromNetwork, fromToken, setLoading, toToken]);
+  const onClickFrom = useCallback(async () => {
+    try {
+      setLoading(true);
+      const networkList = await depositService.getNetworkList({
+        chainId: toChainId || 'AELF',
+      });
+      const copiedNetworkList = [...networkList];
+      if (copiedNetworkList && fromNetwork && copiedNetworkList[0].name !== fromNetwork.name) {
+        copiedNetworkList.unshift(fromNetwork);
+        copiedNetworkList.pop();
+      }
+      if (copiedNetworkList && fromNetwork && fromToken) {
+        fromTokenNetworkRef.current = {
+          networkList: copiedNetworkList.slice(0, 2),
+          fromNetwork,
+          fromToken,
+          networkListSize: networkList.length,
+          toChainId: toChainId || 'AELF',
+        };
+        allNetworkListRef.current = {
+          networkList,
+        };
+        setStep(Step.FROM_TOKEN);
+      } else {
+        throw 'invalid params';
+      }
+    } catch (error) {
+      console.log('aaaa error : ', error);
+      singleMessage.error(handleErrorMessage(error));
+    } finally {
+      setLoading(false);
+    }
+  }, [setLoading, toChainId, fromNetwork, fromToken]);
+  const onClickTo = useCallback(async () => {
+    try {
+      setLoading(true);
 
-  const [youReceive, setReceive] = useState<number | undefined>(undefined);
-  useEffect(() => {
-    setTimeout(() => {
-      setReceive(305.627);
-      console.log('setReceive');
-    }, 5000);
-  }, [setReceive]);
+      if (toChainIdList && toChainId && toToken) {
+        toTokenNetworkRef.current = {
+          toChainIdList,
+          toChainId,
+          toToken,
+        };
+        setStep(Step.TO_TOKEN);
+      } else {
+        throw 'invalid params';
+      }
+    } catch (error) {
+      console.log('aaaa error : ', error);
+      singleMessage.error(handleErrorMessage(error));
+    } finally {
+      setLoading(false);
+    }
+  }, [setLoading, toChainIdList, toChainId, toToken]);
   const renderHeader = useMemo(() => {
     return (
       <div className="ext-nav-bar">
@@ -103,7 +191,7 @@ export default function DepositHome() {
                 </div>
               </div>
             </div>
-            <div className="token-wrapper">
+            <div className="token-wrapper" onClick={onClickFrom}>
               <div className="token-name-wrapper">
                 <div className="token-icon-name">
                   <div className="token">
@@ -122,6 +210,7 @@ export default function DepositHome() {
                   placeholder="0.00"
                   onKeyDown={handleKeyDown}
                   onChange={(e) => {
+                    setPayAmount(Number(e.target.value));
                     console.log('onChange?.(e.target.value)', e.target.value);
                   }}
                 />
@@ -140,7 +229,7 @@ export default function DepositHome() {
                 </div>
               </div>
             </div>
-            <div className="token-wrapper">
+            <div className="token-wrapper" onClick={onClickTo}>
               <div className="token-name-wrapper">
                 <div className="token-icon-name">
                   <div className="token">
@@ -153,7 +242,7 @@ export default function DepositHome() {
               <div className="token-amount-container">
                 <span className="token-amount-title">You Receive</span>
                 <input
-                  value={youReceive}
+                  value={receiveAmount.toAmount}
                   type="number"
                   className="deposit-input"
                   placeholder="0.00"
@@ -165,22 +254,37 @@ export default function DepositHome() {
                 />
               </div>
             </div>
-            <span className="mini-receive">Minimum receive: 105.12345678</span>
+            <span className="mini-receive">Minimum receive: {receiveAmount.minimumReceiveAmount}</span>
           </div>
           <CustomSvg type="DepositTransfer" className="transfer-icon" />
         </div>
-        <ExchangeRate
+        <ExchangeSimpleRate
           fromSymbol={fromToken?.symbol || ''}
           toSymbol={toToken?.symbol || ''}
-          toChainId={toChainId || 'AELF'}
+          unitReceiveAmount={unitReceiveAmount}
+          rateRefreshTime={rateRefreshTime}
           slippage={'0.05'}
-          onFetchNewRate={() => {
-            console.log('onFetchNewRate!');
-          }}
+          // onFetchNewRate={() => {
+          //   console.log('onFetchNewRate!');
+          // }}
         />
       </div>
     );
-  }, [fromNetwork?.name, fromToken?.icon, fromToken?.symbol, toChainId, toToken?.icon, toToken?.symbol, youReceive]);
+  }, [
+    fromNetwork?.name,
+    fromToken?.icon,
+    fromToken?.symbol,
+    onClickFrom,
+    onClickTo,
+    rateRefreshTime,
+    receiveAmount.minimumReceiveAmount,
+    receiveAmount.toAmount,
+    setPayAmount,
+    toChainId,
+    toToken?.icon,
+    toToken?.symbol,
+    unitReceiveAmount,
+  ]);
   const [step, setStep] = useState(Step.HOME);
   const homeEle = useMemo(() => {
     return (
@@ -189,39 +293,62 @@ export default function DepositHome() {
           {renderHeader}
           <div className="body">
             {renderCard}
-            <DepositCommonButton
-              text={'Next'}
-              onClick={() => {
-                console.log('clicked next!!');
-                setStep(Step.FROM_TOKEN);
-              }}
-            />
+            <DepositCommonButton text={'Next'} onClick={handleOnNext} />
           </div>
         </div>
       </div>
     );
-  }, [renderCard, renderHeader]);
+  }, [handleOnNext, renderCard, renderHeader]);
   const mainContent = useCallback(() => {
     return (
       <>
         {step === Step.HOME && homeEle}
         {step === Step.FROM_NETWORK && (
           <SelectNetwork
+            networkList={allNetworkListRef.current?.networkList || []}
             onClose={() => {
-              setStep(Step.HOME);
+              setStep(Step.FROM_TOKEN);
+            }}
+            onClickItem={(network) => {
+              if (
+                fromTokenNetworkRef.current?.networkList &&
+                fromTokenNetworkRef.current.networkList?.[0].name !== network.name
+              ) {
+                fromTokenNetworkRef.current.networkList.unshift(network);
+                fromTokenNetworkRef.current.networkList.pop();
+              }
+              fromTokenNetworkRef.current = {
+                fromNetwork: network,
+                networkList: fromTokenNetworkRef.current?.networkList || [],
+                fromToken: fromTokenNetworkRef.current?.fromToken,
+                networkListSize: fromTokenNetworkRef.current?.networkListSize || 0,
+                toChainId: toChainId || 'AELF',
+              };
+              setStep(Step.FROM_TOKEN);
             }}
           />
         )}
         {step === Step.FROM_TOKEN && (
           <TokenNetworkList
+            networkList={fromTokenNetworkRef.current?.networkList || []}
+            network={fromTokenNetworkRef.current?.fromNetwork}
+            token={fromTokenNetworkRef.current?.fromToken}
+            networkListSize={fromTokenNetworkRef.current?.networkListSize}
+            toChainId={fromTokenNetworkRef.current?.toChainId}
             drawerType={'from'}
             onClose={() => {
               setStep(Step.HOME);
+            }}
+            onMoreClicked={() => {
+              setStep(Step.FROM_NETWORK);
             }}
           />
         )}
         {step === Step.TO_TOKEN && (
           <TokenNetworkList
+            toChainIdList={toTokenNetworkRef.current?.toChainIdList || []}
+            toChainId={toTokenNetworkRef.current?.toChainId}
+            token={toTokenNetworkRef.current?.toToken}
             drawerType={'to'}
             onClose={() => {
               setStep(Step.HOME);
@@ -230,6 +357,10 @@ export default function DepositHome() {
         )}
         {step === Step.DEPOSIT_ADDRESS && (
           <DepositAddress
+            depositInfo={depositAddressRef.current?.depositInfo}
+            fromNetwork={depositAddressRef.current?.fromNetwork}
+            fromToken={depositAddressRef.current?.fromToken}
+            toToken={depositAddressRef.current?.toToken}
             onClose={() => {
               setStep(Step.HOME);
             }}
@@ -237,6 +368,6 @@ export default function DepositHome() {
         )}
       </>
     );
-  }, [homeEle, step]);
+  }, [homeEle, step, toChainId]);
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

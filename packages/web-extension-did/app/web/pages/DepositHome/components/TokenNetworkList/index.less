@@ -93,13 +93,11 @@ button {
           z-index: 8;
           border-radius: 5px;
           .all-span {
-            display: flex;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0;
+            // flex-shrink: 0;
             flex-basis: auto;
-            position: relative;
-            width: 17px;
+            width: auto%;
             height: 22px;
             color: #101114;
             font-size: 14px;
@@ -108,6 +106,8 @@ button {
             text-align: center;
             white-space: nowrap;
             z-index: 9;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
         }
         .network-1-button {
@@ -128,7 +128,7 @@ button {
             flex-shrink: 0;
             flex-basis: auto;
             position: relative;
-            width: 109px;
+            width: auto;
             height: 22px;
             color: #101114;
             font-size: 14px;
@@ -142,10 +142,14 @@ button {
         .network-button {
           height: 32px;
           width: auto;
+          max-width: 152px;
           padding: 5px 8px;
           background-color: transparent;
           &:hover {
             background-color: #F9F9FA;
+          }
+          .custom-svg {
+            flex-shrink: 0
           }
         }
         .network-button-selected {
@@ -184,7 +188,7 @@ button {
             flex-shrink: 0;
             flex-basis: auto;
             position: relative;
-            width: 61px;
+            width: auto;
             height: 22px;
             color: #101114;
             font-size: 14px;
@@ -195,34 +199,24 @@ button {
             z-index: 15;
           }
         }
+        .divider {
+          flex-grow: 1;
+        }
         .network-more-button {
           display: flex;
           align-items: center;
           justify-content: center;
           flex-wrap: nowrap;
-          flex: 1 0 0;
+          // flex: 1 0 0;
+          flex-basis: 0;
+          max-width: 64px;
+          min-width: 32px;
           gap: 6px;
+          flex-shrink: 0;
           position: relative;
           cursor: pointer;
           z-index: 16;
           border-radius: 5px;
-          .dnetwork-more-count {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            flex-basis: auto;
-            position: relative;
-            width: 16px;
-            height: 22px;
-            color: #101114;
-            font-size: 14px;
-            font-weight: 500;
-            line-height: 22px;
-            text-align: center;
-            white-space: nowrap;
-            z-index: 17;
-          }
         }
       }
     }
@@ -296,6 +290,9 @@ button {
           z-index: 22;
           .icon-wrapper {
             position: relative;
+            img{
+              border-radius: 18px;
+            }
           }
           .network-icon-container{
             position: absolute;

@@ -4,14 +4,19 @@ import CustomSvg from 'components/CustomSvg';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import QRCodeCommon from 'pages/components/QRCodeCommon';
-// import { getExploreLink } from '@portkey-wallet/utils';
 import CommonAddress from 'components/CommonAddress';
+import { TDepositInfo, TNetworkItem, TTokenItem } from '@portkey-wallet/types/types-ca/deposit';
 export interface IDepositAddressProps {
+  depositInfo: TDepositInfo | undefined;
+  fromNetwork: TNetworkItem | undefined;
+  fromToken: TTokenItem | undefined;
+  toToken: TTokenItem | undefined;
   onClose?: () => void;
   type?: 'component' | 'page';
 }
 export default function DepositAddress(props: IDepositAddressProps) {
-  const { onClose, type = 'component' } = props;
+  const { onClose, type = 'component', depositInfo, fromNetwork, fromToken, toToken } = props;
+  console.log('wfs DepositAddress props', props);
   const { isPrompt } = useCommonState();
   const [msg, setMsg] = useState<string | undefined>(undefined);
   useEffect(() => {
@@ -19,9 +24,9 @@ export default function DepositAddress(props: IDepositAddressProps) {
       setMsg('Swap Success!  100 USDT has been sent to you.');
     }, 2000);
   }, [setMsg]);
-  // const openOnExplorer = useCallback(() => {
-  //   return getExploreLink(chainInfo?.explorerUrl || '', activityItem.transactionId || '', 'transaction');
-  // }, [activityItem.transactionId, chainInfo?.explorerUrl]);
+  const openOnExplorer = useCallback(() => {
+    window.open(fromNetwork?.explorerUrl, '_blank');
+  }, [fromNetwork?.explorerUrl]);
   const headerEle = useMemo(() => {
     return (
       <div className="ext-nav-bar">
@@ -41,19 +46,18 @@ export default function DepositAddress(props: IDepositAddressProps) {
       <div className="qr-code-card">
         <div className="qr-code-title">
           <div className="qr-code-token-info">
-            <img
-              className="token-img"
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgNFxQx-fPrn1VqNkWC2Y3gDr8JDAZgxkGvA&usqp=CAU"
-            />
-            <div className="qr-code-token-name">USDT</div>
+            <img className="token-img" src={fromToken?.icon} />
+            <div className="qr-code-token-name">{fromToken?.symbol}</div>
           </div>
-          <div className="token-network">BNB Smart Chain</div>
+          <div className="token-network">{fromNetwork?.name}</div>
         </div>
         <div className="qr-code-container">
           <QRCodeCommon
-            value={'U97UqZe52baDgmvdhgt6hcQnWBjiEKayeywLXiFEuH5LAEFhB'}
+            value={depositInfo?.depositAddress || ''}
             logo={{
-              url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgNFxQx-fPrn1VqNkWC2Y3gDr8JDAZgxkGvA&usqp=CAU',
+              url:
+                fromToken?.icon ||
+                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgNFxQx-fPrn1VqNkWC2Y3gDr8JDAZgxkGvA&usqp=CAU',
               width: 23,
               height: 23,
             }}
@@ -61,25 +65,36 @@ export default function DepositAddress(props: IDepositAddressProps) {
         </div>
       </div>
     );
-  }, []);
+  }, [depositInfo?.depositAddress, fromNetwork?.name, fromToken?.icon, fromToken?.symbol]);
   const addressInfoEle = useMemo(() => {
     return (
       <div className="address-and-info-container">
-        <CommonAddress label="Deposit Address" value="U97UqZe52baDgmvdhgt6hcQnWBjiEKayeywLXiFEuH5LAEFhB" />
+        <CommonAddress label="Deposit Address" value={depositInfo?.depositAddress || ''} />
         <div className="minimum-deposit-container">
           <div className="minimum-deposit">Minimum Deposit</div>
           <div className="minimum-deposit-cal-container">
-            <div className="minimum-deposit-token-amount">1.23 SGR</div>
-            <div className="minimum-deposit-token-price">$ 1.23</div>
+            <div className="minimum-deposit-token-amount">
+              {depositInfo?.minAmount} {toToken?.symbol}
+            </div>
+            <div className="minimum-deposit-token-price">$ {depositInfo?.minAmountUsd}</div>
           </div>
         </div>
         <div className="contract-address-container">
           <div className="contract-address-title">Contract Address</div>
-          <div className="contract-address">0xc213...B58e8F</div>
+          <div className="contract-address" onClick={openOnExplorer}>
+            {fromNetwork?.contractAddress}
+          </div>
         </div>
       </div>
     );
-  }, []);
+  }, [
+    depositInfo?.depositAddress,
+    depositInfo?.minAmount,
+    depositInfo?.minAmountUsd,
+    fromNetwork?.contractAddress,
+    openOnExplorer,
+    toToken?.symbol,
+  ]);
   const hintTextEle = useMemo(() => {
     return (
       <div className="hint-container">

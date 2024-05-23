@@ -1,3 +1,4 @@
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { ChainId } from '@portkey-wallet/im';
 import { TNetworkItem, TTokenItem } from '@portkey-wallet/types/types-ca/deposit';
 import depositService from '@portkey-wallet/utils/deposit';
@@ -21,7 +22,7 @@ export const useMemoNetworkAndTokenData = () => {
   const [networkAndTokenData, setNetworkAndTokenData] = useState<NetworkAndTokenShowType>([]);
   const pastProps = useRef<RequestNetworkTokenDataProps | undefined>();
   const updateNetworkAndTokenData = useCallback(
-    async (props: RequestNetworkTokenDataProps, networkList: TNetworkItem[]) => {
+    async (props: RequestNetworkTokenDataProps, networkList: TNetworkItem[], isReceiveAndAll = false) => {
       if (
         pastProps.current &&
         pastProps.current.chainId === props.chainId &&
@@ -31,9 +32,17 @@ export const useMemoNetworkAndTokenData = () => {
       }
       Loading.show();
       try {
-        const res = await depositService.getTokenListByNetwork(props);
-        console.log('res', res);
-        setNetworkAndTokenData(dealWithNetworkAndTokenData(res, networkList));
+        if (isReceiveAndAll) {
+          const response = [];
+          for (let i = 0; i < networkList.length; i++) {
+            const res = await depositService.getTokenListByNetwork({ ...props, network: networkList[i].network });
+            response.push(dealWithNetworkAndTokenData(res, [networkList[i]]));
+          }
+          setNetworkAndTokenData(response.flat());
+        } else {
+          const res = await depositService.getTokenListByNetwork(props);
+          setNetworkAndTokenData(dealWithNetworkAndTokenData(res, networkList));
+        }
         pastProps.current = props;
       } catch (ignored) {
         console.log('ignored', ignored);
@@ -48,16 +57,25 @@ export const useMemoNetworkAndTokenData = () => {
 
 const dealWithNetworkAndTokenData = (tokens: TTokenItem[], networkList: TNetworkItem[]) => {
   const arr: NetworkAndTokenShowType = [];
-  networkList.forEach(network => {
+  if (networkList.length <= 1) {
     sortTokens(tokens).forEach(tokenItem => {
-      if (tokenItem.networkList?.some(item => item.network === network.network)) {
-        arr.push({
-          token: tokenItem,
-          network,
-        });
-      }
+      arr.push({
+        token: tokenItem,
+        network: networkList[0],
+      });
     });
-  });
+  } else {
+    networkList.forEach(network => {
+      sortTokens(tokens).forEach(tokenItem => {
+        if (tokenItem.networkList?.some(item => item.network === network.network)) {
+          arr.push({
+            token: tokenItem,
+            network,
+          });
+        }
+      });
+    });
+  }
   return arr;
 };
 
@@ -76,4 +94,9 @@ const getTokenPriority = (token: TTokenItem) => {
   } else {
     return 1;
   }
+};
+
+export const getFixedChainIdName = (chainId: string) => {
+  const isMainChainId = chainId === MAIN_CHAIN_ID;
+  return `${isMainChainId ? 'MainChain' : 'SideChain'} ${chainId}`;
 };

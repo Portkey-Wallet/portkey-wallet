@@ -8,8 +8,6 @@ export interface ISelectBaseProps {
   networkList: TNetworkItem[];
   currentToken: TTokenItem;
   currentNetwork: TNetworkItem;
-  onResolve: OnSelectFinishCallback;
-  onReject: (reason?: any) => void;
 }
 
 export type ISelectTokenResult = {

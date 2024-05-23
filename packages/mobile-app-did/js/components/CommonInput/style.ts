@@ -3,7 +3,7 @@ import { defaultColors } from 'assets/theme/index';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
 
-const { bg1, border1, font3, font5, bg4 } = defaultColors;
+const { border1, font3, font5, bg4 } = defaultColors;
 
 export const commonStyles = StyleSheet.create({
   rightIconContainerStyle: {
@@ -12,11 +12,17 @@ export const commonStyles = StyleSheet.create({
   loadingStyle: {
     width: pTd(20),
   },
+  inputContainerGrayBorderStyle: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: defaultColors.border10,
+    borderBottomColor: defaultColors.border10,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
 });
 
 export const searchStyles = StyleSheet.create({
   containerStyle: {
-    height: pTd(36),
+    height: pTd(40),
     paddingLeft: 0,
     paddingRight: 0,
   },
@@ -86,9 +92,6 @@ export const generalStyles = StyleSheet.create({
 
 export const bgWhiteStyles = StyleSheet.create({
   inputContainerStyle: {
-    borderColor: bg1,
-    borderWidth: 0,
-    borderRadius: pTd(6),
-    backgroundColor: bg1,
+    backgroundColor: defaultColors.bg1,
   },
 });

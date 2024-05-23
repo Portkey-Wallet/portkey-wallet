@@ -24,7 +24,7 @@ const SwitchNetworks: React.FC = () => {
   return (
     <PageContainer
       titleDom={t('Switch Networks')}
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: false }}>
       {NetworkList.map(item => (

@@ -48,7 +48,7 @@ export default function Receive() {
   return (
     <PageContainer
       titleDom={t('Receive')}
-      safeAreaColor={['blue', 'white']}
+      safeAreaColor={['white', 'white']}
       containerStyles={styles.containerStyles}
       scrollViewProps={{ disabled: false }}>
       <View style={styles.topWrap}>

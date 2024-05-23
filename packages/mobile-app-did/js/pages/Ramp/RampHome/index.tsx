@@ -105,7 +105,7 @@ export default function RampHome() {
 
   return (
     <PageContainer
-      safeAreaColor={['blue', 'white']}
+      safeAreaColor={['white', 'white']}
       titleDom={'Buy'}
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>

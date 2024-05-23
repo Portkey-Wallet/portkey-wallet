@@ -67,6 +67,9 @@ export const defaultColors = {
   font18: '#55585E',
   font19: '#808080',
   font20: '#1A1A1A',
+  font21: '#55585E',
+  font22: '#F53F3F',
+  font23: '#C0C3C7',
 
   white: '#ffffff',
   black: '#000000',

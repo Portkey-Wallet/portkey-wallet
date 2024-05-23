@@ -3,8 +3,8 @@
 .bottom-bar-warp {
   width: 100%;
   height: 60px;
-  border-top: 1px solid @Neutral-6;
-  background-color: @bg-11;
+  border-top: 1px solid @neutral-divider;
+  background-color: @neutral-default-bg;
   .function-item {
     flex: 1;
     padding: 8px 28px;
@@ -19,14 +19,14 @@
           width: 100%;
           height: 100%;
           path {
-            fill: @Neutral-3;
+            fill: @neutral-tertiary-text;
           }
         }
       }
       .function-item-title {
         font-size: 12px;
         line-height: 16px;
-        color: @Neutral-3;
+        color: @neutral-tertiary-text;
         text-align: center;
       }
     } 
@@ -43,12 +43,12 @@
     &.is-active {
       .function-item-click-wrap {
         .function-item-title {
-          color: @brand-1;
+          color: @brand-normal;
         }
         .function-item-icon.custom-svg {
           svg {
             path {
-              fill: @brand-1;
+              fill: @brand-normal;
             }
           }
         }

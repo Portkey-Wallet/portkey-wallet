@@ -35,13 +35,17 @@ export function isDIDAelfAddress(value?: string) {
     const arr = value.split('_');
     const res = arr[0].length > arr[1].length ? arr[0] : arr[1];
     try {
-      return !!AElf.utils.decodeAddressRep(res);
+      const decodeStr = AElf.utils.decodeAddressRep(res);
+      return !!decodeStr && Buffer.from(decodeStr, 'hex').length === 32;
+      // return !!AElf.utils.decodeAddressRep(res);
     } catch {
       return false;
     }
   }
   try {
-    return !!AElf.utils.decodeAddressRep(value);
+    const decodeStr = AElf.utils.decodeAddressRep(value);
+    return !!decodeStr && Buffer.from(decodeStr, 'hex').length === 32;
+    // return !!AElf.utils.decodeAddressRep(value);
   } catch {
     return false;
   }

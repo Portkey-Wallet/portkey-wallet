@@ -9,7 +9,7 @@ import { getAelfAddress, getEntireDIDAelfAddress, isCrossChain, isEqAddress } fr
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { Button, Modal } from 'antd';
 import CustomSvg from 'components/CustomSvg';
-import TitleWrapper from 'components/TitleWrapper';
+import CommonHeader from 'components/CommonHeader';
 import { ReactElement, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
@@ -746,13 +746,17 @@ export default function Send() {
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['page-send', isPrompt && 'detail-page-prompt'])}>
-        <TitleWrapper
-          className="page-title"
+        <CommonHeader
           title={`Send ${type === 'token' ? symbol : ''}`}
-          leftCallBack={() => {
+          onLeftBack={() => {
             StageObj[stage].backFun();
           }}
-          rightElement={<CustomSvg type="Close2" onClick={() => navigate('/')} />}
+          rightElementList={[
+            {
+              customSvgType: 'SuggestClose',
+              onClick: () => navigate('/'),
+            },
+          ]}
         />
         {stage !== SendStage.Preview && (
           <div

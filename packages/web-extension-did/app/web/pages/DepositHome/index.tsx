@@ -22,6 +22,7 @@ import { useLoading } from 'store/Provider/hooks';
 import { singleMessage } from '@portkey/did-ui-react';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import depositService from '@portkey-wallet/utils/deposit';
+import CommonHeader from 'components/CommonHeader';
 
 enum Step {
   HOME,
@@ -164,21 +165,12 @@ export default function DepositHome() {
   }, [setLoading, toChainIdList, toChainId, toToken]);
   const renderHeader = useMemo(() => {
     return (
-      <div className="ext-nav-bar">
-        <div className="frame-1">
-          <div
-            className="direction-left"
-            onClick={() => {
-              navigate('/');
-            }}>
-            <div className="union" />
-          </div>
-          <div className="frame-2">
-            <span className="dev-mode">Deposit Assets</span>
-          </div>
-        </div>
-        <div className="frame-3" />
-      </div>
+      <CommonHeader
+        title={'Deposit Assets'}
+        onLeftBack={() => {
+          navigate('/');
+        }}
+      />
     );
   }, [navigate]);
   const renderCard = useMemo(() => {
@@ -195,8 +187,8 @@ export default function DepositHome() {
                 </div>
               </div>
             </div>
-            <div className="token-wrapper" onClick={onClickFrom}>
-              <div className="token-name-wrapper">
+            <div className="token-wrapper">
+              <div className="token-name-wrapper" onClick={onClickFrom}>
                 <div className="token-icon-name">
                   <div className="token">
                     <img src={fromToken?.icon} className="token-img" />
@@ -235,8 +227,8 @@ export default function DepositHome() {
                 </div>
               </div>
             </div>
-            <div className="token-wrapper" onClick={onClickTo}>
-              <div className="token-name-wrapper">
+            <div className="token-wrapper">
+              <div className="token-name-wrapper" onClick={onClickTo}>
                 <div className="token-icon-name">
                   <div className="token">
                     <img src={toToken?.icon} className="token-img" />
@@ -355,6 +347,7 @@ export default function DepositHome() {
             onItemClicked={(token) => {
               console.log('token', token);
               setFrom({ newFromNetwork: token.network!, newFromToken: token });
+              setStep(Step.HOME);
             }}
           />
         )}
@@ -373,6 +366,7 @@ export default function DepositHome() {
                 newToChainId: token.network?.network as ChainId,
                 newToToken: token,
               });
+              setStep(Step.HOME);
             }}
           />
         )}

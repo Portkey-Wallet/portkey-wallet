@@ -60,16 +60,14 @@ export default function Home() {
 
   return (
     <div className={clsx(['portkey-home', 'flex-column', isPrompt && 'portkey-prompt'])}>
-      {isPrompt ? (
+      {isPrompt && isNotLessThan768 ? (
         <PortKeyHeader unReadShow={isImputation || !viewReferralStatus} onUserClick={onUserClick} />
       ) : (
         <HomeHeader unReadShow={isImputation || !viewReferralStatus} onUserClick={onUserClick} />
       )}
       <button
         onClick={() => {
-          navigate('/token-detail/deposit-home/tDVW/USDT', {
-            state: { params: 'a' },
-          });
+          navigate('/token-detail/deposit-home/tDVW/USDT');
         }}>
         deposit home
       </button>

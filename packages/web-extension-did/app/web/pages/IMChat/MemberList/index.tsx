@@ -2,8 +2,7 @@ import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback, useEffectOnce } from '@portkey-wallet/hooks';
-import SettingHeader from 'pages/components/SettingHeader';
-import CustomSvg from 'components/CustomSvg';
+import CommonHeader from 'components/CommonHeader';
 import DropdownSearch from 'components/DropdownSearch';
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { useGroupChannelInfo, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
@@ -132,11 +131,7 @@ export default function MemberList() {
   return (
     <div className="member-list-page flex-column-between">
       <div className="member-list-top">
-        <SettingHeader
-          title={t('Members')}
-          leftCallBack={() => navigate(`/chat-group-info/${channelUuid}`)}
-          rightElement={<CustomSvg type="Close2" onClick={() => navigate(`/chat-group-info/${channelUuid}`)} />}
-        />
+        <CommonHeader title={t('Members')} onLeftBack={() => navigate(`/chat-group-info/${channelUuid}`)} />
         <DropdownSearch
           overlay={<></>}
           value={inputValue}

@@ -6,6 +6,7 @@ import PromptFrame from 'pages/components/PromptFrame';
 import QRCodeCommon from 'pages/components/QRCodeCommon';
 import CommonAddress from 'components/CommonAddress';
 import { TDepositInfo, TNetworkItem, TTokenItem } from '@portkey-wallet/types/types-ca/deposit';
+import CommonHeader from 'components/CommonHeader';
 export interface IDepositAddressProps {
   depositInfo: TDepositInfo | undefined;
   fromNetwork: TNetworkItem | undefined;
@@ -29,16 +30,12 @@ export default function DepositAddress(props: IDepositAddressProps) {
   }, [fromNetwork?.explorerUrl]);
   const headerEle = useMemo(() => {
     return (
-      <div className="ext-nav-bar">
-        <span className="dev-mode">Deposit Address</span>
-        <div
-          className="suggest-close"
-          onClick={() => {
-            onClose?.();
-          }}>
-          <div className="union" />
-        </div>
-      </div>
+      <CommonHeader
+        title={'Deposit Address'}
+        onLeftBack={() => {
+          onClose?.();
+        }}
+      />
     );
   }, [onClose]);
   const qrCodeEle = useMemo(() => {

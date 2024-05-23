@@ -6,7 +6,7 @@
     gap: 8px;
     margin-top: 40px;
     line-height: 22px;
-    color: @Neutral-3;
+    color: @neutral-tertiary-text;
     font-size: 14px;
     .nonfts-icon {
       width: 64px;
@@ -19,7 +19,7 @@
   }
   .nft-list {
     .@{app-prefix}-collapse {
-      background-color: @bg-11;
+      background-color: @neutral-default-bg;
       border: none;
       .@{app-prefix}-collapse-item {
         border: none;
@@ -28,7 +28,7 @@
           align-items: center;
           padding: 16px;
           &:hover {
-            background-color: @Neutral-4;
+            background-color: @neutral-hover-bg;
           }
           .@{app-prefix}-collapse-expand-icon {
             width: 16px;
@@ -55,9 +55,9 @@
           height: 36px;
           flex-shrink: 0;
           border-radius: 4px;
-          background-color: @bg-15;
+          background-color: @neutral-divider;
           font-size: 20px;
-          color: @font-12;
+          color: @neutral-disable-text;
           img {
             width: 100%;
             height: 100%;
@@ -72,7 +72,7 @@
             gap: 2px;
             font-size: 16px;
             line-height: 24px;
-            color: @font-11;
+            color: @neutral-primary-text;
             .alias {
               flex: 1;
               word-break: break-all;
@@ -82,7 +82,7 @@
           .network {
             line-height: 16px;
             font-size: 12px;
-            color: @Neutral-3;
+            color: @neutral-tertiary-text;
           }
         }
       }
@@ -120,14 +120,14 @@
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
-              color: @font-5;
+              color: @neutral-white-text;
             }
             .token-balance {
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
               opacity: 0.8;
-              color: @font-5;
+              color: @neutral-white-text;
             }
           }
           &.nft-item-no-img {
@@ -140,13 +140,13 @@
               .alias {
                 font-size: 14px;
                 line-height: 20px;
-                color: @font-11;
+                color: @neutral-primary-text;
                 white-space: normal;
                 .text-overflow(2);
               }
               .token-balance {
                 opacity: 1;
-                color: @font-13;
+                color: @neutral-secondary-text;
               }
             }
           }
@@ -177,15 +177,20 @@
           gap: 6px;
           justify-content: center;
           align-items: center;
-          color: @font-9;
+          color: @brand-normal;
           margin-left: -40px;
           padding-top: 7px;
           svg {
             path {
-              fill: @font-9;
+              fill: @brand-normal;
             }
           }
         }
+      }
+    }
+    &.hidden-loading-more {
+      .adm-infinite-scroll {
+        display: none;
       }
     }
   }

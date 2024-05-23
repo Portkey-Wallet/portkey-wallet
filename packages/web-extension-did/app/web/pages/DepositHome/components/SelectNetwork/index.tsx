@@ -6,6 +6,7 @@ import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import { TNetworkItem } from '@portkey-wallet/types/types-ca/deposit';
 import NetworkLogo from '../NetworkLogo';
+import CommonHeader, { CustomSvgPlaceholderSize } from 'components/CommonHeader';
 export interface ISelectNetworkProps {
   onClose?: () => void;
   onClickItem?: (network: TNetworkItem) => void;
@@ -58,20 +59,16 @@ export default function SelectNetwork(props: ISelectNetworkProps) {
   const mainContent = useCallback(() => {
     return (
       <div className="deposit-select-network-container">
-        <div className="group">
-          <div className="wrapper">
-            <CustomSvg
-              type="LeftArrow"
-              onClick={() => {
-                onClose?.();
-              }}
-            />
-            <div className="box">
-              <span className="text">Select Network</span>
-            </div>
-          </div>
-          <div className="section-2" />
-        </div>
+        <CommonHeader
+          title={'Select Network'}
+          rightElementList={[
+            {
+              customSvgType: 'SuggestClose',
+              customSvgPlaceholderSize: CustomSvgPlaceholderSize.MD,
+              onClick: onClose,
+            },
+          ]}
+        />
         <div className="body">
           {renderNotice}
           {renderList}

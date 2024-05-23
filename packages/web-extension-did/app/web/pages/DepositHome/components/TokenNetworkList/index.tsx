@@ -10,6 +10,7 @@ import depositService from '@portkey-wallet/utils/deposit';
 import { useLoading } from 'store/Provider/hooks';
 import { singleMessage } from '@portkey/did-ui-react';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import CommonHeader, { CustomSvgPlaceholderSize } from 'components/CommonHeader';
 
 export interface ITokenNetworkListProps {
   onClose?: () => void;
@@ -25,6 +26,7 @@ export interface ITokenNetworkListProps {
   token?: TTokenItem | undefined;
 }
 const ALL_MARK = 'All';
+const ALL_INDEX = 0;
 function TokenNetworkList(pros: ITokenNetworkListProps) {
   console.log(pros);
   const {
@@ -44,8 +46,9 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
     [drawerType],
   );
   const { setLoading } = useLoading();
-  const [selectedNetworkIndex, setSelectedNetworkIndex] = useState<number>(-1);
+  const [selectedNetworkIndex, setSelectedNetworkIndex] = useState<number>(1);
   const [currentTokenList, setCurrentTokenList] = useState<TExtendedTokenItem[]>([]);
+  console.log('wfs===currentTokenList', currentTokenList);
   const showNetworkList = useMemo(() => {
     if (drawerType === 'from') {
       let copiedNetworkList = [...networkList];
@@ -58,8 +61,6 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
         explorerUrl: '',
         status: NetworkStatus.Health,
       });
-      // const selectedIndex = copiedNetworkList.findIndex((item) => item.name === network?.name);
-      // setSelectedNetworkIndex(selectedIndex);
       copiedNetworkList = copiedNetworkList.map((item) => ({
         ...item,
         name: item.name.replace(/\(.*?\)/g, '').trim(),
@@ -84,31 +85,16 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
         explorerUrl: '',
         status: NetworkStatus.Health,
       });
+      // const selectedIndex = copiedToChainIdList.findIndex((item) => item.network === toChainId);
+      // setSelectedNetworkIndex(selectedIndex);
       return copiedToChainIdList;
     }
   }, [drawerType, networkList, toChainIdList]);
-  useEffect(() => {
-    const selectedIndex = showNetworkList.findIndex(
-      (item) => item.network === (drawerType === 'from' ? network?.network : toChainId),
-    );
-    setSelectedNetworkIndex(selectedIndex);
-  }, [drawerType, toChainId, showNetworkList, network?.network]);
   console.log('wfs showNetworkList===', showNetworkList);
   const { isPrompt } = useCommonState();
   console.log('isPrompt====', isPrompt);
   const headerEle = useMemo(() => {
-    return (
-      <div className="ext-nav-bar">
-        <span className="dev-mode">{headerTitle}</span>
-        <div
-          className="suggest-close"
-          onClick={() => {
-            onClose?.();
-          }}>
-          <div className="union" />
-        </div>
-      </div>
-    );
+    return <CommonHeader title={headerTitle} onLeftBack={onClose} />;
   }, [headerTitle, onClose]);
   useEffect(() => {
     (async () => {
@@ -119,10 +105,26 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
           network: drawerType === 'from' ? network?.network : toChainId,
           chainId: toChainId || 'AELF',
         });
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const tempUpdatedTokenList = tokenList.map(({ networkList, ...rest }) => rest);
-        const updatedTokenList = { ...tempUpdatedTokenList, network: { ...network } };
-        setCurrentTokenList(updatedTokenList);
+        const updatedTokenList = tokenList
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          .map(({ networkList, ...rest }) => rest)
+          .map((item) => ({
+            ...item,
+            network:
+              drawerType === 'from'
+                ? { ...network }
+                : {
+                    name: `${toChainId === 'AELF' ? 'MainChain' : 'SideChain'} ${toChainId}`,
+                    network: toChainId as string,
+                    multiConfirm: '',
+                    multiConfirmTime: '',
+                    contractAddress: '',
+                    explorerUrl: '',
+                    status: NetworkStatus.Health,
+                  },
+          }));
+        // const updatedTokenList = { ...tempUpdatedTokenList, network: { ...network } };
+        setCurrentTokenList(updatedTokenList as TExtendedTokenItem[]);
       } catch (error) {
         console.log('aaaa error : ', error);
         singleMessage.error(handleErrorMessage(error));
@@ -140,6 +142,7 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
           network: item.network === ALL_MARK ? undefined : item.network,
           chainId: item.network === ALL_MARK ? undefined : toChainId || 'AELF',
         });
+        console.log('wfs setSelectedNetworkIndex invoke2', index);
         setSelectedNetworkIndex(index);
         if (item.network === ALL_MARK) {
           const tokenListForAll: TExtendedTokenItem[] = [];
@@ -150,10 +153,28 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
           });
           setCurrentTokenList(tokenListForAll);
         } else {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const tempUpdatedTokenList = tokenList.map(({ networkList, ...rest }) => rest);
-          const updatedTokenList = { ...tempUpdatedTokenList, network: { ...item } };
-          setCurrentTokenList(updatedTokenList);
+          // const tempUpdatedTokenList = tokenList.map(({ networkList, ...rest }) => rest);
+          const updatedTokenList = tokenList
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            .map(({ networkList, ...rest }) => rest)
+            .map((inItem) => ({
+              ...inItem,
+              network:
+                drawerType === 'from'
+                  ? { ...item }
+                  : {
+                      name: `${item.network === 'AELF' ? 'MainChain' : 'SideChain'} ${item.network}`,
+                      network: item.network as string,
+                      multiConfirm: '',
+                      multiConfirmTime: '',
+                      contractAddress: '',
+                      explorerUrl: '',
+                      status: NetworkStatus.Health,
+                    },
+            }));
+          // cons
+          // const updatedTokenList = { ...tempUpdatedTokenList, network: { ...item } };
+          setCurrentTokenList(updatedTokenList as TExtendedTokenItem[]);
         }
       } catch (error) {
         console.log('aaaa error : ', error);
@@ -164,6 +185,7 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
     },
     [drawerType, setLoading, toChainId],
   );
+  console.log('wfs selectedNetworkIndex===', selectedNetworkIndex);
   const selectNetworkEle = useMemo(() => {
     return (
       <div className="select-network-container">
@@ -183,7 +205,6 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
               <span className="all-span">{item.name}</span>
             </button>
           ))}
-          {/* <div className="divider"></div> */}
           {drawerType === 'from' && networkListSize > 2 && (
             <button
               className="network-more-button network-button network-button-unselected"
@@ -204,42 +225,47 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
         <div className="select-token-title">
           <span className="select-token">Select Token</span>
         </div>
-        <List
-          className="token-list"
-          dataSource={currentTokenList}
-          renderItem={(token) => (
-            <List.Item
-              onClick={() => {
-                console.log('click item!!', token);
-                onItemClicked?.(token);
-              }}>
-              <div className="item-container">
-                <div className="item-wrapper">
-                  <div className="icon-wrapper">
-                    <img src={token.icon} alt="TokenSymbol" width="36" height="36" />
-                    {token.network && (
-                      <div className="network-icon-container">
-                        <NetworkLogo network={token.network.network} />
+        {currentTokenList.length !== 0 && (
+          <List
+            className="token-list"
+            dataSource={currentTokenList}
+            renderItem={(token) => {
+              console.log('wfs ====render token', token);
+              return (
+                <List.Item
+                  onClick={() => {
+                    console.log('click item!!', token);
+                    onItemClicked?.(token);
+                  }}>
+                  <div className="item-container">
+                    <div className="item-wrapper">
+                      <div className="icon-wrapper">
+                        <img src={token.icon} alt="TokenSymbol" width="36" height="36" />
+                        {selectedNetworkIndex === ALL_INDEX && (
+                          <div className="network-icon-container">
+                            <NetworkLogo network={token.network?.network} />
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                  <div className="token-info-container">
-                    <div className="token-info-name-container">
-                      <span className="token-name">{token.symbol}</span>
-                      <span className="token-full-name">{token.name}</span>
+                      <div className="token-info-container">
+                        <div className="token-info-name-container">
+                          <span className="token-name">{token.symbol}</span>
+                          <span className="token-full-name">{token.name}</span>
+                        </div>
+                        <span className="token-address">
+                          {token.network ? token.network.contractAddress : token.contractAddress}
+                        </span>
+                      </div>
                     </div>
-                    <span className="token-address">
-                      {token.network ? token.network.contractAddress : token.contractAddress}
-                    </span>
                   </div>
-                </div>
-              </div>
-            </List.Item>
-          )}
-        />
+                </List.Item>
+              );
+            }}
+          />
+        )}
       </div>
     );
-  }, [currentTokenList, onItemClicked]);
+  }, [currentTokenList, onItemClicked, selectedNetworkIndex]);
   const mainContent = useCallback(() => {
     return (
       <div className="select-token-network-list">

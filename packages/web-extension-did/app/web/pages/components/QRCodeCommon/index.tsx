@@ -1,22 +1,21 @@
 import { QRCode } from 'react-qrcode-logo';
-
-export default function QRCodeCommon({
-  value,
-  logo,
-}: {
+export interface IQRCodeCommonProps {
   value: string;
+  size?: number;
   logo?: {
     url: string;
     width: number;
     height: number;
   };
-}) {
+}
+
+export default function QRCodeCommon({ value, size = 200, logo }: IQRCodeCommonProps) {
   return (
     <QRCode
       value={value}
-      size={200}
+      size={size}
       quietZone={0}
-      logoImage={logo?.url || 'assets/svgIcon/PortkeyQR.svg'}
+      logoImage={logo?.url || 'assets/images/PortkeyText.png'}
       logoWidth={logo?.width || 40}
       logoHeight={logo?.height || 40}
       qrStyle={'squares'}

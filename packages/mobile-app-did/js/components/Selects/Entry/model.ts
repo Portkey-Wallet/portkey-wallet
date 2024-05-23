@@ -100,3 +100,8 @@ export const getFixedChainIdName = (chainId: string) => {
   const isMainChainId = chainId === MAIN_CHAIN_ID;
   return `${isMainChainId ? 'MainChain' : 'SideChain'} ${chainId}`;
 };
+
+export const getFixedContractAddress = (contractAddress?: string) => {
+  if (!contractAddress) return '';
+  return contractAddress.slice(0, 6) + '...' + contractAddress.slice(-6);
+};

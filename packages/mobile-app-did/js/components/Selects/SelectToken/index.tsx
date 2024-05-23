@@ -1,16 +1,21 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet, ViewStyle } from 'react-native';
+import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet, ViewStyle, ImageStyle } from 'react-native';
 import { ISelectBaseProps, OnSelectFinishCallback } from '../Entry';
 import { TNetworkItem, TTokenItem } from '@portkey-wallet/types/types-ca/deposit';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import CommonAvatar from 'components/CommonAvatar';
 import GStyles from 'assets/theme/GStyles';
-import { TextM } from 'components/CommonText';
+import { TextL, TextM, TextS } from 'components/CommonText';
 import { ModalBody } from 'components/ModalBody';
 import { useGStyles } from 'assets/theme/useGStyles';
-import { RequestNetworkTokenDataProps, getFixedChainIdName, useMemoNetworkAndTokenData } from '../Entry/model';
+import {
+  RequestNetworkTokenDataProps,
+  getFixedChainIdName,
+  getFixedContractAddress,
+  useMemoNetworkAndTokenData,
+} from '../Entry/model';
 import Svg from 'components/Svg';
 import fonts from 'assets/theme/fonts';
 import { ChainId } from '@portkey-wallet/types';
@@ -135,7 +140,10 @@ export const SelectNetworkModal = (
       isShowLeftBackIcon={layer === Layers.LAYER2}
       isShowRightCloseIcon={layer === Layers.LAYER1}
       preventBack
-      onBack={() => setLayer(Layers.LAYER1)}
+      onBack={() => {
+        setLayer(Layers.LAYER1);
+        setFocusedOn(FocusedOnType.TopTwo);
+      }}
       onClose={() => {
         onReject?.('user canceled');
       }}
@@ -143,7 +151,7 @@ export const SelectNetworkModal = (
       title={layer === Layers.LAYER1 ? (isPay ? 'Pay' : 'Receive') : 'Select Network'}
       modalBodyType="bottom">
       {layer === Layers.LAYER1 && (
-        <View style={styles.container}>
+        <View style={[styles.container, { paddingTop: pTd(32) }]}>
           <View style={styles.layerBlock}>
             <Text style={styles.layerBlockTitle}>{'Select a network'}</Text>
             <View style={styles.networkBtnLine}>{networkBtns}</View>
@@ -207,7 +215,7 @@ const NetworkListItem = (props: { item: TNetworkItem; onSelect: OnSelectNetworkC
       onPress={() => {
         onSelect(item);
       }}>
-      <Image style={styles.networkIcon} source={getNetworkImagePath(network)} resizeMode={'contain'} />
+      <NetworkIcon networkName={network} iconStyle={styles.networkIcon} iconSize={20} />
       <View style={styles.networkTextLines}>
         <Text style={[styles.networkTextMain, fonts.mediumFont]}>{name}</Text>
         <Text style={styles.networkTextSub}>{`Arrival Time ≈ ${multiConfirmTime}`}</Text>
@@ -215,6 +223,27 @@ const NetworkListItem = (props: { item: TNetworkItem; onSelect: OnSelectNetworkC
       </View>
     </TouchableOpacity>
   );
+};
+
+const NetworkIcon = (props: { networkName: string; iconStyle: ImageStyle; iconSize: number; textSize?: number }) => {
+  const { networkName, iconStyle, iconSize = 20, textSize = 14 } = props;
+  const icon = getNetworkImagePath(networkName);
+  if (icon) {
+    return <Image style={iconStyle} source={icon} resizeMode={'contain'} />;
+  } else {
+    return (
+      <CommonAvatar
+        title={networkName}
+        style={iconStyle}
+        avatarSize={pTd(iconSize)}
+        hasBorder
+        titleStyle={{
+          fontSize: pTd(textSize),
+          color: defaultColors.font20,
+        }}
+      />
+    );
+  }
 };
 
 const NetworkTopBtn = (props: {
@@ -246,11 +275,7 @@ const NetworkTopBtn = (props: {
         reportPress(type, networkItem);
       }}>
       {isTopTwo && (
-        <Image
-          style={styles.networkBtnIcon}
-          source={getNetworkImagePath(networkItem?.network || 'ETH')}
-          resizeMode={'contain'}
-        />
+        <NetworkIcon networkName={networkItem?.network || 'ETH'} iconStyle={styles.networkBtnIcon} iconSize={20} />
       )}
       <TextM
         style={[styles.networkBtnText, fonts.mediumFont, isPay ? { maxWidth: pTd(95) } : undefined]}
@@ -283,7 +308,7 @@ const getNetworkImagePath = (network: string) => {
     case 'AVAXC':
       return require('../../../assets/image/pngs/third-party-avax.png');
     default: {
-      return require('../../../assets/image/pngs/third-party-solana.png');
+      return '';
     }
   }
 };
@@ -297,7 +322,7 @@ const TokenListItem = (props: {
 }) => {
   const { item, onSelect, underNetwork, isReceive, isShowAll } = props;
   const { symbol, name, icon, contractAddress: itemContractAddress } = item;
-  const { name: networkName, contractAddress: networkContractAddress } = underNetwork;
+  const { network, name: networkName, contractAddress: networkContractAddress } = underNetwork;
   const contractAddress = isShowAll ? networkContractAddress : itemContractAddress;
 
   return (
@@ -317,19 +342,17 @@ const TokenListItem = (props: {
           imageUrl={icon}
           borderStyle={GStyles.hairlineBorder}
         />
-        {isShowAll && (
-          <View style={styles.subIcon}>
-            <Image style={styles.subIcon} source={getNetworkImagePath(underNetwork.network)} resizeMode={'contain'} />
-          </View>
-        )}
+        {isShowAll && <NetworkIcon networkName={network} iconStyle={styles.subIcon} iconSize={16} textSize={10} />}
       </View>
       <View style={styles.tokenTextLines}>
         <View style={styles.tokenTextMain}>
-          <Text style={[styles.tokenSymbol, fonts.mediumFont]}>{symbol}</Text>
-          <Text style={styles.tokenDetail}>{name}</Text>
+          <TextL style={[styles.tokenSymbol, fonts.mediumFont]}>{symbol}</TextL>
+          <TextS style={styles.tokenDetail}>{name}</TextS>
         </View>
         {isShowAll && (
-          <Text style={styles.tokenTextSub}>{isReceive ? getFixedChainIdName(networkName) : contractAddress}</Text>
+          <Text style={styles.tokenTextSub}>
+            {isReceive ? getFixedChainIdName(networkName) : getFixedContractAddress(contractAddress)}
+          </Text>
         )}
       </View>
     </TouchableOpacity>
@@ -350,7 +373,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'flex-start',
     paddingHorizontal: pTd(16),
-    paddingVertical: pTd(8),
   },
   layerBlock: {
     flexDirection: 'column',
@@ -364,6 +386,7 @@ const styles = StyleSheet.create({
     marginBottom: pTd(8),
   },
   tokenItem: {
+    height: pTd(64),
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
@@ -433,11 +456,11 @@ const styles = StyleSheet.create({
   },
   networkTextMain: {
     lineHeight: pTd(22),
-    color: defaultColors.font20,
+    color: defaultColors.font5,
   },
   networkTextSub: {
     lineHeight: pTd(16),
-    color: defaultColors.font19,
+    color: defaultColors.font11,
   },
   networkBtnLine: {
     flexDirection: 'row',
@@ -445,7 +468,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   networkBtn: {
-    paddingHorizontal: pTd(6),
+    paddingHorizontal: pTd(7),
     paddingVertical: pTd(5),
     borderWidth: 0.5,
     borderRadius: pTd(6),

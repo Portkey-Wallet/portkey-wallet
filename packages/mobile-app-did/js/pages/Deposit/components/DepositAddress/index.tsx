@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
 import OverlayModal from 'components/OverlayModal';
@@ -11,7 +11,7 @@ import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { copyText } from 'utils';
 import { defaultColors } from 'assets/theme';
-import { TTokenItem, TNetworkItem, TRecordsListItem } from '@portkey-wallet/types/types-ca/deposit';
+import { TTokenItem, TNetworkItem, TRecordsListItem, TRecordsStatus } from '@portkey-wallet/types/types-ca/deposit';
 import depositService from '@portkey-wallet/utils/deposit';
 
 interface DepositAddressProps {
@@ -44,12 +44,24 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken,
     copyText(contractAddress);
   }, [contractAddress]);
 
+  const recordBgColor = useMemo(() => {
+    if (lastRecord?.status === TRecordsStatus.Succeed) {
+      return defaultColors.bg36;
+    } else if (lastRecord?.status === TRecordsStatus.Failed) {
+      return defaultColors.bg37;
+    } else {
+      // default is TRecordsStatus.Processing
+      return defaultColors.bg38;
+    }
+  }, [lastRecord?.status]);
+
   return (
     <ModalBody modalBodyType="bottom" title={'Deposit Address'} style={gStyles.overlayStyle}>
       <ScrollView>
         <View style={styles.container}>
           {lastRecord && (
-            <View style={styles.recordWrap}>
+            <View style={[styles.recordWrap, { backgroundColor: recordBgColor }]}>
+              <View style={styles.recordIcon} />
               <Text style={styles.recordText}>{lastRecord.status}</Text>
             </View>
           )}
@@ -119,8 +131,20 @@ const styles = StyleSheet.create({
   },
   recordWrap: {
     flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    height: pTd(40),
+    borderRadius: pTd(6),
+  },
+  recordIcon: {
+    width: pTd(16),
+    height: pTd(16),
+    marginLeft: pTd(8),
+    borderRadius: pTd(8),
+    backgroundColor: '#00B75F',
   },
   recordText: {
+    marginLeft: pTd(8),
     color: defaultColors.font1,
     fontSize: pTd(12),
   },

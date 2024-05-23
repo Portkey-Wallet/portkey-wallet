@@ -118,7 +118,7 @@ const PaymentSecurityDetail: React.FC = () => {
         )}
       </View>
       <CommonButton
-        type="solid"
+        type="primary"
         onPress={() => {
           navigationService.navigate('PaymentSecurityEdit', {
             transferLimitDetail: detail,

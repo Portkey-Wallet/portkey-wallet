@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
 import OverlayModal from 'components/OverlayModal';
@@ -11,8 +11,8 @@ import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { copyText } from 'utils';
 import { defaultColors } from 'assets/theme';
-import { TTokenItem, TNetworkItem, TRecordsListItem, TRecordsStatus } from '@portkey-wallet/types/types-ca/deposit';
-import depositService from '@portkey-wallet/utils/deposit';
+import { TTokenItem, TNetworkItem, TRecordsStatus } from '@portkey-wallet/types/types-ca/deposit';
+import { useDepositRecord } from '@portkey-wallet/hooks/hooks-ca/deposit';
 
 interface DepositAddressProps {
   fromNetwork: TNetworkItem;
@@ -24,21 +24,7 @@ interface DepositAddressProps {
 const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken, depositInfo, contractAddress }) => {
   const gStyles = useGStyles();
 
-  const [lastRecord, setLastRecord] = useState<TRecordsListItem>();
-
-  const fetchRecentlyRecord = useCallback(async () => {
-    const res = await depositService.getLastRecordsList();
-    if (res) setLastRecord(res);
-  }, []);
-
-  useEffect(() => {
-    fetchRecentlyRecord();
-    const interval = setInterval(() => {
-      fetchRecentlyRecord();
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [fetchRecentlyRecord]);
+  const { lastRecord } = useDepositRecord();
 
   const onCopyAddress = useCallback(() => {
     copyText(contractAddress);
@@ -55,14 +41,36 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken,
     }
   }, [lastRecord?.status]);
 
+  const recordIcon = useMemo(() => {
+    if (lastRecord?.status === TRecordsStatus.Succeed) {
+      return 'deposit_status_success';
+    } else if (lastRecord?.status === TRecordsStatus.Failed) {
+      return 'deposit_status_failed';
+    } else {
+      // default is TRecordsStatus.Processing
+      return 'deposit_status_processing';
+    }
+  }, [lastRecord?.status]);
+
+  const recordText = useMemo(() => {
+    if (lastRecord?.status === TRecordsStatus.Succeed) {
+      return `${lastRecord.toTransfer?.amount} ${lastRecord.toTransfer?.symbol} received`;
+    } else if (lastRecord?.status === TRecordsStatus.Failed) {
+      return 'Failed';
+    } else {
+      // default is TRecordsStatus.Processing
+      return 'Processing';
+    }
+  }, [lastRecord?.status, lastRecord?.toTransfer?.amount, lastRecord?.toTransfer?.symbol]);
+
   return (
     <ModalBody modalBodyType="bottom" title={'Deposit Address'} style={gStyles.overlayStyle}>
       <ScrollView>
         <View style={styles.container}>
           {lastRecord && (
             <View style={[styles.recordWrap, { backgroundColor: recordBgColor }]}>
-              <View style={styles.recordIcon} />
-              <Text style={styles.recordText}>{lastRecord.status}</Text>
+              <Svg iconStyle={styles.recordIcon} size={pTd(16)} icon={recordIcon} />
+              <Text style={styles.recordText}>{recordText}</Text>
             </View>
           )}
           <View style={styles.tokenWrap}>
@@ -137,11 +145,8 @@ const styles = StyleSheet.create({
     borderRadius: pTd(6),
   },
   recordIcon: {
-    width: pTd(16),
-    height: pTd(16),
     marginLeft: pTd(8),
     borderRadius: pTd(8),
-    backgroundColor: '#00B75F',
   },
   recordText: {
     marginLeft: pTd(8),

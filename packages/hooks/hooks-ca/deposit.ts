@@ -3,7 +3,11 @@ import AElf from 'aelf-sdk';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
-import { TDepositTokenItem, TQueryTransferAuthTokenRequest } from '@portkey-wallet/types/types-ca/deposit';
+import {
+  TDepositTokenItem,
+  TQueryTransferAuthTokenRequest,
+  TRecordsListItem,
+} from '@portkey-wallet/types/types-ca/deposit';
 import { TTokenItem, TNetworkItem } from '@portkey-wallet/types/types-ca/deposit';
 import { ChainId } from '@portkey-wallet/types';
 import depositService from '@portkey-wallet/utils/deposit';
@@ -380,4 +384,26 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
     setFrom,
     setTo,
   };
+};
+
+const FETCH_DEPOSIT_RECORD_DURATION = 5000; // todo_wade: confirm the duration
+
+export const useDepositRecord = () => {
+  const [lastRecord, setLastRecord] = useState<TRecordsListItem>();
+
+  const fetchRecentlyRecord = useCallback(async () => {
+    const res = await depositService.getLastRecordsList();
+    if (res) setLastRecord(res);
+  }, []);
+
+  useEffect(() => {
+    fetchRecentlyRecord();
+    const interval = setInterval(() => {
+      fetchRecentlyRecord();
+    }, FETCH_DEPOSIT_RECORD_DURATION);
+
+    return () => clearInterval(interval);
+  }, [fetchRecentlyRecord]);
+
+  return { lastRecord };
 };

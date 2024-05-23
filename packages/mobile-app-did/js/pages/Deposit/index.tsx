@@ -6,7 +6,7 @@ import PageContainer from 'components/PageContainer';
 import CommonButton from 'components/CommonButton';
 import Loading from 'components/Loading';
 import Svg from 'components/Svg';
-import { selectPayToken, selectReceiveToken, ISelectTokenResult } from 'components/Selects/Entry';
+import { selectPayToken, selectReceiveToken } from 'components/Selects/Entry';
 import { FromCard } from './components/FromCard';
 import { ToCard } from './components/ToCard';
 import { showDepositAddress } from './components/DepositAddress';
@@ -98,12 +98,6 @@ export default function Deposit() {
         networkList: allNetworkList,
         currentToken: fromToken,
         currentNetwork: fromNetwork,
-        onResolve: (data: ISelectTokenResult) => {
-          console.log('select pay: ', data);
-        },
-        onReject: reason => {
-          console.log('select pay reject: ', reason);
-        },
       });
       if (res.network && res.token) {
         setFrom({
@@ -123,12 +117,6 @@ export default function Deposit() {
         networkList: toChainIdList.map(chainid => mapChainToNetwork(chainid)),
         currentToken: toToken,
         currentNetwork: mapChainToNetwork(toChainId),
-        onResolve: (data: ISelectTokenResult) => {
-          console.log('select receive: ', data);
-        },
-        onReject: reason => {
-          console.log('select receive reject: ', reason);
-        },
       });
       if (res.network.name && res.token) {
         setTo({

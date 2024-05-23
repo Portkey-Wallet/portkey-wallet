@@ -183,5 +183,5 @@ export interface IDepositService {
   getNetworkList({ chainId, symbol }: { chainId: ChainId; symbol: string }): Promise<TNetworkItem[]>;
   getDepositInfo(params: TGetDepositInfoRequest): Promise<TDepositInfo>;
   depositCalculator(params: TGetDepositCalculateRequest): Promise<TConversionRate>;
-  getLastRecordsList(): Promise<TRecordsListItem>;
+  getLastRecordsList(): Promise<TRecordsListItem | null>;
 }

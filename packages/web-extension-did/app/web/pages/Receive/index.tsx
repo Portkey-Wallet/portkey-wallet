@@ -43,14 +43,23 @@ export default function Receive() {
     return false;
   });
   const [curTab, setCurTab] = useState<ReceiveTabEnum>(showTabData[0].value);
-
+  // for Buy: show history data when back, if check other tab, do not show history
+  const [showHistoryData, setShowHistoryData] = useState(true);
   const { isPrompt } = useCommonState();
 
   useEffectOnce(() => {
-    if (state?.receivePageSide) {
-      setCurTab(state.receivePageSide);
+    if (state?.pageSide) {
+      setCurTab(state.pageSide);
     }
   });
+  const buyData = useMemo(
+    () => ({
+      fiat: showHistoryData ? state.extraData?.fiat : undefined,
+      amount: showHistoryData ? state.extraData?.amount : undefined,
+      crypto: showHistoryData ? state.extraData?.crypto ?? state.symbol : state.symbol,
+    }),
+    [showHistoryData, state.extraData?.amount, state.extraData?.crypto, state.extraData?.fiat, state.symbol],
+  );
   const headerTitle = useMemo(() => {
     return (
       <div>
@@ -73,6 +82,9 @@ export default function Receive() {
               className="receive-radio-tab"
               radioList={showTabData}
               onChange={(target) => {
+                if (curTab === ReceiveTabEnum.Buy && state.pageSide === ReceiveTabEnum.Buy) {
+                  setShowHistoryData(false);
+                }
                 setCurTab(target as ReceiveTabEnum);
               }}
               activeValue={curTab}
@@ -83,13 +95,13 @@ export default function Receive() {
             {curTab === ReceiveTabEnum.QRCode && <QRCodePage />}
             {curTab === ReceiveTabEnum.Exchanges && <ExchangePage />}
             {curTab === ReceiveTabEnum.Deposit && <DepositPage />}
-            {curTab === ReceiveTabEnum.Buy && <BuyPage />}
+            {curTab === ReceiveTabEnum.Buy && <BuyPage {...buyData} />}
           </div>
         </div>
         {isPrompt && <PromptEmptyElement />}
       </div>
     );
-  }, [curTab, headerTitle, isPrompt, navigate, showTabData]);
+  }, [isPrompt, headerTitle, showTabData, curTab, buyData, navigate, state.pageSide]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

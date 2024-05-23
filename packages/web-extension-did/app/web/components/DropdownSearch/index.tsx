@@ -18,7 +18,7 @@ export default function DropdownSearch({
   ...props
 }: DropdownSearchProps) {
   return (
-    <div className={clsx('dropdown-search-wrapper', wrapperClassName)}>
+    <div className={clsx('dropdown-search-wrapper', 'web-dropdown-search', wrapperClassName)}>
       <Dropdown overlayClassName="empty-dropdown" {...props}>
         <Input
           value={value}

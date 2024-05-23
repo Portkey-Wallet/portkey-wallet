@@ -4,15 +4,8 @@ import OverlayModal from 'components/OverlayModal';
 import { Keyboard } from 'react-native';
 import { SelectNetworkModal } from '../SelectToken';
 
-export type IPaySelectTokenProps = {
-  networkList: TNetworkItem[];
-} & ISelectBaseProps;
-
-export type IReceiveSelectTokenProps = {
-  networkDataList: { network: TNetworkItem; tokenList: TTokenItem[] }[];
-} & ISelectBaseProps;
-
 export interface ISelectBaseProps {
+  networkList: TNetworkItem[];
   currentToken: TTokenItem;
   currentNetwork: TNetworkItem;
   onResolve: OnSelectFinishCallback;
@@ -24,7 +17,7 @@ export type ISelectTokenResult = {
   token: TTokenItem;
 };
 
-export const selectPayToken = (props: IPaySelectTokenProps): Promise<ISelectTokenResult> => {
+export const selectPayToken = (props: ISelectBaseProps): Promise<ISelectTokenResult> => {
   return new Promise((resolve, reject) => {
     Keyboard.dismiss();
     OverlayModal.show(
@@ -35,6 +28,7 @@ export const selectPayToken = (props: IPaySelectTokenProps): Promise<ISelectToke
           OverlayModal.hide();
         }}
         onReject={reject}
+        isPay={true}
       />,
       {
         position: 'bottom',
@@ -43,7 +37,7 @@ export const selectPayToken = (props: IPaySelectTokenProps): Promise<ISelectToke
   });
 };
 
-export const selectReceiveToken = (props: IReceiveSelectTokenProps): Promise<ISelectTokenResult> => {
+export const selectReceiveToken = (props: ISelectBaseProps): Promise<ISelectTokenResult> => {
   return new Promise((resolve, reject) => {
     Keyboard.dismiss();
     OverlayModal.show(
@@ -54,6 +48,7 @@ export const selectReceiveToken = (props: IReceiveSelectTokenProps): Promise<ISe
           OverlayModal.hide();
         }}
         onReject={reject}
+        isPay={false}
       />,
       {
         position: 'bottom',

@@ -433,7 +433,7 @@ const styles = StyleSheet.create({
   },
   networkTextMain: {
     lineHeight: pTd(22),
-    color: defaultColors.font20,
+    color: defaultColors.font24,
   },
   networkTextSub: {
     lineHeight: pTd(16),

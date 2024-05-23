@@ -7,7 +7,6 @@ import {
   StyleProvider,
   MessageContentType,
   PopDataProps,
-  Avatar,
   IInputReplyMsgProps,
 } from '@portkey-wallet/im-ui-web';
 import { useGroupChannel, useHideChannel, useLeaveChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
@@ -282,18 +281,6 @@ export default function ChatBox() {
     },
     [navigate, channelUuid],
   );
-  const renderTitle = useMemo(
-    () => (
-      <div className="flex title-element">
-        <div className="title-content flex-center" onClick={handleGoGroupInfo}>
-          <Avatar isGroupAvatar={true} src={groupInfo?.icon} />
-          <div className="title-name">{groupInfo?.name || info?.displayName || ''}</div>
-        </div>
-        <div>{info?.mute && <CustomSvg type="Mute" />}</div>
-      </div>
-    ),
-    [handleGoGroupInfo, groupInfo?.icon, groupInfo?.name, info?.displayName, info?.mute],
-  );
   const renderAddMember = useMemo(
     () =>
       isAdmin &&
@@ -314,8 +301,14 @@ export default function ChatBox() {
   return (
     <div className="chat-box-page flex-column">
       <ChatBoxHeader
+        avatarProps={{
+          isGroupAvatar: true,
+          src: groupInfo?.icon,
+        }}
+        titleName={groupInfo?.name || info?.displayName}
+        isMute={info?.mute}
+        handleClickTitle={handleGoGroupInfo}
         popMenuData={groupPopList.filter((i) => !isAdmin || i.key !== 'leave-group')}
-        renderTitle={<div className="flex title-element">{renderTitle}</div>}
         goBack={() => navigate('/chat-list')}
         popVisible={popVisible}
         setPopVisible={setPopVisible}

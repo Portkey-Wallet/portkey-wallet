@@ -19,15 +19,15 @@
     font-size: 14px;
     margin-bottom: 8px;
     padding-bottom: 12px;
-    color: @font-13;
-    border-bottom: 1px solid @border-2;
+    color: @neutral-secondary-text;
+    border-bottom: 1px solid @neutral-divider;
     .tooltip-icon {
       margin-left: 8px;
       width: 14px;
       height: 14px;
     }
     .already-approval {
-      color: @font-9;
+      color: @brand-normal;
     }
     .common-tooltip {
       max-width: 272px;
@@ -38,14 +38,14 @@
     .verifier-item {
       position: relative;
       padding: 24px 0;
-      border-bottom: 1px solid @border-2;
+      border-bottom: 1px solid @neutral-divider;
       &.verifier-item-disabled {
         &::after {
           content: '';
           position: absolute;
           width: 100%;
           height: 100%;
-          background-color: @bg-11;
+          background-color: @neutral-default-bg;
           opacity: 0.3;
           cursor: not-allowed;
         }
@@ -53,14 +53,14 @@
       .account-text {
         margin-left: 12px;
         line-height: 20px;
-        color: @font-11;
+        color: @neutral-primary-text;
         font-size: 14px;
         width: 0; // responsive text, to fix overflow
         flex: 1;
         .detail {
           font-size: 12px;
           line-height: 16px;
-          color: @font-13;
+          color: @neutral-secondary-text;
         }
       }
       .account-text-one-row {
@@ -89,14 +89,14 @@
         margin-left: 16px;
       }
       .@{app-prefix}-btn-text {
-        color: @font-9;
+        color: @brand-normal;
         padding: 0;
         margin-left: 16px;
         &.verified {
-          color: @font-15;
+          color: @functional-success-default;
         }
         &.expired {
-          color: @font-12;
+          color: @neutral-disable-text;
         }
         &:hover {
           background-color: transparent;
@@ -125,7 +125,7 @@
     background-color: @bg-4;
     padding: 0 8px;
     text-align: center;
-    color: @font-8;
+    color: @functional-warning-default;
     font-size: 12px;
   }
 
@@ -135,17 +135,9 @@
   }
 }
 .popup-page.guardian-approval-wrapper {
-  .setting-header-wrapper {
-    background: @bg-11;
-    border: none;
-    height: 64px;
-    padding: 0 16px;
+  .guardian-approval-header {
     position: sticky;
     top: 0;
-    .custom-svg {
-      width: 16px !important;
-      height: 16px !important;
-    }
   }
   .guardian-approval-content {
     padding-top: 0;
@@ -155,14 +147,14 @@
     .title {
       height: 28px;
       line-height: 28px;
-      color: @font-11;
+      color: @neutral-primary-text;
       font-size: 24px;
       margin-bottom: 4px;
       text-align: center;
     }
     .description {
       line-height: 20px;
-      color: @font-13;
+      color: @neutral-secondary-text;
       font-size: 14px;
       margin-bottom: 32px;
     }
@@ -174,7 +166,7 @@
       height: 14px;
     }
     .already-approval {
-      color: @font-9;
+      color: @brand-normal;
     }
     .common-tooltip {
       max-width: 272px;
@@ -182,7 +174,7 @@
   }
   .verifier-content {
     .verifier-item {
-      border-bottom: 1px solid @border-2;
+      border-bottom: 1px solid @neutral-divider;
     }
   }
   .btn-wrap {
@@ -190,9 +182,9 @@
     bottom: 0;
     margin-left: -24px;
     width: 100vw;
-    border-top: 1px solid @border-2;
+    border-top: 1px solid @neutral-divider;
     padding: 16px;
-    background-color: @bg-11;
+    background-color: @neutral-default-bg;
     button {
       height: 48px;
     }

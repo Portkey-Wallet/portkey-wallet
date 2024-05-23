@@ -17,13 +17,13 @@ export type NoDataPropsType = {
 
 const NoData: React.FC<NoDataPropsType> = props => {
   const {
-    icon = 'noData',
+    icon = 'no-data-detail',
     message = 'You have no transactions!',
     type = 'top',
     topDistance = pTd(89),
     noPic = false,
     style = {},
-    oblongSize = [pTd(160), pTd(140)],
+    oblongSize = [pTd(64), pTd(64)],
   } = props;
 
   let topStyle: ViewStyle = {};

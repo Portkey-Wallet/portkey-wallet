@@ -107,7 +107,7 @@ const TabsDrawerContent: React.FC = () => {
       return (
         <View style={rightDomStyle.iconGroupWrap}>
           <Touchable style={rightDomStyle.iconWrap} onPress={() => showWalletInfo({ tabInfo: activeItem })}>
-            <Svg icon="wallet-white" size={20} />
+            <Svg icon="wallet-gray" size={pTd(20)} />
           </Touchable>
         </View>
       );
@@ -325,7 +325,7 @@ const TabsDrawerContent: React.FC = () => {
         leftDom={
           <View style={styles.leftWrap}>
             <Touchable onPress={backToSearchPage} style={styles.backIcon}>
-              <Svg icon="left-arrow" size={pTd(16)} color={defaultColors.bg1} />
+              <Svg icon="left-arrow" size={pTd(20)} color={defaultColors.font18} />
             </Touchable>
             <TextWithProtocolIcon
               type="iconLeft"
@@ -337,7 +337,7 @@ const TabsDrawerContent: React.FC = () => {
         }
         rightDom={rightDom}
         notHandleHardwareBackPress
-        safeAreaColor={['blue', 'white']}
+        safeAreaColor={['white', 'white']}
         containerStyles={styles.container}
         scrollViewProps={{ disabled: true }}
         titleDom={activeTabId ? '' : `${tabs?.length} Tabs`}>

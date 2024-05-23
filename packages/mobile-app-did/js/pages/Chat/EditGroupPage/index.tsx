@@ -79,7 +79,7 @@ const EditGroupPage = () => {
     <PageContainer
       titleDom="Edit Group"
       hideTouchable
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
       <ScrollView style={GStyles.flex1}>

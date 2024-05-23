@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
     shadowColor: defaultColors.shadow1,
     shadowOpacity: 0.2,
     shadowRadius: 10,
+    shadowOffset: { width: 0, height: 20 },
     elevation: 2,
   },
   closeIconWrap: {

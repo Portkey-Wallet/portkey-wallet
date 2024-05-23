@@ -6,14 +6,14 @@
     position: sticky;
     top: 0;
     z-index: 10;
-    background: @bg-11;
+    background: @neutral-default-bg;
     padding: 17px;
     display: flex;
     justify-content: center;
     p {
       font-size: 18px;
       line-height: 22px;
-      color: @font-11;
+      color: @neutral-primary-text;
     }
     .custom-svg {
       position: absolute;
@@ -31,7 +31,7 @@
     position: sticky;
     z-index: 10;
     top: 56px;
-    background-color: @bg-11;
+    background-color: @neutral-default-bg;
     padding: 4px 16px 8px;
     margin-bottom: 0;
   }
@@ -44,9 +44,9 @@
         width: 32px;
         height: 32px;
         border-radius: 6px;
-        background-color: @bg-15;
+        background-color: @neutral-divider;
         font-size: 20px;
-        color: @font-12;
+        color: @neutral-disable-text;
         margin-right: 8px;
         flex-shrink: 0;
         .tokentagsmall-icon,
@@ -74,7 +74,7 @@
         .alias {
           line-height: 20px;
           font-size: 16px;
-          color: @font-11;
+          color: @neutral-primary-text;
           word-break: break-all;
           .text-overflow(2);
           &.mul-line {
@@ -84,7 +84,7 @@
         .network {
           line-height: 20px;
           font-size: 14px;
-          color: @font-13;
+          color: @neutral-secondary-text;
         }
       }
       .amount {
@@ -92,7 +92,7 @@
         .balance {
           line-height: 20px;
           font-size: 16px;
-          color: @font-11;
+          color: @neutral-primary-text;
           width: 80px;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -105,7 +105,7 @@
       align-items: center;
       height: 72px;
       padding: 13px 16px;
-      border-bottom: 1px solid @border-2;
+      border-bottom: 1px solid @neutral-divider;
       .icon {
         width: 32px;
         height: 32px;
@@ -120,7 +120,7 @@
           line-height: 20px;
         }
         .network {
-          color: @font-13;
+          color: @neutral-secondary-text;
           line-height: 20px;
           font-size: 14px;
         }
@@ -132,14 +132,14 @@
         .quantity {
           line-height: 20px;
           font-size: 16px;
-          color: @font-11;
+          color: @neutral-primary-text;
           word-break: break-all;
           .text-overflow(2);
         }
         .convert {
           line-height: 20px;
           font-size: 14px;
-          color: @font-13;
+          color: @neutral-secondary-text;
           word-break: break-all;
           .text-overflow(2);
         }
@@ -153,7 +153,7 @@
       justify-content: center;
       .empty-text {
         line-height: 20px;
-        color: @font-12;
+        color: @neutral-disable-text;
         font-size: 14px;
       }
     }

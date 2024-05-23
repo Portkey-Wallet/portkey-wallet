@@ -1,6 +1,5 @@
-import BackHeader from 'components/BackHeader';
+import CommonHeader from 'components/CommonHeader';
 import { IContactsProps } from '..';
-import AddContactButton from '../components/AddContactButton';
 import ContactsBody from '../components/ContactsBody';
 import ContactsSearchInput from '../components/ContactsSearchInput';
 import './index.less';
@@ -10,7 +9,6 @@ export default function ContactsPopup({
   headerTitle,
   goBack,
   searchPlaceholder,
-  addText,
   handleAdd,
   isSearch,
   handleSearch,
@@ -23,14 +21,19 @@ export default function ContactsPopup({
 }: IContactsProps) {
   return (
     <div className="flex-column contacts-popup min-width-max-height">
-      <div className="flex-column contacts-title">
-        <BackHeader
+      <div className="flex-column">
+        <CommonHeader
           title={headerTitle}
-          leftCallBack={goBack}
-          rightElement={
-            (contactCount !== 0 || (contactCount === 0 && isSearch)) && (
-              <AddContactButton addText={addText} goBack={goBack} onAdd={handleAdd} isClosed />
-            )
+          onLeftBack={goBack}
+          rightElementList={
+            contactCount !== 0 || (contactCount === 0 && isSearch)
+              ? [
+                  {
+                    customSvgType: 'SuggestAdd',
+                    onClick: handleAdd,
+                  },
+                ]
+              : undefined
           }
         />
         <ContactsSearchInput placeholder={searchPlaceholder} handleChange={handleSearch} />

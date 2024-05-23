@@ -668,7 +668,7 @@ const GuardianEdit: React.FC = () => {
 
   return (
     <PageContainer
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       titleDom={isEdit ? 'Edit Guardians' : 'Add Guardians'}
       leftCallback={goBack}
       containerStyles={pageStyles.pageWrap}

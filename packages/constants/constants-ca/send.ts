@@ -36,3 +36,34 @@ export const RECEIVE_SIDE_CHAIN_TOKEN_TIP_CONTENT = [
 ];
 export const RECEIVE_SIDE_CHAIN_TOKEN_TIP_MODAL_REMEMBER_TEXT = `Don't show this again`;
 export const RECEIVE_SIDE_CHAIN_TOKEN_TIP_MODAL_BUTTON_TEXT = `I Know`;
+
+export const RECEIVE_MAIN_CHAIN_ELF_TIP = `If you wish to receive assets from exchanges, please switch to the "Exchanges" tab on the right.`;
+
+export enum ReceiveTabEnum {
+  QRCode = 'QRCode',
+  Exchanges = 'Exchanges',
+  Buy = 'Buy',
+  Deposit = 'Deposit',
+}
+
+export const ALL_RECEIVE_TAB: {
+  value: ReceiveTabEnum;
+  label: string;
+}[] = [
+  {
+    value: ReceiveTabEnum.QRCode,
+    label: 'QR Code',
+  },
+  {
+    value: ReceiveTabEnum.Deposit,
+    label: 'Deposit',
+  },
+  {
+    value: ReceiveTabEnum.Exchanges,
+    label: 'Exchanges',
+  },
+  {
+    value: ReceiveTabEnum.Buy,
+    label: 'Buy',
+  },
+];

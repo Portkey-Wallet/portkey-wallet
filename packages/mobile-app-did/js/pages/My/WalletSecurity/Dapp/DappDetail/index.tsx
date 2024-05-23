@@ -131,7 +131,7 @@ const DappDetail: React.FC = () => {
   return (
     <PageContainer
       titleDom={'Dapp Details'}
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <DappListItem

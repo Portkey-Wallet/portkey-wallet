@@ -4,6 +4,7 @@ import Svg from 'components/Svg';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
+import { formatSymbolDisplay } from '@portkey-wallet/utils/format';
 
 interface ToCardProps {
   wrapStyle?: StyleProp<ViewStyle>;
@@ -36,7 +37,7 @@ export const ToCard: React.FC<ToCardProps> = ({
       <View style={styles.contentWrapper}>
         <TouchableOpacity style={styles.tokenWrapper} onPress={onPress} activeOpacity={1}>
           {tokenIcon && <Image style={styles.tokenIconImage} source={{ uri: tokenIcon }} />}
-          <Text style={styles.tokenText}>{tokenSymbol}</Text>
+          <Text style={styles.tokenText}>{formatSymbolDisplay(tokenSymbol)}</Text>
           <Svg iconStyle={styles.arrowIcon} size={pTd(10)} icon={'solid-down-arrow'} />
         </TouchableOpacity>
         {showAmount && (
@@ -61,7 +62,6 @@ const styles = StyleSheet.create({
     borderRadius: pTd(6),
     paddingHorizontal: pTd(12),
     paddingTop: pTd(14),
-    paddingBottom: pTd(20),
   },
   chainWrapper: {
     flexDirection: 'row',

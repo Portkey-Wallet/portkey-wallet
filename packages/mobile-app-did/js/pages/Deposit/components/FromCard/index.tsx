@@ -16,6 +16,7 @@ import CommonAvatar from 'components/CommonAvatar';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
+import { formatSymbolDisplay } from '@portkey-wallet/utils/format';
 
 interface FromCardProps {
   wrapStyle?: StyleProp<ViewStyle>;
@@ -66,7 +67,7 @@ export const FromCard: React.FC<FromCardProps> = ({
       <View style={styles.contentWrapper}>
         <TouchableOpacity style={styles.tokenWrapper} onPress={onPress} activeOpacity={1}>
           {tokenIcon && <Image style={styles.tokenIconImage} source={{ uri: tokenIcon }} />}
-          <Text style={styles.tokenText}>{tokenSymbol}</Text>
+          <Text style={styles.tokenText}>{formatSymbolDisplay(tokenSymbol)}</Text>
           <Svg iconStyle={styles.arrowIcon} size={pTd(10)} icon={'solid-down-arrow'} />
         </TouchableOpacity>
         {showAmount && (

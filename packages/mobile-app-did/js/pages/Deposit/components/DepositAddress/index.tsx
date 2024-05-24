@@ -12,6 +12,7 @@ import { pTd } from 'utils/unit';
 import { copyText } from 'utils';
 import { defaultColors } from 'assets/theme';
 import { TTokenItem, TNetworkItem, TRecordsStatus } from '@portkey-wallet/types/types-ca/deposit';
+import { formatSymbolDisplay } from '@portkey-wallet/utils/format';
 import { useDepositRecord } from '@portkey-wallet/hooks/hooks-ca/deposit';
 import { showCopyDepositAddress } from '../CopyContractAddress';
 
@@ -134,7 +135,7 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken,
           )}
           <View style={styles.tokenWrap}>
             <Image style={styles.tokenImage} source={{ uri: fromToken.icon }} />
-            <Text style={styles.tokenText}>{fromToken.symbol}</Text>
+            <Text style={styles.tokenText}>{formatSymbolDisplay(fromToken.symbol)}</Text>
           </View>
           <Text style={styles.chainText}>{fromNetwork.name}</Text>
           <View style={styles.qrcodeWrap}>
@@ -242,6 +243,7 @@ const styles = StyleSheet.create({
   tokenImage: {
     width: pTd(24),
     height: pTd(24),
+    borderRadius: pTd(12),
   },
   tokenText: {
     marginLeft: pTd(8),

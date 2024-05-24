@@ -287,7 +287,7 @@ const NetworkTopBtn = (props: {
   );
 };
 
-const getNetworkImagePath = (network: string) => {
+export const getNetworkImagePath = (network: string) => {
   switch (network) {
     case 'ETH':
       return require('../../../assets/image/pngs/third-party-ethereum.png');

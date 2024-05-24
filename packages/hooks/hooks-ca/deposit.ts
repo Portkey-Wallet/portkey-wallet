@@ -15,7 +15,7 @@ import depositService from '@portkey-wallet/utils/deposit';
 const MAX_REFRESH_TIME = 15;
 
 export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manager?: AElfWallet) => {
-  const { caHash, address } = useCurrentWalletInfo();
+  const { caHash, address, originChainId } = useCurrentWalletInfo();
   const { apiUrl } = useCurrentNetworkInfo();
 
   const [loading, setLoading] = useState<boolean>(true);
@@ -131,12 +131,12 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
       signature: signature,
       plain_text: plainTextHex,
       ca_hash: caHash ?? '',
-      chain_id: 'AELF', // todo_wade: fix the chain_id
+      chain_id: originChainId ?? 'AELF',
       managerAddress: address,
     };
     const res = await depositService.getTransferToken(params, apiUrl);
-    console.log('aaaaa token : ', res);
-  }, [address, caHash, apiUrl, manager]);
+    console.log('etransfer token : ', res);
+  }, [manager, caHash, originChainId, address, apiUrl]);
 
   const fetchDepositTokenList = useCallback(async () => {
     const tokenList = await depositService.getDepositTokenList();

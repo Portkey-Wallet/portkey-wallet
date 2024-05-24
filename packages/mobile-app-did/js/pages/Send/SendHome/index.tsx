@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Keyboard, Text, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
@@ -201,8 +201,11 @@ const SendHome: React.FC = () => {
 
   const isValidOtherChainAddress = useMemo(() => {
     const { address } = selectedToContact || {};
-    return checkIsValidEtransferAddress(address) && !isAllowAelfAddress(address);
-  }, [selectedToContact]);
+    return (
+      checkIsValidEtransferAddress(address) &&
+      !(isAllowAelfAddress(address) && isValidChainId(getAddressChainId(selectedToContact.address, assetInfo.chainId)))
+    );
+  }, [assetInfo.chainId, isValidChainId, selectedToContact]);
 
   // warning dialog
   const showDialog = useCallback(
@@ -302,7 +305,7 @@ const SendHome: React.FC = () => {
     }
 
     if (!isAllowAelfAddress(selectedToContact.address)) {
-      if (enableEtransfer && isValidOtherChainAddress) {
+      if (enableEtransfer && checkIsValidEtransferAddress(selectedToContact.address)) {
         setErrorMessage([]);
       } else {
         setErrorMessage([AddressError.INVALID_ADDRESS]);
@@ -319,7 +322,6 @@ const SendHome: React.FC = () => {
     isValidChainId,
     showDialog,
     enableEtransfer,
-    isValidOtherChainAddress,
   ]);
 
   const nextStep = useCallback(() => {
@@ -328,6 +330,10 @@ const SendHome: React.FC = () => {
       return setStep(2);
     }
   }, [checkCanNext]);
+
+  const ensureKeyboardClosed = useCallback(() => {
+    Keyboard.dismiss();
+  }, []);
 
   //when finish send  upDate balance
 
@@ -529,6 +535,7 @@ const SendHome: React.FC = () => {
                 linkSyntax: 'ETransfer',
                 linkStyle: otherChainWarningStyle.linkText,
                 linkPress: () => {
+                  ensureKeyboardClosed();
                   if (!eTransferUrl) return;
                   onDisclaimerModalPress(
                     DepositModalMap.eTransfer,
@@ -568,6 +575,7 @@ const SendHome: React.FC = () => {
     assetInfo?.symbol,
     eTransferUrl,
     enableEtransfer,
+    ensureKeyboardClosed,
     isValidOtherChainAddress,
     onDisclaimerModalPress,
     selectedToContact.address,

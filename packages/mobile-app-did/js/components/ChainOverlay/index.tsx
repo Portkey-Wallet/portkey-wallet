@@ -10,6 +10,7 @@ import { useLanguage } from 'i18n/hooks';
 import { useGStyles } from 'assets/theme/useGStyles';
 import { ModalBody } from 'components/ModalBody';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
+import { defaultColors } from 'assets/theme';
 
 type ValueType = string | number;
 type DefaultValueType = string;
@@ -57,7 +58,12 @@ const SelectList = <ItemType extends ItemTypeBase<ItemValueType>, ItemValueType 
                   <View style={styles.itemContent}>
                     <TextL>{item[labelAttrName]}</TextL>
                     {value !== undefined && value === item.chainId && (
-                      <Svg iconStyle={styles.itemIcon} icon="selected" size={pTd(24)} />
+                      <Svg
+                        iconStyle={styles.itemIcon}
+                        icon="selected"
+                        size={pTd(24)}
+                        color={defaultColors.primaryColor}
+                      />
                     )}
                   </View>
                 </View>

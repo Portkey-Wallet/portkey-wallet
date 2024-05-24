@@ -129,7 +129,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
   return (
     <PageContainer
       titleDom={t('Custom Token')}
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <TextM style={pageStyles.tips}>

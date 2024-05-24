@@ -42,7 +42,7 @@ export default function InnerSettings() {
   const { t } = useLanguage();
 
   return (
-    <PageContainer titleDom={t('Auto-Lock')} safeAreaColor={['blue', 'gray']} containerStyles={pageStyles.pageWrap}>
+    <PageContainer titleDom={t('Auto-Lock')} safeAreaColor={['white', 'gray']} containerStyles={pageStyles.pageWrap}>
       <ListItem
         title={t(AutoLockList.find(ele => ele.value === autoLockingTime)?.label || '')}
         rightElement={<Svg icon="down-arrow" size={pTd(16)} />}

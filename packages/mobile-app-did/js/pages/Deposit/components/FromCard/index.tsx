@@ -16,6 +16,7 @@ import CommonAvatar from 'components/CommonAvatar';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
+import { formatSymbolDisplay } from '@portkey-wallet/utils/format';
 
 interface FromCardProps {
   wrapStyle?: StyleProp<ViewStyle>;
@@ -58,15 +59,15 @@ export const FromCard: React.FC<FromCardProps> = ({
 
   return (
     <View style={[styles.container, wrapStyle]}>
-      <View style={styles.chainWrapper}>
+      <TouchableOpacity style={styles.chainWrapper} onPress={onPress} activeOpacity={1}>
         <Text style={styles.typeText}>From</Text>
         {network && networkIcon(styles.chainIconImage)}
         <Text style={styles.chainNameText}>{networkName}</Text>
-      </View>
+      </TouchableOpacity>
       <View style={styles.contentWrapper}>
-        <TouchableOpacity style={styles.tokenWrapper} onPress={onPress}>
+        <TouchableOpacity style={styles.tokenWrapper} onPress={onPress} activeOpacity={1}>
           {tokenIcon && <Image style={styles.tokenIconImage} source={{ uri: tokenIcon }} />}
-          <Text style={styles.tokenText}>{tokenSymbol}</Text>
+          <Text style={styles.tokenText}>{formatSymbolDisplay(tokenSymbol)}</Text>
           <Svg iconStyle={styles.arrowIcon} size={pTd(10)} icon={'solid-down-arrow'} />
         </TouchableOpacity>
         {showAmount && (
@@ -91,11 +92,13 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg33,
     borderRadius: pTd(6),
     paddingHorizontal: pTd(12),
-    paddingVertical: pTd(20),
+    paddingTop: pTd(14),
+    paddingBottom: pTd(20),
   },
   chainWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
+    height: pTd(28),
   },
   typeText: {
     color: defaultColors.font11,
@@ -113,13 +116,15 @@ const styles = StyleSheet.create({
     fontSize: pTd(12),
   },
   contentWrapper: {
-    marginTop: pTd(20),
+    marginTop: pTd(14),
     height: pTd(46),
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   tokenWrapper: {
+    flex: 1,
+    height: '100%',
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -140,7 +145,7 @@ const styles = StyleSheet.create({
   mountWrapper: {
     alignItems: 'flex-end',
     flex: 1,
-    marginLeft: pTd(20),
+    marginLeft: pTd(12),
   },
   mountText: {
     color: defaultColors.font5,

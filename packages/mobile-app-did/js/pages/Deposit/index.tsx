@@ -17,6 +17,7 @@ import { TNetworkItem, TTokenItem } from '@portkey-wallet/types/types-ca/deposit
 import { useDeposit } from '@portkey-wallet/hooks/hooks-ca/deposit';
 import { getManagerAccount, getPin } from 'utils/redux';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { ChainId } from '@portkey-wallet/types';
 
 export default function Deposit() {
@@ -75,7 +76,7 @@ export default function Deposit() {
     }
   }, [fetchDepositInfo, fromNetwork, fromToken]);
 
-  const onPayAmountChanged = useCallback(
+  const onPayAmountChanged = useThrottleCallback(
     (text: string) => {
       if (text.length === 0) {
         setPayAmount(0);

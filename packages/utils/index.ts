@@ -302,7 +302,7 @@ export const formatNameWithRules = (
         break;
       case FormatNameRuleList.NO_UNDERLINE:
         // SGR-1 => SGR
-        result = result.replace(/-.*$/g, '');
+        result = result?.replace('-1', '');
         break;
       default:
         break;

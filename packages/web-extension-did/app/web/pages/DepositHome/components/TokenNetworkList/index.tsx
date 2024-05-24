@@ -9,7 +9,7 @@ import { ChainId } from '@portkey/provider-types';
 import depositService from '@portkey-wallet/utils/deposit';
 import { useLoading } from 'store/Provider/hooks';
 import { singleMessage } from '@portkey/did-ui-react';
-import { handleErrorMessage } from '@portkey-wallet/utils';
+import { FormatNameRuleList, formatNameWithRules, handleErrorMessage } from '@portkey-wallet/utils';
 import CommonHeader, { CustomSvgPlaceholderSize } from 'components/CommonHeader';
 import clsx from 'clsx';
 
@@ -302,7 +302,9 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
                       </div>
                       <div className="token-info-container">
                         <div className="token-info-name-container">
-                          <span className="token-name">{token.symbol}</span>
+                          <span className="token-name">
+                            {formatNameWithRules(token.symbol, [FormatNameRuleList.NO_UNDERLINE])}
+                          </span>
                           <span className="token-full-name">{token.name}</span>
                         </div>
                         {!!contractAddress && <span className="token-address">{contractAddressShow(token)}</span>}

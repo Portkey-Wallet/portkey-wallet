@@ -20,7 +20,7 @@ import getSeed from 'utils/getSeed';
 import { getWallet } from '@portkey-wallet/utils/aelf';
 import { useLoading } from 'store/Provider/hooks';
 import { singleMessage } from '@portkey/did-ui-react';
-import { handleErrorMessage } from '@portkey-wallet/utils';
+import { FormatNameRuleList, formatNameWithRules, handleErrorMessage } from '@portkey-wallet/utils';
 import depositService from '@portkey-wallet/utils/deposit';
 import CommonHeader from 'components/CommonHeader';
 
@@ -208,7 +208,9 @@ export default function DepositHome() {
                     <div className="token">
                       <img src={fromToken?.icon} className="token-img" />
                     </div>
-                    <span className="token-name">{fromToken?.symbol}</span>
+                    <span className="token-name">
+                      {formatNameWithRules(fromToken?.symbol || '', [FormatNameRuleList.NO_UNDERLINE])}
+                    </span>
                   </div>
                   <CustomSvg type="DownDeposit" />
                   {/* </div> */}
@@ -252,7 +254,9 @@ export default function DepositHome() {
                     <div className="token">
                       <img src={toToken?.icon} className="token-img" />
                     </div>
-                    <span className="token-name">{toToken?.symbol}</span>
+                    <span className="token-name">
+                      {formatNameWithRules(toToken?.symbol || '', [FormatNameRuleList.NO_UNDERLINE])}
+                    </span>
                   </div>
                   <CustomSvg type="DownDeposit" />
                 </div>
@@ -283,7 +287,7 @@ export default function DepositHome() {
         {!isSameSymbol && (
           <ExchangeSimpleRate
             fromSymbol={fromToken?.symbol || ''}
-            toSymbol={toToken?.symbol || ''}
+            toSymbol={formatNameWithRules(toToken?.symbol || '', [FormatNameRuleList.NO_UNDERLINE])}
             unitReceiveAmount={unitReceiveAmount}
             rateRefreshTime={rateRefreshTime}
             slippage={'0.05'}
@@ -326,7 +330,7 @@ export default function DepositHome() {
         {step === Step.FROM_NETWORK && (
           <SelectNetwork
             networkList={allNetworkListRef.current?.networkList || []}
-            fromTokenSymbol={fromToken?.symbol}
+            fromTokenSymbol={formatNameWithRules(fromToken?.symbol || '', [FormatNameRuleList.NO_UNDERLINE])}
             onClose={() => {
               setStep(Step.FROM_TOKEN);
             }}

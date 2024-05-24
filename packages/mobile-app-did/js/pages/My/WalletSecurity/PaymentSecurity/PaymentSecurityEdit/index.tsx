@@ -139,7 +139,7 @@ const PaymentSecurityEdit: React.FC = () => {
   return (
     <PageContainer
       titleDom={'Transfer Settings'}
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View>
@@ -182,7 +182,7 @@ const PaymentSecurityEdit: React.FC = () => {
           <TextM style={FontStyles.font3}>No limit for transfer</TextM>
         )}
       </View>
-      <CommonButton disabled={isButtonDisabled} type="solid" onPress={save}>
+      <CommonButton disabled={isButtonDisabled} type="primary" onPress={save}>
         Send Request
       </CommonButton>
     </PageContainer>

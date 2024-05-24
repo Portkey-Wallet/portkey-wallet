@@ -95,6 +95,10 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken,
       fromNetwork,
       fromToken,
       contractAddress,
+      onExplore: () => {
+        // dismiss the current modal when push to discover page
+        OverlayModal.hide(false);
+      },
     });
   }, [contractAddress, fromNetwork, fromToken]);
 
@@ -113,7 +117,9 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken,
             <Text style={styles.tokenText}>{fromToken.symbol}</Text>
           </View>
           <Text style={styles.chainText}>{fromNetwork.name}</Text>
-          <CommonQRCodeStyled style={styles.qrcode} qrData={depositInfo.depositAddress} width={pTd(240)} />
+          <View style={styles.qrcodeWrap}>
+            <CommonQRCodeStyled style={styles.qrcode} qrData={depositInfo.depositAddress} width={pTd(216)} />
+          </View>
           <View style={styles.addressCard}>
             <Text style={styles.addressLabelText}>Deposit Address</Text>
             <View style={styles.addressWrap}>
@@ -212,11 +218,19 @@ const styles = StyleSheet.create({
     color: defaultColors.font11,
     fontSize: pTd(14),
   },
-  qrcode: {
+  qrcodeWrap: {
     marginTop: pTd(16),
     width: pTd(240),
     height: pTd(240),
     borderRadius: pTd(11),
+    borderColor: defaultColors.border8,
+    borderWidth: 0.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  qrcode: {
+    width: pTd(216),
+    height: pTd(216),
   },
   addressCard: {
     marginTop: pTd(24),
@@ -257,7 +271,9 @@ const styles = StyleSheet.create({
     fontSize: pTd(12),
     color: defaultColors.font23,
   },
-  minimumAmountWrap: {},
+  minimumAmountWrap: {
+    alignItems: 'flex-end',
+  },
   minimumAmountText: {
     color: defaultColors.font24,
     fontSize: pTd(12),

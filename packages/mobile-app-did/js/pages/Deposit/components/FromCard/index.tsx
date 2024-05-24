@@ -61,7 +61,7 @@ export const FromCard: React.FC<FromCardProps> = ({
         <TouchableOpacity style={styles.tokenWrapper} onPress={onPress}>
           {tokenIcon && <Image style={styles.tokenIconImage} source={{ uri: tokenIcon }} />}
           <Text style={styles.tokenText}>{tokenSymbol}</Text>
-          <Svg iconStyle={styles.arrowIcon} size={pTd(12)} icon={'down-arrow'} />
+          <Svg iconStyle={styles.arrowIcon} size={pTd(10)} icon={'solid-down-arrow'} />
         </TouchableOpacity>
         {showAmount && (
           <View style={styles.mountWrapper}>

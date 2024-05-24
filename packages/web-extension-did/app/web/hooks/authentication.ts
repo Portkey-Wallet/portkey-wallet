@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { VerifyTokenParams } from '@portkey-wallet/types/types-ca/authentication';
+import { ReportUnsetLoginGuardianProps, VerifyTokenParams } from '@portkey-wallet/types/types-ca/authentication';
 import {
   getGoogleUserInfo,
   parseAppleIdentityToken,
@@ -129,6 +129,15 @@ export function useVerifyFacebook() {
     },
     [currentNetwork],
   );
+}
+
+export function useReportUnsetLoginGuardian() {
+  return useCallback(async (params: ReportUnsetLoginGuardianProps): Promise<boolean> => {
+    const res = await request.verify.reportUnsetLoginGuardian({
+      params: { ...params },
+    });
+    return !!res;
+  }, []);
 }
 
 export function useVerifyToken() {

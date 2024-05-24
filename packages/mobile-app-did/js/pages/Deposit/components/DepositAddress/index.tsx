@@ -138,7 +138,17 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken,
           </View>
           <Text style={styles.chainText}>{fromNetwork.name}</Text>
           <View style={styles.qrcodeWrap}>
-            <CommonQRCodeStyled style={styles.qrcode} qrData={depositInfo.depositAddress} width={pTd(216)} />
+            <CommonQRCodeStyled
+              style={styles.qrcode}
+              qrData={depositInfo.depositAddress}
+              width={pTd(216)}
+              logo={undefined}
+            />
+            <View style={styles.qrCodeLogoWrap}>
+              <View style={styles.qrCodeLogo}>
+                <Image style={styles.qrCodeImage} source={{ uri: fromToken.icon }} />
+              </View>
+            </View>
           </View>
           <View style={styles.addressCard}>
             <Text style={styles.addressLabelText}>Deposit Address</Text>
@@ -256,6 +266,24 @@ const styles = StyleSheet.create({
   qrcode: {
     width: pTd(216),
     height: pTd(216),
+  },
+  qrCodeLogoWrap: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  qrCodeLogo: {
+    width: pTd(26),
+    height: pTd(26),
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: defaultColors.white,
+  },
+  qrCodeImage: {
+    width: pTd(20),
+    height: pTd(20),
   },
   addressCard: {
     marginTop: pTd(24),

@@ -28,13 +28,13 @@ export const ToCard: React.FC<ToCardProps> = ({
 }) => {
   return (
     <View style={[styles.container, wrapStyle]}>
-      <View style={styles.chainWrapper}>
+      <TouchableOpacity style={styles.chainWrapper} onPress={onPress} activeOpacity={1}>
         <Text style={styles.typeText}>To</Text>
         <Image style={styles.chainIconImage} source={require('assets/image/pngs/aelf.png')} />
         <Text style={styles.chainNameText}>{chainName}</Text>
-      </View>
+      </TouchableOpacity>
       <View style={styles.contentWrapper}>
-        <TouchableOpacity style={styles.tokenWrapper} onPress={onPress}>
+        <TouchableOpacity style={styles.tokenWrapper} onPress={onPress} activeOpacity={1}>
           {tokenIcon && <Image style={styles.tokenIconImage} source={{ uri: tokenIcon }} />}
           <Text style={styles.tokenText}>{tokenSymbol}</Text>
           <Svg iconStyle={styles.arrowIcon} size={pTd(10)} icon={'solid-down-arrow'} />
@@ -60,11 +60,13 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg33,
     borderRadius: pTd(6),
     paddingHorizontal: pTd(12),
-    paddingTop: pTd(20),
+    paddingTop: pTd(14),
+    paddingBottom: pTd(20),
   },
   chainWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
+    height: pTd(28),
   },
   typeText: {
     color: defaultColors.font11,
@@ -82,15 +84,17 @@ const styles = StyleSheet.create({
     fontSize: pTd(12),
   },
   contentWrapper: {
-    marginTop: pTd(20),
+    marginTop: pTd(14),
     height: pTd(46),
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   tokenWrapper: {
+    height: '100%',
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
   },
   tokenIconImage: {
     width: pTd(28),
@@ -109,7 +113,7 @@ const styles = StyleSheet.create({
   amountWrapper: {
     alignItems: 'flex-end',
     flex: 1,
-    marginLeft: pTd(20),
+    marginLeft: pTd(12),
   },
   amountText: {
     color: defaultColors.font5,

@@ -35,7 +35,7 @@ class DepositService implements IDepositService {
   async getTokenListByNetwork({
     type,
     network,
-    chainId = 'AELF', // todo_wade: remove default value
+    chainId,
   }: {
     type: 'from' | 'to';
     network?: string;

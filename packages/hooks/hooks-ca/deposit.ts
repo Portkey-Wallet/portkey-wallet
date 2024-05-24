@@ -18,6 +18,8 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
   const { caHash, address } = useCurrentWalletInfo();
   const { apiUrl } = useCurrentNetworkInfo();
 
+  const [loading, setLoading] = useState<boolean>(true);
+
   const [allNetworkList, setAllNetworkList] = useState<TNetworkItem[]>([]);
 
   const [depoistTokenList, setDepositTokenList] = useState<TDepositTokenItem[]>([]);
@@ -195,13 +197,22 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
 
   useEffect(() => {
     (async () => {
-      await fetchTransferToken();
-      await fetchDepositTokenList();
-      await fetchAllNetworkList();
+      try {
+        if (!manager) {
+          return;
+        }
+        setLoading(true);
+        await fetchTransferToken();
+        await fetchDepositTokenList();
+        await fetchAllNetworkList();
+      } finally {
+        setLoading(false);
+      }
     })();
-  }, [fetchAllNetworkList, fetchDepositTokenList, fetchTransferToken]);
+  }, [fetchAllNetworkList, fetchDepositTokenList, fetchTransferToken, manager]);
 
   const isSameSymbol = useMemo(() => {
+    if (!fromToken || !toToken) return true;
     return fromToken && toToken && fromToken.symbol === toToken.symbol;
   }, [fromToken, toToken]);
 
@@ -311,13 +322,10 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
 
   const setTo = useCallback(
     ({ newToChainId, newToToken }: { newToChainId: ChainId; newToToken: TTokenItem }) => {
-      console.log('newToChainId : ', newToChainId);
-      console.log('newToToken : ', newToToken);
       if (newToChainId === toChainId && newToToken.symbol === toToken?.symbol) {
         return;
       }
-      // 先看一下当前的fromToken是否支持这个toToken。
-      // 支持的话，直接设置toToken；否则找到第一个支持的fromToken，然后同时更新fromToken和toToken
+
       let isFromTokenValid = false;
       depoistTokenList.forEach(token => {
         if (token.toTokenList) {
@@ -366,6 +374,7 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
   );
 
   return {
+    loading,
     allNetworkList,
     fromNetwork,
     fromToken,

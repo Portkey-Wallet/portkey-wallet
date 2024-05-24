@@ -27,6 +27,10 @@ export type TTokenItem = {
   networkList?: TNetworkItem[]; // only available in "ALL" mode
 };
 
+export type TExtendedTokenItem = Omit<TTokenItem, 'networkList'> & {
+  network?: TNetworkItem;
+};
+
 export type TGetDepositTokenListRequest = {
   type: BusinessType;
 };

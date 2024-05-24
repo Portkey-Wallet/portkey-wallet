@@ -11,22 +11,24 @@ export interface ISelectNetworkProps {
   onClose?: () => void;
   onClickItem?: (network: TNetworkItem) => void;
   networkList?: TNetworkItem[];
+  fromTokenSymbol?: string;
   type?: 'component' | 'page';
 }
 export default function SelectNetwork(props: ISelectNetworkProps) {
   const { isPrompt } = useCommonState();
-  const { type = 'component', networkList, onClickItem, onClose } = props || {};
+  const { type = 'component', networkList, fromTokenSymbol, onClickItem, onClose } = props || {};
+  console.log('wfs fromTokenSymbol===', fromTokenSymbol);
   const renderNotice = useMemo(() => {
     return (
       <div className="notice-container">
         <CustomSvg type="Info" />
         <span className="note-text">
-          Note: Please select from the supported networks listed below. Sending USDT from other networks may result in
-          the loss of your assets.
+          Note: Please select from the supported networks listed below. Sending {fromTokenSymbol || 'USDT'} from other
+          networks may result in the loss of your assets.
         </span>
       </div>
     );
-  }, []);
+  }, [fromTokenSymbol]);
 
   const renderList = useMemo(() => {
     return (

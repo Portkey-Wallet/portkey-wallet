@@ -72,6 +72,7 @@ export default function DepositHome() {
     })();
   }, []);
   const {
+    loading,
     fromNetwork,
     fromToken,
     toChainIdList,
@@ -88,6 +89,16 @@ export default function DepositHome() {
     setPayAmount,
   } = useDeposit(initToToken, chain as ChainId, manager);
   console.log('wfs isSameSymbol===', isSameSymbol);
+  useEffect(() => {
+    console.log('wfs fromNetwork===', fromNetwork);
+  }, [fromNetwork]);
+  useEffect(() => {
+    if (loading) {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [loading, setLoading]);
   const handleOnNext = useCallback(async () => {
     console.log('wfs click next!!');
     try {
@@ -166,7 +177,7 @@ export default function DepositHome() {
   const renderHeader = useMemo(() => {
     return (
       <CommonHeader
-        title={'Deposit Assets'}
+        title={'Deposit Asset'}
         onLeftBack={() => {
           navigate('/');
         }}
@@ -179,25 +190,30 @@ export default function DepositHome() {
         <div className="from-to-card-container">
           <div className="card-container">
             <div className="card-info-wrapper">
-              <div className="dropdown-trigger">
-                <span className="from-to-title">From</span>
-                <div className="network-info-wrapper">
-                  <NetworkLogo network={fromNetwork?.network} />
-                  <span className="network-info-name">{fromNetwork?.name}</span>
-                </div>
-              </div>
-            </div>
-            <div className="token-wrapper">
-              <div className="token-name-wrapper" onClick={onClickFrom}>
-                <div className="token-icon-name">
-                  <div className="token">
-                    <img src={fromToken?.icon} className="token-img" />
+              {fromNetwork && (
+                <div className="dropdown-trigger">
+                  <span className="from-to-title">From</span>
+                  <div className="network-info-wrapper">
+                    <NetworkLogo network={fromNetwork?.network} />
+                    <span className="network-info-name">{fromNetwork?.name}</span>
                   </div>
-                  <span className="token-name">{fromToken?.symbol}</span>
                 </div>
-                <CustomSvg type="DownDeposit" />
-                {/* </div> */}
-              </div>
+              )}
+            </div>
+
+            <div className="token-wrapper">
+              {fromToken && (
+                <div className="token-name-wrapper" onClick={onClickFrom}>
+                  <div className="token-icon-name">
+                    <div className="token">
+                      <img src={fromToken?.icon} className="token-img" />
+                    </div>
+                    <span className="token-name">{fromToken?.symbol}</span>
+                  </div>
+                  <CustomSvg type="DownDeposit" />
+                  {/* </div> */}
+                </div>
+              )}
               {!isSameSymbol && (
                 <div className="token-amount-container">
                   <span className="token-amount-title">You Pay</span>
@@ -217,26 +233,30 @@ export default function DepositHome() {
           </div>
           <div className="card-container">
             <div className="card-info-wrapper">
-              <div className="dropdown-trigger">
-                <span className="from-to-title">To</span>
-                <div className="network-info-wrapper">
-                  <NetworkLogo network={'AELF'} />
-                  <span className="network-info-name">
-                    {toChainId === 'AELF' ? `MainChain ${toChainId}` : `SideChain ${toChainId}`}
-                  </span>
+              {toChainId && (
+                <div className="dropdown-trigger">
+                  <span className="from-to-title">To</span>
+                  <div className="network-info-wrapper">
+                    <NetworkLogo network={'AELF'} />
+                    <span className="network-info-name">
+                      {toChainId === 'AELF' ? `MainChain ${toChainId}` : `SideChain ${toChainId}`}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
             <div className="token-wrapper">
-              <div className="token-name-wrapper" onClick={onClickTo}>
-                <div className="token-icon-name">
-                  <div className="token">
-                    <img src={toToken?.icon} className="token-img" />
+              {toToken && (
+                <div className="token-name-wrapper" onClick={onClickTo}>
+                  <div className="token-icon-name">
+                    <div className="token">
+                      <img src={toToken?.icon} className="token-img" />
+                    </div>
+                    <span className="token-name">{toToken?.symbol}</span>
                   </div>
-                  <span className="token-name">{toToken?.symbol}</span>
+                  <CustomSvg type="DownDeposit" />
                 </div>
-                <CustomSvg type="DownDeposit" />
-              </div>
+              )}
               {!isSameSymbol && (
                 <div className="token-amount-container">
                   <span className="token-amount-title">You Receive</span>
@@ -272,10 +292,8 @@ export default function DepositHome() {
       </div>
     );
   }, [
-    fromNetwork?.name,
-    fromNetwork?.network,
-    fromToken?.icon,
-    fromToken?.symbol,
+    fromNetwork,
+    fromToken,
     isSameSymbol,
     onClickFrom,
     onClickTo,
@@ -284,8 +302,7 @@ export default function DepositHome() {
     receiveAmount.toAmount,
     setPayAmount,
     toChainId,
-    toToken?.icon,
-    toToken?.symbol,
+    toToken,
     unitReceiveAmount,
   ]);
   const [step, setStep] = useState(Step.HOME);
@@ -309,6 +326,7 @@ export default function DepositHome() {
         {step === Step.FROM_NETWORK && (
           <SelectNetwork
             networkList={allNetworkListRef.current?.networkList || []}
+            fromTokenSymbol={fromToken?.symbol}
             onClose={() => {
               setStep(Step.FROM_TOKEN);
             }}
@@ -342,7 +360,15 @@ export default function DepositHome() {
             onClose={() => {
               setStep(Step.HOME);
             }}
-            onMoreClicked={() => {
+            onMoreClicked={(index) => {
+              const selectedNetwork = fromTokenNetworkRef.current?.networkList[index - 1];
+              fromTokenNetworkRef.current = {
+                fromNetwork: selectedNetwork,
+                networkList: fromTokenNetworkRef.current?.networkList || [],
+                fromToken: fromTokenNetworkRef.current?.fromToken,
+                networkListSize: fromTokenNetworkRef.current?.networkListSize || 0,
+                toChainId: toChainId || 'AELF',
+              };
               setStep(Step.FROM_NETWORK);
             }}
             onItemClicked={(token) => {

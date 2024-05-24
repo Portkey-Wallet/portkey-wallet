@@ -65,12 +65,6 @@ export default function Home() {
       ) : (
         <HomeHeader unReadShow={isImputation || !viewReferralStatus} onUserClick={onUserClick} />
       )}
-      <button
-        onClick={() => {
-          navigate('/token-detail/deposit-home/tDVW/USDT');
-        }}>
-        deposit home
-      </button>
       <div className={clsx('portkey-body', isPrompt ? '' : 'flex-1')}>
         <MyBalance />
       </div>

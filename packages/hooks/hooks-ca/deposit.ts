@@ -198,6 +198,9 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
   useEffect(() => {
     (async () => {
       try {
+        if (!manager) {
+          return;
+        }
         setLoading(true);
         await fetchTransferToken();
         await fetchDepositTokenList();
@@ -206,7 +209,7 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
         setLoading(false);
       }
     })();
-  }, [fetchAllNetworkList, fetchDepositTokenList, fetchTransferToken]);
+  }, [fetchAllNetworkList, fetchDepositTokenList, fetchTransferToken, manager]);
 
   const isSameSymbol = useMemo(() => {
     if (!fromToken || !toToken) return true;

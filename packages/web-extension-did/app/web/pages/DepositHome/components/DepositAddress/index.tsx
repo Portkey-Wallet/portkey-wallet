@@ -26,27 +26,6 @@ export default function DepositAddress(props: IDepositAddressProps) {
   const contractAddressShow = useMemo(() => {
     return fromNetwork?.contractAddress?.slice(0, 6) + '...' + fromNetwork?.contractAddress?.slice(-6);
   }, [fromNetwork?.contractAddress]);
-  // const recordBgColor = useMemo(() => {
-  //   if (lastRecord?.status === TRecordsStatus.Succeed) {
-  //     return defaultColors.bg36;
-  //   } else if (lastRecord?.status === TRecordsStatus.Failed) {
-  //     return defaultColors.bg37;
-  //   } else {
-  //     // default is TRecordsStatus.Processing
-  //     return defaultColors.bg38;
-  //   }
-  // }, [lastRecord?.status]);
-
-  // const recordIcon = useMemo(() => {
-  //   if (lastRecord?.status === TRecordsStatus.Succeed) {
-  //     return 'deposit_status_success';
-  //   } else if (lastRecord?.status === TRecordsStatus.Failed) {
-  //     return 'deposit_status_failed';
-  //   } else {
-  //     // default is TRecordsStatus.Processing
-  //     return 'deposit_status_processing';
-  //   }
-  // }, [lastRecord?.status]);
 
   const recordText = useMemo(() => {
     const link = 'https://t.me/Portkey_Official_Group';
@@ -145,19 +124,17 @@ export default function DepositAddress(props: IDepositAddressProps) {
     toToken?.symbol,
   ]);
   const hintTextEle = useMemo(() => {
+    const notes = depositInfo?.extraNotes || [];
     return (
       <div className="hint-container">
         <div className="hint-content">
-          • Your deposit will be finalised after X confirmations on the network.
-          <br />
-          • To avoid potential losses, please ensure you only deposit the token supported, XXXX.
-          <br />• For the cross-chain transfer of XXX, you can view the details using the TXID on the deposit platform.
-          <br />• For the swap to YYY, a fixed slippage rate will be applied. In the event of a failed transaction, you
-          will receive XXX on aelf.
+          {notes.map((note, index) => (
+            <p key={index}>• {note}</p>
+          ))}
         </div>
       </div>
     );
-  }, []);
+  }, [depositInfo?.extraNotes]);
   const showMsgEle = useMemo(() => {
     return (
       <div className="msg-container">

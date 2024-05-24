@@ -210,10 +210,6 @@ export const PageRouter = () => {
       path: '/token-detail/deposit-home/:chain/:symbol',
       element: <DepositHome />,
     },
-    // {
-    //   path: '/token-detail/deposit-home/select-token-network',
-    //   element: <TokenNetworkList />,
-    // },
     {
       path: '/token-detail/deposit-home/select-network',
       element: <SelectNetwork />,

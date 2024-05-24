@@ -316,7 +316,7 @@ export const PageRouter = () =>
       element: <Home />,
     },
     {
-      path: '/token-detail/deposit-home',
+      path: '/token-detail/deposit-home/:chain/:symbol',
       element: <DepositHome />,
     },
   ]);

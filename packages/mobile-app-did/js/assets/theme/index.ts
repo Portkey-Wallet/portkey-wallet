@@ -71,6 +71,7 @@ export const defaultColors = {
   font22: '#B2B0FF',
   font23: '#808080',
   font24: '#1A1A1A',
+  font25: '#5D42FF',
 
   white: '#ffffff',
   black: '#000000',

@@ -69,7 +69,7 @@ export default function Deposit() {
         });
       }
     } catch (error) {
-      console.log('aaaa error : ', error);
+      console.log('fetchDepositInfo error : ', error);
     } finally {
       Loading.hide();
     }

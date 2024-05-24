@@ -100,12 +100,14 @@ const SelectGroupMembersToTransferPage = () => {
   return (
     <PageContainer
       titleDom="Select Recipient"
-      safeAreaColor={['blue', 'white']}
+      safeAreaColor={['white', 'white']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
       <View style={styles.inputWrap}>
         <CommonInput
           allowClear
+          grayBorder
+          theme="white-bg"
           value={keyword}
           placeholder={'Search'}
           onChangeText={v => {
@@ -154,8 +156,8 @@ const styles = StyleSheet.create({
     ...GStyles.paddingArg(0),
   },
   inputWrap: {
-    backgroundColor: defaultColors.bg5,
-    ...GStyles.paddingArg(8, 20, 8),
+    backgroundColor: defaultColors.bg1,
+    ...GStyles.paddingArg(0, 20, 8),
   },
   buttonWrap: {
     ...GStyles.marginArg(10, 20, 16),

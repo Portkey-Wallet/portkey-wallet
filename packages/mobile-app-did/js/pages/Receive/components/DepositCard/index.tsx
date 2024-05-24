@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: pTd(48),
     marginBottom: pTd(72),
-    paddingHorizontal: pTd(24),
+    paddingHorizontal: pTd(16),
     height: pTd(258),
   },
   cardIcon: {

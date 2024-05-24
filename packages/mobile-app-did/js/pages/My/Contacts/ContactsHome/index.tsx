@@ -59,22 +59,24 @@ const ContactsHome: React.FC = () => {
     <PageContainer
       leftCallback={() => navigationService.navigate('Tab')}
       titleDom={t('Contacts')}
-      safeAreaColor={['blue', 'white']}
+      safeAreaColor={['white', 'white']}
       rightDom={
         <Touchable
           style={{ padding: pTd(16) }}
           onPress={() => {
             navigationService.navigate('NoChatContactProfileEdit');
           }}>
-          <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
+          <Svg icon="add1" size={pTd(20)} color={defaultColors.icon5} />
         </Touchable>
       }
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       {isShowChat && (
         <>
-          <View style={[BGStyles.bg5, GStyles.paddingArg(8, 20, 8)]}>
+          <View style={[BGStyles.bg1, GStyles.paddingArg(0, 20, 8)]}>
             <CommonInput
+              grayBorder
+              theme="white-bg"
               value={keyword}
               placeholder={t('Name/address')}
               onChangeText={value => setKeyword(value.trim())}

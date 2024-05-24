@@ -87,7 +87,7 @@ const ActivityListPage = () => {
   return (
     <PageContainer
       titleDom={t('Activity')}
-      safeAreaColor={['blue', 'white']}
+      safeAreaColor={['white', 'white']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <FlashList

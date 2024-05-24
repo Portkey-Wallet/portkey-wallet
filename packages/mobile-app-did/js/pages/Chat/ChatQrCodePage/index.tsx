@@ -21,7 +21,7 @@ const ChatQrCodePage: React.FC = () => {
 
   return (
     <PageContainer
-      safeAreaColor={['blue', 'white']}
+      safeAreaColor={['white', 'white']}
       scrollViewProps={{ disabled: false }}
       hideTouchable={true}
       titleDom="My QR Code"

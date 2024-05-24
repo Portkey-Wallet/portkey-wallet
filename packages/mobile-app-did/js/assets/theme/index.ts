@@ -12,7 +12,7 @@ export const defaultColors = {
   bg3: '#F3E4E4',
   bg4: '#F7F8F9',
   bg5: '#5B8EF4',
-  bg6: '#F7F7F9',
+  bg6: '#F5F6F7',
   bg7: '#DEE2E8',
   bg8: '#00B75F',
   bg9: '#E7F0FC',
@@ -58,18 +58,19 @@ export const defaultColors = {
   font9: '#000000',
   font10: '#00B75F',
   font11: '#979AA1',
-  font12: '#B34B4B',
+  font12: '#F53F3F',
   font13: '#EA4F45',
   font14: '#FFE4C5',
   font15: '#C6A05A',
   font16: '#25272A',
   font17: '#547AFF',
   font18: '#55585E',
-  font19: '#808080',
-  font20: '#1A1A1A',
-  font21: '#55585E',
-  font22: '#F53F3F',
-  font23: '#C0C3C7',
+  font19: '#55585E',
+  font20: '#F53F3F',
+  font21: '#C0C3C7',
+  font22: '#B2B0FF',
+  font23: '#808080',
+  font24: '#1A1A1A',
 
   white: '#ffffff',
   black: '#000000',
@@ -78,6 +79,7 @@ export const defaultColors = {
   icon2: '#ffffff',
   icon3: '#333333',
   icon4: '#757A85',
+  icon5: '#55585E',
 
   border1: '#C5CBD5',
   border2: '#F7F8F9',
@@ -89,10 +91,32 @@ export const defaultColors = {
   border8: '#DCDEE1',
   border9: '#FFD4A2',
 
-  error: '#B34B4B',
+  error: '#F53F3F',
   error1: '#FF4D4F',
 
   shadow1: '#4D4E59',
+};
+
+export const lightModeColors = {
+  brandTouched: '#5137EE',
+  brandNormal: '#5D42FF',
+  brandDisable: '#B2B0FF',
+  brandLight: '#EFECFF',
+
+  functionalGreenDefault: '#00B75F',
+  functionalGreenDisable: '#99E2BF',
+  functionalGreenLight: '#EAF9EF',
+
+  functionalYellowDefault: '#FF9417',
+  functionalYellowDisable: '#FFD4A2',
+  functionalYellowLight: '#FFF4E8',
+
+  functionalRedDefault: '#F53F3F',
+  functionalRedDisable: '#FCBCBC',
+  functionalRedLight: '#FFEEEE',
+
+  primaryTextColor: '#101114',
+  secondaryTextColor: '#101114',
 };
 
 export const AELFColors = {

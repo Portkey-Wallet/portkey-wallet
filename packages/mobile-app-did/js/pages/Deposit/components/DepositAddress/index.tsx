@@ -13,6 +13,7 @@ import { copyText } from 'utils';
 import { defaultColors } from 'assets/theme';
 import { TTokenItem, TNetworkItem, TRecordsStatus } from '@portkey-wallet/types/types-ca/deposit';
 import { useDepositRecord } from '@portkey-wallet/hooks/hooks-ca/deposit';
+import { showCopyDepositAddress } from '../CopyContractAddress';
 
 interface DepositAddressProps {
   fromNetwork: TNetworkItem;
@@ -30,14 +31,18 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken,
     copyText(contractAddress);
   }, [contractAddress]);
 
+  const isSameSymbol = useMemo(() => {
+    return lastRecord?.fromTransfer?.symbol === lastRecord?.toTransfer?.symbol;
+  }, [lastRecord]);
+
   const recordBgColor = useMemo(() => {
     if (lastRecord?.status === TRecordsStatus.Succeed) {
       return defaultColors.bg36;
     } else if (lastRecord?.status === TRecordsStatus.Failed) {
-      return defaultColors.bg37;
+      return defaultColors.bg38;
     } else {
       // default is TRecordsStatus.Processing
-      return defaultColors.bg38;
+      return defaultColors.bg37;
     }
   }, [lastRecord?.status]);
 
@@ -52,16 +57,50 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken,
     }
   }, [lastRecord?.status]);
 
+  const depositSucceedText = useMemo(() => {
+    if (isSameSymbol) {
+      return `Deposit successful, with ${lastRecord?.toTransfer?.amount} ${lastRecord?.toTransfer?.symbol} sent to you.`;
+    } else {
+      return `Swap successful, with ${lastRecord?.toTransfer?.amount} ${lastRecord?.toTransfer?.symbol} sent to you.`;
+    }
+  }, [isSameSymbol, lastRecord]);
+  const depositFailedText = useMemo(() => {
+    if (isSameSymbol) {
+      return `Swap failed. Please contact the Portkey team for help.`;
+    } else {
+      return `Swap failed, with ${lastRecord?.fromTransfer?.amount} ${lastRecord?.fromTransfer?.symbol} sent to you.`;
+    }
+  }, [isSameSymbol, lastRecord]);
+  const depositProcessingText = useMemo(() => {
+    if (isSameSymbol) {
+      return `${lastRecord?.toTransfer?.amount} ${lastRecord?.toTransfer?.symbol} received, pending cross-chain transfer.`;
+    } else {
+      return `${lastRecord?.toTransfer?.amount} ${lastRecord?.toTransfer?.symbol} received, pending swap.`;
+    }
+  }, [isSameSymbol, lastRecord]);
+
   const recordText = useMemo(() => {
     if (lastRecord?.status === TRecordsStatus.Succeed) {
-      return `${lastRecord.toTransfer?.amount} ${lastRecord.toTransfer?.symbol} received`;
+      return depositSucceedText;
     } else if (lastRecord?.status === TRecordsStatus.Failed) {
-      return 'Failed';
+      return depositFailedText;
     } else {
       // default is TRecordsStatus.Processing
-      return 'Processing';
+      return depositProcessingText;
     }
-  }, [lastRecord?.status, lastRecord?.toTransfer?.amount, lastRecord?.toTransfer?.symbol]);
+  }, [depositFailedText, depositProcessingText, depositSucceedText, lastRecord]);
+
+  const onPressContractAddress = useCallback(() => {
+    showCopyDepositAddress({
+      fromNetwork,
+      fromToken,
+      contractAddress,
+      onExplore: () => {
+        // dismiss the current modal when push to discover page
+        OverlayModal.hide(false);
+      },
+    });
+  }, [contractAddress, fromNetwork, fromToken]);
 
   return (
     <ModalBody modalBodyType="bottom" title={'Deposit Address'} style={gStyles.overlayStyle}>
@@ -78,7 +117,9 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken,
             <Text style={styles.tokenText}>{fromToken.symbol}</Text>
           </View>
           <Text style={styles.chainText}>{fromNetwork.name}</Text>
-          <CommonQRCodeStyled style={styles.qrcode} qrData={depositInfo.depositAddress} width={pTd(240)} />
+          <View style={styles.qrcodeWrap}>
+            <CommonQRCodeStyled style={styles.qrcode} qrData={depositInfo.depositAddress} width={pTd(216)} />
+          </View>
           <View style={styles.addressCard}>
             <Text style={styles.addressLabelText}>Deposit Address</Text>
             <View style={styles.addressWrap}>
@@ -100,7 +141,11 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken,
           {contractAddress && (
             <View style={styles.contractAddressWrap}>
               <Text style={styles.contractAddressLabel}>Contract Address</Text>
+              <View style={styles.flex} />
               <Text style={styles.contractAddressText}>{formatStr2EllipsisStr(contractAddress, 6)}</Text>
+              <TouchableOpacity onPress={onPressContractAddress}>
+                <Svg icon={'question'} size={pTd(12)} iconStyle={styles.contractAddressIcon} />
+              </TouchableOpacity>
             </View>
           )}
           {depositInfo.extraNotes && (
@@ -173,11 +218,19 @@ const styles = StyleSheet.create({
     color: defaultColors.font11,
     fontSize: pTd(14),
   },
-  qrcode: {
+  qrcodeWrap: {
     marginTop: pTd(16),
     width: pTd(240),
     height: pTd(240),
     borderRadius: pTd(11),
+    borderColor: defaultColors.border8,
+    borderWidth: 0.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  qrcode: {
+    width: pTd(216),
+    height: pTd(216),
   },
   addressCard: {
     marginTop: pTd(24),
@@ -216,11 +269,13 @@ const styles = StyleSheet.create({
   },
   minimumDepositText: {
     fontSize: pTd(12),
-    color: defaultColors.font19,
+    color: defaultColors.font23,
   },
-  minimumAmountWrap: {},
+  minimumAmountWrap: {
+    alignItems: 'flex-end',
+  },
   minimumAmountText: {
-    color: defaultColors.font20,
+    color: defaultColors.font24,
     fontSize: pTd(12),
   },
   minimumAmountUsdText: {
@@ -231,15 +286,18 @@ const styles = StyleSheet.create({
     marginTop: pTd(12),
     width: '100%',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   contractAddressLabel: {
     fontSize: pTd(12),
-    color: defaultColors.font19,
+    color: defaultColors.font23,
   },
   contractAddressText: {
     fontSize: pTd(12),
-    color: defaultColors.font20,
+    color: defaultColors.font24,
+  },
+  contractAddressIcon: {
+    marginLeft: pTd(4),
   },
   noteWrap: {
     width: '100%',
@@ -251,5 +309,8 @@ const styles = StyleSheet.create({
   noteText: {
     color: defaultColors.font18,
     fontSize: pTd(12),
+  },
+  flex: {
+    flex: 1,
   },
 });

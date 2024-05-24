@@ -36,6 +36,7 @@ export const FloatTip = (props: FloatTipProps) => {
     paddingVertical: pTd(6),
     minWidth: pTd(54),
     borderRadius: pTd(6),
+    overflow: 'hidden',
   };
   const baseArrowStyle: ViewStyle = {
     borderLeftWidth: 8,

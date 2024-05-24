@@ -4,6 +4,7 @@ import { ModalBody } from 'components/ModalBody';
 import OverlayModal from 'components/OverlayModal';
 import Svg from 'components/Svg';
 import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
+import { CopyButton } from 'components/CopyButton';
 import { useGStyles } from 'assets/theme/useGStyles';
 import fonts from 'assets/theme/fonts';
 import { TDepositInfo } from '@portkey-wallet/types/types-ca/deposit';
@@ -155,9 +156,7 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken,
             <Text style={styles.addressLabelText}>Deposit Address</Text>
             <View style={styles.addressWrap}>
               <Text style={styles.addressText}>{depositInfo.depositAddress}</Text>
-              <TouchableOpacity onPress={onCopyAddress}>
-                <Svg icon={'copy1'} size={pTd(32)} iconStyle={styles.copyButton} />
-              </TouchableOpacity>
+              <CopyButton onCopy={onCopyAddress} />
             </View>
           </View>
           {depositInfo.minAmount && (
@@ -308,13 +307,7 @@ const styles = StyleSheet.create({
     fontSize: pTd(14),
     color: defaultColors.font5,
     ...fonts.mediumFont,
-  },
-  copyButton: {
-    marginLeft: pTd(12),
-    width: pTd(32),
-    height: pTd(32),
-    backgroundColor: 'blue',
-    borderRadius: pTd(6),
+    marginRight: pTd(12),
   },
   minimumDepositWrap: {
     marginTop: pTd(12),

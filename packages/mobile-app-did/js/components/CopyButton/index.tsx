@@ -2,10 +2,11 @@ import { useEffectOnce } from '@portkey-wallet/hooks';
 import { FloatTip, FloatTipProps } from 'components/FloatTip';
 import Svg from 'components/Svg';
 import React, { useCallback, useRef, useState } from 'react';
-import { LayoutChangeEvent, StyleSheet, TouchableOpacity } from 'react-native';
+import { LayoutChangeEvent, StyleSheet, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 
 export interface CopyButtonProps {
+  style?: StyleProp<ViewStyle>;
   tipsStyle?: Pick<FloatTipProps, 'containerStyle' | 'textStyle' | 'content'>;
   onCopy: () => void;
   duration?: number;
@@ -14,7 +15,7 @@ export interface CopyButtonProps {
 export const CopyButton = (props: CopyButtonProps) => {
   const [copyChecked, setCopyChecked] = useState(false);
   const copyForwarder = useRef<NodeJS.Timeout | null>(null);
-  const { tipsStyle = {}, onCopy, duration = 2000 } = props;
+  const { style = {}, tipsStyle = {}, onCopy, duration = 2000 } = props;
   const [wrapperLayoutProps, setWrapperLayoutProps] = useState<{ width: number; height: number }>({
     width: 0,
     height: 0,
@@ -45,7 +46,7 @@ export const CopyButton = (props: CopyButtonProps) => {
   }, [duration, onCopy]);
 
   return (
-    <TouchableOpacity onPress={copyId} onLayout={onLayout}>
+    <TouchableOpacity onPress={copyId} onLayout={onLayout} disabled={copyChecked} style={style}>
       <FloatTip wrapperLayoutProps={wrapperLayoutProps} {...tipsStyle} content={'Copied'} display={copyChecked} />
       <Svg icon={copyChecked ? 'copy-checked' : 'copy1'} size={pTd(32)} iconStyle={styles.copyButtonIcon} />
     </TouchableOpacity>

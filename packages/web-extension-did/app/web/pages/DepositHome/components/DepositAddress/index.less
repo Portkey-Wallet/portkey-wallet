@@ -11,11 +11,13 @@
   align-items: center;
   position: relative;
   width: inherit;
-  max-width: 440px;
-  min-width: 375px;
-  height: calc(100vh - 72px);
-  max-height: 884px;
-  min-height: 624px;
+  height: 100%;
+  // max-width: 440px;
+  // min-width: 375px;
+  // height: calc(100vh - 72px);
+  // max-height: 884px;
+  // min-height: 624px;
+  min-height: 838px !important;
   margin: 0 auto;
   padding: 0 0 50px; 
   .body {
@@ -48,6 +50,12 @@
         font-weight: 400;
         position: relative;
         flex: 1;
+        a {
+          color: @brand-click;
+          &:hover {
+            color: @brand-click;
+          }
+        }
       }
     }
     .qr-code-card {
@@ -205,6 +213,12 @@
           display: flex;
           align-items: center;
           justify-content: flex-end;
+          &:hover{
+            color: @brand-normal;
+          }
+          &:active{
+            color: @brand-click;
+          }
         }
       }
       

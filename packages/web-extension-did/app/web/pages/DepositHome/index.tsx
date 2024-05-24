@@ -116,7 +116,7 @@ export default function DepositHome() {
         chainId: toChainId || 'AELF',
       });
       const copiedNetworkList = [...networkList];
-      if (copiedNetworkList && fromNetwork && copiedNetworkList[0].name !== fromNetwork.name) {
+      if (copiedNetworkList && fromNetwork && copiedNetworkList[0].network !== fromNetwork.network) {
         copiedNetworkList.unshift(fromNetwork);
         copiedNetworkList.pop();
       }
@@ -182,7 +182,7 @@ export default function DepositHome() {
               <div className="dropdown-trigger">
                 <span className="from-to-title">From</span>
                 <div className="network-info-wrapper">
-                  <NetworkLogo network={fromNetwork?.name} />
+                  <NetworkLogo network={fromNetwork?.network} />
                   <span className="network-info-name">{fromNetwork?.name}</span>
                 </div>
               </div>
@@ -254,7 +254,7 @@ export default function DepositHome() {
                 </div>
               )}
             </div>
-            {!isSameSymbol && (
+            {!isSameSymbol && receiveAmount.minimumReceiveAmount > 0 && (
               <span className="mini-receive">Minimum receive: {receiveAmount.minimumReceiveAmount}</span>
             )}
           </div>
@@ -273,6 +273,7 @@ export default function DepositHome() {
     );
   }, [
     fromNetwork?.name,
+    fromNetwork?.network,
     fromToken?.icon,
     fromToken?.symbol,
     isSameSymbol,
@@ -376,6 +377,7 @@ export default function DepositHome() {
             fromNetwork={depositAddressRef.current?.fromNetwork}
             fromToken={depositAddressRef.current?.fromToken}
             toToken={depositAddressRef.current?.toToken}
+            isSameSymbol={isSameSymbol}
             onClose={() => {
               setStep(Step.HOME);
             }}
@@ -383,6 +385,6 @@ export default function DepositHome() {
         )}
       </>
     );
-  }, [homeEle, setFrom, setTo, step, toChainId]);
+  }, [homeEle, isSameSymbol, setFrom, setTo, step, toChainId]);
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

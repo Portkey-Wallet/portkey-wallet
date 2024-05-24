@@ -32,26 +32,26 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
   const {
     drawerType,
     type = 'component',
-    networkList = [],
+    networkList,
     network,
-    networkListSize = 0,
-    toChainIdList = [],
+    networkListSize,
+    toChainIdList,
     toChainId,
     onItemClicked,
     onMoreClicked,
     onClose,
   } = pros;
-  const headerTitle = useMemo(
-    () => (drawerType === 'from' ? 'Select Pay Token' : 'Select Receive Token'),
-    [drawerType],
-  );
+  const headerTitle = useMemo(() => {
+    return drawerType === 'from' ? 'Pay' : 'Receive';
+  }, [drawerType]);
   const { setLoading } = useLoading();
-  const [selectedNetworkIndex, setSelectedNetworkIndex] = useState<number>(1);
+  const [selectedNetworkIndex, setSelectedNetworkIndex] = useState<number>(-1);
   const [currentTokenList, setCurrentTokenList] = useState<TExtendedTokenItem[]>([]);
   console.log('wfs===currentTokenList', currentTokenList);
   const showNetworkList = useMemo(() => {
+    console.log('wfs showNetworkList=== invoke');
     if (drawerType === 'from') {
-      let copiedNetworkList = [...networkList];
+      let copiedNetworkList = [...(networkList || [])];
       copiedNetworkList?.unshift({
         network: ALL_MARK,
         name: ALL_MARK,
@@ -67,7 +67,7 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
       }));
       return copiedNetworkList;
     } else {
-      const copiedToChainIdList = toChainIdList.map((item) => ({
+      const copiedToChainIdList = toChainIdList?.map((item) => ({
         name: `${item === 'AELF' ? 'MainChain' : 'SideChain'} ${item}`,
         network: item as string,
         multiConfirm: '',
@@ -91,10 +91,35 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
     }
   }, [drawerType, networkList, toChainIdList]);
   console.log('wfs showNetworkList===', showNetworkList);
+  useEffect(() => {
+    const selectedIndex = showNetworkList?.findIndex(
+      (item) => item.network === (drawerType === 'from' ? network?.network : toChainId),
+    );
+    console.log(
+      'wfs setSelectedNetworkIndex invoke1',
+      selectedIndex,
+      toChainId,
+      showNetworkList,
+      drawerType,
+      network?.network,
+    );
+    setSelectedNetworkIndex(selectedIndex || -1);
+  }, [toChainId, showNetworkList, drawerType, network?.network]);
   const { isPrompt } = useCommonState();
   console.log('isPrompt====', isPrompt);
   const headerEle = useMemo(() => {
-    return <CommonHeader title={headerTitle} onLeftBack={onClose} />;
+    return (
+      <CommonHeader
+        title={headerTitle}
+        rightElementList={[
+          {
+            customSvgType: 'SuggestClose',
+            customSvgPlaceholderSize: CustomSvgPlaceholderSize.MD,
+            onClick: onClose,
+          },
+        ]}
+      />
+    );
   }, [headerTitle, onClose]);
   useEffect(() => {
     (async () => {
@@ -186,12 +211,16 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
     [drawerType, setLoading, toChainId],
   );
   console.log('wfs selectedNetworkIndex===', selectedNetworkIndex);
+  const contractAddressShow = useCallback((token: TExtendedTokenItem) => {
+    const contractAddress = token.network ? token.network.contractAddress : token.contractAddress;
+    return contractAddress?.slice(0, 6) + '...' + contractAddress?.slice(-6);
+  }, []);
   const selectNetworkEle = useMemo(() => {
     return (
       <div className="select-network-container">
         <span className="select-network">Select Network</span>
         <div className="all">
-          {showNetworkList.map((item, index) => (
+          {showNetworkList?.map((item, index) => (
             <button
               key={index}
               className={`all-button network-button ${
@@ -205,14 +234,14 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
               <span className="all-span">{item.name}</span>
             </button>
           ))}
-          {drawerType === 'from' && networkListSize > 2 && (
+          {drawerType === 'from' && (networkListSize || 0) > 2 && (
             <button
               className="network-more-button network-button network-button-unselected"
               onClick={() => {
                 console.log('wfs onMoreClicked===');
                 onMoreClicked?.();
               }}>
-              <span className="network-more-count">{networkListSize - 2}+</span>
+              <span className="network-more-count">{(networkListSize || 0) - 2}+</span>
             </button>
           )}
         </div>
@@ -231,6 +260,7 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
             dataSource={currentTokenList}
             renderItem={(token) => {
               console.log('wfs ====render token', token);
+              const contractAddress = token.network ? token.network.contractAddress : token.contractAddress;
               return (
                 <List.Item
                   onClick={() => {
@@ -252,9 +282,7 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
                           <span className="token-name">{token.symbol}</span>
                           <span className="token-full-name">{token.name}</span>
                         </div>
-                        <span className="token-address">
-                          {token.network ? token.network.contractAddress : token.contractAddress}
-                        </span>
+                        {!!contractAddress && <span className="token-address">{contractAddressShow(token)}</span>}
                       </div>
                     </div>
                   </div>
@@ -265,7 +293,7 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
         )}
       </div>
     );
-  }, [currentTokenList, onItemClicked, selectedNetworkIndex]);
+  }, [contractAddressShow, currentTokenList, onItemClicked, selectedNetworkIndex]);
   const mainContent = useCallback(() => {
     return (
       <div className="select-token-network-list">

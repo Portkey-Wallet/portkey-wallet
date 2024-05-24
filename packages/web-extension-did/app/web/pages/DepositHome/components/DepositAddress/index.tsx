@@ -1,30 +1,82 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import './index.less';
 import CustomSvg from 'components/CustomSvg';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import QRCodeCommon from 'pages/components/QRCodeCommon';
 import CommonAddress from 'components/CommonAddress';
-import { TDepositInfo, TNetworkItem, TTokenItem } from '@portkey-wallet/types/types-ca/deposit';
+import { TDepositInfo, TNetworkItem, TRecordsStatus, TTokenItem } from '@portkey-wallet/types/types-ca/deposit';
 import CommonHeader from 'components/CommonHeader';
+import { useDepositRecord } from '@portkey-wallet/hooks/hooks-ca/deposit';
+import clsx from 'clsx';
 export interface IDepositAddressProps {
   depositInfo: TDepositInfo | undefined;
   fromNetwork: TNetworkItem | undefined;
   fromToken: TTokenItem | undefined;
   toToken: TTokenItem | undefined;
+  isSameSymbol?: boolean;
   onClose?: () => void;
   type?: 'component' | 'page';
 }
 export default function DepositAddress(props: IDepositAddressProps) {
-  const { onClose, type = 'component', depositInfo, fromNetwork, fromToken, toToken } = props;
+  const { onClose, type = 'component', depositInfo, fromNetwork, fromToken, toToken, isSameSymbol } = props;
   console.log('wfs DepositAddress props', props);
   const { isPrompt } = useCommonState();
-  const [msg, setMsg] = useState<string | undefined>(undefined);
-  useEffect(() => {
-    setTimeout(() => {
-      setMsg('Swap Success!  100 USDT has been sent to you.');
-    }, 2000);
-  }, [setMsg]);
+  const { lastRecord } = useDepositRecord();
+  const contractAddressShow = useMemo(() => {
+    return fromNetwork?.contractAddress?.slice(0, 6) + '...' + fromNetwork?.contractAddress?.slice(-6);
+  }, [fromNetwork?.contractAddress]);
+  // const recordBgColor = useMemo(() => {
+  //   if (lastRecord?.status === TRecordsStatus.Succeed) {
+  //     return defaultColors.bg36;
+  //   } else if (lastRecord?.status === TRecordsStatus.Failed) {
+  //     return defaultColors.bg37;
+  //   } else {
+  //     // default is TRecordsStatus.Processing
+  //     return defaultColors.bg38;
+  //   }
+  // }, [lastRecord?.status]);
+
+  // const recordIcon = useMemo(() => {
+  //   if (lastRecord?.status === TRecordsStatus.Succeed) {
+  //     return 'deposit_status_success';
+  //   } else if (lastRecord?.status === TRecordsStatus.Failed) {
+  //     return 'deposit_status_failed';
+  //   } else {
+  //     // default is TRecordsStatus.Processing
+  //     return 'deposit_status_processing';
+  //   }
+  // }, [lastRecord?.status]);
+
+  const recordText = useMemo(() => {
+    const link = 'https://t.me/Portkey_Official_Group';
+    if (isSameSymbol) {
+      if (lastRecord?.status === TRecordsStatus.Succeed) {
+        return `Deposit successful, with ${lastRecord.toTransfer?.amount} ${lastRecord.toTransfer?.symbol} sent to you.`;
+      } else if (lastRecord?.status === TRecordsStatus.Failed) {
+        return (
+          <span>
+            Swap failed. Please contact the{' '}
+            <a href={link} target="_blank" rel="noopener noreferrer">
+              Portkey team
+            </a>{' '}
+            for help.
+          </span>
+        );
+      } else if (lastRecord?.status === TRecordsStatus.Processing) {
+        return `${lastRecord.toTransfer?.amount} ${lastRecord.toTransfer?.symbol} received, pending cross-chain transfer.`;
+      }
+    } else {
+      if (lastRecord?.status === TRecordsStatus.Succeed) {
+        return `Swap successful, with ${lastRecord.toTransfer?.amount} ${lastRecord.toTransfer?.symbol} sent to you.`;
+      } else if (lastRecord?.status === TRecordsStatus.Failed) {
+        return `Swap failed, with ${lastRecord.toTransfer?.amount} ${lastRecord.toTransfer?.symbol} sent to you.`;
+      } else if (lastRecord?.status === TRecordsStatus.Processing) {
+        return `${lastRecord.toTransfer?.amount} ${lastRecord.toTransfer?.symbol} received, pending swap.`;
+      }
+    }
+    return undefined;
+  }, [isSameSymbol, lastRecord?.status, lastRecord?.toTransfer?.amount, lastRecord?.toTransfer?.symbol]);
   const openOnExplorer = useCallback(() => {
     window.open(fromNetwork?.explorerUrl, '_blank');
   }, [fromNetwork?.explorerUrl]);
@@ -79,16 +131,16 @@ export default function DepositAddress(props: IDepositAddressProps) {
         <div className="contract-address-container">
           <div className="contract-address-title">Contract Address</div>
           <div className="contract-address" onClick={openOnExplorer}>
-            {fromNetwork?.contractAddress}
+            {contractAddressShow}
           </div>
         </div>
       </div>
     );
   }, [
+    contractAddressShow,
     depositInfo?.depositAddress,
     depositInfo?.minAmount,
     depositInfo?.minAmountUsd,
-    fromNetwork?.contractAddress,
     openOnExplorer,
     toToken?.symbol,
   ]);
@@ -110,23 +162,24 @@ export default function DepositAddress(props: IDepositAddressProps) {
     return (
       <div className="msg-container">
         <CustomSvg type="MsgSuccess" />
-        <div className="msg-content">{msg}</div>
+        <div className="msg-content">{recordText}</div>
       </div>
     );
-  }, [msg]);
+  }, [recordText]);
+  // isPrompt && 'detail-page-prompt'
   const mainContent = useCallback(() => {
     return (
-      <div className="deposit-address-container">
+      <div className={clsx(['deposit-address-container', isPrompt && 'detail-page-prompt'])}>
         {headerEle}
-        <div className="body" style={{ paddingTop: msg ? 0 : 8 }}>
-          {msg && showMsgEle}
+        <div className="body" style={{ paddingTop: recordText ? 0 : 8 }}>
+          {recordText && showMsgEle}
           {qrCodeEle}
           {addressInfoEle}
           {hintTextEle}
         </div>
       </div>
     );
-  }, [headerEle, msg, showMsgEle, qrCodeEle, addressInfoEle, hintTextEle]);
+  }, [isPrompt, headerEle, recordText, showMsgEle, qrCodeEle, addressInfoEle, hintTextEle]);
 
   return <>{isPrompt && type === 'page' ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

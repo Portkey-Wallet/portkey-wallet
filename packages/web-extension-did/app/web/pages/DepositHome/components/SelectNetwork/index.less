@@ -112,9 +112,17 @@ button {
       .select-network-list-item {
         width: 100%;
         padding: 0;
-        :hover {
+        &:hover {
           background-color: @neutral-hover-bg;
           cursor: pointer;
+        }
+        .custom-svg {
+          width: 20px;
+          height: 20px;
+          svg {
+            width: 20px;
+            height: 20px;
+          }
         }
       }
       .select-network-list-item-meta {
@@ -170,6 +178,12 @@ button {
           position: relative;
         }
       }
+    }
+    
+    .deposit-network {
+      width: 20px;
+      height: 20px;
+      border-radius: 10px;
     }
   }
   .portkey-list-item {

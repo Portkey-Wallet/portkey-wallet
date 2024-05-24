@@ -308,7 +308,7 @@ export default function BuyForm(props: IBuyFormProps) {
                 />
               )}
               <TextL style={[GStyles.flex1, fonts.mediumFont]}>{fiat?.symbol}</TextL>
-              <Svg size={16} icon="down-arrow" color={defaultColors.icon1} />
+              <Svg size={8} icon="solid-down-arrow" color={defaultColors.icon1} />
             </Touchable>
           }
           type="general"
@@ -347,7 +347,7 @@ export default function BuyForm(props: IBuyFormProps) {
                 />
               )}
               <TextL style={[GStyles.flex1, fonts.mediumFont]}>{crypto?.symbol || ''}</TextL>
-              <Svg size={16} icon="down-arrow" color={defaultColors.icon1} />
+              <Svg size={8} icon="solid-down-arrow" color={defaultColors.icon1} />
             </Touchable>
           }
           type="general"

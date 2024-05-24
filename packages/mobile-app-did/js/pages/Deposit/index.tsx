@@ -149,7 +149,7 @@ export default function Deposit() {
         />
         <ToCard
           wrapStyle={styles.toCard}
-          chainName={formatChainInfoToShow(chainId)}
+          chainName={formatChainInfoToShow(toChainId)}
           tokenSymbol={toToken?.symbol ?? ''}
           tokenIcon={toToken?.icon ?? ''}
           receiveAmount={receiveAmount.toAmount}

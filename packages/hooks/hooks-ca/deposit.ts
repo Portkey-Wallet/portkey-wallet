@@ -48,6 +48,11 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
     refreshReceiveTimerRef.current = undefined;
   }, []);
 
+  const clearAmount = useCallback(() => {
+    setPayAmount(0);
+    setReceiveAmount({ toAmount: 0, minimumReceiveAmount: 0 });
+  }, []);
+
   const calculateAmount = useCallback(
     async (fromAmount: number) => {
       if (!toChainId || !fromToken?.symbol || !toToken?.symbol || !fromAmount) {
@@ -279,6 +284,8 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
         return;
       }
 
+      clearAmount();
+
       let toTokenValid = false;
       depoistTokenList.forEach(token => {
         if (token.toTokenList) {
@@ -317,7 +324,15 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
         });
       }
     },
-    [clearFromAndTo, depoistTokenList, fromNetwork, fromToken, toChainId, toToken?.symbol],
+    [
+      clearAmount,
+      clearFromAndTo,
+      depoistTokenList,
+      fromNetwork?.network,
+      fromToken?.symbol,
+      toChainId,
+      toToken?.symbol,
+    ],
   );
 
   const setTo = useCallback(
@@ -325,6 +340,8 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
       if (newToChainId === toChainId && newToToken.symbol === toToken?.symbol) {
         return;
       }
+
+      clearAmount();
 
       let isFromTokenValid = false;
       depoistTokenList.forEach(token => {
@@ -370,7 +387,7 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
         });
       }
     },
-    [clearFromAndTo, depoistTokenList, fromToken?.symbol, toChainId, toToken?.symbol],
+    [clearAmount, clearFromAndTo, depoistTokenList, fromToken?.symbol, toChainId, toToken?.symbol],
   );
 
   return {

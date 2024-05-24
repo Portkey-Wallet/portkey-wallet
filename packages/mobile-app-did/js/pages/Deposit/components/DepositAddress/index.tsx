@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Image, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
 import OverlayModal from 'components/OverlayModal';
 import Svg from 'components/Svg';
@@ -31,7 +31,7 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken,
   }, [contractAddress]);
 
   const onContactPortkeyTeam = useCallback(() => {
-    //'https://t.me/Portkey_Official_Group');
+    Linking.openURL('https://t.me/Portkey_Official_Group');
   }, []);
 
   const isSameSymbol = useMemo(() => {
@@ -77,7 +77,7 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken,
           <Text onPress={onContactPortkeyTeam} style={styles.contactPortkeyText}>
             Portkey team
           </Text>{' '}
-          for help.{' '}
+          for help.
         </Text>
       );
     } else {
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    height: pTd(40),
+    paddingVertical: pTd(10),
     borderRadius: pTd(6),
   },
   recordIcon: {
@@ -215,6 +215,7 @@ const styles = StyleSheet.create({
   },
   recordText: {
     marginLeft: pTd(8),
+    marginRight: pTd(8),
     color: defaultColors.font1,
     fontSize: pTd(12),
   },

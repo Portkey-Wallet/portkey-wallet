@@ -60,7 +60,7 @@ export type TGetNetworkListResult = {
 
 export type TNetworkItem = {
   network: string;
-  name: string;
+  name: ChainId | string;
   multiConfirm: string;
   multiConfirmTime: string;
   contractAddress: string;

@@ -15,7 +15,7 @@ import depositService from '@portkey-wallet/utils/deposit';
 const MAX_REFRESH_TIME = 15;
 
 export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manager?: AElfWallet) => {
-  const { caHash, address } = useCurrentWalletInfo();
+  const { caHash, address, originChainId } = useCurrentWalletInfo();
   const { apiUrl } = useCurrentNetworkInfo();
 
   const [loading, setLoading] = useState<boolean>(true);
@@ -46,6 +46,11 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
   const clearRefreshReceive = useCallback(() => {
     refreshReceiveTimerRef.current && clearInterval(refreshReceiveTimerRef.current);
     refreshReceiveTimerRef.current = undefined;
+  }, []);
+
+  const clearAmount = useCallback(() => {
+    setPayAmount(0);
+    setReceiveAmount({ toAmount: 0, minimumReceiveAmount: 0 });
   }, []);
 
   const calculateAmount = useCallback(
@@ -131,12 +136,12 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
       signature: signature,
       plain_text: plainTextHex,
       ca_hash: caHash ?? '',
-      chain_id: 'AELF', // todo_wade: fix the chain_id
+      chain_id: originChainId ?? 'AELF',
       managerAddress: address,
     };
     const res = await depositService.getTransferToken(params, apiUrl);
-    console.log('aaaaa token : ', res);
-  }, [address, caHash, apiUrl, manager]);
+    console.log('etransfer token : ', res);
+  }, [manager, caHash, originChainId, address, apiUrl]);
 
   const fetchDepositTokenList = useCallback(async () => {
     const tokenList = await depositService.getDepositTokenList();
@@ -198,9 +203,7 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
   useEffect(() => {
     (async () => {
       try {
-        if (!manager) {
-          return;
-        }
+        if (!manager) return;
         setLoading(true);
         await fetchTransferToken();
         await fetchDepositTokenList();
@@ -279,6 +282,8 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
         return;
       }
 
+      clearAmount();
+
       let toTokenValid = false;
       depoistTokenList.forEach(token => {
         if (token.toTokenList) {
@@ -317,7 +322,15 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
         });
       }
     },
-    [clearFromAndTo, depoistTokenList, fromNetwork, fromToken, toChainId, toToken?.symbol],
+    [
+      clearAmount,
+      clearFromAndTo,
+      depoistTokenList,
+      fromNetwork?.network,
+      fromToken?.symbol,
+      toChainId,
+      toToken?.symbol,
+    ],
   );
 
   const setTo = useCallback(
@@ -325,6 +338,8 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
       if (newToChainId === toChainId && newToToken.symbol === toToken?.symbol) {
         return;
       }
+
+      clearAmount();
 
       let isFromTokenValid = false;
       depoistTokenList.forEach(token => {
@@ -370,7 +385,7 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
         });
       }
     },
-    [clearFromAndTo, depoistTokenList, fromToken?.symbol, toChainId, toToken?.symbol],
+    [clearAmount, clearFromAndTo, depoistTokenList, fromToken?.symbol, toChainId, toToken?.symbol],
   );
 
   return {

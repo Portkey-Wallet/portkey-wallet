@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Image, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
 import OverlayModal from 'components/OverlayModal';
 import Svg from 'components/Svg';
@@ -24,12 +24,15 @@ interface DepositAddressProps {
 
 const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken, depositInfo, contractAddress }) => {
   const gStyles = useGStyles();
-
   const { lastRecord } = useDepositRecord();
 
   const onCopyAddress = useCallback(() => {
     copyText(contractAddress);
   }, [contractAddress]);
+
+  const onContactPortkeyTeam = useCallback(() => {
+    Linking.openURL('https://t.me/Portkey_Official_Group');
+  }, []);
 
   const isSameSymbol = useMemo(() => {
     return lastRecord?.fromTransfer?.symbol === lastRecord?.toTransfer?.symbol;
@@ -58,25 +61,42 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken,
   }, [lastRecord?.status]);
 
   const depositSucceedText = useMemo(() => {
+    let text = '';
     if (isSameSymbol) {
-      return `Deposit successful, with ${lastRecord?.toTransfer?.amount} ${lastRecord?.toTransfer?.symbol} sent to you.`;
+      text = `Deposit successful, with ${lastRecord?.toTransfer?.amount} ${lastRecord?.toTransfer?.symbol} sent to you.`;
     } else {
-      return `Swap successful, with ${lastRecord?.toTransfer?.amount} ${lastRecord?.toTransfer?.symbol} sent to you.`;
+      text = `Swap successful, with ${lastRecord?.toTransfer?.amount} ${lastRecord?.toTransfer?.symbol} sent to you.`;
     }
+    return <Text style={styles.recordText}>{text}</Text>;
   }, [isSameSymbol, lastRecord]);
   const depositFailedText = useMemo(() => {
     if (isSameSymbol) {
-      return `Swap failed. Please contact the Portkey team for help.`;
+      return (
+        <Text style={styles.recordText}>
+          Swap failed. Please contact the{' '}
+          <Text onPress={onContactPortkeyTeam} style={styles.contactPortkeyText}>
+            Portkey team
+          </Text>{' '}
+          for help.
+        </Text>
+      );
     } else {
-      return `Swap failed, with ${lastRecord?.fromTransfer?.amount} ${lastRecord?.fromTransfer?.symbol} sent to you.`;
+      return (
+        <Text
+          style={
+            styles.recordText
+          }>{`Swap failed, with ${lastRecord?.fromTransfer?.amount} ${lastRecord?.fromTransfer?.symbol} sent to you.`}</Text>
+      );
     }
-  }, [isSameSymbol, lastRecord]);
+  }, [isSameSymbol, lastRecord, onContactPortkeyTeam]);
   const depositProcessingText = useMemo(() => {
+    let text = '';
     if (isSameSymbol) {
-      return `${lastRecord?.toTransfer?.amount} ${lastRecord?.toTransfer?.symbol} received, pending cross-chain transfer.`;
+      text = `${lastRecord?.toTransfer?.amount} ${lastRecord?.toTransfer?.symbol} received, pending cross-chain transfer.`;
     } else {
-      return `${lastRecord?.toTransfer?.amount} ${lastRecord?.toTransfer?.symbol} received, pending swap.`;
+      text = `${lastRecord?.toTransfer?.amount} ${lastRecord?.toTransfer?.symbol} received, pending swap.`;
     }
+    return <Text style={styles.recordText}>{text}</Text>;
   }, [isSameSymbol, lastRecord]);
 
   const recordText = useMemo(() => {
@@ -109,7 +129,7 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken,
           {lastRecord && (
             <View style={[styles.recordWrap, { backgroundColor: recordBgColor }]}>
               <Svg iconStyle={styles.recordIcon} size={pTd(16)} icon={recordIcon} />
-              <Text style={styles.recordText}>{recordText}</Text>
+              {recordText}
             </View>
           )}
           <View style={styles.tokenWrap}>
@@ -186,7 +206,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    height: pTd(40),
+    paddingVertical: pTd(10),
     borderRadius: pTd(6),
   },
   recordIcon: {
@@ -195,8 +215,13 @@ const styles = StyleSheet.create({
   },
   recordText: {
     marginLeft: pTd(8),
+    marginRight: pTd(8),
     color: defaultColors.font1,
     fontSize: pTd(12),
+  },
+  contactPortkeyText: {
+    color: defaultColors.font25,
+    textDecorationLine: 'underline',
   },
   tokenWrap: {
     marginTop: pTd(16),

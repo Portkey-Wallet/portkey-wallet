@@ -52,7 +52,7 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
         const req = await removeManager(caContract, managerAddress, caHash);
 
         const { deviceId } = await getDeviceInfo();
-        request.wallet.reportExitWallet({ params: { deviceId } });
+        await request.wallet.reportExitWallet({ params: { deviceId } });
 
         if (req && !req.error) {
           console.log('logout success', req);

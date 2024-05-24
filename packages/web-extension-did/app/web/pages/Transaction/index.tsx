@@ -291,7 +291,7 @@ export default function Transaction() {
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['transaction-detail-modal', isPrompt && 'detail-page-prompt'])}>
-        <div className="transaction-detail-body">
+        <div>
           <CommonHeader
             rightElementList={[
               {
@@ -301,15 +301,17 @@ export default function Transaction() {
               },
             ]}
           />
-          <div className="transaction-info">
-            <div className="method-wrap">
-              <p className="method-name">{activityItem?.transactionName}</p>
-              {isNft ? nftHeaderUI() : tokenHeaderUI()}
+          <div className="transaction-detail-body">
+            <div className="transaction-info">
+              <div className="method-wrap">
+                <p className="method-name">{activityItem?.transactionName}</p>
+                {isNft ? nftHeaderUI() : tokenHeaderUI()}
+              </div>
+              {statusAndDateUI()}
+              {fromToUI()}
+              {networkUI()}
+              {transactionUI()}
             </div>
-            {statusAndDateUI()}
-            {fromToUI()}
-            {networkUI()}
-            {transactionUI()}
           </div>
         </div>
         <div className="transaction-footer">

@@ -1,6 +1,9 @@
 @import '../../../../assets/theme/color.less';
+@import '../../../../assets/theme/constants.less';
 
-.custom-list {
+// To increase the css weight
+.custom-list.custom-list-weight {
+  height: auto;
   .header {
     position: sticky;
     top: 0;
@@ -8,9 +11,9 @@
   }
   .dropdown-search-wrapper {
     position: sticky;
-    top: 56px;
+    top: @common-header-height;
     background-color: @neutral-default-bg;
-    padding: 4px 16px 8px;
+    padding: 0 16px 8px;
     margin-bottom: 0;
   }
   .list {

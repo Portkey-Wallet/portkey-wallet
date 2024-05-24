@@ -1,4 +1,4 @@
-import CustomSvg from 'components/CustomSvg';
+import CommonHeader, { CustomSvgPlaceholderSize } from 'components/CommonHeader';
 import QRCodeCommon from 'pages/components/QRCodeCommon';
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { ChannelTypeEnum } from '@portkey-wallet/im';
@@ -26,9 +26,15 @@ export default function ShowQRCode({
   return (
     <div className="show-qrcode-wrapper flex-column">
       {showHeader && (
-        <div className="show-qrcode-header">
-          <CustomSvg onClick={onBack} type="SuggestClose" />
-        </div>
+        <CommonHeader
+          rightElementList={[
+            {
+              customSvgType: 'SuggestClose',
+              customSvgPlaceholderSize: CustomSvgPlaceholderSize.MD,
+              onClick: onBack,
+            },
+          ]}
+        />
       )}
       <div className="show-qrcode-content flex-column-center">
         <div className="qrcode-content-icon"></div>

@@ -1,5 +1,6 @@
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import CustomSvg from 'components/CustomSvg';
+import CommonHeader, { CustomSvgPlaceholderSize } from 'components/CommonHeader';
 import DropdownSearch from 'components/DropdownSearch';
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -245,10 +246,17 @@ export default function CustomTokenList({
 
   return (
     <div className="custom-token-list">
-      <div className="header">
-        <p>{title || 'Select Assets'}</p>
-        <CustomSvg type="SuggestClose" onClick={onClose} />
-      </div>
+      <CommonHeader
+        className="header"
+        title={title || 'Select Assets'}
+        rightElementList={[
+          {
+            customSvgType: 'SuggestClose',
+            customSvgPlaceholderSize: CustomSvgPlaceholderSize.MD,
+            onClick: onClose,
+          },
+        ]}
+      />
       <DropdownSearch
         overlayClassName="empty-dropdown"
         open={openDrop}

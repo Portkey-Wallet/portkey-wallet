@@ -19,9 +19,11 @@ const InputWithCancel = React.forwardRef(function InputWithCancel(props: InputWi
   const { t } = useLanguage();
 
   return (
-    <View style={[BGStyles.bg5, GStyles.flexRow, styles.inputContainer]}>
+    <View style={[BGStyles.bg1, GStyles.flexRow, styles.inputContainer]}>
       <CommonInput
         autoFocus
+        grayBorder
+        theme="white-bg"
         returnKeyType="search"
         containerStyle={styles.inputStyle}
         rightIcon={
@@ -37,7 +39,7 @@ const InputWithCancel = React.forwardRef(function InputWithCancel(props: InputWi
         ref={ref}
       />
       <Touchable onPress={onCancel}>
-        <TextM style={[FontStyles.font2, styles.cancelButton]}>{t('Cancel')}</TextM>
+        <TextM style={[FontStyles.primaryColor, styles.cancelButton]}>{t('Cancel')}</TextM>
       </Touchable>
     </View>
   );
@@ -47,7 +49,7 @@ export default InputWithCancel;
 
 const styles = StyleSheet.create({
   inputContainer: {
-    ...GStyles.paddingArg(8, 20),
+    ...GStyles.paddingArg(0, 20, 8),
   },
   inputStyle: {
     width: pTd(280),

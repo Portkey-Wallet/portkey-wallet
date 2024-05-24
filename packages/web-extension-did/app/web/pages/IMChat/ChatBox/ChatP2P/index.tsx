@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
 import { MessageList, InputBar, StyleProvider, MessageContentType, PopDataProps } from '@portkey-wallet/im-ui-web';
-import { Avatar } from '@portkey-wallet/im-ui-web';
 import { useChannel, useIsStranger, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
 import BookmarkListDrawer from 'pages/IMChat/components/BookmarkListDrawer';
@@ -165,18 +164,6 @@ export default function ChatBox() {
     },
     [handleSendMsgError, sendMessage],
   );
-  const renderTitle = useMemo(
-    () => (
-      <div className="flex title-element">
-        <div className="title-content flex-center" onClick={handleGoProfile}>
-          <Avatar src={info?.channelIcon} letter={info?.displayName?.slice(0, 1).toUpperCase()} />
-          <div className="title-name">{info?.displayName}</div>
-        </div>
-        {info?.mute && <CustomSvg type="Mute" />}
-      </div>
-    ),
-    [handleGoProfile, info?.channelIcon, info?.displayName, info?.mute],
-  );
   useEffect(() => {
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);
@@ -184,8 +171,14 @@ export default function ChatBox() {
   return (
     <div className="chat-box-page flex-column">
       <ChatBoxHeader
+        avatarProps={{
+          src: info?.channelIcon,
+          letter: info?.displayName?.slice(0, 1).toUpperCase(),
+        }}
+        titleName={info?.displayName}
+        isMute={info?.mute}
+        handleClickTitle={handleGoProfile}
         popMenuData={p2pPopList.filter((i) => isStranger || i.key !== 'add-contact')}
-        renderTitle={renderTitle}
         goBack={() => navigate('/chat-list')}
         popVisible={popVisible}
         setPopVisible={setPopVisible}

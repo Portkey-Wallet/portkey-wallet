@@ -1,15 +1,11 @@
 @import '../../../../assets/theme/color.less';
+@import '../../../../assets/theme/constants.less';
 
 .view-contact-popup {
   height: 100%;
-  .view-contact-nav {
-    padding-top: 16px;
-    background-color: @bg-13;
-    border-bottom: 1px solid @border-2;
-  }
 
   .view-contact-body {
-    height: calc(100% - 97px);
+    height: calc(100% - @common-header-height);
 
     .footer {
       padding: 16px;
@@ -21,5 +17,5 @@
   margin-bottom: 16px;
   font-size: 18px;
   line-height: 22px;
-  color: @font-11;
+  color: @neutral-primary-text;
 }

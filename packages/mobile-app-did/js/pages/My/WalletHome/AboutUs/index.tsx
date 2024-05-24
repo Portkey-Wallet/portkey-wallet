@@ -66,7 +66,7 @@ const AboutUs = () => {
   return (
     <PageContainer
       titleDom={t('About Us')}
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       containerStyles={styles.pageContainer}
       scrollViewProps={{ disabled: false }}>
       <View style={styles.logoWrap}>

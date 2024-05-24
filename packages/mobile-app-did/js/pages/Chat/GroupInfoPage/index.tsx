@@ -104,7 +104,7 @@ const GroupInfoPage = () => {
       hideTouchable
       leftCallback={() => navigationService.goBack()}
       titleDom={ChatOperationsEnum.GROUP_INFO}
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
       <ScrollView>

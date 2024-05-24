@@ -88,7 +88,7 @@ const WalletName: React.FC = () => {
       containerStyles={pageStyles.pageWrap}
       rightDom={
         <Touchable onPress={() => navigationService.navigate('ChatQrCodePage')} style={[GStyles.marginRight(pTd(24))]}>
-          <Svg icon="chat-scan-white" size={pTd(20)} color={defaultColors.icon5} />
+          <Svg icon="chat-qr-code" size={pTd(20)} />
         </Touchable>
       }>
       <View style={pageStyles.pageContainer}>

@@ -1,4 +1,3 @@
-import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { ChainId } from '@portkey-wallet/im';
 import { TNetworkItem, TTokenItem } from '@portkey-wallet/types/types-ca/deposit';
 import depositService from '@portkey-wallet/utils/deposit';
@@ -94,14 +93,4 @@ const getTokenPriority = (token: TTokenItem) => {
   } else {
     return 1;
   }
-};
-
-export const getFixedChainIdName = (chainId: string) => {
-  const isMainChainId = chainId === MAIN_CHAIN_ID;
-  return `${isMainChainId ? 'MainChain' : 'SideChain'} ${chainId}`;
-};
-
-export const getFixedContractAddress = (contractAddress?: string) => {
-  if (!contractAddress) return '';
-  return contractAddress.slice(0, 6) + '...' + contractAddress.slice(-6);
 };

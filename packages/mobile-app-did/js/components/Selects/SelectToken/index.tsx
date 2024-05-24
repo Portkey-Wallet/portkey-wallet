@@ -10,15 +10,11 @@ import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM, TextS } from 'components/CommonText';
 import { ModalBody } from 'components/ModalBody';
 import { useGStyles } from 'assets/theme/useGStyles';
-import {
-  RequestNetworkTokenDataProps,
-  getFixedChainIdName,
-  getFixedContractAddress,
-  useMemoNetworkAndTokenData,
-} from '../Entry/model';
+import { RequestNetworkTokenDataProps, useMemoNetworkAndTokenData } from '../Entry/model';
 import Svg from 'components/Svg';
 import fonts from 'assets/theme/fonts';
 import { ChainId } from '@portkey-wallet/types';
+import { formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 
 enum Layers {
   LAYER1,
@@ -263,7 +259,7 @@ const NetworkTopBtn = (props: {
     if (isAll) return 'All';
     if (isTopTwo) {
       const name = removeQuoteFromStr(networkItem?.name || 'ETH');
-      return isPay ? name : getFixedChainIdName(name);
+      return isPay ? name : formatChainInfoToShow(name as ChainId); // in this case, name is chainId
     }
     return `${networkOverflowNum}+`;
   }, [isAll, isPay, isTopTwo, networkItem?.name, networkOverflowNum]);
@@ -351,7 +347,9 @@ const TokenListItem = (props: {
         </View>
         {isShowAll && (
           <Text style={styles.tokenTextSub}>
-            {isReceive ? getFixedChainIdName(networkName) : getFixedContractAddress(contractAddress)}
+            {isReceive
+              ? formatChainInfoToShow(networkName as ChainId)
+              : formatStr2EllipsisStr(contractAddress, 6, 'middle')}
           </Text>
         )}
       </View>

@@ -15,8 +15,10 @@ import depositService from '@portkey-wallet/utils/deposit';
 const MAX_REFRESH_TIME = 15;
 
 export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manager?: AElfWallet) => {
-  const { caHash, address } = useCurrentWalletInfo();
+  const { caHash, address, originChainId } = useCurrentWalletInfo();
   const { apiUrl } = useCurrentNetworkInfo();
+
+  const [loading, setLoading] = useState<boolean>(true);
 
   const [allNetworkList, setAllNetworkList] = useState<TNetworkItem[]>([]);
 
@@ -44,6 +46,11 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
   const clearRefreshReceive = useCallback(() => {
     refreshReceiveTimerRef.current && clearInterval(refreshReceiveTimerRef.current);
     refreshReceiveTimerRef.current = undefined;
+  }, []);
+
+  const clearAmount = useCallback(() => {
+    setPayAmount(0);
+    setReceiveAmount({ toAmount: 0, minimumReceiveAmount: 0 });
   }, []);
 
   const calculateAmount = useCallback(
@@ -129,12 +136,12 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
       signature: signature,
       plain_text: plainTextHex,
       ca_hash: caHash ?? '',
-      chain_id: 'AELF', // todo_wade: fix the chain_id
+      chain_id: originChainId ?? 'AELF',
       managerAddress: address,
     };
     const res = await depositService.getTransferToken(params, apiUrl);
-    console.log('aaaaa token : ', res);
-  }, [address, caHash, apiUrl, manager]);
+    console.log('etransfer token : ', res);
+  }, [manager, caHash, originChainId, address, apiUrl]);
 
   const fetchDepositTokenList = useCallback(async () => {
     const tokenList = await depositService.getDepositTokenList();
@@ -195,13 +202,20 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
 
   useEffect(() => {
     (async () => {
-      await fetchTransferToken();
-      await fetchDepositTokenList();
-      await fetchAllNetworkList();
+      try {
+        if (!manager) return;
+        setLoading(true);
+        await fetchTransferToken();
+        await fetchDepositTokenList();
+        await fetchAllNetworkList();
+      } finally {
+        setLoading(false);
+      }
     })();
-  }, [fetchAllNetworkList, fetchDepositTokenList, fetchTransferToken]);
+  }, [fetchAllNetworkList, fetchDepositTokenList, fetchTransferToken, manager]);
 
   const isSameSymbol = useMemo(() => {
+    if (!fromToken || !toToken) return true;
     return fromToken && toToken && fromToken.symbol === toToken.symbol;
   }, [fromToken, toToken]);
 
@@ -268,6 +282,8 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
         return;
       }
 
+      clearAmount();
+
       let toTokenValid = false;
       depoistTokenList.forEach(token => {
         if (token.toTokenList) {
@@ -306,18 +322,25 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
         });
       }
     },
-    [clearFromAndTo, depoistTokenList, fromNetwork, fromToken, toChainId, toToken?.symbol],
+    [
+      clearAmount,
+      clearFromAndTo,
+      depoistTokenList,
+      fromNetwork?.network,
+      fromToken?.symbol,
+      toChainId,
+      toToken?.symbol,
+    ],
   );
 
   const setTo = useCallback(
     ({ newToChainId, newToToken }: { newToChainId: ChainId; newToToken: TTokenItem }) => {
-      console.log('newToChainId : ', newToChainId);
-      console.log('newToToken : ', newToToken);
       if (newToChainId === toChainId && newToToken.symbol === toToken?.symbol) {
         return;
       }
-      // 先看一下当前的fromToken是否支持这个toToken。
-      // 支持的话，直接设置toToken；否则找到第一个支持的fromToken，然后同时更新fromToken和toToken
+
+      clearAmount();
+
       let isFromTokenValid = false;
       depoistTokenList.forEach(token => {
         if (token.toTokenList) {
@@ -362,10 +385,11 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
         });
       }
     },
-    [clearFromAndTo, depoistTokenList, fromToken?.symbol, toChainId, toToken?.symbol],
+    [clearAmount, clearFromAndTo, depoistTokenList, fromToken?.symbol, toChainId, toToken?.symbol],
   );
 
   return {
+    loading,
     allNetworkList,
     fromNetwork,
     fromToken,

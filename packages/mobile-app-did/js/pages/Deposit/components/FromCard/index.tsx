@@ -1,6 +1,18 @@
 import React from 'react';
-import { StyleSheet, View, Text, Image, StyleProp, ViewStyle, TextInput, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  StyleProp,
+  ViewStyle,
+  ImageStyle,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
 import Svg from 'components/Svg';
+import { getNetworkImagePath } from 'components/Selects/SelectToken';
+import CommonAvatar from 'components/CommonAvatar';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
@@ -26,27 +38,21 @@ export const FromCard: React.FC<FromCardProps> = ({
   onPress,
   showAmount,
 }) => {
-  const getNetworkImagePath = () => {
-    switch (network) {
-      case 'ETH':
-        return require('assets/image/pngs/third-party-ethereum.png');
-      case 'BSC':
-        return require('assets/image/pngs/third-party-bnb.png');
-      case 'TRX':
-        return require('assets/image/pngs/third-party-tron.png');
-      case 'ARBITRUM':
-        return require('assets/image/pngs/third-party-arb.png');
-      case 'Solana':
-        return require('assets/image/pngs/third-party-solana.png');
-      case 'MATIC':
-        return require('assets/image/pngs/third-party-polygon.png');
-      case 'OPTIMISM':
-        return require('assets/image/pngs/third-party-op.png');
-      case 'AVAXC':
-        return require('assets/image/pngs/third-party-avax.png');
-      default: {
-        return require('assets/image/pngs/third-party-solana.png');
-      }
+  const networkIcon = (iconStyle: ImageStyle) => {
+    const icon = getNetworkImagePath(network);
+    if (icon) {
+      return <Image style={iconStyle} source={icon} resizeMode={'contain'} />;
+    } else {
+      return (
+        <CommonAvatar
+          title={networkName}
+          avatarSize={pTd(20)}
+          hasBorder
+          titleStyle={{
+            fontSize: pTd(14),
+          }}
+        />
+      );
     }
   };
 
@@ -54,14 +60,14 @@ export const FromCard: React.FC<FromCardProps> = ({
     <View style={[styles.container, wrapStyle]}>
       <View style={styles.chainWrapper}>
         <Text style={styles.typeText}>From</Text>
-        <Image style={styles.chainIconImage} source={getNetworkImagePath()} />
+        {network && networkIcon(styles.chainIconImage)}
         <Text style={styles.chainNameText}>{networkName}</Text>
       </View>
       <View style={styles.contentWrapper}>
         <TouchableOpacity style={styles.tokenWrapper} onPress={onPress}>
           {tokenIcon && <Image style={styles.tokenIconImage} source={{ uri: tokenIcon }} />}
           <Text style={styles.tokenText}>{tokenSymbol}</Text>
-          <Svg iconStyle={styles.arrowIcon} size={pTd(12)} icon={'down-arrow'} />
+          <Svg iconStyle={styles.arrowIcon} size={pTd(10)} icon={'solid-down-arrow'} />
         </TouchableOpacity>
         {showAmount && (
           <View style={styles.mountWrapper}>
@@ -94,9 +100,9 @@ const styles = StyleSheet.create({
   typeText: {
     color: defaultColors.font11,
     fontSize: pTd(12),
+    marginRight: pTd(8),
   },
   chainIconImage: {
-    marginLeft: pTd(8),
     width: pTd(16),
     height: pTd(16),
     borderRadius: pTd(8),

@@ -46,7 +46,7 @@ export default function HeaderPinSection(props: HeaderPinSection) {
           {isImg ? 'Photo' : lastPinMessage?.content}
         </TextM>
       </View>
-      <Svg icon="pin-list-icon" size={pTd(20)} />
+      <Svg icon="pin-list-icon" size={pTd(20)} color={defaultColors.primaryColor} />
     </Touchable>
   );
 }

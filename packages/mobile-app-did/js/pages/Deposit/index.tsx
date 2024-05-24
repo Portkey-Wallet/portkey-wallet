@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import { defaultColors } from 'assets/theme';
@@ -15,14 +15,12 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { TNetworkItem, TTokenItem } from '@portkey-wallet/types/types-ca/deposit';
 import { useDeposit } from '@portkey-wallet/hooks/hooks-ca/deposit';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getManagerAccount, getPin } from 'utils/redux';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
 
 export default function Deposit() {
   const { t } = useLanguage();
-  const { currentNetwork } = useWallet();
 
   const tokenItem = useRouterParams<TokenItemShowType>();
   const { chainId, symbol, imageUrl } = tokenItem;
@@ -33,6 +31,7 @@ export default function Deposit() {
   };
 
   const {
+    loading,
     allNetworkList,
     fromNetwork,
     fromToken,
@@ -49,6 +48,14 @@ export default function Deposit() {
     setTo,
   } = useDeposit(initToToken, chainId, getManagerAccount(getPin() ?? ''));
 
+  useEffect(() => {
+    if (loading) {
+      Loading.show();
+    } else {
+      Loading.hide();
+    }
+  }, [loading]);
+
   const onNext = useCallback(async () => {
     try {
       Loading.show();
@@ -62,7 +69,7 @@ export default function Deposit() {
         });
       }
     } catch (error) {
-      console.log('aaaa error : ', error);
+      console.log('fetchDepositInfo error : ', error);
     } finally {
       Loading.hide();
     }
@@ -142,8 +149,7 @@ export default function Deposit() {
         />
         <ToCard
           wrapStyle={styles.toCard}
-          chainName={formatChainInfoToShow(chainId, currentNetwork)}
-          chainIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACXklEQVR4AcTWA6wlMRiG4Tlr27Zt27bN6ERrK1jbN1rbtm3bto3um810M+lRe08mO8kTjYqvf2tF5srWZomFDJiB1/iKjSgNDyzXLvvnsTAXXyActiEnXG9AUVyFUHxBZxh/0IOMaI0+6I0WSA8P1Oer4Q6EH17TBkRDFWzEawjbC6xCBURRGpAexyEUD1DftAFFcBLCj1/Yj7xQR6wt7kPY3mEUEpo2IAI/IQL4jDGwoAaxDPpgEOojKYxD9RS/IYI4hpTwl51YiI2oiFSqf0GE8BzdYcEk3DGRCEkQH9Hg8+CjkCMAnEQVxEKoHydAUXgxGwswFi2QGdHx74XpMgMabmIwaqEKmqIdCsGyZcRQJaDSD+xBY8TG3wYUxOEgq+AOlmIyInAET/EcP+1ndiAzUmEOvkAEcRetEUPWgXJYjjcQtmdYiHoy3YiB/BiL18r6bw4vPkBouIDCctiiIB3qojs6ozrSBKiEiTEZnx35aI7dEJp+YIz/sgyNoKVCFwxESTTARwhNv3Ep3E0pulwVaA9h6Mf/bsDPcKYgJTqFOQWXnSFMizqOENYIEsJEmOgI4Sm0wC7jENrLsAyWKUvrORahvrIM82GM8uxDtDJchhflMsyPg0GG6a5mIcqC1AaFqI0sRFMMSvEtDHWU4iaOUuxxHFaH4z5+65TiB5qb0WlU09yMEqIYvJiF+RiLln42I63ev0BPt7ZjnRE4jtRuHUhmhhiFLxjv5pGsMI4H2Y4PIb+bh9JoqIz1fo7lq1HF7WO57FEGtMKfIXdM5MjpmAx412wod07p3z0HAEmapjUsGtMuAAAAAElFTkSuQmCC"
+          chainName={formatChainInfoToShow(toChainId)}
           tokenSymbol={toToken?.symbol ?? ''}
           tokenIcon={toToken?.icon ?? ''}
           receiveAmount={receiveAmount.toAmount}

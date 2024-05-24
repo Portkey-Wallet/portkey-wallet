@@ -8,7 +8,6 @@ import { pTd } from 'utils/unit';
 interface ToCardProps {
   wrapStyle?: StyleProp<ViewStyle>;
   chainName: string;
-  chainIcon: string;
   tokenSymbol: string;
   tokenIcon: string;
   receiveAmount: number;
@@ -19,7 +18,6 @@ interface ToCardProps {
 
 export const ToCard: React.FC<ToCardProps> = ({
   wrapStyle,
-  chainIcon,
   chainName,
   tokenIcon,
   tokenSymbol,
@@ -32,14 +30,14 @@ export const ToCard: React.FC<ToCardProps> = ({
     <View style={[styles.container, wrapStyle]}>
       <View style={styles.chainWrapper}>
         <Text style={styles.typeText}>To</Text>
-        <Image style={styles.chainIconImage} source={{ uri: chainIcon }} />
+        <Image style={styles.chainIconImage} source={require('assets/image/pngs/aelf.png')} />
         <Text style={styles.chainNameText}>{chainName}</Text>
       </View>
       <View style={styles.contentWrapper}>
         <TouchableOpacity style={styles.tokenWrapper} onPress={onPress}>
           {tokenIcon && <Image style={styles.tokenIconImage} source={{ uri: tokenIcon }} />}
           <Text style={styles.tokenText}>{tokenSymbol}</Text>
-          <Svg iconStyle={styles.arrowIcon} size={pTd(12)} icon={'down-arrow'} />
+          <Svg iconStyle={styles.arrowIcon} size={pTd(10)} icon={'solid-down-arrow'} />
         </TouchableOpacity>
         {showAmount && (
           <View style={styles.amountWrapper}>

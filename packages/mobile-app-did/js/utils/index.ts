@@ -1,9 +1,7 @@
-import CommonToast from 'components/CommonToast';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
 import * as Network from 'expo-network';
 import { setStringAsync } from 'expo-clipboard';
-import i18n from 'i18n';
 import { Timestamp } from '@portkey-wallet/types';
 dayjs.extend(utc);
 
@@ -31,10 +29,10 @@ export const getFaviconUrlFromDomain = (domain = '') => {
  */
 export const copyText = async (text: string) => {
   try {
-    const isCopy = await setStringAsync(text);
-    isCopy && CommonToast.success(i18n.t('Copy Success'));
+    await setStringAsync(text);
+    // isCopy && CommonToast.success(i18n.t('Copy Success'));
   } catch {
-    CommonToast.success(i18n.t('Copy Fail'));
+    // CommonToast.success(i18n.t('Copy Fail'));
   }
 };
 /**

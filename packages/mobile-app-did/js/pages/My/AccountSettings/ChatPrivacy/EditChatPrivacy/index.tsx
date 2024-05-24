@@ -97,7 +97,11 @@ const EditChatPrivacy: React.FC = () => {
           onPress={() => {
             updatePrivacyPermission(item.value);
           }}
-          rightElement={permission === item.value ? <Svg icon={'selected'} size={pTd(20)} /> : null}
+          rightElement={
+            permission === item.value ? (
+              <Svg icon={'selected'} size={pTd(20)} color={defaultColors.primaryColor} />
+            ) : null
+          }
         />
       ))}
     </PageContainer>

@@ -128,9 +128,9 @@ function TokenDetail() {
   );
 
   const handleSendOrReceive = useCallback(
-    (type: 'send' | 'receive') => {
+    (type: 'send' | 'receive', pageSide?: ReceiveTabEnum) => {
       navigate(`/${type}/token/${currentToken?.symbol}`, {
-        state: { ...currentToken, address: currentToken?.tokenContractAddress },
+        state: { ...currentToken, address: currentToken?.tokenContractAddress, pageSide },
       });
     },
     [currentToken, navigate],
@@ -173,7 +173,7 @@ function TokenDetail() {
               onSend={cardShowFn.send ? () => handleSendOrReceive('send') : undefined}
               onReceive={cardShowFn.receive ? () => handleSendOrReceive('receive') : undefined}
               onClickSwap={cardShowFn.swap ? () => handleClickTrade(TradeTypeEnum.Swap) : undefined}
-              onClickDeposit={isShowDeposit ? () => handleClickTrade(TradeTypeEnum.ETrans) : undefined}
+              onClickDeposit={isShowDeposit ? () => handleSendOrReceive('receive', ReceiveTabEnum.Deposit) : undefined}
               isShowFaucet={isShowFaucet}
             />
           </div>

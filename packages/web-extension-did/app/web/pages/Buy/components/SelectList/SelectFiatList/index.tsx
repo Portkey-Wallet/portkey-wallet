@@ -82,7 +82,7 @@ export default function SelectFiatList({
   );
 
   return (
-    <div className="custom-list">
+    <div className="custom-list custom-list-weight">
       <CommonHeader
         className="header"
         title={title || 'Select'}

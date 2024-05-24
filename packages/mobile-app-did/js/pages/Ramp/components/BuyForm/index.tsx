@@ -357,7 +357,7 @@ export default function BuyForm(props: IBuyFormProps) {
           placeholder=" "
         />
 
-        {rate !== '' && (
+        {rate !== '' ? (
           <View style={styles.rateWrap}>
             <TextM style={[GStyles.flex1, FontStyles.font3]}>{`1 ${crypto?.symbol || ''} ≈ ${rate} ${
               fiat?.symbol || ''
@@ -367,10 +367,12 @@ export default function BuyForm(props: IBuyFormProps) {
               <TextS style={styles.refreshLabel}>{rateRefreshTime}s</TextS>
             </View>
           </View>
+        ) : (
+          <View style={styles.blank} />
         )}
       </View>
 
-      <CommonButton type="primary" disabled={!isAllowAmount} onPress={onNext}>
+      <CommonButton type="primary" buttonStyle={styles.btnStyle} disabled={!isAllowAmount} onPress={onNext}>
         Next
       </CommonButton>
     </View>
@@ -380,7 +382,7 @@ export default function BuyForm(props: IBuyFormProps) {
 const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
   },
   inputContainerStyle: {
     height: pTd(64),
@@ -408,5 +410,12 @@ const styles = StyleSheet.create({
   refreshLabel: {
     marginLeft: pTd(4),
     color: defaultColors.font3,
+  },
+  btnStyle: {
+    marginTop: pTd(40),
+  },
+  blank: {
+    height: pTd(18),
+    width: '100%',
   },
 });

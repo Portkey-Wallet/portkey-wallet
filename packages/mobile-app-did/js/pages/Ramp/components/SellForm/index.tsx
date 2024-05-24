@@ -429,7 +429,7 @@ export default function SellForm() {
           placeholder=" "
         />
 
-        {rate !== '' && (
+        {rate !== '' ? (
           <View style={styles.rateWrap}>
             <TextM style={[GStyles.flex1, FontStyles.font3]}>{`1 ${crypto?.symbol || ''} ≈ ${rate} ${
               fiat?.symbol || ''
@@ -439,10 +439,12 @@ export default function SellForm() {
               <TextS style={styles.refreshLabel}>{rateRefreshTime}s</TextS>
             </View>
           </View>
+        ) : (
+          <View style={styles.blank} />
         )}
       </View>
 
-      <CommonButton type="primary" disabled={!isAllowAmount} onPress={onNext}>
+      <CommonButton type="primary" buttonStyle={styles.btnStyle} disabled={!isAllowAmount} onPress={onNext}>
         Next
       </CommonButton>
     </View>
@@ -452,7 +454,7 @@ export default function SellForm() {
 const styles = StyleSheet.create({
   formContainer: {
     height: '100%',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
   },
   inputContainerStyle: {
     height: pTd(64),
@@ -480,5 +482,12 @@ const styles = StyleSheet.create({
   refreshLabel: {
     marginLeft: pTd(4),
     color: defaultColors.font3,
+  },
+  btnStyle: {
+    marginTop: pTd(40),
+  },
+  blank: {
+    height: pTd(18),
+    width: '100%',
   },
 });

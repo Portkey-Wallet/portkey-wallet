@@ -147,7 +147,7 @@ export const SelectNetworkModal = (
       title={layer === Layers.LAYER1 ? (isPay ? 'Pay' : 'Receive') : 'Select Network'}
       modalBodyType="bottom">
       {layer === Layers.LAYER1 && (
-        <View style={[styles.container, { paddingTop: pTd(32) }]}>
+        <View style={[styles.container]}>
           <View style={styles.layerBlock}>
             <Text style={styles.layerBlockTitle}>{'Select a network'}</Text>
             <View style={styles.networkBtnLine}>{networkBtns}</View>
@@ -155,6 +155,7 @@ export const SelectNetworkModal = (
           <View style={styles.layerBlock}>
             <Text style={styles.layerBlockTitle}>{'Select a token'}</Text>
             <FlatList
+              style={styles.list}
               data={networkAndTokenData}
               keyExtractor={(item, index) => `${item.network.network}-${index}`}
               renderItem={({ item }) => (
@@ -181,12 +182,12 @@ export const SelectNetworkModal = (
           </View>
           <FlatList
             data={networkList}
+            style={styles.list}
             keyExtractor={(item, index) => `${item.network}-${index}`}
             renderItem={({ item }) => (
               <NetworkListItem
                 item={item}
                 onSelect={network => {
-                  console.log('choosing network', network);
                   setCurrentChoosingNetwork(network);
                   setLastTimeTargetNetwork(network);
                   setFocusedOn(FocusedOnType.TopTwo);
@@ -235,7 +236,6 @@ const NetworkIcon = (props: { networkName: string; iconStyle: ImageStyle; iconSi
         hasBorder
         titleStyle={{
           fontSize: pTd(textSize),
-          color: defaultColors.font20,
         }}
       />
     );
@@ -372,11 +372,13 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingHorizontal: pTd(16),
   },
+  list: { width: '100%' },
   layerBlock: {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'flex-start',
     marginBottom: pTd(24),
+    width: '100%',
   },
   layerBlockTitle: {
     lineHeight: pTd(22),
@@ -389,12 +391,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     paddingVertical: pTd(16),
+    width: '100%',
   },
   networkItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     padding: pTd(16),
+    width: '100%',
   },
   tokenIconBox: {
     height: pTd(36),

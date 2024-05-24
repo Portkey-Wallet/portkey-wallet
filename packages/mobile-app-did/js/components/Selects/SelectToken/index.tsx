@@ -14,7 +14,12 @@ import { RequestNetworkTokenDataProps, useMemoNetworkAndTokenData } from '../Ent
 import Svg from 'components/Svg';
 import fonts from 'assets/theme/fonts';
 import { ChainId } from '@portkey-wallet/types';
-import { formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
+import {
+  FormatNameRuleList,
+  formatChainInfoToShow,
+  formatNameWithRules,
+  formatStr2EllipsisStr,
+} from '@portkey-wallet/utils';
 
 enum Layers {
   LAYER1,
@@ -258,7 +263,7 @@ const NetworkTopBtn = (props: {
   const text = useMemo(() => {
     if (isAll) return 'All';
     if (isTopTwo) {
-      const name = removeQuoteFromStr(networkItem?.name || 'ETH');
+      const name = formatNameWithRules(networkItem?.name || 'ETH', [FormatNameRuleList.NO_BRACKETS]);
       return isPay ? name : formatChainInfoToShow(name as ChainId); // in this case, name is chainId
     }
     return `${networkOverflowNum}+`;
@@ -342,7 +347,9 @@ const TokenListItem = (props: {
       </View>
       <View style={styles.tokenTextLines}>
         <View style={styles.tokenTextMain}>
-          <TextL style={[styles.tokenSymbol, fonts.mediumFont]}>{symbol}</TextL>
+          <TextL style={[styles.tokenSymbol, fonts.mediumFont]}>
+            {formatNameWithRules(symbol, [FormatNameRuleList.NO_UNDERLINE])}
+          </TextL>
           <TextS style={styles.tokenDetail}>{name}</TextS>
         </View>
         {isShowAll && (
@@ -355,10 +362,6 @@ const TokenListItem = (props: {
       </View>
     </TouchableOpacity>
   );
-};
-
-const removeQuoteFromStr = (str: string) => {
-  return str.replace(/\(.*\)/g, '');
 };
 
 const isNetworkItemEqual = (a: TNetworkItem, b: TNetworkItem) => {

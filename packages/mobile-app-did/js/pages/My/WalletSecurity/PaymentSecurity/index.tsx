@@ -105,7 +105,7 @@ const PaymentSecurityList: React.FC = () => {
   return (
     <PageContainer
       titleDom={'Payment Security'}
-      safeAreaColor={['white', 'gray']}
+      safeAreaColor={['blue', 'gray']}
       containerStyles={pageStyles.pageWrap}
       hideTouchable={true}
       scrollViewProps={{ disabled: true }}>

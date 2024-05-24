@@ -50,14 +50,6 @@ export const FontStyles = StyleSheet.create({
   font14: { color: defaultColors.font14 },
   font15: { color: defaultColors.font15 },
   font16: { color: defaultColors.font16 },
-  font17: { color: defaultColors.font17 },
-  font18: { color: defaultColors.font18 },
-  font19: { color: defaultColors.font19 },
-  font20: { color: defaultColors.font20 },
-  font21: { color: defaultColors.font21 },
-  font22: { color: defaultColors.font22 },
-
-  white: { color: defaultColors.white },
 
   error: { color: defaultColors.error },
   weight500: fonts.mediumFont,

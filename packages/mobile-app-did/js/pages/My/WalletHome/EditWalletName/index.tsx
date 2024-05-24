@@ -92,7 +92,7 @@ const EditWalletName: React.FC = () => {
   return (
     <PageContainer
       titleDom={t('Edit')}
-      safeAreaColor={['white', 'gray']}
+      safeAreaColor={['blue', 'gray']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <ScrollView>
@@ -122,7 +122,7 @@ const EditWalletName: React.FC = () => {
         <ProfileAddressSection isMySelf disable addressList={caInfoList} />
       </ScrollView>
 
-      <CommonButton disabled={nameValue === ''} type="primary" onPress={onSave}>
+      <CommonButton disabled={nameValue === ''} type="solid" onPress={onSave}>
         {t('Save')}
       </CommonButton>
     </PageContainer>

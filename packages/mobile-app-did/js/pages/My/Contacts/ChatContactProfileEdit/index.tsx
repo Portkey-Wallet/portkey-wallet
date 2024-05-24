@@ -85,7 +85,7 @@ const ChatContactProfileEdit: React.FC = () => {
   return (
     <PageContainer
       titleDom={'Edit Contact'}
-      safeAreaColor={['white', 'gray']}
+      safeAreaColor={['blue', 'gray']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}
       hideTouchable={true}>
@@ -108,7 +108,7 @@ const ChatContactProfileEdit: React.FC = () => {
       </ScrollView>
 
       <View style={pageStyles.btnContainer}>
-        <CommonButton onPress={onFinish} type="primary">
+        <CommonButton onPress={onFinish} type="solid">
           {t('Save')}
         </CommonButton>
         <CommonButton style={pageStyles.deleteBtnStyle} onPress={onDelete} titleStyle={FontStyles.font12} type="clear">

@@ -24,7 +24,7 @@ const WalletSecurity: React.FC = () => {
   return (
     <PageContainer
       titleDom={'Wallet Security'}
-      safeAreaColor={['white', 'gray']}
+      safeAreaColor={['blue', 'gray']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <MenuItem

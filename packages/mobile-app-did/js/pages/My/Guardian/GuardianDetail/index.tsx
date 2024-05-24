@@ -118,7 +118,7 @@ export default function GuardianDetail() {
 
   return (
     <PageContainer
-      safeAreaColor={['white', 'gray']}
+      safeAreaColor={['blue', 'gray']}
       titleDom={'Guardians'}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>

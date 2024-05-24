@@ -73,7 +73,7 @@ const DeviceList: React.FC = () => {
   return (
     <PageContainer
       titleDom={'Login Devices'}
-      safeAreaColor={['white', 'gray']}
+      safeAreaColor={['blue', 'gray']}
       containerStyles={pageStyles.pageWrap}
       hideTouchable={true}
       scrollViewProps={{ disabled: true }}>

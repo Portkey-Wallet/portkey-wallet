@@ -67,13 +67,11 @@ export default function SelectCountry() {
   return (
     <PageContainer
       titleDom="Country/Region"
-      safeAreaColor={['white', 'white']}
+      safeAreaColor={['blue', 'white']}
       containerStyles={styles.containerStyles}
       scrollViewProps={{ disabled: true }}>
       <View style={styles.inputContainerStyle}>
         <CommonInput
-          grayBorder
-          theme="white-bg"
           placeholder="Search countries and regions"
           type="search"
           onChangeText={s => setSearchList(!s ? undefined : countryCodeFilter(s, phoneCountryCodeList))}
@@ -113,7 +111,6 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg1,
   },
   inputContainerStyle: {
-    backgroundColor: defaultColors.bg1,
     marginBottom: 20,
     paddingHorizontal: pTd(20),
   },

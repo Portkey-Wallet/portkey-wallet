@@ -115,14 +115,12 @@ const RemoveMembersPage = () => {
   return (
     <PageContainer
       titleDom="Remove Members"
-      safeAreaColor={['white', 'white']}
+      safeAreaColor={['blue', 'white']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
       <View style={styles.inputWrap}>
         <CommonInput
           allowClear
-          grayBorder
-          theme="white-bg"
           value={keyword}
           placeholder={'Search members'}
           onChangeText={v => {
@@ -167,8 +165,8 @@ const styles = StyleSheet.create({
     ...GStyles.paddingArg(0),
   },
   inputWrap: {
-    backgroundColor: defaultColors.bg1,
-    ...GStyles.paddingArg(0, 20, 8),
+    backgroundColor: defaultColors.bg5,
+    ...GStyles.paddingArg(8, 20, 8),
   },
   buttonWrap: {
     ...GStyles.marginArg(10, 20, 16),

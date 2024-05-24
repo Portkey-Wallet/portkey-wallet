@@ -60,7 +60,6 @@ import { useIsFocused } from '@react-navigation/native';
 import { NavigateMultiLevelParams } from 'types/navigate';
 import { isCrossChain } from '@portkey-wallet/utils/aelf';
 import { useGetTransferFee } from 'hooks/transfer';
-import { useReportUnsetLoginGuardian } from 'hooks/authentication';
 
 export type RouterParams = {
   loginAccount?: string;
@@ -114,7 +113,6 @@ export default function GuardianApproval() {
   } = useRouterParams<RouterParams & MultiLevelParams>();
   const dispatch = useAppDispatch();
   const checkRouteExistInRouteStack = useCheckRouteExistInRouteStack();
-  const reportUnsetLoginAccount = useReportUnsetLoginGuardian();
 
   const onEmitDapp = useThrottleCallback(
     (guardiansApproved?: GuardiansApproved) => {
@@ -587,8 +585,6 @@ export default function GuardianApproval() {
         guardiansStatus,
       );
       if (req && !req.error) {
-        const { identifierHash } = guardianItem;
-        await reportUnsetLoginAccount({ caHash, unsetGuardianIdentifierHash: identifierHash, chainId: originChainId });
         myEvents.refreshGuardiansList.emit();
         myEvents.setLoginAccount.emit({
           guardian: {
@@ -615,8 +611,6 @@ export default function GuardianApproval() {
     guardianItem,
     guardiansStatus,
     managerAddress,
-    originChainId,
-    reportUnsetLoginAccount,
     setLoginAccountNavigate,
     t,
     userGuardiansList,

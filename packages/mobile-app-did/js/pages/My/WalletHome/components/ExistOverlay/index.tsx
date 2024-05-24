@@ -23,7 +23,7 @@ const ExistOverlay = ({ callBack }: ExistOverlayProps) => {
         {t('After you exit, your assets remain in your account and you can access them through social recovery.')}
       </TextM>
       <CommonButton
-        type="primary"
+        type="solid"
         containerStyle={[styles.btnContainer, GStyles.marginTop(20)]}
         buttonStyle={[styles.btnStyle, styles.confirmBtnStyle]}
         titleStyle={[FontStyles.font2, styles.btnTitle]}

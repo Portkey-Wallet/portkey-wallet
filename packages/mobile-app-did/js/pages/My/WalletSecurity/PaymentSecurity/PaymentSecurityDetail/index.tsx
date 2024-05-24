@@ -83,7 +83,7 @@ const PaymentSecurityDetail: React.FC = () => {
   return (
     <PageContainer
       titleDom={'Transfer Settings'}
-      safeAreaColor={['white', 'gray']}
+      safeAreaColor={['blue', 'gray']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View>
@@ -118,7 +118,7 @@ const PaymentSecurityDetail: React.FC = () => {
         )}
       </View>
       <CommonButton
-        type="primary"
+        type="solid"
         onPress={() => {
           navigationService.navigate('PaymentSecurityEdit', {
             transferLimitDetail: detail,

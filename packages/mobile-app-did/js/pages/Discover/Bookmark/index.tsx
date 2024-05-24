@@ -36,7 +36,7 @@ export default function Bookmark() {
 
   return (
     <PageContainer
-      safeAreaColor={['white', 'gray']}
+      safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: true }}
       hideTouchable={true}
       containerStyles={styles.containerStyles}

@@ -1,6 +1,7 @@
 import { ChainId } from '@portkey-wallet/types';
 import QRCodeCommon from 'pages/components/QRCodeCommon';
 import Copy from 'components/Copy';
+import { CustomSvg } from '@portkey/did-ui-react';
 import { useLocationState } from 'hooks/router';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useWalletInfo } from 'store/Provider/hooks';
@@ -10,7 +11,6 @@ import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { RECEIVE_MAIN_CHAIN_ELF_TIP } from '@portkey-wallet/constants/constants-ca/send';
 import { QRCodeDataObjType, shrinkSendQrData } from '@portkey-wallet/utils/qrCode';
 import { DEFAULT_TOKEN } from '@portkey-wallet/constants/constants-ca/wallet';
-import CustomSvg from 'components/CustomSvg';
 import './index.less';
 
 export default function QRCodePage() {
@@ -64,7 +64,7 @@ export default function QRCodePage() {
         </div>
       </div>
       <div className="flex receive-tip">
-        <CustomSvg className="receive-tip-icon flex-center" type="InfoDefault" />
+        <CustomSvg className="receive-tip-icon" type="Info" />
         <div className="receive-tip-text flex-1">
           Please use this address for receiving assets on the <span className="bold">aelf network</span> only.
           {showMainChainELFTip}

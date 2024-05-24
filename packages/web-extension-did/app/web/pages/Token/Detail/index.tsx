@@ -16,7 +16,7 @@ import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from 'pages/com
 import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import './index.less';
 import { useLocationState, useNavigateState } from 'hooks/router';
-import { TReceiveLocationState, TSendLocationState, TTokenDetailLocationState } from 'types/router';
+import { TSendLocationState, TTokenDetailLocationState } from 'types/router';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
@@ -26,7 +26,6 @@ import { getDisclaimerData } from 'utils/disclaimer';
 import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import CommonHeader from 'components/CommonHeader';
-import { ReceiveTabEnum } from '@portkey-wallet/constants/constants-ca/send';
 
 export enum TokenTransferStatus {
   CONFIRMED = 'Confirmed',
@@ -38,7 +37,7 @@ export type TTokenDetailNavigateState = {
 };
 
 function TokenDetail() {
-  const navigate = useNavigateState<TTokenDetailNavigateState | Partial<TSendLocationState> | TReceiveLocationState>();
+  const navigate = useNavigateState<TTokenDetailNavigateState | Partial<TSendLocationState>>();
   const { state: currentToken } = useLocationState<TTokenDetailLocationState>();
   const isMainNet = useIsMainnet();
   const { checkDappIsConfirmed } = useDisclaimer();
@@ -64,9 +63,7 @@ function TokenDetail() {
   const disclaimerData = useRef<IDisclaimerProps>(initDisclaimerData);
   const handleBuy = useCallback(() => {
     if (isMainNet) {
-      navigate(`/receive/token/${currentToken.symbol}`, {
-        state: { ...currentToken, address: currentToken?.tokenContractAddress, pageSide: ReceiveTabEnum.Buy },
-      });
+      navigate('/buy', { state: { tokenInfo: currentToken } });
     } else {
       const openWinder = window.open(FAUCET_URL, '_blank');
       if (openWinder) {

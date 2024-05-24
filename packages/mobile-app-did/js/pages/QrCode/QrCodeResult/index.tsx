@@ -14,7 +14,7 @@ const QrCodeResult = () => {
   return (
     <PageContainer
       titleDom={'QR Code Info'}
-      safeAreaColor={['white', 'gray']}
+      safeAreaColor={['blue', 'gray']}
       containerStyles={[pageStyles.pageWrap]}
       scrollViewProps={{ disabled: true }}>
       <TextM selectable>{qrCodeStr}</TextM>

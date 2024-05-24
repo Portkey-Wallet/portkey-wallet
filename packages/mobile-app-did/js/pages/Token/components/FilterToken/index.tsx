@@ -35,7 +35,7 @@ const FilterTokenSection: React.FC<IFilterTokenSectionProps> = (props: IFilterTo
       <>
         <TextL style={[customTokenTipsStyle.tips, v === TipsEnum.TRY && customTokenTipsStyle.try]}>{v}</TextL>
         <CommonButton
-          type="primary"
+          type="solid"
           containerStyle={customTokenTipsStyle.addButtonWrap}
           buttonStyle={customTokenTipsStyle.addButton}
           onPress={() => navigationService.navigate('CustomToken')}>

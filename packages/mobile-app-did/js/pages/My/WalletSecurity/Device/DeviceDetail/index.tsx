@@ -29,7 +29,7 @@ const DeviceDetail: React.FC = () => {
   return (
     <PageContainer
       titleDom={'Devices Details'}
-      safeAreaColor={['white', 'gray']}
+      safeAreaColor={['blue', 'gray']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View>

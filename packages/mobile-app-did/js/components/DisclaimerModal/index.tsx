@@ -86,11 +86,7 @@ const DisclaimerModal = ({
           ))}
         </ScrollView>
         <Touchable style={[BGStyles.bg1, GStyles.flexRow, styles.agreeWrap]} onPress={() => setSelected(!selected)}>
-          <Svg
-            size={pTd(20)}
-            icon={selected ? 'selected' : 'unselected'}
-            color={selected ? defaultColors.primaryColor : undefined}
-          />
+          <Svg size={pTd(20)} icon={selected ? 'selected' : 'unselected'} />
           <TextM style={GStyles.marginLeft(pTd(8))}>I have read and agree to the terms.</TextM>
         </Touchable>
         <CommonButton disabled={!selected} type="primary" title={'Continue'} onPress={onConfirm} />

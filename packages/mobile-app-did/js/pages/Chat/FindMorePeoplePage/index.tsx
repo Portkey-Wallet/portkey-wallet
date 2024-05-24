@@ -98,14 +98,12 @@ const FindMorePeople = () => {
   return (
     <PageContainer
       titleDom={'Find People'}
-      safeAreaColor={['white', 'white']}
+      safeAreaColor={['blue', 'white']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
-      <View style={[BGStyles.bg1, GStyles.paddingArg(0, 20, 8)]}>
+      <View style={[BGStyles.bg5, GStyles.paddingArg(8, 20, 8)]}>
         <CommonInput
-          grayBorder
           ref={iptRef}
-          theme="white-bg"
           loading={loading}
           allowClear
           value={keyword}

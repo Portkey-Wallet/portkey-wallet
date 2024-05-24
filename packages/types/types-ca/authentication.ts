@@ -10,9 +10,3 @@ export type VerifyTokenParams = {
   targetChainId?: ChainId;
   operationDetails?: string;
 };
-
-export type ReportUnsetLoginGuardianProps = {
-  chainId: ChainId;
-  caHash: string;
-  unsetGuardianIdentifierHash: string;
-};

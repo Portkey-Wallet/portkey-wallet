@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useAppDispatch } from 'store/hooks';
 import { useGetCurrentCAViewContract } from './contract';
-import { setGuardianListAction, setVerifierListAction } from '@portkey-wallet/store/store-ca/guardians/actions';
+import {
+  setGuardianListAction,
+  setGuardiansAction,
+  setVerifierListAction,
+} from '@portkey-wallet/store/store-ca/guardians/actions';
 import { LoginInfo } from 'types/wallet';
 import { checkHolderError } from '@portkey-wallet/utils/check';
 import { VerifierItem } from '@portkey-wallet/types/verifier';

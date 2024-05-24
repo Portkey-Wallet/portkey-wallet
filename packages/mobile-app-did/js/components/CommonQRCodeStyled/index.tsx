@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import QRCodeStyled, { SVGQRCodeStyledProps, useQRCodeData } from 'react-native-qrcode-styled';
-import portkeyLogo from 'assets/image/pngs/portkey-v2-new-brand.png';
+import portkeyLogo from 'assets/image/pngs/portkeyBlackBorderRadius.png';
 import { pTd } from 'utils/unit';
 import { StyleSheet, View } from 'react-native';
 import { TextL } from 'components/CommonText';

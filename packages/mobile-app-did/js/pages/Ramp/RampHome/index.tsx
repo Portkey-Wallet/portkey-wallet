@@ -17,7 +17,6 @@ import CommonToast from 'components/CommonToast';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import CommonTouchableTabs from 'components/CommonTouchableTabs';
 import { useAppRampEntryShow } from 'hooks/ramp';
-import { pTd } from 'utils/unit';
 
 type TabItemType = {
   name: string;
@@ -106,17 +105,12 @@ export default function RampHome() {
 
   return (
     <PageContainer
-      safeAreaColor={['white', 'white']}
+      safeAreaColor={['blue', 'white']}
       titleDom={'Buy'}
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View style={[GStyles.flexRow, GStyles.alignCenter]}>
-        <CommonTouchableTabs
-          tabList={tabList}
-          onTabPress={onTabPress}
-          selectTab={selectTab}
-          tabHeaderStyle={styles.tabHeader}
-        />
+        <CommonTouchableTabs tabList={tabList} onTabPress={onTabPress} selectTab={selectTab} />
       </View>
       <View style={GStyles.flex1}>{tabList.find(item => item.type === selectTab)?.component}</View>
     </PageContainer>
@@ -128,8 +122,5 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: defaultColors.bg1,
     ...GStyles.paddingArg(16, 20),
-  },
-  tabHeader: {
-    width: pTd(190),
   },
 });

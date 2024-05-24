@@ -44,7 +44,7 @@ export default function GuardianHome() {
 
   return (
     <PageContainer
-      safeAreaColor={['white', 'white']}
+      safeAreaColor={['blue', 'white']}
       titleDom={t('Guardians')}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}
@@ -55,7 +55,7 @@ export default function GuardianHome() {
             onPress={() => {
               navigationService.navigate('GuardianEdit');
             }}>
-            <Svg icon="add1" size={pTd(20)} color={defaultColors.icon5} />
+            <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
           </Touchable>
         )
       }>

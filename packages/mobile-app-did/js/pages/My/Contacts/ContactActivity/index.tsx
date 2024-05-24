@@ -161,7 +161,7 @@ const ContactActivity: React.FC = () => {
   return (
     <PageContainer
       titleDom={t('Details')}
-      safeAreaColor={['white', 'white']}
+      safeAreaColor={['blue', 'white']}
       scrollViewProps={{ disabled: true }}
       containerStyles={[styles.container, BGStyles.bg1]}>
       <View style={styles.topSection}>

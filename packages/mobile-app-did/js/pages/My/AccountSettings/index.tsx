@@ -48,7 +48,7 @@ export default function AccountSettings() {
   return (
     <PageContainer
       containerStyles={styles.containerStyles}
-      safeAreaColor={['white', 'gray']}
+      safeAreaColor={['blue', 'gray']}
       titleDom={t('Account Setting')}>
       {list.map(item => (
         <MenuItem

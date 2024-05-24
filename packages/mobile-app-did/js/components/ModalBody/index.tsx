@@ -17,7 +17,6 @@ import { ViewStyleType } from 'types/styles';
 export interface ModalBodyProps extends ViewProps {
   title?: string;
   isShowLeftBackIcon?: boolean;
-  preventBack?: boolean;
   isShowRightCloseIcon?: boolean;
   modalBodyType?: 'center' | 'bottom';
   style?: ViewStyleType;
@@ -38,11 +37,9 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
     modalBodyType,
     isShowRightCloseIcon = true,
     isShowLeftBackIcon = false,
-    preventBack = false,
     title = '',
     children,
     style = {},
-    onBack,
     onClose,
     bottomButtonGroup,
     onTouchStart,
@@ -59,9 +56,9 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
               style={styles.leftIcon}
               pointerEvents="box-only"
               onTouchStart={() => {
-                onBack?.();
+                onClose?.();
                 Keyboard.dismiss();
-                !preventBack && OverlayModal.hide();
+                OverlayModal.hide();
               }}>
               <Svg icon="left-arrow" size={pTd(20)} />
             </View>

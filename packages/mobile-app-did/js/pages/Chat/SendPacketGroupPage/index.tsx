@@ -188,7 +188,7 @@ export default function SendPacketGroupPage() {
     <PageContainer
       titleDom="Send Crypto Box"
       hideTouchable
-      safeAreaColor={['white', 'gray']}
+      safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.containerStyles}>
       <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.scrollStyle}>

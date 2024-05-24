@@ -148,7 +148,7 @@ const ContactProfile: React.FC = () => {
   return (
     <PageContainer
       titleDom="Details"
-      safeAreaColor={['white', 'gray']}
+      safeAreaColor={['blue', 'gray']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}
       leftCallback={isFromNoChatProfileEditPage ? () => navigationService.pop(2) : navigationService.goBack}

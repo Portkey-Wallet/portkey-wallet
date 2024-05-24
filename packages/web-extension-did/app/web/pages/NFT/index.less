@@ -132,33 +132,6 @@
           flex-shrink: 0;
           text-align: right;
         }
-        .traits-info-skeleton {
-          margin-top: 12px;
-          gap: 4px;
-          .@{app-prefix}-skeleton-element {
-            .@{app-prefix}-skeleton-avatar {
-              width: 100px;
-              height: 20px;
-              border-radius: 6px;
-              background-color: @bg-31;
-              .@{app-prefix}-skeleton-element {
-                .@{app-prefix}-skeleton-active {
-                  .@{app-prefix}-skeleton-avatar {
-                    &::after {
-                      /* stylelint-disable-next-line color-function-notation */
-                      background: linear-gradient(90deg, hsla(0deg, 0%, 96%, 20%) 25%,hsla(0deg, 0%, 92%, 24%) 37%,hsla(0deg, 0%, 96%, 20%) 63%);
-                    }
-                  }
-                }
-              }
-            }
-            &.skeleton-desc {
-              .@{app-prefix}-skeleton-avatar {
-                width: 140px;
-              }
-            }
-          }
-        }
       }
     }
   }

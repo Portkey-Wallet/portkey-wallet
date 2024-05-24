@@ -5,12 +5,7 @@ import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
-import {
-  AmountSign,
-  formatAmountUSDShow,
-  formatTokenAmountShowWithDecimals,
-  formatWithCommas,
-} from '@portkey-wallet/utils/converter';
+import { AmountSign, formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { addressFormat } from '@portkey-wallet/utils';
 import CommonAvatar from 'components/CommonAvatar';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -23,8 +18,6 @@ import { FontStyles } from 'assets/theme/styles';
 import NFTAvatar from 'components/NFTAvatar';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
-import DoubleAvatar from 'components/DoubleAvatar';
-import { TextM } from 'components/CommonText';
 
 interface ActivityItemPropsType {
   preItem?: ActivityItemType;
@@ -63,116 +56,35 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
   }, [item]);
 
   const AmountDom = useMemo(() => {
-    const { amount = '', isReceived, decimals = 8, symbol, nftInfo } = item || {};
+    const { amount = '', isReceived, decimals = 8, symbol } = item || {};
     let prefix = ' ';
     if (amount && !ZERO.isEqualTo(amount)) prefix = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
-    const suffix = nftInfo?.alias || symbol || '';
+    const suffix = item?.nftInfo || !symbol ? '' : ' ' + symbol;
 
     return (
       <Text numberOfLines={1} ellipsizeMode="tail" style={[itemStyle.tokenBalance, isReceived && FontStyles.font10]}>
-        {`${prefix}${formatTokenAmountShowWithDecimals(item?.amount, decimals)} ${suffix}`}
+        {`${prefix}${formatTokenAmountShowWithDecimals(item?.amount, decimals)}${suffix}`}
       </Text>
     );
   }, [item]);
 
   const ExtraDom = useMemo(() => {
-    if (!item?.currentTxPriceInUsd) return null;
+    const extraContent = item?.nftInfo
+      ? item?.nftInfo?.alias
+      : formatAmountUSDShow(isMainnet ? item?.currentTxPriceInUsd : '');
+    if (!extraContent) return null;
+
     return (
       <Text numberOfLines={1} ellipsizeMode="tail" style={itemStyle.usdtBalance}>
-        {formatAmountUSDShow(isMainnet ? item?.currentTxPriceInUsd : '')}
+        {extraContent}
       </Text>
     );
-  }, [isMainnet, item?.currentTxPriceInUsd]);
+  }, [isMainnet, item?.currentTxPriceInUsd, item?.nftInfo]);
 
-  // new rules
-  const isEmptyToken = useMemo(
-    () => !(item?.nftInfo || item?.symbol || item?.operations?.length),
-    [item?.nftInfo, item?.operations?.length, item?.symbol],
-  );
-  const isDappTx = useMemo(() => !!item?.dappName, [item?.dappName]);
-  const isShowEmptyTokenForDapp = useMemo(() => isEmptyToken && isDappTx, [isDappTx, isEmptyToken]);
-  const isShowSystemForDefault = useMemo(() => isEmptyToken && !isDappTx, [isDappTx, isEmptyToken]);
-  const isShowTx = useMemo(() => !isEmptyToken, [isEmptyToken]);
-
-  const SystemActivityItem = useMemo(() => {
-    return (
-      <View style={itemStyle.contentWrap}>
-        <CommonAvatar
-          title={item?.symbol}
-          style={itemStyle.left}
-          svgName={item?.listIcon ? undefined : 'transfer'}
-          imageUrl={item?.listIcon || ''}
-          avatarSize={pTd(32)}
-          hasBorder
-          titleStyle={itemStyle.avatarTitleStyle}
-          borderStyle={GStyles.hairlineBorder}
-        />
-
-        <View style={[itemStyle.center, item?.isSystem && itemStyle.systemCenter]}>
-          <Text style={[itemStyle.centerType, fonts.mediumFont]}>{item?.transactionName}</Text>
-        </View>
-      </View>
-    );
-  }, [item?.isSystem, item?.listIcon, item?.symbol, item?.transactionName]);
-
-  const TxActivityItem = useMemo(() => {
-    if (item?.operations?.length !== 0) {
-      const { operations = [] } = item || {};
-      if (operations.length < 2) return null;
-      let [tokenTop, tokenBottom] = operations.map(_token => ({
-        symbol: _token.nftInfo ? _token.nftInfo.alias : _token.symbol,
-        url: _token.nftInfo ? _token.nftInfo.imageUrl : _token.icon,
-        isReceived: _token.isReceived,
-        amount: _token.amount,
-        decimals: _token.decimals,
-      }));
-      const sameDirection = tokenTop.isReceived === tokenBottom.isReceived;
-      if (!sameDirection && !tokenTop.isReceived) {
-        [tokenBottom, tokenTop] = [tokenTop, tokenBottom];
-      }
-      let renderTopIconInfo = { imageUrl: tokenTop.url, title: tokenTop.symbol };
-      let renderBottomIconInfo = { imageUrl: tokenBottom.url, title: tokenBottom.symbol };
-      if (!sameDirection) {
-        [renderTopIconInfo, renderBottomIconInfo] = [renderBottomIconInfo, renderTopIconInfo];
-      }
-
-      return (
-        <View style={itemStyle.contentWrap}>
-          <DoubleAvatar firstAvatar={renderTopIconInfo} secondAvatar={renderBottomIconInfo} />
-          <View style={[itemStyle.center, itemStyle.systemCenter]}>
-            <Text numberOfLines={1} style={[itemStyle.centerType, fonts.mediumFont]}>
-              {item?.transactionName}
-            </Text>
-            <Text style={itemStyle.centerStatus}>{item?.dappName}</Text>
-          </View>
-          <View style={itemStyle.right}>
-            <TextM
-              numberOfLines={1}
-              style={[!sameDirection && GStyles.fontSize(16), tokenTop.isReceived && FontStyles.font10]}>
-              {`${formatWithCommas({
-                sign: tokenTop.isReceived ? AmountSign.PLUS : AmountSign.MINUS,
-                amount: tokenTop.amount,
-                decimals: tokenTop.decimals,
-                digits: Number(tokenTop.decimals),
-              })} ${tokenTop.symbol}`}
-            </TextM>
-            <TextM
-              numberOfLines={1}
-              style={[!sameDirection && GStyles.fontSize(12), tokenBottom.isReceived && FontStyles.font10]}>
-              {`${formatWithCommas({
-                sign: tokenBottom.isReceived ? AmountSign.PLUS : AmountSign.MINUS,
-                amount: tokenBottom.amount,
-                decimals: tokenBottom.decimals,
-                digits: Number(tokenBottom.decimals),
-              })} ${tokenBottom.symbol}`}
-            </TextM>
-          </View>
-        </View>
-      );
-    }
-
-    if (item?.dappName)
-      return (
+  return (
+    <Touchable style={[itemStyle.itemWrap, isLineShow && itemStyle.itemBorder]} onPress={() => onPress?.(item)}>
+      {!isDaySame && <Text style={itemStyle.time}>{dayStr}</Text>}
+      <View style={itemStyle.containerWrap}>
         <View style={itemStyle.contentWrap}>
           {item?.nftInfo ? (
             <NFTAvatar
@@ -186,6 +98,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
             />
           ) : (
             <CommonAvatar
+              title={item?.symbol}
               style={itemStyle.left}
               svgName={item?.listIcon ? undefined : 'transfer'}
               imageUrl={item?.listIcon || ''}
@@ -195,94 +108,26 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
               borderStyle={GStyles.hairlineBorder}
             />
           )}
+
           <View style={[itemStyle.center, item?.isSystem && itemStyle.systemCenter]}>
-            <Text numberOfLines={1} style={[itemStyle.centerType, fonts.mediumFont]}>
-              {item?.transactionName}
-            </Text>
-            <Text style={itemStyle.centerStatus}>{item?.dappName}</Text>
+            <Text style={[itemStyle.centerType, fonts.mediumFont]}>{item?.transactionName}</Text>
+            {!item?.isSystem && (
+              <>
+                {AddressDom}
+                {item?.transactionType === TransactionTypes.CROSS_CHAIN_TRANSFER && (
+                  <Text style={itemStyle.centerStatus}>Cross-Chain Transfer</Text>
+                )}
+              </>
+            )}
           </View>
-          <View style={itemStyle.right}>
-            {AmountDom}
-            {ExtraDom}
-          </View>
-        </View>
-      );
 
-    return (
-      <View style={itemStyle.contentWrap}>
-        {item?.nftInfo ? (
-          <NFTAvatar
-            disabled
-            isSeed={item.nftInfo.isSeed}
-            seedType={item.nftInfo.seedType}
-            nftSize={pTd(32)}
-            badgeSizeType="small"
-            data={item.nftInfo}
-            style={[itemStyle.left, itemStyle.nftAvatarWrap]}
-          />
-        ) : (
-          <CommonAvatar
-            style={itemStyle.left}
-            svgName={item?.listIcon ? undefined : 'transfer'}
-            imageUrl={item?.listIcon || ''}
-            avatarSize={pTd(32)}
-            hasBorder
-            titleStyle={itemStyle.avatarTitleStyle}
-            borderStyle={GStyles.hairlineBorder}
-          />
-        )}
-
-        <View style={[itemStyle.center, item?.isSystem && itemStyle.systemCenter]}>
-          <Text style={[itemStyle.centerType, fonts.mediumFont]}>{item?.transactionName}</Text>
           {!item?.isSystem && (
-            <>
-              {AddressDom}
-              {item?.transactionType === TransactionTypes.CROSS_CHAIN_TRANSFER && (
-                <Text style={itemStyle.centerStatus}>Cross-Chain Transfer</Text>
-              )}
-            </>
+            <View style={itemStyle.right}>
+              {AmountDom}
+              {ExtraDom}
+            </View>
           )}
         </View>
-
-        <View style={itemStyle.right}>
-          {AmountDom}
-          {ExtraDom}
-        </View>
-      </View>
-    );
-  }, [AddressDom, AmountDom, ExtraDom, item]);
-
-  const EmptyTokenForDapp = useMemo(() => {
-    return (
-      <View style={itemStyle.contentWrap}>
-        <CommonAvatar
-          title={item?.dappName || 'Unknown'}
-          style={itemStyle.left}
-          svgName={item?.dappName ? undefined : 'transfer'}
-          imageUrl={item?.dappIcon || ''}
-          avatarSize={pTd(32)}
-          hasBorder
-          titleStyle={itemStyle.avatarTitleStyle}
-          borderStyle={GStyles.hairlineBorder}
-        />
-
-        <View style={[itemStyle.center, item?.isSystem && itemStyle.systemCenter]}>
-          <Text numberOfLines={1} style={[itemStyle.centerType, fonts.mediumFont]}>
-            {item?.transactionName}
-          </Text>
-          <Text style={itemStyle.centerStatus}>{item?.dappName}</Text>
-        </View>
-      </View>
-    );
-  }, [item?.dappIcon, item?.dappName, item?.isSystem, item?.transactionName]);
-
-  return (
-    <Touchable style={[itemStyle.itemWrap, isLineShow && itemStyle.itemBorder]} onPress={() => onPress?.(item)}>
-      {!isDaySame && <Text style={itemStyle.time}>{dayStr}</Text>}
-      <View style={itemStyle.containerWrap}>
-        {isShowEmptyTokenForDapp && EmptyTokenForDapp}
-        {isShowSystemForDefault && SystemActivityItem}
-        {isShowTx && TxActivityItem}
         <Resend containerStyle={itemStyle.resendContainer} item={item} />
       </View>
     </Touchable>

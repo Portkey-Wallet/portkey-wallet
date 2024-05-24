@@ -58,7 +58,7 @@ const ChatPrivacy: React.FC = () => {
   return (
     <PageContainer
       titleDom={'Privacy'}
-      safeAreaColor={['white', 'gray']}
+      safeAreaColor={['blue', 'gray']}
       containerStyles={pageStyles.pageWrap}
       hideTouchable={true}
       scrollViewProps={{ disabled: true }}>

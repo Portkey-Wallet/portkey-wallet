@@ -100,14 +100,14 @@ export const thirdGroupStyle = StyleSheet.create({
 
 export const otherChainWarningStyle = StyleSheet.create({
   wrap: {
-    backgroundColor: defaultColors.bg35,
+    backgroundColor: defaultColors.bg33,
     paddingHorizontal: pTd(12),
     paddingVertical: pTd(8),
     marginHorizontal: pTd(16),
     marginTop: pTd(12),
     borderRadius: pTd(6),
     borderWidth: pTd(0.5),
-    borderColor: defaultColors.border9,
+    borderColor: defaultColors.border8,
   },
   flex: {
     display: 'flex',

@@ -119,7 +119,7 @@ export default function SearchPeople() {
   return (
     <PageContainer
       hideHeader
-      safeAreaColor={['white', 'white']}
+      safeAreaColor={['blue', 'white']}
       scrollViewProps={{ disabled: true }}
       hideTouchable={true}
       containerStyles={styles.containerStyles}

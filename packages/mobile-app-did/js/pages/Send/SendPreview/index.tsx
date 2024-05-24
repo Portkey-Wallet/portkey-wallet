@@ -426,7 +426,7 @@ const SendPreview: React.FC = () => {
 
   return (
     <PageContainer
-      safeAreaColor={['white', 'white']}
+      safeAreaColor={['blue', 'white']}
       titleDom={`${t('Send')}${sendType === 'token' ? ' ' + assetInfo.symbol : ''}`}
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>

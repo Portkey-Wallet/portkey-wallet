@@ -199,7 +199,6 @@ const ApproveModal = (props: SignModalPropsType) => {
           <Touchable style={styles.batchApprovalWrap} onPress={() => setIsBatchApproval(!isBatchApproval)}>
             <Svg
               icon={isBatchApproval ? 'selected' : 'unselected'}
-              color={isBatchApproval ? defaultColors.primaryColor : undefined}
               size={pTd(20)}
               iconStyle={{ marginRight: pTd(8) }}
             />

@@ -180,7 +180,7 @@ const ChatDetailsPage = () => {
     () => (
       <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.paddingLeft(pTd(16))]}>
         <Touchable style={GStyles.marginRight(pTd(20))} onPress={onBack}>
-          <Svg size={pTd(20)} icon="left-arrow" color={defaultColors.icon5} />
+          <Svg size={pTd(20)} icon="left-arrow" color={defaultColors.bg1} />
         </Touchable>
         <Touchable
           style={[GStyles.flexRow, GStyles.itemCenter]}
@@ -203,7 +203,7 @@ const ChatDetailsPage = () => {
           <TextL
             numberOfLines={1}
             style={[
-              FontStyles.font5,
+              FontStyles.font2,
               GStyles.marginRight(pTd(4)),
               GStyles.marginLeft(pTd(8)),
               FontStyles.weight500,
@@ -213,7 +213,7 @@ const ChatDetailsPage = () => {
           </TextL>
         </Touchable>
 
-        {mute && <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.font11} />}
+        {mute && <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.bg1} />}
       </View>
     ),
     [avatar, currentChannelInfo?.displayName, displayName, mute, onBack, toRelationId],
@@ -223,13 +223,13 @@ const ChatDetailsPage = () => {
     <PageContainer
       noCenterDom
       hideTouchable
-      safeAreaColor={['white', 'gray']}
+      safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}
       leftDom={leftDom}
       rightDom={
         <Touchable style={[GStyles.marginRight(pTd(16))]} onPress={onPressMore}>
-          <Svg size={pTd(20)} icon="more" color={defaultColors.icon5} />
+          <Svg size={pTd(20)} icon="more" color={defaultColors.bg1} />
         </Touchable>
       }>
       <FloatingActionButton shouldShowFirstTime={isStranger} onPressButton={addContact} />

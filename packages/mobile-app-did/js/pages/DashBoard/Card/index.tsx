@@ -16,6 +16,8 @@ import { useAppETransShow } from 'hooks/cms';
 import { PortkeyLinearGradient } from 'components/PortkeyLinearGradient';
 import { pTd } from 'utils/unit';
 import { Skeleton } from '@rneui/base';
+import { defaultColors } from 'assets/theme';
+
 const Card: React.FC<{ title: string }> = ({ title }) => {
   const isMainnet = useIsMainnet();
   const userInfo = useCurrentUserInfo();

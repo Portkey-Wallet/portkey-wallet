@@ -203,7 +203,4 @@ export default {
   height: function (n: number | string) {
     return { height: n };
   },
-  fontSize: function (n: number) {
-    return { fontSize: n };
-  },
 } as const;

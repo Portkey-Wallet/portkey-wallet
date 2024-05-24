@@ -25,7 +25,7 @@ import FacebookOverlay from 'components/OauthOverlay/facebook';
 import { parseTelegramToken } from '@portkey-wallet/utils/authentication';
 import { useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useLatestRef } from '@portkey-wallet/hooks';
-import { ReportUnsetLoginGuardianProps, VerifyTokenParams } from '@portkey-wallet/types/types-ca/authentication';
+import { VerifyTokenParams } from '@portkey-wallet/types/types-ca/authentication';
 import { onAndroidFacebookAuthentication, onTwitterAuthentication } from 'utils/authentication';
 import {
   TAppleAuthentication,
@@ -438,16 +438,6 @@ export function useVerifyFacebookToken() {
     [facebookSign],
   );
 }
-
-export function useReportUnsetLoginGuardian() {
-  return useCallback(async (params: ReportUnsetLoginGuardianProps): Promise<boolean> => {
-    const res = await request.verify.reportUnsetLoginGuardian({
-      params: { ...params },
-    });
-    return !!res;
-  }, []);
-}
-
 export function useVerifyToken() {
   const verifyGoogleToken = useVerifyGoogleToken();
   const verifyAppleToken = useVerifyAppleToken();

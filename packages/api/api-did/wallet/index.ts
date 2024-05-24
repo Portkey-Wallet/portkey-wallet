@@ -44,8 +44,4 @@ export default {
     target: '/api/app/twitterAuth/userInfo',
     config: { method: 'GET' },
   },
-  reportExitWallet: {
-    target: '/api/app/report/exitWallet',
-    config: { method: 'POST' },
-  },
 } as const;

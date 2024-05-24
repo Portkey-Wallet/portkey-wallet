@@ -15,5 +15,4 @@ export default {
   checkGoogleRecaptcha: '/api/app/account/isGoogleRecaptchaOpen',
   getVerifierServer: '/api/app/account/getVerifierServer',
   getTelegramBot: { target: '/api/app/telegramAuth/getTelegramBot', config: { method: 'GET' } },
-  reportUnsetLoginGuardian: { target: '/api/app/account/guardianIdentifiers/unset', config: { method: 'POST' } },
 } as const;

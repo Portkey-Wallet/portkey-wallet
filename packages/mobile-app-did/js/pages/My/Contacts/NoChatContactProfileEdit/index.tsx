@@ -315,7 +315,7 @@ const ContactEdit: React.FC = () => {
 
   return (
     <PageContainer
-      safeAreaColor={['white', 'gray']}
+      safeAreaColor={['blue', 'gray']}
       titleDom={isEdit ? t('Edit Contact') : t('Add New Contacts')}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
@@ -366,7 +366,7 @@ const ContactEdit: React.FC = () => {
         </TouchableWithoutFeedback>
       </KeyboardAwareScrollView>
       <View style={pageStyles.btnContainer}>
-        <CommonButton onPress={onFinish} disabled={isSaveDisable} type="primary">
+        <CommonButton onPress={onFinish} disabled={isSaveDisable} type="solid">
           {isEdit ? t('Save') : t('Add')}
         </CommonButton>
         {isEdit && (

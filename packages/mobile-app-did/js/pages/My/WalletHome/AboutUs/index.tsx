@@ -66,11 +66,11 @@ const AboutUs = () => {
   return (
     <PageContainer
       titleDom={t('About Us')}
-      safeAreaColor={['white', 'gray']}
+      safeAreaColor={['blue', 'gray']}
       containerStyles={styles.pageContainer}
       scrollViewProps={{ disabled: false }}>
       <View style={styles.logoWrap}>
-        <Svg icon="app-blue-logo" size={pTd(80)} />
+        <Svg icon="app-blue-logo" oblongSize={[pTd(48.89), pTd(48.89)]} />
       </View>
       <TextXXXL>Portkey</TextXXXL>
       <TextM style={styles.version}>
@@ -137,9 +137,11 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: pTd(16),
+    borderWidth: 1,
+    borderColor: defaultColors.border6,
     marginTop: pTd(40),
     marginBottom: pTd(16),
-    overflow: 'hidden',
+    backgroundColor: defaultColors.bg1,
   },
   version: {
     marginTop: pTd(4),

@@ -31,7 +31,7 @@ const SelectModal = ({ title = '', value = 1, dataList = [], onChangeValue }: Se
               OverlayModal.hide();
             }}>
             <TextL>{ele.label}</TextL>
-            {value === ele.value && <Svg icon="selected" size={pTd(24)} color={defaultColors.primaryColor} />}
+            {value === ele.value && <Svg icon="selected" size={pTd(24)} />}
           </Touchable>
         ))}
       </ScrollView>

@@ -22,8 +22,6 @@ import { defaultColors } from 'assets/theme';
 import WalletMenuItem from '../components/WalletMenuItem';
 import { TextS } from 'components/CommonText';
 import { useUpdateInfo } from 'store/user/hooks';
-import { request } from '@portkey-wallet/api/api-did';
-import { getDeviceInfo } from 'utils/deviceInfo';
 
 interface WalletHomeProps {
   name?: string;
@@ -50,10 +48,6 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
       try {
         const caContract = await getCurrentCAContract();
         const req = await removeManager(caContract, managerAddress, caHash);
-
-        const { deviceId } = await getDeviceInfo();
-        await request.wallet.reportExitWallet({ params: { deviceId } });
-
         if (req && !req.error) {
           console.log('logout success', req);
           logout();
@@ -73,7 +67,7 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
   return (
     <PageContainer
       titleDom={t('Wallet')}
-      safeAreaColor={['white', 'gray']}
+      safeAreaColor={['blue', 'gray']}
       containerStyles={[pageStyles.pageWrap]}
       scrollViewProps={{ disabled: true }}>
       <ScrollView alwaysBounceVertical={false}>

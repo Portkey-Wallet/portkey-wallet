@@ -83,8 +83,8 @@ const ViewOnWebView: React.FC = () => {
   );
 
   return (
-    <SafeAreaBox edges={['top', 'right', 'left']} style={[{ backgroundColor: safeAreaColorMap.white }]}>
-      <CustomHeader themeType={'white'} titleDom={browserInfo?.title} />
+    <SafeAreaBox edges={['top', 'right', 'left']} style={[{ backgroundColor: safeAreaColorMap.blue }]}>
+      <CustomHeader themeType={'blue'} titleDom={browserInfo?.title} />
       <View style={pageStyles.contentWrap}>
         <Progressbar ref={progressBarRef} />
         <WebView

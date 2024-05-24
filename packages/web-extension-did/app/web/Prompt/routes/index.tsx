@@ -63,9 +63,6 @@ import AccountCancelation from 'pages/Wallet/AccountCancelation';
 import VerifyAccountCancelation from 'pages/Wallet/VerifyAccountCancelation';
 import TokenAllowance from 'pages/WalletSecurity/TokenAllowance';
 import TokenAllowanceDetail from 'pages/WalletSecurity/TokenAllowance/TokenAllowanceDetail';
-import DepositHome from 'pages/DepositHome';
-import SelectNetwork from 'pages/DepositHome/components/SelectNetwork';
-// import TokenNetworkList from 'pages/DepositHome/components/TokenNetworkList';
 
 export const PageRouter = () => {
   const { isNotLessThan768 } = useCommonState();
@@ -205,14 +202,6 @@ export const PageRouter = () => {
     {
       path: '*',
       element: <NotFound />,
-    },
-    {
-      path: '/token-detail/deposit-home/:chain/:symbol',
-      element: <DepositHome />,
-    },
-    {
-      path: '/token-detail/deposit-home/select-network',
-      element: <SelectNetwork />,
     },
   ];
   const settingPromptRoutes = [

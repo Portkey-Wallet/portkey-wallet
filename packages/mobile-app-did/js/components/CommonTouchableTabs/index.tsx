@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { StyleSheet, View } from 'react-native';
@@ -12,7 +13,7 @@ import { TextStyleType, ViewStyleType } from 'types/styles';
 export type TabItemType<T> = {
   name: string;
   type: T;
-  component?: JSX.Element;
+  component: JSX.Element;
 };
 
 export type CommonTouchableTabsProps<T> = {
@@ -60,6 +61,7 @@ export default function CommonTouchableTabs<T>({
 
 const styles = StyleSheet.create({
   tabHeader: {
+    width: pTd(190),
     backgroundColor: defaultColors.bg18,
     borderRadius: pTd(6),
     flexDirection: 'row',
@@ -68,7 +70,6 @@ const styles = StyleSheet.create({
     marginBottom: pTd(32),
   },
   tabWrap: {
-    flex: 1,
     width: pTd(88),
     height: pTd(30),
     borderRadius: pTd(6),

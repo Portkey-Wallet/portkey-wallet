@@ -31,7 +31,7 @@ const ChatGroupQrCodePage: React.FC = () => {
 
   return (
     <PageContainer
-      safeAreaColor={['white', 'white']}
+      safeAreaColor={['blue', 'white']}
       scrollViewProps={{ disabled: false }}
       hideTouchable={true}
       titleDom="Group QR Code"

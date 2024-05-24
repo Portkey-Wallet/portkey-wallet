@@ -13,14 +13,12 @@ export type CommonInputProps = InputProps & {
   theme?: 'white-bg' | 'gray-bg';
   allowClear?: boolean;
   loading?: boolean;
-  grayBorder?: boolean;
 };
 
 const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, forwardedRef: any) {
   const { t } = useLanguage();
   const {
     loading,
-    grayBorder,
     allowClear,
     placeholder,
     type = 'search',
@@ -54,12 +52,7 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
       <Input
         selectionColor={defaultColors.bg13}
         containerStyle={[searchStyles.containerStyle, containerStyle]}
-        inputContainerStyle={[
-          searchStyles.inputContainerStyle,
-          theme === 'white-bg' && bgWhiteStyles.inputContainerStyle,
-          grayBorder && commonStyles.inputContainerGrayBorderStyle,
-          inputContainerStyle,
-        ]}
+        inputContainerStyle={[searchStyles.inputContainerStyle, inputContainerStyle]}
         inputStyle={[searchStyles.inputStyle, inputStyle]}
         labelStyle={[searchStyles.labelStyle, labelStyle]}
         rightIconContainerStyle={[commonStyles.rightIconContainerStyle, rightIconContainerStyle]}
@@ -79,7 +72,6 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
       inputContainerStyle={[
         generalStyles.inputContainerStyle,
         theme === 'white-bg' && bgWhiteStyles.inputContainerStyle,
-        grayBorder && commonStyles.inputContainerGrayBorderStyle,
         inputContainerStyle,
       ]}
       selectionColor={defaultColors.bg13}

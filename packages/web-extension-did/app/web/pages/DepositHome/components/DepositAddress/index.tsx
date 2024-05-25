@@ -22,7 +22,10 @@ export default function DepositAddress(props: IDepositAddressProps) {
   const { onClose, type = 'component', depositInfo, fromNetwork, fromToken, toToken, isSameSymbol } = props;
   console.log('wfs DepositAddress props', props);
   const { isPrompt } = useCommonState();
-  const { lastRecord } = useDepositRecord();
+  const { lastRecord } = useDepositRecord({
+    fromSymbol: fromToken?.symbol || '',
+    address: depositInfo?.depositAddress || '',
+  });
   const contractAddressShow = useMemo(() => {
     return fromNetwork?.contractAddress?.slice(0, 6) + '...' + fromNetwork?.contractAddress?.slice(-6);
   }, [fromNetwork?.contractAddress]);

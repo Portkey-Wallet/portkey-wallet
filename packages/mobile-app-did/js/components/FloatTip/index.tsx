@@ -1,7 +1,6 @@
 import { defaultColors } from 'assets/theme';
 import React, { useCallback, useMemo, useState } from 'react';
 import { TextStyle, View, Text, ViewStyle, StyleSheet, LayoutChangeEvent } from 'react-native';
-import { pTd } from 'utils/unit';
 
 export interface FloatTipProps {
   display: boolean;
@@ -28,14 +27,21 @@ export const FloatTip = (props: FloatTipProps) => {
   );
   const baseTextStyle: TextStyle = {
     color: defaultColors.white,
-    backgroundColor: defaultColors.black,
-    fontSize: pTd(12),
-    lineHeight: pTd(16),
-    paddingHorizontal: pTd(8),
-    paddingVertical: pTd(6),
-    minWidth: pTd(54),
-    borderRadius: pTd(6),
-    overflow: 'hidden',
+    fontSize: 12,
+    lineHeight: 16,
+    textAlign: 'center',
+  };
+  const textWrapStyle: ViewStyle = {
+    backgroundColor: display ? defaultColors.black : 'transparent',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    alignSelf: 'flex-start',
+    minWidth: 64,
+    overflow: 'visible',
+    borderRadius: 6,
   };
   const baseArrowStyle: ViewStyle = {
     borderLeftWidth: 8,
@@ -55,7 +61,7 @@ export const FloatTip = (props: FloatTipProps) => {
     switch (direction) {
       case 'top': {
         positionStyle = {
-          top: -height - pTd(4),
+          top: -height - 4,
           left: -width,
         };
         break;
@@ -68,9 +74,9 @@ export const FloatTip = (props: FloatTipProps) => {
   }, [layoutProps, targetStyle, wrapperLayoutProps]);
   return (
     <View onLayout={onLayout} style={[containerStyle, container, addOnStyle]}>
-      <Text style={[baseTextStyle, textStyle, text]} numberOfLines={1}>
-        {content}
-      </Text>
+      <View style={textWrapStyle}>
+        <Text style={[baseTextStyle, textStyle, text]}>{content}</Text>
+      </View>
       <View style={[baseArrowStyle, arrow, arrowStyle]} />
     </View>
   );
@@ -84,6 +90,7 @@ const transparentStyle = StyleSheet.create({
     zIndex: 999,
     justifyContent: 'center',
     alignItems: 'center',
+    flexWrap: 'nowrap',
   },
   top: {
     flexDirection: 'column',
@@ -113,6 +120,7 @@ const defaultStyle = StyleSheet.create({
     zIndex: 999,
     justifyContent: 'center',
     alignItems: 'center',
+    flexWrap: 'nowrap',
   },
   text: {},
   top: {

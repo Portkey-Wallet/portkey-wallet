@@ -431,7 +431,7 @@ const replyMessageImageStyles = StyleSheet.create({
     alignItems: 'center',
   },
   rightWrap: {
-    backgroundColor: defaultColors.bg25,
+    backgroundColor: defaultColors.bg40,
   },
   blueBlank: {
     position: 'absolute',

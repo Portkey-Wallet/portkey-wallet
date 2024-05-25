@@ -25,7 +25,7 @@ interface DepositAddressProps {
 
 const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken, depositInfo, contractAddress }) => {
   const gStyles = useGStyles();
-  const { lastRecord } = useDepositRecord();
+  const { lastRecord } = useDepositRecord({ fromSymbol: fromToken.symbol, address: depositInfo.depositAddress });
 
   const onContactPortkeyTeam = useCallback(() => {
     Linking.openURL('https://t.me/Portkey_Official_Group');

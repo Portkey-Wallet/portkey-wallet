@@ -1,7 +1,6 @@
 import MainCards from 'pages/components/BalanceCard';
 import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import Activity from 'pages/Home/components/Activity';
-import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
@@ -20,12 +19,11 @@ import { TReceiveLocationState, TSendLocationState, TTokenDetailLocationState } 
 import { useExtensionRampEntryShow } from 'hooks/ramp';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import { TradeTypeEnum } from 'constants/trade';
 import { getDisclaimerData } from 'utils/disclaimer';
 import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
-import CommonHeader from 'components/CommonHeader';
+import CommonTokenHeader from 'components/CommonTokenHeader';
 import { ReceiveTabEnum } from '@portkey-wallet/constants/constants-ca/send';
 
 export enum TokenTransferStatus {
@@ -145,19 +143,7 @@ function TokenDetail() {
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['token-detail', isPrompt && isNotLessThan768 ? 'portkey-body' : ''])}>
-        <CommonHeader
-          className="token-detail-title"
-          title={
-            <div className="title-center flex-column">
-              <div className="symbol flex-row-center">
-                <TokenImageDisplay symbol={currentToken.symbol} src={currentToken.imgUrl} width={20} />
-                <span>{currentToken?.symbol}</span>
-              </div>
-              <div className="network">{transNetworkText(currentToken.chainId, !isMainNet)}</div>
-            </div>
-          }
-          onLeftBack={() => navigate('/')}
-        />
+        <CommonTokenHeader symbol={currentToken.symbol} imgUrl={currentToken.imgUrl} chainId={currentToken.chainId} />
         <div className={clsx('token-detail-content', isPrompt ? '' : 'token-detail-content-popup')}>
           <div className="token-detail-balance flex-column">
             <div className={clsx('balance-amount', 'flex-column', isPrompt && 'is-prompt')}>
@@ -200,7 +186,6 @@ function TokenDetail() {
     cardShowFn.swap,
     isShowDeposit,
     isShowFaucet,
-    navigate,
     handleSendOrReceive,
     handleClickTrade,
   ]);

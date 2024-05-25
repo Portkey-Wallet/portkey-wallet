@@ -56,10 +56,19 @@ export default function DepositCard(props: IDepositCardProps) {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Svg
+        {/* <Svg
           icon={mode === DepositMode.DEPOSIT ? 'deposit-service' : 'exchange-service'}
           size={160}
           iconStyle={styles.cardIcon}
+        /> */}
+        <Image
+          source={
+            mode === DepositMode.DEPOSIT
+              ? require('../../../../assets/image/pngs/deposit-service.png')
+              : require('../../../../assets/image/pngs/exchange-service.png')
+          }
+          style={styles.cardIcon}
+          resizeMode={'contain'}
         />
         <TextM style={styles.cardText}>{mode === DepositMode.DEPOSIT ? cardTips.deposit : cardTips.exchange}</TextM>
       </View>
@@ -120,6 +129,8 @@ const styles = StyleSheet.create({
   },
   cardIcon: {
     flex: 1,
+    height: pTd(160),
+    width: pTd(160),
   },
   cardText: {
     textAlign: 'center',

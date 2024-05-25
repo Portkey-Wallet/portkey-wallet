@@ -87,9 +87,11 @@ export default function Receive() {
         <View style={[infoStyle.wrap, infoStyle.flex]}>
           <Svg icon="more-info" size={pTd(16)} iconStyle={infoStyle.icon} color={defaultColors.bg30} />
           <RichText
-            text={
-              'Please use this address for receiving assets on the $aelf network$ only. If you wish to receive assets from exchanges, please switch to the "Exchanges" tab on the right.'
-            }
+            text={`Please use this address for receiving assets on the $aelf network$ only.${
+              tabs.some(it => it.type === ReceivePageTabType.EXCHANGES)
+                ? ' If you wish to receive assets from exchanges, please switch to the "Exchanges" tab on the right.'
+                : ''
+            }`}
             commonTextStyle={infoStyle.commonText}
             wrapperStyle={infoStyle.wrapperText}
             textDivider={'$'}
@@ -97,7 +99,7 @@ export default function Receive() {
         </View>
       </View>
     );
-  }, [toCaAddress, tokenItem, currentCaAddress, chainId]);
+  }, [toCaAddress, tokenItem, currentCaAddress, chainId, tabs]);
 
   return (
     <PageContainer

@@ -76,7 +76,7 @@ export default function Receive() {
 
         <View style={[GStyles.flexCol, GStyles.itemStart, GStyles.spaceBetween, styles.addressWrap]}>
           <TextS style={styles.aelfAddressTitle}>{'Your aelf address'}</TextS>
-          <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween]}>
+          <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, styles.textRow]}>
             <TextM style={styles.address}>
               {formatStr2EllipsisStr(addressFormat(currentCaAddress, chainId, 'aelf'), 32)}
             </TextM>
@@ -184,7 +184,9 @@ const styles = StyleSheet.create({
     width: pTd(270),
     color: defaultColors.font5,
     ...fonts.mediumFont,
-    paddingRight: pTd(12),
+  },
+  textRow: {
+    width: '100%',
   },
 });
 

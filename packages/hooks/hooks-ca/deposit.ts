@@ -203,9 +203,7 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
   useEffect(() => {
     (async () => {
       try {
-        if (!manager) {
-          return;
-        }
+        if (!manager) return;
         setLoading(true);
         await fetchTransferToken();
         await fetchDepositTokenList();

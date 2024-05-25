@@ -6,6 +6,15 @@ import { useMemo } from 'react';
 import { TReceiveLocationState } from 'types/router';
 import './index.less';
 
+const EXCHANGE_PARTNER_SVG_LIST = [
+  'ExchangePartner1',
+  'ExchangePartner2',
+  'ExchangePartner3',
+  'ExchangePartner4',
+  'ExchangePartner5',
+  'ExchangePartner6',
+] as const;
+
 export default function ExchangePage() {
   const { state } = useLocationState<TReceiveLocationState>();
   const wallet = useCurrentWalletInfo();
@@ -20,7 +29,13 @@ export default function ExchangePage() {
         </div>
       </div>
       <div className="exchange-page-partner flex-column">
-        <CustomSvg type="ExchangePartner" />
+        <div className="exchange-partner-svg-list flex-row-center">
+          {EXCHANGE_PARTNER_SVG_LIST.map((type, index) => (
+            <div key={index} className="exchange-partner-svg-item">
+              <CustomSvg type={type} />
+            </div>
+          ))}
+        </div>
         <div className="exchange-partner-operation flex-between-center">
           <div className="flex-column">
             <div className="operation-title">Receive ELF from top-tier exchanges</div>

@@ -183,7 +183,9 @@ export const SelectNetworkModal = (
             <Text
               style={
                 styles.commonText
-              }>{`Note: Please select from the supported networks listed below. Sending ${symbol} from other networks may result in the loss of your assets.`}</Text>
+              }>{`Note: Please select from the supported networks listed below. Sending ${formatNameWithRules(symbol, [
+              FormatNameRuleList.NO_UNDERLINE,
+            ])} from other networks may result in the loss of your assets.`}</Text>
           </View>
           <FlatList
             data={networkList}

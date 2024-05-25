@@ -189,11 +189,14 @@ export function useAuthSocialAccountInfo(type: ISocialLogin) {
     }
     if (type === 'Twitter') {
       userInfo = parseTwitterToken(identityToken) ?? {};
+      identityToken = userInfo.accessToken;
     }
     if (type === 'Facebook') {
       userInfo = (await parseFacebookToken(identityToken)) ?? {};
       identityToken = userInfo.accessToken;
     }
+
+    console.log('===', identityToken, userInfo);
 
     return {
       identityToken,

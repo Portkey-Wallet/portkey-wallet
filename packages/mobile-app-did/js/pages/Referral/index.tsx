@@ -60,7 +60,7 @@ export default function Referral() {
       <SafeAreaBox pageSafeBottomPadding={!isIOS} style={[gStyles.container, BGStyles.transparent]}>
         {isSplashScreen && (
           <View style={[GStyles.flex1, GStyles.flexEnd, GStyles.itemCenter]}>
-            <TextM style={[FontStyles.white, styles.versionStyle]}>{`V${Application.nativeApplicationVersion}`}</TextM>
+            <TextM style={[FontStyles.font22, styles.versionStyle]}>{`V${Application.nativeApplicationVersion}`}</TextM>
           </View>
         )}
         {!isSplashScreen && !address ? (

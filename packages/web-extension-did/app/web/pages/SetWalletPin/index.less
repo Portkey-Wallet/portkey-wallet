@@ -6,5 +6,24 @@
     .portkey-ui-wrapper {
       height: 100%;
     }
+    .portkey-ant-input-affix-wrapper-status-error:not(.portkey-ant-input-affix-wrapper-disabled, .portkey-ant-input-affix-wrapper-borderless).portkey-ant-input-affix-wrapper {
+      border-color: @brand-normal !important;
+      &:hover {
+        border-color: @brand-normal !important;
+      }
+    }
+    .portkey-ant-btn-primary {
+      background-color: @brand-normal;
+      border-color: @brand-normal;
+      &:hover {
+        background-color: @brand-hover;
+        border-color: @brand-hover;
+      }
+      &:disabled,
+      &:disabled:hover {
+        background-color: @brand-disable;
+        border-color: @brand-disable;
+      }
+    }
   }
 }

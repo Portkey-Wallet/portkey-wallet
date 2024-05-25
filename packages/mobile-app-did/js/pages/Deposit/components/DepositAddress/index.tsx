@@ -10,7 +10,6 @@ import fonts from 'assets/theme/fonts';
 import { TDepositInfo } from '@portkey-wallet/types/types-ca/deposit';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
-import { copyText } from 'utils';
 import { defaultColors } from 'assets/theme';
 import { TTokenItem, TNetworkItem, TRecordsStatus } from '@portkey-wallet/types/types-ca/deposit';
 import { formatSymbolDisplay } from '@portkey-wallet/utils/format';
@@ -27,10 +26,6 @@ interface DepositAddressProps {
 const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken, depositInfo, contractAddress }) => {
   const gStyles = useGStyles();
   const { lastRecord } = useDepositRecord();
-
-  const onCopyAddress = useCallback(() => {
-    copyText(contractAddress);
-  }, [contractAddress]);
 
   const onContactPortkeyTeam = useCallback(() => {
     Linking.openURL('https://t.me/Portkey_Official_Group');
@@ -156,7 +151,7 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken,
             <Text style={styles.addressLabelText}>Deposit Address</Text>
             <View style={styles.addressWrap}>
               <Text style={styles.addressText}>{depositInfo.depositAddress}</Text>
-              <CopyButton onCopy={onCopyAddress} />
+              <CopyButton copyContent={contractAddress} />
             </View>
           </View>
           {depositInfo.minAmount && (

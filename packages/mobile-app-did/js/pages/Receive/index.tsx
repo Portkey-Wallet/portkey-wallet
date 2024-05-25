@@ -34,7 +34,7 @@ export default function Receive() {
   const { chainId, symbol, targetScene } = tokenItem;
   const currentWallet = useCurrentWalletInfo();
   const [selectTab, setSelectTab] = useState<ReceivePageTabType>(targetScene || ReceivePageTabType.QR_CODE);
-  const { buy, deposit } = checkEnabledFunctionalTypes(symbol, chainId === 'AELF');
+  const { buy, deposit, exchange } = checkEnabledFunctionalTypes(symbol, chainId === 'AELF');
   const isETransToken = useMemo(() => ETransTokenList.includes(symbol), [symbol]);
   const isMainnet = useIsMainnet();
   const { isETransDepositShow } = useAppETransShow();
@@ -52,14 +52,14 @@ export default function Receive() {
     const tabList: TabItemType<ReceivePageTabType>[] = [{ name: t('QR Code'), type: ReceivePageTabType.QR_CODE }];
     if (isDepositShow || targetScene === ReceivePageTabType.DEPOSIT) {
       tabList.push({ name: t('Deposit'), type: ReceivePageTabType.DEPOSIT });
-    } else {
+    } else if (exchange) {
       tabList.push({ name: t('Exchanges'), type: ReceivePageTabType.EXCHANGES });
     }
     if (isBuyButtonShow || targetScene === ReceivePageTabType.BUY) {
       tabList.push({ name: t('Buy'), type: ReceivePageTabType.BUY });
     }
     return tabList;
-  }, [isBuyButtonShow, isDepositShow, t, targetScene]);
+  }, [exchange, isBuyButtonShow, isDepositShow, t, targetScene]);
 
   const currentCaAddress = currentWallet?.[chainId]?.caAddress;
 
@@ -107,12 +107,16 @@ export default function Receive() {
       safeAreaColor={['white']}
       containerStyles={styles.containerStyles}
       scrollViewProps={{ disabled: true }}>
-      <CommonTouchableTabs
-        tabList={tabs}
-        selectTab={selectTab}
-        onTabPress={(type: ReceivePageTabType) => setSelectTab(type)}
-        tabHeaderStyle={styles.tabHeader}
-      />
+      {tabs.length >= 2 ? (
+        <CommonTouchableTabs
+          tabList={tabs}
+          selectTab={selectTab}
+          onTabPress={(type: ReceivePageTabType) => setSelectTab(type)}
+          tabHeaderStyle={styles.tabHeader}
+        />
+      ) : (
+        <View style={styles.tabHeaderInitial} />
+      )}
       {selectTab === ReceivePageTabType.QR_CODE && <OriginalQrCodePage />}
       {(selectTab === ReceivePageTabType.EXCHANGES || selectTab === ReceivePageTabType.DEPOSIT) && (
         <DepositCard
@@ -145,6 +149,10 @@ const styles = StyleSheet.create({
   },
   tabHeader: {
     marginTop: pTd(16),
+  },
+  tabHeaderInitial: {
+    marginTop: pTd(16),
+    height: pTd(30),
   },
   accountCardStyle: {
     marginTop: pTd(0),

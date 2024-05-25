@@ -1,8 +1,9 @@
 @import '../../assets/theme/color.less';
 
-.dropdown-search-wrapper {
+// To increase the css weight
+.dropdown-search-wrapper.web-dropdown-search {
   padding: 16px 24px 10px;
-  background-color: @bg-13;
+  background-color: @neutral-default-bg;
   margin-bottom: 1px;
 
   .@{app-prefix}-input-affix-wrapper {
@@ -30,7 +31,7 @@
       .anticon-close-circle {
         width: 14px;
         height: 14px;
-        background: url('../../assets/svgIcon/Close2.svg') no-repeat center;
+        background: url('../../assets/svgIcon/SuggestClose.svg') no-repeat center;
         background-size: inherit;
 
         & > svg {

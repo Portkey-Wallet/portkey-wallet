@@ -191,7 +191,7 @@ export default function DepositHome() {
           <div className="card-container">
             <div className="card-info-wrapper">
               {fromNetwork && (
-                <div className="dropdown-trigger">
+                <div className="dropdown-trigger" onClick={onClickFrom}>
                   <span className="from-to-title">From</span>
                   <div className="network-info-wrapper">
                     <NetworkLogo network={fromNetwork?.network} />
@@ -234,7 +234,7 @@ export default function DepositHome() {
           <div className="card-container">
             <div className="card-info-wrapper">
               {toChainId && (
-                <div className="dropdown-trigger">
+                <div className="dropdown-trigger" onClick={onClickTo}>
                   <span className="from-to-title">To</span>
                   <div className="network-info-wrapper">
                     <NetworkLogo network={'AELF'} />
@@ -411,6 +411,6 @@ export default function DepositHome() {
         )}
       </>
     );
-  }, [homeEle, isSameSymbol, setFrom, setTo, step, toChainId]);
+  }, [fromToken?.symbol, homeEle, isSameSymbol, setFrom, setTo, step, toChainId]);
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

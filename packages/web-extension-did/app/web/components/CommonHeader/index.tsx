@@ -66,7 +66,7 @@ export default function CommonHeader({
         </Popover>
       );
     }
-    return svgElement;
+    return <React.Fragment key={index}>{svgElement}</React.Fragment>;
   };
 
   return (

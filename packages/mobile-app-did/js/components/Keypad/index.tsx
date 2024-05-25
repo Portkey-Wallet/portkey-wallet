@@ -6,6 +6,7 @@ import { TextXXXL } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import { PIN_SIZE } from '@portkey-wallet/constants/misc';
+import { defaultColors } from 'assets/theme';
 
 export interface KeypadPropsType {
   onChange?: (value: string) => void;
@@ -136,7 +137,7 @@ const Keypad = forwardRef(function Keypad(
       <View style={styles.padRow}>
         {isBiometrics ? (
           <TouchableOpacity style={styles.padBtn} onPress={onBiometricsPress}>
-            <Svg icon="touch-id" oblongSize={[pTd(24), pTd(26)]} />
+            <Svg icon="touch-id" oblongSize={[pTd(24), pTd(26)]} color={defaultColors.primaryColor} />
           </TouchableOpacity>
         ) : (
           <View style={styles.padBtn} />

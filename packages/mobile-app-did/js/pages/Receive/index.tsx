@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import { TextM, TextS } from 'components/CommonText';
 import AccountCard from 'pages/Receive/components/AccountCard';
@@ -13,9 +13,7 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { addressFormat, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { copyText } from 'utils';
-import Touchable from 'components/Touchable';
 import fonts from 'assets/theme/fonts';
-import { useEffectOnce } from '@portkey-wallet/hooks';
 import { RichText } from 'components/RichText';
 import CommonTouchableTabs, { TabItemType } from 'components/CommonTouchableTabs';
 import BuyForm from 'pages/Ramp/components/BuyForm';
@@ -29,14 +27,13 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { TokenTitle } from 'components/TokenTitle';
 import navigationService from 'utils/navigationService';
 import { ReceivePageTabType } from './types';
+import { CopyButton } from 'components/CopyButton';
 
 export default function Receive() {
   const { t } = useLanguage();
   const tokenItem = useRouterParams<TokenItemShowType & { targetScene: ReceivePageTabType }>();
   const { chainId, symbol, targetScene } = tokenItem;
   const currentWallet = useCurrentWalletInfo();
-  const [copyChecked, setCopyChecked] = useState(false);
-  const copyForwarder = useRef<NodeJS.Timeout | null>(null);
   const [selectTab, setSelectTab] = useState<ReceivePageTabType>(targetScene || ReceivePageTabType.QR_CODE);
   const { buy, deposit } = checkEnabledFunctionalTypes(symbol, chainId === 'AELF');
   const isETransToken = useMemo(() => ETransTokenList.includes(symbol), [symbol]);
@@ -67,25 +64,12 @@ export default function Receive() {
 
   const currentCaAddress = currentWallet?.[chainId]?.caAddress;
 
-  useEffectOnce(() => {
-    return () => {
-      if (copyForwarder.current) {
-        clearTimeout(copyForwarder.current);
-      }
-    };
-  });
-
   const onClickDepositButton = useCallback(() => {
     navigationService.navigate('Deposit', tokenItem);
   }, [tokenItem]);
 
   const copyId = useCallback(() => {
     copyText(`ELF_${currentCaAddress}_${chainId}`);
-    setCopyChecked(true);
-    copyForwarder.current = setTimeout(() => {
-      setCopyChecked(false);
-      copyForwarder.current = null;
-    }, 2000);
   }, [chainId, currentCaAddress]);
 
   const OriginalQrCodePage = useCallback(() => {
@@ -103,9 +87,7 @@ export default function Receive() {
             <TextM style={styles.address}>
               {formatStr2EllipsisStr(addressFormat(currentCaAddress, chainId, 'aelf'), 32)}
             </TextM>
-            <Touchable onPress={copyId}>
-              <Svg icon={copyChecked ? 'copy-checked' : 'copy1'} size={pTd(32)} iconStyle={styles.copyIcon} />
-            </Touchable>
+            <CopyButton onCopy={copyId} />
           </View>
         </View>
 
@@ -122,7 +104,7 @@ export default function Receive() {
         </View>
       </View>
     );
-  }, [currentCaAddress, chainId, copyId, copyChecked, tokenItem]);
+  }, [currentCaAddress, chainId, copyId, tokenItem]);
 
   return (
     <PageContainer
@@ -199,6 +181,7 @@ const styles = StyleSheet.create({
     width: pTd(270),
     color: defaultColors.font5,
     ...fonts.mediumFont,
+    paddingRight: pTd(12),
   },
 });
 

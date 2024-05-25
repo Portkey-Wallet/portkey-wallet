@@ -9,6 +9,9 @@
     width: 0;
     flex: 1;
   }
+  .verifier-account-wrapper .send-tip .account {
+    color: @brand-normal;
+  }
   .verifier-account-wrapper {
     .portkey-ui-code-verify-passcode {
       .adm-passcode-input.adm-passcode-input-seperated {
@@ -23,7 +26,16 @@
             margin-right: 0;
             flex: 0 1;
             flex-basis: 48px;
+            &::after {
+              background-color: @brand-normal;
+            }
           }
+        }
+      }
+      .resend-btn {
+        color: @brand-normal;
+        &.resend-after-btn {
+          color: @neutral-disable-text;
         }
       }
     }

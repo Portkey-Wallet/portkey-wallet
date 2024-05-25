@@ -335,3 +335,17 @@
     }
   }
 }
+
+/* tooltip */
+.common-tooltip-gray {
+  .@{app-prefix}-tooltip-inner {
+    box-shadow: none;
+    background-color: @neutral-tooltip-bg;
+    opacity: 1;
+  }
+  .@{app-prefix}-tooltip-arrow-content {
+    box-shadow: none;
+    /* stylelint-disable-next-line custom-property-empty-line-before */
+    --antd-arrow-background-color: @neutral-tooltip-bg;
+  }
+}

@@ -56,11 +56,7 @@ export default function Copy({
   }, [isShowCopyIcon]);
 
   return (
-    <CommonTooltip
-      title={tooltipTitle}
-      trigger={'hover'}
-      open={isTooltipOpen}
-      overlayClassName="common-tooltip-overlay">
+    <CommonTooltip title={tooltipTitle} trigger={'hover'} open={isTooltipOpen} overlayClassName="common-tooltip-gray">
       <span
         onClick={() => {
           if (isShowCopyIcon) {

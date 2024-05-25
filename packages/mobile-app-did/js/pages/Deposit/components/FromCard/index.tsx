@@ -46,11 +46,12 @@ export const FromCard: React.FC<FromCardProps> = ({
     } else {
       return (
         <CommonAvatar
+          style={iconStyle}
           title={networkName}
           avatarSize={pTd(20)}
           hasBorder
           titleStyle={{
-            fontSize: pTd(14),
+            fontSize: pTd(10),
           }}
         />
       );

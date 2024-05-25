@@ -288,3 +288,30 @@ export const handleLoopFetch = async <T>({
 export const checkIsUserCancel = (error: any) => {
   return handleErrorMessage(error) === USER_CANCELED;
 };
+
+export const formatNameWithRules = (
+  tokenName: string,
+  ruleList: Array<FormatNameRuleList> = [FormatNameRuleList.NO_UNDERLINE],
+) => {
+  let result = tokenName;
+  if (!result) return result;
+  ruleList.forEach(rule => {
+    switch (rule) {
+      case FormatNameRuleList.NO_BRACKETS:
+        result = result.replace(/\(.*\)/g, '');
+        break;
+      case FormatNameRuleList.NO_UNDERLINE:
+        // SGR-1 => SGR
+        result = result.replace(/-.*$/g, '');
+        break;
+      default:
+        break;
+    }
+  });
+  return result;
+};
+
+export enum FormatNameRuleList {
+  NO_BRACKETS = 'NO_BRACKETS',
+  NO_UNDERLINE = 'NO_UNDERLINE',
+}

@@ -588,7 +588,13 @@ export default function GuardianApproval() {
       );
       if (req && !req.error) {
         const { identifierHash } = guardianItem;
-        await reportUnsetLoginAccount({ caHash, unsetGuardianIdentifierHash: identifierHash, chainId: originChainId });
+        try {
+          await reportUnsetLoginAccount({
+            caHash,
+            unsetGuardianIdentifierHash: identifierHash,
+            chainId: originChainId,
+          });
+        } catch (ignored) {}
         myEvents.refreshGuardiansList.emit();
         myEvents.setLoginAccount.emit({
           guardian: {

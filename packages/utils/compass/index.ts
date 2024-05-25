@@ -5,6 +5,7 @@ export interface FunctionalType {
   swap: boolean;
   deposit: boolean;
   withdraw: boolean;
+  exchange: boolean;
 }
 
 export const checkEnabledFunctionalTypes = (symbol: string, isOnMainChain: boolean): FunctionalType => {
@@ -18,5 +19,6 @@ export const checkEnabledFunctionalTypes = (symbol: string, isOnMainChain: boole
     swap: (symbol === USDTSymbol || symbol === ELFSymbol) && !isOnMainChain,
     deposit: symbol === USDTSymbol || (symbol.startsWith(SGRSymbol) && !isOnMainChain),
     withdraw: symbol === USDTSymbol || symbol.startsWith(SGRSymbol),
+    exchange: symbol === ELFSymbol && isOnMainChain,
   };
 };

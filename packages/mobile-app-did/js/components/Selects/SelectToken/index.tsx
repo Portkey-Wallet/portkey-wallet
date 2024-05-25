@@ -49,6 +49,7 @@ export const SelectNetworkModal = (
   }, [networkList]);
   const topTwoNetworks = useMemo(() => {
     const arr: TNetworkItem[] = [];
+    if (!isPay) return networkList.slice(0, 2);
     if (lastTimeTargetNetwork) {
       if (isNetworkItemEqual(lastTimeTargetNetwork, currentNetwork)) {
         arr.push(currentNetwork);
@@ -62,7 +63,7 @@ export const SelectNetworkModal = (
       arr.push(networkList.find(it => !isNetworkItemEqual(it, currentNetwork)) || networkList[0]);
     }
     return arr;
-  }, [currentNetwork, lastTimeTargetNetwork, networkList]);
+  }, [currentNetwork, isPay, lastTimeTargetNetwork, networkList]);
   const onNetworkBtnClick = useCallback((type: FocusedOnType, networkItem?: TNetworkItem) => {
     setFocusedOn(type);
     if (type === FocusedOnType.TopTwo) {

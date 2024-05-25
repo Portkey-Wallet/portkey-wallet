@@ -30,6 +30,15 @@ export default function DepositAddress(props: IDepositAddressProps) {
     return fromNetwork?.contractAddress?.slice(0, 6) + '...' + fromNetwork?.contractAddress?.slice(-6);
   }, [fromNetwork?.contractAddress]);
 
+  const msgStatusIcon = useMemo(() => {
+    if (lastRecord?.status === TRecordsStatus.Succeed) {
+      return 'MsgSuccess';
+    } else if (lastRecord?.status === TRecordsStatus.Processing) {
+      return 'MsgProcessing';
+    }
+    return 'MsgFailed';
+  }, [lastRecord?.status]);
+
   const recordText = useMemo(() => {
     const link = 'https://t.me/Portkey_Official_Group';
     if (isSameSymbol) {
@@ -140,12 +149,18 @@ export default function DepositAddress(props: IDepositAddressProps) {
   }, [depositInfo?.extraNotes]);
   const showMsgEle = useMemo(() => {
     return (
-      <div className="msg-container">
-        <CustomSvg type="MsgSuccess" />
+      <div
+        className={clsx([
+          'msg-container',
+          msgStatusIcon === 'MsgProcessing' && 'msg-container-processing-bg',
+          msgStatusIcon === 'MsgFailed' && 'msg-container-failed-bg',
+          msgStatusIcon === 'MsgSuccess' && 'msg-container-success-bg',
+        ])}>
+        <CustomSvg type={msgStatusIcon} />
         <div className="msg-content">{recordText}</div>
       </div>
     );
-  }, [recordText]);
+  }, [msgStatusIcon, recordText]);
   // isPrompt && 'detail-page-prompt'
   const mainContent = useCallback(() => {
     return (

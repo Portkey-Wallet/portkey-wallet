@@ -45,7 +45,7 @@ export default function CryptoInput({
               <img src={curCrypto.icon} />
             </div>
             <div className="currency">{curCrypto.symbol}</div>
-            <CustomSvg type="Down" />
+            <CustomSvg type="DirectionDown" />
           </div>
         }
       />

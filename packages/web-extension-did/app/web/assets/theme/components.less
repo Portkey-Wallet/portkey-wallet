@@ -24,8 +24,8 @@
     color: white;
   }
   &:focus {
-    background-color: @brand-normal;
-    border-color: @brand-normal;
+    background-color: @brand-click;
+    border-color: @brand-click;
   }
   &:hover {
     background-color: @brand-hover;
@@ -333,5 +333,19 @@
         width: 100% !important;
       }
     }
+  }
+}
+
+/* tooltip */
+.common-tooltip-gray {
+  .@{app-prefix}-tooltip-inner {
+    box-shadow: none;
+    background-color: @neutral-tooltip-bg;
+    opacity: 1;
+  }
+  .@{app-prefix}-tooltip-arrow-content {
+    box-shadow: none;
+    /* stylelint-disable-next-line custom-property-empty-line-before */
+    --antd-arrow-background-color: @neutral-tooltip-bg;
   }
 }

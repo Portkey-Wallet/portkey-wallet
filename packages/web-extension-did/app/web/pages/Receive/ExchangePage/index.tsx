@@ -1,5 +1,5 @@
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import Copy from 'components/Copy';
+import Copy from 'components/CopyAddress';
 import CustomSvg from 'components/CustomSvg';
 import { useLocationState } from 'hooks/router';
 import { useMemo } from 'react';

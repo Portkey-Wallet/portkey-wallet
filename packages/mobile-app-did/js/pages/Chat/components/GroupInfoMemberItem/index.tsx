@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     lineHeight: pTd(20),
     borderRadius: pTd(4),
     paddingHorizontal: pTd(8),
-    backgroundColor: defaultColors.bg9,
+    backgroundColor: defaultColors.brandLight,
     color: defaultColors.bg5,
     textAlign: 'center',
     overflow: 'hidden',

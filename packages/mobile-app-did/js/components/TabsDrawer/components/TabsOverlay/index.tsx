@@ -159,7 +159,7 @@ const BrowserEditModal = ({
   }> = useMemo(() => {
     return [
       { title: HANDLE_TYPE.REFRESH, icon: 'refresh1' },
-      { title: HANDLE_TYPE.COPY, icon: 'copy1' },
+      { title: HANDLE_TYPE.COPY, icon: 'copy-pre' },
       { title: HANDLE_TYPE.SHARE, icon: 'share' },
       {
         title: bookmark ? HANDLE_TYPE.UN_BOOKMARK : HANDLE_TYPE.BOOKMARK,

@@ -5,7 +5,6 @@ import CommonButton from 'components/CommonButton';
 import { CopyButton } from 'components/CopyButton';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
-import { copyText } from 'utils';
 import { TTokenItem, TNetworkItem } from '@portkey-wallet/types/types-ca/deposit';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { defaultColors } from 'assets/theme';
@@ -39,16 +38,12 @@ const CopyDepositAddress: React.FC<CopyDepositAddressProps> = ({
     });
   }, [fromNetwork, jumpToWebview, onExplore]);
 
-  const onCopy = useCallback(() => {
-    copyText(contractAddress);
-  }, [contractAddress]);
-
   return (
     <View style={styles.container}>
       <Text style={styles.titleText}>{`${fromToken.symbol} Contract Address on ${fromNetwork.name} Network`}</Text>
       <View style={styles.addressWrap}>
         <Text style={styles.addressText}>{contractAddress}</Text>
-        <CopyButton onCopy={onCopy} style={styles.copyButton} />
+        <CopyButton style={styles.copyButton} copyContent={contractAddress} />
         <TouchableOpacity onPress={jumpToNetwork}>
           <Svg icon={'explore'} size={pTd(20)} iconStyle={styles.exploreButton} />
         </TouchableOpacity>

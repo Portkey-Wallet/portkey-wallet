@@ -1,9 +1,8 @@
 import clsx from 'clsx';
-import CommonHeader from 'components/CommonHeader';
+import CommonTokenHeader from 'components/CommonTokenHeader';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import PromptFrame from 'pages/components/PromptFrame';
 import { useCallback, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
 import { useCommonState } from 'store/Provider/hooks';
 import RadioTab from 'pages/components/RadioTab';
 import QRCodePage from './QRCodePage';
@@ -18,18 +17,13 @@ import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
 import { DEFAULT_TOKEN } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
 import { ALL_RECEIVE_TAB, ReceiveTabEnum } from '@portkey-wallet/constants/constants-ca/send';
-import TokenImageDisplay from 'pages/components/TokenImageDisplay';
-import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import './index.less';
 
 export default function Receive() {
-  const navigate = useNavigate();
   const { isETransDepositShow } = useExtensionETransShow();
   const { isBuySectionShow } = useExtensionRampEntryShow();
   const { state } = useLocationState<TReceiveLocationState>();
-  const isMainnet = useIsMainnet();
   const dappShowFn = useMemo(
     () => checkEnabledFunctionalTypes(state.symbol, state.chainId === MAIN_CHAIN_ID),
     [state.chainId, state.symbol],
@@ -60,22 +54,11 @@ export default function Receive() {
     }),
     [showHistoryData, state.extraData?.amount, state.extraData?.crypto, state.extraData?.fiat, state.symbol],
   );
-  const headerTitle = useMemo(() => {
-    return (
-      <div>
-        <div className="top-header flex-row-center">
-          <TokenImageDisplay symbol={state.symbol} src={state.imageUrl} width={20} />
-          <span>{state.symbol}</span>
-        </div>
-        <div className="bottom-header">{transNetworkText(state.chainId, !isMainnet)}</div>
-      </div>
-    );
-  }, [isMainnet, state.chainId, state.imageUrl, state.symbol]);
 
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['receive-wrapper flex-column', isPrompt && 'detail-page-prompt'])}>
-        <CommonHeader onLeftBack={() => navigate('/')} title={headerTitle} />
+        <CommonTokenHeader symbol={state.symbol} imgUrl={state.imageUrl} chainId={state.chainId} />
         <div className="receive-content flex-1 flex-column">
           {showTabData.length > 1 ? (
             <RadioTab
@@ -101,7 +84,7 @@ export default function Receive() {
         {isPrompt && <PromptEmptyElement />}
       </div>
     );
-  }, [isPrompt, headerTitle, showTabData, curTab, state.chainId, state.symbol, state.pageSide, buyData, navigate]);
+  }, [isPrompt, state.symbol, state.imageUrl, state.chainId, state.pageSide, showTabData, curTab, buyData]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

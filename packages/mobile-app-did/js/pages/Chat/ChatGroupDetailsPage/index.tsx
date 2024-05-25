@@ -199,7 +199,7 @@ const ChatGroupDetailsPage = () => {
           </View>
         </Touchable>
 
-        {mute && <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.font11} />}
+        {mute && <Svg size={pTd(12)} icon="chat-mute" color={defaultColors.font11} />}
       </View>
     ),
     [displayName, groupInfo?.icon, groupInfo?.name, mute, onBack],

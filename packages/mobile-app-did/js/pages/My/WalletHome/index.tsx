@@ -48,11 +48,11 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
       if (!isConfirm || !managerAddress || !caHash) return;
       Loading.show({ text: t('Signing out of Portkey...') });
       try {
-        const caContract = await getCurrentCAContract();
-        const req = await removeManager(caContract, managerAddress, caHash);
-
         const { deviceId } = await getDeviceInfo();
         await request.wallet.reportExitWallet({ params: { deviceId } });
+
+        const caContract = await getCurrentCAContract();
+        const req = await removeManager(caContract, managerAddress, caHash);
 
         if (req && !req.error) {
           console.log('logout success', req);

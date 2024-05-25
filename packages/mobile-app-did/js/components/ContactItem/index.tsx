@@ -108,6 +108,6 @@ export const styles = StyleSheet.create({
     paddingHorizontal: pTd(8),
     paddingVertical: pTd(2),
     borderRadius: pTd(4),
-    backgroundColor: defaultColors.bg9,
+    backgroundColor: defaultColors.brandLight,
   },
 });

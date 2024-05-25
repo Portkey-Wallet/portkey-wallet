@@ -23,6 +23,7 @@ import { singleMessage } from '@portkey/did-ui-react';
 import { FormatNameRuleList, formatNameWithRules, handleErrorMessage } from '@portkey-wallet/utils';
 import depositService from '@portkey-wallet/utils/deposit';
 import CommonHeader from 'components/CommonHeader';
+import clsx from 'clsx';
 
 enum Step {
   HOME,
@@ -89,6 +90,7 @@ export default function DepositHome() {
     setPayAmount,
   } = useDeposit(initToToken, chain as ChainId, manager);
   console.log('wfs isSameSymbol===', isSameSymbol);
+  console.log('wfs receiveAmount->toAmount===', receiveAmount.toAmount);
   useEffect(() => {
     console.log('wfs fromNetwork===', fromNetwork);
   }, [fromNetwork]);
@@ -225,8 +227,9 @@ export default function DepositHome() {
                     placeholder="0.00"
                     onKeyDown={handleKeyDown}
                     onChange={(e) => {
-                      setPayAmount(Number(e.target.value));
-                      console.log('onChange?.(e.target.value)', e.target.value);
+                      const localPayAmount = e.target.value ? Number(e.target.value) : 0;
+                      setPayAmount(localPayAmount);
+                      console.log('onChange?.(e.target.value)', localPayAmount);
                     }}
                   />
                 </div>
@@ -264,17 +267,9 @@ export default function DepositHome() {
               {!isSameSymbol && (
                 <div className="token-amount-container">
                   <span className="token-amount-title">You Receive</span>
-                  <input
-                    value={receiveAmount.toAmount}
-                    type="number"
-                    className="deposit-input"
-                    placeholder="0.00"
-                    onKeyDown={handleKeyDown}
-                    readOnly
-                    onChange={(e) => {
-                      console.log('onChange?.(e.target.value)', e.target.value);
-                    }}
-                  />
+                  <span className={clsx(['deposit-input', receiveAmount.toAmount === 0 && 'receive-zero'])}>
+                    {receiveAmount.toAmount === 0 ? '0.00' : receiveAmount.toAmount}
+                  </span>
                 </div>
               )}
             </div>

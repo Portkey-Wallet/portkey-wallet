@@ -141,7 +141,7 @@ const GroupInfoPage = () => {
                   groupIcon: groupInfo?.icon || '',
                 });
               }}>
-              <Svg icon="chat-scan" size={pTd(16)} />
+              <Svg icon="chat-qr-code" size={pTd(16)} />
             </Touchable>
           </View>
         </FormItem>

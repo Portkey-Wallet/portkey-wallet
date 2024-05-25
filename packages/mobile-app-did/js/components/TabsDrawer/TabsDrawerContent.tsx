@@ -306,7 +306,7 @@ const TabsDrawerContent: React.FC = () => {
           <Touchable
             style={[handleButtonStyle.handleItem, handleButtonStyle.add]}
             onPress={() => dispatch(changeDrawerOpenStatus(false))}>
-            <Svg icon="add-blue" size={pTd(28)} />
+            <Svg icon="add" size={pTd(28)} color={defaultColors.primaryColor} />
           </Touchable>
           <Touchable style={handleButtonStyle.handleItem} onPress={onDone}>
             <TextM style={[handleButtonStyle.done, FontStyles.font4]}>{t('Done')}</TextM>

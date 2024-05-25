@@ -40,7 +40,7 @@ const ProfileIDSection: React.FC<ProfileIDSectionType> = props => {
         </Touchable>
         {showQrCodeButton && (
           <Touchable onPress={() => navigationService.navigate('ChatQrCodePage')} style={GStyles.marginLeft(pTd(24))}>
-            <Svg icon="chat-scan" size={pTd(16)} />
+            <Svg icon="chat-qr-code" size={pTd(16)} />
           </Touchable>
         )}
       </View>

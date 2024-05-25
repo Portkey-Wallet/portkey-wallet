@@ -46,6 +46,7 @@ export const defaultColors = {
   bg37: '#EFECFF',
   bg38: '#FFEEEE',
   bg39: '#F8F8F8',
+  bg40: '#E4E0FF',
 
   font1: '#464B53',
   font2: 'white',
@@ -96,9 +97,6 @@ export const defaultColors = {
   error1: '#FF4D4F',
 
   shadow1: '#4D4E59',
-};
-
-export const lightModeColors = {
   brandTouched: '#5137EE',
   brandNormal: '#5D42FF',
   brandDisable: '#B2B0FF',

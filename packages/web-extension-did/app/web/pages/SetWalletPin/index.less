@@ -6,7 +6,9 @@
     .portkey-ui-wrapper {
       height: 100%;
     }
-    .portkey-ant-input-affix-wrapper-status-error:not(.portkey-ant-input-affix-wrapper-disabled, .portkey-ant-input-affix-wrapper-borderless).portkey-ant-input-affix-wrapper {
+    .portkey-ant-input-affix-wrapper-status-error:not(.portkey-ant-input-affix-wrapper-disabled, .portkey-ant-input-affix-wrapper-borderless).portkey-ant-input-affix-wrapper,
+    .portkey-ant-input-affix-wrapper-status-error:not(.portkey-ant-input-affix-wrapper-disabled, .portkey-ant-input-affix-wrapper-borderless).portkey-ant-input-affix-wrapper,
+    .portkey-ant-input-status-error:not(.portkey-ant-input-disabled, .portkey-ant-input-borderless).portkey-ant-input:hover {
       border-color: @brand-normal !important;
       &:hover {
         border-color: @brand-normal !important;
@@ -19,8 +21,14 @@
         background-color: @brand-hover;
         border-color: @brand-hover;
       }
+      &:focus {
+        background-color: @brand-click;
+        border-color: @brand-click;
+      }
       &:disabled,
-      &:disabled:hover {
+      &:disabled:hover,
+      &:disabled:focus,
+      &:disabled:active {
         background-color: @brand-disable;
         border-color: @brand-disable;
       }

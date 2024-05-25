@@ -35,7 +35,7 @@ const UnBlockButton = (props: TUnBlockButtonPropsType) => {
 
   return (
     <Touchable style={styles.wrap} onPress={unBlockAction}>
-      <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.flexCenter, GStyles.height('100%')]}>
+      <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.flexCenter, GStyles.height(pTd(60))]}>
         <TextM> {loading && <LottieLoading />}</TextM>
         <TextL style={[fonts.mediumFont, FontStyles.primaryColor, GStyles.marginLeft(pTd(8))]}>
           {loading ? 'Unblocking' : 'Unblock'}

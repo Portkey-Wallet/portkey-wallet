@@ -408,13 +408,13 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
 
 const FETCH_DEPOSIT_RECORD_DURATION = 20000;
 
-export const useDepositRecord = () => {
+export const useDepositRecord = ({ fromSymbol, address }: { fromSymbol: string; address: string }) => {
   const [lastRecord, setLastRecord] = useState<TRecordsListItem>();
 
   const fetchRecentlyRecord = useCallback(async () => {
-    const res = await depositService.getLastRecordsList();
+    const res = await depositService.getLastRecordsList({ fromSymbol, address });
     if (res) setLastRecord(res);
-  }, []);
+  }, [fromSymbol, address]);
 
   useEffect(() => {
     fetchRecentlyRecord();

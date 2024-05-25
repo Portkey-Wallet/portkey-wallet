@@ -134,6 +134,8 @@ export interface TGetRecordsListRequest {
   endTimestamp?: number | null;
   skipCount: number; // 0
   maxResultCount: number; // 1
+  fromSymbol: string;
+  address: string;
 }
 
 export type TGetRecordsListResult = {
@@ -187,5 +189,11 @@ export interface IDepositService {
   getNetworkList({ chainId, symbol }: { chainId: ChainId; symbol: string }): Promise<TNetworkItem[]>;
   getDepositInfo(params: TGetDepositInfoRequest): Promise<TDepositInfo>;
   depositCalculator(params: TGetDepositCalculateRequest): Promise<TConversionRate>;
-  getLastRecordsList(): Promise<TRecordsListItem | null>;
+  getLastRecordsList({
+    fromSymbol,
+    address,
+  }: {
+    fromSymbol: string;
+    address: string;
+  }): Promise<TRecordsListItem | null>;
 }

@@ -19,6 +19,7 @@ import { getManagerAccount, getPin } from 'utils/redux';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { ChainId } from '@portkey-wallet/types';
+import { TextL } from 'components/CommonText';
 
 export default function Deposit() {
   const { t } = useLanguage();
@@ -172,8 +173,8 @@ export default function Deposit() {
           <Text style={styles.rateText}>Slippage: 5%</Text>
         </View>
       )}
-      <CommonButton style={styles.nextButton} type="primary" disabled={false} onPress={onNext}>
-        Next
+      <CommonButton containerStyle={styles.nextButton} type="primary" disabled={false} onPress={onNext}>
+        <TextL style={styles.nextButtonText}>{'Next'}</TextL>
       </CommonButton>
     </PageContainer>
   );
@@ -218,5 +219,10 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     paddingTop: pTd(40),
+  },
+  nextButtonText: {
+    fontSize: pTd(16),
+    lineHeight: pTd(24),
+    color: defaultColors.white,
   },
 });

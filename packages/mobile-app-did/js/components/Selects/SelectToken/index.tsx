@@ -84,7 +84,7 @@ export const SelectNetworkModal = (
     if (!isPay && !isShowAll) {
       prep.chainId = (currentChoosingNetwork.name || 'AELF') as ChainId;
     }
-    updateNetworkAndTokenData(prep, isShowAll ? networkList : [currentChoosingNetwork], isShowAll && !isPay);
+    updateNetworkAndTokenData(prep, isShowAll ? networkList : [currentChoosingNetwork], isPay);
   }, [
     currentChoosingNetwork,
     currentChoosingNetwork.name,

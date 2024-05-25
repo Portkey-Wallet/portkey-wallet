@@ -1,11 +1,10 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
 import { TextM, TextS } from 'components/CommonText';
-import { copyText } from 'utils';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import fonts from 'assets/theme/fonts';
 import { CopyButton } from 'components/CopyButton';
@@ -54,10 +53,6 @@ export default function DepositCard(props: IDepositCardProps) {
   const currentWallet = useCurrentWalletInfo();
   const currentCaAddress = currentWallet?.[chainId]?.caAddress;
 
-  const copyId = useCallback(() => {
-    copyText(currentCaAddress ?? '');
-  }, [currentCaAddress]);
-
   return (
     <View style={styles.container}>
       <View style={styles.card}>
@@ -83,7 +78,7 @@ export default function DepositCard(props: IDepositCardProps) {
                 </TextM>
                 <TextS style={styles.copyButtonSubText}>{'Click to copy your address'}</TextS>
               </View>
-              <CopyButton onCopy={copyId} />
+              <CopyButton copyContent={currentCaAddress} />
             </View>
           </View>
         )}

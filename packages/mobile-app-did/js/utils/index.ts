@@ -3,6 +3,8 @@ import utc from 'dayjs/plugin/utc.js';
 import * as Network from 'expo-network';
 import { setStringAsync } from 'expo-clipboard';
 import { Timestamp } from '@portkey-wallet/types';
+import CommonToast from 'components/CommonToast';
+import i18n from 'i18n';
 dayjs.extend(utc);
 
 export const INFINITY = 'Infinity';
@@ -27,12 +29,12 @@ export const getFaviconUrlFromDomain = (domain = '') => {
  * a mobile app func to copy text
  * @param text
  */
-export const copyText = async (text: string) => {
+export const copyText = async (text: string, allowToast = true) => {
   try {
     await setStringAsync(text);
-    // isCopy && CommonToast.success(i18n.t('Copy Success'));
+    allowToast && CommonToast.success(i18n.t('Copy Success'));
   } catch {
-    // CommonToast.success(i18n.t('Copy Fail'));
+    allowToast && CommonToast.success(i18n.t('Copy Fail'));
   }
 };
 /**

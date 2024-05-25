@@ -3,19 +3,21 @@ import { FloatTip, FloatTipProps } from 'components/FloatTip';
 import Svg from 'components/Svg';
 import React, { useCallback, useRef, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
+import { copyText } from 'utils';
 import { pTd } from 'utils/unit';
 
 export interface CopyButtonProps {
+  copyContent: string | (() => string) | undefined;
   style?: StyleProp<ViewStyle>;
   tipsStyle?: Pick<FloatTipProps, 'containerStyle' | 'textStyle' | 'content'>;
-  onCopy: () => void;
+  onCopy?: () => void;
   duration?: number;
 }
 
 export const CopyButton = (props: CopyButtonProps) => {
   const [copyChecked, setCopyChecked] = useState(false);
   const copyForwarder = useRef<NodeJS.Timeout | null>(null);
-  const { style = {}, tipsStyle = {}, onCopy, duration = 2000 } = props;
+  const { style = {}, tipsStyle = {}, onCopy, duration = 2000, copyContent } = props;
   const [wrapperLayoutProps, setWrapperLayoutProps] = useState<{ width: number; height: number }>({
     width: 0,
     height: 0,
@@ -28,6 +30,11 @@ export const CopyButton = (props: CopyButtonProps) => {
     },
     [wrapperLayoutProps],
   );
+  const innerCopy = useCallback(() => {
+    const content = typeof copyContent === 'function' ? copyContent() : copyContent;
+    content && copyText(content, false);
+  }, [copyContent]);
+
   useEffectOnce(() => {
     return () => {
       if (copyForwarder.current) {
@@ -36,17 +43,18 @@ export const CopyButton = (props: CopyButtonProps) => {
     };
   });
 
-  const copyId = useCallback(() => {
-    onCopy();
+  const realCopy = useCallback(() => {
+    innerCopy();
+    onCopy?.();
     setCopyChecked(true);
     copyForwarder.current = setTimeout(() => {
       setCopyChecked(false);
       copyForwarder.current = null;
     }, duration);
-  }, [duration, onCopy]);
+  }, [innerCopy, duration, onCopy]);
 
   return (
-    <TouchableOpacity onPress={copyId} onLayout={onLayout} disabled={copyChecked} style={style}>
+    <TouchableOpacity onPress={realCopy} onLayout={onLayout} disabled={copyChecked} style={style}>
       <FloatTip wrapperLayoutProps={wrapperLayoutProps} {...tipsStyle} content={'Copied'} display={copyChecked} />
       <Svg icon={copyChecked ? 'copy-checked' : 'copy1'} size={pTd(32)} iconStyle={styles.copyButtonIcon} />
     </TouchableOpacity>

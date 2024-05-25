@@ -12,7 +12,6 @@ import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { addressFormat, formatStr2EllipsisStr } from '@portkey-wallet/utils';
-import { copyText } from 'utils';
 import fonts from 'assets/theme/fonts';
 import { RichText } from 'components/RichText';
 import CommonTouchableTabs, { TabItemType } from 'components/CommonTouchableTabs';
@@ -68,18 +67,12 @@ export default function Receive() {
     navigationService.navigate('Deposit', tokenItem);
   }, [tokenItem]);
 
-  const copyId = useCallback(() => {
-    copyText(`ELF_${currentCaAddress}_${chainId}`);
-  }, [chainId, currentCaAddress]);
+  const toCaAddress = useMemo(() => `ELF_${currentCaAddress}_${chainId}`, [currentCaAddress, chainId]);
 
   const OriginalQrCodePage = useCallback(() => {
     return (
       <View>
-        <AccountCard
-          toCaAddress={`ELF_${currentCaAddress}_${chainId}`}
-          tokenInfo={tokenItem}
-          style={styles.accountCardStyle}
-        />
+        <AccountCard toCaAddress={toCaAddress} tokenInfo={tokenItem} style={styles.accountCardStyle} />
 
         <View style={[GStyles.flexCol, GStyles.itemStart, GStyles.spaceBetween, styles.addressWrap]}>
           <TextS style={styles.aelfAddressTitle}>{'Your aelf address'}</TextS>
@@ -87,7 +80,7 @@ export default function Receive() {
             <TextM style={styles.address}>
               {formatStr2EllipsisStr(addressFormat(currentCaAddress, chainId, 'aelf'), 32)}
             </TextM>
-            <CopyButton onCopy={copyId} />
+            <CopyButton copyContent={toCaAddress} />
           </View>
         </View>
 
@@ -104,7 +97,7 @@ export default function Receive() {
         </View>
       </View>
     );
-  }, [currentCaAddress, chainId, copyId, tokenItem]);
+  }, [toCaAddress, tokenItem, currentCaAddress, chainId]);
 
   return (
     <PageContainer

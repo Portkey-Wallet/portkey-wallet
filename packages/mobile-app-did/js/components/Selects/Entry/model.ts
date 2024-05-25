@@ -21,7 +21,7 @@ export const useMemoNetworkAndTokenData = () => {
   const [networkAndTokenData, setNetworkAndTokenData] = useState<NetworkAndTokenShowType>([]);
   const pastProps = useRef<RequestNetworkTokenDataProps | undefined>();
   const updateNetworkAndTokenData = useCallback(
-    async (props: RequestNetworkTokenDataProps, networkList: TNetworkItem[], isReceiveAndAll = false) => {
+    async (props: RequestNetworkTokenDataProps, networkList: TNetworkItem[], isPay = false) => {
       if (
         pastProps.current &&
         pastProps.current.chainId === props.chainId &&
@@ -31,20 +31,12 @@ export const useMemoNetworkAndTokenData = () => {
       }
       Loading.show();
       try {
-        if (isReceiveAndAll) {
-          const response = [];
-          for (let i = 0; i < networkList.length; i++) {
-            const res = await depositService.getTokenListByNetwork({ ...props, network: networkList[i].network });
-            response.push(dealWithNetworkAndTokenData(res, [networkList[i]]));
-          }
-          setNetworkAndTokenData(response.flat());
-        } else {
-          const res = await depositService.getTokenListByNetwork(props);
-          setNetworkAndTokenData(dealWithNetworkAndTokenData(res, networkList));
-        }
+        const res = await depositService.getTokenListByNetwork(props);
+        console.log('res', res);
+        setNetworkAndTokenData(dealWithNetworkAndTokenData(res, networkList, isPay));
         pastProps.current = props;
       } catch (ignored) {
-        console.log('ignored', ignored);
+        console.log('error', ignored);
       } finally {
         Loading.hide();
       }
@@ -54,7 +46,7 @@ export const useMemoNetworkAndTokenData = () => {
   return { networkAndTokenData, updateNetworkAndTokenData };
 };
 
-const dealWithNetworkAndTokenData = (tokens: TTokenItem[], networkList: TNetworkItem[]) => {
+const dealWithNetworkAndTokenData = (tokens: TTokenItem[], networkList: TNetworkItem[], isPay = false) => {
   const arr: NetworkAndTokenShowType = [];
   if (networkList.length <= 1) {
     sortTokens(tokens).forEach(tokenItem => {
@@ -66,7 +58,9 @@ const dealWithNetworkAndTokenData = (tokens: TTokenItem[], networkList: TNetwork
   } else {
     networkList.forEach(network => {
       sortTokens(tokens).forEach(tokenItem => {
-        if (tokenItem.networkList?.some(item => item.network === network.network)) {
+        if (
+          tokenItem.networkList?.some(item => (isPay ? item.network === network.network : item.name === network.name))
+        ) {
           arr.push({
             token: tokenItem,
             network,

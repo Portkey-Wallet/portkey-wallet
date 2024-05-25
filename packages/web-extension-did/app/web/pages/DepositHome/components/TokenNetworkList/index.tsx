@@ -193,9 +193,36 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
           const tokenListForAll: TExtendedTokenItem[] = [];
           tokenList.forEach((item) => {
             const { networkList, ...rest } = item;
-            const divideArray = networkList?.map((item) => ({ ...rest, network: { ...item } })) || [];
+            const divideArray =
+              networkList?.map((item) => ({
+                ...rest,
+                network: {
+                  ...item,
+                  contractAddress:
+                    drawerType === 'to'
+                      ? `${item.network === 'AELF' ? 'MainChain' : 'SideChain'} ${item.network}`
+                      : item.contractAddress,
+                },
+              })) || [];
             tokenListForAll.push(...divideArray);
           });
+
+          if (drawerType === 'to') {
+            // sort
+            tokenListForAll.sort((a, b) => {
+              const networkA = a.network?.network;
+              const networkB = b.network?.network;
+
+              if (networkA === 'AELF' && networkB !== 'AELF') {
+                return -1;
+              } else if (networkA !== 'AELF' && networkB === 'AELF') {
+                return 1;
+              } else {
+                return 0;
+              }
+            });
+          }
+
           setCurrentTokenList(tokenListForAll);
         } else {
           // const tempUpdatedTokenList = tokenList.map(({ networkList, ...rest }) => rest);
@@ -228,13 +255,19 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
         setLoading(false);
       }
     },
-    [drawerType, setLoading, toChainId],
+    [drawerType, setLoading],
   );
   console.log('wfs selectedNetworkIndex===', selectedNetworkIndex);
-  const contractAddressShow = useCallback((token: TExtendedTokenItem) => {
-    const contractAddress = token.network ? token.network.contractAddress : token.contractAddress;
-    return contractAddress?.slice(0, 6) + '...' + contractAddress?.slice(-6);
-  }, []);
+  const contractAddressShow = useCallback(
+    (token: TExtendedTokenItem) => {
+      const contractAddress = token.network ? token.network.contractAddress : token.contractAddress;
+      if (drawerType === 'to') {
+        return contractAddress;
+      }
+      return contractAddress?.slice(0, 6) + '...' + contractAddress?.slice(-6);
+    },
+    [drawerType],
+  );
   const selectNetworkEle = useMemo(() => {
     return (
       <div className="select-network-container">

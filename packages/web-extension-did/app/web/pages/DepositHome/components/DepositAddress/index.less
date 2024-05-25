@@ -30,11 +30,19 @@
     flex-shrink: 0;
     position: relative;
     width: 100%;
+    .msg-container-processing-bg {
+      background-color: @brand-light;
+    }
+    .msg-container-failed-bg {
+      background-color: @functional-error-light;
+    }
+    .msg-container-success-bg {
+      background-color: @functional-success-light;
+    }
     .msg-container {
       display: flex;
       padding: 10px 12px;
       flex-direction: row;
-      background-color: @functional-success-light;
       border-radius: 6px;
       width: 100%;
       margin: 0 16px 8px;

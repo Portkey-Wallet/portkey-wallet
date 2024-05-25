@@ -122,7 +122,13 @@ class DepositService implements IDepositService {
     return conversionRate;
   }
 
-  async getLastRecordsList(): Promise<TRecordsListItem | null> {
+  async getLastRecordsList({
+    fromSymbol,
+    address,
+  }: {
+    fromSymbol: string;
+    address: string;
+  }): Promise<TRecordsListItem | null> {
     request.set('headers', { 'T-Authorization': this.transferToken });
 
     const twoHoursMillisecond = 2 * 60 * 60 * 1000;
@@ -134,6 +140,8 @@ class DepositService implements IDepositService {
       skipCount: 0,
       maxResultCount: 1,
       startTimestamp,
+      fromSymbol,
+      address,
     };
     const {
       code,

@@ -76,7 +76,7 @@ export default function Receive() {
 
         <View style={[GStyles.flexCol, GStyles.itemStart, GStyles.spaceBetween, styles.addressWrap]}>
           <TextS style={styles.aelfAddressTitle}>{'Your aelf address'}</TextS>
-          <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, styles.textRow]}>
+          <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, GStyles.width100]}>
             <TextM style={styles.address}>
               {formatStr2EllipsisStr(addressFormat(currentCaAddress, chainId, 'aelf'), 32)}
             </TextM>

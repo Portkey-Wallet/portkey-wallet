@@ -113,7 +113,8 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
     }, 1000);
 
     refreshReceiveTimerRef.current = timer;
-  }, [clearRefreshReceive, fetchRate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clearRefreshReceive]);
 
   const clearFromAndTo = useCallback(() => {
     setFromNetwork(undefined);
@@ -178,7 +179,7 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
         });
       }
     });
-    setToChainIdList(Array.from(toChainIdSet));
+    setToChainIdList(Array.from(toChainIdSet).sort());
   }, [clearFromAndTo, initChainId, initToToken.symbol]);
 
   const fetchAllNetworkList = useCallback(async () => {
@@ -230,10 +231,10 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
         registerRefreshReceive();
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     calculateAmount,
     clearRefreshReceive,
-    fetchRate,
     fromToken?.symbol,
     isSameSymbol,
     registerRefreshReceive,

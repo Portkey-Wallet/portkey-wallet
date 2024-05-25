@@ -150,7 +150,7 @@ const GroupInfoPage = () => {
           <Touchable
             style={[GStyles.flexRow, GStyles.itemCenter, styles.membersActionWrap]}
             onPress={() => navigationService.navigate('AddMembersPage')}>
-            <Svg icon="chat-add-member" size={pTd(20)} />
+            <Svg icon="add" size={pTd(20)} color={defaultColors.primaryColor} />
             <TextL style={[FontStyles.font4, styles.actionText]}>Add Members</TextL>
           </Touchable>
           {isAdmin && (

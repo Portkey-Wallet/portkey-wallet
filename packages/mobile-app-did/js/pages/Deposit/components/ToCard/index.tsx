@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
   },
   minimumAmountText: {
     width: '100%',
+    height: pTd(16),
     marginBottom: pTd(4),
     color: defaultColors.font11,
     lineHeight: pTd(16),

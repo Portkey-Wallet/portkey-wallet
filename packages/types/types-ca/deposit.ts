@@ -130,8 +130,8 @@ export type TQueryTransferAuthTokenRequest = {
 export interface TGetRecordsListRequest {
   type: number; // 1
   status: number; // 0
-  startTimestamp?: number | null; // current time - 30 minutes
-  endTimestamp?: number | null; // current time
+  startTimestamp?: number | null;
+  endTimestamp?: number | null;
   skipCount: number; // 0
   maxResultCount: number; // 1
 }

@@ -18,10 +18,7 @@ const EXCHANGE_PARTNER_SVG_LIST = [
 export default function ExchangePage() {
   const { state } = useLocationState<TReceiveLocationState>();
   const wallet = useCurrentWalletInfo();
-  const caAddress = useMemo(
-    () => `ELF_${wallet?.[state.chainId || 'AELF']?.caAddress}_${state.chainId}`,
-    [state, wallet],
-  );
+  const caAddress = useMemo(() => wallet?.[state.chainId || 'AELF']?.caAddress || '', [state.chainId, wallet]);
 
   return (
     <div className="exchange-page flex-column-center">

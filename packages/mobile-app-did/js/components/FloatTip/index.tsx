@@ -1,7 +1,6 @@
 import { defaultColors } from 'assets/theme';
-import { TextM } from 'components/CommonText';
 import React, { useCallback, useMemo, useState } from 'react';
-import { TextStyle, View, ViewStyle, StyleSheet, LayoutChangeEvent } from 'react-native';
+import { TextStyle, View, Text, ViewStyle, StyleSheet, LayoutChangeEvent } from 'react-native';
 import { pTd } from 'utils/unit';
 
 export interface FloatTipProps {
@@ -48,7 +47,7 @@ export const FloatTip = (props: FloatTipProps) => {
   };
 
   const addOnStyle: ViewStyle = useMemo(() => {
-    const { width: selfWidth } = layoutProps;
+    const { width: selfWidth, height } = layoutProps;
     const { width: wrapperWidth } = wrapperLayoutProps; // since now only support top direction, only width is needed
     let positionStyle: ViewStyle = {};
     const direction = 'top';
@@ -56,7 +55,7 @@ export const FloatTip = (props: FloatTipProps) => {
     switch (direction) {
       case 'top': {
         positionStyle = {
-          top: -pTd(56),
+          top: -height - pTd(4),
           left: -width,
         };
         break;
@@ -69,7 +68,9 @@ export const FloatTip = (props: FloatTipProps) => {
   }, [layoutProps, targetStyle, wrapperLayoutProps]);
   return (
     <View onLayout={onLayout} style={[containerStyle, container, addOnStyle]}>
-      <TextM style={[baseTextStyle, textStyle, text]}>{content}</TextM>
+      <Text style={[baseTextStyle, textStyle, text]} numberOfLines={1}>
+        {content}
+      </Text>
       <View style={[baseArrowStyle, arrow, arrowStyle]} />
     </View>
   );

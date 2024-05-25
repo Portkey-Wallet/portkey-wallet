@@ -24,7 +24,7 @@ import MessageImage from '../Message/MessageImage';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 
 import Touchable from 'components/Touchable';
-import { useChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useBlockAndReport, useChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import GStyles from 'assets/theme/GStyles';
 import { ChatMessage } from 'pages/Chat/types';
 import { FontStyles } from 'assets/theme/styles';
@@ -38,6 +38,8 @@ import SystemInfo from '../SystemInfo';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 import CustomView from '../CustomView';
+import UnBlockButton from '../UnBlockButton';
+import { ChannelTypeEnum } from '@portkey-wallet/im';
 
 const ListViewProps = {
   // windowSize: 50,
@@ -54,7 +56,7 @@ export default function ChatsDetailContent() {
   const dispatch = useChatsDispatch();
   const messageContainerRef = useRef<FlatList>();
 
-  const { list, init, next, hasNext, loading } = useChannel(currentChannelId || '');
+  const { list, init, next, hasNext, loading, info } = useChannel(currentChannelId || '', ChannelTypeEnum.P2P);
   const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
@@ -69,6 +71,7 @@ export default function ChatsDetailContent() {
   const formattedList = useMemo(() => formatMessageList(list), [list]);
   const { relationId } = useRelationId();
   const user = useMemo(() => ({ _id: relationId || '' }), [relationId]);
+  const { isBlocked } = useBlockAndReport(info?.toRelationId || '');
 
   const onLoadEarlier = useLockCallback(async () => {
     try {
@@ -155,13 +158,18 @@ export default function ChatsDetailContent() {
     [onDismiss],
   );
 
+  console.log('info info', info);
+
   const bottomBar = useMemo(
-    () => (
-      <BottomBarContainer scrollToBottom={scrollToBottom}>
-        <AccessoryBar />
-      </BottomBarContainer>
-    ),
-    [scrollToBottom],
+    () =>
+      isBlocked ? (
+        <UnBlockButton blockedUserId={info?.toRelationId || ''} />
+      ) : (
+        <BottomBarContainer scrollToBottom={scrollToBottom}>
+          <AccessoryBar />
+        </BottomBarContainer>
+      ),
+    [info?.toRelationId, isBlocked, scrollToBottom],
   );
 
   const disabledTouchable = useMemo(() => formattedList.length > 10, [formattedList.length]);

@@ -1,20 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getVerifierList } from '../../utils/sandboxUtil/getVerifierList';
 import { VerifierItem } from '@portkey/did';
 import { AccountTypeEnum, OperationTypeEnum } from '@portkey/services';
-import {
-  GuardianApproval,
-  BaseGuardianItem,
-  SetAllowance,
-  did,
-  IAllowance,
-  handleErrorMessage,
-  IGuardiansApproved,
-  ManagerApproveInnerProps,
-} from '@portkey/did-ui-react';
+import { GuardianApproval, BaseGuardianItem, did, handleErrorMessage, IGuardiansApproved } from '@portkey/did-ui-react';
 import { useCurrentChain, useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useLoading } from 'store/Provider/hooks';
-import BackHeader from 'components/BackHeader';
+import CommonHeader from 'components/CommonHeader';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import { DEFAULT_DECIMAL, DEFAULT_NFT_DECIMAL } from '@portkey-wallet/constants/constants-ca/activity';
 import { LANG_MAX } from '@portkey-wallet/constants/misc';
@@ -24,13 +15,27 @@ import { isNFT } from 'utils';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import getSeed from 'utils/getSeed';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
+import SetAllowance, { IAllowanceConfirmProps } from 'pages/components/SetAllowance';
+import { ChainId, NetworkType } from '@portkey-wallet/types';
 
 export enum ManagerApproveStep {
   SetAllowance = 'SetAllowance',
   GuardianApproval = 'GuardianApproval',
 }
 
-const PrefixCls = 'manager-approval';
+export interface IManagerApproveInnerProps {
+  originChainId: ChainId;
+  targetChainId: ChainId;
+  caHash: string;
+  amount: string;
+  dappInfo?: { icon?: string; href?: string; name?: string };
+  symbol: string;
+  networkType: NetworkType;
+  showBatchApproveToken: boolean;
+  onCancel?: () => void;
+  onError?: (error: Error) => void;
+  onFinish?: (res: { amount: string; guardiansApproved: IGuardiansApproved[]; batchApproveToken: boolean }) => void;
+}
 
 export default function ManagerApproveInner({
   originChainId,
@@ -39,10 +44,11 @@ export default function ManagerApproveInner({
   amount,
   dappInfo,
   symbol,
+  showBatchApproveToken,
   onCancel,
   onFinish,
   onError,
-}: ManagerApproveInnerProps) {
+}: IManagerApproveInnerProps) {
   const [step, setStep] = useState<ManagerApproveStep>(ManagerApproveStep.SetAllowance);
   const [tokenInfo, setTokenInfo] = useState<{
     symbol: string;
@@ -60,6 +66,7 @@ export default function ManagerApproveInner({
   const currentNetwork = useCurrentNetwork();
   const DEFAULT_SYMBOL_DECIMAL = useMemo(() => (isNFT(symbol) ? DEFAULT_NFT_DECIMAL : DEFAULT_DECIMAL), [symbol]);
   const [allowance, setAllowance] = useState<string>(divDecimals(amount, DEFAULT_SYMBOL_DECIMAL).toFixed());
+  const batchApproveTokenRef = useRef<boolean>(false);
 
   const getChainInfo = useGetChainInfo();
 
@@ -105,9 +112,10 @@ export default function ManagerApproveInner({
   }, [caHash, getVerifierListHandler, originChainId]);
 
   const allowanceConfirm = useCallback(
-    async (allowanceInfo: IAllowance) => {
+    async (allowanceInfo: IAllowanceConfirmProps) => {
       try {
         setAllowance(allowanceInfo.allowance);
+        batchApproveTokenRef.current = allowanceInfo.batchApproveToken;
         setLoading(true);
 
         const guardianList = await getGuardianList();
@@ -164,12 +172,12 @@ export default function ManagerApproveInner({
     getTokenInfo();
   }, [getTokenInfo, setLoading]);
   return (
-    <div className="portkey-ui-flex-column portkey-ui-manager-approval-wrapper">
+    <div className="flex-column manager-approval-wrapper">
       {step === ManagerApproveStep.SetAllowance && (
         <SetAllowance
-          className="portkey-ui-flex-column"
           symbol={symbol}
           amount={allowance}
+          showBatchApproveToken={showBatchApproveToken}
           decimals={tokenInfo?.decimals ?? DEFAULT_SYMBOL_DECIMAL}
           recommendedAmount={divDecimals(amount, tokenInfo?.decimals ?? DEFAULT_SYMBOL_DECIMAL).toFixed()}
           max={divDecimals(LANG_MAX, tokenInfo?.decimals ?? DEFAULT_SYMBOL_DECIMAL).toFixed(0)}
@@ -183,8 +191,8 @@ export default function ManagerApproveInner({
       {step === ManagerApproveStep.GuardianApproval && guardianList && (
         <GuardianApproval
           networkType={currentNetwork}
-          className={`${PrefixCls}-guardian-approve`}
-          header={<BackHeader leftCallBack={() => setStep(ManagerApproveStep.SetAllowance)} />}
+          className="manager-approval-guardian-approve"
+          header={<CommonHeader onLeftBack={() => setStep(ManagerApproveStep.SetAllowance)} />}
           originChainId={originChainId}
           targetChainId={targetChainId}
           guardianList={guardianList}
@@ -201,6 +209,7 @@ export default function ManagerApproveInner({
             onFinish?.({
               amount: timesDecimals(allowance, tokenInfo?.decimals || DEFAULT_SYMBOL_DECIMAL).toFixed(0),
               guardiansApproved: approved,
+              batchApproveToken: batchApproveTokenRef.current,
             });
           }}
           onError={(error) => onError?.(Error(handleErrorMessage(error.error)))}

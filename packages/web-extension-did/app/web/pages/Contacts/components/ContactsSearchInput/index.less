@@ -5,8 +5,8 @@
   width: calc(100% - 48px);
   height: 48px;
   border-radius: 6px;
-  background-color: @bg-11;
-  border: 1px solid @border-1;
+  background-color: @neutral-default-bg;
+  border: 1px solid @neutral-border;
 
   .@{app-prefix}-input-prefix {
     margin-right: 12px;
@@ -16,7 +16,7 @@
     .anticon-close-circle {
       width: 14px;
       height: 14px;
-      background: url('../../../../assets/svgIcon/Close2.svg') no-repeat center;
+      background: url('../../../../assets/svgIcon/SuggestClose.svg') no-repeat center;
       background-size: inherit;
 
       & > svg {
@@ -33,7 +33,7 @@
 
 .contacts-search-input.@{app-prefix}-input-affix-wrapper-focused {
   box-shadow: none;
-  border-color: @border-3 !important;
+  border-color: @brand-normal !important;
   .@{app-prefix}-input-prefix {
     .custom-svg {
       background: url('../../../../assets/svgIcon/Search.svg') center no-repeat;

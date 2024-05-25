@@ -104,7 +104,7 @@ const GroupInfoPage = () => {
       hideTouchable
       leftCallback={() => navigationService.goBack()}
       titleDom={ChatOperationsEnum.GROUP_INFO}
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
       <ScrollView>
@@ -141,7 +141,7 @@ const GroupInfoPage = () => {
                   groupIcon: groupInfo?.icon || '',
                 });
               }}>
-              <Svg icon="chat-scan" size={pTd(16)} />
+              <Svg icon="chat-qr-code" size={pTd(16)} />
             </Touchable>
           </View>
         </FormItem>
@@ -150,7 +150,7 @@ const GroupInfoPage = () => {
           <Touchable
             style={[GStyles.flexRow, GStyles.itemCenter, styles.membersActionWrap]}
             onPress={() => navigationService.navigate('AddMembersPage')}>
-            <Svg icon="chat-add-member" size={pTd(20)} />
+            <Svg icon="add" size={pTd(20)} color={defaultColors.primaryColor} />
             <TextL style={[FontStyles.font4, styles.actionText]}>Add Members</TextL>
           </Touchable>
           {isAdmin && (

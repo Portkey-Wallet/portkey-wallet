@@ -14,7 +14,7 @@ import { pTd } from 'utils/unit';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import myEvents from 'utils/deviceEvent';
 import { useFocusEffect } from '@react-navigation/native';
-import { useLatestRef } from '@portkey-wallet/hooks';
+import { useLatestRef, useThrottleCallback } from '@portkey-wallet/hooks';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import { measurePageY } from 'utils/measure';
 import useRequestNotifyPermission from 'hooks/usePermission';
@@ -25,7 +25,7 @@ import { useJoinOfficialGroupTipModal } from 'hooks/guide';
 import { useChannelList } from '@portkey-wallet/hooks/hooks-ca/im';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
-export default function DiscoverHome() {
+export default function ChatHomePage() {
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const emitCloseSwiped = useCallback(() => myEvents.chatHomeListCloseSwiped.emit(''), []);
   const lastEmitCloseSwiped = useLatestRef(emitCloseSwiped);
@@ -102,10 +102,14 @@ export default function DiscoverHome() {
     );
   }, [onRightPress]);
 
-  const checkModal = useLockCallback(async () => {
-    const isShowNotice = await requestNotifyPermission();
-    if (!isShowNotice) await joinOfficialGroupModal();
-  }, [joinOfficialGroupModal, requestNotifyPermission]);
+  const checkModal = useThrottleCallback(
+    async () => {
+      const isShowNotice = await requestNotifyPermission();
+      if (!isShowNotice) await joinOfficialGroupModal();
+    },
+    [joinOfficialGroupModal, requestNotifyPermission],
+    1000,
+  );
 
   useFocusEffect(
     useCallback(() => {

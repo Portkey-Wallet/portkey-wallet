@@ -22,6 +22,7 @@ import securityApi from './security';
 import guideApi from './guide';
 import managerApi from './manager';
 import referralApi from './referral';
+import depositApi from './deposit';
 
 export const DEFAULT_METHOD = 'POST';
 
@@ -62,6 +63,7 @@ export const EXPAND_APIS = {
   guide: guideApi,
   manager: managerApi,
   referral: referralApi,
+  deposit: depositApi,
 };
 
 export type BASE_REQ_TYPES = {

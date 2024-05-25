@@ -12,6 +12,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    color: @neutral-primary-text;
   }
 
   input,
@@ -29,13 +30,13 @@
     transform: translateY(13px);
     font-size: 12px;
     line-height: 16px;
-    color: @font-13;
+    color: @neutral-secondary-text;
   }
   .@{app-prefix}-input:focus.with-name {
     transform: translateY(0);
     line-height: 22px;
     font-size: 16px;
-    color: @font-13;
+    color: @neutral-secondary-text;
   }
   .@{app-prefix}-input:focus + .account-name {
     display: none;
@@ -46,7 +47,7 @@
     text-overflow: ellipsis;
     overflow: hidden;
     pointer-events: none;
-    color: @font-13;
+    color: @neutral-secondary-text;
     position: absolute;
     top: 5px;
     left: 15px;

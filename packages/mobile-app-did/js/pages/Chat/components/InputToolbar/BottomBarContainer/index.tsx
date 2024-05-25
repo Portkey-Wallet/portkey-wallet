@@ -7,7 +7,13 @@ import { Animated } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useKeyboardAnim, useSendCurrentChannelMessage, useHideCurrentChannel } from '../../hooks';
-import { useBottomBarStatus, useChatReplyMessageInfo, useChatText, useChatsDispatch } from '../../../context/hooks';
+import {
+  useBottomBarStatus,
+  useChatReplyMessageInfo,
+  useChatText,
+  useChatsDispatch,
+  useCurrentChannel,
+} from '../../../context/hooks';
 import { ChatBottomBarStatus } from 'store/chat/slice';
 import { setBottomBarStatus, setChatText, setReplyMessageInfo } from '../../../context/chatsContext';
 import { BGStyles } from 'assets/theme/styles';
@@ -48,8 +54,10 @@ export function BottomBarContainer({
   const textInputRef = useRef<ChatInput>(null);
   const keyboardAnim = useKeyboardAnim({ textInputRef });
   const timer = useRef<NodeJS.Timeout>();
-  const { sendChannelMessage } = useSendCurrentChannelMessage();
+  const { sendChannelMessage, sendMessageToPeople } = useSendCurrentChannelMessage();
   const hideChannel = useHideCurrentChannel();
+  const { currentChannelType } = useCurrentChannel() || {};
+
   const inputFocus = useCallback(
     (autoHide?: boolean) => {
       textInputRef.current?.focus(autoHide);
@@ -93,11 +101,16 @@ export function BottomBarContainer({
 
     try {
       scrollToBottom?.();
-      typeof text === 'string' &&
-        (await sendChannelMessage({
-          content: text.trim(),
-          quoteMessage: replyMessageInfo?.message?.rawMessage,
-        }));
+      if (typeof text === 'string') {
+        currentChannelType === 'Group'
+          ? await sendChannelMessage({
+              content: text.trim(),
+              quoteMessage: replyMessageInfo?.message?.rawMessage,
+            })
+          : await sendMessageToPeople({
+              content: text.trim(),
+            });
+      }
     } catch (error: any) {
       if (error?.code === NO_LONGER_IN_GROUP) {
         hideChannel();
@@ -115,7 +128,16 @@ export function BottomBarContainer({
 
       CommonToast.fail('Failed to send message');
     }
-  }, [dispatch, hideChannel, replyMessageInfo?.message, scrollToBottom, sendChannelMessage, text]);
+  }, [
+    currentChannelType,
+    dispatch,
+    hideChannel,
+    replyMessageInfo?.message?.rawMessage,
+    scrollToBottom,
+    sendChannelMessage,
+    sendMessageToPeople,
+    text,
+  ]);
 
   return (
     <View style={styles.wrap}>

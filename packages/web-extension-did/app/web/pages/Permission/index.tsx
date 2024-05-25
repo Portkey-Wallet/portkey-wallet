@@ -3,7 +3,6 @@ import usePromptSearch from 'hooks/usePromptSearch';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
 import LockPage from 'pages/components/LockPage';
-import RegisterHeader from 'pages/components/RegisterHeader';
 import { useCallback } from 'react';
 import errorHandler from 'utils/errorHandler';
 import { reportUserCurrentNetwork } from 'utils/analysisReport';
@@ -20,5 +19,5 @@ export default function Permission() {
   useEffect(() => {
     reportUserCurrentNetwork(currentNetwork);
   }, [currentNetwork]);
-  return <LockPage header={<RegisterHeader />} onUnLockHandler={onUnLockHandler} />;
+  return <LockPage onUnLockHandler={onUnLockHandler} />;
 }

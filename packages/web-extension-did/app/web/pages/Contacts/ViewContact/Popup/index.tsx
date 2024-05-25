@@ -1,5 +1,4 @@
-import BackHeader from 'components/BackHeader';
-import CustomSvg from 'components/CustomSvg';
+import CommonHeader from 'components/CommonHeader';
 import './index.less';
 import ViewContactBody from 'pages/Contacts/components/ViewContactBody';
 import { IProfileDetailProps } from 'types/Profile';
@@ -18,13 +17,7 @@ export default function ViewContactPopup({
 }: IProfileDetailProps) {
   return (
     <div className="view-contact-popup">
-      <div className="view-contact-nav">
-        <BackHeader
-          title={headerTitle}
-          leftCallBack={goBack}
-          rightElement={<CustomSvg type="Close2" onClick={goBack} />}
-        />
-      </div>
+      <CommonHeader title={headerTitle} onLeftBack={goBack} />
       <ViewContactBody
         data={data}
         editText={editText}

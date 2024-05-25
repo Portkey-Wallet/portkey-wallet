@@ -84,11 +84,11 @@ const WalletName: React.FC = () => {
   return (
     <PageContainer
       titleDom={t('My Profile')}
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       containerStyles={pageStyles.pageWrap}
       rightDom={
         <Touchable onPress={() => navigationService.navigate('ChatQrCodePage')} style={[GStyles.marginRight(pTd(24))]}>
-          <Svg icon="chat-scan-white" size={pTd(20)} color={defaultColors.white} />
+          <Svg icon="chat-qr-code" size={pTd(20)} />
         </Touchable>
       }>
       <View style={pageStyles.pageContainer}>
@@ -98,7 +98,7 @@ const WalletName: React.FC = () => {
             <ProfileAddressSection isMySelf addressList={caInfoList} />
           </>
         </View>
-        <CommonButton title={'Edit'} type="solid" onPress={() => navigationService.navigate('EditWalletName')} />
+        <CommonButton title={'Edit'} type="primary" onPress={() => navigationService.navigate('EditWalletName')} />
       </View>
 
       {showDeletion && (

@@ -1,5 +1,4 @@
-import BackHeader from 'components/BackHeader';
-import CustomSvg from 'components/CustomSvg';
+import CommonHeader from 'components/CommonHeader';
 import './index.less';
 import { IPaymentSecurityProps } from '..';
 import PaymentSecurityList from '../../components/PaymentSecurityList';
@@ -16,13 +15,7 @@ export default function PaymentSecurityPopup({
 }: IPaymentSecurityProps) {
   return (
     <div className="payment-security-popup min-width-max-height">
-      <div className="popup-header-wrap">
-        <BackHeader
-          title={headerTitle}
-          leftCallBack={goBack}
-          rightElement={<CustomSvg type="Close2" onClick={goBack} />}
-        />
-      </div>
+      <CommonHeader className="popup-header-wrap" title={headerTitle} onLeftBack={goBack} />
       <div>
         {list.length > 0 && (
           <>

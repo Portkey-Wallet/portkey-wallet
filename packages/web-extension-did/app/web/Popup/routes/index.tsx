@@ -53,6 +53,9 @@ import ChatPrivacyEdit from 'pages/AccountSetting/ChatPrivacyEdit';
 import GroupQRCode from 'pages/IMChat/GroupQRCode';
 import PinnedMsg from 'pages/IMChat/PinnedMsgPage';
 import TradePage from 'pages/Trade';
+import TokenAllowance from 'pages/WalletSecurity/TokenAllowance';
+import TokenAllowanceDetail from 'pages/WalletSecurity/TokenAllowance/TokenAllowanceDetail';
+import DepositHome from 'pages/DepositHome';
 
 export const PageRouter = () =>
   useRoutes([
@@ -241,6 +244,14 @@ export const PageRouter = () =>
       element: <GuardianApproval />,
     },
     {
+      path: '/setting/wallet-security/token-allowance',
+      element: <TokenAllowance />,
+    },
+    {
+      path: '/setting/wallet-security/token-allowance-detail',
+      element: <TokenAllowanceDetail />,
+    },
+    {
       path: '/chat-list',
       element: <ChatList />,
     },
@@ -303,5 +314,9 @@ export const PageRouter = () =>
     {
       path: '*',
       element: <Home />,
+    },
+    {
+      path: '/token-detail/deposit-home/:chain/:symbol',
+      element: <DepositHome />,
     },
   ]);

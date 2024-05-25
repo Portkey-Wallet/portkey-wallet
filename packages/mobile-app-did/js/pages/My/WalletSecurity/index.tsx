@@ -24,7 +24,7 @@ const WalletSecurity: React.FC = () => {
   return (
     <PageContainer
       titleDom={'Wallet Security'}
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <MenuItem
@@ -48,6 +48,13 @@ const WalletSecurity: React.FC = () => {
         title="Payment Security"
         onPress={() => {
           navigationService.navigate('PaymentSecurityList');
+        }}
+      />
+      <MenuItem
+        style={pageStyles.menuStyle}
+        title="Token Allowance"
+        onPress={() => {
+          navigationService.navigate('TokenAllowanceHome');
         }}
       />
     </PageContainer>

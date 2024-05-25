@@ -3,14 +3,11 @@
 .group-info-page {
   height: 100%;
   .group-info-header {
-    width: 100%;
-    padding-top: 16px;
-    background-color: @bg-13;
     z-index: 100;
   }
   .group-info-body {
     width: 100%;
-    height: calc(100% - 96px);
+    height: calc(100% - @common-header-height);
     overflow-y: auto;
     .group-info-container {
       .info-basic {
@@ -21,18 +18,18 @@
           max-width: 312px;
           font-size: 20px;
           line-height: 24px;
-          color: @font-11;
+          color: @neutral-primary-text;
           .text-overflow(1);
         }
         .group-members {
           font-size: 12px;
           line-height: 16px;
-          color: @font-13;
+          color: @neutral-secondary-text;
         }
       }
       .info-share {
         padding: 24px;
-        border-bottom: 1px solid @border-2;
+        border-bottom: 1px solid @neutral-divider;
         .share-link {
           width: 100%;
           gap: 16px;
@@ -40,13 +37,13 @@
             font-size: 16px;
             line-height: 22px;
             font-weight: 500;
-            color: @font-1;
+            color: @neutral-primary-text;
           }
           .share-link-content {
             gap: 16px;
             font-size: 14px;
             line-height: 20px;
-            color: @font-9;
+            color: @brand-normal;
             cursor: pointer;
             .link-content {
               flex: 1;
@@ -67,7 +64,7 @@
           padding: 10px 0 9px 24px;
           font-size: 14px;
           line-height: 20px;
-          border-bottom: 1px solid @border-2;
+          border-bottom: 1px solid @neutral-divider;
           cursor: pointer;
           .custom-svg {
             width: 28px;
@@ -79,10 +76,10 @@
           }
         }
         .add-member {
-          color: @font-9;
+          color: @brand-normal;
         }
         .remove-member {
-          color: @font-18;
+          color: @functional-error-default;
           &.remove-disable {
             pointer-events: none;
             .removemem-icon,
@@ -97,8 +94,8 @@
           padding: 16px 24px;
           font-size: 14px;
           line-height: 20px;
-          color: @font-11;
-          border-bottom: 1px solid @border-2;
+          color: @neutral-primary-text;
+          border-bottom: 1px solid @neutral-divider;
           cursor: pointer;
           .member-basic {
             align-items: center;
@@ -120,7 +117,7 @@
             padding: 2px 4px;
             font-size: 12px;
             line-height: 16px;
-            color: @font-9;
+            color: @brand-normal;
             border-radius: 4px;
             background-color: @bg-24;
           }
@@ -130,7 +127,7 @@
           gap: 8px;
           font-size: 12px;
           line-height: 16px;
-          color: @font-13;
+          color: @neutral-secondary-text;
           cursor: pointer;
           .custom-svg {
             rotate: 180deg;
@@ -141,7 +138,7 @@
             }
           }
           &.is-admin {
-            border-bottom: 1px solid @border-2;
+            border-bottom: 1px solid @neutral-divider;
           }
         }
       }
@@ -149,7 +146,7 @@
         padding: 14px 24px;
         font-size: 16px;
         line-height: 22px;
-        color: @font-11;
+        color: @neutral-primary-text;
         cursor: pointer;
         /* stylelint-disable-next-line no-descending-specificity */
         .custom-svg {
@@ -166,7 +163,7 @@
       width: 100%;
       height: 80px;
       padding: 16px;
-      border-top: 1px solid @border-2;
+      border-top: 1px solid @neutral-divider;
       .op-btn {
         height: 48px;
         font-size: 16px;
@@ -175,9 +172,9 @@
         cursor: pointer;
       }
       .edit-group-btn {
-        color: @font-5;
-        background-color: @bg-7;
-        border: 1px solid @border-3;
+        color: @neutral-white-text;
+        background-color: @brand-normal;
+        border: 1px solid @brand-normal;
       }
       .leave-group-btn {
         color: @font-14;

@@ -1,10 +1,11 @@
 @import '../../../../assets/theme/color.less';
+@import '../../../../assets/theme/constants.less';
 
 .device-detail-common {
-  height: calc(100% - 97px);
+  height: calc(100% - @common-header-height);
   .content-item {
     height: 96px;
-    border-bottom: 1px solid @bg-15;
+    border-bottom: 1px solid @neutral-divider;
     .item-desc {
       width: 100%;
       display: flex;
@@ -20,7 +21,7 @@
       }
       .name {
         line-height: 22px;
-        color: @font-11;
+        color: @neutral-primary-text;
         font-size: 16px;
       }
       .tag {
@@ -28,16 +29,16 @@
         padding: 0 12px;
         height: 22px;
         line-height: 16px;
-        color: @font-13;
+        color: @neutral-secondary-text;
         font-size: 12px;
-        border: 1px solid @border-1;
+        border: 1px solid @neutral-border;
         border-radius: 12px;
       }
     }
     .item-time {
       padding-left: 48px;
       line-height: 20px;
-      color: @font-12;
+      color: @neutral-disable-text;
       font-size: 14px;
     }
   }
@@ -45,15 +46,15 @@
     padding: 24px;
     font-size: 14px;
     line-height: 20px;
-    color: @font-13;
+    color: @neutral-secondary-text;
   }
   .content-btn {
     width: 100%;
-    background-color: @bg-11;
+    background-color: @neutral-default-bg;
     .@{app-prefix}-btn-primary {
       color: @font-14;
       height: 48px;
-      background-color: @bg-11;
+      background-color: @neutral-default-bg;
       border-radius: 24px;
       border: 1px solid @border-7;
       text-shadow: none;

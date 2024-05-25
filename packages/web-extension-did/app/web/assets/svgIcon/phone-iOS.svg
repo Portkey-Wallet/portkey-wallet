@@ -5,9 +5,9 @@
         <g id="Line" transform="translate(-121.000000, -157.000000)">
             <g id="phone_iOS" transform="translate(121.000000, 157.000068)">
                 <rect id="Rectangle" x="0" y="0" width="16" height="16"></rect>
-                <rect id="shape" stroke="#515A62" stroke-width="1.2" x="3.27272727" y="0.727272727" width="9.45454545" height="14.5454545" rx="1.09090909"></rect>
-                <line x1="7.27272727" y1="2.90909091" x2="8.72727273" y2="2.90909091" id="shape" stroke="#515A62" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></line>
-                <line x1="6.54545455" y1="13.0909091" x2="9.45454545" y2="13.0909091" id="shape" stroke="#515A62" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></line>
+                <rect id="shape" stroke="#55585e" stroke-width="1.2" x="3.27272727" y="0.727272727" width="9.45454545" height="14.5454545" rx="1.09090909"></rect>
+                <line x1="7.27272727" y1="2.90909091" x2="8.72727273" y2="2.90909091" id="shape" stroke="#55585e" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></line>
+                <line x1="6.54545455" y1="13.0909091" x2="9.45454545" y2="13.0909091" id="shape" stroke="#55585e" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></line>
             </g>
         </g>
     </g>

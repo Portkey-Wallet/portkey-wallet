@@ -179,7 +179,7 @@ const ChatGroupDetailsPage = () => {
     () => (
       <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.paddingLeft(pTd(16))]}>
         <Touchable onPress={onBack} style={GStyles.marginRight(pTd(20))}>
-          <Svg size={pTd(20)} icon="left-arrow" color={defaultColors.bg1} />
+          <Svg size={pTd(20)} icon="left-arrow" color={defaultColors.icon5} />
         </Touchable>
         <Touchable
           style={[GStyles.flexRow, GStyles.itemCenter]}
@@ -193,13 +193,13 @@ const ChatGroupDetailsPage = () => {
             svgName={groupInfo?.icon ? undefined : 'chat-group-avatar-header'}
           />
           <View style={[GStyles.marginRight(pTd(4)), GStyles.marginLeft(pTd(8))]}>
-            <TextL numberOfLines={1} style={[FontStyles.font2, FontStyles.weight500, styles.name]}>
+            <TextL numberOfLines={1} style={[FontStyles.font5, FontStyles.weight500, styles.name]}>
               {groupInfo?.name || displayName || ''}
             </TextL>
           </View>
         </Touchable>
 
-        {mute && <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.bg1} />}
+        {mute && <Svg size={pTd(12)} icon="chat-mute" color={defaultColors.font11} />}
       </View>
     ),
     [displayName, groupInfo?.icon, groupInfo?.name, mute, onBack],
@@ -227,13 +227,13 @@ const ChatGroupDetailsPage = () => {
     <PageContainer
       noCenterDom
       hideTouchable
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}
       leftDom={leftDom}
       rightDom={
         <Touchable style={[GStyles.marginRight(pTd(16))]} onPress={onPressMore}>
-          <Svg size={pTd(20)} icon="more" color={defaultColors.bg1} />
+          <Svg size={pTd(20)} icon="more" color={defaultColors.icon5} />
         </Touchable>
       }>
       {headerDom}

@@ -6,7 +6,6 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
 import LockPage from 'pages/components/LockPage';
-import RegisterHeader from 'pages/components/RegisterHeader';
 import { useCallback } from 'react';
 import { useEffectOnce } from 'react-use';
 import { useLoading } from 'store/Provider/hooks';
@@ -64,7 +63,7 @@ export default function QueryPage() {
 
   return (
     <div className="query-page-wrapper">
-      <LockPage header={<RegisterHeader />} onUnLockHandler={onUnLockHandler} />
+      <LockPage onUnLockHandler={onUnLockHandler} />
     </div>
   );
 }

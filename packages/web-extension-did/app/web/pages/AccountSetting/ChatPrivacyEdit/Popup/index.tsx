@@ -1,7 +1,5 @@
-import BackHeader from 'components/BackHeader';
+import CommonHeader from 'components/CommonHeader';
 import { IChatPrivacyEditProps } from '..';
-import CustomSvg from 'components/CustomSvg';
-import './index.less';
 import ChatPrivacyEditFrom from '../components/ChatPrivacyEditFrom';
 
 export default function ChatPrivacyEditPopup({
@@ -13,13 +11,7 @@ export default function ChatPrivacyEditPopup({
 }: IChatPrivacyEditProps) {
   return (
     <div className="min-width-max-height chat-privacy-edit-popup">
-      <div className="chat-privacy-edit-header">
-        <BackHeader
-          title={headerTitle}
-          leftCallBack={goBack}
-          rightElement={<CustomSvg type="Close2" onClick={goBack} />}
-        />
-      </div>
+      <CommonHeader title={headerTitle} onLeftBack={goBack} />
       <ChatPrivacyEditFrom state={state} permissionSelected={permissionSelected} changePermission={changePermission} />
     </div>
   );

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
-import BackHeader from 'components/BackHeader';
+import CommonHeader from 'components/CommonHeader';
 import CustomSvg from 'components/CustomSvg';
 import { useNavigate } from 'react-router';
 import { InitProviderSelected, MAX_UPDATE_TIME } from '../const';
@@ -22,9 +22,10 @@ import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { sleep } from '@portkey-wallet/utils';
 import singleMessage from 'utils/singleMessage';
 import { useLocationState } from 'hooks/router';
-import { TRampPreviewLocationState } from 'types/router';
+import { TRampPreviewLocationState, TReceiveLocationState } from 'types/router';
 import { chromeStorage } from 'store/utils';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
+import { ReceiveTabEnum } from '@portkey-wallet/constants/constants-ca/send';
 
 export default function Preview() {
   const { t } = useTranslation();
@@ -167,6 +168,7 @@ export default function Preview() {
     navigate,
     providerSelected.providerInfo,
     providerSelected.providerNetwork,
+    providerSelected.providerSymbol,
     refreshRampShow,
     setLoading,
     state.approveList,
@@ -184,8 +186,29 @@ export default function Preview() {
       ),
     });
   }, [providerSelected?.providerInfo.name]);
-
   const handleBack = useCallback(() => {
+    // from receive buy
+    if (state.mainPageInfo?.pageName === ReceiveTabEnum.Buy) {
+      const _tokenInfo = state.tokenInfo;
+      const receiveInfo: TReceiveLocationState = {
+        chainId: _tokenInfo?.chainId ?? 'AELF',
+        symbol: _tokenInfo?.symbol ?? '',
+        balance: _tokenInfo?.balance ?? '',
+        imageUrl: _tokenInfo?.imgUrl ?? '',
+        address: _tokenInfo?.tokenContractAddress ?? '',
+        decimals: _tokenInfo?.decimals ?? '',
+        pageSide: ReceiveTabEnum.Buy,
+        extraData: {
+          fiat: state.fiat,
+          crypto: state.crypto,
+          amount: state.amount,
+        },
+      };
+      navigate(`/receive/token/${state.crypto}`, {
+        state: receiveInfo,
+      });
+      return;
+    }
     navigate('/buy', { state: state });
   }, [navigate, state]);
 
@@ -245,13 +268,10 @@ export default function Preview() {
   const mainContent = useMemo(
     () => (
       <div className={clsx(['preview-frame flex-column', isPrompt ? 'detail-page-prompt' : ''])}>
-        <div className="preview-title">
-          <BackHeader
-            title={`${data.side === RampType.BUY ? 'Buy' : 'Sell'} ${state.crypto}`}
-            leftCallBack={handleBack}
-            rightElement={<CustomSvg type="Close2" onClick={handleBack} />}
-          />
-        </div>
+        <CommonHeader
+          title={`${data.side === RampType.BUY ? 'Buy' : 'Sell'} ${state.crypto}`}
+          onLeftBack={handleBack}
+        />
 
         <div className="preview-content">
           <div className="transaction flex-column-center">

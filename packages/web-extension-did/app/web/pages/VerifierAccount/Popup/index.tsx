@@ -1,4 +1,4 @@
-import SettingHeader from 'pages/components/SettingHeader';
+import CommonHeader from 'components/CommonHeader';
 import { ReactNode } from 'react';
 
 export interface IVerifierAccountPopupProps {
@@ -9,7 +9,7 @@ export interface IVerifierAccountPopupProps {
 const VerifierAccountPopup = ({ renderContent, onBack }: IVerifierAccountPopupProps) => {
   return (
     <div className="verifier-account popup-page">
-      <SettingHeader leftCallBack={onBack} />
+      <CommonHeader className="verifier-account-header" onLeftBack={onBack} />
       {renderContent}
     </div>
   );

@@ -87,7 +87,7 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
           if (!(await qrScanPermissionAndToast())) return;
           navigationService.navigate('QrScanner');
         }}>
-        <Svg icon="scan" size={22} color={defaultColors.font8} />
+        <Svg icon="scan" size={pTd(22)} color={defaultColors.font8} />
       </Touchable>
     );
   }, [qrScanPermissionAndToast]);
@@ -96,16 +96,18 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.white]}>
       <CustomHeader titleDom={titleDom} rightDom={rightDom} />
       <NestedScrollView>
-        <NestedScrollViewHeader
-          stickyHeaderBeginIndex={1}
-          onScroll={({ nativeEvent }) => {
-            const {
-              contentOffset: { y },
-            } = nativeEvent;
-            setScrollY(new Animated.Value(y));
-          }}>
-          <Card title={title} />
-        </NestedScrollViewHeader>
+        {React.cloneElement(
+          <NestedScrollViewHeader
+            stickyHeaderBeginIndex={1}
+            onScroll={({ nativeEvent }) => {
+              const {
+                contentOffset: { y },
+              } = nativeEvent;
+              setScrollY(new Animated.Value(y));
+            }}
+          />,
+          { children: <Card title={title} /> },
+        )}
         <DashBoardTab />
       </NestedScrollView>
     </SafeAreaBox>
@@ -117,6 +119,8 @@ const styles = StyleSheet.create({
     padding: pTd(16),
   },
   title: {
+    height: pTd(44),
+    lineHeight: pTd(44),
     color: defaultColors.bg31,
     fontWeight: 'bold',
     ...fonts.mediumFont,

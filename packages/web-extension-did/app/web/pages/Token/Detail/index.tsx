@@ -1,7 +1,6 @@
 import MainCards from 'pages/components/BalanceCard';
 import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import Activity from 'pages/Home/components/Activity';
-import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
@@ -16,16 +15,16 @@ import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from 'pages/com
 import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import './index.less';
 import { useLocationState, useNavigateState } from 'hooks/router';
-import { TSendLocationState, TTokenDetailLocationState } from 'types/router';
+import { TReceiveLocationState, TSendLocationState, TTokenDetailLocationState } from 'types/router';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import TokenImageDisplay from 'pages/components/TokenImageDisplay';
-import CustomSvg from 'components/CustomSvg';
 import { TradeTypeEnum } from 'constants/trade';
 import { getDisclaimerData } from 'utils/disclaimer';
 import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import CommonTokenHeader from 'components/CommonTokenHeader';
+import { ReceiveTabEnum } from '@portkey-wallet/constants/constants-ca/send';
 
 export enum TokenTransferStatus {
   CONFIRMED = 'Confirmed',
@@ -37,14 +36,14 @@ export type TTokenDetailNavigateState = {
 };
 
 function TokenDetail() {
-  const navigate = useNavigateState<TTokenDetailNavigateState | Partial<TSendLocationState>>();
+  const navigate = useNavigateState<TTokenDetailNavigateState | Partial<TSendLocationState> | TReceiveLocationState>();
   const { state: currentToken } = useLocationState<TTokenDetailLocationState>();
   const isMainNet = useIsMainnet();
   const { checkDappIsConfirmed } = useDisclaimer();
   const checkSecurity = useCheckSecurity();
   const [disclaimerOpen, setDisclaimerOpen] = useState<boolean>(false);
   const { eTransferUrl = '', awakenUrl = '' } = useCurrentNetworkInfo();
-  const { isPrompt } = useCommonState();
+  const { isPrompt, isNotLessThan768 } = useCommonState();
   const { isRampShow } = useExtensionRampEntryShow();
   const { setLoading } = useLoading();
   const cardShowFn = useMemo(
@@ -63,7 +62,9 @@ function TokenDetail() {
   const disclaimerData = useRef<IDisclaimerProps>(initDisclaimerData);
   const handleBuy = useCallback(() => {
     if (isMainNet) {
-      navigate('/buy', { state: { tokenInfo: currentToken } });
+      navigate(`/receive/token/${currentToken.symbol}`, {
+        state: { ...currentToken, address: currentToken?.tokenContractAddress, pageSide: ReceiveTabEnum.Buy },
+      });
     } else {
       const openWinder = window.open(FAUCET_URL, '_blank');
       if (openWinder) {
@@ -125,9 +126,9 @@ function TokenDetail() {
   );
 
   const handleSendOrReceive = useCallback(
-    (type: 'send' | 'receive') => {
+    (type: 'send' | 'receive', pageSide?: ReceiveTabEnum) => {
       navigate(`/${type}/token/${currentToken?.symbol}`, {
-        state: { ...currentToken, address: currentToken?.tokenContractAddress },
+        state: { ...currentToken, address: currentToken?.tokenContractAddress, pageSide },
       });
     },
     [currentToken, navigate],
@@ -141,17 +142,8 @@ function TokenDetail() {
 
   const mainContent = useCallback(() => {
     return (
-      <div className={clsx(['token-detail', isPrompt ? 'portkey-body' : ''])}>
-        <div className="token-detail-title flex">
-          <CustomSvg type="NewRightArrow" onClick={() => navigate('/')} />
-          <div className="title-center flex-column">
-            <div className="symbol flex-row-center">
-              <TokenImageDisplay symbol={currentToken.symbol} src={currentToken.imgUrl} width={20} />
-              <span>{currentToken?.symbol}</span>
-            </div>
-            <div className="network">{transNetworkText(currentToken.chainId, !isMainNet)}</div>
-          </div>
-        </div>
+      <div className={clsx(['token-detail', isPrompt && isNotLessThan768 ? 'portkey-body' : ''])}>
+        <CommonTokenHeader symbol={currentToken.symbol} imgUrl={currentToken.imgUrl} chainId={currentToken.chainId} />
         <div className={clsx('token-detail-content', isPrompt ? '' : 'token-detail-content-popup')}>
           <div className="token-detail-balance flex-column">
             <div className={clsx('balance-amount', 'flex-column', isPrompt && 'is-prompt')}>
@@ -167,7 +159,7 @@ function TokenDetail() {
               onSend={cardShowFn.send ? () => handleSendOrReceive('send') : undefined}
               onReceive={cardShowFn.receive ? () => handleSendOrReceive('receive') : undefined}
               onClickSwap={cardShowFn.swap ? () => handleClickTrade(TradeTypeEnum.Swap) : undefined}
-              onClickDeposit={isShowDeposit ? () => handleClickTrade(TradeTypeEnum.ETrans) : undefined}
+              onClickDeposit={isShowDeposit ? () => handleSendOrReceive('receive', ReceiveTabEnum.Deposit) : undefined}
               isShowFaucet={isShowFaucet}
             />
           </div>
@@ -180,6 +172,7 @@ function TokenDetail() {
     );
   }, [
     isPrompt,
+    isNotLessThan768,
     currentToken.symbol,
     currentToken.imgUrl,
     currentToken.chainId,
@@ -193,14 +186,13 @@ function TokenDetail() {
     cardShowFn.swap,
     isShowDeposit,
     isShowFaucet,
-    navigate,
     handleSendOrReceive,
     handleClickTrade,
   ]);
 
   return (
     <>
-      {isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}
+      {isPrompt && isNotLessThan768 ? <PromptFrame content={mainContent()} /> : mainContent()}
       <DisclaimerModal open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} {...disclaimerData.current} />
     </>
   );

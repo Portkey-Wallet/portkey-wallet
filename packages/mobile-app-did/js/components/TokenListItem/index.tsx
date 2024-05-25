@@ -66,7 +66,7 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
           </View>
         )}
         {noBalanceShow && currentSymbol === item?.symbol && currentChainId === item?.chainId && (
-          <Svg icon="selected" size={pTd(24)} />
+          <Svg icon="selected" size={pTd(24)} color={defaultColors.primaryColor} />
         )}
       </View>
     </Touchable>
@@ -109,6 +109,7 @@ const itemStyle = StyleSheet.create({
   chainInfo: {
     lineHeight: pTd(16),
     marginTop: pTd(2),
+    height: pTd(20),
     width: pTd(150),
   },
   balanceWrap: {
@@ -126,6 +127,7 @@ const itemStyle = StyleSheet.create({
   dollar: {
     marginTop: pTd(2),
     lineHeight: pTd(16),
+    height: pTd(20),
     color: defaultColors.font11,
   },
 });

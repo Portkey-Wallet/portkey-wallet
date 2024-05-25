@@ -5,9 +5,9 @@
         <g id="Line" transform="translate(-193.000000, -157.000000)">
             <g id="desk_mac" transform="translate(193.000000, 157.000068)">
                 <rect id="Rectangle" x="0" y="0" width="16" height="16"></rect>
-                <polygon id="shape" stroke="#515A62" stroke-width="1.2" stroke-linejoin="round" points="0.727272727 1.90222222 15.2727273 1.90222222 15.2727273 9.90222222 0.727272727 9.90222222"></polygon>
-                <polyline id="shape" stroke="#515A62" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" points="15.2727273 9.90222222 15.2727273 12.8113131 0.727272727 12.8113131 0.727272727 9.90222222"></polyline>
-                <polyline id="shape" stroke="#515A62" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" points="6.85316364 12.8113131 5.09090909 14.9931313 10.9090909 14.9931313 9.14683636 12.8113131"></polyline>
+                <polygon id="shape" stroke="#55585e" stroke-width="1.2" stroke-linejoin="round" points="0.727272727 1.90222222 15.2727273 1.90222222 15.2727273 9.90222222 0.727272727 9.90222222"></polygon>
+                <polyline id="shape" stroke="#55585e" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" points="15.2727273 9.90222222 15.2727273 12.8113131 0.727272727 12.8113131 0.727272727 9.90222222"></polyline>
+                <polyline id="shape" stroke="#55585e" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" points="6.85316364 12.8113131 5.09090909 14.9931313 10.9090909 14.9931313 9.14683636 12.8113131"></polyline>
             </g>
         </g>
     </g>

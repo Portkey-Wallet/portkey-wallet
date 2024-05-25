@@ -2,7 +2,8 @@
 @import '../../assets/theme/constants.less';
 
 .connect-wallet {
-  margin: 40px auto;
+  margin: auto;
+  padding: 40px 24px;
   width: 328px;
   flex-direction: column;
   align-items: center;
@@ -10,11 +11,11 @@
     margin-bottom: 24px;
     width: fit-content;
     padding: 8px 16px;
-    border: 1px solid @border-2;
+    border: 1px solid @neutral-divider;
     border-radius: 24px;
     font-size: 14px;
     line-height: 20px;
-    color: @font-13;
+    color: @neutral-secondary-text;
     .icon {
       width: 24px;
       border-radius: 50%;
@@ -34,26 +35,26 @@
     font-size: 24px;
     line-height: 28px;
     font-weight: 700;
-    color: @font-11;
+    color: @neutral-primary-text;
   }
   .allow {
     width: 100%;
     margin-bottom: 32px;
     font-size: 12px;
     line-height: 16px;
-    color: @font-13;
-    border: 1px solid @border-2;
+    color: @neutral-secondary-text;
+    border: 1px solid @neutral-divider;
     border-radius: 6px;
     .item {
       padding-top: 16px;
       margin: 0 16px 16px;
-      border-top: 1px solid @border-2;
+      border-top: 1px solid @neutral-divider;
       .allow-title {
         align-items: center;
         font-size: 14px;
         line-height: 20px;
         font-weight: 500;
-        color: @font-11;
+        color: @neutral-primary-text;
         .tickfilled-icon {
           width: 14px;
           height: 14px;
@@ -72,6 +73,7 @@
   }
   .btn{
     width: 100%;
+    gap: 16px;
     margin-top: 40px;
     .@{app-prefix}-btn {
       width: 156px;
@@ -82,13 +84,13 @@
       border-radius: 24px;
     }
     .@{app-prefix}-btn-text {
-      border: 1px solid @border-3;
-      color: @font-9;
-      background-color: @bg-11;
+      border: 1px solid @brand-normal;
+      color: @brand-normal;
+      background-color: @neutral-default-bg;
     }
     .@{app-prefix}-btn-primary {
-      color: @font-5;
-      background-color: @bg-7;
+      color: @neutral-white-text;
+      background-color: @brand-normal;
     }
   }
 }

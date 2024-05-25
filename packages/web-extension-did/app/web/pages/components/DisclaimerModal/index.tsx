@@ -90,7 +90,7 @@ const DisclaimerModal = ({
       onClose={handleClose}>
       <div className="disclaimer-modal flex-column">
         <div className="container flex-column">
-          <CustomSvg type="Close2" onClick={handleClose} />
+          <CustomSvg type="SuggestClose" onClick={handleClose} />
           <div className="disclaimer-modal-header flex-center">Disclaimer</div>
           <div className={clsx(['disclaimer-modal-content', 'flex-column', isPrompt && 'isPrompt'])}>
             <div className="disclaimer-detail flex-row-center">

@@ -10,7 +10,7 @@ export default function ExchangeRate({ showRateText, rateUpdateTime }: IExchange
     <div className="exchange-rate flex-between-center">
       <div>{showRateText}</div>
       <div className="timer flex-center">
-        <CustomSvg type="Timer" />
+        <CustomSvg type="TimerFilled" />
         <div className="timestamp">{rateUpdateTime}s</div>
       </div>
     </div>

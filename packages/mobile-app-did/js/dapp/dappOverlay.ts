@@ -7,6 +7,7 @@ import ApproveOverlay from './components/ApproveOverlay';
 import { DeviceEventEmitter } from 'react-native';
 import { GuardiansApproved } from 'pages/Guardian/types';
 import { ChainId } from '@portkey-wallet/types';
+import { BATCH_APPROVAL_SYMBOL } from '@portkey-wallet/constants/constants-ca/dapp';
 
 export type ApproveInfo = {
   symbol: string;
@@ -21,6 +22,7 @@ export type ApproveParams = {
   approveInfo: ApproveInfo;
   eventName: string;
   isDiscover?: boolean;
+  showBatchApproveToken?: boolean;
 };
 
 export async function requestManagerApprove(
@@ -91,6 +93,9 @@ export class DappOverlay implements IDappOverlay {
     approveParams: ApproveParams,
   ): Promise<{ success: boolean; guardiansApproved: GuardiansApproved; approveInfo: ApproveInfo } | false> {
     return new Promise(resolve => {
+      // batch approval from dapp forbidden
+      if (approveParams.approveInfo.symbol === BATCH_APPROVAL_SYMBOL) return resolve(false);
+
       const listener = DeviceEventEmitter.addListener(approveParams.eventName, data => {
         const { success } = data || {};
         listener.remove();

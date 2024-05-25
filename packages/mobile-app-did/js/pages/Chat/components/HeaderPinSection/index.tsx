@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg1,
     borderBottomColor: defaultColors.border6,
     borderBottomWidth: StyleSheet.hairlineWidth,
+    marginTop: -StyleSheet.hairlineWidth,
   },
   leftBlue: {
     width: pTd(3),

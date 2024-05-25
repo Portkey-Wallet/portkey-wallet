@@ -45,7 +45,7 @@ export default function CurrencyInput({
               <img src={curFiat.icon} />
             </div>
             <div className="currency">{curFiat.symbol}</div>
-            <CustomSvg type="Down" />
+            <CustomSvg type="DirectionDown" />
           </div>
         }
       />

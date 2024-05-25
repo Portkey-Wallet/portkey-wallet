@@ -1,6 +1,6 @@
 import { ChainId } from '@portkey-wallet/types';
 import QRCodeCommon from 'pages/components/QRCodeCommon';
-import Copy from 'components/Copy';
+import Copy from 'components/CopyAddress';
 import { useLocationState } from 'hooks/router';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useWalletInfo } from 'store/Provider/hooks';
@@ -60,7 +60,7 @@ export default function QRCodePage() {
         <div className="label">Your aelf Address</div>
         <div className="flex-between-center address">
           <div className="address-text flex-1">{caAddress}</div>
-          <Copy className="copy-icon" toCopy={caAddress}></Copy>
+          <Copy toCopy={caAddress} />
         </div>
       </div>
       <div className="flex receive-tip">

@@ -411,6 +411,6 @@ export default function DepositHome() {
         )}
       </>
     );
-  }, [homeEle, isSameSymbol, setFrom, setTo, step, toChainId]);
+  }, [fromToken?.symbol, homeEle, isSameSymbol, setFrom, setTo, step, toChainId]);
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

@@ -181,7 +181,12 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
         const tokenList = await depositService.getTokenListByNetwork({
           type: drawerType,
           network: item.network === ALL_MARK ? undefined : item.network,
-          chainId: item.network === ALL_MARK ? undefined : toChainId || 'AELF',
+          chainId:
+            drawerType === 'from'
+              ? undefined
+              : item.network === ALL_MARK
+              ? undefined
+              : ((item.network || 'AELF') as ChainId),
         });
         setSelectedNetworkIndex(index);
         if (item.network === ALL_MARK) {

@@ -1,5 +1,4 @@
-@blue-bg: #EFECFF;
-@hover: #5D42FF;
+@import '../../assets/theme/color.less';
 
 .copy-icon-wrapper {
   border-radius: 4px;
@@ -19,12 +18,12 @@
 }
 
 .copy-icon-wrapper-background-color {
-    background-color: #F5F6F7;
+    background-color: @neutral-container-bg;
     &:active {
-      background-color: @blue-bg;
+      background-color: @brand-light;
     }
     &:hover {
-      background-color: @blue-bg;
+      background-color: @brand-light;
     }
 }
 .copy-svg{
@@ -34,12 +33,12 @@
   }
   :hover {
     path {
-      fill: @hover;
+      fill: @brand-normal;
     }
   }
   :active {
     path {
-      fill: @hover;
+      fill: @brand-normal;
     }
   }
 }

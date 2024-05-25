@@ -372,10 +372,8 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
             if (findTargetToken) return;
             token.toTokenList.forEach(toTokenItem => {
               if (toTokenItem.symbol == newToToken.symbol && toTokenItem.chainIdList?.includes(newToChainId)) {
-                console.log('target token: ', JSON.stringify(token));
                 findTargetToken = true;
                 clearFromAndTo();
-                // setFromNetwork(newFromNetwork); // todo_wade: request network list
                 setFromToken(token);
                 setToToken(newToToken);
                 setToChainId(newToChainId);

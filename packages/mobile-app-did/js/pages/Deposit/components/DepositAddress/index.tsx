@@ -1,17 +1,18 @@
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Image, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
 import OverlayModal from 'components/OverlayModal';
 import Svg from 'components/Svg';
 import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
+import { CopyButton } from 'components/CopyButton';
 import { useGStyles } from 'assets/theme/useGStyles';
 import fonts from 'assets/theme/fonts';
 import { TDepositInfo } from '@portkey-wallet/types/types-ca/deposit';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
-import { copyText } from 'utils';
 import { defaultColors } from 'assets/theme';
 import { TTokenItem, TNetworkItem, TRecordsStatus } from '@portkey-wallet/types/types-ca/deposit';
+import { formatSymbolDisplay } from '@portkey-wallet/utils/format';
 import { useDepositRecord } from '@portkey-wallet/hooks/hooks-ca/deposit';
 import { showCopyDepositAddress } from '../CopyContractAddress';
 
@@ -24,12 +25,11 @@ interface DepositAddressProps {
 
 const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken, depositInfo, contractAddress }) => {
   const gStyles = useGStyles();
-
   const { lastRecord } = useDepositRecord();
 
-  const onCopyAddress = useCallback(() => {
-    copyText(contractAddress);
-  }, [contractAddress]);
+  const onContactPortkeyTeam = useCallback(() => {
+    Linking.openURL('https://t.me/Portkey_Official_Group');
+  }, []);
 
   const isSameSymbol = useMemo(() => {
     return lastRecord?.fromTransfer?.symbol === lastRecord?.toTransfer?.symbol;
@@ -58,25 +58,42 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken,
   }, [lastRecord?.status]);
 
   const depositSucceedText = useMemo(() => {
+    let text = '';
     if (isSameSymbol) {
-      return `Deposit successful, with ${lastRecord?.toTransfer?.amount} ${lastRecord?.toTransfer?.symbol} sent to you.`;
+      text = `Deposit successful, with ${lastRecord?.toTransfer?.amount} ${lastRecord?.toTransfer?.symbol} sent to you.`;
     } else {
-      return `Swap successful, with ${lastRecord?.toTransfer?.amount} ${lastRecord?.toTransfer?.symbol} sent to you.`;
+      text = `Swap successful, with ${lastRecord?.toTransfer?.amount} ${lastRecord?.toTransfer?.symbol} sent to you.`;
     }
+    return <Text style={styles.recordText}>{text}</Text>;
   }, [isSameSymbol, lastRecord]);
   const depositFailedText = useMemo(() => {
     if (isSameSymbol) {
-      return `Swap failed. Please contact the Portkey team for help.`;
+      return (
+        <Text style={styles.recordText}>
+          Swap failed. Please contact the{' '}
+          <Text onPress={onContactPortkeyTeam} style={styles.contactPortkeyText}>
+            Portkey team
+          </Text>{' '}
+          for help.
+        </Text>
+      );
     } else {
-      return `Swap failed, with ${lastRecord?.fromTransfer?.amount} ${lastRecord?.fromTransfer?.symbol} sent to you.`;
+      return (
+        <Text
+          style={
+            styles.recordText
+          }>{`Swap failed, with ${lastRecord?.fromTransfer?.amount} ${lastRecord?.fromTransfer?.symbol} sent to you.`}</Text>
+      );
     }
-  }, [isSameSymbol, lastRecord]);
+  }, [isSameSymbol, lastRecord, onContactPortkeyTeam]);
   const depositProcessingText = useMemo(() => {
+    let text = '';
     if (isSameSymbol) {
-      return `${lastRecord?.toTransfer?.amount} ${lastRecord?.toTransfer?.symbol} received, pending cross-chain transfer.`;
+      text = `${lastRecord?.toTransfer?.amount} ${lastRecord?.toTransfer?.symbol} received, pending cross-chain transfer.`;
     } else {
-      return `${lastRecord?.toTransfer?.amount} ${lastRecord?.toTransfer?.symbol} received, pending swap.`;
+      text = `${lastRecord?.toTransfer?.amount} ${lastRecord?.toTransfer?.symbol} received, pending swap.`;
     }
+    return <Text style={styles.recordText}>{text}</Text>;
   }, [isSameSymbol, lastRecord]);
 
   const recordText = useMemo(() => {
@@ -95,6 +112,10 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken,
       fromNetwork,
       fromToken,
       contractAddress,
+      onExplore: () => {
+        // dismiss the current modal when push to discover page
+        OverlayModal.hide(false);
+      },
     });
   }, [contractAddress, fromNetwork, fromToken]);
 
@@ -105,22 +126,32 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken,
           {lastRecord && (
             <View style={[styles.recordWrap, { backgroundColor: recordBgColor }]}>
               <Svg iconStyle={styles.recordIcon} size={pTd(16)} icon={recordIcon} />
-              <Text style={styles.recordText}>{recordText}</Text>
+              {recordText}
             </View>
           )}
           <View style={styles.tokenWrap}>
             <Image style={styles.tokenImage} source={{ uri: fromToken.icon }} />
-            <Text style={styles.tokenText}>{fromToken.symbol}</Text>
+            <Text style={styles.tokenText}>{formatSymbolDisplay(fromToken.symbol)}</Text>
           </View>
           <Text style={styles.chainText}>{fromNetwork.name}</Text>
-          <CommonQRCodeStyled style={styles.qrcode} qrData={depositInfo.depositAddress} width={pTd(240)} />
+          <View style={styles.qrcodeWrap}>
+            <CommonQRCodeStyled
+              style={styles.qrcode}
+              qrData={depositInfo.depositAddress}
+              width={pTd(216)}
+              logo={undefined}
+            />
+            <View style={styles.qrCodeLogoWrap}>
+              <View style={styles.qrCodeLogo}>
+                <Image style={styles.qrCodeImage} source={{ uri: fromToken.icon }} />
+              </View>
+            </View>
+          </View>
           <View style={styles.addressCard}>
             <Text style={styles.addressLabelText}>Deposit Address</Text>
             <View style={styles.addressWrap}>
               <Text style={styles.addressText}>{depositInfo.depositAddress}</Text>
-              <TouchableOpacity onPress={onCopyAddress}>
-                <Svg icon={'copy1'} size={pTd(32)} iconStyle={styles.copyButton} />
-              </TouchableOpacity>
+              <CopyButton copyContent={contractAddress} />
             </View>
           </View>
           {depositInfo.minAmount && (
@@ -180,7 +211,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    height: pTd(40),
+    paddingVertical: pTd(10),
     borderRadius: pTd(6),
   },
   recordIcon: {
@@ -189,8 +220,13 @@ const styles = StyleSheet.create({
   },
   recordText: {
     marginLeft: pTd(8),
+    marginRight: pTd(8),
     color: defaultColors.font1,
     fontSize: pTd(12),
+  },
+  contactPortkeyText: {
+    color: defaultColors.font25,
+    textDecorationLine: 'underline',
   },
   tokenWrap: {
     marginTop: pTd(16),
@@ -201,6 +237,7 @@ const styles = StyleSheet.create({
   tokenImage: {
     width: pTd(24),
     height: pTd(24),
+    borderRadius: pTd(12),
   },
   tokenText: {
     marginLeft: pTd(8),
@@ -212,11 +249,37 @@ const styles = StyleSheet.create({
     color: defaultColors.font11,
     fontSize: pTd(14),
   },
-  qrcode: {
+  qrcodeWrap: {
     marginTop: pTd(16),
     width: pTd(240),
     height: pTd(240),
     borderRadius: pTd(11),
+    borderColor: defaultColors.border8,
+    borderWidth: 0.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  qrcode: {
+    width: pTd(216),
+    height: pTd(216),
+  },
+  qrCodeLogoWrap: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  qrCodeLogo: {
+    width: pTd(26),
+    height: pTd(26),
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: defaultColors.white,
+  },
+  qrCodeImage: {
+    width: pTd(20),
+    height: pTd(20),
   },
   addressCard: {
     marginTop: pTd(24),
@@ -239,13 +302,7 @@ const styles = StyleSheet.create({
     fontSize: pTd(14),
     color: defaultColors.font5,
     ...fonts.mediumFont,
-  },
-  copyButton: {
-    marginLeft: pTd(12),
-    width: pTd(32),
-    height: pTd(32),
-    backgroundColor: 'blue',
-    borderRadius: pTd(6),
+    marginRight: pTd(12),
   },
   minimumDepositWrap: {
     marginTop: pTd(12),
@@ -257,7 +314,9 @@ const styles = StyleSheet.create({
     fontSize: pTd(12),
     color: defaultColors.font23,
   },
-  minimumAmountWrap: {},
+  minimumAmountWrap: {
+    alignItems: 'flex-end',
+  },
   minimumAmountText: {
     color: defaultColors.font24,
     fontSize: pTd(12),

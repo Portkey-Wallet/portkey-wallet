@@ -10,15 +10,16 @@ import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM, TextS } from 'components/CommonText';
 import { ModalBody } from 'components/ModalBody';
 import { useGStyles } from 'assets/theme/useGStyles';
-import {
-  RequestNetworkTokenDataProps,
-  getFixedChainIdName,
-  getFixedContractAddress,
-  useMemoNetworkAndTokenData,
-} from '../Entry/model';
+import { RequestNetworkTokenDataProps, useMemoNetworkAndTokenData } from '../Entry/model';
 import Svg from 'components/Svg';
 import fonts from 'assets/theme/fonts';
 import { ChainId } from '@portkey-wallet/types';
+import {
+  FormatNameRuleList,
+  formatChainInfoToShow,
+  formatNameWithRules,
+  formatStr2EllipsisStr,
+} from '@portkey-wallet/utils';
 
 enum Layers {
   LAYER1,
@@ -151,7 +152,7 @@ export const SelectNetworkModal = (
       title={layer === Layers.LAYER1 ? (isPay ? 'Pay' : 'Receive') : 'Select Network'}
       modalBodyType="bottom">
       {layer === Layers.LAYER1 && (
-        <View style={[styles.container, { paddingTop: pTd(32) }]}>
+        <View style={[styles.container]}>
           <View style={styles.layerBlock}>
             <Text style={styles.layerBlockTitle}>{'Select a network'}</Text>
             <View style={styles.networkBtnLine}>{networkBtns}</View>
@@ -159,6 +160,7 @@ export const SelectNetworkModal = (
           <View style={styles.layerBlock}>
             <Text style={styles.layerBlockTitle}>{'Select a token'}</Text>
             <FlatList
+              style={styles.list}
               data={networkAndTokenData}
               keyExtractor={(item, index) => `${item.network.network}-${index}`}
               renderItem={({ item }) => (
@@ -181,16 +183,18 @@ export const SelectNetworkModal = (
             <Text
               style={
                 styles.commonText
-              }>{`Note: Please select from the supported networks listed below. Sending ${symbol} from other networks may result in the loss of your assets.`}</Text>
+              }>{`Note: Please select from the supported networks listed below. Sending ${formatNameWithRules(symbol, [
+              FormatNameRuleList.NO_UNDERLINE,
+            ])} from other networks may result in the loss of your assets.`}</Text>
           </View>
           <FlatList
             data={networkList}
+            style={styles.list}
             keyExtractor={(item, index) => `${item.network}-${index}`}
             renderItem={({ item }) => (
               <NetworkListItem
                 item={item}
                 onSelect={network => {
-                  console.log('choosing network', network);
                   setCurrentChoosingNetwork(network);
                   setLastTimeTargetNetwork(network);
                   setFocusedOn(FocusedOnType.TopTwo);
@@ -239,7 +243,6 @@ const NetworkIcon = (props: { networkName: string; iconStyle: ImageStyle; iconSi
         hasBorder
         titleStyle={{
           fontSize: pTd(textSize),
-          color: defaultColors.font20,
         }}
       />
     );
@@ -262,8 +265,8 @@ const NetworkTopBtn = (props: {
   const text = useMemo(() => {
     if (isAll) return 'All';
     if (isTopTwo) {
-      const name = removeQuoteFromStr(networkItem?.name || 'ETH');
-      return isPay ? name : getFixedChainIdName(name);
+      const name = formatNameWithRules(networkItem?.name || 'ETH', [FormatNameRuleList.NO_BRACKETS]);
+      return isPay ? name : formatChainInfoToShow(name as ChainId); // in this case, name is chainId
     }
     return `${networkOverflowNum}+`;
   }, [isAll, isPay, isTopTwo, networkItem?.name, networkOverflowNum]);
@@ -287,7 +290,7 @@ const NetworkTopBtn = (props: {
   );
 };
 
-const getNetworkImagePath = (network: string) => {
+export const getNetworkImagePath = (network: string) => {
   switch (network) {
     case 'ETH':
       return require('../../../assets/image/pngs/third-party-ethereum.png');
@@ -346,21 +349,21 @@ const TokenListItem = (props: {
       </View>
       <View style={styles.tokenTextLines}>
         <View style={styles.tokenTextMain}>
-          <TextL style={[styles.tokenSymbol, fonts.mediumFont]}>{symbol}</TextL>
+          <TextL style={[styles.tokenSymbol, fonts.mediumFont]}>
+            {formatNameWithRules(symbol, [FormatNameRuleList.NO_UNDERLINE])}
+          </TextL>
           <TextS style={styles.tokenDetail}>{name}</TextS>
         </View>
         {isShowAll && (
           <Text style={styles.tokenTextSub}>
-            {isReceive ? getFixedChainIdName(networkName) : getFixedContractAddress(contractAddress)}
+            {isReceive
+              ? formatChainInfoToShow(networkName as ChainId)
+              : formatStr2EllipsisStr(contractAddress, 6, 'middle')}
           </Text>
         )}
       </View>
     </TouchableOpacity>
   );
-};
-
-const removeQuoteFromStr = (str: string) => {
-  return str.replace(/\(.*\)/g, '');
 };
 
 const isNetworkItemEqual = (a: TNetworkItem, b: TNetworkItem) => {
@@ -374,11 +377,13 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingHorizontal: pTd(16),
   },
+  list: { width: '100%' },
   layerBlock: {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'flex-start',
     marginBottom: pTd(24),
+    width: '100%',
   },
   layerBlockTitle: {
     lineHeight: pTd(22),
@@ -391,12 +396,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     paddingVertical: pTd(16),
+    width: '100%',
   },
   networkItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     padding: pTd(16),
+    width: '100%',
   },
   tokenIconBox: {
     height: pTd(36),

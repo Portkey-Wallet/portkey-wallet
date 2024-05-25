@@ -27,6 +27,10 @@ export type TTokenItem = {
   networkList?: TNetworkItem[]; // only available in "ALL" mode
 };
 
+export type TExtendedTokenItem = Omit<TTokenItem, 'networkList'> & {
+  network?: TNetworkItem;
+};
+
 export type TGetDepositTokenListRequest = {
   type: BusinessType;
 };
@@ -56,7 +60,7 @@ export type TGetNetworkListResult = {
 
 export type TNetworkItem = {
   network: string;
-  name: string;
+  name: ChainId | string;
   multiConfirm: string;
   multiConfirmTime: string;
   contractAddress: string;
@@ -126,8 +130,8 @@ export type TQueryTransferAuthTokenRequest = {
 export interface TGetRecordsListRequest {
   type: number; // 1
   status: number; // 0
-  startTimestamp?: number | null; // current time - 30 minutes
-  endTimestamp?: number | null; // current time
+  startTimestamp?: number | null;
+  endTimestamp?: number | null;
   skipCount: number; // 0
   maxResultCount: number; // 1
 }

@@ -22,8 +22,14 @@
   &:hover,
   &:focus {
     color: white;
-    background-color: @brand-normal;
-    border-color: @brand-normal;
+  }
+  &:focus {
+    background-color: @brand-click;
+    border-color: @brand-click;
+  }
+  &:hover {
+    background-color: @brand-hover;
+    border-color: @brand-hover;
   }
 
   &:disabled,
@@ -31,10 +37,9 @@
   &:disabled:focus,
   &:disabled:active {
     color: white;
-    background-color: @brand-normal;
-    border-color: @brand-normal;
+    background-color: @brand-disable !important;
+    border-color: @brand-disable !important;
     box-shadow: none !important;
-    opacity: 0.3;
   }
 }
 
@@ -89,11 +94,11 @@
     padding-bottom: 24px;
 
     .@{app-prefix}-form-item-control {
-      &>div:nth-of-type(2) {
+      & > div:nth-of-type(2) {
         line-height: 20px;
         height: 20px !important;
 
-        &>div:nth-of-type(2) {
+        & > div:nth-of-type(2) {
           height: 16px !important;
         }
       }
@@ -120,7 +125,7 @@
     color: @font-2;
   }
 
-  .@{app-prefix}-form-item-label>label {
+  .@{app-prefix}-form-item-label > label {
     color: @font-2;
     line-height: 22px;
     font-size: 16px;
@@ -163,7 +168,7 @@
     padding-bottom: 8px;
   }
 
-  .@{app-prefix}-form-item-label>label {
+  .@{app-prefix}-form-item-label > label {
     color: @neutral-primary-text;
     font-size: 14px;
     line-height: 20px;
@@ -280,7 +285,6 @@
   overflow: hidden;
 
   .@{app-prefix}-modal-content {
-
     .@{app-prefix}-modal-body {
       padding: 0;
 
@@ -329,5 +333,19 @@
         width: 100% !important;
       }
     }
+  }
+}
+
+/* tooltip */
+.common-tooltip-gray {
+  .@{app-prefix}-tooltip-inner {
+    box-shadow: none;
+    background-color: @neutral-tooltip-bg;
+    opacity: 1;
+  }
+  .@{app-prefix}-tooltip-arrow-content {
+    box-shadow: none;
+    /* stylelint-disable-next-line custom-property-empty-line-before */
+    --antd-arrow-background-color: @neutral-tooltip-bg;
   }
 }

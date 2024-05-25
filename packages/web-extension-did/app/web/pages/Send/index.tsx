@@ -785,7 +785,7 @@ export default function Send() {
                   />
                   {toAccount.address && (
                     <CustomSvg
-                      type="Close2"
+                      type="SuggestClose"
                       onClick={() => {
                         setStage(SendStage.Address);
                         setToAccount({ address: '' });

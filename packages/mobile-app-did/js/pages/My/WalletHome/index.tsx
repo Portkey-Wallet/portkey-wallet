@@ -22,6 +22,8 @@ import { defaultColors } from 'assets/theme';
 import WalletMenuItem from '../components/WalletMenuItem';
 import { TextS } from 'components/CommonText';
 import { useUpdateInfo } from 'store/user/hooks';
+import { request } from '@portkey-wallet/api/api-did';
+import { getDeviceInfo } from 'utils/deviceInfo';
 
 interface WalletHomeProps {
   name?: string;
@@ -46,8 +48,12 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
       if (!isConfirm || !managerAddress || !caHash) return;
       Loading.show({ text: t('Signing out of Portkey...') });
       try {
+        const { deviceId } = await getDeviceInfo();
+        await request.wallet.reportExitWallet({ params: { deviceId } });
+
         const caContract = await getCurrentCAContract();
         const req = await removeManager(caContract, managerAddress, caHash);
+
         if (req && !req.error) {
           console.log('logout success', req);
           logout();

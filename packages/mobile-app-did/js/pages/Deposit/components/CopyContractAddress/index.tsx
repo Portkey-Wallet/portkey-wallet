@@ -2,31 +2,49 @@ import React, { useCallback } from 'react';
 import { StyleSheet, View, Keyboard, Text, TouchableOpacity } from 'react-native';
 import OverlayModal from 'components/OverlayModal';
 import CommonButton from 'components/CommonButton';
+import { CopyButton } from 'components/CopyButton';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { TTokenItem, TNetworkItem } from '@portkey-wallet/types/types-ca/deposit';
+import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { defaultColors } from 'assets/theme';
 
 interface CopyDepositAddressProps {
   fromNetwork: TNetworkItem;
   fromToken: TTokenItem;
   contractAddress: string;
+  onExplore: () => void;
 }
 
-const CopyDepositAddress: React.FC<CopyDepositAddressProps> = ({ fromNetwork, fromToken, contractAddress }) => {
+const CopyDepositAddress: React.FC<CopyDepositAddressProps> = ({
+  fromNetwork,
+  fromToken,
+  contractAddress,
+  onExplore,
+}) => {
+  const jumpToWebview = useDiscoverJumpWithNetWork();
+
   const onDismiss = useCallback(() => {
     OverlayModal.hide(false);
   }, []);
+
+  const jumpToNetwork = useCallback(() => {
+    onExplore();
+    jumpToWebview({
+      item: {
+        name: fromNetwork.name,
+        url: fromNetwork.explorerUrl,
+      },
+    });
+  }, [fromNetwork, jumpToWebview, onExplore]);
 
   return (
     <View style={styles.container}>
       <Text style={styles.titleText}>{`${fromToken.symbol} Contract Address on ${fromNetwork.name} Network`}</Text>
       <View style={styles.addressWrap}>
         <Text style={styles.addressText}>{contractAddress}</Text>
-        <TouchableOpacity>
-          <Svg icon={'copy1'} size={pTd(32)} iconStyle={styles.copyButton} />
-        </TouchableOpacity>
-        <TouchableOpacity>
+        <CopyButton style={styles.copyButton} copyContent={contractAddress} />
+        <TouchableOpacity onPress={jumpToNetwork}>
           <Svg icon={'explore'} size={pTd(20)} iconStyle={styles.exploreButton} />
         </TouchableOpacity>
       </View>
@@ -60,6 +78,7 @@ const styles = StyleSheet.create({
   },
   copyButton: {
     marginLeft: pTd(12),
+    marginTop: pTd(-6),
   },
   exploreButton: {
     marginLeft: pTd(12),

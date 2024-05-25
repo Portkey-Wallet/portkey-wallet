@@ -1,14 +1,13 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React from 'react';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
 import { TextM, TextS } from 'components/CommonText';
-import { useEffectOnce } from '@portkey-wallet/hooks';
-import { copyText } from 'utils';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import fonts from 'assets/theme/fonts';
+import { CopyButton } from 'components/CopyButton';
 
 export enum DepositMode {
   DEPOSIT = 1,
@@ -51,27 +50,8 @@ const thirdPartyServiceIcons = [
 export default function DepositCard(props: IDepositCardProps) {
   const { token, mode, onClickDepositButton } = props;
   const { chainId } = token;
-  const [copyChecked, setCopyChecked] = useState(false);
-  const copyForwarder = useRef<NodeJS.Timeout | null>(null);
   const currentWallet = useCurrentWalletInfo();
   const currentCaAddress = currentWallet?.[chainId]?.caAddress;
-
-  useEffectOnce(() => {
-    return () => {
-      if (copyForwarder.current) {
-        clearTimeout(copyForwarder.current);
-      }
-    };
-  });
-
-  const copyId = useCallback(() => {
-    copyText(currentCaAddress ?? '');
-    setCopyChecked(true);
-    copyForwarder.current = setTimeout(() => {
-      setCopyChecked(false);
-      copyForwarder.current = null;
-    }, 2000);
-  }, [currentCaAddress]);
 
   return (
     <View style={styles.container}>
@@ -98,9 +78,7 @@ export default function DepositCard(props: IDepositCardProps) {
                 </TextM>
                 <TextS style={styles.copyButtonSubText}>{'Click to copy your address'}</TextS>
               </View>
-              <TouchableOpacity onPress={copyId}>
-                <Svg icon={copyChecked ? 'copy-checked' : 'copy1'} size={pTd(32)} iconStyle={styles.copyButtonIcon} />
-              </TouchableOpacity>
+              <CopyButton copyContent={currentCaAddress} />
             </View>
           </View>
         )}

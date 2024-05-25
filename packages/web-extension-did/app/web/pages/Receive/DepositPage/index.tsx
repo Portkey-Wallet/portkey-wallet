@@ -1,7 +1,19 @@
+import { useNavigate } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
 import './index.less';
 
-export default function DepositPage() {
+interface IDepositPageProps {
+  chainId: string;
+  symbol: string;
+}
+
+export default function DepositPage({ chainId, symbol }: IDepositPageProps) {
+  const navigate = useNavigate();
+
+  const handleNavigate = () => {
+    navigate(`/token-detail/deposit-home/${chainId}/${symbol}`);
+  };
+
   return (
     <div className="deposit-page flex-column-center">
       <div className="deposit-page-logo flex-column-center">
@@ -10,7 +22,7 @@ export default function DepositPage() {
           Enjoy effortless cross-chain functionality and deposit assets directly into your Portkey wallet.
         </div>
       </div>
-      <div className="deposit-page-operation-entry flex-row-center cursor-pointer" onClick={() => void 0}>
+      <div className="deposit-page-operation-entry flex-row-center cursor-pointer" onClick={handleNavigate}>
         <div className="direction-deposit-icon-wrap flex-center">
           <CustomSvg type="DirectionDeposit" />
         </div>

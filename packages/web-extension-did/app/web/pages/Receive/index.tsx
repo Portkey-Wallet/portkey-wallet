@@ -94,14 +94,14 @@ export default function Receive() {
           <div className="receive-content-page flex-1">
             {curTab === ReceiveTabEnum.QRCode && <QRCodePage />}
             {curTab === ReceiveTabEnum.Exchanges && <ExchangePage />}
-            {curTab === ReceiveTabEnum.Deposit && <DepositPage />}
+            {curTab === ReceiveTabEnum.Deposit && <DepositPage chainId={state.chainId} symbol={state.symbol} />}
             {curTab === ReceiveTabEnum.Buy && <BuyPage {...buyData} />}
           </div>
         </div>
         {isPrompt && <PromptEmptyElement />}
       </div>
     );
-  }, [isPrompt, headerTitle, showTabData, curTab, buyData, navigate, state.pageSide]);
+  }, [isPrompt, headerTitle, showTabData, curTab, state.chainId, state.symbol, state.pageSide, buyData, navigate]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

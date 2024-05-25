@@ -1,0 +1,254 @@
+
+@import '../../../../assets/theme/color.less';
+.deposit-address-container,
+.deposit-address-container * {
+  box-sizing: border-box;
+}
+.deposit-address-container {
+  background: @neutral-default-bg;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  position: relative;
+  width: inherit;
+  height: 100%;
+  // max-width: 440px;
+  // min-width: 375px;
+  // height: calc(100vh - 72px);
+  // max-height: 884px;
+  // min-height: 624px;
+  min-height: 838px !important;
+  margin: 0 auto;
+  padding: 0 0 50px; 
+  .body {
+    padding: 8px 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: center;
+    justify-content: flex-start;
+    flex-shrink: 0;
+    position: relative;
+    width: 100%;
+    .msg-container {
+      display: flex;
+      padding: 10px 12px;
+      flex-direction: row;
+      background-color: @functional-success-light;
+      border-radius: 6px;
+      width: 100%;
+      margin: 0 16px 8px;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-start;
+      flex-shrink: 0;
+      .msg-content {
+        color: @neutral-primary-text;
+        text-align: left;
+        font-size: 12px;
+        line-height: 20px;
+        font-weight: 400;
+        position: relative;
+        flex: 1;
+        a {
+          color: @brand-click;
+          &:hover {
+            color: @brand-click;
+          }
+        }
+      }
+    }
+    .qr-code-card {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+      justify-content: flex-start;
+      flex-shrink: 0;
+      position: relative;
+      .qr-code-container{
+        padding: 12px;
+        border: 1px solid @neutral-divider;
+        border-radius: 16px;
+      }
+      .qr-code-title {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        position: relative;
+        .qr-code-token-info {
+          display: flex;
+          flex-direction: row;
+          gap: 8px;
+          align-items: center;
+          justify-content: flex-start;
+          flex-shrink: 0;
+          position: relative;
+          .token-img {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            position: relative;
+            overflow: visible;
+          }
+          .qr-code-token-name {
+            color: @neutral-primary-text;
+            text-align: center;
+            font-size: 20px;
+            line-height: 28px;
+            font-weight: 500;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+        }
+      
+        .token-network {
+          color: @neutral-tertiary-text;
+          text-align: left;
+          font-size: 14px;
+          line-height: 22px;
+          font-weight: 400;
+          position: relative;
+        }
+      }
+    }
+    .address-and-info-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: flex-start;
+      justify-content: flex-start;
+      flex-shrink: 0;
+      position: relative;
+      width: 100%;
+      .minimum-deposit-container {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        align-items: flex-start;
+        justify-content: flex-start;
+        flex-shrink: 0;
+        width: 100%;
+        position: relative;
+        .minimum-deposit {
+          color: @neutral-tertiary-text;
+          text-align: left;
+          font-size: 12px;
+          line-height: 16px;
+          font-weight: 400;
+          position: relative;
+          width: 100px;
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+        }
+        .minimum-deposit-cal-container {
+          display: flex;
+          flex-direction: column;
+          gap: 0;
+          align-items: flex-start;
+          justify-content: flex-start;
+          flex: 1;
+          position: relative;
+          .minimum-deposit-token-amount {
+            color: @neutral-primary-text;
+            text-align: right;
+            font-size: 12px;
+            line-height: 16px;
+            font-weight: 400;
+            position: relative;
+            align-self: stretch;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+          }
+          .minimum-deposit-token-price {
+            color: @neutral-tertiary-text;
+            text-align: right;
+            font-size: 12px;
+            line-height: 16px;
+            font-weight: 400;
+            position: relative;
+            align-self: stretch;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+          }
+        }
+      }
+      
+      
+      
+      .contract-address-container {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        align-items: flex-start;
+        justify-content: flex-start;
+        flex-shrink: 0;
+        width: 100%;
+        position: relative;
+        cursor: pointer;
+        .contract-address-title {
+          color: @neutral-tertiary-text;
+          text-align: left;
+          font-size: 12px;
+          line-height: 16px;
+          font-weight: 400;
+          position: relative;
+          width: 120px;
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+        }
+        .contract-address {
+          color: @neutral-primary-text;
+          text-align: right;
+          font-size: 12px;
+          line-height: 16px;
+          font-weight: 400;
+          text-decoration: underline;
+          position: relative;
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          &:hover{
+            color: @brand-normal;
+          }
+          &:active{
+            color: @brand-click;
+          }
+        }
+      }
+      
+    }
+    .hint-container {
+      background: @neutral-hover-bg;
+      border-radius: 6px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: flex-start;
+      justify-content: flex-start;
+      align-self: stretch;
+      flex-shrink: 0;
+      position: relative;
+      .hint-content {
+        color: @neutral-secondary-text;
+        text-align: left;
+        font-size: 12px;
+        line-height: 20px;
+        font-weight: 400;
+        position: relative;
+        align-self: stretch;
+      }
+    }
+  }
+}

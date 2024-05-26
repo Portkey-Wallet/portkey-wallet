@@ -94,7 +94,7 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
 
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.white]}>
-      <CustomHeader titleDom={titleDom} rightDom={rightDom} />
+      <CustomHeader titleDom={titleDom} rightDom={rightDom} noLeftDom={true} />
       <NestedScrollView>
         {React.cloneElement(
           <NestedScrollViewHeader

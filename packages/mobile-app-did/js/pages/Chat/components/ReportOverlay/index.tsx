@@ -88,6 +88,7 @@ function ReportOverlay(props: ReportOverlayPropsTypes) {
         ))}
         <View style={styles.inputWrap}>
           <TextInput
+            textAlignVertical="top"
             editable={selectedType === ReportMessageEnum.Other}
             placeholder="Please enter any additional details relevant to your report."
             multiline
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
     height: pTd(80),
     borderRadius: pTd(6),
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border9,
+    borderColor: defaultColors.border8,
     padding: pTd(12),
   },
   input: {

@@ -71,7 +71,7 @@ export default function Receive() {
 
   const OriginalQrCodePage = useCallback(() => {
     return (
-      <View>
+      <View style={styles.qrcodeContainer}>
         <AccountCard toCaAddress={toCaAddress} tokenInfo={tokenItem} style={styles.accountCardStyle} />
 
         <View style={[GStyles.flexCol, GStyles.itemStart, GStyles.spaceBetween, styles.addressWrap]}>
@@ -107,15 +107,13 @@ export default function Receive() {
       safeAreaColor={['white']}
       containerStyles={styles.containerStyles}
       scrollViewProps={{ disabled: true }}>
-      {tabs.length >= 2 ? (
+      {tabs.length >= 2 && (
         <CommonTouchableTabs
           tabList={tabs}
           selectTab={selectTab}
           onTabPress={(type: ReceivePageTabType) => setSelectTab(type)}
           tabHeaderStyle={styles.tabHeader}
         />
-      ) : (
-        <View style={styles.tabHeaderInitial} />
       )}
       {selectTab === ReceivePageTabType.QR_CODE && <OriginalQrCodePage />}
       {(selectTab === ReceivePageTabType.EXCHANGES || selectTab === ReceivePageTabType.DEPOSIT) && (
@@ -126,7 +124,7 @@ export default function Receive() {
         />
       )}
       {selectTab === ReceivePageTabType.BUY && (
-        <View style={GStyles.flex1}>
+        <View style={[GStyles.flex1, styles.buyContainer]}>
           <BuyForm symbol={symbol} />
         </View>
       )}
@@ -150,9 +148,8 @@ const styles = StyleSheet.create({
   tabHeader: {
     marginTop: pTd(16),
   },
-  tabHeaderInitial: {
-    marginTop: pTd(16),
-    height: pTd(30),
+  qrcodeContainer: {
+    marginTop: pTd(48),
   },
   accountCardStyle: {
     marginTop: pTd(0),
@@ -187,6 +184,9 @@ const styles = StyleSheet.create({
   },
   textRow: {
     width: '100%',
+  },
+  buyContainer: {
+    marginTop: pTd(24),
   },
 });
 

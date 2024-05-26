@@ -65,7 +65,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     ...GStyles.paddingArg(3),
-    marginBottom: pTd(32),
   },
   tabWrap: {
     flex: 1,

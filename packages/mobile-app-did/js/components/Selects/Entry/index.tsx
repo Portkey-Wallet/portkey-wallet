@@ -38,6 +38,7 @@ const selectToken = (props: ISelectBaseProps, isPay: boolean): Promise<ISelectTo
       />,
       {
         position: 'bottom',
+        enabledNestScrollView: true,
       },
     );
   });

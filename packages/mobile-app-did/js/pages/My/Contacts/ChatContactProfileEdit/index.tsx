@@ -38,7 +38,7 @@ const ChatContactProfileEdit: React.FC = () => {
   const [error, setError] = useState('');
 
   const onFinish = useCallback(async () => {
-    if (remark && !isValidRemark(remark)) return setError('Only a-z, A-Z, 0-9 and "_"  allowed');
+    if (remark && !isValidRemark(remark)) return setError('1-16 charaers, Only a-z, A-Z, 0-9 and "_"  allowed');
     try {
       Loading.show();
       await editContact({ name: remark, id: contact?.id || '', relationId: contact?.imInfo?.relationId || '' });

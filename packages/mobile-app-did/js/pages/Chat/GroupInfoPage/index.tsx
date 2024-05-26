@@ -278,8 +278,7 @@ const styles = StyleSheet.create({
     ...GStyles.marginArg(10, 20, 16),
   },
   leaveButtonStyle: {
-    borderColor: defaultColors.border7,
-    borderWidth: pTd(1),
+    borderColor: defaultColors.border10,
     marginBottom: pTd(1),
   },
   leaveTitleStyle: {

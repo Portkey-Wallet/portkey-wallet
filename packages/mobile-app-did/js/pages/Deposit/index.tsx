@@ -17,7 +17,6 @@ import { TNetworkItem, TTokenItem } from '@portkey-wallet/types/types-ca/deposit
 import { useDeposit } from '@portkey-wallet/hooks/hooks-ca/deposit';
 import { getManagerAccount, getPin } from 'utils/redux';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
-import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { ChainId } from '@portkey-wallet/types';
 import { TextL } from 'components/CommonText';
 
@@ -41,6 +40,7 @@ export default function Deposit() {
     toChainIdList,
     toToken,
     unitReceiveAmount,
+    payAmount,
     receiveAmount,
     rateRefreshTime,
     isSameSymbol,
@@ -77,7 +77,7 @@ export default function Deposit() {
     }
   }, [fetchDepositInfo, fromNetwork, fromToken]);
 
-  const onPayAmountChanged = useThrottleCallback(
+  const onPayAmountChanged = useCallback(
     (text: string) => {
       if (text.length === 0) {
         setPayAmount(0);
@@ -154,8 +154,8 @@ export default function Deposit() {
           chainName={formatChainInfoToShow(toChainId)}
           tokenSymbol={toToken?.symbol ?? ''}
           tokenIcon={toToken?.icon ?? ''}
-          receiveAmount={receiveAmount.toAmount}
-          minumumReceiveAmount={receiveAmount.minimumReceiveAmount}
+          receiveAmount={payAmount > 0 ? receiveAmount.toAmount : 0}
+          minumumReceiveAmount={payAmount > 0 ? receiveAmount.minimumReceiveAmount : 0}
           showAmount={!isSameSymbol}
           onPress={onSelectReceiveToken}
         />

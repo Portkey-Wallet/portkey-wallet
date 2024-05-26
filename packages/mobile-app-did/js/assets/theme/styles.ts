@@ -75,4 +75,7 @@ export const BorderStyles = StyleSheet.create({
   border5: { borderColor: defaultColors.border5 },
   border6: { borderColor: defaultColors.border6 },
   border7: { borderColor: defaultColors.border7 },
+  border8: { borderColor: defaultColors.border8 },
+  border9: { borderColor: defaultColors.border9 },
+  border10: { borderColor: defaultColors.border10 },
 });

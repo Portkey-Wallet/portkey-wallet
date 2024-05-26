@@ -85,7 +85,7 @@ function PeriodOverlay(props: RememberMeOverlayProps) {
         {SessionKeyArray.map(ele => (
           <Touchable key={ele.value} style={Overlay.itemRow} onPress={() => onPressItem(ele?.value)}>
             <TextL>{ele.label}</TextL>
-            {value === ele.value && <Svg icon="selected" size={pTd(24)} />}
+            {value === ele.value && <Svg icon="selected" size={pTd(24)} color={defaultColors.primaryColor} />}
           </Touchable>
         ))}
       </ScrollView>

@@ -80,7 +80,7 @@ export default function DepositHome() {
     toChainId,
     toToken,
     unitReceiveAmount,
-    // payAmount,
+    payAmount,
     receiveAmount,
     rateRefreshTime,
     isSameSymbol,
@@ -268,12 +268,12 @@ export default function DepositHome() {
                 <div className="token-amount-container">
                   <span className="token-amount-title">You Receive</span>
                   <span className={clsx(['deposit-input', receiveAmount.toAmount === 0 && 'receive-zero'])}>
-                    {receiveAmount.toAmount === 0 ? '0.00' : receiveAmount.toAmount}
+                    {payAmount > 0 ? (receiveAmount.toAmount === 0 ? '0.00' : receiveAmount.toAmount) : '0.00'}
                   </span>
                 </div>
               )}
             </div>
-            {!isSameSymbol && receiveAmount.minimumReceiveAmount > 0 && (
+            {!isSameSymbol && payAmount > 0 && receiveAmount.minimumReceiveAmount > 0 && (
               <span className="mini-receive">Minimum receive: {receiveAmount.minimumReceiveAmount}</span>
             )}
           </div>
@@ -296,6 +296,7 @@ export default function DepositHome() {
     isSameSymbol,
     onClickFrom,
     onClickTo,
+    payAmount,
     rateRefreshTime,
     receiveAmount.minimumReceiveAmount,
     receiveAmount.toAmount,

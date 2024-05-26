@@ -158,7 +158,11 @@ const GroupInfoPage = () => {
               disabled={disableRemoveButton}
               style={[GStyles.flexRow, GStyles.itemCenter, styles.membersActionWrap]}
               onPress={() => navigationService.navigate('RemoveMembersPage')}>
-              <Svg icon="chat-remove-member" size={pTd(20)} color={disableRemoveButton ? defaultColors.bg16 : ''} />
+              <Svg
+                icon="chat-remove-member"
+                size={pTd(20)}
+                color={disableRemoveButton ? defaultColors.bg16 : defaultColors.bg17}
+              />
               <TextL style={[FontStyles.font13, styles.actionText, disableRemoveButton && styles.disabled]}>
                 Remove Members
               </TextL>

@@ -82,3 +82,9 @@ export const isNFT = (symbol: string) => {
   const lastStr = symbol.split('-').splice(-1)[0];
   return !BigNumber(lastStr).isNaN();
 };
+
+export const isNFTCollection = (symbol: string) => {
+  if (!isNFT(symbol)) return false;
+  const lastStr = symbol.split('-').splice(-1)[0];
+  return BigNumber(lastStr).isZero();
+};

@@ -10,6 +10,7 @@
   <style name="Theme.App.SplashScreen" parent="AppTheme">
     <!-- Below line is handled by '@expo/configure-splash-screen' command and it's discouraged to modify it manually -->
     <item name="android:windowBackground">@drawable/splashscreen</item>
+    <item name="android:windowFullscreen">true</item>
     <!-- <item name="android:windowTranslucentStatus">true</item> -->
   </style>
 </resources>

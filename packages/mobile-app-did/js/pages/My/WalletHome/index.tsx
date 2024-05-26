@@ -102,7 +102,7 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
       <CommonButton
         type="outline"
         containerStyle={[GStyles.paddingTop(16), GStyles.marginArg(2, 4), BorderStyles.border7]}
-        buttonStyle={[BorderStyles.border7]}
+        buttonStyle={[BorderStyles.border10]}
         titleStyle={FontStyles.font12}
         onPress={() => {
           ExistOverlay.showExistOverlay({

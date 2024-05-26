@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     borderRadius: pTd(6),
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: defaultColors.border8,
-    padding: pTd(12),
+    paddingHorizontal: pTd(12),
   },
   input: {
     fontSize: pTd(16),

@@ -189,7 +189,7 @@ const ContactActivity: React.FC = () => {
             <View style={styles.handleWrap}>
               {!addressName && (
                 <Touchable style={styles.handleIconItem} onPress={navToAddContact}>
-                  <Svg icon="add-contact" size={pTd(20)} />
+                  <Svg icon="add-contact" size={pTd(20)} color={defaultColors.primaryColor} />
                 </Touchable>
               )}
               <Touchable
@@ -198,7 +198,7 @@ const ContactActivity: React.FC = () => {
                 <Svg color={defaultColors.font4} icon="copy3" size={pTd(20)} />
               </Touchable>
               <Touchable style={styles.handleIconItem} onPress={() => navToExplore(address, chainId)}>
-                <Svg icon="share2" size={pTd(20)} />
+                <Svg icon="share2" size={pTd(20)} color={defaultColors.primaryColor} />
               </Touchable>
             </View>
           </View>

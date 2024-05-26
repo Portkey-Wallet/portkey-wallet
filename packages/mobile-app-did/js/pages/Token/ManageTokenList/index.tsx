@@ -150,7 +150,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
         onPress={() => {
           navigationService.navigate('CustomToken');
         }}>
-        <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
+        <Svg icon="add1" size={pTd(20)} color={defaultColors.font18} />
       </Touchable>
     ),
     [],

@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import DepositCommonButton from './components/DepositCommonButton';
-import { handleKeyDown } from 'utils/keyDown';
+// import { handleKeyDown } from 'utils/keyDown';
 // import ExchangeRate from './components/ExchangeRate';
 import ExchangeSimpleRate from './components/ExchangeSimpleRate';
 import SelectNetwork from './components/SelectNetwork';
@@ -92,9 +92,6 @@ export default function DepositHome() {
   console.log('wfs isSameSymbol===', isSameSymbol);
   console.log('wfs receiveAmount->toAmount===', receiveAmount.toAmount);
   useEffect(() => {
-    console.log('wfs fromNetwork===', fromNetwork);
-  }, [fromNetwork]);
-  useEffect(() => {
     if (loading) {
       setLoading(true);
     } else {
@@ -102,7 +99,6 @@ export default function DepositHome() {
     }
   }, [loading, setLoading]);
   const handleOnNext = useCallback(async () => {
-    console.log('wfs click next!!');
     try {
       setLoading(true);
       const depositInfo = await fetchDepositInfo();
@@ -225,7 +221,11 @@ export default function DepositHome() {
                     type="number"
                     className="deposit-input"
                     placeholder="0.00"
-                    onKeyDown={handleKeyDown}
+                    onKeyDown={(e) => {
+                      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                        e.preventDefault();
+                      }
+                    }}
                     onChange={(e) => {
                       const localPayAmount = e.target.value ? Number(e.target.value) : 0;
                       setPayAmount(localPayAmount);
@@ -307,7 +307,7 @@ export default function DepositHome() {
   const [step, setStep] = useState(Step.HOME);
   const homeEle = useMemo(() => {
     return (
-      <div className="deposit-home-container">
+      <div className={clsx(['deposit-home-container', isPrompt && 'detail-page-prompt'])}>
         <div className="deposit-home-wrapper">
           {renderHeader}
           <div className="body">
@@ -317,7 +317,7 @@ export default function DepositHome() {
         </div>
       </div>
     );
-  }, [handleOnNext, renderCard, renderHeader]);
+  }, [handleOnNext, isPrompt, renderCard, renderHeader]);
   const mainContent = useCallback(() => {
     return (
       <>

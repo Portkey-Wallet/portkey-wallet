@@ -311,7 +311,7 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
   }, [showNetworkList, drawerType, networkListSize, selectedNetworkIndex, handleNetworkChange, onMoreClicked]);
   const selectTokenEle = useMemo(() => {
     return (
-      <div className="select-token-container">
+      <div className="select-token-container flex-1">
         <div className="select-token-title">
           <span className="select-token">Select a Token</span>
         </div>
@@ -328,7 +328,11 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
                     console.log('click item!!', token);
                     onItemClicked?.(token);
                   }}>
-                  <div className="item-container">
+                  <div
+                    className={clsx(
+                      'item-container',
+                      selectedNetworkIndex !== ALL_INDEX && drawerType === 'to' && 'single-select',
+                    )}>
                     <div className="item-wrapper">
                       <div className="icon-wrapper">
                         <img src={token.icon} alt="TokenSymbol" width="36" height="36" />
@@ -356,10 +360,10 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
         )}
       </div>
     );
-  }, [contractAddressShow, currentTokenList, onItemClicked, selectedNetworkIndex]);
+  }, [contractAddressShow, currentTokenList, drawerType, onItemClicked, selectedNetworkIndex]);
   const mainContent = useCallback(() => {
     return (
-      <div className="select-token-network-list">
+      <div className={clsx('select-token-network-list', isPrompt ? 'detail-page-prompt' : '')}>
         {headerEle}
         <div className="body">
           {selectNetworkEle}
@@ -367,7 +371,7 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
         </div>
       </div>
     );
-  }, [headerEle, selectNetworkEle, selectTokenEle]);
+  }, [headerEle, isPrompt, selectNetworkEle, selectTokenEle]);
   return <>{isPrompt && type === 'page' ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }
 export default memo(TokenNetworkList, (prev, next) => {

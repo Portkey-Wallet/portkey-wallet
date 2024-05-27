@@ -7,7 +7,6 @@ button {
   outline: 0;
 }
 
-.select-token-network-list,
 .select-token-network-list * {
   box-sizing: border-box;
   overflow: hidden;
@@ -19,13 +18,8 @@ button {
   align-items: center;
   position: relative;
   width: inherit;
-  max-width: 440px;
-  min-width: 360px;
-  height: calc(100vh - 72px);
-  max-height: 884px;
-  min-height: 624px;
+  overflow: auto;
   margin: 0 auto;
-  padding: 0 0 50px;
   background: @neutral-default-bg;
   .custom-svg {
     width: 20px;
@@ -227,7 +221,8 @@ button {
         width: 100%;
       }
       .token-list {
-        max-height: 708px;
+        padding-bottom: 24px;
+        height: 100%;
         overflow: auto;
       }
       .portkey-list-item {
@@ -272,6 +267,9 @@ button {
         position: relative;
         z-index: 21;
         width: 100%;
+        &.single-select {
+          padding: 14px 16px;
+        }
         .item-wrapper {
           display: flex;
           align-items: center;
@@ -280,7 +278,6 @@ button {
           flex-shrink: 0;
           gap: 10px;
           position: relative;
-          height: 64px;
           z-index: 22;
           .icon-wrapper {
             position: relative;

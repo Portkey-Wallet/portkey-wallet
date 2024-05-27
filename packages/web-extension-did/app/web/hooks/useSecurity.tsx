@@ -186,7 +186,7 @@ export function useSynchronizingModal() {
         type: 'info',
         content: (
           <div className="security-modal">
-            <CustomSvg type="Close2" onClick={() => modal.destroy()} />
+            <CustomSvg type="SuggestClose" onClick={() => modal.destroy()} />
             <Image
               width={180}
               height={108}

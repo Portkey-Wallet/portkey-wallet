@@ -74,7 +74,12 @@ const SelectList = ({ list, callBack, value }: SelectListProps) => {
                     </View>
 
                     {value !== undefined && value === `${item.network}_${item.symbol}` && (
-                      <Svg iconStyle={styles.itemIcon} icon="selected" size={pTd(24)} />
+                      <Svg
+                        iconStyle={styles.itemIcon}
+                        icon="selected"
+                        size={pTd(24)}
+                        color={defaultColors.primaryColor}
+                      />
                     )}
                   </View>
                 </View>

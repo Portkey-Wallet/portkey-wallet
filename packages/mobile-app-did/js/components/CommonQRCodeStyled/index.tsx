@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import QRCodeStyled, { SVGQRCodeStyledProps, useQRCodeData } from 'react-native-qrcode-styled';
-import portkeyLogo from 'assets/image/pngs/portkeyBlackBorderRadius.png';
+import portkeyLogo from 'assets/image/pngs/portkey-v2-new-brand.png';
 import { pTd } from 'utils/unit';
 import { StyleSheet, View } from 'react-native';
 import { TextL } from 'components/CommonText';
@@ -44,8 +44,8 @@ export default function CommonQRCodeStyled(props: CommonQRCodeStyledPropsType) {
         color={'#000000'}
         logo={{
           href: portkeyLogo,
-          scale: 1.5,
-          padding: pTd(5),
+          scale: 1.8,
+          padding: pTd(0),
           hidePieces: false,
         }}
         outerEyesOptions={{

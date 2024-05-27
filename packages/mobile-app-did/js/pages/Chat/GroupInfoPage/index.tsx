@@ -104,7 +104,7 @@ const GroupInfoPage = () => {
       hideTouchable
       leftCallback={() => navigationService.goBack()}
       titleDom={ChatOperationsEnum.GROUP_INFO}
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
       <ScrollView>
@@ -141,7 +141,7 @@ const GroupInfoPage = () => {
                   groupIcon: groupInfo?.icon || '',
                 });
               }}>
-              <Svg icon="chat-scan" size={pTd(16)} />
+              <Svg icon="chat-qr-code" size={pTd(16)} />
             </Touchable>
           </View>
         </FormItem>
@@ -150,7 +150,7 @@ const GroupInfoPage = () => {
           <Touchable
             style={[GStyles.flexRow, GStyles.itemCenter, styles.membersActionWrap]}
             onPress={() => navigationService.navigate('AddMembersPage')}>
-            <Svg icon="chat-add-member" size={pTd(20)} />
+            <Svg icon="add" size={pTd(20)} color={defaultColors.primaryColor} />
             <TextL style={[FontStyles.font4, styles.actionText]}>Add Members</TextL>
           </Touchable>
           {isAdmin && (
@@ -158,7 +158,11 @@ const GroupInfoPage = () => {
               disabled={disableRemoveButton}
               style={[GStyles.flexRow, GStyles.itemCenter, styles.membersActionWrap]}
               onPress={() => navigationService.navigate('RemoveMembersPage')}>
-              <Svg icon="chat-remove-member" size={pTd(20)} color={disableRemoveButton ? defaultColors.bg16 : ''} />
+              <Svg
+                icon="chat-remove-member"
+                size={pTd(20)}
+                color={disableRemoveButton ? defaultColors.bg16 : defaultColors.bg17}
+              />
               <TextL style={[FontStyles.font13, styles.actionText, disableRemoveButton && styles.disabled]}>
                 Remove Members
               </TextL>
@@ -274,8 +278,7 @@ const styles = StyleSheet.create({
     ...GStyles.marginArg(10, 20, 16),
   },
   leaveButtonStyle: {
-    borderColor: defaultColors.border7,
-    borderWidth: pTd(1),
+    borderColor: defaultColors.border10,
     marginBottom: pTd(1),
   },
   leaveTitleStyle: {

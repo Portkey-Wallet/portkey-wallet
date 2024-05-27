@@ -163,4 +163,15 @@ export const setRedPackageConfig = createAction<{
   value: RedPackageConfigType;
 }>('im/setRedPackageConfig');
 
+export const setBlockedUserList = createAction<{
+  network: NetworkType;
+  blockedUserList: string[];
+}>('im/setBlockedUserList');
+
+export const changeBlockedMap = createAction<{
+  network: NetworkType;
+  targetRelationId: string;
+  isBlock: boolean;
+}>('im/changeBlockedMap');
+
 export const resetIm = createAction<NetworkType>('im/resetIm');

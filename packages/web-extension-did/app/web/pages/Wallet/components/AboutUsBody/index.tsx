@@ -40,7 +40,7 @@ export default function AboutUsBody() {
     <div className="about-us-body">
       <div className="flex-column-center logo-wrapper">
         <div className="flex-center logo">
-          <CustomSvg type="PortKey" />
+          <CustomSvg type="PortkeyAboutUs" />
         </div>
         <span className="name">{t('Portkey')}</span>
         <span className="version">{`${process.env.SDK_VERSION?.toUpperCase()}`}</span>

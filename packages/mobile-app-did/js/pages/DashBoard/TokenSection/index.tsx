@@ -93,7 +93,6 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
             onPress={() => {
               navigationService.navigate('ManageTokenList');
             }}>
-            {/* <Svg icon="add-token" size={20} /> */}
             <TextM style={styles.addTokenText}>{t('Add Tokens')}</TextM>
           </Touchable>
         }

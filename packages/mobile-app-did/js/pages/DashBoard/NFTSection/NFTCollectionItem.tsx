@@ -83,7 +83,7 @@ export default function NFTItem(props: NFTItemPropsType) {
   return (
     <View style={styles.wrap}>
       <Touchable
-        onPressWithSecond={0}
+        onPressWithSecond={800}
         style={[styles.topSeries]}
         onPress={() => {
           if (openCollectionObj?.[`${symbol}${chainId}`]) {

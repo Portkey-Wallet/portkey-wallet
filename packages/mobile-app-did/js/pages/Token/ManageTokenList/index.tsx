@@ -150,7 +150,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
         onPress={() => {
           navigationService.navigate('CustomToken');
         }}>
-        <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
+        <Svg icon="add1" size={pTd(20)} color={defaultColors.font18} />
       </Touchable>
     ),
     [],
@@ -159,13 +159,15 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   return (
     <PageContainer
       titleDom={t('Add Tokens')}
-      safeAreaColor={['blue', 'white']}
+      safeAreaColor={['white', 'white']}
       rightDom={RightDom}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View style={pageStyles.inputWrap}>
         <CommonInput
           allowClear
+          grayBorder
+          theme="white-bg"
           loading={isSearching}
           value={keyword}
           placeholder={t('Token Name')}
@@ -196,8 +198,8 @@ export const pageStyles = StyleSheet.create({
     ...gStyles.paddingArg(0),
   },
   inputWrap: {
-    backgroundColor: defaultColors.bg5,
-    ...gStyles.paddingArg(8, 20, 8),
+    backgroundColor: defaultColors.bg1,
+    ...gStyles.paddingArg(0, 20, 8),
   },
   list: {
     flex: 1,

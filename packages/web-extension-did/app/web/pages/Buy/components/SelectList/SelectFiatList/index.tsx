@@ -1,4 +1,3 @@
-import CustomSvg from 'components/CustomSvg';
 import DropdownSearch from 'components/DropdownSearch';
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,6 +5,7 @@ import '../index.less';
 import { useBuyFiat } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { IRampFiatItem } from '@portkey-wallet/ramp';
 import { getSellFiat } from '@portkey-wallet/utils/ramp';
+import CommonHeader, { CustomSvgPlaceholderSize } from 'components/CommonHeader';
 
 export interface ISelectFiatListProps {
   onChange?: (v: IRampFiatItem) => void;
@@ -82,11 +82,18 @@ export default function SelectFiatList({
   );
 
   return (
-    <div className="custom-list">
-      <div className="header">
-        <p>{title || 'Select'}</p>
-        <CustomSvg type="Close2" onClick={onClose} />
-      </div>
+    <div className="custom-list custom-list-weight">
+      <CommonHeader
+        className="header"
+        title={title || 'Select'}
+        rightElementList={[
+          {
+            customSvgType: 'SuggestClose',
+            customSvgPlaceholderSize: CustomSvgPlaceholderSize.MD,
+            onClick: onClose,
+          },
+        ]}
+      />
       <DropdownSearch
         overlayClassName="empty-dropdown"
         open={openDrop}

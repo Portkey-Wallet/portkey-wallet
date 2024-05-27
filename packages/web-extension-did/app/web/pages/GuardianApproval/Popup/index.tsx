@@ -1,4 +1,4 @@
-import SettingHeader from 'pages/components/SettingHeader';
+import CommonHeader from 'components/CommonHeader';
 import { ReactNode } from 'react';
 
 export interface IGuardianApprovalPopupProps {
@@ -9,7 +9,7 @@ export interface IGuardianApprovalPopupProps {
 const GuardianApprovalPopup = ({ onBack, renderContent }: IGuardianApprovalPopupProps) => {
   return (
     <div className="guardian-approval-wrapper popup-page min-width-max-height">
-      <SettingHeader leftCallBack={onBack} />
+      <CommonHeader className="guardian-approval-header" onLeftBack={onBack} />
       {renderContent}
     </div>
   );

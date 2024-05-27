@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
   },
   wrapRight: {
-    backgroundColor: defaultColors.bg9,
+    backgroundColor: defaultColors.brandLight,
     borderTopRightRadius: pTd(2),
     marginRight: 0,
     overflow: 'hidden',

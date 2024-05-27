@@ -43,7 +43,11 @@ export default memo(
       if (disabled || selected) iconName = 'selected';
 
       return iconName ? (
-        <Svg iconStyle={styles.itemIcon} color={disabled ? defaultColors.bg16 : undefined} icon={iconName} />
+        <Svg
+          iconStyle={styles.itemIcon}
+          color={disabled ? defaultColors.bg16 : selected ? defaultColors.primaryColor : undefined}
+          icon={iconName}
+        />
       ) : null;
     }, [disabled, multiple, selected]);
 

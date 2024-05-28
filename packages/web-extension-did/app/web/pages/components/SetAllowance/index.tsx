@@ -6,8 +6,8 @@ import { isValidNumber } from '@portkey-wallet/utils/reg';
 import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 import ThrottleButton from 'components/ThrottleButton';
 import { ALLOWANCE_HEADER_NO_NAME, SET_ALLOWANCE_MULTIPLY_TIP } from '@portkey-wallet/constants/constants-ca/allowance';
+import { isNFT } from '@portkey-wallet/utils/token';
 import './index.less';
-import { isNFT } from 'utils';
 
 export interface IBaseSetAllowanceProps {
   symbol: string;

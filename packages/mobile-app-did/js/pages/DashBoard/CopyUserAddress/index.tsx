@@ -53,8 +53,10 @@ const CopyUserAddress: React.FC = () => {
         return (
           <View key={index + ''} style={styles.itemWrap}>
             <View>
-              <Text>{transNetworkText(item.chainId, !isMainnet)}</Text>
-              <Text>{addressFormat(formatStr2EllipsisStr(item.address, 4), item.chainId, 'aelf')}</Text>
+              <Text style={styles.chainText}>{transNetworkText(item.chainId, !isMainnet)}</Text>
+              <Text style={styles.addressText}>
+                {formatStr2EllipsisStr(addressFormat(item.address, item?.chainId), 8)}
+              </Text>
             </View>
             <CopyButton copyContent={copyContent({ address: item.address, chainId: item.chainId })} />
           </View>
@@ -98,6 +100,15 @@ const styles = StyleSheet.create({
     borderRadius: pTd(6),
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  chainText: {
+    color: defaultColors.font5,
+    fontSize: pTd(14),
+    ...fonts.mediumFont,
+  },
+  addressText: {
+    color: defaultColors.font11,
+    fontSize: pTd(12),
   },
 });
 

@@ -93,6 +93,7 @@ export const defaultColors = {
   border8: '#DCDEE1',
   border9: '#FFD4A2',
   border10: '#F53F3F',
+  border11: '#EBEBEC',
 
   error: '#F53F3F',
   error1: '#FF4D4F',

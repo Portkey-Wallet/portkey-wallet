@@ -18,6 +18,7 @@ import {
   setNickNameAndAvatarAction,
   resetCurrentUserInfoAction,
   updateCASyncState,
+  setHideAssetsAction,
 } from './actions';
 import { UserInfoType, WalletError, WalletState } from './type';
 import { changeEncryptStr } from '../../wallet/utils';
@@ -26,6 +27,7 @@ export const DEFAULT_USER_INFO: UserInfoType = {
   nickName: '',
   userId: '',
   avatar: '',
+  hideAssets: false,
 };
 
 const initialState: WalletState = {
@@ -139,6 +141,16 @@ export const walletSlice = createSlice({
             ...(state?.userInfo?.[networkType] || {}),
             nickName,
             avatar,
+          },
+        };
+      })
+      .addCase(setHideAssetsAction, (state, action) => {
+        const { hideAssets } = action.payload;
+        state.userInfo = {
+          ...(state.userInfo || {}),
+          MAINNET: {
+            ...(state?.userInfo?.MAINNET ?? { nickName: '', userId: '', hideAssets: false }),
+            hideAssets,
           },
         };
       })

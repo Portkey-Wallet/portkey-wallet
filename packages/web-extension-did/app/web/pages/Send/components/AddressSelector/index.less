@@ -6,7 +6,7 @@
     padding-bottom: 16px;
     width: 100%;
     line-height: 20px;
-    color: @font-12;
+    color: @neutral-disable-text;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -21,8 +21,8 @@
       box-shadow: none;
       z-index: 10;
       position: sticky;
-      background: @bg-11;
-      border-bottom: 1px solid @border-2;
+      background: @neutral-default-bg;
+      border-bottom: 1px solid @neutral-divider;
 
       .@{app-prefix}-tabs-nav-wrap {
         min-width: 100%;
@@ -46,14 +46,14 @@
               height: 22px;
               line-height: 22px;
               text-align: center;
-              color: @font-13 !important;
+              color: @neutral-secondary-text !important;
               text-shadow: unset;
             }
           }
 
           .@{app-prefix}-tabs-tab-active {
             .@{app-prefix}-tabs-tab-btn {
-              color: @font-11 !important;
+              color: @neutral-primary-text !important;
             }
           }
 
@@ -78,10 +78,10 @@
     line-height: 16px;
     .address {
       display: flex;
-      color: @font-11;
+      color: @neutral-primary-text;
     }
     .network {
-      color: @font-13;
+      color: @neutral-secondary-text;
     }
   }
   // common go-detail style, for Recents and Contacts
@@ -102,7 +102,7 @@
   .recents {
     .recent-item {
       border-top: none !important;
-      border-bottom: 1px solid @border-2;
+      border-bottom: 1px solid @neutral-divider;
       padding: 13px 16px 11px 24px;
       .main-info {
         flex: 1;
@@ -115,7 +115,7 @@
       }
     }
     .contact-card-in-recent {
-      border-bottom: 1px solid @border-2;
+      border-bottom: 1px solid @neutral-divider;
       .@{app-prefix}-collapse-header {
         padding-left: 24px !important;
       }
@@ -149,13 +149,13 @@
     .adm-index-bar-anchor-title {
       padding: 8px 24px;
       line-height: 16px;
-      color: @font-13;
+      color: @neutral-secondary-text;
       font-size: 12px;
       height: 32px;
     }
     .adm-list-item {
       padding: 0;
-      border-top: 1px solid @border-2;
+      border-top: 1px solid @neutral-divider;
       .adm-list-item-content {
         padding: 0;
         border-top: none;
@@ -180,7 +180,7 @@
     border-top: 0;
     border-left: 0;
     border-right: 0;
-    background: @bg-11;
+    background: @neutral-default-bg;
     .@{app-prefix}-collapse-item {
       border-bottom: none;
     }
@@ -215,7 +215,7 @@
       align-items: center;
       line-height: 20px;
       font-size: 14px;
-      color: @font-11;
+      color: @neutral-primary-text;
     }
     .content {
       display: flex;
@@ -231,20 +231,20 @@
           gap: 2px;
           line-height: 16px;
           font-size: 12px;
-          color: @font-11;
+          color: @neutral-primary-text;
           padding-left: 34px;
           margin-right: 24px;
 
           &.disabled {
             cursor: not-allowed;
-            color: @font-12;
+            color: @neutral-disable-text;
           }
         }
         .network {
-          color: @font-13;
+          color: @neutral-secondary-text;
           &.disabled {
             cursor: not-allowed;
-            color: @font-12;
+            color: @neutral-disable-text;
           }
         }
         .go-detail {
@@ -252,7 +252,7 @@
         }
       }
       .not-recent-address {
-        color: @font-12;
+        color: @neutral-disable-text;
       }
     }
   }
@@ -261,7 +261,7 @@
   .my-address {
     .my-address-item {
       border-top: none !important;
-      border-bottom: 1px solid @border-2;
+      border-bottom: 1px solid @neutral-divider;
       padding: 13px 24px 11px;
       .address-item();
     }

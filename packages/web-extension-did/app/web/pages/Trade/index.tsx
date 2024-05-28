@@ -1,5 +1,6 @@
 import { Button } from 'antd';
 import CustomSvg, { SvgType } from 'components/CustomSvg';
+import CommonHeader from 'components/CommonHeader';
 import BottomBar from 'pages/components/BottomBar';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
 import { useExtensionBridgeButtonShow } from 'hooks/cms';
@@ -88,7 +89,7 @@ export default function TradePage() {
 
   return (
     <div className="trade-page-warp flex-column">
-      <div className="trade-page-title">Trade</div>
+      <CommonHeader title="Trade" />
       <div className="trade-page-content flex-column flex-1">
         {tradeListShow.map((item, index) => (
           <div className="trade-item flex-column-center" key={`${item.title}_${index}`}>

@@ -2,15 +2,15 @@
 @import '../../../assets/theme/constants.less';
 
 .activity-list {
-  border-bottom: solid 0.5px @border-2;
+  border-bottom: solid 0.5px @neutral-divider;
   .activity-date-wrap {
     .activity-date-item {
       margin: 4px 16px;
       padding-top: 20px;
-      border-top: 0.5px solid @border-2;
+      border-top: 0.5px solid @neutral-divider;
       font-size: 12px;
       line-height: 18px;
-      color: @Neutral-3;
+      color: @neutral-tertiary-text;
     }
     &:first-of-type {
       .activity-date-item {
@@ -27,7 +27,7 @@
     justify-content: center;
 
     &:hover {
-      background-color: @Neutral-4;
+      background-color: @neutral-hover-bg;
     }
     &.activity-item-resend {
       height: 106px;
@@ -42,14 +42,26 @@
         background-position: center;
         background-repeat: no-repeat;
         background-size: contain;
+        border-radius: 50%;
         svg {
           width: 32px;
           height: 32px;
+        }
+        .two-image-top,
+        .two-image-bottom {
+          width: 24px;
+          height: 24px;
+          /* stylelint-disable-next-line no-descending-specificity */
+          svg {
+            width: 100%;
+            height: 100%;
+          }
         }
       }
       .systemactivity-icon {
         width: 32px;
         height: 32px;
+        /* stylelint-disable-next-line no-descending-specificity */
         svg {
           width: 32px;
           height: 32px;
@@ -68,12 +80,12 @@
           width: 160px;
           font-size: 11px;
           line-height: 18px;
-          color: @Neutral-3;
+          color: @neutral-tertiary-text;
           .transaction-name {
             font-size: 16px;
             line-height: 24px;
             font-weight: 500;
-            color: @font-1;
+            color: @neutral-primary-text;
             word-break: break-all;
             .text-overflow(1);
           }
@@ -86,29 +98,43 @@
           flex: 1;
           font-size: 12px;
           line-height: 18px;
-          color: @Neutral-3;
+          color: @neutral-tertiary-text;
           text-align: right;
           .transaction-amount {
             font-size: 16px;
             line-height: 24px;
-            color: @font-1;
+            color: @neutral-primary-text;
             word-break: break-all;
             .text-overflow(1);
             &.received-amount {
-              color: @font-15;
+              color: @functional-success-default;
             }
           }
           .transaction-nft-symbol,
           .transaction-convert {
+            height: 16px;
             word-break: break-all;
             .text-overflow(1);
           }
           .hidden-transaction-convert {
-            overflow: hidden;
+            visibility: hidden;
           }
           &.prompt-activity-item-amount {
             flex: 3;
             min-width: 120px;
+          }
+          &.same-direction {
+            .transaction-amount {
+              font-size: 14px;
+              line-height: 22px;
+            }
+          }
+          &.opposite-direction {
+            .transaction-amount-1 {
+              font-size: 12px;
+              line-height: 16px;
+              color: @neutral-tertiary-text;
+            }
           }
         }
       }
@@ -117,7 +143,7 @@
         font-size: 16px;
         line-height: 24px;
         font-weight: 500;
-        color: @font-1;
+        color: @neutral-primary-text;
         word-break: break-all;
         .text-overflow(1);
       }
@@ -135,6 +161,11 @@
     }
   }
 
+  &.hidden-loading-more {
+    .adm-infinite-scroll {
+      display: none;
+    }
+  }
   @media screen and (min-width: 768px) {
     .load-more {
       padding-bottom: 12px;
@@ -156,11 +187,11 @@
 
       padding: 24px;
       margin: 0;
-      border-bottom: 1px solid @border-2;
+      border-bottom: 1px solid @neutral-divider;
       text-align: center;
       line-height: 22px;
       font-size: 18px;
-      color: @Neutral-3;
+      color: @neutral-tertiary-text;
     }
     .@{app-prefix}-modal-confirm-btns {
       padding: 15px 16px 17px;

@@ -25,6 +25,7 @@ import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat
 import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
 import ActionSheet from 'components/ActionSheet';
 import OverlayModal from 'components/OverlayModal';
+import { showReportOverlay } from '../../ReportOverlay';
 
 const PIN_UNICODE_SPACE = '\u00A0\u00A0\u00A0\u00A0';
 const TIME_UNICODE_SPACE = isIOS
@@ -179,6 +180,7 @@ function MessageText(
         });
       }
 
+      // delete other's message
       if (isGroupChat && isAdmin && position === 'left') {
         list.push({
           title: 'Delete',
@@ -194,6 +196,7 @@ function MessageText(
         });
       }
 
+      // delete my message
       if (currentMessage)
         if (position === 'right')
           list.push({
@@ -208,6 +211,24 @@ function MessageText(
               }
             },
           });
+
+      // report
+      if (position === 'left')
+        list.push({
+          title: 'Report',
+          iconName: 'chat-report',
+          onPress: async () => {
+            try {
+              showReportOverlay({
+                messageId: currentMessage?.id || '',
+                message: currentMessage?.text || '',
+                reportedRelationId: currentMessage?.from || '',
+              });
+            } catch (error) {
+              CommonToast.fail('Failed to delete message');
+            }
+          },
+        });
 
       list = isNotSupported ? [] : list;
 
@@ -410,7 +431,7 @@ const replyMessageImageStyles = StyleSheet.create({
     alignItems: 'center',
   },
   rightWrap: {
-    backgroundColor: defaultColors.bg25,
+    backgroundColor: defaultColors.bg40,
   },
   blueBlank: {
     position: 'absolute',

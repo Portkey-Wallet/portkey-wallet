@@ -1,24 +1,15 @@
 @import '../../assets/theme/color.less';
 .transaction-detail-modal {
-  background-color: @bg-11;
+  background-color: @neutral-default-bg;
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 
   .transaction-detail-body {
-    background: @bg-11;
-    padding: 24px;
+    background: @neutral-default-bg;
+    padding: 0 24px 24px;
 
-    .header {
-      display: flex;
-      justify-content: flex-end;
-      margin: 0 0 7px;
-      .custom-svg {
-        width: 18px;
-        height: 18px;
-      }
-    }
     .transaction-info {
       display: flex;
       flex-direction: column;
@@ -31,7 +22,7 @@
       .label {
         display: flex;
         justify-content: space-between;
-        color: @font-11;
+        color: @neutral-primary-text;
         font-weight: 500;
       }
       .value {
@@ -56,13 +47,13 @@
         }
         .method-name {
           font-size: 20px;
-          color: @font-11;
+          color: @neutral-primary-text;
           font-weight: 500;
           line-height: 24px;
         }
         .token-amount {
           gap: 4px;
-          color: @font-11;
+          color: @neutral-primary-text;
           line-height: 22px;
           font-size: 18px;
           margin-bottom: 15px;
@@ -77,7 +68,7 @@
           .usd {
             line-height: 16px;
             font-size: 12px;
-            color: @font-13;
+            color: @neutral-secondary-text;
             word-break: break-all;
             text-align: center;
           }
@@ -94,16 +85,16 @@
           margin-left: -24px;
           margin-right: -24px;
           padding-bottom: 20px;
-          border-bottom: 1px solid @border-2;
+          border-bottom: 1px solid @neutral-divider;
           margin-bottom: 15px;
           .assets {
             position: relative;
             width: 64px;
             height: 64px;
             border-radius: 6px;
-            background: @bg-15;
+            background: @neutral-divider;
             font-size: 24px;
-            color: @font-12;
+            color: @neutral-disable-text;
             overflow: hidden;
             .tokentagmedium-icon,
             .tokentagmedium-icon svg,
@@ -133,7 +124,7 @@
               line-height: 22px;
               font-size: 16px;
               font-weight: 500;
-              color: @font-11;
+              color: @neutral-primary-text;
               word-wrap: break-word;
               word-break: break-all;
               .token-id {
@@ -142,7 +133,7 @@
               }
             }
             .quantity {
-              color: @font-13;
+              color: @neutral-secondary-text;
               line-height: 20px;
               font-size: 14px;
             }
@@ -165,13 +156,13 @@
             font-weight: 500;
           }
           .confirmed {
-            color: @font-15;
+            color: @functional-success-default;
           }
           .failed {
             color: @font-14;
           }
           .right {
-            color: @font-11;
+            color: @neutral-primary-text;
           }
         }
       }
@@ -184,7 +175,7 @@
           .content {
             display: flex;
             flex-direction: column;
-            color: @font-13;
+            color: @neutral-secondary-text;
             gap: 2px;
             .left,
             .right {
@@ -197,7 +188,7 @@
             .name {
               line-height: 20px;
               font-size: 14px;
-              color: @font-11;
+              color: @neutral-primary-text;
             }
             .address-wrap {
               display: flex;
@@ -228,7 +219,7 @@
         .value {
           line-height: 16px;
           font-size: 12px;
-          color: @font-13;
+          color: @neutral-secondary-text;
         }
       }
       .money-wrap {
@@ -242,11 +233,11 @@
           .value {
             /* stylelint-disable-next-line no-descending-specificity */
             .left {
-              color: @font-13;
+              color: @neutral-secondary-text;
             }
             /* stylelint-disable-next-line no-descending-specificity */
             .right {
-              color: @font-11;
+              color: @neutral-primary-text;
               font-weight: 500;
               .right-item {
                 margin-bottom: 8px;
@@ -256,7 +247,7 @@
                   word-break: break-all;
                 }
                 .right-usd {
-                  color: @font-13;
+                  color: @neutral-secondary-text;
                   font-size: 12px;
                   font-weight: 400;
                 }
@@ -281,7 +272,7 @@
                 span {
                   text-align: right;
                   &.convert {
-                    color: @font-13;
+                    color: @neutral-secondary-text;
                     font-weight: 400;
                     font-size: 12px;
                     line-height: 16px;
@@ -298,10 +289,11 @@
     .link {
       display: block;
       width: 100%;
-      background: @bg-11;
+      background: @neutral-default-bg;
       text-align: center;
       line-height: 20px;
       padding-bottom: 40px;
+      color: @brand-normal;
     }
   }
 }
@@ -309,7 +301,7 @@
 .transaction-detail {
   .transaction-detail-modal {
     position: relative;
-    background: @bg-11;
+    background: @neutral-default-bg;
 
     .transaction-info {
       .method-wrap {

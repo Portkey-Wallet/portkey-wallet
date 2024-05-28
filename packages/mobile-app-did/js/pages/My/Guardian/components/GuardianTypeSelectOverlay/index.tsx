@@ -9,6 +9,7 @@ import { TextL } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { ModalBody } from 'components/ModalBody';
+import { defaultColors } from 'assets/theme';
 
 type ValueType = string | number;
 type DefaultValueType = string;
@@ -53,7 +54,12 @@ const SelectList = <ItemType extends ItemTypeBase<ItemValueType>, ItemValueType 
                   )}
                   <TextL>{item[labelAttrName]}</TextL>
                   {value !== undefined && value === item.value && (
-                    <Svg iconStyle={styles.itemIcon} icon="selected" size={pTd(24)} />
+                    <Svg
+                      iconStyle={styles.itemIcon}
+                      icon="selected"
+                      size={pTd(24)}
+                      color={defaultColors.primaryColor}
+                    />
                   )}
                 </View>
               </View>

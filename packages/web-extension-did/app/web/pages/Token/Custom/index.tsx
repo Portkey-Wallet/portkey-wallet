@@ -2,7 +2,7 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useChainIdList, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { Button, Input } from 'antd';
 import CustomSvg from 'components/CustomSvg';
-import TitleWrapper from 'components/TitleWrapper';
+import CommonHeader from 'components/CommonHeader';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
@@ -122,12 +122,7 @@ export default function CustomToken() {
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['page-custom-token', isPrompt && 'detail-page-prompt'])}>
-        <TitleWrapper
-          className="page-title"
-          title={t('Custom Token')}
-          leftCallBack={handleBack}
-          rightElement={<CustomSvg type="Close2" onClick={handleBack} />}
-        />
+        <CommonHeader title={t('Custom Token')} onLeftBack={handleBack} />
         <div className="page-content flex-column">
           <div className="tip">
             {t(

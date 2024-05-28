@@ -7,13 +7,12 @@ import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { TextM, TextS } from 'components/CommonText';
+import { CopyButton } from 'components/CopyButton';
 import FormItem from 'components/FormItem';
 import Svg from 'components/Svg';
-import Touchable from 'components/Touchable';
 
 import React, { memo, useCallback, useMemo } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import { copyText } from 'utils';
 import { pTd } from 'utils/unit';
 
 type addressItemType = {
@@ -35,9 +34,9 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
   const { title = 'Address', disable, noMarginTop, addressList: addressListProps, isMySelf } = props;
   const isMainnet = useIsMainnet();
 
-  const copyId = useCallback(
+  const copyContent = useCallback(
     (ele: addressItemType) =>
-      copyText(ele.chainName === AELF_CHIAN_TYPE || !ele.chainName ? `ELF_${ele.address}_${ele.chainId}` : ele.address),
+      ele.chainName === AELF_CHIAN_TYPE || !ele.chainName ? `ELF_${ele.address}_${ele.chainId}` : ele.address,
     [],
   );
 
@@ -62,9 +61,7 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
                 20,
               )}
             </TextM>
-            <Touchable onPress={() => copyId(ele)}>
-              <Svg icon="copy" size={pTd(16)} />
-            </Touchable>
+            <CopyButton copyContent={copyContent(ele)} />
           </View>
           <View style={GStyles.flexRow}>
             {isMySelf ? (

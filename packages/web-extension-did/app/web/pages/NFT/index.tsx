@@ -1,6 +1,6 @@
-import { Button } from 'antd';
+import { Button, Skeleton } from 'antd';
 import PromptFrame from 'pages/components/PromptFrame';
-import SettingHeader from 'pages/components/SettingHeader';
+import CommonHeader from 'components/CommonHeader';
 import { useCommonState } from 'store/Provider/hooks';
 import clsx from 'clsx';
 import { useCallback, useMemo, useState } from 'react';
@@ -138,15 +138,22 @@ export default function NFT() {
     return traitsPercentages ? (
       <div className="info traits-info">
         <div className="info-title">Traits</div>
-        {traitsPercentages.map((trait, i) => (
-          <div key={`${trait.traitType}_${i}`} className="info-item flex-between-center">
-            <div className="label">
-              <div>{trait.traitType}</div>
-              <div className="label-bold">{trait.value}</div>
-            </div>
-            <div className="content">{trait.percent}</div>
-          </div>
-        ))}
+        {traitsPercentages.length === 0
+          ? new Array(3).fill('').map((_item, index) => (
+              <div key={`skeleton_${index}`} className="flex-column traits-info-skeleton">
+                <Skeleton.Avatar className="skeleton-title" shape="square" active />
+                <Skeleton.Avatar className="skeleton-desc" shape="square" active />
+              </div>
+            ))
+          : traitsPercentages.map((trait, i) => (
+              <div key={`${trait.traitType}_${i}`} className="info-item flex-between-center">
+                <div className="label">
+                  <div>{trait.traitType}</div>
+                  <div className="label-bold">{trait.value}</div>
+                </div>
+                <div className="content">{trait.percent}</div>
+              </div>
+            ))}
       </div>
     ) : null;
   }, [nftDetail]);
@@ -171,7 +178,7 @@ export default function NFT() {
     return (
       <div id="nft-detail" className={clsx(['nft-detail', isPrompt && 'detail-page-prompt'])}>
         <div className="nft-detail-body">
-          <SettingHeader leftCallBack={() => navigate('/', { state: { key: BalanceTab.NFT } })} />
+          <CommonHeader onLeftBack={() => navigate('/', { state: { key: BalanceTab.NFT } })} />
           <div className="collection flex-start-center">
             <div className="img">
               {collectionImageUrl ? (

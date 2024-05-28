@@ -71,7 +71,7 @@ const TokenAllowanceHome: React.FC = () => {
   return (
     <PageContainer
       titleDom={t('Token Allowance')}
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <FlatList
@@ -83,12 +83,7 @@ const TokenAllowanceHome: React.FC = () => {
             <LottieLoading />
           ) : (
             <Touchable>
-              <NoData
-                style={BGStyles.bg4}
-                message={t('No Data')}
-                topDistance={pTd(120)}
-                oblongSize={[pTd(160), pTd(140)]}
-              />
+              <NoData style={BGStyles.bg4} message={t('No Data')} topDistance={pTd(120)} />
             </Touchable>
           )
         }

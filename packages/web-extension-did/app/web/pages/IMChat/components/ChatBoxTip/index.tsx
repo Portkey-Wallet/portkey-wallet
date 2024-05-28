@@ -13,7 +13,7 @@ const ChatBoxTip = ({ onClose, onConfirm, showClose = true, children }: IChatBox
       <div className="content flex-center" onClick={onConfirm}>
         {children}
       </div>
-      {showClose && <CustomSvg type="Close2" onClick={onClose} />}
+      {showClose && <CustomSvg type="SuggestClose" onClick={onClose} />}
     </div>
   );
 };

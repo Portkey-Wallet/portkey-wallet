@@ -44,7 +44,13 @@ export default function SelectCryptoListWrap({
       />
     </CustomPromptModal>
   ) : (
-    <BaseDrawer {...props} onClose={onClose} className="ramp-crypto-drawer" destroyOnClose>
+    <BaseDrawer
+      {...props}
+      onClose={onClose}
+      className="ramp-crypto-drawer"
+      height={528}
+      placement="bottom"
+      destroyOnClose>
       <SelectCryptoList
         title={title}
         searchPlaceHolder={searchPlaceHolder}

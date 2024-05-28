@@ -275,13 +275,15 @@ export default function MyBalance() {
           )}>
           {text}
         </div>
-        <div className="hide-assets-icon-wrap">
-          <CustomSvg
-            className="hide-assets-icon cursor-pointer"
-            type={userInfo.hideAssets ? 'EyeInvisibleOutlined' : 'EyeOutlined'}
-            onClick={() => setHideAssets(!userInfo.hideAssets)}
-          />
-        </div>
+        {isMainNet && (
+          <div className="hide-assets-icon-wrap">
+            <CustomSvg
+              className="hide-assets-icon cursor-pointer"
+              type={userInfo.hideAssets ? 'EyeInvisibleOutlined' : 'EyeOutlined'}
+              onClick={() => setHideAssets(!userInfo.hideAssets)}
+            />
+          </div>
+        )}
       </div>
     );
   }, [isMainNet, setHideAssets, usdShow, userInfo.hideAssets]);

@@ -54,6 +54,10 @@ import {
   UnPinAllParams,
   SearchChannelMembersParams,
   SearchChannelMembersResult,
+  TBlockUserParams,
+  TCheckIsBlockedParams,
+  TUnBlockUserParams,
+  TReportMessageParams,
 } from '../types/service';
 import {
   ChannelInfo,
@@ -416,6 +420,40 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
   unPinAll(params: UnPinAllParams): IMServiceCommon<null> {
     return this._request.send({
       url: '/api/v1/pin/cancelAll',
+      params,
+      method: 'POST',
+    });
+  }
+  blockUser(params: TBlockUserParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/users/block',
+      params,
+      method: 'POST',
+    });
+  }
+  unBlockUser(params: TUnBlockUserParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/users/unBlock',
+      params,
+      method: 'POST',
+    });
+  }
+  checkIsBlocked(params: TCheckIsBlockedParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/users/isBlock',
+      params,
+      method: 'GET',
+    });
+  }
+  fetchBlockedList(): IMServiceCommon<string[]> {
+    return this._request.send({
+      url: '/api/v1/users/blockList',
+      method: 'GET',
+    });
+  }
+  reportMessage(params: TReportMessageParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/users/report',
       params,
       method: 'POST',
     });

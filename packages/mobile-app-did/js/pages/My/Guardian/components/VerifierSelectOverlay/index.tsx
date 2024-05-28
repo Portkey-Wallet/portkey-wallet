@@ -52,7 +52,12 @@ const SelectList = ({ callBack, id, editGuardian }: SelectListProps) => {
                 <View style={styles.itemContent}>
                   <TextL>{item.name}</TextL>
                   {id !== undefined && id === item.id && (
-                    <Svg iconStyle={styles.itemIcon} icon="selected" size={pTd(24)} />
+                    <Svg
+                      iconStyle={styles.itemIcon}
+                      icon="selected"
+                      size={pTd(24)}
+                      color={defaultColors.primaryColor}
+                    />
                   )}
                 </View>
               </View>

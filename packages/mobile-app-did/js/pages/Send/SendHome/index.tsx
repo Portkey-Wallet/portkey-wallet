@@ -11,7 +11,7 @@ import { pTd } from 'utils/unit';
 import ActionSheet from 'components/ActionSheet';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { getAelfAddress, getEntireDIDAelfAddress, isAllowAelfAddress, isCrossChain } from '@portkey-wallet/utils/aelf';
+import { getAelfAddress, getEntireDIDAelfAddress, isCrossChain, isDIDAelfAddress } from '@portkey-wallet/utils/aelf';
 import useDebounce from 'hooks/useDebounce';
 import { useLanguage } from 'i18n/hooks';
 import SelectContact from '../SelectContact';
@@ -203,7 +203,7 @@ const SendHome: React.FC = () => {
     const { address } = selectedToContact || {};
     return (
       checkIsValidEtransferAddress(address) &&
-      !(isAllowAelfAddress(address) && isValidChainId(getAddressChainId(selectedToContact.address, assetInfo.chainId)))
+      !(isDIDAelfAddress(address) && isValidChainId(getAddressChainId(selectedToContact.address, assetInfo.chainId)))
     );
   }, [assetInfo.chainId, isValidChainId, selectedToContact]);
 
@@ -304,7 +304,7 @@ const SendHome: React.FC = () => {
       return false;
     }
 
-    if (!isAllowAelfAddress(selectedToContact.address)) {
+    if (!isDIDAelfAddress(selectedToContact.address)) {
       if (enableEtransfer && checkIsValidEtransferAddress(selectedToContact.address)) {
         setErrorMessage([]);
       } else {

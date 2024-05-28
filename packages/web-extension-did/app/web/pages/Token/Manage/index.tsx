@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Button } from 'antd';
-import SettingHeader from 'pages/components/SettingHeader';
+import CommonHeader from 'components/CommonHeader';
 import CustomSvg from 'components/CustomSvg';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import DropdownSearch from 'components/DropdownSearch';
@@ -101,18 +101,6 @@ export default function AddToken() {
     },
     [handleSearch, setLoading],
     500,
-  );
-
-  const rightElement = useMemo(
-    () => (
-      <div className="flex-center">
-        <Button onClick={handleAddCustomToken} className="custom-token-add-btn">
-          {t('Custom Token')}
-        </Button>
-        <CustomSvg type="Close2" onClick={() => navigate('/')} />
-      </div>
-    ),
-    [handleAddCustomToken, navigate, t],
   );
 
   const handleUserTokenDisplay = useCallback(
@@ -248,7 +236,11 @@ export default function AddToken() {
     return (
       <div className={clsx(['add-token', isPrompt && 'detail-page-prompt'])}>
         <div className="add-token-top">
-          <SettingHeader title={t('Add tokens')} leftCallBack={() => navigate('/')} rightElement={rightElement} />
+          <CommonHeader
+            title={t('Add tokens')}
+            onLeftBack={() => navigate('/')}
+            rightElementList={[{ customSvgType: 'SuggestAdd', onClick: handleAddCustomToken }]}
+          />
           <DropdownSearch
             overlay={<></>}
             value={filterWord}
@@ -265,7 +257,7 @@ export default function AddToken() {
         {renderTokenList}
       </div>
     );
-  }, [filterWord, isPrompt, navigate, renderTokenList, rightElement, searchDebounce, t]);
+  }, [filterWord, handleAddCustomToken, isPrompt, navigate, renderTokenList, searchDebounce, t]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

@@ -1,6 +1,5 @@
 import { BaseHeaderProps } from 'types/UI';
-import BackHeader from 'components/BackHeader';
-import CustomSvg from 'components/CustomSvg';
+import CommonHeader from 'components/CommonHeader';
 import './index.less';
 import TransferSettingsEditBody, { ITransferSettingsEditBodyProps } from '../../components/TransferSettingsEditBody';
 
@@ -20,13 +19,7 @@ export default function TransferSettingsEditPopup({
 }: BaseHeaderProps & ITransferSettingsEditBodyProps) {
   return (
     <div className="transfer-settings-edit-popup min-width-max-height">
-      <div className="popup-header-wrap">
-        <BackHeader
-          title={headerTitle}
-          leftCallBack={goBack}
-          rightElement={<CustomSvg type="Close2" onClick={goBack} />}
-        />
-      </div>
+      <CommonHeader className="popup-header-wrap" title={headerTitle} onLeftBack={goBack} />
       <TransferSettingsEditBody
         form={form}
         restrictedValue={restrictedValue}

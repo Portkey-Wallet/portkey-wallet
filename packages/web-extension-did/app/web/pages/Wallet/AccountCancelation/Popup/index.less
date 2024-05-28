@@ -1,16 +1,11 @@
-@import '../../../../assets/theme/color.less';
+@import '../../../../assets/theme/constants.less';
 
 .account-cancelation-popup {
   width: 100%;
   min-width: 360px;
   height: 100%;
-  .nav-header {
-    padding-top: 16px;
-    background: @bg-13;
-    border-bottom: 1px solid @border-2;
-  }
 
   .account-cancelation-body {
-    height: calc(100% - 97px);
+    height: calc(100% - @common-header-height);
   };
 }

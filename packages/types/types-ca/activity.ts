@@ -29,6 +29,18 @@ export type ActivityItemType = {
   listIcon?: string;
   isDelegated?: boolean;
   isSystem?: boolean;
+  operations?: TDappOperations[];
+  dappName?: string;
+  dappIcon?: string;
+};
+
+export type TDappOperations = {
+  symbol: string;
+  amount: string;
+  decimals: string;
+  icon?: string;
+  isReceived: true;
+  nftInfo?: NftInfo;
 };
 
 export type NftInfo = {

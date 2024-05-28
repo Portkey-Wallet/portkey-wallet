@@ -76,7 +76,7 @@ export default function Biometric() {
     [setBiometrics],
   );
   return (
-    <PageContainer containerStyles={styles.containerStyles} safeAreaColor={['blue', 'gray']} titleDom={t('Biometric')}>
+    <PageContainer containerStyles={styles.containerStyles} safeAreaColor={['white', 'gray']} titleDom={t('Biometric')}>
       {biometricsReady && (
         <>
           <ListItem

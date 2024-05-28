@@ -13,6 +13,7 @@ import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { TextStyleType, ViewStyleType } from 'types/styles';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import { defaultColors } from 'assets/theme';
 
 export type TTopViewProps = { chainId: ChainId; style?: ViewStyleType; textStyle?: TextStyleType };
 
@@ -60,7 +61,11 @@ function ReceiveTip({ chainId, style }: TTopViewProps) {
       <TipView chainId={chainId} style={style} />
       <View style={[GStyles.flexRow, GStyles.itemCenter, styles.selectBox]}>
         <Touchable style={GStyles.paddingRight(pTd(8))} onPress={() => setSelected(v => !v)}>
-          <Svg icon={selected ? 'selected' : 'unselected'} size={pTd(20)} />
+          <Svg
+            icon={selected ? 'selected' : 'unselected'}
+            size={pTd(20)}
+            color={selected ? defaultColors.primaryColor : undefined}
+          />
         </Touchable>
         <TextM style={GStyles.flex1}>{`Don't show this again`}</TextM>
       </View>

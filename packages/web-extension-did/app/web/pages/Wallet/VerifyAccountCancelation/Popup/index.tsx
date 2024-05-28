@@ -1,11 +1,11 @@
 import { IVerifyAccountCancel } from '..';
-import BackHeader from 'components/BackHeader';
+import CommonHeader from 'components/CommonHeader';
 import './index.less';
 
 export default function VerifyAccountCancelPopup({ headerTitle = '', onBack, renderContent }: IVerifyAccountCancel) {
   return (
     <div className="verify-account-cancel-popup">
-      <BackHeader title={headerTitle} leftCallBack={onBack} />
+      <CommonHeader title={headerTitle} onLeftBack={onBack} />
       {renderContent}
     </div>
   );

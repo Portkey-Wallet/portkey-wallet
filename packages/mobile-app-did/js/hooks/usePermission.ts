@@ -6,6 +6,7 @@ import { useCallback } from 'react';
 import { useAppDispatch } from 'store/hooks';
 import { requestUserNotifyPermission } from 'utils/FCM';
 import { openSettings } from 'react-native-permissions';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 export default function useRequestNotifyPermission() {
   const dispatch = useAppDispatch();
@@ -21,7 +22,7 @@ export default function useRequestNotifyPermission() {
     openSettings();
   }, []);
 
-  return useCallback(async (): Promise<boolean> => {
+  return useLockCallback(async (): Promise<boolean> => {
     if (settings.closeNotificationsModalTime) return false;
 
     const isPermissionOK = await requestUserNotifyPermission();

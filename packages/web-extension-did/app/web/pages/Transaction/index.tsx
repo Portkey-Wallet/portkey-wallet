@@ -2,7 +2,6 @@ import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
-import { Transaction } from '@portkey-wallet/types/types-ca/trade';
 import { getExploreLink } from '@portkey-wallet/utils';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import {
@@ -32,6 +31,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { ITransactionLocationState, THomePageLocationState } from 'types/router';
 import { getSeedTypeTag } from 'utils/assets';
+import CommonHeader, { CustomSvgPlaceholderSize } from 'components/CommonHeader';
 
 export default function Transaction() {
   const { t } = useTranslation();
@@ -291,19 +291,27 @@ export default function Transaction() {
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['transaction-detail-modal', isPrompt && 'detail-page-prompt'])}>
-        <div className="transaction-detail-body">
-          <div className="header">
-            <CustomSvg type="Close2" onClick={onClose} />
-          </div>
-          <div className="transaction-info">
-            <div className="method-wrap">
-              <p className="method-name">{activityItem?.transactionName}</p>
-              {isNft ? nftHeaderUI() : tokenHeaderUI()}
+        <div>
+          <CommonHeader
+            rightElementList={[
+              {
+                customSvgType: 'SuggestClose',
+                customSvgPlaceholderSize: CustomSvgPlaceholderSize.MD,
+                onClick: onClose,
+              },
+            ]}
+          />
+          <div className="transaction-detail-body">
+            <div className="transaction-info">
+              <div className="method-wrap">
+                <p className="method-name">{activityItem?.transactionName}</p>
+                {isNft ? nftHeaderUI() : tokenHeaderUI()}
+              </div>
+              {statusAndDateUI()}
+              {fromToUI()}
+              {networkUI()}
+              {transactionUI()}
             </div>
-            {statusAndDateUI()}
-            {fromToUI()}
-            {networkUI()}
-            {transactionUI()}
           </div>
         </div>
         <div className="transaction-footer">

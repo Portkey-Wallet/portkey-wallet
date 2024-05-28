@@ -44,10 +44,7 @@ const styles = StyleSheet.create({
     height: pTd(48),
     borderBottomColor: defaultColors.border6,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    shadowColor: defaultColors.shadow1,
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 2,
+    marginTop: -StyleSheet.hairlineWidth,
   },
   closeIconWrap: {
     position: 'absolute',

@@ -45,7 +45,7 @@ export const Item: React.FC<TItemProps> = ({ value = '', item, callBack }) => {
           <TextL>{`${item.countryName || ''} - ${item.symbol}`}</TextL>
 
           {value !== undefined && value === `${item.country}_${item.symbol}` && (
-            <Svg iconStyle={styles.itemIcon} icon="selected" size={pTd(24)} />
+            <Svg iconStyle={styles.itemIcon} icon="selected" size={pTd(24)} color={defaultColors.primaryColor} />
           )}
         </View>
       </View>

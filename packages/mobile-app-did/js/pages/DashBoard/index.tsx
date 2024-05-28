@@ -87,14 +87,14 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
           if (!(await qrScanPermissionAndToast())) return;
           navigationService.navigate('QrScanner');
         }}>
-        <Svg icon="scan" size={22} color={defaultColors.font8} />
+        <Svg icon="scan" size={pTd(22)} color={defaultColors.font8} />
       </Touchable>
     );
   }, [qrScanPermissionAndToast]);
 
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.white]}>
-      <CustomHeader titleDom={titleDom} rightDom={rightDom} />
+      <CustomHeader titleDom={titleDom} rightDom={rightDom} noLeftDom={true} />
       <NestedScrollView>
         {React.cloneElement(
           <NestedScrollViewHeader
@@ -119,6 +119,8 @@ const styles = StyleSheet.create({
     padding: pTd(16),
   },
   title: {
+    height: pTd(44),
+    lineHeight: pTd(44),
     color: defaultColors.bg31,
     fontWeight: 'bold',
     ...fonts.mediumFont,

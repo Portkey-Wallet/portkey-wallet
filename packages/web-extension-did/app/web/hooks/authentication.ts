@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { VerifyTokenParams } from '@portkey-wallet/types/types-ca/authentication';
+import { ReportUnsetLoginGuardianProps, VerifyTokenParams } from '@portkey-wallet/types/types-ca/authentication';
 import {
   getGoogleUserInfo,
   parseAppleIdentityToken,
@@ -131,6 +131,15 @@ export function useVerifyFacebook() {
   );
 }
 
+export function useReportUnsetLoginGuardian() {
+  return useCallback(async (params: ReportUnsetLoginGuardianProps): Promise<boolean> => {
+    const res = await request.verify.reportUnsetLoginGuardian({
+      params: { ...params },
+    });
+    return !!res;
+  }, []);
+}
+
 export function useVerifyToken() {
   const verifyGoogleToken = useVerifyGoogleToken();
   const verifyAppleToken = useVerifyAppleToken();
@@ -180,11 +189,14 @@ export function useAuthSocialAccountInfo(type: ISocialLogin) {
     }
     if (type === 'Twitter') {
       userInfo = parseTwitterToken(identityToken) ?? {};
+      identityToken = userInfo.accessToken;
     }
     if (type === 'Facebook') {
       userInfo = (await parseFacebookToken(identityToken)) ?? {};
       identityToken = userInfo.accessToken;
     }
+
+    console.log('===', identityToken, userInfo);
 
     return {
       identityToken,

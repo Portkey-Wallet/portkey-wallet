@@ -1,5 +1,4 @@
-import BackHeader from 'components/BackHeader';
-import CustomSvg from 'components/CustomSvg';
+import CommonHeader from 'components/CommonHeader';
 import SetNewPinForm from 'pages/AccountSetting/components/SetNewPinForm';
 import { ISetNewPinProps } from '..';
 import './index.less';
@@ -15,13 +14,7 @@ export default function SetNewPinPopup({
 }: ISetNewPinProps) {
   return (
     <div className="set-new-pin-popup min-width-max-height">
-      <div className="set-pin-title">
-        <BackHeader
-          title={headerTitle}
-          leftCallBack={goBack}
-          rightElement={<CustomSvg type="Close2" onClick={goBack} />}
-        />
-      </div>
+      <CommonHeader title={headerTitle} onLeftBack={goBack} />
       <SetNewPinForm
         form={form}
         setPinLabel={setPinLabel}

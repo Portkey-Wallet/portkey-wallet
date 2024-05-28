@@ -33,6 +33,10 @@ export const BGStyles = StyleSheet.create({
 });
 
 export const FontStyles = StyleSheet.create({
+  primaryColor: { color: defaultColors.primaryColor },
+  primaryTextColor: { color: defaultColors.primaryTextColor },
+  secondaryTextColor: { color: defaultColors.secondaryTextColor },
+
   font1: { color: defaultColors.font1 },
   font2: { color: defaultColors.font2 },
   font3: { color: defaultColors.font3 },
@@ -49,6 +53,14 @@ export const FontStyles = StyleSheet.create({
   font14: { color: defaultColors.font14 },
   font15: { color: defaultColors.font15 },
   font16: { color: defaultColors.font16 },
+  font17: { color: defaultColors.font17 },
+  font18: { color: defaultColors.font18 },
+  font19: { color: defaultColors.font19 },
+  font20: { color: defaultColors.font20 },
+  font21: { color: defaultColors.font21 },
+  font22: { color: defaultColors.font22 },
+
+  white: { color: defaultColors.white },
 
   error: { color: defaultColors.error },
   weight500: fonts.mediumFont,
@@ -66,4 +78,7 @@ export const BorderStyles = StyleSheet.create({
   border5: { borderColor: defaultColors.border5 },
   border6: { borderColor: defaultColors.border6 },
   border7: { borderColor: defaultColors.border7 },
+  border8: { borderColor: defaultColors.border8 },
+  border9: { borderColor: defaultColors.border9 },
+  border10: { borderColor: defaultColors.border10 },
 });

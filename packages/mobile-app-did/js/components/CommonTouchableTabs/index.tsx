@@ -38,7 +38,7 @@ export default function CommonTouchableTabs<T>({
     <View style={[styles.tabHeader, tabHeaderStyle]}>
       {tabList.map(tabItem => {
         const selectedTab = selectTab === tabItem.type;
-        const tabTitleStyles: TextStyleType = [FontStyles.font7];
+        const tabTitleStyles: TextStyleType = [FontStyles.font11];
         if (tabTextStyle) tabTitleStyles.push(tabTextStyle);
         if (selectedTab) {
           tabTitleStyles.push(styles.selectTabTextStyle);
@@ -60,12 +60,11 @@ export default function CommonTouchableTabs<T>({
 
 const styles = StyleSheet.create({
   tabHeader: {
-    backgroundColor: defaultColors.bg18,
+    backgroundColor: defaultColors.bg6,
     borderRadius: pTd(6),
     flexDirection: 'row',
     justifyContent: 'space-between',
     ...GStyles.paddingArg(3),
-    marginBottom: pTd(32),
   },
   tabWrap: {
     flex: 1,

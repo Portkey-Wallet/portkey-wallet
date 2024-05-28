@@ -20,6 +20,9 @@ import {
   formatNameWithRules,
   formatStr2EllipsisStr,
 } from '@portkey-wallet/utils';
+import myEvents from 'utils/deviceEvent';
+import NoData from 'components/NoData';
+import { useLanguage } from 'i18n/hooks';
 
 enum Layers {
   LAYER1,
@@ -37,6 +40,7 @@ type OnSelectNetworkCallback = (network: TNetworkItem) => void;
 export const SelectNetworkModal = (
   props: ISelectBaseProps & { isPay?: boolean; onResolve: OnSelectFinishCallback; onReject: (reason?: any) => void },
 ) => {
+  const { t } = useLanguage();
   const { networkList, currentToken, currentNetwork, onResolve, onReject, isPay = false } = props;
   const [layer, setLayer] = useState(Layers.LAYER1);
   const { symbol } = currentToken;
@@ -49,6 +53,7 @@ export const SelectNetworkModal = (
   }, [networkList]);
   const topTwoNetworks = useMemo(() => {
     const arr: TNetworkItem[] = [];
+    if (!isPay) return networkList.slice(0, 2);
     if (lastTimeTargetNetwork) {
       if (isNetworkItemEqual(lastTimeTargetNetwork, currentNetwork)) {
         arr.push(currentNetwork);
@@ -62,7 +67,7 @@ export const SelectNetworkModal = (
       arr.push(networkList.find(it => !isNetworkItemEqual(it, currentNetwork)) || networkList[0]);
     }
     return arr;
-  }, [currentNetwork, lastTimeTargetNetwork, networkList]);
+  }, [currentNetwork, isPay, lastTimeTargetNetwork, networkList]);
   const onNetworkBtnClick = useCallback((type: FocusedOnType, networkItem?: TNetworkItem) => {
     setFocusedOn(type);
     if (type === FocusedOnType.TopTwo) {
@@ -72,7 +77,9 @@ export const SelectNetworkModal = (
     }
   }, []);
   const { networkAndTokenData, updateNetworkAndTokenData } = useMemoNetworkAndTokenData();
-
+  const noData = useMemo(() => {
+    return <NoData noPic message={t('No Data')} />;
+  }, [t]);
   useEffect(() => {
     if (!networkList) return;
     const type = isPay ? 'from' : 'to';
@@ -151,59 +158,84 @@ export const SelectNetworkModal = (
       style={gStyle.overlayStyle}
       title={layer === Layers.LAYER1 ? (isPay ? 'Pay' : 'Receive') : 'Select Network'}
       modalBodyType="bottom">
-      {layer === Layers.LAYER1 && (
-        <View style={[styles.container]}>
+      {layer === Layers.LAYER1 ? (
+        <View style={styles.container}>
           <View style={styles.layerBlock}>
             <Text style={styles.layerBlockTitle}>{'Select a network'}</Text>
             <View style={styles.networkBtnLine}>{networkBtns}</View>
           </View>
-          <View style={styles.layerBlock}>
-            <Text style={styles.layerBlockTitle}>{'Select a token'}</Text>
-            <FlatList
-              style={styles.list}
-              data={networkAndTokenData}
-              keyExtractor={(item, index) => `${item.network.network}-${index}`}
-              renderItem={({ item }) => (
-                <TokenListItem
-                  item={item.token}
-                  onSelect={onResolve}
-                  underNetwork={item.network}
-                  isReceive={!isPay}
-                  isShowAll={focusedOn === FocusedOnType.All}
-                />
-              )}
-            />
-          </View>
+          <Text style={styles.layerBlockTitle}>{'Select a token'}</Text>
+        </View>
+      ) : (
+        <View style={[styles.wrap, styles.flex]}>
+          <Svg icon="more-info" size={pTd(16)} iconStyle={styles.icon} color={defaultColors.bg30} />
+          <Text
+            style={
+              styles.commonText
+            }>{`Note: Please select from the supported networks listed below. Sending ${formatNameWithRules(symbol, [
+            FormatNameRuleList.NO_UNDERLINE,
+          ])} from other networks may result in the loss of your assets.`}</Text>
         </View>
       )}
-      {layer === Layers.LAYER2 && (
-        <View>
-          <View style={[styles.wrap, styles.flex]}>
-            <Svg icon="more-info" size={pTd(16)} iconStyle={styles.icon} color={defaultColors.bg30} />
-            <Text
-              style={
-                styles.commonText
-              }>{`Note: Please select from the supported networks listed below. Sending ${formatNameWithRules(symbol, [
-              FormatNameRuleList.NO_UNDERLINE,
-            ])} from other networks may result in the loss of your assets.`}</Text>
-          </View>
-          <FlatList
-            data={networkList}
-            style={styles.list}
-            keyExtractor={(item, index) => `${item.network}-${index}`}
-            renderItem={({ item }) => (
-              <NetworkListItem
-                item={item}
-                onSelect={network => {
-                  setCurrentChoosingNetwork(network);
-                  setLastTimeTargetNetwork(network);
-                  setFocusedOn(FocusedOnType.TopTwo);
-                  setLayer(Layers.LAYER1);
-                }}
-              />
-            )}
-          />
-        </View>
+      {layer === Layers.LAYER1 ? (
+        <FlatList
+          onLayout={e => {
+            myEvents.nestScrollViewLayout.emit(e.nativeEvent.layout);
+          }}
+          style={styles.tokenList}
+          data={networkAndTokenData}
+          disableScrollViewPanResponder={true}
+          onScroll={({ nativeEvent }) => {
+            const {
+              contentOffset: { y: scrollY },
+            } = nativeEvent;
+            if (scrollY <= 0) {
+              myEvents.nestScrollViewScrolledTop.emit();
+            }
+          }}
+          keyExtractor={(item, index) => `${item.network.network}-${index}`}
+          renderItem={({ item }) => (
+            <TokenListItem
+              item={item.token}
+              onSelect={onResolve}
+              key={`${item.token.symbol}-${item.network.network}`}
+              underNetwork={item.network}
+              isReceive={!isPay}
+              isShowAll={focusedOn === FocusedOnType.All}
+            />
+          )}
+        />
+      ) : (
+        <FlatList
+          onLayout={e => {
+            myEvents.nestScrollViewLayout.emit(e.nativeEvent.layout);
+          }}
+          data={networkList}
+          style={styles.networkList}
+          disableScrollViewPanResponder={true}
+          onScroll={({ nativeEvent }) => {
+            const {
+              contentOffset: { y: scrollY },
+            } = nativeEvent;
+            if (scrollY <= 0) {
+              myEvents.nestScrollViewScrolledTop.emit();
+            }
+          }}
+          ListEmptyComponent={noData}
+          keyExtractor={(item, index) => `${item.network}-${index}`}
+          renderItem={({ item }) => (
+            <NetworkListItem
+              item={item}
+              key={`${item.network}-${item.name}`}
+              onSelect={network => {
+                setCurrentChoosingNetwork(network);
+                setLastTimeTargetNetwork(network);
+                setFocusedOn(FocusedOnType.TopTwo);
+                setLayer(Layers.LAYER1);
+              }}
+            />
+          )}
+        />
       )}
     </ModalBody>
   );
@@ -373,11 +405,12 @@ const isNetworkItemEqual = (a: TNetworkItem, b: TNetworkItem) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'flex-start',
     paddingHorizontal: pTd(16),
   },
-  list: { width: '100%' },
+  tokenList: { width: '100%', paddingHorizontal: pTd(16), flex: 1 },
+  networkList: { width: '100%', flex: 1 },
   layerBlock: {
     flexDirection: 'column',
     justifyContent: 'center',

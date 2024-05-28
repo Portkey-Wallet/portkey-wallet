@@ -34,7 +34,7 @@ export default function Receive() {
   const { chainId, symbol, targetScene } = tokenItem;
   const currentWallet = useCurrentWalletInfo();
   const [selectTab, setSelectTab] = useState<ReceivePageTabType>(targetScene || ReceivePageTabType.QR_CODE);
-  const { buy, deposit } = checkEnabledFunctionalTypes(symbol, chainId === 'AELF');
+  const { buy, deposit, exchange } = checkEnabledFunctionalTypes(symbol, chainId === 'AELF');
   const isETransToken = useMemo(() => ETransTokenList.includes(symbol), [symbol]);
   const isMainnet = useIsMainnet();
   const { isETransDepositShow } = useAppETransShow();
@@ -52,14 +52,14 @@ export default function Receive() {
     const tabList: TabItemType<ReceivePageTabType>[] = [{ name: t('QR Code'), type: ReceivePageTabType.QR_CODE }];
     if (isDepositShow || targetScene === ReceivePageTabType.DEPOSIT) {
       tabList.push({ name: t('Deposit'), type: ReceivePageTabType.DEPOSIT });
-    } else {
+    } else if (exchange) {
       tabList.push({ name: t('Exchanges'), type: ReceivePageTabType.EXCHANGES });
     }
     if (isBuyButtonShow || targetScene === ReceivePageTabType.BUY) {
       tabList.push({ name: t('Buy'), type: ReceivePageTabType.BUY });
     }
     return tabList;
-  }, [isBuyButtonShow, isDepositShow, t, targetScene]);
+  }, [exchange, isBuyButtonShow, isDepositShow, t, targetScene]);
 
   const currentCaAddress = currentWallet?.[chainId]?.caAddress;
 
@@ -71,12 +71,12 @@ export default function Receive() {
 
   const OriginalQrCodePage = useCallback(() => {
     return (
-      <View>
+      <View style={styles.qrcodeContainer}>
         <AccountCard toCaAddress={toCaAddress} tokenInfo={tokenItem} style={styles.accountCardStyle} />
 
         <View style={[GStyles.flexCol, GStyles.itemStart, GStyles.spaceBetween, styles.addressWrap]}>
           <TextS style={styles.aelfAddressTitle}>{'Your aelf address'}</TextS>
-          <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween]}>
+          <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, GStyles.width100]}>
             <TextM style={styles.address}>
               {formatStr2EllipsisStr(addressFormat(currentCaAddress, chainId, 'aelf'), 32)}
             </TextM>
@@ -107,12 +107,14 @@ export default function Receive() {
       safeAreaColor={['white']}
       containerStyles={styles.containerStyles}
       scrollViewProps={{ disabled: true }}>
-      <CommonTouchableTabs
-        tabList={tabs}
-        selectTab={selectTab}
-        onTabPress={(type: ReceivePageTabType) => setSelectTab(type)}
-        tabHeaderStyle={styles.tabHeader}
-      />
+      {tabs.length >= 2 && (
+        <CommonTouchableTabs
+          tabList={tabs}
+          selectTab={selectTab}
+          onTabPress={(type: ReceivePageTabType) => setSelectTab(type)}
+          tabHeaderStyle={styles.tabHeader}
+        />
+      )}
       {selectTab === ReceivePageTabType.QR_CODE && <OriginalQrCodePage />}
       {(selectTab === ReceivePageTabType.EXCHANGES || selectTab === ReceivePageTabType.DEPOSIT) && (
         <DepositCard
@@ -122,7 +124,7 @@ export default function Receive() {
         />
       )}
       {selectTab === ReceivePageTabType.BUY && (
-        <View style={GStyles.flex1}>
+        <View style={[GStyles.flex1, styles.buyContainer]}>
           <BuyForm symbol={symbol} />
         </View>
       )}
@@ -145,6 +147,9 @@ const styles = StyleSheet.create({
   },
   tabHeader: {
     marginTop: pTd(16),
+  },
+  qrcodeContainer: {
+    marginTop: pTd(48),
   },
   accountCardStyle: {
     marginTop: pTd(0),
@@ -176,7 +181,12 @@ const styles = StyleSheet.create({
     width: pTd(270),
     color: defaultColors.font5,
     ...fonts.mediumFont,
-    paddingRight: pTd(12),
+  },
+  textRow: {
+    width: '100%',
+  },
+  buyContainer: {
+    marginTop: pTd(24),
   },
 });
 

@@ -267,10 +267,18 @@ export const useDeposit = (initToToken: TTokenItem, initChainId: ChainId, manage
           symbol: fromToken?.symbol,
         });
         if (networkList && networkList.length > 0) {
-          setFromNetwork(networkList[0]);
+          if (fromNetwork) {
+            const targetNetwork = networkList.find(network => network.network === fromNetwork.network);
+            if (!targetNetwork) {
+              setFromNetwork(networkList[0]);
+            }
+          } else {
+            setFromNetwork(networkList[0]);
+          }
         }
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fromToken, toChainId]);
 
   const setFrom = useCallback(

@@ -1,6 +1,5 @@
 @import '../../../../assets/theme/color.less';
 
-.deposit-select-network-container,
 .deposit-select-network-container * {
   box-sizing: border-box;
   overflow: hidden;
@@ -19,15 +18,9 @@ button {
   align-items: center;
   position: relative;
   margin: 0 auto;
-  padding: 0 0 50px;
   width: inherit;
-  max-width: 440px;
-  min-width: 360px;
-  height: calc(100vh - 72px);
-  max-height: 884px;
-  min-height: 624px;
   background: @neutral-default-bg;
-  overflow: hidden;
+  overflow: auto;
   .group {
     display: flex;
     align-items: center;
@@ -101,8 +94,8 @@ button {
       flex-shrink: 0;
       position: relative;
       z-index: 14;
+      padding-bottom: 24px;
       .portkey-list-items {
-        max-height: 656px;
         overflow: auto;
       }
       .portkey-list, .portkey-spin-nested-loading, .portkey-spin-container, .portkey-list-items {

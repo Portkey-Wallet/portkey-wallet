@@ -193,9 +193,36 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
           const tokenListForAll: TExtendedTokenItem[] = [];
           tokenList.forEach((item) => {
             const { networkList, ...rest } = item;
-            const divideArray = networkList?.map((item) => ({ ...rest, network: { ...item } })) || [];
+            const divideArray =
+              networkList?.map((item) => ({
+                ...rest,
+                network: {
+                  ...item,
+                  contractAddress:
+                    drawerType === 'to'
+                      ? `${item.network === 'AELF' ? 'MainChain' : 'SideChain'} ${item.network}`
+                      : item.contractAddress,
+                },
+              })) || [];
             tokenListForAll.push(...divideArray);
           });
+
+          if (drawerType === 'to') {
+            // sort
+            tokenListForAll.sort((a, b) => {
+              const networkA = a.network?.network;
+              const networkB = b.network?.network;
+
+              if (networkA === 'AELF' && networkB !== 'AELF') {
+                return -1;
+              } else if (networkA !== 'AELF' && networkB === 'AELF') {
+                return 1;
+              } else {
+                return 0;
+              }
+            });
+          }
+
           setCurrentTokenList(tokenListForAll);
         } else {
           // const tempUpdatedTokenList = tokenList.map(({ networkList, ...rest }) => rest);
@@ -228,13 +255,19 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
         setLoading(false);
       }
     },
-    [drawerType, setLoading, toChainId],
+    [drawerType, setLoading],
   );
   console.log('wfs selectedNetworkIndex===', selectedNetworkIndex);
-  const contractAddressShow = useCallback((token: TExtendedTokenItem) => {
-    const contractAddress = token.network ? token.network.contractAddress : token.contractAddress;
-    return contractAddress?.slice(0, 6) + '...' + contractAddress?.slice(-6);
-  }, []);
+  const contractAddressShow = useCallback(
+    (token: TExtendedTokenItem) => {
+      const contractAddress = token.network ? token.network.contractAddress : token.contractAddress;
+      if (drawerType === 'to') {
+        return contractAddress;
+      }
+      return contractAddress?.slice(0, 6) + '...' + contractAddress?.slice(-6);
+    },
+    [drawerType],
+  );
   const selectNetworkEle = useMemo(() => {
     return (
       <div className="select-network-container">
@@ -278,7 +311,7 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
   }, [showNetworkList, drawerType, networkListSize, selectedNetworkIndex, handleNetworkChange, onMoreClicked]);
   const selectTokenEle = useMemo(() => {
     return (
-      <div className="select-token-container">
+      <div className="select-token-container flex-1">
         <div className="select-token-title">
           <span className="select-token">Select a Token</span>
         </div>
@@ -295,7 +328,11 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
                     console.log('click item!!', token);
                     onItemClicked?.(token);
                   }}>
-                  <div className="item-container">
+                  <div
+                    className={clsx(
+                      'item-container',
+                      selectedNetworkIndex !== ALL_INDEX && drawerType === 'to' && 'single-select',
+                    )}>
                     <div className="item-wrapper">
                       <div className="icon-wrapper">
                         <img src={token.icon} alt="TokenSymbol" width="36" height="36" />
@@ -323,10 +360,10 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
         )}
       </div>
     );
-  }, [contractAddressShow, currentTokenList, onItemClicked, selectedNetworkIndex]);
+  }, [contractAddressShow, currentTokenList, drawerType, onItemClicked, selectedNetworkIndex]);
   const mainContent = useCallback(() => {
     return (
-      <div className="select-token-network-list">
+      <div className={clsx('select-token-network-list', isPrompt ? 'detail-page-prompt' : '')}>
         {headerEle}
         <div className="body">
           {selectNetworkEle}
@@ -334,7 +371,7 @@ function TokenNetworkList(pros: ITokenNetworkListProps) {
         </div>
       </div>
     );
-  }, [headerEle, selectNetworkEle, selectTokenEle]);
+  }, [headerEle, isPrompt, selectNetworkEle, selectTokenEle]);
   return <>{isPrompt && type === 'page' ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }
 export default memo(TokenNetworkList, (prev, next) => {

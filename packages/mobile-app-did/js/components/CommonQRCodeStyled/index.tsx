@@ -44,8 +44,8 @@ export default function CommonQRCodeStyled(props: CommonQRCodeStyledPropsType) {
         color={'#000000'}
         logo={{
           href: portkeyLogo,
-          scale: 1.5,
-          padding: pTd(5),
+          scale: 1.8,
+          padding: pTd(0),
           hidePieces: false,
         }}
         outerEyesOptions={{

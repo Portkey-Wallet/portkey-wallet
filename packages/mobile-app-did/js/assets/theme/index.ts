@@ -116,7 +116,7 @@ export const defaultColors = {
   functionalRedLight: '#FFEEEE',
 
   primaryTextColor: '#101114',
-  secondaryTextColor: '#101114',
+  secondaryTextColor: '#55585E',
 };
 
 export const AELFColors = {

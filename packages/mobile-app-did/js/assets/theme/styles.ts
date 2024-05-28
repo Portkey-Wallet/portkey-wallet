@@ -34,6 +34,9 @@ export const BGStyles = StyleSheet.create({
 
 export const FontStyles = StyleSheet.create({
   primaryColor: { color: defaultColors.primaryColor },
+  primaryTextColor: { color: defaultColors.primaryTextColor },
+  secondaryTextColor: { color: defaultColors.secondaryTextColor },
+
   font1: { color: defaultColors.font1 },
   font2: { color: defaultColors.font2 },
   font3: { color: defaultColors.font3 },

@@ -11,7 +11,7 @@ import { DEFAULT_DECIMAL, DEFAULT_NFT_DECIMAL } from '@portkey-wallet/constants/
 import { LANG_MAX } from '@portkey-wallet/constants/misc';
 import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
 import { request } from '@portkey-wallet/api/api-did';
-import { isNFT, isNFTCollection } from 'utils';
+import { isNFT, isNFTCollection } from '@portkey-wallet/utils/token';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import getSeed from 'utils/getSeed';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';

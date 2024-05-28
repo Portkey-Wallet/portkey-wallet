@@ -2,7 +2,7 @@ export const ALLOWANCE_HEADER = `DAPP_NAME is requesting access to your token`;
 
 export const ALLOWANCE_HEADER_NO_NAME = `Request for access to your token`;
 
-export const ALLOWANCE_DESC = `To ensure asset security, please customise an allowance for this dApp. Until this allowance is exhausted, the dApp will not request your approval to utilise the specified token. You have the option to adjust these settings once the allowance is depleted.`;
+export const ALLOWANCE_DESC = `To ensure asset security, please customize an allowance for this dApp. Until this allowance is exhausted, the dApp will not request your approval to utilize`;
 
 export const SET_ALLOWANCE_BTN_TEXT = `Approve multiple tokens at the same time`;
 

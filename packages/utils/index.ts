@@ -192,7 +192,7 @@ export const formatStr2EllipsisStr = (address = '', digit = 8, type: 'middle' | 
 
   const len = address.length;
 
-  if (type === 'tail') return `${address.slice(0, digit)}...`;
+  if (type === 'tail') return len > digit ? `${address.slice(0, digit)}...` : address;
 
   if (len < 2 * digit) return address;
   const pre = address.substring(0, digit);

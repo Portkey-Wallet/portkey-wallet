@@ -16,7 +16,7 @@ import { VerificationType } from '@portkey-wallet/types/verifier';
 import { isWalletError } from '@portkey-wallet/store/wallet/utils';
 import { useHardwareBack } from 'hooks/useHardwareBack';
 import { setPasswordSeed } from 'store/reducers/user/slice';
-import { CAInfoType, LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { CAInfoType, LoginMethod, LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { sendScanLoginSuccess } from '@portkey-wallet/api/api-did/message/utils';
 import ModalTip from 'pages/components/ModalTip';
 import './index.less';
@@ -36,6 +36,7 @@ import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SetPinAndAddManager from 'pages/components/SetPinAndAddManager';
+import googleAnalytics from 'utils/googleAnalytics';
 
 export default function SetWalletPin() {
   const { t } = useTranslation();
@@ -111,7 +112,29 @@ export default function SetWalletPin() {
   const onCreate = useDebounceCallback(
     async (value: DIDWalletInfo | string) => {
       try {
-        if (state === 'scan' && typeof value === 'string') return createByScan(value);
+        try {
+          let loginMethod = LoginMethod.SocialRecovery;
+          switch (state) {
+            case 'register':
+              loginMethod = LoginMethod.Signup;
+              break;
+            case 'scan':
+              loginMethod = LoginMethod.Scan;
+              break;
+            case 'login':
+            default:
+              loginMethod = LoginMethod.SocialRecovery;
+              break;
+          }
+          googleAnalytics.loginEndEvent(loginMethod);
+        } catch (error) {
+          console.error('loginEndEvent:', error);
+        }
+
+        if (state === 'scan' && typeof value === 'string') {
+          return createByScan(value);
+        }
+
         if (typeof value !== 'object') return;
         const result = await getHolderInfo({
           chainId: originChainId,
@@ -147,7 +170,7 @@ export default function SetWalletPin() {
         setLoading(false);
       }
     },
-    [state, createByScan, originChainId, dispatch, navigate, setLoading],
+    [state, originChainId, dispatch, navigate, setLoading, currentNetwork, createByScan],
     500,
   );
 
@@ -217,6 +240,8 @@ export default function SetWalletPin() {
         if (!pendingInfo.current) return;
         const errorString = handleErrorMessage(error.error);
         if (errorString?.includes('ManagerInfo exists')) {
+          googleAnalytics.loginEndEvent(state === 'login' ? LoginMethod.SocialRecovery : LoginMethod.Signup);
+
           const isSuccess = await distributeFail({
             messageStr: errorString,
             managerAddress: pendingInfo.current.walletInfo.address,

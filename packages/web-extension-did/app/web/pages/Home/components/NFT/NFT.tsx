@@ -20,6 +20,8 @@ import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
+import useGAReport from 'hooks/useGAReport';
+import { useEffectOnce } from 'react-use';
 
 export default function NFT() {
   const nav = useNavigate();
@@ -42,14 +44,20 @@ export default function NFT() {
     [maxNftNum],
   );
 
+  const { startReport, endReport } = useGAReport();
+
+  useEffectOnce(() => {
+    startReport('Home-NFTsList');
+  });
+
   useEffect(() => {
     fetchAccountNFTCollectionInfoList({
       maxNFTCount: maxNftNum,
       caAddressInfos,
       skipCount: 0,
       maxResultCount: PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
-    });
-  }, [caAddressInfos, fetchAccountNFTCollectionInfoList, maxNftNum]);
+    }).then(() => endReport('Home-NFTsList'));
+  }, [caAddressInfos, endReport, fetchAccountNFTCollectionInfoList, maxNftNum]);
 
   const getMoreNFTCollection = useCallback(async () => {
     if (accountNFTList.length < totalRecordCount) {

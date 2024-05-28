@@ -27,6 +27,7 @@ import BottomBar from 'pages/components/BottomBar';
 import ChatListHeader from '../components/ChatListHeader';
 import clsx from 'clsx';
 import './index.less';
+import useGAReport from 'hooks/useGAReport';
 
 export default function ChatList() {
   const navigate = useNavigateState<TFindMoreLocationState>();
@@ -126,10 +127,17 @@ export default function ChatList() {
     [hideChannel],
   );
 
+  const { startReport, endReport } = useGAReport();
+
+  useEffectOnce(() => {
+    startReport('ChatList');
+  });
+
   const initChannelList = useCallback(async () => {
     await init();
+    endReport('ChatList');
     setShowGuide(true);
-  }, [init]);
+  }, [endReport, init]);
   useEffectOnce(() => {
     initChannelList();
     joinOfficialGroupTip();

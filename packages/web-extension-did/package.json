@@ -170,7 +170,7 @@
   "author": "hzz780, potter",
   "license": "MIT",
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": "eslint --cache --fix",
+    "*.{jsx,ts,tsx}": "eslint --cache --fix",
     "*.{css,less}": "stylelint --fix"
   }
 }

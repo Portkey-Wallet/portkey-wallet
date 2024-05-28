@@ -1,7 +1,9 @@
 import { addDapp, removeDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
+import { LoginMethod, SocialLoginEnum } from '@portkey-wallet/types/types-ca/wallet';
 import { Button } from 'antd';
 import { useAppDispatch } from 'store/Provider/hooks';
 import { setCountryModal } from 'store/reducers/modal/slice';
+import googleAnalytics from 'utils/googleAnalytics';
 import { clearLocalStorage } from 'utils/storage/chromeStorage';
 
 export default function Example() {
@@ -68,14 +70,17 @@ export default function Example() {
         </Button>
         <Button
           onClick={() => {
-            dispatch(
-              removeDapp({
-                networkType: 'TESTNET',
-                origin: 'http://192.168.11.251:3000',
-              }),
-            );
+            // googleAnalytics.loginEvent('login_tesetttt', { date: Date.now() });
+            googleAnalytics.loginStartEvent(SocialLoginEnum.Apple, { extra: Date.now() });
           }}>
-          removeDapp ip
+          Analytics
+        </Button>
+        <Button
+          onClick={() => {
+            // googleAnalytics.loginEvent('login_tesetttt', { date: Date.now() });
+            googleAnalytics.loginEndEvent(LoginMethod.Signup, { extra: Date.now() });
+          }}>
+          Analytics
         </Button>
       </div>
     </div>

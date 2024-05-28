@@ -11,6 +11,8 @@ import { PAGE_SIZE_IN_ACCOUNT_TOKEN } from '@portkey-wallet/constants/constants-
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import './index.less';
+import { useEffectOnce } from 'react-use';
+import useGAReport from 'hooks/useGAReport';
 
 export default function TokenList() {
   const { t } = useTranslation();
@@ -23,9 +25,17 @@ export default function TokenList() {
     [accountTokenList.length, totalRecordCount],
   );
 
+  const { startReport, endReport } = useGAReport();
+
+  useEffectOnce(() => {
+    startReport('Home-TokenList');
+  });
+
   useEffect(() => {
-    fetchAccountTokenInfoList({ caAddressInfos, skipCount: 0, maxResultCount: PAGE_SIZE_IN_ACCOUNT_TOKEN });
-  }, [caAddressInfos, fetchAccountTokenInfoList]);
+    fetchAccountTokenInfoList({ caAddressInfos, skipCount: 0, maxResultCount: PAGE_SIZE_IN_ACCOUNT_TOKEN }).then(() => {
+      endReport('Home-TokenList');
+    });
+  }, [caAddressInfos, endReport, fetchAccountTokenInfoList]);
 
   const onNavigate = useCallback(
     (tokenInfo: TokenItemShowType) => {

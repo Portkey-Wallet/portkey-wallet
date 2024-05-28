@@ -21,6 +21,7 @@ import { useCommonState } from 'store/Provider/hooks';
 import clsx from 'clsx';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import './index.less';
+import useGAReport from 'hooks/useGAReport';
 
 export interface ICustomTokenListProps {
   onChange?: (v: IAssetItemType, type: 'token' | 'nft') => void;
@@ -69,6 +70,12 @@ export default function CustomTokenList({
   ]);
   useFreshTokenPrice();
 
+  const { startReport, endReport } = useGAReport();
+
+  useEffectOnce(() => {
+    startReport(drawerType === 'send' ? 'Send-TokenList' : 'Receive-TokenList');
+  });
+
   const getInitData = useCallback(async () => {
     try {
       if (drawerType === 'send') {
@@ -90,11 +97,12 @@ export default function CustomTokenList({
     } catch (error) {
       console.log('===getInitData error', error);
     }
+    return drawerType;
   }, [caAddressInfos, chainIdArray, drawerType, fetchAccountAssetsInfoList, fetchTokenInfoList]);
 
   useEffectOnce(() => {
     setFilterWord('');
-    getInitData();
+    getInitData().then((res) => endReport(res === 'send' ? 'Send-TokenList' : 'Receive-TokenList'));
   });
 
   const setData = useCallback(() => {

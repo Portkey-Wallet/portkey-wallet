@@ -126,6 +126,7 @@ export const walletSlice = createSlice({
           state.userInfo = {
             ...state.userInfo,
             [currentNetwork]: {
+              ...(state?.userInfo?.[currentNetwork] || {}),
               nickName,
               userId,
               avatar,

@@ -13,6 +13,7 @@ import {
   useCurrentUserInfo,
   useCurrentWallet,
   useOriginChainId,
+  useSetHideAssets,
 } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
@@ -44,6 +45,7 @@ import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import { RampType } from '@portkey-wallet/ramp';
 import { getDisclaimerData } from 'utils/disclaimer';
 import { TradeTypeEnum } from 'constants/trade';
+import CustomSvg from 'components/CustomSvg';
 
 export interface TransactionResult {
   total: number;
@@ -69,6 +71,7 @@ export default function MyBalance() {
   const { eTransferUrl = '' } = useCurrentNetworkInfo();
   const isFCMEnable = useFCMEnable();
   const { setLoading } = useLoading();
+  const setHideAssets = useSetHideAssets();
 
   const renderTabsData = useMemo(
     () => [
@@ -249,14 +252,46 @@ export default function MyBalance() {
     }
   }, [isPrompt]);
 
+  const renderUsdShow = useCallback(() => {
+    let text = '';
+    let isHideAssets = false;
+    if (isMainNet) {
+      if (userInfo.hideAssets) {
+        text = '******';
+        isHideAssets = true;
+      } else {
+        text = usdShow;
+      }
+    } else {
+      text = 'Dev Mode';
+    }
+    return (
+      <div className="balance-amount-content flex-row-start">
+        <div
+          className={clsx(
+            'balance-amount',
+            text.length > 18 && 'balance-amount-long',
+            isHideAssets && 'balance-amount-hidden',
+          )}>
+          {text}
+        </div>
+        <div className="hide-assets-icon-wrap">
+          <CustomSvg
+            className="hide-assets-icon cursor-pointer"
+            type={userInfo.hideAssets ? 'EyeInvisibleOutlined' : 'EyeOutlined'}
+            onClick={() => setHideAssets(!userInfo.hideAssets)}
+          />
+        </div>
+      </div>
+    );
+  }, [isMainNet, setHideAssets, usdShow, userInfo.hideAssets]);
+
   return (
     <div className={clsx('balance', detailScroll && 'detail-scroll')} onScroll={onBalanceWrapScroll}>
       <div className="main-content-wrap flex-column">
         <div className={clsx('balance-amount-wrap', 'flex-column', isPrompt && 'is-prompt')}>
           <div className="wallet-name">{userInfo.nickName}</div>
-          <div className={clsx('balance-amount', usdShow.length > 18 && 'balance-amount-long')}>
-            {isMainNet ? <span className="amount">{usdShow}</span> : <span className="dev-mode">Dev Mode</span>}
-          </div>
+          {renderUsdShow()}
         </div>
         <MainCards
           onSend={async () => {

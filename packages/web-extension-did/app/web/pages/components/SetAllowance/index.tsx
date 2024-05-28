@@ -103,8 +103,14 @@ export default function SetAllowance({
             onChange={(e) => {
               inputChange(e.target.value);
             }}
-            suffix={<span onClick={() => inputChange(max)}>Max</span>}
+            suffix={
+              <span>
+                <span className={`set-allowance-approve-symbol`}>{approveSymbol}</span>
+                <span onClick={() => inputChange(max)}>Max</span>
+              </span>
+            }
           />
+
           {typeof error !== 'undefined' && <div className="error-text">{error}</div>}
         </div>
 
@@ -120,7 +126,7 @@ export default function SetAllowance({
             if (BigNumber(allowance).lte(0)) return setError('Please enter a non-zero value');
             onConfirm?.({ allowance });
           }}>
-          Pre-uthorize
+          Pre-authorize
         </ThrottleButton>
       </div>
     </div>

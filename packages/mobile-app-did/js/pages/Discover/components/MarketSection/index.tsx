@@ -24,12 +24,9 @@ export interface IMarketSectionProps {
 export default function MarketSection() {
   const { marketInfo, refreshing, refreshList, handleType, handleSort } = useMarket();
   console.log('wfs marketInfo===', marketInfo);
-  const renderItem = useCallback(
-    ({ item }: { item: ICryptoCurrencyItem; index: number }) => {
-      return <MarketItem isLoading={refreshing} item={item} />;
-    },
-    [refreshing],
-  );
+  const renderItem = useCallback(({ item }: { item: ICryptoCurrencyItem; index: number }) => {
+    return <MarketItem isLoading={false} item={item} />;
+  }, []);
   // const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(async () => {
     try {

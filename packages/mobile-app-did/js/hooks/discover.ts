@@ -161,13 +161,12 @@ export const useMarket = () => {
             sortDir,
           },
         });
-        return result.data;
+        console.log('wfs result===', result);
+        return result;
       } catch (e) {
         throw `fetch market data failed,  caused by: ${e}`;
       } finally {
-        setTimeout(() => {
-          setRefreshing(false);
-        }, 1000);
+        setRefreshing(false);
       }
     },
     [],
@@ -245,6 +244,10 @@ export const useMarket = () => {
 };
 export const useMarketFavorite = () => {
   const markFavorite = useCallback(async (id: number, symbol: string) => {
+    console.log('wfs=== markFavorite', {
+      id,
+      symbol,
+    });
     await request.discover.markFavorite({
       params: {
         id,
@@ -253,6 +256,10 @@ export const useMarketFavorite = () => {
     });
   }, []);
   const unMarkFavorite = useCallback(async (id: number, symbol: string) => {
+    console.log('wfs=== unMarkFavorite', {
+      id,
+      symbol,
+    });
     await request.discover.unMarkFavorite({
       params: {
         id,

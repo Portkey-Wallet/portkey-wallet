@@ -32,7 +32,7 @@ export default function MarketItem(props: IMarketItemProps) {
     } else if (item.priceChangePercentage24H < 0) {
       return '-';
     }
-    return '-';
+    return '';
   }, [item.priceChangePercentage24H]);
   return (
     <View style={styles.mainContainer}>
@@ -49,7 +49,8 @@ export default function MarketItem(props: IMarketItemProps) {
               disabled={isDefaultSymbol}
               onPress={() => {
                 onStarClicked?.(!item.collected);
-                if (item.collected) {
+                console.log('wfs=== favorite', favorite);
+                if (favorite) {
                   setFavorite(false);
                   unMarkFavorite(item.id, item.symbol);
                 } else {
@@ -79,7 +80,7 @@ export default function MarketItem(props: IMarketItemProps) {
           </Text>
           <Text style={[styles.text4, FontStyles.functionalRedDefault, styles.section3Width, chgColor]}>
             {prefixChg}
-            {item.priceChangePercentage24H * 100 || 0}%
+            {item.priceChangePercentage24H || 0}%
           </Text>
         </>
       )}

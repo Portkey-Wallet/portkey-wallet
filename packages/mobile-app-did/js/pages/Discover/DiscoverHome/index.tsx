@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet, GestureResponderEvent } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
 import SimulatedInputBox from 'components/SimulatedInputBox';
@@ -10,7 +10,6 @@ import { BGStyles } from 'assets/theme/styles';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
-import { DiscoverArchivedSection } from '../components/DiscoverArchivedSection';
 import { useCheckAndInitNetworkDiscoverMap } from 'hooks/discover';
 import { useFetchCurrentRememberMeBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useFocusEffect } from '@react-navigation/native';
@@ -18,12 +17,36 @@ import Touchable from 'components/Touchable';
 import { TextM } from 'components/CommonText';
 import { DiscoverShowOptions, useTabDrawer } from 'utils/discover';
 import fonts from 'assets/theme/fonts';
+import { useOnTouchAndPopUp } from 'components/FloatOverlay/touch';
+import { ListItemType } from 'components/FloatOverlay/Popover';
+import { ArchivedTabEnum } from '../types';
 
 export default function DiscoverHome() {
   useCheckAndInitNetworkDiscoverMap();
   const fetchCurrentRememberMeBlackList = useFetchCurrentRememberMeBlackList();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const { currentTabLength = 0, showTabDrawer } = useTabDrawer();
+  const jumpToHistory = useCallback(
+    (num: ArchivedTabEnum) => navigationService.navigate('Bookmark', { type: num }),
+    [],
+  );
+  const popUpList = useMemo<ListItemType[]>(() => {
+    return [
+      {
+        title: 'Bookmarks',
+        iconName: 'star',
+        iconColor: defaultColors.icon5,
+        onPress: () => jumpToHistory(ArchivedTabEnum.Bookmarks),
+      },
+      {
+        title: 'Records',
+        iconName: 'history',
+        iconColor: defaultColors.icon5,
+        onPress: () => jumpToHistory(ArchivedTabEnum.History),
+      },
+    ];
+  }, [jumpToHistory]);
+  const onTouch = useOnTouchAndPopUp({ list: popUpList });
 
   const scanQRIcon = useMemo(
     () => <TouchableIcon icon="scan" onPress={qrScanPermissionAndToast} />,
@@ -39,16 +62,8 @@ export default function DiscoverHome() {
   }, [currentTabLength, showTabDrawer]);
 
   const showToolsIcon = useMemo(() => {
-    return (
-      <TouchableIcon
-        icon="more-vertical"
-        onPress={() => {
-          console.log('showTools');
-        }}
-        size={22}
-      />
-    );
-  }, []);
+    return <TouchableIcon icon="more-vertical" onPress={onTouch} size={22} />;
+  }, [onTouch]);
 
   useFocusEffect(
     useCallback(() => {
@@ -64,14 +79,21 @@ export default function DiscoverHome() {
         {showToolsIcon}
       </View>
       <ScrollView style={styles.container}>
-        <DiscoverArchivedSection />
         <DiscoverCmsListSection />
       </ScrollView>
     </SafeAreaBox>
   );
 }
 
-function TouchableIcon({ icon, onPress, size = 20 }: { icon: IconName; onPress: () => void; size?: number }) {
+function TouchableIcon({
+  icon,
+  onPress,
+  size = 20,
+}: {
+  icon: IconName;
+  onPress: (event: GestureResponderEvent) => Promise<any>;
+  size?: number;
+}) {
   return (
     <Touchable style={styles.svgWrap} onPress={onPress}>
       <Svg icon={icon} size={pTd(size)} color={defaultColors.bg34} />
@@ -81,7 +103,7 @@ function TouchableIcon({ icon, onPress, size = 20 }: { icon: IconName; onPress: 
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: defaultColors.bg4,
+    backgroundColor: defaultColors.white,
     paddingTop: pTd(24),
     flex: 1,
   },

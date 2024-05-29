@@ -1,5 +1,4 @@
 import { defaultColors } from 'assets/theme';
-import GStyles from 'assets/theme/GStyles';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { TextM } from 'components/CommonText';
 import Svg from 'components/Svg';
@@ -18,7 +17,7 @@ export default function SimulatedInputBox({ placeholder = 'Search', onClickInput
     <View style={[styles.wrap, BGStyles.white]}>
       <TouchableWithoutFeedback onPress={() => onClickInput?.()}>
         <View style={styles.innerInput}>
-          <Svg icon="search" size={pTd(16)} />
+          <Svg icon="search" size={pTd(20)} />
           <TextM style={[FontStyles.font7, styles.content]}>{placeholder}</TextM>
           {rightDom}
         </View>
@@ -33,7 +32,8 @@ const styles = StyleSheet.create({
   },
   innerInput: {
     height: pTd(36),
-    ...GStyles.paddingArg(7, 17),
+    paddingHorizontal: pTd(12),
+    paddingVertical: pTd(8),
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-start',

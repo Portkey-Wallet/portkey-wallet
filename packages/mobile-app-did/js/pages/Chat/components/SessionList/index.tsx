@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { FlatList, GestureResponderEvent } from 'react-native';
 import { BGStyles } from 'assets/theme/styles';
-import ChatOverlay from '../ChatOverlay';
+import ChatOverlay from '../../../../components/FloatOverlay';
 import ChatHomeListItemSwiped from '../ChatHomeListItemSwiper';
 import { ChannelItem, ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im/types';
 import NoData from 'components/NoData';

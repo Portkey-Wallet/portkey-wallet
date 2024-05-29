@@ -36,6 +36,7 @@ export interface UserInfoType {
   nickName: string;
   userId: string;
   avatar?: string;
+  hideAssets: boolean;
 }
 
 export interface WalletState {

@@ -151,7 +151,7 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken,
             <Text style={styles.addressLabelText}>Deposit Address</Text>
             <View style={styles.addressWrap}>
               <Text style={styles.addressText}>{depositInfo.depositAddress}</Text>
-              <CopyButton copyContent={contractAddress} />
+              <CopyButton copyContent={depositInfo.depositAddress} />
             </View>
           </View>
           {depositInfo.minAmount && (

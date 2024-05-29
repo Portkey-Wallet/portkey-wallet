@@ -114,6 +114,7 @@ const MessageList: FC<IMessageListProps> = ({
           onClickUrl={props?.onClickUrl}
           onClickUnSupportMsg={props?.onClickUnSupportMsg}
           onClickAvatar={props?.onClickAvatar}
+          onReportMsg={props?.onReportMsg}
         />
       );
     });

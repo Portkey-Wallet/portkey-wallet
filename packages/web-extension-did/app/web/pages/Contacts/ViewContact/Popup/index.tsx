@@ -11,6 +11,7 @@ export default function ViewContactPopup({
   chatText,
   addedText,
   addContactText,
+  morePopListData,
   handleEdit,
   handleChat,
   handleAdd,
@@ -27,6 +28,7 @@ export default function ViewContactPopup({
         handleEdit={handleEdit}
         handleChat={handleChat}
         handleAdd={handleAdd}
+        morePopListData={morePopListData}
       />
     </div>
   );

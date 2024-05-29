@@ -14,12 +14,12 @@ export const useSetNewWalletName = ({ caHash, chainId }: { caHash: string; chain
   }, []);
 
   const handleSetNewWalletName = useCallback(async () => {
-    await walletNameService.setNewWalletName({ caHash, chainId, replaceAccount: true });
+    await walletNameService.setNewWalletName({ caHash, chainId, replaceNickname: true });
     await updateShouldData();
   }, [caHash, chainId, updateShouldData]);
 
   const handleCancelSetNewWalletNameModal = useCallback(async () => {
-    await walletNameService.setNewWalletName({ caHash, chainId, replaceAccount: false });
+    await walletNameService.setNewWalletName({ caHash, chainId, replaceNickname: false });
     await updateShouldData();
   }, [caHash, chainId, updateShouldData]);
 

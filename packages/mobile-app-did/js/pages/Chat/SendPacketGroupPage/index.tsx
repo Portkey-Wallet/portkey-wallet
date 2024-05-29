@@ -193,7 +193,12 @@ export default function SendPacketGroupPage() {
       containerStyles={styles.containerStyles}>
       <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.scrollStyle}>
         <View style={[GStyles.flexRow, GStyles.alignCenter]}>
-          <CommonTouchableTabs tabList={tabList} onTabPress={onTabPress} selectTab={selectTab} />
+          <CommonTouchableTabs
+            tabList={tabList}
+            onTabPress={onTabPress}
+            selectTab={selectTab}
+            tabHeaderStyle={styles.tabHeaderStyle}
+          />
         </View>
         <View style={GStyles.flex1}>{tabList.find(item => item.type === selectTab)?.component}</View>
         <TextM style={styles.tips}>
@@ -220,5 +225,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: defaultColors.font3,
     marginBottom: isIOS ? 0 : pTd(16),
+  },
+  tabHeaderStyle: {
+    width: pTd(190),
+    marginBottom: pTd(32),
   },
 });

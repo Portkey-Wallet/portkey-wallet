@@ -220,6 +220,7 @@ export default function ChatBox() {
     try {
       setUnBlockLoading(true);
       await unBlockApi(info?.toRelationId);
+      singleMessage.success('User unblocked');
     } catch (error) {
       console.log('===handleUnBlock error', error);
       singleMessage.error(handleErrorMessage(error, 'unBlock error'));

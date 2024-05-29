@@ -7,7 +7,7 @@ export type TShouldShowSetNewWalletNameIconResponse = boolean;
 export interface ISetNewWalletNameParams {
   caHash: string;
   chainId: ChainId;
-  setLoginAccount: boolean;
+  replaceAccount: boolean;
 }
 
 export interface IWalletNameService {

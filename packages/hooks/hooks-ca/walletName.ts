@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { ChainId } from '@portkey/provider-types';
 import walletNameService from '@portkey-wallet/utils/walletName';
 
-export const useSetNewWalletName = ({ caHash, chainId }: { caHash: string; chainId: ChainId }) => {
+export const useSetNewWalletName = () => {
   const [shouldShowSetNewWalletNameModal, setShouldShowSetNewWalletNameModal] = useState(false);
   const [shouldShowSetNewWalletNameIcon, setShouldShowSetNewWalletNameIcon] = useState(false);
 
@@ -13,15 +13,23 @@ export const useSetNewWalletName = ({ caHash, chainId }: { caHash: string; chain
     setShouldShowSetNewWalletNameIcon(shouldShowIcon);
   }, []);
 
-  const handleSetNewWalletName = useCallback(async () => {
-    await walletNameService.setNewWalletName({ caHash, chainId, replaceNickname: true });
-    await updateShouldData();
-  }, [caHash, chainId, updateShouldData]);
+  const handleSetNewWalletName = useCallback(
+    async ({ caHash, chainId }: { caHash?: string; chainId?: ChainId }) => {
+      if (!caHash || !chainId) throw new Error('Missing caHash or chainId');
+      await walletNameService.setNewWalletName({ caHash, chainId, replaceNickname: true });
+      await updateShouldData();
+    },
+    [updateShouldData],
+  );
 
-  const handleCancelSetNewWalletNameModal = useCallback(async () => {
-    await walletNameService.setNewWalletName({ caHash, chainId, replaceNickname: false });
-    await updateShouldData();
-  }, [caHash, chainId, updateShouldData]);
+  const handleCancelSetNewWalletNameModal = useCallback(
+    async ({ caHash, chainId }: { caHash?: string; chainId?: ChainId }) => {
+      if (!caHash || !chainId) throw new Error('Missing caHash or chainId');
+      await walletNameService.setNewWalletName({ caHash, chainId, replaceNickname: false });
+      await updateShouldData();
+    },
+    [updateShouldData],
+  );
 
   return {
     shouldShowSetNewWalletNameModal,

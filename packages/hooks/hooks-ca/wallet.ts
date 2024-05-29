@@ -9,6 +9,7 @@ import { request } from '@portkey-wallet/api/api-did';
 import { useAppCommonDispatch } from '../index';
 import {
   setNickNameAndAvatarAction,
+  setHideAssetsAction,
   getCaHolderInfoAsync,
   setCheckManagerExceed,
 } from '@portkey-wallet/store/store-ca/wallet/actions';
@@ -203,6 +204,16 @@ export const useSetUserInfo = () => {
       dispatch(setNickNameAndAvatarAction({ ...params, networkType: networkInfo.networkType }));
     },
     [dispatch, networkInfo],
+  );
+};
+
+export const useSetHideAssets = () => {
+  const dispatch = useAppCommonDispatch();
+  return useCallback(
+    (hideAssets: boolean) => {
+      dispatch(setHideAssetsAction({ hideAssets }));
+    },
+    [dispatch],
   );
 };
 

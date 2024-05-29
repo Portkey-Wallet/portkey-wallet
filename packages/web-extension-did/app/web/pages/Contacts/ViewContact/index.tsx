@@ -22,7 +22,15 @@ import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { ILoginAccountListProps } from '../components/LoginAccountList';
-import { EditContactItemApiType, IContactProfileLoginAccount } from '@portkey-wallet/types/types-ca/contact';
+import {
+  ContactItemType,
+  EditContactItemApiType,
+  IContactProfileLoginAccount,
+} from '@portkey-wallet/types/types-ca/contact';
+import CustomSvg from 'components/CustomSvg';
+import CustomModalConfirm from 'pages/components/CustomModalConfirm';
+import { useBlockAndReport } from '@portkey-wallet/hooks/hooks-ca/im';
+import clsx from 'clsx';
 
 export default function ViewContact() {
   const { isNotLessThan768 } = useCommonState();
@@ -31,7 +39,7 @@ export default function ViewContact() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const showChat = useIsChatShow();
-
+  const { checkIsBlocked, block: blockApi, unBlock: unBlockApi } = useBlockAndReport();
   const relationId = useMemo(
     () => state?.relationId || state?.imInfo?.relationId,
     [state?.imInfo?.relationId, state?.relationId],
@@ -40,7 +48,7 @@ export default function ViewContact() {
     () => state?.portkeyId || state?.imInfo?.portkeyId,
     [state?.imInfo?.portkeyId, state?.portkeyId],
   );
-
+  const isBlocked = useMemo(() => checkIsBlocked(relationId), [checkIsBlocked, relationId]);
   const { index } = useIndexAndName(state);
 
   // bind: api response
@@ -59,6 +67,54 @@ export default function ViewContact() {
     [index, portkeyId, relationId, state],
   );
   const mergeData = useMemo(() => ({ ...stateTransform, ...profileData }), [profileData, stateTransform]);
+  const { name } = useIndexAndName(mergeData as Partial<ContactItemType>);
+  const transName = useMemo(() => {
+    if (showChat) {
+      return mergeData?.caHolderInfo?.walletName || mergeData?.imInfo?.name || mergeData?.name;
+    } else {
+      return name;
+    }
+  }, [mergeData?.caHolderInfo?.walletName, mergeData?.imInfo?.name, mergeData?.name, name, showChat]);
+
+  const morePopListData = useMemo(
+    () => [
+      {
+        key: 'block',
+        leftIcon: <CustomSvg className={clsx(isBlocked && 'contact-blocked')} type="Block" />,
+        children: <span className={clsx(isBlocked && 'contact-blocked')}>{isBlocked ? 'Unblock' : 'Block User'}</span>,
+        onClick: () => {
+          const blockModal = CustomModalConfirm({
+            content: (
+              <div className="light-modal-content flex-column-center">
+                <div className="light-modal-content-title">{`${isBlocked ? 'Unblock' : 'Block'} User`}</div>
+                <div className="light-modal-content-context">
+                  {isBlocked
+                    ? `${transName} will be able to message you.`
+                    : `${transName} will no longer be able to message you.`}
+                </div>
+              </div>
+            ),
+            maskClosable: true,
+            okText: isBlocked ? 'Unblock' : 'Block',
+            cancelText: 'No',
+            onOk: async () => {
+              try {
+                blockModal.destroy();
+                const msg = isBlocked ? 'User unblocked' : 'User blocked';
+                await (isBlocked ? unBlockApi(relationId) : blockApi(relationId));
+                singleMessage.success(msg);
+              } catch (e) {
+                const _err = handleErrorMessage(e, 'Failed to block message');
+                singleMessage.error(_err);
+                console.log('===handle block message error', e);
+              }
+            },
+          });
+        },
+      },
+    ],
+    [blockApi, isBlocked, relationId, transName, unBlockApi],
+  );
 
   const title = t('Details');
   const editText = t('Edit');
@@ -205,6 +261,7 @@ export default function ViewContact() {
       }
       handleAdd={handleAdd}
       handleChat={() => handleChat(relationId || '')}
+      morePopListData={morePopListData}
     />
   ) : (
     <ViewContactPopup
@@ -220,6 +277,7 @@ export default function ViewContact() {
       }
       handleAdd={handleAdd}
       handleChat={() => handleChat(relationId || '')}
+      morePopListData={morePopListData}
     />
   );
 }

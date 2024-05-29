@@ -1,0 +1,49 @@
+@import './../../../../assets/theme/color.less';
+
+.chat-report-page {
+  height: 100%;
+  .report-page-content {
+    overflow: auto;
+    .report-page-list {
+      overflow: auto;
+      padding-bottom: 24px;
+      .report-list-item {
+        gap: 12px;
+        padding: 16px;
+        font-size: 16px;
+        line-height: 24px;
+        color: @neutral-primary-text;
+        cursor: pointer;
+        .custom-svg {
+          width: 24px;
+          height: 24px;
+          svg {
+            width: 100%;
+            height: 100%;
+          }
+        }
+        &:hover {
+          background-color: @neutral-hover-bg;
+          .custom-svg {
+            path {
+              fill: @brand-normal;
+            }
+          }
+        }
+      }
+      .content-textarea {
+        padding: 0 16px 0 52px;
+      }
+    }
+    .report-page-footer {
+      gap: 12px;
+      padding: 12px 16px;
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 500;
+      button {
+        height: 48px;
+      }
+    }
+  }
+}

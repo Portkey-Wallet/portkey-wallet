@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { ChainId } from '@portkey/provider-types';
 import walletNameService from '@portkey-wallet/utils/walletName';
 
@@ -12,6 +12,10 @@ export const useSetNewWalletName = () => {
     setShouldShowSetNewWalletNameModal(shouldShowModal);
     setShouldShowSetNewWalletNameIcon(shouldShowIcon);
   }, []);
+
+  useEffect(() => {
+    updateShouldData();
+  }, [updateShouldData]);
 
   const handleSetNewWalletName = useCallback(
     async ({ caHash, chainId }: { caHash?: string; chainId?: ChainId }) => {

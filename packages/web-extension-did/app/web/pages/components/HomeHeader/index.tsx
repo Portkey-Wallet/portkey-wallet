@@ -5,7 +5,7 @@ import Avatar from '../Avatar';
 import AccountConnect from '../AccountConnect';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import UnReadBadge from '../UnReadBadge';
-import CopyAddressDrawerOrModal, { CopyAddressDrawerOrModalInstance } from '../CopyAddressDrawerOrModal';
+import CopyAddressDrawerOrModal, { ICopyAddressDrawerOrModalInstance } from '../CopyAddressDrawerOrModal';
 import './index.less';
 
 export interface IHomeHeaderProps {
@@ -14,7 +14,7 @@ export interface IHomeHeaderProps {
 }
 export default function HomeHeader({ onUserClick, unReadShow }: IHomeHeaderProps) {
   const userInfo = useCurrentUserInfo();
-  const copyAddressDrawerOrModalRef = useRef<CopyAddressDrawerOrModalInstance | null>(null);
+  const copyAddressDrawerOrModalRef = useRef<ICopyAddressDrawerOrModalInstance | null>(null);
   return (
     <>
       <CommonHeader

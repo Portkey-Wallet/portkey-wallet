@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, View, Keyboard, Text, TouchableOpacity } from 'react-native';
 import OverlayModal from 'components/OverlayModal';
 import Svg from 'components/Svg';
@@ -7,8 +7,7 @@ import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { addressFormat, formatStr2EllipsisStr } from '@portkey-wallet/utils';
-import { useCurrentCaInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
+import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ChainId } from '@portkey-wallet/types';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
@@ -16,21 +15,7 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 const CopyUserAddress: React.FC = () => {
   const isMainnet = useIsMainnet();
-  const caInfo = useCurrentCaInfo();
-
-  const caInfoList = useMemo(() => {
-    const result: { address: string; chainId: ChainId }[] = [];
-    Object.entries(caInfo || {}).map(([key, value]) => {
-      const info = value as CAInfo;
-      if (info?.caAddress) {
-        result.push({
-          address: info?.caAddress,
-          chainId: key as ChainId,
-        });
-      }
-    });
-    return result;
-  }, [caInfo]);
+  const caAddressInfos = useCaAddressInfoList();
 
   const copyContent = useCallback(
     (item: { address: string; chainId: ChainId }) => `ELF_${item.address}_${item.chainId}`,
@@ -49,16 +34,16 @@ const CopyUserAddress: React.FC = () => {
           <Svg icon="close2" size={pTd(22)} iconStyle={styles.closeImage} color={defaultColors.bg34} />
         </TouchableOpacity>
       </View>
-      {caInfoList.map((item, index) => {
+      {caAddressInfos.map((item, index) => {
         return (
           <View key={index + ''} style={styles.itemWrap}>
             <View>
               <Text style={styles.chainText}>{transNetworkText(item.chainId, !isMainnet)}</Text>
               <Text style={styles.addressText}>
-                {formatStr2EllipsisStr(addressFormat(item.address, item?.chainId), 8)}
+                {formatStr2EllipsisStr(addressFormat(item.caAddress, item?.chainId), 8)}
               </Text>
             </View>
-            <CopyButton copyContent={copyContent({ address: item.address, chainId: item.chainId })} />
+            <CopyButton copyContent={copyContent({ address: item.caAddress, chainId: item.chainId })} />
           </View>
         );
       })}

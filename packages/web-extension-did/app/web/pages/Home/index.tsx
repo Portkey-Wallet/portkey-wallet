@@ -18,6 +18,7 @@ import { useManagerExceedTipModal } from 'hooks/useManagerExceedTip';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 import HomeHeader from 'pages/components/HomeHeader';
 import BottomBar from 'pages/components/BottomBar';
+import SetNewWalletNameModal from './components/SetNewWalletNameModal';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -69,6 +70,7 @@ export default function Home() {
         <MyBalance />
       </div>
       {!isPrompt && <BottomBar />}
+      <SetNewWalletNameModal />
     </div>
   );
 }

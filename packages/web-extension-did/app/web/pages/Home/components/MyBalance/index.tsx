@@ -46,6 +46,7 @@ import { RampType } from '@portkey-wallet/ramp';
 import { getDisclaimerData } from 'utils/disclaimer';
 import { TradeTypeEnum } from 'constants/trade';
 import CustomSvg from 'components/CustomSvg';
+import SetNewWalletNameIcon from '../SetNewWalletNameIcon';
 
 export interface TransactionResult {
   total: number;
@@ -292,7 +293,10 @@ export default function MyBalance() {
     <div className={clsx('balance', detailScroll && 'detail-scroll')} onScroll={onBalanceWrapScroll}>
       <div className="main-content-wrap flex-column">
         <div className={clsx('balance-amount-wrap', 'flex-column', isPrompt && 'is-prompt')}>
-          <div className="wallet-name">{userInfo.nickName}</div>
+          <div className="wallet-name-wrap flex-row-center">
+            <div className="wallet-name">{userInfo.nickName}</div>
+            <SetNewWalletNameIcon />
+          </div>
           {renderUsdShow()}
         </div>
         <MainCards

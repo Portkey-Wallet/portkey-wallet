@@ -36,7 +36,7 @@ const CopyUserAddress: React.FC = () => {
       </View>
       {caAddressInfos.map((item, index) => {
         return (
-          <View key={index + ''} style={styles.itemWrap}>
+          <View key={index} style={styles.itemWrap}>
             <View>
               <Text style={styles.chainText}>{transNetworkText(item.chainId, !isMainnet)}</Text>
               <Text style={styles.addressText}>
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: pTd(12),
     paddingVertical: pTd(20),
     borderWidth: 0.5,
-    borderColor: defaultColors.border11,
+    borderColor: defaultColors.neutralDivider,
     borderRadius: pTd(6),
     flexDirection: 'row',
     justifyContent: 'space-between',

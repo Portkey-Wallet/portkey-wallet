@@ -2,26 +2,22 @@ import { useCallback, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { Popover } from 'antd';
 import CustomSvg from 'components/CustomSvg';
-import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useSetNewWalletName } from '@portkey-wallet/hooks/hooks-ca/walletName';
+import { useSetNewWalletName } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import singleMessage from 'utils/singleMessage';
 import './index.less';
 
 export default function SetNewWalletNameIcon() {
   const { shouldShowSetNewWalletNameIcon, handleSetNewWalletName } = useSetNewWalletName();
-  const {
-    walletInfo: { caHash, originChainId },
-  } = useCurrentWallet();
   const [isOpen, setIsOpen] = useState(false);
 
   const handlePopoverConfirm = useCallback(() => {
     setIsOpen(false);
-    handleSetNewWalletName({ caHash, chainId: originChainId }).catch((error) => {
+    handleSetNewWalletName().catch((error) => {
       const msg = handleErrorMessage(error);
       singleMessage.error(msg);
     });
-  }, [caHash, handleSetNewWalletName, originChainId]);
+  }, [handleSetNewWalletName]);
 
   const popoverContent = useMemo(() => {
     return (

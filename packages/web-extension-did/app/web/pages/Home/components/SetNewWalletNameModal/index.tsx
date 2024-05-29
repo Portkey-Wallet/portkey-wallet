@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, Modal } from 'antd';
-import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useSetNewWalletName } from '@portkey-wallet/hooks/hooks-ca/walletName';
+import { useSetNewWalletName } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import singleMessage from 'utils/singleMessage';
 import './index.less';
@@ -9,9 +8,6 @@ import './index.less';
 const SET_NEW_WALLET_NAME_MODAL_WIDTH = 320;
 
 export default function SetNewWalletNameModal() {
-  const {
-    walletInfo: { caHash, originChainId },
-  } = useCurrentWallet();
   const { shouldShowSetNewWalletNameModal, handleSetNewWalletName, handleCancelSetNewWalletNameModal } =
     useSetNewWalletName();
 
@@ -24,7 +20,7 @@ export default function SetNewWalletNameModal() {
   }, [shouldShowSetNewWalletNameModal]);
 
   const handleConfirm = () => {
-    handleSetNewWalletName({ caHash, chainId: originChainId }).catch((error) => {
+    handleSetNewWalletName().catch((error) => {
       const msg = handleErrorMessage(error);
       singleMessage.error(msg);
     });
@@ -32,7 +28,7 @@ export default function SetNewWalletNameModal() {
   };
 
   const handleCancel = () => {
-    handleCancelSetNewWalletNameModal({ caHash, chainId: originChainId }).catch((error) => {
+    handleCancelSetNewWalletNameModal().catch((error) => {
       const msg = handleErrorMessage(error);
       singleMessage.error(msg);
     });

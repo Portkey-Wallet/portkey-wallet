@@ -19,6 +19,7 @@ import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 import HomeHeader from 'pages/components/HomeHeader';
 import BottomBar from 'pages/components/BottomBar';
 import SetNewWalletNameModal from './components/SetNewWalletNameModal';
+import { useBlockAndReport } from '@portkey-wallet/hooks/hooks-ca/im';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ export default function Home() {
   const isSell = useRef(0); // guaranteed to make only one transfer
   const handleAchSell = useHandleAchSell();
   const locked = useStorage('locked');
+  const { fetchAndSetBlockList } = useBlockAndReport();
 
   const checkAchSell = useCallback(async () => {
     if (search) {
@@ -56,6 +58,7 @@ export default function Home() {
     managerExceedTip();
     getViewReferralStatusStatus();
     getReferralLink();
+    fetchAndSetBlockList();
   });
   initIm();
 

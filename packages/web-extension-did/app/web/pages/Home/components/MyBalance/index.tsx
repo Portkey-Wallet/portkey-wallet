@@ -8,12 +8,7 @@ import Activity from '../Activity/index';
 import { Transaction } from '@portkey-wallet/types/types-ca/trade';
 import NFT from '../NFT/NFT';
 import { useAppDispatch, useUserInfo, useCommonState, useLoading } from 'store/Provider/hooks';
-import {
-  useCaAddressInfoList,
-  useCurrentUserInfo,
-  useCurrentWallet,
-  useOriginChainId,
-} from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo, useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import CustomTokenModal from 'pages/components/CustomTokenModal';
@@ -44,6 +39,8 @@ import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import { RampType } from '@portkey-wallet/ramp';
 import { getDisclaimerData } from 'utils/disclaimer';
 import { TradeTypeEnum } from 'constants/trade';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+import SkeletonCom from 'pages/components/SkeletonCom';
 
 export interface TransactionResult {
   total: number;
@@ -65,7 +62,6 @@ export default function MyBalance() {
   const appDispatch = useAppDispatch();
   const isMainNet = useIsMainnet();
   const { walletInfo } = useCurrentWallet();
-  const caAddressInfos = useCaAddressInfoList();
   const { eTransferUrl = '' } = useCurrentNetworkInfo();
   const isFCMEnable = useFCMEnable();
   const { setLoading } = useLoading();
@@ -109,14 +105,17 @@ export default function MyBalance() {
   const usdShow = useMemo(() => formatAmountUSDShow(accountBalanceUSD), [accountBalanceUSD]);
   const [detailScroll, setDetailScroll] = useState(false);
 
-  useEffect(() => {
+  useEffectOnce(() => {
     if (state?.key) {
       setActiveKey(state.key);
     }
+  });
+
+  useEffect(() => {
     if (!passwordSeed) return;
     appDispatch(getCaHolderInfoAsync());
     appDispatch(getSymbolImagesAsync());
-  }, [passwordSeed, appDispatch, isRampShow, state?.key, caAddressInfos]);
+  }, [appDispatch, passwordSeed]);
 
   useEffect(() => {
     getGuardianList({ caHash: walletInfo?.caHash });
@@ -253,9 +252,13 @@ export default function MyBalance() {
     <div className={clsx('balance', detailScroll && 'detail-scroll')} onScroll={onBalanceWrapScroll}>
       <div className="main-content-wrap flex-column">
         <div className={clsx('balance-amount-wrap', 'flex-column', isPrompt && 'is-prompt')}>
-          <div className="wallet-name">{userInfo.nickName}</div>
+          <div className="wallet-name">{userInfo.nickName ?? <SkeletonCom />}</div>
           <div className={clsx('balance-amount', usdShow.length > 18 && 'balance-amount-long')}>
-            {isMainNet ? <span className="amount">{usdShow}</span> : <span className="dev-mode">Dev Mode</span>}
+            {isMainNet ? (
+              <span className="amount">{usdShow ?? <SkeletonCom />}</span>
+            ) : (
+              <span className="dev-mode">Dev Mode</span>
+            )}
           </div>
         </div>
         <MainCards

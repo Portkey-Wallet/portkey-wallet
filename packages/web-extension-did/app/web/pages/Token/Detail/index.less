@@ -17,6 +17,7 @@
       padding: 24px 16px;
       background-color: @neutral-default-bg;
       .balance-amount {
+        gap: 4px;
         &.is-prompt {
           align-items: center;
         }
@@ -25,6 +26,10 @@
           line-height: 40px;
           font-weight: 500;
           color: @neutral-primary-text;
+          .@{app-prefix}-skeleton-avatar {
+            width: 148px;
+            height: 40px;
+          }
           &.amount-number-long {
             font-size: 28px;
             line-height: 36px;
@@ -34,6 +39,10 @@
           font-size: 14px;
           line-height: 20px;
           color: @neutral-tertiary-text;
+          .@{app-prefix}-skeleton-avatar {
+            width: 80px;
+            height: 22px;
+          }
           &.hidden-amount-convert {
             visibility: hidden;
           }

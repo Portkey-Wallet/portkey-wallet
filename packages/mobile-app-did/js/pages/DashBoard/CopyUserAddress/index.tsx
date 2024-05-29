@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: pTd(16),
-    color: defaultColors.font5,
+    color: defaultColors.neutralPrimaryTextColor,
     ...fonts.mediumFont,
   },
   closeImage: {
@@ -87,12 +87,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   chainText: {
-    color: defaultColors.font5,
+    color: defaultColors.neutralPrimaryTextColor,
     fontSize: pTd(14),
     ...fonts.mediumFont,
   },
   addressText: {
-    color: defaultColors.font11,
+    color: defaultColors.neutralTertiaryText,
     fontSize: pTd(12),
   },
 });

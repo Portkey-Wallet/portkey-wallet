@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   accountName: {
-    color: defaultColors.font11,
+    color: defaultColors.neutralTertiaryText,
     opacity: 0.8,
     fontSize: pTd(14),
     lineHeight: pTd(20),

@@ -218,15 +218,11 @@ function MessageText(
           title: 'Report',
           iconName: 'chat-report',
           onPress: async () => {
-            try {
-              showReportOverlay({
-                messageId: currentMessage?.id || '',
-                message: currentMessage?.text || '',
-                reportedRelationId: currentMessage?.from || '',
-              });
-            } catch (error) {
-              CommonToast.fail('Failed to delete message');
-            }
+            showReportOverlay({
+              messageId: currentMessage?.id || '',
+              message: currentMessage?.text || '',
+              reportedRelationId: currentMessage?.from || '',
+            });
           },
         });
 

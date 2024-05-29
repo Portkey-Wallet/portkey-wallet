@@ -115,8 +115,17 @@ export const defaultColors = {
   functionalRedDisable: '#FCBCBC',
   functionalRedLight: '#FFEEEE',
 
-  primaryTextColor: '#101114',
-  secondaryTextColor: '#101114',
+  neutralPrimaryTextColor: '#101114',
+  neutralSecondaryTextColor: '#55585E',
+  neutralTertiaryText: '#979AA1',
+  neutralDisableText: '#C0C3C7',
+  neutralBorder: '#DCDEE1',
+  neutralDivider: '#EBEBEC',
+  neutralContainerBG: '#F5F6F7',
+  neutralHoverBG: '#F9F9FA',
+  neutralDefaultBG: '#FFFFFF',
+  neutralMaskBG: 'rgba(0, 0, 0, 0.6)',
+  neutralTooltipBG: 'rgba(0, 0, 0, 0.8)',
 };
 
 export const AELFColors = {

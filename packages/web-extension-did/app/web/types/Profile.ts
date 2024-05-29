@@ -1,6 +1,7 @@
 import { ILoginAccountListProps } from 'pages/Contacts/components/LoginAccountList';
 import { BaseHeaderProps } from './UI';
 import { IContactProfile } from '@portkey-wallet/types/types-ca/contact';
+import { IPopoverMenuListData } from '@portkey-wallet/im-ui-web';
 
 // used for route parameters
 export type ExtraType = 'can-chat-edit' | 'cant-chat-edit' | 'add-new-chat';
@@ -27,6 +28,7 @@ export interface IProfileDetailBodyProps {
   addedText?: string;
   addContactText?: string;
   isShowRemark?: boolean;
+  morePopListData?: IPopoverMenuListData[];
   handleEdit: () => void;
   handleChat?: () => void;
   handleAdd?: () => void;

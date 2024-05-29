@@ -11,9 +11,25 @@
   box-shadow: none;
 }
 
-.@{app-prefix}-btn-default {
+button.@{app-prefix}-btn-default {
   color: @neutral-primary-text;
-  border-color: @neutral-divider;
+  border-color: @neutral-border;
+  background-color: @neutral-default-bg;
+  &:hover {
+    color: @neutral-secondary-text;
+    border-color: @neutral-divider;
+  }
+  &:focus {
+    color: @neutral-primary-text;
+    border-color: @neutral-border;
+  }
+  &:disabled,
+  &:disabled:hover,
+  &:disabled:focus,
+  &:disabled:active {
+    color: @neutral-disable-text;
+    border-color: @neutral-border;
+  }
 }
 
 .@{app-prefix}-btn-primary {
@@ -347,6 +363,20 @@
     box-shadow: none;
     /* stylelint-disable-next-line custom-property-empty-line-before */
     --antd-arrow-background-color: @neutral-tooltip-bg;
+  }
+}
+
+/* drawer */
+.common-drawer {
+  overflow-x: auto;
+  .@{app-prefix}-drawer-mask {
+    min-width: 360px;
+  }
+  .@{app-prefix}-drawer-content-wrapper {
+    min-width: 360px;
+  }
+  .@{app-prefix}-drawer-content {
+    border-radius: 8px 8px 0 0;
   }
 }
 

@@ -160,7 +160,7 @@ export default function SendPacketGroupPage() {
             key={GroupRedPacketTabEnum.Random}
             type={RedPackageTypeEnum.RANDOM}
             onPressButton={onPressBtn}
-            groupMemberCount={groupInfo?.members?.length}
+            groupMemberCount={groupInfo?.totalCount}
           />
         ),
       },
@@ -172,12 +172,12 @@ export default function SendPacketGroupPage() {
             key={GroupRedPacketTabEnum.Fixed}
             type={RedPackageTypeEnum.FIXED}
             onPressButton={onPressBtn}
-            groupMemberCount={groupInfo?.members?.length}
+            groupMemberCount={groupInfo?.totalCount}
           />
         ),
       },
     ],
-    [groupInfo?.members?.length, onPressBtn],
+    [groupInfo?.totalCount, onPressBtn],
   );
 
   const onTabPress = useCallback((tabType: GroupRedPacketTabEnum) => {

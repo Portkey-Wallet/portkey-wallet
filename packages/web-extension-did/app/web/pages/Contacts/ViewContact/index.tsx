@@ -70,7 +70,7 @@ export default function ViewContact() {
   const { name } = useIndexAndName(mergeData as Partial<ContactItemType>);
   const transName = useMemo(() => {
     if (showChat) {
-      return mergeData?.caHolderInfo?.walletName || mergeData?.imInfo?.name || mergeData?.name;
+      return mergeData?.name || mergeData?.caHolderInfo?.walletName || mergeData?.imInfo?.name;
     } else {
       return name;
     }

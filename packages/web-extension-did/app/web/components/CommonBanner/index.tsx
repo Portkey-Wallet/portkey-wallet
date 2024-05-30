@@ -31,12 +31,14 @@ export default function CommonBanner({ wrapClassName, bannerList }: ICommonBanne
 
   useEffect(() => {
     if (imageLoadedStatusList.length > 0 && imageLoadedStatusList.every(Boolean)) {
+      commonBannerRef.current?.swipeTo(0);
       setIsShowSkeleton(false);
     }
   }, [imageLoadedStatusList]);
 
   const handleImageLoad = useCallback((index: number) => {
     setImageLoadedStatusList((prev) => {
+      if (prev.length === 0) return prev;
       const newLoaded = [...prev];
       newLoaded[index] = true;
       return newLoaded;
@@ -88,7 +90,7 @@ export default function CommonBanner({ wrapClassName, bannerList }: ICommonBanne
       className={clsx('common-banner-wrap', wrapClassName)}
       onMouseEnter={() => !isShowSkeleton && setIsShowArrow(true)}
       onMouseLeave={() => !isShowSkeleton && setIsShowArrow(false)}>
-      {isShowSkeleton ? (
+      {isShowSkeleton && (
         <div className="skeleton-wrap flex-row-between">
           <div className="skeleton-left flex-column">
             <SkeletonCom className="skeleton-left-top" type={SkeletonComType.avatar} />
@@ -98,34 +100,31 @@ export default function CommonBanner({ wrapClassName, bannerList }: ICommonBanne
             <SkeletonCom type={SkeletonComType.image} />
           </div>
         </div>
-      ) : (
-        <>
-          <Swiper
-            ref={commonBannerRef}
-            className="common-banner"
-            allowTouchMove={false}
-            loop
-            autoplay
-            autoplayInterval={SWIPER_AUTOPLAY_INTERVAL}
-            indicator={swiperIndicator}>
-            {swiperItems}
-          </Swiper>
-          <div
-            className={clsx('common-banner-arrow', 'common-banner-arrow-left', {
-              ['common-banner-arrow-hidden']: !isShowArrow,
-            })}
-            onClick={() => commonBannerRef.current?.swipePrev()}>
-            <CustomSvg type="LeftArrowWithRightSideSpacing" />
-          </div>
-          <div
-            className={clsx('common-banner-arrow', 'common-banner-arrow-right', {
-              ['common-banner-arrow-hidden']: !isShowArrow,
-            })}
-            onClick={() => commonBannerRef.current?.swipeNext()}>
-            <CustomSvg type="LeftArrowWithRightSideSpacing" />
-          </div>
-        </>
       )}
+      <Swiper
+        ref={commonBannerRef}
+        className="common-banner"
+        allowTouchMove={false}
+        loop
+        autoplay
+        autoplayInterval={SWIPER_AUTOPLAY_INTERVAL}
+        indicator={swiperIndicator}>
+        {swiperItems}
+      </Swiper>
+      <div
+        className={clsx('common-banner-arrow', 'common-banner-arrow-left', {
+          ['common-banner-arrow-hidden']: !isShowArrow,
+        })}
+        onClick={() => commonBannerRef.current?.swipePrev()}>
+        <CustomSvg type="LeftArrowWithRightSideSpacing" />
+      </div>
+      <div
+        className={clsx('common-banner-arrow', 'common-banner-arrow-right', {
+          ['common-banner-arrow-hidden']: !isShowArrow,
+        })}
+        onClick={() => commonBannerRef.current?.swipeNext()}>
+        <CustomSvg type="LeftArrowWithRightSideSpacing" />
+      </div>
     </div>
   );
 }

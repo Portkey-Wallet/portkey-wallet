@@ -1,15 +1,28 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { StyleSheet, View, Keyboard, Text, TouchableOpacity } from 'react-native';
 import OverlayModal from 'components/OverlayModal';
+import CommonToast from 'components/CommonToast';
 import { pTd } from 'utils/unit';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { useRefreshUserInfo, useSetNewWalletName } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 
-const SetNewWalletNamePopupComponent: React.FC = () => {
-  const onCancel = useCallback(() => {
+interface SetNewWalletNamePopupProps {
+  onCancel: () => void;
+  onSetNewWalletName: () => void;
+}
+
+const SetNewWalletNamePopupComponent: React.FC<SetNewWalletNamePopupProps> = ({ onCancel, onSetNewWalletName }) => {
+  const onPressCancel = useCallback(() => {
     OverlayModal.hide(false);
-  }, []);
+    onCancel && onCancel();
+  }, [onCancel]);
+
+  const onPressSet = useCallback(() => {
+    onSetNewWalletName && onSetNewWalletName();
+    OverlayModal.hide(false);
+  }, [onSetNewWalletName]);
 
   return (
     <View style={styles.container}>
@@ -18,10 +31,10 @@ const SetNewWalletNamePopupComponent: React.FC = () => {
         <Text style={styles.descText}>
           You can set your login account as your wallet name to make your wallet customised and recongnisable.
         </Text>
-        <TouchableOpacity style={styles.setButton}>
-          <Text style={styles.setText}>Set Wallet Name</Text>
+        <TouchableOpacity style={styles.setButton} onPress={onPressSet}>
+          <Text style={styles.setText}>Use Login Account as Name</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
+        <TouchableOpacity style={styles.cancelButton} onPress={onPressCancel}>
           <Text style={styles.cancelText}>Cancel</Text>
         </TouchableOpacity>
       </View>
@@ -82,21 +95,37 @@ const styles = StyleSheet.create({
   },
 });
 
-const showSetNewWalletNamePopup = () => {
+const showSetNewWalletNamePopup = (props: SetNewWalletNamePopupProps) => {
   Keyboard.dismiss();
-  OverlayModal.show(<SetNewWalletNamePopupComponent />, {
+  OverlayModal.show(<SetNewWalletNamePopupComponent {...props} />, {
     position: 'center',
     animated: false,
     containerStyle: { width: '100%' },
+    onCloseRequest: props.onCancel,
   });
 };
 
 export const SetNewWalletNamePopup: React.FC = () => {
-  const [show, setShow] = useState(false);
+  const { shouldShowSetNewWalletNameModal, handleSetNewWalletName, handleCancelSetNewWalletNameModal } =
+    useSetNewWalletName();
+  const refreshUserInfo = useRefreshUserInfo();
+  const onSetNewWalletName = useCallback(async () => {
+    try {
+      await handleSetNewWalletName();
+      refreshUserInfo();
+      CommonToast.success('Set Success');
+    } catch (error) {
+      CommonToast.failError(error);
+    }
+  }, [handleSetNewWalletName, refreshUserInfo]);
+
   useEffect(() => {
-    if (show) return;
-    showSetNewWalletNamePopup();
-    setShow(true);
-  }, [show]);
+    if (shouldShowSetNewWalletNameModal) {
+      showSetNewWalletNamePopup({
+        onCancel: handleCancelSetNewWalletNameModal,
+        onSetNewWalletName: onSetNewWalletName,
+      });
+    }
+  }, [handleCancelSetNewWalletNameModal, handleSetNewWalletName, onSetNewWalletName, shouldShowSetNewWalletNameModal]);
   return <View />;
 };

@@ -1,21 +1,36 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import OverlayModal from 'components/OverlayModal';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import { defaultColors } from 'assets/theme';
+import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 
-const SetNewWalletNamePopover: React.FC = () => {
+const SetNewWalletNamePopover: React.FC<{ setNewWalletName: () => void; xPosition?: number; yPosition?: number }> = ({
+  setNewWalletName,
+  xPosition,
+  yPosition,
+}) => {
   const onDismiss = useCallback(() => {
     OverlayModal.hide();
   }, []);
 
   const onSetNewWalletName = useCallback(() => {
-    console.log('set new wallet name');
-  }, []);
+    setNewWalletName();
+    OverlayModal.hide();
+  }, [setNewWalletName]);
+
+  const top = yPosition || 100;
+  const left = useMemo(() => {
+    const originLeft = xPosition || pTd(107);
+    const popoverWidth = pTd(224);
+    const maiginRight = pTd(16);
+    const maxLeft = screenWidth - popoverWidth - maiginRight;
+    return originLeft > maxLeft ? maxLeft : originLeft;
+  }, [xPosition]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { marginLeft: left, marginTop: top }]}>
       <TouchableOpacity onPress={onDismiss}>
         <Svg
           icon="close2"
@@ -28,7 +43,7 @@ const SetNewWalletNamePopover: React.FC = () => {
         Set your login account as your wallet name to make your wallet customised and recongnisable.
       </Text>
       <TouchableOpacity onPress={onSetNewWalletName}>
-        <Text style={styles.buttonText}>Set Wallet Name</Text>
+        <Text style={styles.buttonText}>Use Login Account as Name</Text>
       </TouchableOpacity>
     </View>
   );
@@ -36,8 +51,6 @@ const SetNewWalletNamePopover: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 100,
-    marginLeft: 50,
     width: pTd(224),
     backgroundColor: defaultColors.white,
     borderRadius: pTd(6),
@@ -72,14 +85,12 @@ const styles = StyleSheet.create({
   },
 });
 
-export const showSetNewWalletNamePopover = () => {
-  OverlayModal.show(<SetNewWalletNamePopover />, {
-    customBounds: {
-      height: 0,
-      width: 0,
-      x: 272,
-      y: 204,
-    },
+export const showSetNewWalletNamePopover = (props: {
+  setNewWalletName: () => void;
+  xPosition?: number;
+  yPosition?: number;
+}) => {
+  OverlayModal.show(<SetNewWalletNamePopover {...props} />, {
     overlayOpacity: 0,
     containerStyle: {},
     style: { backgroundColor: 'transparent' },

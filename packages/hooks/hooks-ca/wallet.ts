@@ -79,6 +79,16 @@ export const useCurrentUserInfo = (forceUpdate?: boolean) => {
   return userInfo?.[currentNetwork] || DEFAULT_USER_INFO;
 };
 
+export const useRefreshUserInfo = () => {
+  const dispatch = useAppCommonDispatch();
+
+  const refreshUserInfo = useCallback(() => {
+    dispatch(getCaHolderInfoAsync());
+  }, [dispatch]);
+
+  return refreshUserInfo;
+};
+
 export const useCurrentWalletInfo = () => {
   const { currentNetwork, walletInfo } = useWallet();
   const originChainId = useOriginChainId();

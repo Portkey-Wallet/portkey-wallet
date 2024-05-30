@@ -19,6 +19,7 @@ import { setReplyMessageInfo } from 'pages/Chat/context/chatsContext';
 import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
 import ActionSheet from 'components/ActionSheet';
 import OverlayModal from 'components/OverlayModal';
+import { showReportOverlay } from '../../ReportOverlay';
 
 const maxWidth = pTd(280);
 const maxHeight = pTd(280);
@@ -160,6 +161,20 @@ function MessageImage(
             } catch (error) {
               CommonToast.fail('Failed to delete message');
             }
+          },
+        });
+
+      // report
+      if (position === 'left')
+        list.push({
+          title: 'Report',
+          iconName: 'chat-report',
+          onPress: async () => {
+            showReportOverlay({
+              messageId: currentMessage?.id || '',
+              message: currentMessage?.imageInfo?.imgUri || '',
+              reportedRelationId: currentMessage?.from || '',
+            });
           },
         });
 

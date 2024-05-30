@@ -37,6 +37,8 @@ export interface UserInfoType {
   userId: string;
   avatar?: string;
   hideAssets: boolean;
+  shouldShowSetNewWalletNameModal: boolean;
+  shouldShowSetNewWalletNameIcon: boolean;
 }
 
 export interface WalletState {

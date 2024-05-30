@@ -9,6 +9,7 @@ import AElf from 'aelf-sdk';
 import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 import { getChainList } from './api';
 import { ChainItemType, WalletState } from './type';
+import walletNameService from '@portkey-wallet/utils/walletName';
 
 export const createWallet =
   ({
@@ -158,3 +159,33 @@ export const setHideAssetsAction =
   createAction<RequireAtLeastOne<{ hideAssets: boolean }>>('wallet/setHideAssetsAction');
 
 export const setOriginChainId = createAction<ChainId>('wallet/setOriginChainId');
+
+export const fetchShouldShowSetNewWalletNameModal = createAsyncThunk(
+  'wallet/fetchShouldShowSetNewWalletNameModal',
+  async () => {
+    const shouldShowModal = await walletNameService.shouldShowSetNewWalletNameModal();
+    return shouldShowModal;
+  },
+);
+
+export const fetchShouldShowSetNewWalletNameIcon = createAsyncThunk(
+  'wallet/fetchShouldShowSetNewWalletNameIcon',
+  async () => {
+    const shouldShowIcon = await walletNameService.shouldShowSetNewWalletNameIcon();
+    return shouldShowIcon;
+  },
+);
+
+export const setNewWalletName = createAsyncThunk(
+  'wallet/setNewWalletName',
+  async ({ caHash, chainId }: { caHash: string; chainId: ChainId }) => {
+    await walletNameService.setNewWalletName({ caHash, chainId, replaceNickname: true });
+  },
+);
+
+export const cancelSetNewWalletNameModal = createAsyncThunk(
+  'wallet/cancelSetNewWalletNameModal',
+  async ({ caHash, chainId }: { caHash: string; chainId: ChainId }) => {
+    await walletNameService.setNewWalletName({ caHash, chainId, replaceNickname: false });
+  },
+);

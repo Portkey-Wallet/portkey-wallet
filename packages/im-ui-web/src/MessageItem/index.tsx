@@ -17,6 +17,15 @@ const MessageItem: React.FC<MessageContentType> = ({ className, ...props }) => {
     () => (SupportSysMsgType.includes(type) ? 'center' : props.position),
     [props.position, type],
   );
+  const renderFromName = useMemo(() => {
+    // const isOwner = SupportCommonMsgType.includes(type) ? (props as IMessage).isOwner : false;
+    return (
+      <div className="message-item-form-name flex-row-center">
+        <div className="form-name-text">{fromName}</div>
+        {/* {isOwner && <div className="admin-icon">Owner</div>} */}
+      </div>
+    );
+  }, [fromName]);
   return (
     <div
       key={props.key}
@@ -25,25 +34,25 @@ const MessageItem: React.FC<MessageContentType> = ({ className, ...props }) => {
       {SupportSysMsgType.includes(type) && <SystemMessage {...props} />}
       {type === MessageTypeEnum.TEXT && (
         <div className="flex-column">
-          {showAvatar && <div className="message-item-form-name">{fromName}</div>}
+          {showAvatar && renderFromName}
           <TextMessage {...(props as IMessage)} />
         </div>
       )}
       {type === MessageTypeEnum.IMAGE && (
         <div>
-          {showAvatar && <div className="message-item-form-name">{fromName}</div>}
+          {showAvatar && renderFromName}
           <ImageMessage {...(props as IMessage)} />
         </div>
       )}
       {type === MessageTypeEnum.REDPACKAGE_CARD && (
         <div className="flex-column">
-          {showAvatar && <div className="message-item-form-name">{fromName}</div>}
+          {showAvatar && renderFromName}
           <RedPacketMessage {...(props as IMessage)} />
         </div>
       )}
       {type === MessageTypeEnum.TRANSFER_CARD && (
         <div className="flex-column">
-          {showAvatar && <div className="message-item-form-name">{fromName}</div>}
+          {showAvatar && renderFromName}
           <TransferMessage {...(props as IMessage)} />
         </div>
       )}

@@ -19,6 +19,8 @@ import {
   resetCurrentUserInfoAction,
   updateCASyncState,
   setHideAssetsAction,
+  fetchShouldShowSetNewWalletNameModal,
+  fetchShouldShowSetNewWalletNameIcon,
 } from './actions';
 import { UserInfoType, WalletError, WalletState } from './type';
 import { changeEncryptStr } from '../../wallet/utils';
@@ -28,6 +30,8 @@ export const DEFAULT_USER_INFO: UserInfoType = {
   userId: '',
   avatar: '',
   hideAssets: false,
+  shouldShowSetNewWalletNameModal: false,
+  shouldShowSetNewWalletNameIcon: false,
 };
 
 const initialState: WalletState = {
@@ -150,7 +154,7 @@ export const walletSlice = createSlice({
         state.userInfo = {
           ...(state.userInfo || {}),
           MAINNET: {
-            ...(state?.userInfo?.MAINNET ?? { nickName: '', userId: '', hideAssets: false }),
+            ...(state?.userInfo?.MAINNET ?? DEFAULT_USER_INFO),
             hideAssets,
           },
         };
@@ -186,6 +190,26 @@ export const walletSlice = createSlice({
         } else {
           state.checkManagerExceedMap = {};
         }
+      })
+      .addCase(fetchShouldShowSetNewWalletNameModal.fulfilled, (state, { payload }: PayloadAction<boolean>) => {
+        const network = state.currentNetwork || initialState.currentNetwork;
+        state.userInfo = {
+          ...(state.userInfo || {}),
+          [network]: {
+            ...(state?.userInfo?.[network] || DEFAULT_USER_INFO),
+            shouldShowSetNewWalletNameModal: payload,
+          },
+        };
+      })
+      .addCase(fetchShouldShowSetNewWalletNameIcon.fulfilled, (state, { payload }: PayloadAction<boolean>) => {
+        const network = state.currentNetwork || initialState.currentNetwork;
+        state.userInfo = {
+          ...(state.userInfo || {}),
+          [network]: {
+            ...(state?.userInfo?.[network] || DEFAULT_USER_INFO),
+            shouldShowSetNewWalletNameIcon: payload,
+          },
+        };
       });
   },
 });

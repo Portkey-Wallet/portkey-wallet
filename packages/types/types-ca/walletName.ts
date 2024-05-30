@@ -1,4 +1,4 @@
-import { ChainId } from '@portkey/provider-types';
+import { ChainId } from '@portkey-wallet/types';
 
 export type TShouldShowSetNewWalletNameModalResponse = boolean;
 

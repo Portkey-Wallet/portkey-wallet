@@ -126,7 +126,7 @@ export default function NFT() {
           key={nftColKey}
           header={
             <div className="nft-collection flex-row-center">
-              <div className="avatar flex-center">
+              <div className={clsx('nft-collection-avatar', 'flex-center', !nft.imageUrl && 'show-nft-default')}>
                 {nft.imageUrl ? <img src={nft.imageUrl} /> : nft.collectionName?.slice(0, 1)}
               </div>
               <div className="info flex-column">

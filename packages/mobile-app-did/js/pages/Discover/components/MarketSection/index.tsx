@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
 import MarketType from './components/MarketType';
-import SafeAreaBox from 'components/SafeAreaBox';
 import MarketHeader from './components/MarketHeader';
 import { FlatList, RefreshControl, View } from 'react-native';
 import { pTd } from 'utils/unit';
@@ -38,7 +37,7 @@ export default function MarketSection() {
     return (
       <View style={styles.empty}>
         <Svg icon="no-data" size={pTd(64)} iconStyle={{ marginBottom: pTd(8) }} />
-        <TextM style={styles.message}>No Data</TextM>
+        <TextM style={styles.message}>No data</TextM>
         <CommonButton
           radius={pTd(4)}
           containerStyle={styles.retryButtonContainer}
@@ -54,33 +53,37 @@ export default function MarketSection() {
     );
   }, [onRefresh, refreshing]);
   return (
-    <SafeAreaBox>
-      <View style={{ paddingHorizontal: pTd(16) }}>
-        <MarketType marketInfo={marketInfo} handleType={handleType} />
-        <MarketHeader style={{ marginTop: pTd(8) }} marketInfo={marketInfo} handleSort={handleSort} />
-        {isSkeleton ? (
-          Array.from({ length: 11 }).map((item, index) => {
-            return <MarketItemSkeleton key={index} />;
-          })
-        ) : (
-          <FlatList
-            nestedScrollEnabled
-            refreshing={false}
-            data={marketInfo?.dataList || []}
-            renderItem={renderItem}
-            keyExtractor={(item: ICryptoCurrencyItem) => '' + item.id}
-            refreshControl={
-              marketInfo?.dataList ? <RefreshControl refreshing={isLoading} onRefresh={onRefresh} /> : undefined
-            }
-            ListEmptyComponent={renderEmpty}
-          />
-        )}
-      </View>
-    </SafeAreaBox>
+    <View style={styles.container}>
+      <MarketType marketInfo={marketInfo} handleType={handleType} />
+      <MarketHeader style={{ marginTop: pTd(8) }} marketInfo={marketInfo} handleSort={handleSort} />
+      {isSkeleton ? (
+        Array.from({ length: 11 }).map((item, index) => {
+          return <MarketItemSkeleton key={index} />;
+        })
+      ) : (
+        <FlatList
+          style={{ minHeight: pTd(512) }}
+          nestedScrollEnabled
+          refreshing={false}
+          data={marketInfo?.dataList || []}
+          renderItem={renderItem}
+          keyExtractor={(item: ICryptoCurrencyItem) => '' + item.id}
+          refreshControl={
+            marketInfo?.dataList ? <RefreshControl refreshing={isLoading} onRefresh={onRefresh} /> : undefined
+          }
+          ListEmptyComponent={renderEmpty}
+        />
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: pTd(16),
+    backgroundColor: defaultColors.neutralDefaultBG,
+    paddingTop: pTd(16),
+  },
   empty: {
     alignItems: 'center',
     justifyContent: 'flex-end',

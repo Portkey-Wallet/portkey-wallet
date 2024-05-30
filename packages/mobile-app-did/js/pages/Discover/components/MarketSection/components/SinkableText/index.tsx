@@ -8,8 +8,19 @@ export interface ISinkableTextProps {
   sinkable: boolean;
   value: number;
 }
+function getDecimalPlaces(num: number): number {
+  const match = num.toString().match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+  if (!match) {
+    return 0;
+  }
+  return Math.max(
+    0,
+    // Number of digits right of decimal point.
+    (match[1] ? match[1].length : 0) - (match[2] ? +match[2] : 0),
+  );
+}
 function calculateSinkValue(num: number): { sink: number; validNum: string } {
-  const match = num.toFixed(20).match(/0\.0*(\d+)/);
+  const match = num.toFixed(getDecimalPlaces(num)).match(/0\.0*(\d+)/);
   return match
     ? { sink: match[0].length - 2 - match[1].length, validNum: match[1] }
     : { sink: 0, validNum: num.toString() };

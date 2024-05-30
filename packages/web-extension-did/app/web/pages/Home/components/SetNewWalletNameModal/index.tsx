@@ -19,16 +19,16 @@ export default function SetNewWalletNameModal() {
     }
   }, [shouldShowSetNewWalletNameModal]);
 
-  const handleConfirm = () => {
-    handleSetNewWalletName().catch((error) => {
+  const handleConfirm = async () => {
+    await handleSetNewWalletName().catch((error) => {
       const msg = handleErrorMessage(error);
       singleMessage.error(msg);
     });
     setIsOpen(false);
   };
 
-  const handleCancel = () => {
-    handleCancelSetNewWalletNameModal().catch((error) => {
+  const handleCancel = async () => {
+    await handleCancelSetNewWalletNameModal().catch((error) => {
       const msg = handleErrorMessage(error);
       singleMessage.error(msg);
     });

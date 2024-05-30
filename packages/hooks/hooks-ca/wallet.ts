@@ -79,6 +79,16 @@ export const useCurrentUserInfo = (forceUpdate?: boolean) => {
   return userInfo?.[currentNetwork] || DEFAULT_USER_INFO;
 };
 
+export const useRefreshUserInfo = () => {
+  const dispatch = useAppCommonDispatch();
+
+  const refreshUserInfo = useCallback(() => {
+    dispatch(getCaHolderInfoAsync());
+  }, [dispatch]);
+
+  return refreshUserInfo;
+};
+
 export const useCurrentWalletInfo = () => {
   const { currentNetwork, walletInfo } = useWallet();
   const originChainId = useOriginChainId();
@@ -330,11 +340,12 @@ export const useSetNewWalletName = () => {
   const caHash = useCurrentCaHash();
   const originChainId = useOriginChainId();
   const { shouldShowSetNewWalletNameModal, shouldShowSetNewWalletNameIcon } = useCurrentUserInfo();
+  const refreshUserInfo = useRefreshUserInfo();
 
-  const updateShouldData = useCallback(() => {
+  const updateShouldData = useCallback(async () => {
     try {
-      dispatch(fetchShouldShowSetNewWalletNameModal());
-      dispatch(fetchShouldShowSetNewWalletNameIcon());
+      await dispatch(fetchShouldShowSetNewWalletNameModal());
+      await dispatch(fetchShouldShowSetNewWalletNameIcon());
     } catch (error) {
       console.error('Failed to update shouldShow data:', error);
     }
@@ -347,13 +358,14 @@ export const useSetNewWalletName = () => {
   const handleSetNewWalletName = useCallback(async () => {
     if (!caHash || !originChainId) throw new Error('Missing caHash or chainId');
     await dispatch(setNewWalletName({ caHash, chainId: originChainId }));
-    updateShouldData();
-  }, [caHash, dispatch, originChainId, updateShouldData]);
+    await updateShouldData();
+    await refreshUserInfo();
+  }, [caHash, dispatch, originChainId, updateShouldData, refreshUserInfo]);
 
   const handleCancelSetNewWalletNameModal = useCallback(async () => {
     if (!caHash || !originChainId) throw new Error('Missing caHash or chainId');
     await dispatch(cancelSetNewWalletNameModal({ caHash, chainId: originChainId }));
-    updateShouldData();
+    await updateShouldData();
   }, [caHash, dispatch, originChainId, updateShouldData]);
 
   return useMemo(

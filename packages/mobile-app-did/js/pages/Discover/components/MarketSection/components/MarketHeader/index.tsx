@@ -74,7 +74,7 @@ export default function MarketHeader({
               CommonToast.failError(`${e}`);
             }
           }}>
-          <HeaderItem name={'Token'} sortDir={calSortDirBySort('symbol')} />
+          <HeaderItem name={'Name'} sortDir={calSortDirBySort('symbol')} />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
@@ -106,12 +106,12 @@ export default function MarketHeader({
           onPress={() => {
             console.log('click! 24 chg%');
             try {
-              handleSort('percentChange24h');
+              handleSort('priceChangePercentage24H');
             } catch (e) {
               CommonToast.failError(`${e}`);
             }
           }}>
-          <HeaderItem name={'24 chg%'} sortDir={calSortDirBySort('percentChange24h')} />
+          <HeaderItem name={'24H Chg%'} sortDir={calSortDirBySort('priceChangePercentage24H')} />
         </TouchableOpacity>
       </View>
     </View>

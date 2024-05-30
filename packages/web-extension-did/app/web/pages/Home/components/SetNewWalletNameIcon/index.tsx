@@ -11,12 +11,12 @@ export default function SetNewWalletNameIcon() {
   const { shouldShowSetNewWalletNameIcon, handleSetNewWalletName } = useSetNewWalletName();
   const [isOpen, setIsOpen] = useState(false);
 
-  const handlePopoverConfirm = useCallback(() => {
-    setIsOpen(false);
-    handleSetNewWalletName().catch((error) => {
+  const handlePopoverConfirm = useCallback(async () => {
+    await handleSetNewWalletName().catch((error) => {
       const msg = handleErrorMessage(error);
       singleMessage.error(msg);
     });
+    setIsOpen(false);
   }, [handleSetNewWalletName]);
 
   const popoverContent = useMemo(() => {

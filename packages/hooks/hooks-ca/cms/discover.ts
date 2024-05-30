@@ -30,6 +30,16 @@ const mockCardDataList: TBaseCardItemType[] = [
       filename_disk: '843753ae-0961-44fe-9b2b-415922833611',
     },
   },
+  {
+    index: 3,
+    url: 'https://portkey.finance',
+    title: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+    description: 'description3',
+    buttonTitle: 'buttonTitle3',
+    imgUrl: {
+      filename_disk: '843753ae-0961-44fe-9b2b-415922833611',
+    },
+  },
 ];
 
 const mockLearnData: TDiscoverLearnGroupList = [
@@ -43,6 +53,12 @@ const mockLearnData: TDiscoverLearnGroupList = [
     index: 2,
     title: 'learn2',
     value: 'learn2',
+    items: mockCardDataList,
+  },
+  {
+    index: 3,
+    title: 'learn3',
+    value: 'learn3',
     items: mockCardDataList,
   },
 ];

@@ -8,14 +8,17 @@ import { TextL, TextS } from 'components/CommonText';
 import NoData from 'components/NoData';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import React, { useCallback } from 'react';
-import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
 
 export const EarnPage = () => {
   const { earnList = [] } = useDiscoverData();
   return (
     <View style={styles.container}>
-      {earnList.length > 0 ? earnList.map((item, index) => <EarnItem key={index} {...item} />) : <NoData />}
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {earnList.length > 0 ? earnList.map((item, index) => <EarnItem key={index} {...item} />) : <NoData />}
+        <View style={styles.gap} />
+      </ScrollView>
     </View>
   );
 };
@@ -41,8 +44,12 @@ const EarnItem = (item: TBaseCardItemType) => {
       <View style={styles.infoWrap}>
         <View style={styles.infoLine}>
           <View style={styles.textLines}>
-            <TextL style={[styles.title, fonts.mediumFont]}>{title}</TextL>
-            <TextS style={styles.description}>{description}</TextS>
+            <TextL style={[styles.title, fonts.mediumFont]} numberOfLines={2} ellipsizeMode="tail">
+              {title}
+            </TextL>
+            <TextS style={styles.description} numberOfLines={1} ellipsizeMode="tail">
+              {description}
+            </TextS>
           </View>
           <CommonButton
             type="primary"
@@ -99,6 +106,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'flex-start',
+    maxWidth: pTd(218),
   },
   title: {
     color: defaultColors.font5,
@@ -118,5 +126,8 @@ const styles = StyleSheet.create({
   btnTitle: {
     fontSize: pTd(12),
     lineHeight: pTd(16),
+  },
+  gap: {
+    height: pTd(16),
   },
 });

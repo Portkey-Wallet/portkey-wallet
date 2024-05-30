@@ -6,17 +6,20 @@ import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import { TextM, TextS } from 'components/CommonText';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 import { pTd } from 'utils/unit';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import fonts from 'assets/theme/fonts';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import Touchable from 'components/Touchable';
+import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
+import CarouselComponent, { CarouselItemProps } from 'components/Carousel';
 
 export function DiscoverCmsListSection() {
   const GroupList = useDiscoverGroupList();
   const { s3Url } = useCurrentNetworkInfo();
+  const { dappBannerList = [] } = useCmsBanner();
   const discoverJump = useDiscoverJumpWithNetWork();
 
   const onClickJump = useCallback(
@@ -31,8 +34,18 @@ export function DiscoverCmsListSection() {
     [discoverJump],
   );
 
+  const lists: CarouselItemProps[] = useMemo(() => {
+    return dappBannerList.map(it => {
+      return {
+        imgUrl: 'https://cdn.britannica.com/22/187222-050-07B17FB6/apples-on-a-tree-branch.jpg',
+        url: it.url,
+      };
+    });
+  }, [dappBannerList]);
+
   return (
     <View style={styles.wrap}>
+      <CarouselComponent containerStyle={styles.slide} items={lists} />
       {GroupList.map((group, index) => (
         <View key={index} style={styles.groupWrap}>
           <TextM style={[FontStyles.font5, fonts.mediumFont, styles.groupTitle]}>{group.title}</TextM>
@@ -65,6 +78,11 @@ export function DiscoverCmsListSection() {
 const styles = StyleSheet.create({
   wrap: {
     ...GStyles.paddingArg(0, 20),
+    marginBottom: pTd(16),
+    backgroundColor: defaultColors.white,
+  },
+  slide: {
+    marginTop: pTd(12),
     marginBottom: pTd(16),
   },
   groupWrap: {

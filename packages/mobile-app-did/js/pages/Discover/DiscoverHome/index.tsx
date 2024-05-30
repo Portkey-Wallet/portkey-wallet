@@ -1,9 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
-import { View, ScrollView, StyleSheet, GestureResponderEvent } from 'react-native';
+import { View, StyleSheet, GestureResponderEvent } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
 import SimulatedInputBox from 'components/SimulatedInputBox';
-import { DiscoverCmsListSection } from '../components/DiscoverCmsListSection';
 import { defaultColors } from 'assets/theme';
 import SafeAreaBox from 'components/SafeAreaBox';
 import { BGStyles } from 'assets/theme/styles';
@@ -20,6 +19,7 @@ import fonts from 'assets/theme/fonts';
 import { useOnTouchAndPopUp } from 'components/FloatOverlay/touch';
 import { ListItemType } from 'components/FloatOverlay/Popover';
 import { ArchivedTabEnum } from '../types';
+import DiscoverTab from '../components/DiscoverTopTab';
 
 export default function DiscoverHome() {
   useCheckAndInitNetworkDiscoverMap();
@@ -78,9 +78,9 @@ export default function DiscoverHome() {
         {showAllTabsIcon}
         {showToolsIcon}
       </View>
-      <ScrollView style={styles.container}>
-        <DiscoverCmsListSection />
-      </ScrollView>
+      <View style={styles.container}>
+        <DiscoverTab />
+      </View>
     </SafeAreaBox>
   );
 }
@@ -104,7 +104,6 @@ function TouchableIcon({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: defaultColors.white,
-    paddingTop: pTd(24),
     flex: 1,
   },
   functionalLine: {

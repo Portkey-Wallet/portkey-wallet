@@ -74,7 +74,7 @@ export default function MarketType({
     }
   }, [marketInfo?.type]);
   return (
-    <TouchableOpacity onPress={onRightPress}>
+    <TouchableOpacity onPress={onRightPress} style={styles.touchWrapper}>
       <View style={styles.mainContainer}>
         <Text style={styles.text}>{showTypeName || 'Top'}</Text>
         <Svg
@@ -88,6 +88,11 @@ export default function MarketType({
 }
 
 const styles = StyleSheet.create({
+  touchWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'flex-start',
+  },
   mainContainer: {
     flexDirection: 'row',
     alignItems: 'center',

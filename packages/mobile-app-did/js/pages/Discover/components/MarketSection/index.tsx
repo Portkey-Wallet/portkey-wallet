@@ -62,7 +62,8 @@ export default function MarketSection() {
         })
       ) : (
         <FlatList
-          style={{ minHeight: pTd(512) }}
+          style={{ height: pTd(502) }}
+          showsVerticalScrollIndicator={false}
           nestedScrollEnabled
           refreshing={false}
           data={marketInfo?.dataList || []}

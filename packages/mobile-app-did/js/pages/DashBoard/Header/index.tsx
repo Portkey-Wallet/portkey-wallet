@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback } from 'react';
-import { View, StyleSheet, Animated } from 'react-native';
+import { View, StyleSheet, Animated, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
 import { TextL, TextM } from 'components/CommonText';
 import CommonAvatar from 'components/CommonAvatar';
@@ -10,6 +10,7 @@ import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
 import { showCopyUserAddress } from '../CopyUserAddress';
+import { showSetNewWalletNamePopover } from '../SetNewWalletName/Popover';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import navigationService from 'utils/navigationService';
@@ -26,6 +27,11 @@ const DashBoardHeader: React.FC<DashBoardHeaderProps> = ({ title, scrollY }) => 
 
   const onCopyAddress = useCallback(() => {
     showCopyUserAddress();
+  }, []);
+
+  const onShowSetNewWalletNamePopover = useCallback(() => {
+    console.log('onShowSetNewWalletNamePopover');
+    showSetNewWalletNamePopover();
   }, []);
 
   const leftDom = useMemo(() => {
@@ -49,7 +55,14 @@ const DashBoardHeader: React.FC<DashBoardHeaderProps> = ({ title, scrollY }) => 
           titleStyle={{ fontSize: pTd(14) }}
         />
         {userInfo?.nickName ? (
-          <TextM style={styles.accountName}>{userInfo.nickName}</TextM>
+          <View style={styles.accountNameWrap}>
+            <TextM numberOfLines={1} style={styles.accountName}>
+              {userInfo.nickName}
+            </TextM>
+            <TouchableOpacity onPress={onShowSetNewWalletNamePopover}>
+              <Svg icon="suggest-circle" size={pTd(16)} iconStyle={styles.suggestIcon} />
+            </TouchableOpacity>
+          </View>
         ) : (
           <Skeleton
             animation="wave"
@@ -61,7 +74,7 @@ const DashBoardHeader: React.FC<DashBoardHeaderProps> = ({ title, scrollY }) => 
         )}
       </Animated.View>
     );
-  }, [scrollY, userInfo?.avatar, userInfo?.nickName]);
+  }, [onShowSetNewWalletNamePopover, scrollY, userInfo?.avatar, userInfo.nickName]);
 
   const titleDom = useMemo(() => {
     return (
@@ -99,9 +112,9 @@ const DashBoardHeader: React.FC<DashBoardHeaderProps> = ({ title, scrollY }) => 
 
   return (
     <View style={styles.container}>
+      <View style={styles.titleWrap}>{titleDom}</View>
       {leftDom}
       {rightDom}
-      <View style={styles.titleWrap}>{titleDom}</View>
     </View>
   );
 };
@@ -120,6 +133,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  accountNameWrap: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   accountName: {
     color: defaultColors.neutralTertiaryText,
     opacity: 0.8,
@@ -127,6 +145,10 @@ const styles = StyleSheet.create({
     lineHeight: pTd(20),
     height: pTd(20),
     marginLeft: pTd(6),
+  },
+  suggestIcon: {
+    marginLeft: pTd(6),
+    marginRight: pTd(6),
   },
   skeletonStyle: {
     backgroundColor: defaultColors.bg4,

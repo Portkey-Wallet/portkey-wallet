@@ -176,10 +176,14 @@ export const useMarket = () => {
   useEffect(() => {
     //init
     (async () => {
-      const localCryptoCurrencyList = await fetchCryptoCurrencyList('Hot');
+      const localCryptoCurrencyList = await fetchCryptoCurrencyList(
+        marketInfo?.type || 'Hot',
+        marketInfo?.sort,
+        marketInfo?.sortDir,
+      );
       dispatch(changeMarketList({ networkType, cryptoCurrencyList: localCryptoCurrencyList }));
     })();
-  }, [dispatch, fetchCryptoCurrencyList, networkType]);
+  }, [dispatch, fetchCryptoCurrencyList, marketInfo?.sort, marketInfo?.sortDir, marketInfo?.type, networkType]);
   const handleType = useCallback(
     //market type change
     async (type: IMarketType) => {

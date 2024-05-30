@@ -60,16 +60,16 @@ export default function MarketItem(props: IMarketItemProps) {
                     CommonToast.success('Removed');
                   } catch (e) {
                     setFavorite(true);
-                    CommonToast.success('Removed Failed');
+                    CommonToast.failError('Failed to remove favourites');
                   }
                 } else {
                   try {
                     setFavorite(true);
                     await markFavorite(item.id, item.symbol);
-                    CommonToast.success('Added to Favorites');
+                    CommonToast.success('Added to favourites');
                   } catch (e) {
                     setFavorite(false);
-                    CommonToast.success('Add Failed');
+                    CommonToast.failError('Failed to add favourites');
                   }
                 }
               }}>
@@ -120,6 +120,7 @@ const styles = StyleSheet.create({
     width: pTd(36),
     height: pTd(36),
     marginRight: pTd(10),
+    borderRadius: pTd(18),
   },
   iconFavorite: {
     marginRight: pTd(10),

@@ -30,6 +30,9 @@ const SendButton = (props: SendButtonType) => {
     [themeType],
   );
 
+  // const onPressButton = useCallback(() => {
+  //   navigationService.navigate('Market');
+  // }, []);
   const onPressButton = useCallback(() => {
     if (themeType === 'innerPage')
       return navigationService.navigate('SendHome', {
@@ -42,7 +45,6 @@ const SendButton = (props: SendButtonType) => {
       } as unknown as IToSendHomeParamsType);
     AssetsOverlay.showAssetList();
   }, [sentToken, themeType]);
-
   return (
     <View style={[commonButtonStyle.buttonWrap, wrapStyle]}>
       <Touchable style={[commonButtonStyle.iconWrapStyle, GStyles.alignCenter, wrapStyle]} onPress={onPressButton}>

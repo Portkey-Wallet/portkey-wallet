@@ -7,7 +7,7 @@ import RedPacketMessage from '../RedPacketMessage';
 import { IMessage, MessageContentType } from '../type';
 import Avatar from '../Avatar';
 import { MessageTypeEnum } from '@portkey-wallet/im';
-import { SupportSysMsgType } from '../constants';
+import { SupportCommonMsgType, SupportSysMsgType } from '../constants';
 import TransferMessage from '../TransferMessage';
 import './index.less';
 
@@ -18,14 +18,14 @@ const MessageItem: React.FC<MessageContentType> = ({ className, ...props }) => {
     [props.position, type],
   );
   const renderFromName = useMemo(() => {
-    // const isOwner = SupportCommonMsgType.includes(type) ? (props as IMessage).isOwner : false;
+    const isOwner = SupportCommonMsgType.includes(type) ? (props as IMessage).isOwner : false;
     return (
       <div className="message-item-form-name flex-row-center">
         <div className="form-name-text">{fromName}</div>
-        {/* {isOwner && <div className="admin-icon">Owner</div>} */}
+        {isOwner && <div className="admin-icon">Owner</div>}
       </div>
     );
-  }, [fromName]);
+  }, [fromName, props, type]);
   return (
     <div
       key={props.key}

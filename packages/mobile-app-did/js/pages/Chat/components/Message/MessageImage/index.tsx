@@ -5,7 +5,6 @@ import CacheImage from 'components/CacheImage';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
-import ChatOverlay from '../../ChatOverlay';
 import { ChatMessage } from 'pages/Chat/types';
 import { formatImageSize } from '@portkey-wallet/utils/img';
 import { useChatsDispatch, useCurrentChannelId } from 'pages/Chat/context/hooks';
@@ -13,13 +12,14 @@ import { useDeleteMessage } from '@portkey-wallet/hooks/hooks-ca/im';
 import isEqual from 'lodash/isEqual';
 import CommonToast from 'components/CommonToast';
 import Broken_Image from 'assets/image/pngs/broken-image.png';
-import { ListItemType } from '../../ChatOverlay/chatPopover';
+import { ListItemType } from '../../../../../components/FloatOverlay/Popover';
 import Svg from 'components/Svg';
 import { setReplyMessageInfo } from 'pages/Chat/context/chatsContext';
 import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
 import ActionSheet from 'components/ActionSheet';
 import OverlayModal from 'components/OverlayModal';
 import { showReportOverlay } from '../../ReportOverlay';
+import FloatOverlay from 'components/FloatOverlay';
 
 const maxWidth = pTd(280);
 const maxHeight = pTd(280);
@@ -74,7 +74,7 @@ function MessageImage(
       if (loadError) return;
 
       const { pageX, pageY } = event.nativeEvent;
-      ChatOverlay.showPreviewImage({
+      FloatOverlay.showPreviewImage({
         source: { uri: imgUri },
         thumb: { uri: thumbUri },
         width,
@@ -192,7 +192,7 @@ function MessageImage(
           },
         });
 
-      list.length && ChatOverlay.showChatPopover({ list, px: pageX, py: pageY, formatType: 'dynamicWidth' });
+      list.length && FloatOverlay.showFloatPopover({ list, px: pageX, py: pageY, formatType: 'dynamicWidth' });
     },
     [
       currentMessage,

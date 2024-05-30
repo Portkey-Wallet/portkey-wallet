@@ -40,7 +40,7 @@ export default function Bookmark() {
       scrollViewProps={{ disabled: true }}
       hideTouchable={true}
       containerStyles={styles.containerStyles}
-      titleDom="Bookmarks">
+      titleDom={selectTab === ArchivedTabEnum.Bookmarks ? 'Bookmarks' : 'Records'}>
       <View style={[GStyles.flexRow, GStyles.alignCenter]}>
         <CommonTouchableTabs
           tabList={tabList}
@@ -56,17 +56,16 @@ export default function Bookmark() {
 }
 
 const styles = StyleSheet.create({
-  containerStyles: { ...GStyles.paddingArg(0), flex: 1, backgroundColor: defaultColors.bg6 },
+  containerStyles: { ...GStyles.paddingArg(0), flex: 1, backgroundColor: defaultColors.white },
 
   tabHeader: {
-    width: pTd(214),
+    width: pTd(343),
     backgroundColor: defaultColors.bg18,
     borderRadius: pTd(6),
-    ...GStyles.paddingArg(3),
     marginVertical: pTd(16),
+    paddingHorizontal: pTd(16),
   },
   tabWrap: {
-    width: pTd(100),
     height: pTd(30),
     borderRadius: pTd(6),
   },

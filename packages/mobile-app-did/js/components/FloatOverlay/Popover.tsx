@@ -145,7 +145,7 @@ const itemStyle = StyleSheet.create({
 
 const styles = StyleSheet.create({
   dynamicWidthItemStyles: {
-    // minWidth: 100,
+    minWidth: 100,
     ...itemStyle.item,
   },
   itemStyles: {
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     borderRadius: pTd(6),
     zIndex: 100,
-    // minWidth: pTd(136),
+    minWidth: pTd(112),
     shadowOffset: { width: 2, height: 5 },
     backgroundColor: defaultColors.bg1,
     shadowColor: defaultColors.shadow1,

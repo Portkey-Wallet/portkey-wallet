@@ -24,6 +24,7 @@ import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey
 import fonts from 'assets/theme/fonts';
 import { sleep } from '@portkey-wallet/utils';
 import BuyButton from 'components/BuyButton';
+import Carousel from 'components/Carousel';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 import CommonToolButton from 'components/CommonToolButton';
@@ -42,6 +43,8 @@ import { ETransTokenList } from '@portkey-wallet/constants/constants-ca/dapp';
 import { useAppETransShow, useAppSwapButtonShow } from 'hooks/cms';
 import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
+import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
 import FaucetButton from 'components/FaucetButton';
 import { TokenTitle } from 'components/TokenTitle';
 import { ReceivePageTabType } from 'pages/Receive/types';
@@ -72,6 +75,8 @@ const TokenDetail: React.FC = () => {
   const onDisclaimerModalPress = useOnDisclaimerModalPress();
   const { buy, swap, deposit } = checkEnabledFunctionalTypes(tokenInfo.symbol, tokenInfo.chainId === 'AELF');
   const { isRampShow } = useAppRampEntryShow();
+  const getS3ImageUrl = useGetS3ImageUrl();
+  const { getTokenDetailBannerList } = useCmsBanner();
   const isBuyButtonShow = useMemo(
     () =>
       SHOW_RAMP_SYMBOL_LIST.includes(tokenInfo.symbol) &&
@@ -195,6 +200,15 @@ const TokenDetail: React.FC = () => {
     return balanceShow?.length > 18;
   }, [balanceShow]);
 
+  const bannerItemsList = useMemo(() => {
+    return getTokenDetailBannerList(tokenInfo.chainId, tokenInfo.symbol).map(item => {
+      return {
+        url: item.url,
+        imgUrl: getS3ImageUrl(item.imgUrl.filename_disk),
+      };
+    });
+  }, [getS3ImageUrl, getTokenDetailBannerList, tokenInfo.chainId, tokenInfo.symbol]);
+
   return (
     <PageContainer
       type="leftBack"
@@ -245,6 +259,7 @@ const TokenDetail: React.FC = () => {
             />
           )}
         </View>
+        {bannerItemsList?.length > 0 && <Carousel items={bannerItemsList} containerStyle={styles.banner} />}
       </View>
 
       <FlashList

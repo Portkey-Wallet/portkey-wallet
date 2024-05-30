@@ -4,7 +4,7 @@ import OverlayModal from 'components/OverlayModal';
 import CommonToast from 'components/CommonToast';
 import { pTd } from 'utils/unit';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
-import { useRefreshUserInfo, useSetNewWalletName } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useSetNewWalletName } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 
@@ -108,16 +108,14 @@ const showSetNewWalletNamePopup = (props: SetNewWalletNamePopupProps) => {
 export const SetNewWalletNamePopup: React.FC = () => {
   const { shouldShowSetNewWalletNameModal, handleSetNewWalletName, handleCancelSetNewWalletNameModal } =
     useSetNewWalletName();
-  const refreshUserInfo = useRefreshUserInfo();
   const onSetNewWalletName = useCallback(async () => {
     try {
       await handleSetNewWalletName();
-      refreshUserInfo();
       CommonToast.success('Set Success');
     } catch (error) {
       CommonToast.failError(error);
     }
-  }, [handleSetNewWalletName, refreshUserInfo]);
+  }, [handleSetNewWalletName]);
 
   useEffect(() => {
     if (shouldShowSetNewWalletNameModal) {

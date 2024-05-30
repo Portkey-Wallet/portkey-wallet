@@ -13,7 +13,7 @@ import { defaultColors } from 'assets/theme';
 import { measureLocation } from 'utils/measure';
 import { showCopyUserAddress } from '../CopyUserAddress';
 import { showSetNewWalletNamePopover } from '../SetNewWalletName/Popover';
-import { useCurrentUserInfo, useSetNewWalletName, useRefreshUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo, useSetNewWalletName } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import navigationService from 'utils/navigationService';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
@@ -26,7 +26,6 @@ interface DashBoardHeaderProps {
 
 const DashBoardHeader: React.FC<DashBoardHeaderProps> = ({ title, scrollY }) => {
   const userInfo = useCurrentUserInfo();
-  const refreshUserInfo = useRefreshUserInfo();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const { shouldShowSetNewWalletNameIcon, handleSetNewWalletName } = useSetNewWalletName();
 
@@ -37,12 +36,11 @@ const DashBoardHeader: React.FC<DashBoardHeaderProps> = ({ title, scrollY }) => 
   const onSetNewWalletName = useCallback(async () => {
     try {
       await handleSetNewWalletName();
-      refreshUserInfo();
       CommonToast.success('Set Success');
     } catch (error) {
       CommonToast.failError(error);
     }
-  }, [handleSetNewWalletName, refreshUserInfo]);
+  }, [handleSetNewWalletName]);
 
   const onShowSetNewWalletNamePopover = useCallback(
     async (event: GestureResponderEvent) => {

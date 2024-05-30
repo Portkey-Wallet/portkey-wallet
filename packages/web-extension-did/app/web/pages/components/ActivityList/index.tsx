@@ -6,7 +6,7 @@ import {
   formatStr2EllipsisStr,
   formatAmountUSDShow,
 } from '@portkey-wallet/utils/converter';
-import CustomSvg from 'components/CustomSvg';
+import CustomSvg, { SvgType } from 'components/CustomSvg';
 import { useCallback, useMemo } from 'react';
 import { useNavigateState } from 'hooks/router';
 import './index.less';
@@ -31,6 +31,7 @@ import TokenImageDisplay from '../TokenImageDisplay';
 import dayjs from 'dayjs';
 import ImageForTwo from '../ImageForTwo';
 import ImageDisplay from '../ImageDisplay';
+import { contractStatusEnum } from '@portkey-wallet/constants/constants-ca/common';
 
 export interface IActivityListProps {
   data?: ActivityItemType[];
@@ -153,14 +154,26 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
     [currentNetwork.walletType],
   );
 
+  const renderStatusIcon = useCallback((item: ActivityItemType) => {
+    let svg = '';
+    if (item.status === contractStatusEnum.MINED) svg = 'SuggestCheck';
+    if (item.status === contractStatusEnum.FAIL) svg = 'SuggestClose2';
+    if (item.status === contractStatusEnum.PENDING) svg = 'Status';
+    if (svg) return <CustomSvg className="flex-center" type={svg as SvgType} />;
+    return null;
+  }, []);
+
   const renderActivityTitleForDapp = useCallback(
     (item: ActivityItemType) => (
       <div className={clsx('activity-item-title', isPrompt && 'prompt-activity-item-title')}>
-        <div className="transaction-name">{item.transactionName}</div>
+        <div className="flex-row-center gap-4">
+          <div className="transaction-name">{item.transactionName}</div>
+          {renderStatusIcon(item)}
+        </div>
         <div className="transaction-dapp-name">{item.dappName}</div>
       </div>
     ),
-    [isPrompt],
+    [isPrompt, renderStatusIcon],
   );
 
   const renderActivityTitle = useCallback(
@@ -168,7 +181,11 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
       const { transactionName, transactionType } = item;
       return (
         <div className={clsx('activity-item-title', isPrompt && 'prompt-activity-item-title')}>
-          <div className="transaction-name">{transactionName}</div>
+          <div className="flex-row-center gap-4">
+            <div className="transaction-name">{transactionName}</div>
+            {renderStatusIcon(item)}
+          </div>
+
           <div className="transaction-address">{formatAddressShow(item)}</div>
           {TransactionTypes.CROSS_CHAIN_TRANSFER === transactionType && (
             <div className="cross-chain-transfer">Cross-Chain Transfer</div>
@@ -176,7 +193,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         </div>
       );
     },
-    [formatAddressShow, isPrompt],
+    [formatAddressShow, isPrompt, renderStatusIcon],
   );
 
   const renderActivityAmountForMulToken = useCallback(
@@ -357,11 +374,14 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
           className="system-activity-icon"
         />
         <div className="activity-item-system-detail">
-          <span>{item?.transactionName}</span>
+          <span className="flex-row-center gap-4">
+            {item?.transactionName}
+            {renderStatusIcon(item)}
+          </span>
         </div>
       </>
     ),
-    [],
+    [renderStatusIcon],
   );
 
   const renderActivityItem = useCallback(

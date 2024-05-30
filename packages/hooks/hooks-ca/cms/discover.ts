@@ -37,7 +37,7 @@ const mockCardDataList: TBaseCardItemType[] = [
     description: 'description3',
     buttonTitle: 'buttonTitle3',
     imgUrl: {
-      filename_disk: '843753ae-0961-44fe-9b2b-415922833611',
+      filename_disk: '40b2d2ab-3daf-4834-ae27-f902cff34f7a.png',
     },
   },
 ];

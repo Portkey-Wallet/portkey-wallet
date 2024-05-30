@@ -9,9 +9,9 @@ import { TextL, TextM } from 'components/CommonText';
 import Svg from 'components/Svg';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import React, { useCallback, useMemo } from 'react';
-import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, Image, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
-import { ScrollView } from 'react-native-gesture-handler';
 
 export const LearnPage = () => {
   const { learnBannerList = [] } = useCmsBanner();
@@ -32,11 +32,11 @@ export const LearnPage = () => {
   const lists: CarouselItemProps[] = useMemo(() => {
     return learnBannerList.map(it => {
       return {
-        imgUrl: 'https://cdn.britannica.com/22/187222-050-07B17FB6/apples-on-a-tree-branch.jpg',
+        imgUrl: getS3ImgUrl(it.imgUrl.filename_disk),
         url: it.url,
       };
     });
-  }, [learnBannerList]);
+  }, [getS3ImgUrl, learnBannerList]);
 
   return (
     <View style={styles.wrap}>
@@ -51,12 +51,16 @@ export const LearnPage = () => {
                 <TouchableOpacity
                   style={styles.jumpIcon}
                   onPress={() => {
-                    console.log('jump to discover');
+                    navigationService.navigate('SubLearnPage', { section: title, title });
                   }}>
                   <Svg icon="right-arrow" size={pTd(16)} color={defaultColors.font5} />
                 </TouchableOpacity>
               </View>
-              <ScrollView horizontal contentContainerStyle={styles.blockScrollWrap}>
+              <ScrollView
+                nestedScrollEnabled
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.blockScrollWrap}>
                 <View style={styles.gap} />
                 {items.map(it => {
                   return (
@@ -83,23 +87,19 @@ const ListItem = ({
 }) => {
   const { title = '', url, imgUrl } = item;
   return (
-    <TouchableOpacity
+    <TouchableWithoutFeedback
       onPress={() => {
         jumpToDiscover(url, title);
       }}>
       <View style={itemStyles.item}>
-        <Image
-          style={itemStyles.img}
-          source={{ uri: 'https://cdn.britannica.com/22/187222-050-07B17FB6/apples-on-a-tree-branch.jpg' }}
-          resizeMode="stretch"
-        />
+        <Image style={itemStyles.img} source={{ uri: getS3ImgUrl(imgUrl.filename_disk) }} resizeMode="stretch" />
         <View style={itemStyles.textBlock}>
           <TextL style={itemStyles.describe} numberOfLines={2} ellipsizeMode="tail">
             {title}
           </TextL>
         </View>
       </View>
-    </TouchableOpacity>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -136,12 +136,10 @@ const styles = StyleSheet.create({
     padding: pTd(6),
   },
   blockScrollWrap: {
-    flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
     marginTop: pTd(8),
     marginBottom: pTd(24),
-    width: 375,
   },
   gap: {
     width: pTd(16),
@@ -153,7 +151,7 @@ const itemStyles = StyleSheet.create({
     flexDirection: 'column',
     borderRadius: pTd(12),
     borderColor: defaultColors.bg32,
-    borderTopWidth: StyleSheet.hairlineWidth,
+    borderWidth: StyleSheet.hairlineWidth,
     overflow: 'hidden',
     marginRight: pTd(12),
   },

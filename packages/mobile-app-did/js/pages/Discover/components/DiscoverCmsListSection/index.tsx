@@ -1,4 +1,4 @@
-import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useDiscoverGroupList, useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
 import { defaultColors } from 'assets/theme';
@@ -19,6 +19,7 @@ import CarouselComponent, { CarouselItemProps } from 'components/Carousel';
 export function DiscoverCmsListSection() {
   const GroupList = useDiscoverGroupList();
   const { s3Url } = useCurrentNetworkInfo();
+  const getS3ImgUrl = useGetS3ImageUrl();
   const { dappBannerList = [] } = useCmsBanner();
   const discoverJump = useDiscoverJumpWithNetWork();
 
@@ -37,11 +38,11 @@ export function DiscoverCmsListSection() {
   const lists: CarouselItemProps[] = useMemo(() => {
     return dappBannerList.map(it => {
       return {
-        imgUrl: 'https://cdn.britannica.com/22/187222-050-07B17FB6/apples-on-a-tree-branch.jpg',
+        imgUrl: getS3ImgUrl(it.imgUrl.filename_disk),
         url: it.url,
       };
     });
-  }, [dappBannerList]);
+  }, [dappBannerList, getS3ImgUrl]);
 
   return (
     <View style={styles.wrap}>

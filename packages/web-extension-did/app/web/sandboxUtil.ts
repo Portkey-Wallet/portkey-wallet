@@ -1,12 +1,32 @@
 import SandboxEventTypes from 'messages/SandboxEventTypes';
-import { getWallet } from '@portkey-wallet/utils/aelf';
+import { getAelfInstance, getWallet } from '@portkey-wallet/utils/aelf';
 import SandboxEventService, { SandboxErrorCode } from 'service/SandboxEventService';
 import { ChainType } from '@portkey-wallet/types';
 import { TokenItemType } from '@portkey-wallet/types/types-ca/token';
 import { customFetch } from '@portkey-wallet/utils/fetch';
-import { getContractBasic } from '@portkey-wallet/contracts/utils';
+import { getContractBasic, getTxResult } from '@portkey-wallet/contracts/utils';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import UISdkSandboxEventTypes from 'messages/UISdkSandboxEventTypes';
+import { ICrossTransferInitOption, IWithdrawParams } from '@portkey-wallet/utils/withdraw/types';
+import CrossTransfer from '@portkey-wallet/utils/withdraw';
+import { IStorageSuite } from '@portkey/types';
+import AElf from 'aelf-sdk';
+import { handleErrorMessage } from '@portkey/did-ui-react';
+const localStore: Record<string, string> = {};
+
+export class BaseAsyncStorage implements IStorageSuite {
+  public async getItem(key: string) {
+    return localStore[key];
+  }
+  public async setItem(key: string, value: string) {
+    return (localStore[key] = value);
+  }
+  public async removeItem(key: string) {
+    return delete localStore[key];
+  }
+}
+
+const asyncStorage = new BaseAsyncStorage();
 
 interface useBalancesProps {
   tokens: TokenItemType | TokenItemType[];
@@ -339,19 +359,47 @@ class SandboxUtil {
   static async etransferCrossTransfer(event: MessageEvent<any>, callback: SendBack) {
     const data = event.data.data ?? {};
     try {
-      const { rpcUrl, address, paramsOption, chainType, methodName, privateKey } = data;
+      const { options: _options, params: _params, chainType } = data;
+      console.log(data, 'etransferCrossTransfer===', _options, _params);
       if (chainType !== 'aelf') throw 'Not support';
-      const aelfContract = await SandboxUtil._getELFSendContract(rpcUrl, address, privateKey);
-      const raw = await aelfContract.encodedTx(methodName, paramsOption);
-      callback(event, {
+      const options: Omit<ICrossTransferInitOption, 'storage'> = JSON.parse(_options);
+      const params: Omit<IWithdrawParams, 'tokenContract' | 'portkeyContract'> = JSON.parse(_params);
+      const crossTransfer = new CrossTransfer();
+      crossTransfer.init({ ...options, storage: asyncStorage });
+      const chainInfo = options.chainList.find((chain) => chain.chainId === params.chainId);
+      const rpcUrl = chainInfo?.endPoint;
+      if (!rpcUrl) throw 'Can not get rpcUrl';
+      const privateKey = AElf.wallet.AESDecrypt(options.walletInfo.AESEncryptPrivateKey, options.pin);
+      const tokenContract = await SandboxUtil._getELFSendContract(
+        rpcUrl,
+        chainInfo.defaultToken.address || '',
+        privateKey,
+      );
+
+      const portkeyContract = await SandboxUtil._getELFSendContract(
+        rpcUrl,
+        chainInfo.caContractAddress || '',
+        privateKey,
+      );
+      const result = await crossTransfer.withdraw({ ...params, tokenContract, portkeyContract });
+      if (!result?.transactionId) throw 'Transfer error';
+      const aelf = getAelfInstance(rpcUrl);
+
+      const txResult = await getTxResult(aelf, result.transactionId);
+      console.log(txResult, 'txResult===etransferCrossTransfer');
+
+      return callback(event, {
         code: SandboxErrorCode.success,
-        message: raw,
+        message: result,
         sid: data.sid,
       });
     } catch (e) {
+      console.log(e, 'etransferCrossTransfer==error');
+      const message = handleErrorMessage(e, 'Transfer error');
+      console.log(message, 'message==etransferCrossTransfer');
       return callback(event, {
         code: SandboxErrorCode.error,
-        message: e,
+        message,
         sid: data.sid,
       });
     }

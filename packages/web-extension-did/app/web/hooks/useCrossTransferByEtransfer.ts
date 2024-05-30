@@ -1,16 +1,15 @@
-import { useCurrentNetworkInfo } from './network';
 import { useEffect, useMemo } from 'react';
-import { useCurrentWallet } from './wallet';
+import { CrossTransferExtension } from 'utils/sandboxUtil/extension-cross-chain';
+import { usePin } from './usePin';
+import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { localStorage } from 'redux-persist-webextension-storage';
 
-import { useCurrentChainList } from './chainList';
-import CrossTransfer from '@portkey-wallet/utils/withdraw';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+const crossChainTransfer = new CrossTransferExtension();
 
-const crossChainTransfer = new CrossTransfer();
-
-export const CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL = ['ELF', 'USDT'];
-
-export const useCrossTransferByEtransfer = (pin?: string) => {
+export const useCrossTransferByEtransfer = () => {
+  const pin = usePin();
   const wallet = useCurrentWallet();
   const { eTransferUrl, eTransferCA } = useCurrentNetworkInfo();
   const currentChainList = useCurrentChainList();
@@ -23,7 +22,7 @@ export const useCrossTransferByEtransfer = (pin?: string) => {
       pin,
       chainList: currentChainList,
       eTransferCA,
-      storage: AsyncStorage,
+      storage: localStorage,
     });
   }, [currentChainList, eTransferCA, eTransferUrl, pin, wallet.walletInfo]);
 

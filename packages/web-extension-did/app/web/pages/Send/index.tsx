@@ -60,10 +60,9 @@ import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from 'pages/components/DisclaimerModal';
 import { getDisclaimerData } from 'utils/disclaimer';
 import { TradeTypeEnum } from 'constants/trade';
-import { CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL } from '@portkey-wallet/hooks/hooks-ca/useWithdrawByETransfer';
-import { usePin } from 'hooks/usePin';
-import { useWithdrawTransferByExtension } from 'hooks/useCrossChainByEtransfer';
-import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
+import { useCrossTransferByEtransfer } from 'hooks/useCrossTransferByEtransfer';
+import { CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL } from '@portkey-wallet/utils/withdraw';
+import { TWithdrawInfo } from '@etransfer/services';
 
 export type ToAccount = { address: string; name?: string };
 
@@ -102,14 +101,14 @@ export default function Send() {
   const isValidSuffix = useIsValidSuffix();
   const checkManagerSyncState = useCheckManagerSyncState();
   const [txFee, setTxFee] = useState<string>();
+  const [withdrawInfo, setWithdrawInfo] = useState<TWithdrawInfo>();
+
   const currentChain = useCurrentChain(chainId);
   const { checkDappIsConfirmed } = useDisclaimer();
   const disclaimerData = useRef<IDisclaimerProps>(initDisclaimerData);
   const [disclaimerOpen, setDisclaimerOpen] = useState<boolean>(false);
 
-  const pin = usePin();
-  console.log(pin, 'pin===');
-  const { withdraw, withdrawPreview } = useWithdrawTransferByExtension(pin);
+  const { withdraw, withdrawPreview } = useCrossTransferByEtransfer();
 
   const dappShowFn = useMemo(
     () => checkEnabledFunctionalTypes(state.symbol, state.chainId === MAIN_CHAIN_ID),
@@ -282,14 +281,7 @@ export default function Send() {
           guardiansApproved: oneTimeApprovalList.current,
         };
         if (CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(crossParams.tokenInfo.symbol)) {
-          const tokenContract = new ExtensionContractBasic({
-            privateKey,
-            rpcUrl: chainInfo.endPoint,
-            contractAddress: chainInfo.defaultToken.address,
-          });
-
           await withdraw({
-            tokenContract,
             chainId,
             toAddress: crossParams.toAddress,
             amount,
@@ -451,7 +443,6 @@ export default function Send() {
         onOneTimeApproval: handleOneTimeApproval,
       });
       if (!limitRes) return ExceedLimit;
-
       // CHECK 5: tx fee
       if (
         isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF') &&
@@ -459,14 +450,17 @@ export default function Send() {
       ) {
         const { withdrawInfo } = await withdrawPreview({
           chainId,
-          address: caAddress,
+          address: toAccount.address,
           symbol: tokenSymbol,
           amount,
         });
         setTxFee(withdrawInfo.aelfTransactionFee);
+        setWithdrawInfo(withdrawInfo);
       } else {
         const fee = await getTranslationInfo();
         console.log('---getTranslationInfo', fee);
+        setWithdrawInfo(undefined);
+
         if (fee) {
           setTxFee(fee);
         } else {
@@ -485,13 +479,7 @@ export default function Send() {
     setLoading,
     amount,
     currentChain,
-    tokenInfo.symbol,
-    tokenInfo.chainId,
-    tokenInfo.address,
-    tokenInfo.decimals,
-    tokenInfo.imageUrl,
-    tokenInfo.alias,
-    tokenInfo.tokenId,
+    tokenInfo,
     wallet,
     chainId,
     checkManagerSyncState,
@@ -678,6 +666,8 @@ export default function Send() {
             imageUrl={tokenInfo.imageUrl || ''}
             chainId={chainId}
             transactionFee={txFee || ''}
+            receiveAmount={withdrawInfo?.receiveAmount}
+            receiveAmountUsd={withdrawInfo?.receiveAmountUsd}
             isCross={isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF')}
             tokenId={tokenInfo.tokenId || ''}
             isSeed={state.isSeed}
@@ -698,6 +688,8 @@ export default function Send() {
       getTranslationInfo,
       chainInfo?.chainId,
       txFee,
+      withdrawInfo?.receiveAmount,
+      withdrawInfo?.receiveAmountUsd,
       state.isSeed,
       state.seedType,
       validateToAddress,

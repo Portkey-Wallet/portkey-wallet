@@ -27,9 +27,11 @@ import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import TabsDrawer from 'components/TabsDrawer';
 import ChatNav from 'pages/Chat/routes';
 import ProviderWebPage from 'pages/ProviderWebPage';
+import MarketSection from 'pages/Discover/components/MarketSection';
 
 const Stack = isIOS ? createNativeStackNavigator() : createStackNavigator();
 export const productionNav = [
+  { name: 'Market', component: MarketSection },
   { name: 'Referral', component: Referral },
   { name: 'Tab', component: Tab },
   { name: 'SecurityLock', component: SecurityLock, options: { gestureEnabled: false } },

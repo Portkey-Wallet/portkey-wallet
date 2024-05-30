@@ -24,7 +24,7 @@ export default function MarketType({
       FloatOverlay.showFloatPopover({
         list: [
           {
-            title: 'Favorite',
+            title: 'Favourites',
             onPress: () => {
               try {
                 handleType('Favorites');
@@ -34,7 +34,7 @@ export default function MarketType({
             },
           },
           {
-            title: 'Hot',
+            title: 'Top',
             onPress: () => {
               try {
                 handleType('Hot');

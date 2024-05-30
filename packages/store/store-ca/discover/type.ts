@@ -52,7 +52,7 @@ export interface ICryptoCurrencyItem {
   lastUpdated: string;
 }
 export type IMarketType = 'Favorites' | 'Hot' | 'Trending';
-export type IMarketSort = 'marketCap' | 'symbol' | 'currentPrice' | 'percentChange24h' | '';
+export type IMarketSort = 'marketCap' | 'symbol' | 'currentPrice' | 'priceChangePercentage24H' | '';
 export type IMarketSortDir = 'asc' | 'desc' | '';
 export interface IMarketInfo {
   type: IMarketType;

@@ -1,0 +1,87 @@
+query discoverLearnGroup(
+  $filter: directus_files_filter
+  $sort: [String]
+  $limit: Int
+  $offset: Int
+  $page: Int
+  $search: String
+  $filter1: portkeyCard_filter
+  $sort1: [String]
+  $limit1: Int
+  $offset1: Int
+  $page1: Int
+  $search1: String
+  $filter2: discoverLearnGroup_portkeyCard_filter
+  $sort2: [String]
+  $limit2: Int
+  $offset2: Int
+  $page2: Int
+  $search2: String
+  $filter3: discoverLearnGroup_filter
+  $sort3: [String]
+  $limit3: Int
+  $offset3: Int
+  $page3: Int
+  $search3: String
+  $filter4: discoverLearnGroup_portkeyCard_filter
+  $sort4: [String]
+  $limit4: Int
+  $offset4: Int
+  $page4: Int
+  $search4: String
+  $filter5: discoverLearnGroup_filter
+  $sort5: [String]
+  $limit5: Int
+  $offset5: Int
+  $page5: Int
+  $search5: String
+) {
+  discoverLearnGroup(filter: $filter5, sort: $sort5, limit: $limit5, offset: $offset5, page: $page5, search: $search5) {
+    id
+    status
+    index
+    title
+    value
+    items(filter: $filter4, sort: $sort4, limit: $limit4, offset: $offset4, page: $page4, search: $search4) {
+      id
+      discoverLearnGroup_id(
+        filter: $filter3
+        sort: $sort3
+        limit: $limit3
+        offset: $offset3
+        page: $page3
+        search: $search3
+      ) {
+        id
+        status
+        index
+        title
+        value
+        items(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2) {
+          id
+          portkeyCard_id(
+            filter: $filter1
+            sort: $sort1
+            limit: $limit1
+            offset: $offset1
+            page: $page1
+            search: $search1
+          ) {
+            id
+            status
+            index
+            title
+            value
+            description
+            buttonTitle
+            imgUrl {
+              filename_disk
+            }
+            url
+            type
+          }
+        }
+      }
+    }
+  }
+}

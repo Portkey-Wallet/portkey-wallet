@@ -200,12 +200,14 @@ const TokenDetail: React.FC = () => {
     return balanceShow?.length > 18;
   }, [balanceShow]);
 
-  const bannerItemsList = getTokenDetailBannerList(tokenInfo.chainId, tokenInfo.symbol).map(item => {
-    return {
-      url: item.url,
-      imgUrl: getS3ImageUrl(item.imgUrl.filename_disk),
-    };
-  });
+  const bannerItemsList = useMemo(() => {
+    return getTokenDetailBannerList(tokenInfo.chainId, tokenInfo.symbol).map(item => {
+      return {
+        url: item.url,
+        imgUrl: getS3ImageUrl(item.imgUrl.filename_disk),
+      };
+    });
+  }, [getS3ImageUrl, getTokenDetailBannerList, tokenInfo.chainId, tokenInfo.symbol]);
 
   return (
     <PageContainer
@@ -257,9 +259,7 @@ const TokenDetail: React.FC = () => {
             />
           )}
         </View>
-        {bannerItemsList && bannerItemsList.length > 0 && (
-          <Carousel items={bannerItemsList} containerStyle={styles.banner} />
-        )}
+        {bannerItemsList?.length > 0 && <Carousel items={bannerItemsList} containerStyle={styles.banner} />}
       </View>
 
       <FlashList

@@ -87,7 +87,7 @@ const DashBoardHeader: React.FC<DashBoardHeaderProps> = ({ title, scrollY }) => 
         />
         {userInfo?.nickName ? (
           <View style={styles.accountNameWrap}>
-            <TextM numberOfLines={1} style={[styles.accountName, { maxWidth: nickNameMaxWidth }]}>
+            <TextM numberOfLines={1} style={[styles.accountName, GStyles.maxWidth(nickNameMaxWidth)]}>
               {userInfo.nickName}
             </TextM>
             {shouldShowSetNewWalletNameIcon && (

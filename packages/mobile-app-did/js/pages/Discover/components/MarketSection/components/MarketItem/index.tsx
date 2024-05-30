@@ -9,6 +9,7 @@ import { useMarketFavorite } from 'hooks/discover';
 import React, { useMemo, useState } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
+import SinkableText from '../SinkableText';
 export interface IMarketItemProps {
   isLoading: boolean;
   item: ICryptoCurrencyItem;
@@ -31,7 +32,7 @@ export default function MarketItem(props: IMarketItemProps) {
     if (item.priceChangePercentage24H > 0) {
       return '+';
     } else if (item.priceChangePercentage24H < 0) {
-      return '-';
+      return '';
     }
     return '';
   }, [item.priceChangePercentage24H]);
@@ -89,9 +90,8 @@ export default function MarketItem(props: IMarketItemProps) {
               <Text style={[styles.text2, FontStyles.neutralSecondaryTextColor]}>${item.marketCap || 0}</Text>
             </View>
           </View>
-          <Text style={[styles.text3, FontStyles.neutralPrimaryTextColor, styles.section2Width]}>
-            ${item.currentPrice || 0}
-          </Text>
+          <SinkableText sinkable value={item.currentPrice} />
+          {/* </Text> */}
           <Text style={[styles.text4, FontStyles.functionalRedDefault, styles.section3Width, chgColor]}>
             {prefixChg}
             {item.priceChangePercentage24H || 0}%
@@ -140,11 +140,20 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     textAlign: 'left',
   },
-  text3: {
+  priceWrapper: {
+    flexDirection: 'row',
+    backgroundColor: 'transparent',
+    justifyContent: 'flex-end',
     height: pTd(22),
+  },
+  text3: {
+    // height: pTd(22),
     fontSize: pTd(14),
     fontWeight: '500',
     textAlign: 'right',
+  },
+  priceSinkText: {
+    fontSize: pTd(10),
   },
   text4: {
     alignItems: 'flex-start',

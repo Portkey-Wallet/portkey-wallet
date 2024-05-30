@@ -10,16 +10,10 @@ import { ICryptoCurrencyItem } from '@portkey-wallet/store/store-ca/discover/typ
 import CommonToast from 'components/CommonToast';
 import Svg from 'components/Svg';
 import CommonButton from 'components/CommonButton';
-import { t } from 'i18next';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { TextL, TextM } from 'components/CommonText';
 import MarketItemSkeleton from './components/MarketItemSkeleton';
-
-export interface IMarketSectionProps {
-  // todo
-  name: string;
-}
 
 export default function MarketSection() {
   const { marketInfo, refreshing, refreshList, handleType, handleSort } = useMarket();
@@ -27,7 +21,6 @@ export default function MarketSection() {
   const renderItem = useCallback(({ item }: { item: ICryptoCurrencyItem; index: number }) => {
     return <MarketItem isLoading={false} item={item} />;
   }, []);
-  // const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(async () => {
     try {
       await refreshList();
@@ -36,21 +29,17 @@ export default function MarketSection() {
     }
   }, [refreshList]);
   const isSkeleton = useMemo(() => {
-    console.log('wfs refreshing===', refreshing, 'marketInfo?.dataList?.length===', marketInfo?.dataList?.length);
     return refreshing && (marketInfo?.dataList?.length || 0) <= 0;
   }, [marketInfo?.dataList?.length, refreshing]);
   const isLoading = useMemo(() => {
     return refreshing && (marketInfo?.dataList?.length || 0) > 0;
   }, [marketInfo?.dataList?.length, refreshing]);
-  console.log('wfs refreshing===', refreshing);
-  console.log('wfs isSkeleton===', isSkeleton, 'isLoading===', isLoading);
   const renderEmpty = useCallback(() => {
     return (
       <View style={styles.empty}>
         <Svg icon="no-data" size={pTd(64)} iconStyle={{ marginBottom: pTd(8) }} />
         <TextM style={styles.message}>No Data</TextM>
         <CommonButton
-          // loading={refreshing}
           radius={pTd(4)}
           containerStyle={styles.retryButtonContainer}
           buttonStyle={styles.retryButton}

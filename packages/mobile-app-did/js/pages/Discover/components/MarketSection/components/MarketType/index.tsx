@@ -20,7 +20,6 @@ export default function MarketType({
   const onRightPress = useCallback(
     async (event: GestureResponderEvent) => {
       setCollapsed(false);
-      // const { pageY } = event.nativeEvent;
       const top = await measurePageY(event.target);
       FloatOverlay.showFloatPopover({
         list: [

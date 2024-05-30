@@ -82,7 +82,6 @@ export class DidService extends ServiceInit {
 
   getConfig = (base: BaseConfig, config?: RequestConfig) => {
     const { method = 'POST', url, baseURL, ...fetchConfig } = getRequestConfig(base, config, this.defaultConfig) || {};
-    console.log('wfs=== getConfig getRequestConfig result is', { method, url, baseURL, fetchConfig });
     const _url = url || (typeof base === 'string' ? base : base.target);
     const URL = spliceUrl(baseURL || '', _url);
     return {

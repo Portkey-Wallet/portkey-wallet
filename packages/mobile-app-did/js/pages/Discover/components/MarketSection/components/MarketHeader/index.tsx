@@ -33,7 +33,7 @@ const itemStyles = StyleSheet.create({
   },
   text: {
     height: pTd(16),
-    color: '#979aa1',
+    color: defaultColors.neutralTertiaryText,
     fontSize: pTd(12),
     lineHeight: pTd(16),
     textAlign: 'left',
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    backgroundColor: '#ffffff',
+    backgroundColor: defaultColors.neutralDefaultBG,
     paddingVertical: pTd(8),
   },
   section: {

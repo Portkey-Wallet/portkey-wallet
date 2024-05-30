@@ -1,4 +1,4 @@
-import { useAppCASelector, useAppCommonDispatch, useAppCommonSelector } from '@portkey-wallet/hooks';
+import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import {
   addUrlToWhiteList,
@@ -146,10 +146,6 @@ export const useMarket = () => {
   const { discoverMap } = useAppSelector(state => state.discover);
   const marketInfo = discoverMap?.[networkType]?.marketInfo;
   const [refreshing, setRefreshing] = useState(false);
-  // const [cryptoCurrencyList, setCryptoCurrencyList] = useState<ICryptoCurrencyItem[]>();
-  // const [marketType, setMarketType] = useState<IMarketType>('Hot');
-  // const [marketSort, setMarketSort] = useState<IMarketSort>();
-  // const [marketSortDir, setMarketSortDir] = useState<IMarketSortDir>();
   const fetchCryptoCurrencyList = useCallback(
     async (type: IMarketType, sort?: IMarketSort, sortDir?: IMarketSortDir): Promise<ICryptoCurrencyItem[]> => {
       try {
@@ -181,7 +177,6 @@ export const useMarket = () => {
     //init
     (async () => {
       const localCryptoCurrencyList = await fetchCryptoCurrencyList('Hot');
-      // setCryptoCurrencyList(localCryptoCurrencyList);
       dispatch(changeMarketList({ networkType, cryptoCurrencyList: localCryptoCurrencyList }));
     })();
   }, [dispatch, fetchCryptoCurrencyList, networkType]);
@@ -191,14 +186,10 @@ export const useMarket = () => {
       dispatch(resetMarketSort({ networkType }));
       dispatch(changeMarketType({ networkType, marketType: type }));
       const localCryptoCurrencyList = await fetchCryptoCurrencyList(type);
-      // setCryptoCurrencyList(localCryptoCurrencyList);
       dispatch(changeMarketList({ networkType, cryptoCurrencyList: localCryptoCurrencyList }));
     },
     [dispatch, fetchCryptoCurrencyList, networkType],
   );
-  // const resetSort = useCallback(() => {
-  //   dispatch(resetMarketSort({ networkType }));
-  // }, [dispatch, networkType]);
   const refreshList = useCallback(
     //market type change
     async () => {
@@ -207,7 +198,6 @@ export const useMarket = () => {
         marketInfo?.sort,
         marketInfo?.sortDir,
       );
-      // setCryptoCurrencyList(localCryptoCurrencyList);
       dispatch(changeMarketList({ networkType, cryptoCurrencyList: localCryptoCurrencyList }));
     },
     [dispatch, fetchCryptoCurrencyList, marketInfo?.sort, marketInfo?.sortDir, marketInfo?.type, networkType],
@@ -217,9 +207,6 @@ export const useMarket = () => {
     async (sort: IMarketSort) => {
       try {
         let nextSortDir: IMarketSortDir = '';
-        console.log('wfs=== marketInfo?.sort', marketInfo?.sort);
-        console.log('wfs=== marketInfo?.sortDir', marketInfo?.sortDir);
-        console.log('wfs=== sort', sort);
         if (marketInfo?.sort === sort) {
           const currentSortDir = marketInfo?.sortDir;
           console.log('wfs=== currentIndex', sorDirList.indexOf(currentSortDir));

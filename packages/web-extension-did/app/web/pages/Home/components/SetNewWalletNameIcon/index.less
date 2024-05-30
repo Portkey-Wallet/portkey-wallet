@@ -1,0 +1,61 @@
+@import '../../../../assets/theme/color.less';
+
+.set-new-wallet-name-icon-wrap {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  &-active,
+  &:hover {
+    background-color: @neutral-hover-bg;
+  }
+  .set-new-wallet-name-icon {
+    width: 16px;
+    height: 16px;
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+.set-new-wallet-name-popover.@{app-prefix}-popover {
+  padding-top: 4px;
+  .@{app-prefix}-popover-inner {
+    width: 224px;
+    border-radius: 6px;
+    box-shadow: 0 2px 12px 0 rgb(77 78 89 / 15%);
+  }
+  .popover-content-wrap {
+    gap: 8px;
+    align-items: flex-start;
+    position: relative;
+    padding-right: 14px;
+    .popover-close-icon {
+      position: absolute;
+      top: 0;
+      right: -8px;
+      width: 14px;
+      height: 14px;
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .popover-content-prompt {
+      font-size: 12px;
+      line-height: 16px;
+      color: @neutral-secondary-text;
+    }
+    .popover-content-confirm {
+      font-size: 14px;
+      line-height: 22px;
+      color: @brand-normal;
+      &:hover {
+        color: @brand-hover;
+      }
+      &:focus {
+        color: @brand-click;
+      }
+    }
+  }
+}

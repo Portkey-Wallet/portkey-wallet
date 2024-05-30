@@ -10,14 +10,24 @@
     padding: 8px 16px 24px;
     .balance-amount-wrap {
       gap: 4px;
-      .wallet-name {
-        font-size: 12px;
-        line-height: 16px;
-        color: @neutral-tertiary-text;
-        word-break: break-all;
+      .wallet-name-wrap {
+        gap: 4px;
         .@{app-prefix}-skeleton-avatar {
           width: 80px;
           height: 22px;
+        }
+      }
+      .wallet-name {
+        font-size: 14px;
+        line-height: 22px;
+        color: @neutral-tertiary-text;
+        word-break: break-all;
+      }
+      .balance-amount-content {
+        gap: 4px;
+        .@{app-prefix}-skeleton-avatar {
+          width: 148px;
+          height: 40px;
         }
       }
       .balance-amount {
@@ -29,15 +39,24 @@
           font-size: 28px;
           line-height: 36px;
         }
-        .amount {
-          .@{app-prefix}-skeleton-avatar {
-            width: 148px;
-            height: 40px;
-          }
+        &.balance-amount-hidden {
+          font-weight: 500;
+          letter-spacing: 3.2px;
         }
       }
       &.is-prompt {
         align-items: center;
+      }
+      .hide-assets-icon-wrap {
+        padding: 6px 0;
+        .hide-assets-icon {
+          width: 16px;
+          height: 16px;
+          svg {
+            width: 100%;
+            height: 100%;
+          }
+        }
       }
     }
   }

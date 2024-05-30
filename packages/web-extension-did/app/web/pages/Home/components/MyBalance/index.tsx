@@ -8,7 +8,12 @@ import Activity from '../Activity/index';
 import { Transaction } from '@portkey-wallet/types/types-ca/trade';
 import NFT from '../NFT/NFT';
 import { useAppDispatch, useUserInfo, useCommonState, useLoading } from 'store/Provider/hooks';
-import { useCurrentUserInfo, useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import {
+  useCurrentUserInfo,
+  useCurrentWallet,
+  useOriginChainId,
+  useSetHideAssets,
+} from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import CustomTokenModal from 'pages/components/CustomTokenModal';
@@ -39,6 +44,8 @@ import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import { RampType } from '@portkey-wallet/ramp';
 import { getDisclaimerData } from 'utils/disclaimer';
 import { TradeTypeEnum } from 'constants/trade';
+import CustomSvg from 'components/CustomSvg';
+import SetNewWalletNameIcon from '../SetNewWalletNameIcon';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import SkeletonCom from 'pages/components/SkeletonCom';
 
@@ -65,6 +72,7 @@ export default function MyBalance() {
   const { eTransferUrl = '' } = useCurrentNetworkInfo();
   const isFCMEnable = useFCMEnable();
   const { setLoading } = useLoading();
+  const setHideAssets = useSetHideAssets();
 
   const renderTabsData = useMemo(
     () => [
@@ -248,18 +256,67 @@ export default function MyBalance() {
     }
   }, [isPrompt]);
 
+  const renderUsdShow = useCallback(() => {
+    let text = '';
+    let isHideAssets = false;
+    let showSkeleton = false;
+    if (isMainNet) {
+      if (userInfo.hideAssets) {
+        text = '******';
+        isHideAssets = true;
+      } else {
+        text = usdShow;
+        if (!usdShow) {
+          showSkeleton = true;
+        }
+      }
+    } else {
+      text = 'Dev Mode';
+    }
+    return (
+      <div className="balance-amount-content flex-row-start">
+        {showSkeleton ? (
+          <SkeletonCom />
+        ) : (
+          <>
+            <div
+              className={clsx(
+                'balance-amount',
+                text.length > 18 && 'balance-amount-long',
+                isHideAssets && 'balance-amount-hidden',
+              )}>
+              {text}
+            </div>
+            {isMainNet && (
+              <div className="hide-assets-icon-wrap">
+                <CustomSvg
+                  className="hide-assets-icon cursor-pointer"
+                  type={userInfo.hideAssets ? 'EyeInvisibleOutlined' : 'EyeOutlined'}
+                  onClick={() => setHideAssets(!userInfo.hideAssets)}
+                />
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    );
+  }, [isMainNet, setHideAssets, usdShow, userInfo.hideAssets]);
+
   return (
     <div className={clsx('balance', detailScroll && 'detail-scroll')} onScroll={onBalanceWrapScroll}>
       <div className="main-content-wrap flex-column">
         <div className={clsx('balance-amount-wrap', 'flex-column', isPrompt && 'is-prompt')}>
-          <div className="wallet-name">{userInfo.nickName ?? <SkeletonCom />}</div>
-          <div className={clsx('balance-amount', usdShow.length > 18 && 'balance-amount-long')}>
-            {isMainNet ? (
-              <span className="amount">{usdShow ?? <SkeletonCom />}</span>
+          <div className="wallet-name-wrap flex-row-center">
+            {userInfo.nickName ? (
+              <>
+                <div className="wallet-name">{userInfo.nickName}</div>
+                <SetNewWalletNameIcon />
+              </>
             ) : (
-              <span className="dev-mode">Dev Mode</span>
+              <SkeletonCom />
             )}
           </div>
+          {renderUsdShow()}
         </div>
         <MainCards
           onSend={async () => {

@@ -8,7 +8,6 @@ import { TextL } from 'components/CommonText';
 import ChatsGroupDetailContent from '../components/ChatsGroupDetailContent';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
-import ChatOverlay from '../../../components/FloatOverlay';
 import navigationService from 'utils/navigationService';
 import { ChatOperationsEnum } from '@portkey-wallet/constants/constants-ca/chat';
 import { FontStyles } from 'assets/theme/styles';
@@ -35,6 +34,7 @@ import HeaderPinSection from '../components/HeaderPinSection';
 import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { TabRouteNameEnum } from 'types/navigate';
+import FloatOverlay from 'components/FloatOverlay';
 
 const ChatGroupDetailsPage = () => {
   const isFocused = useIsFocused();
@@ -143,7 +143,7 @@ const ChatGroupDetailsPage = () => {
       const { pageY } = event.nativeEvent;
 
       const top = await measurePageY(event.target);
-      ChatOverlay.showChatPopover({
+      FloatOverlay.showFloatPopover({
         list: handleList,
         formatType: 'dynamicWidth',
         customPosition: { right: pTd(8), top: (top || pageY) + 30 },

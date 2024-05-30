@@ -1,4 +1,3 @@
-import ChatOverlay from 'pages/Chat/components/ChatOverlay';
 import React, { useCallback, useState } from 'react';
 import { GestureResponderEvent, StyleSheet, View, Text } from 'react-native';
 import Svg from 'components/Svg';
@@ -8,6 +7,7 @@ import { defaultColors } from 'assets/theme';
 import { TouchableOpacity } from 'react-native';
 import CommonToast from 'components/CommonToast';
 import { IMarketInfo, IMarketType } from '@portkey-wallet/store/store-ca/discover/type';
+import FloatOverlay from 'components/FloatOverlay';
 
 export default function MarketType({
   marketInfo,
@@ -22,7 +22,7 @@ export default function MarketType({
       setCollapsed(false);
       // const { pageY } = event.nativeEvent;
       const top = await measurePageY(event.target);
-      ChatOverlay.showChatPopover({
+      FloatOverlay.showFloatPopover({
         list: [
           {
             title: 'Favorite',

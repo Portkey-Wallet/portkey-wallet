@@ -8,7 +8,6 @@ import { TextL } from 'components/CommonText';
 import ChatsDetailContent from '../components/ChatsDetailContent';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
-import ChatOverlay from '../../../components/FloatOverlay';
 import navigationService from 'utils/navigationService';
 import { ChatOperationsEnum } from '@portkey-wallet/constants/constants-ca/chat';
 import CommonAvatar from 'components/CommonAvatar';
@@ -35,6 +34,7 @@ import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import { measurePageY } from 'utils/measure';
 import { useIsFocused } from '@react-navigation/native';
 import { TabRouteNameEnum } from 'types/navigate';
+import FloatOverlay from 'components/FloatOverlay';
 
 const ChatDetailsPage = () => {
   const dispatch = useAppCommonDispatch();
@@ -145,7 +145,7 @@ const ChatDetailsPage = () => {
       const { pageY } = event.nativeEvent;
 
       const top = await measurePageY(event.target);
-      ChatOverlay.showChatPopover({
+      FloatOverlay.showFloatPopover({
         list: handleList,
         formatType: 'dynamicWidth',
         customPosition: { right: pTd(8), top: (top || pageY) + 30 },

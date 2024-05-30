@@ -1,6 +1,7 @@
 import { ICryptoCurrencyItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { defaultColors } from 'assets/theme';
 import { FontStyles } from 'assets/theme/styles';
+import CommonToast from 'components/CommonToast';
 import PortkeySkeleton from 'components/PortkeySkeleton';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
@@ -47,15 +48,28 @@ export default function MarketItem(props: IMarketItemProps) {
           <View style={[styles.boxWrapper, styles.section1Width]}>
             <Touchable
               disabled={isDefaultSymbol}
-              onPress={() => {
+              onPress={async () => {
                 onStarClicked?.(!item.collected);
                 console.log('wfs=== favorite', favorite);
                 if (favorite) {
-                  setFavorite(false);
                   unMarkFavorite(item.id, item.symbol);
+                  try {
+                    setFavorite(false);
+                    await unMarkFavorite(item.id, item.symbol);
+                    CommonToast.success('Removed');
+                  } catch (e) {
+                    setFavorite(true);
+                    CommonToast.success('Removed Failed');
+                  }
                 } else {
-                  setFavorite(true);
-                  markFavorite(item.id, item.symbol);
+                  try {
+                    setFavorite(true);
+                    await markFavorite(item.id, item.symbol);
+                    CommonToast.success('Added to Favorites');
+                  } catch (e) {
+                    setFavorite(false);
+                    CommonToast.success('Add Failed');
+                  }
                 }
               }}>
               <Svg

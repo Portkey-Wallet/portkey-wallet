@@ -154,12 +154,18 @@ export const useMarket = () => {
     async (type: IMarketType, sort?: IMarketSort, sortDir?: IMarketSortDir): Promise<ICryptoCurrencyItem[]> => {
       try {
         setRefreshing(true);
+        const params: { type?: IMarketType; sort?: IMarketSort; sortDir?: IMarketSortDir } = {};
+        if (type) {
+          params.type = type;
+        }
+        if (sort) {
+          params.sort = sort;
+        }
+        if (sortDir) {
+          params.sortDir = sortDir;
+        }
         const result = await request.discover.getCryptoCurrencyList({
-          params: {
-            type,
-            sort,
-            sortDir,
-          },
+          params: params,
         });
         console.log('wfs result===', result);
         return result;
@@ -226,7 +232,11 @@ export const useMarket = () => {
           nextSortDir = 'desc';
         }
         dispatch(changeMarketSort({ networkType, markSort: { sort, sortDir: nextSortDir } }));
-        const localCryptoCurrencyList = await fetchCryptoCurrencyList(marketInfo?.type || 'Hot', sort, nextSortDir);
+        const localCryptoCurrencyList = await fetchCryptoCurrencyList(
+          marketInfo?.type || 'Hot',
+          nextSortDir === '' ? '' : sort,
+          nextSortDir,
+        );
         dispatch(changeMarketList({ networkType, cryptoCurrencyList: localCryptoCurrencyList }));
       } catch (e) {
         dispatch(rollBackMarketSort({ networkType }));

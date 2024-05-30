@@ -1,0 +1,44 @@
+query discoverTabData_aggregated($groupBy: [String], $filter: discoverTabData_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
+    discoverTabData_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
+        group
+        countAll
+        count{
+            id
+            status
+            index
+            name
+            value
+        }
+        countDistinct{
+            id
+            status
+            index
+            name
+            value
+        }
+        avg{
+            id
+            index
+        }
+        sum{
+            id
+            index
+        }
+        avgDistinct{
+            id
+            index
+        }
+        sumDistinct{
+            id
+            index
+        }
+        min{
+            id
+            index
+        }
+        max{
+            id
+            index
+        }
+    }
+}

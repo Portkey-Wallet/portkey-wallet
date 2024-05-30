@@ -2,7 +2,7 @@ import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
 import PageContainer from 'components/PageContainer';
-import React, { useCallback, useMemo, useRef, useState, Fragment } from 'react';
+import React, { useCallback, useMemo, useRef, useState, Fragment, forwardRef, useImperativeHandle } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca/index';
 import { pTd } from 'utils/unit';
@@ -38,8 +38,9 @@ import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
 import Touchable from 'components/Touchable';
+import { ITabContext } from './tools';
 
-const TabsDrawerContent: React.FC = () => {
+export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
   const { t } = useLanguage();
   const { networkType } = useCurrentNetworkInfo();
   const nav = useNavigation();
@@ -202,6 +203,17 @@ const TabsDrawerContent: React.FC = () => {
     [activeItem, activeTabId, activeWebviewScreenShot],
   );
 
+  const provider = useMemo<ITabContext>(() => {
+    return {
+      currentTabLength: (tabs ?? []).length,
+      showAllTabs: () => {
+        clickBottomActionBtn('showTab');
+      },
+    };
+  }, [clickBottomActionBtn, tabs]);
+
+  useImperativeHandle(drawerRef, () => provider, [provider]);
+
   const TabsDom = useMemo(() => {
     return tabs?.map(ele => {
       const isHidden = activeTabId !== ele.id;
@@ -346,9 +358,9 @@ const TabsDrawerContent: React.FC = () => {
       </PageContainer>
     </BrowserContext.Provider>
   );
-};
+});
 
-export default TabsDrawerContent;
+TabsDrawerContent.displayName = 'TabsDrawerContent';
 
 const styles = StyleSheet.create({
   container: {

@@ -15,12 +15,33 @@ type Query {
   deviceType(filter: deviceType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [deviceType!]!
   deviceType_by_id(id: ID!): deviceType
   deviceType_aggregated(groupBy: [String], filter: deviceType_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [deviceType_aggregated!]!
+  discoverDappBanner: discoverDappBanner
+  discoverDappBanner_portkeyCard(filter: discoverDappBanner_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverDappBanner_portkeyCard!]!
+  discoverDappBanner_portkeyCard_by_id(id: ID!): discoverDappBanner_portkeyCard
+  discoverDappBanner_portkeyCard_aggregated(groupBy: [String], filter: discoverDappBanner_portkeyCard_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverDappBanner_portkeyCard_aggregated!]!
+  discoverEarnData: discoverEarnData
+  discoverEarnData_portkeyCard(filter: discoverEarnData_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverEarnData_portkeyCard!]!
+  discoverEarnData_portkeyCard_by_id(id: ID!): discoverEarnData_portkeyCard
+  discoverEarnData_portkeyCard_aggregated(groupBy: [String], filter: discoverEarnData_portkeyCard_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverEarnData_portkeyCard_aggregated!]!
   discoverGroup(filter: discoverGroup_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverGroup!]!
   discoverGroup_by_id(id: ID!): discoverGroup
   discoverGroup_aggregated(groupBy: [String], filter: discoverGroup_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverGroup_aggregated!]!
   discoverItem(filter: discoverItem_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverItem!]!
   discoverItem_by_id(id: ID!): discoverItem
   discoverItem_aggregated(groupBy: [String], filter: discoverItem_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverItem_aggregated!]!
+  discoverLearnBanner: discoverLearnBanner
+  discoverLearnBanner_portkeyCard(filter: discoverLearnBanner_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverLearnBanner_portkeyCard!]!
+  discoverLearnBanner_portkeyCard_by_id(id: ID!): discoverLearnBanner_portkeyCard
+  discoverLearnBanner_portkeyCard_aggregated(groupBy: [String], filter: discoverLearnBanner_portkeyCard_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverLearnBanner_portkeyCard_aggregated!]!
+  discoverLearnGroup(filter: discoverLearnGroup_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverLearnGroup!]!
+  discoverLearnGroup_by_id(id: ID!): discoverLearnGroup
+  discoverLearnGroup_aggregated(groupBy: [String], filter: discoverLearnGroup_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverLearnGroup_aggregated!]!
+  discoverLearnGroup_portkeyCard(filter: discoverLearnGroup_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverLearnGroup_portkeyCard!]!
+  discoverLearnGroup_portkeyCard_by_id(id: ID!): discoverLearnGroup_portkeyCard
+  discoverLearnGroup_portkeyCard_aggregated(groupBy: [String], filter: discoverLearnGroup_portkeyCard_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverLearnGroup_portkeyCard_aggregated!]!
+  discoverTabData(filter: discoverTabData_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverTabData!]!
+  discoverTabData_by_id(id: ID!): discoverTabData
+  discoverTabData_aggregated(groupBy: [String], filter: discoverTabData_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverTabData_aggregated!]!
   download: download
   entrance(filter: entrance_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entrance!]!
   entrance_by_id(id: ID!): entrance
@@ -35,6 +56,13 @@ type Query {
   entranceModuleName_by_id(id: ID!): entranceModuleName
   entranceModuleName_aggregated(groupBy: [String], filter: entranceModuleName_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [entranceModuleName_aggregated!]!
   home: home
+  home_dApp(filter: home_dApp_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [home_dApp!]!
+  home_dApp_by_id(id: ID!): home_dApp
+  home_dApp_aggregated(groupBy: [String], filter: home_dApp_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [home_dApp_aggregated!]!
+  homeBanner: homeBanner
+  homeBanner_portkeyCard(filter: homeBanner_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [homeBanner_portkeyCard!]!
+  homeBanner_portkeyCard_by_id(id: ID!): homeBanner_portkeyCard
+  homeBanner_portkeyCard_aggregated(groupBy: [String], filter: homeBanner_portkeyCard_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [homeBanner_portkeyCard_aggregated!]!
   loginMode(filter: loginMode_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [loginMode!]!
   loginMode_by_id(id: ID!): loginMode
   loginMode_aggregated(groupBy: [String], filter: loginMode_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [loginMode_aggregated!]!
@@ -60,6 +88,9 @@ type Query {
   officialSocialMedia(filter: officialSocialMedia_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [officialSocialMedia!]!
   officialSocialMedia_by_id(id: ID!): officialSocialMedia
   officialSocialMedia_aggregated(groupBy: [String], filter: officialSocialMedia_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [officialSocialMedia_aggregated!]!
+  portkeyCard(filter: portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [portkeyCard!]!
+  portkeyCard_by_id(id: ID!): portkeyCard
+  portkeyCard_aggregated(groupBy: [String], filter: portkeyCard_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [portkeyCard_aggregated!]!
   rememberMeBlackListSites(filter: rememberMeBlackListSites_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [rememberMeBlackListSites!]!
   rememberMeBlackListSites_by_id(id: ID!): rememberMeBlackListSites
   rememberMeBlackListSites_aggregated(groupBy: [String], filter: rememberMeBlackListSites_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [rememberMeBlackListSites_aggregated!]!
@@ -72,6 +103,12 @@ type Query {
   tabType(filter: tabType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [tabType!]!
   tabType_by_id(id: ID!): tabType
   tabType_aggregated(groupBy: [String], filter: tabType_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [tabType_aggregated!]!
+  tokenDetailBanner(filter: tokenDetailBanner_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [tokenDetailBanner!]!
+  tokenDetailBanner_by_id(id: ID!): tokenDetailBanner
+  tokenDetailBanner_aggregated(groupBy: [String], filter: tokenDetailBanner_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [tokenDetailBanner_aggregated!]!
+  tokenDetailBanner_portkeyCard(filter: tokenDetailBanner_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [tokenDetailBanner_portkeyCard!]!
+  tokenDetailBanner_portkeyCard_by_id(id: ID!): tokenDetailBanner_portkeyCard
+  tokenDetailBanner_portkeyCard_aggregated(groupBy: [String], filter: tokenDetailBanner_portkeyCard_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [tokenDetailBanner_portkeyCard_aggregated!]!
   topMenu(filter: topMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [topMenu!]!
   topMenu_by_id(id: ID!): topMenu
   topMenu_aggregated(groupBy: [String], filter: topMenu_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [topMenu_aggregated!]!
@@ -428,6 +465,82 @@ type directus_files {
   metadata_func: count_functions
 }
 
+type discoverDappBanner {
+  id: ID!
+  status: String
+  items(filter: discoverDappBanner_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverDappBanner_portkeyCard]
+  items_func: count_functions
+}
+
+type discoverDappBanner_portkeyCard {
+  id: ID!
+  discoverDappBanner_id(filter: discoverDappBanner_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): discoverDappBanner
+  portkeyCard_id(filter: portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): portkeyCard
+}
+
+type discoverDappBanner_portkeyCard_aggregated {
+  group: JSON
+  countAll: Int
+  count: discoverDappBanner_portkeyCard_aggregated_count
+  countDistinct: discoverDappBanner_portkeyCard_aggregated_count
+  avg: discoverDappBanner_portkeyCard_aggregated_fields
+  sum: discoverDappBanner_portkeyCard_aggregated_fields
+  avgDistinct: discoverDappBanner_portkeyCard_aggregated_fields
+  sumDistinct: discoverDappBanner_portkeyCard_aggregated_fields
+  min: discoverDappBanner_portkeyCard_aggregated_fields
+  max: discoverDappBanner_portkeyCard_aggregated_fields
+}
+
+type discoverDappBanner_portkeyCard_aggregated_count {
+  id: Int
+  discoverDappBanner_id: Int
+  portkeyCard_id: Int
+}
+
+type discoverDappBanner_portkeyCard_aggregated_fields {
+  id: Float
+  discoverDappBanner_id: Float
+  portkeyCard_id: Float
+}
+
+type discoverEarnData {
+  id: ID!
+  status: String
+  items(filter: discoverEarnData_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverEarnData_portkeyCard]
+  items_func: count_functions
+}
+
+type discoverEarnData_portkeyCard {
+  id: ID!
+  discoverEarnData_id(filter: discoverEarnData_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): discoverEarnData
+  portkeyCard_id(filter: portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): portkeyCard
+}
+
+type discoverEarnData_portkeyCard_aggregated {
+  group: JSON
+  countAll: Int
+  count: discoverEarnData_portkeyCard_aggregated_count
+  countDistinct: discoverEarnData_portkeyCard_aggregated_count
+  avg: discoverEarnData_portkeyCard_aggregated_fields
+  sum: discoverEarnData_portkeyCard_aggregated_fields
+  avgDistinct: discoverEarnData_portkeyCard_aggregated_fields
+  sumDistinct: discoverEarnData_portkeyCard_aggregated_fields
+  min: discoverEarnData_portkeyCard_aggregated_fields
+  max: discoverEarnData_portkeyCard_aggregated_fields
+}
+
+type discoverEarnData_portkeyCard_aggregated_count {
+  id: Int
+  discoverEarnData_id: Int
+  portkeyCard_id: Int
+}
+
+type discoverEarnData_portkeyCard_aggregated_fields {
+  id: Float
+  discoverEarnData_id: Float
+  portkeyCard_id: Float
+}
+
 type discoverGroup {
   date_created: Date
   date_created_func: datetime_functions
@@ -530,6 +643,146 @@ type discoverItem_aggregated_fields {
   id: Float
   index: Float
   sort: Float
+}
+
+type discoverLearnBanner {
+  id: ID!
+  status: String
+  items(filter: discoverLearnBanner_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverLearnBanner_portkeyCard]
+  items_func: count_functions
+}
+
+type discoverLearnBanner_portkeyCard {
+  id: ID!
+  discoverLearnBanner_id(filter: discoverLearnBanner_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): discoverLearnBanner
+  portkeyCard_id(filter: portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): portkeyCard
+}
+
+type discoverLearnBanner_portkeyCard_aggregated {
+  group: JSON
+  countAll: Int
+  count: discoverLearnBanner_portkeyCard_aggregated_count
+  countDistinct: discoverLearnBanner_portkeyCard_aggregated_count
+  avg: discoverLearnBanner_portkeyCard_aggregated_fields
+  sum: discoverLearnBanner_portkeyCard_aggregated_fields
+  avgDistinct: discoverLearnBanner_portkeyCard_aggregated_fields
+  sumDistinct: discoverLearnBanner_portkeyCard_aggregated_fields
+  min: discoverLearnBanner_portkeyCard_aggregated_fields
+  max: discoverLearnBanner_portkeyCard_aggregated_fields
+}
+
+type discoverLearnBanner_portkeyCard_aggregated_count {
+  id: Int
+  discoverLearnBanner_id: Int
+  portkeyCard_id: Int
+}
+
+type discoverLearnBanner_portkeyCard_aggregated_fields {
+  id: Float
+  discoverLearnBanner_id: Float
+  portkeyCard_id: Float
+}
+
+type discoverLearnGroup {
+  id: ID!
+  status: String
+  index: GraphQLBigInt
+  title: String
+  value: String
+  items(filter: discoverLearnGroup_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverLearnGroup_portkeyCard]
+  items_func: count_functions
+}
+
+type discoverLearnGroup_aggregated {
+  group: JSON
+  countAll: Int
+  count: discoverLearnGroup_aggregated_count
+  countDistinct: discoverLearnGroup_aggregated_count
+  avg: discoverLearnGroup_aggregated_fields
+  sum: discoverLearnGroup_aggregated_fields
+  avgDistinct: discoverLearnGroup_aggregated_fields
+  sumDistinct: discoverLearnGroup_aggregated_fields
+  min: discoverLearnGroup_aggregated_fields
+  max: discoverLearnGroup_aggregated_fields
+}
+
+type discoverLearnGroup_aggregated_count {
+  id: Int
+  status: Int
+  index: Int
+  title: Int
+  value: Int
+  items: Int
+}
+
+type discoverLearnGroup_aggregated_fields {
+  id: Float
+  index: Float
+}
+
+type discoverLearnGroup_portkeyCard {
+  id: ID!
+  discoverLearnGroup_id(filter: discoverLearnGroup_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): discoverLearnGroup
+  portkeyCard_id(filter: portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): portkeyCard
+}
+
+type discoverLearnGroup_portkeyCard_aggregated {
+  group: JSON
+  countAll: Int
+  count: discoverLearnGroup_portkeyCard_aggregated_count
+  countDistinct: discoverLearnGroup_portkeyCard_aggregated_count
+  avg: discoverLearnGroup_portkeyCard_aggregated_fields
+  sum: discoverLearnGroup_portkeyCard_aggregated_fields
+  avgDistinct: discoverLearnGroup_portkeyCard_aggregated_fields
+  sumDistinct: discoverLearnGroup_portkeyCard_aggregated_fields
+  min: discoverLearnGroup_portkeyCard_aggregated_fields
+  max: discoverLearnGroup_portkeyCard_aggregated_fields
+}
+
+type discoverLearnGroup_portkeyCard_aggregated_count {
+  id: Int
+  discoverLearnGroup_id: Int
+  portkeyCard_id: Int
+}
+
+type discoverLearnGroup_portkeyCard_aggregated_fields {
+  id: Float
+  discoverLearnGroup_id: Float
+  portkeyCard_id: Float
+}
+
+type discoverTabData {
+  id: ID!
+  status: String
+  index: GraphQLBigInt
+  name: String
+  value: String
+}
+
+type discoverTabData_aggregated {
+  group: JSON
+  countAll: Int
+  count: discoverTabData_aggregated_count
+  countDistinct: discoverTabData_aggregated_count
+  avg: discoverTabData_aggregated_fields
+  sum: discoverTabData_aggregated_fields
+  avgDistinct: discoverTabData_aggregated_fields
+  sumDistinct: discoverTabData_aggregated_fields
+  min: discoverTabData_aggregated_fields
+  max: discoverTabData_aggregated_fields
+}
+
+type discoverTabData_aggregated_count {
+  id: Int
+  status: Int
+  index: Int
+  name: Int
+  value: Int
+}
+
+type discoverTabData_aggregated_fields {
+  id: Float
+  index: Float
 }
 
 type download {
@@ -717,6 +970,77 @@ type home {
   videoContent: String
   videoTitle: String
   videoUrl: String
+  dAppList(filter: home_dApp_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [home_dApp]
+  dAppList_func: count_functions
+}
+
+type home_dApp {
+  dApp_id: Int
+  home_id(filter: home_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): home
+  id: ID!
+}
+
+type home_dApp_aggregated {
+  group: JSON
+  countAll: Int
+  count: home_dApp_aggregated_count
+  countDistinct: home_dApp_aggregated_count
+  avg: home_dApp_aggregated_fields
+  sum: home_dApp_aggregated_fields
+  avgDistinct: home_dApp_aggregated_fields
+  sumDistinct: home_dApp_aggregated_fields
+  min: home_dApp_aggregated_fields
+  max: home_dApp_aggregated_fields
+}
+
+type home_dApp_aggregated_count {
+  dApp_id: Int
+  home_id: Int
+  id: Int
+}
+
+type home_dApp_aggregated_fields {
+  dApp_id: Float
+  home_id: Float
+  id: Float
+}
+
+type homeBanner {
+  id: ID!
+  status: String
+  items(filter: homeBanner_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [homeBanner_portkeyCard]
+  items_func: count_functions
+}
+
+type homeBanner_portkeyCard {
+  id: ID!
+  homeBanner_id(filter: homeBanner_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): homeBanner
+  portkeyCard_id(filter: portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): portkeyCard
+}
+
+type homeBanner_portkeyCard_aggregated {
+  group: JSON
+  countAll: Int
+  count: homeBanner_portkeyCard_aggregated_count
+  countDistinct: homeBanner_portkeyCard_aggregated_count
+  avg: homeBanner_portkeyCard_aggregated_fields
+  sum: homeBanner_portkeyCard_aggregated_fields
+  avgDistinct: homeBanner_portkeyCard_aggregated_fields
+  sumDistinct: homeBanner_portkeyCard_aggregated_fields
+  min: homeBanner_portkeyCard_aggregated_fields
+  max: homeBanner_portkeyCard_aggregated_fields
+}
+
+type homeBanner_portkeyCard_aggregated_count {
+  id: Int
+  homeBanner_id: Int
+  portkeyCard_id: Int
+}
+
+type homeBanner_portkeyCard_aggregated_fields {
+  id: Float
+  homeBanner_id: Float
+  portkeyCard_id: Float
 }
 
 type loginMode {
@@ -1065,6 +1389,51 @@ type officialSocialMedia_aggregated_fields {
   sort: Float
 }
 
+type portkeyCard {
+  id: ID!
+  status: String
+  index: GraphQLBigInt
+  title: String
+  value: String
+  description: String
+  buttonTitle: String
+  imgUrl(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  url: String
+  type: Int
+}
+
+type portkeyCard_aggregated {
+  group: JSON
+  countAll: Int
+  count: portkeyCard_aggregated_count
+  countDistinct: portkeyCard_aggregated_count
+  avg: portkeyCard_aggregated_fields
+  sum: portkeyCard_aggregated_fields
+  avgDistinct: portkeyCard_aggregated_fields
+  sumDistinct: portkeyCard_aggregated_fields
+  min: portkeyCard_aggregated_fields
+  max: portkeyCard_aggregated_fields
+}
+
+type portkeyCard_aggregated_count {
+  id: Int
+  status: Int
+  index: Int
+  title: Int
+  value: Int
+  description: Int
+  buttonTitle: Int
+  imgUrl: Int
+  url: Int
+  type: Int
+}
+
+type portkeyCard_aggregated_fields {
+  id: Float
+  index: Float
+  type: Float
+}
+
 type rememberMeBlackListSites {
   date_created: Date
   date_created_func: datetime_functions
@@ -1250,6 +1619,71 @@ type tabType_aggregated_count {
 type tabType_aggregated_fields {
   id: Float
   sort: Float
+}
+
+type tokenDetailBanner {
+  id: ID!
+  status: String
+  chainId: String
+  symbol: String
+  items(filter: tokenDetailBanner_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [tokenDetailBanner_portkeyCard]
+  items_func: count_functions
+}
+
+type tokenDetailBanner_aggregated {
+  group: JSON
+  countAll: Int
+  count: tokenDetailBanner_aggregated_count
+  countDistinct: tokenDetailBanner_aggregated_count
+  avg: tokenDetailBanner_aggregated_fields
+  sum: tokenDetailBanner_aggregated_fields
+  avgDistinct: tokenDetailBanner_aggregated_fields
+  sumDistinct: tokenDetailBanner_aggregated_fields
+  min: tokenDetailBanner_aggregated_fields
+  max: tokenDetailBanner_aggregated_fields
+}
+
+type tokenDetailBanner_aggregated_count {
+  id: Int
+  status: Int
+  chainId: Int
+  symbol: Int
+  items: Int
+}
+
+type tokenDetailBanner_aggregated_fields {
+  id: Float
+}
+
+type tokenDetailBanner_portkeyCard {
+  id: ID!
+  tokenDetailBanner_id(filter: tokenDetailBanner_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): tokenDetailBanner
+  portkeyCard_id(filter: portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): portkeyCard
+}
+
+type tokenDetailBanner_portkeyCard_aggregated {
+  group: JSON
+  countAll: Int
+  count: tokenDetailBanner_portkeyCard_aggregated_count
+  countDistinct: tokenDetailBanner_portkeyCard_aggregated_count
+  avg: tokenDetailBanner_portkeyCard_aggregated_fields
+  sum: tokenDetailBanner_portkeyCard_aggregated_fields
+  avgDistinct: tokenDetailBanner_portkeyCard_aggregated_fields
+  sumDistinct: tokenDetailBanner_portkeyCard_aggregated_fields
+  min: tokenDetailBanner_portkeyCard_aggregated_fields
+  max: tokenDetailBanner_portkeyCard_aggregated_fields
+}
+
+type tokenDetailBanner_portkeyCard_aggregated_count {
+  id: Int
+  tokenDetailBanner_id: Int
+  portkeyCard_id: Int
+}
+
+type tokenDetailBanner_portkeyCard_aggregated_fields {
+  id: Float
+  tokenDetailBanner_id: Float
+  portkeyCard_id: Float
 }
 
 type topMenu {
@@ -1517,6 +1951,40 @@ input directus_files_filter {
   _or: [directus_files_filter]
 }
 
+input discoverDappBanner_filter {
+  id: number_filter_operators
+  status: string_filter_operators
+  items: discoverDappBanner_portkeyCard_filter
+  items_func: count_function_filter_operators
+  _and: [discoverDappBanner_filter]
+  _or: [discoverDappBanner_filter]
+}
+
+input discoverDappBanner_portkeyCard_filter {
+  id: number_filter_operators
+  discoverDappBanner_id: discoverDappBanner_filter
+  portkeyCard_id: portkeyCard_filter
+  _and: [discoverDappBanner_portkeyCard_filter]
+  _or: [discoverDappBanner_portkeyCard_filter]
+}
+
+input discoverEarnData_filter {
+  id: number_filter_operators
+  status: string_filter_operators
+  items: discoverEarnData_portkeyCard_filter
+  items_func: count_function_filter_operators
+  _and: [discoverEarnData_filter]
+  _or: [discoverEarnData_filter]
+}
+
+input discoverEarnData_portkeyCard_filter {
+  id: number_filter_operators
+  discoverEarnData_id: discoverEarnData_filter
+  portkeyCard_id: portkeyCard_filter
+  _and: [discoverEarnData_portkeyCard_filter]
+  _or: [discoverEarnData_portkeyCard_filter]
+}
+
 input discoverGroup_filter {
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
@@ -1553,6 +2021,53 @@ input discoverItem_filter {
   user_updated: string_filter_operators
   _and: [discoverItem_filter]
   _or: [discoverItem_filter]
+}
+
+input discoverLearnBanner_filter {
+  id: number_filter_operators
+  status: string_filter_operators
+  items: discoverLearnBanner_portkeyCard_filter
+  items_func: count_function_filter_operators
+  _and: [discoverLearnBanner_filter]
+  _or: [discoverLearnBanner_filter]
+}
+
+input discoverLearnBanner_portkeyCard_filter {
+  id: number_filter_operators
+  discoverLearnBanner_id: discoverLearnBanner_filter
+  portkeyCard_id: portkeyCard_filter
+  _and: [discoverLearnBanner_portkeyCard_filter]
+  _or: [discoverLearnBanner_portkeyCard_filter]
+}
+
+input discoverLearnGroup_filter {
+  id: number_filter_operators
+  status: string_filter_operators
+  index: number_filter_operators
+  title: string_filter_operators
+  value: string_filter_operators
+  items: discoverLearnGroup_portkeyCard_filter
+  items_func: count_function_filter_operators
+  _and: [discoverLearnGroup_filter]
+  _or: [discoverLearnGroup_filter]
+}
+
+input discoverLearnGroup_portkeyCard_filter {
+  id: number_filter_operators
+  discoverLearnGroup_id: discoverLearnGroup_filter
+  portkeyCard_id: portkeyCard_filter
+  _and: [discoverLearnGroup_portkeyCard_filter]
+  _or: [discoverLearnGroup_portkeyCard_filter]
+}
+
+input discoverTabData_filter {
+  id: number_filter_operators
+  status: string_filter_operators
+  index: number_filter_operators
+  name: string_filter_operators
+  value: string_filter_operators
+  _and: [discoverTabData_filter]
+  _or: [discoverTabData_filter]
 }
 
 input entrance_entranceMatch_filter {
@@ -1609,6 +2124,47 @@ input entranceModuleName_filter {
   description: string_filter_operators
   _and: [entranceModuleName_filter]
   _or: [entranceModuleName_filter]
+}
+
+input home_dApp_filter {
+  dApp_id: number_filter_operators
+  home_id: home_filter
+  id: number_filter_operators
+  _and: [home_dApp_filter]
+  _or: [home_dApp_filter]
+}
+
+input home_filter {
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  focusImage: directus_files_filter
+  id: number_filter_operators
+  user_updated: string_filter_operators
+  dAppSectionTitle: string_filter_operators
+  videoContent: string_filter_operators
+  videoTitle: string_filter_operators
+  videoUrl: string_filter_operators
+  dAppList: home_dApp_filter
+  dAppList_func: count_function_filter_operators
+  _and: [home_filter]
+  _or: [home_filter]
+}
+
+input homeBanner_filter {
+  id: number_filter_operators
+  status: string_filter_operators
+  items: homeBanner_portkeyCard_filter
+  items_func: count_function_filter_operators
+  _and: [homeBanner_filter]
+  _or: [homeBanner_filter]
+}
+
+input homeBanner_portkeyCard_filter {
+  id: number_filter_operators
+  homeBanner_id: homeBanner_filter
+  portkeyCard_id: portkeyCard_filter
+  _and: [homeBanner_portkeyCard_filter]
+  _or: [homeBanner_portkeyCard_filter]
 }
 
 input loginMode_filter {
@@ -1755,6 +2311,21 @@ input officialSocialMedia_filter {
   _or: [officialSocialMedia_filter]
 }
 
+input portkeyCard_filter {
+  id: number_filter_operators
+  status: string_filter_operators
+  index: number_filter_operators
+  title: string_filter_operators
+  value: string_filter_operators
+  description: string_filter_operators
+  buttonTitle: string_filter_operators
+  imgUrl: directus_files_filter
+  url: string_filter_operators
+  type: number_filter_operators
+  _and: [portkeyCard_filter]
+  _or: [portkeyCard_filter]
+}
+
 input rememberMeBlackListSites_filter {
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
@@ -1838,6 +2409,25 @@ input tabType_filter {
   value: string_filter_operators
   _and: [tabType_filter]
   _or: [tabType_filter]
+}
+
+input tokenDetailBanner_filter {
+  id: number_filter_operators
+  status: string_filter_operators
+  chainId: string_filter_operators
+  symbol: string_filter_operators
+  items: tokenDetailBanner_portkeyCard_filter
+  items_func: count_function_filter_operators
+  _and: [tokenDetailBanner_filter]
+  _or: [tokenDetailBanner_filter]
+}
+
+input tokenDetailBanner_portkeyCard_filter {
+  id: number_filter_operators
+  tokenDetailBanner_id: tokenDetailBanner_filter
+  portkeyCard_id: portkeyCard_filter
+  _and: [tokenDetailBanner_portkeyCard_filter]
+  _or: [tokenDetailBanner_portkeyCard_filter]
 }
 
 input topMenu_filter {

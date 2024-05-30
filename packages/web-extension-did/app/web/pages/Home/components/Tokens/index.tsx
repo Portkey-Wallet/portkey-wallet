@@ -8,7 +8,7 @@ import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { PAGE_SIZE_IN_ACCOUNT_TOKEN } from '@portkey-wallet/constants/constants-ca/assets';
-import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddressInfoList, useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import './index.less';
 import clsx from 'clsx';
@@ -18,6 +18,7 @@ export default function TokenList() {
   const navigate = useNavigate();
   const isMainnet = useIsMainnet();
   const caAddressInfos = useCaAddressInfoList();
+  const userInfo = useCurrentUserInfo();
   const { accountTokenList, totalRecordCount, fetchAccountTokenInfoList } = useAccountTokenInfo();
   const hasMoreTokenList = useMemo(
     () => accountTokenList.length < totalRecordCount,
@@ -50,6 +51,29 @@ export default function TokenList() {
     return;
   }, [navigate]);
 
+  const getTokenAmount = useCallback(
+    (item: TokenItemShowType) =>
+      userInfo.hideAssets ? '****' : formatTokenAmountShowWithDecimals(item.balance, item.decimals),
+    [userInfo.hideAssets],
+  );
+
+  const getAmountUSDShow = useCallback(
+    (item: TokenItemShowType) => {
+      const formatAmount = formatAmountUSDShow(item?.balanceInUsd);
+      let text = '';
+      if (isMainnet && formatAmount) {
+        if (userInfo.hideAssets) {
+          text = '****';
+        } else {
+          text = formatAmount;
+        }
+        return <span className="convert">{text}</span>;
+      }
+      return null;
+    },
+    [isMainnet, userInfo.hideAssets],
+  );
+
   return (
     <div className={clsx('tab-token', !hasMoreTokenList && 'hidden-loading-more')}>
       <ul className="token-list">
@@ -62,11 +86,11 @@ export default function TokenList() {
             <div className="token-desc">
               <div className="info flex-between">
                 <span>{item.symbol}</span>
-                <span>{formatTokenAmountShowWithDecimals(item.balance, item.decimals)}</span>
+                <span>{getTokenAmount(item)}</span>
               </div>
               <div className="amount flex-between">
                 <span>{transNetworkText(item.chainId, !isMainnet)}</span>
-                {isMainnet && <span className="convert">{formatAmountUSDShow(item?.balanceInUsd)}</span>}
+                {getAmountUSDShow(item)}
               </div>
             </div>
           </li>

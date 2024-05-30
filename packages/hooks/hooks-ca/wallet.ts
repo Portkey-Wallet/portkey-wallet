@@ -12,6 +12,10 @@ import {
   setHideAssetsAction,
   getCaHolderInfoAsync,
   setCheckManagerExceed,
+  fetchShouldShowSetNewWalletNameModal,
+  fetchShouldShowSetNewWalletNameIcon,
+  setNewWalletName,
+  cancelSetNewWalletNameModal,
 } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { DeviceInfoType } from '@portkey-wallet/types/types-ca/device';
 import { extraDataListDecode } from '@portkey-wallet/utils/device';
@@ -73,6 +77,16 @@ export const useCurrentUserInfo = (forceUpdate?: boolean) => {
   }, [currentNetwork, dispatch, forceUpdate, userInfo]);
 
   return userInfo?.[currentNetwork] || DEFAULT_USER_INFO;
+};
+
+export const useRefreshUserInfo = () => {
+  const dispatch = useAppCommonDispatch();
+
+  const refreshUserInfo = useCallback(() => {
+    dispatch(getCaHolderInfoAsync());
+  }, [dispatch]);
+
+  return refreshUserInfo;
 };
 
 export const useCurrentWalletInfo = () => {
@@ -320,3 +334,52 @@ export function useCheckManagerExceed() {
     return managersTooMany;
   }, [checkManagerExceed, caHash, dispatch, currentNetworkInfo.networkType]);
 }
+
+export const useSetNewWalletName = () => {
+  const dispatch = useAppCommonDispatch();
+  const caHash = useCurrentCaHash();
+  const originChainId = useOriginChainId();
+  const { shouldShowSetNewWalletNameModal, shouldShowSetNewWalletNameIcon } = useCurrentUserInfo();
+  const refreshUserInfo = useRefreshUserInfo();
+
+  const updateShouldData = useCallback(async () => {
+    try {
+      await dispatch(fetchShouldShowSetNewWalletNameModal());
+      await dispatch(fetchShouldShowSetNewWalletNameIcon());
+    } catch (error) {
+      console.error('Failed to update shouldShow data:', error);
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    updateShouldData();
+  }, [updateShouldData]);
+
+  const handleSetNewWalletName = useCallback(async () => {
+    if (!caHash || !originChainId) throw new Error('Missing caHash or chainId');
+    await dispatch(setNewWalletName({ caHash, chainId: originChainId }));
+    await updateShouldData();
+    await refreshUserInfo();
+  }, [caHash, dispatch, originChainId, updateShouldData, refreshUserInfo]);
+
+  const handleCancelSetNewWalletNameModal = useCallback(async () => {
+    if (!caHash || !originChainId) throw new Error('Missing caHash or chainId');
+    await dispatch(cancelSetNewWalletNameModal({ caHash, chainId: originChainId }));
+    await updateShouldData();
+  }, [caHash, dispatch, originChainId, updateShouldData]);
+
+  return useMemo(
+    () => ({
+      shouldShowSetNewWalletNameModal,
+      shouldShowSetNewWalletNameIcon,
+      handleSetNewWalletName,
+      handleCancelSetNewWalletNameModal,
+    }),
+    [
+      handleCancelSetNewWalletNameModal,
+      handleSetNewWalletName,
+      shouldShowSetNewWalletNameIcon,
+      shouldShowSetNewWalletNameModal,
+    ],
+  );
+};

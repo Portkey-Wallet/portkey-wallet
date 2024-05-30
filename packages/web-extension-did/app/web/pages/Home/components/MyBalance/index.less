@@ -8,6 +8,7 @@
   .main-content-wrap {
     gap: 24px;
     padding: 8px 16px 24px;
+    border-bottom: 1px solid @neutral-divider;
     .balance-amount-wrap {
       gap: 4px;
       .wallet-name-wrap {
@@ -61,6 +62,11 @@
     }
   }
 
+  .banner-wrap {
+    border-bottom: 1px solid @neutral-divider;
+    margin-bottom: 8px;
+  }
+
   .@{app-prefix}-tabs {
     background-color: @neutral-default-bg;
     overflow: hidden;
@@ -73,6 +79,10 @@
       position: sticky;
       top: 0;
       background: @neutral-default-bg;
+
+      &::before {
+        content: none;
+      }
 
       .@{app-prefix}-tabs-nav-wrap {
         .@{app-prefix}-tabs-nav-list {

@@ -7,6 +7,7 @@ import {
   TDiscoverDappBannerList,
   TDiscoverLearnBannerList,
 } from '@portkey-wallet/types/types-ca/cms';
+import { ChainId } from '@portkey-wallet/types';
 
 export const useCMS = () => useAppCASelector(state => state.cms);
 
@@ -46,7 +47,7 @@ export const useCmsBanner = () => {
     return mockCardDataList;
   }, []);
 
-  const getTokenDetailBannerList = useCallback((chainId, symbol): TTokenDetailBannerList => {
+  const getTokenDetailBannerList = useCallback((chainId: ChainId, symbol: string): TTokenDetailBannerList => {
     console.log('===', chainId, symbol);
     return mockCardDataList;
   }, []);

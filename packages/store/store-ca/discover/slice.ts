@@ -1,5 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { IDiscoverStateType, IDiscoverNetworkStateType, ITabItem, IBookmarkItem } from './type';
+import {
+  IDiscoverStateType,
+  IDiscoverNetworkStateType,
+  ITabItem,
+  IBookmarkItem,
+  ICryptoCurrencyItem,
+  IMarketType,
+  IMarketSortAndDir,
+} from './type';
 import { NetworkType } from '@portkey-wallet/types';
 import { enableMapSet } from 'immer';
 import { RECORD_LIMIT, TAB_LIMIT } from '@portkey-wallet/constants/constants-ca/discover';
@@ -10,6 +18,16 @@ const initNetworkData: IDiscoverNetworkStateType = {
   whiteList: [],
   tabs: [],
   bookmarkList: [],
+  marketInfo: {
+    type: 'Hot',
+    sort: '',
+    sortDir: '',
+    dataList: [],
+  },
+  preMarketInfo: {
+    sort: '',
+    sortDir: '',
+  },
 };
 
 const initialState: IDiscoverStateType = {
@@ -177,6 +195,77 @@ export const discoverSlice = createSlice({
         [payload]: [],
       };
     },
+    changeMarketType: (state, { payload }: { payload: { networkType: NetworkType; marketType: IMarketType } }) => {
+      console.log('wfs=== changeMarketType before', state.discoverMap);
+      state.discoverMap = {
+        ...(state.discoverMap || {}),
+        [payload.networkType]: {
+          ...(state.discoverMap?.[payload.networkType] || {}),
+          marketInfo: { ...(state.discoverMap?.[payload.networkType]?.marketInfo || {}), type: payload.marketType },
+        },
+      };
+      console.log('wfs=== changeMarketType after', state.discoverMap);
+    },
+    changeMarketSort: (state, { payload }: { payload: { networkType: NetworkType; markSort: IMarketSortAndDir } }) => {
+      console.log('wfs=== changeMarketSort before', state.discoverMap);
+      const marketInfo = state.discoverMap?.[payload.networkType]?.marketInfo;
+      const preMarketInfo = { sort: marketInfo?.sort, sortDir: marketInfo?.sortDir };
+      state.discoverMap = {
+        ...(state.discoverMap || {}),
+        [payload.networkType]: {
+          ...(state.discoverMap?.[payload.networkType] || {}),
+          preMarketInfo,
+          marketInfo: { ...(state.discoverMap?.[payload.networkType]?.marketInfo || {}), ...payload.markSort },
+        },
+      };
+      console.log('wfs=== changeMarketSort after', state.discoverMap);
+    },
+    changeMarketList: (
+      state,
+      { payload }: { payload: { networkType: NetworkType; cryptoCurrencyList: ICryptoCurrencyItem[] } },
+    ) => {
+      console.log('wfs=== changeMarketList before', state.discoverMap);
+      state.discoverMap = {
+        ...(state.discoverMap || {}),
+        [payload.networkType]: {
+          ...(state.discoverMap?.[payload.networkType] || {}),
+          marketInfo: {
+            ...(state.discoverMap?.[payload.networkType]?.marketInfo || {}),
+            dataList: payload.cryptoCurrencyList,
+          },
+        },
+      };
+      console.log('wfs=== changeMarketList after', state.discoverMap);
+    },
+    rollBackMarketSort: (state, { payload }: { payload: { networkType: NetworkType } }) => {
+      console.log('wfs=== rollBackMarketSort before', state.discoverMap);
+      state.discoverMap = {
+        ...(state.discoverMap || {}),
+        [payload.networkType]: {
+          ...(state.discoverMap?.[payload.networkType] || {}),
+          marketInfo: {
+            ...(state.discoverMap?.[payload.networkType]?.marketInfo || {}),
+            ...state.discoverMap?.[payload.networkType]?.preMarketInfo,
+          },
+        },
+      };
+      console.log('wfs=== rollBackMarketSort after', state.discoverMap);
+    },
+    resetMarketSort: (state, { payload }: { payload: { networkType: NetworkType } }) => {
+      console.log('wfs=== resetMarketSort before', state.discoverMap);
+      state.discoverMap = {
+        ...(state.discoverMap || {}),
+        [payload.networkType]: {
+          ...(state.discoverMap?.[payload.networkType] || {}),
+          marketInfo: {
+            ...(state.discoverMap?.[payload.networkType]?.marketInfo || {}),
+            sort: '',
+            sortDir: '',
+          },
+        },
+      };
+      console.log('wfs=== resetMarketSort after', state.discoverMap);
+    },
   },
 });
 
@@ -200,6 +289,11 @@ export const {
   removeAutoApproveItem,
   addDisclaimerConfirmedDapp,
   resetDisclaimerConfirmedDapp,
+  changeMarketType,
+  changeMarketSort,
+  changeMarketList,
+  rollBackMarketSort,
+  resetMarketSort,
 } = discoverSlice.actions;
 
 export default discoverSlice;

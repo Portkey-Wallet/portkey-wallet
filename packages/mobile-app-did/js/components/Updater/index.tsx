@@ -35,6 +35,8 @@ import { useCheckCodePushUpdate } from 'store/user/hooks';
 import useInterval from '@portkey-wallet/hooks/useInterval';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import MatchValueMap from 'utils/matchValueMap';
+import { useInitCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
+import { useInitCMSDiscoverNewData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
 
 request.setExceptionManager(exceptionManager);
 
@@ -120,6 +122,8 @@ export default function Updater() {
   useSocialMediaList(true);
   useTabMenuList(true);
   useDiscoverGroupList(true);
+  useInitCmsBanner();
+  useInitCMSDiscoverNewData();
   useAppEntrance(true);
   useRememberMeBlackList(true);
   useCheckContactMap();

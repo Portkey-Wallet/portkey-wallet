@@ -11,7 +11,7 @@ import BaseDrawer from '../BaseDrawer';
 import { useCommonState } from 'store/Provider/hooks';
 import './index.less';
 
-export interface CopyAddressDrawerOrModalInstance {
+export interface ICopyAddressDrawerOrModalInstance {
   open: () => void;
 }
 

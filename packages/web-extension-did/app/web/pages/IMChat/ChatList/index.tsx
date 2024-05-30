@@ -9,6 +9,7 @@ import {
   useMuteChannel,
   useHideChannel,
   useUnreadCount,
+  useBlockAndReport,
 } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
 import { useHandleClickChatItem } from 'hooks/im';
@@ -40,6 +41,7 @@ export default function ChatList() {
   const handleClickChatItem = useHandleClickChatItem();
   const joinOfficialGroupTip = useJoinOfficialGroupTipModal();
   const [showGuide, setShowGuide] = useState<boolean>(false);
+  const { fetchAndSetBlockList } = useBlockAndReport();
   const hasPinedMsg = useMemo(() => chatList.some((chat) => chat.pin), [chatList]);
   const popList = useMemo(
     () => [
@@ -70,6 +72,10 @@ export default function ChatList() {
     ],
     [navigate],
   );
+
+  useEffectOnce(() => {
+    fetchAndSetBlockList();
+  });
 
   const handlePin = useCallback(
     async (chatItem: IChatItemProps) => {

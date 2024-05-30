@@ -10,14 +10,25 @@
     padding: 8px 16px 24px;
     .balance-amount-wrap {
       gap: 4px;
+      .wallet-name-wrap {
+        gap: 4px;
+        .@{app-prefix}-skeleton-avatar {
+          width: 80px;
+          height: 22px;
+        }
+      }
       .wallet-name {
-        font-size: 12px;
-        line-height: 16px;
+        font-size: 14px;
+        line-height: 22px;
         color: @neutral-tertiary-text;
         word-break: break-all;
       }
       .balance-amount-content {
         gap: 4px;
+        .@{app-prefix}-skeleton-avatar {
+          width: 148px;
+          height: 40px;
+        }
       }
       .balance-amount {
         font-size: 32px;

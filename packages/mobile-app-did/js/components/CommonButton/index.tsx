@@ -8,6 +8,7 @@ export type CommonButtonProps = {
   buttonType?: 'send' | 'receive';
   type?: 'solid' | 'clear' | 'outline' | 'primary' | 'transparent';
   onPressWithSecond?: number;
+  radius?: number;
 } & Omit<ButtonProps, 'type'>;
 const stylesMap: any = {
   outline: {
@@ -37,6 +38,7 @@ const stylesMap: any = {
 
 const CommonButton: React.FC<CommonButtonProps> = props => {
   const {
+    radius,
     type,
     buttonStyle,
     titleStyle,
@@ -54,7 +56,7 @@ const CommonButton: React.FC<CommonButtonProps> = props => {
 
   return (
     <Button
-      radius={pTd(8)}
+      radius={radius || pTd(8)}
       iconPosition="left"
       size="md"
       buttonStyle={[styles.buttonStyle, mapStyles?.buttonStyle, buttonStyle]}

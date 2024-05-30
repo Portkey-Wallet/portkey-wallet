@@ -1,6 +1,5 @@
 import { ICryptoCurrencyItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { defaultColors } from 'assets/theme';
-import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import CommonToast from 'components/CommonToast';
 import PortkeySkeleton from 'components/PortkeySkeleton';

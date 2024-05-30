@@ -23,8 +23,7 @@ export const EarnPage = () => {
 const EarnItem = (item: TBaseCardItemType) => {
   const discoverJump = useDiscoverJumpWithNetWork();
   const getS3ImgUrl = useGetS3ImageUrl();
-  // const imageUrl = getS3ImgUrl(item.imgUrl.filename_disk);
-  const imageUrl = 'https://cdn.britannica.com/22/187222-050-07B17FB6/apples-on-a-tree-branch.jpg';
+  const imageUrl = getS3ImgUrl(item.imgUrl.filename_disk);
   const { title = '', description, url, buttonTitle } = item;
   const onPress = useCallback(() => {
     discoverJump({
@@ -48,7 +47,7 @@ const EarnItem = (item: TBaseCardItemType) => {
           <CommonButton
             type="primary"
             buttonStyle={styles.btn}
-            titleStyle={styles.btnTitle}
+            titleStyle={[styles.btnTitle, fonts.mediumFont]}
             title={buttonTitle || 'Earn Now'}
             onPress={onPress}
           />
@@ -76,9 +75,10 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: defaultColors.bg32,
     marginTop: pTd(16),
+    overflow: 'hidden',
   },
   bigImage: {
-    width: '100%',
+    width: pTd(343),
     height: pTd(128),
   },
   infoWrap: {

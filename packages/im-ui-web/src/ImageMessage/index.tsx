@@ -54,12 +54,19 @@ const ImageMessage: React.FC<IMessage> = (props) => {
         children: 'Delete',
         onClick: () => props?.onDeleteMsg?.(props),
       },
+      {
+        key: 'report',
+        leftIcon: <CustomSvg type="Report" />,
+        children: 'Report',
+        onClick: () => props?.onReportMsg?.(props),
+      },
     ],
     [pinInfo, props],
   );
   const popListFilter = useMemo(() => {
     let _popList: string[] = [];
     const hasDelAuth = position === 'right' || isAdmin;
+    const hasReportAuth = position === 'left' && !!props.onReportMsg;
     if (showPageType === MessageShowPageEnum['MSG-PAGE']) {
       if (isGroup) {
         _popList = isAdmin ? ['pin', 'reply'] : ['reply'];
@@ -71,8 +78,11 @@ const ImageMessage: React.FC<IMessage> = (props) => {
     if (hasDelAuth) {
       _popList.unshift('delete');
     }
+    if (hasReportAuth) {
+      _popList.push('report');
+    }
     return popAllList.filter((t) => _popList.includes(t.key));
-  }, [isAdmin, isGroup, popAllList, position, showPageType]);
+  }, [isAdmin, isGroup, popAllList, position, props.onReportMsg, showPageType]);
   const showMask = useMemo(() => {
     const dataShow = props.dateString ? props.dateString : formatTime(createAt);
     return (

@@ -18,6 +18,9 @@ import {
   setNickNameAndAvatarAction,
   resetCurrentUserInfoAction,
   updateCASyncState,
+  setHideAssetsAction,
+  fetchShouldShowSetNewWalletNameModal,
+  fetchShouldShowSetNewWalletNameIcon,
 } from './actions';
 import { UserInfoType, WalletError, WalletState } from './type';
 import { changeEncryptStr } from '../../wallet/utils';
@@ -26,6 +29,9 @@ export const DEFAULT_USER_INFO: UserInfoType = {
   nickName: '',
   userId: '',
   avatar: '',
+  hideAssets: false,
+  shouldShowSetNewWalletNameModal: false,
+  shouldShowSetNewWalletNameIcon: false,
 };
 
 const initialState: WalletState = {
@@ -124,6 +130,7 @@ export const walletSlice = createSlice({
           state.userInfo = {
             ...state.userInfo,
             [currentNetwork]: {
+              ...(state?.userInfo?.[currentNetwork] || {}),
               nickName,
               userId,
               avatar,
@@ -139,6 +146,16 @@ export const walletSlice = createSlice({
             ...(state?.userInfo?.[networkType] || {}),
             nickName,
             avatar,
+          },
+        };
+      })
+      .addCase(setHideAssetsAction, (state, action) => {
+        const { hideAssets } = action.payload;
+        state.userInfo = {
+          ...(state.userInfo || {}),
+          MAINNET: {
+            ...(state?.userInfo?.MAINNET ?? DEFAULT_USER_INFO),
+            hideAssets,
           },
         };
       })
@@ -173,6 +190,26 @@ export const walletSlice = createSlice({
         } else {
           state.checkManagerExceedMap = {};
         }
+      })
+      .addCase(fetchShouldShowSetNewWalletNameModal.fulfilled, (state, { payload }: PayloadAction<boolean>) => {
+        const network = state.currentNetwork || initialState.currentNetwork;
+        state.userInfo = {
+          ...(state.userInfo || {}),
+          [network]: {
+            ...(state?.userInfo?.[network] || DEFAULT_USER_INFO),
+            shouldShowSetNewWalletNameModal: payload,
+          },
+        };
+      })
+      .addCase(fetchShouldShowSetNewWalletNameIcon.fulfilled, (state, { payload }: PayloadAction<boolean>) => {
+        const network = state.currentNetwork || initialState.currentNetwork;
+        state.userInfo = {
+          ...(state.userInfo || {}),
+          [network]: {
+            ...(state?.userInfo?.[network] || DEFAULT_USER_INFO),
+            shouldShowSetNewWalletNameIcon: payload,
+          },
+        };
       });
   },
 });

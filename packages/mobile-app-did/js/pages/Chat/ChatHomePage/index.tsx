@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { View, StyleSheet, GestureResponderEvent } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
 import navigationService from 'utils/navigationService';
@@ -7,16 +7,13 @@ import Svg from 'components/Svg';
 import SafeAreaBox from 'components/SafeAreaBox';
 import { BGStyles } from 'assets/theme/styles';
 import CustomHeader from 'components/CustomHeader';
-import ChatOverlay from '../components/ChatOverlay';
 import Touchable from 'components/Touchable';
 import SessionList from '../components/SessionList';
 import { pTd } from 'utils/unit';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import myEvents from 'utils/deviceEvent';
 import { useFocusEffect } from '@react-navigation/native';
 import { useLatestRef, useThrottleCallback } from '@portkey-wallet/hooks';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
-import { measurePageY } from 'utils/measure';
 import useRequestNotifyPermission from 'hooks/usePermission';
 import InviteFriendsSection from '../components/InviteFriendsSection';
 import OfficialChatGroup from '../components/OfficialChatGroup';
@@ -24,6 +21,8 @@ import OfficialChatGroup from '../components/OfficialChatGroup';
 import { useJoinOfficialGroupTipModal } from 'hooks/guide';
 import { useChannelList } from '@portkey-wallet/hooks/hooks-ca/im';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { useOnTouchAndPopUp } from 'components/FloatOverlay/touch';
+import { ListItemType } from 'components/FloatOverlay/Popover';
 
 export default function ChatHomePage() {
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
@@ -33,6 +32,34 @@ export default function ChatHomePage() {
   const joinOfficialGroupModal = useJoinOfficialGroupTipModal();
   const { list: channelList, init: initChannelList } = useChannelList();
   const [hasFinishInit, setHasFinishInit] = useState(false);
+  const popUpList: ListItemType[] = useMemo(() => {
+    return [
+      {
+        title: 'New Chat',
+        iconName: 'chat-new-chat',
+        onPress: () => navigationService.navigate('NewChatHomePage'),
+      },
+      {
+        title: 'Create Group',
+        iconName: 'chat-create-group',
+        onPress: () => navigationService.navigate('CreateGroupPage'),
+      },
+      {
+        title: 'Find People',
+        iconName: 'chat-find-more',
+        onPress: () => navigationService.navigate('FindMorePeoplePage'),
+      },
+      {
+        title: 'Scan',
+        iconName: 'scan',
+        onPress: async () => {
+          if (!(await qrScanPermissionAndToast())) return;
+          navigationService.navigate('QrScanner');
+        },
+      },
+    ];
+  }, [qrScanPermissionAndToast]);
+  const onTouch = useOnTouchAndPopUp({ list: popUpList });
 
   const lastInitChannelList = useLatestRef(initChannelList);
 
@@ -46,44 +73,6 @@ export default function ChatHomePage() {
     }
   }, [lastInitChannelList]);
 
-  const onRightPress = useCallback(
-    async (event: GestureResponderEvent) => {
-      const { pageY } = event.nativeEvent;
-      const top = await measurePageY(event.target);
-      ChatOverlay.showChatPopover({
-        list: [
-          {
-            title: 'New Chat',
-            iconName: 'chat-new-chat',
-            onPress: () => navigationService.navigate('NewChatHomePage'),
-          },
-          {
-            title: 'Create Group',
-            iconName: 'chat-create-group',
-            onPress: () => navigationService.navigate('CreateGroupPage'),
-          },
-          {
-            title: 'Find People',
-            iconName: 'chat-find-more',
-            onPress: () => navigationService.navigate('FindMorePeoplePage'),
-          },
-          {
-            title: 'Scan',
-            iconName: 'scan',
-            onPress: async () => {
-              if (!(await qrScanPermissionAndToast())) return;
-              navigationService.navigate('QrScanner');
-            },
-          },
-        ],
-        formatType: 'dynamicWidth',
-        customPosition: { right: pTd(8), top: (top || pageY) + 30 },
-        customBounds: { x: screenWidth - pTd(20), y: pageY + 20, width: 0, height: 0 },
-      });
-    },
-    [qrScanPermissionAndToast],
-  );
-
   const RightDom = useMemo(() => {
     return (
       <View style={GStyles.flexRow}>
@@ -95,12 +84,12 @@ export default function ChatHomePage() {
           }}>
           <Svg icon="search" color={defaultColors.bg31} size={pTd(20)} />
         </Touchable>
-        <Touchable style={styles.addIcon} onPress={onRightPress}>
+        <Touchable style={styles.addIcon} onPress={onTouch}>
           <Svg color={defaultColors.bg31} size={pTd(20)} icon="chat-add" />
         </Touchable>
       </View>
     );
-  }, [onRightPress]);
+  }, [onTouch]);
 
   const checkModal = useThrottleCallback(
     async () => {

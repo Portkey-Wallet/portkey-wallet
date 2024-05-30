@@ -6,6 +6,7 @@ import CustomSvg from 'components/CustomSvg';
 
 export enum CopySize {
   Small = 'small',
+  Middle = 'middle',
   Normal = 'normal',
 }
 

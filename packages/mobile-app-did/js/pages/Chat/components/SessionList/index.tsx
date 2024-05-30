@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { FlatList, GestureResponderEvent } from 'react-native';
 import { BGStyles } from 'assets/theme/styles';
-import ChatOverlay from '../ChatOverlay';
 import ChatHomeListItemSwiped from '../ChatHomeListItemSwiper';
 import { ChannelItem, ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im/types';
 import NoData from 'components/NoData';
@@ -16,6 +15,7 @@ import GStyles from 'assets/theme/GStyles';
 import ActionSheet from 'components/ActionSheet';
 import { PIN_LIMIT_EXCEED } from '@portkey-wallet/constants/constants-ca/chat';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
+import FloatOverlay from 'components/FloatOverlay';
 
 export default function SessionList() {
   const { list: channelList, next: nextChannelList, hasNext: hasNextChannelList } = useChannelList();
@@ -41,7 +41,7 @@ export default function SessionList() {
     (event: GestureResponderEvent, item: ChannelItem) => {
       const { pageX, pageY } = event.nativeEvent;
       if (item.channelType !== ChannelTypeEnum.GROUP && item.channelType !== ChannelTypeEnum.P2P) {
-        return ChatOverlay.showChatPopover({
+        return FloatOverlay.showFloatPopover({
           list: [
             {
               title: 'Delete',
@@ -55,7 +55,7 @@ export default function SessionList() {
         });
       }
 
-      ChatOverlay.showChatPopover({
+      FloatOverlay.showFloatPopover({
         list: [
           {
             title: item.pin ? 'Unpin' : 'Pin',

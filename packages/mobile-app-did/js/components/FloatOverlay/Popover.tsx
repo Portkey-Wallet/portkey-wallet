@@ -57,7 +57,7 @@ function formatPositionByDynamicWidth(px: number, py: number, length: number) {
   return { top, left };
 }
 
-function ChatPopover({
+function FloatPopover({
   list,
   customPosition,
   formatType,
@@ -101,7 +101,7 @@ function ChatPopover({
   );
 }
 
-export function showChatPopover({
+export function showFloatPopover({
   list,
   px,
   py,
@@ -118,7 +118,7 @@ export function showChatPopover({
         : formatPositionByDynamicWidth(px || 0, py || 0, list.length);
   }
   OverlayModal.show(
-    <ChatPopover list={list} customPosition={customPosition} formatType={formatType} onMaskClose={onMaskClose} />,
+    <FloatPopover list={list} customPosition={customPosition} formatType={formatType} onMaskClose={onMaskClose} />,
     {
       customBounds: customBounds || {
         x: px || customPosition.left || 0,

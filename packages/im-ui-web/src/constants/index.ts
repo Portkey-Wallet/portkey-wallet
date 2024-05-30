@@ -15,3 +15,10 @@ export const TransferTextToMe = `[A transfer to you. Please check it on Portkey 
 export const TransferTextToOther = `[A transfer between others]`;
 
 export const SupportSysMsgType: MessageType[] = [MessageTypeEnum.PIN_SYS, MessageTypeEnum.SYS];
+
+export const SupportCommonMsgType: MessageType[] = [
+  MessageTypeEnum.TEXT,
+  MessageTypeEnum.IMAGE,
+  MessageTypeEnum.TRANSFER_CARD,
+  MessageTypeEnum.REDPACKAGE_CARD,
+];

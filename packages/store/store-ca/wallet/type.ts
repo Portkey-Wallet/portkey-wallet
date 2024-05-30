@@ -1,4 +1,5 @@
 import { ChainId, ChainType, NetworkType } from '@portkey-wallet/types';
+import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 import { CAWalletInfoType } from '@portkey-wallet/types/types-ca/wallet';
 import { TWalletInfo } from '@portkey-wallet/types/wallet';
 import { PinErrorMessage } from '@portkey-wallet/utils/wallet/types';
@@ -16,22 +17,6 @@ export enum BaseWalletError {
 }
 export const WalletError = Object.assign({}, BaseWalletError, PinErrorMessage);
 
-export type DefaultToken = {
-  address: string;
-  decimals: string;
-  imageUrl: string;
-  name: string;
-  symbol: string;
-};
-export interface ChainItemType {
-  chainId: ChainId;
-  chainName: string;
-  endPoint: string;
-  explorerUrl: string;
-  caContractAddress: string;
-  defaultToken: DefaultToken;
-}
-
 export interface UserInfoType {
   nickName: string;
   userId: string;
@@ -43,8 +28,8 @@ export interface WalletState {
   walletType: WalletType;
   currentNetwork: NetworkType;
   walletInfo?: CAWalletInfoType;
-  chainList: ChainItemType[];
-  chainInfo?: { [key in NetworkType]?: ChainItemType[] };
+  chainList: IChainItemType[];
+  chainInfo?: { [key in NetworkType]?: IChainItemType[] };
   originChainId?: ChainId;
   userInfo?: { [key in NetworkType]?: UserInfoType };
   tmpWalletInfo?: TWalletInfo;

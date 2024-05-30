@@ -72,6 +72,10 @@ class SandboxUtil {
         case SandboxEventTypes.getTransactionRaw:
           SandboxUtil.getTransactionRaw(event, SandboxUtil.callback);
           break;
+        case SandboxEventTypes.etransferCrossTransfer:
+          SandboxUtil.etransferCrossTransfer(event, SandboxUtil.callback);
+          break;
+
         default:
           break;
       }
@@ -312,6 +316,27 @@ class SandboxUtil {
   }
 
   static async getTransactionRaw(event: MessageEvent<any>, callback: SendBack) {
+    const data = event.data.data ?? {};
+    try {
+      const { rpcUrl, address, paramsOption, chainType, methodName, privateKey } = data;
+      if (chainType !== 'aelf') throw 'Not support';
+      const aelfContract = await SandboxUtil._getELFSendContract(rpcUrl, address, privateKey);
+      const raw = await aelfContract.encodedTx(methodName, paramsOption);
+      callback(event, {
+        code: SandboxErrorCode.success,
+        message: raw,
+        sid: data.sid,
+      });
+    } catch (e) {
+      return callback(event, {
+        code: SandboxErrorCode.error,
+        message: e,
+        sid: data.sid,
+      });
+    }
+  }
+
+  static async etransferCrossTransfer(event: MessageEvent<any>, callback: SendBack) {
     const data = event.data.data ?? {};
     try {
       const { rpcUrl, address, paramsOption, chainType, methodName, privateKey } = data;

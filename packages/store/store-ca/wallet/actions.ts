@@ -8,7 +8,8 @@ import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import AElf from 'aelf-sdk';
 import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 import { getChainList } from './api';
-import { ChainItemType, WalletState } from './type';
+import { WalletState } from './type';
+import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 
 export const createWallet =
   ({
@@ -90,7 +91,7 @@ export const resetCaInfo = createAction<NetworkType>('wallet/resetCaInfo');
 export const changePin = createAction<{ pin: string; newPin: string }>('wallet/changePin');
 
 export const changeNetworkType = createAction<NetworkType>('wallet/changeNetworkType');
-export const setChainListAction = createAction<{ chainList: ChainItemType[]; networkType: NetworkType }>(
+export const setChainListAction = createAction<{ chainList: IChainItemType[]; networkType: NetworkType }>(
   'wallet/setChainListAction',
 );
 

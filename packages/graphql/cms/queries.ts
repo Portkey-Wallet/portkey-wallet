@@ -72,9 +72,9 @@ import {
 } from './__generated__/hooks/discoverEarnDataCustom';
 
 import {
-  DiscoverLearnGroupDocument,
-  DiscoverLearnGroupQuery,
-  DiscoverLearnGroupQueryVariables,
+  DiscoverLearnGroupCustomDocument,
+  DiscoverLearnGroupCustomQuery,
+  DiscoverLearnGroupCustomQueryVariables,
 } from './__generated__/hooks/discoverLearnGroupCustom';
 
 // SocialMedia
@@ -161,6 +161,9 @@ const getHomeBanner = async (network: NetworkType, params: HomeBannerCustomQuery
     query: HomeBannerCustomDocument,
     variables: params,
   });
+
+  console.log('getcms HomeBanner', result);
+
   return result;
 };
 // token detailBanner
@@ -172,20 +175,22 @@ const getTokenDetailBanner = async (network: NetworkType, params: TokenDetailBan
   });
   return result;
 };
+
 // dapp banner
-const getDiscoverDappBanner = async (network: NetworkType, params: HomeBannerCustomQueryVariables) => {
+const getDiscoverDappBanner = async (network: NetworkType, params: DiscoverDappBannerCustomQueryVariables) => {
   const apolloClient = getApolloClient(network);
-  const result = await apolloClient.query<HomeBannerCustomQuery>({
+  const result = await apolloClient.query<DiscoverDappBannerCustomQuery>({
     query: DiscoverDappBannerCustomDocument,
     variables: params,
   });
   return result;
 };
+
 // learn banner
 const getDiscoverLearnBanner = async (network: NetworkType, params: DiscoverLearnBannerCustomQueryVariables) => {
   const apolloClient = getApolloClient(network);
   const result = await apolloClient.query<DiscoverLearnBannerCustomQuery>({
-    query: DiscoverLearnGroupDocument,
+    query: DiscoverLearnBannerCustomDocument,
     variables: params,
   });
   return result;
@@ -211,10 +216,10 @@ const getDiscoverEarnList = async (network: NetworkType, params: DiscoverEarnDat
 };
 
 // get learnGroupList
-const getDiscoverLearnGroupList = async (network: NetworkType, params: DiscoverLearnGroupQueryVariables) => {
+const getDiscoverLearnGroupList = async (network: NetworkType, params: DiscoverLearnGroupCustomQueryVariables) => {
   const apolloClient = getApolloClient(network);
-  const result = await apolloClient.query<DiscoverLearnGroupQuery>({
-    query: DiscoverLearnGroupDocument,
+  const result = await apolloClient.query<DiscoverLearnGroupCustomQuery>({
+    query: DiscoverLearnGroupCustomDocument,
     variables: params,
   });
   return result;

@@ -1,5 +1,6 @@
 query discoverLearnBannerCustom {
   discoverLearnBanner {
+    status
     items {
       portkeyCard_id {
         status

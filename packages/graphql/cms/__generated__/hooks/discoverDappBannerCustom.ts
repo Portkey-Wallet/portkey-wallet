@@ -9,6 +9,7 @@ export type DiscoverDappBannerCustomQuery = {
   __typename?: 'Query';
   discoverDappBanner?: {
     __typename?: 'discoverDappBanner';
+    status?: string | null;
     items?: Array<{
       __typename?: 'discoverDappBanner_portkeyCard';
       portkeyCard_id?: {
@@ -29,6 +30,7 @@ export type DiscoverDappBannerCustomQuery = {
 export const DiscoverDappBannerCustomDocument = gql`
   query discoverDappBannerCustom {
     discoverDappBanner {
+      status
       items {
         portkeyCard_id {
           status

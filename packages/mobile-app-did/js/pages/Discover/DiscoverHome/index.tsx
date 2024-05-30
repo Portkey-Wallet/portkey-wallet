@@ -16,11 +16,16 @@ import { useCheckAndInitNetworkDiscoverMap } from 'hooks/discover';
 import { useFetchCurrentRememberMeBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useFocusEffect } from '@react-navigation/native';
 import Touchable from 'components/Touchable';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
+import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
 
 export default function DiscoverHome() {
   useCheckAndInitNetworkDiscoverMap();
   const fetchCurrentRememberMeBlackList = useFetchCurrentRememberMeBlackList();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
+  const { fetchDiscoverLearnBannerAsync } = useCmsBanner();
+  const { fetchDiscoverEarnAsync, fetchDiscoverLearnAsync } = useDiscoverData();
 
   const RightDom = useMemo(
     () => (
@@ -41,6 +46,12 @@ export default function DiscoverHome() {
       fetchCurrentRememberMeBlackList();
     }, [fetchCurrentRememberMeBlackList]),
   );
+
+  useEffectOnce(() => {
+    fetchDiscoverLearnBannerAsync();
+    fetchDiscoverEarnAsync();
+    fetchDiscoverLearnAsync();
+  });
 
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={BGStyles.white}>

@@ -1,5 +1,6 @@
 query discoverEarnDataCustom {
   discoverEarnData {
+    status
     items {
       portkeyCard_id {
         status

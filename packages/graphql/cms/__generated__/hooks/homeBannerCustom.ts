@@ -9,6 +9,7 @@ export type HomeBannerCustomQuery = {
   __typename?: 'Query';
   homeBanner?: {
     __typename?: 'homeBanner';
+    status?: string | null;
     items?: Array<{
       __typename?: 'homeBanner_portkeyCard';
       portkeyCard_id?: {
@@ -29,6 +30,7 @@ export type HomeBannerCustomQuery = {
 export const HomeBannerCustomDocument = gql`
   query homeBannerCustom {
     homeBanner {
+      status
       items {
         portkeyCard_id {
           status

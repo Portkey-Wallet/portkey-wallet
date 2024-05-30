@@ -1,5 +1,6 @@
 query homeBannerCustom {
   homeBanner {
+    status
     items {
       portkeyCard_id {
         status

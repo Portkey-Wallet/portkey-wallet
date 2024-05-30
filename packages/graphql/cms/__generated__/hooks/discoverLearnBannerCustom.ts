@@ -9,6 +9,7 @@ export type DiscoverLearnBannerCustomQuery = {
   __typename?: 'Query';
   discoverLearnBanner?: {
     __typename?: 'discoverLearnBanner';
+    status?: string | null;
     items?: Array<{
       __typename?: 'discoverLearnBanner_portkeyCard';
       portkeyCard_id?: {
@@ -29,6 +30,7 @@ export type DiscoverLearnBannerCustomQuery = {
 export const DiscoverLearnBannerCustomDocument = gql`
   query discoverLearnBannerCustom {
     discoverLearnBanner {
+      status
       items {
         portkeyCard_id {
           status

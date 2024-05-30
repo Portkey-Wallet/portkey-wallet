@@ -1,5 +1,6 @@
 query discoverDappBannerCustom {
   discoverDappBanner {
+    status
     items {
       portkeyCard_id {
         status

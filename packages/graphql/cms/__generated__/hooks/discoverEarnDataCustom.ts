@@ -9,6 +9,7 @@ export type DiscoverEarnDataCustomQuery = {
   __typename?: 'Query';
   discoverEarnData?: {
     __typename?: 'discoverEarnData';
+    status?: string | null;
     items?: Array<{
       __typename?: 'discoverEarnData_portkeyCard';
       portkeyCard_id?: {
@@ -29,6 +30,7 @@ export type DiscoverEarnDataCustomQuery = {
 export const DiscoverEarnDataCustomDocument = gql`
   query discoverEarnDataCustom {
     discoverEarnData {
+      status
       items {
         portkeyCard_id {
           status

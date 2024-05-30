@@ -43,8 +43,11 @@ export const useCmsBanner = () => {
   const getTokenDetailBannerList = useCallback(
     (chainId: ChainId, symbol: string): TBaseCardItemType[] => {
       return (
-        tokenDetailBannerListMap?.[networkType]?.find(ele => ele.chainId === chainId && ele.symbol === symbol)?.items ||
-        []
+        tokenDetailBannerListMap?.[networkType]?.find(
+          ele =>
+            ele.chainId?.toLocaleLowerCase() === chainId?.toLocaleLowerCase() &&
+            ele.symbol?.toLocaleLowerCase() === symbol?.toLocaleLowerCase(),
+        )?.items || []
       );
     },
     [networkType, tokenDetailBannerListMap],

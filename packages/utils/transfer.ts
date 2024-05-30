@@ -1,4 +1,6 @@
+import { request } from '@portkey-wallet/api/api-did';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import { ChainId } from '@portkey-wallet/types';
 import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
 
 export type IGenerateTransferRawTransactionParams = {
@@ -28,4 +30,15 @@ export const generateTransferRawTransaction = async (params: IGenerateTransferRa
     throw new Error('Failed to get raw transaction.');
   }
   return rawResult.data;
+};
+
+export interface IReportTransactionParams {
+  chainId: ChainId;
+  caAddress: string;
+  transactionId: string;
+  rawTransaction: string;
+}
+
+export const reportTransaction = async (params: IReportTransactionParams) => {
+  return request.activity.reportTransaction({ params });
 };

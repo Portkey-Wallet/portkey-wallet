@@ -46,7 +46,6 @@ export default function RecentDetail() {
     data: [],
     totalRecordCount: 0,
   });
-  const [lastPageSize, setLastPageSize] = useState<number>(0);
   const { passwordSeed } = useUserInfo();
   const { isPrompt } = useCommonState();
   const isMainnet = useIsMainnet();
@@ -102,7 +101,6 @@ export default function RecentDetail() {
       fetchRecentContactActivities(fetchParams)
         .then((res) => {
           setActivityList(res);
-          setLastPageSize(res?.data?.length || 0);
         })
         .catch((error) => {
           throw Error(JSON.stringify(error));
@@ -126,7 +124,6 @@ export default function RecentDetail() {
         .then((res) => {
           setLoading(false);
           setActivityList({ ...res, data: [...activityInfo.data, ...res.data] });
-          setLastPageSize(res?.data?.length || 0);
         })
         .catch((error) => {
           setLoading(false);
@@ -136,8 +133,8 @@ export default function RecentDetail() {
   }, [activityInfo, fetchParams, loading]);
 
   const isHasMore = useMemo(() => {
-    return activityInfo.data.length < activityInfo.totalRecordCount && lastPageSize !== 0;
-  }, [activityInfo.data.length, activityInfo.totalRecordCount, lastPageSize]);
+    return !!activityInfo.hasNextPage;
+  }, [activityInfo.hasNextPage]);
 
   const mainContent = () => {
     return (

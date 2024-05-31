@@ -548,7 +548,7 @@ export default class AELFMethodController {
           icon: message.icon,
           method: payload?.method,
           chainId: payload.chainId,
-          showBatchApproveToken: _config?.showBatchApproveToken,
+          batchApproveNFT: _config?.batchApproveNFT,
         });
 
         removeLocalStorage('txPayload');

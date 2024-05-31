@@ -20,13 +20,13 @@ import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 import './index.less';
 
 export default function AllowanceApprove() {
-  const { origin, chainId, icon, method, transactionInfoId, showBatchApproveToken } = usePromptSearch<{
+  const { origin, chainId, icon, method, transactionInfoId, batchApproveNFT } = usePromptSearch<{
     origin: string;
     transactionInfoId: string;
     icon: string;
     method: string;
     chainId: ChainId;
-    showBatchApproveToken: boolean;
+    batchApproveNFT: boolean;
   }>();
   const caHash = useCurrentCaHash();
   const originChainId = useOriginChainId();
@@ -53,11 +53,11 @@ export default function AllowanceApprove() {
     async ({
       amount,
       guardiansApproved,
-      batchApproveToken,
+      symbol,
     }: {
       amount: string;
       guardiansApproved: IGuardiansApproved[];
-      batchApproveToken: boolean;
+      symbol: string;
     }) => {
       try {
         if (!txParams) throw Error('invalid params(txParams)');
@@ -87,7 +87,7 @@ export default function AllowanceApprove() {
         const options = {
           caHash,
           spender: txParams.params.paramsOption.spender,
-          symbol: batchApproveToken ? '*' : txParams.params.paramsOption.symbol,
+          symbol,
           amount,
           guardiansApproved,
         };
@@ -148,7 +148,7 @@ export default function AllowanceApprove() {
           caHash={caHash || ''}
           amount={txParams.params.paramsOption.amount}
           symbol={txParams.params.paramsOption.symbol}
-          showBatchApproveToken={showBatchApproveToken}
+          batchApproveNFT={batchApproveNFT}
           dappInfo={{
             icon,
             href: origin,

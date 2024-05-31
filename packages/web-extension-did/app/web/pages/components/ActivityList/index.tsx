@@ -157,7 +157,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   const renderStatusIcon = useCallback((item: ActivityItemType) => {
     let svg = '';
     if (item.status === contractStatusEnum.MINED) svg = 'SuggestCheck';
-    if (item.status === contractStatusEnum.FAIL) svg = 'SuggestClose2';
+    if (item.status === contractStatusEnum.FAILED) svg = 'SuggestClose2';
     if (item.status === contractStatusEnum.PENDING) svg = 'Status';
     if (svg) return <CustomSvg className="flex-center" type={svg as SvgType} />;
     return null;

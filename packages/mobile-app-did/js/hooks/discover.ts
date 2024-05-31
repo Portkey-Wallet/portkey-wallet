@@ -166,7 +166,7 @@ export const useMarket = () => {
         console.log('wfs result===', result);
         return result;
       } catch (e) {
-        throw `fetch market data failed,  caused by: ${e}`;
+        throw `fetch market data failed,  caused by: ${JSON.stringify(e)}`;
       } finally {
         setRefreshing(false);
       }

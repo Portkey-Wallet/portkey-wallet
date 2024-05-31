@@ -19,7 +19,7 @@ import { TDepositInfo, TNetworkItem, TTokenItem } from '@portkey-wallet/types/ty
 import getSeed from 'utils/getSeed';
 import { getWallet } from '@portkey-wallet/utils/aelf';
 import { useLoading } from 'store/Provider/hooks';
-import { singleMessage } from '@portkey/did-ui-react';
+import { isValidNumber, singleMessage } from '@portkey/did-ui-react';
 import { FormatNameRuleList, formatNameWithRules, handleErrorMessage } from '@portkey-wallet/utils';
 import depositService from '@portkey-wallet/utils/deposit';
 import CommonHeader from 'components/CommonHeader';
@@ -51,6 +51,7 @@ export default function DepositHome() {
   }>();
   const fromTokenNetworkRef = useRef<{
     networkList: TNetworkItem[];
+    allNetworkList: TNetworkItem[];
     fromNetwork: TNetworkItem | undefined;
     fromToken: TTokenItem | undefined;
     networkListSize: number;
@@ -91,6 +92,7 @@ export default function DepositHome() {
   } = useDeposit(initToToken, chain as ChainId, manager);
   console.log('wfs isSameSymbol===', isSameSymbol);
   console.log('wfs receiveAmount->toAmount===', receiveAmount.toAmount);
+  console.log('wfs payAmount===', payAmount);
   useEffect(() => {
     if (loading) {
       setLoading(true);
@@ -118,20 +120,34 @@ export default function DepositHome() {
       setLoading(false);
     }
   }, [fetchDepositInfo, fromNetwork, fromToken, setLoading, toToken]);
+  const resetTwoNetworkList = useCallback(
+    (networkList: TNetworkItem[]) => {
+      let copiedNetworkList = [...networkList];
+      if (copiedNetworkList && fromNetwork && copiedNetworkList[0].network !== fromNetwork.network) {
+        copiedNetworkList = copiedNetworkList.filter((item) => item.network !== fromNetwork.network);
+        copiedNetworkList.unshift(fromNetwork);
+        // copiedNetworkList.pop();
+      }
+      return copiedNetworkList.slice(0, 2);
+    },
+    [fromNetwork],
+  );
   const onClickFrom = useCallback(async () => {
     try {
       setLoading(true);
       const networkList = await depositService.getNetworkList({
         chainId: toChainId || 'AELF',
       });
-      const copiedNetworkList = [...networkList];
+      let copiedNetworkList = [...networkList];
       if (copiedNetworkList && fromNetwork && copiedNetworkList[0].network !== fromNetwork.network) {
+        copiedNetworkList = copiedNetworkList.filter((item) => item.network !== fromNetwork.network);
         copiedNetworkList.unshift(fromNetwork);
-        copiedNetworkList.pop();
+        // copiedNetworkList.pop();
       }
       if (copiedNetworkList && fromNetwork && fromToken) {
         fromTokenNetworkRef.current = {
           networkList: copiedNetworkList.slice(0, 2),
+          allNetworkList: networkList,
           fromNetwork,
           fromToken,
           networkListSize: networkList.length,
@@ -218,7 +234,8 @@ export default function DepositHome() {
                 <div className="token-amount-container">
                   <span className="token-amount-title">You Pay</span>
                   <input
-                    type="number"
+                    value={payAmount === 0 ? '' : payAmount}
+                    type="text"
                     className="deposit-input"
                     placeholder="0.00"
                     onKeyDown={(e) => {
@@ -227,9 +244,13 @@ export default function DepositHome() {
                       }
                     }}
                     onChange={(e) => {
-                      const localPayAmount = e.target.value ? Number(e.target.value) : 0;
-                      setPayAmount(localPayAmount);
-                      console.log('onChange?.(e.target.value)', localPayAmount);
+                      console.log('wfs payAmount onChange===', e.target.value);
+                      if (!isValidNumber(e.target.value)) {
+                        setPayAmount(0);
+                      } else {
+                        const localPayAmount = e.target.value ? Number(e.target.value) : 0;
+                        setPayAmount(localPayAmount);
+                      }
                     }}
                   />
                 </div>
@@ -333,13 +354,27 @@ export default function DepositHome() {
             onClickItem={(network) => {
               if (
                 fromTokenNetworkRef.current?.networkList &&
-                fromTokenNetworkRef.current.networkList?.[0].name !== network.name
+                fromTokenNetworkRef.current.networkList?.[0].network !== network.network
               ) {
-                fromTokenNetworkRef.current.networkList.unshift(network);
-                fromTokenNetworkRef.current.networkList.pop();
+                if (network.network === fromNetwork?.network) {
+                  // selected network is fromNetwork, reset to init state
+                  fromTokenNetworkRef.current.networkList = resetTwoNetworkList(
+                    fromTokenNetworkRef.current.allNetworkList,
+                  );
+                } else {
+                  // selected network is not fromNetwork, and networkList the first network is not equals fromNetwork
+                  if (fromTokenNetworkRef.current.networkList?.[0].network !== fromNetwork?.network) {
+                    fromTokenNetworkRef.current.networkList[0] = network;
+                  } else {
+                    // selected network is not fromNetwork, and networkList the first network is equals fromNetwork
+                    fromTokenNetworkRef.current.networkList.unshift(network);
+                    fromTokenNetworkRef.current.networkList.pop();
+                  }
+                }
               }
               fromTokenNetworkRef.current = {
                 fromNetwork: network,
+                allNetworkList: fromTokenNetworkRef.current?.allNetworkList || [],
                 networkList: fromTokenNetworkRef.current?.networkList || [],
                 fromToken: fromTokenNetworkRef.current?.fromToken,
                 networkListSize: fromTokenNetworkRef.current?.networkListSize || 0,
@@ -361,10 +396,12 @@ export default function DepositHome() {
               setStep(Step.HOME);
             }}
             onMoreClicked={(index) => {
+              // save from-TokenNetworkList component selected state
               const selectedNetwork = fromTokenNetworkRef.current?.networkList[index - 1];
               fromTokenNetworkRef.current = {
                 fromNetwork: selectedNetwork,
                 networkList: fromTokenNetworkRef.current?.networkList || [],
+                allNetworkList: fromTokenNetworkRef.current?.allNetworkList || [],
                 fromToken: fromTokenNetworkRef.current?.fromToken,
                 networkListSize: fromTokenNetworkRef.current?.networkListSize || 0,
                 toChainId: toChainId || 'AELF',

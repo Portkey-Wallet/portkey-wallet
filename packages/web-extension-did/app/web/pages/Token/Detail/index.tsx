@@ -25,6 +25,7 @@ import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import CommonTokenHeader from 'components/CommonTokenHeader';
 import { ReceiveTabEnum } from '@portkey-wallet/constants/constants-ca/send';
+import SkeletonCom from 'pages/components/SkeletonCom';
 
 export enum TokenTransferStatus {
   CONFIRMED = 'Confirmed',
@@ -148,10 +149,10 @@ function TokenDetail() {
           <div className="token-detail-balance flex-column">
             <div className={clsx('balance-amount', 'flex-column', isPrompt && 'is-prompt')}>
               <div className={clsx('amount-number', AmountShowWithDecimals.length > 18 && 'amount-number-long')}>
-                {AmountShowWithDecimals}
+                {AmountShowWithDecimals ?? <SkeletonCom />}
               </div>
               <div className={clsx('amount-convert', !isMainNet && 'hidden-amount-convert')}>
-                {formatAmountUSDShow(currentToken?.balanceInUsd)}
+                {formatAmountUSDShow(currentToken?.balanceInUsd) ?? <SkeletonCom />}
               </div>
             </div>
             <MainCards

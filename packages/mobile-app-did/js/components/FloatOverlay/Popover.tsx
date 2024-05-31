@@ -15,7 +15,7 @@ const BoxWidth = 100;
 const horizontalSpacing = 120;
 const verticalSpacing = 300;
 
-export type ListItemType = { onPress?: () => void; title: string; iconName: IconName; iconColor?: string };
+export type ListItemType = { onPress?: () => void; title: string; iconName?: IconName; iconColor?: string };
 
 export type ShowChatPopoverParams = {
   list: ListItemType[];
@@ -25,6 +25,7 @@ export type ShowChatPopoverParams = {
   customPosition?: { left?: number; right?: number; top?: number; bottom?: number };
   customBounds?: CustomBounds;
   formatType?: 'fixedWidth' | 'dynamicWidth';
+  onMaskClose?: () => void;
 };
 
 function formatPositionTop(px: number, py: number, length: number) {
@@ -56,29 +57,42 @@ function formatPositionByDynamicWidth(px: number, py: number, length: number) {
   return { top, left };
 }
 
-function ChatPopover({
+function FloatPopover({
   list,
   customPosition,
   formatType,
+  onMaskClose,
 }: {
   formatType: ShowChatPopoverParams['formatType'];
   list: ListItemType[];
   customPosition: ShowChatPopoverParams['customPosition'];
+  onMaskClose?: () => void;
 }) {
   return (
-    <TouchableOpacity activeOpacity={1} onPress={() => OverlayModal.hide()} style={styles.backgroundBox}>
+    <TouchableOpacity
+      activeOpacity={1}
+      onPress={() => {
+        onMaskClose?.();
+        return OverlayModal.hide();
+      }}
+      style={styles.backgroundBox}>
       <View style={[styles.container, { ...customPosition }]}>
         {list.map((item, index) => {
           return (
             <Touchable
               key={index}
               onPress={() => {
+                onMaskClose?.();
                 item.onPress?.();
                 OverlayModal.hide();
               }}
-              style={formatType === 'fixedWidth' ? styles.itemStyles : styles.dynamicWidthItemStyles}>
-              <Svg size={pTd(20)} icon={item.iconName} color={item.iconColor || defaultColors.icon1} />
-              <TextL style={styles.textStyles}>{item.title}</TextL>
+              style={[formatType === 'fixedWidth' ? styles.itemStyles : styles.dynamicWidthItemStyles]}>
+              {item.iconName && (
+                <Svg size={pTd(20)} icon={item.iconName} color={item.iconColor || defaultColors.icon1} />
+              )}
+              <TextL style={[styles.textStyles, item.iconName ? styles.leftMargin12 : styles.leftMargin0]}>
+                {item.title}
+              </TextL>
             </Touchable>
           );
         })}
@@ -87,7 +101,7 @@ function ChatPopover({
   );
 }
 
-export function showChatPopover({
+export function showFloatPopover({
   list,
   px,
   py,
@@ -95,6 +109,7 @@ export function showChatPopover({
   customPosition,
   customBounds,
   formatType = 'fixedWidth',
+  onMaskClose,
 }: ShowChatPopoverParams) {
   if (!customPosition) {
     customPosition =
@@ -102,18 +117,21 @@ export function showChatPopover({
         ? formatPosition(px || 0, py || 0, list.length, position)
         : formatPositionByDynamicWidth(px || 0, py || 0, list.length);
   }
-  OverlayModal.show(<ChatPopover list={list} customPosition={customPosition} formatType={formatType} />, {
-    customBounds: customBounds || {
-      x: px || customPosition.left || 0,
-      y: py || customPosition.top || 0,
-      width: 0,
-      height: 0,
+  OverlayModal.show(
+    <FloatPopover list={list} customPosition={customPosition} formatType={formatType} onMaskClose={onMaskClose} />,
+    {
+      customBounds: customBounds || {
+        x: px || customPosition.left || 0,
+        y: py || customPosition.top || 0,
+        width: 0,
+        height: 0,
+      },
+      overlayOpacity: 0,
+      containerStyle: {},
+      style: { backgroundColor: 'transparent' },
+      animated: true,
     },
-    overlayOpacity: 0,
-    containerStyle: {},
-    style: { backgroundColor: 'transparent' },
-    animated: true,
-  });
+  );
 }
 
 const itemStyle = StyleSheet.create({
@@ -139,7 +157,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     borderRadius: pTd(6),
     zIndex: 100,
-    minWidth: pTd(136),
+    minWidth: pTd(112),
     shadowOffset: { width: 2, height: 5 },
     backgroundColor: defaultColors.bg1,
     shadowColor: defaultColors.shadow1,
@@ -150,6 +168,12 @@ const styles = StyleSheet.create({
   textStyles: {
     marginLeft: pTd(12),
     color: defaultColors.font5,
+  },
+  leftMargin12: {
+    marginLeft: pTd(12),
+  },
+  leftMargin0: {
+    marginLeft: 0,
   },
   backgroundBox: { height: screenHeight, width: screenWidth, backgroundColor: 'transparent' },
 });

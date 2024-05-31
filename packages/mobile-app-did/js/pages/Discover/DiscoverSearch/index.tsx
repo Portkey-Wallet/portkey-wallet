@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     paddingRight: 0,
   },
   inputContainer: {
-    ...GStyles.paddingArg(0, 20, 8),
+    ...GStyles.paddingArg(12, 20, 8),
   },
   inputStyle: {
     width: pTd(280),

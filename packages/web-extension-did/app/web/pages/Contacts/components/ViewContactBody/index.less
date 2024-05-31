@@ -47,6 +47,10 @@
         color: @neutral-disable-text;
         cursor: default;
       }
+      .no-chat-contact {
+        color: @neutral-disable-text;
+        cursor: not-allowed;
+      }
     }
   }
 
@@ -79,5 +83,36 @@
       line-height: 22px;
       border-radius: 24px;
     }
+  }
+}
+
+.portkey-chat-contact-popover {
+  .portkey-popover-content {
+    min-width: 120px;
+    .portkey-popover-inner {
+      border-radius: 6px;
+      .portkey-popover-inner-content {
+        padding: 0 12px;
+        .icon-left {
+          .block-icon.contact-blocked {
+            svg {
+              path {
+                fill: @functional-error-default;
+              }
+            }
+          }
+        }
+        .menu-item-container {
+          .contact-blocked {
+            color: @functional-error-default;
+          }
+        }
+      }
+    }
+  }
+}
+.portkey-chat-contact-popover.portkey-popover-placement-bottom {
+  .portkey-popover-content {
+    margin-top: -10px;
   }
 }

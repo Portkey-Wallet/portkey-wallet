@@ -1,4 +1,4 @@
-@import '../assets/theme/color.less';
+@import '../assets/theme/constants.less';
 
 .portkey-message-item {
   position: relative;
@@ -29,14 +29,26 @@
     flex-shrink: 0;
   }
   .message-item-form-name {
+    gap: 4px;
     margin-bottom: 2px;
-    max-width: 210px;
-    font-size: 12px;
-    line-height: 16px;
-    color: @neutral-disable-text;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
+    .form-name-text {
+      max-width: 210px;
+      font-size: 12px;
+      line-height: 16px;
+      color: @neutral-disable-text;
+      word-break: break-all;
+      .text-overflow(1);
+    }
+    .admin-icon {
+      height: 14px;
+      padding: 1px 4px;
+      font-size: 10px;
+      line-height: 12px;
+      font-weight: 500;
+      color: @neutral-white-text;
+      border-radius: 4px;
+      background-color: @brand-normal;
+    }
   }
 }
 

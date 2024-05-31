@@ -54,7 +54,15 @@ export default function DiscoverHome() {
   const onTouch = useOnTouchAndPopUp({ list: popUpList });
 
   const scanQRIcon = useMemo(
-    () => <TouchableIcon icon="scan" onPress={qrScanPermissionAndToast} />,
+    () => (
+      <TouchableIcon
+        icon="scan"
+        onPress={async () => {
+          if (!(await qrScanPermissionAndToast())) return;
+          navigationService.navigate('QrScanner');
+        }}
+      />
+    ),
     [qrScanPermissionAndToast],
   );
 
@@ -102,7 +110,7 @@ function TouchableIcon({
   size = 20,
 }: {
   icon: IconName;
-  onPress: (event: GestureResponderEvent) => Promise<any>;
+  onPress: (event: GestureResponderEvent) => Promise<any> | void;
   size?: number;
 }) {
   return (

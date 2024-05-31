@@ -27,7 +27,7 @@ import {
   parseTelegramToken,
   parseTwitterToken,
 } from '@portkey-wallet/utils/authentication';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { ISocialLogin, LoginType, TAllLoginKey } from '@portkey-wallet/types/types-ca/wallet';
 import { useGetRegisterInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import useChangeNetworkText from 'hooks/useChangeNetworkText';
@@ -49,6 +49,7 @@ import { setCurrentGuardianAction, setUserGuardianItemStatus } from '@portkey-wa
 import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
 import { FromPageEnum, TVerifierAccountLocationState } from 'types/router';
+import googleAnalytics from 'utils/googleAnalytics';
 
 export default function RegisterStart() {
   const { type } = useParams();
@@ -410,6 +411,19 @@ export default function RegisterStart() {
     [onInputFinish, setLoading, validateIdentifier],
   );
 
+  const onInputClick = useCallback(
+    (data: LoginInfo) => {
+      googleAnalytics.loginStartEvent(LoginType[data.loginType] as TAllLoginKey);
+
+      onInputFinish(data);
+    },
+    [onInputFinish],
+  );
+
+  const onSocialStart = useCallback((type: ISocialLogin) => {
+    googleAnalytics.loginStartEvent(type);
+  }, []);
+
   return (
     <div id="register-start-wrapper">
       <RegisterHeader />
@@ -423,7 +437,8 @@ export default function RegisterStart() {
             <SignCard
               validatePhone={validateIdentifier}
               validateEmail={validateIdentifier}
-              onFinish={onInputFinish}
+              onFinish={onInputClick}
+              onSocialStart={onSocialStart}
               onSocialSignFinish={onSocialFinish}
             />
           )}
@@ -432,7 +447,8 @@ export default function RegisterStart() {
             <LoginCard
               validatePhone={validateIdentifier}
               validateEmail={validateIdentifier}
-              onFinish={onInputFinish}
+              onFinish={onInputClick}
+              onSocialStart={onSocialStart}
               onSocialLoginFinish={onSocialFinish}
             />
           )}

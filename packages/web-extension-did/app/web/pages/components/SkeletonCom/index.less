@@ -1,20 +1,36 @@
 @import '../../../assets/theme/color.less';
 
 .@{app-prefix}-skeleton-element {
+  .@{app-prefix}-skeleton-avatar,
+  .@{app-prefix}-skeleton-image {
+    border-radius: 4px;
+    background-color: @neutral-container-bg;
+  }
   .@{app-prefix}-skeleton-avatar {
     width: 100px;
     height: 20px;
-    border-radius: 6px;
-    background-color: @bg-31;
-    .@{app-prefix}-skeleton-element {
-      .@{app-prefix}-skeleton-active {
-        .@{app-prefix}-skeleton-avatar {
-          &::after {
-            /* stylelint-disable-next-line color-function-notation */
-            background: linear-gradient(90deg, hsla(0deg, 0%, 96%, 20%) 25%,hsla(0deg, 0%, 92%, 24%) 37%,hsla(0deg, 0%, 96%, 20%) 63%);
-          }
-        }
+  }
+  .@{app-prefix}-skeleton-image {
+    width: 80px;
+    height: 80px;
+    line-height: unset;
+    .skeleton-image-icon {
+      z-index: 1;
+      width: 32px;
+      height: 32px;
+      svg {
+        width: 100%;
+        height: 100%;
       }
+    }
+  }
+}
+.@{app-prefix}-skeleton-active {
+  .@{app-prefix}-skeleton-avatar,
+  .@{app-prefix}-skeleton-image {
+    &::after {
+      background: linear-gradient(111deg, rgb(0 0 0 / 0%) 27.26%, rgb(0 0 0 / 4%) 50.07%, rgb(0 0 0 / 0%) 72.74%),
+        @neutral-container-bg;
     }
   }
 }

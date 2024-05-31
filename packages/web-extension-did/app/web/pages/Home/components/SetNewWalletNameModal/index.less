@@ -30,5 +30,16 @@
       font-size: 16px;
       line-height: 22px;
     }
+    .@{app-prefix}-btn-default {
+      color: @neutral-primary-text;
+      &:hover {
+        color: @neutral-secondary-text;
+        border-color: @neutral-divider;
+      }
+      &:focus {
+        color: @neutral-primary-text;
+        border-color: @neutral-border;
+      }
+    }
   }
 }

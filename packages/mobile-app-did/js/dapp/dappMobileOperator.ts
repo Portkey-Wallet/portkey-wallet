@@ -34,6 +34,7 @@ import { getGuardiansApprovedByApprove } from 'utils/guardian';
 import { ChainId } from '@portkey-wallet/types';
 import { checkSecuritySafe } from 'utils/security';
 import AElf from 'aelf-sdk';
+import { getApproveSymbol } from '@portkey-wallet/utils/token';
 
 const SEND_METHOD: { [key: string]: true } = {
   [MethodsBase.SEND_TRANSACTION]: true,
@@ -397,11 +398,14 @@ export default class DappMobileOperator extends Operator {
       },
       isDiscover: this.isDiscover,
       eventName,
-      showBatchApproveToken: this.config?.showBatchApproveToken,
+      batchApproveNFT: this.config?.batchApproveNFT,
     });
 
     if (!info) return this.userDenied(eventName);
     const { guardiansApproved, approveInfo } = info;
+
+    const finallyApproveSymbol = this.config?.batchApproveNFT ? getApproveSymbol(approveInfo.symbol) : symbol;
+
     const caHash = getCurrentCaHash();
     return this.handleSendTransaction(eventName, {
       ...payload,
@@ -411,7 +415,7 @@ export default class DappMobileOperator extends Operator {
         paramsOption: {
           caHash,
           spender: approveInfo.spender,
-          symbol: approveInfo.symbol,
+          symbol: finallyApproveSymbol,
           amount: approveInfo.amount,
           guardiansApproved: getGuardiansApprovedByApprove(guardiansApproved),
         },

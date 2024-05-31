@@ -115,6 +115,8 @@ export const defaultColors = {
   functionalRedDisable: '#FCBCBC',
   functionalRedLight: '#FFEEEE',
 
+  primaryTextColor: '#101114',
+  secondaryTextColor: '#55585E',
   neutralPrimaryTextColor: '#101114',
   neutralSecondaryTextColor: '#55585E',
   neutralTertiaryText: '#979AA1',

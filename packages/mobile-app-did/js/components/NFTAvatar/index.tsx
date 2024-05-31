@@ -96,9 +96,11 @@ const NFTAvatar: React.FC<NoDataPropsType> = props => {
             {alias}
           </TextM>
 
-          <TextS numberOfLines={1} style={[styles.id, !!imageUrl && styles.idNoPic]}>
-            {formatTokenAmountShowWithDecimals(balance, decimals)}
-          </TextS>
+          {balance && decimals && (
+            <TextS numberOfLines={1} style={[styles.id, !!imageUrl && styles.idNoPic]}>
+              {formatTokenAmountShowWithDecimals(balance, decimals)}
+            </TextS>
+          )}
           {imageUrl && <View style={styles.mask} />}
         </>
       )}

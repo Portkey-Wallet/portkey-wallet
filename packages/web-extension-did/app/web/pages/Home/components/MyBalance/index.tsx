@@ -91,7 +91,7 @@ export default function MyBalance() {
       {
         label: t('Activity'),
         key: BalanceTab.ACTIVITY,
-        children: <Activity />,
+        children: <Activity pageKey="Home-Activity" />,
       },
     ],
     [t],

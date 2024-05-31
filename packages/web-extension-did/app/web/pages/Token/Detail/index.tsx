@@ -178,7 +178,7 @@ function TokenDetail() {
           {!isNotLessThan768 && <CommonBanner wrapClassName="banner-wrap" bannerList={tokenDetailBannerList} />}
           <div className="token-detail-activity">
             <div className="token-detail-activity-title">Activity</div>
-            <Activity chainId={currentToken.chainId} symbol={currentToken.symbol} />
+            <Activity chainId={currentToken.chainId} symbol={currentToken.symbol} pageKey="Token-Activity" />
           </div>
         </div>
       </div>

@@ -225,12 +225,12 @@ const styles = StyleSheet.create({
     paddingBottom: pTd(18),
   },
   listWrap: {
-    paddingHorizontal: pTd(20),
+    paddingHorizontal: pTd(4),
     flex: 1,
   },
   buttonGroupWrap: {
     marginTop: pTd(16),
-    paddingHorizontal: pTd(20),
+    paddingHorizontal: pTd(16),
   },
   deleteAll: {
     marginTop: pTd(10),

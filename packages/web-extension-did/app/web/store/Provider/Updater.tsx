@@ -29,6 +29,7 @@ import useFCM from 'hooks/useFCM';
 import { useSetTokenConfig } from 'hooks/useSetTokenConfig';
 import { useInitLoginModeList } from 'hooks/loginModal';
 import { useUserInfo } from './hooks';
+import { useInitCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
 
 keepAliveOnPages({});
 request.setExceptionManager(exceptionManager);
@@ -98,6 +99,7 @@ export default function Updater() {
   useRememberMeBlackList(true);
   useTabMenuList(true);
   useCheckContactMap();
+  useInitCmsBanner();
 
   useEffectOnce(() => {
     initConfig();

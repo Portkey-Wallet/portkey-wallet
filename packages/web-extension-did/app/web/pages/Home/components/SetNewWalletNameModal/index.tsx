@@ -19,16 +19,16 @@ export default function SetNewWalletNameModal() {
     }
   }, [shouldShowSetNewWalletNameModal]);
 
-  const handleConfirm = () => {
-    handleSetNewWalletName().catch((error) => {
+  const handleConfirm = async () => {
+    await handleSetNewWalletName().catch((error) => {
       const msg = handleErrorMessage(error);
       singleMessage.error(msg);
     });
     setIsOpen(false);
   };
 
-  const handleCancel = () => {
-    handleCancelSetNewWalletNameModal().catch((error) => {
+  const handleCancel = async () => {
+    await handleCancelSetNewWalletNameModal().catch((error) => {
       const msg = handleErrorMessage(error);
       singleMessage.error(msg);
     });
@@ -47,15 +47,13 @@ export default function SetNewWalletNameModal() {
       open={isOpen}
       onCancel={handleCancel}>
       <div>
-        <div className="modal-title">Set your new wallet name</div>
+        <div className="modal-title">Set a Name for Your Wallet</div>
         <div className="modal-content">
-          <p>{`Portkey's latest support for using login account as wallet name in one click makes your identity more
-          recognizable.`}</p>
-          <p>{`Do you want to use login account as your new wallet name?`}</p>
+          You can set your login account as your wallet name to make your wallet customised and recongnisable.
         </div>
         <div className="modal-footer flex-column">
           <Button type="primary" onClick={handleConfirm}>
-            Set New Wallet Name
+            Use Login Account as Name
           </Button>
           <Button onClick={handleCancel}>Cancel</Button>
         </div>

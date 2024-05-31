@@ -11,12 +11,12 @@ export default function SetNewWalletNameIcon() {
   const { shouldShowSetNewWalletNameIcon, handleSetNewWalletName } = useSetNewWalletName();
   const [isOpen, setIsOpen] = useState(false);
 
-  const handlePopoverConfirm = useCallback(() => {
-    setIsOpen(false);
-    handleSetNewWalletName().catch((error) => {
+  const handlePopoverConfirm = useCallback(async () => {
+    await handleSetNewWalletName().catch((error) => {
       const msg = handleErrorMessage(error);
       singleMessage.error(msg);
     });
+    setIsOpen(false);
   }, [handleSetNewWalletName]);
 
   const popoverContent = useMemo(() => {
@@ -26,7 +26,7 @@ export default function SetNewWalletNameIcon() {
           Set your login account as your wallet name to make your wallet customised and recongnisable.
         </div>
         <div className="popover-content-confirm cursor-pointer" onClick={handlePopoverConfirm}>
-          Set Wallet Name
+          Use Login Account as Name
         </div>
         <CustomSvg className="popover-close-icon cursor-pointer" type="SuggestClose" onClick={() => setIsOpen(false)} />
       </div>

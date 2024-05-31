@@ -15,6 +15,7 @@ import { useCheckManagerSyncState } from 'hooks/wallet';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 import { useEffectOnce } from '@portkey-wallet/hooks';
+import CircleLoading from 'components/CircleLoading';
 
 export default function TokenInput({
   fromAccount,
@@ -40,6 +41,7 @@ export default function TokenInput({
   const { t } = useTranslation();
   const [amount, setAmount] = useState<string>(value ? `${value} ${token.symbol}` : '');
   const [balance, setBalance] = useState<string>('');
+  const [balanceLoading, setBalanceLoading] = useState(false);
   const [maxAmount, setMaxAmount] = useState('');
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const amountInUsdShow = useAmountInUsdShow();
@@ -58,18 +60,25 @@ export default function TokenInput({
 
   const getTokenBalance = useCallback(async () => {
     if (!currentChain) return;
-    const result = await getBalance({
-      rpcUrl: currentChain.endPoint,
-      address: token.address,
-      chainType: currentNetwork.walletType,
-      paramsOption: {
-        owner: fromAccount.address,
-        symbol: token.symbol,
-      },
-    });
-    const balance = result.result.balance;
-    setBalance(balance);
-    console.log(result, currentChain, 'balances==getTokenBalance=');
+    try {
+      setBalanceLoading(true);
+      const result = await getBalance({
+        rpcUrl: currentChain.endPoint,
+        address: token.address,
+        chainType: currentNetwork.walletType,
+        paramsOption: {
+          owner: fromAccount.address,
+          symbol: token.symbol,
+        },
+      });
+      const balance = result.result.balance;
+      setBalance(balance);
+      console.log(result, currentChain, 'balances==getTokenBalance=');
+    } catch (error) {
+      console.log('===getBalance error', error);
+    } finally {
+      setBalanceLoading(false);
+    }
   }, [currentChain, currentNetwork.walletType, fromAccount.address, token.address, token.symbol]);
 
   const getMaxAmount = useCallback(async () => {
@@ -137,10 +146,14 @@ export default function TokenInput({
             </div>
             <div className="center">
               <p className="symbol">{token?.symbol}</p>
-              <p className="amount">{`${t('Balance_with_colon')} ${formatTokenAmountShowWithDecimals(
-                balance,
-                token.decimals,
-              )} ${token?.symbol}`}</p>
+              <p className="amount flex-row-center">
+                {t('Balance_with_colon')}
+                {balanceLoading ? (
+                  <CircleLoading />
+                ) : (
+                  ` ${formatTokenAmountShowWithDecimals(balance, token.decimals)} ${token?.symbol}`
+                )}
+              </p>
             </div>
           </div>
         </div>

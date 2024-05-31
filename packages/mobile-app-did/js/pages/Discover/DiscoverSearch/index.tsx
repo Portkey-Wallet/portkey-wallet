@@ -23,7 +23,7 @@ import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
 
 export default function DiscoverSearch() {
   const { t } = useLanguage();
-  const { learnGroupList } = useDiscoverData();
+  const { learnGroupList, earnList } = useDiscoverData();
 
   const iptRef = useRef<TextInput>();
   useInputFocus(iptRef);
@@ -49,8 +49,12 @@ export default function DiscoverSearch() {
       });
     });
 
+    earnList.map(ele => {
+      list.push(parseLearnItemToDiscoverItem(ele));
+    });
+
     return list;
-  }, [discoverGroupList, learnGroupList]);
+  }, [discoverGroupList, earnList, learnGroupList]);
 
   useEffect(() => {
     if (!value) setShowRecord(true);

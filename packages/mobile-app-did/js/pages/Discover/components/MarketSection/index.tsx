@@ -13,6 +13,7 @@ import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { TextL, TextM } from 'components/CommonText';
 import MarketItemSkeleton from './components/MarketItemSkeleton';
+import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
 
 export default function MarketSection() {
   const { marketInfo, refreshing, refreshList, handleType, handleSort } = useMarket();
@@ -62,7 +63,9 @@ export default function MarketSection() {
         })
       ) : (
         <FlatList
+          contentContainerStyle={{ paddingBottom: pTd(bottomBarHeight + 40) }}
           style={{ minHeight: pTd(512) }}
+          showsVerticalScrollIndicator={false}
           nestedScrollEnabled
           refreshing={false}
           data={marketInfo?.dataList || []}

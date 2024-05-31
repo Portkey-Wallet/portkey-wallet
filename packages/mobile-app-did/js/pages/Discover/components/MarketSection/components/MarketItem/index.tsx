@@ -53,7 +53,6 @@ export default function MarketItem(props: IMarketItemProps) {
                 onStarClicked?.(!item.collected);
                 console.log('wfs=== favorite', favorite);
                 if (favorite) {
-                  unMarkFavorite(item.id, item.symbol);
                   try {
                     setFavorite(false);
                     await unMarkFavorite(item.id, item.symbol);

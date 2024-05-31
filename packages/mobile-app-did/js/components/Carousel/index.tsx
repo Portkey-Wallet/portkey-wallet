@@ -23,7 +23,6 @@ const CarouselComponent: React.FC<CarouselProps> = ({ containerStyle, items, onC
   const onPress =
     ({ index, item }: { index: number; item: CarouselItemProps }) =>
     () => {
-      console.log('CarouselComponent onPress', index, item);
       if (onClick) {
         onClick({ index, item });
       } else {

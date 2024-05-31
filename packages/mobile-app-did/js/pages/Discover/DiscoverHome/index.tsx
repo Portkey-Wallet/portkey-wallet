@@ -13,6 +13,9 @@ import { useCheckAndInitNetworkDiscoverMap } from 'hooks/discover';
 import { useFetchCurrentRememberMeBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useFocusEffect } from '@react-navigation/native';
 import Touchable from 'components/Touchable';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
+import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
 import { TextM } from 'components/CommonText';
 import { DiscoverShowOptions, useTabDrawer } from 'utils/discover';
 import fonts from 'assets/theme/fonts';
@@ -25,6 +28,8 @@ export default function DiscoverHome() {
   useCheckAndInitNetworkDiscoverMap();
   const fetchCurrentRememberMeBlackList = useFetchCurrentRememberMeBlackList();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
+  const { fetchDiscoverLearnBannerAsync } = useCmsBanner();
+  const { fetchDiscoverEarnAsync, fetchDiscoverLearnAsync } = useDiscoverData();
   const { currentTabLength = 0, showTabDrawer } = useTabDrawer();
   const jumpToHistory = useCallback(
     (num: ArchivedTabEnum) => navigationService.navigate('Bookmark', { type: num }),
@@ -70,6 +75,12 @@ export default function DiscoverHome() {
       fetchCurrentRememberMeBlackList();
     }, [fetchCurrentRememberMeBlackList]),
   );
+
+  useEffectOnce(() => {
+    fetchDiscoverLearnBannerAsync();
+    fetchDiscoverEarnAsync();
+    fetchDiscoverLearnAsync();
+  });
 
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={BGStyles.white}>

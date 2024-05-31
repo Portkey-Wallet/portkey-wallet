@@ -1,4 +1,5 @@
 import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
+import { ChainId } from '..';
 
 export type IEntranceModuleName = 'buy' | 'sell' | 'bridge' | 'eTransDeposit' | 'eTransWithdraw' | 'swap';
 export type IEntranceMatchKey = 'version' | 'installationTime' | 'deviceType';
@@ -87,7 +88,13 @@ export type TDiscoverLearnGroupItemType = {
   items?: TBaseCardItemType[];
 };
 
-export type TTokenDetailBannerList = TBaseCardItemType[];
+export type TTokenDetailBannerItemType = {
+  chainId: ChainId;
+  symbol: string;
+  items?: TBaseCardItemType[];
+};
+
+export type TTokenDetailBannerList = TTokenDetailBannerItemType[];
 export type THomeBannerList = TBaseCardItemType[];
 export type TDiscoverLearnBannerList = TBaseCardItemType[];
 export type TDiscoverDappBannerList = TBaseCardItemType[];

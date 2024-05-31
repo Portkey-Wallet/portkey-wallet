@@ -1,77 +1,66 @@
-import { useMemo } from 'react';
-import { useAppCASelector } from '../.';
+import { useCallback, useEffect, useMemo } from 'react';
+import { useAppCASelector } from '../index';
+import { TDiscoverTabList, TDiscoverLearnGroupList, TDiscoverEarnList } from '@portkey-wallet/types/types-ca/cms';
+import { useAppCommonDispatch } from '../..';
+import { useCurrentNetworkInfo, useNetworkList } from '../network';
 import {
-  TBaseCardItemType,
-  TDiscoverTabList,
-  TDiscoverLearnGroupList,
-  TDiscoverEarnList,
-} from '@portkey-wallet/types/types-ca/cms';
+  getDiscoverEarnAsync,
+  getDiscoverLearnAsync,
+  getDiscoverTabAsync,
+} from '@portkey-wallet/store/store-ca/cms/actions';
 
 export const useCMS = () => useAppCASelector(state => state.cms);
 
-const mockCardDataList: TBaseCardItemType[] = [
-  {
-    index: 1,
-    url: 'https://portkey.finance',
-    title: 'title',
-    description: 'description',
-    buttonTitle: 'buttonTitle',
-    imgUrl: {
-      filename_disk: '2b85049c-e6be-4362-bb2f-822b4d252551.png',
-    },
-  },
-  {
-    index: 2,
-    url: 'https://portkey.finance',
-    title: 'title2',
-    description: 'description2',
-    buttonTitle: 'buttonTitle2',
-    imgUrl: {
-      filename_disk: '40b2d2ab-3daf-4834-ae27-f902cff34f7a.png',
-    },
-  },
-];
-
-const mockLearnData: TDiscoverLearnGroupList = [
-  {
-    index: 1,
-    title: 'learn1',
-    value: 'learn1',
-    items: mockCardDataList,
-  },
-  {
-    index: 2,
-    title: 'learn2',
-    value: 'learn2',
-    items: mockCardDataList,
-  },
-];
-
-const mockTabItemData: TDiscoverTabList = [
-  {
-    index: 1,
-    title: 'dapp',
-    value: 'dapp',
-  },
-  {
-    index: 2,
-    title: 'earn',
-    value: 'earn',
-  },
-];
-
 export const useDiscoverData = () => {
-  const discoverHeaderTabList = useMemo<TDiscoverTabList>(() => {
-    return mockTabItemData;
-  }, []);
+  const dispatch = useAppCommonDispatch();
+  const { networkType } = useCurrentNetworkInfo();
+  const { discoverTabListMap, discoverEarnListMap, discoverLearnGroupListMap } = useCMS();
 
-  const earnList = useMemo<TDiscoverEarnList>(() => {
-    return mockCardDataList;
-  }, []);
+  const discoverHeaderTabList = useMemo<TDiscoverTabList>(
+    () => discoverTabListMap?.[networkType] || [],
+    [discoverTabListMap, networkType],
+  );
 
-  const learnGroupList = useMemo<TDiscoverLearnGroupList>(() => {
-    return mockLearnData;
-  }, []);
+  const earnList = useMemo<TDiscoverEarnList>(
+    () => discoverEarnListMap?.[networkType] || [],
+    [discoverEarnListMap, networkType],
+  );
 
-  return { discoverHeaderTabList, learnGroupList, earnList };
+  const learnGroupList = useMemo<TDiscoverLearnGroupList>(
+    () => discoverLearnGroupListMap?.[networkType] || [],
+    [discoverLearnGroupListMap, networkType],
+  );
+
+  const fetchDiscoverTabAsync = useCallback(() => dispatch(getDiscoverTabAsync(networkType)), [dispatch, networkType]);
+
+  const fetchDiscoverEarnAsync = useCallback(
+    () => dispatch(getDiscoverEarnAsync(networkType)),
+    [dispatch, networkType],
+  );
+
+  const fetchDiscoverLearnAsync = useCallback(
+    () => dispatch(getDiscoverLearnAsync(networkType)),
+    [dispatch, networkType],
+  );
+
+  return {
+    discoverHeaderTabList,
+    earnList,
+    learnGroupList,
+    fetchDiscoverTabAsync,
+    fetchDiscoverEarnAsync,
+    fetchDiscoverLearnAsync,
+  };
+};
+
+export const useInitCMSDiscoverNewData = () => {
+  const dispatch = useAppCommonDispatch();
+  const networkList = useNetworkList();
+
+  useEffect(() => {
+    networkList.forEach(item => {
+      dispatch(getDiscoverTabAsync(item.networkType));
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 };

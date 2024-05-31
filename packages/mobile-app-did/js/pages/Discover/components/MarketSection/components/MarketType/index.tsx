@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { GestureResponderEvent, StyleSheet, View, Text } from 'react-native';
 import Svg from 'components/Svg';
 import { measurePageY } from 'utils/measure';
@@ -64,10 +64,19 @@ export default function MarketType({
     },
     [handleType],
   );
+  const showTypeName = useMemo(() => {
+    if (marketInfo?.type === 'Hot') {
+      return 'Top';
+    } else if (marketInfo?.type === 'Favorites') {
+      return 'Favourites';
+    } else if (marketInfo?.type === 'Trending') {
+      return 'Trending';
+    }
+  }, [marketInfo?.type]);
   return (
-    <TouchableOpacity onPress={onRightPress}>
+    <TouchableOpacity onPress={onRightPress} style={styles.touchWrapper}>
       <View style={styles.mainContainer}>
-        <Text style={styles.text}>{marketInfo?.type || 'Hot'}</Text>
+        <Text style={styles.text}>{showTypeName || 'Top'}</Text>
         <Svg
           icon={collapsed ? 'down-arrow' : 'up-arrow'}
           size={pTd(16)}
@@ -79,6 +88,11 @@ export default function MarketType({
 }
 
 const styles = StyleSheet.create({
+  touchWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'flex-start',
+  },
   mainContainer: {
     flexDirection: 'row',
     alignItems: 'center',

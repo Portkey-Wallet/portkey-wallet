@@ -97,4 +97,7 @@ export const styles = StyleSheet.create({
     marginHorizontal: pTd(16),
   },
   buttonRow: { width: '94%', justifyContent: 'space-around' },
+  banner: {
+    marginBottom: pTd(8),
+  },
 });

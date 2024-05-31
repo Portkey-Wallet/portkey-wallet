@@ -1,0 +1,38 @@
+query tokenDetailBanner_aggregated($groupBy: [String], $filter: tokenDetailBanner_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
+    tokenDetailBanner_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
+        group
+        countAll
+        count{
+            id
+            status
+            chainId
+            symbol
+            items
+        }
+        countDistinct{
+            id
+            status
+            chainId
+            symbol
+            items
+        }
+        avg{
+            id
+        }
+        sum{
+            id
+        }
+        avgDistinct{
+            id
+        }
+        sumDistinct{
+            id
+        }
+        min{
+            id
+        }
+        max{
+            id
+        }
+    }
+}

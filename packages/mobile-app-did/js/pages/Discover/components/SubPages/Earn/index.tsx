@@ -15,10 +15,16 @@ export const EarnPage = () => {
   const { earnList = [] } = useDiscoverData();
   return (
     <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {earnList.length > 0 ? earnList.map((item, index) => <EarnItem key={index} {...item} />) : <NoData />}
-        <View style={styles.gap} />
-      </ScrollView>
+      {earnList.length > 0 ? (
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {earnList.map((item, index) => (
+            <EarnItem key={index} {...item} />
+          ))}
+          <View style={styles.gap} />
+        </ScrollView>
+      ) : (
+        <NoData message={'No Data'} />
+      )}
     </View>
   );
 };

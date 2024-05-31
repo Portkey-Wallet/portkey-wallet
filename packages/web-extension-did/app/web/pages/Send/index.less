@@ -133,10 +133,15 @@
           color: @neutral-primary-text;
         }
         .amount {
+          gap: 6px;
           line-height: 16px;
           font-size: 12px;
           color: @neutral-secondary-text;
           word-break: break-all;
+          .circle-loading {
+            width: 14px;
+            height: 14px;
+          }
         }
       }
     }
@@ -202,11 +207,13 @@
           }
         }
         .quantity {
+          gap: 6px;
           color: @neutral-secondary-text;
           line-height: 20px;
           font-size: 14px;
-          span {
-            margin-left: 6px;
+          .circle-loading {
+            width: 14px;
+            height: 14px;
           }
         }
       }

@@ -20,6 +20,6 @@ export const INIT_HAS_ERROR: ErrorType = {
 
 export enum contractStatusEnum {
   MINED = 'MINED',
-  FAIL = 'FAIL',
+  FAILED = 'FAILED',
   PENDING = 'PENDING',
 }

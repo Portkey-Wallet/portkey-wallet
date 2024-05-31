@@ -31,7 +31,7 @@ export default function CustomBubble(props: BubbleProps<ChatMessage> & { isGroup
           <TextS numberOfLines={1} style={styles.memberName}>
             {currentMessage?.fromName}
           </TextS>
-          {currentMessage?.isOwner && <Text>Owner</Text>}
+          {currentMessage?.isOwner && <Text style={styles.ownerText}>Owner</Text>}
         </View>
       )}
       <Bubble

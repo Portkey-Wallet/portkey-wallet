@@ -37,10 +37,11 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
         maxResultCount: 0,
         skipCount: 0,
         totalRecordCount: 0,
+        hasNextPage: false,
       }
     );
   }, [activity.activityMap, chainId, symbol]);
-  const [hasMore, setHasMore] = useState(currentActivity.data.length < currentActivity?.totalRecordCount);
+  const [hasMore, setHasMore] = useState(!!currentActivity.hasNextPage);
   const dispatch = useAppCommonDispatch();
   const { passwordSeed } = useUserInfo();
   const [initLoading, setInitLoading] = useState(false);
@@ -71,10 +72,10 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
       dispatch(getActivityListAsync(params))
         .then((res: any) => {
           if (res.payload) {
-            if (res.payload.data?.length + res.payload.skipCount === res.payload.totalRecordCount) {
-              setHasMore(false);
-            } else {
+            if (res.payload.hasNextPage) {
               setHasMore(true);
+            } else {
+              setHasMore(false);
             }
           }
         })
@@ -96,7 +97,7 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
       };
       const res = await dispatch(getActivityListAsync(params));
       if (res.payload) {
-        if (res.payload.data?.length + res.payload.skipCount === res.payload.totalRecordCount) {
+        if (!res.payload.hasNextPage) {
           setHasMore(false);
         }
       } else {

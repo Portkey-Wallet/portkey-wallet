@@ -44,7 +44,15 @@ export const LearnPage = () => {
   return (
     <View style={styles.wrap}>
       <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
-        {lists.length > 0 && <CarouselComponent items={lists} containerStyle={styles.scroll} />}
+        {lists.length > 0 && (
+          <CarouselComponent
+            items={lists}
+            containerStyle={styles.scroll}
+            imageMarginHorizontal={pTd(16)}
+            showImageBorderRadius={true}
+            imageRatio={343.0 / 128.0}
+          />
+        )}
         {learnGroupList.map((item, index) => {
           const { title, items = [] } = item;
           return (

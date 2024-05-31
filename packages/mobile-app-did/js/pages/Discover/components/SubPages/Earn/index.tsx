@@ -82,7 +82,6 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.white,
   },
   item: {
-    flexWrap: 'wrap',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
@@ -128,7 +127,7 @@ const styles = StyleSheet.create({
   },
   btn: {
     paddingHorizontal: pTd(16),
-    height: pTd(32),
+    height: pTd(34),
     borderRadius: pTd(4),
   },
   btnTitle: {

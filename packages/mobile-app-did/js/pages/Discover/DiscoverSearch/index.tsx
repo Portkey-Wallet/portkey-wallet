@@ -18,9 +18,12 @@ import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { useInputFocus } from 'hooks/useInputFocus';
 import Touchable from 'components/Touchable';
+import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
+import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
 
 export default function DiscoverSearch() {
   const { t } = useLanguage();
+  const { learnGroupList } = useDiscoverData();
 
   const iptRef = useRef<TextInput>();
   useInputFocus(iptRef);
@@ -40,9 +43,14 @@ export default function DiscoverSearch() {
         list.push(item);
       });
     });
+    learnGroupList.map(group => {
+      group?.items?.map(item => {
+        list.push(parseLearnItemToDiscoverItem(item));
+      });
+    });
 
     return list;
-  }, [discoverGroupList]);
+  }, [discoverGroupList, learnGroupList]);
 
   useEffect(() => {
     if (!value) setShowRecord(true);
@@ -116,6 +124,17 @@ export default function DiscoverSearch() {
     </PageContainer>
   );
 }
+
+const parseLearnItemToDiscoverItem = (item: TBaseCardItemType): DiscoverItem => {
+  return {
+    title: item.title || '',
+    description: item.description || '',
+    url: item.url,
+    imgUrl: item.imgUrl,
+    id: '-1',
+    index: Number(item.index),
+  };
+};
 
 const styles = StyleSheet.create({
   container: {

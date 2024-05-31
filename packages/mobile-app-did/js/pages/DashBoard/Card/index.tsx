@@ -16,8 +16,21 @@ import { PortkeyLinearGradient } from 'components/PortkeyLinearGradient';
 import { pTd } from 'utils/unit';
 import { Skeleton } from '@rneui/base';
 import Svg from 'components/Svg';
+import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
+import CarouselComponent, { CarouselItemProps } from 'components/Carousel';
+import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 const Card: React.FC<{ title: string }> = ({ title }) => {
+  const { homeBannerList = [] } = useCmsBanner();
+  const getS3ImgUrl = useGetS3ImageUrl();
+  const lists: CarouselItemProps[] = useMemo(() => {
+    return homeBannerList.map(it => {
+      return {
+        imgUrl: getS3ImgUrl(it.imgUrl.filename_disk),
+        url: it.url,
+      };
+    });
+  }, [getS3ImgUrl, homeBannerList]);
   const isMainnet = useIsMainnet();
   const userInfo = useCurrentUserInfo();
   const setHideAssets = useSetHideAssets();
@@ -78,6 +91,7 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
         {!isMainnet && <FaucetButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
         <ActivityButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
       </View>
+      <CarouselComponent items={lists} />
     </View>
   );
 };

@@ -7,7 +7,7 @@ import { FontStyles } from 'assets/theme/styles';
 import { TextM, TextS } from 'components/CommonText';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, Image, ScrollView } from 'react-native';
 import { pTd } from 'utils/unit';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import fonts from 'assets/theme/fonts';
@@ -45,38 +45,43 @@ export function DiscoverCmsListSection() {
   }, [dappBannerList, getS3ImgUrl]);
 
   return (
-    <View style={styles.wrap}>
-      <CarouselComponent containerStyle={styles.slide} items={lists} />
-      {GroupList.map((group, index) => (
-        <View key={index} style={styles.groupWrap}>
-          <TextM style={[FontStyles.font5, fonts.mediumFont, styles.groupTitle]}>{group.title}</TextM>
-          <View style={styles.itemsGroup}>
-            {group.items.map((item, i) => (
-              <Touchable key={i} style={styles.itemWrap} onPress={() => onClickJump(item)}>
-                <Image
-                  style={styles.image}
-                  source={{
-                    uri: item?.imgUrl?.filename_disk
-                      ? `${s3Url}/${item?.imgUrl?.filename_disk}`
-                      : getFaviconUrl(item.url),
-                  }}
-                />
-                <View style={styles.right}>
-                  <TextWithProtocolIcon textFontSize={pTd(16)} title={item?.title} url={item.url} />
-                  <TextS style={FontStyles.font7} numberOfLines={1} ellipsizeMode="tail">
-                    {item?.description}
-                  </TextS>
-                </View>
-              </Touchable>
-            ))}
+    <ScrollView contentContainerStyle={styles.scroll}>
+      <View style={styles.wrap}>
+        <CarouselComponent containerStyle={styles.slide} items={lists} />
+        {GroupList.map((group, index) => (
+          <View key={index} style={styles.groupWrap}>
+            <TextM style={[FontStyles.font5, fonts.mediumFont, styles.groupTitle]}>{group.title}</TextM>
+            <View style={styles.itemsGroup}>
+              {group.items.map((item, i) => (
+                <Touchable key={i} style={styles.itemWrap} onPress={() => onClickJump(item)}>
+                  <Image
+                    style={styles.image}
+                    source={{
+                      uri: item?.imgUrl?.filename_disk
+                        ? `${s3Url}/${item?.imgUrl?.filename_disk}`
+                        : getFaviconUrl(item.url),
+                    }}
+                  />
+                  <View style={styles.right}>
+                    <TextWithProtocolIcon textFontSize={pTd(16)} title={item?.title} url={item.url} />
+                    <TextS style={FontStyles.font7} numberOfLines={1} ellipsizeMode="tail">
+                      {item?.description}
+                    </TextS>
+                  </View>
+                </Touchable>
+              ))}
+            </View>
           </View>
-        </View>
-      ))}
-    </View>
+        ))}
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  scroll: {
+    backgroundColor: defaultColors.white,
+  },
   wrap: {
     ...GStyles.paddingArg(0, 20),
     marginBottom: pTd(16),

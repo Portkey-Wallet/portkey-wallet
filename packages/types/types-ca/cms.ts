@@ -77,7 +77,7 @@ export type TDiscoverTabValue = 'dapp' | 'earn' | 'market' | 'learn';
 
 export type TBaseTabItemType = {
   index: string | number;
-  title?: string;
+  name?: string;
   value?: TDiscoverTabValue;
 };
 

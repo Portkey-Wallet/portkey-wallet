@@ -3,6 +3,7 @@ import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
 import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
 import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
 import { defaultColors } from 'assets/theme';
+import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
 import CarouselComponent, { CarouselItemProps } from 'components/Carousel';
 import { TextL, TextM } from 'components/CommonText';
@@ -41,7 +42,7 @@ export const LearnPage = () => {
   return (
     <View style={styles.wrap}>
       <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
-        <CarouselComponent items={lists} />
+        {lists.length > 0 && <CarouselComponent items={lists} containerStyle={styles.scroll} />}
         {learnGroupList.map((item, index) => {
           const { title, items = [] } = item;
           return (
@@ -62,11 +63,13 @@ export const LearnPage = () => {
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.blockScrollWrap}>
                 <View style={styles.gap} />
-                {items.map(it => {
-                  return (
-                    <ListItem key={it.title} item={it} getS3ImgUrl={getS3ImgUrl} jumpToDiscover={jumpToDiscover} />
-                  );
-                })}
+                <View style={GStyles.flexRow}>
+                  {items.map(it => {
+                    return (
+                      <ListItem key={it.title} item={it} getS3ImgUrl={getS3ImgUrl} jumpToDiscover={jumpToDiscover} />
+                    );
+                  })}
+                </View>
               </ScrollView>
             </View>
           );
@@ -107,6 +110,10 @@ const styles = StyleSheet.create({
   wrap: {
     flex: 1,
   },
+  scroll: {
+    marginTop: pTd(16),
+    marginBottom: pTd(24),
+  },
   container: {
     backgroundColor: defaultColors.white,
     justifyContent: 'flex-start',
@@ -118,7 +125,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
-    marginTop: pTd(12),
   },
   blockTitle: {
     flexDirection: 'row',
@@ -138,8 +144,8 @@ const styles = StyleSheet.create({
   blockScrollWrap: {
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginTop: pTd(8),
     marginBottom: pTd(24),
+    minWidth: '100%',
   },
   gap: {
     width: pTd(16),

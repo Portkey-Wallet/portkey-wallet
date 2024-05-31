@@ -47,7 +47,7 @@ export function DiscoverCmsListSection() {
   return (
     <ScrollView contentContainerStyle={styles.scroll}>
       <View style={styles.wrap}>
-        <CarouselComponent containerStyle={styles.slide} items={lists} />
+        {lists.length > 0 && <CarouselComponent containerStyle={styles.slide} items={lists} />}
         {GroupList.map((group, index) => (
           <View key={index} style={styles.groupWrap}>
             <TextM style={[FontStyles.font5, fonts.mediumFont, styles.groupTitle]}>{group.title}</TextM>
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.white,
   },
   wrap: {
-    ...GStyles.paddingArg(0, 20),
+    ...GStyles.paddingArg(0, 16),
     marginBottom: pTd(16),
     backgroundColor: defaultColors.white,
   },
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg1,
     display: 'flex',
     flexDirection: 'row',
-    ...GStyles.paddingArg(16, 12),
+    ...GStyles.paddingArg(16, 0),
     width: '100%',
   },
   image: {

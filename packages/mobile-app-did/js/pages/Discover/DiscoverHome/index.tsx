@@ -132,8 +132,8 @@ const styles = StyleSheet.create({
     ...GStyles.paddingArg(8, 20),
   },
   switchButton: {
-    width: pTd(21),
-    height: pTd(21),
+    width: pTd(19),
+    height: pTd(19),
     borderRadius: pTd(4),
     borderWidth: pTd(1.5),
     borderColor: defaultColors.font19,

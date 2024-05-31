@@ -4,7 +4,7 @@ import { View, StyleSheet } from 'react-native';
 
 import Svg from 'components/Svg';
 import GStyles from 'assets/theme/GStyles';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
+import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 
@@ -34,15 +34,7 @@ const NoDiscoverData = (props: INoDiscoverDataProps) => {
   };
 
   return (
-    <View
-      style={[
-        GStyles.flex1,
-        GStyles.center,
-        BGStyles.bg1,
-        wrapStyle,
-        location === 'top' && styles.topNoDataStyle,
-        style,
-      ]}>
+    <View style={[GStyles.flex1, GStyles.center, wrapStyle, location === 'top' && styles.topNoDataStyle, style]}>
       <Svg icon={iconName} size={pTd(size === 'large' ? 56 : 36)} iconStyle={[styles.icon, iconStyle]} />
       <TextS style={[FontStyles.font7, size === 'large' && styles.largeText]}>{noDataText}</TextS>
     </View>
@@ -58,6 +50,7 @@ const styles = StyleSheet.create({
   topNoDataStyle: {
     justifyContent: 'flex-start',
     paddingTop: pTd(142),
+    backgroundColor: defaultColors.white,
   },
   largeText: {
     fontSize: pTd(16),

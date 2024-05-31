@@ -6,12 +6,12 @@ import { pTd } from 'utils/unit';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 
-interface CarouselItemProps {
+export interface CarouselItemProps {
   imgUrl: string;
   url: string;
 }
 
-interface CarouselProps {
+export interface CarouselProps {
   containerStyle?: StyleProp<ViewStyle>;
   items: CarouselItemProps[];
   onClick?: ({ index, item }: { index: number; item: CarouselItemProps }) => void;

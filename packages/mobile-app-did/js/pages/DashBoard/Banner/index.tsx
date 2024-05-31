@@ -18,11 +18,11 @@ export const DashBoardBanner: React.FC = () => {
   }, [getS3ImageUrl, homeBannerList]);
 
   if (!list?.length) return null;
-  return <Carousel items={list} containerStyle={styles.containerer} />;
+  return <Carousel items={list} containerStyle={styles.container} />;
 };
 
 const styles = StyleSheet.create({
-  containerer: {
+  container: {
     marginBottom: pTd(8),
   },
 });

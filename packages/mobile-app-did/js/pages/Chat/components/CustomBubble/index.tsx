@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { BubbleProps } from 'react-native-gifted-chat';
 import { Bubble } from 'react-native-gifted-chat';
 import { defaultColors } from 'assets/theme';
@@ -27,9 +27,12 @@ export default function CustomBubble(props: BubbleProps<ChatMessage> & { isGroup
   return (
     <View>
       {isGroupChat && !isHideName && (
-        <TextS numberOfLines={1} style={styles.memberName}>
-          {currentMessage?.fromName}
-        </TextS>
+        <View style={styles.nameWrap}>
+          <TextS numberOfLines={1} style={styles.memberName}>
+            {currentMessage?.fromName}
+          </TextS>
+          {currentMessage?.isOwner && <Text style={styles.ownerText}>Owner</Text>}
+        </View>
       )}
       <Bubble
         touchableProps={{ disabled: true }}
@@ -108,9 +111,24 @@ const styles = StyleSheet.create({
   notSupportStyle: {
     backgroundColor: defaultColors.bg18,
   },
-  memberName: {
-    color: defaultColors.font7,
+  nameWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: pTd(2),
     marginLeft: -pTd(4),
+  },
+  memberName: {
+    color: defaultColors.font7,
+  },
+  ownerText: {
+    backgroundColor: defaultColors.primaryColor,
+    color: defaultColors.white,
+    fontSize: pTd(10),
+    width: pTd(37),
+    height: pTd(14),
+    textAlign: 'center',
+    marginLeft: pTd(4),
+    borderRadius: pTd(3),
+    overflow: 'hidden',
   },
 });

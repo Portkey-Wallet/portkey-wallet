@@ -26,7 +26,7 @@ export const activitySlice = createSlice({
   },
   extraReducers: builder => {
     builder.addCase(getActivityListAsync.fulfilled, (state, action) => {
-      const { data, totalRecordCount, skipCount, maxResultCount, chainId, symbol } = action.payload;
+      const { data, totalRecordCount, skipCount, maxResultCount, chainId, symbol, hasNextPage } = action.payload;
       const currentMapKey = getCurrentActivityMapKey(chainId, symbol);
 
       if (!state.activityMap) state.activityMap = {};
@@ -38,6 +38,7 @@ export const activitySlice = createSlice({
         maxResultCount,
         chainId,
         symbol,
+        hasNextPage,
       };
 
       state.isLoading = false;

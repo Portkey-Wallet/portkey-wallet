@@ -12,7 +12,7 @@ export default function AddContactButton({ onAdd, addText, goBack, isClosed = fa
   return (
     <div className="flex-center header-right-action">
       <Button onClick={onAdd}>{addText}</Button>
-      {isClosed && <CustomSvg type="Close2" onClick={goBack ?? undefined} />}
+      {isClosed && <CustomSvg type="SuggestClose" onClick={goBack ?? undefined} />}
     </div>
   );
 }

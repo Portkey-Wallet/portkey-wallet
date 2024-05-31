@@ -2,8 +2,7 @@ import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
-import SettingHeader from 'pages/components/SettingHeader';
-import CustomSvg from 'components/CustomSvg';
+import CommonHeader from 'components/CommonHeader';
 import DropdownSearch from 'components/DropdownSearch';
 import { Button } from 'antd';
 import { useGroupChannelInfo, useTransferChannelOwner } from '@portkey-wallet/hooks/hooks-ca/im';
@@ -135,11 +134,7 @@ export default function TransferOwnership() {
   return (
     <div className="transfer-ownership-page flex-column-between">
       <div className="transfer-ownership-top">
-        <SettingHeader
-          title={t('Transfer Group Ownership')}
-          leftCallBack={() => navigate(-1)}
-          rightElement={<CustomSvg type="Close2" onClick={() => navigate(-1)} />}
-        />
+        <CommonHeader title={t('Transfer Group Ownership')} onLeftBack={() => navigate(-1)} />
         <DropdownSearch
           overlay={<></>}
           inputProps={{

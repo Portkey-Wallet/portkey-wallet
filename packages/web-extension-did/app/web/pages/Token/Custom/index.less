@@ -1,59 +1,25 @@
 @import '../../../assets/theme/color.less';
 
 .page-custom-token {
-  padding-top: 16px;
-  background-color: @bg-13;
   height: 100vh;
   display: flex;
   flex-direction: column;
-
-  .page-title {
-    padding: 26px 24px;
-    align-items: center;
-    .title-left-col {
-      .custom-svg {
-        width: 24px;
-        height: 24px;
-        svg {
-          width: 24px;
-          height: 24px;
-        }
-      }
-    }
-    .title-center {
-      flex: 1;
-      padding: 0 12px;
-      color: @font-11;
-      line-height: 28px;
-      font-size: 24px;
-    }
-    .title-right-col {
-      .custom-svg {
-        width: 18px;
-        height: 18px;
-        svg {
-          width: 18px;
-          height: 18px;
-        }
-      }
-    }
-  }
 
   .page-content {
     padding: 24px;
     flex: 1;
     gap: 24px;
     overflow: hidden;
-    background-color: @bg-11;
-    border-top: 1px solid @border-2;
+    background-color: @neutral-default-bg;
+    border-top: 1px solid @neutral-divider;
     font-size: 14px;
     line-height: 20px;
     font-weight: 400;
-    color: @font-1;
+    color: @neutral-primary-text;
   }
 
   .tip {
-    color: @font-13;
+    color: @neutral-secondary-text;
     line-break: anywhere;
   }
 
@@ -61,7 +27,7 @@
     margin-bottom: 8px;
   }
   .@{app-prefix}-input[disabled] {
-    color: @font-1;
+    color: @neutral-primary-text;
     background-color: @bg-22;
   }
 
@@ -73,9 +39,9 @@
   }
 
   .btn-wrap {
-    background-color: @bg-11;
+    background-color: @neutral-default-bg;
     padding: 16px;
-    border-top: 1px solid @border-2;
+    border-top: 1px solid @neutral-divider;
     .btn {
       border-radius: 100px;
       height: 48px;

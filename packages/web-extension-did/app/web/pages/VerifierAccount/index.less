@@ -9,6 +9,9 @@
     width: 0;
     flex: 1;
   }
+  .verifier-account-wrapper .send-tip .account {
+    color: @brand-normal;
+  }
   .verifier-account-wrapper {
     .portkey-ui-code-verify-passcode {
       .adm-passcode-input.adm-passcode-input-seperated {
@@ -23,7 +26,16 @@
             margin-right: 0;
             flex: 0 1;
             flex-basis: 48px;
+            &::after {
+              background-color: @brand-normal;
+            }
           }
+        }
+      }
+      .resend-btn {
+        color: @brand-normal;
+        &.resend-after-btn {
+          color: @neutral-disable-text;
         }
       }
     }
@@ -33,7 +45,7 @@
         margin: auto;
         display: block;
         margin-top: 24px;
-        color: @font-9;
+        color: @brand-normal;
         border: none;
         background-color: transparent;
         &:hover {
@@ -44,7 +56,7 @@
           font-size: 14px;
         }
         &.resend-after-btn {
-          color: @font-12;
+          color: @neutral-disable-text;
         }
       }
     }
@@ -59,16 +71,9 @@
 .verifier-account.popup-page {
   min-width: 360px;
   width: 100%;
-  .setting-header-wrapper {
-    border: none;
-    height: 64px;
-    padding: 0 16px;
+  .verifier-account-header {
     position: sticky;
     top: 0;
-    .custom-svg {
-      width: 16px !important;
-      height: 16px !important;
-    }
   }
   .verifier-account-content {
     padding: 0 24px;

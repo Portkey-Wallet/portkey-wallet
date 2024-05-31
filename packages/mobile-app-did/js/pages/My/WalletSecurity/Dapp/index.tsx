@@ -15,7 +15,7 @@ const DappList: React.FC = () => {
   return (
     <PageContainer
       titleDom={'Connected Sites'}
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: false }}>
       {dappList?.map(item => (

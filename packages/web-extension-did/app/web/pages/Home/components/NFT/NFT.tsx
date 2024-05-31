@@ -134,7 +134,7 @@ export default function NFT() {
           key={nftColKey}
           header={
             <div className="nft-collection flex-row-center">
-              <div className="avatar flex-center">
+              <div className={clsx('nft-collection-avatar', 'flex-center', !nft.imageUrl && 'show-nft-default')}>
                 {nft.imageUrl ? <img src={nft.imageUrl} /> : nft.collectionName?.slice(0, 1)}
               </div>
               <div className="info flex-column">
@@ -209,7 +209,7 @@ export default function NFT() {
           No NFTs yet
         </div>
       ) : (
-        <div className="nft-list">
+        <div className={clsx('nft-list', !hasMoreNFTCollection && 'hidden-loading-more')}>
           <Collapse
             collapsible={isFetching ? 'disabled' : undefined}
             onChange={handleChange}
@@ -218,9 +218,7 @@ export default function NFT() {
             )}>
             {accountNFTList.map((item) => renderItem(item))}
           </Collapse>
-          {hasMoreNFTCollection && (
-            <LoadingMore hasMore={hasMoreNFTCollection} loadMore={getMoreNFTCollection} className="load-more" />
-          )}
+          <LoadingMore hasMore={hasMoreNFTCollection} loadMore={getMoreNFTCollection} className="load-more" />
         </div>
       )}
     </div>

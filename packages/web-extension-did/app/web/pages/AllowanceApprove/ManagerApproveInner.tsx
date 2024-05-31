@@ -5,7 +5,7 @@ import { AccountTypeEnum, OperationTypeEnum } from '@portkey/services';
 import { GuardianApproval, BaseGuardianItem, did, handleErrorMessage, IGuardiansApproved } from '@portkey/did-ui-react';
 import { useCurrentChain, useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useLoading } from 'store/Provider/hooks';
-import BackHeader from 'components/BackHeader';
+import CommonHeader from 'components/CommonHeader';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import { DEFAULT_DECIMAL, DEFAULT_NFT_DECIMAL } from '@portkey-wallet/constants/constants-ca/activity';
 import { LANG_MAX } from '@portkey-wallet/constants/misc';
@@ -192,7 +192,7 @@ export default function ManagerApproveInner({
         <GuardianApproval
           networkType={currentNetwork}
           className="manager-approval-guardian-approve"
-          header={<BackHeader leftCallBack={() => setStep(ManagerApproveStep.SetAllowance)} />}
+          header={<CommonHeader onLeftBack={() => setStep(ManagerApproveStep.SetAllowance)} />}
           originChainId={originChainId}
           targetChainId={targetChainId}
           guardianList={guardianList}

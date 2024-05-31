@@ -20,8 +20,8 @@ export interface IErrorBoundary {
 export type FallbackProps = IErrorBoundary;
 export function Fallback({ resetError }: FallbackProps) {
   return (
-    <SafeAreaBox edges={['left', 'top', 'right']} style={BGStyles.bg5}>
-      <SafeAreaBox edges={['bottom']} style={BGStyles.bg4}>
+    <SafeAreaBox edges={['left', 'top', 'right']} style={BGStyles.bg1}>
+      <SafeAreaBox edges={['bottom']} style={BGStyles.bg1}>
         <View style={styles.headerWrap} />
 
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   headerWrap: {
     height: pTd(52),
     width: '100%',
-    backgroundColor: defaultColors.bg5,
+    backgroundColor: defaultColors.bg1,
   },
   contentWrap: {
     paddingHorizontal: pTd(20),

@@ -83,12 +83,14 @@ export default function DiscoverSearch() {
   return (
     <PageContainer
       hideHeader
-      safeAreaColor={['blue', 'white']}
+      safeAreaColor={['white', 'white']}
       containerStyles={styles.container}
       scrollViewProps={{ disabled: true }}>
-      <View style={[BGStyles.bg5, GStyles.flexRow, styles.inputContainer]}>
+      <View style={[BGStyles.bg1, GStyles.flexRow, styles.inputContainer]}>
         <CommonInput
           autoFocus
+          grayBorder
+          theme="white-bg"
           ref={iptRef}
           value={value}
           onChangeText={v => setValue(v)}
@@ -107,7 +109,7 @@ export default function DiscoverSearch() {
           style={styles.rnInputStyle}
         />
         <Touchable onPress={navigationService.goBack}>
-          <TextM style={[FontStyles.font2, styles.cancelButton]}>{t('Cancel')}</TextM>
+          <TextM style={[FontStyles.primaryColor, styles.cancelButton]}>{t('Cancel')}</TextM>
         </Touchable>
       </View>
       {showRecord ? <RecordSection /> : <SearchDiscoverSection searchedDiscoverList={filteredDiscoverList || []} />}
@@ -121,7 +123,7 @@ const styles = StyleSheet.create({
     paddingRight: 0,
   },
   inputContainer: {
-    ...GStyles.paddingArg(8, 20),
+    ...GStyles.paddingArg(12, 20, 8),
   },
   inputStyle: {
     width: pTd(280),

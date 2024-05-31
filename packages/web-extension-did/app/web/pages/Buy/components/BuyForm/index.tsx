@@ -22,15 +22,35 @@ import { useEffectOnce } from '@portkey-wallet/hooks';
 import { getBuyCrypto } from '@portkey-wallet/utils/ramp';
 import singleMessage from 'utils/singleMessage';
 import { useLocationState } from 'hooks/router';
-import { TRampLocationState } from 'types/router';
+import { TRampLocationState, TTokenDetailLocationState } from 'types/router';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
 import useGAReport from 'hooks/useGAReport';
 
-export default function BuyForm() {
+export interface IBuyFormProps {
+  mainPageInfo?: {
+    pageName: string;
+    pageState?: any;
+    newState: {
+      fiat?: string;
+      country?: string;
+      crypto: string;
+      network?: string;
+      amount?: string;
+      tokenInfo?: TTokenDetailLocationState;
+    };
+  };
+}
+
+export default function BuyForm(props: IBuyFormProps) {
   const { t } = useTranslation();
   const { setLoading } = useLoading();
   const navigate = useNavigate();
-  const { state } = useLocationState<TRampLocationState>();
+  const { state: originState } = useLocationState<TRampLocationState>();
+  const state = useMemo(
+    () =>
+      props?.mainPageInfo?.newState && props?.mainPageInfo?.pageName ? props?.mainPageInfo?.newState : originState,
+    [originState, props?.mainPageInfo?.newState, props?.mainPageInfo?.pageName],
+  );
   // get data
   const { refreshRampShow } = useExtensionRampEntryShow();
   const { symbol: defaultFiat, amount: defaultFiatAmount, country: defaultCountry } = useBuyDefaultFiatState();
@@ -181,6 +201,9 @@ export default function BuyForm() {
           amount: fiatAmountRef.current,
           side: RampType.BUY,
           tokenInfo: state ? state.tokenInfo : null,
+          mainPageInfo: {
+            pageName: props?.mainPageInfo?.pageName,
+          },
         },
       });
     } catch (error) {
@@ -188,7 +211,7 @@ export default function BuyForm() {
     } finally {
       setLoading(false);
     }
-  }, [navigate, refreshRampShow, setLoading, state]);
+  }, [navigate, props?.mainPageInfo?.pageName, refreshRampShow, setLoading, state]);
 
   return (
     <>

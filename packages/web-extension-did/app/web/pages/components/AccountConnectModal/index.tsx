@@ -55,7 +55,7 @@ export default function AccountConnectModal({ open, onCancel }: IAccountConnectM
       title={t(dapp ? 'Connected' : 'Not Connected')}>
       {renderBody}
       <div className="close-icon">
-        <CustomSvg type="Close2" onClick={onCancel} />
+        <CustomSvg type="SuggestClose" onClick={onCancel} />
       </div>
     </CommonModal>
   );

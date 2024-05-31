@@ -2,8 +2,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
 import { MessageList, InputBar, StyleProvider, MessageContentType, PopDataProps } from '@portkey-wallet/im-ui-web';
-import { Avatar } from '@portkey-wallet/im-ui-web';
-import { useChannel, useIsStranger, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
+import {
+  ImageMessageFileType,
+  useBlockAndReport,
+  useChannel,
+  useIsStranger,
+  useRelationId,
+} from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
 import BookmarkListDrawer from 'pages/IMChat/components/BookmarkListDrawer';
 import { formatMessageList } from 'pages/IMChat/utils';
@@ -22,6 +27,12 @@ import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
 import { TViewContactLocationState } from 'types/router';
+import ReportDrawer from 'pages/IMChat/components/ReportDrawer';
+import { ReportMessageEnum } from '@portkey-wallet/constants/constants-ca/chat';
+import { handleErrorMessage } from '@portkey-wallet/utils';
+import CircleLoading from 'components/CircleLoading';
+import { MessageTypeEnum, ParsedImage } from '@portkey-wallet/im';
+import { formatImageData } from '@portkey-wallet/im-ui-web';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
@@ -31,12 +42,22 @@ export default function ChatBox() {
   const messageRef = useRef<any>(null);
   const addContactApi = useAddStrangerContact();
   const [popVisible, setPopVisible] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const [showStrangerTip, setShowStrangerTip] = useState(true);
   const { list, init, sendMessage, pin, mute, exit, info, sendImage, deleteMessage, hasNext, next, loading } =
     useChannel(`${channelUuid}`);
   const isStranger = useIsStranger(info?.toRelationId || '');
-  const { handleDeleteMsg, handlePin, handleMute } = useHandle({ info, mute, pin, deleteMessage, list });
+  const { reportMessage, isBlocked, unBlock: unBlockApi } = useBlockAndReport(info?.toRelationId);
+  const { handleDeleteMsg, handlePin, handleMute } = useHandle({
+    info,
+    mute,
+    pin,
+    deleteMessage,
+    list,
+  });
+  const curOperateMsg = useRef<MessageContentType>();
   const { setLoading } = useLoading();
+  const [unBlockLoading, setUnBlockLoading] = useState(false);
   const clickUrl = useClickUrl({ fromChannelUuid: channelUuid, isGroup: false });
   useEffectOnce(() => {
     init();
@@ -125,7 +146,7 @@ export default function ChatBox() {
         key: 'album',
         children: (
           <CustomUpload
-            sendImage={sendImage}
+            sendImage={(file: ImageMessageFileType) => sendImage(file, info?.toRelationId)}
             onSuccess={() => (messageRef.current.scrollTop = messageRef.current.scrollHeight)}
             handleSendMsgError={handleSendMsgError}
           />
@@ -138,7 +159,7 @@ export default function ChatBox() {
         onClick: () => setShowBookmark(true),
       },
     ],
-    [handleSendMsgError, sendImage],
+    [handleSendMsgError, info?.toRelationId, sendImage],
   );
   const hidePop = useCallback((e: Event) => {
     try {
@@ -156,6 +177,7 @@ export default function ChatBox() {
     async (v: string) => {
       try {
         await sendMessage({
+          toRelationId: info?.toRelationId,
           content: v.trim() ?? '',
         });
         messageRef.current.scrollTop = messageRef.current.scrollHeight;
@@ -163,20 +185,49 @@ export default function ChatBox() {
         handleSendMsgError(e);
       }
     },
-    [handleSendMsgError, sendMessage],
+    [handleSendMsgError, info?.toRelationId, sendMessage],
   );
-  const renderTitle = useMemo(
-    () => (
-      <div className="flex title-element">
-        <div className="title-content flex-center" onClick={handleGoProfile}>
-          <Avatar src={info?.channelIcon} letter={info?.displayName?.slice(0, 1).toUpperCase()} />
-          <div className="title-name">{info?.displayName}</div>
-        </div>
-        {info?.mute && <CustomSvg type="Mute" />}
-      </div>
-    ),
-    [handleGoProfile, info?.channelIcon, info?.displayName, info?.mute],
+  const handleReport = useCallback(
+    async ({ reportType, description }: { reportType: ReportMessageEnum; description: string }) => {
+      if (!curOperateMsg.current) throw 'can not find target message';
+      try {
+        const parsedContent = curOperateMsg.current.parsedContent;
+        let msg = parsedContent;
+        if (curOperateMsg.current.type === MessageTypeEnum.IMAGE) {
+          const { thumbImgUrl, imgUrl } = formatImageData(parsedContent as ParsedImage);
+          msg = thumbImgUrl ?? imgUrl;
+        }
+
+        await reportMessage({
+          message: msg,
+          messageId: curOperateMsg.current.id,
+          reportedRelationId: curOperateMsg.current.from,
+          reportType,
+          description,
+          channelUuid,
+        });
+        singleMessage.success(
+          'Thank you for reporting this. Portkey will look into the matter and take appropriate action to handle it.',
+        );
+      } catch (error) {
+        console.log('handleReport error===', error);
+        singleMessage.error(handleErrorMessage(error, 'report message error.'));
+      }
+    },
+    [channelUuid, reportMessage],
   );
+  const handleUnBlock = useCallback(async () => {
+    try {
+      setUnBlockLoading(true);
+      await unBlockApi(info?.toRelationId);
+      singleMessage.success('User unblocked');
+    } catch (error) {
+      console.log('===handleUnBlock error', error);
+      singleMessage.error(handleErrorMessage(error, 'unBlock error'));
+    } finally {
+      setUnBlockLoading(false);
+    }
+  }, [info?.toRelationId, unBlockApi]);
   useEffect(() => {
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);
@@ -184,8 +235,14 @@ export default function ChatBox() {
   return (
     <div className="chat-box-page flex-column">
       <ChatBoxHeader
+        avatarProps={{
+          src: info?.channelIcon,
+          letter: info?.displayName?.slice(0, 1).toUpperCase(),
+        }}
+        titleName={info?.displayName}
+        isMute={info?.mute}
+        handleClickTitle={handleGoProfile}
         popMenuData={p2pPopList.filter((i) => isStranger || i.key !== 'add-contact')}
-        renderTitle={renderTitle}
         goBack={() => navigate('/chat-list')}
         popVisible={popVisible}
         setPopVisible={setPopVisible}
@@ -210,20 +267,40 @@ export default function ChatBox() {
             onDeleteMsg={handleDeleteMsg}
             onClickUrl={clickUrl}
             onClickUnSupportMsg={WarnTip}
+            onReportMsg={(item: MessageContentType) => {
+              setReportOpen(true);
+              curOperateMsg.current = item;
+            }}
           />
         </StyleProvider>
       </div>
-      <div className="chat-box-footer">
-        <StyleProvider prefixCls="portkey">
-          <InputBar moreData={inputMorePopList} maxLength={MAX_INPUT_LENGTH} onSendMessage={handleSendMessage} />
-        </StyleProvider>
-      </div>
+      {isBlocked ? (
+        <div className="unblock-footer flex-center">
+          {unBlockLoading ? (
+            <div className="flex-row-center un-click-content">
+              <CircleLoading />
+              Unblocking
+            </div>
+          ) : (
+            <div onClick={handleUnBlock} className="click-content">
+              Unblock
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="chat-box-footer">
+          <StyleProvider prefixCls="portkey">
+            <InputBar moreData={inputMorePopList} maxLength={MAX_INPUT_LENGTH} onSendMessage={handleSendMessage} />
+          </StyleProvider>
+        </div>
+      )}
       <BookmarkListDrawer
         destroyOnClose
         open={showBookmark}
         onClose={() => setShowBookmark(false)}
         onClick={handleSendMessage}
       />
+      <ReportDrawer open={reportOpen} onCloseReport={() => setReportOpen(false)} onReport={handleReport} />
     </div>
   );
 }

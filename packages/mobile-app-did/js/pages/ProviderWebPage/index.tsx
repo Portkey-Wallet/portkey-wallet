@@ -22,9 +22,9 @@ const ProviderWebPage = () => {
     icon?: IconName;
   }>();
   return (
-    <SafeAreaBox edges={['top', 'right', 'left']} style={{ backgroundColor: SafeAreaColorMap.blue }}>
+    <SafeAreaBox edges={['top', 'right', 'left']} style={{ backgroundColor: SafeAreaColorMap.white }}>
       <View style={[GStyles.flex1, BGStyles.bg4]}>
-        <CustomHeader themeType={'blue'} titleDom={title} />
+        <CustomHeader themeType={'white'} titleDom={title} />
         <ProviderWebPageComponent url={url} title={title} icon={icon} />
       </View>
     </SafeAreaBox>

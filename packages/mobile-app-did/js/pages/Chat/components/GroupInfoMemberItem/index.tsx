@@ -1,6 +1,6 @@
-import { TextL, TextS } from 'components/CommonText';
+import { TextL } from 'components/CommonText';
 import React from 'react';
-import { StyleSheet, ViewStyle } from 'react-native';
+import { StyleSheet, ViewStyle, Text } from 'react-native';
 import { pTd } from 'utils/unit';
 import CommonAvatar from 'components/CommonAvatar';
 import { defaultColors } from 'assets/theme';
@@ -34,7 +34,7 @@ export default function GroupInfoMemberItem(props: GroupInfoMemberItemPropsType)
       <TextL numberOfLines={1} style={[FontStyles.font5, GStyles.flex1, styles.memberItemText]}>
         {item.title}
       </TextL>
-      {isOwner && <TextS style={styles.ownerMark}>Owner</TextS>}
+      {isOwner && <Text style={styles.ownerMark}>Owner</Text>}
     </Touchable>
   );
 }
@@ -51,11 +51,12 @@ const styles = StyleSheet.create({
   },
   ownerMark: {
     height: pTd(20),
+    fontSize: pTd(10),
     lineHeight: pTd(20),
     borderRadius: pTd(4),
     paddingHorizontal: pTd(8),
-    backgroundColor: defaultColors.bg9,
-    color: defaultColors.bg5,
+    backgroundColor: defaultColors.primaryColor,
+    color: defaultColors.white,
     textAlign: 'center',
     overflow: 'hidden',
   },

@@ -47,15 +47,7 @@ const ListItem: React.FC<ListItemProps> = props => {
   } = props;
   const RightElement = useMemo(() => {
     if (switching) {
-      return (
-        <CommonSwitch
-          style={switchStyles}
-          value={switchValue}
-          thumbColor="white"
-          trackColor={{ false: '', true: defaultColors.primaryColor }}
-          onValueChange={onValueChange}
-        />
-      );
+      return <CommonSwitch style={switchStyles} value={switchValue} thumbColor="white" onValueChange={onValueChange} />;
     }
 
     return <Svg icon="right-arrow" size={18} color={defaultColors.font7} iconStyle={styles.iconStyle} />;

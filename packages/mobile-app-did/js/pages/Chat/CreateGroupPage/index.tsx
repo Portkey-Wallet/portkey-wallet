@@ -83,7 +83,7 @@ const ChatGroupDetails = () => {
     <PageContainer
       titleDom="Create Group"
       hideTouchable
-      safeAreaColor={['blue', 'white']}
+      safeAreaColor={['white', 'white']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
       <View style={[GStyles.flexRow, GStyles.itemCenter, styles.groupNameWrap]}>
@@ -96,6 +96,7 @@ const ChatGroupDetails = () => {
           value={groupName}
           onChangeText={setGroupName}
           inputStyle={styles.nameInputStyle}
+          inputContainerStyle={styles.inputContainerStyle}
           errorStyle={styles.nameInputErrorStyle}
           containerStyle={styles.nameInputContainerStyle}
         />
@@ -172,5 +173,9 @@ const styles = StyleSheet.create({
     height: 0,
     padding: 0,
     margin: 0,
+  },
+  inputContainerStyle: {
+    borderWidth: 0,
+    borderBottomWidth: 0,
   },
 });

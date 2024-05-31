@@ -1,16 +1,17 @@
 @import '../../assets/theme/color.less';
 
-.dropdown-search-wrapper {
+// To increase the css weight
+.dropdown-search-wrapper.web-dropdown-search {
   padding: 16px 24px 10px;
-  background-color: @bg-13;
+  background-color: @neutral-default-bg;
   margin-bottom: 1px;
 
   .@{app-prefix}-input-affix-wrapper {
     border-radius: 6px;
-    border: 1px solid @border-1;
+    border: 1px solid @neutral-border;
     padding: 12px 16px;
     line-height: 16px;
-    color: @font-11;
+    color: @neutral-primary-text;
     font-size: 16px;
 
     .@{app-prefix}-input-prefix {
@@ -30,7 +31,7 @@
       .anticon-close-circle {
         width: 14px;
         height: 14px;
-        background: url('../../assets/svgIcon/Close2.svg') no-repeat center;
+        background: url('../../assets/svgIcon/SuggestClose.svg') no-repeat center;
         background-size: inherit;
 
         & > svg {
@@ -40,13 +41,13 @@
     }
 
     .@{app-prefix}-input::placeholder {
-      color: @font-12;
+      color: @neutral-disable-text;
     }
   }
 
   .@{app-prefix}-input-affix-wrapper-focused {
     box-shadow: none;
-    border-color: @border-3 !important;
+    border-color: @brand-normal !important;
     .@{app-prefix}-input-prefix {
       .custom-svg {
         background: url('../../assets/svgIcon/Search.svg') center no-repeat;

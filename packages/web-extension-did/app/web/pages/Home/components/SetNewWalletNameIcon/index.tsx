@@ -26,7 +26,7 @@ export default function SetNewWalletNameIcon() {
           Set your login account as your wallet name to make your wallet customised and recongnisable.
         </div>
         <div className="popover-content-confirm cursor-pointer" onClick={handlePopoverConfirm}>
-          Set Wallet Name
+          Use Login Account as Name
         </div>
         <CustomSvg className="popover-close-icon cursor-pointer" type="SuggestClose" onClick={() => setIsOpen(false)} />
       </div>

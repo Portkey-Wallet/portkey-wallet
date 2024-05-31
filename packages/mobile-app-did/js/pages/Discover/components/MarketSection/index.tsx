@@ -38,21 +38,23 @@ export default function MarketSection() {
     return (
       <View style={styles.empty}>
         <Svg icon="no-data" size={pTd(64)} iconStyle={{ marginBottom: pTd(8) }} />
-        <TextM style={styles.message}>No data</TextM>
+        <TextM style={styles.message}>No Data</TextM>
         <CommonButton
           radius={pTd(4)}
           containerStyle={styles.retryButtonContainer}
           buttonStyle={styles.retryButton}
+          titleStyle={styles.btnTitleStyle}
           type="primary"
+          title="Retry"
           disabled={refreshing}
           onPress={() => {
             onRefresh();
-          }}>
-          <TextL style={styles.nextButtonText}>{'Retry'}</TextL>
-        </CommonButton>
+          }}
+        />
       </View>
     );
   }, [onRefresh, refreshing]);
+
   return (
     <View style={styles.container}>
       <MarketType marketInfo={marketInfo} handleType={handleType} />
@@ -113,5 +115,8 @@ const styles = StyleSheet.create({
     fontSize: pTd(12),
     lineHeight: pTd(20),
     color: defaultColors.white,
+  },
+  btnTitleStyle: {
+    lineHeight: pTd(16),
   },
 });

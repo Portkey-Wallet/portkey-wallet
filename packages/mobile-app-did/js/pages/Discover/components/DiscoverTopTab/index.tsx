@@ -31,14 +31,16 @@ const DiscoverTab: React.FC = () => {
   }, [t]);
 
   const tabList = useMemo(() => {
-    return discoverHeaderTabList
-      .sort((a, b) => Number(a.index) - Number(b.index))
-      .map(item => {
-        return {
-          name: item.name || 'tab',
-          tabItemDom: tabOriginalList.find(tab => tab.name === item.name)?.tabItemDom || <></>,
-        };
-      });
+    return (
+      discoverHeaderTabList
+        // .sort((a, b) => Number(a.index) - Number(b.index))
+        .map(item => {
+          return {
+            name: item.name || 'tab',
+            tabItemDom: tabOriginalList.find(tab => tab.name === item.name)?.tabItemDom || <></>,
+          };
+        })
+    );
   }, [discoverHeaderTabList, tabOriginalList]);
 
   return <CommonTopTab swipeEnabled hasTabBarBorderRadius={false} tabList={tabList} />;

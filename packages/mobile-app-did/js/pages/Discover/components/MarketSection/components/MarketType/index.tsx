@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     paddingLeft: pTd(12),
     paddingRight: pTd(12),
     backgroundColor: defaultColors.neutralDefaultBG,
-    borderWidth: pTd(0.5),
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: defaultColors.neutralBorder,
     borderRadius: pTd(24),
   },

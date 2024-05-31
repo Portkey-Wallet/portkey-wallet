@@ -5,12 +5,12 @@ import { Swiper, SwiperProps, SwiperRef } from 'antd-mobile';
 import CustomSvg from 'components/CustomSvg';
 import SkeletonCom, { SkeletonComType } from 'pages/components/SkeletonCom';
 import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { THomeBannerList, TTokenDetailBannerList } from '@portkey-wallet/types/types-ca/cms';
+import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
 import './index.less';
 
 interface ICommonBannerProps {
   wrapClassName?: string;
-  bannerList: THomeBannerList | TTokenDetailBannerList;
+  bannerList: TBaseCardItemType[];
 }
 
 const SWIPER_AUTOPLAY_INTERVAL = 5000;

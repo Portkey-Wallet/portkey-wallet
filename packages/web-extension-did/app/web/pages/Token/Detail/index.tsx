@@ -28,7 +28,7 @@ import { ReceiveTabEnum } from '@portkey-wallet/constants/constants-ca/send';
 import SkeletonCom from 'pages/components/SkeletonCom';
 import CommonBanner from 'components/CommonBanner';
 import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
-import { TTokenDetailBannerList } from '@portkey-wallet/types/types-ca/cms';
+import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
 
 export enum TokenTransferStatus {
   CONFIRMED = 'Confirmed',
@@ -46,7 +46,7 @@ function TokenDetail() {
   const { checkDappIsConfirmed } = useDisclaimer();
   const checkSecurity = useCheckSecurity();
   const { getTokenDetailBannerList } = useCmsBanner();
-  const [tokenDetailBannerList, setTokenDetailBannerList] = useState<TTokenDetailBannerList>([]);
+  const [tokenDetailBannerList, setTokenDetailBannerList] = useState<TBaseCardItemType[]>([]);
   const [disclaimerOpen, setDisclaimerOpen] = useState<boolean>(false);
   const { eTransferUrl = '', awakenUrl = '' } = useCurrentNetworkInfo();
   const { isPrompt, isNotLessThan768 } = useCommonState();

@@ -24,6 +24,8 @@ export default function CommonBanner({ wrapClassName, bannerList }: ICommonBanne
   const [imageLoadedStatusList, setImageLoadedStatusList] = useState<boolean[]>([]);
   const [isShowArrow, setIsShowArrow] = useState(false);
 
+  const canSwitch = useMemo(() => !isShowSkeleton && bannerList.length > 1, [bannerList.length, isShowSkeleton]);
+
   useEffect(() => {
     const tempImageLoadedStatusList = Array(bannerList.length).fill(false);
     setImageLoadedStatusList(tempImageLoadedStatusList);
@@ -31,7 +33,6 @@ export default function CommonBanner({ wrapClassName, bannerList }: ICommonBanne
 
   useEffect(() => {
     if (imageLoadedStatusList.length > 0 && imageLoadedStatusList.every(Boolean)) {
-      commonBannerRef.current?.swipeTo(0);
       setIsShowSkeleton(false);
     }
   }, [imageLoadedStatusList]);
@@ -68,6 +69,7 @@ export default function CommonBanner({ wrapClassName, bannerList }: ICommonBanne
   );
 
   const swiperIndicator: SwiperProps['indicator'] = (total, current) => {
+    if (!canSwitch) return null;
     return (
       <div className="common-banner-indicator flex-center cursor-pointer">
         {Array.from({ length: total }).map((_, index) => (
@@ -88,8 +90,8 @@ export default function CommonBanner({ wrapClassName, bannerList }: ICommonBanne
   return (
     <div
       className={clsx('common-banner-wrap', wrapClassName)}
-      onMouseEnter={() => !isShowSkeleton && setIsShowArrow(true)}
-      onMouseLeave={() => !isShowSkeleton && setIsShowArrow(false)}>
+      onMouseEnter={() => canSwitch && setIsShowArrow(true)}
+      onMouseLeave={() => canSwitch && setIsShowArrow(false)}>
       {isShowSkeleton && (
         <div className="skeleton-wrap flex-row-between">
           <div className="skeleton-left flex-column">
@@ -106,7 +108,7 @@ export default function CommonBanner({ wrapClassName, bannerList }: ICommonBanne
         className="common-banner"
         allowTouchMove={false}
         loop
-        autoplay
+        autoplay={canSwitch}
         autoplayInterval={SWIPER_AUTOPLAY_INTERVAL}
         indicator={swiperIndicator}>
         {swiperItems}

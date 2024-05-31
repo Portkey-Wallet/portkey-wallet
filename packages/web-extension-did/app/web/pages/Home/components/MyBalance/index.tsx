@@ -48,6 +48,8 @@ import CustomSvg from 'components/CustomSvg';
 import SetNewWalletNameIcon from '../SetNewWalletNameIcon';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import SkeletonCom from 'pages/components/SkeletonCom';
+import CommonBanner from 'components/CommonBanner';
+import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
 
 export interface TransactionResult {
   total: number;
@@ -112,6 +114,7 @@ export default function MyBalance() {
   const accountBalanceUSD = useAccountBalanceUSD();
   const usdShow = useMemo(() => formatAmountUSDShow(accountBalanceUSD), [accountBalanceUSD]);
   const [detailScroll, setDetailScroll] = useState(false);
+  const { homeBannerList } = useCmsBanner();
 
   useEffectOnce(() => {
     if (state?.key) {
@@ -333,6 +336,7 @@ export default function MyBalance() {
         />
       </div>
       {SelectTokenELe}
+      {!isNotLessThan768 && <CommonBanner wrapClassName="banner-wrap" bannerList={homeBannerList} />}
       <Tabs activeKey={activeKey} onChange={onChange} items={renderTabsData} className="balance-tab" />
       <DisclaimerModal open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} {...disclaimerData.current} />
     </div>

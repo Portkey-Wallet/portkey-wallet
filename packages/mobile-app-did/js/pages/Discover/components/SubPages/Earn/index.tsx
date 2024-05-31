@@ -10,6 +10,7 @@ import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import React, { useCallback } from 'react';
 import { View, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
+import { isUrl } from '@portkey-wallet/utils';
 
 export const EarnPage = () => {
   const { earnList = [] } = useDiscoverData();
@@ -35,6 +36,7 @@ const EarnItem = (item: TBaseCardItemType) => {
   const imageUrl = getS3ImgUrl(item.imgUrl.filename_disk);
   const { title = '', description, url, buttonTitle } = item;
   const onPress = useCallback(() => {
+    if (!isUrl(url)) return;
     discoverJump({
       item: {
         name: title,

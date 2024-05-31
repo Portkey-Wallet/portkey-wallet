@@ -10,6 +10,7 @@ import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import React, { useCallback, useMemo } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View, Image } from 'react-native';
 import { pTd } from 'utils/unit';
+import { isUrl } from '@portkey-wallet/utils';
 
 export interface SubLearnPageProps {
   section: string;
@@ -46,6 +47,7 @@ const GuardItem = ({
   const discoverJump = useDiscoverJumpWithNetWork();
   const imageUrl = getS3ImgUrl(imgUrl.filename_disk);
   const onPress = useCallback(() => {
+    if (!isUrl(url)) return;
     discoverJump({
       item: {
         name: title,

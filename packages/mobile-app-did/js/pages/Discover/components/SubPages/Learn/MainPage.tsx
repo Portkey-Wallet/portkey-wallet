@@ -13,6 +13,7 @@ import React, { useCallback, useMemo } from 'react';
 import { View, StyleSheet, ScrollView, Image, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
+import { isUrl } from '@portkey-wallet/utils';
 
 export const LearnPage = () => {
   const { learnBannerList = [] } = useCmsBanner();
@@ -21,6 +22,7 @@ export const LearnPage = () => {
   const discoverJump = useDiscoverJumpWithNetWork();
   const jumpToDiscover = useCallback(
     (url: string, title = '') => {
+      if (!isUrl(url)) return;
       discoverJump({
         item: {
           name: title,

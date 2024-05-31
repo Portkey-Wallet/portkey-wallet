@@ -52,10 +52,10 @@ const EarnItem = (item: TBaseCardItemType) => {
       <View style={styles.infoWrap}>
         <View style={styles.infoLine}>
           <View style={styles.textLines}>
-            <TextL style={[styles.title, fonts.mediumFont]} numberOfLines={2} ellipsizeMode="tail">
+            <TextL style={[styles.title, fonts.mediumFont]} numberOfLines={1} ellipsizeMode="tail">
               {title}
             </TextL>
-            <TextS style={styles.description} numberOfLines={1} ellipsizeMode="tail">
+            <TextS style={styles.description} numberOfLines={2} ellipsizeMode="tail">
               {description}
             </TextS>
           </View>
@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: pTd(16),
     height: pTd(34),
     borderRadius: pTd(4),
+    width: pTd(92),
   },
   btnTitle: {
     fontSize: pTd(12),

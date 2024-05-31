@@ -6,6 +6,7 @@ import CustomSvg from 'components/CustomSvg';
 import SkeletonCom, { SkeletonComType } from 'pages/components/SkeletonCom';
 import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
+import { isUrl } from '@portkey-wallet/utils';
 import './index.less';
 
 interface ICommonBannerProps {
@@ -51,14 +52,14 @@ export default function CommonBanner({ wrapClassName, bannerList }: ICommonBanne
       bannerList.map((item, index) => (
         <Swiper.Item key={index}>
           <Image
-            className={clsx('common-banner-item', { ['cursor-pointer']: !!item?.url })}
+            className={clsx('common-banner-item', { ['cursor-pointer']: isUrl(item?.url) })}
             width="100%"
             height="100%"
             src={getS3ImageUrl(item?.imgUrl?.filename_disk)}
             preview={false}
             onLoad={() => handleImageLoad(index)}
             onClick={() => {
-              if (item?.url) {
+              if (isUrl(item?.url)) {
                 window.open(item.url, '_blank');
               }
             }}

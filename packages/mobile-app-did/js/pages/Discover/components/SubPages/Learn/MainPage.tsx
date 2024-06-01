@@ -119,9 +119,9 @@ const ListItem = ({
 const styles = StyleSheet.create({
   wrap: {
     flex: 1,
+    backgroundColor: defaultColors.white,
   },
   scroll: {
-    marginTop: pTd(16),
     marginBottom: pTd(24),
   },
   container: {

@@ -18,6 +18,7 @@ export interface CarouselProps {
   imageMarginHorizontal?: number;
   imageRatio?: number; // image 'width / height'
   showImageBorderRadius?: boolean;
+  showDivider?: boolean;
   items: CarouselItemProps[];
   onClick?: ({ index, item }: { index: number; item: CarouselItemProps }) => void;
 }
@@ -29,6 +30,7 @@ const CarouselComponent: React.FC<CarouselProps> = ({
   imageMarginHorizontal = 0,
   imageRatio = DEFAULT_CAROUSEL_IMAGE_RATIO,
   showImageBorderRadius = false,
+  showDivider = false,
 }) => {
   const jumpToWebview = useDiscoverJumpWithNetWork();
 
@@ -62,7 +64,7 @@ const CarouselComponent: React.FC<CarouselProps> = ({
 
   return (
     <Carousel
-      style={[styles.container, { height: containerHeight }, containerStyle]}
+      style={[styles.container, { height: containerHeight }, containerStyle, showDivider && styles.divider]}
       control={
         items.length > 1 && (
           <Carousel.Control
@@ -95,6 +97,12 @@ const CarouselComponent: React.FC<CarouselProps> = ({
 const styles = StyleSheet.create({
   container: {
     width: screenWidth,
+  },
+  divider: {
+    borderBottomColor: defaultColors.neutralDivider,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderTopColor: defaultColors.neutralDivider,
+    borderTopWidth: StyleSheet.hairlineWidth,
   },
   image: {
     width: '100%',

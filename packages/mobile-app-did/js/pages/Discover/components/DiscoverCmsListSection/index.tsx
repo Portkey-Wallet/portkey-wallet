@@ -48,7 +48,12 @@ export function DiscoverCmsListSection() {
     <ScrollView contentContainerStyle={styles.scroll}>
       <View style={styles.wrap}>
         {lists.length > 0 ? (
-          <CarouselComponent containerStyle={styles.slide} items={lists} />
+          <CarouselComponent
+            containerStyle={styles.slide}
+            items={lists}
+            imageMarginHorizontal={16}
+            showImageBorderRadius={true}
+          />
         ) : (
           <View style={styles.init} />
         )}
@@ -67,7 +72,7 @@ export function DiscoverCmsListSection() {
                     }}
                   />
                   <View style={styles.right}>
-                    <TextWithProtocolIcon textFontSize={pTd(16)} title={item?.title} url={item.url} />
+                    <TextWithProtocolIcon textFontSize={pTd(16)} title={item?.title} url={item.url} iconSize={12} />
                     <TextS style={FontStyles.font7} numberOfLines={1} ellipsizeMode="tail">
                       {item?.description}
                     </TextS>
@@ -95,7 +100,8 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.white,
   },
   slide: {
-    marginTop: pTd(12),
+    marginLeft: pTd(-16),
+    marginTop: pTd(16),
     marginBottom: pTd(16),
   },
   groupWrap: {
@@ -117,10 +123,10 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   image: {
-    width: pTd(40),
-    height: pTd(40),
-    marginRight: pTd(16),
-    borderRadius: pTd(20),
+    width: pTd(36),
+    height: pTd(36),
+    marginRight: pTd(10),
+    borderRadius: pTd(18),
   },
   right: {
     flex: 1,

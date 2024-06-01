@@ -55,10 +55,6 @@ export const styles = StyleSheet.create({
     lineHeight: pTd(24),
     paddingVertical: pTd(8),
   },
-  divide: {
-    borderBottomColor: '#DEE2E8',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
   buttonGroupWrap: {
     backgroundColor: white,
     marginTop: pTd(32),

@@ -119,9 +119,9 @@ const ListItem = ({
 const styles = StyleSheet.create({
   wrap: {
     flex: 1,
+    backgroundColor: defaultColors.white,
   },
   scroll: {
-    marginTop: pTd(16),
     marginBottom: pTd(24),
   },
   container: {
@@ -185,6 +185,7 @@ const itemStyles = StyleSheet.create({
   },
   describe: {
     lineHeight: pTd(22),
+    fontSize: pTd(14),
     color: defaultColors.font5,
     ...fonts.mediumFont,
     maxWidth: pTd(128),

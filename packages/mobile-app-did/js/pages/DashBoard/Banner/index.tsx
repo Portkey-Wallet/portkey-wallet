@@ -18,7 +18,7 @@ export const DashBoardBanner: React.FC = () => {
   }, [getS3ImageUrl, homeBannerList]);
 
   if (!list?.length) return null;
-  return <Carousel items={list} containerStyle={styles.container} />;
+  return <Carousel items={list} containerStyle={styles.container} showDivider={true} />;
 };
 
 const styles = StyleSheet.create({

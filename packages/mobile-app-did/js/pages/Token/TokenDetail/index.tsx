@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { View, Text } from 'react-native';
+import { NestedScrollView, NestedScrollViewHeader } from '@sdcx/nested-scroll';
 import PageContainer from 'components/PageContainer';
 import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
@@ -209,59 +210,61 @@ const TokenDetail: React.FC = () => {
     });
   }, [getS3ImageUrl, getTokenDetailBannerList, tokenInfo.chainId, tokenInfo.symbol]);
 
-  return (
-    <PageContainer
-      type="leftBack"
-      backTitle={t('')}
-      titleDom={<TokenTitle tokenInfo={tokenInfo} />}
-      safeAreaColor={['white']}
-      leftCallback={() => navigation.goBack()}
-      containerStyles={styles.pageWrap}
-      scrollViewProps={{ disabled: true }}>
-      <View style={styles.card}>
-        <Text style={[styles.tokenBalance, amountTextOverflow ? styles.textOverflow : {}]}>{`${balanceShow}`}</Text>
-        {isMainnet && (
-          <TextS style={[styles.dollarBalance]}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</TextS>
+  const renderButtonItmes = useCallback(() => {
+    return (
+      <View style={[styles.buttonGroupWrap, buttonGroupWrapStyle]}>
+        <SendButton themeType="innerPage" sentToken={currentTokenInfo} wrapStyle={buttonWrapStyle} />
+        <ReceiveButton currentTokenInfo={currentTokenInfo} themeType="innerPage" wrapStyle={buttonWrapStyle} />
+        {isBuyButtonShow && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
+        {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}
+        {isSwapShow && swap && (
+          <CommonToolButton
+            title="Swap"
+            icon="swap"
+            onPress={() => {
+              onDisclaimerModalPress(
+                DepositModalMap.AwakenSwap,
+                stringifyETrans({
+                  url: `${awakenUrl}/trading/ELF_USDT_0.05` || '',
+                }),
+              );
+            }}
+            themeType="innerPage"
+            wrapStyle={buttonWrapStyle}
+          />
         )}
-        <View style={[styles.buttonGroupWrap, buttonGroupWrapStyle]}>
-          <SendButton themeType="innerPage" sentToken={currentTokenInfo} wrapStyle={buttonWrapStyle} />
-          <ReceiveButton currentTokenInfo={currentTokenInfo} themeType="innerPage" wrapStyle={buttonWrapStyle} />
-          {isBuyButtonShow && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
-          {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}
-          {isSwapShow && swap && (
-            <CommonToolButton
-              title="Swap"
-              icon="swap"
-              onPress={() => {
-                onDisclaimerModalPress(
-                  DepositModalMap.AwakenSwap,
-                  stringifyETrans({
-                    url: `${awakenUrl}/trading/ELF_USDT_0.05` || '',
-                  }),
-                );
-              }}
-              themeType="innerPage"
-              wrapStyle={buttonWrapStyle}
-            />
-          )}
-          {deposit && (
-            <CommonToolButton
-              title="Deposit"
-              icon="deposit"
-              onPress={() =>
-                navigationService.navigate(
-                  'Receive',
-                  Object.assign({}, tokenInfo, { targetScene: ReceivePageTabType.DEPOSIT }),
-                )
-              }
-              themeType="innerPage"
-              wrapStyle={buttonWrapStyle}
-            />
-          )}
-        </View>
-        {bannerItemsList?.length > 0 && <Carousel items={bannerItemsList} containerStyle={styles.banner} />}
+        {deposit && (
+          <CommonToolButton
+            title="Deposit"
+            icon="deposit"
+            onPress={() =>
+              navigationService.navigate(
+                'Receive',
+                Object.assign({}, tokenInfo, { targetScene: ReceivePageTabType.DEPOSIT }),
+              )
+            }
+            themeType="innerPage"
+            wrapStyle={buttonWrapStyle}
+          />
+        )}
       </View>
+    );
+  }, [
+    awakenUrl,
+    buttonGroupWrapStyle,
+    buttonWrapStyle,
+    currentTokenInfo,
+    deposit,
+    isBuyButtonShow,
+    isFaucetButtonShow,
+    isSwapShow,
+    onDisclaimerModalPress,
+    swap,
+    tokenInfo,
+  ]);
 
+  const renderActivityList = useCallback(() => {
+    return (
       <FlashList
         refreshing={isLoading === ListLoadingEnum.header}
         data={currentActivity?.data || []}
@@ -282,7 +285,7 @@ const TokenDetail: React.FC = () => {
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListHeaderComponent={
-          <View style={styles.divide}>
+          <View>
             <TextL style={[FontStyles.font16, styles.listFront, fonts.mediumFont]}>{'Activity'}</TextL>
           </View>
         }
@@ -294,6 +297,37 @@ const TokenDetail: React.FC = () => {
           init();
         }}
       />
+    );
+  }, [currentActivity?.data, getActivityList, init, isEmpty, isLoading, onRefreshList, renderItem, t]);
+
+  const renderBanner = useCallback(() => {
+    return bannerItemsList?.length > 0 ? (
+      <Carousel items={bannerItemsList} containerStyle={styles.banner} showDivider={true} />
+    ) : (
+      <View />
+    );
+  }, [bannerItemsList]);
+
+  return (
+    <PageContainer
+      type="leftBack"
+      backTitle={t('')}
+      titleDom={<TokenTitle tokenInfo={tokenInfo} />}
+      safeAreaColor={['white']}
+      leftCallback={() => navigation.goBack()}
+      containerStyles={styles.pageWrap}
+      scrollViewProps={{ disabled: true }}>
+      <View style={styles.card}>
+        <Text style={[styles.tokenBalance, amountTextOverflow ? styles.textOverflow : {}]}>{`${balanceShow}`}</Text>
+        {isMainnet && (
+          <TextS style={[styles.dollarBalance]}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</TextS>
+        )}
+        {renderButtonItmes()}
+      </View>
+      <NestedScrollView>
+        {React.cloneElement(<NestedScrollViewHeader stickyHeaderBeginIndex={1} />, { children: renderBanner() })}
+        {renderActivityList()}
+      </NestedScrollView>
     </PageContainer>
   );
 };

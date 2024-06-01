@@ -11,6 +11,7 @@ import React, { useCallback, useMemo } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View, Image } from 'react-native';
 import { pTd } from 'utils/unit';
 import { isUrl } from '@portkey-wallet/utils';
+import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 
 export interface SubLearnPageProps {
   section: string;
@@ -55,15 +56,19 @@ const GuardItem = ({
       },
     });
   }, [discoverJump, title, url]);
+  const textMaxWidth = screenWidth - pTd(92 + 16);
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={styles.item}>
         <Image style={styles.image} source={{ uri: imageUrl }} resizeMode="stretch" />
         <View style={styles.textLine}>
-          <TextL style={[styles.title, fonts.mediumFont]} numberOfLines={2} ellipsizeMode="tail">
+          <TextL
+            style={[styles.title, fonts.mediumFont, { maxWidth: textMaxWidth }]}
+            numberOfLines={1}
+            ellipsizeMode="tail">
             {title}
           </TextL>
-          <TextS style={styles.description} numberOfLines={1} ellipsizeMode="tail">
+          <TextS style={[styles.description, { maxWidth: textMaxWidth }]} numberOfLines={1} ellipsizeMode="tail">
             {description}
           </TextS>
         </View>
@@ -82,7 +87,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   item: {
-    padding: pTd(16),
+    paddingVertical: pTd(16),
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
@@ -97,7 +102,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'flex-start',
-    maxWidth: pTd(237),
   },
   title: {
     color: defaultColors.font5,

@@ -68,8 +68,8 @@ export default function DiscoverHome() {
 
   const showAllTabsIcon = useMemo(() => {
     return (
-      <Touchable onPress={() => showTabDrawer(DiscoverShowOptions.SHOW_TABS)} style={styles.svgWrap}>
-        <TextM style={[styles.switchButton, fonts.mediumFont]}>{currentTabLength}</TextM>
+      <Touchable onPress={() => showTabDrawer(DiscoverShowOptions.SHOW_TABS)} style={styles.showAllTabsWrap}>
+        <TextM style={[styles.showAllTabsText, fonts.mediumFont]}>{currentTabLength}</TextM>
       </Touchable>
     );
   }, [currentTabLength, showTabDrawer]);
@@ -139,16 +139,20 @@ const styles = StyleSheet.create({
   inputContainer: {
     ...GStyles.paddingArg(8, 20),
   },
-  switchButton: {
-    width: pTd(19),
-    height: pTd(19),
+  showAllTabsWrap: {
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: pTd(4),
-    borderWidth: pTd(1.5),
+    borderWidth: 1.5,
     borderColor: defaultColors.font19,
+    width: pTd(22),
+    height: pTd(22),
+    marginHorizontal: pTd(16),
+  },
+  showAllTabsText: {
     color: defaultColors.font19,
     textAlign: 'center',
     lineHeight: pTd(18),
-    marginHorizontal: pTd(16),
   },
   svgWrap: {
     display: 'flex',

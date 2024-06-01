@@ -61,6 +61,7 @@ const EarnItem = (item: TBaseCardItemType) => {
           </View>
           <CommonButton
             type="primary"
+            radius={pTd(4)}
             buttonStyle={styles.btn}
             titleStyle={[styles.btnTitle, fonts.mediumFont]}
             title={buttonTitle || 'Earn Now'}
@@ -105,15 +106,14 @@ const styles = StyleSheet.create({
   infoLine: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
   },
   textLines: {
+    flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'flex-start',
-    maxWidth: pTd(218),
   },
   title: {
     color: defaultColors.font5,
@@ -126,10 +126,9 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
   btn: {
+    marginLeft: pTd(8),
     paddingHorizontal: pTd(16),
     height: pTd(34),
-    borderRadius: pTd(4),
-    width: pTd(92),
   },
   btnTitle: {
     fontSize: pTd(12),

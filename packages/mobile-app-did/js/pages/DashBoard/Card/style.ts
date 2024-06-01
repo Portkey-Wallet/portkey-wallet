@@ -5,7 +5,7 @@ import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import fonts from 'assets/theme/fonts';
 import { ScreenWidth } from '@rneui/base';
 
-const { font16, white } = defaultColors;
+const { font5, white } = defaultColors;
 
 export const styles = StyleSheet.create({
   cardWrap: {
@@ -37,6 +37,7 @@ export const styles = StyleSheet.create({
     height: pTd(44),
   },
   textColumn: {
+    marginTop: pTd(8),
     display: 'flex',
     width: '100%',
     paddingHorizontal: pTd(16),
@@ -52,7 +53,7 @@ export const styles = StyleSheet.create({
     fontSize: pTd(32),
     lineHeight: pTd(40),
     height: pTd(40),
-    color: font16,
+    color: font5,
   },
   eyeIcon: {
     marginTop: pTd(6),

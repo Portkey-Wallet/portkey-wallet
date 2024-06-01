@@ -89,11 +89,14 @@ const styles = StyleSheet.create({
   chainText: {
     color: defaultColors.neutralPrimaryTextColor,
     fontSize: pTd(14),
+    lineHeight: pTd(22),
     ...fonts.mediumFont,
   },
   addressText: {
+    marginTop: pTd(4),
     color: defaultColors.neutralTertiaryText,
     fontSize: pTd(12),
+    lineHeight: pTd(16),
   },
 });
 

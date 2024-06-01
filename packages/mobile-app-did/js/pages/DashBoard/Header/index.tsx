@@ -77,32 +77,34 @@ const DashBoardHeader: React.FC<DashBoardHeaderProps> = ({ title, scrollY }) => 
           },
           styles.leftDomWrap,
         ]}>
-        <CommonAvatar
-          hasBorder={!userInfo?.avatar}
-          title={userInfo?.nickName}
-          avatarSize={pTd(24)}
-          imageUrl={userInfo?.avatar || ''}
-          resizeMode="cover"
-          titleStyle={{ fontSize: pTd(14) }}
-        />
         {userInfo?.nickName ? (
-          <View style={styles.accountNameWrap}>
-            <TextM numberOfLines={1} style={[styles.accountName, GStyles.maxWidth(nickNameMaxWidth)]}>
-              {userInfo.nickName}
-            </TextM>
-            {shouldShowSetNewWalletNameIcon && (
-              <TouchableOpacity onPress={onShowSetNewWalletNamePopover} style={styles.suggestIcon}>
-                <Svg icon="suggest-circle" size={pTd(16)} />
-              </TouchableOpacity>
-            )}
-          </View>
+          <>
+            <CommonAvatar
+              hasBorder={!userInfo?.avatar}
+              title={userInfo?.nickName}
+              avatarSize={pTd(24)}
+              imageUrl={userInfo?.avatar || ''}
+              resizeMode="cover"
+              titleStyle={{ fontSize: pTd(14) }}
+            />
+            <View style={styles.accountNameWrap}>
+              <TextM numberOfLines={1} style={[styles.accountName, GStyles.maxWidth(nickNameMaxWidth)]}>
+                {userInfo.nickName}
+              </TextM>
+              {shouldShowSetNewWalletNameIcon && (
+                <TouchableOpacity onPress={onShowSetNewWalletNamePopover} style={styles.suggestIcon}>
+                  <Svg icon="suggest-circle" size={pTd(16)} />
+                </TouchableOpacity>
+              )}
+            </View>
+          </>
         ) : (
           <Skeleton
             animation="wave"
             LinearGradientComponent={() => <PortkeyLinearGradient />}
             style={[styles.skeletonStyle, GStyles.marginBottom(pTd(4))]}
             height={pTd(20)}
-            width={pTd(80)}
+            width={pTd(100)}
           />
         )}
       </Animated.View>
@@ -180,7 +182,6 @@ const styles = StyleSheet.create({
   },
   accountName: {
     color: defaultColors.neutralTertiaryText,
-    opacity: 0.8,
     fontSize: pTd(14),
     lineHeight: pTd(20),
     height: pTd(20),
@@ -194,7 +195,6 @@ const styles = StyleSheet.create({
   },
   skeletonStyle: {
     backgroundColor: defaultColors.bg4,
-    marginLeft: pTd(6),
   },
   titleWrap: {
     position: 'absolute',

@@ -31,7 +31,11 @@ export default function CustomBubble(props: BubbleProps<ChatMessage> & { isGroup
           <TextS numberOfLines={1} style={styles.memberName}>
             {currentMessage?.fromName}
           </TextS>
-          {currentMessage?.isOwner && <Text style={styles.ownerText}>Owner</Text>}
+          {currentMessage?.isOwner && (
+            <View style={styles.ownerTextWrap}>
+              <Text style={styles.ownerText}>Owner</Text>
+            </View>
+          )}
         </View>
       )}
       <Bubble
@@ -120,15 +124,19 @@ const styles = StyleSheet.create({
   memberName: {
     color: defaultColors.font7,
   },
-  ownerText: {
+  ownerTextWrap: {
     backgroundColor: defaultColors.primaryColor,
-    color: defaultColors.white,
-    fontSize: pTd(10),
-    width: pTd(37),
-    height: pTd(14),
-    textAlign: 'center',
     marginLeft: pTd(4),
     borderRadius: pTd(3),
     overflow: 'hidden',
+    width: pTd(37),
+    height: pTd(14),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  ownerText: {
+    color: defaultColors.white,
+    fontSize: pTd(10),
+    textAlign: 'center',
   },
 });

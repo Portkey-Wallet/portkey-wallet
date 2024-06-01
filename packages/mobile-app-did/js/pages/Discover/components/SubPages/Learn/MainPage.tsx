@@ -185,6 +185,7 @@ const itemStyles = StyleSheet.create({
   },
   describe: {
     lineHeight: pTd(22),
+    fontSize: pTd(14),
     color: defaultColors.font5,
     ...fonts.mediumFont,
     maxWidth: pTd(128),

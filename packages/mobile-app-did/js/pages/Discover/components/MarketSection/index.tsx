@@ -1,7 +1,7 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import MarketType from './components/MarketType';
 import MarketHeader from './components/MarketHeader';
-import { FlatList, RefreshControl, View } from 'react-native';
+import { FlatList, Platform, RefreshControl, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import MarketItem from './components/MarketItem';
 import { useMarket } from 'hooks/discover';
@@ -11,12 +11,13 @@ import Svg from 'components/Svg';
 import CommonButton from 'components/CommonButton';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
-import { TextL, TextM } from 'components/CommonText';
+import { TextM } from 'components/CommonText';
 import MarketItemSkeleton from './components/MarketItemSkeleton';
 import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
 
 export default function MarketSection() {
   const { marketInfo, refreshing, refreshList, handleType, handleSort } = useMarket();
+  const flatListRef = useRef<FlatList>(null);
   console.log('wfs marketInfo===', marketInfo);
   const renderItem = useCallback(({ item }: { item: ICryptoCurrencyItem; index: number }) => {
     return <MarketItem isLoading={false} item={item} />;
@@ -28,6 +29,9 @@ export default function MarketSection() {
       CommonToast.failError(`${e}`);
     }
   }, [refreshList]);
+  useEffect(() => {
+    flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
+  }, [marketInfo?.dataList]);
   const isSkeleton = useMemo(() => {
     return refreshing && (marketInfo?.dataList?.length || 0) <= 0;
   }, [marketInfo?.dataList?.length, refreshing]);
@@ -65,7 +69,8 @@ export default function MarketSection() {
         })
       ) : (
         <FlatList
-          contentContainerStyle={{ paddingBottom: pTd(bottomBarHeight + 40) }}
+          ref={flatListRef}
+          contentContainerStyle={{ paddingBottom: pTd(bottomBarHeight + (Platform.OS === 'android' ? 80 : 40)) }}
           style={{ minHeight: pTd(512) }}
           showsVerticalScrollIndicator={false}
           nestedScrollEnabled

@@ -17,7 +17,7 @@ import { isUrl } from '@portkey-wallet/utils';
 
 export const LearnPage = () => {
   const { learnBannerList = [] } = useCmsBanner();
-  const { learnGroupList = [] } = useDiscoverData();
+  const { learnShortGroupList } = useDiscoverData();
   const getS3ImgUrl = useGetS3ImageUrl();
   const discoverJump = useDiscoverJumpWithNetWork();
   const jumpToDiscover = useCallback(
@@ -53,7 +53,7 @@ export const LearnPage = () => {
             imageRatio={343.0 / 128.0}
           />
         )}
-        {learnGroupList.map((item, index) => {
+        {learnShortGroupList.map((item, index) => {
           const { title, items = [] } = item;
           return (
             <View style={styles.block} key={index}>
@@ -167,7 +167,7 @@ const itemStyles = StyleSheet.create({
     flexDirection: 'column',
     borderRadius: pTd(12),
     borderColor: defaultColors.bg32,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: pTd(1),
     overflow: 'hidden',
     marginRight: pTd(12),
   },

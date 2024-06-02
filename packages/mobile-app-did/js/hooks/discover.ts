@@ -19,7 +19,7 @@ import {
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { isUrl } from '@portkey-wallet/utils';
 import { prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ICryptoCurrencyItem,
   IMarketSort,
@@ -145,6 +145,7 @@ export const useMarket = () => {
   const { networkType } = useCurrentNetworkInfo();
   const { discoverMap } = useAppSelector(state => state.discover);
   const marketInfo = discoverMap?.[networkType]?.marketInfo;
+  const initMarketInfo = useRef(marketInfo);
   const [refreshing, setRefreshing] = useState(false);
   const fetchCryptoCurrencyList = useCallback(
     async (type: IMarketType, sort?: IMarketSort, sortDir?: IMarketSortDir): Promise<ICryptoCurrencyItem[]> => {
@@ -160,12 +161,14 @@ export const useMarket = () => {
         if (sortDir) {
           params.sortDir = sortDir;
         }
+        console.log('wfs=== getCryptoCurrencyList params', params);
         const result = await request.discover.getCryptoCurrencyList({
           params: params,
         });
-        console.log('wfs result===', result);
+        console.log('wfs=== fetchCryptoCurrencyList result', result);
         return result;
       } catch (e) {
+        console.log('wfs=== fetchCryptoCurrencyList error', e);
         throw `fetch market data failed,  caused by: ${JSON.stringify(e)}`;
       } finally {
         setRefreshing(false);
@@ -177,13 +180,20 @@ export const useMarket = () => {
     //init
     (async () => {
       const localCryptoCurrencyList = await fetchCryptoCurrencyList(
-        marketInfo?.type || 'Hot',
-        marketInfo?.sort,
-        marketInfo?.sortDir,
+        initMarketInfo.current?.type || 'Hot',
+        !initMarketInfo.current?.sortDir ? undefined : initMarketInfo.current?.sort,
+        initMarketInfo.current?.sortDir,
       );
       dispatch(changeMarketList({ networkType, cryptoCurrencyList: localCryptoCurrencyList }));
     })();
-  }, [dispatch, fetchCryptoCurrencyList, marketInfo?.sort, marketInfo?.sortDir, marketInfo?.type, networkType]);
+  }, [
+    dispatch,
+    fetchCryptoCurrencyList,
+    initMarketInfo.current?.sort,
+    initMarketInfo.current?.sortDir,
+    initMarketInfo.current?.type,
+    networkType,
+  ]);
   const handleType = useCallback(
     //market type change
     async (type: IMarketType) => {
@@ -209,6 +219,14 @@ export const useMarket = () => {
   const handleSort = useCallback(
     // market sort change
     async (sort: IMarketSort) => {
+      if (refreshing) {
+        return;
+      }
+      console.log('wfs=== handleSort', {
+        sort: marketInfo?.sort,
+        sortDir: marketInfo?.sortDir,
+        type: marketInfo?.type,
+      });
       try {
         let nextSortDir: IMarketSortDir = '';
         if (marketInfo?.sort === sort) {
@@ -222,6 +240,7 @@ export const useMarket = () => {
           dispatch(resetMarketSort({ networkType }));
           nextSortDir = 'desc';
         }
+        console.log('wfs=== handleSort', { sort, sortDir: nextSortDir });
         dispatch(changeMarketSort({ networkType, markSort: { sort, sortDir: nextSortDir } }));
         const localCryptoCurrencyList = await fetchCryptoCurrencyList(
           marketInfo?.type || 'Hot',
@@ -231,9 +250,18 @@ export const useMarket = () => {
         dispatch(changeMarketList({ networkType, cryptoCurrencyList: localCryptoCurrencyList }));
       } catch (e) {
         dispatch(rollBackMarketSort({ networkType }));
+        throw e;
       }
     },
-    [dispatch, fetchCryptoCurrencyList, marketInfo?.sort, marketInfo?.sortDir, marketInfo?.type, networkType],
+    [
+      dispatch,
+      fetchCryptoCurrencyList,
+      marketInfo?.sort,
+      marketInfo?.sortDir,
+      marketInfo?.type,
+      networkType,
+      refreshing,
+    ],
   );
   return {
     marketInfo,

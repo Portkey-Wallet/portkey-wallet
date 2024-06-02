@@ -25,9 +25,9 @@ export default function MarketType({
         list: [
           {
             title: 'Favourites',
-            onPress: () => {
+            onPress: async () => {
               try {
-                handleType('Favorites');
+                await handleType('Favorites');
               } catch (e) {
                 CommonToast.failError(`${e}`);
               }
@@ -35,9 +35,9 @@ export default function MarketType({
           },
           {
             title: 'Top',
-            onPress: () => {
+            onPress: async () => {
               try {
-                handleType('Hot');
+                await handleType('Hot');
               } catch (e) {
                 CommonToast.failError(`${e}`);
               }
@@ -45,9 +45,9 @@ export default function MarketType({
           },
           {
             title: 'Trending',
-            onPress: () => {
+            onPress: async () => {
               try {
-                handleType('Trending');
+                await handleType('Trending');
               } catch (e) {
                 CommonToast.failError(`${e}`);
               }
@@ -78,7 +78,7 @@ export default function MarketType({
       <View style={styles.mainContainer}>
         <Text style={styles.text}>{showTypeName || 'Top'}</Text>
         <Svg
-          icon={collapsed ? 'down-arrow' : 'up-arrow'}
+          icon={collapsed ? 'down-arrow' : 'direction-up'}
           size={pTd(16)}
           color={defaultColors.neutralSecondaryTextColor}
         />

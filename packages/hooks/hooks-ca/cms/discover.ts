@@ -30,6 +30,13 @@ export const useDiscoverData = () => {
     () => discoverLearnGroupListMap?.[networkType] || [],
     [discoverLearnGroupListMap, networkType],
   );
+  const learnShortGroupList = useMemo<TDiscoverLearnGroupList>(() => {
+    const learnGroupList = discoverLearnGroupListMap?.[networkType] || [];
+    return learnGroupList.map(group => ({
+      ...group,
+      items: group.items?.slice(0, 4),
+    }));
+  }, [discoverLearnGroupListMap, networkType]);
 
   const fetchDiscoverTabAsync = useCallback(() => dispatch(getDiscoverTabAsync(networkType)), [dispatch, networkType]);
 
@@ -47,6 +54,7 @@ export const useDiscoverData = () => {
     discoverHeaderTabList,
     earnList,
     learnGroupList,
+    learnShortGroupList,
     fetchDiscoverTabAsync,
     fetchDiscoverEarnAsync,
     fetchDiscoverLearnAsync,

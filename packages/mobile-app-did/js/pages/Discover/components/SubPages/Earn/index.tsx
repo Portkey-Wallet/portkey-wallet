@@ -17,7 +17,7 @@ export const EarnPage = () => {
   return (
     <View style={styles.container}>
       {earnList.length > 0 ? (
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
           {earnList.map((item, index) => (
             <EarnItem key={index} {...item} />
           ))}
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: pTd(12),
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: pTd(1),
     borderColor: defaultColors.bg32,
     marginTop: pTd(16),
     overflow: 'hidden',

@@ -78,7 +78,7 @@ export default function MarketType({
       <View style={styles.mainContainer}>
         <Text style={styles.text}>{showTypeName || 'Top'}</Text>
         <Svg
-          icon={collapsed ? 'down-arrow' : 'up-arrow'}
+          icon={collapsed ? 'down-arrow' : 'direction-up'}
           size={pTd(16)}
           color={defaultColors.neutralSecondaryTextColor}
         />

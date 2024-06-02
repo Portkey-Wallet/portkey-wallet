@@ -17,7 +17,7 @@ export const EarnPage = () => {
   return (
     <View style={styles.container}>
       {earnList.length > 0 ? (
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
           {earnList.map((item, index) => (
             <EarnItem key={index} {...item} />
           ))}

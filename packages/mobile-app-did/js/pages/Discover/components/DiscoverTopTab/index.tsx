@@ -43,6 +43,6 @@ const DiscoverTab: React.FC = () => {
     );
   }, [discoverHeaderTabList, tabOriginalList]);
 
-  return <CommonTopTab swipeEnabled hasTabBarBorderRadius={false} tabList={tabList} />;
+  return <CommonTopTab swipeEnabled={false} hasTabBarBorderRadius={false} tabList={tabList} />;
 };
 export default DiscoverTab;

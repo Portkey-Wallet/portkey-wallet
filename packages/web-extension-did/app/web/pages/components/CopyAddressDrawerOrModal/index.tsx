@@ -38,7 +38,7 @@ const CopyAddressDrawerOrModal = forwardRef((_, ref) => {
           <div className="chain">{formatChain}</div>
           <div className="address">{formatStr2EllipsisStr(formatAddress, [8, 9])}</div>
         </div>
-        <Copy size={CopySize.Middle} toCopy={formatAddress} />
+        <Copy className="address-copy" size={CopySize.Middle} toCopy={formatAddress} />
       </div>
     );
   };

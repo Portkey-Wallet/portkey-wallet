@@ -167,7 +167,7 @@ const itemStyles = StyleSheet.create({
     flexDirection: 'column',
     borderRadius: pTd(12),
     borderColor: defaultColors.bg32,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: pTd(1),
     overflow: 'hidden',
     marginRight: pTd(12),
   },

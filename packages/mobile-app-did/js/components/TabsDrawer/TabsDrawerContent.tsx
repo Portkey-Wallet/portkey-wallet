@@ -148,6 +148,8 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
 
   const onDone = useCallback(() => {
     if (tabs?.length === 0) return dispatch(changeDrawerOpenStatus(false));
+    if (!preActiveTabId) return dispatch(changeDrawerOpenStatus(false));
+
     if (tabs?.find(ele => ele.id === preActiveTabId)) {
       dispatch(setActiveTab({ id: preActiveTabId, networkType }));
     } else {
@@ -332,20 +334,28 @@ export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
     <BrowserContext.Provider value={value}>
       <PageContainer
         hideTouchable
+        type="leftBack"
         noCenterDom={!!activeTabId}
-        noLeftDom={!activeTabId}
         leftDom={
-          <View style={styles.leftWrap}>
-            <Touchable onPress={backToSearchPage} style={styles.backIcon}>
-              <Svg icon="left-arrow" size={pTd(20)} color={defaultColors.font18} />
-            </Touchable>
-            <TextWithProtocolIcon
-              type="iconLeft"
-              location="header"
-              title={getCmsWebsiteInfoName(activeItem?.url || '') || activeItem?.name}
-              url={activeItem?.url || ''}
-            />
-          </View>
+          activeTabId ? (
+            <View style={styles.leftWrap}>
+              <Touchable onPress={backToSearchPage} style={styles.backIcon}>
+                <Svg icon="left-arrow" size={pTd(20)} color={defaultColors.font18} />
+              </Touchable>
+              <TextWithProtocolIcon
+                type="iconLeft"
+                location="header"
+                title={getCmsWebsiteInfoName(activeItem?.url || '') || activeItem?.name}
+                url={activeItem?.url || ''}
+              />
+            </View>
+          ) : (
+            <View style={styles.leftWrap}>
+              <Touchable onPress={backToSearchPage} style={styles.backIcon}>
+                <Svg icon="left-arrow" size={pTd(20)} color={defaultColors.font18} />
+              </Touchable>
+            </View>
+          )
         }
         rightDom={rightDom}
         notHandleHardwareBackPress

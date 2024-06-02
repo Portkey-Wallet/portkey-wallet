@@ -7,6 +7,7 @@ import { DiscoverCmsListSection } from '../DiscoverCmsListSection';
 import { EarnPage } from '../SubPages/Earn';
 import { LearnPage } from '../SubPages/Learn/MainPage';
 import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
+import { Platform } from 'react-native';
 
 const DiscoverTab: React.FC = () => {
   const { t } = useLanguage();
@@ -43,6 +44,12 @@ const DiscoverTab: React.FC = () => {
     );
   }, [discoverHeaderTabList, tabOriginalList]);
 
-  return <CommonTopTab swipeEnabled={false} hasTabBarBorderRadius={false} tabList={tabList} />;
+  return (
+    <CommonTopTab
+      swipeEnabled={Platform.OS === 'android' ? false : true}
+      hasTabBarBorderRadius={false}
+      tabList={tabList}
+    />
+  );
 };
 export default DiscoverTab;

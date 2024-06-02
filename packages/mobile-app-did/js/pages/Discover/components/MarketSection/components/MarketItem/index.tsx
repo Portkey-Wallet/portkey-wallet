@@ -9,7 +9,7 @@ import { useMarketFavorite } from 'hooks/discover';
 import React, { useMemo, useState } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
-import SinkableText from '../SinkableText';
+import SinkableText, { getDecimalPlaces } from '../SinkableText';
 export interface IMarketItemProps {
   isLoading: boolean;
   item: ICryptoCurrencyItem;
@@ -93,7 +93,10 @@ export default function MarketItem(props: IMarketItemProps) {
           {/* </Text> */}
           <Text style={[styles.text4, FontStyles.functionalRedDefault, styles.section3Width, chgColor]}>
             {prefixChg}
-            {item.priceChangePercentage24H || 0}%
+            {item.priceChangePercentage24H.toFixed(
+              getDecimalPlaces(item.priceChangePercentage24H) < 1 ? 1 : getDecimalPlaces(item.priceChangePercentage24H),
+            ) || 0}
+            %
           </Text>
         </>
       )}

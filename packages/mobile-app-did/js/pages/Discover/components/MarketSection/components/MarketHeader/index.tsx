@@ -66,7 +66,7 @@ export default function MarketHeader({
     <View style={[styles.mainContainer, style]}>
       <View style={[styles.section, styles.section1Width]}>
         <TouchableOpacity
-          activeOpacity={1}
+          activeOpacity={0.8}
           onPress={() => {
             console.log('click! Token');
             try {
@@ -78,7 +78,7 @@ export default function MarketHeader({
           <HeaderItem name={'Name'} sortDir={calSortDirBySort('symbol')} />
         </TouchableOpacity>
         <TouchableOpacity
-          activeOpacity={1}
+          activeOpacity={0.8}
           onPress={() => {
             console.log('click! Market Cap');
             try {
@@ -92,7 +92,7 @@ export default function MarketHeader({
       </View>
       <View style={[styles.section, styles.section2Width]}>
         <TouchableOpacity
-          activeOpacity={1}
+          activeOpacity={0.8}
           onPress={() => {
             console.log('click! Price');
             try {
@@ -106,7 +106,7 @@ export default function MarketHeader({
       </View>
       <View style={[styles.section, styles.section3Width]}>
         <TouchableOpacity
-          activeOpacity={1}
+          activeOpacity={0.8}
           onPress={() => {
             console.log('click! 24 chg%');
             try {

@@ -70,7 +70,7 @@ export default function MarketSection() {
       ) : (
         <FlatList
           ref={flatListRef}
-          contentContainerStyle={{ paddingBottom: pTd(bottomBarHeight + (Platform.OS === 'android' ? 80 : 40)) }}
+          contentContainerStyle={{ paddingBottom: pTd(10) }}
           style={{ minHeight: pTd(512) }}
           showsVerticalScrollIndicator={false}
           nestedScrollEnabled
@@ -93,6 +93,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: pTd(16),
     backgroundColor: defaultColors.neutralDefaultBG,
     paddingTop: pTd(16),
+    flex: 1,
   },
   empty: {
     alignItems: 'center',

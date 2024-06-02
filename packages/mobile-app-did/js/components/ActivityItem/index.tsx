@@ -93,15 +93,15 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
   }, [rotation]);
 
   const StatusDom = useMemo(() => {
-    if (item?.status === contractStatusEnum.FAIL)
+    if (item?.status === contractStatusEnum.FAILED)
       return (
-        <View style={GStyles.paddingBottom(2)}>
+        <View style={GStyles.marginLeft(pTd(8))}>
           <Svg icon="activity-fail" size={pTd(16)} />;
         </View>
       );
     if (item?.status === contractStatusEnum.MINED)
       return (
-        <View style={GStyles.paddingBottom(2)}>
+        <View style={GStyles.marginLeft(pTd(8))}>
           <Svg icon="activity-mined" size={pTd(16)} />
         </View>
       );
@@ -109,7 +109,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
     return (
       <Animated.View
         style={[
-          GStyles.paddingBottom(2),
+          GStyles.marginLeft(8),
           {
             transform: [
               {
@@ -124,7 +124,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
         <Svg icon="activity-pending" size={pTd(16)} />
       </Animated.View>
     );
-  }, [item?.status, rotation]);
+  }, [rotation]);
 
   const ExtraDom = useMemo(() => {
     if (!item?.currentTxPriceInUsd) return null;
@@ -160,9 +160,10 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
         />
 
         <View style={[itemStyle.center, item?.isSystem && itemStyle.systemCenter]}>
-          <Text style={[itemStyle.centerType, fonts.mediumFont]}>
-            {item?.transactionName} {StatusDom}
-          </Text>
+          <View style={itemStyle.textAndStatusWrapCenter}>
+            <TextM style={[itemStyle.centerType, fonts.mediumFont]}>{item?.transactionName}</TextM>
+            {StatusDom}
+          </View>
         </View>
       </View>
     );
@@ -193,9 +194,13 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
         <View style={itemStyle.contentWrap}>
           <DoubleAvatar firstAvatar={renderTopIconInfo} secondAvatar={renderBottomIconInfo} />
           <View style={[itemStyle.center, itemStyle.systemCenter]}>
-            <Text numberOfLines={1} style={[itemStyle.centerType, fonts.mediumFont]}>
-              {item?.transactionName} {StatusDom}
-            </Text>
+            <View style={itemStyle.textAndStatusWrapCenter}>
+              <TextM numberOfLines={1} style={[itemStyle.centerType, fonts.mediumFont]}>
+                {item?.transactionName}
+              </TextM>
+              {StatusDom}
+            </View>
+
             <Text style={itemStyle.centerStatus}>{item?.dappName}</Text>
           </View>
           <View style={itemStyle.right}>
@@ -249,9 +254,13 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
             />
           )}
           <View style={[itemStyle.center, item?.isSystem && itemStyle.systemCenter]}>
-            <Text numberOfLines={1} style={[itemStyle.centerType, fonts.mediumFont]}>
-              {item?.transactionName} {StatusDom}
-            </Text>
+            <View style={itemStyle.textAndStatusWrapCenter}>
+              <TextM numberOfLines={1} style={[itemStyle.centerType, fonts.mediumFont]}>
+                {item?.transactionName}
+              </TextM>
+              {StatusDom}
+            </View>
+
             <Text style={itemStyle.centerStatus}>{item?.dappName}</Text>
           </View>
           <View style={itemStyle.right}>
@@ -286,9 +295,13 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
         )}
 
         <View style={[itemStyle.center, item?.isSystem && itemStyle.systemCenter]}>
-          <Text style={[itemStyle.centerType, fonts.mediumFont]}>
-            {item?.transactionName} {StatusDom}
-          </Text>
+          <View style={itemStyle.textAndStatusWrapCenter}>
+            <TextM numberOfLines={1} style={[itemStyle.centerType, fonts.mediumFont]}>
+              {item?.transactionName}
+            </TextM>
+            {StatusDom}
+          </View>
+
           {!item?.isSystem && (
             <>
               {AddressDom}
@@ -322,9 +335,12 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
         />
 
         <View style={[itemStyle.center, item?.isSystem && itemStyle.systemCenter]}>
-          <Text numberOfLines={1} style={[itemStyle.centerType, fonts.mediumFont]}>
-            {item?.transactionName} {StatusDom}
-          </Text>
+          <View style={itemStyle.textAndStatusWrapCenter}>
+            <TextM numberOfLines={1} style={[itemStyle.centerType, fonts.mediumFont]}>
+              {item?.transactionName}
+            </TextM>
+            {StatusDom}
+          </View>
           <Text style={itemStyle.centerStatus}>{item?.dappName}</Text>
         </View>
       </View>
@@ -429,5 +445,11 @@ const itemStyle = StyleSheet.create({
   },
   resendContainer: {
     marginBottom: pTd(8),
+  },
+  textAndStatusWrapCenter: {
+    height: pTd(24),
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

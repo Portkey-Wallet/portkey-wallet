@@ -15,6 +15,7 @@ export const styles = StyleSheet.create({
     backgroundColor: white,
     flexDirection: 'column',
     alignItems: 'center',
+    height: pTd(228),
   },
   tokenImage: {
     marginTop: pTd(40),
@@ -42,6 +43,7 @@ export const styles = StyleSheet.create({
     color: font11,
     fontSize: pTd(14),
     lineHeight: pTd(20),
+    height: pTd(20),
   },
   textOverflow: {
     fontSize: pTd(28),

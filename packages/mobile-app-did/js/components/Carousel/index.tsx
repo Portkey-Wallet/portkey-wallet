@@ -69,7 +69,13 @@ const CarouselComponent: React.FC<CarouselProps> = ({
     return showImageBorderRadius ? pTd(12) : 0;
   }, [showImageBorderRadius]);
   return (
-    <View style={[styles.container, { height: containerHeight }, containerStyle, showDivider && styles.divider]}>
+    <View
+      style={[
+        styles.container,
+        { height: containerHeight },
+        containerStyle,
+        showDivider && !showSkeleton && styles.divider,
+      ]}>
       <Carousel
         style={styles.carouselWrap}
         control={
@@ -100,7 +106,7 @@ const CarouselComponent: React.FC<CarouselProps> = ({
         })}
       </Carousel>
       {showSkeleton && (
-        <View style={[styles.skeletonWrap, showDivider && styles.divider]}>
+        <View style={styles.skeletonWrap}>
           <PortkeySkeleton
             style={{ marginHorizontal: imageMarginHorizontal, borderRadius: imageBorderRadius }}
             width={imageWidth}

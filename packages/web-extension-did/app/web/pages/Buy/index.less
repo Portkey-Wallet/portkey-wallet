@@ -2,16 +2,11 @@
 
 .buy-frame {
   height: 100vh;
-  background-color: @bg-11;
-
-  .buy-title {
-    padding-top: 16px;
-    background-color: @bg-13;
-  }
+  background-color: @neutral-default-bg;
 
   .buy-content {
     height: 100%;
-    background: @bg-11;
+    background: @neutral-default-bg;
 
     .buy-radio {
       margin: 16px;
@@ -20,7 +15,7 @@
         font-size: 14px;
         line-height: 20px;
         font-weight: 500;
-        background-color: @bg-10;
+        background-color: @neutral-container-bg;
         border-radius: 6px;
         .@{app-prefix}-radio-button-wrapper {
           display: flex;
@@ -28,8 +23,8 @@
           margin: 3px;
           width: 88px;
           height: 30px;
-          background-color: @bg-10;
-          color: @font-12;
+          background-color: @neutral-container-bg;
+          color: @neutral-disable-text;
           border: none;
           &:not(:first-child)::before {
             display: none;
@@ -39,9 +34,9 @@
           }
         }
         .@{app-prefix}-radio-button-wrapper-checked {
-          background-color: @bg-11;
+          background-color: @neutral-default-bg;
           box-shadow: none;
-          color: @font-11;
+          color: @neutral-primary-text;
           border-radius: 6px;
         }
       }
@@ -49,29 +44,33 @@
 
     .buy-input,
     .sell-input {
-      margin-top: 16px;
       width: 100%;
       .label {
         font-size: 14px;
-        line-height: 20px;
-        color: @font-13;
+        line-height: 22px;
+        color: @neutral-tertiary-text;
       }
       .@{app-prefix}-input-affix-wrapper {
-        margin-top: 8px;
-        padding: 16px;
-        height: 56px;
+        align-items: center;
+        margin-top: 4px;
+        padding: 0 12px;
+        height: 64px;
         border-radius: 6px;
-        border: 1px solid @border-1;
+        border: 1px solid @neutral-border;
+        box-shadow: none;
+        &-focused {
+          border-color: @brand-normal;
+        }
         input {
           font-size: 24px;
           line-height: 28px;
           font-weight: 500;
-          color: @font-11;
+          color: @neutral-primary-text;
         }
         .@{app-prefix}-input-suffix {
           display: flex;
           padding-left: 12px;
-          border-left: 1px solid @border-2;
+          border-left: 1px solid @neutral-border;
           cursor: pointer;
           .img,
           .elf-icon-icon {
@@ -87,10 +86,11 @@
           }
           .currency {
             width: 48px;
+            margin-right: 4px;
             font-size: 16px;
             line-height: 22px;
             font-weight: 500;
-            color: @font-11;
+            color: @neutral-primary-text;
           }
         }
       }
@@ -104,43 +104,44 @@
         margin-top: 4px;
         font-size: 12px;
         line-height: 16px;
-        color: @font-8;
+        color: @functional-warning-default;
       }
     }
 
     .buy-form,
     .sell-form {
       flex: 1;
-      padding: 0 24px;
+      gap: 24px;
+      padding: 16px 24px 0;
     }
     .exchange-rate {
       width: 100%;
-      margin-top: 24px;
-      font-size: 14px;
-      line-height: 20px;
-      color: @font-13;
+      font-size: 12px;
+      line-height: 16px;
+      color: @neutral-secondary-text;
       .timer {
         .custom-svg {
-          margin-right: 5px;
-        }
-        .timestamp {
-          font-size: 12px;
-          line-height: 16px;
+          margin-right: 2px;
+          width: 14px;
+          height: 14px;
+          svg {
+            width: 100%;
+            height: 100%;
+          }
         }
       }
     }
     .ramp-footer {
       width: 100%;
-      height: 80px;
-      padding: 16px;
-      border-top: 1px solid @border-2;
-      background: @bg-11;
+      padding: 12px 16px 16px;
+      background: @neutral-default-bg;
 
       .@{app-prefix}-btn {
         height: 48px;
-        border-radius: 22px;
+        border-radius: 6px;
         font-size: 16px;
-        line-height: 22px;
+        line-height: 24px;
+        font-weight: 500;
       }
     }
   }

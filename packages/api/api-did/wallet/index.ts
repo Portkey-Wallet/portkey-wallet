@@ -44,4 +44,20 @@ export default {
     target: '/api/app/twitterAuth/userInfo',
     config: { method: 'GET' },
   },
+  reportExitWallet: {
+    target: '/api/app/report/exitWallet',
+    config: { method: 'POST' },
+  },
+  shouldShowSetNewWalletNameModal: {
+    target: '/api/app/account/poppedUp',
+    config: { method: 'GET' },
+  },
+  shouldShowSetNewWalletNameIcon: {
+    target: '/api/app/account/bubbling',
+    config: { method: 'GET' },
+  },
+  setNewWalletName: {
+    target: '/api/app/account/replace',
+    config: { method: 'POST' },
+  },
 } as const;

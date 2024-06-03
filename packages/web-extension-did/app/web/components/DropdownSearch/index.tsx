@@ -18,12 +18,13 @@ export default function DropdownSearch({
   ...props
 }: DropdownSearchProps) {
   return (
-    <div className={clsx('dropdown-search-wrapper', wrapperClassName)}>
+    <div className={clsx('dropdown-search-wrapper', 'web-dropdown-search', wrapperClassName)}>
       <Dropdown overlayClassName="empty-dropdown" {...props}>
         <Input
           value={value}
           allowClear
           onPressEnter={onPressEnter}
+          // eslint-disable-next-line no-inline-styles/no-inline-styles
           prefix={<CustomSvg type="SearchBlur" style={{ width: 20, height: 20 }} />}
           {...inputProps}
         />

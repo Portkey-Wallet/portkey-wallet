@@ -7,10 +7,15 @@ import {
   StyleProvider,
   MessageContentType,
   PopDataProps,
-  Avatar,
   IInputReplyMsgProps,
 } from '@portkey-wallet/im-ui-web';
-import { useGroupChannel, useHideChannel, useLeaveChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
+import {
+  useBlockAndReport,
+  useGroupChannel,
+  useHideChannel,
+  useLeaveChannel,
+  useRelationId,
+} from '@portkey-wallet/hooks/hooks-ca/im';
 import BookmarkListDrawer from '../../components/BookmarkListDrawer';
 import { formatImageData, formatMessageList } from '../../utils';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +29,7 @@ import CustomModal from 'pages/components/CustomModal';
 import { useClickUrl } from 'hooks/im';
 import WarnTip from 'pages/IMChat/components/WarnTip';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
-import { NO_LONGER_IN_GROUP } from '@portkey-wallet/constants/constants-ca/chat';
+import { NO_LONGER_IN_GROUP, ReportMessageEnum } from '@portkey-wallet/constants/constants-ca/chat';
 import { Message, MessageTypeEnum, ParsedImage } from '@portkey-wallet/im';
 import ChatBoxPinnedMsg from 'pages/IMChat/components/ChatBoxPinnedMsg';
 import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
@@ -32,6 +37,8 @@ import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
 import { TViewContactLocationState } from 'types/router';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { handleErrorMessage } from '@portkey-wallet/utils';
+import ReportDrawer from 'pages/IMChat/components/ReportDrawer';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
@@ -41,8 +48,11 @@ export default function ChatBox() {
   const [showBookmark, setShowBookmark] = useState(false);
   const messageRef = useRef<any>(null);
   const [popVisible, setPopVisible] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const [showAddMemTip, setShowAddMemTip] = useState(true);
+  const { reportMessage } = useBlockAndReport();
   const [replyMsg, setReplyMsg] = useState<Message>();
+  const curOperateMsg = useRef<MessageContentType>();
   const showReplyMsg: IInputReplyMsgProps | undefined = useMemo(() => {
     if (replyMsg?.type === MessageTypeEnum.TEXT) {
       return {
@@ -282,18 +292,6 @@ export default function ChatBox() {
     },
     [navigate, channelUuid],
   );
-  const renderTitle = useMemo(
-    () => (
-      <div className="flex title-element">
-        <div className="title-content flex-center" onClick={handleGoGroupInfo}>
-          <Avatar isGroupAvatar={true} src={groupInfo?.icon} />
-          <div className="title-name">{groupInfo?.name || info?.displayName || ''}</div>
-        </div>
-        <div>{info?.mute && <CustomSvg type="Mute" />}</div>
-      </div>
-    ),
-    [handleGoGroupInfo, groupInfo?.icon, groupInfo?.name, info?.displayName, info?.mute],
-  );
   const renderAddMember = useMemo(
     () =>
       isAdmin &&
@@ -307,6 +305,34 @@ export default function ChatBox() {
       ),
     [handleAddMember, isAdmin, showAddMemTip],
   );
+  const handleReport = useCallback(
+    async ({ reportType, description }: { reportType: ReportMessageEnum; description: string }) => {
+      if (!curOperateMsg.current) throw 'can not find target message';
+      try {
+        const parsedContent = curOperateMsg.current.parsedContent;
+        let msg = parsedContent;
+        if (curOperateMsg.current.type === MessageTypeEnum.IMAGE) {
+          const { thumbImgUrl, imgUrl } = formatImageData(parsedContent as ParsedImage);
+          msg = thumbImgUrl ?? imgUrl;
+        }
+        await reportMessage({
+          message: msg,
+          messageId: curOperateMsg.current.id,
+          reportedRelationId: curOperateMsg.current.from,
+          reportType,
+          description,
+          channelUuid,
+        });
+        singleMessage.success(
+          'Thank you for reporting this. Portkey will look into the matter and take appropriate action to handle it.',
+        );
+      } catch (error) {
+        console.log('handleReport error===', error);
+        singleMessage.error(handleErrorMessage(error, 'report message error.'));
+      }
+    },
+    [channelUuid, reportMessage],
+  );
   useEffect(() => {
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);
@@ -314,8 +340,14 @@ export default function ChatBox() {
   return (
     <div className="chat-box-page flex-column">
       <ChatBoxHeader
+        avatarProps={{
+          isGroupAvatar: true,
+          src: groupInfo?.icon,
+        }}
+        titleName={groupInfo?.name || info?.displayName}
+        isMute={info?.mute}
+        handleClickTitle={handleGoGroupInfo}
         popMenuData={groupPopList.filter((i) => !isAdmin || i.key !== 'leave-group')}
-        renderTitle={<div className="flex title-element">{renderTitle}</div>}
         goBack={() => navigate('/chat-list')}
         popVisible={popVisible}
         setPopVisible={setPopVisible}
@@ -348,6 +380,10 @@ export default function ChatBox() {
             onClickUrl={clickUrl}
             onClickUnSupportMsg={WarnTip}
             onReplyMsg={handleClickReply}
+            onReportMsg={(item: MessageContentType) => {
+              setReportOpen(true);
+              curOperateMsg.current = item;
+            }}
           />
         </StyleProvider>
       </div>
@@ -368,6 +404,7 @@ export default function ChatBox() {
         onClose={() => setShowBookmark(false)}
         onClick={handleSendMessage}
       />
+      <ReportDrawer open={reportOpen} onCloseReport={() => setReportOpen(false)} onReport={handleReport} />
     </div>
   );
 }

@@ -1,0 +1,12 @@
+<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Frame 3854">
+<path id="Ellipse 1" d="M9.33824 2.69291C8.64333 2.31487 7.84676 2.1001 7.00003 2.1001C4.29383 2.1001 2.10003 4.2939 2.10003 7.0001C2.10003 9.70629 4.29383 11.9001 7.00003 11.9001C9.33786 11.9001 11.2933 10.2629 11.7823 8.07247" stroke="url(#paint0_angular_11673_5043)" stroke-width="2.04167" stroke-linecap="round"/>
+</g>
+<defs>
+<radialGradient id="paint0_angular_11673_5043" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(6.94117 7.0001) rotate(-32.2928) scale(5.21538 5.15274)">
+<stop offset="0.09" stop-color="#979AA0" stop-opacity="0"/>
+<stop offset="0.68" stop-color="#55585E" stop-opacity="0.6"/>
+<stop offset="1" stop-color="#55585E" stop-opacity="0.8"/>
+</radialGradient>
+</defs>
+</svg>

@@ -15,6 +15,7 @@ import Touchable from 'components/Touchable';
 import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 export interface TokenSectionProps {
@@ -23,6 +24,7 @@ export interface TokenSectionProps {
 
 export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
   const { t } = useLanguage();
+  const userInfo = useCurrentUserInfo();
 
   const { accountTokenList, totalRecordCount, fetchAccountTokenInfoList } = useAccountTokenInfo();
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
@@ -36,9 +38,16 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
 
   const renderItem = useCallback(
     ({ item }: { item: TokenItemShowType }) => {
-      return <TokenListItem key={item.symbol} item={item} onPress={() => onNavigate(item)} />;
+      return (
+        <TokenListItem
+          key={item.symbol}
+          item={item}
+          onPress={() => onNavigate(item)}
+          hideBalance={userInfo.hideAssets}
+        />
+      );
     },
-    [onNavigate],
+    [onNavigate, userInfo.hideAssets],
   );
 
   const getAccountTokenList = useLockCallback(
@@ -93,7 +102,6 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
             onPress={() => {
               navigationService.navigate('ManageTokenList');
             }}>
-            {/* <Svg icon="add-token" size={20} /> */}
             <TextM style={styles.addTokenText}>{t('Add Tokens')}</TextM>
           </Touchable>
         }

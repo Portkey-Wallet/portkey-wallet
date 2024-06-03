@@ -10,11 +10,24 @@ import {
   addAutoApproveItem,
   upDateRecordsItem,
   updateTab,
+  changeMarketList,
+  changeMarketType,
+  changeMarketSort,
+  resetMarketSort,
+  rollBackMarketSort,
 } from '@portkey-wallet/store/store-ca/discover/slice';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { isUrl } from '@portkey-wallet/utils';
 import { prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  ICryptoCurrencyItem,
+  IMarketSort,
+  IMarketSortDir,
+  IMarketType,
+} from '@portkey-wallet/store/store-ca/discover/type';
+import { useAppSelector } from 'store/hooks';
+import { request } from '@portkey-wallet/api/api-did';
 
 export const useIsDrawerOpen = () => useAppCASelector(state => state.discover.isDrawerOpen);
 
@@ -125,4 +138,138 @@ export const useCheckAndUpDateTabItemName = () => {
     },
     [discoverMap, dispatch, networkType],
   );
+};
+const sorDirList: IMarketSortDir[] = ['desc', 'asc', ''];
+export const useMarket = () => {
+  const dispatch = useAppCommonDispatch();
+  const { networkType } = useCurrentNetworkInfo();
+  const { discoverMap } = useAppSelector(state => state.discover);
+  const marketInfo = discoverMap?.[networkType]?.marketInfo;
+  const [refreshing, setRefreshing] = useState(false);
+  const fetchCryptoCurrencyList = useCallback(
+    async (type: IMarketType, sort?: IMarketSort, sortDir?: IMarketSortDir): Promise<ICryptoCurrencyItem[]> => {
+      try {
+        setRefreshing(true);
+        const params: { type?: IMarketType; sort?: IMarketSort; sortDir?: IMarketSortDir } = {};
+        if (type) {
+          params.type = type;
+        }
+        if (sort) {
+          params.sort = sort;
+        }
+        if (sortDir) {
+          params.sortDir = sortDir;
+        }
+        const result = await request.discover.getCryptoCurrencyList({
+          params: params,
+        });
+        console.log('wfs result===', result);
+        return result;
+      } catch (e) {
+        throw `fetch market data failed,  caused by: ${e}`;
+      } finally {
+        setRefreshing(false);
+      }
+    },
+    [],
+  );
+  useEffect(() => {
+    //init
+    (async () => {
+      const localCryptoCurrencyList = await fetchCryptoCurrencyList(
+        marketInfo?.type || 'Hot',
+        marketInfo?.sort,
+        marketInfo?.sortDir,
+      );
+      dispatch(changeMarketList({ networkType, cryptoCurrencyList: localCryptoCurrencyList }));
+    })();
+  }, [dispatch, fetchCryptoCurrencyList, marketInfo?.sort, marketInfo?.sortDir, marketInfo?.type, networkType]);
+  const handleType = useCallback(
+    //market type change
+    async (type: IMarketType) => {
+      dispatch(resetMarketSort({ networkType }));
+      dispatch(changeMarketType({ networkType, marketType: type }));
+      const localCryptoCurrencyList = await fetchCryptoCurrencyList(type);
+      dispatch(changeMarketList({ networkType, cryptoCurrencyList: localCryptoCurrencyList }));
+    },
+    [dispatch, fetchCryptoCurrencyList, networkType],
+  );
+  const refreshList = useCallback(
+    //market type change
+    async () => {
+      const localCryptoCurrencyList = await fetchCryptoCurrencyList(
+        marketInfo?.type || 'Hot',
+        marketInfo?.sort,
+        marketInfo?.sortDir,
+      );
+      dispatch(changeMarketList({ networkType, cryptoCurrencyList: localCryptoCurrencyList }));
+    },
+    [dispatch, fetchCryptoCurrencyList, marketInfo?.sort, marketInfo?.sortDir, marketInfo?.type, networkType],
+  );
+  const handleSort = useCallback(
+    // market sort change
+    async (sort: IMarketSort) => {
+      try {
+        let nextSortDir: IMarketSortDir = '';
+        if (marketInfo?.sort === sort) {
+          const currentSortDir = marketInfo?.sortDir;
+          console.log('wfs=== currentIndex', sorDirList.indexOf(currentSortDir));
+          const currentIndex = sorDirList.indexOf(currentSortDir);
+          if (currentIndex !== -1) {
+            nextSortDir = sorDirList[(currentIndex + 1) % sorDirList.length];
+          }
+        } else {
+          dispatch(resetMarketSort({ networkType }));
+          nextSortDir = 'desc';
+        }
+        dispatch(changeMarketSort({ networkType, markSort: { sort, sortDir: nextSortDir } }));
+        const localCryptoCurrencyList = await fetchCryptoCurrencyList(
+          marketInfo?.type || 'Hot',
+          nextSortDir === '' ? '' : sort,
+          nextSortDir,
+        );
+        dispatch(changeMarketList({ networkType, cryptoCurrencyList: localCryptoCurrencyList }));
+      } catch (e) {
+        dispatch(rollBackMarketSort({ networkType }));
+      }
+    },
+    [dispatch, fetchCryptoCurrencyList, marketInfo?.sort, marketInfo?.sortDir, marketInfo?.type, networkType],
+  );
+  return {
+    marketInfo,
+    refreshing,
+    handleType,
+    refreshList,
+    handleSort,
+  };
+};
+export const useMarketFavorite = () => {
+  const markFavorite = useCallback(async (id: number, symbol: string) => {
+    console.log('wfs=== markFavorite', {
+      id,
+      symbol,
+    });
+    await request.discover.markFavorite({
+      params: {
+        id,
+        symbol,
+      },
+    });
+  }, []);
+  const unMarkFavorite = useCallback(async (id: number, symbol: string) => {
+    console.log('wfs=== unMarkFavorite', {
+      id,
+      symbol,
+    });
+    await request.discover.unMarkFavorite({
+      params: {
+        id,
+        symbol,
+      },
+    });
+  }, []);
+  return {
+    markFavorite,
+    unMarkFavorite,
+  };
 };

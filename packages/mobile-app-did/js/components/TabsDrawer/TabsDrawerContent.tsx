@@ -2,7 +2,7 @@ import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
 import PageContainer from 'components/PageContainer';
-import React, { useCallback, useMemo, useRef, useState, Fragment } from 'react';
+import React, { useCallback, useMemo, useRef, useState, Fragment, forwardRef, useImperativeHandle } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca/index';
 import { pTd } from 'utils/unit';
@@ -38,8 +38,9 @@ import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
 import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
 import Touchable from 'components/Touchable';
+import { ITabContext } from './tools';
 
-const TabsDrawerContent: React.FC = () => {
+export const TabsDrawerContent = forwardRef(function (_, drawerRef) {
   const { t } = useLanguage();
   const { networkType } = useCurrentNetworkInfo();
   const nav = useNavigation();
@@ -107,7 +108,7 @@ const TabsDrawerContent: React.FC = () => {
       return (
         <View style={rightDomStyle.iconGroupWrap}>
           <Touchable style={rightDomStyle.iconWrap} onPress={() => showWalletInfo({ tabInfo: activeItem })}>
-            <Svg icon="wallet-white" size={20} />
+            <Svg icon="wallet-gray" size={pTd(20)} />
           </Touchable>
         </View>
       );
@@ -201,6 +202,17 @@ const TabsDrawerContent: React.FC = () => {
     },
     [activeItem, activeTabId, activeWebviewScreenShot],
   );
+
+  const provider = useMemo<ITabContext>(() => {
+    return {
+      currentTabLength: (tabs ?? []).length,
+      showAllTabs: () => {
+        clickBottomActionBtn('showTab');
+      },
+    };
+  }, [clickBottomActionBtn, tabs]);
+
+  useImperativeHandle(drawerRef, () => provider, [provider]);
 
   const TabsDom = useMemo(() => {
     return tabs?.map(ele => {
@@ -306,7 +318,7 @@ const TabsDrawerContent: React.FC = () => {
           <Touchable
             style={[handleButtonStyle.handleItem, handleButtonStyle.add]}
             onPress={() => dispatch(changeDrawerOpenStatus(false))}>
-            <Svg icon="add-blue" size={pTd(28)} />
+            <Svg icon="add" size={pTd(28)} color={defaultColors.primaryColor} />
           </Touchable>
           <Touchable style={handleButtonStyle.handleItem} onPress={onDone}>
             <TextM style={[handleButtonStyle.done, FontStyles.font4]}>{t('Done')}</TextM>
@@ -325,7 +337,7 @@ const TabsDrawerContent: React.FC = () => {
         leftDom={
           <View style={styles.leftWrap}>
             <Touchable onPress={backToSearchPage} style={styles.backIcon}>
-              <Svg icon="left-arrow" size={pTd(16)} color={defaultColors.bg1} />
+              <Svg icon="left-arrow" size={pTd(20)} color={defaultColors.font18} />
             </Touchable>
             <TextWithProtocolIcon
               type="iconLeft"
@@ -337,7 +349,7 @@ const TabsDrawerContent: React.FC = () => {
         }
         rightDom={rightDom}
         notHandleHardwareBackPress
-        safeAreaColor={['blue', 'white']}
+        safeAreaColor={['white', 'white']}
         containerStyles={styles.container}
         scrollViewProps={{ disabled: true }}
         titleDom={activeTabId ? '' : `${tabs?.length} Tabs`}>
@@ -346,9 +358,9 @@ const TabsDrawerContent: React.FC = () => {
       </PageContainer>
     </BrowserContext.Provider>
   );
-};
+});
 
-export default TabsDrawerContent;
+TabsDrawerContent.displayName = 'TabsDrawerContent';
 
 const styles = StyleSheet.create({
   container: {

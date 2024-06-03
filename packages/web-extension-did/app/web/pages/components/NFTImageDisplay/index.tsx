@@ -28,7 +28,9 @@ export default function NFTImageDisplay({
   const isShowDefault = useMemo(() => isError || !src, [isError, src]);
   const seedTypeTag = getSeedTypeTag({ seedType, isSeed }, seedTypeTagSize);
   return (
-    <div className={clsx('nft-img-wrapper flex-center', className)} style={{ width, height: width }}>
+    <div
+      className={clsx('nft-img-wrapper flex-center', className, isShowDefault && 'show-default-nft')}
+      style={{ width, height: width }}>
       {seedTypeTag && <CustomSvg type={seedTypeTag} />}
       {isShowDefault ? (
         alias.slice(0, 1)

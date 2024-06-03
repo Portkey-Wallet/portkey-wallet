@@ -25,7 +25,7 @@ export function useTransferLimitApprovalModal() {
         content: (
           <div>
             <div className="flex-center close-icon" onClick={() => transferLimitModal.destroy()}>
-              <CustomSvg type="Close2" />
+              <CustomSvg type="SuggestClose" />
             </div>
 
             <span>{type === LimitType.Daily ? ApproveExceedDailyLimit : ApproveExceedSingleLimit}</span>

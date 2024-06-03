@@ -73,6 +73,8 @@ class SignalrFCM extends BaseSignalr {
   private resetSignalrFCM = () => {
     this.fcmToken = undefined;
     this.fcmRefreshTokenTime = undefined;
+    this.locked = false;
+    this.openStateMap = {};
   };
 
   public exitWallet = () => {

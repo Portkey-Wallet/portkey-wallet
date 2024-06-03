@@ -1,8 +1,8 @@
-import { Modal } from 'antd';
+import { Modal, ModalFuncProps } from 'antd';
 import { ReactNode } from 'react';
 import './index.less';
 
-export interface ICustomModalConfirmProps {
+export interface ICustomModalConfirmProps extends ModalFuncProps {
   content: ReactNode;
   okText?: string;
   cancelText?: string;
@@ -10,8 +10,8 @@ export interface ICustomModalConfirmProps {
   onCancel?: () => void;
 }
 
-const CustomModalConfirm = ({ content, okText, onCancel, onOk, cancelText }: ICustomModalConfirmProps) => {
-  const props = {
+const CustomModalConfirm = ({ content, okText, onCancel, onOk, cancelText, ...props }: ICustomModalConfirmProps) => {
+  const _props = {
     open: true,
     width: 320,
     icon: null,
@@ -21,10 +21,11 @@ const CustomModalConfirm = ({ content, okText, onCancel, onOk, cancelText }: ICu
     okButtonProps: {
       loading: false,
     },
+    ...props,
   };
 
   return Modal.confirm({
-    ...props,
+    ..._props,
     className: 'custom-modal-confirm',
     okText: okText || 'OK',
     cancelText: cancelText || 'Cancel',

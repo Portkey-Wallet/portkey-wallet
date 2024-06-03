@@ -51,13 +51,13 @@ const NewChatHome = () => {
 
   return (
     <PageContainer
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       scrollViewProps={{ disabled: true }}
       hideTouchable={true}
       containerStyles={styles.containerStyles}
       titleDom="New Chat">
-      <View style={[BGStyles.bg5, GStyles.paddingArg(8, 20, 8)]}>
-        <CommonInput value={keyword} placeholder="Name/address" onChangeText={setKeyword} />
+      <View style={[BGStyles.bg1, GStyles.paddingArg(0, 20, 8)]}>
+        <CommonInput grayBorder theme="white-bg" value={keyword} placeholder="Name/address" onChangeText={setKeyword} />
       </View>
       <FlatList
         data={filterList}

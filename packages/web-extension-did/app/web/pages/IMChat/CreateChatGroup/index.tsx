@@ -1,4 +1,4 @@
-import SettingHeader from 'pages/components/SettingHeader';
+import CommonHeader from 'components/CommonHeader';
 import './index.less';
 import { useTranslation } from 'react-i18next';
 import { Button, Form, Input } from 'antd';
@@ -9,7 +9,6 @@ import { useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import ContactListSelect, { IContactItemSelectProps } from '../components/ContactListSelect';
 import { useCreateGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
-import CustomSvg from 'components/CustomSvg';
 import UploadAvatar from 'pages/components/UploadAvatar';
 import { useLoading } from 'store/Provider/hooks';
 import uploadImageToS3 from 'utils/compressAndUploadToS3';
@@ -132,13 +131,7 @@ export default function CreateChatGroup() {
 
   return (
     <div className="create-chat-group">
-      <div className="create-chat-top">
-        <SettingHeader
-          title={t('Create Group')}
-          leftCallBack={() => navigate(-1)}
-          rightElement={<CustomSvg type="Close2" onClick={() => navigate(-1)} />}
-        />
-      </div>
+      <CommonHeader className="create-chat-top" title={t('Create Group')} onLeftBack={() => navigate(-1)} />
       <div className="create-chat-body">
         <Form
           form={form}

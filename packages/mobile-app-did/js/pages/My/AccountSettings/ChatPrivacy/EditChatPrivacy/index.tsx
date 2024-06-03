@@ -72,7 +72,7 @@ const EditChatPrivacy: React.FC = () => {
   return (
     <PageContainer
       titleDom={CONTACT_PRIVACY_TYPE_LABEL_MAP[detail.privacyType]}
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <TextM style={[FontStyles.font3, pageStyles.title]}>{`My login ${
@@ -97,7 +97,11 @@ const EditChatPrivacy: React.FC = () => {
           onPress={() => {
             updatePrivacyPermission(item.value);
           }}
-          rightElement={permission === item.value ? <Svg icon={'selected'} size={pTd(20)} /> : null}
+          rightElement={
+            permission === item.value ? (
+              <Svg icon={'selected'} size={pTd(20)} color={defaultColors.primaryColor} />
+            ) : null
+          }
         />
       ))}
     </PageContainer>

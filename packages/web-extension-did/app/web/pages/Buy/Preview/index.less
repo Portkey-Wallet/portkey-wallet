@@ -2,57 +2,54 @@
 
 .preview-frame {
   height: 100vh;
-  background-color: @bg-11;
-
-  .preview-title {
-    padding-top: 16px;
-    background-color: @bg-13;
-  }
+  background-color: @neutral-default-bg;
 
   .preview-content {
-    padding: 0 24px;
+    padding: 0 16px;
     flex: 1;
-    background-color: @bg-11;
+    background-color: @neutral-default-bg;
     height: 376px;
     overflow-y: auto;
 
     .transaction {
-      margin: 32px;
+      margin: 16px 0 40px;
       .send {
         font-weight: 500;
-        color: @font-11;
+        color: @neutral-primary-text;
         .amount {
-          font-size: 28px;
-          line-height: 28px;
+          font-size: 32px;
+          line-height: 40px;
         }
         .currency {
           margin-left: 8px;
-          font-size: 12px;
-          line-height: 16px;
+          font-size: 14px;
+          line-height: 22px;
         }
       }
       .receive {
-        margin-top: 12px;
-        font-size: 12px;
-        line-height: 16px;
-        color: @font-13;
+        margin-top: 8px;
+        font-size: 14px;
+        line-height: 22px;
+        color: @neutral-tertiary-text;
       }
     }
 
     .card {
       width: 100%;
       .label {
-        margin: 0 0 8px 8px;
+        margin-bottom: 8px;
         font-size: 12px;
         line-height: 16px;
+        color: @neutral-tertiary-text;
       }
       .card-item {
         padding: 16px 12px;
-        border: 1px solid @border-2;
+        border: 1px solid @neutral-divider;
         border-radius: 6px;
-        margin-bottom: 8px;
+        margin-bottom: 12px;
         position: relative;
         overflow: hidden;
+        cursor: pointer;
         .ramp-provider {
           height: 20px;
           .ramp-provider-logo {
@@ -60,17 +57,17 @@
             margin-right: 16px;
           }
           .rate {
-            padding: 2px 0;
+            padding: 4px 0;
             font-size: 12px;
             line-height: 16px;
-            color: @font-13;
+            color: @neutral-tertiary-text;
           }
         }
         .ramp-provider-pay {
           margin-top: 24px;
           .ramp-provider-pay-item {
             border-radius: 2px;
-            border: 0.5px solid @border-2;
+            border: 0.5px solid @neutral-divider;
             min-width: 20px;
             height: 20px;
             margin-right: 6px;
@@ -82,7 +79,7 @@
       }
 
       .card-item-selected {
-        border: 1px solid @border-3;
+        border: 1px solid @brand-normal;
         .card-selected-icon {
           position: absolute;
           top: -1px;
@@ -96,27 +93,27 @@
 
   .preview-footer {
     width: 100%;
-    height: 128px;
-    padding: 16px;
-    border-top: 1px solid @border-2;
-    background-color: @bg-11;
+    padding: 12px 16px 16px;
+    background-color: @neutral-default-bg;
 
     .disclaimer {
-      margin: 0 8px 8px;
+      margin: 0 4px 12px;
       font-size: 14px;
-      line-height: 20px;
-      background-color: @bg-11;
+      line-height: 22px;
+      color: @neutral-secondary-text;
+      background-color: @neutral-default-bg;
       .highlight {
-        color: @font-9;
+        color: @brand-normal;
         cursor: pointer;
       }
     }
 
     .@{app-prefix}-btn {
       height: 48px;
-      border-radius: 22px;
+      border-radius: 6px;
       font-size: 16px;
       line-height: 22px;
+      font-weight: 500;
     }
   }
 }

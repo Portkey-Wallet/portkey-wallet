@@ -8,7 +8,6 @@ import { TextL } from 'components/CommonText';
 import ChatsDetailContent from '../components/ChatsDetailContent';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
-import ChatOverlay from '../components/ChatOverlay';
 import navigationService from 'utils/navigationService';
 import { ChatOperationsEnum } from '@portkey-wallet/constants/constants-ca/chat';
 import CommonAvatar from 'components/CommonAvatar';
@@ -30,11 +29,12 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import Loading from 'components/Loading';
 import { useAddStrangerContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
-import type { ListItemType } from '../components/ChatOverlay/chatPopover';
+import type { ListItemType } from '../../../components/FloatOverlay/Popover';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import { measurePageY } from 'utils/measure';
 import { useIsFocused } from '@react-navigation/native';
 import { TabRouteNameEnum } from 'types/navigate';
+import FloatOverlay from 'components/FloatOverlay';
 
 const ChatDetailsPage = () => {
   const dispatch = useAppCommonDispatch();
@@ -145,7 +145,7 @@ const ChatDetailsPage = () => {
       const { pageY } = event.nativeEvent;
 
       const top = await measurePageY(event.target);
-      ChatOverlay.showChatPopover({
+      FloatOverlay.showFloatPopover({
         list: handleList,
         formatType: 'dynamicWidth',
         customPosition: { right: pTd(8), top: (top || pageY) + 30 },
@@ -180,7 +180,7 @@ const ChatDetailsPage = () => {
     () => (
       <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.paddingLeft(pTd(16))]}>
         <Touchable style={GStyles.marginRight(pTd(20))} onPress={onBack}>
-          <Svg size={pTd(20)} icon="left-arrow" color={defaultColors.bg1} />
+          <Svg size={pTd(20)} icon="left-arrow" color={defaultColors.icon5} />
         </Touchable>
         <Touchable
           style={[GStyles.flexRow, GStyles.itemCenter]}
@@ -203,7 +203,7 @@ const ChatDetailsPage = () => {
           <TextL
             numberOfLines={1}
             style={[
-              FontStyles.font2,
+              FontStyles.font5,
               GStyles.marginRight(pTd(4)),
               GStyles.marginLeft(pTd(8)),
               FontStyles.weight500,
@@ -213,7 +213,7 @@ const ChatDetailsPage = () => {
           </TextL>
         </Touchable>
 
-        {mute && <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.bg1} />}
+        {mute && <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.font11} />}
       </View>
     ),
     [avatar, currentChannelInfo?.displayName, displayName, mute, onBack, toRelationId],
@@ -223,13 +223,13 @@ const ChatDetailsPage = () => {
     <PageContainer
       noCenterDom
       hideTouchable
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}
       leftDom={leftDom}
       rightDom={
         <Touchable style={[GStyles.marginRight(pTd(16))]} onPress={onPressMore}>
-          <Svg size={pTd(20)} icon="more" color={defaultColors.bg1} />
+          <Svg size={pTd(20)} icon="more" color={defaultColors.icon5} />
         </Touchable>
       }>
       <FloatingActionButton shouldShowFirstTime={isStranger} onPressButton={addContact} />

@@ -199,6 +199,7 @@ const ApproveModal = (props: SignModalPropsType) => {
           <Touchable style={styles.batchApprovalWrap} onPress={() => setIsBatchApproval(!isBatchApproval)}>
             <Svg
               icon={isBatchApproval ? 'selected' : 'unselected'}
+              color={isBatchApproval ? defaultColors.primaryColor : undefined}
               size={pTd(20)}
               iconStyle={{ marginRight: pTd(8) }}
             />
@@ -253,7 +254,7 @@ const styles = StyleSheet.create({
     marginTop: pTd(24),
     textAlign: 'center',
     color: defaultColors.primaryColor,
-    backgroundColor: defaultColors.bg9,
+    backgroundColor: defaultColors.brandLight,
     ...GStyles.paddingArg(2, 8),
   },
   signTitle: {

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import svgsList from 'assets/svgs';
 import { lockWallet } from 'utils/lib/serviceWorkerAction';
 import PortKeyHeader from 'pages/components/PortKeyHeader';
-import SettingHeader from 'pages/components/SettingHeader';
+import CommonHeader from 'components/CommonHeader';
 import './index.less';
 import { Outlet } from 'react-router-dom';
 import clsx from 'clsx';
@@ -86,7 +86,7 @@ export default function PromptMy() {
       <PortKeyHeader unReadShow={isImputation || !viewReferralStatus} onUserClick={backCb} />
 
       <div className="prompt-my-frame">
-        <SettingHeader title={t('My')} leftCallBack={backCb} />
+        <CommonHeader title={t('My')} onLeftBack={backCb} />
         <div className="prompt-my-body">
           <div className="prompt-my-menu-list">
             {settingList.map((item) => (

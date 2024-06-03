@@ -19,6 +19,7 @@ export const getActivityListAsync = createAsyncThunk(
       skipCount: params.skipCount,
       chainId: params.chainId,
       symbol: params.symbol,
+      hasNextPage: response.hasNextPage,
     };
   },
 );

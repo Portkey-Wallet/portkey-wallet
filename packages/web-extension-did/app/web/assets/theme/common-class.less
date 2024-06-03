@@ -13,7 +13,11 @@
   flex-direction: row;
   align-items: center;
 }
-
+.flex-row-start {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
 .flex-row-between {
   display: flex;
   flex-direction: row;
@@ -68,10 +72,10 @@
   align-items: center;
 }
 .font-5 {
-  color: @font-5;
+  color: @neutral-white-text;
 }
 .font-1 {
-  color: @font-1;
+  color: @neutral-primary-text;
 }
 
 .text-center {
@@ -86,7 +90,7 @@
   font-size: 18px;
   font-weight: bold;
   line-height: 22px;
-  color: @font-11;
+  color: @neutral-primary-text;
 }
 
 /* set list-style */
@@ -154,14 +158,14 @@ td {
     font-size: 40px;
     margin-bottom: 8px;
     text-align: center;
-    color: @font-11;
+    color: @neutral-primary-text;
   }
   .description {
     line-height: 22px;
     font-size: 16px;
     margin-bottom: 32px;
     text-align: center;
-    color: @font-11;
+    color: @neutral-primary-text;
   }
 }
 
@@ -183,7 +187,7 @@ td {
 
 .brand-tip {
   line-height: 22px;
-  color: @font-11;
+  color: @neutral-primary-text;
   font-size: 16px;
 }
 
@@ -308,17 +312,13 @@ td {
 
 .popup-header-wrap {
   overflow: hidden;
-  width: 100%;
-  padding-top: 16px;
-  background-color: @bg-13;
-  border-bottom: 1px solid @border-2;
   z-index: 10;
 }
 
 .three-level-prompt-container {
   width: 100%;
   flex: 1;
-  border-left: 1px solid @border-2;
+  border-left: 1px solid @neutral-divider;
   overflow-y: auto;
 
   .three-level-prompt-body {

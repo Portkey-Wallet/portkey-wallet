@@ -1,0 +1,27 @@
+@import '../../../assets/theme/color.less';
+
+.copy-address-drawer {
+  .address-list {
+    gap: 16px;
+    padding: 0 16px;
+    .address-item {
+      padding: 20px 12px;
+      border: 1px solid @neutral-divider;
+      border-radius: 6px;
+      .address-wrap {
+        gap: 4px;
+        .chain {
+          font-size: 14px;
+          font-weight: 500;
+          line-height: 22px;
+          color: @neutral-primary-text;
+        }
+        .address {
+          font-size: 12px;
+          line-height: 16px;
+          color: @neutral-tertiary-text;
+        }
+      }
+    }
+  }
+}

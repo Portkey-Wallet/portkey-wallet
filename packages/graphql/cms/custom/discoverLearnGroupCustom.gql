@@ -1,0 +1,22 @@
+query discoverLearnGroupCustom {
+  discoverLearnGroup {
+    status
+    index
+    title
+    value
+    items {
+      portkeyCard_id {
+        status
+        title
+        url
+        index
+        value
+        description
+        buttonTitle
+        imgUrl {
+          filename_disk
+        }
+      }
+    }
+  }
+}

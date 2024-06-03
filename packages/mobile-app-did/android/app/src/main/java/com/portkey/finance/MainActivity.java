@@ -13,6 +13,8 @@ import com.facebook.react.ReactRootView;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.core.content.ContextCompat;
+
 public class MainActivity extends ReactActivity {
   /**
    * react navigation
@@ -26,16 +28,21 @@ public class MainActivity extends ReactActivity {
     @Override
   protected void onStop() {
     super.onStop();
-    android.content.Intent service = new android.content.Intent(getApplicationContext(), PortkeyHeadlessJsTaskService.class);
-    Bundle bundle = new Bundle();
+    try {
+      android.content.Intent service = new android.content.Intent(getApplicationContext(), PortkeyHeadlessJsTaskService.class);
+      Bundle bundle = new Bundle();
 
-    bundle.putString("portkey", "finance");
-    service.putExtras(bundle);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      // start the foreground service
-      getApplicationContext().startForegroundService(service);
-    } else {
-      getApplicationContext().startService(service);
+      bundle.putString("portkey", "finance");
+      service.putExtras(bundle);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        // start the foreground service
+        ContextCompat.startForegroundService(this, service);
+//        getApplicationContext().startForegroundService(service);
+      } else {
+        this.startService(service);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
   }
 

@@ -30,6 +30,8 @@ export default function ErrorBoundary({ children, view }: ErrorBoundaryProps) {
     ({ error, componentStack }: Omit<ErrorBoundaryTrue, 'hasError'>) => {
       const handleError = handleReportError({ error, componentStack, view });
       crashlytics().recordError(handleError, view);
+
+      console.log('Severity.Error', JSON.stringify(handleError), Severity.Error);
       exceptionManager.reportError(handleError, Severity.Error);
     },
     [view],

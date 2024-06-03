@@ -17,7 +17,7 @@ export const useDiscoverData = () => {
   const { discoverTabListMap, discoverEarnListMap, discoverLearnGroupListMap } = useCMS();
 
   const discoverHeaderTabList = useMemo<TDiscoverTabList>(
-    () => discoverTabListMap?.[networkType] || [],
+    () => discoverTabListMap?.[networkType] || [{ index: 1, name: 'Market', value: 'market' }],
     [discoverTabListMap, networkType],
   );
 

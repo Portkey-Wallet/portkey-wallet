@@ -17,6 +17,7 @@ import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
+import { useInitCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
 
 const DashBoard: React.FC<any> = ({ navigation }) => {
   const isMainnet = useIsMainnet();
@@ -24,6 +25,7 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
   const { getViewReferralStatusStatus, getReferralLink } = useReferral();
   const managerExceedTipModalCheck = useManagerExceedTipModal();
   const accountBalanceUSD = useAccountBalanceUSD();
+  useInitCmsBanner();
   useReportingSignalR();
 
   const [scrollY, setScrollY] = useState(new Animated.Value(0));

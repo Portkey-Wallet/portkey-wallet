@@ -17,6 +17,7 @@ export interface IMarketItemProps {
 }
 export default function MarketItem(props: IMarketItemProps) {
   const { isLoading, item, onStarClicked } = props;
+  console.log('wfs===item', item);
   const { markFavorite, unMarkFavorite } = useMarketFavorite();
   const [favorite, setFavorite] = useState(item.collected);
   const isDefaultSymbol = item.symbol === 'ELF' || item.symbol === 'SGR';

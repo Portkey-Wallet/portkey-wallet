@@ -13,7 +13,6 @@ import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { TextM } from 'components/CommonText';
 import MarketItemSkeleton from './components/MarketItemSkeleton';
-import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
 
 export default function MarketSection() {
   const { marketInfo, refreshing, refreshList, handleType, handleSort } = useMarket();
@@ -75,9 +74,9 @@ export default function MarketSection() {
           showsVerticalScrollIndicator={false}
           nestedScrollEnabled
           refreshing={false}
-          data={marketInfo?.dataList || []}
+          data={Array.isArray(marketInfo?.dataList) ? marketInfo?.dataList : []}
           renderItem={renderItem}
-          keyExtractor={(item: ICryptoCurrencyItem) => '' + item.id}
+          keyExtractor={(item: ICryptoCurrencyItem, index: number) => '' + (item.id || index)}
           refreshControl={
             marketInfo?.dataList ? <RefreshControl refreshing={isLoading} onRefresh={onRefresh} /> : undefined
           }

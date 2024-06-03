@@ -9,40 +9,41 @@ import { LearnPage } from '../SubPages/Learn/MainPage';
 import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
 import { Platform } from 'react-native';
 
+const defaultList = [
+  {
+    name: 'Dapp',
+    value: 'Dapp',
+    tabItemDom: <DiscoverCmsListSection />,
+  },
+  {
+    name: 'Market',
+    value: 'Market',
+
+    tabItemDom: <MarketSection />,
+  },
+  {
+    name: 'Earn',
+    value: 'Earn',
+    tabItemDom: <EarnPage />,
+  },
+  {
+    name: 'Learn',
+    value: 'Learn',
+    tabItemDom: <LearnPage />,
+  },
+];
+
 const DiscoverTab: React.FC = () => {
-  const { t } = useLanguage();
   const { discoverHeaderTabList } = useDiscoverData();
 
-  const tabOriginalList = useMemo(() => {
-    return [
-      { name: t('Dapp'), tabItemDom: <DiscoverCmsListSection /> },
-      {
-        name: t('Market'),
-        tabItemDom: <MarketSection />,
-      },
-      {
-        name: t('Earn'),
-        tabItemDom: <EarnPage />,
-      },
-      {
-        name: t('Learn'),
-        tabItemDom: <LearnPage />,
-      },
-    ];
-  }, [t]);
-
-  const tabList = useMemo(() => {
-    return (
-      discoverHeaderTabList
-        // .sort((a, b) => Number(a.index) - Number(b.index))
-        .map(item => {
-          return {
-            name: item.name || 'tab',
-            tabItemDom: tabOriginalList.find(tab => tab.name === item.name)?.tabItemDom || <></>,
-          };
-        })
-    );
-  }, [discoverHeaderTabList, tabOriginalList]);
+  const tabList = useMemo(
+    () =>
+      discoverHeaderTabList.map(item => ({
+        name: item.name || item.value || '',
+        tabItemDom: defaultList.find(tab => tab.value === item.value)?.tabItemDom || <></>,
+      })),
+    [discoverHeaderTabList],
+  );
 
   return (
     <CommonTopTab

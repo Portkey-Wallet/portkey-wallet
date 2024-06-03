@@ -9,7 +9,7 @@ export interface ISinkableTextProps {
   value: number;
 }
 export function getDecimalPlaces(num?: number): number {
-  if (!num || typeof num !== 'number') {
+  if (typeof num !== 'number') {
     return 0;
   }
   const match = num.toString().match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
@@ -23,7 +23,7 @@ export function getDecimalPlaces(num?: number): number {
   );
 }
 function calculateSinkValue(num?: number): { sink: number; validNum: string } {
-  if (!num || typeof num !== 'number') return { sink: 0, validNum: '' };
+  if (typeof num !== 'number') return { sink: 0, validNum: '' };
   const match = num.toFixed(getDecimalPlaces(num)).match(/0\.0*(\d+)/);
   return match
     ? { sink: match[0].length - 2 - match[1].length, validNum: match[1] }

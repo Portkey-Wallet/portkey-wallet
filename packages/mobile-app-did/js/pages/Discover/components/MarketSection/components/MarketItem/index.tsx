@@ -17,7 +17,6 @@ export interface IMarketItemProps {
 }
 export default function MarketItem(props: IMarketItemProps) {
   const { isLoading, item, onStarClicked } = props;
-  console.log('wfs===item', item);
   const { markFavorite, unMarkFavorite } = useMarketFavorite();
   const [favorite, setFavorite] = useState(item.collected);
   const isDefaultSymbol = item.symbol === 'ELF' || item.symbol === 'SGR';
@@ -90,7 +89,7 @@ export default function MarketItem(props: IMarketItemProps) {
               <Text style={[styles.text2, FontStyles.neutralSecondaryTextColor]}>${item.marketCap || 0}</Text>
             </View>
           </View>
-          <SinkableText sinkable value={item.currentPrice} />
+          <SinkableText sinkable value={item?.currentPrice} />
           {/* </Text> */}
           <Text style={[styles.text4, FontStyles.functionalRedDefault, styles.section3Width, chgColor]}>
             {prefixChg}

@@ -9,7 +9,7 @@ import {
   getDiscoverTabAsync,
 } from '@portkey-wallet/store/store-ca/cms/actions';
 
-const DEFAULT_DISCOVER_TAB_LIST: TDiscoverTabList = [{ index: 1, name: 'Market', value: 'market' }];
+const DEFAULT_DISCOVER_TAB_LIST: TDiscoverTabList = [{ index: 2, name: 'Market', value: 'Market' }];
 
 export const useCMS = () => useAppCASelector(state => state.cms);
 

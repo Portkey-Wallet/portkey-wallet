@@ -73,7 +73,7 @@ export type TBaseCardItemType = {
   url: string;
 };
 
-export type TDiscoverTabValue = 'dapp' | 'earn' | 'market' | 'learn';
+export type TDiscoverTabValue = 'Dapp' | 'Earn' | 'Market' | 'Learn';
 
 export type TBaseTabItemType = {
   index: string | number;

@@ -11,14 +11,13 @@ import { Platform } from 'react-native';
 
 const defaultList = [
   {
-    name: 'Dapp',
+    name: 'dApp',
     value: 'Dapp',
     tabItemDom: <DiscoverCmsListSection />,
   },
   {
     name: 'Market',
     value: 'Market',
-
     tabItemDom: <MarketSection />,
   },
   {

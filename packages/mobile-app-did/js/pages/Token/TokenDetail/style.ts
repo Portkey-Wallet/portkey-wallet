@@ -42,6 +42,7 @@ export const styles = StyleSheet.create({
     color: font11,
     fontSize: pTd(14),
     lineHeight: pTd(20),
+    height: pTd(20),
   },
   textOverflow: {
     fontSize: pTd(28),
@@ -54,10 +55,6 @@ export const styles = StyleSheet.create({
     fontWeight: '900',
     lineHeight: pTd(24),
     paddingVertical: pTd(8),
-  },
-  divide: {
-    borderBottomColor: '#DEE2E8',
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   buttonGroupWrap: {
     backgroundColor: white,
@@ -97,4 +94,7 @@ export const styles = StyleSheet.create({
     marginHorizontal: pTd(16),
   },
   buttonRow: { width: '94%', justifyContent: 'space-around' },
+  banner: {
+    marginBottom: pTd(8),
+  },
 });

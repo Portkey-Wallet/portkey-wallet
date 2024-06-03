@@ -129,10 +129,10 @@ const styles = StyleSheet.create({
     paddingBottom: pTd(18),
   },
   listWrap: {
-    paddingHorizontal: pTd(20),
+    paddingHorizontal: pTd(4),
   },
   buttonGroupWrap: {
-    paddingHorizontal: pTd(20),
+    paddingHorizontal: pTd(16),
   },
   deleteAll: {
     marginTop: pTd(10),

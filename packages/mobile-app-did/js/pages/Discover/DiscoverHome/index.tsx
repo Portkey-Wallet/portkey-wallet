@@ -1,40 +1,82 @@
 import React, { useCallback, useMemo } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { View, StyleSheet, GestureResponderEvent } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
 import SimulatedInputBox from 'components/SimulatedInputBox';
-import { DiscoverCmsListSection } from '../components/DiscoverCmsListSection';
 import { defaultColors } from 'assets/theme';
 import SafeAreaBox from 'components/SafeAreaBox';
-import CustomHeader from 'components/CustomHeader';
 import { BGStyles } from 'assets/theme/styles';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
-import Svg from 'components/Svg';
+import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
-import { DiscoverArchivedSection } from '../components/DiscoverArchivedSection';
 import { useCheckAndInitNetworkDiscoverMap } from 'hooks/discover';
 import { useFetchCurrentRememberMeBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useFocusEffect } from '@react-navigation/native';
 import Touchable from 'components/Touchable';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
+import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
+import { TextM } from 'components/CommonText';
+import { DiscoverShowOptions, useTabDrawer } from 'utils/discover';
+import fonts from 'assets/theme/fonts';
+import { useOnTouchAndPopUp } from 'components/FloatOverlay/touch';
+import { ListItemType } from 'components/FloatOverlay/Popover';
+import { ArchivedTabEnum } from '../types';
+import DiscoverTab from '../components/DiscoverTopTab';
 
 export default function DiscoverHome() {
   useCheckAndInitNetworkDiscoverMap();
   const fetchCurrentRememberMeBlackList = useFetchCurrentRememberMeBlackList();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
+  const { fetchDiscoverLearnBannerAsync } = useCmsBanner();
+  const { fetchDiscoverEarnAsync, fetchDiscoverLearnAsync } = useDiscoverData();
+  const { currentTabLength = 0, showTabDrawer } = useTabDrawer();
+  const jumpToHistory = useCallback(
+    (num: ArchivedTabEnum) => navigationService.navigate('Bookmark', { type: num }),
+    [],
+  );
+  const popUpList = useMemo<ListItemType[]>(() => {
+    return [
+      {
+        title: 'Bookmarks',
+        iconName: 'star',
+        iconColor: defaultColors.icon5,
+        onPress: () => jumpToHistory(ArchivedTabEnum.Bookmarks),
+      },
+      {
+        title: 'Records',
+        iconName: 'history',
+        iconColor: defaultColors.icon5,
+        onPress: () => jumpToHistory(ArchivedTabEnum.History),
+      },
+    ];
+  }, [jumpToHistory]);
+  const onTouch = useOnTouchAndPopUp({ list: popUpList });
 
-  const RightDom = useMemo(
+  const scanQRIcon = useMemo(
     () => (
-      <Touchable
-        style={styles.svgWrap}
+      <TouchableIcon
+        icon="scan"
         onPress={async () => {
           if (!(await qrScanPermissionAndToast())) return;
           navigationService.navigate('QrScanner');
-        }}>
-        <Svg icon="scan" size={pTd(22)} color={defaultColors.bg31} />
-      </Touchable>
+        }}
+      />
     ),
     [qrScanPermissionAndToast],
   );
+
+  const showAllTabsIcon = useMemo(() => {
+    return (
+      <Touchable onPress={() => showTabDrawer(DiscoverShowOptions.SHOW_TABS)} style={styles.showAllTabsWrap}>
+        <TextM style={[styles.showAllTabsText, fonts.mediumFont]}>{currentTabLength}</TextM>
+      </Touchable>
+    );
+  }, [currentTabLength, showTabDrawer]);
+
+  const showToolsIcon = useMemo(() => {
+    return <TouchableIcon icon="more-vertical" onPress={onTouch} size={22} />;
+  }, [onTouch]);
 
   useFocusEffect(
     useCallback(() => {
@@ -42,32 +84,80 @@ export default function DiscoverHome() {
     }, [fetchCurrentRememberMeBlackList]),
   );
 
+  useEffectOnce(() => {
+    fetchDiscoverLearnBannerAsync();
+    fetchDiscoverEarnAsync();
+    fetchDiscoverLearnAsync();
+  });
+
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={BGStyles.white}>
-      <CustomHeader noLeftDom rightDom={RightDom} themeType="white" titleDom={'Discover'} />
-      <SimulatedInputBox onClickInput={() => navigationService.navigate('DiscoverSearch')} />
-      <ScrollView style={styles.container}>
-        <DiscoverArchivedSection />
-        <DiscoverCmsListSection />
-      </ScrollView>
+      <View style={styles.functionalLine}>
+        <SimulatedInputBox onClickInput={() => navigationService.navigate('DiscoverSearch')} rightDom={scanQRIcon} />
+        {showAllTabsIcon}
+        {showToolsIcon}
+      </View>
+      <View style={styles.container}>
+        <DiscoverTab />
+      </View>
     </SafeAreaBox>
+  );
+}
+
+function TouchableIcon({
+  icon,
+  onPress,
+  size = 20,
+}: {
+  icon: IconName;
+  onPress: (event: GestureResponderEvent) => Promise<any> | void;
+  size?: number;
+}) {
+  return (
+    <Touchable style={styles.svgWrap} onPress={onPress}>
+      <Svg icon={icon} size={pTd(size)} color={defaultColors.bg34} />
+    </Touchable>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: defaultColors.bg4,
-    paddingTop: pTd(24),
+    backgroundColor: defaultColors.white,
     flex: 1,
+  },
+  functionalLine: {
+    height: pTd(56),
+    flexDirection: 'row',
+    paddingHorizontal: pTd(16),
+    paddingVertical: pTd(8),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pagesBtn: {
+    paddingHorizontal: pTd(16),
   },
   inputContainer: {
     ...GStyles.paddingArg(8, 20),
+  },
+  showAllTabsWrap: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: pTd(4),
+    borderWidth: 1.5,
+    borderColor: defaultColors.font19,
+    width: pTd(22),
+    height: pTd(22),
+    marginHorizontal: pTd(16),
+  },
+  showAllTabsText: {
+    color: defaultColors.font19,
+    textAlign: 'center',
+    lineHeight: pTd(18),
   },
   svgWrap: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: pTd(16),
   },
 });

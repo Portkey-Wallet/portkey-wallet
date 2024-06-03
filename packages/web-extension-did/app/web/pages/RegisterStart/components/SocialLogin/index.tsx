@@ -30,11 +30,13 @@ export default function SocialLogin({
   type,
   onBack,
   onFinish,
+  onSocialStart,
   switchLogin,
 }: {
   type: RegisterType;
   onBack?: () => void;
   onFinish: SocialLoginFinishHandler;
+  onSocialStart: (type: ISocialLogin) => void;
   switchLogin?: (type: 'Email' | 'Phone') => void;
 }) {
   const navigate = useNavigateState();
@@ -67,6 +69,7 @@ export default function SocialLogin({
   const onSocialChange = useCallback(
     async (v: ISocialLogin) => {
       try {
+        onSocialStart(v);
         setLoading(true);
         const result = await socialLoginAction(v, currentNetwork);
         setLoading(false);
@@ -81,7 +84,7 @@ export default function SocialLogin({
         singleMessage.error(msg);
       }
     },
-    [currentNetwork, onFinish, setLoading],
+    [currentNetwork, onFinish, onSocialStart, setLoading],
   );
 
   const allowedLoginGuardianList: LoginGuardianListType[] = useMemo(

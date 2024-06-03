@@ -22,7 +22,7 @@ export type ApproveParams = {
   approveInfo: ApproveInfo;
   eventName: string;
   isDiscover?: boolean;
-  showBatchApproveToken?: boolean;
+  batchApproveNFT?: boolean;
 };
 
 export async function requestManagerApprove(

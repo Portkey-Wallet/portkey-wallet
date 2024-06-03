@@ -29,7 +29,7 @@ export default function DiscoverHome() {
   const fetchCurrentRememberMeBlackList = useFetchCurrentRememberMeBlackList();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const { fetchDiscoverLearnBannerAsync } = useCmsBanner();
-  const { fetchDiscoverTabAsync, fetchDiscoverEarnAsync, fetchDiscoverLearnAsync } = useDiscoverData();
+  const { fetchDiscoverEarnAsync, fetchDiscoverLearnAsync } = useDiscoverData();
   const { currentTabLength = 0, showTabDrawer } = useTabDrawer();
   const jumpToHistory = useCallback(
     (num: ArchivedTabEnum) => navigationService.navigate('Bookmark', { type: num }),
@@ -88,7 +88,6 @@ export default function DiscoverHome() {
     fetchDiscoverLearnBannerAsync();
     fetchDiscoverEarnAsync();
     fetchDiscoverLearnAsync();
-    fetchDiscoverTabAsync();
   });
 
   return (

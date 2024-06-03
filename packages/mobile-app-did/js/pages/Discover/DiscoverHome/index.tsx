@@ -145,14 +145,13 @@ const styles = StyleSheet.create({
     borderRadius: pTd(4),
     borderWidth: 1.5,
     borderColor: defaultColors.font19,
-    width: pTd(22),
-    height: pTd(22),
+    width: pTd(19),
+    height: pTd(19),
     marginHorizontal: pTd(16),
   },
   showAllTabsText: {
     color: defaultColors.font19,
     textAlign: 'center',
-    lineHeight: pTd(18),
   },
   svgWrap: {
     display: 'flex',

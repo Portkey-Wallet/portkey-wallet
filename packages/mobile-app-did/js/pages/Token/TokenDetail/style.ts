@@ -15,7 +15,6 @@ export const styles = StyleSheet.create({
     backgroundColor: white,
     flexDirection: 'column',
     alignItems: 'center',
-    height: pTd(228),
   },
   tokenImage: {
     marginTop: pTd(40),

@@ -185,6 +185,7 @@ export const RedPacketDetails = () => {
             data={{
               imageUrl: redPacketData?.imageUrl || '',
               alias: redPacketData?.alias || '',
+              tokenId: redPacketData?.tokenId || '',
             }}
           />
         )}

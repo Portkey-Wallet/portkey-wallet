@@ -39,7 +39,7 @@ const NFTAvatar: React.FC<NoDataPropsType> = props => {
     nftSize = pTd(98),
     isSeed = false,
     badgeSizeType = 'small',
-    data: { imageUrl, alias, balance, decimals },
+    data: { imageUrl, alias, balance, decimals, tokenId },
     onPress,
   } = props;
 
@@ -96,11 +96,10 @@ const NFTAvatar: React.FC<NoDataPropsType> = props => {
             {alias}
           </TextM>
 
-          {balance && decimals && (
-            <TextS numberOfLines={1} style={[styles.id, !!imageUrl && styles.idNoPic]}>
-              {formatTokenAmountShowWithDecimals(balance, decimals)}
-            </TextS>
-          )}
+          <TextS numberOfLines={1} style={[styles.id, !!imageUrl && styles.idNoPic]}>
+            {balance && decimals ? formatTokenAmountShowWithDecimals(balance, decimals) : `#${tokenId}`}
+          </TextS>
+
           {imageUrl && <View style={styles.mask} />}
         </>
       )}

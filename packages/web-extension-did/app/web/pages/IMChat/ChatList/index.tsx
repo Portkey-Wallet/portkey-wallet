@@ -9,6 +9,7 @@ import {
   useMuteChannel,
   useHideChannel,
   useUnreadCount,
+  useBlockAndReport,
 } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
 import { useHandleClickChatItem } from 'hooks/im';
@@ -26,6 +27,7 @@ import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import BottomBar from 'pages/components/BottomBar';
 import clsx from 'clsx';
 import './index.less';
+import useGAReport from 'hooks/useGAReport';
 
 export default function ChatList() {
   const navigate = useNavigateState<TFindMoreLocationState>();
@@ -40,6 +42,7 @@ export default function ChatList() {
   const handleClickChatItem = useHandleClickChatItem();
   const joinOfficialGroupTip = useJoinOfficialGroupTipModal();
   const [showGuide, setShowGuide] = useState<boolean>(false);
+  const { fetchAndSetBlockList } = useBlockAndReport();
   const hasPinedMsg = useMemo(() => chatList.some((chat) => chat.pin), [chatList]);
   const popList = useMemo(
     () => [
@@ -70,6 +73,10 @@ export default function ChatList() {
     ],
     [navigate],
   );
+
+  useEffectOnce(() => {
+    fetchAndSetBlockList();
+  });
 
   const handlePin = useCallback(
     async (chatItem: IChatItemProps) => {
@@ -109,10 +116,17 @@ export default function ChatList() {
     [hideChannel],
   );
 
+  const { startReport, endReport } = useGAReport();
+
+  useEffectOnce(() => {
+    startReport('ChatList');
+  });
+
   const initChannelList = useCallback(async () => {
     await init();
+    endReport('ChatList');
     setShowGuide(true);
-  }, [init]);
+  }, [endReport, init]);
   useEffectOnce(() => {
     initChannelList();
     joinOfficialGroupTip();

@@ -36,6 +36,47 @@ import {
 
 import { LoginModeDocument, LoginModeQuery, LoginModeQueryVariables } from './__generated__/hooks/loginModeCustom';
 
+import {
+  HomeBannerCustomDocument,
+  HomeBannerCustomQuery,
+  HomeBannerCustomQueryVariables,
+} from './__generated__/hooks/homeBannerCustom';
+import {
+  TokenDetailBannerCustomDocument,
+  TokenDetailBannerCustomQuery,
+  TokenDetailBannerCustomQueryVariables,
+} from './__generated__/hooks/tokenDetailBannerCustom';
+
+import {
+  DiscoverDappBannerCustomDocument,
+  DiscoverDappBannerCustomQuery,
+  DiscoverDappBannerCustomQueryVariables,
+} from './__generated__/hooks/discoverDappBannerCustom';
+
+import {
+  DiscoverLearnBannerCustomDocument,
+  DiscoverLearnBannerCustomQuery,
+  DiscoverLearnBannerCustomQueryVariables,
+} from './__generated__/hooks/discoverLearnBannerCustom';
+
+import {
+  DiscoverTabDataCustomDocument,
+  DiscoverTabDataCustomQuery,
+  DiscoverTabDataCustomQueryVariables,
+} from './__generated__/hooks/discoverTabDataCustom';
+
+import {
+  DiscoverEarnDataCustomDocument,
+  DiscoverEarnDataCustomQuery,
+  DiscoverEarnDataCustomQueryVariables,
+} from './__generated__/hooks/discoverEarnDataCustom';
+
+import {
+  DiscoverLearnGroupCustomDocument,
+  DiscoverLearnGroupCustomQuery,
+  DiscoverLearnGroupCustomQueryVariables,
+} from './__generated__/hooks/discoverLearnGroupCustom';
+
 // SocialMedia
 const getSocialMedia = async (network: NetworkType, params: SocialMediaCustomQueryVariables) => {
   const apolloClient = getApolloClient(network);
@@ -53,6 +94,8 @@ const getTabMenu = async (network: NetworkType, params: TabMenuCustomQueryVariab
     query: TabMenuCustomDocument,
     variables: params,
   });
+  console.log('getTabMenu', result);
+
   return result;
 };
 
@@ -96,6 +139,7 @@ const getCodePushControl = async (network: NetworkType, params: CodePushControlC
     query: CodePushControlCustomDocument,
     variables: params,
   });
+
   return result;
 };
 
@@ -104,6 +148,78 @@ const getLoginMode = async (network: NetworkType, params: LoginModeQueryVariable
   const apolloClient = getApolloClient(network);
   const result = await apolloClient.query<LoginModeQuery>({
     query: LoginModeDocument,
+    variables: params,
+  });
+
+  return result;
+};
+
+// homeBanner
+const getHomeBanner = async (network: NetworkType, params: HomeBannerCustomQueryVariables) => {
+  const apolloClient = getApolloClient(network);
+  const result = await apolloClient.query<HomeBannerCustomQuery>({
+    query: HomeBannerCustomDocument,
+    variables: params,
+  });
+
+  console.log('getcms HomeBanner', result);
+
+  return result;
+};
+// token detailBanner
+const getTokenDetailBanner = async (network: NetworkType, params: TokenDetailBannerCustomQueryVariables) => {
+  const apolloClient = getApolloClient(network);
+  const result = await apolloClient.query<TokenDetailBannerCustomQuery>({
+    query: TokenDetailBannerCustomDocument,
+    variables: params,
+  });
+  return result;
+};
+
+// dapp banner
+const getDiscoverDappBanner = async (network: NetworkType, params: DiscoverDappBannerCustomQueryVariables) => {
+  const apolloClient = getApolloClient(network);
+  const result = await apolloClient.query<DiscoverDappBannerCustomQuery>({
+    query: DiscoverDappBannerCustomDocument,
+    variables: params,
+  });
+  return result;
+};
+
+// learn banner
+const getDiscoverLearnBanner = async (network: NetworkType, params: DiscoverLearnBannerCustomQueryVariables) => {
+  const apolloClient = getApolloClient(network);
+  const result = await apolloClient.query<DiscoverLearnBannerCustomQuery>({
+    query: DiscoverLearnBannerCustomDocument,
+    variables: params,
+  });
+  return result;
+};
+// get discover tab list
+const getDiscoverTabList = async (network: NetworkType, params: DiscoverTabDataCustomQueryVariables) => {
+  const apolloClient = getApolloClient(network);
+  const result = await apolloClient.query<DiscoverTabDataCustomQuery>({
+    query: DiscoverTabDataCustomDocument,
+    variables: params,
+  });
+  return result;
+};
+
+// get earnList
+const getDiscoverEarnList = async (network: NetworkType, params: DiscoverEarnDataCustomQueryVariables) => {
+  const apolloClient = getApolloClient(network);
+  const result = await apolloClient.query<DiscoverEarnDataCustomQuery>({
+    query: DiscoverEarnDataCustomDocument,
+    variables: params,
+  });
+  return result;
+};
+
+// get learnGroupList
+const getDiscoverLearnGroupList = async (network: NetworkType, params: DiscoverLearnGroupCustomQueryVariables) => {
+  const apolloClient = getApolloClient(network);
+  const result = await apolloClient.query<DiscoverLearnGroupCustomQuery>({
+    query: DiscoverLearnGroupCustomDocument,
     variables: params,
   });
   return result;
@@ -117,4 +233,11 @@ export {
   getEntrance,
   getCodePushControl,
   getLoginMode,
+  getHomeBanner,
+  getTokenDetailBanner,
+  getDiscoverDappBanner,
+  getDiscoverLearnBanner,
+  getDiscoverTabList,
+  getDiscoverEarnList,
+  getDiscoverLearnGroupList,
 };

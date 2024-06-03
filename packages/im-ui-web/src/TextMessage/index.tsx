@@ -80,12 +80,19 @@ const TextMessage: React.FC<IMessage> = (props) => {
         children: 'Delete',
         onClick: () => props?.onDeleteMsg?.(props),
       },
+      {
+        key: 'report',
+        leftIcon: <CustomSvg type="Report" />,
+        children: 'Report',
+        onClick: () => props?.onReportMsg?.(props),
+      },
     ],
     [parsedContent, pinInfo, props, setCopied],
   );
   const popoverShowList = useMemo(() => {
     let _popList: Array<string> = [];
     const hasDelAuth = position === 'right' || isAdmin;
+    const hasReportAuth = position === 'left' && !!props.onReportMsg;
     if (showPageType === MessageShowPageEnum['MSG-PAGE']) {
       if (isGroup) {
         _popList = isAdmin ? ['copy', 'pin', 'reply'] : ['copy', 'reply'];
@@ -99,8 +106,11 @@ const TextMessage: React.FC<IMessage> = (props) => {
     if (hasDelAuth) {
       _popList.push('delete');
     }
+    if (hasReportAuth) {
+      _popList.push('report');
+    }
     return popoverAllList.filter((item) => _popList.includes(item.key));
-  }, [isAdmin, isGroup, popoverAllList, position, showPageType]);
+  }, [isAdmin, isGroup, popoverAllList, position, props.onReportMsg, showPageType]);
 
   const renderReplyMsg = useMemo(() => {
     if (!quote) {

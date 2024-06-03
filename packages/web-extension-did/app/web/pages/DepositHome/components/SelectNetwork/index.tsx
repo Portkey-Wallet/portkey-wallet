@@ -7,6 +7,7 @@ import PromptFrame from 'pages/components/PromptFrame';
 import { TNetworkItem } from '@portkey-wallet/types/types-ca/deposit';
 import NetworkLogo from '../NetworkLogo';
 import CommonHeader from 'components/CommonHeader';
+import clsx from 'clsx';
 export interface ISelectNetworkProps {
   onClose?: () => void;
   onClickItem?: (network: TNetworkItem) => void;
@@ -33,7 +34,7 @@ export default function SelectNetwork(props: ISelectNetworkProps) {
   const renderList = useMemo(() => {
     return (
       <List
-        className="network-list"
+        className="network-list flex-1"
         // itemLayout="horizontal"
         dataSource={networkList}
         renderItem={(item) => (
@@ -60,14 +61,14 @@ export default function SelectNetwork(props: ISelectNetworkProps) {
   }, [networkList, onClickItem]);
   const mainContent = useCallback(() => {
     return (
-      <div className="deposit-select-network-container">
+      <div className={clsx('deposit-select-network-container', isPrompt ? 'detail-page-prompt' : '')}>
         <CommonHeader title={'Select Network'} onLeftBack={onClose} />
-        <div className="body">
+        <div className="body flex-1">
           {renderNotice}
           {renderList}
         </div>
       </div>
     );
-  }, [onClose, renderList, renderNotice]);
+  }, [isPrompt, onClose, renderList, renderNotice]);
   return <>{isPrompt && type === 'page' ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

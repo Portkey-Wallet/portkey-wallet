@@ -50,14 +50,16 @@
       }
       .nft-collection {
         gap: 12px;
-        .avatar {
+        .nft-collection-avatar {
           width: 36px;
           height: 36px;
           flex-shrink: 0;
           border-radius: 4px;
-          background-color: @neutral-divider;
           font-size: 20px;
           color: @neutral-disable-text;
+          &.show-nft-default {
+            background-color: @neutral-divider;
+          }
           img {
             width: 100%;
             height: 100%;

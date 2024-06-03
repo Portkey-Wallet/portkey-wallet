@@ -24,6 +24,7 @@ import singleMessage from 'utils/singleMessage';
 import { useLocationState } from 'hooks/router';
 import { TRampLocationState, TTokenDetailLocationState } from 'types/router';
 import { useExtensionRampEntryShow } from 'hooks/ramp';
+import useGAReport from 'hooks/useGAReport';
 
 export interface IBuyFormProps {
   mainPageInfo?: {
@@ -168,9 +169,15 @@ export default function BuyForm(props: IBuyFormProps) {
     }
   }, [getSpecifiedFiat, handleCryptoSelect, handleFiatSelect, setLoading, state?.crypto, state?.tokenInfo?.symbol]);
 
+  const { startReport, endReport } = useGAReport();
+
+  useEffectOnce(() => {
+    startReport('Buy-DataInit');
+  });
+
   useEffectOnce(() => {
     fetchSpecifiedFiat();
-    updateBuyReceive();
+    updateBuyReceive().then(() => endReport('Buy-DataInit'));
   });
 
   const handleNext = useCallback(async () => {

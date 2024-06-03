@@ -133,7 +133,12 @@ export default function PermissionCheck({
 
   useEffect(() => {
     if (location.pathname.includes('/test')) return;
-    if (locked && !noCheckRegister && !isRegisterPage) return navigate('/unlock');
+
+    if (locked && !noCheckRegister && !isRegisterPage) {
+      checkNeedUnlock().then((needUnlock) => {
+        needUnlock && navigate('/unlock');
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRegisterPage, locked, navigate, noCheckRegister]);
 

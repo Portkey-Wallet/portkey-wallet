@@ -10,7 +10,10 @@ import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
-import { DEFAULT_DEPOSIT_TO_TOKEN } from '@portkey-wallet/constants/constants-ca/deposit';
+import {
+  DEFAULT_DEPOSIT_TO_TOKEN_MAINNET,
+  DEFAULT_DEPOSIT_TO_TOKEN_TESTNET,
+} from '@portkey-wallet/constants/constants-ca/deposit';
 
 type DepositButtonPropsType = {
   wrapStyle?: StyleProp<ViewProps>;
@@ -23,11 +26,11 @@ const DepositButton = (props: DepositButtonPropsType) => {
   const { wrapStyle } = props;
 
   const onPress = useCallback(() => {
-    const chainId = isMainnet ? 'tDVV' : 'tDVW';
+    const defaultToToken = isMainnet ? DEFAULT_DEPOSIT_TO_TOKEN_MAINNET : DEFAULT_DEPOSIT_TO_TOKEN_TESTNET;
     const toToken = accountTokenList.find(
-      item => item.symbol === DEFAULT_DEPOSIT_TO_TOKEN.symbol && item.chainId === chainId,
+      item => item.symbol === defaultToToken.symbol && item.chainId === defaultToToken.chainId,
     );
-    navigationService.navigate('Deposit', toToken ?? DEFAULT_DEPOSIT_TO_TOKEN);
+    navigationService.navigate('Deposit', toToken ?? defaultToToken);
   }, [accountTokenList, isMainnet]);
 
   return (

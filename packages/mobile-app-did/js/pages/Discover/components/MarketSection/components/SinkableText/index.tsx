@@ -9,6 +9,9 @@ export interface ISinkableTextProps {
   value: number;
 }
 export function getDecimalPlaces(num: number): number {
+  if (!num) {
+    return 0;
+  }
   const match = num.toString().match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
   if (!match) {
     return 0;

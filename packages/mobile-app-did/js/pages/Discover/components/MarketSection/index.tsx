@@ -75,7 +75,7 @@ export default function MarketSection() {
           showsVerticalScrollIndicator={false}
           nestedScrollEnabled
           refreshing={false}
-          data={marketInfo?.dataList || []}
+          data={[]}
           renderItem={renderItem}
           keyExtractor={(item: ICryptoCurrencyItem) => '' + item.id}
           refreshControl={
@@ -103,6 +103,7 @@ const styles = StyleSheet.create({
   },
   retryButton: {
     height: pTd(32),
+    paddingVertical: 0,
   },
   retryButtonContainer: {
     width: pTd(120),

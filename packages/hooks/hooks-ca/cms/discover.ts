@@ -9,6 +9,8 @@ import {
   getDiscoverTabAsync,
 } from '@portkey-wallet/store/store-ca/cms/actions';
 
+const DEFAULT_DISCOVER_TAB_LIST: TDiscoverTabList = [{ index: 1, name: 'Market', value: 'market' }];
+
 export const useCMS = () => useAppCASelector(state => state.cms);
 
 export const useDiscoverData = () => {
@@ -16,10 +18,12 @@ export const useDiscoverData = () => {
   const { networkType } = useCurrentNetworkInfo();
   const { discoverTabListMap, discoverEarnListMap, discoverLearnGroupListMap } = useCMS();
 
-  const discoverHeaderTabList = useMemo<TDiscoverTabList>(
-    () => discoverTabListMap?.[networkType] || [{ index: 1, name: 'Market', value: 'market' }],
-    [discoverTabListMap, networkType],
-  );
+  const discoverHeaderTabList = useMemo<TDiscoverTabList>(() => {
+    if (!discoverTabListMap?.[networkType] || discoverTabListMap?.[networkType]?.length === 0)
+      return DEFAULT_DISCOVER_TAB_LIST;
+
+    return discoverTabListMap?.[networkType] || DEFAULT_DISCOVER_TAB_LIST;
+  }, [discoverTabListMap, networkType]);
 
   const earnList = useMemo<TDiscoverEarnList>(
     () => discoverEarnListMap?.[networkType] || [],

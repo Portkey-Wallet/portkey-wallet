@@ -85,6 +85,7 @@ const styles = StyleSheet.create({
     borderRadius: pTd(6),
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   chainText: {
     color: defaultColors.neutralPrimaryTextColor,

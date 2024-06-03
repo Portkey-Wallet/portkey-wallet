@@ -36,12 +36,12 @@ export default function ExchangePage() {
             </div>
           ))}
         </div>
-        <div className="exchange-partner-operation flex-between-center">
-          <div className="flex-column">
-            <div className="operation-title">Receive ELF from top-tier exchanges</div>
-            <div className="operation-desc">Click to copy your address</div>
+        <div className="exchange-partner-operation flex-column ">
+          <div className="operation-title">Receive ELF from top-tier exchanges</div>
+          <div className="operation-desc flex-between-center">
+            <div>{caAddress}</div>
+            <Copy toCopy={caAddress} />
           </div>
-          <Copy toCopy={caAddress} />
         </div>
       </div>
     </div>

@@ -62,9 +62,14 @@
         color: @neutral-primary-text;
       }
       .operation-desc {
+        gap: 12px;
         font-size: 12px;
         line-height: 16px;
         color: @neutral-tertiary-text;
+        word-break: break-all;
+        .copy-icon-wrapper {
+          flex-shrink: 0;
+        }
       }
     }
   }

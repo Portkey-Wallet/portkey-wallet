@@ -210,8 +210,7 @@ module.exports = (env, argv) => {
     envConfig.IM_S3_KEY = devConfig.IM_S3_KEY;
     envConfig.IM_S3_TESTNET_KEY = devConfig.IM_S3_TESTNET_KEY;
     envConfig.FCM_PROJECT_ID = devConfig.FCM_PROJECT_ID;
-    // TODO
-    envConfig.GA_API_SECRET = productionConfig.GA_API_SECRET;
+    envConfig.GA_API_SECRET = '';
   } else {
     envConfig.SENTRY_DSN = productionConfig.SENTRY_DSN;
     envConfig.IM_S3_KEY = productionConfig.IM_S3_KEY;

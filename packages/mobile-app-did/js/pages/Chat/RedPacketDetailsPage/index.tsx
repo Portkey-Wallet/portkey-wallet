@@ -177,6 +177,7 @@ export const RedPacketDetails = () => {
         {redPacketData?.assetType === AssetType.nft && (
           <NFTAvatar
             disabled
+            showNftDetailInfo
             isSeed={redPacketData?.isSeed}
             seedType={redPacketData?.seedType}
             badgeSizeType="normal"

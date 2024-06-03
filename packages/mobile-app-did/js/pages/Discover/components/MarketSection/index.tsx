@@ -75,7 +75,7 @@ export default function MarketSection() {
           showsVerticalScrollIndicator={false}
           nestedScrollEnabled
           refreshing={false}
-          data={[]}
+          data={marketInfo?.dataList || []}
           renderItem={renderItem}
           keyExtractor={(item: ICryptoCurrencyItem) => '' + item.id}
           refreshControl={

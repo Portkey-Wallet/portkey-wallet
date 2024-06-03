@@ -8,6 +8,8 @@ import { commonButtonStyle } from '../SendButton/style';
 import Touchable from 'components/Touchable';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
+import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { DEFAULT_DEPOSIT_TO_TOKEN } from '@portkey-wallet/constants/constants-ca/deposit';
 
 type DepositButtonPropsType = {
   wrapStyle?: StyleProp<ViewProps>;
@@ -15,15 +17,15 @@ type DepositButtonPropsType = {
 
 const DepositButton = (props: DepositButtonPropsType) => {
   const { t } = useLanguage();
+  const { accountTokenList } = useAccountTokenInfo();
   const { wrapStyle } = props;
 
   const onPress = useCallback(() => {
-    navigationService.navigate('Deposit', {
-      symbol: 'USDT',
-      chainId: 'tDVV',
-      imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf/Coin-USDT.png',
-    });
-  }, []);
+    const toToken = accountTokenList.find(
+      item => item.symbol === DEFAULT_DEPOSIT_TO_TOKEN.symbol && item.chainId === DEFAULT_DEPOSIT_TO_TOKEN.chainId,
+    );
+    navigationService.navigate('Deposit', toToken ?? DEFAULT_DEPOSIT_TO_TOKEN);
+  }, [accountTokenList]);
 
   return (
     <View style={[commonButtonStyle.buttonWrap, wrapStyle]}>

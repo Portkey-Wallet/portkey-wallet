@@ -1,4 +1,5 @@
-@import '../../assets/theme/color.less';
+@import '../../assets/theme/constants.less';
+
 .transaction-detail-modal {
   background-color: @neutral-default-bg;
   height: 100%;
@@ -175,6 +176,7 @@
           .content {
             display: flex;
             flex-direction: column;
+            flex: 0.4;
             color: @neutral-secondary-text;
             gap: 2px;
             .left,
@@ -189,10 +191,16 @@
               line-height: 20px;
               font-size: 14px;
               color: @neutral-primary-text;
+              .text-overflow(1);
+
+              word-break: break-all;
             }
             .address-wrap {
               display: flex;
               gap: 4px;
+              &.right {
+                justify-content: flex-end;
+              }
               .copy-address {
                 width: 12px;
                 height: 12px;

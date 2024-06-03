@@ -116,8 +116,11 @@ export default function TokenInput({
 
   useEffect(() => {
     getTokenBalance();
+  }, [getTokenBalance]);
+
+  useEffect(() => {
     getMaxAmount();
-  }, [getMaxAmount, getTokenBalance]);
+  }, [getMaxAmount]);
 
   const handleAmountBlur = useCallback(() => {
     onChange({ amount, balance });

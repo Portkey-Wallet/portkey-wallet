@@ -79,7 +79,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingHorizontal: pTd(16),
     backgroundColor: defaultColors.white,
   },
   item: {

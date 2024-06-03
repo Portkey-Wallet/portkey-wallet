@@ -29,6 +29,7 @@ export default function MarketSection() {
       CommonToast.failError(`${e}`);
     }
   }, [refreshList]);
+
   useEffect(() => {
     flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
   }, [marketInfo?.dataList]);

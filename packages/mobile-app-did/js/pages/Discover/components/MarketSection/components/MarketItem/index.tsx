@@ -89,12 +89,14 @@ export default function MarketItem(props: IMarketItemProps) {
               <Text style={[styles.text2, FontStyles.neutralSecondaryTextColor]}>${item.marketCap || 0}</Text>
             </View>
           </View>
-          <SinkableText sinkable value={item.currentPrice} />
+          <SinkableText sinkable value={item?.currentPrice} />
           {/* </Text> */}
           <Text style={[styles.text4, FontStyles.functionalRedDefault, styles.section3Width, chgColor]}>
             {prefixChg}
-            {item.priceChangePercentage24H.toFixed(
-              getDecimalPlaces(item.priceChangePercentage24H) < 1 ? 1 : getDecimalPlaces(item.priceChangePercentage24H),
+            {item.priceChangePercentage24H?.toFixed(
+              getDecimalPlaces(item?.priceChangePercentage24H) < 1
+                ? 1
+                : getDecimalPlaces(item?.priceChangePercentage24H),
             ) || 0}
             %
           </Text>

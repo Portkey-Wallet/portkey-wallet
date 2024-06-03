@@ -4,7 +4,7 @@ import { styles } from './style';
 import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
 import ActivityButton from 'pages/DashBoard/ActivityButton';
-import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentUserInfo, useSetHideAssets } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import FaucetButton from 'components/FaucetButton';
 import GStyles from 'assets/theme/GStyles';
@@ -41,8 +41,6 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
     [buttonCount],
   );
 
-  const { eTransferUrl = '' } = useCurrentNetworkInfo();
-
   const onHideAssets = useCallback(() => {
     setHideAssets(!userInfo.hideAssets);
   }, [setHideAssets, userInfo.hideAssets]);
@@ -75,7 +73,7 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
         <SendButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
         <ReceiveButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
         {isRampShow && <BuyButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
-        {isETransDepositShow && <DepositButton wrapStyle={buttonWrapStyle} depositUrl={eTransferUrl} />}
+        {isETransDepositShow && <DepositButton wrapStyle={buttonWrapStyle} />}
         {!isMainnet && <FaucetButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
         <ActivityButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
       </View>

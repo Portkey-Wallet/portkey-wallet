@@ -5543,15 +5543,6 @@
   resolved "https://registry.yarnpkg.com/@portkey/accounts/-/accounts-2.0.1-alpha.0.tgz#1ed39ca709cfde4bedf3b6612a5637d1e480ec77"
   integrity sha512-i8jhOaX3n/WBwrktx78MFSO4pNtdGZGqjoqDmcXLqgUAfS6CLny3DoNZygxyVWkLi3j8JUuzmmMNLHGHRvM9aQ==
 
-"@portkey/chain@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.npmjs.org/@portkey/chain/-/chain-2.1.0.tgz#195df5b60dcfe3ce79192957ea2e3f3c8b047379"
-  integrity sha512-crM91g9SM6wq0lwlmmNx5kNB+oMmwYjZl16tPx6KFVq8qui55yQDnOAzbokMSp5vWWRVJIW6q+R9omzTc0++Sg==
-  dependencies:
-    "@portkey/contracts" "^2.0.4"
-    "@portkey/provider-types" "^2.1.0"
-    aelf-sdk "^3.2.45-beta.0"
-
 "@portkey/chain@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@portkey/chain/-/chain-2.2.1.tgz#fea884b61acdeebc496665a2e2eb24864ccaf07a"
@@ -5676,39 +5667,12 @@
     "@portkey/types" "^2.0.0-alpha.0"
     "@types/readable-stream" "^2.3.15"
 
-"@portkey/provider-types@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.npmjs.org/@portkey/provider-types/-/provider-types-2.1.0.tgz#10713b38463463f2bd9737496d425906ab9e38a1"
-  integrity sha512-FyNQHIr4G04mY2RPHNLTRM/iEMUVLtMwFKayu2UIhxTz2E+EjLq9jWz6zlkZjr1PESxYvBJiVUQikK+giVcCbg==
-  dependencies:
-    "@portkey/types" "^2.0.0-alpha.0"
-    "@types/readable-stream" "^2.3.15"
-
-"@portkey/provider-utils@2.1.0", "@portkey/provider-utils@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.npmjs.org/@portkey/provider-utils/-/provider-utils-2.1.0.tgz#f885d76c89faae2106a4ab131124e852dc9d19b9"
-  integrity sha512-njtE4enDW3q6T+Bndxnoiwp3PgTfFRskHHqTJO6FinjmreqF20bgRN2kZ93ojzh2CLsDrFcyvUm6v/4VT4MuJg==
-  dependencies:
-    "@portkey/provider-types" "^2.1.0"
-
 "@portkey/provider-utils@2.2.1", "@portkey/provider-utils@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@portkey/provider-utils/-/provider-utils-2.2.1.tgz#fb34d09f95fbdb2704ee1477296ab2404721f3d4"
   integrity sha512-aW1bcNAv5V8p/vG7I3+KfhuteJjc0k/b+t6ycJC31puFu0pUXDuseu0Tt96DDBVAx94s8p5aiIBckKUrxCIFLQ==
   dependencies:
     "@portkey/provider-types" "^2.2.1"
-
-"@portkey/providers@2.1.0":
-  version "2.1.0"
-  resolved "https://registry.npmjs.org/@portkey/providers/-/providers-2.1.0.tgz#de93655c35dd54bd53492d92be36acd7aeb87cf3"
-  integrity sha512-/BoRMUKQtun88CNe65ZASy85zb8D8rOwxG3QgtOg3C7r931Kf1CJGrj0AVETMfG/qzhnT/F4KopqnMfsEfv1iw==
-  dependencies:
-    "@portkey/chain" "^2.1.0"
-    "@portkey/provider-types" "^2.1.0"
-    "@portkey/provider-utils" "^2.1.0"
-    "@types/readable-stream" "^2.3.15"
-    lodash "^4.17.21"
-    readable-stream "^4.4.0"
 
 "@portkey/providers@2.2.1", "@portkey/providers@^2.2.1":
   version "2.2.1"

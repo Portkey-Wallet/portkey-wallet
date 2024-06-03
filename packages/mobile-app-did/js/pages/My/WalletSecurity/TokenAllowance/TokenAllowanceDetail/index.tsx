@@ -24,7 +24,7 @@ import { managerForwardCall } from 'utils/transfer/managerForwardCall';
 import { useGetChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { LANG_MAX } from '@portkey-wallet/constants/misc';
 import myEvents from 'utils/deviceEvent';
-import { formatAmountShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { screenHeight } from '@portkey-wallet/utils/mobile/device';
 import { formatApproveSymbolShow } from '@portkey-wallet/utils/token';

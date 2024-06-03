@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { View, Text } from 'react-native';
-import { NestedScrollView, NestedScrollViewHeader } from '@sdcx/nested-scroll';
 import PageContainer from 'components/PageContainer';
 import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
@@ -324,10 +323,8 @@ const TokenDetail: React.FC = () => {
         )}
         {renderButtonItmes()}
       </View>
-      <NestedScrollView>
-        {React.cloneElement(<NestedScrollViewHeader stickyHeaderBeginIndex={1} />, { children: renderBanner() })}
-        {renderActivityList()}
-      </NestedScrollView>
+      {renderBanner()}
+      {renderActivityList()}
     </PageContainer>
   );
 };

@@ -44,7 +44,7 @@ const ActivityListPage = () => {
     async (isInit: boolean) => {
       const { skipCount = 0, hasNextPage = true } = currentActivity || {};
       const maxResultCount = 30;
-      if (!isInit && hasNextPage) return;
+      if (!isInit && !hasNextPage) return;
 
       setIsLoading(isInit ? ListLoadingEnum.header : ListLoadingEnum.footer);
       const params: IActivitiesApiParams = {

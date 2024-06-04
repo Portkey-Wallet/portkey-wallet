@@ -10,6 +10,8 @@ import Svg from 'components/Svg';
 
 const DEFAULT_CAROUSEL_IMAGE_RATIO = 375.0 / 125.0;
 
+type DotStyle = 'Light' | 'Dark';
+
 export interface CarouselItemProps {
   imgUrl: string;
   url: string;
@@ -21,6 +23,7 @@ export interface CarouselProps {
   imageRatio?: number; // image 'width / height'
   showImageBorderRadius?: boolean;
   showDivider?: boolean;
+  dotStyle?: DotStyle;
   items: CarouselItemProps[];
   onClick?: ({ index, item }: { index: number; item: CarouselItemProps }) => void;
 }
@@ -33,6 +36,7 @@ const CarouselComponent: React.FC<CarouselProps> = ({
   imageRatio = DEFAULT_CAROUSEL_IMAGE_RATIO,
   showImageBorderRadius = false,
   showDivider = false,
+  dotStyle = 'Dark',
 }) => {
   const jumpToWebview = useDiscoverJumpWithNetWork();
   const [showSkeleton, setShowSkeleton] = useState(true);
@@ -68,6 +72,12 @@ const CarouselComponent: React.FC<CarouselProps> = ({
   const imageBorderRadius = useMemo(() => {
     return showImageBorderRadius ? pTd(12) : 0;
   }, [showImageBorderRadius]);
+  const dotColor = useMemo(() => {
+    return dotStyle === 'Dark' ? defaultColors.neutralDisableText : 'rgba(255, 255, 255, 0.60)';
+  }, [dotStyle]);
+  const activeDotColor = useMemo(() => {
+    return dotStyle === 'Dark' ? defaultColors.neutralSecondaryTextColor : 'rgba(255, 255, 255, 0.90)';
+  }, [dotStyle]);
   return (
     <View
       style={[
@@ -82,8 +92,8 @@ const CarouselComponent: React.FC<CarouselProps> = ({
           items.length > 1 && (
             <Carousel.Control
               style={styles.dotRow}
-              dot={<View style={styles.dotStyle} />}
-              activeDot={<View style={[styles.dotStyle, styles.activeDotStyle]} />}
+              dot={<View style={[styles.dotStyle, { backgroundColor: dotColor }]} />}
+              activeDot={<View style={[styles.dotStyle, styles.activeDotStyle, { backgroundColor: activeDotColor }]} />}
             />
           )
         }

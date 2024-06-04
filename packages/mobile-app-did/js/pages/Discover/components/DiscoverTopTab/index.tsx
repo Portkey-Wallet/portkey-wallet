@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import CommonTopTab from 'components/CommonTopTab';
 
-import { useLanguage } from 'i18n/hooks';
 import MarketSection from '../MarketSection';
 import { DiscoverCmsListSection } from '../DiscoverCmsListSection';
 import { EarnPage } from '../SubPages/Earn';

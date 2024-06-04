@@ -45,7 +45,7 @@ export function DiscoverCmsListSection() {
   }, [dappBannerList, getS3ImgUrl]);
 
   return (
-    <ScrollView contentContainerStyle={styles.scroll}>
+    <ScrollView contentContainerStyle={styles.scroll} style={styles.scroll}>
       <View style={styles.wrap}>
         {lists.length > 0 ? (
           <CarouselComponent
@@ -53,6 +53,8 @@ export function DiscoverCmsListSection() {
             items={lists}
             imageMarginHorizontal={16}
             showImageBorderRadius={true}
+            imageRatio={343.0 / 128.0}
+            dotStyle="Light"
           />
         ) : (
           <View style={styles.init} />
@@ -102,7 +104,7 @@ const styles = StyleSheet.create({
   slide: {
     marginLeft: pTd(-16),
     marginTop: pTd(16),
-    marginBottom: pTd(16),
+    marginBottom: pTd(24),
   },
   groupWrap: {
     marginBottom: pTd(16),

@@ -73,10 +73,10 @@ const CarouselComponent: React.FC<CarouselProps> = ({
     return showImageBorderRadius ? pTd(12) : 0;
   }, [showImageBorderRadius]);
   const dotColor = useMemo(() => {
-    return dotStyle === 'Dark' ? defaultColors.neutralDisableText : 'rgba(255, 255, 255, 0.60)';
+    return dotStyle === 'Dark' ? defaultColors.neutralDisableText : defaultColors.bg41;
   }, [dotStyle]);
   const activeDotColor = useMemo(() => {
-    return dotStyle === 'Dark' ? defaultColors.neutralSecondaryTextColor : 'rgba(255, 255, 255, 0.90)';
+    return dotStyle === 'Dark' ? defaultColors.neutralSecondaryTextColor : defaultColors.bg42;
   }, [dotStyle]);
   return (
     <View

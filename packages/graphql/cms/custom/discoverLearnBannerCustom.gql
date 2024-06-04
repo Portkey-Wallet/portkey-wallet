@@ -1,0 +1,19 @@
+query discoverLearnBannerCustom {
+  discoverLearnBanner {
+    status
+    items {
+      portkeyCard_id {
+        status
+        title
+        url
+        index
+        value
+        description
+        buttonTitle
+        imgUrl {
+          filename_disk
+        }
+      }
+    }
+  }
+}

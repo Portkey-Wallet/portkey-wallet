@@ -168,11 +168,13 @@ export const useSendChannelMessage = () => {
       content,
       type = 'TEXT',
       quoteMessage: _quoteMessage,
+      toRelationId,
     }: {
       channelId: string;
       content: string;
       type?: MessageType;
       quoteMessage?: Message;
+      toRelationId?: string;
     }) => {
       let _relationId = relationId;
       if (!_relationId) {
@@ -189,6 +191,7 @@ export const useSendChannelMessage = () => {
         content,
         sendUuid: getSendUuid(_relationId, channelId),
         quoteId: quoteMessage?.id,
+        toRelationId,
       };
 
       const msgObj: Message = messageParser({
@@ -301,10 +304,12 @@ export const useSendChannelMessage = () => {
       channelId,
       file,
       quoteMessage,
+      toRelationId,
     }: {
       channelId: string;
       file: ImageMessageFileType;
       quoteMessage?: Message;
+      toRelationId?: string;
     }) => {
       try {
         const s3Result = await s3Instance.uploadFile({
@@ -315,6 +320,7 @@ export const useSendChannelMessage = () => {
           channelId,
           s3Result: { ...s3Result, ...file },
           quoteMessage,
+          toRelationId,
         });
         return s3Result;
       } catch (error) {
@@ -608,21 +614,33 @@ export const useChannel = (channelId: string, channelType?: ChannelTypeEnum) => 
   const exit = useCallback(async () => hideChannel(channelId), [channelId, hideChannel]);
 
   const sendMessage = useCallback(
-    ({ content, type, quoteMessage }: { content: string; type?: MessageType; quoteMessage?: Message }) => {
+    ({
+      content,
+      type,
+      quoteMessage,
+      toRelationId,
+    }: {
+      content: string;
+      type?: MessageType;
+      quoteMessage?: Message;
+      toRelationId?: string; // P2P
+    }) => {
       return sendChannelMessage({
         channelId,
         content,
         type,
         quoteMessage,
+        toRelationId,
       });
     },
     [channelId, sendChannelMessage],
   );
   const sendImage = useCallback(
-    (file: ImageMessageFileType) => {
+    (file: ImageMessageFileType, toRelationId?: string) => {
       return sendChannelImage({
         channelId,
         file,
+        toRelationId,
       });
     },
     [channelId, sendChannelImage],

@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import Svg from 'components/Svg';
 import { View, StyleProp, ViewProps } from 'react-native';
 import { TextM } from 'components/CommonText';
@@ -7,26 +7,35 @@ import GStyles from 'assets/theme/GStyles';
 import { commonButtonStyle } from '../SendButton/style';
 import Touchable from 'components/Touchable';
 import { pTd } from 'utils/unit';
-import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
+import navigationService from 'utils/navigationService';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import {
+  DEFAULT_DEPOSIT_TO_TOKEN_MAINNET,
+  DEFAULT_DEPOSIT_TO_TOKEN_TESTNET,
+} from '@portkey-wallet/constants/constants-ca/deposit';
 
 type DepositButtonPropsType = {
   wrapStyle?: StyleProp<ViewProps>;
-  depositUrl: string;
 };
 
 const DepositButton = (props: DepositButtonPropsType) => {
   const { t } = useLanguage();
-  const { wrapStyle, depositUrl } = props;
+  const { accountTokenList } = useAccountTokenInfo();
+  const isMainnet = useIsMainnet();
+  const { wrapStyle } = props;
 
-  const onDisclaimerModalPress = useOnDisclaimerModalPress();
+  const onPress = useCallback(() => {
+    const defaultToToken = isMainnet ? DEFAULT_DEPOSIT_TO_TOKEN_MAINNET : DEFAULT_DEPOSIT_TO_TOKEN_TESTNET;
+    const toToken = accountTokenList.find(
+      item => item.symbol === defaultToToken.symbol && item.chainId === defaultToToken.chainId,
+    );
+    navigationService.navigate('Deposit', toToken ?? defaultToToken);
+  }, [accountTokenList, isMainnet]);
 
   return (
     <View style={[commonButtonStyle.buttonWrap, wrapStyle]}>
-      <Touchable
-        style={[commonButtonStyle.iconWrapStyle, GStyles.alignCenter]}
-        onPress={() => {
-          onDisclaimerModalPress(DepositModalMap.eTransfer, depositUrl);
-        }}>
+      <Touchable style={[commonButtonStyle.iconWrapStyle, GStyles.alignCenter]} onPress={onPress}>
         <Svg icon="depositMain" size={pTd(48)} />
       </Touchable>
       <TextM style={[commonButtonStyle.commonTitleStyle, commonButtonStyle.dashBoardTitleColorStyle]}>

@@ -1,6 +1,7 @@
 import { ChainType } from '@portkey-wallet/types';
 import SandboxEventTypes from 'messages/SandboxEventTypes';
 import IdGenerator from 'utils/IdGenerator';
+import { getWalletState } from 'utils/lib/SWGetReduxStore';
 
 export enum SandboxErrorCode {
   error,
@@ -22,13 +23,22 @@ export interface DispatchParam {
 }
 
 export default class SandboxEventService {
-  static dispatch(event: SandboxEventTypes, data?: any, ele = 'sandbox') {
+  static async dispatch(event: SandboxEventTypes, data?: any, ele = 'sandbox') {
+    let caAddress = '';
+    let currentNetwork = 'MAINNET';
+    try {
+      const res = await getWalletState();
+      currentNetwork = res.currentNetwork;
+      caAddress = res.walletInfo?.caInfo?.[res.currentNetwork]?.AELF?.caAddress ?? '';
+    } catch (error) {
+      console.log('===getWalletState error', error);
+    }
     const iframe = document.getElementById(ele);
     const sid = IdGenerator.numeric(24);
     (iframe as any)?.contentWindow.postMessage(
       {
         event,
-        data: { ...data, sid },
+        data: { ...data, sendOptions: { ...(data.sendOptions ?? {}), caAddress, currentNetwork }, sid },
       },
       '*',
     );
@@ -54,7 +64,7 @@ export default class SandboxEventService {
    * @returns
    */
   static async dispatchAndReceive(event: SandboxEventTypes, data?: DispatchParam, ele = 'sandbox') {
-    const dispatchKey = SandboxEventService.dispatch(event, data, ele);
+    const dispatchKey = await SandboxEventService.dispatch(event, data, ele);
     return await SandboxEventService.listen(dispatchKey);
   }
 }

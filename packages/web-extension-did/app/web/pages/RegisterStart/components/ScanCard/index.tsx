@@ -22,6 +22,8 @@ import InternalMessageTypes from 'messages/InternalMessageTypes';
 import CustomSvg from 'components/CustomSvg';
 import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
+import googleAnalytics from 'utils/googleAnalytics';
+import { LoginMethod } from '@portkey-wallet/types/types-ca/wallet';
 
 export default function ScanCard() {
   const navigate = useNavigateState();
@@ -85,6 +87,10 @@ export default function ScanCard() {
   //   }
   // }, [networkItem.apiUrl, qrData]);
 
+  useEffectOnce(() => {
+    googleAnalytics.loginStartEvent('Scan');
+  });
+
   useEffect(() => {
     const { caInfo, originChainId } = caWallet || {};
     InternalMessage.payload(InternalMessageTypes.GET_SEED)
@@ -96,6 +102,7 @@ export default function ScanCard() {
           if (pin) {
             try {
               dispatch(setCAInfoType({ caInfo, pin }));
+              googleAnalytics.loginEndEvent(LoginMethod.Scan);
               navigate('/success-page/login');
             } catch (error: any) {
               singleMessage.error(handleErrorMessage(error));
@@ -112,7 +119,7 @@ export default function ScanCard() {
           }
         }
       });
-  }, [caWallet, dispatch, navigate, newWallet]);
+  }, [caWallet, currentNetwork, dispatch, navigate, newWallet]);
 
   return (
     <div className="scan-card">

@@ -11,6 +11,8 @@ import { useNavigate } from 'react-router';
 import { useAppDispatch } from 'store/Provider/hooks';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
 import useDistributeLoginFail from './useDistributeLoginFail';
+import googleAnalytics from 'utils/googleAnalytics';
+import { LoginMethod } from '@portkey-wallet/types/types-ca/wallet';
 
 export default function useFetchDidWallet() {
   const fetchWalletResult = useFetchWalletCAAddress();
@@ -102,6 +104,11 @@ export default function useFetchDidWallet() {
           );
 
           const path = VerificationType.register === verificationType ? 'register' : 'login';
+
+          googleAnalytics.loginEndEvent(
+            VerificationType.register === verificationType ? LoginMethod.Signup : LoginMethod.SocialRecovery,
+          );
+
           navigate(`/success-page/${path}`);
         } catch (error: any) {
           throw handleErrorMessage(error);

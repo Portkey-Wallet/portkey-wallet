@@ -42,9 +42,9 @@ const ActivityListPage = () => {
   const [isLoading, setIsLoading] = useState(ListLoadingEnum.hide);
   const getActivityList = useLockCallback(
     async (isInit: boolean) => {
-      const { data = [], skipCount = 0, totalRecordCount = 0 } = currentActivity || {};
+      const { skipCount = 0, hasNextPage = true } = currentActivity || {};
       const maxResultCount = 30;
-      if (!isInit && data?.length >= totalRecordCount) return;
+      if (!isInit && hasNextPage) return;
 
       setIsLoading(isInit ? ListLoadingEnum.header : ListLoadingEnum.footer);
       const params: IActivitiesApiParams = {

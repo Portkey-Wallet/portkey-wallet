@@ -1,4 +1,5 @@
 import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
+import { ChainId } from '..';
 
 export type IEntranceModuleName = 'buy' | 'sell' | 'bridge' | 'eTransDeposit' | 'eTransWithdraw' | 'swap';
 export type IEntranceMatchKey = 'version' | 'installationTime' | 'deviceType';
@@ -59,3 +60,45 @@ export type TLoginModeRecommendKey = keyof Pick<
   ILoginModeItem,
   'extensionRecommend' | 'iOSRecommend' | 'androidRecommend'
 >;
+
+export type TBaseCardItemType = {
+  index: string | number;
+  title?: string;
+  value?: string;
+  description?: string;
+  buttonTitle?: string;
+  imgUrl: {
+    filename_disk: string;
+  };
+  url: string;
+};
+
+export type TDiscoverTabValue = 'Dapp' | 'Earn' | 'Market' | 'Learn';
+
+export type TBaseTabItemType = {
+  index: string | number;
+  name?: string;
+  value?: TDiscoverTabValue;
+};
+
+export type TDiscoverLearnGroupItemType = {
+  index: string | number;
+  title: string;
+  value?: string;
+  items?: TBaseCardItemType[];
+};
+
+export type TTokenDetailBannerItemType = {
+  chainId: ChainId;
+  symbol: string;
+  items?: TBaseCardItemType[];
+};
+
+export type TTokenDetailBannerList = TTokenDetailBannerItemType[];
+export type THomeBannerList = TBaseCardItemType[];
+export type TDiscoverLearnBannerList = TBaseCardItemType[];
+export type TDiscoverDappBannerList = TBaseCardItemType[];
+
+export type TDiscoverTabList = TBaseTabItemType[];
+export type TDiscoverEarnList = TBaseCardItemType[];
+export type TDiscoverLearnGroupList = TDiscoverLearnGroupItemType[];

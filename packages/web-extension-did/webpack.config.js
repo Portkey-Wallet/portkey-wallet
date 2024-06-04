@@ -10,8 +10,8 @@ const ROOT = path.resolve(__dirname, './');
 const { version } = require(path.resolve(ROOT, 'package.json'));
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, '../..');
-const productionConfig = require(path.resolve(ROOT, 'env.config/production.json'))
-const devConfig = require(path.resolve(ROOT, 'env.config/dev.json'))
+const productionConfig = require(path.resolve(ROOT, 'env.config/production.json'));
+const devConfig = require(path.resolve(ROOT, 'env.config/dev.json'));
 const outputDir = 'public';
 // TODO: Hot update, browser synchronization component
 // module.exports =
@@ -169,6 +169,11 @@ let config = {
           toType: 'dir',
         },
         {
+          from: './app/web/assets/js',
+          to: `./${outputDir}/assets/js`,
+          toType: 'dir',
+        },
+        {
           from: './app/web/assets/images',
           to: `./${outputDir}/assets/images`,
           toType: 'dir',
@@ -205,11 +210,13 @@ module.exports = (env, argv) => {
     envConfig.IM_S3_KEY = devConfig.IM_S3_KEY;
     envConfig.IM_S3_TESTNET_KEY = devConfig.IM_S3_TESTNET_KEY;
     envConfig.FCM_PROJECT_ID = devConfig.FCM_PROJECT_ID;
+    envConfig.GA_API_SECRET = '';
   } else {
     envConfig.SENTRY_DSN = productionConfig.SENTRY_DSN;
     envConfig.IM_S3_KEY = productionConfig.IM_S3_KEY;
     envConfig.IM_S3_TESTNET_KEY = productionConfig.IM_S3_TESTNET_KEY;
     envConfig.FCM_PROJECT_ID = productionConfig.FCM_PROJECT_ID;
+    envConfig.GA_API_SECRET = productionConfig.GA_API_SECRET;
   }
 
   // console.log(JSON.stringify(envConfig.SENTRY_DSN), 'SENTRY_DSN===')
@@ -223,16 +230,14 @@ module.exports = (env, argv) => {
     'process.env.IM_S3_KEY': JSON.stringify(envConfig.IM_S3_KEY),
     'process.env.IM_S3_TESTNET_KEY': JSON.stringify(envConfig.IM_S3_TESTNET_KEY),
     'process.env.FCM_PROJECT_ID': JSON.stringify(envConfig.FCM_PROJECT_ID),
+    'process.env.GA_API_SECRET': JSON.stringify(envConfig.GA_API_SECRET),
   });
 
-  console.log(definePlugin)
+  console.log(definePlugin);
 
-  config.plugins.push(
-    definePlugin
-  );
+  config.plugins.push(definePlugin);
 
   if (argv.mode === 'production') {
-
     config.plugins.push(
       new TerserPlugin({
         //   cache: true,
@@ -259,7 +264,7 @@ module.exports = (env, argv) => {
       }),
     );
   } else {
-    config.devtool = 'source-map'
+    config.devtool = 'source-map';
   }
 
   return config;

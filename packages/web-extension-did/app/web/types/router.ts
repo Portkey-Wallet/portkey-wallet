@@ -234,6 +234,7 @@ export type TReceiveLocationState = {
   address: string;
   balanceInUsd?: string;
   decimals: string | number;
+  label?: string;
   pageSide?: ReceiveTabEnum;
   extraData?: any;
 };
@@ -269,7 +270,8 @@ export type TTokenDetailLocationState = {
   decimals: number;
   tokenContractAddress: string;
   balanceInUsd?: string;
-  imgUrl?: string;
+  imageUrl?: string;
+  label?: string;
 };
 
 export type TWalletNameFromPage =

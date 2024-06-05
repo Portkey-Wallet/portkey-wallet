@@ -95,7 +95,7 @@ export default function TokenList() {
             <TokenImageDisplay width={36} className="token-icon" symbol={item.symbol} src={item.imageUrl} />
             <div className="token-desc">
               <div className="info flex-between">
-                <span>{item.symbol}</span>
+                <span>{item.label ?? item.symbol}</span>
                 <span>{getTokenAmount(item)}</span>
               </div>
               <div className="amount flex-between">

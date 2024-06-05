@@ -14,6 +14,7 @@ import { View, StyleSheet, ScrollView, Image, TouchableOpacity, TouchableWithout
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 import { isUrl } from '@portkey-wallet/utils';
+import { parseLink } from '@portkey-wallet/hooks/hooks-ca/cms/util';
 
 export const LearnPage = () => {
   const { learnBannerList = [] } = useCmsBanner();
@@ -36,7 +37,8 @@ export const LearnPage = () => {
     return learnBannerList.map(it => {
       return {
         imgUrl: getS3ImgUrl(it.imgUrl.filename_disk),
-        url: it.url,
+        // url: it.url,
+        appLink: parseLink(it.appLink),
       };
     });
   }, [getS3ImgUrl, learnBannerList]);

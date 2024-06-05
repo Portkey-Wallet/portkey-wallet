@@ -11,11 +11,14 @@ import {
   TLoginModeIndexKey,
   TLoginModeRecommendKey,
   IMatchListItem,
+  TLink,
+  TLinkType,
 } from '@portkey-wallet/types/types-ca/cms';
 import BigNumber from 'bignumber.js';
 import { getEntrance as getEntranceGraphQL, getCodePushControl } from '@portkey-wallet/graphql/cms/queries';
 import { NetworkType } from '@portkey-wallet/types';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { isExtension } from '@portkey-wallet/utils';
 
 const createEntranceMatchRule = (type: IEntranceMatchRuleType, params: string): any => {
   switch (type) {
@@ -194,3 +197,28 @@ export const filterLoginModeListToOther = (loginModeList: ILoginModeItem[], devi
 
   return loginModeList.filter(item => !item[recommendKey]).sort((a, b) => a[indexKey] - b[indexKey]);
 };
+
+export function parseLink(link: string, defaultUrl?: string): TLink {
+  // default op is open the discover webview
+  if (!link) {
+    return {
+      type: isExtension() ? 'external' : 'internal',
+      location: defaultUrl || '',
+      params: {},
+    };
+  }
+  const match = link.match(/^(.*):\/\/(.*?)(\?|$)/);
+  // const protocol = match ? match[1] : '';
+  const host = match ? match[2] : '';
+  const rest = match ? link.slice(match[0].length) : link;
+  const locationMatch = rest.match(/location=([^&]*)/);
+  const location = locationMatch ? decodeURIComponent(locationMatch[1]) : '';
+  console.log('location', location);
+  const paramsMatch = rest.match(/params=([^&]*)/);
+  const params = paramsMatch ? JSON.parse(decodeURIComponent(paramsMatch[1])) : {};
+  return {
+    type: host as TLinkType,
+    location,
+    params,
+  };
+}

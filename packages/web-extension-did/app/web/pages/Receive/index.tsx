@@ -77,8 +77,8 @@ export default function Receive() {
           <div className="receive-content-page flex-1">
             {curTab === ReceiveTabEnum.QRCode && <QRCodePage />}
             {curTab === ReceiveTabEnum.Exchanges && <ExchangePage />}
-            {curTab === ReceiveTabEnum.Deposit && <DepositPage chainId={state.chainId} symbol={state.symbol} />}
             {curTab === ReceiveTabEnum.Buy && <BuyPage {...buyData} />}
+            {curTab === ReceiveTabEnum.Deposit && <DepositPage chainId={state.chainId} symbol={state.symbol} />}
           </div>
         </div>
         {isPrompt && <PromptEmptyElement />}

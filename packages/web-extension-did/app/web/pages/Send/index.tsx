@@ -842,6 +842,7 @@ export default function Send() {
     t,
     toAccount,
     tokenInfo.chainId,
+    tokenInfo.label,
     type,
     userInfo?.nickName,
   ]);

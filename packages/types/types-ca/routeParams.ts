@@ -5,6 +5,7 @@ import type { SendType } from './send';
 
 export interface IToSendHomeAssetParamsBaseType {
   symbol: string;
+  label?: string;
   chainId: ChainId;
   balance: string;
   imageUrl: string;

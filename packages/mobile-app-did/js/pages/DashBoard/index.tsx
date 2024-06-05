@@ -18,6 +18,7 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import { useInitCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
+import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
 
 const DashBoard: React.FC<any> = ({ navigation }) => {
   const isMainnet = useIsMainnet();
@@ -25,6 +26,7 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
   const { getViewReferralStatusStatus, getReferralLink } = useReferral();
   const managerExceedTipModalCheck = useManagerExceedTipModal();
   const accountBalanceUSD = useAccountBalanceUSD();
+  const { fetchDiscoverTabAsync } = useDiscoverData();
   useInitCmsBanner();
   useReportingSignalR();
 
@@ -44,6 +46,7 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
     managerExceedTipModalCheck();
     getViewReferralStatusStatus();
     getReferralLink();
+    fetchDiscoverTabAsync();
   });
 
   // nav's to chat tab

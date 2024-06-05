@@ -8,7 +8,10 @@ export interface ISinkableTextProps {
   sinkable: boolean;
   value: number;
 }
-export function getDecimalPlaces(num: number): number {
+export function getDecimalPlaces(num?: number): number {
+  if (typeof num !== 'number') {
+    return 0;
+  }
   const match = num.toString().match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
   if (!match) {
     return 0;
@@ -19,7 +22,8 @@ export function getDecimalPlaces(num: number): number {
     (match[1] ? match[1].length : 0) - (match[2] ? +match[2] : 0),
   );
 }
-function calculateSinkValue(num: number): { sink: number; validNum: string } {
+function calculateSinkValue(num?: number): { sink: number; validNum: string } {
+  if (typeof num !== 'number') return { sink: 0, validNum: '' };
   const match = num.toFixed(getDecimalPlaces(num)).match(/0\.0*(\d+)/);
   return match
     ? { sink: match[0].length - 2 - match[1].length, validNum: match[1] }
@@ -34,7 +38,7 @@ export default function SinkableText(props: ISinkableTextProps) {
   return (
     <View style={[styles.priceWrapper, styles.section2Width]}>
       <Text style={[styles.text3, FontStyles.neutralPrimaryTextColor, GStyles.alignCenter]}>
-        ${showSink ? '0.0' : value.toFixed(getDecimalPlaces(value) < 2 ? 2 : getDecimalPlaces(value)).toString()}
+        ${showSink ? '0.0' : value?.toFixed(getDecimalPlaces(value) < 2 ? 2 : getDecimalPlaces(value))?.toString()}
       </Text>
       {showSink && <Text style={[styles.priceSinkText, GStyles.alignEnd]}>{sinkValue}</Text>}
       {showSink && (

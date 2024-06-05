@@ -39,7 +39,6 @@ import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import { pTd } from 'utils/unit';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
-import { ETransTokenList } from '@portkey-wallet/constants/constants-ca/dapp';
 import { useAppETransShow, useAppSwapButtonShow } from 'hooks/cms';
 import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
@@ -86,11 +85,9 @@ const TokenDetail: React.FC = () => {
       buy,
     [buy, isMainnet, isRampShow, tokenInfo.chainId, tokenInfo.symbol],
   );
-  const isETransToken = useMemo(() => ETransTokenList.includes(tokenInfo.symbol), [tokenInfo.symbol]);
-  const isDepositShow = useMemo(
-    () => isETransToken && isETransDepositShow && deposit,
-    [isETransToken, isETransDepositShow, deposit],
-  );
+
+  const isDepositShow = useMemo(() => isETransDepositShow && deposit, [isETransDepositShow, deposit]);
+
   const isFaucetButtonShow = useMemo(
     () => !isMainnet && tokenInfo.symbol === defaultToken.symbol && tokenInfo.chainId === 'AELF',
     [defaultToken.symbol, isMainnet, tokenInfo.chainId, tokenInfo.symbol],

@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router';
 import { useAppDispatch, useCommonState } from 'store/Provider/hooks';
 import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import { sleep } from '@portkey-wallet/utils';
-import OpenNewTabController from 'controllers/openNewTabController';
+// import OpenNewTabController from 'controllers/openNewTabController';
 import im from '@portkey-wallet/im';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 
@@ -30,7 +30,7 @@ export function useChangeNetwork() {
           await sleep(500);
           await InternalMessage.payload(PortkeyMessageTypes.EXPAND_FULL_SCREEN).send();
         } else {
-          await OpenNewTabController.closeOpenTabs(true);
+          // await OpenNewTabController.closeOpenTabs(true);
 
           navigate('/');
         }
@@ -39,7 +39,7 @@ export function useChangeNetwork() {
           await sleep(500);
           await InternalMessage.payload(PortkeyMessageTypes.REGISTER_START_WALLET).send();
         } else {
-          await OpenNewTabController.closeOpenTabs(true);
+          // await OpenNewTabController.closeOpenTabs(true);
           navigate('/register/start');
         }
       }

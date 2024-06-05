@@ -206,7 +206,7 @@ const TokenDetail: React.FC = () => {
     });
   }, [getS3ImageUrl, getTokenDetailBannerList, tokenInfo.chainId, tokenInfo.symbol]);
 
-  const renderButtonItmes = useCallback(() => {
+  const renderButtonItems = useCallback(() => {
     return (
       <View style={[styles.buttonGroupWrap, buttonGroupWrapStyle]}>
         <SendButton themeType="innerPage" sentToken={currentTokenInfo} wrapStyle={buttonWrapStyle} />
@@ -318,7 +318,7 @@ const TokenDetail: React.FC = () => {
         {isMainnet && (
           <TextS style={[styles.dollarBalance]}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</TextS>
         )}
-        {renderButtonItmes()}
+        {renderButtonItems()}
       </View>
       {renderBanner()}
       {renderActivityList()}

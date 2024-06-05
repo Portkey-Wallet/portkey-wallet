@@ -18,6 +18,7 @@ export interface BaseToken {
   limitPerMint?: number;
   expires?: string;
   seedOwnedSymbol?: string;
+  label?: string;
 }
 
 export interface TokenItemType extends BaseToken {

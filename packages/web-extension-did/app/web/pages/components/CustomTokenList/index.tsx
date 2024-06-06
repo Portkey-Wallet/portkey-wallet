@@ -173,10 +173,10 @@ export default function CustomTokenList({
           key={`${token.symbol}_${token.chainId}`}
           onClick={onChange?.bind(undefined, token, 'token')}>
           <div className="icon flex-center">
-            <TokenImageDisplay symbol={token?.symbol} src={token.tokenInfo?.imageUrl} />
+            <TokenImageDisplay symbol={token.label ?? token?.symbol} src={token.tokenInfo?.imageUrl} />
           </div>
           <div className="info flex-column">
-            <p className="symbol">{`${token.symbol}`}</p>
+            <p className="symbol">{`${token.label ?? token.symbol}`}</p>
             <p className="network">{transNetworkText(token.chainId, !isMainnet)}</p>
           </div>
           <div className="amount flex-column">
@@ -204,6 +204,7 @@ export default function CustomTokenList({
           balanceInUsd: token.balanceInUsd || '',
           tokenContractAddress: token.address,
         },
+        label: token.label,
       };
       return (
         <div
@@ -211,10 +212,10 @@ export default function CustomTokenList({
           key={`${token.symbol}_${token.chainId}`}
           onClick={onChange?.bind(undefined, tokenTmp, 'token')}>
           <div className="icon flex-center">
-            <TokenImageDisplay symbol={token?.symbol} src={token?.imageUrl} />
+            <TokenImageDisplay symbol={token.label ?? token?.symbol} src={token?.imageUrl} />
           </div>
           <div className="info">
-            <p className="symbol">{`${token.symbol}`}</p>
+            <p className="symbol">{`${token.label ?? token.symbol}`}</p>
             <p className="network">{transNetworkText(token.chainId, !isMainnet)}</p>
           </div>
         </div>

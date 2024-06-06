@@ -30,12 +30,25 @@ export interface ISendPreviewProps {
   isSeed?: boolean;
   seedType?: SeedTypeEnum;
   decimals?: number;
+  label?: string;
 }
 
 export default function SendPreview(props: ISendPreviewProps) {
   const userInfo = useCurrentUserInfo();
-  const { amount, symbol, alias, toAccount, transactionFee, type, imageUrl, chainId, isCross, tokenId, decimals } =
-    props;
+  const {
+    amount,
+    symbol,
+    alias,
+    toAccount,
+    transactionFee,
+    type,
+    imageUrl,
+    chainId,
+    isCross,
+    tokenId,
+    decimals,
+    label,
+  } = props;
   const wallet = useCurrentWalletInfo();
   const isMainnet = useIsMainnet();
   const amountInUsdShow = useAmountInUsdShow();
@@ -59,7 +72,7 @@ export default function SendPreview(props: ISendPreviewProps) {
     if (ZERO.plus(amount).isLessThanOrEqualTo(crossChainFee)) {
       return (
         <>
-          <div className="amount">{`0 ${symbol}`}</div>
+          <div className="amount">{`0 ${label ?? symbol}`}</div>
           <div className="usd">{isMainnet && '$ 0'}</div>
         </>
       );
@@ -69,21 +82,21 @@ export default function SendPreview(props: ISendPreviewProps) {
           <div className="amount">{`${formatAmountShow(
             ZERO.plus(amount).minus(crossChainFee),
             Number(defaultToken.decimals),
-          )} ${symbol}`}</div>
+          )} ${label ?? symbol}`}</div>
           <div className="usd">
             {isMainnet && amountInUsdShow(ZERO.plus(amount).minus(crossChainFee).toFixed(), 0, symbol)}
           </div>
         </>
       );
     }
-  }, [amount, amountInUsdShow, crossChainFee, defaultToken.decimals, isMainnet, symbol]);
+  }, [amount, amountInUsdShow, crossChainFee, defaultToken.decimals, isMainnet, symbol, label]);
 
   return (
     <div className="send-preview">
       {type !== 'nft' ? (
         <div className="amount-preview">
           <p className="amount">
-            -{formatAmountShow(amount, decimals)} {symbol}
+            -{formatAmountShow(amount, decimals)} {label ?? symbol}
           </p>
           <p className="convert">{isMainnet && amountInUsdShow(amount, 0, symbol)}</p>
         </div>

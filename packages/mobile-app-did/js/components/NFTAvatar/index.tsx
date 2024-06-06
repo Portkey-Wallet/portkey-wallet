@@ -25,7 +25,7 @@ export type NoDataPropsType = {
     imageUrl: string;
     tokenId?: string;
     balance?: string;
-    decimals?: string;
+    decimals?: string | number;
   };
   onPress?: () => void;
 };

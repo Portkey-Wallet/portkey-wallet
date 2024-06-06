@@ -154,6 +154,7 @@ export default function MyBalance() {
         tokenId: isNFT ? v.nftInfo?.tokenId : '',
         isSeed: isNFT ? v.nftInfo?.isSeed : false,
         seedType: isNFT ? v.nftInfo?.seedType : SeedTypeEnum.None,
+        label: v.label,
       };
       navigate(`/${navTarget}/${type}/${v.symbol}`, { state });
     },

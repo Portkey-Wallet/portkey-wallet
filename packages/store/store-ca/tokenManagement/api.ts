@@ -22,6 +22,7 @@ export function fetchAllTokenList({
     address: string;
     imageUrl?: string;
     name?: string;
+    label?: string;
   }[];
   totalCount: number;
 }> {

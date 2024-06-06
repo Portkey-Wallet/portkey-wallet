@@ -448,6 +448,16 @@ export default function DepositHome() {
         )}
       </>
     );
-  }, [fromToken?.symbol, homeEle, isSameSymbol, setFrom, setTo, step, toChainId]);
+  }, [
+    fromNetwork?.network,
+    fromToken?.symbol,
+    homeEle,
+    isSameSymbol,
+    resetTwoNetworkList,
+    setFrom,
+    setTo,
+    step,
+    toChainId,
+  ]);
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

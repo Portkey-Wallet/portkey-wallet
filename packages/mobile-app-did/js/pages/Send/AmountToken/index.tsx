@@ -47,8 +47,10 @@ export default function AmountToken({
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const symbolImages = useSymbolImages();
   const formattedTokenNameToSuffix = useMemo(() => {
-    return selectedToken?.symbol?.length > 5 ? `${selectedToken?.symbol.slice(0, 5)}...` : selectedToken?.symbol;
-  }, [selectedToken?.symbol]);
+    const tmpName = selectedToken?.label || selectedToken?.symbol;
+
+    return tmpName?.length > 5 ? `${tmpName.slice(0, 5)}...` : tmpName;
+  }, [selectedToken?.label, selectedToken?.symbol]);
 
   const onChangeText = useCallback(
     (value: string) => {
@@ -67,7 +69,7 @@ export default function AmountToken({
         <Text style={styles.topTitle}>{t('Amount')}</Text>
         <Text style={styles.topBalance}>
           {`${t('Balance')} ${formatTokenAmountShowWithDecimals(balanceShow, selectedToken.decimals)} ${
-            selectedToken.symbol
+            selectedToken?.label || selectedToken?.symbol
           }`}
         </Text>
       </View>

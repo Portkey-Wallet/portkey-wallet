@@ -138,6 +138,7 @@ type RedPacketAmountShowPropsType = {
   componentType: 'packetDetailPage' | 'sendPacketPage';
   amountShow: string;
   symbol?: string;
+  label?: string;
   textColor?: string;
   wrapStyle?: StyleProp<ViewStyle>;
   assetType?: AssetType;
@@ -148,6 +149,7 @@ export const RedPacketAmountShow = (props: RedPacketAmountShowPropsType) => {
     componentType,
     amountShow,
     symbol,
+    label,
     textColor = defaultColors.font15,
     wrapStyle = {},
     assetType = AssetType.ft,
@@ -187,7 +189,9 @@ export const RedPacketAmountShow = (props: RedPacketAmountShowPropsType) => {
   return (
     <Text style={[GStyles.textAlignCenter, wrapStyle]}>
       <Text style={[amountShowStyle, styles.amount, TextColorStyle]}>{amountShowValue}</Text>
-      {symbol && <TextM style={[GStyles.paddingLeft(pTd(8)), styles.symbol, TextColorStyle]}>{`  ${symbol}`}</TextM>}
+      {symbol && (
+        <TextM style={[GStyles.paddingLeft(pTd(8)), styles.symbol, TextColorStyle]}>{`  ${label || symbol}`}</TextM>
+      )}
     </Text>
   );
 };

@@ -51,6 +51,7 @@ export const LearnPage = () => {
             imageMarginHorizontal={pTd(16)}
             showImageBorderRadius={true}
             imageRatio={343.0 / 128.0}
+            dotStyle="Light"
           />
         )}
         {learnShortGroupList.map((item, index) => {
@@ -64,7 +65,7 @@ export const LearnPage = () => {
                   onPress={() => {
                     navigationService.navigate('SubLearnPage', { section: title, title });
                   }}>
-                  <Svg icon="right-arrow" size={pTd(16)} color={defaultColors.font5} />
+                  <Svg icon="direction-arrow-right" size={pTd(16)} />
                 </TouchableOpacity>
               </View>
               <ScrollView
@@ -140,16 +141,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: pTd(16),
-    width: '100%',
+    marginHorizontal: pTd(16),
+    marginBottom: pTd(8),
   },
   blockTitleText: {
+    flex: 1,
     color: defaultColors.font5,
     lineHeight: pTd(22),
     ...fonts.mediumFont,
   },
   jumpIcon: {
-    padding: pTd(6),
+    marginRight: pTd(-6),
+    paddingHorizontal: pTd(6),
   },
   blockScrollWrap: {
     justifyContent: 'flex-start',

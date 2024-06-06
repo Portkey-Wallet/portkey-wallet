@@ -22,10 +22,6 @@ export type ApproveParams = {
   approveInfo: ApproveInfo;
   eventName: string;
   isDiscover?: boolean;
-  /**
-   * @deprecated useless
-   */
-  showBatchApproveToken?: boolean;
   batchApproveNFT?: boolean;
 };
 

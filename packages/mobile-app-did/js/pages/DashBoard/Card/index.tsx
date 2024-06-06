@@ -1,12 +1,11 @@
-import React, { useMemo } from 'react';
-import { View, Text, StyleProp, ViewProps } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { View, Text, StyleProp, ViewProps, TouchableOpacity } from 'react-native';
 import { styles } from './style';
 import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
 import ActivityButton from 'pages/DashBoard/ActivityButton';
-import { TextM } from 'components/CommonText';
-import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentUserInfo, useSetHideAssets } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import FaucetButton from 'components/FaucetButton';
 import GStyles from 'assets/theme/GStyles';
 import DepositButton from 'components/DepositButton';
@@ -16,9 +15,13 @@ import { useAppETransShow } from 'hooks/cms';
 import { PortkeyLinearGradient } from 'components/PortkeyLinearGradient';
 import { pTd } from 'utils/unit';
 import { Skeleton } from '@rneui/base';
+import Svg from 'components/Svg';
+import { DashBoardBanner } from '../Banner';
+
 const Card: React.FC<{ title: string }> = ({ title }) => {
   const isMainnet = useIsMainnet();
   const userInfo = useCurrentUserInfo();
+  const setHideAssets = useSetHideAssets();
   const { isETransDepositShow } = useAppETransShow();
   const { isRampShow } = useAppRampEntryShow();
   const buttonCount = useMemo(() => {
@@ -38,24 +41,24 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
     [buttonCount],
   );
 
-  const { eTransferUrl = '' } = useCurrentNetworkInfo();
+  const onHideAssets = useCallback(() => {
+    setHideAssets(!userInfo.hideAssets);
+  }, [setHideAssets, userInfo.hideAssets]);
 
   return (
     <View style={[styles.cardWrap]}>
       <View style={styles.textColumn}>
-        {userInfo?.nickName ? (
-          <TextM style={styles.accountName}>{userInfo?.nickName}</TextM>
-        ) : (
-          <Skeleton
-            animation="wave"
-            LinearGradientComponent={() => <PortkeyLinearGradient />}
-            style={[styles.skeletonStyle, GStyles.marginBottom(pTd(4))]}
-            height={pTd(20)}
-            width={pTd(80)}
-          />
-        )}
         {title ? (
-          <Text style={styles.usdtBalance}>{title}</Text>
+          <View style={styles.usdtBalanceWrap}>
+            <Text style={[styles.usdtBalance, userInfo.hideAssets && { letterSpacing: pTd(3.2) }]}>
+              {userInfo.hideAssets ? '******' : title}
+            </Text>
+            {isMainnet && (
+              <TouchableOpacity onPress={onHideAssets}>
+                <Svg icon={userInfo.hideAssets ? 'eyeClosed' : 'eye'} size={pTd(16)} iconStyle={styles.eyeIcon} />
+              </TouchableOpacity>
+            )}
+          </View>
         ) : (
           <Skeleton
             animation="wave"
@@ -70,10 +73,11 @@ const Card: React.FC<{ title: string }> = ({ title }) => {
         <SendButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
         <ReceiveButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
         {isRampShow && <BuyButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
-        {isETransDepositShow && <DepositButton wrapStyle={buttonWrapStyle} depositUrl={eTransferUrl} />}
+        {isETransDepositShow && <DepositButton wrapStyle={buttonWrapStyle} />}
         {!isMainnet && <FaucetButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
         <ActivityButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
       </View>
+      <DashBoardBanner />
     </View>
   );
 };

@@ -13,6 +13,7 @@ import StyleProvider from './StyleProvider';
 
 export * from './type';
 export * from './constants';
+export * from './utils';
 export {
   ChatList,
   TextMessage,

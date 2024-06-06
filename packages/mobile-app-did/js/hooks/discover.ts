@@ -10,11 +10,24 @@ import {
   addAutoApproveItem,
   upDateRecordsItem,
   updateTab,
+  changeMarketList,
+  changeMarketType,
+  changeMarketSort,
+  resetMarketSort,
+  rollBackMarketSort,
 } from '@portkey-wallet/store/store-ca/discover/slice';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { isUrl } from '@portkey-wallet/utils';
 import { prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  ICryptoCurrencyItem,
+  IMarketSort,
+  IMarketSortDir,
+  IMarketType,
+} from '@portkey-wallet/store/store-ca/discover/type';
+import { useAppSelector } from 'store/hooks';
+import { request } from '@portkey-wallet/api/api-did';
 
 export const useIsDrawerOpen = () => useAppCASelector(state => state.discover.isDrawerOpen);
 
@@ -125,4 +138,166 @@ export const useCheckAndUpDateTabItemName = () => {
     },
     [discoverMap, dispatch, networkType],
   );
+};
+const sorDirList: IMarketSortDir[] = ['desc', 'asc', ''];
+export const useMarket = () => {
+  const dispatch = useAppCommonDispatch();
+  const { networkType } = useCurrentNetworkInfo();
+  const { discoverMap } = useAppSelector(state => state.discover);
+  const marketInfo = discoverMap?.[networkType]?.marketInfo;
+  const initMarketInfo = useRef(marketInfo);
+  const [refreshing, setRefreshing] = useState(false);
+  const fetchCryptoCurrencyList = useCallback(
+    async (type: IMarketType, sort?: IMarketSort, sortDir?: IMarketSortDir): Promise<ICryptoCurrencyItem[]> => {
+      try {
+        setRefreshing(true);
+        const params: { type?: IMarketType; sort?: IMarketSort; sortDir?: IMarketSortDir } = {};
+        if (type) {
+          params.type = type;
+        }
+        if (sort) {
+          params.sort = sort;
+        }
+        if (sortDir) {
+          params.sortDir = sortDir;
+        }
+        console.log('wfs=== getCryptoCurrencyList params', params);
+        const result = await request.discover.getCryptoCurrencyList({
+          params: params,
+        });
+        console.log('wfs=== fetchCryptoCurrencyList result', result);
+        return result;
+      } catch (e) {
+        console.log('wfs=== fetchCryptoCurrencyList error', e);
+        throw `fetch market data failed,  caused by: ${JSON.stringify(e)}`;
+      } finally {
+        setRefreshing(false);
+      }
+    },
+    [],
+  );
+  useEffect(() => {
+    //init
+    (async () => {
+      const localCryptoCurrencyList = await fetchCryptoCurrencyList(
+        initMarketInfo.current?.type || 'Hot',
+        !initMarketInfo.current?.sortDir ? undefined : initMarketInfo.current?.sort,
+        initMarketInfo.current?.sortDir,
+      );
+      dispatch(changeMarketList({ networkType, cryptoCurrencyList: localCryptoCurrencyList }));
+    })();
+  }, [
+    dispatch,
+    fetchCryptoCurrencyList,
+    initMarketInfo.current?.sort,
+    initMarketInfo.current?.sortDir,
+    initMarketInfo.current?.type,
+    networkType,
+  ]);
+  const handleType = useCallback(
+    //market type change
+    async (type: IMarketType) => {
+      dispatch(resetMarketSort({ networkType }));
+      dispatch(changeMarketType({ networkType, marketType: type }));
+      const localCryptoCurrencyList = await fetchCryptoCurrencyList(type);
+      dispatch(changeMarketList({ networkType, cryptoCurrencyList: localCryptoCurrencyList }));
+    },
+    [dispatch, fetchCryptoCurrencyList, networkType],
+  );
+  const refreshList = useCallback(
+    //market type change
+    async () => {
+      const localCryptoCurrencyList = await fetchCryptoCurrencyList(
+        marketInfo?.type || 'Hot',
+        marketInfo?.sort,
+        marketInfo?.sortDir,
+      );
+      dispatch(changeMarketList({ networkType, cryptoCurrencyList: localCryptoCurrencyList }));
+    },
+    [dispatch, fetchCryptoCurrencyList, marketInfo?.sort, marketInfo?.sortDir, marketInfo?.type, networkType],
+  );
+  const handleSort = useCallback(
+    // market sort change
+    async (sort: IMarketSort) => {
+      if (refreshing) {
+        return;
+      }
+      console.log('wfs=== handleSort', {
+        sort: marketInfo?.sort,
+        sortDir: marketInfo?.sortDir,
+        type: marketInfo?.type,
+      });
+      try {
+        let nextSortDir: IMarketSortDir = '';
+        if (marketInfo?.sort === sort) {
+          const currentSortDir = marketInfo?.sortDir;
+          console.log('wfs=== currentIndex', sorDirList.indexOf(currentSortDir));
+          const currentIndex = sorDirList.indexOf(currentSortDir);
+          if (currentIndex !== -1) {
+            nextSortDir = sorDirList[(currentIndex + 1) % sorDirList.length];
+          }
+        } else {
+          dispatch(resetMarketSort({ networkType }));
+          nextSortDir = 'desc';
+        }
+        console.log('wfs=== handleSort', { sort, sortDir: nextSortDir });
+        dispatch(changeMarketSort({ networkType, markSort: { sort, sortDir: nextSortDir } }));
+        const localCryptoCurrencyList = await fetchCryptoCurrencyList(
+          marketInfo?.type || 'Hot',
+          nextSortDir === '' ? '' : sort,
+          nextSortDir,
+        );
+        dispatch(changeMarketList({ networkType, cryptoCurrencyList: localCryptoCurrencyList }));
+      } catch (e) {
+        dispatch(rollBackMarketSort({ networkType }));
+        throw e;
+      }
+    },
+    [
+      dispatch,
+      fetchCryptoCurrencyList,
+      marketInfo?.sort,
+      marketInfo?.sortDir,
+      marketInfo?.type,
+      networkType,
+      refreshing,
+    ],
+  );
+  return {
+    marketInfo,
+    refreshing,
+    handleType,
+    refreshList,
+    handleSort,
+  };
+};
+export const useMarketFavorite = () => {
+  const markFavorite = useCallback(async (id: number, symbol: string) => {
+    console.log('wfs=== markFavorite', {
+      id,
+      symbol,
+    });
+    await request.discover.markFavorite({
+      params: {
+        id,
+        symbol,
+      },
+    });
+  }, []);
+  const unMarkFavorite = useCallback(async (id: number, symbol: string) => {
+    console.log('wfs=== unMarkFavorite', {
+      id,
+      symbol,
+    });
+    await request.discover.unMarkFavorite({
+      params: {
+        id,
+        symbol,
+      },
+    });
+  }, []);
+  return {
+    markFavorite,
+    unMarkFavorite,
+  };
 };

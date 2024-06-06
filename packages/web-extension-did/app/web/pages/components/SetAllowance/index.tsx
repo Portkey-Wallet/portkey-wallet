@@ -6,8 +6,8 @@ import { isValidNumber } from '@portkey-wallet/utils/reg';
 import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 import ThrottleButton from 'components/ThrottleButton';
 import { ALLOWANCE_HEADER_NO_NAME, SET_ALLOWANCE_MULTIPLY_TIP } from '@portkey-wallet/constants/constants-ca/allowance';
+import { isNFT } from '@portkey-wallet/utils/token';
 import './index.less';
-import { isNFT } from 'utils';
 
 export interface IBaseSetAllowanceProps {
   symbol: string;
@@ -103,8 +103,14 @@ export default function SetAllowance({
             onChange={(e) => {
               inputChange(e.target.value);
             }}
-            suffix={<span onClick={() => inputChange(max)}>Max</span>}
+            suffix={
+              <span>
+                <span className={`set-allowance-approve-symbol`}>{approveSymbol}</span>
+                <span onClick={() => inputChange(max)}>Max</span>
+              </span>
+            }
           />
+
           {typeof error !== 'undefined' && <div className="error-text">{error}</div>}
         </div>
 
@@ -120,7 +126,7 @@ export default function SetAllowance({
             if (BigNumber(allowance).lte(0)) return setError('Please enter a non-zero value');
             onConfirm?.({ allowance });
           }}>
-          Pre-uthorize
+          Pre-authorize
         </ThrottleButton>
       </div>
     </div>

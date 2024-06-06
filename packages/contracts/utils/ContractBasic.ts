@@ -1,9 +1,10 @@
 import { sleep } from '@portkey-wallet/utils';
 import { AElfInterface } from '@portkey-wallet/types/aelf';
 import { getTxResult, handleContractError, handleContractParams, handleFunctionName } from '.';
-import { ChainType } from '@portkey-wallet/types';
+import { ChainId, ChainType } from '@portkey-wallet/types';
 import { encodedTx } from '@portkey-wallet/utils/aelf';
 import { AElfCallSendMethod, AElfCallViewMethod, CallSendMethod, CallViewMethod, ContractProps } from '../types';
+import { reportTransaction } from '@portkey-wallet/utils/transfer';
 
 export class ContractBasic {
   public address?: string;
@@ -105,7 +106,24 @@ export class AElfContractBasic {
 
           return { data: txResult, transactionId: TransactionId };
         } catch (error) {
-          return { error: handleContractError(error, req), transactionId: TransactionId };
+          const _error = handleContractError(error, req);
+          try {
+            const res = await this.aelfInstance?.chain.getChainStatus();
+            const _msg = _error.message.toLowerCase();
+            if (/(pending|pending_validation)/.test(_msg)) {
+              reportTransaction(
+                {
+                  chainId: res?.ChainId as ChainId,
+                  caAddress: sendOptions?.caAddress ?? '',
+                  transactionId: TransactionId,
+                },
+                sendOptions?.currentNetwork ?? 'MAINNET',
+              );
+            }
+          } catch (error) {
+            console.log('===reportTransaction error', error);
+          }
+          return { error: _error, transactionId: TransactionId };
         }
       }
 

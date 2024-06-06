@@ -80,12 +80,12 @@ export default function DepositCard(props: IDepositCardProps) {
                 <Image source={item.icon} key={index} style={[styles.candiedHawsItem, { zIndex: -1 * index }]} />
               ))}
             </View>
-            <View style={styles.copyButton}>
+            <TextM style={[styles.copyButtonMainText, fonts.mediumFont]}>
+              {`Receive ${token.symbol} from top-tier exchanges`}
+            </TextM>
+            <View style={styles.copyAddressWrap}>
               <View style={styles.copyButtonTextLines}>
-                <TextM style={[styles.copyButtonMainText, fonts.mediumFont]}>
-                  {`Receive ${token.symbol} from top-tier exchanges`}
-                </TextM>
-                <TextS style={styles.copyButtonSubText}>{'Click to copy your address'}</TextS>
+                <TextS style={styles.copyButtonSubText}>{currentCaAddress}</TextS>
               </View>
               <CopyButton copyContent={currentCaAddress} />
             </View>
@@ -162,17 +162,19 @@ const styles = StyleSheet.create({
     borderRadius: pTd(40),
     marginLeft: pTd(-12),
   },
-  copyButton: {
+  copyAddressWrap: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop: pTd(4),
   },
   copyButtonTextLines: {
     display: 'flex',
+    flex: 1,
     flexDirection: 'column',
     alignItems: 'flex-start',
     justifyContent: 'center',
+    marginRight: pTd(16),
   },
   copyButtonMainText: {
     color: defaultColors.font5,
@@ -180,8 +182,7 @@ const styles = StyleSheet.create({
   },
   copyButtonSubText: {
     color: defaultColors.font11,
-    lineHeight: pTd(26),
-    paddingTop: pTd(4),
+    lineHeight: pTd(16),
   },
   copyButtonIcon: {
     height: pTd(32),

@@ -13,6 +13,7 @@ import { useCommonState } from 'store/Provider/hooks';
 import { useGoAddNewContact } from 'hooks/useProfile';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { ExtraTypeEnum } from 'types/Profile';
+import { useBlockAndReport } from '@portkey-wallet/hooks/hooks-ca/im';
 
 const initContactItem: Partial<ContactItemType> = {
   id: '-1',
@@ -44,9 +45,11 @@ export default function Contacts() {
   const isImputation = useIsImputation();
   const [isCloseImputationManually, setIsCloseImputationManually] = useState(false);
   const showImputation = isImputation && !isCloseImputationManually;
+  const { fetchAndSetBlockList } = useBlockAndReport();
 
   useEffectOnce(() => {
     appDispatch(fetchContactListAsync());
+    fetchAndSetBlockList();
   });
 
   useEffect(() => {

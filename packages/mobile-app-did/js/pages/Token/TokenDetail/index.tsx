@@ -24,6 +24,7 @@ import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey
 import fonts from 'assets/theme/fonts';
 import { sleep } from '@portkey-wallet/utils';
 import BuyButton from 'components/BuyButton';
+import Carousel from 'components/Carousel';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 import CommonToolButton from 'components/CommonToolButton';
@@ -38,10 +39,11 @@ import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import { pTd } from 'utils/unit';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
-import { ETransTokenList } from '@portkey-wallet/constants/constants-ca/dapp';
 import { useAppETransShow, useAppSwapButtonShow } from 'hooks/cms';
 import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
+import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
 import FaucetButton from 'components/FaucetButton';
 import { TokenTitle } from 'components/TokenTitle';
 import { ReceivePageTabType } from 'pages/Receive/types';
@@ -72,6 +74,8 @@ const TokenDetail: React.FC = () => {
   const onDisclaimerModalPress = useOnDisclaimerModalPress();
   const { buy, swap, deposit } = checkEnabledFunctionalTypes(tokenInfo.symbol, tokenInfo.chainId === 'AELF');
   const { isRampShow } = useAppRampEntryShow();
+  const getS3ImageUrl = useGetS3ImageUrl();
+  const { getTokenDetailBannerList } = useCmsBanner();
   const isBuyButtonShow = useMemo(
     () =>
       SHOW_RAMP_SYMBOL_LIST.includes(tokenInfo.symbol) &&
@@ -81,11 +85,9 @@ const TokenDetail: React.FC = () => {
       buy,
     [buy, isMainnet, isRampShow, tokenInfo.chainId, tokenInfo.symbol],
   );
-  const isETransToken = useMemo(() => ETransTokenList.includes(tokenInfo.symbol), [tokenInfo.symbol]);
-  const isDepositShow = useMemo(
-    () => isETransToken && isETransDepositShow && deposit,
-    [isETransToken, isETransDepositShow, deposit],
-  );
+
+  const isDepositShow = useMemo(() => isETransDepositShow && deposit, [isETransDepositShow, deposit]);
+
   const isFaucetButtonShow = useMemo(
     () => !isMainnet && tokenInfo.symbol === defaultToken.symbol && tokenInfo.chainId === 'AELF',
     [defaultToken.symbol, isMainnet, tokenInfo.chainId, tokenInfo.symbol],
@@ -195,58 +197,70 @@ const TokenDetail: React.FC = () => {
     return balanceShow?.length > 18;
   }, [balanceShow]);
 
-  return (
-    <PageContainer
-      type="leftBack"
-      backTitle={t('')}
-      titleDom={<TokenTitle tokenInfo={tokenInfo} />}
-      safeAreaColor={['white']}
-      leftCallback={() => navigation.goBack()}
-      containerStyles={styles.pageWrap}
-      scrollViewProps={{ disabled: true }}>
-      <View style={styles.card}>
-        <Text style={[styles.tokenBalance, amountTextOverflow ? styles.textOverflow : {}]}>{`${balanceShow}`}</Text>
-        {isMainnet && (
-          <TextS style={[styles.dollarBalance]}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</TextS>
-        )}
-        <View style={[styles.buttonGroupWrap, buttonGroupWrapStyle]}>
-          <SendButton themeType="innerPage" sentToken={currentTokenInfo} wrapStyle={buttonWrapStyle} />
-          <ReceiveButton currentTokenInfo={currentTokenInfo} themeType="innerPage" wrapStyle={buttonWrapStyle} />
-          {isBuyButtonShow && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
-          {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}
-          {isSwapShow && swap && (
-            <CommonToolButton
-              title="Swap"
-              icon="swap"
-              onPress={() => {
-                onDisclaimerModalPress(
-                  DepositModalMap.AwakenSwap,
-                  stringifyETrans({
-                    url: `${awakenUrl}/trading/ELF_USDT_0.05` || '',
-                  }),
-                );
-              }}
-              themeType="innerPage"
-              wrapStyle={buttonWrapStyle}
-            />
-          )}
-          {deposit && (
-            <CommonToolButton
-              title="Deposit"
-              icon="deposit"
-              onPress={() =>
-                navigationService.navigate(
-                  'Receive',
-                  Object.assign({}, tokenInfo, { targetScene: ReceivePageTabType.DEPOSIT }),
-                )
-              }
-              themeType="innerPage"
-              wrapStyle={buttonWrapStyle}
-            />
-          )}
-        </View>
-      </View>
+  const bannerItemsList = useMemo(() => {
+    return getTokenDetailBannerList(tokenInfo.chainId, tokenInfo.symbol).map(item => {
+      return {
+        url: item.url,
+        imgUrl: getS3ImageUrl(item.imgUrl.filename_disk),
+      };
+    });
+  }, [getS3ImageUrl, getTokenDetailBannerList, tokenInfo.chainId, tokenInfo.symbol]);
 
+  const renderButtonItems = useCallback(() => {
+    return (
+      <View style={[styles.buttonGroupWrap, buttonGroupWrapStyle]}>
+        <SendButton themeType="innerPage" sentToken={currentTokenInfo} wrapStyle={buttonWrapStyle} />
+        <ReceiveButton currentTokenInfo={currentTokenInfo} themeType="innerPage" wrapStyle={buttonWrapStyle} />
+        {isBuyButtonShow && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
+        {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}
+        {isSwapShow && swap && (
+          <CommonToolButton
+            title="Swap"
+            icon="swap"
+            onPress={() => {
+              onDisclaimerModalPress(
+                DepositModalMap.AwakenSwap,
+                stringifyETrans({
+                  url: `${awakenUrl}/trading/ELF_USDT_0.05` || '',
+                }),
+              );
+            }}
+            themeType="innerPage"
+            wrapStyle={buttonWrapStyle}
+          />
+        )}
+        {deposit && (
+          <CommonToolButton
+            title="Deposit"
+            icon="deposit"
+            onPress={() =>
+              navigationService.navigate(
+                'Receive',
+                Object.assign({}, tokenInfo, { targetScene: ReceivePageTabType.DEPOSIT }),
+              )
+            }
+            themeType="innerPage"
+            wrapStyle={buttonWrapStyle}
+          />
+        )}
+      </View>
+    );
+  }, [
+    awakenUrl,
+    buttonGroupWrapStyle,
+    buttonWrapStyle,
+    currentTokenInfo,
+    deposit,
+    isBuyButtonShow,
+    isFaucetButtonShow,
+    isSwapShow,
+    onDisclaimerModalPress,
+    swap,
+    tokenInfo,
+  ]);
+
+  const renderActivityList = useCallback(() => {
+    return (
       <FlashList
         refreshing={isLoading === ListLoadingEnum.header}
         data={currentActivity?.data || []}
@@ -267,7 +281,7 @@ const TokenDetail: React.FC = () => {
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListHeaderComponent={
-          <View style={styles.divide}>
+          <View>
             <TextL style={[FontStyles.font16, styles.listFront, fonts.mediumFont]}>{'Activity'}</TextL>
           </View>
         }
@@ -279,6 +293,35 @@ const TokenDetail: React.FC = () => {
           init();
         }}
       />
+    );
+  }, [currentActivity?.data, getActivityList, init, isEmpty, isLoading, onRefreshList, renderItem, t]);
+
+  const renderBanner = useCallback(() => {
+    return bannerItemsList?.length > 0 ? (
+      <Carousel items={bannerItemsList} containerStyle={styles.banner} showDivider={true} />
+    ) : (
+      <View />
+    );
+  }, [bannerItemsList]);
+
+  return (
+    <PageContainer
+      type="leftBack"
+      backTitle={t('')}
+      titleDom={<TokenTitle tokenInfo={tokenInfo} />}
+      safeAreaColor={['white']}
+      leftCallback={() => navigation.goBack()}
+      containerStyles={styles.pageWrap}
+      scrollViewProps={{ disabled: true }}>
+      <View style={styles.card}>
+        <Text style={[styles.tokenBalance, amountTextOverflow ? styles.textOverflow : {}]}>{`${balanceShow}`}</Text>
+        {isMainnet && (
+          <TextS style={[styles.dollarBalance]}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</TextS>
+        )}
+        {renderButtonItems()}
+      </View>
+      {renderBanner()}
+      {renderActivityList()}
     </PageContainer>
   );
 };

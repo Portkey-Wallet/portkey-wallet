@@ -18,6 +18,7 @@ export interface BaseToken {
   limitPerMint?: number;
   expires?: string;
   seedOwnedSymbol?: string;
+  label?: string;
 }
 
 export interface TokenItemType extends BaseToken {
@@ -59,6 +60,7 @@ export interface IAccountCryptoBoxAssetItem {
   chainId: ChainId;
   address: string;
   symbol: string;
+  label?: string;
   imageUrl: string;
   decimals: number | string;
   alias?: string;

@@ -15,6 +15,7 @@ import { useCurrentCaHash } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useLoading } from 'store/Provider/hooks';
 import { LANG_MAX, ZERO } from '@portkey-wallet/constants/misc';
 import './index.less';
+import { formatApproveSymbolShow } from '@portkey-wallet/utils/token';
 
 export interface IAllowanceDetailProps {
   allowanceDetail: ITokenAllowance;
@@ -109,7 +110,7 @@ export default function AllowanceDetail({ allowanceDetail }: IAllowanceDetailPro
       {allowanceDetail?.symbolApproveList?.map((item) => (
         <div className="set-allowance-operation" key={item.symbol}>
           <div className="set-allowance-title flex-between-center">
-            <div>{`Approve ${item.symbol}`}</div>
+            <div>{`Approve ${formatApproveSymbolShow(item.symbol)}`}</div>
             <Switch
               className="login-switch"
               onChange={(checked: boolean) => handleClickSwitch(checked, item.symbol)}

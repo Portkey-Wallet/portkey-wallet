@@ -365,8 +365,8 @@ export type TReportMessageParams = {
   userCaAddressInfos: ICaAddressInfoListItemType[];
   channelUuid?: string;
   reportType: ReportMessageEnum;
-  message?: string;
-  messageId?: string;
+  message: string;
+  messageId: string;
   description?: string; // if is other report type , this is required
 };
 

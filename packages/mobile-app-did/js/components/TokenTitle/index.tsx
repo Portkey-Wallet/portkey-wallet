@@ -35,7 +35,9 @@ export const TokenTitle: React.FC<TokenTitleProps> = ({ tokenInfo }) => {
           titleStyle={Object.assign({}, FontStyles.font11, { fontSize: pTd(12) })}
           borderStyle={GStyles.hairlineBorder}
         />
-        <TextL style={[GStyles.textAlignCenter, FontStyles.font16, fonts.mediumFont]}>{tokenInfo.symbol}</TextL>
+        <TextL style={[GStyles.textAlignCenter, FontStyles.font16, fonts.mediumFont]}>
+          {tokenInfo.label || tokenInfo.symbol}
+        </TextL>
       </View>
       <TextS style={[GStyles.textAlignCenter, FontStyles.font11, styles.subTitle]}>
         {formatChainInfoToShow(tokenInfo.chainId)}

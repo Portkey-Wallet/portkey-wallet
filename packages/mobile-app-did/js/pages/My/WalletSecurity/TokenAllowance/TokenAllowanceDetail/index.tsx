@@ -1,11 +1,11 @@
 import React, { useCallback, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 import Svg from 'components/Svg';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
+import { FontStyles } from 'assets/theme/styles';
 import { StyleSheet } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import TokenAllowanceItem from '../components/TokenAllowanceItem';
@@ -24,9 +24,10 @@ import { managerForwardCall } from 'utils/transfer/managerForwardCall';
 import { useGetChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { LANG_MAX } from '@portkey-wallet/constants/misc';
 import myEvents from 'utils/deviceEvent';
-import { formatAmountShow } from '@portkey-wallet/utils/converter';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { screenHeight } from '@portkey-wallet/utils/mobile/device';
+import { formatApproveSymbolShow } from '@portkey-wallet/utils/token';
 
 const TokenAllowanceDetail: React.FC = () => {
   const {
@@ -123,7 +124,7 @@ const TokenAllowanceDetail: React.FC = () => {
           <View key={key} style={pageStyles.approvalWrap}>
             <View style={pageStyles.approveTop}>
               <View style={pageStyles.approvalLeft}>
-                <TextM style={FontStyles.primaryTextColor}>{`Approve ${ele.symbol}`}</TextM>
+                <TextM style={FontStyles.primaryTextColor}>{`Approve ${formatApproveSymbolShow(ele.symbol)}`}</TextM>
                 <View style={GStyles.width(pTd(2))} />
                 <TextS style={FontStyles.font3}>
                   This will approve access to all tokens and the dApp will not request your approval until the allowance
@@ -144,7 +145,9 @@ const TokenAllowanceDetail: React.FC = () => {
               <View
                 style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.height(pTd(20)), GStyles.marginTop(pTd(12))]}>
                 <TextM style={FontStyles.primaryTextColor}>Approve Amount</TextM>
-                <TextM style={FontStyles.secondaryTextColor}>{formatAmountShow(ele.amount, ele.decimals)}</TextM>
+                <TextM style={FontStyles.secondaryTextColor}>
+                  {formatTokenAmountShowWithDecimals(ele.amount, ele.decimals)}
+                </TextM>
               </View>
             )}
           </View>

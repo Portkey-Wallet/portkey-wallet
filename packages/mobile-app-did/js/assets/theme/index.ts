@@ -47,6 +47,8 @@ export const defaultColors = {
   bg38: '#FFEEEE',
   bg39: '#F8F8F8',
   bg40: '#E4E0FF',
+  bg41: 'rgba(255, 255, 255, 0.60)',
+  bg42: 'rgba(255, 255, 255, 0.90)',
 
   font1: '#464B53',
   font2: 'white',
@@ -117,6 +119,17 @@ export const defaultColors = {
 
   primaryTextColor: '#101114',
   secondaryTextColor: '#55585E',
+  neutralPrimaryTextColor: '#101114',
+  neutralSecondaryTextColor: '#55585E',
+  neutralTertiaryText: '#979AA1',
+  neutralDisableText: '#C0C3C7',
+  neutralBorder: '#DCDEE1',
+  neutralDivider: '#EBEBEC',
+  neutralContainerBG: '#F5F6F7',
+  neutralHoverBG: '#F9F9FA',
+  neutralDefaultBG: '#FFFFFF',
+  neutralMaskBG: 'rgba(0, 0, 0, 0.6)',
+  neutralTooltipBG: 'rgba(0, 0, 0, 0.8)',
 };
 
 export const AELFColors = {

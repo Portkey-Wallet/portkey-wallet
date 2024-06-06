@@ -19,6 +19,8 @@ export interface IDiscoverNetworkStateType {
   whiteList: string[];
   tabs: ITabItem[];
   bookmarkList?: IBookmarkItem[];
+  marketInfo?: IMarketInfo;
+  preMarketInfo?: IPreMarketSelectedInfo;
 }
 
 export interface IDiscoverStateType {
@@ -32,4 +34,37 @@ export interface IDiscoverStateType {
   disclaimerConfirmedMap?: {
     [key in NetworkType]?: string[];
   };
+}
+
+export interface ICryptoCurrencyItem {
+  id: number;
+  symbol: string;
+  image: string;
+  totalVolume: number;
+  totalSupply: number;
+  currentPrice: number;
+  description: string;
+  supportEtransfer: boolean;
+  collected: boolean;
+  priceChangePercentage24HInCurrency: number;
+  priceChangePercentage24H: number;
+  marketCap: number;
+  lastUpdated: string;
+}
+export type IMarketType = 'Favorites' | 'Hot' | 'Trending';
+export type IMarketSort = 'marketCap' | 'symbol' | 'currentPrice' | 'priceChangePercentage24H' | '';
+export type IMarketSortDir = 'asc' | 'desc' | '';
+export interface IMarketInfo {
+  type: IMarketType;
+  sort: IMarketSort;
+  sortDir: IMarketSortDir;
+  dataList: ICryptoCurrencyItem[];
+}
+export interface IMarketSortAndDir {
+  sort: IMarketSort;
+  sortDir: IMarketSortDir;
+}
+export interface IPreMarketSelectedInfo {
+  sort: IMarketSort;
+  sortDir: IMarketSortDir;
 }

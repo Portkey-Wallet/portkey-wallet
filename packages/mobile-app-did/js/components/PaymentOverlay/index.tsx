@@ -38,6 +38,7 @@ import NFTAvatar from 'components/NFTAvatar';
 
 export type PaymentAssetInfo = {
   symbol: string;
+  label?: string;
   decimals: number | string;
   alias?: string;
   tokenId?: string;
@@ -266,7 +267,11 @@ const PaymentModal = ({
               !!crossSufficientItem || !!isCanBuy ? GStyles.maxWidth(pTd(80)) : GStyles.maxWidth(pTd(180)),
             ]}
             numberOfLines={1}>
-            {`${assetInfo.assetType === AssetType.nft ? assetInfo.alias + ' #' + assetInfo.tokenId : assetInfo.symbol}`}
+            {`${
+              assetInfo.assetType === AssetType.nft
+                ? assetInfo.alias + ' #' + assetInfo.tokenId
+                : assetInfo.label || assetInfo.symbol
+            }`}
           </TextL>
           <TextS style={FontStyles.font5} numberOfLines={1}>
             {' ' + formatChainInfoToShow(chainId, currentNetwork)}
@@ -277,7 +282,8 @@ const PaymentModal = ({
   }, [
     assetInfo.alias,
     assetInfo.assetType,
-    assetInfo?.imageUrl,
+    assetInfo.imageUrl,
+    assetInfo.label,
     assetInfo.symbol,
     assetInfo.tokenId,
     chainId,
@@ -304,7 +310,7 @@ const PaymentModal = ({
         <TextS style={FontStyles.font3}>
           {formatTokenAmountShowWithDecimals(currentAssetInfo?.balance, currentAssetInfo?.decimals)}
         </TextS>
-        <TextS style={FontStyles.font3}>{` ${currentAssetInfo?.symbol || ''}`}</TextS>
+        <TextS style={FontStyles.font3}>{` ${currentAssetInfo?.label || currentAssetInfo?.symbol || ''}`}</TextS>
         {!!tokenPriceObject[currentAssetInfo?.symbol || ''] && (
           <TextS style={FontStyles.font3}>
             {`  ${convertAmountUSDShow(
@@ -319,8 +325,10 @@ const PaymentModal = ({
     assetInfo.assetType,
     currentAssetInfo?.balance,
     currentAssetInfo?.decimals,
+    currentAssetInfo?.label,
     currentAssetInfo?.symbol,
-    currentNft,
+    currentNft?.balance,
+    currentNft?.decimals,
     isInsufficientTransactionFee,
     tokenPriceObject,
   ]);
@@ -340,6 +348,7 @@ const PaymentModal = ({
             textColor={defaultColors.font5}
             amountShow={amount}
             symbol={assetInfo.assetType === AssetType.nft ? '' : assetInfo.symbol}
+            label={assetInfo.label}
           />
           {!!tokenPriceObject[currentAssetInfo?.symbol || ''] && assetInfo.assetType === AssetType.ft && (
             <TextM style={GStyles.marginTop(pTd(2))}>

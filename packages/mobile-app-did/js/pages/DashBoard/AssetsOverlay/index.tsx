@@ -54,13 +54,7 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
     [item?.nftInfo?.alias, item?.nftInfo?.tokenId],
   );
 
-  if (item.tokenInfo)
-    return (
-      <TokenListItem
-        item={{ name: '', ...item, ...item?.tokenInfo, tokenContractAddress: item.address }}
-        onPress={() => onPress(item)}
-      />
-    );
+  if (item.tokenInfo) return <TokenListItem item={{ ...item, ...item?.tokenInfo }} onPress={() => onPress?.(item)} />;
 
   if (item.nftInfo) {
     return (
@@ -188,11 +182,12 @@ const AssetList = ({ imTransferInfo, toAddress = '' }: ShowAssetListParamsType) 
           item={item}
           onPress={() => {
             OverlayModal.hide();
+
             const routeParams = {
               sendType: item?.nftInfo ? 'nft' : 'token',
               assetInfo: item?.nftInfo
                 ? { ...item?.nftInfo, chainId: item.chainId, symbol: item.symbol }
-                : { ...item?.tokenInfo, chainId: item.chainId, symbol: item.symbol },
+                : { ...item?.tokenInfo, chainId: item.chainId, symbol: item.symbol, label: item.label },
               toInfo: {
                 address: addressItem ? addressFormat(addressItem.address, addressItem.chainId) : toAddress,
                 name: imTransferInfo?.name || '',

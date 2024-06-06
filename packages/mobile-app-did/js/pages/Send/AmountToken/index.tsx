@@ -69,7 +69,7 @@ export default function AmountToken({
         <Text style={styles.topTitle}>{t('Amount')}</Text>
         <Text style={styles.topBalance}>
           {`${t('Balance')} ${formatTokenAmountShowWithDecimals(balanceShow, selectedToken.decimals)} ${
-            selectedToken.symbol
+            selectedToken?.label || selectedToken?.symbol
           }`}
         </Text>
       </View>

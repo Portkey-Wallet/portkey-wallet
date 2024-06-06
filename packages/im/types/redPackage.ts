@@ -70,4 +70,5 @@ export type RedPackageGrabInfoItem = {
   grabTime: number;
   isLuckyKing: boolean;
   amount: string;
+  isMe: boolean;
 };

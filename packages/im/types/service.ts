@@ -285,6 +285,11 @@ export type GetRedPackageDetailResult = RedPackageDetail & {
   items: RedPackageGrabInfoItem[];
 };
 
+export type GetCryptoGiftResult = {
+  firstDetail: RedPackageDetail;
+  histories: RedPackageDetail[];
+};
+
 export type GrabRedPackageParams = {
   id: string;
   channelUuid: string;

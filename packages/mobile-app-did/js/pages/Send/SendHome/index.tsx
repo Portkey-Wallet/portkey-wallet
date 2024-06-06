@@ -585,7 +585,7 @@ const SendHome: React.FC = () => {
   return (
     <PageContainer
       safeAreaColor={['white']}
-      titleDom={`${t('Send')}${sendType === 'token' ? ' ' + assetInfo.label || assetInfo.symbol : ''}`}
+      titleDom={`${t('Send')}${sendType === 'token' ? ' ' + (assetInfo.label || assetInfo.symbol) : ''}`}
       rightDom={
         sendType === 'token' && !isFixedToContact ? (
           <Touchable

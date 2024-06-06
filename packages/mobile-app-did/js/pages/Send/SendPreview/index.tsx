@@ -427,7 +427,7 @@ const SendPreview: React.FC = () => {
   return (
     <PageContainer
       safeAreaColor={['white', 'white']}
-      titleDom={`${t('Send')}${sendType === 'token' ? ' ' + assetInfo?.label || assetInfo?.symbol : ''}`}
+      titleDom={`${t('Send')}${sendType === 'token' ? ' ' + (assetInfo?.label || assetInfo?.symbol) : ''}`}
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       {sendType === 'nft' ? (

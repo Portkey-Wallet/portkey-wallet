@@ -1,8 +1,15 @@
 import { useCallback, useState, useRef } from 'react';
 import { request } from '@portkey-wallet/api/api-did';
-import { RedPackageDetail, RedPackageGrabInfoItem } from '@portkey-wallet/im';
+import { RedPackageDetail, RedPackageGrabInfoItem, RedPackageTypeEnum } from '@portkey-wallet/im';
+import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import useLockCallback from '../../useLockCallback';
+import { generateRedPackageRawTransaction } from '@portkey-wallet/utils/chat';
+import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
+import { handleLoopFetch } from '@portkey-wallet/utils';
+import { RedPackageCreationStatusEnum } from '@portkey-wallet/im/types';
+import { useCurrentWalletInfo, useCurrentUserInfo } from '../wallet';
 
 export const useGetFirstCryptoGift = () => {
   const [firstCryptoGift, setFirstCryptoGift] = useState<RedPackageDetail | null>(null);
@@ -62,11 +69,13 @@ export const useGetCryptoGiftHistories = () => {
   };
 };
 
+type RedPackageDisplayType = 'Common' | 'CryptoGift';
+
 type NextCryptoGiftDetailParams = {
   id?: string;
   skipCount?: number;
   maxResultCount?: number;
-  redPackageDisplayType?: 'Common' | 'CryptoGift';
+  redPackageDisplayType?: RedPackageDisplayType;
 };
 export type NextCryptoGiftDetailResult = { info: RedPackageDetail; list: RedPackageGrabInfoItem[] };
 
@@ -140,4 +149,87 @@ export const useGetRedPackageDetail = (id?: string) => {
     next,
     init,
   };
+};
+
+export interface ISendCryptoGiftHookParams {
+  totalAmount: string;
+  type: RedPackageTypeEnum;
+  count: number;
+  memo: string;
+  caContract: ContractBasic;
+  token: ICryptoBoxAssetItemType;
+}
+
+export const useSendCryptoGift = () => {
+  const userInfo = useCurrentUserInfo();
+  const wallet = useCurrentWalletInfo();
+  const redPackageDisplayType: RedPackageDisplayType = 'CryptoGift';
+
+  return useCallback(
+    async (params: ISendCryptoGiftHookParams) => {
+      const { totalAmount, memo, type, count, caContract, token } = params;
+      const { chainId, symbol, assetType = AssetType.ft } = token;
+
+      const caHash = wallet.caHash;
+      const caAddress = wallet[chainId]?.caAddress;
+      if (!userInfo || !caHash || !caAddress) {
+        throw new Error('No user info');
+      }
+
+      const generateCryptoGiftParams = { chainId, symbol, redPackageDisplayType };
+      const redPackageInfo = await request.redPackage.generateCryptoGift({ params: generateCryptoGiftParams });
+      const { id, publicKey, minAmount, redPackageContractAddress, expireTime } = redPackageInfo.data;
+
+      const rawTransaction = await generateRedPackageRawTransaction({
+        caContract,
+        caHash,
+        caAddress,
+        contractAddress: redPackageContractAddress,
+        id,
+        symbol,
+        totalAmount,
+        minAmount,
+        expirationTime: Date.now() + expireTime,
+        totalCount: count,
+        type,
+        publicKey,
+      });
+
+      const sendCryptoGiftParams = {
+        id,
+        totalAmount,
+        type,
+        count,
+        chainId,
+        symbol,
+        memo,
+        rawTransaction,
+        assetType,
+      };
+      const {
+        data: { sessionId },
+      } = await request.redPackage.sendCryptoGift({
+        params: sendCryptoGiftParams,
+      });
+
+      const { data: creationStatus } = await handleLoopFetch({
+        fetch: () => {
+          const getCreationStatusParams = { sessionId };
+          return request.redPackage.getCreationStatus({
+            params: getCreationStatusParams,
+          });
+        },
+        times: 10,
+        interval: 2000,
+        checkIsContinue: _creationStatusResult => {
+          return _creationStatusResult?.data?.status === RedPackageCreationStatusEnum.PENDING;
+        },
+      });
+      if (creationStatus.status !== RedPackageCreationStatusEnum.SUCCESS) {
+        throw new Error('Creation FAIL');
+      }
+      return id;
+    },
+    [userInfo, wallet],
+  );
 };

@@ -2,6 +2,7 @@ import { useCallback, useState, useRef } from 'react';
 import { request } from '@portkey-wallet/api/api-did';
 import { RedPackageDetail, RedPackageGrabInfoItem, RedPackageTypeEnum } from '@portkey-wallet/im';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
+import { CryptoGiftItem } from '@portkey-wallet/types/types-ca/cryptogift';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import useLockCallback from '../../useLockCallback';
 import { generateRedPackageRawTransaction } from '@portkey-wallet/utils/chat';
@@ -12,7 +13,7 @@ import { RedPackageCreationStatusEnum } from '@portkey-wallet/im/types';
 import { useCurrentWalletInfo, useCurrentUserInfo } from '../wallet';
 
 export const useGetFirstCryptoGift = () => {
-  const [firstCryptoGift, setFirstCryptoGift] = useState<RedPackageDetail | null>(null);
+  const [firstCryptoGift, setFirstCryptoGift] = useState<CryptoGiftItem | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,7 +42,7 @@ export const useGetFirstCryptoGift = () => {
 };
 
 export const useGetCryptoGiftHistories = () => {
-  const [cryptoGiftHistories, setCryptoGiftHistories] = useState<RedPackageDetail[]>([]);
+  const [cryptoGiftHistories, setCryptoGiftHistories] = useState<CryptoGiftItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

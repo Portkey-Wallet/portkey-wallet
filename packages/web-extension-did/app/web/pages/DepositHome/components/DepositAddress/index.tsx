@@ -88,7 +88,9 @@ export default function DepositAddress(props: IDepositAddressProps) {
         <div className="qr-code-title">
           <div className="qr-code-token-info">
             <img className="token-img" src={fromToken?.icon} />
-            <div className="qr-code-token-name">{fromToken?.symbol}</div>
+            <div className="qr-code-token-name">
+              {formatNameWithRules(fromToken?.symbol || '', [FormatNameRuleList.NO_UNDERLINE])}
+            </div>
           </div>
           <div className="token-network">{fromNetwork?.name}</div>
         </div>

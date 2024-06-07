@@ -20,7 +20,7 @@ export interface IDepositAddressProps {
   type?: 'component' | 'page';
 }
 export default function DepositAddress(props: IDepositAddressProps) {
-  const { onClose, type = 'component', depositInfo, fromNetwork, fromToken, toToken, isSameSymbol } = props;
+  const { onClose, type = 'component', depositInfo, fromNetwork, fromToken, isSameSymbol } = props;
   console.log('wfs DepositAddress props', props);
   const { isPrompt } = useCommonState();
   const { lastRecord } = useDepositRecord({

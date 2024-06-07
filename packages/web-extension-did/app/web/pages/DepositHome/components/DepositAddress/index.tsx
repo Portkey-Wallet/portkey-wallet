@@ -20,7 +20,7 @@ export interface IDepositAddressProps {
   type?: 'component' | 'page';
 }
 export default function DepositAddress(props: IDepositAddressProps) {
-  const { onClose, type = 'component', depositInfo, fromNetwork, fromToken, toToken, isSameSymbol } = props;
+  const { onClose, type = 'component', depositInfo, fromNetwork, fromToken, isSameSymbol } = props;
   console.log('wfs DepositAddress props', props);
   const { isPrompt } = useCommonState();
   const { lastRecord } = useDepositRecord({
@@ -88,7 +88,9 @@ export default function DepositAddress(props: IDepositAddressProps) {
         <div className="qr-code-title">
           <div className="qr-code-token-info">
             <img className="token-img" src={fromToken?.icon} />
-            <div className="qr-code-token-name">{fromToken?.symbol}</div>
+            <div className="qr-code-token-name">
+              {formatNameWithRules(fromToken?.symbol || '', [FormatNameRuleList.NO_UNDERLINE])}
+            </div>
           </div>
           <div className="token-network">{fromNetwork?.name}</div>
         </div>

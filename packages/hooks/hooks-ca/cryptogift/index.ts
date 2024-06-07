@@ -79,7 +79,7 @@ type NextCryptoGiftDetailParams = {
 };
 export type NextCryptoGiftDetailResult = { info: RedPackageDetail; list: RedPackageGrabInfoItem[] };
 
-export const useGetRedPackageDetail = (id?: string) => {
+export const useGetCryptoGiftDetail = (id?: string) => {
   const [info, setInfo] = useState<RedPackageDetail>();
   const infoRef = useRef(info);
   infoRef.current = info;

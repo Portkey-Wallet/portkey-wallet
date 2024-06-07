@@ -10,7 +10,6 @@ import { shrinkSendQrData, QRCodeDataObjType } from '@portkey-wallet/utils/qrCod
 import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
 
 const cardWidth = ScreenWidth * 0.63;
-
 export default function AccountCard({
   tokenInfo,
   toCaAddress,

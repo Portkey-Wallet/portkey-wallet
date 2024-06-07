@@ -10,7 +10,7 @@ import { useStorage } from 'hooks/useStorage';
 import { sleep } from '@portkey-wallet/utils';
 import { useIsNotLessThan768 } from 'hooks/useScreen';
 import { useEffectOnce } from 'react-use';
-import OpenNewTabController from 'controllers/openNewTabController';
+// import OpenNewTabController from 'controllers/openNewTabController';
 import { useOtherNetworkLogged } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 const timeout = async () => {
@@ -116,7 +116,7 @@ export default function PermissionCheck({
     const needPin = await checkNeedUnlock();
     if (needPin) return navigate('/unlock');
     if (pageType == 'Popup') {
-      await OpenNewTabController.closeOpenTabs();
+      // await OpenNewTabController.closeOpenTabs();
       return InternalMessage.payload(PortkeyMessageTypes.REGISTER_WALLET, {}).send();
     } else {
       if (caInfo?.managerInfo) return navigate('/query-page');

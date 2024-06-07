@@ -116,17 +116,17 @@ export default function Receive() {
         />
       )}
       {selectTab === ReceivePageTabType.QR_CODE && <OriginalQrCodePage />}
+      {selectTab === ReceivePageTabType.BUY && (
+        <View style={[GStyles.flex1, styles.buyContainer]}>
+          <BuyForm symbol={symbol} />
+        </View>
+      )}
       {(selectTab === ReceivePageTabType.EXCHANGES || selectTab === ReceivePageTabType.DEPOSIT) && (
         <DepositCard
           mode={selectTab === ReceivePageTabType.EXCHANGES ? DepositMode.EXCHANGE : DepositMode.DEPOSIT}
           token={tokenItem}
           onClickDepositButton={onClickDepositButton}
         />
-      )}
-      {selectTab === ReceivePageTabType.BUY && (
-        <View style={[GStyles.flex1, styles.buyContainer]}>
-          <BuyForm symbol={symbol} />
-        </View>
       )}
     </PageContainer>
   );

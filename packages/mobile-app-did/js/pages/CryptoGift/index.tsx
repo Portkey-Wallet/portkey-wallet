@@ -10,9 +10,11 @@ import GStyles from 'assets/theme/GStyles';
 import Svg from 'components/Svg';
 import CommonButton from 'components/CommonButton';
 import HistoryCard from './components/HistoryCard';
+import { useGetFirstCryptoGift } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 
 export default function CryptoGift() {
   const { t } = useLanguage();
+  const { firstCryptoGift, loading, error } = useGetFirstCryptoGift();
   return (
     <PageContainer
       noCenterDom
@@ -27,7 +29,12 @@ export default function CryptoGift() {
       <CommonButton containerStyle={styles.buttonContainer} type="primary" disabled={false}>
         <TextL style={styles.buttonText}>{t('Create Crypto Gifts')}</TextL>
       </CommonButton>
-      <HistoryCard containerStyle={styles.hsCardContainer} showTitle isSkeleton />
+      <HistoryCard
+        containerStyle={styles.hsCardContainer}
+        showTitle
+        redPacketDetail={firstCryptoGift || undefined}
+        isSkeleton={loading}
+      />
       <View style={styles.noteWrap}>
         <Text style={styles.noteText}>
           {'• 12 as djha aaa sdjh asjd asdja sjda sdj hasd hajs ksdh ajskd hakj sdha asjd'}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TextL, TextM, TextS } from 'components/CommonText';
 import { StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { StyleProp } from 'react-native';
@@ -7,13 +7,50 @@ import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import { FontStyles } from 'assets/theme/styles';
 import navigationService from 'utils/navigationService';
+import { RedPackageDetail, RedPackageStatusEnum } from '@portkey-wallet/im';
+import PortkeySkeleton from 'components/PortkeySkeleton';
+import GStyles from 'assets/theme/GStyles';
+import { formatTransferTime } from '@portkey-wallet/utils/time';
+import { getClaimedShow } from 'pages/Chat/utils/format';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 export interface IHistoryCardProps {
   containerStyle?: StyleProp<ViewStyle>;
   showTitle?: boolean;
-  // isSkeleton?: boolean;
+  redPacketDetail?: RedPackageDetail;
+  isSkeleton?: boolean;
 }
 export default function HistoryCard(props: IHistoryCardProps) {
-  const { showTitle } = props;
+  const { showTitle, redPacketDetail, isSkeleton } = props;
+  console.log('wfs=== redPacketDetail', redPacketDetail);
+  const statusStyles = useMemo(() => {
+    if (redPacketDetail?.viewStatus === RedPackageStatusEnum.EXPIRED) {
+      return {
+        bg: {
+          backgroundColor: defaultColors.neutralContainerBG,
+        },
+        textColor: {
+          color: defaultColors.neutralTertiaryText,
+        },
+      };
+    } else if (redPacketDetail?.viewStatus === RedPackageStatusEnum.NONE_LEFT) {
+      return {
+        bg: {
+          backgroundColor: defaultColors.neutralContainerBG,
+        },
+        textColor: {
+          color: defaultColors.neutralPrimaryTextColor,
+        },
+      };
+    }
+    return {
+      bg: {
+        backgroundColor: defaultColors.brandLight,
+      },
+      textColor: {
+        color: defaultColors.brandNormal,
+      },
+    };
+  }, [redPacketDetail?.viewStatus]);
   return (
     <View style={[styles.historyContainer, props.containerStyle]}>
       {showTitle && (
@@ -39,24 +76,51 @@ export default function HistoryCard(props: IHistoryCardProps) {
           navigationService.navigate('GiftDetail');
         }}>
         <View style={styles.historyCard}>
-          <View style={styles.cardPart1}>
-            <View style={styles.giftIconBg}>
-              <Svg icon="crypto-gift" size={pTd(12)} />
-            </View>
-            <TextM style={styles.text}>Claim and Join Portkey</TextM>
-            <View style={styles.statusContainer}>
-              <TextS style={styles.statusText}>In Progress</TextS>
-            </View>
-          </View>
-          {/* <Text style={styles.dateText}>May 28 at 4:11 pm</Text> */}
-          <View style={styles.dateContainer}>
-            <TextS style={styles.dateText}>May 28 at 4:11 pm</TextS>
-          </View>
-          <View style={styles.divider} />
-          <View style={styles.claimContainer}>
-            <TextS style={styles.claimText}>Claimed:</TextS>
-            <TextS style={styles.claimValue}>0.00000005 / 0.00000008 ELF</TextS>
-          </View>
+          {isSkeleton ? (
+            <>
+              <View style={styles.cardPart1}>
+                <PortkeySkeleton width={pTd(24)} height={pTd(22)} />
+                <PortkeySkeleton width={pTd(280)} height={pTd(22)} style={[GStyles.marginLeft(pTd(8))]} />
+              </View>
+              <PortkeySkeleton
+                width={pTd(208)}
+                height={pTd(16)}
+                style={[GStyles.marginTop(pTd(2)), GStyles.marginLeft(pTd(32))]}
+              />
+              <PortkeySkeleton
+                width={pTd(280)}
+                height={pTd(16)}
+                style={[GStyles.marginTop(pTd(16)), GStyles.marginLeft(pTd(32))]}
+              />
+            </>
+          ) : (
+            <>
+              <View style={styles.cardPart1}>
+                <View style={styles.giftIconBg}>
+                  <Svg icon="crypto-gift" size={pTd(12)} />
+                </View>
+                <TextM style={styles.text}>{redPacketDetail?.memo || 'Best Wishes'}</TextM>
+                <View style={[styles.statusContainer, statusStyles.bg]}>
+                  <TextS style={[styles.statusText, statusStyles.textColor]}>In Progress</TextS>
+                </View>
+              </View>
+              {/* <Text style={styles.dateText}>May 28 at 4:11 pm</Text> */}
+              <View style={styles.dateContainer}>
+                <TextS style={styles.dateText}>{formatTransferTime(redPacketDetail?.createTime || 1483284289)}</TextS>
+              </View>
+              <View style={styles.divider} />
+              <View style={styles.claimContainer}>
+                <TextS style={styles.claimText}>Claimed:</TextS>
+                <TextS style={styles.claimValue}>
+                  {getClaimedShow(
+                    formatTokenAmountShowWithDecimals(redPacketDetail?.grabbedAmount, redPacketDetail?.decimals),
+                    formatTokenAmountShowWithDecimals(redPacketDetail?.totalAmount, redPacketDetail?.decimals),
+                    redPacketDetail?.symbol || 'ELF',
+                  )}
+                </TextS>
+              </View>
+            </>
+          )}
         </View>
       </TouchableOpacity>
     </View>

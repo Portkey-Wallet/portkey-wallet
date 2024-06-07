@@ -31,10 +31,14 @@ export default function GiftResult() {
   const renderDivider = useCallback(() => {
     return <View style={styles.divider} />;
   }, []);
+  const onDone = useCallback(() => {
+    console.log('onDone clicked!!');
+    navigationService.navigate('CryptoGift');
+  }, []);
   return (
     <View style={styles.pageWrap}>
       <ImageBackground source={giftResultBg} style={styles.topSectionStyle}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={onDone}>
           <View style={[GStyles.height(pTd(44)), GStyles.itemCenter, GStyles.flexEnd, GStyles.flexRow]}>
             <TextM style={[FontStyles.brandNormal, GStyles.paddingRight(pTd(16))]}>Done</TextM>
           </View>

@@ -46,6 +46,7 @@ export default function QRCodePage() {
         tokenContractAddress: state.address,
         balanceInUsd: state.balanceInUsd,
         decimals: state.decimals,
+        label: state.label,
       },
       address: caAddress,
     }),

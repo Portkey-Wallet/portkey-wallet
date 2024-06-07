@@ -10,6 +10,7 @@ const enum IndexOfQrData {
   CHAIN_ID_INDEX = 6,
   DECIMALS_INDEX = 7,
   DEVICE_TYPE_INDEX = 8,
+  TOKEN_LABEL_INDEX = 9,
 }
 
 export type QrCodeDataArrType = [
@@ -22,6 +23,7 @@ export type QrCodeDataArrType = [
   ChainId,
   string | number,
   number | undefined,
+  string | undefined,
 ];
 
 export type QRCodeDataObjType = {
@@ -33,6 +35,7 @@ export type QRCodeDataObjType = {
   deviceType?: number;
   assetInfo: {
     symbol: string;
+    label?: string;
     tokenContractAddress: string;
     chainId: ChainId;
     decimals: string | number;
@@ -40,7 +43,7 @@ export type QRCodeDataObjType = {
 };
 
 export const shrinkSendQrData = (data: QRCodeDataObjType): QrCodeDataArrType => {
-  // 1.chainType  2.networkType 3.data.type 4.toAddress 5. symbol 6. tokenContractAddress 7. chainId 8. decimals
+  // 1.chainType  2.networkType 3.data.type 4.toAddress 5. symbol 6. tokenContractAddress 7. chainId 8. decimals 9.token label
 
   if (data.networkType?.includes('MAIN')) {
     data.networkType = 'MAIN' as NetworkType;
@@ -56,6 +59,7 @@ export const shrinkSendQrData = (data: QRCodeDataObjType): QrCodeDataArrType => 
     data.assetInfo.chainId,
     data.assetInfo.decimals,
     data.deviceType,
+    data.assetInfo.label,
   ];
 };
 
@@ -71,6 +75,7 @@ export const expandQrData = (data: QrCodeDataArrType | QRCodeDataObjType): QRCod
     toInfo: { name: '', address: dataArr[IndexOfQrData.ADDRESS_INDEX] },
     assetInfo: {
       symbol: dataArr[IndexOfQrData.SYMBOL_INDEX],
+      label: dataArr[IndexOfQrData.TOKEN_LABEL_INDEX],
       tokenContractAddress: dataArr[IndexOfQrData.TOKEN_CONTRACT_ADDRESS_INDEX],
       chainId: dataArr[IndexOfQrData.CHAIN_ID_INDEX],
       decimals: dataArr[IndexOfQrData.DECIMALS_INDEX],

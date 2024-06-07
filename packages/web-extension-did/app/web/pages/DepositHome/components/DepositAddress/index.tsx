@@ -9,6 +9,7 @@ import { TDepositInfo, TNetworkItem, TRecordsStatus, TTokenItem } from '@portkey
 import CommonHeader from 'components/CommonHeader';
 import { useDepositRecord } from '@portkey-wallet/hooks/hooks-ca/deposit';
 import clsx from 'clsx';
+import { FormatNameRuleList, formatNameWithRules } from '@portkey-wallet/utils';
 export interface IDepositAddressProps {
   depositInfo: TDepositInfo | undefined;
   fromNetwork: TNetworkItem | undefined;
@@ -114,7 +115,7 @@ export default function DepositAddress(props: IDepositAddressProps) {
           <div className="minimum-deposit">Minimum Deposit</div>
           <div className="minimum-deposit-cal-container">
             <div className="minimum-deposit-token-amount">
-              {depositInfo?.minAmount} {toToken?.symbol}
+              {depositInfo?.minAmount} {formatNameWithRules(fromToken?.symbol || '', [FormatNameRuleList.NO_UNDERLINE])}
             </div>
             <div className="minimum-deposit-token-price">$ {depositInfo?.minAmountUsd}</div>
           </div>
@@ -132,8 +133,8 @@ export default function DepositAddress(props: IDepositAddressProps) {
     depositInfo?.depositAddress,
     depositInfo?.minAmount,
     depositInfo?.minAmountUsd,
+    fromToken?.symbol,
     openOnExplorer,
-    toToken?.symbol,
   ]);
   const hintTextEle = useMemo(() => {
     const notes = depositInfo?.extraNotes || [];

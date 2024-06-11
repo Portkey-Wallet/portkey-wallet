@@ -46,7 +46,7 @@ export const useGetCryptoGiftHistories = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const getFirstCryptoGift = useCallback(async () => {
+  const getCryptoGiftHistories = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -60,7 +60,7 @@ export const useGetCryptoGiftHistories = () => {
   }, []);
 
   useEffectOnce(() => {
-    getFirstCryptoGift();
+    getCryptoGiftHistories();
   });
 
   return {

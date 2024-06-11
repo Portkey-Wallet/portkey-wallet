@@ -159,6 +159,7 @@ export interface ISendCryptoGiftHookParams {
   memo: string;
   caContract: ContractBasic;
   token: ICryptoBoxAssetItemType;
+  isNewUsersOnly?: boolean;
 }
 
 export const useSendCryptoGift = () => {
@@ -168,7 +169,7 @@ export const useSendCryptoGift = () => {
 
   return useCallback(
     async (params: ISendCryptoGiftHookParams) => {
-      const { totalAmount, memo, type, count, caContract, token } = params;
+      const { totalAmount, memo, type, count, caContract, token, isNewUsersOnly = false } = params;
       const { chainId, symbol, assetType = AssetType.ft } = token;
 
       const caHash = wallet.caHash;
@@ -206,6 +207,8 @@ export const useSendCryptoGift = () => {
         memo,
         rawTransaction,
         assetType,
+        redPackageDisplayType,
+        isNewUsersOnly,
       };
       const {
         data: { sessionId },

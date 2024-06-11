@@ -1,5 +1,5 @@
-import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { ChainType } from '@portkey-wallet/types';
+import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import SandboxEventTypes from 'messages/SandboxEventTypes';
 import SandboxEventService, { SandboxErrorCode } from 'service/SandboxEventService';
@@ -12,7 +12,7 @@ export const getBalance = async ({
 }: {
   account: string;
   tokenList: BaseToken[];
-  currentChain: ChainItemType;
+  currentChain: IChainItemType;
   chainType: ChainType;
 }) => {
   if (!account) return;

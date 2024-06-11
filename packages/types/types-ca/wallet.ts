@@ -21,6 +21,12 @@ export enum LoginType {
   Twitter,
 }
 
+export enum LoginMethod {
+  Signup = 'Signup',
+  SocialRecovery = 'SocialRecovery',
+  Scan = 'Scan',
+}
+
 export enum SocialLoginEnum {
   Google = 'Google',
   Apple = 'Apple',
@@ -32,6 +38,8 @@ export enum SocialLoginEnum {
 export type LoginKeyType = string;
 
 export type LoginKey = keyof typeof LoginType;
+
+export type TAllLoginKey = LoginKey | 'Scan';
 
 export type SocialLoginKey = keyof typeof SocialLoginEnum;
 

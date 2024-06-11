@@ -21,6 +21,9 @@ export interface UserInfoType {
   nickName: string;
   userId: string;
   avatar?: string;
+  hideAssets: boolean;
+  shouldShowSetNewWalletNameModal: boolean;
+  shouldShowSetNewWalletNameIcon: boolean;
 }
 
 export interface WalletState {

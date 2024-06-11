@@ -20,6 +20,8 @@ import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
+import useGAReport from 'hooks/useGAReport';
+import { useEffectOnce } from 'react-use';
 
 export default function NFT() {
   const nav = useNavigate();
@@ -42,14 +44,20 @@ export default function NFT() {
     [maxNftNum],
   );
 
+  const { startReport, endReport } = useGAReport();
+
+  useEffectOnce(() => {
+    startReport('Home-NFTsList');
+  });
+
   useEffect(() => {
     fetchAccountNFTCollectionInfoList({
       maxNFTCount: maxNftNum,
       caAddressInfos,
       skipCount: 0,
       maxResultCount: PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
-    });
-  }, [caAddressInfos, fetchAccountNFTCollectionInfoList, maxNftNum]);
+    }).then(() => endReport('Home-NFTsList'));
+  }, [caAddressInfos, endReport, fetchAccountNFTCollectionInfoList, maxNftNum]);
 
   const getMoreNFTCollection = useCallback(async () => {
     if (accountNFTList.length < totalRecordCount) {
@@ -126,7 +134,7 @@ export default function NFT() {
           key={nftColKey}
           header={
             <div className="nft-collection flex-row-center">
-              <div className="avatar flex-center">
+              <div className={clsx('nft-collection-avatar', 'flex-center', !nft.imageUrl && 'show-nft-default')}>
                 {nft.imageUrl ? <img src={nft.imageUrl} /> : nft.collectionName?.slice(0, 1)}
               </div>
               <div className="info flex-column">

@@ -23,12 +23,75 @@ module.exports.deviceBrand_aggregated = fs.readFileSync(path.join(__dirname, 'de
 module.exports.deviceType = fs.readFileSync(path.join(__dirname, 'deviceType.gql'), 'utf8');
 module.exports.deviceType_by_id = fs.readFileSync(path.join(__dirname, 'deviceType_by_id.gql'), 'utf8');
 module.exports.deviceType_aggregated = fs.readFileSync(path.join(__dirname, 'deviceType_aggregated.gql'), 'utf8');
+module.exports.discoverDappBanner = fs.readFileSync(path.join(__dirname, 'discoverDappBanner.gql'), 'utf8');
+module.exports.discoverDappBanner_portkeyCard = fs.readFileSync(
+  path.join(__dirname, 'discoverDappBanner_portkeyCard.gql'),
+  'utf8',
+);
+module.exports.discoverDappBanner_portkeyCard_by_id = fs.readFileSync(
+  path.join(__dirname, 'discoverDappBanner_portkeyCard_by_id.gql'),
+  'utf8',
+);
+module.exports.discoverDappBanner_portkeyCard_aggregated = fs.readFileSync(
+  path.join(__dirname, 'discoverDappBanner_portkeyCard_aggregated.gql'),
+  'utf8',
+);
+module.exports.discoverEarnData = fs.readFileSync(path.join(__dirname, 'discoverEarnData.gql'), 'utf8');
+module.exports.discoverEarnData_portkeyCard = fs.readFileSync(
+  path.join(__dirname, 'discoverEarnData_portkeyCard.gql'),
+  'utf8',
+);
+module.exports.discoverEarnData_portkeyCard_by_id = fs.readFileSync(
+  path.join(__dirname, 'discoverEarnData_portkeyCard_by_id.gql'),
+  'utf8',
+);
+module.exports.discoverEarnData_portkeyCard_aggregated = fs.readFileSync(
+  path.join(__dirname, 'discoverEarnData_portkeyCard_aggregated.gql'),
+  'utf8',
+);
 module.exports.discoverGroup = fs.readFileSync(path.join(__dirname, 'discoverGroup.gql'), 'utf8');
 module.exports.discoverGroup_by_id = fs.readFileSync(path.join(__dirname, 'discoverGroup_by_id.gql'), 'utf8');
 module.exports.discoverGroup_aggregated = fs.readFileSync(path.join(__dirname, 'discoverGroup_aggregated.gql'), 'utf8');
 module.exports.discoverItem = fs.readFileSync(path.join(__dirname, 'discoverItem.gql'), 'utf8');
 module.exports.discoverItem_by_id = fs.readFileSync(path.join(__dirname, 'discoverItem_by_id.gql'), 'utf8');
 module.exports.discoverItem_aggregated = fs.readFileSync(path.join(__dirname, 'discoverItem_aggregated.gql'), 'utf8');
+module.exports.discoverLearnBanner = fs.readFileSync(path.join(__dirname, 'discoverLearnBanner.gql'), 'utf8');
+module.exports.discoverLearnBanner_portkeyCard = fs.readFileSync(
+  path.join(__dirname, 'discoverLearnBanner_portkeyCard.gql'),
+  'utf8',
+);
+module.exports.discoverLearnBanner_portkeyCard_by_id = fs.readFileSync(
+  path.join(__dirname, 'discoverLearnBanner_portkeyCard_by_id.gql'),
+  'utf8',
+);
+module.exports.discoverLearnBanner_portkeyCard_aggregated = fs.readFileSync(
+  path.join(__dirname, 'discoverLearnBanner_portkeyCard_aggregated.gql'),
+  'utf8',
+);
+module.exports.discoverLearnGroup = fs.readFileSync(path.join(__dirname, 'discoverLearnGroup.gql'), 'utf8');
+module.exports.discoverLearnGroup_by_id = fs.readFileSync(path.join(__dirname, 'discoverLearnGroup_by_id.gql'), 'utf8');
+module.exports.discoverLearnGroup_aggregated = fs.readFileSync(
+  path.join(__dirname, 'discoverLearnGroup_aggregated.gql'),
+  'utf8',
+);
+module.exports.discoverLearnGroup_portkeyCard = fs.readFileSync(
+  path.join(__dirname, 'discoverLearnGroup_portkeyCard.gql'),
+  'utf8',
+);
+module.exports.discoverLearnGroup_portkeyCard_by_id = fs.readFileSync(
+  path.join(__dirname, 'discoverLearnGroup_portkeyCard_by_id.gql'),
+  'utf8',
+);
+module.exports.discoverLearnGroup_portkeyCard_aggregated = fs.readFileSync(
+  path.join(__dirname, 'discoverLearnGroup_portkeyCard_aggregated.gql'),
+  'utf8',
+);
+module.exports.discoverTabData = fs.readFileSync(path.join(__dirname, 'discoverTabData.gql'), 'utf8');
+module.exports.discoverTabData_by_id = fs.readFileSync(path.join(__dirname, 'discoverTabData_by_id.gql'), 'utf8');
+module.exports.discoverTabData_aggregated = fs.readFileSync(
+  path.join(__dirname, 'discoverTabData_aggregated.gql'),
+  'utf8',
+);
 module.exports.download = fs.readFileSync(path.join(__dirname, 'download.gql'), 'utf8');
 module.exports.entrance = fs.readFileSync(path.join(__dirname, 'entrance.gql'), 'utf8');
 module.exports.entrance_by_id = fs.readFileSync(path.join(__dirname, 'entrance_by_id.gql'), 'utf8');
@@ -52,6 +115,19 @@ module.exports.entranceModuleName_aggregated = fs.readFileSync(
   'utf8',
 );
 module.exports.home = fs.readFileSync(path.join(__dirname, 'home.gql'), 'utf8');
+module.exports.home_dApp = fs.readFileSync(path.join(__dirname, 'home_dApp.gql'), 'utf8');
+module.exports.home_dApp_by_id = fs.readFileSync(path.join(__dirname, 'home_dApp_by_id.gql'), 'utf8');
+module.exports.home_dApp_aggregated = fs.readFileSync(path.join(__dirname, 'home_dApp_aggregated.gql'), 'utf8');
+module.exports.homeBanner = fs.readFileSync(path.join(__dirname, 'homeBanner.gql'), 'utf8');
+module.exports.homeBanner_portkeyCard = fs.readFileSync(path.join(__dirname, 'homeBanner_portkeyCard.gql'), 'utf8');
+module.exports.homeBanner_portkeyCard_by_id = fs.readFileSync(
+  path.join(__dirname, 'homeBanner_portkeyCard_by_id.gql'),
+  'utf8',
+);
+module.exports.homeBanner_portkeyCard_aggregated = fs.readFileSync(
+  path.join(__dirname, 'homeBanner_portkeyCard_aggregated.gql'),
+  'utf8',
+);
 module.exports.loginMode = fs.readFileSync(path.join(__dirname, 'loginMode.gql'), 'utf8');
 module.exports.loginMode_by_id = fs.readFileSync(path.join(__dirname, 'loginMode_by_id.gql'), 'utf8');
 module.exports.loginMode_aggregated = fs.readFileSync(path.join(__dirname, 'loginMode_aggregated.gql'), 'utf8');
@@ -101,6 +177,9 @@ module.exports.officialSocialMedia_aggregated = fs.readFileSync(
   path.join(__dirname, 'officialSocialMedia_aggregated.gql'),
   'utf8',
 );
+module.exports.portkeyCard = fs.readFileSync(path.join(__dirname, 'portkeyCard.gql'), 'utf8');
+module.exports.portkeyCard_by_id = fs.readFileSync(path.join(__dirname, 'portkeyCard_by_id.gql'), 'utf8');
+module.exports.portkeyCard_aggregated = fs.readFileSync(path.join(__dirname, 'portkeyCard_aggregated.gql'), 'utf8');
 module.exports.rememberMeBlackListSites = fs.readFileSync(path.join(__dirname, 'rememberMeBlackListSites.gql'), 'utf8');
 module.exports.rememberMeBlackListSites_by_id = fs.readFileSync(
   path.join(__dirname, 'rememberMeBlackListSites_by_id.gql'),
@@ -119,6 +198,24 @@ module.exports.tabMenu_aggregated = fs.readFileSync(path.join(__dirname, 'tabMen
 module.exports.tabType = fs.readFileSync(path.join(__dirname, 'tabType.gql'), 'utf8');
 module.exports.tabType_by_id = fs.readFileSync(path.join(__dirname, 'tabType_by_id.gql'), 'utf8');
 module.exports.tabType_aggregated = fs.readFileSync(path.join(__dirname, 'tabType_aggregated.gql'), 'utf8');
+module.exports.tokenDetailBanner = fs.readFileSync(path.join(__dirname, 'tokenDetailBanner.gql'), 'utf8');
+module.exports.tokenDetailBanner_by_id = fs.readFileSync(path.join(__dirname, 'tokenDetailBanner_by_id.gql'), 'utf8');
+module.exports.tokenDetailBanner_aggregated = fs.readFileSync(
+  path.join(__dirname, 'tokenDetailBanner_aggregated.gql'),
+  'utf8',
+);
+module.exports.tokenDetailBanner_portkeyCard = fs.readFileSync(
+  path.join(__dirname, 'tokenDetailBanner_portkeyCard.gql'),
+  'utf8',
+);
+module.exports.tokenDetailBanner_portkeyCard_by_id = fs.readFileSync(
+  path.join(__dirname, 'tokenDetailBanner_portkeyCard_by_id.gql'),
+  'utf8',
+);
+module.exports.tokenDetailBanner_portkeyCard_aggregated = fs.readFileSync(
+  path.join(__dirname, 'tokenDetailBanner_portkeyCard_aggregated.gql'),
+  'utf8',
+);
 module.exports.topMenu = fs.readFileSync(path.join(__dirname, 'topMenu.gql'), 'utf8');
 module.exports.topMenu_by_id = fs.readFileSync(path.join(__dirname, 'topMenu_by_id.gql'), 'utf8');
 module.exports.topMenu_aggregated = fs.readFileSync(path.join(__dirname, 'topMenu_aggregated.gql'), 'utf8');

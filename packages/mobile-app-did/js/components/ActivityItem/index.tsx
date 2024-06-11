@@ -1,6 +1,6 @@
 import { defaultColors } from 'assets/theme';
-import React, { memo, useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { memo, useEffect, useMemo, useState } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
@@ -25,6 +25,8 @@ import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
 import DoubleAvatar from 'components/DoubleAvatar';
 import { TextM } from 'components/CommonText';
+import { contractStatusEnum } from '@portkey-wallet/constants/constants-ca/common';
+import Svg from 'components/Svg';
 
 interface ActivityItemPropsType {
   preItem?: ActivityItemType;
@@ -35,6 +37,7 @@ interface ActivityItemPropsType {
 
 const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress, index }) => {
   const isMainnet = useIsMainnet();
+  const [rotation] = useState(new Animated.Value(0));
 
   const isDaySame = useMemo(() => {
     const preTime = dayjs.unix(Number(preItem?.timestamp || 0));
@@ -75,6 +78,54 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
     );
   }, [item]);
 
+  useEffect(() => {
+    const rotationAnimation = Animated.loop(
+      Animated.timing(rotation, {
+        toValue: 360,
+        duration: 1500,
+        useNativeDriver: true,
+      }),
+    );
+    rotationAnimation.start();
+    return () => {
+      rotationAnimation.stop();
+    };
+  }, [rotation]);
+
+  const StatusDom = useMemo(() => {
+    if (item?.status === contractStatusEnum.FAILED)
+      return (
+        <View style={GStyles.marginLeft(pTd(8))}>
+          <Svg icon="activity-fail" size={pTd(16)} />;
+        </View>
+      );
+    if (item?.status === contractStatusEnum.MINED)
+      return (
+        <View style={GStyles.marginLeft(pTd(8))}>
+          <Svg icon="activity-mined" size={pTd(16)} />
+        </View>
+      );
+
+    return (
+      <Animated.View
+        style={[
+          GStyles.marginLeft(8),
+          {
+            transform: [
+              {
+                rotate: rotation.interpolate({
+                  inputRange: [0, 360],
+                  outputRange: ['0deg', '360deg'],
+                }),
+              },
+            ],
+          },
+        ]}>
+        <Svg icon="activity-pending" size={pTd(16)} />
+      </Animated.View>
+    );
+  }, [rotation]);
+
   const ExtraDom = useMemo(() => {
     if (!item?.currentTxPriceInUsd) return null;
     return (
@@ -109,11 +160,14 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
         />
 
         <View style={[itemStyle.center, item?.isSystem && itemStyle.systemCenter]}>
-          <Text style={[itemStyle.centerType, fonts.mediumFont]}>{item?.transactionName}</Text>
+          <View style={itemStyle.textAndStatusWrapCenter}>
+            <TextM style={[itemStyle.centerType, fonts.mediumFont]}>{item?.transactionName}</TextM>
+            {StatusDom}
+          </View>
         </View>
       </View>
     );
-  }, [item?.isSystem, item?.listIcon, item?.symbol, item?.transactionName]);
+  }, [StatusDom, item?.isSystem, item?.listIcon, item?.symbol, item?.transactionName]);
 
   const TxActivityItem = useMemo(() => {
     if (item?.operations?.length !== 0) {
@@ -140,9 +194,13 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
         <View style={itemStyle.contentWrap}>
           <DoubleAvatar firstAvatar={renderTopIconInfo} secondAvatar={renderBottomIconInfo} />
           <View style={[itemStyle.center, itemStyle.systemCenter]}>
-            <Text numberOfLines={1} style={[itemStyle.centerType, fonts.mediumFont]}>
-              {item?.transactionName}
-            </Text>
+            <View style={itemStyle.textAndStatusWrapCenter}>
+              <TextM numberOfLines={1} style={[itemStyle.centerType, fonts.mediumFont]}>
+                {item?.transactionName}
+              </TextM>
+              {StatusDom}
+            </View>
+
             <Text style={itemStyle.centerStatus}>{item?.dappName}</Text>
           </View>
           <View style={itemStyle.right}>
@@ -196,9 +254,13 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
             />
           )}
           <View style={[itemStyle.center, item?.isSystem && itemStyle.systemCenter]}>
-            <Text numberOfLines={1} style={[itemStyle.centerType, fonts.mediumFont]}>
-              {item?.transactionName}
-            </Text>
+            <View style={itemStyle.textAndStatusWrapCenter}>
+              <TextM numberOfLines={1} style={[itemStyle.centerType, fonts.mediumFont]}>
+                {item?.transactionName}
+              </TextM>
+              {StatusDom}
+            </View>
+
             <Text style={itemStyle.centerStatus}>{item?.dappName}</Text>
           </View>
           <View style={itemStyle.right}>
@@ -233,7 +295,13 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
         )}
 
         <View style={[itemStyle.center, item?.isSystem && itemStyle.systemCenter]}>
-          <Text style={[itemStyle.centerType, fonts.mediumFont]}>{item?.transactionName}</Text>
+          <View style={itemStyle.textAndStatusWrapCenter}>
+            <TextM numberOfLines={1} style={[itemStyle.centerType, fonts.mediumFont]}>
+              {item?.transactionName}
+            </TextM>
+            {StatusDom}
+          </View>
+
           {!item?.isSystem && (
             <>
               {AddressDom}
@@ -250,7 +318,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
         </View>
       </View>
     );
-  }, [AddressDom, AmountDom, ExtraDom, item]);
+  }, [AddressDom, AmountDom, ExtraDom, StatusDom, item]);
 
   const EmptyTokenForDapp = useMemo(() => {
     return (
@@ -267,14 +335,17 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ preItem, item, onPress,
         />
 
         <View style={[itemStyle.center, item?.isSystem && itemStyle.systemCenter]}>
-          <Text numberOfLines={1} style={[itemStyle.centerType, fonts.mediumFont]}>
-            {item?.transactionName}
-          </Text>
+          <View style={itemStyle.textAndStatusWrapCenter}>
+            <TextM numberOfLines={1} style={[itemStyle.centerType, fonts.mediumFont]}>
+              {item?.transactionName}
+            </TextM>
+            {StatusDom}
+          </View>
           <Text style={itemStyle.centerStatus}>{item?.dappName}</Text>
         </View>
       </View>
     );
-  }, [item?.dappIcon, item?.dappName, item?.isSystem, item?.transactionName]);
+  }, [StatusDom, item?.dappIcon, item?.dappName, item?.isSystem, item?.transactionName]);
 
   return (
     <Touchable style={[itemStyle.itemWrap, isLineShow && itemStyle.itemBorder]} onPress={() => onPress?.(item)}>
@@ -374,5 +445,11 @@ const itemStyle = StyleSheet.create({
   },
   resendContainer: {
     marginBottom: pTd(8),
+  },
+  textAndStatusWrapCenter: {
+    height: pTd(24),
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

@@ -131,6 +131,7 @@ export default function Send() {
       tokenId: state.tokenId,
       isSeed: state.isSeed,
       seedType: state.seedType,
+      label: state.label,
     }),
     [
       chainId,
@@ -142,6 +143,7 @@ export default function Send() {
       state.seedType,
       state.symbol,
       state.tokenId,
+      state.label,
     ],
   );
   const defaultToken = useDefaultToken(chainId);
@@ -673,6 +675,7 @@ export default function Send() {
             isSeed={state.isSeed}
             seedType={state.seedType}
             decimals={tokenInfo.decimals}
+            label={state.label}
           />
         ),
       },
@@ -692,6 +695,7 @@ export default function Send() {
       withdrawInfo?.receiveAmountUsd,
       state.isSeed,
       state.seedType,
+      state.label,
       validateToAddress,
       t,
       navigate,
@@ -776,7 +780,7 @@ export default function Send() {
     return (
       <div className={clsx(['page-send', isPrompt && 'detail-page-prompt'])}>
         <CommonHeader
-          title={`Send ${type === 'token' ? symbol : ''}`}
+          title={`Send ${type === 'token' ? tokenInfo.label ?? symbol : ''}`}
           onLeftBack={() => {
             StageObj[stage].backFun();
           }}
@@ -867,6 +871,7 @@ export default function Send() {
     t,
     toAccount,
     tokenInfo.chainId,
+    tokenInfo.label,
     type,
     userInfo?.nickName,
   ]);

@@ -47,6 +47,25 @@
   .chat-box-footer {
     flex-shrink: 0;
   }
+  .unblock-footer {
+    height: 60px;
+    font-size: 16px;
+    line-height: 22px;
+    color: @brand-normal;
+    border-top: 1px solid @neutral-divider;
+    background-color: @neutral-hover-bg;
+    .click-content {
+      cursor: pointer;
+    }
+    .un-click-content {
+      gap: 8px;
+      cursor: not-allowed;
+      .circle-loading {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
 }
 
 .portkey-input-more-popover {

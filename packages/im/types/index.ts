@@ -96,6 +96,7 @@ export type Message = {
   from: string;
   fromAvatar?: string;
   fromName?: string;
+  isOwner?: boolean;
 
   id?: string;
   quote?: Message;

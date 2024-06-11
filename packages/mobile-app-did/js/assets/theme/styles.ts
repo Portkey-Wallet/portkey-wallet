@@ -34,6 +34,9 @@ export const BGStyles = StyleSheet.create({
 
 export const FontStyles = StyleSheet.create({
   primaryColor: { color: defaultColors.primaryColor },
+  primaryTextColor: { color: defaultColors.primaryTextColor },
+  secondaryTextColor: { color: defaultColors.secondaryTextColor },
+
   font1: { color: defaultColors.font1 },
   font2: { color: defaultColors.font2 },
   font3: { color: defaultColors.font3 },
@@ -56,6 +59,11 @@ export const FontStyles = StyleSheet.create({
   font20: { color: defaultColors.font20 },
   font21: { color: defaultColors.font21 },
   font22: { color: defaultColors.font22 },
+  neutralPrimaryTextColor: { color: defaultColors.neutralPrimaryTextColor },
+  neutralSecondaryTextColor: { color: defaultColors.neutralSecondaryTextColor },
+  neutralTertiaryText: { color: defaultColors.neutralTertiaryText },
+  functionalRedDefault: { color: defaultColors.functionalRedDefault },
+  functionalGreenDefault: { color: defaultColors.functionalGreenDefault },
 
   white: { color: defaultColors.white },
 

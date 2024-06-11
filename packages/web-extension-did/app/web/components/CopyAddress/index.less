@@ -12,6 +12,11 @@
   height: 24px;
 }
 
+.copy-icon-wrapper-middle {
+  width: 28px;
+  height: 28px;
+}
+
 .copy-icon-wrapper-normal {
   width: 32px;
   height: 32px;
@@ -21,24 +26,20 @@
     background-color: @neutral-container-bg;
     &:active {
       background-color: @brand-light;
+      .copy-svg path {
+        fill: @brand-normal;
+      }
     }
     &:hover {
       background-color: @brand-light;
+      .copy-svg path {
+        fill: @brand-normal;
+      }
     }
 }
 .copy-svg{
   svg{
     width: 16px;
     height: 16px;
-  }
-  :hover {
-    path {
-      fill: @brand-normal;
-    }
-  }
-  :active {
-    path {
-      fill: @brand-normal;
-    }
   }
 }

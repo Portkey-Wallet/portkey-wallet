@@ -8,13 +8,28 @@
   .main-content-wrap {
     gap: 24px;
     padding: 8px 16px 24px;
+    border-bottom: 1px solid @neutral-divider;
     .balance-amount-wrap {
       gap: 4px;
+      .wallet-name-wrap {
+        gap: 4px;
+        .@{app-prefix}-skeleton-avatar {
+          width: 80px;
+          height: 22px;
+        }
+      }
       .wallet-name {
-        font-size: 12px;
-        line-height: 16px;
+        font-size: 14px;
+        line-height: 22px;
         color: @neutral-tertiary-text;
         word-break: break-all;
+      }
+      .balance-amount-content {
+        gap: 4px;
+        .@{app-prefix}-skeleton-avatar {
+          width: 148px;
+          height: 40px;
+        }
       }
       .balance-amount {
         font-size: 32px;
@@ -25,17 +40,37 @@
           font-size: 28px;
           line-height: 36px;
         }
+        &.balance-amount-hidden {
+          font-weight: 500;
+          letter-spacing: 3.2px;
+        }
       }
       &.is-prompt {
         align-items: center;
       }
+      .hide-assets-icon-wrap {
+        padding: 6px 0;
+        .hide-assets-icon {
+          width: 16px;
+          height: 16px;
+          svg {
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
     }
+  }
+
+  .banner-wrap {
+    border-bottom: 1px solid @neutral-divider;
   }
 
   .@{app-prefix}-tabs {
     background-color: @neutral-default-bg;
     overflow: hidden;
     height: 100%;
+    margin-top: 8px;
 
     .@{app-prefix}-tabs-nav {
       margin: 0;
@@ -44,6 +79,10 @@
       position: sticky;
       top: 0;
       background: @neutral-default-bg;
+
+      &::before {
+        content: none;
+      }
 
       .@{app-prefix}-tabs-nav-wrap {
         .@{app-prefix}-tabs-nav-list {

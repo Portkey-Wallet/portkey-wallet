@@ -15,6 +15,7 @@ import { useCheckManagerSyncState } from 'hooks/wallet';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 import { useEffectOnce } from '@portkey-wallet/hooks';
+import CircleLoading from 'components/CircleLoading';
 
 export default function TokenInput({
   fromAccount,
@@ -38,8 +39,9 @@ export default function TokenInput({
   const currentChain = useCurrentChain(token.chainId as ChainId);
   const isMainnet = useIsMainnet();
   const { t } = useTranslation();
-  const [amount, setAmount] = useState<string>(value ? `${value} ${token.symbol}` : '');
+  const [amount, setAmount] = useState<string>(value ? `${value} ${token.label ?? token.symbol}` : '');
   const [balance, setBalance] = useState<string>('');
+  const [balanceLoading, setBalanceLoading] = useState(false);
   const [maxAmount, setMaxAmount] = useState('');
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const amountInUsdShow = useAmountInUsdShow();
@@ -58,18 +60,25 @@ export default function TokenInput({
 
   const getTokenBalance = useCallback(async () => {
     if (!currentChain) return;
-    const result = await getBalance({
-      rpcUrl: currentChain.endPoint,
-      address: token.address,
-      chainType: currentNetwork.walletType,
-      paramsOption: {
-        owner: fromAccount.address,
-        symbol: token.symbol,
-      },
-    });
-    const balance = result.result.balance;
-    setBalance(balance);
-    console.log(result, currentChain, 'balances==getTokenBalance=');
+    try {
+      setBalanceLoading(true);
+      const result = await getBalance({
+        rpcUrl: currentChain.endPoint,
+        address: token.address,
+        chainType: currentNetwork.walletType,
+        paramsOption: {
+          owner: fromAccount.address,
+          symbol: token.symbol,
+        },
+      });
+      const balance = result.result.balance;
+      setBalance(balance);
+      console.log(result, currentChain, 'balances==getTokenBalance=');
+    } catch (error) {
+      console.log('===getBalance error', error);
+    } finally {
+      setBalanceLoading(false);
+    }
   }, [currentChain, currentNetwork.walletType, fromAccount.address, token.address, token.symbol]);
 
   const getMaxAmount = useCallback(async () => {
@@ -107,8 +116,11 @@ export default function TokenInput({
 
   useEffect(() => {
     getTokenBalance();
+  }, [getTokenBalance]);
+
+  useEffect(() => {
     getMaxAmount();
-  }, [getMaxAmount, getTokenBalance]);
+  }, [getMaxAmount]);
 
   const handleAmountBlur = useCallback(() => {
     onChange({ amount, balance });
@@ -133,14 +145,18 @@ export default function TokenInput({
         <div className="control">
           <div className="asset-selector">
             <div className="icon">
-              <TokenImageDisplay symbol={token.symbol} src={token.imageUrl} width={36} />
+              <TokenImageDisplay symbol={token.label ?? token.symbol} src={token.imageUrl} width={36} />
             </div>
             <div className="center">
-              <p className="symbol">{token?.symbol}</p>
-              <p className="amount">{`${t('Balance_with_colon')} ${formatTokenAmountShowWithDecimals(
-                balance,
-                token.decimals,
-              )} ${token?.symbol}`}</p>
+              <div className="symbol">{token.label ?? token.symbol}</div>
+              <div className="amount flex-row-center">
+                {t('Balance_with_colon')}
+                {balanceLoading ? (
+                  <CircleLoading />
+                ) : (
+                  ` ${formatTokenAmountShowWithDecimals(balance, token.decimals)} ${token.label ?? token.symbol}`
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -158,7 +174,7 @@ export default function TokenInput({
               className={clsx(needConvert ? 'need-convert' : '')}
               value={amount}
               onFocus={() => {
-                setAmount((v) => v?.replace(` ${token?.symbol}`, ''));
+                setAmount((v) => v?.replace(` ${token.label ?? token.symbol}`, ''));
               }}
               onBlur={handleAmountBlur}
               onChange={(e) => {

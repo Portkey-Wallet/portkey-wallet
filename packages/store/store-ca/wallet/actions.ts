@@ -8,8 +8,9 @@ import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import AElf from 'aelf-sdk';
 import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 import { getChainList } from './api';
-import { WalletState } from './type';
 import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
+import { WalletState } from './type';
+import walletNameService from '@portkey-wallet/utils/walletName';
 
 export const createWallet =
   ({
@@ -128,7 +129,7 @@ export const getCaHolderInfoAsync = createAsyncThunk<
   const baseUrl = NetworkList.find(item => item.networkType === currentNetwork)?.apiUrl;
   const caHash = walletInfo?.caInfo[currentNetwork].AELF?.caHash;
   if (!caHash || !baseUrl) return undefined;
-  let caHolder = undefined;
+  let caHolder;
   try {
     const response = await getCaHolder(baseUrl, {
       caHash,
@@ -155,4 +156,37 @@ export const setNickNameAndAvatarAction = createAction<
   RequireAtLeastOne<{ nickName: string; avatar: string; networkType: NetworkType }>
 >('wallet/setUserNameAndAvatarAction');
 
+export const setHideAssetsAction =
+  createAction<RequireAtLeastOne<{ hideAssets: boolean }>>('wallet/setHideAssetsAction');
+
 export const setOriginChainId = createAction<ChainId>('wallet/setOriginChainId');
+
+export const fetchShouldShowSetNewWalletNameModal = createAsyncThunk(
+  'wallet/fetchShouldShowSetNewWalletNameModal',
+  async () => {
+    const shouldShowModal = await walletNameService.shouldShowSetNewWalletNameModal();
+    return shouldShowModal;
+  },
+);
+
+export const fetchShouldShowSetNewWalletNameIcon = createAsyncThunk(
+  'wallet/fetchShouldShowSetNewWalletNameIcon',
+  async () => {
+    const shouldShowIcon = await walletNameService.shouldShowSetNewWalletNameIcon();
+    return shouldShowIcon;
+  },
+);
+
+export const setNewWalletName = createAsyncThunk(
+  'wallet/setNewWalletName',
+  async ({ caHash, chainId }: { caHash: string; chainId: ChainId }) => {
+    await walletNameService.setNewWalletName({ caHash, chainId, replaceNickname: true });
+  },
+);
+
+export const cancelSetNewWalletNameModal = createAsyncThunk(
+  'wallet/cancelSetNewWalletNameModal',
+  async ({ caHash, chainId }: { caHash: string; chainId: ChainId }) => {
+    await walletNameService.setNewWalletName({ caHash, chainId, replaceNickname: false });
+  },
+);

@@ -55,15 +55,15 @@ export const ALL_RECEIVE_TAB: {
     label: 'QR Code',
   },
   {
-    value: ReceiveTabEnum.Deposit,
-    label: 'Deposit',
-  },
-  {
     value: ReceiveTabEnum.Exchanges,
     label: 'Exchanges',
   },
   {
     value: ReceiveTabEnum.Buy,
     label: 'Buy',
+  },
+  {
+    value: ReceiveTabEnum.Deposit,
+    label: 'Deposit',
   },
 ];

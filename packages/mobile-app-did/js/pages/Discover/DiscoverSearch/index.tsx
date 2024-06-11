@@ -18,9 +18,12 @@ import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { useInputFocus } from 'hooks/useInputFocus';
 import Touchable from 'components/Touchable';
+import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
+import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
 
 export default function DiscoverSearch() {
   const { t } = useLanguage();
+  const { learnGroupList, earnList } = useDiscoverData();
 
   const iptRef = useRef<TextInput>();
   useInputFocus(iptRef);
@@ -40,9 +43,18 @@ export default function DiscoverSearch() {
         list.push(item);
       });
     });
+    learnGroupList.map(group => {
+      group?.items?.map(item => {
+        list.push(parseLearnItemToDiscoverItem(item));
+      });
+    });
+
+    earnList.map(ele => {
+      list.push(parseLearnItemToDiscoverItem(ele));
+    });
 
     return list;
-  }, [discoverGroupList]);
+  }, [discoverGroupList, earnList, learnGroupList]);
 
   useEffect(() => {
     if (!value) setShowRecord(true);
@@ -117,13 +129,24 @@ export default function DiscoverSearch() {
   );
 }
 
+const parseLearnItemToDiscoverItem = (item: TBaseCardItemType): DiscoverItem => {
+  return {
+    title: item.title || '',
+    description: item.description || '',
+    url: item.url,
+    imgUrl: item.imgUrl,
+    id: '-1',
+    index: Number(item.index),
+  };
+};
+
 const styles = StyleSheet.create({
   container: {
     paddingLeft: 0,
     paddingRight: 0,
   },
   inputContainer: {
-    ...GStyles.paddingArg(0, 20, 8),
+    ...GStyles.paddingArg(12, 20, 8),
   },
   inputStyle: {
     width: pTd(280),

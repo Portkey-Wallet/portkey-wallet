@@ -27,12 +27,9 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { isIOS } from '@rneui/base';
 import { isValidNumber } from '@portkey-wallet/utils/reg';
 import Svg, { IconName } from 'components/Svg';
-import {
-  ALLOWANCE_DESC,
-  SET_ALLOWANCE_BTN_TEXT,
-  SET_ALLOWANCE_TIP,
-  SET_ALLOWANCE_MULTIPLY_TIP,
-} from '@portkey-wallet/constants/constants-ca/allowance';
+import { ALLOWANCE_DESC, SET_ALLOWANCE_MULTIPLY_TIP } from '@portkey-wallet/constants/constants-ca/allowance';
+import { isNFT } from '@portkey-wallet/utils/token';
+import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 type SignModalPropsType = {
   dappInfo: DappStoreItem;
   approveParams: ApproveParams;
@@ -50,11 +47,15 @@ const ApproveModal = (props: SignModalPropsType) => {
 
   const [errorMessage, setErrorMessage] = useState('');
   const [symbolNum, setSymbolNum] = useState<string>('');
-  const [isBatchApproval, setIsBatchApproval] = useState<boolean>(false);
+
   const decimals = useMemo(() => approveParams.approveInfo.decimals, [approveParams.approveInfo.decimals]);
-  const symbol = useMemo(
-    () => (isBatchApproval ? '*' : approveParams.approveInfo.symbol),
-    [approveParams.approveInfo.symbol, isBatchApproval],
+
+  const approveSymbol = useMemo(
+    () =>
+      approveParams?.batchApproveNFT && isNFT(approveParams.approveInfo.symbol)
+        ? approveParams.approveInfo.symbol.split('-')[0]
+        : approveParams.approveInfo.symbol,
+    [approveParams.approveInfo.symbol, approveParams?.batchApproveNFT],
   );
 
   const MAX_NUM = useMemo(
@@ -97,7 +98,7 @@ const ApproveModal = (props: SignModalPropsType) => {
               approveInfo: {
                 ...approveParams.approveInfo,
                 decimals,
-                symbol,
+                symbol: approveParams.approveInfo.symbol,
                 amount: (LANG_MAX.lt(tmpAmount) ? LANG_MAX : tmpAmount).toFixed(0),
               },
             } as ApproveParams,
@@ -116,7 +117,6 @@ const ApproveModal = (props: SignModalPropsType) => {
       decimals,
       dispatch,
       onReject,
-      symbol,
       symbolNum,
       t,
       targetChainId,
@@ -166,17 +166,17 @@ const ApproveModal = (props: SignModalPropsType) => {
             ]}>
             {isEditBatchApprovalInApp
               ? `Set access token amount`
-              : `${dappInfo.name || dappInfo.origin} is requesting access to your Token`}
+              : `${dappInfo.name || dappInfo.origin} is requesting access to your ${approveSymbol}`}
           </TextL>
 
-          <TextS style={[FontStyles.font7, GStyles.textAlignCenter]}>{ALLOWANCE_DESC}</TextS>
+          <TextS style={[FontStyles.font7, GStyles.textAlignCenter]}>{`${ALLOWANCE_DESC} ${approveSymbol}`}</TextS>
         </View>
 
         <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.inputTitle]}>
           <TextM style={GStyles.flex1}>Set Allowance</TextM>
           {!isEditBatchApprovalInApp && (
             <Touchable onPress={onUseRecommendedValue}>
-              <TextM style={FontStyles.font4}> Use Recommended Value</TextM>
+              <TextM style={FontStyles.primaryColor}> Use Recommended Value</TextM>
             </Touchable>
           )}
         </View>
@@ -189,27 +189,18 @@ const ApproveModal = (props: SignModalPropsType) => {
           onChangeText={onChangeText}
           errorMessage={errorMessage}
           rightIcon={
-            <Touchable onPress={onPressMax}>
-              <TextM style={FontStyles.font4}>Max</TextM>
-            </Touchable>
+            <View style={GStyles.flexRow}>
+              <Touchable>
+                <TextM style={FontStyles.font18}>{formatStr2EllipsisStr(approveSymbol, 8, 'tail')}</TextM>
+              </Touchable>
+              <Touchable style={GStyles.marginLeft(pTd(12))} onPress={onPressMax}>
+                <TextM style={FontStyles.primaryColor}>Max</TextM>
+              </Touchable>
+            </View>
           }
         />
 
-        {approveParams?.showBatchApproveToken && !isEditBatchApprovalInApp && (
-          <Touchable style={styles.batchApprovalWrap} onPress={() => setIsBatchApproval(!isBatchApproval)}>
-            <Svg
-              icon={isBatchApproval ? 'selected' : 'unselected'}
-              color={isBatchApproval ? defaultColors.primaryColor : undefined}
-              size={pTd(20)}
-              iconStyle={{ marginRight: pTd(8) }}
-            />
-            <TextM>{SET_ALLOWANCE_BTN_TEXT}</TextM>
-          </Touchable>
-        )}
-
-        <TextM style={[FontStyles.font3]}>
-          {approveParams?.showBatchApproveToken ? SET_ALLOWANCE_MULTIPLY_TIP : SET_ALLOWANCE_TIP}
-        </TextM>
+        <TextM style={[FontStyles.font3]}>{SET_ALLOWANCE_MULTIPLY_TIP}</TextM>
       </View>
       <OverlayBottomSection bottomButtonGroup={ButtonList} />
     </ModalBody>

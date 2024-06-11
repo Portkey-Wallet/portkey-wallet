@@ -18,13 +18,13 @@ import { apis } from 'utils/BrowserApis';
 import SocialLoginController from 'controllers/socialLoginController';
 import { LocalStream } from 'utils/extensionStreams';
 import { MethodsWallet, MethodsBase } from '@portkey/provider-types';
-import OpenNewTabController from 'controllers/openNewTabController';
+// import OpenNewTabController from 'controllers/openNewTabController';
 import BadgeController from 'controllers/BadgeController';
 import GCMController from 'controllers/GCMController';
 
 const notificationService = new NotificationService();
 const socialLoginService = new SocialLoginController();
-OpenNewTabController.onOpenNewTab();
+// OpenNewTabController.onOpenNewTab();
 
 let seed: string | null = null;
 
@@ -297,7 +297,7 @@ export default class ServiceWorkerInstantiate {
       'tabs',
     );
     // close this(chrome.runtime.id) other tabs when register wallet
-    await OpenNewTabController.closeOpenTabs(true);
+    // await OpenNewTabController.closeOpenTabs(true);
   };
 
   static loginWallet = () => {
@@ -324,7 +324,7 @@ export default class ServiceWorkerInstantiate {
     );
     sendResponse(errorHandler(0));
     /**  */
-    await OpenNewTabController.closeOpenTabs(true);
+    // await OpenNewTabController.closeOpenTabs(true);
   }
 
   static expandSetting() {

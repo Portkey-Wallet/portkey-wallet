@@ -11,9 +11,9 @@
   box-shadow: none;
 }
 
-.@{app-prefix}-btn-default {
-  color: @brand-normal;
-  border-color: @brand-normal;
+button.@{app-prefix}-btn-default {
+  border-color: @neutral-border;
+  background-color: @neutral-default-bg;
 }
 
 .@{app-prefix}-btn-primary {
@@ -347,5 +347,27 @@
     box-shadow: none;
     /* stylelint-disable-next-line custom-property-empty-line-before */
     --antd-arrow-background-color: @neutral-tooltip-bg;
+  }
+}
+
+/* drawer */
+.common-drawer {
+  overflow-x: auto;
+  .@{app-prefix}-drawer-mask {
+    min-width: 360px;
+  }
+  .@{app-prefix}-drawer-content-wrapper {
+    min-width: 360px;
+  }
+  .@{app-prefix}-drawer-content {
+    border-radius: 8px 8px 0 0;
+  }
+}
+
+/* message tip */
+.@{app-prefix}-message {
+  .@{app-prefix}-message-custom-content {
+    display: flex;
+    text-align: left;
   }
 }

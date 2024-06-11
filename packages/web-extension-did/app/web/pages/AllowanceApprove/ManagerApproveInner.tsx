@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getVerifierList } from '../../utils/sandboxUtil/getVerifierList';
 import { VerifierItem } from '@portkey/did';
 import { AccountTypeEnum, OperationTypeEnum } from '@portkey/services';
@@ -11,7 +11,7 @@ import { DEFAULT_DECIMAL, DEFAULT_NFT_DECIMAL } from '@portkey-wallet/constants/
 import { LANG_MAX } from '@portkey-wallet/constants/misc';
 import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
 import { request } from '@portkey-wallet/api/api-did';
-import { isNFT } from 'utils';
+import { isNFT, isNFTCollection } from '@portkey-wallet/utils/token';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import getSeed from 'utils/getSeed';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -31,10 +31,10 @@ export interface IManagerApproveInnerProps {
   dappInfo?: { icon?: string; href?: string; name?: string };
   symbol: string;
   networkType: NetworkType;
-  showBatchApproveToken: boolean;
+  batchApproveNFT: boolean;
   onCancel?: () => void;
   onError?: (error: Error) => void;
-  onFinish?: (res: { amount: string; guardiansApproved: IGuardiansApproved[]; batchApproveToken: boolean }) => void;
+  onFinish?: (res: { amount: string; guardiansApproved: IGuardiansApproved[]; symbol: string }) => void;
 }
 
 export default function ManagerApproveInner({
@@ -44,7 +44,7 @@ export default function ManagerApproveInner({
   amount,
   dappInfo,
   symbol,
-  showBatchApproveToken,
+  batchApproveNFT,
   onCancel,
   onFinish,
   onError,
@@ -64,9 +64,17 @@ export default function ManagerApproveInner({
   const [guardianList, setGuardianList] = useState<BaseGuardianItem[]>();
   const { setLoading } = useLoading();
   const currentNetwork = useCurrentNetwork();
-  const DEFAULT_SYMBOL_DECIMAL = useMemo(() => (isNFT(symbol) ? DEFAULT_NFT_DECIMAL : DEFAULT_DECIMAL), [symbol]);
+  const [DEFAULT_SYMBOL_DECIMAL, approveSymbol] = useMemo(() => {
+    const defaultDecimals = isNFT(symbol) ? DEFAULT_NFT_DECIMAL : DEFAULT_DECIMAL;
+
+    if (!batchApproveNFT || isNFTCollection(symbol) || !isNFT(symbol)) return [defaultDecimals, symbol];
+
+    const collection = symbol.split('-')[0];
+
+    return [defaultDecimals, `${collection}-*`];
+  }, [batchApproveNFT, symbol]);
+
   const [allowance, setAllowance] = useState<string>(divDecimals(amount, DEFAULT_SYMBOL_DECIMAL).toFixed());
-  const batchApproveTokenRef = useRef<boolean>(false);
 
   const getChainInfo = useGetChainInfo();
 
@@ -115,7 +123,6 @@ export default function ManagerApproveInner({
     async (allowanceInfo: IAllowanceConfirmProps) => {
       try {
         setAllowance(allowanceInfo.allowance);
-        batchApproveTokenRef.current = allowanceInfo.batchApproveToken;
         setLoading(true);
 
         const guardianList = await getGuardianList();
@@ -177,7 +184,6 @@ export default function ManagerApproveInner({
         <SetAllowance
           symbol={symbol}
           amount={allowance}
-          showBatchApproveToken={showBatchApproveToken}
           decimals={tokenInfo?.decimals ?? DEFAULT_SYMBOL_DECIMAL}
           recommendedAmount={divDecimals(amount, tokenInfo?.decimals ?? DEFAULT_SYMBOL_DECIMAL).toFixed()}
           max={divDecimals(LANG_MAX, tokenInfo?.decimals ?? DEFAULT_SYMBOL_DECIMAL).toFixed(0)}
@@ -209,7 +215,7 @@ export default function ManagerApproveInner({
             onFinish?.({
               amount: timesDecimals(allowance, tokenInfo?.decimals || DEFAULT_SYMBOL_DECIMAL).toFixed(0),
               guardiansApproved: approved,
-              batchApproveToken: batchApproveTokenRef.current,
+              symbol: approveSymbol,
             });
           }}
           onError={(error) => onError?.(Error(handleErrorMessage(error.error)))}

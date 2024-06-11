@@ -33,6 +33,7 @@ export interface ISendPreviewProps {
   decimals?: number;
   receiveAmount?: string;
   receiveAmountUsd?: string;
+  label?: string;
 }
 
 export default function SendPreview(props: ISendPreviewProps) {
@@ -51,6 +52,7 @@ export default function SendPreview(props: ISendPreviewProps) {
     decimals,
     receiveAmount,
     receiveAmountUsd,
+    label,
   } = props;
   const wallet = useCurrentWalletInfo();
   const isMainnet = useIsMainnet();
@@ -83,31 +85,40 @@ export default function SendPreview(props: ISendPreviewProps) {
     else amountUsd = amountInUsdShow(ZERO.plus(amount).minus(crossChainFee).toFixed(), 0, symbol);
     return (
       <>
-        <div className="amount">{`${amount} ${symbol}`}</div>
+        <div className="amount">{`${amount} ${label ?? symbol}`}</div>
         <div className="usd">{isMainnet && amountUsd}</div>
       </>
     );
-  }, [amountInUsdShow, crossChainFee, defaultToken.decimals, isMainnet, receiveAmount, receiveAmountUsd, symbol]);
+  }, [
+    amountInUsdShow,
+    crossChainFee,
+    defaultToken.decimals,
+    isMainnet,
+    label,
+    receiveAmount,
+    receiveAmountUsd,
+    symbol,
+  ]);
 
   const renderEstimateAmount = useMemo(() => {
     if (ZERO.plus(amount).isLessThanOrEqualTo(crossChainFee)) {
       return (
         <>
-          <div className="amount">{`0 ${symbol}`}</div>
+          <div className="amount">{`0 ${label ?? symbol}`}</div>
           <div className="usd">{isMainnet && '$ 0'}</div>
         </>
       );
     } else {
       return receiveAmountInner;
     }
-  }, [amount, crossChainFee, isMainnet, receiveAmountInner, symbol]);
+  }, [amount, crossChainFee, isMainnet, label, receiveAmountInner, symbol]);
 
   return (
     <div className="send-preview">
       {type !== 'nft' ? (
         <div className="amount-preview">
           <p className="amount">
-            -{formatAmountShow(amount, decimals)} {symbol}
+            -{formatAmountShow(amount, decimals)} {label ?? symbol}
           </p>
           <p className="convert">{isMainnet && amountInUsdShow(amount, 0, symbol)}</p>
         </div>

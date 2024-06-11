@@ -1,6 +1,6 @@
 export enum CryptoGiftStatus {
-  InProgress = 'In Progress',
-  FullyClaimed = 'Fully Claimed',
+  Active = 'Active',
+  Claimed = 'Claimed',
   Expired = 'Expired',
 }
 

@@ -80,7 +80,7 @@ type NextCryptoGiftDetailParams = {
 };
 export type NextCryptoGiftDetailResult = { info: RedPackageDetail; list: RedPackageGrabInfoItem[] };
 
-export const useGetCryptoGiftDetail = (id?: string) => {
+export const useGetCryptoGiftDetail = (id: string) => {
   const [info, setInfo] = useState<RedPackageDetail>();
   const infoRef = useRef(info);
   infoRef.current = info;
@@ -139,9 +139,9 @@ export const useGetCryptoGiftDetail = (id?: string) => {
   );
   const init = useCallback(
     async (params?: { id: string }) => {
-      return await next(params);
+      return await next({ id: params?.id ?? id ?? '' });
     },
-    [next],
+    [id, next],
   );
 
   return {

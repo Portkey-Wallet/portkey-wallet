@@ -421,10 +421,13 @@ export const show = (props: Omit<PaymentOverlayProps, 'onConfirm'>) => {
 export const showRedPacket = (props: Omit<PaymentOverlayProps, 'onConfirm' | 'title'>) => {
   return show({ ...props, title: 'Portkey Crypto Box' });
 };
-
+export const showCryptoGift = (props: Omit<PaymentOverlayProps, 'onConfirm' | 'title'>) => {
+  return show({ ...props, title: 'Crypto Gift' });
+};
 export default {
   show,
   showRedPacket,
+  showCryptoGift,
 };
 
 export const styles = StyleSheet.create({

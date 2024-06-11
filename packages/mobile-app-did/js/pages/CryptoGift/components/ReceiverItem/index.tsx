@@ -1,4 +1,4 @@
-import { RedPackageGrabInfoItem } from '@portkey-wallet/im';
+import { DisplayType, RedPackageGrabInfoItem } from '@portkey-wallet/im';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
@@ -10,7 +10,7 @@ import Svg from 'components/Svg';
 import { getEllipsisTokenShow } from 'pages/Chat/utils/format';
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { formatTransferTime } from '@portkey-wallet/utils/time';
+import { formatTimeToHmStr, formatTransferTime } from '@portkey-wallet/utils/time';
 import { pTd } from 'utils/unit';
 
 interface IReceiverItemProps {
@@ -22,24 +22,30 @@ interface IReceiverItemProps {
 
 const ReceiverItem: React.FC<IReceiverItemProps> = props => {
   const { item, symbol, decimals, isLuckyKing } = props;
-
+  console.log('wfs=--- props', props);
   return (
     <View style={itemStyle.wrap}>
-      <CommonAvatar
-        hasBorder
-        resizeMode="cover"
-        style={itemStyle.left}
-        title={item?.username}
-        avatarSize={pTd(48)}
-        imageUrl={item?.avatar}
-      />
+      {item?.displayType === DisplayType.Pending ? (
+        <View style={itemStyle.pendingIconBG}>
+          <Svg icon={'lock-gift'} size={pTd(20)} />
+        </View>
+      ) : (
+        <CommonAvatar
+          hasBorder
+          resizeMode="cover"
+          style={itemStyle.left}
+          title={item?.username}
+          avatarSize={pTd(48)}
+          imageUrl={item?.avatar}
+        />
+      )}
       <View style={itemStyle.right}>
         <View style={itemStyle.infoWrap}>
           <View style={itemStyle.userNameWrapper}>
             <TextL numberOfLines={1} style={itemStyle.name}>
-              {item?.username || ''}
+              {item?.displayType === DisplayType.Pending ? 'Awaiting Claim' : item?.username || ''}
             </TextL>
-            {item.isMe && (
+            {item?.isMe && (
               <View style={itemStyle.meBg}>
                 <TextS style={[GStyles.fontSize(pTd(10)), FontStyles.neutralDefaultBG, fonts.mediumFont]}>Me</TextS>
               </View>
@@ -61,6 +67,10 @@ const ReceiverItem: React.FC<IReceiverItemProps> = props => {
               <Svg icon="luckiest" size={pTd(16)} />
               <TextM style={itemStyle.luckiest}>Luckiest Draw</TextM>
             </View>
+          ) : item?.displayType === DisplayType.Pending ? (
+            <View style={[GStyles.flexRow, GStyles.itemCenter, itemStyle.luckiestWrap]}>
+              <TextM style={itemStyle.expirationTime}>{`Expiration ${formatTimeToHmStr(item?.expirationTime)}`}</TextM>
+            </View>
           ) : (
             <View style={itemStyle.luckiestWrap} />
           )}
@@ -80,6 +90,14 @@ const itemStyle = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  pendingIconBG: {
+    backgroundColor: defaultColors.neutralDivider,
+    height: pTd(48),
+    width: pTd(48),
+    borderRadius: pTd(24),
+    justifyContent: 'center',
     alignItems: 'center',
   },
   left: {},
@@ -131,14 +149,17 @@ const itemStyle = StyleSheet.create({
     paddingLeft: pTd(10),
   },
   amount: {
-    color: defaultColors.font5,
+    color: defaultColors.primaryTextColor,
     ...fonts.mediumFont,
   },
   luckiest: {
     marginLeft: pTd(4),
-    color: defaultColors.font6,
+    color: defaultColors.functionalYellowDefault,
   },
   luckiestWrap: {
     height: pTd(16),
+  },
+  expirationTime: {
+    color: defaultColors.neutralTertiaryText,
   },
 });

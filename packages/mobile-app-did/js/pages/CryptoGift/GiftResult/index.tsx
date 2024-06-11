@@ -1,39 +1,49 @@
-import PageContainer from 'components/PageContainer';
 import Svg from 'components/Svg';
-import Touchable from 'components/Touchable';
 import { useLanguage } from 'i18n/hooks';
-import React, { useCallback, useState } from 'react';
-import { FlatList } from 'react-native-gesture-handler';
+import React, { useCallback, useMemo } from 'react';
 import { pTd } from 'utils/unit';
-import HistoryCard from '../components/HistoryCard';
-import { Image, ImageBackground, StyleSheet, TouchableOpacity } from 'react-native';
+import { ImageBackground, Share, StyleSheet, TouchableOpacity } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import HeaderCard from '../components/HeaderCard';
 import { View } from 'react-native';
-import Packet_Detail_Header_Bg from '../img/Packet_Detail_Header_Bg.png';
 import { screenWidth, statusBarHeight } from '@portkey-wallet/utils/mobile/device';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
-import referralTopBackground from 'assets/image/pngs/referralTopBackground.png';
 import giftResultBg from 'assets/image/pngs/giftResultBg.png';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
-import fonts from 'assets/theme/fonts';
 import { TextL, TextM, TextTitle, TextXL } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';
-const data = Array.from({ length: 11 });
+import { copyText } from 'utils';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+export interface IGiftResultProps {
+  giftId: string;
+}
+
 export default function GiftResult() {
+  const { giftId } = useRouterParams<IGiftResultProps>();
   const { t } = useLanguage();
-  const [isSkeleton, setIsSkeleton] = useState<boolean>(true);
-  const renderItem = useCallback(() => {
-    return <HistoryCard containerStyle={styles.itemDivider} />;
-  }, []);
-  const renderDivider = useCallback(() => {
-    return <View style={styles.divider} />;
-  }, []);
+  const currentNetworkInfo = useCurrentNetworkInfo();
+  const shareUrl = useMemo(() => {
+    return `${currentNetworkInfo.referralUrl}/cryptoGift?id=${giftId}`;
+  }, [currentNetworkInfo.referralUrl, giftId]);
   const onDone = useCallback(() => {
     console.log('onDone clicked!!');
     navigationService.navigate('CryptoGift');
   }, []);
+  const onCopyPress = useCallback(async () => {
+    await copyText(shareUrl || '');
+  }, [shareUrl]);
+  const onSharePress = useCallback(async () => {
+    await Share.share({
+      message: 'Crypto Gift',
+      url: shareUrl,
+      title: 'Crypto Gift',
+    }).catch(shareError => {
+      console.log(shareError);
+    });
+  }, [shareUrl]);
+
   return (
     <View style={styles.pageWrap}>
       <ImageBackground source={giftResultBg} style={styles.topSectionStyle}>
@@ -42,19 +52,25 @@ export default function GiftResult() {
             <TextM style={[FontStyles.brandNormal, GStyles.paddingRight(pTd(16))]}>Done</TextM>
           </View>
         </TouchableOpacity>
-        <HeaderCard />
+        <HeaderCard showViewDetails giftId={giftId} />
         {/* <Image source={referralTopText} style={styles.referralTopText} /> */}
       </ImageBackground>
       <View style={[GStyles.itemCenter, GStyles.flexCenter, GStyles.flexRow, GStyles.marginTop(pTd(40))]}>
-        <TextTitle>Send to Your Friends Right Now!</TextTitle>
+        <TextTitle>Share the surprise with your friends NOW!</TextTitle>
       </View>
-      <CommonButton containerStyle={styles.buttonContainer} type="primary" disabled={false} radius={pTd(6)}>
+      <CommonButton
+        containerStyle={styles.buttonContainer}
+        type="primary"
+        disabled={false}
+        radius={pTd(6)}
+        onPress={onCopyPress}>
         <View style={styles.buttonContentWrapper}>
           <Svg icon="copy" size={pTd(20)} color={defaultColors.neutralDefaultBG} />
-          <TextL style={styles.buttonText}>{t('Create Crypto Gifts')}</TextL>
+          <TextL style={styles.buttonText}>{t('Copy Link')}</TextL>
         </View>
       </CommonButton>
       <CommonButton
+        onPress={onSharePress}
         containerStyle={[styles.buttonContainer, GStyles.paddingTop(pTd(16))]}
         buttonStyle={styles.shareButtonStyle}
         type="outline"
@@ -62,11 +78,9 @@ export default function GiftResult() {
         radius={pTd(6)}>
         <View style={styles.buttonContentWrapper}>
           <Svg icon="share-gift" size={pTd(20)} color={defaultColors.brandNormal} />
-          <TextL style={[styles.buttonText, FontStyles.brandNormal]}>{t('Share with your friends')}</TextL>
+          <TextL style={[styles.buttonText, FontStyles.brandNormal]}>{t('Share')}</TextL>
         </View>
       </CommonButton>
-      {/* <NewUserOnly /> */}
-      {/* <View style={[GStyles.flexCol, GStyles.center, styles.bottomSectionWrap]} /> */}
     </View>
   );
 }

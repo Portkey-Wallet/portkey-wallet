@@ -22,7 +22,9 @@ export default function NewUserOnly(props: INewUserOnlyProps) {
     <View style={styles.container}>
       <View style={styles.textContainer}>
         <TextM style={styles.title}>New Users Only</TextM>
-        <Text style={styles.description}>Once enabled, only new Portkey users can receive your crypto gift.</Text>
+        <Text style={styles.description}>
+          Once enabled, only newly registered Portkey users can claim your crypto gift.
+        </Text>
       </View>
       {/* <View style={styles.switchContainer}>
         <View style={styles.switchBackground}>

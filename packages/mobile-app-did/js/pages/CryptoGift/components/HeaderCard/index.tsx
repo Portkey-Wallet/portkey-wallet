@@ -6,21 +6,28 @@ import { TextL, TextM } from 'components/CommonText';
 import fonts from 'assets/theme/fonts';
 import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
+import navigationService from 'utils/navigationService';
 export interface IHeaderCardProps {
   showViewDetails?: boolean;
   memo?: string;
+  giftId?: string;
 }
 export default function HeaderCard(props: IHeaderCardProps) {
-  const { showViewDetails, memo } = props;
+  const { showViewDetails, memo, giftId } = props;
   return (
     <View style={styles.container}>
       <Svg icon="gift-box-close" oblongSize={[pTd(171.5), pTd(120)]} />
       <View style={styles.titlWrapper}>
         {showViewDetails && <Svg icon="success" size={pTd(20)} iconStyle={styles.icon} />}
-        <TextL style={{ ...fonts.mediumFont }}>{memo || `“Claim and Join Portkey”`}</TextL>
+        <TextL style={{ ...fonts.mediumFont }}>{memo || `The crypto gift is packaged.`}</TextL>
       </View>
       {showViewDetails && (
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigationService.navigate('GiftDetail', {
+              id: giftId,
+            });
+          }}>
           <TextM style={[FontStyles.brandNormal, GStyles.marginTop(pTd(8))]}>View Details</TextM>
         </TouchableOpacity>
       )}

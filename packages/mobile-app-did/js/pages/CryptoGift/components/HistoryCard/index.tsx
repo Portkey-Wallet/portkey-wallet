@@ -24,13 +24,17 @@ export default function HistoryCard(props: IHistoryCardProps) {
   const { showTitle, redPacketDetail, isSkeleton } = props;
   console.log('wfs=== redPacketDetail', redPacketDetail);
   const statusStyles = useMemo(() => {
-    if (redPacketDetail?.redPackageStatus === CryptoGiftOriginalStatus.Expired) {
+    if (
+      redPacketDetail?.redPackageStatus === CryptoGiftOriginalStatus.Init ||
+      redPacketDetail?.redPackageStatus === CryptoGiftOriginalStatus.NotClaimed ||
+      redPacketDetail?.redPackageStatus === CryptoGiftOriginalStatus.Claimed
+    ) {
       return {
         bg: {
-          backgroundColor: defaultColors.neutralContainerBG,
+          backgroundColor: defaultColors.brandLight,
         },
         textColor: {
-          color: defaultColors.neutralTertiaryText,
+          color: defaultColors.brandNormal,
         },
       };
     } else if (redPacketDetail?.redPackageStatus === CryptoGiftOriginalStatus.FullyClaimed) {
@@ -45,10 +49,10 @@ export default function HistoryCard(props: IHistoryCardProps) {
     }
     return {
       bg: {
-        backgroundColor: defaultColors.brandLight,
+        backgroundColor: defaultColors.neutralContainerBG,
       },
       textColor: {
-        color: defaultColors.brandNormal,
+        color: defaultColors.neutralTertiaryText,
       },
     };
   }, [redPacketDetail?.redPackageStatus]);
@@ -56,7 +60,7 @@ export default function HistoryCard(props: IHistoryCardProps) {
     <View style={[styles.historyContainer, props.containerStyle]}>
       {showTitle && (
         <View style={styles.titleContainer}>
-          <TextL style={styles.textTitle}> History</TextL>
+          <TextL style={styles.textTitle}>Crypto Gift Sent</TextL>
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => {

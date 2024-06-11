@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import GStyles from 'assets/theme/GStyles';
 import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -39,6 +39,7 @@ export type TInputValue = {
 
 export type CryptoValuesType = TInputValue & {
   token: ICryptoBoxAssetItemType;
+  isNewUserOnly?: boolean;
 };
 
 export type SendRedPacketGroupSectionPropsType = {
@@ -56,8 +57,11 @@ const AMOUNT_LABEL_MAP = {
 
 export default function SendRedPacketGroupSection(props: SendRedPacketGroupSectionPropsType) {
   const { type, groupMemberCount, isCryptoGift, onPressButton } = props;
+  console.log('wfs=== isCryptoGift', isCryptoGift);
   const { getTokenInfo } = useGetRedPackageConfig();
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
+
+  const isNewUserOnly = useRef<boolean>(false);
 
   const defaultToken = useDefaultToken(MAIN_CHAIN_ID);
 
@@ -198,6 +202,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
               .times(values.packetNum || 0)
               .toFixed()
           : ZERO.plus(values.count).toFixed(),
+      isNewUserOnly: isNewUserOnly.current,
     });
   }, [getTokenInfo, onPressButton, selectToken, type, values]);
 
@@ -330,6 +335,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
         <NewUserOnly
           onSwitchChanged={selected => {
             console.log('wfs=== NewUserOnly', selected);
+            isNewUserOnly.current = selected;
           }}
         />
       )}
@@ -362,7 +368,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
       <CommonButton
         disabled={!isAllowPrepare}
         type="primary"
-        title={'Send Crypto Box'}
+        title={isCryptoGift ? 'Send Crypto Gift' : 'Send Crypto Box'}
         containerStyle={styles.btnStyle}
         onPress={onPreparePress}
       />

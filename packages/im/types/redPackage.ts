@@ -1,6 +1,7 @@
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import { ChainId } from '.';
 import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
+import { CryptoGiftOriginalStatus } from '@portkey-wallet/types/types-ca/cryptogift';
 
 export type RedPackageStatusInfo = {
   viewStatus: RedPackageStatusEnum;
@@ -31,7 +32,10 @@ export const redPackagesStatusShowMap = {
   [RedPackageStatusEnum.NONE_LEFT]: 'None left',
   [RedPackageStatusEnum.EXPIRED]: 'Expired',
 };
-
+export enum DisplayType {
+  Common = 'Common',
+  Pending = 'Pending',
+}
 export type RedPackageDetail = {
   totalCount: number;
   senderId: string;
@@ -61,6 +65,8 @@ export type RedPackageDetail = {
   assetType: AssetType;
   isSeed?: boolean;
   seedType?: SeedTypeEnum;
+  // only for crypto gift
+  status?: CryptoGiftOriginalStatus;
 };
 
 export type RedPackageGrabInfoItem = {
@@ -71,4 +77,6 @@ export type RedPackageGrabInfoItem = {
   isLuckyKing: boolean;
   amount: string;
   isMe: boolean;
+  displayType: DisplayType;
+  expirationTime: number;
 };

@@ -2,7 +2,7 @@ import PageContainer from 'components/PageContainer';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import { useLanguage } from 'i18n/hooks';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList } from 'react-native-gesture-handler';
 import { pTd } from 'utils/unit';
 import HistoryCard from '../components/HistoryCard';
@@ -20,20 +20,24 @@ import CommonAvatar from 'components/CommonAvatar';
 import ReceiverItem from '../components/ReceiverItem';
 import { useGetCryptoGiftDetail } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 import { RedPackageGrabInfoItem } from '@portkey-wallet/im';
+import { CryptoGiftOriginalStatus } from '@portkey-wallet/types/types-ca/cryptogift';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 const data: RedPackageGrabInfoItem[] = Array.from({ length: 11 });
 export default function GiftDetail() {
   const { t } = useLanguage();
-  const { info, list, next, init } = useGetCryptoGiftDetail();
+  const { id } = useRouterParams<{ id: string }>();
+  const { info, list, next, init } = useGetCryptoGiftDetail(id);
   useEffect(() => {
     init();
   }, [init]);
   const renderItem = useCallback(
-    (item: RedPackageGrabInfoItem) => {
+    ({ item }: { item: RedPackageGrabInfoItem }) => {
+      console.log('wfs123', item);
       return (
         <ReceiverItem
           item={item}
           symbol={info?.symbol || 'token'}
-          isLuckyKing={item.userId === info?.luckKingId}
+          isLuckyKing={!!item && item.userId === info?.luckKingId}
           decimals={info?.decimal}
         />
       );
@@ -46,6 +50,28 @@ export default function GiftDetail() {
   const nextList = useCallback(() => {
     next();
   }, [next]);
+  const statusTextShow = useMemo(() => {
+    if (
+      info?.status === CryptoGiftOriginalStatus.Init ||
+      info?.status === CryptoGiftOriginalStatus.NotClaimed ||
+      info?.status === CryptoGiftOriginalStatus.Claimed
+    ) {
+      return t(
+        `Active, with ${info?.count || '--'}/${info?.totalCount || '--'} crypto gift(s) opened and ${
+          info?.grabbedAmount || '--'
+        }/${info?.totalAmount || '--'} ${info?.symbol || 'token'} claimed.`,
+      );
+    } else if (info?.status === CryptoGiftOriginalStatus.FullyClaimed) {
+      return t(
+        `Expired, with ${info?.count || '--'}/${info?.totalCount || '--'} crypto gift(s) opened and ${
+          info?.grabbedAmount || '--'
+        }/${info?.totalAmount || '--'} ${info?.symbol || 'token'} claimed.`,
+      );
+    }
+    return `All claimed, with ${info?.count || '--'}/${info?.totalCount || '--'} crypto gift(s) opened and ${
+      info?.grabbedAmount || '--'
+    }/${info?.totalAmount || '--'} ${info?.symbol || 'token'} claimed.`;
+  }, [info?.count, info?.grabbedAmount, info?.status, info?.symbol, info?.totalAmount, info?.totalCount, t]);
   return (
     <PageContainer
       noCenterDom
@@ -66,11 +92,7 @@ export default function GiftDetail() {
             <HeaderCard memo={info?.memo} />
             {renderDivider()}
             <TextM style={[FontStyles.neutralTertiaryText, GStyles.marginTop(pTd(16)), GStyles.paddingArg(0, pTd(16))]}>
-              {t(
-                `Active, with ${info?.count || '--'}/${info?.totalCount || '--'} crypto gift(s) opened and ${
-                  info?.grabbedAmount || '--'
-                }/${info?.totalAmount || '--'} ${info?.symbol || 'token'} claimed.`,
-              )}
+              {statusTextShow}
             </TextM>
             <View
               style={[

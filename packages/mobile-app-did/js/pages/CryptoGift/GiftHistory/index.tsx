@@ -5,13 +5,20 @@ import React, { useCallback, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import HistoryCard from '../components/HistoryCard';
-const data = Array.from({ length: 11 });
+import { useGetCryptoGiftHistories } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
+import { CryptoGiftItem } from '@portkey-wallet/types/types-ca/cryptogift';
+import NoData from 'components/NoData';
+import { BGStyles } from 'assets/theme/styles';
+const emptyData: CryptoGiftItem[] = Array.from({ length: 7 });
 export default function GiftHistory() {
   const { t } = useLanguage();
-  const [isSkeleton, setIsSkeleton] = useState<boolean>(true);
-  const renderItem = useCallback(() => {
-    return <HistoryCard containerStyle={styles.itemDivider} />;
-  }, []);
+  const { cryptoGiftHistories, loading, error } = useGetCryptoGiftHistories();
+  const renderItem = useCallback(
+    ({ item }: { item: CryptoGiftItem }) => {
+      return <HistoryCard containerStyle={styles.itemDivider} isSkeleton={loading} redPacketDetail={item} />;
+    },
+    [loading],
+  );
   return (
     <PageContainer
       titleDom={t('History')}
@@ -19,13 +26,14 @@ export default function GiftHistory() {
       containerStyles={styles.pageStyles}
       scrollViewProps={{ disabled: false }}>
       <FlatList
-        // ref={flatListRef}
         contentContainerStyle={{ paddingBottom: pTd(10) }}
-        style={{ minHeight: pTd(512) }}
         showsVerticalScrollIndicator={false}
         nestedScrollEnabled
-        data={data}
+        data={!loading ? cryptoGiftHistories : emptyData}
         renderItem={renderItem}
+        ListEmptyComponent={() => (
+          <NoData style={BGStyles.neutralDefaultBG} topDistance={pTd(95)} message={error || 'No history'} />
+        )}
         keyExtractor={(item: any, index: number) => '' + (item?.id || index)}
       />
     </PageContainer>

@@ -13,17 +13,18 @@ import GStyles from 'assets/theme/GStyles';
 import { formatTransferTime } from '@portkey-wallet/utils/time';
 import { getClaimedShow } from 'pages/Chat/utils/format';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
+import { CryptoGiftItem, CryptoGiftOriginalStatus } from '@portkey-wallet/types/types-ca/cryptogift';
 export interface IHistoryCardProps {
   containerStyle?: StyleProp<ViewStyle>;
   showTitle?: boolean;
-  redPacketDetail?: RedPackageDetail;
+  redPacketDetail?: CryptoGiftItem;
   isSkeleton?: boolean;
 }
 export default function HistoryCard(props: IHistoryCardProps) {
   const { showTitle, redPacketDetail, isSkeleton } = props;
   console.log('wfs=== redPacketDetail', redPacketDetail);
   const statusStyles = useMemo(() => {
-    if (redPacketDetail?.viewStatus === RedPackageStatusEnum.EXPIRED) {
+    if (redPacketDetail?.redPackageStatus === CryptoGiftOriginalStatus.Expired) {
       return {
         bg: {
           backgroundColor: defaultColors.neutralContainerBG,
@@ -32,7 +33,7 @@ export default function HistoryCard(props: IHistoryCardProps) {
           color: defaultColors.neutralTertiaryText,
         },
       };
-    } else if (redPacketDetail?.viewStatus === RedPackageStatusEnum.NONE_LEFT) {
+    } else if (redPacketDetail?.redPackageStatus === CryptoGiftOriginalStatus.FullyClaimed) {
       return {
         bg: {
           backgroundColor: defaultColors.neutralContainerBG,
@@ -50,7 +51,7 @@ export default function HistoryCard(props: IHistoryCardProps) {
         color: defaultColors.brandNormal,
       },
     };
-  }, [redPacketDetail?.viewStatus]);
+  }, [redPacketDetail?.redPackageStatus]);
   return (
     <View style={[styles.historyContainer, props.containerStyle]}>
       {showTitle && (
@@ -100,21 +101,23 @@ export default function HistoryCard(props: IHistoryCardProps) {
                   <Svg icon="crypto-gift" size={pTd(12)} />
                 </View>
                 <TextM style={styles.text}>{redPacketDetail?.memo || 'Best Wishes'}</TextM>
-                <View style={[styles.statusContainer, statusStyles.bg]}>
-                  <TextS style={[styles.statusText, statusStyles.textColor]}>In Progress</TextS>
-                </View>
+                {redPacketDetail?.status && (
+                  <View style={[styles.statusContainer, statusStyles.bg]}>
+                    <TextS style={[styles.statusText, statusStyles.textColor]}>{redPacketDetail?.status}</TextS>
+                  </View>
+                )}
               </View>
               {/* <Text style={styles.dateText}>May 28 at 4:11 pm</Text> */}
               <View style={styles.dateContainer}>
-                <TextS style={styles.dateText}>{formatTransferTime(redPacketDetail?.createTime || 1483284289)}</TextS>
+                <TextS style={styles.dateText}>{formatTransferTime(redPacketDetail?.createTime || 1)}</TextS>
               </View>
               <View style={styles.divider} />
               <View style={styles.claimContainer}>
                 <TextS style={styles.claimText}>Claimed:</TextS>
                 <TextS style={styles.claimValue}>
                   {getClaimedShow(
-                    formatTokenAmountShowWithDecimals(redPacketDetail?.grabbedAmount, redPacketDetail?.decimals),
-                    formatTokenAmountShowWithDecimals(redPacketDetail?.totalAmount, redPacketDetail?.decimals),
+                    formatTokenAmountShowWithDecimals(redPacketDetail?.grabbedAmount, redPacketDetail?.decimal),
+                    formatTokenAmountShowWithDecimals(redPacketDetail?.totalAmount, redPacketDetail?.decimal),
                     redPacketDetail?.symbol || 'ELF',
                   )}
                 </TextS>
@@ -208,7 +211,7 @@ const styles = StyleSheet.create({
   },
   claimValue: {
     flex: 1,
-    marginLeft: pTd(12),
+    marginLeft: pTd(8),
     // color: '#101114',
     // fontSize: 12,
     // fontWeight: '400',

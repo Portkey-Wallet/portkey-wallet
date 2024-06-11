@@ -39,9 +39,11 @@ const ReceiverItem: React.FC<IReceiverItemProps> = props => {
             <TextL numberOfLines={1} style={itemStyle.name}>
               {item?.username || ''}
             </TextL>
-            <View style={itemStyle.meBg}>
-              <TextS style={[GStyles.fontSize(pTd(10)), FontStyles.neutralDefaultBG, fonts.mediumFont]}>Me</TextS>
-            </View>
+            {item.isMe && (
+              <View style={itemStyle.meBg}>
+                <TextS style={[GStyles.fontSize(pTd(10)), FontStyles.neutralDefaultBG, fonts.mediumFont]}>Me</TextS>
+              </View>
+            )}
           </View>
           <View style={itemStyle.blank} />
           <TextM numberOfLines={1} style={[FontStyles.font3, itemStyle.time]}>

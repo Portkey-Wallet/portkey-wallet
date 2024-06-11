@@ -14,7 +14,7 @@ import { useGetFirstCryptoGift } from '@portkey-wallet/hooks/hooks-ca/cryptogift
 
 export default function CryptoGift() {
   const { t } = useLanguage();
-  const { firstCryptoGift, loading, error } = useGetFirstCryptoGift();
+  const { firstCryptoGift, loading } = useGetFirstCryptoGift();
   return (
     <PageContainer
       noCenterDom

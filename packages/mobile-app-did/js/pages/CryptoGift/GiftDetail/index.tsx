@@ -2,7 +2,7 @@ import PageContainer from 'components/PageContainer';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import { useLanguage } from 'i18n/hooks';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList } from 'react-native-gesture-handler';
 import { pTd } from 'utils/unit';
 import HistoryCard from '../components/HistoryCard';
@@ -18,34 +18,37 @@ import { TextM } from 'components/CommonText';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import CommonAvatar from 'components/CommonAvatar';
 import ReceiverItem from '../components/ReceiverItem';
-const data = Array.from({ length: 11 });
+import { useGetCryptoGiftDetail } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
+import { RedPackageGrabInfoItem } from '@portkey-wallet/im';
+const data: RedPackageGrabInfoItem[] = Array.from({ length: 11 });
 export default function GiftDetail() {
   const { t } = useLanguage();
-  const [isSkeleton, setIsSkeleton] = useState<boolean>(true);
-  const renderItem = useCallback(() => {
-    return (
-      <ReceiverItem
-        item={{
-          userId: '',
-          username: 'zhangsan',
-          avatar: '',
-          grabTime: 123832948235730,
-          isLuckyKing: true,
-          amount: '1231000000000000000',
-        }}
-        symbol={'ELF'}
-        isLuckyKing={false}
-        decimals={16}
-      />
-    );
-  }, []);
+  const { info, list, next, init } = useGetCryptoGiftDetail();
+  useEffect(() => {
+    init();
+  }, [init]);
+  const renderItem = useCallback(
+    (item: RedPackageGrabInfoItem) => {
+      return (
+        <ReceiverItem
+          item={item}
+          symbol={info?.symbol || 'token'}
+          isLuckyKing={item.userId === info?.luckKingId}
+          decimals={info?.decimal}
+        />
+      );
+    },
+    [info?.decimal, info?.luckKingId, info?.symbol],
+  );
   const renderDivider = useCallback(() => {
     return <View style={styles.divider} />;
   }, []);
+  const nextList = useCallback(() => {
+    next();
+  }, [next]);
   return (
     <PageContainer
       noCenterDom
-      scrollViewProps={{ disabled: true }}
       rightDom={
         <Touchable
           onPress={() => {
@@ -60,10 +63,14 @@ export default function GiftDetail() {
         // ref={flatListRef}
         ListHeaderComponent={() => (
           <>
-            <HeaderCard />
+            <HeaderCard memo={info?.memo} />
             {renderDivider()}
             <TextM style={[FontStyles.neutralTertiaryText, GStyles.marginTop(pTd(16)), GStyles.paddingArg(0, pTd(16))]}>
-              3/3 crypto gifts opened, with 10.00000003/20 ELF has been claimed.
+              {t(
+                `Active, with ${info?.count || '--'}/${info?.totalCount || '--'} crypto gift(s) opened and ${
+                  info?.grabbedAmount || '--'
+                }/${info?.totalAmount || '--'} ${info?.symbol || 'token'} claimed.`,
+              )}
             </TextM>
             <View
               style={[
@@ -75,13 +82,20 @@ export default function GiftDetail() {
             />
           </>
         )}
+        onEndReached={nextList}
         contentContainerStyle={{ paddingBottom: pTd(10) }}
         // style={{ minHeight: pTd(512) }}
         showsVerticalScrollIndicator={false}
-        nestedScrollEnabled
+        // nestedScrollEnabled
         data={data}
         renderItem={renderItem}
         keyExtractor={(item: any, index: number) => '' + (item?.id || index)}
+        // ListFooterComponentStyle={styles.listFooterComponentStyle}
+        // ListFooterComponent={() => (
+        //   <TextM style={styles.bottomTips}>
+        //     {t('Unclaimed tokens/NFTs have been automatically returned to the sender.')}
+        //   </TextM>
+        // )}
       />
     </PageContainer>
   );
@@ -121,5 +135,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  listFooterComponentStyle: {
+    width: screenWidth,
+    marginTop: 20,
+    // position: 'absolute',
+    bottom: 0,
+    paddingHorizontal: pTd(20),
+  },
+  bottomTips: {
+    color: defaultColors.font3,
+    textAlign: 'center',
   },
 });

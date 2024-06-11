@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   containerStyles: {
     position: 'relative',
     flex: 1,
-    backgroundColor: defaultColors.bg4,
+    backgroundColor: defaultColors.neutralDefaultBG,
     ...GStyles.paddingArg(0, 0),
   },
   scrollStyle: {

@@ -29,6 +29,7 @@ import CryptoAssetsListOverlay from '../CryptoAssetsListOverlay';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import NFTAvatar from 'components/NFTAvatar';
+import NewUserOnly from 'pages/CryptoGift/components/NewUserOnly';
 
 export type TInputValue = {
   packetNum?: string;
@@ -43,6 +44,7 @@ export type CryptoValuesType = TInputValue & {
 export type SendRedPacketGroupSectionPropsType = {
   type?: RedPackageTypeEnum;
   groupMemberCount?: number;
+  isCryptoGift?: boolean;
   onPressButton: (values: CryptoValuesType) => void;
 };
 
@@ -53,7 +55,7 @@ const AMOUNT_LABEL_MAP = {
 };
 
 export default function SendRedPacketGroupSection(props: SendRedPacketGroupSectionPropsType) {
-  const { type, groupMemberCount, onPressButton } = props;
+  const { type, groupMemberCount, isCryptoGift, onPressButton } = props;
   const { getTokenInfo } = useGetRedPackageConfig();
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
 
@@ -324,7 +326,13 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
           onChangeText={onMemoChange}
         />
       </FormItem>
-
+      {isCryptoGift && (
+        <NewUserOnly
+          onSwitchChanged={selected => {
+            console.log('wfs=== NewUserOnly', selected);
+          }}
+        />
+      )}
       {selectToken.assetType === AssetType.nft ? (
         <>
           <RedPacketAmountShow
@@ -369,8 +377,9 @@ const styles = StyleSheet.create({
   },
   inputWrap: {
     backgroundColor: defaultColors.bg1,
-    borderWidth: 0,
-    borderBottomWidth: 0,
+    borderColor: defaultColors.neutralBorder,
+    borderWidth: 0.5,
+    borderBottomWidth: 0.5,
   },
   inputContainerStyle: {
     height: pTd(64),

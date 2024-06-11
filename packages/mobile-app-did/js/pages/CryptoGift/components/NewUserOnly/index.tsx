@@ -5,12 +5,18 @@ import Switch from 'components/Switch';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
-
-export default function NewUserOnly() {
+export interface INewUserOnlyProps {
+  onSwitchChanged?: (selected: boolean) => void;
+}
+export default function NewUserOnly(props: INewUserOnlyProps) {
+  const { onSwitchChanged } = props;
   const [isEnabled, setIsEnabled] = useState(false);
 
   const toggleSwitch = () => {
-    setIsEnabled(previousState => !previousState);
+    setIsEnabled(previousState => {
+      onSwitchChanged?.(!previousState);
+      return !previousState;
+    });
   };
   return (
     <View style={styles.container}>

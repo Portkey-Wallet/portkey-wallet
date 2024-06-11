@@ -20,7 +20,6 @@ import { BGStyles, FontStyles } from 'assets/theme/styles';
 import fonts from 'assets/theme/fonts';
 import { TextL, TextM, TextTitle, TextXL } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';
-import NewUserOnly from '../components/NewUserOnly';
 const data = Array.from({ length: 11 });
 export default function GiftResult() {
   const { t } = useLanguage();

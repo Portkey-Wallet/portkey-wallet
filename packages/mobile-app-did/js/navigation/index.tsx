@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { useRef } from 'react';
+import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp, CardStyleInterpolators } from '@react-navigation/stack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -28,6 +29,7 @@ import TabsDrawer from 'components/TabsDrawer';
 import ChatNav from 'pages/Chat/routes';
 import ProviderWebPage from 'pages/ProviderWebPage';
 import MarketSection from 'pages/Discover/components/MarketSection';
+import { reportPageShow } from 'utils/analysisiReport';
 
 const Stack = isIOS ? createNativeStackNavigator() : createStackNavigator();
 export const productionNav = [
@@ -68,8 +70,30 @@ export type RootStackName = typeof devNav[number]['name'];
 
 export type RootNavigationProp = StackNavigationProp<RootStackParamList>;
 export default function NavigationRoot() {
+  const routeNameRef = useRef(null);
+  const navigationRef = useRef<React.Ref<NavigationContainerRef<RootStackParamList>> | undefined>();
+  const refHandler = (ref: any) => {
+    navigationRef.current = ref;
+    navigationService.setTopLevelNavigator(ref);
+  };
+
   return (
-    <NavigationContainer ref={navigationService.setTopLevelNavigator}>
+    <NavigationContainer
+      ref={refHandler}
+      onReady={() => {
+        routeNameRef.current = navigationRef?.current?.getCurrentRoute().name;
+      }}
+      onStateChange={async () => {
+        if (!navigationRef.current) return;
+        const previousRouteName = routeNameRef.current;
+        const currentRouteName = navigationRef.current.getCurrentRoute().name;
+
+        console.log('currentRouteName, ', currentRouteName);
+        if (previousRouteName !== currentRouteName) {
+          reportPageShow({ page_name: currentRouteName });
+        }
+        routeNameRef.current = currentRouteName;
+      }}>
       <TabsDrawer>
         <Stack.Navigator
           initialRouteName="Referral"

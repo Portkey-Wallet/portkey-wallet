@@ -157,7 +157,7 @@ class CrossTransfer implements ICrossTransfer {
 
       return result;
     } catch (error) {
-      console.log(handleErrorMessage(error), 'withdrawPreview==error');
+      console.log(handleErrorMessage(error), 'withdraw==error');
       if (this.authTokenCount > 5) throw error;
       if (isAuthTokenError(error)) {
         this.authTokenCount++;

@@ -5,7 +5,6 @@ import { setGuardianListAction, setVerifierListAction } from '@portkey-wallet/st
 import { LoginInfo } from 'types/wallet';
 import { checkHolderError } from '@portkey-wallet/utils/check';
 import { VerifierItem } from '@portkey-wallet/types/verifier';
-import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { request } from '@portkey-wallet/api/api-did';
 import { handleErrorMessage, handleErrorCode } from '@portkey-wallet/utils';
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -14,11 +13,12 @@ import { GuardiansInfo } from '@portkey-wallet/types/types-ca/guardian';
 import { useGuardiansInfo } from './store';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
+import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 
 export const useGetHolderInfoByViewContract = () => {
   const getCurrentCAViewContract = useGetCurrentCAViewContract();
   return useCallback(
-    async (loginInfo: LoginInfo, chainInfo?: ChainItemType) => {
+    async (loginInfo: LoginInfo, chainInfo?: IChainItemType) => {
       if (!loginInfo) throw new Error('Could not find accountInfo');
       const caContract = await getCurrentCAViewContract(chainInfo);
       return caContract?.callViewMethod('GetHolderInfo', {
@@ -33,7 +33,7 @@ export const useGetHolderInfoByViewContract = () => {
 export const useGetHolderInfo = () => {
   const originChainId = useOriginChainId();
   return useCallback(
-    async (loginInfo: LoginInfo, chainInfo?: ChainItemType) => {
+    async (loginInfo: LoginInfo, chainInfo?: IChainItemType) => {
       if (!loginInfo) throw new Error('Could not find accountInfo');
       return request.wallet.guardianIdentifiers({
         params: { chainId: chainInfo?.chainId || originChainId, ...loginInfo },
@@ -46,7 +46,7 @@ export const useGetHolderInfo = () => {
 export const useGetGuardiansInfo = () => {
   const getHolderInfo = useGetHolderInfo();
   return useCallback(
-    async (loginInfo: LoginInfo, chainInfo?: ChainItemType) => {
+    async (loginInfo: LoginInfo, chainInfo?: IChainItemType) => {
       try {
         const res = await getHolderInfo(loginInfo, chainInfo);
         if (res && !res.error) return res?.data || res;
@@ -68,7 +68,7 @@ export const useGetGuardiansInfoWriteStore = () => {
   const verifierMapRef = useRef(verifierMap);
   verifierMapRef.current = verifierMap;
   return useCallback(
-    async (loginInfo: LoginInfo, chainInfo?: ChainItemType) => {
+    async (loginInfo: LoginInfo, chainInfo?: IChainItemType) => {
       const guardiansInfo: GuardiansInfo = await getGetGuardiansInfo(loginInfo, chainInfo);
 
       const _verifierMap = verifierMapRef.current;
@@ -94,7 +94,7 @@ export const useGetVerifierServers = () => {
   const dispatch = useAppDispatch();
   const getCurrentCAViewContract = useGetCurrentCAViewContract();
   return useCallback(
-    async (chainInfo?: ChainItemType) => {
+    async (chainInfo?: IChainItemType) => {
       const caContract = await getCurrentCAViewContract(chainInfo);
       const res = await caContract?.callViewMethod('GetVerifierServers', '');
       if (res && !res.error) {

@@ -54,4 +54,7 @@ export interface IToSendPreviewParamsType extends IToSendHomeParamsType {
   successNavigateName?: any;
   guardiansApproved?: GuardiansApprovedType[];
   isAutoSend?: boolean;
+  receiveAmount?: string;
+  receiveAmountUsd?: string;
+  isEtransferCrossInLimit?: boolean;
 }

@@ -148,15 +148,15 @@ export default function TokenInput({
               <TokenImageDisplay symbol={token.label ?? token.symbol} src={token.imageUrl} width={36} />
             </div>
             <div className="center">
-              <p className="symbol">{token.label ?? token.symbol}</p>
-              <p className="amount flex-row-center">
+              <div className="symbol">{token.label ?? token.symbol}</div>
+              <div className="amount flex-row-center">
                 {t('Balance_with_colon')}
                 {balanceLoading ? (
                   <CircleLoading />
                 ) : (
                   ` ${formatTokenAmountShowWithDecimals(balance, token.decimals)} ${token.label ?? token.symbol}`
                 )}
-              </p>
+              </div>
             </div>
           </div>
         </div>

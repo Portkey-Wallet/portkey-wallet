@@ -10,7 +10,7 @@ import { getDefaultWallet } from '@portkey-wallet/utils/aelfUtils';
 import AElf from 'aelf-sdk';
 import { usePin } from './store';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
-import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
+import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 
 export function useGetCurrentCAViewContract(_chainId?: ChainId) {
   const originChainId = useOriginChainId();
@@ -19,7 +19,7 @@ export function useGetCurrentCAViewContract(_chainId?: ChainId) {
   const [{ viewContracts }, dispatch] = useInterface();
 
   return useCallback(
-    async (paramChainInfo?: ChainItemType) => {
+    async (paramChainInfo?: IChainItemType) => {
       const _chainInfo = paramChainInfo || chainInfo;
       if (!_chainInfo) throw Error('Could not find chain information');
 

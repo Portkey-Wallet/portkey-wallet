@@ -158,7 +158,9 @@ const DepositAddress: React.FC<DepositAddressProps> = ({ fromNetwork, fromToken,
             <View style={styles.minimumDepositWrap}>
               <Text style={styles.minimumDepositText}>Minimum Deposit</Text>
               <View style={styles.minimumAmountWrap}>
-                <Text style={styles.minimumAmountText}>{depositInfo.minAmount + ' ' + fromToken.symbol}</Text>
+                <Text style={styles.minimumAmountText}>
+                  {depositInfo.minAmount + ' ' + formatSymbolDisplay(fromToken.symbol)}
+                </Text>
                 <Text style={styles.minimumAmountUsdText}>{'$ ' + depositInfo.minAmountUsd}</Text>
               </View>
             </View>

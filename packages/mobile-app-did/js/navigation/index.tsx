@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { useRef } from 'react';
-import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
+import { useRef, useCallback } from 'react';
+import { NavigationContainer, NavigationContainerRef, NavigationState } from '@react-navigation/native';
+import { type ParamListBase } from '@react-navigation/core';
 import { createStackNavigator, StackNavigationProp, CardStyleInterpolators } from '@react-navigation/stack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -30,6 +31,8 @@ import ChatNav from 'pages/Chat/routes';
 import ProviderWebPage from 'pages/ProviderWebPage';
 import MarketSection from 'pages/Discover/components/MarketSection';
 import { reportPageShow } from 'utils/analysisiReport';
+
+const PageShowMap = new Map<string, boolean>();
 
 const Stack = isIOS ? createNativeStackNavigator() : createStackNavigator();
 export const productionNav = [
@@ -70,30 +73,23 @@ export type RootStackName = typeof devNav[number]['name'];
 
 export type RootNavigationProp = StackNavigationProp<RootStackParamList>;
 export default function NavigationRoot() {
-  const routeNameRef = useRef(null);
-  const navigationRef = useRef<React.Ref<NavigationContainerRef<RootStackParamList>> | undefined>();
+  const navigationRef = useRef<NavigationContainerRef<ParamListBase>>();
   const refHandler = (ref: any) => {
     navigationRef.current = ref;
     navigationService.setTopLevelNavigator(ref);
   };
 
-  return (
-    <NavigationContainer
-      ref={refHandler}
-      onReady={() => {
-        routeNameRef.current = navigationRef?.current?.getCurrentRoute().name;
-      }}
-      onStateChange={async () => {
-        if (!navigationRef.current) return;
-        const previousRouteName = routeNameRef.current;
-        const currentRouteName = navigationRef.current.getCurrentRoute().name;
+  const onNavigationStateChange = useCallback(async () => {
+    const currentRouteName = navigationRef?.current?.getCurrentRoute()?.name;
+    const currentRouteKey = navigationRef?.current?.getCurrentRoute()?.key;
+    if (!currentRouteName || !currentRouteKey) return;
+    if (PageShowMap.get(currentRouteKey)) return;
+    reportPageShow({ page_name: currentRouteName });
+    PageShowMap.set(currentRouteKey, true);
+  }, []);
 
-        console.log('currentRouteName, ', currentRouteName);
-        if (previousRouteName !== currentRouteName) {
-          reportPageShow({ page_name: currentRouteName });
-        }
-        routeNameRef.current = currentRouteName;
-      }}>
+  return (
+    <NavigationContainer ref={refHandler} onStateChange={onNavigationStateChange}>
       <TabsDrawer>
         <Stack.Navigator
           initialRouteName="Referral"

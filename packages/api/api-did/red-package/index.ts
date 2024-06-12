@@ -1,6 +1,6 @@
 export default {
   getFirstCryptoGift: {
-    target: '/api/app/cryptogift/history/fist',
+    target: '/api/app/cryptogift/history/first',
     config: { method: 'GET' },
   },
   getCryptoGiftHistories: {

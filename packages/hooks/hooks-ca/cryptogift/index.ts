@@ -113,11 +113,9 @@ export const useGetCryptoGiftDetail = (id: string) => {
           list: [],
         };
       }
-
-      const {
-        data: { items, ...detail },
-      } = await request.redPackage.getCryptoGiftDetail({ params: fetchParams });
-
+      const { items, ...detail } = await request.redPackage.getCryptoGiftDetail({ params: fetchParams });
+      console.log('wfs items===', items);
+      console.log('wfs detail===', detail);
       setInfo(detail);
       if (fetchParams.skipCount === 0) {
         setList(items);
@@ -184,7 +182,8 @@ export const useSendCryptoGift = () => {
 
       const generateCryptoGiftParams = { chainId, symbol, redPackageDisplayType };
       const redPackageInfo = await request.redPackage.generateCryptoGift({ params: generateCryptoGiftParams });
-      const { id, publicKey, minAmount, redPackageContractAddress, expireTime } = redPackageInfo.data;
+      console.log('wfs===generateCryptoGift', redPackageInfo);
+      const { id, publicKey, minAmount, redPackageContractAddress, expireTime } = redPackageInfo;
 
       const rawTransaction = await generateRedPackageRawTransaction({
         caContract,
@@ -214,13 +213,11 @@ export const useSendCryptoGift = () => {
         redPackageDisplayType,
         isNewUsersOnly,
       };
-      const {
-        data: { sessionId },
-      } = await request.redPackage.sendCryptoGift({
+      const { sessionId } = await request.redPackage.sendCryptoGift({
         params: sendCryptoGiftParams,
       });
 
-      const { data: creationStatus } = await handleLoopFetch({
+      const creationStatus = await handleLoopFetch({
         fetch: () => {
           const getCreationStatusParams = { sessionId };
           return request.redPackage.getCreationStatus({
@@ -249,12 +246,20 @@ export const useGetCryptoGiftConfig = () => {
   const cryptoGiftConfig = useMemo(() => cryptoGiftConfigMap?.[networkType], [networkType, cryptoGiftConfigMap]);
   const init = useCallback(async () => {
     const result = await request.redPackage.getRedPackageConfig();
-    const tokenInfo = result?.data?.tokenInfo || [];
-    const redPackageContractAddress = result?.data?.redPackageContractAddress || [];
+    console.log('wfs result===', result);
+    const tokenInfo = result?.tokenInfo || [];
+    const redPackageContractAddress = result?.redPackageContractAddress || [];
     const redPackageConfig = {
       tokenInfo,
       redPackageContractAddress,
     };
+    console.log(
+      'wfs=== useGetCryptoGiftConfig init',
+      JSON.stringify({
+        network: networkType,
+        value: redPackageConfig,
+      }),
+    );
     dispatch(
       setRedPackageConfig({
         network: networkType,

@@ -8,7 +8,7 @@ import useLockCallback from '../../useLockCallback';
 import { generateRedPackageRawTransaction } from '@portkey-wallet/utils/chat';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
-import { handleLoopFetch } from '@portkey-wallet/utils';
+import { handleErrorMessage, handleLoopFetch } from '@portkey-wallet/utils';
 import { RedPackageCreationStatusEnum } from '@portkey-wallet/im/types';
 import { useCurrentWalletInfo, useCurrentUserInfo } from '../wallet';
 
@@ -24,7 +24,7 @@ export const useGetFirstCryptoGift = () => {
       const res = await request.redPackage.getFirstCryptoGift();
       setFirstCryptoGift(res);
     } catch (e) {
-      setError(e.message);
+      setError(handleErrorMessage(e));
     } finally {
       setLoading(false);
     }
@@ -53,7 +53,7 @@ export const useGetCryptoGiftHistories = () => {
       const res = await request.redPackage.getCryptoGiftHistories();
       setCryptoGiftHistories(res);
     } catch (e) {
-      setError(e.message);
+      setError(handleErrorMessage(e));
     } finally {
       setLoading(false);
     }

@@ -129,7 +129,7 @@ export const getClaimedShow = (grabbedAmountShow: string, totalAmountShow: strin
   const totalAmountShowLen = totalAmountShow?.length || 0;
   const symbolLen = symbol?.length || 0;
   if (grabbedAmountShowLen + 3 + totalAmountShowLen + symbolLen > digits)
-    return `${grabbedAmountShowLen} / ${totalAmountShow.slice(0, digits - symbolLen)}... ${symbol}`;
+    return `${grabbedAmountShow} / ${totalAmountShow.slice(0, digits - symbolLen)}... ${symbol}`;
 
-  return `${grabbedAmountShowLen} / ${totalAmountShow} ${symbol}`;
+  return `${grabbedAmountShow} / ${totalAmountShow} ${symbol}`;
 };

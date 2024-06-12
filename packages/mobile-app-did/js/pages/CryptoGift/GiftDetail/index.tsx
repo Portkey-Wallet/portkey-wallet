@@ -6,7 +6,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList } from 'react-native-gesture-handler';
 import { pTd } from 'utils/unit';
 import HistoryCard from '../components/HistoryCard';
-import { ImageBackground, StyleSheet } from 'react-native';
+import { ImageBackground, Share, StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import HeaderCard from '../components/HeaderCard';
 import { View } from 'react-native';
@@ -22,11 +22,14 @@ import { useGetCryptoGiftDetail } from '@portkey-wallet/hooks/hooks-ca/cryptogif
 import { RedPackageGrabInfoItem } from '@portkey-wallet/im';
 import { CryptoGiftOriginalStatus } from '@portkey-wallet/types/types-ca/cryptogift';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 const data: RedPackageGrabInfoItem[] = Array.from({ length: 11 });
 export default function GiftDetail() {
   const { t } = useLanguage();
   const { id } = useRouterParams<{ id: string }>();
   const { info, list, next, init } = useGetCryptoGiftDetail(id);
+  const currentNetworkInfo = useCurrentNetworkInfo();
   useEffect(() => {
     init();
   }, [init]);
@@ -50,6 +53,7 @@ export default function GiftDetail() {
   const nextList = useCallback(() => {
     next();
   }, [next]);
+  console.log('info', info?.grabbed);
   const statusTextShow = useMemo(() => {
     if (
       info?.status === CryptoGiftOriginalStatus.Init ||
@@ -57,29 +61,53 @@ export default function GiftDetail() {
       info?.status === CryptoGiftOriginalStatus.Claimed
     ) {
       return t(
-        `Active, with ${info?.grabbed || '--'}/${info?.count || '--'} crypto gift(s) opened and ${
-          info?.grabbedAmount || '--'
-        }/${info?.totalAmount || '--'} ${info?.symbol || 'token'} claimed.`,
+        `Active, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
+          info?.grabbedAmount ? formatTokenAmountShowWithDecimals(info?.grabbedAmount, info?.decimal) : '--'
+        }/${info?.totalAmount ? formatTokenAmountShowWithDecimals(info?.totalAmount, info?.decimal) : '--'} ${
+          info?.symbol || 'token'
+        } claimed.`,
       );
     } else if (info?.status === CryptoGiftOriginalStatus.FullyClaimed) {
       return t(
-        `Expired, with ${info?.grabbed || '--'}/${info?.count || '--'} crypto gift(s) opened and ${
-          info?.grabbedAmount || '--'
-        }/${info?.totalAmount || '--'} ${info?.symbol || 'token'} claimed.`,
+        `Expired, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
+          info?.grabbedAmount ? formatTokenAmountShowWithDecimals(info?.grabbedAmount, info?.decimal) : '--'
+        }/${info?.totalAmount ? formatTokenAmountShowWithDecimals(info?.totalAmount, info?.decimal) : '--'} ${
+          info?.symbol || 'token'
+        } claimed.`,
       );
     }
-    return `All claimed, with ${info?.grabbed || '--'}/${info?.count || '--'} crypto gift(s) opened and ${
-      info?.grabbedAmount || '--'
-    }/${info?.totalAmount || '--'} ${info?.symbol || 'token'} claimed.`;
-  }, [info?.status, info?.grabbed, info?.count, info?.grabbedAmount, info?.totalAmount, info?.symbol, t]);
+    return `All claimed, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
+      info?.grabbedAmount ? formatTokenAmountShowWithDecimals(info?.grabbedAmount, info?.decimal) : '--'
+    }/${info?.totalAmount ? formatTokenAmountShowWithDecimals(info?.totalAmount, info?.decimal) : '--'} ${
+      info?.symbol || 'token'
+    } claimed.`;
+  }, [
+    info?.status,
+    info?.grabbed,
+    info?.count,
+    info?.grabbedAmount,
+    info?.totalAmount,
+    info?.symbol,
+    info?.decimal,
+    t,
+  ]);
+  const shareUrl = useMemo(() => {
+    return `${currentNetworkInfo.referralUrl}/cryptoGift?id=${id}`;
+  }, [currentNetworkInfo.referralUrl, id]);
+  const onSharePress = useCallback(async () => {
+    await Share.share({
+      message: 'Crypto Gift',
+      url: shareUrl,
+      title: 'Crypto Gift',
+    }).catch(shareError => {
+      console.log(shareError);
+    });
+  }, [shareUrl]);
   return (
     <PageContainer
       noCenterDom
       rightDom={
-        <Touchable
-          onPress={() => {
-            navigationService.navigate('GiftResult');
-          }}>
+        <Touchable onPress={onSharePress}>
           <Svg size={pTd(22)} icon="share-gift" iconStyle={styles.iconMargin} />
         </Touchable>
       }

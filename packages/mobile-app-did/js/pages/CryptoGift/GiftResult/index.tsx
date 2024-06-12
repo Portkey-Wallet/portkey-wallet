@@ -16,6 +16,10 @@ import CommonButton from 'components/CommonButton';
 import { copyText } from 'utils';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+import { DeviceEventEmitter } from 'react-native';
+import { CryptoGiftCreateSuccess } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
+
 export interface IGiftResultProps {
   giftId: string;
 }
@@ -43,7 +47,9 @@ export default function GiftResult() {
       console.log(shareError);
     });
   }, [shareUrl]);
-
+  useEffectOnce(() => {
+    DeviceEventEmitter.emit(CryptoGiftCreateSuccess);
+  });
   return (
     <View style={styles.pageWrap}>
       <ImageBackground source={giftResultBg} style={styles.topSectionStyle}>

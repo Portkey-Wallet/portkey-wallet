@@ -29,7 +29,6 @@ export const useIMRelationIdNetMapNetMapState = () => useAppCASelector(state => 
 export const useIMRelationTokenNetMapNetMapState = () => useAppCASelector(state => state.im.relationTokenNetMap);
 export const useIMGroupInfoMapNetMapState = () => useAppCASelector(state => state.im.groupInfoMapNetMap);
 export const useRedPackageConfigMapState = () => useAppCASelector(state => state.im.redPackageConfigMap);
-export const useCryptoGiftConfigMapState = () => useAppCASelector(state => state.cryptoGift.redPackageConfigMap);
 export const useIMPinListNetMapState = () => useAppCASelector(state => state.im.pinListNetMap);
 export const useIMLastPinNetMapState = () => useAppCASelector(state => state.im.lastPinNetMap);
 export const useImBlockedMapState = () => useAppCASelector(state => state.im.blockedUserListMap);

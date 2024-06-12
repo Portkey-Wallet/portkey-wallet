@@ -1,4 +1,4 @@
-import { useCallback, useState, useRef, useMemo } from 'react';
+import { useCallback, useState, useRef, useMemo, useEffect } from 'react';
 import { request } from '@portkey-wallet/api/api-did';
 import { RedPackageDetail, RedPackageGrabInfoItem, RedPackageTypeEnum } from '@portkey-wallet/im';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
@@ -14,8 +14,9 @@ import { useCurrentWalletInfo, useCurrentUserInfo } from '../wallet';
 import { ChainId } from '@portkey-wallet/types';
 import { useCurrentNetworkInfo } from '../network';
 import { setRedPackageConfig } from '@portkey-wallet/store/store-ca/cryptoGift/actions';
+import { DeviceEventEmitter } from 'react-native';
 export const useCryptoGiftConfigMapState = () => useAppCASelector(state => state.cryptoGift.redPackageConfigMap);
-
+export const CryptoGiftCreateSuccess = 'CryptoGiftCreateSuccess';
 export const useGetFirstCryptoGift = () => {
   const [firstCryptoGift, setFirstCryptoGift] = useState<CryptoGiftItem | null>(null);
   const [loading, setLoading] = useState(false);
@@ -37,7 +38,14 @@ export const useGetFirstCryptoGift = () => {
   useEffectOnce(() => {
     getFirstCryptoGift();
   });
-
+  useEffect(() => {
+    const eventListener = DeviceEventEmitter.addListener(CryptoGiftCreateSuccess, () => {
+      getFirstCryptoGift();
+    });
+    return () => {
+      eventListener.remove();
+    };
+  }, [getFirstCryptoGift]);
   return {
     firstCryptoGift,
     loading,
@@ -227,7 +235,7 @@ export const useSendCryptoGift = () => {
         times: 10,
         interval: 2000,
         checkIsContinue: _creationStatusResult => {
-          return _creationStatusResult?.data?.status === RedPackageCreationStatusEnum.PENDING;
+          return _creationStatusResult?.status === RedPackageCreationStatusEnum.PENDING;
         },
       });
       if (creationStatus.status !== RedPackageCreationStatusEnum.SUCCESS) {

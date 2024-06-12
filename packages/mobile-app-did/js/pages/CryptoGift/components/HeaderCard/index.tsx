@@ -19,7 +19,7 @@ export default function HeaderCard(props: IHeaderCardProps) {
       <Svg icon="gift-box-close" oblongSize={[pTd(171.5), pTd(120)]} />
       <View style={styles.titleWrapper}>
         {showViewDetails && <Svg icon="success" size={pTd(20)} iconStyle={styles.icon} />}
-        <TextL style={{ ...fonts.mediumFont }}>{memo || `The crypto gift is packaged.`}</TextL>
+        <TextL style={{ ...fonts.mediumFont }}>{`"${memo}"` || `The crypto gift is packaged.`}</TextL>
       </View>
       {showViewDetails && (
         <TouchableOpacity

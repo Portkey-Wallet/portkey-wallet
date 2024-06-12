@@ -192,7 +192,7 @@ const SendPreview: React.FC = () => {
           tokenContract,
           portkeyContract: contract,
           toAddress: toInfo.address,
-          amount,
+          amount: String(sendNumber),
           tokenInfo: {
             symbol: assetInfo.symbol,
             decimals: Number(assetInfo.decimals),

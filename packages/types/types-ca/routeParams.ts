@@ -56,4 +56,5 @@ export interface IToSendPreviewParamsType extends IToSendHomeParamsType {
   isAutoSend?: boolean;
   receiveAmount?: string;
   receiveAmountUsd?: string;
+  isEtransferCrossInLimit?: boolean;
 }

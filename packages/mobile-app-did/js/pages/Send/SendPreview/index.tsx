@@ -75,6 +75,7 @@ const SendPreview: React.FC = () => {
     imTransferInfo,
     receiveAmount,
     receiveAmountUsd,
+    isEtransferCrossInLimit = false,
   } = routerParams;
 
   const isApproved = useMemo(() => guardiansApproved && guardiansApproved.length > 0, [guardiansApproved]);
@@ -104,9 +105,9 @@ const SendPreview: React.FC = () => {
   const isTokenHasPrice = useIsTokenHasPrice(assetInfo.symbol);
 
   const crossTransferByEtransfer = useCrossTransferByEtransfer(pin);
-  const isSupportCross = useMemo(
-    () => CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(assetInfo.symbol),
-    [assetInfo.symbol],
+  const isSupportEtransferCross = useMemo(
+    () => CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(assetInfo.symbol) && isEtransferCrossInLimit,
+    [assetInfo.symbol, isEtransferCrossInLimit],
   );
 
   const isCrossChainTransfer = isCrossChain(toInfo.address, assetInfo.chainId);
@@ -186,7 +187,7 @@ const SendPreview: React.FC = () => {
       }
       const tokenContract = tokenContractRef.current;
 
-      if (isSupportCross) {
+      if (isSupportEtransferCross) {
         const crossTransferByEtransferResult = await crossTransferByEtransfer.withdraw({
           chainId: chainInfo.chainId,
           tokenContract,
@@ -271,7 +272,7 @@ const SendPreview: React.FC = () => {
     guardiansApproved,
     isApproved,
     isCrossChainTransfer,
-    isSupportCross,
+    isSupportEtransferCross,
     pin,
     routerParams,
     sendNumber,
@@ -554,7 +555,7 @@ const SendPreview: React.FC = () => {
             )}
           </View>
 
-          {isCrossChainTransfer && !isSupportCross && (
+          {isCrossChainTransfer && !isSupportEtransferCross && (
             <>
               <Text style={[styles.divider, styles.marginTop0]} />
               <View style={styles.section}>
@@ -584,7 +585,7 @@ const SendPreview: React.FC = () => {
               <Text style={[styles.divider, styles.marginTop0]} />
             </>
           )}
-          {isCrossChainTransfer && isSupportCross && assetInfo.symbol === defaultToken.symbol && (
+          {isCrossChainTransfer && isSupportEtransferCross && assetInfo.symbol === defaultToken.symbol && (
             <View style={styles.section}>
               <View style={[styles.flexSpaceBetween]}>
                 <TextM style={[styles.blackFontColor, styles.fontBold, styles.leftTitle, GStyles.alignEnd]}>

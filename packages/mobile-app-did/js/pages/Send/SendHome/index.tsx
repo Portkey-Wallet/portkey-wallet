@@ -467,6 +467,7 @@ const SendHome: React.FC = () => {
     let fee;
     let receiveAmount: string | undefined;
     let receiveAmountUsd: string | undefined;
+    let isEtransferCrossInLimit = false;
     try {
       if (isCross && isSupportCross) {
         const { withdrawInfo } = await crossTransferByEtransfer.withdrawPreview({
@@ -478,6 +479,12 @@ const SendHome: React.FC = () => {
         fee = withdrawInfo?.aelfTransactionFee;
         receiveAmount = withdrawInfo?.receiveAmount;
         receiveAmountUsd = withdrawInfo?.receiveAmountUsd;
+        const maxAmount = Number(withdrawInfo?.maxAmount);
+        const minAmount = Number(withdrawInfo?.minAmount);
+        isEtransferCrossInLimit = Number(sendNumber) >= minAmount && Number(sendNumber) <= maxAmount;
+        if (!isEtransferCrossInLimit) {
+          fee = await getTransactionFee(isCross);
+        }
       } else {
         fee = await getTransactionFee(isCross);
       }
@@ -493,7 +500,7 @@ const SendHome: React.FC = () => {
       Loading.hide();
     }
 
-    return { status: true, fee, receiveAmount, receiveAmountUsd };
+    return { status: true, fee, receiveAmount, receiveAmountUsd, isEtransferCrossInLimit };
   }, [
     chainInfo,
     balance,
@@ -525,6 +532,7 @@ const SendHome: React.FC = () => {
       transactionFee: result?.fee || '0',
       receiveAmount: result?.receiveAmount,
       receiveAmountUsd: result?.receiveAmountUsd,
+      isEtransferCrossInLimit: result?.isEtransferCrossInLimit,
     });
   }, [checkCanPreview, previewParamsWithoutFee]);
 

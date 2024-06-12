@@ -282,7 +282,10 @@ export default function Send() {
           fee: timesDecimals(txFee, defaultToken.decimals).toFixed(),
           guardiansApproved: oneTimeApprovalList.current,
         };
-        if (CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(crossParams.tokenInfo.symbol)) {
+        const amountAllowed =
+          (withdrawInfo?.maxAmount ? ZERO.plus(amount).lte(withdrawInfo?.maxAmount) : true) &&
+          (withdrawInfo?.minAmount ? ZERO.plus(amount).gte(withdrawInfo?.minAmount) : true);
+        if (CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(crossParams.tokenInfo.symbol) && amountAllowed) {
           await withdraw({
             chainId,
             toAddress: crossParams.toAddress,
@@ -336,6 +339,8 @@ export default function Send() {
     wallet.address,
     wallet?.caHash,
     withdraw,
+    withdrawInfo?.maxAmount,
+    withdrawInfo?.minAmount,
   ]);
 
   const checkLimit = useCheckLimit(tokenInfo.chainId);

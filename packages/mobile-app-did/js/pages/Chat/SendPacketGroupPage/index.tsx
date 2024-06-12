@@ -189,6 +189,7 @@ export default function SendPacketGroupPage() {
       currentChannelId,
       getCAContract,
       getContractAddress,
+      getCryptoGiftContractAddress,
       isCryptoGift,
       reportAnalyticsEvent,
       securitySafeCheckAndToast,
@@ -236,7 +237,7 @@ export default function SendPacketGroupPage() {
 
   return (
     <PageContainer
-      titleDom="Send Crypto Box"
+      titleDom={isCryptoGift ? 'Create Crypto Gift' : 'Send Crypto Box'}
       hideTouchable
       safeAreaColor={['white', 'gray']}
       scrollViewProps={{ disabled: true }}

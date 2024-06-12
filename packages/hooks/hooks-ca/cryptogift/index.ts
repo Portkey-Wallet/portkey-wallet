@@ -3,18 +3,18 @@ import { request } from '@portkey-wallet/api/api-did';
 import { RedPackageDetail, RedPackageGrabInfoItem, RedPackageTypeEnum } from '@portkey-wallet/im';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import { CryptoGiftItem } from '@portkey-wallet/types/types-ca/cryptogift';
-import { useAppCommonDispatch, useEffectOnce } from '@portkey-wallet/hooks';
+import { useAppCASelector, useAppCommonDispatch, useEffectOnce } from '@portkey-wallet/hooks';
 import useLockCallback from '../../useLockCallback';
 import { generateRedPackageRawTransaction } from '@portkey-wallet/utils/chat';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import { handleErrorMessage, handleLoopFetch } from '@portkey-wallet/utils';
-import { RedPackageConfigType, RedPackageCreationStatusEnum } from '@portkey-wallet/im/types';
+import { RedPackageCreationStatusEnum } from '@portkey-wallet/im/types';
 import { useCurrentWalletInfo, useCurrentUserInfo } from '../wallet';
-import { ChainId, NetworkType } from '@portkey-wallet/types';
+import { ChainId } from '@portkey-wallet/types';
 import { useCurrentNetworkInfo } from '../network';
 import { setRedPackageConfig } from '@portkey-wallet/store/store-ca/cryptoGift/actions';
-import { useCryptoGiftConfigMapState } from '../im';
+export const useCryptoGiftConfigMapState = () => useAppCASelector(state => state.cryptoGift.redPackageConfigMap);
 
 export const useGetFirstCryptoGift = () => {
   const [firstCryptoGift, setFirstCryptoGift] = useState<CryptoGiftItem | null>(null);

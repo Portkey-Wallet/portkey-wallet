@@ -14,6 +14,7 @@ export enum CryptoGiftOriginalStatus {
 }
 
 export type CryptoGiftItem = {
+  exist?: boolean;
   id: string;
   totalAmount: number;
   grabbedAmount: number;

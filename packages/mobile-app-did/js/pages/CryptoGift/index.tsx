@@ -36,7 +36,7 @@ export default function CryptoGift() {
       <CommonButton containerStyle={styles.buttonContainer} type="primary" disabled={false} onPress={onGiftCreatePress}>
         <TextL style={styles.buttonText}>{t('Send Crypto Gift')}</TextL>
       </CommonButton>
-      {firstCryptoGift && (
+      {firstCryptoGift && firstCryptoGift.exist && (
         <HistoryCard
           containerStyle={styles.hsCardContainer}
           showTitle

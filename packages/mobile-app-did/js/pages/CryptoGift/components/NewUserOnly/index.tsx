@@ -1,7 +1,6 @@
 import { defaultColors } from 'assets/theme';
 import CommonSwitch from 'components/CommonSwitch';
 import { TextM } from 'components/CommonText';
-import Switch from 'components/Switch';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';

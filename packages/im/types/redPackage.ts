@@ -33,8 +33,8 @@ export const redPackagesStatusShowMap = {
   [RedPackageStatusEnum.EXPIRED]: 'Expired',
 };
 export enum DisplayType {
-  Common = 'Common',
-  Pending = 'Pending',
+  Common = 0,
+  Pending = 1,
 }
 export type RedPackageDetail = {
   totalCount: number;

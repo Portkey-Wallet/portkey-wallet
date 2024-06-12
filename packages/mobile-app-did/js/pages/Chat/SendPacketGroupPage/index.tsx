@@ -29,7 +29,6 @@ import { createTimeRecorder } from '@portkey-wallet/utils/timeRecorder';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { TabRouteNameEnum } from 'types/navigate';
 import { useSendCryptoGift } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 export interface ISendPacketGroupPageProps {
   isCryptoGift?: boolean;

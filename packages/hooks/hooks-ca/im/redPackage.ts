@@ -384,9 +384,10 @@ export const useGetRedPackageConfig = (isAutoFetch = false, isInit = false) => {
 
   const getContractAddress = useCallback(
     (chainId: ChainId) => {
+      console.log('wfs=== redPackageConfigMap', JSON.stringify(redPackageConfigMap));
       return redPackageConfig?.redPackageContractAddress.find(item => item.chainId === chainId)?.contractAddress;
     },
-    [redPackageConfig?.redPackageContractAddress],
+    [redPackageConfigMap, redPackageConfig?.redPackageContractAddress],
   );
 
   return {

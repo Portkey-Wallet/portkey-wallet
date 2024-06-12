@@ -1,16 +1,20 @@
-import { useCallback, useState, useRef } from 'react';
+import { useCallback, useState, useRef, useMemo } from 'react';
 import { request } from '@portkey-wallet/api/api-did';
 import { RedPackageDetail, RedPackageGrabInfoItem, RedPackageTypeEnum } from '@portkey-wallet/im';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import { CryptoGiftItem } from '@portkey-wallet/types/types-ca/cryptogift';
-import { useEffectOnce } from '@portkey-wallet/hooks';
+import { useAppCommonDispatch, useEffectOnce } from '@portkey-wallet/hooks';
 import useLockCallback from '../../useLockCallback';
 import { generateRedPackageRawTransaction } from '@portkey-wallet/utils/chat';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import { handleErrorMessage, handleLoopFetch } from '@portkey-wallet/utils';
-import { RedPackageCreationStatusEnum } from '@portkey-wallet/im/types';
+import { RedPackageConfigType, RedPackageCreationStatusEnum } from '@portkey-wallet/im/types';
 import { useCurrentWalletInfo, useCurrentUserInfo } from '../wallet';
+import { ChainId, NetworkType } from '@portkey-wallet/types';
+import { useCurrentNetworkInfo } from '../network';
+import { setRedPackageConfig } from '@portkey-wallet/store/store-ca/cryptoGift/actions';
+import { useCryptoGiftConfigMapState } from '../im';
 
 export const useGetFirstCryptoGift = () => {
   const [firstCryptoGift, setFirstCryptoGift] = useState<CryptoGiftItem | null>(null);
@@ -236,4 +240,37 @@ export const useSendCryptoGift = () => {
     },
     [userInfo, wallet],
   );
+};
+
+export const useGetCryptoGiftConfig = () => {
+  const { networkType } = useCurrentNetworkInfo();
+  const dispatch = useAppCommonDispatch();
+  const cryptoGiftConfigMap = useCryptoGiftConfigMapState();
+  const cryptoGiftConfig = useMemo(() => cryptoGiftConfigMap?.[networkType], [networkType, cryptoGiftConfigMap]);
+  const init = useCallback(async () => {
+    const result = await request.redPackage.getRedPackageConfig();
+    const tokenInfo = result?.data?.tokenInfo || [];
+    const redPackageContractAddress = result?.data?.redPackageContractAddress || [];
+    const redPackageConfig = {
+      tokenInfo,
+      redPackageContractAddress,
+    };
+    dispatch(
+      setRedPackageConfig({
+        network: networkType,
+        value: redPackageConfig,
+      }),
+    );
+    // CryptoGiftConfigMap[networkType] = redPackageConfig;
+  }, [dispatch, networkType]);
+  const getCryptoGiftContractAddress = useCallback(
+    (chainId: ChainId) => {
+      return cryptoGiftConfig?.redPackageContractAddress.find(item => item.chainId === chainId)?.contractAddress;
+    },
+    [cryptoGiftConfig?.redPackageContractAddress],
+  );
+  return {
+    init,
+    getCryptoGiftContractAddress,
+  };
 };

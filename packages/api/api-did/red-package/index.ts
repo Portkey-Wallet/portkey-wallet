@@ -23,4 +23,8 @@ export default {
     target: '/api/app/redPackage/getCreationResult',
     config: { method: 'GET' },
   },
+  getRedPackageConfig: {
+    target: '/api/app/redpackage/config',
+    config: { method: 'GET' },
+  },
 } as const;

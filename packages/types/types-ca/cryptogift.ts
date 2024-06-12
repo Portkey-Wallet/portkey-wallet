@@ -5,12 +5,12 @@ export enum CryptoGiftStatus {
 }
 
 export enum CryptoGiftOriginalStatus {
-  Init = 'Init',
-  NotClaimed = 'NotClaimed',
-  Claimed = 'Claimed',
-  FullyClaimed = 'FullyClaimed',
-  Expired = 'Expired',
-  Cancelled = 'Cancelled',
+  Init = 0,
+  NotClaimed = 1,
+  Claimed = 2,
+  FullyClaimed = 3,
+  Expired = 4,
+  Cancelled = 5,
 }
 
 export type CryptoGiftItem = {

@@ -78,7 +78,9 @@ export default function HistoryCard(props: IHistoryCardProps) {
         activeOpacity={0.8}
         onPress={() => {
           // todo goto this card
-          navigationService.navigate('GiftDetail');
+          navigationService.navigate('GiftDetail', {
+            id: redPacketDetail?.id,
+          });
         }}>
         <View style={styles.historyCard}>
           {isSkeleton ? (

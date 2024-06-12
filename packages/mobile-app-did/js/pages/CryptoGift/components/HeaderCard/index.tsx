@@ -17,13 +17,14 @@ export default function HeaderCard(props: IHeaderCardProps) {
   return (
     <View style={styles.container}>
       <Svg icon="gift-box-close" oblongSize={[pTd(171.5), pTd(120)]} />
-      <View style={styles.titlWrapper}>
+      <View style={styles.titleWrapper}>
         {showViewDetails && <Svg icon="success" size={pTd(20)} iconStyle={styles.icon} />}
         <TextL style={{ ...fonts.mediumFont }}>{memo || `The crypto gift is packaged.`}</TextL>
       </View>
       {showViewDetails && (
         <TouchableOpacity
           onPress={() => {
+            navigationService.pop(2);
             navigationService.navigate('GiftDetail', {
               id: giftId,
             });
@@ -38,7 +39,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
   },
-  titlWrapper: {
+  titleWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
   },

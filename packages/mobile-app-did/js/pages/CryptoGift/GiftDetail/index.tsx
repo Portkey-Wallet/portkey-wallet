@@ -57,21 +57,21 @@ export default function GiftDetail() {
       info?.status === CryptoGiftOriginalStatus.Claimed
     ) {
       return t(
-        `Active, with ${info?.count || '--'}/${info?.totalCount || '--'} crypto gift(s) opened and ${
+        `Active, with ${info?.grabbed || '--'}/${info?.count || '--'} crypto gift(s) opened and ${
           info?.grabbedAmount || '--'
         }/${info?.totalAmount || '--'} ${info?.symbol || 'token'} claimed.`,
       );
     } else if (info?.status === CryptoGiftOriginalStatus.FullyClaimed) {
       return t(
-        `Expired, with ${info?.count || '--'}/${info?.totalCount || '--'} crypto gift(s) opened and ${
+        `Expired, with ${info?.grabbed || '--'}/${info?.count || '--'} crypto gift(s) opened and ${
           info?.grabbedAmount || '--'
         }/${info?.totalAmount || '--'} ${info?.symbol || 'token'} claimed.`,
       );
     }
-    return `All claimed, with ${info?.count || '--'}/${info?.totalCount || '--'} crypto gift(s) opened and ${
+    return `All claimed, with ${info?.grabbed || '--'}/${info?.count || '--'} crypto gift(s) opened and ${
       info?.grabbedAmount || '--'
     }/${info?.totalAmount || '--'} ${info?.symbol || 'token'} claimed.`;
-  }, [info?.count, info?.grabbedAmount, info?.status, info?.symbol, info?.totalAmount, info?.totalCount, t]);
+  }, [info?.status, info?.grabbed, info?.count, info?.grabbedAmount, info?.totalAmount, info?.symbol, t]);
   return (
     <PageContainer
       noCenterDom
@@ -109,7 +109,7 @@ export default function GiftDetail() {
         // style={{ minHeight: pTd(512) }}
         showsVerticalScrollIndicator={false}
         // nestedScrollEnabled
-        data={data}
+        data={list}
         renderItem={renderItem}
         keyExtractor={(item: any, index: number) => '' + (item?.id || index)}
         // ListFooterComponentStyle={styles.listFooterComponentStyle}

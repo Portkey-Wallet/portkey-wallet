@@ -28,7 +28,7 @@ import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
 import { createTimeRecorder } from '@portkey-wallet/utils/timeRecorder';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { TabRouteNameEnum } from 'types/navigate';
-import { useSendCryptoGift } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
+import { useGetCryptoGiftConfig, useSendCryptoGift } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 export interface ISendPacketGroupPageProps {
   isCryptoGift?: boolean;
@@ -45,6 +45,7 @@ export default function SendPacketGroupPage() {
   const checkAllowanceAndApprove = useCheckAllowanceAndApprove();
   const checkManagerSyncState = useCheckManagerSyncState();
   const { getContractAddress } = useGetRedPackageConfig(true);
+  const { getCryptoGiftContractAddress } = useGetCryptoGiftConfig();
   const reportAnalyticsEvent = useReportAnalyticsEvent();
   const sendCryptoGift = useSendCryptoGift();
   const onPressBtn = useLockCallback(
@@ -98,8 +99,12 @@ export default function SendPacketGroupPage() {
               }),
           });
         }
-
-        const redPacketContractAddress = getContractAddress(token.chainId);
+        let redPacketContractAddress;
+        if (isCryptoGift) {
+          redPacketContractAddress = getCryptoGiftContractAddress(token.chainId);
+        } else {
+          redPacketContractAddress = getContractAddress(token.chainId);
+        }
         if (!redPacketContractAddress) {
           throw new Error('redPacketContractAddress is not exist');
         }

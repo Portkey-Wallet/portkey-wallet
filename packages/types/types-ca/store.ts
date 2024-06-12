@@ -34,6 +34,7 @@ import { rampSlice } from '@portkey-wallet/store/store-ca/ramp/slice';
 import { IRampStateType } from '@portkey-wallet/store/store-ca/ramp/type';
 import { referralSlice } from '@portkey-wallet/store/store-ca/referral/slice';
 import { ReferralStateType } from '@portkey-wallet/store/store-ca/referral/type';
+import { CryptoGiftStateType } from '@portkey-wallet/store/store-ca/cryptoGift/type';
 
 export type CACommonState = RootCommonState & {
   [tokenManagementSlice.name]: TokenState;
@@ -51,7 +52,7 @@ export type CACommonState = RootCommonState & {
   [cmsSlice.name]: CMSState;
   [txFeeSlice.name]: TxFeeType;
   [imSlice.name]: IMStateType;
-  [cryptoGiftSlice.name]: IMStateType;
+  [cryptoGiftSlice.name]: CryptoGiftStateType;
   [securitySlice.name]: SecurityStateType;
   [referralSlice.name]: ReferralStateType;
 };

@@ -261,7 +261,6 @@ export const useGetCryptoGiftConfig = () => {
         value: redPackageConfig,
       }),
     );
-    // CryptoGiftConfigMap[networkType] = redPackageConfig;
   }, [dispatch, networkType]);
   const getCryptoGiftContractAddress = useCallback(
     (chainId: ChainId) => {

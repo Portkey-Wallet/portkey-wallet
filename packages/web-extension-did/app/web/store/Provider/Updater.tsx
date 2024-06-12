@@ -30,7 +30,6 @@ import { useSetTokenConfig } from 'hooks/useSetTokenConfig';
 import { useInitLoginModeList } from 'hooks/loginModal';
 import { useUserInfo } from './hooks';
 import { useInitCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
-import { useGetCryptoGiftConfig } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 
 keepAliveOnPages({});
 request.setExceptionManager(exceptionManager);
@@ -43,7 +42,6 @@ export default function Updater() {
   const isMainnet = useIsMainnet();
   const initLoginModeList = useInitLoginModeList();
   const { passwordSeed } = useUserInfo();
-  const { init: initCryptoGiftConfig } = useGetCryptoGiftConfig();
 
   const { apiUrl, imApiUrl, imWsUrl, imS3Bucket } = useCurrentNetworkInfo();
   useMemo(async () => {
@@ -107,7 +105,6 @@ export default function Updater() {
     initConfig();
     initRequest();
     initLoginModeList();
-    initCryptoGiftConfig();
   });
   return null;
 }

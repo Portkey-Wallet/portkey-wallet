@@ -22,13 +22,6 @@ export interface IWithdrawPreviewParams {
   amount: string;
 }
 
-export interface IWithdrawPreviewParams {
-  chainId: ChainId;
-  address: string;
-  symbol: string;
-  amount: string;
-}
-
 export interface IWithdrawParams {
   chainId: ChainId;
   tokenContract: ContractBasic;

@@ -1,33 +1,44 @@
 import CommonHeader from 'components/CommonHeader';
 import { useNavigate } from 'react-router';
 import RadioTab from 'pages/components/RadioTab';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Input, Switch } from 'antd';
 import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import CustomSvg from 'components/CustomSvg';
-import { useCommonState } from 'store/Provider/hooks';
+import { useCommonState, useLoading } from 'store/Provider/hooks';
 import clsx from 'clsx';
 import PromptFrame from 'pages/components/PromptFrame';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import SelectAsset from '../components/SelectAsset';
-import { DEFAULT_GIFT_TOKEN } from '../utils';
+import { DEFAULT_GIFT_TOKEN, TDVV_CHAIN_GIFT_TOKEN, TDVW_CHAIN_GIFT_TOKEN, getPrice } from '../utils';
 import { useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { ZERO } from '@portkey-wallet/im-ui-web';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimals, formatAmountShow, formatAmountUSDShow, timesDecimals } from '@portkey-wallet/utils/converter';
 import ConfirmGift from '../components/ConfirmGift';
-import { useSendCryptoGift } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
+import { useGetCryptoGiftConfig, useSendCryptoGift } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 import { RedPackageTypeEnum } from '@portkey-wallet/im/types/redPackage';
-import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
 import singleMessage from 'utils/singleMessage';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import getSeed from 'utils/getSeed';
-import { getBalance } from 'utils/sandboxUtil/getBalance';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-// import getTransferFee from 'pages/Send/utils/getTransferFee';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { DEFAULT_TOKEN } from '@portkey-wallet/constants/constants-ca/wallet';
+import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
+import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
+import { useCalculateCryptoGiftFee } from 'hooks/useCalculateCryptoGiftFee';
+import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { useExtensionRampEntryShow } from 'hooks/ramp';
+import { useCheckManagerSyncState } from 'hooks/wallet';
+import { useCheckSecurity } from 'hooks/useSecurity';
+import AllowanceModal from 'pages/components/setAllowanceModal';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+import { useCheckAllowance } from 'hooks/useCheckAllowance';
+import { IGuardiansApproved } from '@portkey/did-ui-react';
+import { isNFT } from '@portkey-wallet/utils/token';
 import './index.less';
 
 export const Gift_TAB: {
@@ -47,37 +58,143 @@ export const Gift_TAB: {
 export default function Create() {
   const navigate = useNavigate();
   const { isPrompt } = useCommonState();
-  const amountInUsdShow = useAmountInUsdShow();
+  const formatAmountInUsdShow = useAmountInUsdShow();
   const [curTab, setCurTab] = useState(RedPackageTypeEnum.RANDOM);
   const [quantity, setQuantity] = useState<string>();
+  const [quantityErr, setQuantityErr] = useState('');
   const [amount, setAmount] = useState<string>();
+  const [amountErr, setAmountErr] = useState('');
+  const [amountUsdShow, setAmountUsdShow] = useState('$0');
   const [token, setToken] = useState<ICryptoBoxAssetItemType>(DEFAULT_GIFT_TOKEN);
+  const isMainnet = useIsMainnet();
+  const otherChainToken = useRef<ICryptoBoxAssetItemType | undefined>(
+    isMainnet ? TDVV_CHAIN_GIFT_TOKEN : TDVW_CHAIN_GIFT_TOKEN,
+  );
   const [memo, setMemo] = useState<string>();
+  const [tokenPrice, setTokenPrice] = useState<number>(0);
   const [newUserFlag, setNewUserFlag] = useState<boolean>(true);
   const [selectAssetOpen, setSelectAssetOpen] = useState<boolean>(false);
   const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
+  const [allowanceOpen, setAllowanceOpen] = useState<boolean>(false);
   const sendCryptoGift = useSendCryptoGift();
-  const chainInfo = useCurrentChain(token.chainId);
+  const { init, getCryptoGiftContractAddress } = useGetCryptoGiftConfig();
+  const allChainList = useCurrentChainList();
+  const chainInfo = useMemo(
+    () => allChainList?.find((item) => item.chainId === token.chainId),
+    [allChainList, token.chainId],
+  );
   const currentNetwork = useCurrentNetworkInfo();
   const wallet = useCurrentWalletInfo();
   const [balance, setBalance] = useState('--');
   const [txFee, setTxFee] = useState('--');
-  const balanceInUsd = useMemo(
-    () => (balance === '--' ? '--' : amountInUsdShow(balance, 0, token.symbol)),
-    [amountInUsdShow, balance, token.symbol],
-  );
+  const [showTransfer, setShowTransfer] = useState(false);
+  const checkManagerSyncState = useCheckManagerSyncState();
+  const checkSecurity = useCheckSecurity();
+  const originChainId = useOriginChainId();
+  const checkAllowance = useCheckAllowance();
+  const privateKeyRef = useRef<string>('');
+  const [btnLoading, setBtnLoading] = useState(false);
+  useFetchTxFee();
+  const { redPackage: cryptoGiftFee } = useGetTxFee(token.chainId);
+  const getCalculateCryptoGiftFee = useCalculateCryptoGiftFee();
+  const balanceInUsd = useMemo(() => {
+    if (balance === '--') return '--';
+    if (!tokenPrice) return '';
+    return formatAmountUSDShow(ZERO.plus(balance).times(tokenPrice));
+  }, [balance, tokenPrice]);
   const txFeeInUsd = useMemo(
-    () => (txFee === '--' ? '--' : amountInUsdShow(txFee, DEFAULT_TOKEN.decimals, DEFAULT_TOKEN.symbol)),
-    [amountInUsdShow, txFee],
+    () => (txFee === '--' ? '--' : formatAmountInUsdShow(txFee, 0, DEFAULT_TOKEN.symbol)),
+    [formatAmountInUsdShow, txFee],
   );
+  const loadRef = useRef<boolean>(false);
+  const { setLoading } = useLoading();
+
+  // totalAmount
   const totalAmount = useMemo(() => {
     if (!(amount && quantity)) return 0;
     return curTab === RedPackageTypeEnum.RANDOM ? amount : ZERO.plus(quantity).times(amount).toFixed();
   }, [amount, curTab, quantity]);
   const totalAmountShow = useMemo(() => {
-    if (!(amount && quantity)) return '0.00';
-    return formatAmountShow(totalAmount, token.decimals);
-  }, [amount, quantity, token.decimals, totalAmount]);
+    if (!totalAmount) return '0.00';
+    return formatAmountShow(totalAmount, 0);
+  }, [totalAmount]);
+  const totalAmountUsdShow = useMemo(() => {
+    if (!(totalAmount && tokenPrice)) return '';
+    return formatAmountUSDShow(ZERO.plus(totalAmount).times(tokenPrice));
+  }, [tokenPrice, totalAmount]);
+
+  const getInitState = useCallback(async () => {
+    const { privateKey } = await getSeed();
+    if (!privateKey) return;
+    privateKeyRef.current = privateKey;
+  }, []);
+
+  useEffectOnce(() => {
+    init();
+    getInitState();
+  });
+
+  const updateAmountUsdShow = useCallback(async () => {
+    let _usd = '';
+    const _price = await getPrice(token.symbol);
+    setTokenPrice(_price);
+    if (_price) {
+      _usd = formatAmountUSDShow(ZERO.plus(amount ?? 0).times(_price));
+    }
+    setAmountUsdShow(_usd);
+  }, [amount, token.symbol]);
+  useEffect(() => {
+    updateAmountUsdShow();
+  }, [updateAmountUsdShow]);
+
+  // check show buy btn
+  const cardShowFn = useMemo(
+    () => checkEnabledFunctionalTypes(token.symbol, token.chainId === MAIN_CHAIN_ID),
+    [token.chainId, token.symbol],
+  );
+  const { isBuySectionShow } = useExtensionRampEntryShow();
+  const isShowBuyBtn = useMemo(
+    () => (balance === '--' || ZERO.plus(balance).lt(totalAmount)) && cardShowFn.buy && isBuySectionShow,
+    [balance, cardShowFn.buy, isBuySectionShow, totalAmount],
+  );
+
+  // check show transfer
+  const checkShowTransfer = useCallback(async () => {
+    if (!otherChainToken.current) {
+      setShowTransfer(false);
+      return;
+    }
+    if (!totalAmount || (balance !== '--' && ZERO.plus(balance).gte(totalAmount))) {
+      setShowTransfer(false);
+      return;
+    }
+    try {
+      const otherChainInfo = allChainList?.find((item) => item.chainId !== token.chainId);
+      if (!otherChainInfo) {
+        setShowTransfer(false);
+        return;
+      }
+      const tokenContract = new ExtensionContractBasic({
+        privateKey: privateKeyRef.current,
+        rpcUrl: otherChainInfo.endPoint,
+        contractAddress: otherChainToken.current.tokenContractAddress ?? otherChainToken.current.address,
+      });
+      const _res = await tokenContract.callViewMethod('GetBalance', {
+        symbol: token.symbol,
+        owner: wallet?.caAddress ?? '',
+      });
+      const _balance = _res.data.balance;
+
+      setShowTransfer(divDecimals(_balance, token.decimals).gte(totalAmount));
+    } catch (error) {
+      console.log('===get other chain balance error', error);
+      setShowTransfer(false);
+    }
+  }, [allChainList, balance, token.chainId, token.decimals, token.symbol, totalAmount, wallet?.caAddress]);
+  useEffect(() => {
+    checkShowTransfer();
+  }, [checkShowTransfer]);
+
   const changeCurTab = useCallback((target: RedPackageTypeEnum) => {
     setCurTab(target);
     setQuantity(undefined);
@@ -86,80 +203,223 @@ export default function Create() {
     setMemo(undefined);
     setNewUserFlag(true);
   }, []);
-  const getTokenBalance = useCallback(async () => {
-    if (!chainInfo) return;
+
+  const updateTokenBalance = useCallback(async () => {
+    if (!chainInfo) throw 'chainInfo not exist';
     try {
-      const result = await getBalance({
+      const tokenContract = new ExtensionContractBasic({
+        privateKey: privateKeyRef.current,
         rpcUrl: chainInfo.endPoint,
-        address: token.address,
-        chainType: currentNetwork.walletType,
-        paramsOption: {
-          owner: wallet?.[token.chainId]?.caAddress ?? '',
-          symbol: token.symbol,
-        },
+        contractAddress: token.tokenContractAddress ?? token.address,
       });
-      const _balance = result.result.balance;
+      const _res = await tokenContract.callViewMethod('GetBalance', {
+        symbol: token.symbol,
+        owner: wallet?.caAddress ?? '',
+      });
+      const _balance = _res.data.balance;
       setBalance(divDecimals(_balance, token.decimals).toFixed());
     } catch (error) {
+      console.log('===updateTokenBalance error', error);
       setBalance('--');
     }
-  }, [chainInfo, currentNetwork.walletType, token.address, token.chainId, token.decimals, token.symbol, wallet]);
-  const getTxFee = useCallback(async () => {
+  }, [chainInfo, token.address, token.decimals, token.symbol, token.tokenContractAddress, wallet?.caAddress]);
+  useEffect(() => {
+    updateTokenBalance();
+  }, [updateTokenBalance]);
+
+  const updateTxFee = useCallback(async () => {
     try {
+      if (!totalAmount) throw 'amount is invalid';
       if (!chainInfo) throw 'can not find chainInfo';
-      const { privateKey } = await getSeed();
-      if (!privateKey) throw 'Invalid Private Key';
-      // const _fee = await getTransferFee({
-      //   caAddress: wallet?.[token.chainId]?.caAddress ?? '',
-      //   managerAddress: wallet.address,
-      //   toAddress: toAccount?.address, // ???
-      //   privateKey,
-      //   chainInfo: chainInfo,
-      //   chainType: currentNetwork.walletType,
-      //   token: {
-      //     ...token,
-      //     decimals: Number(token.decimals),
-      //   },
-      //   caHash: wallet.caHash as string,
-      //   amount: timesDecimals(totalAmount, token.decimals).toFixed(),
-      // });
-      // setTxFee(_fee);
+      const _fee = await getCalculateCryptoGiftFee({
+        count: totalAmount,
+        chainInfo,
+        caAddress: wallet?.caAddress ?? '',
+        cryptoGiftFee: cryptoGiftFee,
+        token,
+      });
+      setTxFee(divDecimals(_fee, DEFAULT_TOKEN.decimals).toFixed());
     } catch (error) {
-      console.log('===getTransferFee error', error);
+      console.log('getTransferFee error', error);
       setTxFee('--');
     }
-  }, [chainInfo]);
+  }, [chainInfo, cryptoGiftFee, getCalculateCryptoGiftFee, token, totalAmount, wallet]);
+  useEffect(() => {
+    updateTxFee();
+  }, [updateTxFee]);
+
+  const handleSetAllowance = useCallback(
+    async ({
+      symbol,
+      amount,
+      guardiansApproved,
+    }: {
+      symbol: string;
+      amount: string | number;
+      guardiansApproved: IGuardiansApproved[];
+    }) => {
+      if (loadRef.current) return;
+      const spender = getCryptoGiftContractAddress(token.chainId);
+      if (!(spender && chainInfo)) {
+        setAllowanceOpen(false);
+        setConfirmOpen(false);
+        return;
+      }
+
+      const caContract = new ExtensionContractBasic({
+        privateKey: privateKeyRef.current,
+        rpcUrl: chainInfo.endPoint,
+        contractAddress: chainInfo.caContractAddress,
+      });
+      try {
+        const options = {
+          caHash: wallet.caHash,
+          spender: spender,
+          symbol,
+          amount,
+          guardiansApproved,
+        };
+        loadRef.current = true;
+        setLoading(true);
+        console.log('ManagerApprove==options', options);
+        await caContract.callSendMethod('ManagerApprove', '', options, {
+          onMethod: 'receipt',
+        });
+      } catch (error) {
+        setAllowanceOpen(false);
+        setLoading(false);
+        console.log('===ManagerApprove error', error);
+        return;
+      } finally {
+        loadRef.current = false;
+      }
+
+      try {
+        const id = await sendCryptoGift({
+          totalAmount: timesDecimals(totalAmount, token.decimals).toFixed(),
+          type: curTab,
+          count: Number(quantity),
+          memo: memo?.trim() ?? RED_PACKAGE_DEFAULT_MEMO,
+          caContract,
+          token,
+          isNewUsersOnly: newUserFlag,
+        });
+        navigate('/crypto-gifts/success', { state: { id } });
+      } catch (error) {
+        console.log('===sendCryptoGift error', error);
+        singleMessage.error(handleErrorMessage(error, 'send crypto gift error'));
+        setAllowanceOpen(false);
+        setConfirmOpen(false);
+      } finally {
+        setLoading(false);
+        loadRef.current = false;
+      }
+    },
+    [
+      chainInfo,
+      curTab,
+      getCryptoGiftContractAddress,
+      memo,
+      navigate,
+      newUserFlag,
+      quantity,
+      sendCryptoGift,
+      setLoading,
+      token,
+      totalAmount,
+      wallet.caHash,
+    ],
+  );
+
   const handleConfirm = useCallback(async () => {
     try {
       if (!chainInfo) throw 'get chainInfo error';
-      const { privateKey } = await getSeed();
-      if (!privateKey) throw 'get privateKey error';
+      const spender = getCryptoGiftContractAddress(token.chainId);
+      if (!spender) throw 'can not get spender';
+
+      const _check = await checkAllowance({
+        tokenInfo: {
+          chainId: token.chainId,
+          symbol: token.symbol,
+          decimals: Number(token.decimals),
+          alias: token.alias,
+          contractAddress: token.tokenContractAddress ?? token.address,
+        },
+        spender,
+        bigAmount: timesDecimals(totalAmount, token.decimals).toFixed(),
+        chainInfo,
+        caAddress: wallet.caAddress ?? '',
+      });
+
+      if (!_check) {
+        setAllowanceOpen(true);
+        return;
+      }
+
       const caContract = new ExtensionContractBasic({
-        privateKey,
+        privateKey: privateKeyRef.current,
         rpcUrl: chainInfo.endPoint,
         contractAddress: chainInfo.caContractAddress,
       });
 
-      sendCryptoGift({
-        totalAmount: totalAmountShow,
+      const id = await sendCryptoGift({
+        totalAmount: timesDecimals(totalAmount, token.decimals).toFixed(),
         type: curTab,
         count: Number(quantity),
-        memo: memo ?? 'Best wishes!',
+        memo: memo?.trim() ?? RED_PACKAGE_DEFAULT_MEMO,
         caContract,
         token,
         isNewUsersOnly: newUserFlag,
       });
+      navigate('/crypto-gifts/success', { state: { id } });
     } catch (error) {
       console.log('===sendCryptoGift error', error);
       singleMessage.error(handleErrorMessage(error, 'send crypto gift error'));
+      setConfirmOpen(false);
     }
-  }, [chainInfo, curTab, memo, newUserFlag, quantity, sendCryptoGift, token, totalAmountShow]);
-  useEffect(() => {
-    getTokenBalance();
-  }, [getTokenBalance]);
-  useEffect(() => {
-    getTxFee();
-  }, [getTxFee]);
+  }, [
+    chainInfo,
+    getCryptoGiftContractAddress,
+    token,
+    checkAllowance,
+    totalAmount,
+    wallet.caAddress,
+    sendCryptoGift,
+    curTab,
+    quantity,
+    memo,
+    newUserFlag,
+    navigate,
+  ]);
+
+  const handlePreviewCheck = useCallback(async () => {
+    try {
+      if (ZERO.plus(quantity ?? '').lte(ZERO)) {
+        setQuantityErr('Please input valid quantity');
+        return;
+      }
+      if (ZERO.plus(amount ?? '').lte(ZERO)) {
+        setAmountErr('Please input valid amount');
+        return;
+      }
+      setBtnLoading(true);
+      // check manager sync
+      const _isManagerSynced = await checkManagerSyncState(token.chainId);
+      if (!_isManagerSynced) throw 'Synchronizing on-chain account information...';
+
+      // check security
+      const securityRes = await checkSecurity(token.chainId);
+      if (!securityRes) throw 'wallet is not security';
+
+      setConfirmOpen(true);
+    } catch (error) {
+      console.log('===handlePreviewCheck error', error);
+      singleMessage.error(handleErrorMessage(error, 'send crypto gift error'));
+    } finally {
+      setBtnLoading(false);
+    }
+  }, [amount, checkManagerSyncState, checkSecurity, quantity, token.chainId]);
+
   const mainContent = useMemo(
     () => (
       <div className={clsx('create-crypto-gift-page', 'flex-column', isPrompt && 'prompt-page')}>
@@ -180,9 +440,11 @@ export default function Create() {
               value={quantity}
               onChange={(e) => {
                 const _v = parseInputNumberChange(e.target.value, undefined, 0);
+                setQuantityErr('');
                 setQuantity(_v);
               }}
             />
+            {quantityErr && <div className="msg-err">{quantityErr}</div>}
           </div>
           <div className="crypto-gift-amount">
             <div className="gift-label">{curTab === RedPackageTypeEnum.RANDOM ? 'Total Amount' : 'Amount Each'}</div>
@@ -192,6 +454,7 @@ export default function Create() {
               value={amount}
               onChange={(e) => {
                 const _v = parseInputNumberChange(e.target.value, undefined, 8);
+                setAmountErr('');
                 setAmount(_v);
               }}
               addonAfter={
@@ -202,17 +465,19 @@ export default function Create() {
                     src={token.imageUrl}
                     symbol={token.symbol}
                   />
-                  <div className="select-asset-symbol flex-1">{token.label ?? token.symbol}</div>
+                  <div className="select-asset-symbol flex-1">{token.label ?? token.alias ?? token.symbol}</div>
                   <CustomSvg className="flex-center" type="DownDeposit" />
                 </div>
               }
             />
-            <div className="amount-in-usd">{amountInUsdShow(amount ?? 0, 0, token.symbol)}</div>
+            {amountErr && <div className="msg-err">{amountErr}</div>}
+            <div className="amount-in-usd">{amountUsdShow}</div>
           </div>
           <div className="crypto-gift-wishes">
             <div className="gift-label">Wishes</div>
             <Input
               type="text"
+              maxLength={80}
               placeholder="Best wishes!"
               value={memo}
               onChange={(e) => {
@@ -223,7 +488,9 @@ export default function Create() {
           <div className="crypto-gift-new-users flex-between">
             <div className="gift-new-users-tip flex-column">
               <div className="tip-label">New Users Only</div>
-              <div className="tip-content">Once enabled, only new Portkey users can receive your crypto gift.</div>
+              <div className="tip-content">
+                Once enabled, only newly registered Portkey users can claim your crypto gift.
+              </div>
             </div>
             <Switch
               checked={newUserFlag}
@@ -232,15 +499,16 @@ export default function Create() {
             />
           </div>
           <div className="crypto-gift-total-amount">
-            <span className="total-amount-number">{totalAmountShow ?? '0.00'}</span>
-            <span className="total-amount-symbol">{token.label ?? token.symbol}</span>
+            <span className="total-amount-number">{totalAmountShow}</span>
+            <span className="total-amount-symbol">{token.label ?? token.alias ?? token.symbol}</span>
           </div>
           <Button
             className="crypto-gift-btn"
-            disabled={!(quantity && amount)}
+            disabled={!(quantity && amount && !quantityErr && !amountErr)}
             type="primary"
-            onClick={() => setConfirmOpen(true)}>
-            Send Crypto Gifts
+            loading={btnLoading}
+            onClick={handlePreviewCheck}>
+            Send Crypto Gift
           </Button>
           <div className="crypto-gift-tip">
             A crypto gift is valid for 24 hours. Unclaimed tokens/NFTs will be automatically returned to you upon
@@ -250,19 +518,24 @@ export default function Create() {
       </div>
     ),
     [
-      amount,
-      amountInUsdShow,
+      isPrompt,
       changeCurTab,
       curTab,
-      isPrompt,
-      navigate,
-      newUserFlag,
       quantity,
+      quantityErr,
+      amount,
       token.imageUrl,
-      token.label,
       token.symbol,
-      totalAmountShow,
+      token.label,
+      token.alias,
+      amountErr,
+      amountUsdShow,
       memo,
+      newUserFlag,
+      totalAmountShow,
+      btnLoading,
+      handlePreviewCheck,
+      navigate,
     ],
   );
   return (
@@ -271,19 +544,39 @@ export default function Create() {
       <SelectAsset
         open={selectAssetOpen}
         onClose={() => setSelectAssetOpen(false)}
-        onSelectAsset={(item) => setToken(item)}
+        onSelectAsset={(item, other) => {
+          setToken(item);
+          otherChainToken.current = other;
+        }}
       />
       <ConfirmGift
-        totalAmount={totalAmountShow}
-        totalAmountInUsd={amountInUsdShow(totalAmount, 0, token.symbol)}
+        totalAmount={totalAmount}
+        totalAmountShow={totalAmountShow}
+        totalAmountUsdShow={totalAmountUsdShow}
         token={token}
+        otherChainToken={otherChainToken.current}
         balance={balance}
         balanceInUsd={balanceInUsd}
         txFee={txFee}
         txFeeInUsd={txFeeInUsd}
         open={confirmOpen}
+        isShowBuy={isShowBuyBtn}
+        showTransfer={showTransfer}
         onClose={() => setConfirmOpen(false)}
         onConfirm={handleConfirm}
+      />
+      <AllowanceModal
+        open={allowanceOpen}
+        originChainId={originChainId}
+        targetChainId={token.chainId}
+        caHash={wallet.caHash ?? ''}
+        defaultIcon="RedPackageIcon"
+        amount={timesDecimals(totalAmount, token.decimals).toFixed()}
+        symbol={token.symbol}
+        batchApproveNFT={isNFT(token.symbol)}
+        networkType={currentNetwork.networkType}
+        onCancel={() => setAllowanceOpen(false)}
+        onFinish={handleSetAllowance}
       />
     </>
   );

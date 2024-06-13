@@ -14,19 +14,10 @@ import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { TCryptoGiftDetailLocationState } from 'types/router';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { CryptoGiftOriginalStatus } from '@portkey-wallet/types/types-ca/cryptogift';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
+import { formatTimeToHmStr, formatTransferTime } from '@portkey-wallet/utils/time';
 import './index.less';
-
-export interface IClaimedInfo {
-  icon?: string;
-  name: string;
-  isMe: boolean;
-  amount: string;
-  symbol: string;
-  date: string;
-  isLuckiest: boolean;
-  pending: boolean;
-  expiration?: string;
-}
 
 export default function CryptoGiftsDetail() {
   const navigate = useNavigateState();
@@ -34,7 +25,7 @@ export default function CryptoGiftsDetail() {
   const { state } = useLocationState<TCryptoGiftDetailLocationState>();
   useEffect(() => {
     if (!state.id) {
-      navigate('/crypto-gifts/history');
+      navigate('/crypto-gifts');
     }
   }, [navigate, state.id]);
   const { info, list, next, init } = useGetCryptoGiftDetail(state.id);
@@ -42,12 +33,20 @@ export default function CryptoGiftsDetail() {
   const [, setCopied] = useCopyToClipboard();
   const hasMore = useMemo(() => list.length < (info?.totalCount ?? 0), [info?.totalCount, list.length]);
   const onClickShare = useCallback(() => {
-    setCopied(`${referralUrl}/${state.id}`);
+    setCopied(`${referralUrl}/cryptoGift?id=${state.id}`);
     singleMessage.success('Copy Success');
   }, [referralUrl, setCopied, state.id]);
   useEffectOnce(() => {
     init();
   });
+  const isActive = useMemo(() => {
+    if (!info?.status) return false;
+    return [
+      CryptoGiftOriginalStatus.Init,
+      CryptoGiftOriginalStatus.NotClaimed,
+      CryptoGiftOriginalStatus.Claimed,
+    ].includes(info?.status);
+  }, [info?.status]);
   const loadMore = useCallback(async () => {
     try {
       await next();
@@ -60,22 +59,33 @@ export default function CryptoGiftsDetail() {
     () => (
       <div className={clsx('crypto-gifts-detail', 'flex-column', isPrompt && 'prompt-page')}>
         <CommonHeader
-          onLeftBack={() => navigate('/crypto-gifts/history')}
-          rightElementList={[
-            {
-              customSvgType: 'ShareCopy',
-              onClick: onClickShare,
-            },
-          ]}
+          onLeftBack={() => navigate('/crypto-gifts')}
+          rightElementList={
+            isActive
+              ? [
+                  {
+                    customSvgType: 'ShareCopy',
+                    onClick: onClickShare,
+                  },
+                ]
+              : []
+          }
         />
         <div className="crypto-gifts-detail-container">
           <div className="crypto-gifts-info flex-column-center">
             <CustomSvg type="BoxClose" />
-            <div className="blessing">{`"${info?.memo}"`}</div>
+            <div className="blessing">{`"${info?.memo ?? ''}"`}</div>
           </div>
           <div className="divide" />
           <div className="crypto-gifts-claimed-info flex-column">
-            <div className="claimed-status">{`${info?.count}/${info?.grabbed} crypto gifts opened, with ${info?.grabbedAmount}/${info?.totalAmount} ${info?.symbol} has been claimed.`}</div>
+            <div className="claimed-status">{`${info?.displayStatus ?? ''}, with ${info?.grabbed ?? 0}/${
+              info?.count
+            } crypto gift(s) opened and ${formatTokenAmountShowWithDecimals(
+              info?.grabbedAmount ?? 0,
+              info?.decimal,
+            )}/${formatTokenAmountShowWithDecimals(info?.totalAmount ?? 0, info?.decimal)} ${
+              info?.label ?? info?.alias ?? info?.symbol ?? ''
+            } claimed.`}</div>
             {(list ?? []).map((item, index) => (
               <div key={index} className="claimed-info flex-row-center">
                 <div className="claimed-info-icon flex-center">
@@ -89,17 +99,20 @@ export default function CryptoGiftsDetail() {
                   <div className="claimed-info-top flex-between-center">
                     <div className="top-left flex-1 flex-row-center">
                       <div className="claimed-name">
-                        {item.displayType === DisplayType.Pending ? 'Pending Deposit' : item.username}
+                        {item.displayType === DisplayType.Pending ? 'Awaiting Claim' : item.username}
                       </div>
                       {item.isMe && <div className="claimed-flag">Me</div>}
                     </div>
-                    <div className="top-right flex-1">{`${item.amount} ${info?.symbol}`}</div>
+                    <div className="top-right flex-1">{`${formatTokenAmountShowWithDecimals(
+                      item.amount ?? 0,
+                      info?.decimal,
+                    )} ${info?.label ?? info?.alias ?? info?.symbol ?? ''}`}</div>
                   </div>
                   <div className="claimed-info-bottom flex-between-center">
-                    <div className="bottom-left">{item.grabTime}</div>
+                    <div className="bottom-left">{formatTransferTime(item.grabTime)}</div>
                     <div className="bottom-right">
                       {item.displayType === DisplayType.Pending && (
-                        <div className="pending-date">Expiration {item.expirationTime}</div>
+                        <div className="pending-date">Expiration {formatTimeToHmStr(item.expirationTime)}</div>
                       )}
                       {item.isLuckyKing && (
                         <div className="luckiest-status flex-row-center">
@@ -121,20 +134,7 @@ export default function CryptoGiftsDetail() {
         </div>
       </div>
     ),
-    [
-      hasMore,
-      info?.count,
-      info?.grabbed,
-      info?.grabbedAmount,
-      info?.memo,
-      info?.symbol,
-      info?.totalAmount,
-      isPrompt,
-      list,
-      loadMore,
-      navigate,
-      onClickShare,
-    ],
+    [hasMore, info, isActive, isPrompt, list, loadMore, navigate, onClickShare],
   );
 
   return <>{isPrompt ? <PromptFrame content={mainContent} /> : mainContent}</>;

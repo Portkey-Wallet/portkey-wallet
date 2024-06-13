@@ -1,7 +1,7 @@
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import { ChainId } from '.';
 import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
-import { CryptoGiftOriginalStatus } from '@portkey-wallet/types/types-ca/cryptogift';
+import { CryptoGiftOriginalStatus, CryptoGiftStatus } from '@portkey-wallet/types/types-ca/cryptogift';
 
 export type RedPackageStatusInfo = {
   viewStatus: RedPackageStatusEnum;
@@ -67,6 +67,8 @@ export type RedPackageDetail = {
   seedType?: SeedTypeEnum;
   // only for crypto gift
   status?: CryptoGiftOriginalStatus;
+  displayStatus?: CryptoGiftStatus;
+  label?: string;
 };
 
 export type RedPackageGrabInfoItem = {

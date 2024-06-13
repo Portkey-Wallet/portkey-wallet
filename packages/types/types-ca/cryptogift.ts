@@ -1,6 +1,6 @@
 export enum CryptoGiftStatus {
   Active = 'Active',
-  Claimed = 'Claimed',
+  Claimed = 'All claimed',
   Expired = 'Expired',
 }
 
@@ -18,10 +18,12 @@ export type CryptoGiftItem = {
   id: string;
   totalAmount: number;
   grabbedAmount: number;
-  decimal: number;
+  decimals: number;
   memo: string;
-  status: CryptoGiftStatus;
-  redPackageStatus: CryptoGiftOriginalStatus;
+  displayStatus: CryptoGiftStatus;
+  status: CryptoGiftOriginalStatus;
   symbol: string;
   createTime: number;
+  label?: string;
+  alias?: string;
 };

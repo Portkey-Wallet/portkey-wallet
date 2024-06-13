@@ -25,9 +25,9 @@ export default function HistoryCard(props: IHistoryCardProps) {
   console.log('wfs=== redPacketDetail', redPacketDetail);
   const statusStyles = useMemo(() => {
     if (
-      redPacketDetail?.redPackageStatus === CryptoGiftOriginalStatus.Init ||
-      redPacketDetail?.redPackageStatus === CryptoGiftOriginalStatus.NotClaimed ||
-      redPacketDetail?.redPackageStatus === CryptoGiftOriginalStatus.Claimed
+      redPacketDetail?.status === CryptoGiftOriginalStatus.Init ||
+      redPacketDetail?.status === CryptoGiftOriginalStatus.NotClaimed ||
+      redPacketDetail?.status === CryptoGiftOriginalStatus.Claimed
     ) {
       return {
         bg: {
@@ -37,7 +37,7 @@ export default function HistoryCard(props: IHistoryCardProps) {
           color: defaultColors.brandNormal,
         },
       };
-    } else if (redPacketDetail?.redPackageStatus === CryptoGiftOriginalStatus.FullyClaimed) {
+    } else if (redPacketDetail?.status === CryptoGiftOriginalStatus.FullyClaimed) {
       return {
         bg: {
           backgroundColor: defaultColors.neutralContainerBG,
@@ -55,7 +55,7 @@ export default function HistoryCard(props: IHistoryCardProps) {
         color: defaultColors.neutralTertiaryText,
       },
     };
-  }, [redPacketDetail?.redPackageStatus]);
+  }, [redPacketDetail?.status]);
   return (
     <View style={[styles.historyContainer, props.containerStyle]}>
       {showTitle && (
@@ -107,9 +107,9 @@ export default function HistoryCard(props: IHistoryCardProps) {
                   <Svg icon="crypto-gift" size={pTd(12)} />
                 </View>
                 <TextM style={styles.text}>{redPacketDetail?.memo || 'Best Wishes'}</TextM>
-                {redPacketDetail?.status && (
+                {redPacketDetail?.displayStatus && (
                   <View style={[styles.statusContainer, statusStyles.bg]}>
-                    <TextS style={[styles.statusText, statusStyles.textColor]}>{redPacketDetail?.status}</TextS>
+                    <TextS style={[styles.statusText, statusStyles.textColor]}>{redPacketDetail?.displayStatus}</TextS>
                   </View>
                 )}
               </View>
@@ -122,8 +122,8 @@ export default function HistoryCard(props: IHistoryCardProps) {
                 <TextS style={styles.claimText}>Claimed:</TextS>
                 <TextS style={styles.claimValue}>
                   {getClaimedShow(
-                    formatTokenAmountShowWithDecimals(redPacketDetail?.grabbedAmount, redPacketDetail?.decimal),
-                    formatTokenAmountShowWithDecimals(redPacketDetail?.totalAmount, redPacketDetail?.decimal),
+                    formatTokenAmountShowWithDecimals(redPacketDetail?.grabbedAmount, redPacketDetail?.decimals),
+                    formatTokenAmountShowWithDecimals(redPacketDetail?.totalAmount, redPacketDetail?.decimals),
                     redPacketDetail?.symbol || 'ELF',
                   )}
                 </TextS>

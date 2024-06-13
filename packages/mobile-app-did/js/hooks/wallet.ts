@@ -15,6 +15,7 @@ import { getGuardiansApprovedByApprove } from 'utils/guardian';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
 import Loading from 'components/Loading';
+import { getApproveSymbol } from '@portkey-wallet/utils/token';
 
 export const useCheckManagerSyncState = () => {
   const getHolderInfoByViewContract = useGetHolderInfoByViewContract();
@@ -103,11 +104,12 @@ export const useCheckAllowanceAndApprove = () => {
       if (!info) throw new Error(USER_CANCELED);
       const { guardiansApproved, approveInfo } = info;
       if (isShowOnceLoading) Loading.showOnce();
+
       try {
         const approveReq = await caContract.callSendMethod(ApproveMethod.ca, '', {
           caHash: caInfo?.caHash,
           spender: approveInfo.spender,
-          symbol: approveInfo.symbol,
+          symbol: getApproveSymbol(approveInfo.symbol),
           amount: approveInfo.amount,
           guardiansApproved: getGuardiansApprovedByApprove(guardiansApproved),
         });

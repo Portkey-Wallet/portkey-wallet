@@ -18,7 +18,6 @@ import CommonTouchableTabs, { TabItemType } from 'components/CommonTouchableTabs
 import BuyForm from 'pages/Ramp/components/BuyForm';
 import DepositCard, { DepositMode } from './components/DepositCard';
 import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
-import { ETransTokenList } from '@portkey-wallet/constants/constants-ca/dapp';
 import { useAppETransShow } from 'hooks/cms';
 import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useAppRampEntryShow } from 'hooks/ramp';
@@ -35,14 +34,12 @@ export default function Receive() {
   const currentWallet = useCurrentWalletInfo();
   const [selectTab, setSelectTab] = useState<ReceivePageTabType>(targetScene || ReceivePageTabType.QR_CODE);
   const { buy, deposit, exchange } = checkEnabledFunctionalTypes(symbol, chainId === 'AELF');
-  const isETransToken = useMemo(() => ETransTokenList.includes(symbol), [symbol]);
+
   const isMainnet = useIsMainnet();
   const { isETransDepositShow } = useAppETransShow();
   const { isRampShow } = useAppRampEntryShow();
-  const isDepositShow = useMemo(
-    () => isETransToken && isETransDepositShow && deposit,
-    [isETransToken, isETransDepositShow, deposit],
-  );
+  const isDepositShow = useMemo(() => isETransDepositShow && deposit, [isETransDepositShow, deposit]);
+
   const isBuyButtonShow = useMemo(
     () => SHOW_RAMP_SYMBOL_LIST.includes(symbol) && chainId === 'AELF' && isRampShow && isMainnet && buy,
     [buy, isMainnet, isRampShow, chainId, symbol],
@@ -50,14 +47,15 @@ export default function Receive() {
 
   const tabs: TabItemType<ReceivePageTabType>[] = useMemo(() => {
     const tabList: TabItemType<ReceivePageTabType>[] = [{ name: t('QR Code'), type: ReceivePageTabType.QR_CODE }];
-    if (isDepositShow || targetScene === ReceivePageTabType.DEPOSIT) {
-      tabList.push({ name: t('Deposit'), type: ReceivePageTabType.DEPOSIT });
-    } else if (exchange) {
-      tabList.push({ name: t('Exchanges'), type: ReceivePageTabType.EXCHANGES });
-    }
-    if (isBuyButtonShow || targetScene === ReceivePageTabType.BUY) {
+
+    if (exchange) tabList.push({ name: t('Exchanges'), type: ReceivePageTabType.EXCHANGES });
+
+    if (isBuyButtonShow || targetScene === ReceivePageTabType.BUY)
       tabList.push({ name: t('Buy'), type: ReceivePageTabType.BUY });
-    }
+
+    if (isDepositShow || targetScene === ReceivePageTabType.DEPOSIT)
+      tabList.push({ name: t('Deposit'), type: ReceivePageTabType.DEPOSIT });
+
     return tabList;
   }, [exchange, isBuyButtonShow, isDepositShow, t, targetScene]);
 
@@ -116,17 +114,16 @@ export default function Receive() {
         />
       )}
       {selectTab === ReceivePageTabType.QR_CODE && <OriginalQrCodePage />}
-      {(selectTab === ReceivePageTabType.EXCHANGES || selectTab === ReceivePageTabType.DEPOSIT) && (
-        <DepositCard
-          mode={selectTab === ReceivePageTabType.EXCHANGES ? DepositMode.EXCHANGE : DepositMode.DEPOSIT}
-          token={tokenItem}
-          onClickDepositButton={onClickDepositButton}
-        />
-      )}
       {selectTab === ReceivePageTabType.BUY && (
         <View style={[GStyles.flex1, styles.buyContainer]}>
           <BuyForm symbol={symbol} />
         </View>
+      )}
+      {selectTab === ReceivePageTabType.EXCHANGES && (
+        <DepositCard mode={DepositMode.EXCHANGE} token={tokenItem} onClickDepositButton={onClickDepositButton} />
+      )}
+      {selectTab === ReceivePageTabType.DEPOSIT && (
+        <DepositCard mode={DepositMode.DEPOSIT} token={tokenItem} onClickDepositButton={onClickDepositButton} />
       )}
     </PageContainer>
   );

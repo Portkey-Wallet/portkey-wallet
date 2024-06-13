@@ -194,7 +194,7 @@ export default function Preview() {
         chainId: _tokenInfo?.chainId ?? 'AELF',
         symbol: _tokenInfo?.symbol ?? '',
         balance: _tokenInfo?.balance ?? '',
-        imageUrl: _tokenInfo?.imgUrl ?? '',
+        imageUrl: _tokenInfo?.imageUrl ?? '',
         address: _tokenInfo?.tokenContractAddress ?? '',
         decimals: _tokenInfo?.decimals ?? '',
         pageSide: ReceiveTabEnum.Buy,

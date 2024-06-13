@@ -12,7 +12,6 @@ import { useExtensionETransShow } from 'hooks/cms';
 import { useCheckSecurity } from 'hooks/useSecurity';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from 'pages/components/DisclaimerModal';
-import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import './index.less';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { TReceiveLocationState, TSendLocationState, TTokenDetailLocationState } from 'types/router';
@@ -48,7 +47,7 @@ function TokenDetail() {
   const { getTokenDetailBannerList } = useCmsBanner();
   const [tokenDetailBannerList, setTokenDetailBannerList] = useState<TBaseCardItemType[]>([]);
   const [disclaimerOpen, setDisclaimerOpen] = useState<boolean>(false);
-  const { eTransferUrl = '', awakenUrl = '' } = useCurrentNetworkInfo();
+  const { awakenUrl = '' } = useCurrentNetworkInfo();
   const { isPrompt, isNotLessThan768 } = useCommonState();
   const { isRampShow } = useExtensionRampEntryShow();
   const { setLoading } = useLoading();
@@ -113,16 +112,6 @@ function TokenDetail() {
           originUrl = awakenUrl;
           targetUrl = `${awakenUrl}/trading/EFL_USDT_0.05`;
           break;
-        case TradeTypeEnum.ETrans:
-          originUrl = eTransferUrl;
-          targetUrl = stringifyETrans({
-            url: eTransferUrl || '',
-            query: {
-              tokenSymbol: currentToken.symbol,
-              chainId: currentToken.chainId,
-            },
-          });
-          break;
       }
       if (checkDappIsConfirmed(originUrl)) {
         const openWinder = window.open(targetUrl, '_blank');
@@ -134,7 +123,7 @@ function TokenDetail() {
         setDisclaimerOpen(true);
       }
     },
-    [awakenUrl, checkDappIsConfirmed, currentToken.chainId, currentToken.symbol, eTransferUrl, handleCheckSecurity],
+    [awakenUrl, checkDappIsConfirmed, handleCheckSecurity],
   );
 
   const handleSendOrReceive = useCallback(
@@ -155,7 +144,11 @@ function TokenDetail() {
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['token-detail', isPrompt && isNotLessThan768 ? 'portkey-body' : ''])}>
-        <CommonTokenHeader symbol={currentToken.symbol} imgUrl={currentToken.imgUrl} chainId={currentToken.chainId} />
+        <CommonTokenHeader
+          symbol={currentToken.label ?? currentToken.symbol}
+          imgUrl={currentToken.imageUrl}
+          chainId={currentToken.chainId}
+        />
         <div className={clsx('token-detail-content', isPrompt ? '' : 'token-detail-content-popup')}>
           <div className="token-detail-balance flex-column">
             <div className={clsx('balance-amount', 'flex-column', isPrompt && 'is-prompt')}>
@@ -186,12 +179,13 @@ function TokenDetail() {
   }, [
     isPrompt,
     isNotLessThan768,
+    currentToken.label,
     currentToken.symbol,
-    currentToken.imgUrl,
+    currentToken.imageUrl,
     currentToken.chainId,
     currentToken?.balanceInUsd,
-    isMainNet,
     AmountShowWithDecimals,
+    isMainNet,
     isShowBuy,
     handleBuy,
     cardShowFn.send,

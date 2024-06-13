@@ -30,6 +30,7 @@ export interface IAssetItemType {
   address: string;
   tokenInfo?: ITokenInfoType;
   nftInfo?: INftInfoType;
+  label?: string;
 }
 
 export enum AddressCheckError {

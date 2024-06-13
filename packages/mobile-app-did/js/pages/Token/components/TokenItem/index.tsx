@@ -44,7 +44,7 @@ const TokenItem = ({ networkType, item, onHandleToken }: TokenItemProps) => {
       <View style={itemStyle.right}>
         <View>
           <TextL numberOfLines={1} ellipsizeMode={'tail'}>
-            {item.symbol}
+            {item.label || item.symbol}
           </TextL>
           <TextS numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font3]}>
             {`${formatChainInfoToShow(item.chainId, networkType)}`}

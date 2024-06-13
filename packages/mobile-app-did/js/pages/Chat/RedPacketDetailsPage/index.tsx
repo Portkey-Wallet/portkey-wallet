@@ -220,6 +220,7 @@ export const RedPacketDetails = () => {
     redPacketData?.senderAvatar,
     redPacketData?.senderName,
     redPacketData?.symbol,
+    redPacketData?.tokenId,
   ]);
 
   const nextList = useCallback(() => {

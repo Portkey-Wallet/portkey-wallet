@@ -5,9 +5,9 @@ import './index.less';
 
 export interface IRadioTabProps {
   className?: string;
-  radioList: { value: string; label?: string }[];
-  activeValue: string;
-  defaultValue?: string;
+  radioList: { value: string | number; label?: string }[];
+  activeValue: string | number;
+  defaultValue?: string | number;
   onChange: (target: any) => void;
 }
 

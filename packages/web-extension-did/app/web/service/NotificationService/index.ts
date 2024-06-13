@@ -5,7 +5,7 @@ import errorHandler from 'utils/errorHandler';
 import getPromptConfig from 'service/NotificationService/getPromptConfig';
 import ExtensionPlatform from 'utils/platforms/extension';
 import { sleep } from '@portkey-wallet/utils';
-import OpenNewTabController from 'controllers/openNewTabController';
+// import OpenNewTabController from 'controllers/openNewTabController';
 
 export interface NotificationType {
   sendResponse?: SendResponseFun;
@@ -121,7 +121,7 @@ export default class NotificationService {
     });
     this.openTag = tag;
     this.closeSender = { ...this.closeSender, [tag.id?.toString() ?? '']: notification };
-    OpenNewTabController.saveOpenTabs(tag.id || '');
+    // OpenNewTabController.saveOpenTabs(tag.id || '');
     return tag;
   };
 
@@ -147,7 +147,7 @@ export default class NotificationService {
       // virus-like behavior as apps overflow the queue causing the user
       // to have to quit the apis to regain control.
     } else if (promptType === 'tabs' && this.openTag) {
-      OpenNewTabController.removeOpenTabs(this.openTag.id || '');
+      // OpenNewTabController.removeOpenTabs(this.openTag.id || '');
       this.platform.closeTab(this.openTag.id);
       this.openTag = null;
     }

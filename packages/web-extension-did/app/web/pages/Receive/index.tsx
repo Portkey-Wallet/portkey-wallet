@@ -58,7 +58,7 @@ export default function Receive() {
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['receive-wrapper flex-column', isPrompt && 'detail-page-prompt'])}>
-        <CommonTokenHeader symbol={state.symbol} imgUrl={state.imageUrl} chainId={state.chainId} />
+        <CommonTokenHeader symbol={state.label ?? state.symbol} imgUrl={state.imageUrl} chainId={state.chainId} />
         <div className="receive-content flex-1 flex-column">
           {showTabData.length > 1 ? (
             <RadioTab
@@ -77,14 +77,24 @@ export default function Receive() {
           <div className="receive-content-page flex-1">
             {curTab === ReceiveTabEnum.QRCode && <QRCodePage />}
             {curTab === ReceiveTabEnum.Exchanges && <ExchangePage />}
-            {curTab === ReceiveTabEnum.Deposit && <DepositPage chainId={state.chainId} symbol={state.symbol} />}
             {curTab === ReceiveTabEnum.Buy && <BuyPage {...buyData} />}
+            {curTab === ReceiveTabEnum.Deposit && <DepositPage chainId={state.chainId} symbol={state.symbol} />}
           </div>
         </div>
         {isPrompt && <PromptEmptyElement />}
       </div>
     );
-  }, [isPrompt, state.symbol, state.imageUrl, state.chainId, state.pageSide, showTabData, curTab, buyData]);
+  }, [
+    isPrompt,
+    state.label,
+    state.symbol,
+    state.imageUrl,
+    state.chainId,
+    state.pageSide,
+    showTabData,
+    curTab,
+    buyData,
+  ]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

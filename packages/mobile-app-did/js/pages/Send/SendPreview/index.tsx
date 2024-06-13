@@ -427,7 +427,7 @@ const SendPreview: React.FC = () => {
   return (
     <PageContainer
       safeAreaColor={['white', 'white']}
-      titleDom={`${t('Send')}${sendType === 'token' ? ' ' + assetInfo.symbol : ''}`}
+      titleDom={`${t('Send')}${sendType === 'token' ? ' ' + (assetInfo?.label || assetInfo?.symbol) : ''}`}
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       {sendType === 'nft' ? (
@@ -456,7 +456,7 @@ const SendPreview: React.FC = () => {
       ) : (
         <>
           <Text style={[styles.tokenCount, FontStyles.font5, fonts.mediumFont]}>
-            {`- ${formatAmountShow(sendNumber, assetInfo.decimals)} ${assetInfo?.symbol}`}
+            {`- ${formatAmountShow(sendNumber, assetInfo.decimals)} ${assetInfo.label || assetInfo?.symbol}`}
           </Text>
           {isMainnet && isTokenHasPrice && (
             <TextM style={styles.tokenUSD}>{`- ${formatAmountUSDShow(

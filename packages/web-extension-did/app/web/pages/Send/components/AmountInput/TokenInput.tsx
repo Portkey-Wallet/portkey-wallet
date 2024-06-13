@@ -39,7 +39,7 @@ export default function TokenInput({
   const currentChain = useCurrentChain(token.chainId as ChainId);
   const isMainnet = useIsMainnet();
   const { t } = useTranslation();
-  const [amount, setAmount] = useState<string>(value ? `${value} ${token.symbol}` : '');
+  const [amount, setAmount] = useState<string>(value ? `${value} ${token.label ?? token.symbol}` : '');
   const [balance, setBalance] = useState<string>('');
   const [balanceLoading, setBalanceLoading] = useState(false);
   const [maxAmount, setMaxAmount] = useState('');
@@ -145,18 +145,18 @@ export default function TokenInput({
         <div className="control">
           <div className="asset-selector">
             <div className="icon">
-              <TokenImageDisplay symbol={token.symbol} src={token.imageUrl} width={36} />
+              <TokenImageDisplay symbol={token.label ?? token.symbol} src={token.imageUrl} width={36} />
             </div>
             <div className="center">
-              <p className="symbol">{token?.symbol}</p>
-              <p className="amount flex-row-center">
+              <div className="symbol">{token.label ?? token.symbol}</div>
+              <div className="amount flex-row-center">
                 {t('Balance_with_colon')}
                 {balanceLoading ? (
                   <CircleLoading />
                 ) : (
-                  ` ${formatTokenAmountShowWithDecimals(balance, token.decimals)} ${token?.symbol}`
+                  ` ${formatTokenAmountShowWithDecimals(balance, token.decimals)} ${token.label ?? token.symbol}`
                 )}
-              </p>
+              </div>
             </div>
           </div>
         </div>
@@ -174,7 +174,7 @@ export default function TokenInput({
               className={clsx(needConvert ? 'need-convert' : '')}
               value={amount}
               onFocus={() => {
-                setAmount((v) => v?.replace(` ${token?.symbol}`, ''));
+                setAmount((v) => v?.replace(` ${token.label ?? token.symbol}`, ''));
               }}
               onBlur={handleAmountBlur}
               onChange={(e) => {

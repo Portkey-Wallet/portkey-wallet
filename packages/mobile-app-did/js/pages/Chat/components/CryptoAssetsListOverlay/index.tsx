@@ -63,7 +63,7 @@ const AssetItem = (props: {
         noBalanceShow
         currentSymbol={currentSymbol}
         currentChainId={currentChainId}
-        item={{ name: '', ...item, tokenContractAddress: address, decimals: Number(item.decimals || 0) }}
+        item={{ ...item, tokenContractAddress: address, decimals: Number(item.decimals || 0) }}
         onPress={() => onPress(item)}
       />
     );

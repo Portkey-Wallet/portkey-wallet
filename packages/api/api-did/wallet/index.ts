@@ -34,10 +34,30 @@ export default {
     target: '/api/app/account/revoke/check',
     config: { method: 'GET' },
   },
+  deletionCheckV2: {
+    target: '/api/app/account/revoke/validate',
+    config: { method: 'GET' },
+  },
   deletionAccount: '/api/app/account/revoke/request',
-
+  deletionAccountV2: '/api/app/account/revoke/account',
   getTwitterUserInfo: {
     target: '/api/app/twitterAuth/userInfo',
     config: { method: 'GET' },
+  },
+  reportExitWallet: {
+    target: '/api/app/report/exitWallet',
+    config: { method: 'POST' },
+  },
+  shouldShowSetNewWalletNameModal: {
+    target: '/api/app/account/poppedUp',
+    config: { method: 'GET' },
+  },
+  shouldShowSetNewWalletNameIcon: {
+    target: '/api/app/account/bubbling',
+    config: { method: 'GET' },
+  },
+  setNewWalletName: {
+    target: '/api/app/account/replace',
+    config: { method: 'POST' },
   },
 } as const;

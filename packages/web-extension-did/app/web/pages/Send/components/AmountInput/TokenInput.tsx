@@ -1,6 +1,6 @@
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimals, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { Button, Input } from 'antd';
 import clsx from 'clsx';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -14,6 +14,8 @@ import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wal
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import { parseInputNumberChange } from '@portkey-wallet/utils/input';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+import CircleLoading from 'components/CircleLoading';
 
 export default function TokenInput({
   fromAccount,
@@ -39,6 +41,7 @@ export default function TokenInput({
   const { t } = useTranslation();
   const [amount, setAmount] = useState<string>(value ? `${value} ${token.symbol}` : '');
   const [balance, setBalance] = useState<string>('');
+  const [balanceLoading, setBalanceLoading] = useState(false);
   const [maxAmount, setMaxAmount] = useState('');
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const amountInUsdShow = useAmountInUsdShow();
@@ -50,26 +53,32 @@ export default function TokenInput({
     () => amountInUsdShow(value || amount, 0, token.symbol),
     [amount, amountInUsdShow, token.symbol, value],
   );
-
-  useEffect(() => {
+  const needConvert = useMemo(() => isMainnet && amountInUsd, [amountInUsd, isMainnet]);
+  useEffectOnce(() => {
     getTokenPrice(token.symbol);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   const getTokenBalance = useCallback(async () => {
     if (!currentChain) return;
-    const result = await getBalance({
-      rpcUrl: currentChain.endPoint,
-      address: token.address,
-      chainType: currentNetwork.walletType,
-      paramsOption: {
-        owner: fromAccount.address,
-        symbol: token.symbol,
-      },
-    });
-    const balance = result.result.balance;
-    setBalance(balance);
-    console.log(result, currentChain, 'balances==getTokenBalance=');
+    try {
+      setBalanceLoading(true);
+      const result = await getBalance({
+        rpcUrl: currentChain.endPoint,
+        address: token.address,
+        chainType: currentNetwork.walletType,
+        paramsOption: {
+          owner: fromAccount.address,
+          symbol: token.symbol,
+        },
+      });
+      const balance = result.result.balance;
+      setBalance(balance);
+      console.log(result, currentChain, 'balances==getTokenBalance=');
+    } catch (error) {
+      console.log('===getBalance error', error);
+    } finally {
+      setBalanceLoading(false);
+    }
   }, [currentChain, currentNetwork.walletType, fromAccount.address, token.address, token.symbol]);
 
   const getMaxAmount = useCallback(async () => {
@@ -107,8 +116,11 @@ export default function TokenInput({
 
   useEffect(() => {
     getTokenBalance();
+  }, [getTokenBalance]);
+
+  useEffect(() => {
     getMaxAmount();
-  }, [getMaxAmount, getTokenBalance]);
+  }, [getMaxAmount]);
 
   const handleAmountBlur = useCallback(() => {
     onChange({ amount, balance });
@@ -137,9 +149,14 @@ export default function TokenInput({
             </div>
             <div className="center">
               <p className="symbol">{token?.symbol}</p>
-              <p className="amount">{`${t('Balance_with_colon')} ${formatAmountShow(
-                divDecimals(balance, token.decimals),
-              )} ${token?.symbol}`}</p>
+              <p className="amount flex-row-center">
+                {t('Balance_with_colon')}
+                {balanceLoading ? (
+                  <CircleLoading />
+                ) : (
+                  ` ${formatTokenAmountShowWithDecimals(balance, token.decimals)} ${token?.symbol}`
+                )}
+              </p>
             </div>
           </div>
         </div>
@@ -150,11 +167,11 @@ export default function TokenInput({
           <Button onClick={handleMax}>Max</Button>
         </div>
         <div className="control">
-          <div className="amount-input">
+          <div className={clsx('amount-input', needConvert ? 'need-convert' : '')}>
             <Input
               type="text"
               placeholder={`0`}
-              className={clsx(isMainnet && token.symbol === defaultToken.symbol && 'need-convert')}
+              className={clsx(needConvert ? 'need-convert' : '')}
               value={amount}
               onFocus={() => {
                 setAmount((v) => v?.replace(` ${token?.symbol}`, ''));
@@ -166,7 +183,7 @@ export default function TokenInput({
                 onChange({ amount: _v, balance });
               }}
             />
-            {isMainnet && <span className="convert">{amountInUsd}</span>}
+            {needConvert && <span className="convert">{amountInUsd}</span>}
           </div>
         </div>
       </div>

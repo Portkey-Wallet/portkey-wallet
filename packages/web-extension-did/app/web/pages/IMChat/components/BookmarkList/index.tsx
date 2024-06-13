@@ -82,13 +82,13 @@ export default function BookmarkList({ onClick, onClose }: IBookmarkListProps) {
     <div className="bookmark-list">
       <div className="header flex-center">
         <p>{`Bookmarks`}</p>
-        <CustomSvg type="Close2" onClick={onClose} />
+        <CustomSvg type="SuggestClose" onClick={onClose} />
       </div>
       <div className="list">
         {isFirstLoading && <CircleLoading />}
         {showBookmarkList.length === 0 ? (
           <div className="empty-content flex-center">
-            {isFirstLoading ? <></> : <p className="empty-text">No Bookmarks</p>}
+            {isFirstLoading ? null : <p className="empty-text">No Bookmarks</p>}
           </div>
         ) : (
           <MenuList list={showBookmarkList} showEnterIcon={false} height={72} />

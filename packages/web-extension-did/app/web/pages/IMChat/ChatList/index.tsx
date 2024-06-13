@@ -1,20 +1,19 @@
-import { Popover } from 'antd';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChatList as ChannelList, IChatItemProps, PopoverMenuList, StyleProvider } from '@portkey-wallet/im-ui-web';
 import CustomSvg from 'components/CustomSvg';
-import SettingHeader from 'pages/components/SettingHeader';
+import CommonHeader from 'components/CommonHeader';
 import {
   useChannelList,
   usePinChannel,
   useMuteChannel,
   useHideChannel,
   useUnreadCount,
+  useBlockAndReport,
 } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
 import { useHandleClickChatItem } from 'hooks/im';
 import { PIN_LIMIT_EXCEED } from '@portkey-wallet/constants/constants-ca/chat';
-import { useWalletInfo } from 'store/Provider/hooks';
 import { setBadge } from 'utils/FCM';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 import { useReportFCMStatus } from 'hooks/useFCM';
@@ -24,7 +23,11 @@ import { FromPageEnum, TFindMoreLocationState } from 'types/router';
 import { useJoinOfficialGroupTipModal } from 'hooks/useJoinOfficialGroupTip';
 import InviteGuideList from 'pages/components/InviteGuideList';
 import OfficialGroupGuide from 'pages/components/OfficialGroupGuide';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import BottomBar from 'pages/components/BottomBar';
+import clsx from 'clsx';
 import './index.less';
+import useGAReport from 'hooks/useGAReport';
 
 export default function ChatList() {
   const navigate = useNavigateState<TFindMoreLocationState>();
@@ -35,10 +38,12 @@ export default function ChatList() {
   const { list: chatList, init, next: nextChannelList, hasNext: hasNextChannelList } = useChannelList();
   const unreadCount = useUnreadCount();
   const reportFCMStatus = useReportFCMStatus();
-  const { userInfo } = useWalletInfo();
+  const userInfo = useCurrentUserInfo();
   const handleClickChatItem = useHandleClickChatItem();
   const joinOfficialGroupTip = useJoinOfficialGroupTipModal();
   const [showGuide, setShowGuide] = useState<boolean>(false);
+  const { fetchAndSetBlockList } = useBlockAndReport();
+  const hasPinedMsg = useMemo(() => chatList.some((chat) => chat.pin), [chatList]);
   const popList = useMemo(
     () => [
       {
@@ -68,23 +73,10 @@ export default function ChatList() {
     ],
     [navigate],
   );
-  const headerRightEle = useMemo(
-    () => (
-      <div className="flex-center right-element">
-        <CustomSvg type="Search" onClick={() => navigate('/chat-list-search')} />
-        <Popover
-          overlayClassName="chat-list-popover"
-          placement="bottom"
-          trigger="click"
-          showArrow={false}
-          content={<PopoverMenuList data={popList} />}>
-          <CustomSvg type="AddCircle" />
-        </Popover>
-        <CustomSvg type="Close2" onClick={() => navigate('/')} />
-      </div>
-    ),
-    [popList, navigate],
-  );
+
+  useEffectOnce(() => {
+    fetchAndSetBlockList();
+  });
 
   const handlePin = useCallback(
     async (chatItem: IChatItemProps) => {
@@ -124,10 +116,17 @@ export default function ChatList() {
     [hideChannel],
   );
 
+  const { startReport, endReport } = useGAReport();
+
+  useEffectOnce(() => {
+    startReport('ChatList');
+  });
+
   const initChannelList = useCallback(async () => {
     await init();
+    endReport('ChatList');
     setShowGuide(true);
-  }, [init]);
+  }, [endReport, init]);
   useEffectOnce(() => {
     initChannelList();
     joinOfficialGroupTip();
@@ -139,11 +138,28 @@ export default function ChatList() {
   }, [reportFCMStatus, unreadCount]);
 
   return (
-    <div className="chat-list-page">
-      <div className="chat-list-top">
-        <SettingHeader title={t('Chats')} leftCallBack={() => navigate('/')} rightElement={headerRightEle} />
-      </div>
-      <div className="chat-list-content">
+    <div className="chat-list-page flex-column">
+      <CommonHeader
+        className={clsx('chat-list-top', hasPinedMsg && 'has-pined-msg')}
+        title={t('Chats')}
+        rightElementList={[
+          {
+            customSvgType: 'CircleSearch',
+            onClick: () => navigate('/chat-list-search'),
+          },
+          {
+            customSvgType: 'CircleAdd',
+            popoverProps: {
+              overlayClassName: 'chat-list-popover',
+              placement: 'bottom',
+              trigger: 'click',
+              showArrow: false,
+              content: <PopoverMenuList data={popList} />,
+            },
+          },
+        ]}
+      />
+      <div className="chat-list-content flex-1">
         {showGuide && chatList.length === 0 && (
           <div className="flex-column">
             <InviteGuideList />
@@ -166,6 +182,7 @@ export default function ChatList() {
           </StyleProvider>
         )}
       </div>
+      <BottomBar />
     </div>
   );
 }

@@ -1,31 +1,35 @@
-.portkey-ui-manager-approval-wrapper {
+.manager-approve-page {
   margin: auto;
-  .set-allowance-wrapper .set-allowance-header {
-    padding-left: 0;
-    padding-right: 0;
-  }
-  .btn-wrapper {
-    margin-top: 40px;
-  }
-  .manager-approval-guardian-approve {
-    .verifier-account-wrapper {
-      .portkey-ui-code-verify-passcode {
-        .adm-passcode-input.adm-passcode-input-seperated {
-          display: flex;
-          justify-content: center;
-          .adm-passcode-input-cell-container {
-            justify-content: space-between;
-            max-width: 408px;
-            .adm-passcode-input-cell {
-              width: auto;
-              min-width: 36px;
-              margin-right: 0;
-              flex: 0 1;
-              flex-basis: 48px;
+  width: 328px;
+
+  .manager-approval-wrapper {
+    .manager-approval-guardian-approve {
+      .verifier-account-wrapper {
+        padding: 0 16px;
+        .portkey-ui-code-verify-passcode {
+          .adm-passcode-input.adm-passcode-input-seperated {
+            display: flex;
+            justify-content: center;
+            .adm-passcode-input-cell-container {
+              justify-content: space-between;
+              max-width: 408px;
+              .adm-passcode-input-cell {
+                width: auto;
+                min-width: 36px;
+                margin-right: 0;
+                flex: 0 1;
+                flex-basis: 44px;
+              }
             }
           }
         }
       }
     }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .manager-approve-page {
+    width: 360px;
   }
 }

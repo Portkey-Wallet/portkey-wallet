@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import svgsList from 'assets/svgs';
 import { lockWallet } from 'utils/lib/serviceWorkerAction';
 import PortKeyHeader from 'pages/components/PortKeyHeader';
-import SettingHeader from 'pages/components/SettingHeader';
+import CommonHeader from 'components/CommonHeader';
 import './index.less';
 import { Outlet } from 'react-router-dom';
 import clsx from 'clsx';
@@ -68,11 +68,6 @@ export default function PromptMy() {
       });
   }, [curMenuInfo, navigate, settingList]);
 
-  const handleLock = useCallback(() => {
-    lockWallet();
-    navigate('/unlock');
-  }, [navigate]);
-
   const backCb = useCallback(() => {
     navigate('/');
   }, [navigate]);
@@ -91,7 +86,7 @@ export default function PromptMy() {
       <PortKeyHeader unReadShow={isImputation || !viewReferralStatus} onUserClick={backCb} />
 
       <div className="prompt-my-frame">
-        <SettingHeader title={t('My')} leftCallBack={backCb} />
+        <CommonHeader title={t('My')} onLeftBack={backCb} />
         <div className="prompt-my-body">
           <div className="prompt-my-menu-list">
             {settingList.map((item) => (
@@ -121,7 +116,7 @@ export default function PromptMy() {
                 <div className="referral-tag flex-center">New</div>
               </div>
             </MenuItem>
-            <div className="lock-row flex-center" onClick={handleLock}>
+            <div className="lock-row flex-center" onClick={lockWallet}>
               {/* eslint-disable-next-line no-inline-styles/no-inline-styles */}
               <CustomSvg type={'Lock'} style={{ width: 16, height: 16 }} />
               <span className="lock-text">{t('Lock')}</span>

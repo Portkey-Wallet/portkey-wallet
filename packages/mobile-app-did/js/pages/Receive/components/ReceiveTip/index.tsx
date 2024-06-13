@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { TextM } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
@@ -11,6 +11,9 @@ import { useSideChainTokenReceiveTipSetting } from '@portkey-wallet/hooks/hooks-
 import Svg from 'components/Svg';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { TextStyleType, ViewStyleType } from 'types/styles';
+import useEffectOnce from 'hooks/useEffectOnce';
+import { useLatestRef } from '@portkey-wallet/hooks';
+import { defaultColors } from 'assets/theme';
 
 export type TTopViewProps = { chainId: ChainId; style?: ViewStyleType; textStyle?: TextStyleType };
 
@@ -45,15 +48,24 @@ export function TipView({ chainId, style, textStyle }: TTopViewProps) {
 }
 
 function ReceiveTip({ chainId, style }: TTopViewProps) {
-  const { showSideChainTokenReceiveTip, setSideChainTokenReceiveTip } = useSideChainTokenReceiveTipSetting();
+  const { cancelSideChainTokenReceiveTip } = useSideChainTokenReceiveTipSetting();
+  const [selected, setSelected] = useState<boolean>(false);
+  const latestSelected = useLatestRef(selected);
+  useEffectOnce(() => {
+    return () => {
+      if (latestSelected.current) cancelSideChainTokenReceiveTip();
+    };
+  });
   return (
     <View>
       <TipView chainId={chainId} style={style} />
       <View style={[GStyles.flexRow, GStyles.itemCenter, styles.selectBox]}>
-        <Touchable
-          style={GStyles.marginRight(pTd(8))}
-          onPress={() => setSideChainTokenReceiveTip(showSideChainTokenReceiveTip)}>
-          <Svg icon={!showSideChainTokenReceiveTip ? 'selected' : 'unselected'} size={pTd(20)} />
+        <Touchable style={GStyles.paddingRight(pTd(8))} onPress={() => setSelected(v => !v)}>
+          <Svg
+            icon={selected ? 'selected' : 'unselected'}
+            size={pTd(20)}
+            color={selected ? defaultColors.primaryColor : undefined}
+          />
         </Touchable>
         <TextM style={GStyles.flex1}>{`Don't show this again`}</TextM>
       </View>

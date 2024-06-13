@@ -3,21 +3,22 @@
 
 .get-signature {
   width: 328px;
-  margin: 40px auto 16px;
+  margin: auto;
+  padding: 40px 16px;
   flex-direction: column;
   font-size: 12px;
   line-height: 16px;
-  color: @font-13;
+  color: @neutral-secondary-text;
   .site {
     align-self: center;
     margin-bottom: 24px;
     width: fit-content;
     padding: 8px 16px;
-    border: 1px solid @border-2;
+    border: 1px solid @neutral-divider;
     border-radius: 24px;
     font-size: 14px;
     line-height: 20px;
-    color: @font-13;
+    color: @neutral-secondary-text;
     .icon {
       flex-shrink: 0;
       width: 24px;
@@ -31,7 +32,7 @@
     .origin {
       font-size: 14px;
       line-height: 20px;
-      color: @font-13;
+      color: @neutral-secondary-text;
       line-break: anywhere;
       .text-overflow(1)
     }
@@ -40,20 +41,22 @@
     font-size: 24px;
     line-height: 28px;
     font-weight: 700;
-    color: @font-11;
+    color: @neutral-primary-text;
   }
   .message {
     margin-top: 16px;
     .data {
       margin-top: 4px;
       padding: 16px;
-      border: 1px solid @border-2;
+      border: 1px solid @neutral-divider;
       border-radius: 6px;
       white-space: pre-wrap;
+      word-break: break-all;
     }
   }
   .btn {
     width: 100%;
+    gap: 16px;
     margin-top: 40px;
     .@{app-prefix}-btn {
       width: 156px;
@@ -64,13 +67,13 @@
       border-radius: 24px;
     }
     .@{app-prefix}-btn-text {
-      border: 1px solid @border-3;
-      color: @font-9;
-      background-color: @bg-11;
+      border: 1px solid @brand-normal;
+      color: @brand-normal;
+      background-color: @neutral-default-bg;
     }
     .@{app-prefix}-btn-primary {
-      color: @font-5;
-      background-color: @bg-7;
+      color: @neutral-white-text;
+      background-color: @brand-normal;
     }
   }
 }

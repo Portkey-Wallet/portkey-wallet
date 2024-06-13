@@ -30,7 +30,7 @@ const GroupInfoPage = () => {
 
   const currentChannelId = useCurrentChannelId();
   const { groupInfo, isAdmin, refresh } = useGroupChannelInfo(currentChannelId || '', false);
-  const { members } = groupInfo || {};
+  const { members = [], totalCount = '' } = groupInfo || {};
   const leaveGroup = useLeaveChannel();
 
   const inviteLink = useMemo(() => `${LinkPortkeyPath.addGroup}${currentChannelId || ''}`, [currentChannelId]);
@@ -99,14 +99,12 @@ const GroupInfoPage = () => {
     })();
   });
 
-  console.log('membersShowList', membersShowList);
-
   return (
     <PageContainer
       hideTouchable
       leftCallback={() => navigationService.goBack()}
       titleDom={ChatOperationsEnum.GROUP_INFO}
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
       <ScrollView>
@@ -119,8 +117,8 @@ const GroupInfoPage = () => {
           <TextXXXL numberOfLines={1} style={[GStyles.marginTop(pTd(8)), GStyles.paddingArg(0, pTd(20))]}>
             {groupInfo?.name}
           </TextXXXL>
-          <TextM style={[GStyles.marginTop(pTd(4)), FontStyles.font7]}>{`${groupInfo?.members?.length || 0} member${
-            groupInfo?.members.length && groupInfo?.members.length > 1 ? 's' : ''
+          <TextM style={[GStyles.marginTop(pTd(4)), FontStyles.font7]}>{`${totalCount} member${
+            totalCount && totalCount > 1 ? 's' : ''
           }`}</TextM>
         </View>
 
@@ -143,7 +141,7 @@ const GroupInfoPage = () => {
                   groupIcon: groupInfo?.icon || '',
                 });
               }}>
-              <Svg icon="chat-scan" size={pTd(16)} />
+              <Svg icon="chat-qr-code" size={pTd(16)} />
             </Touchable>
           </View>
         </FormItem>
@@ -152,7 +150,7 @@ const GroupInfoPage = () => {
           <Touchable
             style={[GStyles.flexRow, GStyles.itemCenter, styles.membersActionWrap]}
             onPress={() => navigationService.navigate('AddMembersPage')}>
-            <Svg icon="chat-add-member" size={pTd(20)} />
+            <Svg icon="add" size={pTd(20)} color={defaultColors.primaryColor} />
             <TextL style={[FontStyles.font4, styles.actionText]}>Add Members</TextL>
           </Touchable>
           {isAdmin && (
@@ -160,7 +158,11 @@ const GroupInfoPage = () => {
               disabled={disableRemoveButton}
               style={[GStyles.flexRow, GStyles.itemCenter, styles.membersActionWrap]}
               onPress={() => navigationService.navigate('RemoveMembersPage')}>
-              <Svg icon="chat-remove-member" size={pTd(20)} color={disableRemoveButton ? defaultColors.bg16 : ''} />
+              <Svg
+                icon="chat-remove-member"
+                size={pTd(20)}
+                color={disableRemoveButton ? defaultColors.bg16 : defaultColors.bg17}
+              />
               <TextL style={[FontStyles.font13, styles.actionText, disableRemoveButton && styles.disabled]}>
                 Remove Members
               </TextL>
@@ -276,8 +278,7 @@ const styles = StyleSheet.create({
     ...GStyles.marginArg(10, 20, 16),
   },
   leaveButtonStyle: {
-    borderColor: defaultColors.border7,
-    borderWidth: pTd(1),
+    borderColor: defaultColors.border10,
     marginBottom: pTd(1),
   },
   leaveTitleStyle: {

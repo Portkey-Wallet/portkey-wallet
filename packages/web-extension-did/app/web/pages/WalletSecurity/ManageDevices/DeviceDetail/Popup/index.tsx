@@ -1,7 +1,6 @@
 import DeviceDetailCom, { IDeviceDetailComProps } from 'pages/WalletSecurity/components/DeviceDetailCom';
-import BackHeader from 'components/BackHeader';
+import CommonHeader from 'components/CommonHeader';
 import './index.less';
-import CustomSvg from 'components/CustomSvg';
 import { BaseHeaderProps } from 'types/UI';
 
 export default function DeviceDetailPopup({
@@ -13,14 +12,7 @@ export default function DeviceDetailPopup({
 }: BaseHeaderProps & IDeviceDetailComProps) {
   return (
     <div className="device-detail-popup min-width-max-height">
-      <div className="device-detail-header">
-        <BackHeader
-          title={headerTitle}
-          leftCallBack={goBack}
-          rightElement={<CustomSvg type="Close2" onClick={goBack} />}
-        />
-      </div>
-
+      <CommonHeader className="popup-header-wrap" title={headerTitle} onLeftBack={goBack} />
       <DeviceDetailCom device={device} isCurrent={isCurrent} onDelete={onDelete} />
     </div>
   );

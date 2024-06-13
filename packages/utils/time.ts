@@ -48,3 +48,11 @@ export const formatTransferTime = (_time?: string | number) => {
 
   return dayjs(time).format('MMM D , h:mm a').replace(',', 'at');
 };
+
+export const formatActivityTime = (date?: dayjs.ConfigType): string => {
+  if (!date) return '';
+  const activityTimeTime = dateToDayjs(date);
+  const now = dayjs();
+  if (activityTimeTime.isSame(now, 'day')) return 'Today';
+  return activityTimeTime.format('YYYY-MM-DD');
+};

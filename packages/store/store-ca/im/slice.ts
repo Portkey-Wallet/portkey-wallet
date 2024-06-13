@@ -18,6 +18,7 @@ import {
   setRelationToken,
   setGroupInfo,
   updateGroupInfo,
+  updateGroupInfoMembersInfo,
   removeChannelMembers,
   transferChannelOwner,
   addChannelMembers,
@@ -28,6 +29,8 @@ import {
   updateChannelRedPackageAttribute,
   setRedPackageConfig,
   cleanALLChannelMessagePin,
+  setBlockedUserList,
+  changeBlockedMap,
 } from './actions';
 import { formatChannelList } from './util';
 import { MessageTypeEnum, ParsedRedPackage } from '@portkey-wallet/im';
@@ -42,6 +45,7 @@ const initialState: IMStateType = {
   redPackageConfigMap: {},
   pinListNetMap: {},
   lastPinNetMap: {},
+  blockedUserListMap: {},
 };
 export const imSlice = createSlice({
   name: 'im',
@@ -315,6 +319,27 @@ export const imSlice = createSlice({
           },
         };
       })
+      .addCase(updateGroupInfoMembersInfo, (state, action) => {
+        const { network, channelId, value, isInit } = action.payload;
+
+        const preChannelInfo = state.groupInfoMapNetMap?.[network]?.[channelId];
+        if (!preChannelInfo) return state;
+
+        return {
+          ...state,
+          groupInfoMapNetMap: {
+            ...state.groupInfoMapNetMap,
+            [network]: {
+              ...state.groupInfoMapNetMap?.[network],
+              [channelId]: {
+                ...preChannelInfo,
+                members: isInit ? value.members : [...preChannelInfo.members, ...value.members],
+                totalCount: value?.totalCount,
+              },
+            },
+          },
+        };
+      })
       .addCase(addChannelMembers, (state, action) => {
         const { network, channelId, memberInfos } = action.payload;
         const preChannelInfo = state.groupInfoMapNetMap?.[network]?.[channelId];
@@ -352,7 +377,7 @@ export const imSlice = createSlice({
         members.forEach(relationId => {
           removeMemberMap[relationId] = true;
         });
-        const newMembers = preChannelInfo.members.filter(member => !removeMemberMap[member.relationId]);
+        const newMembers = preChannelInfo?.members.filter(member => !removeMemberMap[member.relationId]);
 
         return {
           ...state,
@@ -374,7 +399,7 @@ export const imSlice = createSlice({
         const preChannelInfo = state.groupInfoMapNetMap?.[network]?.[channelId];
         if (!preChannelInfo) return state;
 
-        const [preOwner, ...otherMembers] = preChannelInfo.members;
+        const [preOwner, ...otherMembers] = preChannelInfo?.members || [];
         const newOwner = otherMembers.find(member => member.relationId === relationId);
         if (!preOwner || !newOwner) return state;
         const newMembers = otherMembers.filter(member => member.relationId !== relationId);
@@ -505,6 +530,43 @@ export const imSlice = createSlice({
           },
         };
       })
+      .addCase(setBlockedUserList, (state, action) => {
+        const { network, blockedUserList } = action.payload;
+        const tmpBlockedUserListMap: { [relationId: string]: string } = {};
+        blockedUserList.forEach(ele => (tmpBlockedUserListMap[ele] = ele));
+
+        return {
+          ...state,
+          blockedUserListMap: {
+            ...state.blockedUserListMap,
+            [network]: tmpBlockedUserListMap,
+          },
+        };
+      })
+      .addCase(changeBlockedMap, (state, action) => {
+        const { network, targetRelationId, isBlock } = action.payload;
+
+        const targetBlockedUserListMap: { [relationId: string]: string } = state.blockedUserListMap?.[network] || {};
+
+        let tmpMap: { [relationId: string]: string } = { ...targetBlockedUserListMap };
+
+        if (isBlock) {
+          tmpMap = {
+            ...targetBlockedUserListMap,
+            [targetRelationId]: targetRelationId,
+          };
+        } else {
+          delete tmpMap?.[targetRelationId];
+        }
+
+        return {
+          ...state,
+          blockedUserListMap: {
+            ...state.blockedUserListMap,
+            [network]: tmpMap,
+          },
+        };
+      })
 
       .addCase(resetIm, (state, action) => {
         return {
@@ -539,6 +601,10 @@ export const imSlice = createSlice({
           },
           lastPinNetMap: {
             ...state.lastPinNetMap,
+            [action.payload]: undefined,
+          },
+          blockedUserListMap: {
+            ...state.blockedUserListMap,
             [action.payload]: undefined,
           },
         };

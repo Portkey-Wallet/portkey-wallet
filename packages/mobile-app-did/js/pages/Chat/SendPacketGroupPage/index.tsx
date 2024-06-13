@@ -23,12 +23,11 @@ import navigationService from 'utils/navigationService';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { checkIsUserCancel, handleErrorMessage } from '@portkey-wallet/utils';
-import myEvents from 'utils/deviceEvent';
-import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import CommonTouchableTabs, { TabItemType } from 'components/CommonTouchableTabs';
 import useReportAnalyticsEvent from 'hooks/userExceptionMessage';
 import { createTimeRecorder } from '@portkey-wallet/utils/timeRecorder';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { TabRouteNameEnum } from 'types/navigate';
 
 export default function SendPacketGroupPage() {
   const currentChannelId = useCurrentChannelId();
@@ -125,7 +124,7 @@ export default function SendPacketGroupPage() {
         if (errorMessage === 'fetch exceed limit') {
           CommonToast.warn('You can view the crypto box you sent later in the chat window.');
           navigationService.navigate('Tab');
-          myEvents.navToBottomTab.emit({ tabName: ChatTabName });
+          navigationService.navToBottomTab(TabRouteNameEnum.CHAT);
         } else {
           CommonToast.failError('Crypto box failed to be sent. Please try again.');
         }
@@ -161,7 +160,7 @@ export default function SendPacketGroupPage() {
             key={GroupRedPacketTabEnum.Random}
             type={RedPackageTypeEnum.RANDOM}
             onPressButton={onPressBtn}
-            groupMemberCount={groupInfo?.members?.length}
+            groupMemberCount={groupInfo?.totalCount}
           />
         ),
       },
@@ -173,12 +172,12 @@ export default function SendPacketGroupPage() {
             key={GroupRedPacketTabEnum.Fixed}
             type={RedPackageTypeEnum.FIXED}
             onPressButton={onPressBtn}
-            groupMemberCount={groupInfo?.members?.length}
+            groupMemberCount={groupInfo?.totalCount}
           />
         ),
       },
     ],
-    [groupInfo?.members?.length, onPressBtn],
+    [groupInfo?.totalCount, onPressBtn],
   );
 
   const onTabPress = useCallback((tabType: GroupRedPacketTabEnum) => {
@@ -189,12 +188,17 @@ export default function SendPacketGroupPage() {
     <PageContainer
       titleDom="Send Crypto Box"
       hideTouchable
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.containerStyles}>
       <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.scrollStyle}>
         <View style={[GStyles.flexRow, GStyles.alignCenter]}>
-          <CommonTouchableTabs tabList={tabList} onTabPress={onTabPress} selectTab={selectTab} />
+          <CommonTouchableTabs
+            tabList={tabList}
+            onTabPress={onTabPress}
+            selectTab={selectTab}
+            tabHeaderStyle={styles.tabHeaderStyle}
+          />
         </View>
         <View style={GStyles.flex1}>{tabList.find(item => item.type === selectTab)?.component}</View>
         <TextM style={styles.tips}>
@@ -221,5 +225,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: defaultColors.font3,
     marginBottom: isIOS ? 0 : pTd(16),
+  },
+  tabHeaderStyle: {
+    width: pTd(190),
+    marginBottom: pTd(32),
   },
 });

@@ -31,7 +31,6 @@ describe('useChainListFetch', () => {
       currentNetwork: 'TESTNET',
       walletAvatar: '',
       walletType: 'aelf',
-      walletName: '',
       chainList: [],
     });
 

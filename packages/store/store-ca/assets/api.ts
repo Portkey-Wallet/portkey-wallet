@@ -4,6 +4,8 @@ import { IAssetItemType } from './type';
 import { NFT_SMALL_SIZE, NFT_MIDDLE_SIZE, NFT_LARGE_SIZE } from '@portkey-wallet/constants/constants-ca/assets';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import { NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
+import { ChainId } from '@portkey-wallet/types';
+import { ITokenAllowance } from '@portkey-wallet/types/types-ca/allowance';
 
 type ITokenItemResponse = Omit<TokenItemShowType, 'name' | 'address'>;
 
@@ -19,12 +21,14 @@ export function fetchTokenList({
 }): Promise<{
   data: ITokenItemResponse[];
   totalRecordCount: number;
+  totalBalanceInUsd?: string;
 }> {
   return request.assets.fetchAccountTokenList({
     params: {
       caAddressInfos,
       skipCount,
       maxResultCount,
+      version: '1.11.1',
     },
   });
 }
@@ -43,9 +47,9 @@ export function fetchAssetList({
   return request.assets.fetchAccountAssetsByKeywords({
     params: {
       caAddressInfos,
-      skipCount: skipCount,
-      maxResultCount: maxResultCount,
-      keyword: keyword,
+      skipCount,
+      maxResultCount,
+      keyword,
       width: NFT_SMALL_SIZE,
       height: -1,
     },
@@ -71,6 +75,7 @@ export function fetchCryptoBoxAssetList({
       maxResultCount,
       width: NFT_SMALL_SIZE,
       height: -1,
+      version: '1.11.1',
     },
   });
 }
@@ -134,5 +139,41 @@ export function fetchTokenPrices({
     params: {
       symbols,
     },
+  });
+}
+
+export function fetchTokenBalance({
+  symbol,
+  chainId,
+  currentCaAddress: caAddress,
+}: {
+  symbol: string;
+  chainId: ChainId;
+  currentCaAddress: string;
+}): Promise<{
+  balance: string;
+  balanceInUsd: string;
+  decimals: string;
+}> {
+  return request.assets.getTokenBalance({
+    params: {
+      symbol,
+      chainId,
+      caAddress,
+    },
+  });
+}
+
+export function fetchTokenAllowanceList({
+  skipCount = 0,
+  maxResultCount = 1000,
+  caAddressInfos,
+}: {
+  caAddressInfos: { chainId: string; caAddress: string }[];
+  skipCount: number;
+  maxResultCount: number;
+}): Promise<{ data: ITokenAllowance[]; totalRecordCount: number }> {
+  return request.assets.fetchTokenAllowanceList({
+    params: { caAddressInfos, skipCount, maxResultCount },
   });
 }

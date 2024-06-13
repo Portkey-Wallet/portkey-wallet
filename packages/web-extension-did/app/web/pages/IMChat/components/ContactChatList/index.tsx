@@ -117,13 +117,13 @@ export default function ContactChatList({ onClose, onConfirm }: IContactChatList
   return (
     <div className="share-contact-list flex-column-between">
       <div className="share-contact-list-header">
-        <CustomSvg type="Close2" onClick={onClose} />
+        <CustomSvg type="SuggestClose" onClick={onClose} />
         <div className="list-header-title flex-center">Share with</div>
         <DropdownSearch
           overlay={<></>}
           inputProps={{
             onChange: handleInputChange,
-            placeholder: 'Name/address/Portkey ID',
+            placeholder: 'Name/address',
           }}
         />
       </div>

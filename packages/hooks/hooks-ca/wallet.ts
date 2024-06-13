@@ -3,15 +3,19 @@ import { useMemo, useCallback, useState, useEffect } from 'react';
 import { WalletInfoType } from '@portkey-wallet/types/wallet';
 import { CAInfoType } from '@portkey-wallet/types/types-ca/wallet';
 import { WalletState } from '@portkey-wallet/store/store-ca/wallet/type';
-import { useCurrentNetworkInfo } from './network';
+import { useCurrentNetwork, useCurrentNetworkInfo } from './network';
 import { useCurrentChain, useCurrentChainList } from './chainList';
 import { request } from '@portkey-wallet/api/api-did';
 import { useAppCommonDispatch } from '../index';
 import {
-  setWalletNameAction,
-  setUserInfoAction,
+  setNickNameAndAvatarAction,
+  setHideAssetsAction,
   getCaHolderInfoAsync,
   setCheckManagerExceed,
+  fetchShouldShowSetNewWalletNameModal,
+  fetchShouldShowSetNewWalletNameIcon,
+  setNewWalletName,
+  cancelSetNewWalletNameModal,
 } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { DeviceInfoType } from '@portkey-wallet/types/types-ca/device';
 import { extraDataListDecode } from '@portkey-wallet/utils/device';
@@ -20,10 +24,12 @@ import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 import { getCAHolderManagerInfo } from '@portkey-wallet/graphql/contract/queries';
 import { ManagerInfo, Maybe } from '@portkey-wallet/graphql/contract/__generated__/types';
+import { DEFAULT_USER_INFO } from '@portkey-wallet/store/store-ca/wallet/slice';
 
 export interface CurrentWalletType extends WalletInfoType, CAInfoType {
   caHash?: string;
   caAddressList?: string[];
+  caAddress?: string;
 }
 
 export interface IDeviceItem {
@@ -47,6 +53,7 @@ export function getCurrentWalletInfo(
 
   const tmpWalletInfo: any = Object.assign({}, walletInfo, currentCAInfo, {
     caHash: currentCAInfo?.[originChainId]?.caHash,
+    caAddress: currentCAInfo?.[originChainId]?.caAddress,
     caAddressList: Object.values(currentCAInfo || {})
       ?.filter((info: any) => !!info?.caAddress)
       ?.map((i: any) => i?.caAddress),
@@ -59,16 +66,27 @@ export function getCurrentWalletInfo(
 
 export const useWallet = () => useAppCASelector(state => state.wallet);
 
-export const useUserInfo = (forceUpdate?: boolean) => {
+export const useCurrentUserInfo = (forceUpdate?: boolean) => {
   const { userInfo } = useWallet();
+  const currentNetwork = useCurrentNetwork();
   const dispatch = useAppCommonDispatch();
 
   useEffect(() => {
-    if (!userInfo?.userId) dispatch(getCaHolderInfoAsync());
+    if (!userInfo?.[currentNetwork]?.userId) dispatch(getCaHolderInfoAsync());
     if (forceUpdate) dispatch(getCaHolderInfoAsync());
-  }, [dispatch, forceUpdate, userInfo]);
+  }, [currentNetwork, dispatch, forceUpdate, userInfo]);
 
-  return userInfo;
+  return userInfo?.[currentNetwork] || DEFAULT_USER_INFO;
+};
+
+export const useRefreshUserInfo = () => {
+  const dispatch = useAppCommonDispatch();
+
+  const refreshUserInfo = useCallback(() => {
+    dispatch(getCaHolderInfoAsync());
+  }, [dispatch]);
+
+  return refreshUserInfo;
 };
 
 export const useCurrentWalletInfo = () => {
@@ -188,23 +206,6 @@ export const useDeviceList = (config?: IUseDeviceListConfig) => {
   return { refresh, deviceList, deviceAmount, loading };
 };
 
-export const useSetWalletName = () => {
-  const dispatch = useAppCommonDispatch();
-  const networkInfo = useCurrentNetworkInfo();
-  return useCallback(
-    async (nickName: string) => {
-      await request.wallet.editWalletName({
-        baseURL: networkInfo.apiUrl,
-        params: {
-          nickName,
-        },
-      });
-      dispatch(setWalletNameAction(nickName));
-    },
-    [dispatch, networkInfo],
-  );
-};
-
 export const useSetUserInfo = () => {
   const dispatch = useAppCommonDispatch();
   const networkInfo = useCurrentNetworkInfo();
@@ -214,9 +215,19 @@ export const useSetUserInfo = () => {
         baseURL: networkInfo.apiUrl,
         params,
       });
-      dispatch(setUserInfoAction(params));
+      dispatch(setNickNameAndAvatarAction({ ...params, networkType: networkInfo.networkType }));
     },
     [dispatch, networkInfo],
+  );
+};
+
+export const useSetHideAssets = () => {
+  const dispatch = useAppCommonDispatch();
+  return useCallback(
+    (hideAssets: boolean) => {
+      dispatch(setHideAssetsAction({ hideAssets }));
+    },
+    [dispatch],
   );
 };
 
@@ -323,3 +334,52 @@ export function useCheckManagerExceed() {
     return managersTooMany;
   }, [checkManagerExceed, caHash, dispatch, currentNetworkInfo.networkType]);
 }
+
+export const useSetNewWalletName = () => {
+  const dispatch = useAppCommonDispatch();
+  const caHash = useCurrentCaHash();
+  const originChainId = useOriginChainId();
+  const { shouldShowSetNewWalletNameModal, shouldShowSetNewWalletNameIcon } = useCurrentUserInfo();
+  const refreshUserInfo = useRefreshUserInfo();
+
+  const updateShouldData = useCallback(async () => {
+    try {
+      await dispatch(fetchShouldShowSetNewWalletNameModal());
+      await dispatch(fetchShouldShowSetNewWalletNameIcon());
+    } catch (error) {
+      console.error('Failed to update shouldShow data:', error);
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    updateShouldData();
+  }, [updateShouldData]);
+
+  const handleSetNewWalletName = useCallback(async () => {
+    if (!caHash || !originChainId) throw new Error('Missing caHash or chainId');
+    await dispatch(setNewWalletName({ caHash, chainId: originChainId }));
+    await updateShouldData();
+    await refreshUserInfo();
+  }, [caHash, dispatch, originChainId, updateShouldData, refreshUserInfo]);
+
+  const handleCancelSetNewWalletNameModal = useCallback(async () => {
+    if (!caHash || !originChainId) throw new Error('Missing caHash or chainId');
+    await dispatch(cancelSetNewWalletNameModal({ caHash, chainId: originChainId }));
+    await updateShouldData();
+  }, [caHash, dispatch, originChainId, updateShouldData]);
+
+  return useMemo(
+    () => ({
+      shouldShowSetNewWalletNameModal,
+      shouldShowSetNewWalletNameIcon,
+      handleSetNewWalletName,
+      handleCancelSetNewWalletNameModal,
+    }),
+    [
+      handleCancelSetNewWalletNameModal,
+      handleSetNewWalletName,
+      shouldShowSetNewWalletNameIcon,
+      shouldShowSetNewWalletNameModal,
+    ],
+  );
+};

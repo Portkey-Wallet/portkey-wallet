@@ -17,8 +17,8 @@ import myEvents from 'utils/deviceEvent';
 import { getChatListSvgName } from 'pages/Chat/utils';
 import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
 import GroupAvatarShow from 'pages/Chat/components/GroupAvatarShow';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 
 type ChatHomeListItemSwipedType<T> = {
   item: T;
@@ -32,7 +32,7 @@ const DELETE_TO_END = screenWidth;
 
 export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipedType<ChannelItem>) {
   const { item, onPress, onLongPress, onDelete } = props;
-  const { userInfo } = useWallet();
+  const userInfo = useCurrentUserInfo();
   const [isEdit, setIsEdit] = useState(false);
   const swipeableRef = useRef<SwipeableItemImperativeRef>(null);
   const listenerCallBack = useCallback(
@@ -71,11 +71,8 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
       const transferInfo = item?.lastMessageContent as ParsedTransfer;
 
       const infoShow = transferInfo?.transferExtraData?.tokenInfo
-        ? `${formatAmountShow(
-            divDecimals(
-              transferInfo?.transferExtraData?.tokenInfo?.amount || '',
-              transferInfo?.transferExtraData?.tokenInfo?.decimal,
-            ),
+        ? `${formatTokenAmountShowWithDecimals(
+            transferInfo?.transferExtraData?.tokenInfo?.amount,
             transferInfo?.transferExtraData?.tokenInfo?.decimal,
           )} ${transferInfo?.transferExtraData?.tokenInfo?.symbol}`
         : `${transferInfo?.transferExtraData?.nftInfo?.alias} #${transferInfo?.transferExtraData?.nftInfo?.nftId}`;

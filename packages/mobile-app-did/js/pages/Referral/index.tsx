@@ -21,17 +21,24 @@ import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import useLatestIsFocusedRef from 'hooks/useLatestIsFocusedRef';
+import { useGetLoginControlListAsync } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export default function Referral() {
   const credentials = useCredentials();
   const { address, caHash } = useCurrentWalletInfo();
   const gStyles = useGStyles();
   const { t } = useLanguage();
+  const getLoginControlListAsync = useGetLoginControlListAsync();
   const isFocusedRef = useLatestIsFocusedRef();
   const [isSplashScreen, setIsSplashScreen] = useState(true);
+
   const init = useCallback(async () => {
     if (!isFocusedRef.current) return;
-    await sleep(200);
+    try {
+      await Promise.race([getLoginControlListAsync(), sleep(3000)]);
+    } catch (error) {
+      console.log(error, '=====error-getLoginControlListAsync');
+    }
     SplashScreen.hideAsync();
     await sleep(500);
     if (address) {
@@ -41,7 +48,7 @@ export default function Referral() {
     }
     await sleep(500);
     setIsSplashScreen(false);
-  }, [isFocusedRef, address, credentials, caHash]);
+  }, [isFocusedRef, address, getLoginControlListAsync, credentials, caHash]);
   useEffect(() => {
     init();
   }, [init]);
@@ -53,7 +60,7 @@ export default function Referral() {
       <SafeAreaBox pageSafeBottomPadding={!isIOS} style={[gStyles.container, BGStyles.transparent]}>
         {isSplashScreen && (
           <View style={[GStyles.flex1, GStyles.flexEnd, GStyles.itemCenter]}>
-            <TextM style={[FontStyles.font3, styles.versionStyle]}>{`V${Application.nativeApplicationVersion}`}</TextM>
+            <TextM style={[FontStyles.font22, styles.versionStyle]}>{`V${Application.nativeApplicationVersion}`}</TextM>
           </View>
         )}
         {!isSplashScreen && !address ? (
@@ -61,7 +68,7 @@ export default function Referral() {
             <Welcome />
             <CommonButton
               buttonStyle={[styles.buttonStyle, BGStyles.bg1]}
-              titleStyle={FontStyles.font4}
+              titleStyle={FontStyles.primaryColor}
               type="primary"
               title={t('Get Started')}
               onPress={() => navigationService.reset('LoginPortkey')}

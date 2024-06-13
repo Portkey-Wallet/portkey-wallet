@@ -11,6 +11,7 @@ import { ToAccount, SendStage } from 'pages/Send';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { GuardianItem } from './guardians';
 import { NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
+import { ReceiveTabEnum } from '@portkey-wallet/constants/constants-ca/send';
 
 export enum FromPageEnum {
   register = 'register',
@@ -27,6 +28,7 @@ export enum FromPageEnum {
   chatBoxGroup = 'chat-box-group',
   chatGroupInfo = 'chat-group-info',
   chatMemberList = 'chat-member-list',
+  accountCancelation = 'accountCancelation',
 }
 
 // Guardians
@@ -110,6 +112,13 @@ export type TVerifierAccountLocationState = {
   extra?: string;
 };
 
+// Account Cancelation Verify Code
+export type TVerifyAccountCancelFromPage = FromPageEnum.accountCancelation;
+export type TVerifyAccountCancelLocationState = {
+  previousPage: TVerifyAccountCancelFromPage;
+  verifierSessionId: string;
+};
+
 // SetTransferLimit
 export type TSetTransferLimitLocationState = ITransferLimitRouteState;
 
@@ -176,6 +185,9 @@ export type TRampPreviewLocationState = {
   tokenInfo?: TTokenDetailLocationState;
   openGuardiansApprove?: boolean;
   approveList?: GuardianItem[];
+  mainPageInfo?: {
+    pageName: string;
+  };
 };
 
 // AddContact
@@ -220,8 +232,10 @@ export type TReceiveLocationState = {
   balance: string;
   imageUrl: string;
   address: string;
-  balanceInUsd: string;
+  balanceInUsd?: string;
   decimals: string | number;
+  pageSide?: ReceiveTabEnum;
+  extraData?: any;
 };
 
 // Send
@@ -255,6 +269,7 @@ export type TTokenDetailLocationState = {
   decimals: number;
   tokenContractAddress: string;
   balanceInUsd?: string;
+  imgUrl?: string;
 };
 
 export type TWalletNameFromPage =

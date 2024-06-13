@@ -5,7 +5,11 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
 import { addressFormat, formatChainInfoToShow, getExploreLink, handleLoopFetch } from '@portkey-wallet/utils';
-import { divDecimals, divDecimalsStr, formatAmountShow, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
+import {
+  divDecimalsStr,
+  formatAmountUSDShow,
+  formatTokenAmountShowWithDecimals,
+} from '@portkey-wallet/utils/converter';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
@@ -26,7 +30,7 @@ import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
-import { useIsTokenHasPrice, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { IActivityApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import Lottie from 'lottie-react-native';
 import Touchable from 'components/Touchable';
@@ -44,8 +48,7 @@ const ActivityDetail = () => {
     return result?.length > 0 ? result : caAddressesInfoList;
   }, [activityItemFromRoute?.fromChainId, caAddressesInfoList]);
 
-  const isTokenHasPrice = useIsTokenHasPrice(activityItemFromRoute?.symbol);
-  const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
+  const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const { currentNetwork } = useCurrentWallet();
   const [initializing, setInitializing] = useState(true);
 
@@ -148,6 +151,8 @@ const ActivityDetail = () => {
   }, [CopyIconUI, activityItem, currentNetwork, t, transactionId]);
 
   const feeUI = useMemo(() => {
+    if (activityItem?.isReceived) return null;
+
     const transactionFees =
       activityItem?.transactionFees?.length === 0
         ? [{ fee: 0, symbol: defaultToken.symbol, feeInUsd: 0 }]
@@ -160,9 +165,7 @@ const ActivityDetail = () => {
           {activityItem?.isDelegated ? (
             <View style={[styles.transactionFeeItemWrap]}>
               <TextM style={[styles.blackFontColor, styles.fontBold]}>{`0 ${defaultToken.symbol}`}</TextM>
-              {isMainnet && (
-                <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{`$ ${formatAmountShow(0, 2)}`}</TextS>
-              )}
+              {isMainnet && <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{`$ 0`}</TextS>}
             </View>
           ) : (
             <View>
@@ -174,7 +177,7 @@ const ActivityDetail = () => {
                   )} ${item.symbol}`}</TextM>
                   {isMainnet && (
                     <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>
-                      {formatAmountUSDShow(item?.feeInUsd ?? 0)}
+                      {formatAmountUSDShow(item?.feeInUsd)}
                     </TextS>
                   )}
                 </View>
@@ -184,34 +187,156 @@ const ActivityDetail = () => {
         </View>
       </View>
     );
-  }, [activityItem?.isDelegated, activityItem?.transactionFees, defaultToken.symbol, isMainnet, t]);
+  }, [
+    activityItem?.isDelegated,
+    activityItem?.isReceived,
+    activityItem?.transactionFees,
+    defaultToken.symbol,
+    isMainnet,
+    t,
+  ]);
 
   const amountShow = useMemo(() => {
-    return `${activityItem?.isReceived ? '+' : '-'} ${divDecimalsStr(activityItem?.amount, activityItem?.decimals)} ${
-      activityItem?.symbol || ''
-    }`;
+    return `${activityItem?.isReceived ? '+' : '-'} ${formatTokenAmountShowWithDecimals(
+      activityItem?.amount,
+      activityItem?.decimals,
+    )} ${activityItem?.symbol || ''}`;
   }, [activityItem?.amount, activityItem?.decimals, activityItem?.isReceived, activityItem?.symbol]);
 
   useEffectOnce(() => {
     getTokenPrice(activityItem?.symbol);
   });
 
-  if (initializing)
-    return (
-      <PageContainer
-        hideHeader
-        safeAreaColor={['white']}
-        containerStyles={styles.containerStyle}
-        scrollViewProps={{ disabled: true }}>
-        <StatusBar barStyle={'dark-content'} />
-        <Touchable style={styles.closeWrap} onPress={() => navigationService.goBack()}>
-          <Svg icon="close" size={pTd(16)} />
-        </Touchable>
-        <View style={[GStyles.marginTop(pTd(24)), GStyles.flexRow, GStyles.flexCenter]}>
-          <Lottie style={styles.loadingIcon} source={require('assets/lottieFiles/loading.json')} autoPlay loop />
+  const loadingDom = useMemo(
+    () => (
+      <View style={[GStyles.marginTop(pTd(24)), GStyles.flexRow, GStyles.flexCenter]}>
+        <Lottie style={styles.loadingIcon} source={require('assets/lottieFiles/loading.json')} autoPlay loop />
+      </View>
+    ),
+    [],
+  );
+
+  const activityDom = useMemo(
+    () => (
+      <>
+        <Text style={[styles.typeTitle]}>{activityItem?.transactionName}</Text>
+
+        {activityItem?.transactionType &&
+          SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType) &&
+          (isNft ? (
+            <>
+              <View style={styles.topWrap}>
+                <NFTAvatar
+                  disabled
+                  badgeSizeType="small"
+                  isSeed={activityItem?.nftInfo?.isSeed}
+                  seedType={activityItem?.nftInfo?.seedType}
+                  nftSize={pTd(64)}
+                  data={{ imageUrl: activityItem?.nftInfo?.imageUrl || '', alias: activityItem?.nftInfo?.alias }}
+                  style={styles.img}
+                />
+                <View style={styles.nftInfo}>
+                  <TextL numberOfLines={1} style={styles.nftTitle}>{`${activityItem?.nftInfo?.alias || ''} #${
+                    activityItem?.nftInfo?.nftId || ''
+                  }  `}</TextL>
+                  <TextS
+                    numberOfLines={1}
+                    style={[FontStyles.font3, styles.marginTop4]}>{`Amount: ${formatTokenAmountShowWithDecimals(
+                    activityItem?.amount,
+                    activityItem?.decimals,
+                  )}`}</TextS>
+                </View>
+              </View>
+              <View style={styles.divider} />
+            </>
+          ) : (
+            <>
+              <Text style={[styles.tokenCount, styles.fontBold]}>
+                {SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType as TransactionTypes) && amountShow}
+              </Text>
+              {isMainnet && (
+                <Text style={styles.usdtCount}>{formatAmountUSDShow(activityItem?.currentTxPriceInUsd)}</Text>
+              )}
+            </>
+          ))}
+        <View style={[styles.flexSpaceBetween, styles.titles1]}>
+          <TextM style={styles.lightGrayFontColor}>{t('Status')}</TextM>
+          <TextM style={styles.lightGrayFontColor}>{t('Date')}</TextM>
         </View>
-      </PageContainer>
-    );
+        <View style={[styles.flexSpaceBetween, styles.values1]}>
+          <TextM style={styles.greenFontColor}>{t(status.text)}</TextM>
+          <TextM style={styles.blackFontColor}>
+            {activityItem && activityItem.timestamp ? formatTransferTime(activityItem?.timestamp) : ''}
+          </TextM>
+        </View>
+        <View style={styles.card}>
+          {/* From */}
+          {activityItem?.transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType) && (
+            <>
+              <View style={styles.section}>
+                <View style={[GStyles.flexRowWrap]}>
+                  <TextM style={styles.lightGrayFontColor}>{t('From')}</TextM>
+                  <View style={GStyles.flex1} />
+                  <View style={[styles.alignItemsEnd, styles.justifyContentCenter]}>
+                    {activityItem?.from && <TextM style={styles.blackFontColor}>{activityItem.from}</TextM>}
+                    <TextS style={styles.lightGrayFontColor}>
+                      {formatStr2EllipsisStr(addressFormat(activityItem?.fromAddress, activityItem?.fromChainId))}
+                    </TextS>
+                  </View>
+                  {CopyIconUI(addressFormat(activityItem?.fromAddress, activityItem?.fromChainId) || '')}
+                </View>
+              </View>
+              <Text style={[styles.divider, styles.marginTop0]} />
+            </>
+          )}
+          {/* To */}
+          {activityItem?.transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType) && (
+            <>
+              <View style={styles.section}>
+                <View style={[GStyles.flexRowWrap]}>
+                  <TextM style={[styles.lightGrayFontColor]}>{t('To')}</TextM>
+                  <View style={GStyles.flex1} />
+                  <View style={[styles.alignItemsEnd, styles.justifyContentCenter]}>
+                    {activityItem?.to && <TextM style={[styles.blackFontColor]}>{activityItem?.to}</TextM>}
+                    <TextS style={[styles.lightGrayFontColor]}>
+                      {formatStr2EllipsisStr(addressFormat(activityItem?.toAddress, activityItem?.toChainId))}
+                    </TextS>
+                  </View>
+                  {CopyIconUI(addressFormat(activityItem?.toAddress, activityItem?.toChainId) || '')}
+                </View>
+              </View>
+              <Text style={[styles.divider, styles.marginTop0]} />
+            </>
+          )}
+
+          {/* more Info */}
+
+          {networkUI}
+          {/* transaction Fee */}
+          {feeUI}
+        </View>
+        <View style={styles.space} />
+        {explorerUrl && (
+          <CommonButton
+            containerStyle={[GStyles.marginTop(8), styles.bottomButton]}
+            onPress={() => {
+              if (!activityItem?.transactionId) return;
+
+              navigationService.navigate('ViewOnWebView', {
+                title: t('View on Explorer'),
+                url: getExploreLink(explorerUrl, activityItem?.transactionId || '', 'transaction'),
+              });
+            }}
+            title={t('View on Explorer')}
+            type="clear"
+            style={styles.button}
+            buttonStyle={styles.bottomButton}
+          />
+        )}
+      </>
+    ),
+    [CopyIconUI, activityItem, amountShow, explorerUrl, feeUI, isMainnet, isNft, networkUI, status.text, t],
+  );
 
   return (
     <PageContainer
@@ -223,122 +348,7 @@ const ActivityDetail = () => {
       <Touchable style={styles.closeWrap} onPress={() => navigationService.goBack()}>
         <Svg icon="close" size={pTd(16)} />
       </Touchable>
-      <Text style={[styles.typeTitle]}>{activityItem?.transactionName}</Text>
-
-      {activityItem?.transactionType &&
-        SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType) &&
-        (isNft ? (
-          <>
-            <View style={styles.topWrap}>
-              <NFTAvatar
-                disabled
-                badgeSizeType="small"
-                isSeed={activityItem?.nftInfo?.isSeed}
-                seedType={activityItem?.nftInfo?.seedType}
-                nftSize={pTd(64)}
-                data={{ imageUrl: activityItem?.nftInfo?.imageUrl || '', alias: activityItem?.nftInfo?.alias }}
-                style={styles.img}
-              />
-              <View style={styles.nftInfo}>
-                <TextL numberOfLines={1} style={styles.nftTitle}>{`${activityItem?.nftInfo?.alias || ''} #${
-                  activityItem?.nftInfo?.nftId || ''
-                }  `}</TextL>
-                <TextS numberOfLines={1} style={[FontStyles.font3, styles.marginTop4]}>{`Amount: ${formatAmountShow(
-                  divDecimals(activityItem?.amount, activityItem?.decimals),
-                )}`}</TextS>
-              </View>
-            </View>
-            <View style={styles.divider} />
-          </>
-        ) : (
-          <>
-            <Text style={[styles.tokenCount, styles.fontBold]}>
-              {SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType as TransactionTypes) && amountShow}
-            </Text>
-            {isMainnet && isTokenHasPrice && (
-              <Text style={styles.usdtCount}>{`$ ${formatAmountShow(
-                divDecimals(activityItem?.amount, activityItem?.decimals).multipliedBy(
-                  tokenPriceObject[activityItem.symbol],
-                ),
-                2,
-              )}`}</Text>
-            )}
-          </>
-        ))}
-      <View style={[styles.flexSpaceBetween, styles.titles1]}>
-        <TextM style={styles.lightGrayFontColor}>{t('Status')}</TextM>
-        <TextM style={styles.lightGrayFontColor}>{t('Date')}</TextM>
-      </View>
-      <View style={[styles.flexSpaceBetween, styles.values1]}>
-        <TextM style={styles.greenFontColor}>{t(status.text)}</TextM>
-        <TextM style={styles.blackFontColor}>
-          {activityItem && activityItem.timestamp ? formatTransferTime(activityItem?.timestamp) : ''}
-        </TextM>
-      </View>
-      <View style={styles.card}>
-        {/* From */}
-        {activityItem?.transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType) && (
-          <>
-            <View style={styles.section}>
-              <View style={[GStyles.flexRowWrap]}>
-                <TextM style={styles.lightGrayFontColor}>{t('From')}</TextM>
-                <View style={GStyles.flex1} />
-                <View style={[styles.alignItemsEnd, styles.justifyContentCenter]}>
-                  {activityItem?.from && <TextM style={styles.blackFontColor}>{activityItem.from}</TextM>}
-                  <TextS style={styles.lightGrayFontColor}>
-                    {formatStr2EllipsisStr(addressFormat(activityItem?.fromAddress, activityItem?.fromChainId))}
-                  </TextS>
-                </View>
-                {CopyIconUI(addressFormat(activityItem?.fromAddress, activityItem?.fromChainId) || '')}
-              </View>
-            </View>
-            <Text style={[styles.divider, styles.marginTop0]} />
-          </>
-        )}
-        {/* To */}
-        {activityItem?.transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType) && (
-          <>
-            <View style={styles.section}>
-              <View style={[GStyles.flexRowWrap]}>
-                <TextM style={[styles.lightGrayFontColor]}>{t('To')}</TextM>
-                <View style={GStyles.flex1} />
-                <View style={[styles.alignItemsEnd, styles.justifyContentCenter]}>
-                  {activityItem?.to && <TextM style={[styles.blackFontColor]}>{activityItem?.to}</TextM>}
-                  <TextS style={[styles.lightGrayFontColor]}>
-                    {formatStr2EllipsisStr(addressFormat(activityItem?.toAddress, activityItem?.toChainId))}
-                  </TextS>
-                </View>
-                {CopyIconUI(addressFormat(activityItem?.toAddress, activityItem?.toChainId) || '')}
-              </View>
-            </View>
-            <Text style={[styles.divider, styles.marginTop0]} />
-          </>
-        )}
-
-        {/* more Info */}
-
-        {networkUI}
-        {/* transaction Fee */}
-        {feeUI}
-      </View>
-      <View style={styles.space} />
-      {explorerUrl && (
-        <CommonButton
-          containerStyle={[GStyles.marginTop(8), styles.bottomButton]}
-          onPress={() => {
-            if (!activityItem?.transactionId) return;
-
-            navigationService.navigate('ViewOnWebView', {
-              title: t('View on Explorer'),
-              url: getExploreLink(explorerUrl, activityItem?.transactionId || '', 'transaction'),
-            });
-          }}
-          title={t('View on Explorer')}
-          type="clear"
-          style={styles.button}
-          buttonStyle={styles.bottomButton}
-        />
-      )}
+      {initializing ? loadingDom : activityDom}
     </PageContainer>
   );
 };

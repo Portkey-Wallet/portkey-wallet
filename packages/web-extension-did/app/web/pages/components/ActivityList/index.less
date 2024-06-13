@@ -1,135 +1,197 @@
 @import '../../../assets/theme/color.less';
+@import '../../../assets/theme/constants.less';
+
 .activity-list {
-  .adm-list-item {
-    padding-left: 0;
-    .adm-list-item-content {
-      padding-right: 0;
+  border-bottom: solid 0.5px @neutral-divider;
+  .activity-date-wrap {
+    .activity-date-item {
+      margin: 4px 16px;
+      padding-top: 20px;
+      border-top: 0.5px solid @neutral-divider;
+      font-size: 12px;
+      line-height: 18px;
+      color: @neutral-tertiary-text;
+    }
+    &:first-of-type {
+      .activity-date-item {
+        margin-top: 0;
+        padding-top: 16px;
+        border-top: none;
+      }
     }
   }
   .activity-item {
-    display: flex;
-    flex-direction: column;
     gap: 8px;
-    padding: 4px 16px;
-    .time {
-      line-height: 16px;
-      color: @font-13;
-      font-size: 12px;
+    height: 76px;
+    padding: 0;
+    justify-content: center;
+
+    .suggestcheck-icon,
+    .suggestclose2-icon,
+    .status-icon {
+      width: 14px;
+      height: 14px;
+      svg {
+        width: 100%;
+        height: 100%;
+      }
     }
-    .info {
-      display: flex;
-      gap: 16px;
-      .custom-list-icon {
-        width: 28px;
-        height: 28px;
-        margin-top: 7px;
+    @keyframes rotate {
+      from {
+          transform: rotate(0deg);
+      }
+      to {
+          transform: rotate(360deg);
+      }
+    }
+    .status-icon {
+      animation: rotate 1s linear infinite;
+    }
+    .gap-4 {
+      gap: 4px;
+    }
+
+    &:hover {
+      background-color: @neutral-hover-bg;
+    }
+    &.activity-item-resend {
+      height: 106px;
+    }
+    .activity-item-content {
+      flex-direction: row;
+      gap: 8px;
+      .system-activity-icon,
+      .token-activity-icon {
+        width: 32px;
+        height: 32px;
         background-position: center;
         background-repeat: no-repeat;
         background-size: contain;
+        border-radius: 50%;
+        svg {
+          width: 32px;
+          height: 32px;
+        }
+        .two-image-top,
+        .two-image-bottom {
+          width: 24px;
+          height: 24px;
+          /* stylelint-disable-next-line no-descending-specificity */
+          svg {
+            width: 100%;
+            height: 100%;
+          }
+        }
       }
+      .systemactivity-icon {
+        width: 32px;
+        height: 32px;
+        /* stylelint-disable-next-line no-descending-specificity */
+        svg {
+          width: 32px;
+          height: 32px;
+        }
+      }
+      .system-activity-icon,
+      .token-activity-icon,
+      .nft-activity-icon,
       .custom-svg {
-        margin-top: 7px;
+        flex-shrink: 0;
       }
-      .custom-svg,
-      svg {
-        width: 28px;
-        height: 28px;
-      }
-      .right {
+      .activity-item-detail {
         flex: 1;
-        .row-1 {
-          line-height: 22px;
-          color: @font-11;
-          font-size: 16px;
-          .row-1-left {
-            flex-grow: 1;
-            gap: 10px;
-            span {
-              flex: 1;
-              overflow: hidden;
-              text-overflow: ellipsis;
-              /* stylelint-disable-next-line value-no-vendor-prefix */
-              display: -webkit-box;
-              -webkit-box-orient: vertical;
-              line-clamp: 1;
-              -webkit-line-clamp: 1;
-              word-break: break-all;
-            }
-            .nft-id-show,
-            .amount-show {
-              text-align: right;
-            }
-          }
-          .amount-symbol {
-            margin-left: 4px;
-          }
-        }
-        .row-2 {
-          display: flex;
-          justify-content: space-between;
-          line-height: 16px;
-          font-size: 12px;
-          color: @font-13;
-          margin-top: 4px;
-          .nft-name {
-            width: 100px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            /* stylelint-disable-next-line value-no-vendor-prefix */
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
-            line-clamp: 1;
-            -webkit-line-clamp: 1;
+        gap: 8px;
+        .activity-item-title {
+          width: 160px;
+          font-size: 11px;
+          line-height: 18px;
+          color: @neutral-tertiary-text;
+          .transaction-name {
+            font-size: 16px;
+            line-height: 24px;
+            font-weight: 500;
+            color: @neutral-primary-text;
             word-break: break-all;
-            text-align: right;
+            .text-overflow(1);
+          }
+          &.prompt-activity-item-title {
+            flex: 2;
+            min-width: 160px;
           }
         }
-        .row-3 {
-          line-height: 16px;
+        .activity-item-amount {
+          flex: 1;
           font-size: 12px;
-          color: @font-13;
-          left: 60px;
-          width: 217px;
-          word-break: break-word;
-          margin-top: 2px;
-        }
-        .row-4 {
-          margin-top: 8px;
+          line-height: 18px;
+          color: @neutral-tertiary-text;
           text-align: right;
-          .resend-btn {
-            display: inline-block;
-            width: 61px;
-            height: 24px;
-            font-size: 12px;
-            font-weight: 400;
+          .transaction-amount {
+            font-size: 16px;
+            line-height: 24px;
+            color: @neutral-primary-text;
+            word-break: break-all;
+            .text-overflow(1);
+            &.received-amount {
+              color: @functional-success-default;
+            }
+          }
+          .transaction-nft-symbol,
+          .transaction-convert {
+            height: 16px;
+            word-break: break-all;
+            .text-overflow(1);
+          }
+          .hidden-transaction-convert {
+            visibility: hidden;
+          }
+          &.prompt-activity-item-amount {
+            flex: 3;
+            min-width: 120px;
+          }
+          &.same-direction {
+            .transaction-amount {
+              font-size: 14px;
+              line-height: 22px;
+            }
+          }
+          &.opposite-direction {
+            .transaction-amount-1 {
+              font-size: 12px;
+              line-height: 16px;
+              color: @neutral-tertiary-text;
+            }
           }
         }
       }
-      .right-not-from {
-        height: 42px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        .right-not-from-amount {
-          text-align: end;
-          div {
-            line-height: 22px;
-          }
-          .usd {
-            line-height: 16px;
-            font-size: 12px;
-            color: @font-13;
-            margin-top: 4px;
-          }
-        }
+      .activity-item-system-detail {
+        flex: 1;
+        font-size: 16px;
+        line-height: 24px;
+        font-weight: 500;
+        color: @neutral-primary-text;
+        word-break: break-all;
+        .text-overflow(1);
+      }
+    }
+    .activity-item-resend-btn {
+      margin-left: 40px;
+      .resend-btn {
+        display: inline-block;
+        width: 65px;
+        height: 24px;
+        font-size: 12px;
+        line-height: 16px;
+        font-weight: 400;
       }
     }
   }
 
-  @media screen and (min-width: 768px) {
-    .activity-item {
-      padding: 4px 24px;
+  &.hidden-loading-more {
+    .adm-infinite-scroll {
+      display: none;
     }
+  }
+  @media screen and (min-width: 768px) {
     .load-more {
       padding-bottom: 12px;
     }
@@ -150,11 +212,11 @@
 
       padding: 24px;
       margin: 0;
-      border-bottom: 1px solid @border-2;
+      border-bottom: 1px solid @neutral-divider;
       text-align: center;
       line-height: 22px;
       font-size: 18px;
-      color: @font-13;
+      color: @neutral-tertiary-text;
     }
     .@{app-prefix}-modal-confirm-btns {
       padding: 15px 16px 17px;

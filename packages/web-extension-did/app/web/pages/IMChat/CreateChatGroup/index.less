@@ -1,19 +1,17 @@
 @import '../../../assets/theme/color.less';
+@import '../../../assets/theme/constants.less';
 
 .create-chat-group {
   height: 100%;
-  background-color: @bg-11;
+  background-color: @neutral-default-bg;
 
   .create-chat-top {
     overflow: hidden;
-    padding-top: 16px;
-    flex-shrink: 0;
-    background-color: @bg-13;
     z-index: 100;
   }
 
   .create-chat-body {
-    height: calc(100% - 96px);
+    height: calc(100% - @common-header-height);
   }
 
   .create-chat-form {
@@ -38,12 +36,12 @@
         padding-bottom: 8px;
       }
       .@{app-prefix}-form-item-label > label {
-        color: @font-11;
+        color: @neutral-primary-text;
         font-size: 14px;
         line-height: 20px;
       }
       .@{app-prefix}-input:placeholder-shown {
-        color: @font-12;
+        color: @neutral-disable-text;
         line-height: 20px;
       }
     }
@@ -53,7 +51,7 @@
     margin-top: 60px;
     font-size: 16px;
     line-height: 22px;
-    color: @font-12;
+    color: @neutral-disable-text;
   }
 
   .create-chat-search {
@@ -68,16 +66,16 @@
   .form-btn {
     width: 100%;
     padding: 16px;
-    border-top: 1px solid @border-2;
+    border-top: 1px solid @neutral-divider;
     margin-bottom: 0 !important;
 
     .create-btn {
-      color: @font-5;
+      color: @neutral-white-text;
       font-size: 16px;
       line-height: 22px;
       height: 48px;
       border-radius: 22px;
-      background-color: @bg-7;
+      background-color: @brand-normal;
     }
   }
 }

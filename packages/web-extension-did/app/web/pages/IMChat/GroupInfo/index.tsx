@@ -6,7 +6,7 @@ import {
 } from '@portkey-wallet/hooks/hooks-ca/im';
 import { Button } from 'antd';
 import CustomSvg from 'components/CustomSvg';
-import SettingHeader from 'pages/components/SettingHeader';
+import CommonHeader from 'components/CommonHeader';
 import { useParams } from 'react-router';
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -31,10 +31,6 @@ const GroupInfo = () => {
   const { groupInfo, isAdmin, refresh } = useGroupChannelInfo(`${channelUuid}`);
   const { sendMassMessage } = useSendChannelMessage();
   const shareLink = useMemo(() => LinkPortkeyPath.addGroup + channelUuid, [channelUuid]);
-  const memberLen = useMemo(
-    () => (typeof groupInfo?.members.length === 'number' ? groupInfo?.members.length : 0),
-    [groupInfo?.members.length],
-  );
   const navigate = useNavigateState<TWalletNameLocationState | TViewContactLocationState>();
   const { t } = useTranslation();
   const { setLoading } = useLoading();
@@ -95,13 +91,11 @@ const GroupInfo = () => {
   }, []);
   return (
     <div className="group-info-page flex-column-between">
-      <div className="group-info-header">
-        <SettingHeader
-          title="Group Info"
-          leftCallBack={() => navigate(`/chat-box-group/${channelUuid}`)}
-          rightElement={<CustomSvg type="Close2" onClick={() => navigate(`/chat-box-group/${channelUuid}`)} />}
-        />
-      </div>
+      <CommonHeader
+        className="group-info-header"
+        title="Group Info"
+        onLeftBack={() => navigate(`/chat-box-group/${channelUuid}`)}
+      />
       <div className="group-info-body flex-column-between">
         <div className="group-info-container">
           <div className="info-basic flex-center">
@@ -109,8 +103,8 @@ const GroupInfo = () => {
               <Avatar isGroupAvatar={true} src={groupInfo?.icon} avatarSize="large" />
               <div className="group-name">{groupInfo?.name || ''}</div>
               <div className="group-members">
-                {memberLen}
-                {memberLen > 1 ? ' members' : ' member'}
+                {groupInfo?.totalCount}
+                {(groupInfo?.totalCount ?? 0) > 1 ? ' members' : ' member'}
               </div>
             </div>
           </div>

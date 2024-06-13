@@ -11,11 +11,12 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { commonButtonStyle } from '../SendButton/style';
 import Touchable from 'components/Touchable';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { ReceivePageTabType } from 'pages/Receive/types';
 
 interface SendButtonType {
   themeType?: 'dashBoard' | 'innerPage';
   wrapStyle?: StyleProp<ViewProps>;
-  tokenInfo: TokenItemShowType;
+  tokenInfo?: TokenItemShowType;
 }
 
 const BuyButton = (props: SendButtonType) => {
@@ -37,9 +38,16 @@ const BuyButton = (props: SendButtonType) => {
         style={[commonButtonStyle.iconWrapStyle, GStyles.alignCenter]}
         onPress={async () => {
           if (!isMainnet) return;
-          navigationService.navigate('RampHome', { symbol: tokenInfo.symbol });
+          if (themeType === 'innerPage') {
+            navigationService.navigate(
+              'Receive',
+              Object.assign({}, tokenInfo, { targetScene: ReceivePageTabType.BUY }),
+            );
+          } else {
+            navigationService.navigate('RampHome', { symbol: tokenInfo ? tokenInfo.symbol : 'ELF' });
+          }
         }}>
-        <Svg icon={themeType === 'dashBoard' ? 'buy' : 'buy1'} size={pTd(46)} />
+        <Svg icon={themeType === 'dashBoard' ? 'buy' : 'buy2'} size={pTd(48)} />
       </Touchable>
       <TextM style={[commonButtonStyle.commonTitleStyle, buttonTitleStyle]}>{t('Buy')}</TextM>
     </View>

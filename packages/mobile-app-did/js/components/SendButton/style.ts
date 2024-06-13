@@ -2,11 +2,10 @@ import { StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 
-const { font2, font4 } = defaultColors;
+const { font16 } = defaultColors;
 
 export const commonButtonStyle = StyleSheet.create({
   buttonWrap: {
-    marginBottom: pTd(24),
     width: pTd(65),
   },
   iconWrapStyle: {
@@ -19,14 +18,16 @@ export const commonButtonStyle = StyleSheet.create({
     width: '100%',
     marginTop: pTd(4),
     textAlign: 'center',
-    color: font2,
-    fontSize: pTd(14),
-    lineHeight: pTd(20),
+    color: font16,
+    fontSize: pTd(12),
+    lineHeight: pTd(16),
   },
   dashBoardTitleColorStyle: {
-    color: font2,
+    color: font16,
+    lineHeight: pTd(16),
+    fontWeight: '400',
   },
   innerPageTitleColorStyle: {
-    color: font4,
+    color: font16,
   },
 });

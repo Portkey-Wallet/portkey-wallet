@@ -2,15 +2,14 @@ import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
-import { Transaction } from '@portkey-wallet/types/types-ca/trade';
 import { getExploreLink } from '@portkey-wallet/utils';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import {
   formatStr2EllipsisStr,
   AmountSign,
   formatWithCommas,
-  formatAmountShow,
-  divDecimals,
+  formatAmountUSDShow,
+  formatTokenAmountShowWithDecimals,
 } from '@portkey-wallet/utils/converter';
 import clsx from 'clsx';
 import Copy from 'components/Copy';
@@ -24,7 +23,7 @@ import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca
 import { addressFormat } from '@portkey-wallet/utils';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
-import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -32,6 +31,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { ITransactionLocationState, THomePageLocationState } from 'types/router';
 import { getSeedTypeTag } from 'utils/assets';
+import CommonHeader, { CustomSvgPlaceholderSize } from 'components/CommonHeader';
 
 export default function Transaction() {
   const { t } = useTranslation();
@@ -46,7 +46,6 @@ export default function Transaction() {
   }, [caAddressInfoList, chainId]);
 
   useFreshTokenPrice();
-  const amountInUsdShow = useAmountInUsdShow();
   const defaultToken = useDefaultToken(chainId ? (chainId as ChainId) : undefined);
 
   // Obtain data through routing to ensure that the page must have data and prevent Null Data Errors.
@@ -115,27 +114,32 @@ export default function Transaction() {
             <span>{nftInfo?.alias}</span>
             <span className="token-id">#{nftInfo?.nftId}</span>
           </p>
-          <p className="quantity">{`Amount: ${formatAmountShow(divDecimals(amount, decimals || 0))}`}</p>
+          <p className="quantity">{`Amount: ${formatTokenAmountShowWithDecimals(amount, decimals)}`}</p>
         </div>
       </div>
     );
   }, [activityItem]);
 
   const tokenHeaderUI = useCallback(() => {
-    const { amount, isReceived, decimals, symbol, transactionType } = activityItem;
+    const { amount, isReceived, decimals, symbol, transactionType, currentTxPriceInUsd = '' } = activityItem;
     const sign = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
     /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
     if (transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(transactionType)) {
       return (
-        <p className="amount">
-          {`${formatWithCommas({ amount, decimals, sign, digits: Number(decimals) })} ${symbol ?? ''}`}
-          {isMainnet && <span className="usd">{amountInUsdShow(amount, decimals || 0, symbol)}</span>}
-        </p>
+        <div className="token-amount flex-column-center">
+          <div className="token-amount-text flex-center">
+            <div className="token-amount-number">
+              {formatWithCommas({ amount, decimals, sign, digits: Number(decimals) })}
+            </div>
+            <div className="token-amount-symbol">{symbol ?? ''}</div>
+          </div>
+          {isMainnet && <div className="usd">{formatAmountUSDShow(currentTxPriceInUsd)}</div>}
+        </div>
       );
     } else {
       return <p className="no-amount"></p>;
     }
-  }, [activityItem, amountInUsdShow, isMainnet]);
+  }, [activityItem, isMainnet]);
 
   const statusAndDateUI = useCallback(() => {
     return (
@@ -234,35 +238,23 @@ export default function Transaction() {
           {feeInfo?.length > 0 &&
             feeInfo.map((item, idx) => {
               return (
-                <div key={'transactionFee' + idx} className="right-item">
+                <div key={'transactionFee' + idx} className="right-item flex-column">
                   <span>{`${formatWithCommas({
                     amount: item.fee,
                     decimals: item.decimals || defaultToken.decimals,
                     digits: Number(item.decimals),
                   })} ${item.symbol ?? ''}`}</span>
-                  {isMainnet && (
-                    <span className="right-usd">
-                      {amountInUsdShow(item.fee, item?.decimals || defaultToken.decimals, defaultToken.symbol)}
-                    </span>
-                  )}
+                  {isMainnet && <span className="right-usd">{formatAmountUSDShow(item?.feeInUsd ?? 0)}</span>}
                 </div>
               );
             })}
         </span>
       </div>
     );
-  }, [
-    activityItem.isDelegated,
-    amountInUsdShow,
-    defaultToken.decimals,
-    defaultToken.symbol,
-    feeInfo,
-    isMainnet,
-    noFeeUI,
-    t,
-  ]);
+  }, [activityItem.isDelegated, defaultToken.decimals, feeInfo, isMainnet, noFeeUI, t]);
 
   const transactionUI = useCallback(() => {
+    const { isReceived } = activityItem;
     return (
       <div className="money-wrap">
         <p className="label">
@@ -276,11 +268,11 @@ export default function Transaction() {
               <Copy toCopy={activityItem.transactionId} />
             </span>
           </div>
-          {feeUI()}
+          {isReceived ? null : feeUI()}
         </div>
       </div>
     );
-  }, [activityItem.transactionId, feeUI, t]);
+  }, [activityItem, feeUI, t]);
 
   const openOnExplorer = useCallback(() => {
     return getExploreLink(chainInfo?.explorerUrl || '', activityItem.transactionId || '', 'transaction');
@@ -299,19 +291,27 @@ export default function Transaction() {
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['transaction-detail-modal', isPrompt && 'detail-page-prompt'])}>
-        <div className="transaction-detail-body">
-          <div className="header">
-            <CustomSvg type="Close2" onClick={onClose} />
-          </div>
-          <div className="transaction-info">
-            <div className="method-wrap">
-              <p className="method-name">{activityItem?.transactionName}</p>
-              {isNft ? nftHeaderUI() : tokenHeaderUI()}
+        <div>
+          <CommonHeader
+            rightElementList={[
+              {
+                customSvgType: 'SuggestClose',
+                customSvgPlaceholderSize: CustomSvgPlaceholderSize.MD,
+                onClick: onClose,
+              },
+            ]}
+          />
+          <div className="transaction-detail-body">
+            <div className="transaction-info">
+              <div className="method-wrap">
+                <p className="method-name">{activityItem?.transactionName}</p>
+                {isNft ? nftHeaderUI() : tokenHeaderUI()}
+              </div>
+              {statusAndDateUI()}
+              {fromToUI()}
+              {networkUI()}
+              {transactionUI()}
             </div>
-            {statusAndDateUI()}
-            {fromToUI()}
-            {networkUI()}
-            {transactionUI()}
           </div>
         </div>
         <div className="transaction-footer">

@@ -37,6 +37,7 @@ const aelfMethodList = [
   MethodsBase.CHAINS_INFO,
   MethodsBase.REQUEST_ACCOUNTS,
   MethodsBase.SEND_TRANSACTION,
+  MethodsBase.SET_WALLET_CONFIG_OPTIONS,
   MethodsWallet.GET_WALLET_SIGNATURE,
   MethodsBase.NETWORK,
   MethodsWallet.GET_WALLET_STATE,
@@ -58,6 +59,7 @@ export default class AELFMethodController {
   protected dappManager: ExtensionDappManager;
   protected approvalController: ApprovalController;
   public aelfMethodList: string[];
+  public config: { [key: string]: { [key: string]: boolean } };
   constructor({ notificationService, approvalController, getPassword, getPageState }: AELFMethodControllerProps) {
     this.getPageState = getPageState;
     this.approvalController = approvalController;
@@ -68,6 +70,7 @@ export default class AELFMethodController {
       locked: () => !getPassword(),
       store: storeInSW,
     });
+    this.config = {};
   }
 
   handleRequest = async ({ params, method, callBack }: { params: any; method: any; callBack: any }) => {
@@ -90,6 +93,9 @@ export default class AELFMethodController {
 
   dispenseMessage = (message: RequestMessageData, sendResponse: SendResponseFun) => {
     switch (message.type) {
+      case MethodsBase.SET_WALLET_CONFIG_OPTIONS:
+        this.setWalletConfigOptions(sendResponse, message.payload);
+        break;
       case MethodsBase.CHAIN_ID:
         this.getChainId(sendResponse, message.payload);
         break;
@@ -147,6 +153,12 @@ export default class AELFMethodController {
         );
         break;
     }
+  };
+
+  setWalletConfigOptions = (sendResponse: SendResponseFun, message: any) => {
+    this.config = Object.assign(this.config, { [message.origin]: message.payload });
+    console.log('===this.config', this.config);
+    sendResponse({ ...errorHandler(0), data: true });
   };
 
   verifySessionInfo = async (origin: string) => {
@@ -523,15 +535,20 @@ export default class AELFMethodController {
       let result;
 
       if (isApprove) {
+        if (payload.params.paramsOption.symbol == '*') {
+          return sendResponse({ ...errorHandler(400001), data: { code: ResponseCode.ERROR_IN_PARAMS } });
+        }
+
         setLocalStorage({ txPayload: { [key]: JSON.stringify(payload) } });
         delete message.payload?.params;
-
+        const _config = this.config?.[origin];
         result = await this.approvalController.authorizedToAllowanceApprove({
           origin,
           transactionInfoId: key,
           icon: message.icon,
           method: payload?.method,
           chainId: payload.chainId,
+          batchApproveNFT: _config?.batchApproveNFT,
         });
 
         removeLocalStorage('txPayload');

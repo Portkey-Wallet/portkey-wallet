@@ -1,7 +1,6 @@
 import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
 import { ScreenWidth } from '@rneui/base';
 import { defaultColors } from 'assets/theme';
-import { TextM } from 'components/CommonText';
 import React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
@@ -55,12 +54,8 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg1,
     padding: pTd(16),
     borderRadius: pTd(12),
-    // Shadow
-    shadowColor: defaultColors.shadow1,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 2,
+    borderWidth: 0.5,
+    borderColor: defaultColors.border8,
   },
   textStyle: {
     marginTop: pTd(10),

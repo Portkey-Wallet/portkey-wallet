@@ -1,5 +1,15 @@
 import { NetworkType } from '@portkey-wallet/types';
-import { IEntrance } from '@portkey-wallet/types/types-ca/cms';
+import {
+  IEntrance,
+  ILoginModeItem,
+  TDiscoverDappBannerList,
+  TDiscoverEarnList,
+  TDiscoverLearnBannerList,
+  TDiscoverLearnGroupList,
+  TDiscoverTabList,
+  THomeBannerList,
+  TTokenDetailBannerList,
+} from '@portkey-wallet/types/types-ca/cms';
 
 export interface SocialMediaItem {
   index: number;
@@ -71,5 +81,29 @@ export interface CMSState {
   };
   entranceNetMap?: {
     [T in NetworkType]?: Partial<IEntrance>;
+  };
+  loginModeListMap?: {
+    [T in NetworkType]?: ILoginModeItem[];
+  };
+  homeBannerListMap?: {
+    [T in NetworkType]?: THomeBannerList;
+  };
+  tokenDetailBannerListMap?: {
+    [T in NetworkType]?: TTokenDetailBannerList;
+  };
+  discoverDappBannerListMap?: {
+    [T in NetworkType]?: TDiscoverDappBannerList;
+  };
+  discoverLearnBannerListMap?: {
+    [T in NetworkType]?: TDiscoverLearnBannerList;
+  };
+  discoverTabListMap?: {
+    [T in NetworkType]?: TDiscoverTabList;
+  };
+  discoverEarnListMap: {
+    [T in NetworkType]?: TDiscoverEarnList;
+  };
+  discoverLearnGroupListMap: {
+    [T in NetworkType]?: TDiscoverLearnGroupList;
   };
 }

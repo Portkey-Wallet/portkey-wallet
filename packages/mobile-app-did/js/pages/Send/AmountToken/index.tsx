@@ -6,7 +6,7 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { Input } from '@rneui/themed';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { useLanguage } from 'i18n/hooks';
 import CommonAvatar from 'components/CommonAvatar';
 import { IToSendAssetParamsType } from '@portkey-wallet/types/types-ca/routeParams';
@@ -66,7 +66,7 @@ export default function AmountToken({
       <View style={styles.top}>
         <Text style={styles.topTitle}>{t('Amount')}</Text>
         <Text style={styles.topBalance}>
-          {`${t('Balance')} ${formatAmountShow(divDecimals(balanceShow, selectedToken.decimals))} ${
+          {`${t('Balance')} ${formatTokenAmountShowWithDecimals(balanceShow, selectedToken.decimals)} ${
             selectedToken.symbol
           }`}
         </Text>
@@ -81,7 +81,8 @@ export default function AmountToken({
             svgName={selectedToken.symbol === defaultToken.symbol ? 'testnet' : undefined}
             imageUrl={selectedToken.imageUrl || symbolImages[selectedToken.symbol]}
             avatarSize={pTd(28)}
-            style={styles.avatarStyle}
+            titleStyle={styles.avatarTitle}
+            borderStyle={GStyles.hairlineBorder}
           />
           <Text style={styles.symbolName}>{formattedTokenNameToSuffix}</Text>
         </View>
@@ -105,10 +106,7 @@ export default function AmountToken({
       {isMainnet && isTokenHasPrice && (
         <View style={styles.bottom}>
           <TextS style={styles.topBalance}>
-            {`$ ${formatAmountShow(
-              ZERO.plus(sendTokenNumber).multipliedBy(tokenPriceObject[selectedToken.symbol]),
-              2,
-            )}`}
+            {formatAmountUSDShow(ZERO.plus(sendTokenNumber).multipliedBy(tokenPriceObject[selectedToken.symbol]))}
           </TextS>
         </View>
       )}
@@ -152,8 +150,9 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  avatarStyle: {
+  avatarTitle: {
     fontSize: pTd(16),
+    color: defaultColors.font11,
   },
   symbolName: {
     flex: 1,

@@ -11,7 +11,7 @@ export type ActivityStateType = {
 };
 
 export type ActivityStateMap = {
-  [key: string]: ActivityStateMapAttributes;
+  [key: string]: ActivityStateMapAttributes | undefined;
 };
 
 export type ActivityStateMapAttributes = {
@@ -21,6 +21,7 @@ export type ActivityStateMapAttributes = {
   totalRecordCount: number;
   chainId?: string;
   symbol?: string;
+  hasNextPage?: boolean;
 };
 
 export interface IActivitiesApiParams {
@@ -38,6 +39,7 @@ export interface IActivitiesApiParams {
 export interface IActivitiesApiResponse {
   data: ActivityItemType[];
   totalRecordCount: number;
+  hasNextPage?: boolean;
 }
 
 export enum ActivityTypeEnum {

@@ -192,7 +192,7 @@ export const formatStr2EllipsisStr = (address = '', digit = 8, type: 'middle' | 
 
   const len = address.length;
 
-  if (type === 'tail') return `${address.slice(0, digit)}...`;
+  if (type === 'tail') return len > digit ? `${address.slice(0, digit)}...` : address;
 
   if (len < 2 * digit) return address;
   const pre = address.substring(0, digit);
@@ -288,3 +288,30 @@ export const handleLoopFetch = async <T>({
 export const checkIsUserCancel = (error: any) => {
   return handleErrorMessage(error) === USER_CANCELED;
 };
+
+export const formatNameWithRules = (
+  tokenName: string,
+  ruleList: Array<FormatNameRuleList> = [FormatNameRuleList.NO_UNDERLINE],
+) => {
+  let result = tokenName;
+  if (!result) return result;
+  ruleList.forEach(rule => {
+    switch (rule) {
+      case FormatNameRuleList.NO_BRACKETS:
+        result = result.replace(/\(.*\)/g, '');
+        break;
+      case FormatNameRuleList.NO_UNDERLINE:
+        // SGR-1 => SGR
+        result = result?.replace('-1', '');
+        break;
+      default:
+        break;
+    }
+  });
+  return result;
+};
+
+export enum FormatNameRuleList {
+  NO_BRACKETS = 'NO_BRACKETS',
+  NO_UNDERLINE = 'NO_UNDERLINE',
+}

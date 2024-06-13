@@ -13,7 +13,7 @@ import { useCommonState } from 'store/Provider/hooks';
 import { useGoAddNewContact } from 'hooks/useProfile';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { ExtraTypeEnum } from 'types/Profile';
-import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useBlockAndReport } from '@portkey-wallet/hooks/hooks-ca/im';
 
 const initContactItem: Partial<ContactItemType> = {
   id: '-1',
@@ -40,15 +40,16 @@ export default function Contacts() {
   const navigate = useNavigate();
   const appDispatch = useAppDispatch();
   const localSearch = useLocalContactSearch();
-  const showChat = useIsChatShow();
   const [curList, setCurList] = useState<ContactIndexType[]>([]);
   const [isSearch, setIsSearch] = useState<boolean>(false);
   const isImputation = useIsImputation();
   const [isCloseImputationManually, setIsCloseImputationManually] = useState(false);
   const showImputation = isImputation && !isCloseImputationManually;
+  const { fetchAndSetBlockList } = useBlockAndReport();
 
   useEffectOnce(() => {
     appDispatch(fetchContactListAsync());
+    fetchAndSetBlockList();
   });
 
   useEffect(() => {
@@ -72,7 +73,7 @@ export default function Contacts() {
   }, [curList]);
 
   const { isNotLessThan768 } = useCommonState();
-  const searchPlaceholder = showChat ? 'Name/address/Portkey ID' : 'Name/address';
+  const searchPlaceholder = 'Name/address';
   const title = t('Contacts');
   const addText = t('Add contact');
 

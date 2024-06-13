@@ -5,11 +5,11 @@ import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import fonts from 'assets/theme/fonts';
 import { ScreenWidth } from '@rneui/base';
 
-const { bg5, font2 } = defaultColors;
+const { font5, white } = defaultColors;
 
 export const styles = StyleSheet.create({
   cardWrap: {
-    backgroundColor: bg5,
+    backgroundColor: white,
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -25,24 +25,42 @@ export const styles = StyleSheet.create({
   block: {
     flex: 1,
   },
+  skeletonStyle: {
+    backgroundColor: defaultColors.bg4,
+  },
   svgWrap: {
-    marginTop: -pTd(33),
-    padding: pTd(16),
-    paddingTop: pTd(40),
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: pTd(16),
+    height: pTd(44),
+  },
+  textColumn: {
+    marginTop: pTd(8),
+    display: 'flex',
+    width: '100%',
+    paddingHorizontal: pTd(16),
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+  usdtBalanceWrap: {
+    flexDirection: 'row',
   },
   usdtBalance: {
     ...fonts.mediumFont,
-    fontSize: pTd(30),
-    lineHeight: pTd(34),
-    color: font2,
+    fontSize: pTd(32),
+    lineHeight: pTd(40),
+    height: pTd(40),
+    color: font5,
   },
-  accountName: {
-    color: font2,
-    opacity: 0.8,
-    lineHeight: pTd(20),
+  eyeIcon: {
+    marginTop: pTd(6),
+    marginLeft: pTd(4),
   },
   buttonGroupWrap: {
-    marginTop: pTd(24),
+    marginTop: 32,
     width: ScreenWidth,
     paddingHorizontal: pTd(16),
   },

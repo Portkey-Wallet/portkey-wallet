@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Button } from 'antd';
-import SettingHeader from 'pages/components/SettingHeader';
+import CommonHeader from 'components/CommonHeader';
 import CustomSvg from 'components/CustomSvg';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import DropdownSearch from 'components/DropdownSearch';
 import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useCommonState, useLoading, useTokenInfo, useUserInfo } from 'store/Provider/hooks';
-import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
+import { useAppDispatch, useCommonState, useLoading, useUserInfo } from 'store/Provider/hooks';
 import { useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import PromptFrame from 'pages/components/PromptFrame';
@@ -17,13 +16,16 @@ import { request } from '@portkey-wallet/api/api-did';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
-import './index.less';
 import singleMessage from 'utils/singleMessage';
+import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
+import LoadingMore from 'components/LoadingMore/LoadingMore';
+import { PAGE_SIZE_DEFAULT, PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
+import './index.less';
 
 export default function AddToken() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { tokenDataShowInMarket } = useTokenInfo();
+  const { tokenDataShowInMarket, totalRecordCount, fetchTokenInfoList } = useToken();
   const [filterWord, setFilterWord] = useState<string>('');
   const { passwordSeed } = useUserInfo();
   const appDispatch = useAppDispatch();
@@ -31,6 +33,22 @@ export default function AddToken() {
   const isMainnet = useIsMainnet();
   const { setLoading } = useLoading();
   const [tokenShowList, setTokenShowList] = useState<TokenItemShowType[]>(tokenDataShowInMarket);
+  const hasMoreToken = useMemo(
+    () => tokenDataShowInMarket.length < totalRecordCount,
+    [tokenDataShowInMarket.length, totalRecordCount],
+  );
+
+  const getMoreTokenInfo = useCallback(async () => {
+    if (tokenDataShowInMarket.length && tokenDataShowInMarket.length < totalRecordCount) {
+      await fetchTokenInfoList({
+        chainIdArray,
+        keyword: '',
+        skipCount: tokenDataShowInMarket.length,
+        maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+      });
+    }
+  }, [chainIdArray, fetchTokenInfoList, tokenDataShowInMarket.length, totalRecordCount]);
+
   useEffect(() => {
     if (!filterWord) {
       setTokenShowList(tokenDataShowInMarket);
@@ -38,8 +56,10 @@ export default function AddToken() {
   }, [filterWord, tokenDataShowInMarket]);
 
   useEffect(() => {
-    !filterWord && passwordSeed && appDispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray }));
-  }, [passwordSeed, appDispatch, chainIdArray, filterWord]);
+    if (!filterWord) {
+      fetchTokenInfoList({ keyword: '', chainIdArray, skipCount: 0, maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS });
+    }
+  }, [passwordSeed, appDispatch, chainIdArray, filterWord, fetchTokenInfoList]);
 
   const handleAddCustomToken = useCallback(() => {
     setFilterWord('');
@@ -54,6 +74,9 @@ export default function AddToken() {
           params: {
             symbol: keyword,
             chainIds: chainIdArray,
+            skipCount: 0,
+            maxResultCount: PAGE_SIZE_DEFAULT,
+            version: '1.11.1',
           },
         });
         const _target = (res || []).map((item: any) => ({
@@ -80,18 +103,6 @@ export default function AddToken() {
     500,
   );
 
-  const rightElement = useMemo(
-    () => (
-      <div className="flex-center">
-        <Button onClick={handleAddCustomToken} className="custom-token-add-btn">
-          {t('Custom Token')}
-        </Button>
-        <CustomSvg type="Close2" onClick={() => navigate('/')} />
-      </div>
-    ),
-    [handleAddCustomToken, navigate, t],
-  );
-
   const handleUserTokenDisplay = useCallback(
     async (item: TokenItemShowType) => {
       try {
@@ -104,7 +115,12 @@ export default function AddToken() {
         });
         await sleep(1000);
         if (!filterWord) {
-          await appDispatch(fetchAllTokenListAsync({ chainIdArray }));
+          await fetchTokenInfoList({
+            chainIdArray,
+            keyword: '',
+            skipCount: 0,
+            maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+          });
         } else {
           await handleSearch(filterWord);
         }
@@ -117,7 +133,7 @@ export default function AddToken() {
         setLoading(false);
       }
     },
-    [appDispatch, chainIdArray, filterWord, handleSearch, setLoading],
+    [chainIdArray, fetchTokenInfoList, filterWord, handleSearch, setLoading],
   );
 
   const renderTokenItemBtn = useCallback(
@@ -196,13 +212,23 @@ export default function AddToken() {
           <div>
             {!filterWord.length && <div className="token-title">{t('Popular Assets')}</div>}
             {tokenShowList.map((item) => renderTokenItem(item))}
+            {!filterWord && <LoadingMore hasMore={hasMoreToken} loadMore={getMoreTokenInfo} className="load-more" />}
           </div>
           {filterWord && renderSearchResultTip}
         </div>
       ) : (
         <>{filterWord ? renderNoSearchResult : ''}</>
       ),
-    [filterWord, renderNoSearchResult, renderSearchResultTip, renderTokenItem, t, tokenShowList],
+    [
+      filterWord,
+      getMoreTokenInfo,
+      hasMoreToken,
+      renderNoSearchResult,
+      renderSearchResultTip,
+      renderTokenItem,
+      t,
+      tokenShowList,
+    ],
   );
 
   const { isPrompt } = useCommonState();
@@ -210,7 +236,11 @@ export default function AddToken() {
     return (
       <div className={clsx(['add-token', isPrompt && 'detail-page-prompt'])}>
         <div className="add-token-top">
-          <SettingHeader title={t('Add tokens')} leftCallBack={() => navigate('/')} rightElement={rightElement} />
+          <CommonHeader
+            title={t('Add tokens')}
+            onLeftBack={() => navigate('/')}
+            rightElementList={[{ customSvgType: 'SuggestAdd', onClick: handleAddCustomToken }]}
+          />
           <DropdownSearch
             overlay={<></>}
             value={filterWord}
@@ -227,7 +257,7 @@ export default function AddToken() {
         {renderTokenList}
       </div>
     );
-  }, [filterWord, isPrompt, navigate, renderTokenList, rightElement, searchDebounce, t]);
+  }, [filterWord, handleAddCustomToken, isPrompt, navigate, renderTokenList, searchDebounce, t]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

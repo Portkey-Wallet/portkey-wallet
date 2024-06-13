@@ -1,238 +1,122 @@
 @import '../../../../assets/theme/color.less';
+@import '../../../../assets/theme/constants.less';
 
 .balance {
   overflow-y: overlay;
+  height: 100%;
 
-  .chat-body {
-    position: absolute;
-    right: 16px;
-    bottom: 16px;
-    z-index: 999;
-  }
-
-  .wallet-name {
-    height: 65px;
-    position: relative;
-    line-height: 22px;
-    color: @font-11;
-    font-size: 16px;
-    text-align: center;
-    font-weight: 500;
-    padding: 21px 24px;
-    border-bottom: 1px solid @border-2;
-    .account-connect {
-      position: absolute;
-      top: 16px;
-      left: 8px;
+  .main-content-wrap {
+    gap: 24px;
+    padding: 8px 16px 24px;
+    border-bottom: 1px solid @neutral-divider;
+    .balance-amount-wrap {
+      gap: 4px;
+      .wallet-name-wrap {
+        gap: 4px;
+        .@{app-prefix}-skeleton-avatar {
+          width: 80px;
+          height: 22px;
+        }
+      }
+      .wallet-name {
+        font-size: 14px;
+        line-height: 22px;
+        color: @neutral-tertiary-text;
+        word-break: break-all;
+      }
+      .balance-amount-content {
+        gap: 4px;
+        .@{app-prefix}-skeleton-avatar {
+          width: 148px;
+          height: 40px;
+        }
+      }
+      .balance-amount {
+        font-size: 32px;
+        line-height: 40px;
+        font-weight: 600;
+        color: @neutral-primary-text;
+        &.balance-amount-long {
+          font-size: 28px;
+          line-height: 36px;
+        }
+        &.balance-amount-hidden {
+          font-weight: 500;
+          letter-spacing: 3.2px;
+        }
+      }
+      &.is-prompt {
+        align-items: center;
+      }
+      .hide-assets-icon-wrap {
+        padding: 6px 0;
+        .hide-assets-icon {
+          width: 16px;
+          height: 16px;
+          svg {
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
     }
   }
-  .balance-amount {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 
-    .amount {
-      font-size: 32px;
-      color: @font-11;
-      font-weight: 500;
-      margin: 32px 0 48px;
-      height: 38px;
-      line-height: 38px;
-    }
+  .banner-wrap {
+    border-bottom: 1px solid @neutral-divider;
   }
 
   .@{app-prefix}-tabs {
-    background-color: @bg-11;
+    background-color: @neutral-default-bg;
     overflow: hidden;
+    height: 100%;
+    margin-top: 8px;
 
     .@{app-prefix}-tabs-nav {
       margin: 0;
-      box-shadow: 0 2px 6px 0 @shadow-1;
+      padding: 0 16px;
       z-index: 9;
       position: sticky;
-      // top: 68px;
-      background: @bg-11;
+      top: 0;
+      background: @neutral-default-bg;
+
+      &::before {
+        content: none;
+      }
 
       .@{app-prefix}-tabs-nav-wrap {
-        min-width: 100%;
-        max-width: 100%;
-
         .@{app-prefix}-tabs-nav-list {
           flex: 1;
-          justify-content: space-between;
+          gap: 32px;
           .@{app-prefix}-tabs-tab {
-            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 18px 0;
+            padding: 10px 0;
             margin: 0;
 
             .@{app-prefix}-tabs-tab-btn {
-              width: 80px;
-              height: 20px;
-              line-height: 20px;
+              font-size: 16px;
+              line-height: 24px;
+              font-weight: 500;
               text-align: center;
-              color: @font-11;
+              color: @neutral-tertiary-text;
               text-shadow: unset;
             }
           }
 
           .@{app-prefix}-tabs-tab-active {
             .@{app-prefix}-tabs-tab-btn {
-              color: @font-9;
+              color: @neutral-primary-text;
             }
-          }
-
-          .@{app-prefix}-tabs-ink-bar {
-            width: 50%;
           }
         }
       }
     }
   }
-
-  .token-list {
-    .token-list-item {
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      padding: 24px 16px;
-      border-bottom: 1px solid @border-2;
-
-      @media screen and (min-width: 768px) {
-        padding: 24px;
-      }
-
-      .token-logo {
-        margin-right: 16px;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        svg {
-          width: 32px;
-          height: 32px;
-        }
-      }
-      .custom-logo {
-        margin-right: 16px;
-        flex-shrink: 0;
-      }
-
-      .desc {
-        width: 100%;
-        .info {
-          flex: 1;
-          display: flex;
-          justify-content: space-between;
-          gap: 4px;
-          & > span {
-            font-size: 18px;
-            color: @font-11;
-            height: 22px;
-            line-height: 22px;
-          }
-        }
-        .amount {
-          margin-top: 2px;
-          display: flex;
-          justify-content: space-between;
-          gap: 4px;
-          line-height: 20px;
-          font-size: 14px;
-          color: @font-13;
-        }
-      }
-    }
-  }
-  .add-token-enter-btn {
-    margin: 25px 0 16px;
-    font-size: 14px;
-    height: 20px;
-    line-height: 20px;
-    color: @font-9;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    cursor: pointer;
-
-    @media screen and (min-width: 768px) {
-      margin-bottom: 40px;
-    }
-
-    div.custom-svg {
-      margin-right: 8px;
-      width: 20px;
-      height: 20px;
-    }
-  }
-  .activity-wrapper {
-    .empty {
-      margin: 32px auto;
-      font-size: 14px;
-      color: @font-12;
-      font-weight: 400;
-      width: 204px;
-      text-align: center;
-    }
-
-    .@{app-prefix}-list-item {
-      padding: 0;
-      border-bottom: 1px solid @border-2;
-      .tx-card {
-        width: 100%;
-        height: 89px;
-        display: flex;
-        justify-content: space-between;
-        padding: 0 19px 0 16px;
-        align-items: center;
-        .left {
-          display: flex;
-          gap: 16px;
-          align-items: center;
-          .custom-svg {
-            width: 28px;
-            height: 28px;
-            svg {
-              width: 28px;
-              height: 28px;
-            }
-          }
-          .info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            .name {
-              line-height: 22px;
-              font-size: 16px;
-              color: @font-11;
-            }
-            .status {
-              font-size: 12px;
-              color: @font-15;
-              line-height: 16px;
-            }
-          }
-        }
-        .right {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-          text-align: right;
-          .balance {
-            font-size: 16px;
-            color: @font-11;
-            line-height: 22px;
-          }
-          .convert {
-            color: @font-13;
-            font-size: 12px;
-            line-height: 16px;
-            height: 16px;
-          }
-        }
-      }
+  &.detail-scroll {
+    .@{app-prefix}-tabs-content-holder {
+      overflow-y: scroll;
     }
   }
 

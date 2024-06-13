@@ -1,5 +1,4 @@
 import { defaultColors } from 'assets/theme';
-import GStyles from 'assets/theme/GStyles';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { TextM } from 'components/CommonText';
 import Svg from 'components/Svg';
@@ -10,18 +9,17 @@ import { pTd } from 'utils/unit';
 interface ISimulatedInputBoxProps {
   placeholder?: string;
   onClickInput?: () => void;
+  rightDom?: React.ReactNode;
 }
 
-export default function SimulatedInputBox({
-  placeholder = 'Search Dapp or enter URL',
-  onClickInput,
-}: ISimulatedInputBoxProps) {
+export default function SimulatedInputBox({ placeholder = 'Search', onClickInput, rightDom }: ISimulatedInputBoxProps) {
   return (
-    <View style={[styles.wrap, BGStyles.bg5]}>
+    <View style={[styles.wrap, BGStyles.white]}>
       <TouchableWithoutFeedback onPress={() => onClickInput?.()}>
         <View style={styles.innerInput}>
-          <Svg icon="search" size={pTd(16)} />
+          <Svg icon="search" size={pTd(20)} />
           <TextM style={[FontStyles.font7, styles.content]}>{placeholder}</TextM>
+          {rightDom}
         </View>
       </TouchableWithoutFeedback>
     </View>
@@ -30,20 +28,21 @@ export default function SimulatedInputBox({
 
 const styles = StyleSheet.create({
   wrap: {
-    width: '100%',
-    ...GStyles.paddingArg(8, 20),
+    flex: 1,
   },
   innerInput: {
     height: pTd(36),
-    ...GStyles.paddingArg(7, 17),
+    paddingHorizontal: pTd(12),
+    paddingVertical: pTd(8),
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    borderRadius: pTd(6),
+    borderRadius: pTd(24),
     backgroundColor: defaultColors.bg4,
   },
   content: {
-    marginLeft: pTd(8),
+    flex: 1,
+    marginHorizontal: pTd(8),
   },
 });

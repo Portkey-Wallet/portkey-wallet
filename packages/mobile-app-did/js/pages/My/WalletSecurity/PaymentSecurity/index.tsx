@@ -41,6 +41,8 @@ const _renderPaymentSecurityItem = ({ item }: { item: ITransferLimitItem }) => {
           svgName={item.symbol === defaultToken.symbol ? 'elf-icon' : undefined}
           imageUrl={item.imageUrl || symbolImages[item.symbol]}
           avatarSize={pTd(32)}
+          titleStyle={FontStyles.font11}
+          borderStyle={GStyles.hairlineBorder}
         />
         <View style={ItemStyles.content}>
           <TextL style={ItemStyles.symbolLabel}>{item.symbol || ''}</TextL>
@@ -103,7 +105,7 @@ const PaymentSecurityList: React.FC = () => {
   return (
     <PageContainer
       titleDom={'Payment Security'}
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       containerStyles={pageStyles.pageWrap}
       hideTouchable={true}
       scrollViewProps={{ disabled: true }}>

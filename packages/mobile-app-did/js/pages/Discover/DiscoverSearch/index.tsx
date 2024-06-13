@@ -18,9 +18,12 @@ import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { useInputFocus } from 'hooks/useInputFocus';
 import Touchable from 'components/Touchable';
+import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
+import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
 
 export default function DiscoverSearch() {
   const { t } = useLanguage();
+  const { learnGroupList, earnList } = useDiscoverData();
 
   const iptRef = useRef<TextInput>();
   useInputFocus(iptRef);
@@ -40,9 +43,18 @@ export default function DiscoverSearch() {
         list.push(item);
       });
     });
+    learnGroupList.map(group => {
+      group?.items?.map(item => {
+        list.push(parseLearnItemToDiscoverItem(item));
+      });
+    });
+
+    earnList.map(ele => {
+      list.push(parseLearnItemToDiscoverItem(ele));
+    });
 
     return list;
-  }, [discoverGroupList]);
+  }, [discoverGroupList, earnList, learnGroupList]);
 
   useEffect(() => {
     if (!value) setShowRecord(true);
@@ -83,12 +95,14 @@ export default function DiscoverSearch() {
   return (
     <PageContainer
       hideHeader
-      safeAreaColor={['blue', 'white']}
+      safeAreaColor={['white', 'white']}
       containerStyles={styles.container}
       scrollViewProps={{ disabled: true }}>
-      <View style={[BGStyles.bg5, GStyles.flexRow, styles.inputContainer]}>
+      <View style={[BGStyles.bg1, GStyles.flexRow, styles.inputContainer]}>
         <CommonInput
           autoFocus
+          grayBorder
+          theme="white-bg"
           ref={iptRef}
           value={value}
           onChangeText={v => setValue(v)}
@@ -107,7 +121,7 @@ export default function DiscoverSearch() {
           style={styles.rnInputStyle}
         />
         <Touchable onPress={navigationService.goBack}>
-          <TextM style={[FontStyles.font2, styles.cancelButton]}>{t('Cancel')}</TextM>
+          <TextM style={[FontStyles.primaryColor, styles.cancelButton]}>{t('Cancel')}</TextM>
         </Touchable>
       </View>
       {showRecord ? <RecordSection /> : <SearchDiscoverSection searchedDiscoverList={filteredDiscoverList || []} />}
@@ -115,13 +129,24 @@ export default function DiscoverSearch() {
   );
 }
 
+const parseLearnItemToDiscoverItem = (item: TBaseCardItemType): DiscoverItem => {
+  return {
+    title: item.title || '',
+    description: item.description || '',
+    url: item.url,
+    imgUrl: item.imgUrl,
+    id: '-1',
+    index: Number(item.index),
+  };
+};
+
 const styles = StyleSheet.create({
   container: {
     paddingLeft: 0,
     paddingRight: 0,
   },
   inputContainer: {
-    ...GStyles.paddingArg(8, 20),
+    ...GStyles.paddingArg(12, 20, 8),
   },
   inputStyle: {
     width: pTd(280),

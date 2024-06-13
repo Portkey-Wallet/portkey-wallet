@@ -18,7 +18,7 @@ import { useEffectOnce } from 'react-use';
 import { Button } from 'antd';
 import { SERVICE_UNAVAILABLE_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useNavigate } from 'react-router';
-import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { useAccountTokenInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getBalance } from 'utils/sandboxUtil/getBalance';
@@ -224,9 +224,7 @@ export default function SellFrom() {
     [goPreview],
   );
 
-  const {
-    accountToken: { accountTokenList },
-  } = useAssets();
+  const { accountTokenList } = useAccountTokenInfo();
   const getCurrentChain = useGetChain();
   const currentNetwork = useCurrentNetworkInfo();
   const wallet = useCurrentWalletInfo();

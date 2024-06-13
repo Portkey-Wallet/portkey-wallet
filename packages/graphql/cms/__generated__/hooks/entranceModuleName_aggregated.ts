@@ -23,23 +23,23 @@ export type EntranceModuleName_AggregatedQuery = {
     countAll?: number | null;
     count?: {
       __typename?: 'entranceModuleName_aggregated_count';
-      date_created?: number | null;
-      date_updated?: number | null;
-      description?: number | null;
       id?: number | null;
       user_created?: number | null;
+      date_created?: number | null;
       user_updated?: number | null;
+      date_updated?: number | null;
       value?: number | null;
+      description?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'entranceModuleName_aggregated_count';
-      date_created?: number | null;
-      date_updated?: number | null;
-      description?: number | null;
       id?: number | null;
       user_created?: number | null;
+      date_created?: number | null;
       user_updated?: number | null;
+      date_updated?: number | null;
       value?: number | null;
+      description?: number | null;
     } | null;
     avg?: { __typename?: 'entranceModuleName_aggregated_fields'; id?: number | null } | null;
     sum?: { __typename?: 'entranceModuleName_aggregated_fields'; id?: number | null } | null;
@@ -72,22 +72,22 @@ export const EntranceModuleName_AggregatedDocument = gql`
       group
       countAll
       count {
-        date_created
-        date_updated
-        description
         id
         user_created
+        date_created
         user_updated
+        date_updated
         value
+        description
       }
       countDistinct {
-        date_created
-        date_updated
-        description
         id
         user_created
+        date_created
         user_updated
+        date_updated
         value
+        description
       }
       avg {
         id

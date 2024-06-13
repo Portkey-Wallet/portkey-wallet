@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { GestureResponderEvent, ScrollView, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import navigationService from 'utils/navigationService';
@@ -10,10 +10,9 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { defaultColors } from 'assets/theme';
 import ProfileHeaderSection from 'pages/My/components/ProfileHeaderSection';
 import ProfileHandleSection from 'pages/My/components/ProfileHandleSection';
-import ProfileIDSection from 'pages/My/components/ProfileIDSection';
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
 import im from '@portkey-wallet/im';
-import { useIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useBlockAndReport, useIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
 import CommonToast from 'components/CommonToast';
 import { pTd } from 'utils/unit';
 import { useJumpToChatDetails } from 'hooks/chat';
@@ -24,6 +23,9 @@ import Loading from 'components/Loading';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import ProfileLoginAccountsSection from '../components/ProfileLoginAccountsSection';
 import { useFocusEffect } from '@react-navigation/native';
+import { showActionPopover } from 'pages/My/components/ActionOverlay';
+import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { measurePageY } from 'utils/measure';
 
 type RouterParams = {
   relationId?: string; // if relationId exist, we should fetch
@@ -50,11 +52,12 @@ const ContactProfile: React.FC = () => {
     contactId,
     relationId,
   });
-
   const contactInfo = useMemo<IContactProfile | undefined>(
     () => profileInfo || storeContactInfo,
     [storeContactInfo, profileInfo],
   );
+
+  const { isBlocked, block, unBlock } = useBlockAndReport(relationId || contactInfo?.imInfo?.relationId);
 
   const isStranger = useIsStranger(relationId || contactInfo?.imInfo?.relationId || '');
 
@@ -88,8 +91,6 @@ const ContactProfile: React.FC = () => {
       checkImputationRef.current(contactInfo);
     }
   }, [checkImputationRef, contactInfo]);
-
-  const isShowPortkeyId = useMemo(() => !!contactInfo?.caHolderInfo?.userId, [contactInfo?.caHolderInfo?.userId]);
 
   const navToChatDetail = useJumpToChatDetails();
 
@@ -147,7 +148,7 @@ const ContactProfile: React.FC = () => {
   return (
     <PageContainer
       titleDom="Details"
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}
       leftCallback={isFromNoChatProfileEditPage ? () => navigationService.pop(2) : navigationService.goBack}
@@ -161,6 +162,7 @@ const ContactProfile: React.FC = () => {
           remark={contactInfo?.name}
         />
         <ProfileHandleSection
+          isBlocked={isBlocked}
           isAdded={!isStranger}
           onPressAdded={addContact}
           onPressChat={async () => {
@@ -170,10 +172,59 @@ const ContactProfile: React.FC = () => {
               CommonToast.failError(error);
             }
           }}
-        />
-        <ProfileIDSection
-          title={isShowPortkeyId ? 'Portkey ID' : 'ID'}
-          id={isShowPortkeyId ? contactInfo?.caHolderInfo?.userId : contactInfo?.imInfo?.relationId}
+          onPressMore={async (event: GestureResponderEvent) => {
+            const { pageY } = event.nativeEvent;
+            const top = await measurePageY(event.target);
+
+            showActionPopover({
+              list: [
+                {
+                  iconName: 'chat-block',
+                  iconColor: isBlocked ? defaultColors.font19 : defaultColors.font20,
+                  textStyle: { color: isBlocked ? defaultColors.font19 : defaultColors.font20 },
+                  title: `${isBlocked ? 'Unblock' : 'Block User'}`,
+                  onPress: () => {
+                    ActionSheet.alert({
+                      title: t(`${isBlocked ? 'Unblock' : 'Block'} User`),
+                      message: t(
+                        `${
+                          contactInfo?.name || contactInfo?.caHolderInfo?.walletName || contactInfo?.imInfo?.name || ''
+                        } ${isBlocked ? 'will be able to message you.' : 'will no longer be able to message you.'}`,
+                      ),
+                      buttons: [
+                        {
+                          title: t('Cancel'),
+                          type: 'outline',
+                        },
+                        {
+                          title: t(isBlocked ? 'Unblock' : 'Block'),
+                          type: 'solid',
+                          onPress: async () => {
+                            try {
+                              isBlocked
+                                ? await unBlock(relationId || contactInfo?.imInfo?.relationId)
+                                : await block(relationId || contactInfo?.imInfo?.relationId);
+                              CommonToast.success(`${isBlocked ? 'User unblocked' : 'User blocked'}`);
+                            } catch (error) {
+                              CommonToast.fail(`${isBlocked ? 'Unblock' : 'Block'} fail`);
+                            }
+                          },
+                        },
+                      ],
+                    });
+                  },
+                },
+              ],
+              customPosition: { right: pTd(16), top: top + 50 },
+              customBounds: {
+                x: screenWidth - pTd(20),
+                y: pageY,
+                width: 0,
+                height: 0,
+              },
+              formatType: 'dynamicWidth',
+            });
+          }}
         />
         <ProfileAddressSection addressList={contactInfo?.addresses || []} />
         <ProfileLoginAccountsSection list={contactInfo?.loginAccounts || []} />
@@ -202,7 +253,7 @@ export const pageStyles = StyleSheet.create({
     ...GStyles.paddingArg(0, 0, 18),
   },
   scrollWrap: {
-    paddingHorizontal: pTd(20),
+    paddingHorizontal: pTd(16),
   },
   blank: {
     height: pTd(24),

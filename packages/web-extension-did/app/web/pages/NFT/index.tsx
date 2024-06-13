@@ -1,13 +1,13 @@
-import { Button } from 'antd';
+import { Button, Skeleton } from 'antd';
 import PromptFrame from 'pages/components/PromptFrame';
-import SettingHeader from 'pages/components/SettingHeader';
+import CommonHeader from 'components/CommonHeader';
 import { useCommonState } from 'store/Provider/hooks';
 import clsx from 'clsx';
 import { useCallback, useMemo, useState } from 'react';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { addressFormat } from '@portkey-wallet/utils';
 import Copy from 'components/Copy';
-import { formatAmountShow, divDecimals } from '@portkey-wallet/utils/converter';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -68,10 +68,10 @@ export default function NFT() {
     const { tokenContractAddress, chainId } = nftDetail;
     const formatTokenContractAds = addressFormat(tokenContractAddress, chainId, currentNetwork.walletType);
     return (
-      <div className="info">
-        <div className="title">Basic info</div>
+      <div className="info basic-info">
+        <div className="info-title">Basic Info</div>
         <div className="contract info-item flex-between">
-          <div className="label">Contract address</div>
+          <div className="label">Contract Address</div>
           <div className="contract-title flex">
             {formatTokenContractAds.replace(/(?<=^\w{8})\w+(?=\w{9})/, '...')}
             <Copy toCopy={formatTokenContractAds} />
@@ -81,13 +81,13 @@ export default function NFT() {
           <div className="label">Blockchain</div>
           <div>{transNetworkText(nftDetail.chainId, !isMainNet)}</div>
         </div>
-        <div className="alias info-item flex-between">
+        <div className="info-item flex-between">
           <div className="label">Symbol</div>
-          <div className="alias-name">{nftDetail.symbol}</div>
+          <div className="content">{nftDetail.symbol}</div>
         </div>
         <div className="total-supply info-item flex-between">
-          <div className="label">Total supply</div>
-          <div>{formatAmountShow(divDecimals(nftDetail.totalSupply, nftDetail.decimals || 0))}</div>
+          <div className="label">Total Supply</div>
+          <div>{formatTokenAmountShowWithDecimals(nftDetail.totalSupply, nftDetail.decimals || 0)}</div>
         </div>
       </div>
     );
@@ -96,34 +96,32 @@ export default function NFT() {
   const renderIsSeedInfo = useMemo(() => {
     const { seedType, expires, seedOwnedSymbol, isSeed } = nftDetail;
     return isSeed ? (
-      <div className="info">
-        <div className="title">Token Creation via This Seed</div>
+      <div className="info seed-info">
+        <div className="info-title">Token Creation via This Seed</div>
         <div className="info-item flex-between">
           <div className="label">Type</div>
           <div>{SeedTypeEnum[seedType || SeedTypeEnum.None]}</div>
         </div>
         <div className="info-item flex-between">
           <div className="label">Token Symbol</div>
-          <div>{seedOwnedSymbol}</div>
+          <div className="content">{seedOwnedSymbol}</div>
         </div>
         <div className="info-item flex-between">
           <div className="label">Expires</div>
           <div>{formatTransferTime(expires ?? '')}</div>
         </div>
       </div>
-    ) : (
-      <></>
-    );
+    ) : null;
   }, [nftDetail]);
 
   const renderInscriptionInfo = useMemo(() => {
     const { inscriptionName, limitPerMint } = nftDetail;
     return inscriptionName ? (
-      <div className="info">
-        <div className="title">Inscription info</div>
+      <div className="info inscription-info">
+        <div className="info-title">Inscription Info</div>
         <div className="info-item flex-between">
           <div className="label">Inscription Name</div>
-          <div>{inscriptionName}</div>
+          <div className="content">{inscriptionName}</div>
         </div>
         {limitPerMint != null && (
           <div className="info-item flex-between">
@@ -132,44 +130,45 @@ export default function NFT() {
           </div>
         )}
       </div>
-    ) : (
-      <></>
-    );
+    ) : null;
   }, [nftDetail]);
 
   const renderTraitsInfo = useMemo(() => {
     const { traitsPercentages } = nftDetail;
     return traitsPercentages ? (
-      <div className="info">
-        <div className="title">Traits</div>
-        {traitsPercentages.map((trait, i) => (
-          <div key={`${trait.traitType}_${i}`} className="info-item flex-between-center">
-            <div className="label">
-              <div>{trait.traitType}</div>
-              <div className="label-bold">{trait.value}</div>
-            </div>
-            <div>{trait.percent}</div>
-          </div>
-        ))}
+      <div className="info traits-info">
+        <div className="info-title">Traits</div>
+        {traitsPercentages.length === 0
+          ? new Array(3).fill('').map((_item, index) => (
+              <div key={`skeleton_${index}`} className="flex-column traits-info-skeleton">
+                <Skeleton.Avatar className="skeleton-title" shape="square" active />
+                <Skeleton.Avatar className="skeleton-desc" shape="square" active />
+              </div>
+            ))
+          : traitsPercentages.map((trait, i) => (
+              <div key={`${trait.traitType}_${i}`} className="info-item flex-between-center">
+                <div className="label">
+                  <div>{trait.traitType}</div>
+                  <div className="label-bold">{trait.value}</div>
+                </div>
+                <div className="content">{trait.percent}</div>
+              </div>
+            ))}
       </div>
-    ) : (
-      <></>
-    );
+    ) : null;
   }, [nftDetail]);
 
   const renderGenerationInfo = useMemo(() => {
     const { generation } = nftDetail;
     return generation ? (
-      <div className="info">
-        <div className="title">Generation info</div>
+      <div className="info generation-info">
+        <div className="info-title">Generation Info</div>
         <div className="info-item flex-between-center">
           <div className="label">Generation</div>
           <div>{generation}</div>
         </div>
       </div>
-    ) : (
-      <></>
-    );
+    ) : null;
   }, [nftDetail]);
 
   const mainContent = useCallback(() => {
@@ -179,7 +178,7 @@ export default function NFT() {
     return (
       <div id="nft-detail" className={clsx(['nft-detail', isPrompt && 'detail-page-prompt'])}>
         <div className="nft-detail-body">
-          <SettingHeader leftCallBack={() => navigate('/', { state: { key: BalanceTab.NFT } })} />
+          <CommonHeader onLeftBack={() => navigate('/', { state: { key: BalanceTab.NFT } })} />
           <div className="collection flex-start-center">
             <div className="img">
               {collectionImageUrl ? (
@@ -209,7 +208,7 @@ export default function NFT() {
         </div>
         <div>
           <div className="btn-wrap flex-column-center">
-            <div className="balance">{`You have: ${formatAmountShow(divDecimals(balance, decimals))}`}</div>
+            <div className="balance">{`You have: ${formatTokenAmountShowWithDecimals(balance, decimals)}`}</div>
             <Button
               type="primary"
               onClick={() =>
@@ -218,7 +217,6 @@ export default function NFT() {
                     ...nftDetail,
                     address: nftDetail.tokenContractAddress,
                     decimals: Number(nftDetail.decimals),
-                    name: nftDetail.symbol,
                   },
                 })
               }>

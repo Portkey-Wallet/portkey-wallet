@@ -6,10 +6,11 @@ import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
 import { getBalance } from 'utils/sandboxUtil/getBalance';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { getSeedTypeTag } from 'utils/assets';
 import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 import CustomSvg from 'components/CustomSvg';
+import CircleLoading from 'components/CircleLoading';
 
 export default function NftInput({
   fromAccount,
@@ -29,6 +30,7 @@ export default function NftInput({
   const currentChain = useCurrentChain(token.chainId as ChainId);
   const currentNetwork = useCurrentNetworkInfo();
   const [balance, setBalance] = useState<string>('');
+  const [balanceLoading, setBalanceLoading] = useState(false);
   const seedTypeTag = useMemo(() => getSeedTypeTag(token), [token]);
 
   const handleAmountBlur = useCallback(() => {
@@ -37,18 +39,25 @@ export default function NftInput({
 
   const getTokenBalance = useCallback(async () => {
     if (!currentChain) return;
-    const result = await getBalance({
-      rpcUrl: currentChain.endPoint,
-      address: token?.address,
-      chainType: currentNetwork.walletType,
-      paramsOption: {
-        owner: fromAccount.address,
-        symbol: token.symbol,
-      },
-    });
-    const balance = result.result.balance;
-    setBalance(balance);
-    console.log(result, currentChain, 'balances==getTokenBalance=');
+    try {
+      setBalanceLoading(true);
+      const result = await getBalance({
+        rpcUrl: currentChain.endPoint,
+        address: token?.address,
+        chainType: currentNetwork.walletType,
+        paramsOption: {
+          owner: fromAccount.address,
+          symbol: token.symbol,
+        },
+      });
+      const balance = result.result.balance;
+      setBalance(balance);
+      console.log(result, currentChain, 'balances==getTokenBalance=');
+    } catch (error) {
+      console.log('===getBalance error', error);
+    } finally {
+      setBalanceLoading(false);
+    }
   }, [currentChain, currentNetwork.walletType, fromAccount.address, token]);
 
   useEffect(() => {
@@ -67,8 +76,11 @@ export default function NftInput({
             <p className="alias">{token.alias}</p>
             <p className="token-id">#{token.tokenId}</p>
           </div>
-          <p className="quantity">
-            Balance: <span>{`${formatAmountShow(divDecimals(balance, token.decimals))}`}</span>
+          <p className="quantity flex-row-center">
+            Balance:
+            <span>
+              {balanceLoading ? <CircleLoading /> : ` ${formatTokenAmountShowWithDecimals(balance, token.decimals)}`}
+            </span>
           </p>
         </div>
       </div>

@@ -11,9 +11,9 @@
   box-shadow: none;
 }
 
-.@{app-prefix}-btn-default {
-  color: @font-9;
-  border-color: @border-3;
+button.@{app-prefix}-btn-default {
+  border-color: @neutral-border;
+  background-color: @neutral-default-bg;
 }
 
 .@{app-prefix}-btn-primary {
@@ -22,8 +22,14 @@
   &:hover,
   &:focus {
     color: white;
-    background-color: @hover1;
-    border-color: @border-4;
+  }
+  &:focus {
+    background-color: @brand-click;
+    border-color: @brand-click;
+  }
+  &:hover {
+    background-color: @brand-hover;
+    border-color: @brand-hover;
   }
 
   &:disabled,
@@ -31,10 +37,9 @@
   &:disabled:focus,
   &:disabled:active {
     color: white;
-    background-color: @bg-7;
-    border-color: @border-3;
+    background-color: @brand-disable !important;
+    border-color: @brand-disable !important;
     box-shadow: none !important;
-    opacity: 0.3;
   }
 }
 
@@ -46,10 +51,10 @@
   border-radius: 6px;
   color: @font-2;
   line-height: 22px;
-  border-color: @border-1;
+  border-color: @neutral-border;
 
   &:hover {
-    border-color: @hover2;
+    border-color: @brand-normal;
   }
 }
 
@@ -59,7 +64,7 @@
   &::placeholder {
     font-size: 14px;
     line-height: 20px;
-    color: @font-12;
+    color: @neutral-disable-text;
   }
 }
 
@@ -89,11 +94,11 @@
     padding-bottom: 24px;
 
     .@{app-prefix}-form-item-control {
-      &>div:nth-of-type(2) {
+      & > div:nth-of-type(2) {
         line-height: 20px;
         height: 20px !important;
 
-        &>div:nth-of-type(2) {
+        & > div:nth-of-type(2) {
           height: 16px !important;
         }
       }
@@ -120,7 +125,7 @@
     color: @font-2;
   }
 
-  .@{app-prefix}-form-item-label>label {
+  .@{app-prefix}-form-item-label > label {
     color: @font-2;
     line-height: 22px;
     font-size: 16px;
@@ -136,26 +141,26 @@
 .@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(.@{app-prefix}-input-borderless).@{app-prefix}-input:hover,
 .@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper,
 .@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper:hover {
-  border-color: @border-3 !important;
+  border-color: @brand-normal !important;
 }
 
 .@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(.@{app-prefix}-input-borderless).@{app-prefix}-input,
 .@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper,
 .@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper:focus {
-  border-color: #c5cbd5;
+  border-color: #dcdee1;
 }
 
 .@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(.@{app-prefix}-input-borderless).@{app-prefix}-input:focus,
 .@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper-focused {
-  border-color: @border-3 !important;
+  border-color: @brand-normal !important;
   box-shadow: 0 0 0 2px rgb(91 142 244 / 20%);
 }
 
 // to change input disable
 .@{app-prefix}-input[disabled] {
   background-color: @bg-13;
-  border: 1px solid @border-1;
-  color: @font-11;
+  border: 1px solid @neutral-border;
+  color: @neutral-primary-text;
 }
 
 .customer-form {
@@ -163,14 +168,14 @@
     padding-bottom: 8px;
   }
 
-  .@{app-prefix}-form-item-label>label {
-    color: @font-11;
+  .@{app-prefix}-form-item-label > label {
+    color: @neutral-primary-text;
     font-size: 14px;
     line-height: 20px;
   }
 
   .@{app-prefix}-input:placeholder-shown {
-    color: @font-12;
+    color: @neutral-disable-text;
     line-height: 20px;
   }
 
@@ -186,8 +191,12 @@
   width: 43px;
   height: 24px;
   background-color: @bg-13;
-  border: 2px solid @border-1;
+  border: 2px solid @neutral-divider;
   position: relative;
+
+  &:focus {
+    box-shadow: none;
+  }
 
   .@{app-prefix}-switch-handle {
     top: 1px;
@@ -196,7 +205,7 @@
   .@{app-prefix}-switch-inner {
     font-size: 16px;
     line-height: 22px;
-    color: @font-13;
+    color: @neutral-secondary-text;
     margin-left: 16px;
     position: absolute;
     top: 0;
@@ -204,15 +213,15 @@
   }
 
   .@{app-prefix}-switch-handle::before {
-    background-color: @bg-23;
+    background-color: @neutral-tertiary-text;
   }
 }
 
 .@{app-prefix}-switch-checked {
-  border: 2px solid @border-3;
+  border: 2px solid @brand-normal;
 
   .@{app-prefix}-switch-handle::before {
-    background-color: @bg-7;
+    background-color: @brand-normal;
   }
 
   .@{app-prefix}-switch-inner {
@@ -223,16 +232,16 @@
 .footer-btn-wrap {
   width: 100%;
   padding: 16px;
-  border-top: 1px solid @border-2;
+  border-top: 1px solid @neutral-divider;
   margin-bottom: 0 !important;
 
   .footer-btn {
-    color: @font-5;
+    color: @neutral-white-text;
     font-size: 16px;
     line-height: 22px;
     height: 48px;
     border-radius: 22px;
-    background-color: @bg-7;
+    background-color: @brand-normal;
   }
 }
 
@@ -246,11 +255,11 @@
     .@{app-prefix}-modal-confirm-content {
       padding: 24px;
       margin: 0;
-      border-bottom: 1px solid @border-2;
+      border-bottom: 1px solid @neutral-divider;
       text-align: center;
       line-height: 20px;
       font-size: 14px;
-      color: @font-13;
+      color: @neutral-secondary-text;
     }
 
     .@{app-prefix}-modal-confirm-btns {
@@ -276,7 +285,6 @@
   overflow: hidden;
 
   .@{app-prefix}-modal-content {
-
     .@{app-prefix}-modal-body {
       padding: 0;
 
@@ -284,11 +292,11 @@
         .@{app-prefix}-modal-confirm-content {
           padding: 32px 24px 24px;
           margin: 0;
-          border-bottom: 1px solid @border-2;
+          border-bottom: 1px solid @neutral-divider;
           text-align: center;
           line-height: 20px;
           font-size: 14px;
-          color: @font-13;
+          color: @neutral-secondary-text;
           position: relative;
 
           .close-icon {
@@ -325,5 +333,41 @@
         width: 100% !important;
       }
     }
+  }
+}
+
+/* tooltip */
+.common-tooltip-gray {
+  .@{app-prefix}-tooltip-inner {
+    box-shadow: none;
+    background-color: @neutral-tooltip-bg;
+    opacity: 1;
+  }
+  .@{app-prefix}-tooltip-arrow-content {
+    box-shadow: none;
+    /* stylelint-disable-next-line custom-property-empty-line-before */
+    --antd-arrow-background-color: @neutral-tooltip-bg;
+  }
+}
+
+/* drawer */
+.common-drawer {
+  overflow-x: auto;
+  .@{app-prefix}-drawer-mask {
+    min-width: 360px;
+  }
+  .@{app-prefix}-drawer-content-wrapper {
+    min-width: 360px;
+  }
+  .@{app-prefix}-drawer-content {
+    border-radius: 8px 8px 0 0;
+  }
+}
+
+/* message tip */
+.@{app-prefix}-message {
+  .@{app-prefix}-message-custom-content {
+    display: flex;
+    text-align: left;
   }
 }

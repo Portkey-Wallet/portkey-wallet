@@ -85,12 +85,12 @@ const AssetItem = (props: {
             <TextL numberOfLines={1} ellipsizeMode={'tail'} style={[itemStyle.nftNameShow, FontStyles.font5]}>
               {`${alias} #${tokenId}`}
             </TextL>
-            <TextS numberOfLines={1} style={[FontStyles.font3, itemStyle.nftItemInfo]}>
+            <TextS numberOfLines={1} style={[FontStyles.font11, itemStyle.nftItemInfo]}>
               {formatChainInfoToShow(chainId as ChainId, currentNetwork)}
             </TextS>
           </View>
           {currentSymbol === symbol && currentChainId === item?.chainId && (
-            <Svg icon="selected" size={pTd(24)} iconStyle={GStyles.flexEnd} />
+            <Svg icon="selected" size={pTd(24)} color={defaultColors.primaryColor} iconStyle={GStyles.flexEnd} />
           )}
         </View>
       </TouchableOpacity>

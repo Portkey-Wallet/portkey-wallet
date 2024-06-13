@@ -44,7 +44,7 @@ export default function GuardianHome() {
 
   return (
     <PageContainer
-      safeAreaColor={['blue', 'white']}
+      safeAreaColor={['white', 'white']}
       titleDom={t('Guardians')}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}
@@ -55,7 +55,7 @@ export default function GuardianHome() {
             onPress={() => {
               navigationService.navigate('GuardianEdit');
             }}>
-            <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
+            <Svg icon="add1" size={pTd(20)} color={defaultColors.icon5} />
           </Touchable>
         )
       }>
@@ -75,7 +75,7 @@ export default function GuardianHome() {
           </Touchable>
         ))}
       </ScrollView>
-      {!isAddAllowed && (
+      {!isAddAllowed && guardianList?.length > 0 && (
         <View style={pageStyles.warnWrap}>
           <Svg icon="warning2" size={pTd(16)} color={defaultColors.icon1} />
           <TextM style={pageStyles.warnLabelWrap}>

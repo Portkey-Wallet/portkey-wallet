@@ -12,8 +12,8 @@
 }
 
 .@{app-prefix}-btn-default {
-  color: @font-4;
-  border-color: @border-3;
+  color: @neutral-primary-text;
+  border-color: @neutral-divider;
 }
 
 .@{app-prefix}-btn-primary {
@@ -22,7 +22,7 @@
   &:focus {
     color: white;
     background-color: @hover1;
-    border-color: @border-4;
+    border-color: @brand-hover;
   }
 
   &:disabled,
@@ -30,8 +30,8 @@
   &:disabled:focus,
   &:disabled:active {
     color: white;
-    background-color: @bg-1;
-    border-color: @border-3;
+    background-color: @brand-normal;
+    border-color: @brand-normal;
     box-shadow: none !important;
     opacity: 0.3;
   }
@@ -45,7 +45,7 @@
   border-radius: 6px;
   color: @font-2;
   line-height: 22px;
-  border-color: @border-1;
+  border-color: @neutral-border;
   &:hover {
     border-color: @hover2;
   }
@@ -57,7 +57,7 @@
   &::placeholder {
     font-size: 14px;
     line-height: 20px;
-    color: @font-6;
+    color: @neutral-disable-text;
   }
 }
 
@@ -126,17 +126,17 @@
 .@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(.@{app-prefix}-input-borderless).@{app-prefix}-input:hover,
 .@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper,
 .@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper:hover {
-  border-color: @border-3 !important;
+  border-color: @brand-normal !important;
 }
 
 .@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(.@{app-prefix}-input-borderless).@{app-prefix}-input,
 .@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper,
 .@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper:focus {
-  border-color: #c5cbd5;
+  border-color: @neutral-border;
 }
 
 .@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(.@{app-prefix}-input-borderless).@{app-prefix}-input:focus,
 .@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper-focused {
-  border-color: @border-3 !important;
+  border-color: @brand-normal !important;
   box-shadow: 0 0 0 2px rgb(91 142 244 / 20%);
 }

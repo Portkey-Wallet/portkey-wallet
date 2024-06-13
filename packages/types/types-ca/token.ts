@@ -1,4 +1,4 @@
-import { ChainId } from '..';
+import { ChainId, NetworkType } from '..';
 import { ChainItemType } from '../chain';
 import { AccountType } from '../wallet';
 import { SeedTypeEnum } from './assets';
@@ -9,7 +9,6 @@ export interface BaseToken {
   decimals: number; // 8
   address: string; // "ArPnUb5FtxG2oXTaWX2DxNZowDEruJLs2TEkhRCzDdrRDfg8B",        token address  contract address
   symbol: string; // "ELF"   the name showed
-  name: string;
   imageUrl?: string;
   alias?: string;
   tokenId?: string; // nft tokenId
@@ -80,14 +79,19 @@ export type UseTokenDeleteType = (
 
 export type FilterTokenList = (token_name: string, address: string) => TokenItemShowType;
 
-export interface TokenState {
+export interface ITokenInfo {
   isFetching: boolean;
-  // addedTokenData: AddedTokenData;
   tokenDataShowInMarket: TokenItemShowType[];
   skipCount: number;
   maxResultCount: number;
   totalRecordCount: number;
+}
+
+export interface TokenState extends ITokenInfo {
   symbolImages: Record<string, string>;
+  tokenInfo?: {
+    [key in NetworkType]?: ITokenInfo;
+  };
 }
 
 export interface AccountItemType {

@@ -4,6 +4,11 @@ import { AElfInterface } from '@portkey-wallet/types/aelf';
 import { ChainId } from '@portkey-wallet/types';
 import { isValidBase58 } from './reg';
 import { getTxResult } from '@portkey-wallet/contracts/utils';
+import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import BigNumber from 'bignumber.js';
+import { timesDecimals } from './converter';
+import { LANG_MAX } from '@portkey-wallet/constants/misc';
+import { SendResult } from '@portkey-wallet/contracts/types';
 const Wallet = AElf.wallet;
 
 export function isEqAddress(a1?: string, a2?: string) {
@@ -30,13 +35,17 @@ export function isDIDAelfAddress(value?: string) {
     const arr = value.split('_');
     const res = arr[0].length > arr[1].length ? arr[0] : arr[1];
     try {
-      return !!AElf.utils.decodeAddressRep(res);
+      const decodeStr = AElf.utils.decodeAddressRep(res);
+      return !!decodeStr && Buffer.from(decodeStr, 'hex').length === 32;
+      // return !!AElf.utils.decodeAddressRep(res);
     } catch {
       return false;
     }
   }
   try {
-    return !!AElf.utils.decodeAddressRep(value);
+    const decodeStr = AElf.utils.decodeAddressRep(value);
+    return !!decodeStr && Buffer.from(decodeStr, 'hex').length === 32;
+    // return !!AElf.utils.decodeAddressRep(value);
   } catch {
     return false;
   }
@@ -185,4 +194,48 @@ export const isCrossChain = (toAddress: string, fromChainId: ChainId): boolean =
     return false;
   }
   return addressChainId !== fromChainId;
+};
+
+export const checkElfChainAllowanceAndApprove = async ({
+  tokenContract,
+  approveTargetAddress,
+  account,
+  contractUseAmount,
+  pivotBalance,
+  symbol,
+}: {
+  tokenContract: ContractBasic;
+  approveTargetAddress: string;
+  account: string;
+  contractUseAmount?: string | number | BigNumber;
+  pivotBalance?: string | number | BigNumber;
+  symbol: string;
+}): Promise<boolean | SendResult> => {
+  const [allowance, info] = await Promise.all([
+    tokenContract.callViewMethod('GetAllowance', [symbol, account, approveTargetAddress]),
+    tokenContract.callViewMethod('GetTokenInfo', [symbol]),
+  ]);
+
+  console.log(allowance, info, '===allowance, info');
+
+  if (allowance?.error) throw allowance?.error;
+  if (info?.error) throw info?.error;
+
+  const allowanceBN = new BigNumber(allowance.data.allowance ?? allowance.data.amount ?? 0);
+  const pivotBalanceBN = contractUseAmount
+    ? new BigNumber(contractUseAmount)
+    : timesDecimals(pivotBalance, info.data.decimals ?? 8);
+
+  if (allowanceBN.lt(pivotBalanceBN)) {
+    const approveResult = await tokenContract.callSendMethod('approve', account, [
+      approveTargetAddress,
+      symbol,
+      LANG_MAX.toFixed(0),
+    ]);
+    console.log(approveResult, '===approveResult');
+
+    if (approveResult?.error) throw approveResult?.error;
+    return approveResult;
+  }
+  return true;
 };

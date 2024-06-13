@@ -24,50 +24,50 @@ export type MediaKitPage_MediaKit_AggregatedQuery = {
     count?: {
       __typename?: 'mediaKitPage_mediaKit_aggregated_count';
       id?: number | null;
-      mediaKit_id?: number | null;
       mediaKitPage_id?: number | null;
+      mediaKit_id?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'mediaKitPage_mediaKit_aggregated_count';
       id?: number | null;
-      mediaKit_id?: number | null;
       mediaKitPage_id?: number | null;
+      mediaKit_id?: number | null;
     } | null;
     avg?: {
       __typename?: 'mediaKitPage_mediaKit_aggregated_fields';
       id?: number | null;
-      mediaKit_id?: number | null;
       mediaKitPage_id?: number | null;
+      mediaKit_id?: number | null;
     } | null;
     sum?: {
       __typename?: 'mediaKitPage_mediaKit_aggregated_fields';
       id?: number | null;
-      mediaKit_id?: number | null;
       mediaKitPage_id?: number | null;
+      mediaKit_id?: number | null;
     } | null;
     avgDistinct?: {
       __typename?: 'mediaKitPage_mediaKit_aggregated_fields';
       id?: number | null;
-      mediaKit_id?: number | null;
       mediaKitPage_id?: number | null;
+      mediaKit_id?: number | null;
     } | null;
     sumDistinct?: {
       __typename?: 'mediaKitPage_mediaKit_aggregated_fields';
       id?: number | null;
-      mediaKit_id?: number | null;
       mediaKitPage_id?: number | null;
+      mediaKit_id?: number | null;
     } | null;
     min?: {
       __typename?: 'mediaKitPage_mediaKit_aggregated_fields';
       id?: number | null;
-      mediaKit_id?: number | null;
       mediaKitPage_id?: number | null;
+      mediaKit_id?: number | null;
     } | null;
     max?: {
       __typename?: 'mediaKitPage_mediaKit_aggregated_fields';
       id?: number | null;
-      mediaKit_id?: number | null;
       mediaKitPage_id?: number | null;
+      mediaKit_id?: number | null;
     } | null;
   }>;
 };
@@ -95,43 +95,43 @@ export const MediaKitPage_MediaKit_AggregatedDocument = gql`
       countAll
       count {
         id
-        mediaKit_id
         mediaKitPage_id
+        mediaKit_id
       }
       countDistinct {
         id
-        mediaKit_id
         mediaKitPage_id
+        mediaKit_id
       }
       avg {
         id
-        mediaKit_id
         mediaKitPage_id
+        mediaKit_id
       }
       sum {
         id
-        mediaKit_id
         mediaKitPage_id
+        mediaKit_id
       }
       avgDistinct {
         id
-        mediaKit_id
         mediaKitPage_id
+        mediaKit_id
       }
       sumDistinct {
         id
-        mediaKit_id
         mediaKitPage_id
+        mediaKit_id
       }
       min {
         id
-        mediaKit_id
         mediaKitPage_id
+        mediaKit_id
       }
       max {
         id
-        mediaKit_id
         mediaKitPage_id
+        mediaKit_id
       }
     }
   }

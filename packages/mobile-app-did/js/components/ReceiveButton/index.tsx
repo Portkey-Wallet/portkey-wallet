@@ -7,9 +7,9 @@ import { TextM } from 'components/CommonText';
 import { useLanguage } from 'i18n/hooks';
 import TokenOverlay from 'components/TokenOverlay';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
-import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import Touchable from 'components/Touchable';
+import { pTd } from 'utils/unit';
 
 interface SendButtonType {
   currentTokenInfo?: TokenItemShowType;
@@ -30,7 +30,8 @@ export default function ReceiveButton(props: SendButtonType) {
   );
 
   return (
-    <View style={[commonButtonStyle.buttonWrap, wrapStyle]}>
+    // eslint-disable-next-line react-native/no-inline-styles
+    <View style={[commonButtonStyle.buttonWrap, wrapStyle, themeType === 'dashBoard' ? { marginBottom: pTd(32) } : {}]}>
       <Touchable
         style={[commonButtonStyle.iconWrapStyle, GStyles.alignCenter]}
         onPress={() => {
@@ -42,7 +43,7 @@ export default function ReceiveButton(props: SendButtonType) {
             },
           });
         }}>
-        <Svg icon={themeType === 'dashBoard' ? 'receive' : 'receive1'} size={pTd(46)} />
+        <Svg icon={themeType === 'dashBoard' ? 'receive' : 'receive1'} size={pTd(48)} />
       </Touchable>
       <TextM style={[commonButtonStyle.commonTitleStyle, buttonTitleStyle]}>{t('Receive')}</TextM>
     </View>

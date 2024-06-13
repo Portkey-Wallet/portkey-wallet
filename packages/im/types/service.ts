@@ -5,6 +5,7 @@ import {
   ChannelItem,
   ChannelMemberInfo,
   ChannelTypeEnum,
+  IChannelContactItem,
   Message,
   MessageCount,
   RedPackageConfigType,
@@ -20,6 +21,8 @@ import {
 import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 import { IM_PIN_LIST_SORT_TYPE_ENUM } from '../constant';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
+import { ReportMessageEnum } from '@portkey-wallet/constants/constants-ca/chat';
+import { ICaAddressInfoListItemType } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 export type IMServiceCommon<T> = Promise<{
   code: string;
@@ -89,9 +92,17 @@ export type CreateChannelResult = {
 
 export type GetChannelInfoParams = {
   channelUuid: string;
+  skipCount?: number;
+  maxResultCount?: number;
 };
 
 export type GetChannelMembersParams = GetChannelInfoParams;
+export type getCannelContactsParams = {
+  channelUuid: string;
+  skipCount?: number;
+  maxResultCount?: number;
+  keyword?: string;
+};
 
 export type SendMessageParams = {
   channelUuid?: string;
@@ -108,6 +119,16 @@ export type SendMessageResult = {
   channelUuid: string;
 };
 
+export type SearchChannelMembersParams = {
+  channelUuid?: string;
+  keyword?: string;
+  skipCount?: number;
+  maxResultCount?: number;
+  filteredMember?: string;
+};
+
+export type SearchChannelMembersResult = { members: ChannelMemberInfo[]; totalCount: number };
+
 export type ReadMessageParams = {
   channelUuid: string;
   total: number;
@@ -122,6 +143,11 @@ export type GetMessageListParams = {
 
 export type DeleteMessageParams = {
   id: string;
+};
+
+export type TDeleteMessageByGroupOwnerParams = {
+  channelUuid: string;
+  messageId: string;
 };
 
 export type TriggerMessageEvent = {
@@ -327,6 +353,23 @@ export type UnPinAllParams = {
   channelUuid: string;
 };
 
+export type TBlockUserParams = {
+  relationId: string;
+};
+export type TUnBlockUserParams = TBlockUserParams;
+export type TCheckIsBlockedParams = TBlockUserParams;
+
+export type TReportMessageParams = {
+  userId: string;
+  reportedRelationId: string;
+  userCaAddressInfos: ICaAddressInfoListItemType[];
+  channelUuid?: string;
+  reportType: ReportMessageEnum;
+  message: string;
+  messageId: string;
+  description?: string; // if is other report type , this is required
+};
+
 export interface IIMService {
   verifySignature(params: VerifySignatureParams): IMServiceCommon<VerifySignatureResult>;
   verifySignatureLoop(
@@ -344,13 +387,28 @@ export interface IIMService {
   getUserInfoList<T = GetUserInfoDefaultResult>(params?: GetUserInfoListParams): IMServiceCommon<T[]>;
 
   createChannel(params: CreateChannelParams): IMServiceCommon<CreateChannelResult>;
-  getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<ChannelInfo>;
+  getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<
+    Omit<ChannelInfo, 'members' | 'totalCount'> & {
+      memberInfos: {
+        members: ChannelMemberInfo[];
+        totalCount: number;
+      };
+    }
+  >;
+
   getChannelMembers(params: GetChannelMembersParams): IMServiceCommon<ChannelMemberInfo[]>;
+  getChannelContacts(params: getCannelContactsParams): IMServiceCommon<{
+    contacts: IChannelContactItem[];
+    totalCount: number;
+  }>;
+
+  searchChannelMembers(params: SearchChannelMembersParams): IMServiceCommon<SearchChannelMembersResult>;
 
   sendMessage(params: SendMessageParams): IMServiceCommon<SendMessageResult>;
   readMessage(params: ReadMessageParams): IMServiceCommon<number>;
   getMessageList(params: GetMessageListParams): IMServiceCommon<Message[]>;
   deleteMessage(params: DeleteMessageParams): IMServiceCommon<null>;
+  deleteMessageByGroupOwner(params: TDeleteMessageByGroupOwnerParams): IMServiceCommon<null>;
   getUnreadCount(): IMServiceCommon<MessageCount>;
   triggerMessageEvent(params: TriggerMessageEvent): IMServiceCommon<null>;
 
@@ -387,4 +445,9 @@ export interface IIMService {
   setPin(params: Message): IMServiceCommon<null>;
   unPin(params: UnPinParams): IMServiceCommon<null>;
   unPinAll(params: UnPinAllParams): IMServiceCommon<null>;
+  blockUser(params: TBlockUserParams): IMServiceCommon<null>;
+  unBlockUser(params: TUnBlockUserParams): IMServiceCommon<null>;
+  checkIsBlocked(params: TCheckIsBlockedParams): IMServiceCommon<null>;
+  fetchBlockedList(): IMServiceCommon<string[]>;
+  reportMessage(params: TReportMessageParams): IMServiceCommon<null>;
 }

@@ -9,6 +9,7 @@ import AElf from 'aelf-sdk';
 import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 import { getChainList } from './api';
 import { ChainItemType, WalletState } from './type';
+import walletNameService from '@portkey-wallet/utils/walletName';
 
 export const createWallet =
   ({
@@ -86,7 +87,6 @@ export const setCAInfoType = createAction<{
 export const resetWallet = createAction('wallet/resetWallet');
 export const setCheckManagerExceed = createAction<{ network: NetworkType }>('wallet/setCheckManagerExceed');
 export const reSetCheckManagerExceed = createAction<NetworkType | undefined>('wallet/reSetCheckManagerExceed');
-export const resetUserInfo = createAction('wallet/resetUserInfo');
 export const resetCaInfo = createAction<NetworkType>('wallet/resetCaInfo');
 export const changePin = createAction<{ pin: string; newPin: string }>('wallet/changePin');
 
@@ -116,6 +116,7 @@ export const getCaHolderInfoAsync = createAsyncThunk<
       nickName: string;
       userId: string;
       avatar?: string;
+      currentNetwork?: NetworkType;
     }
   | undefined
 >('wallet/getCaHolderInfoAsync', async (_, thunkAPI) => {
@@ -144,10 +145,47 @@ export const getCaHolderInfoAsync = createAsyncThunk<
     nickName: caHolder.nickName,
     userId: caHolder.userId,
     avatar: caHolder.avatar,
+    currentNetwork,
   };
 });
 
-export const setWalletNameAction = createAction<string>('wallet/setWalletName');
-export const setUserInfoAction =
-  createAction<RequireAtLeastOne<{ nickName: string; avatar: string }>>('wallet/setUserInfo');
+export const resetCurrentUserInfoAction = createAction<NetworkType>('wallet/resetCurrentUserInfoAction');
+
+export const setNickNameAndAvatarAction = createAction<
+  RequireAtLeastOne<{ nickName: string; avatar: string; networkType: NetworkType }>
+>('wallet/setUserNameAndAvatarAction');
+
+export const setHideAssetsAction =
+  createAction<RequireAtLeastOne<{ hideAssets: boolean }>>('wallet/setHideAssetsAction');
+
 export const setOriginChainId = createAction<ChainId>('wallet/setOriginChainId');
+
+export const fetchShouldShowSetNewWalletNameModal = createAsyncThunk(
+  'wallet/fetchShouldShowSetNewWalletNameModal',
+  async () => {
+    const shouldShowModal = await walletNameService.shouldShowSetNewWalletNameModal();
+    return shouldShowModal;
+  },
+);
+
+export const fetchShouldShowSetNewWalletNameIcon = createAsyncThunk(
+  'wallet/fetchShouldShowSetNewWalletNameIcon',
+  async () => {
+    const shouldShowIcon = await walletNameService.shouldShowSetNewWalletNameIcon();
+    return shouldShowIcon;
+  },
+);
+
+export const setNewWalletName = createAsyncThunk(
+  'wallet/setNewWalletName',
+  async ({ caHash, chainId }: { caHash: string; chainId: ChainId }) => {
+    await walletNameService.setNewWalletName({ caHash, chainId, replaceNickname: true });
+  },
+);
+
+export const cancelSetNewWalletNameModal = createAsyncThunk(
+  'wallet/cancelSetNewWalletNameModal',
+  async ({ caHash, chainId }: { caHash: string; chainId: ChainId }) => {
+    await walletNameService.setNewWalletName({ caHash, chainId, replaceNickname: false });
+  },
+);

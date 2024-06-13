@@ -21,11 +21,26 @@ export type ActivityItemType = {
   amount: string;
   symbol: string;
   decimals?: string;
-  priceInUsd?: string;
+  priceInUsd?: string; // The unit price at that time
+  currentPriceInUsd?: string; // Real-time unit price
+  currentTxPriceInUsd?: string; // Real-time tx price
   nftInfo?: NftInfo;
   transactionFees: TransactionFees[];
   listIcon?: string;
   isDelegated?: boolean;
+  isSystem?: boolean;
+  operations?: TDappOperations[];
+  dappName?: string;
+  dappIcon?: string;
+};
+
+export type TDappOperations = {
+  symbol: string;
+  amount: string;
+  decimals: string;
+  icon?: string;
+  isReceived: true;
+  nftInfo?: NftInfo;
 };
 
 export type NftInfo = {

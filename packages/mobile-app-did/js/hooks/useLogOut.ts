@@ -1,11 +1,9 @@
 import { useCallback } from 'react';
 import { useAppDispatch } from 'store/hooks';
-import { resetSettings } from '@portkey-wallet/store/settings/slice';
 
 import navigationService from 'utils/navigationService';
-import { resetNetwork } from '@portkey-wallet/store/network/actions';
 
-import { reSetCheckManagerExceed, resetCaInfo, resetWallet } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { reSetCheckManagerExceed } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { resetUser } from 'store/user/actions';
 
 import { resetGuardians } from '@portkey-wallet/store/store-ca/guardians/actions';
@@ -20,7 +18,7 @@ import {
 } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { ManagerInfo } from '@portkey-wallet/graphql/contract/__generated__/types';
-import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
+import { useLogoutResetStore, useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import { useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
 import { getWalletInfo, isCurrentCaHash } from 'utils/redux';
@@ -43,6 +41,7 @@ export default function useLogOut() {
   const dispatch = useAppDispatch();
   const { currentNetwork } = useWallet();
   const resetStore = useResetStore();
+  const logoutResetStore = useLogoutResetStore();
   const otherNetworkLogged = useOtherNetworkLogged();
   const { resetCurrentNetworkSetting } = useMiscSetting();
 
@@ -61,16 +60,13 @@ export default function useLogOut() {
       dispatch(resetSecurity(currentNetwork));
       dispatch(reSetCheckManagerExceed(currentNetwork));
       resetCurrentNetworkSetting();
+      logoutResetStore();
       if (otherNetworkLogged) {
-        dispatch(resetCaInfo(currentNetwork));
         navigationService.reset('LoginPortkey');
       } else {
         resetBadge();
         deleteFCMToken();
-        dispatch(resetWallet());
         dispatch(resetUser());
-        dispatch(resetSettings());
-        dispatch(resetNetwork());
         dispatch(resetGuardians());
         navigationService.reset('Referral');
         setTimeout(() => {
@@ -81,7 +77,7 @@ export default function useLogOut() {
     } catch (error) {
       console.log(error, '====error');
     }
-  }, [currentNetwork, dispatch, otherNetworkLogged, resetCurrentNetworkSetting, resetStore]);
+  }, [currentNetwork, dispatch, logoutResetStore, otherNetworkLogged, resetCurrentNetworkSetting, resetStore]);
 }
 
 export function useCheckManager() {

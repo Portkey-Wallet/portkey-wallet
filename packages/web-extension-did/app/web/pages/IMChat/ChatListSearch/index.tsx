@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
-import SettingHeader from 'pages/components/SettingHeader';
+import CommonHeader from 'components/CommonHeader';
 import CustomSvg from 'components/CustomSvg';
 import { useLoading } from 'store/Provider/hooks';
 import DropdownSearch from 'components/DropdownSearch';
@@ -72,13 +72,9 @@ export default function ChatListSearch() {
 
   return (
     <div className="chat-list-search-page flex-column">
-      <div className="chat-list-header">
+      <div className="chat-list-search-header">
         <div className="chat-list-search">
-          <SettingHeader
-            title={t('Search')}
-            leftCallBack={() => navigate('/chat-list')}
-            rightElement={<CustomSvg type="Close2" onClick={() => navigate('/chat-list')} />}
-          />
+          <CommonHeader title={t('Search')} onLeftBack={() => navigate('/chat-list')} />
           <DropdownSearch
             overlay={<></>}
             value={filterWord}

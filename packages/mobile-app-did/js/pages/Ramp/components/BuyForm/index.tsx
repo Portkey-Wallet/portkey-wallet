@@ -33,8 +33,17 @@ import { useAppRampEntryShow } from 'hooks/ramp';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 
-export default function BuyForm() {
-  const { symbol } = useRouterParams<{ symbol?: string }>();
+export interface IBuyFormProps {
+  symbol?: string;
+}
+
+export default function BuyForm(props: IBuyFormProps) {
+  const { symbol: routerSymbol } = useRouterParams<IBuyFormProps>();
+  const { symbol: propSymbol } = props;
+  const symbol = useMemo(() => {
+    return propSymbol || routerSymbol;
+  }, [propSymbol, routerSymbol]);
+
   const {
     buyFiatList: fiatListState,
     buyDefaultFiat: defaultFiat,
@@ -292,8 +301,6 @@ export default function BuyForm() {
               {fiat?.icon && (
                 <CommonAvatar
                   avatarSize={pTd(24)}
-                  width={pTd(24)}
-                  height={pTd(24)}
                   hasBorder
                   title={fiat?.symbol || ''}
                   style={styles.unitIconStyle}
@@ -301,7 +308,7 @@ export default function BuyForm() {
                 />
               )}
               <TextL style={[GStyles.flex1, fonts.mediumFont]}>{fiat?.symbol}</TextL>
-              <Svg size={16} icon="down-arrow" color={defaultColors.icon1} />
+              <Svg size={8} icon="solid-down-arrow" color={defaultColors.icon1} />
             </Touchable>
           }
           type="general"
@@ -340,7 +347,7 @@ export default function BuyForm() {
                 />
               )}
               <TextL style={[GStyles.flex1, fonts.mediumFont]}>{crypto?.symbol || ''}</TextL>
-              <Svg size={16} icon="down-arrow" color={defaultColors.icon1} />
+              <Svg size={8} icon="solid-down-arrow" color={defaultColors.icon1} />
             </Touchable>
           }
           type="general"
@@ -350,7 +357,7 @@ export default function BuyForm() {
           placeholder=" "
         />
 
-        {rate !== '' && (
+        {rate !== '' ? (
           <View style={styles.rateWrap}>
             <TextM style={[GStyles.flex1, FontStyles.font3]}>{`1 ${crypto?.symbol || ''} ≈ ${rate} ${
               fiat?.symbol || ''
@@ -360,10 +367,12 @@ export default function BuyForm() {
               <TextS style={styles.refreshLabel}>{rateRefreshTime}s</TextS>
             </View>
           </View>
+        ) : (
+          <View style={styles.blank} />
         )}
       </View>
 
-      <CommonButton type="primary" disabled={!isAllowAmount} onPress={onNext}>
+      <CommonButton type="primary" buttonStyle={styles.btnStyle} disabled={!isAllowAmount} onPress={onNext}>
         Next
       </CommonButton>
     </View>
@@ -372,8 +381,8 @@ export default function BuyForm() {
 
 const styles = StyleSheet.create({
   formContainer: {
-    height: '100%',
-    justifyContent: 'space-between',
+    flex: 1,
+    justifyContent: 'flex-start',
   },
   inputContainerStyle: {
     height: pTd(64),
@@ -392,8 +401,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   unitIconStyle: {
-    width: pTd(24),
-    height: pTd(24),
     marginRight: pTd(8),
   },
   rateWrap: {
@@ -403,5 +410,12 @@ const styles = StyleSheet.create({
   refreshLabel: {
     marginLeft: pTd(4),
     color: defaultColors.font3,
+  },
+  btnStyle: {
+    marginTop: pTd(40),
+  },
+  blank: {
+    height: pTd(18),
+    width: '100%',
   },
 });

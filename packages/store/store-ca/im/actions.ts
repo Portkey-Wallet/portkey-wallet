@@ -126,6 +126,13 @@ export const updateGroupInfo = createAction<{
   value: Partial<ChannelInfo>;
 }>('im/updateGroupInfo');
 
+export const updateGroupInfoMembersInfo = createAction<{
+  network: NetworkType;
+  channelId: string;
+  isInit: boolean;
+  value: Pick<ChannelInfo, 'members' | 'totalCount'>;
+}>('im/updateGroupInfoMembersInfo');
+
 export const setPinList = createAction<{
   network: NetworkType;
   channelId: string;
@@ -155,5 +162,16 @@ export const setRedPackageConfig = createAction<{
   network: NetworkType;
   value: RedPackageConfigType;
 }>('im/setRedPackageConfig');
+
+export const setBlockedUserList = createAction<{
+  network: NetworkType;
+  blockedUserList: string[];
+}>('im/setBlockedUserList');
+
+export const changeBlockedMap = createAction<{
+  network: NetworkType;
+  targetRelationId: string;
+  isBlock: boolean;
+}>('im/changeBlockedMap');
 
 export const resetIm = createAction<NetworkType>('im/resetIm');

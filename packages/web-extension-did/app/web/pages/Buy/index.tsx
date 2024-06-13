@@ -1,8 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Radio, RadioChangeEvent } from 'antd';
-import BackHeader from 'components/BackHeader';
-import CustomSvg from 'components/CustomSvg';
+import CommonHeader from 'components/CommonHeader';
 import { useNavigate } from 'react-router';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
@@ -96,13 +95,7 @@ export default function Buy() {
   const mainContent = useMemo(
     () => (
       <div className={clsx(['buy-frame flex-column', isPrompt ? 'detail-page-prompt' : ''])}>
-        <div className="buy-title">
-          <BackHeader
-            title={t('Buy')}
-            leftCallBack={handleBack}
-            rightElement={<CustomSvg type="Close2" onClick={handleBack} />}
-          />
-        </div>
+        <CommonHeader title={t('Buy')} onLeftBack={handleBack} />
         <div className="buy-content flex-column-center">
           <div className="buy-radio">
             <Radio.Group defaultValue={RampType.BUY} buttonStyle="solid" value={page} onChange={handlePageChange}>

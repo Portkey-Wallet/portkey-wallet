@@ -1,8 +1,8 @@
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ChainId } from '@portkey-wallet/types';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimals, formatAmountShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { formatChainInfoToShow, handleErrorMessage } from '@portkey-wallet/utils';
 import { Button } from 'antd';
 import CustomSvg from 'components/CustomSvg';
@@ -44,7 +44,8 @@ export default function SendTransactions() {
   }>();
   const chainInfo = useCurrentChain(payload?.chainId);
   const wallet = useCurrentWalletInfo();
-  const { currentNetwork, userInfo } = useWalletInfo();
+  const { currentNetwork } = useWalletInfo();
+  const userInfo = useCurrentUserInfo();
   const isMainnet = useIsMainnet();
   const { t } = useTranslation();
   const amountInUsdShow = useAmountInUsdShow();
@@ -64,14 +65,9 @@ export default function SendTransactions() {
   const updateSessionInfo = useUpdateSessionInfo();
   const formatAmountInUsdShow = useCallback(
     (amount: string | number, decimals: string | number, symbol: string) => {
-      const value = amountInUsdShow(amount, decimals, symbol);
-      if (symbol === defaultToken.symbol) {
-        return value === '$ 0' ? '<$ 0.01' : value;
-      } else {
-        return value;
-      }
+      return amountInUsdShow(amount, decimals, symbol);
     },
-    [amountInUsdShow, defaultToken.symbol],
+    [amountInUsdShow],
   );
   const checkOriginInBlackList = useCheckSiteIsInBlackList();
 
@@ -162,7 +158,7 @@ export default function SendTransactions() {
   }, [getTokenPrice, getTokensPrice, payload, isMainnet, txParams.paramsOption?.symbol, defaultToken.symbol]);
 
   const renderAccountInfo = useMemo(() => {
-    if (payload?.contractAddress || typeof payload?.contractAddress !== 'string') return <></>;
+    if (payload?.contractAddress || typeof payload?.contractAddress !== 'string') return null;
     return (
       <div className="account flex">
         <div className="name">{userInfo?.nickName}</div>
@@ -186,13 +182,7 @@ export default function SendTransactions() {
           <div>Amount</div>
           <div className="amount-number flex-between-center">
             <div className="value">
-              <span>
-                {loading ? (
-                  <CircleLoading />
-                ) : (
-                  `${formatAmountShow(divDecimals(amount, decimals), defaultToken.decimals)}`
-                )}
-              </span>
+              <span>{loading ? <CircleLoading /> : `${formatTokenAmountShowWithDecimals(amount, decimals)}`}</span>
               <span>&nbsp;{symbol}</span>
             </div>
             {isMainnet && <div>{formatAmountInUsdShow(amount, decimals, symbol)}</div>}
@@ -237,13 +227,7 @@ export default function SendTransactions() {
               </div>
               <div className="amount-show flex-between-center">
                 <div className="value">
-                  <span>
-                    {loading ? (
-                      <CircleLoading />
-                    ) : (
-                      `${formatAmountShow(divDecimals(amount, decimals), defaultToken.decimals)}`
-                    )}
-                  </span>
+                  <span>{loading ? <CircleLoading /> : `${formatTokenAmountShowWithDecimals(amount, decimals)}`}</span>
                   <span>&nbsp;{symbol}</span>
                 </div>
                 {isMainnet && <div>{formatAmountInUsdShow(amount, 0, symbol)}</div>}

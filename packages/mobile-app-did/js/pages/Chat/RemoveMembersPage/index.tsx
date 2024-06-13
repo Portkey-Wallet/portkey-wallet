@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -10,26 +10,37 @@ import CommonToast from 'components/CommonToast';
 import CommonButton from 'components/CommonButton';
 import Loading from 'components/Loading';
 import { useCurrentChannelId } from '../context/hooks';
-import { useGroupChannelInfo, useRemoveChannelMembers } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useGroupChannelInfo, useRelationId, useRemoveChannelMembers } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ChannelMemberInfo } from '@portkey-wallet/im/types/index';
 import NoData from 'components/NoData';
 import ActionSheet from 'components/ActionSheet';
 import navigationService from 'utils/navigationService';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { strIncludes } from '@portkey-wallet/utils';
 import { useSelectedItemsMap } from '@portkey-wallet/hooks/hooks-ca/chat';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import im from '@portkey-wallet/im';
+import LottieLoading from 'components/LottieLoading';
+import { pTd } from 'utils/unit';
+import { SEARCH_MEMBER_LIST_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
 
 const RemoveMembersPage = () => {
+  const { relationId: myRelationId } = useRelationId();
+
   const currentChannelId = useCurrentChannelId();
-  const { groupInfo } = useGroupChannelInfo(currentChannelId || '', false);
-  const { members = [] } = groupInfo || {};
+  const { groupInfo, refresh, refreshChannelMembersInfo } = useGroupChannelInfo(currentChannelId || '', false);
+  const { members = [], totalCount } = groupInfo || {};
+
   const removeMembers = useRemoveChannelMembers(currentChannelId || '');
 
   const [keyword, setKeyword] = useState('');
-  const debounceKeyword = useDebounce(keyword, 200);
-  const [rawMemberList, setRawMemberList] = useState<ChannelMemberInfo[]>([]);
+  const debounceKeyword = useDebounce(keyword, 800);
+  const [isSearching, setIsSearching] = useState(false);
   const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>([]);
   const { selectedItemsMap: selectedMemberMap, onPressItem } = useSelectedItemsMap<GroupMemberItemType>();
+
+  const listShow = useMemo(() => {
+    return debounceKeyword ? filterMembers.filter(ele => ele.relationId !== myRelationId) : members?.slice(1);
+  }, [debounceKeyword, filterMembers, members, myRelationId]);
 
   const onRemove = useCallback(() => {
     ActionSheet.alert({
@@ -46,6 +57,7 @@ const RemoveMembersPage = () => {
               Loading.show();
               const result = Array.from(selectedMemberMap.keys());
               await removeMembers(result || []);
+              await refresh();
               navigationService.goBack();
             } catch (error) {
               CommonToast.failError(error);
@@ -56,33 +68,61 @@ const RemoveMembersPage = () => {
         },
       ],
     });
-  }, [removeMembers, selectedMemberMap]);
+  }, [refresh, removeMembers, selectedMemberMap]);
 
-  useEffect(() => {
-    setFilterMembers(() => {
-      let result = [];
-      if (debounceKeyword) {
-        result = rawMemberList.filter(ele => strIncludes(ele.name, debounceKeyword) && !ele.isAdmin);
-      } else {
-        result = rawMemberList.filter(ele => !ele.isAdmin);
+  const searchMemberList = useLockCallback(async () => {
+    if (!debounceKeyword.trim()) return;
+    setIsSearching(true);
+
+    try {
+      const result = await im.service.searchChannelMembers({
+        channelUuid: currentChannelId,
+        keyword: debounceKeyword,
+        skipCount: 0,
+        maxResultCount: SEARCH_MEMBER_LIST_LIMIT,
+      });
+      setFilterMembers(result?.data.members || []);
+    } catch (error) {
+      CommonToast.failError(error);
+    } finally {
+      setIsSearching(false);
+    }
+  }, [currentChannelId, debounceKeyword]);
+
+  const fetchMemberList = useLockCallback(
+    async (isInit?: false) => {
+      if (debounceKeyword.trim()) return;
+      if (totalCount && members?.length >= totalCount && !isInit) return;
+
+      try {
+        await refreshChannelMembersInfo(isInit ? 0 : members?.length || 0);
+      } catch (error) {
+        console.log('fetchMoreData', error);
       }
-      return result;
-    });
-  }, [debounceKeyword, rawMemberList]);
+    },
+    [debounceKeyword, members?.length, refreshChannelMembersInfo, totalCount],
+  );
+
+  // keyword search
+  useEffect(() => {
+    searchMemberList();
+  }, [debounceKeyword, members, searchMemberList]);
 
   useEffectOnce(() => {
-    setRawMemberList([...members]);
+    fetchMemberList(true);
   });
 
   return (
     <PageContainer
       titleDom="Remove Members"
-      safeAreaColor={['blue', 'white']}
+      safeAreaColor={['white', 'white']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
       <View style={styles.inputWrap}>
         <CommonInput
           allowClear
+          grayBorder
+          theme="white-bg"
           value={keyword}
           placeholder={'Search members'}
           onChangeText={v => {
@@ -92,9 +132,15 @@ const RemoveMembersPage = () => {
       </View>
 
       <FlatList
-        data={filterMembers || []}
+        data={listShow || []}
         keyExtractor={(item: ChannelMemberInfo) => item.relationId}
-        ListEmptyComponent={<NoData noPic message="No search result" />}
+        ListEmptyComponent={
+          isSearching ? (
+            <LottieLoading lottieWrapStyle={GStyles.marginTop(pTd(24))} />
+          ) : (
+            <NoData noPic message="No search result" />
+          )
+        }
         renderItem={({ item }) => (
           <GroupMemberItem
             selected={selectedMemberMap.has(item.relationId)}
@@ -102,6 +148,7 @@ const RemoveMembersPage = () => {
             onPress={onPressItem}
           />
         )}
+        onEndReached={() => fetchMemberList()}
       />
       <View style={styles.buttonWrap}>
         <CommonButton disabled={selectedMemberMap.size === 0} title="Remove" type="primary" onPress={onRemove} />
@@ -120,8 +167,8 @@ const styles = StyleSheet.create({
     ...GStyles.paddingArg(0),
   },
   inputWrap: {
-    backgroundColor: defaultColors.bg5,
-    ...GStyles.paddingArg(8, 20, 8),
+    backgroundColor: defaultColors.bg1,
+    ...GStyles.paddingArg(0, 20, 8),
   },
   buttonWrap: {
     ...GStyles.marginArg(10, 20, 16),

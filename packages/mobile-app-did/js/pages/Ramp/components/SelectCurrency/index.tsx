@@ -39,20 +39,13 @@ export const Item: React.FC<TItemProps> = ({ value = '', item, callBack }) => {
       }}>
       <View style={styles.itemRow}>
         <View style={styles.commonAvatarWrap}>
-          <CommonAvatar
-            hasBorder
-            title={item.symbol}
-            avatarSize={pTd(32)}
-            width={pTd(32)}
-            height={pTd(32)}
-            imageUrl={item.icon || ' '}
-          />
+          <CommonAvatar hasBorder title={item.symbol} avatarSize={pTd(32)} imageUrl={item.icon || ' '} />
         </View>
         <View style={styles.itemContent}>
           <TextL>{`${item.countryName || ''} - ${item.symbol}`}</TextL>
 
           {value !== undefined && value === `${item.country}_${item.symbol}` && (
-            <Svg iconStyle={styles.itemIcon} icon="selected" size={pTd(24)} />
+            <Svg iconStyle={styles.itemIcon} icon="selected" size={pTd(24)} color={defaultColors.primaryColor} />
           )}
         </View>
       </View>

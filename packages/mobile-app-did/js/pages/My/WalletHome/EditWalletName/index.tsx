@@ -7,13 +7,12 @@ import { INIT_HAS_ERROR, ErrorType } from '@portkey-wallet/constants/constants-c
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
 import navigationService from 'utils/navigationService';
 import CommonToast from 'components/CommonToast';
-import { useCurrentCaInfo, useSetUserInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentCaInfo, useCurrentUserInfo, useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Loading from 'components/Loading';
 import FormItem from 'components/FormItem';
 import { ScrollView, StyleSheet, TextInput } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import gStyles from 'assets/theme/GStyles';
-import ProfilePortkeyIDSection from 'pages/My/components/ProfileIDSection';
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
 import { ChainId } from '@portkey/provider-types';
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
@@ -24,7 +23,6 @@ import { TextL } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { sleep } from '@portkey-wallet/utils';
 
 const EditWalletName: React.FC = () => {
@@ -33,7 +31,7 @@ const EditWalletName: React.FC = () => {
   const uploadRef = useRef<ImageWithUploadFuncInstance>(null);
 
   const { t } = useLanguage();
-  const { userInfo } = useWallet();
+  const userInfo = useCurrentUserInfo();
   const [nameValue, setNameValue] = useState<string>(userInfo?.nickName || '');
   const [avatar, setAvatar] = useState<string>(userInfo?.avatar || '');
 
@@ -94,7 +92,7 @@ const EditWalletName: React.FC = () => {
   return (
     <PageContainer
       titleDom={t('Edit')}
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <ScrollView>
@@ -121,11 +119,10 @@ const EditWalletName: React.FC = () => {
             errorMessage={nameError.errorMsg}
           />
         </FormItem>
-        <ProfilePortkeyIDSection noMarginTop disable id={userInfo?.userId || ''} />
         <ProfileAddressSection isMySelf disable addressList={caInfoList} />
       </ScrollView>
 
-      <CommonButton disabled={nameValue === ''} type="solid" onPress={onSave}>
+      <CommonButton disabled={nameValue === ''} type="primary" onPress={onSave}>
         {t('Save')}
       </CommonButton>
     </PageContainer>

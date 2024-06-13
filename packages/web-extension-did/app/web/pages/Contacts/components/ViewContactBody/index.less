@@ -23,7 +23,7 @@
       font-size: 12px;
       line-height: 16px;
       margin-top: 4px;
-      color: @font-13;
+      color: @neutral-secondary-text;
     }
     .action {
       width: 100%;
@@ -32,8 +32,8 @@
       .action-item {
         flex: 1;
         height: 64px;
-        background-color: @bg-11;
-        color: @font-9;
+        background-color: @neutral-default-bg;
+        color: @brand-normal;
         justify-content: center;
         border-radius: 6px;
         cursor: pointer;
@@ -44,8 +44,12 @@
         }
       }
       .added-contact {
-        color: @font-12;
+        color: @neutral-disable-text;
         cursor: default;
+      }
+      .no-chat-contact {
+        color: @neutral-disable-text;
+        cursor: not-allowed;
       }
     }
   }
@@ -54,7 +58,7 @@
     display: flex;
     flex-direction: column;
     padding: 24px 0;
-    color: @font-11;
+    color: @neutral-primary-text;
     width: 100%;
   }
 
@@ -70,14 +74,45 @@
 
   .footer {
     padding: 16px 24px;
-    border-top: 1px solid @border-2;
+    border-top: 1px solid @neutral-divider;
 
     .edit-btn {
       height: 48px;
-      color: @font-5;
+      color: @neutral-white-text;
       font-size: 16px;
       line-height: 22px;
       border-radius: 24px;
     }
+  }
+}
+
+.portkey-chat-contact-popover {
+  .portkey-popover-content {
+    min-width: 120px;
+    .portkey-popover-inner {
+      border-radius: 6px;
+      .portkey-popover-inner-content {
+        padding: 0 12px;
+        .icon-left {
+          .block-icon.contact-blocked {
+            svg {
+              path {
+                fill: @functional-error-default;
+              }
+            }
+          }
+        }
+        .menu-item-container {
+          .contact-blocked {
+            color: @functional-error-default;
+          }
+        }
+      }
+    }
+  }
+}
+.portkey-chat-contact-popover.portkey-popover-placement-bottom {
+  .portkey-popover-content {
+    margin-top: -10px;
   }
 }

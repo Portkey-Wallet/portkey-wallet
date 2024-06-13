@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
-import SettingHeader from 'pages/components/SettingHeader';
-import CustomSvg from 'components/CustomSvg';
+import CommonHeader from 'components/CommonHeader';
 import { useLoading } from 'store/Provider/hooks';
 import DropdownSearch from 'components/DropdownSearch';
 import ContactList from 'pages/Contacts/components/ContactList';
@@ -71,11 +70,7 @@ export default function NewChat() {
   return (
     <div className="new-chat-page flex-column">
       <div className="new-chat-top">
-        <SettingHeader
-          title={t('New Chat')}
-          leftCallBack={() => navigate('/chat-list')}
-          rightElement={<CustomSvg type="Close2" onClick={() => navigate('/chat-list')} />}
-        />
+        <CommonHeader title={t('New Chat')} onLeftBack={() => navigate('/chat-list')} />
         <DropdownSearch
           overlay={<></>}
           value={filterWord}
@@ -85,7 +80,7 @@ export default function NewChat() {
               setFilterWord(_value);
               searchDebounce(_value);
             },
-            placeholder: 'Name/address/Portkey ID',
+            placeholder: 'Name/address',
           }}
         />
       </div>

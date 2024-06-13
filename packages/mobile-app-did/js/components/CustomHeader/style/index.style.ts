@@ -3,7 +3,7 @@ import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 
-const { bg1, bg5 } = defaultColors;
+const { bg1, bg5, font5, icon5 } = defaultColors;
 
 export const headerHeight = pTd(52);
 
@@ -57,7 +57,7 @@ export const blueStyles = StyleSheet.create({
 export const whitStyles = StyleSheet.create({
   ...styles,
   sectionContainer: {
-    height: pTd(52),
+    height: pTd(44),
     width: '100%',
     display: 'flex',
     flexDirection: 'row',
@@ -78,7 +78,7 @@ export const whitStyles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    color: bg5,
+    color: font5,
     fontWeight: 'bold',
     ...fonts.mediumFont,
   },
@@ -89,7 +89,7 @@ export const whitStyles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   leftBackTitle: {
-    color: bg5,
+    color: icon5,
   },
 });
 

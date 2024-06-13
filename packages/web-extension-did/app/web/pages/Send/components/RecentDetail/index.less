@@ -1,48 +1,17 @@
 @import '../../../../assets/theme/color.less';
 
 .recent-detail {
-  background-color: @bg-11;
+  background-color: @neutral-default-bg;
   height: 100%;
   display: flex;
   flex-direction: column;
 
   .recent-detail-header {
-    padding: 42px 24px 26px;
-    align-items: center;
-    background: @bg-13;
-    border-bottom: 1px solid @border-2;
     margin-bottom: 16px;
-    .title-left-col {
-      .custom-svg {
-        width: 24px;
-        height: 24px;
-        svg {
-          width: 24px;
-          height: 24px;
-        }
-      }
-    }
-    .title-center {
-      flex: 1;
-      padding: 0 12px;
-      color: @font-11;
-      line-height: 28px;
-      font-size: 24px;
-    }
-    .title-right-col {
-      .custom-svg {
-        width: 18px;
-        height: 18px;
-        svg {
-          width: 18px;
-          height: 18px;
-        }
-      }
-    }
   }
 
   .recent-detail-body {
-    background: @bg-11;
+    background: @neutral-default-bg;
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -53,7 +22,7 @@
       margin-bottom: 8px;
       .recent-detail-contact {
         font-weight: 400;
-        color: @font-11;
+        color: @neutral-primary-text;
         margin-bottom: 16px;
         .name {
           font-size: 20px;
@@ -68,12 +37,12 @@
         gap: 4px;
         margin: 0 4px;
         .address {
-          color: @font-11;
+          color: @neutral-primary-text;
           line-height: 16px;
         }
         .network {
           font-size: 12px;
-          color: @font-13;
+          color: @neutral-secondary-text;
           line-height: 16px;
         }
       }
@@ -95,14 +64,6 @@
     .activity-list {
       .adm-list-body {
         border-top: none;
-        .adm-list-item {
-          border-top: 1px solid @border-2;
-          &:first-child {
-            .adm-list-item-content {
-              border-top: none;
-            }
-          }
-        }
       }
     }
   }

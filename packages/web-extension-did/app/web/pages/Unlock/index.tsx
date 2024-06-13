@@ -1,17 +1,15 @@
-import RegisterHeader from 'pages/components/RegisterHeader';
 import { useCallback, useEffect } from 'react';
-import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
+import { useWalletInfo } from 'store/Provider/hooks';
 import LockPage from '../components/LockPage';
 import { useStorage } from 'hooks/useStorage';
 import { reportUserCurrentNetwork } from 'utils/analysisReport';
-import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useNavigateState } from 'hooks/router';
 
 const Unlock = () => {
   const navigate = useNavigateState();
-  const { isPrompt } = useCommonState();
-  const { networkType } = useCurrentNetwork();
-  const { walletInfo, currentNetwork } = useWalletInfo();
+  const currentNetwork = useCurrentNetwork();
+  const { walletInfo } = useWalletInfo();
   const locked = useStorage('locked');
   console.log(locked, 'locked==');
   useEffect(() => {
@@ -21,8 +19,8 @@ const Unlock = () => {
   }, [locked, navigate]);
 
   useEffect(() => {
-    reportUserCurrentNetwork(networkType);
-  }, [networkType]);
+    reportUserCurrentNetwork(currentNetwork);
+  }, [currentNetwork]);
 
   const handleNavigate = useCallback(() => {
     const caInfo = walletInfo?.caInfo?.[currentNetwork];
@@ -36,7 +34,7 @@ const Unlock = () => {
 
   return (
     <div>
-      <LockPage header={isPrompt && <RegisterHeader />} onUnLockHandler={handleNavigate} />
+      <LockPage onUnLockHandler={handleNavigate} />
     </div>
   );
 };

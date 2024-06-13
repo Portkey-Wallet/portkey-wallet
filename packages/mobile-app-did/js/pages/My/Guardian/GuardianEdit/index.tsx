@@ -12,7 +12,7 @@ import ListItem from 'components/ListItem';
 import CommonInput from 'components/CommonInput';
 import { checkEmail } from '@portkey-wallet/utils/check';
 import { useGuardiansInfo } from 'hooks/store';
-import { LOGIN_TYPE_LIST } from 'constants/misc';
+import { LOGIN_TYPE_LIST, T_LOGIN_TYPE_LIST_ITEM } from 'constants/misc';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
 import { ApprovalType, VerificationType, OperationTypeEnum, VerifierItem } from '@portkey-wallet/types/verifier';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR, ErrorType } from '@portkey-wallet/constants/constants-ca/common';
@@ -54,6 +54,8 @@ import { NavigateMultiLevelParams } from 'types/navigate';
 import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
 import { useIsFocused } from '@react-navigation/native';
 import { TAppleAuthentication } from 'types/authentication';
+import { useLoginModeList } from 'hooks/loginMode';
+import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
@@ -96,6 +98,7 @@ const GuardianEdit: React.FC = () => {
 
   const verifyToken = useVerifyToken();
   const [firstName, setFirstName] = useState<string>();
+  const loginModeList = useLoginModeList();
 
   const thirdPartyInfoRef = useRef<thirdPartyInfoType>();
   const { approveParams } = useRouterParams<NavigateMultiLevelParams>();
@@ -548,7 +551,7 @@ const GuardianEdit: React.FC = () => {
       );
     }
 
-    if (!selectedType) return <></>;
+    if (!selectedType) return null;
 
     switch (selectedType.value) {
       case LoginType.Email:
@@ -635,7 +638,7 @@ const GuardianEdit: React.FC = () => {
       default:
         break;
     }
-    return <></>;
+    return null;
   }, [
     account,
     clearAccount,
@@ -652,15 +655,20 @@ const GuardianEdit: React.FC = () => {
     onTwitterSign,
     selectedType,
   ]);
-
   const goBack = useCallback(() => {
     if (isEdit) return navigationService.navigate('GuardianHome');
     navigationService.goBack();
   }, [isEdit]);
 
+  const selectGuardianList = useMemo(() => {
+    return loginModeList
+      ?.map(i => LOGIN_TYPE_LIST.find(v => LOGIN_TYPE_LABEL_MAP[v.value] === i.type?.value))
+      .filter(i => !!i) as T_LOGIN_TYPE_LIST_ITEM[];
+  }, [loginModeList]);
+
   return (
     <PageContainer
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['white', 'gray']}
       titleDom={isEdit ? 'Edit Guardians' : 'Add Guardians'}
       leftCallback={goBack}
       containerStyles={pageStyles.pageWrap}
@@ -672,7 +680,7 @@ const GuardianEdit: React.FC = () => {
             <ListItem
               onPress={() => {
                 GuardianTypeSelectOverlay.showList({
-                  list: LOGIN_TYPE_LIST,
+                  list: selectGuardianList,
                   labelAttrName: 'name',
                   value: selectedType?.value,
                   callBack: onChooseType,

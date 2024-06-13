@@ -3,6 +3,7 @@ export type ParsedContent = string | ParsedImage | ParsedRedPackage | ParsedTran
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import { PIN_OPERATION_TYPE_ENUM } from './pin';
 import { RedPackageStatusInfo } from './redPackage';
+import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 
 export type ChainId = 'AELF' | 'tDVV' | 'tDVW';
 
@@ -95,6 +96,7 @@ export type Message = {
   from: string;
   fromAvatar?: string;
   fromName?: string;
+  isOwner?: boolean;
 
   id?: string;
   quote?: Message;
@@ -137,6 +139,7 @@ export type ChannelInfo = {
   openAccess: boolean;
   type: ChannelTypeEnum;
   members: ChannelMemberInfo[];
+  totalCount: number;
   mute: boolean;
   pin: boolean;
 };
@@ -190,6 +193,8 @@ export type GroupMemberItemType = {
   avatar: string;
   isAdmin: boolean;
 };
+
+export type IChannelContactItem = ContactItemType & { isGroupMember: boolean };
 
 export type RedPackageTokenInfo = {
   chainId: ChainId;

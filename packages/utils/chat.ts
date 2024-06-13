@@ -31,11 +31,11 @@ export const formatChatListTime = (date?: dayjs.ConfigType): string => {
   }
 };
 
-export const formatMessageTime = (date?: dayjs.ConfigType): string => {
+export const formatMessageTime = (date?: dayjs.ConfigType, isYearShow = false): string => {
   if (!date) return '';
   const messageTime = dateToDayjs(date);
   const now = dayjs();
-  if (messageTime.isSame(now, 'year')) {
+  if (!isYearShow && messageTime.isSame(now, 'year')) {
     return messageTime.format('MM-DD');
   } else {
     return messageTime.format('YYYY-MM-DD');

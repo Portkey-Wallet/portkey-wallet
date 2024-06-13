@@ -27,23 +27,36 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { isIOS } from '@rneui/base';
 import { isValidNumber } from '@portkey-wallet/utils/reg';
 import Svg, { IconName } from 'components/Svg';
-
+import { ALLOWANCE_DESC, SET_ALLOWANCE_MULTIPLY_TIP } from '@portkey-wallet/constants/constants-ca/allowance';
+import { isNFT } from '@portkey-wallet/utils/token';
+import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 type SignModalPropsType = {
   dappInfo: DappStoreItem;
   approveParams: ApproveParams;
   onReject: () => void;
+  isEditBatchApprovalInApp?: boolean;
 };
 
 const ZERO_MESSAGE = 'Please enter a nonzero value';
 const ApproveModal = (props: SignModalPropsType) => {
-  const { dappInfo, approveParams, onReject } = props;
+  const { dappInfo, approveParams, onReject, isEditBatchApprovalInApp } = props;
   console.log(approveParams, '====approveInfo');
-  const { decimals, amount, targetChainId } = approveParams.approveInfo;
+  const { amount, targetChainId } = approveParams.approveInfo;
   const dispatch = useAppDispatch();
   const { t } = useLanguage();
 
   const [errorMessage, setErrorMessage] = useState('');
   const [symbolNum, setSymbolNum] = useState<string>('');
+
+  const decimals = useMemo(() => approveParams.approveInfo.decimals, [approveParams.approveInfo.decimals]);
+
+  const approveSymbol = useMemo(
+    () =>
+      approveParams?.batchApproveNFT && isNFT(approveParams.approveInfo.symbol)
+        ? approveParams.approveInfo.symbol.split('-')[0]
+        : approveParams.approveInfo.symbol,
+    [approveParams.approveInfo.symbol, approveParams?.batchApproveNFT],
+  );
 
   const MAX_NUM = useMemo(
     () => divDecimals(LANG_MAX, approveParams.approveInfo.decimals),
@@ -77,13 +90,15 @@ const ApproveModal = (props: SignModalPropsType) => {
             setErrorMessage('');
           }
 
-          const tmpAmount = timesDecimals(symbolNum, approveParams.approveInfo.decimals);
+          const tmpAmount = timesDecimals(symbolNum, decimals);
           navigationService.navigate('GuardianApproval', {
             approveParams: {
               isDiscover: approveParams.isDiscover,
               eventName: approveParams.eventName,
               approveInfo: {
                 ...approveParams.approveInfo,
+                decimals,
+                symbol: approveParams.approveInfo.symbol,
                 amount: (LANG_MAX.lt(tmpAmount) ? LANG_MAX : tmpAmount).toFixed(0),
               },
             } as ApproveParams,
@@ -99,6 +114,7 @@ const ApproveModal = (props: SignModalPropsType) => {
       approveParams.approveInfo,
       approveParams.eventName,
       approveParams.isDiscover,
+      decimals,
       dispatch,
       onReject,
       symbolNum,
@@ -124,8 +140,8 @@ const ApproveModal = (props: SignModalPropsType) => {
   const onUseRecommendedValue = useCallback(() => {
     setErrorMessage('');
     if (LANG_MAX.lt(amount)) return onPressMax();
-    setSymbolNum(parseInputNumberChange(divDecimalsStr(amount, decimals), MAX_NUM, decimals));
-  }, [MAX_NUM, amount, decimals, onPressMax]);
+    setSymbolNum(parseInputNumberChange(divDecimalsStr(amount, approveParams.approveInfo.decimals), MAX_NUM, decimals));
+  }, [MAX_NUM, amount, approveParams.approveInfo.decimals, decimals, onPressMax]);
 
   useEffectOnce(() => {
     onUseRecommendedValue();
@@ -147,21 +163,22 @@ const ApproveModal = (props: SignModalPropsType) => {
               GStyles.textAlignCenter,
               GStyles.marginTop(pTd(8)),
               GStyles.marginBottom(pTd(8)),
-            ]}>{`${dappInfo.name || dappInfo.origin} is requesting access to your ${
-            approveParams.approveInfo.alias || approveParams.approveInfo.symbol
-          }`}</TextL>
-          <TextS style={[FontStyles.font7, GStyles.textAlignCenter]}>
-            {`To ensure your assets' security while interacting with the DApp, please set a token allowance for this DApp. The DApp will notify you when its allowance is used up and you can modify the settings again.`}
-          </TextS>
+            ]}>
+            {isEditBatchApprovalInApp
+              ? `Set access token amount`
+              : `${dappInfo.name || dappInfo.origin} is requesting access to your ${approveSymbol}`}
+          </TextL>
+
+          <TextS style={[FontStyles.font7, GStyles.textAlignCenter]}>{`${ALLOWANCE_DESC} ${approveSymbol}`}</TextS>
         </View>
 
         <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.inputTitle]}>
-          <TextM style={GStyles.flex1}>{`Set Allowance (${
-            approveParams.approveInfo.alias || approveParams.approveInfo.symbol
-          })`}</TextM>
-          <Touchable onPress={onUseRecommendedValue}>
-            <TextM style={FontStyles.font4}> Use Recommended Value</TextM>
-          </Touchable>
+          <TextM style={GStyles.flex1}>Set Allowance</TextM>
+          {!isEditBatchApprovalInApp && (
+            <Touchable onPress={onUseRecommendedValue}>
+              <TextM style={FontStyles.primaryColor}> Use Recommended Value</TextM>
+            </Touchable>
+          )}
         </View>
 
         <CommonInput
@@ -172,14 +189,18 @@ const ApproveModal = (props: SignModalPropsType) => {
           onChangeText={onChangeText}
           errorMessage={errorMessage}
           rightIcon={
-            <Touchable onPress={onPressMax}>
-              <TextM style={FontStyles.font4}>Max</TextM>
-            </Touchable>
+            <View style={GStyles.flexRow}>
+              <Touchable>
+                <TextM style={FontStyles.font18}>{formatStr2EllipsisStr(approveSymbol, 8, 'tail')}</TextM>
+              </Touchable>
+              <Touchable style={GStyles.marginLeft(pTd(12))} onPress={onPressMax}>
+                <TextM style={FontStyles.primaryColor}>Max</TextM>
+              </Touchable>
+            </View>
           }
         />
-        <TextM style={[FontStyles.font3]}>
-          {`Transactions below the specified amount won't need your confirmation until the DApp exhausts its allowance.`}
-        </TextM>
+
+        <TextM style={[FontStyles.font3]}>{SET_ALLOWANCE_MULTIPLY_TIP}</TextM>
       </View>
       <OverlayBottomSection bottomButtonGroup={ButtonList} />
     </ModalBody>
@@ -224,12 +245,18 @@ const styles = StyleSheet.create({
     marginTop: pTd(24),
     textAlign: 'center',
     color: defaultColors.primaryColor,
-    backgroundColor: defaultColors.bg9,
+    backgroundColor: defaultColors.brandLight,
     ...GStyles.paddingArg(2, 8),
   },
   signTitle: {
     marginTop: pTd(24),
     marginBottom: pTd(24),
     textAlign: 'center',
+  },
+  batchApprovalWrap: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: pTd(24),
   },
 });

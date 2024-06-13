@@ -1,53 +1,96 @@
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchNFTAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { ChainId } from '@portkey-wallet/types';
 import { NFTCollectionItemShowType, NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
-import { Collapse } from 'antd';
-import { List } from 'antd-mobile';
+import { Collapse, Skeleton } from 'antd';
 import CustomSvg from 'components/CustomSvg';
-import { useCallback, useState, useMemo } from 'react';
+import { useCallback, useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import clsx from 'clsx';
-import { useAppDispatch, useAssetInfo, useCommonState } from 'store/Provider/hooks';
+import { useCommonState } from 'store/Provider/hooks';
 import './index.less';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { PAGE_SIZE_IN_NFT_ITEM } from '@portkey-wallet/constants/constants-ca/assets';
+import {
+  PAGE_SIZE_IN_NFT_ITEM,
+  PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
+} from '@portkey-wallet/constants/constants-ca/assets';
 import { PAGE_SIZE_IN_NFT_ITEM_PROMPT } from 'constants/index';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { getSeedTypeTag } from 'utils/assets';
+import LoadingMore from 'components/LoadingMore/LoadingMore';
+import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { ZERO } from '@portkey-wallet/constants/misc';
+import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
+import useGAReport from 'hooks/useGAReport';
+import { useEffectOnce } from 'react-use';
 
 export default function NFT() {
   const nav = useNavigate();
   const [openPanel, setOpenPanel] = useState<string[]>([]);
   const [nftNum, setNftNum] = useState<Record<string, number>>({});
+  const [openOp, setOpenOp] = useState<boolean>(true);
   const isMainnet = useIsMainnet();
-  const {
-    accountNFT: { accountNFTList },
-  } = useAssetInfo();
-  const dispatch = useAppDispatch();
+  const { accountNFTList, totalRecordCount, fetchAccountNFTCollectionInfoList, fetchAccountNFTItem, isFetching } =
+    useAccountNFTCollectionInfo();
   const { isPrompt } = useCommonState();
   const caAddressInfos = useCaAddressInfoList();
   const [getMoreFlag, setGetMoreFlag] = useState(false);
   const maxNftNum = useMemo(() => (isPrompt ? PAGE_SIZE_IN_NFT_ITEM_PROMPT : PAGE_SIZE_IN_NFT_ITEM), [isPrompt]);
+  const hasMoreNFTCollection = useMemo(
+    () => accountNFTList.length < totalRecordCount,
+    [accountNFTList.length, totalRecordCount],
+  );
+  const calSkeletonLength = useCallback(
+    (needToShowNum: number) => (needToShowNum >= 0 ? (needToShowNum < maxNftNum ? needToShowNum : maxNftNum) : 0),
+    [maxNftNum],
+  );
 
-  const getMore = useCallback(
+  const { startReport, endReport } = useGAReport();
+
+  useEffectOnce(() => {
+    startReport('Home-NFTsList');
+  });
+
+  useEffect(() => {
+    fetchAccountNFTCollectionInfoList({
+      maxNFTCount: maxNftNum,
+      caAddressInfos,
+      skipCount: 0,
+      maxResultCount: PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
+    }).then(() => endReport('Home-NFTsList'));
+  }, [caAddressInfos, endReport, fetchAccountNFTCollectionInfoList, maxNftNum]);
+
+  const getMoreNFTCollection = useCallback(async () => {
+    if (accountNFTList.length < totalRecordCount) {
+      await fetchAccountNFTCollectionInfoList({
+        maxNFTCount: maxNftNum,
+        caAddressInfos,
+        skipCount: accountNFTList.length,
+        maxResultCount: PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
+      });
+    }
+  }, [accountNFTList.length, caAddressInfos, fetchAccountNFTCollectionInfoList, maxNftNum, totalRecordCount]);
+
+  const getMoreNFTItem = useCallback(
     async (symbol: string, chainId: ChainId) => {
       if (getMoreFlag) return;
       const nftColKey = `${symbol}_${chainId}`;
       const curNftNum = nftNum[nftColKey];
       setGetMoreFlag(true);
-      await dispatch(
-        fetchNFTAsync({
+      try {
+        setNftNum((pre) => ({ ...pre, [nftColKey]: curNftNum + 1 }));
+        await fetchAccountNFTItem({
           symbol,
           chainId: chainId as ChainId,
           pageNum: curNftNum,
           caAddressInfos: caAddressInfos.filter((item) => item.chainId === chainId),
-        }),
-      );
-      setNftNum({ ...nftNum, [nftColKey]: curNftNum + 1 });
-      setGetMoreFlag(false);
+        });
+      } catch (error) {
+        console.log('===getMoreNFTItem error', error);
+      } finally {
+        setGetMoreFlag(false);
+      }
     },
-    [caAddressInfos, dispatch, nftNum, getMoreFlag],
+    [getMoreFlag, nftNum, fetchAccountNFTItem, caAddressInfos],
   );
 
   const handleChange = useCallback(
@@ -55,37 +98,43 @@ export default function NFT() {
       const openArr = typeof arr === 'string' ? [arr] : arr;
       openPanel.forEach((prev: string) => {
         if (!openArr.some((cur: string) => cur === prev)) {
-          setNftNum({ ...nftNum, [prev]: 0 });
+          setNftNum((pre) => ({ ...pre, [prev]: 0 }));
+          setOpenOp(false);
         }
       });
       openArr.forEach((cur: string) => {
         if (!openPanel.some((prev: string) => cur === prev)) {
           const curTmp = cur.split('_');
-          dispatch(
-            fetchNFTAsync({
-              symbol: curTmp[0],
-              chainId: curTmp[1] as ChainId,
-              pageNum: 0,
-              caAddressInfos: caAddressInfos.filter((item) => item.chainId === curTmp[1]),
-            }),
-          );
-          setNftNum({ ...nftNum, [cur]: 1 });
+          setOpenOp(true);
+          fetchAccountNFTItem({
+            symbol: curTmp[0],
+            chainId: curTmp[1] as ChainId,
+            pageNum: 0,
+            caAddressInfos: caAddressInfos.filter((item) => item.chainId === curTmp[1]),
+          });
+          setNftNum((pre) => ({ ...pre, [cur]: 1 }));
         }
       });
       setOpenPanel(openArr);
     },
-    [caAddressInfos, dispatch, nftNum, openPanel],
+    [caAddressInfos, fetchAccountNFTItem, openPanel],
   );
 
   const renderItem = useCallback(
     (nft: NFTCollectionItemShowType) => {
       const nftColKey = `${nft.symbol}_${nft.chainId}`;
+      const curNftNum = nftNum?.[nftColKey] ?? 0;
+      const curNFTSkeletonLength = calSkeletonLength(
+        ZERO.plus(nft.itemCount)
+          .minus(ZERO.plus(curNftNum - 1).times(maxNftNum))
+          .toNumber(),
+      );
       return (
         <Collapse.Panel
           key={nftColKey}
           header={
             <div className="nft-collection flex-row-center">
-              <div className="avatar flex-center">
+              <div className={clsx('nft-collection-avatar', 'flex-center', !nft.imageUrl && 'show-nft-default')}>
                 {nft.imageUrl ? <img src={nft.imageUrl} /> : nft.collectionName?.slice(0, 1)}
               </div>
               <div className="info flex-column">
@@ -100,14 +149,13 @@ export default function NFT() {
           <div className="nft-item-list">
             {!!nftNum[nftColKey] &&
               nft.children.map((nftItem: NFTItemBaseType, index: number) => {
-                const curNftNum = nftNum[nftColKey] ?? 0;
                 const seedTypeTag = getSeedTypeTag(nftItem);
                 return (
                   index < curNftNum * maxNftNum && (
                     <div
                       key={`${nft.symbol}-${nftItem.symbol}`}
                       style={{
-                        backgroundImage: `url('${nftItem.imageUrl}')`,
+                        backgroundImage: `url('${nftItem.imageUrl || ''}')`,
                       }}
                       className={clsx(['nft-item', nftItem.imageUrl ? '' : 'nft-item-no-img'])}
                       onClick={() => {
@@ -122,17 +170,26 @@ export default function NFT() {
                       {seedTypeTag && <CustomSvg type={seedTypeTag} />}
                       <div className="mask flex-column">
                         <p className="alias">{nftItem.alias}</p>
-                        <p className="token-id">#{nftItem.tokenId}</p>
+                        <p className="token-balance">
+                          {formatTokenAmountShowWithDecimals(nftItem.balance, nftItem.decimals)}
+                        </p>
                       </div>
                     </div>
                   )
                 );
               })}
+            {nft.isFetching &&
+              openOp &&
+              new Array(curNFTSkeletonLength)
+                .fill('')
+                .map((_item, index) => (
+                  <Skeleton.Avatar className="nft-item-skeleton" key={`skeleton_${index}`} shape="square" active />
+                ))}
             {!!nftNum[nftColKey] && Number(nft.totalRecordCount) > nftNum[nftColKey] * maxNftNum && (
               <div
                 className="load-more"
                 onClick={() => {
-                  getMore(nft.symbol, nft.chainId);
+                  getMoreNFTItem(nft.symbol, nft.chainId);
                 }}>
                 <CustomSvg type="Down" /> More
               </div>
@@ -141,19 +198,28 @@ export default function NFT() {
         </Collapse.Panel>
       );
     },
-    [getMore, isMainnet, maxNftNum, nav, nftNum],
+    [nftNum, calSkeletonLength, maxNftNum, isMainnet, openOp, nav, getMoreNFTItem],
   );
 
   return (
     <div className="tab-nft">
       {accountNFTList.length === 0 ? (
-        <p className="empty-text">No NFTs yet</p>
+        <div className="empty-nft-list flex-column-center">
+          <CustomSvg type="NoNFTs" />
+          No NFTs yet
+        </div>
       ) : (
-        <List className="nft-list">
-          <List.Item>
-            <Collapse onChange={handleChange}>{accountNFTList.map((item) => renderItem(item))}</Collapse>
-          </List.Item>
-        </List>
+        <div className={clsx('nft-list', !hasMoreNFTCollection && 'hidden-loading-more')}>
+          <Collapse
+            collapsible={isFetching ? 'disabled' : undefined}
+            onChange={handleChange}
+            expandIcon={(panelProps) => (
+              <CustomSvg className={panelProps.isActive ? 'is-active' : ''} type="NewRightArrow" />
+            )}>
+            {accountNFTList.map((item) => renderItem(item))}
+          </Collapse>
+          <LoadingMore hasMore={hasMoreNFTCollection} loadMore={getMoreNFTCollection} className="load-more" />
+        </div>
       )}
     </div>
   );

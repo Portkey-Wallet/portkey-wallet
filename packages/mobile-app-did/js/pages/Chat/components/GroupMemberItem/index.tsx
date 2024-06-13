@@ -43,7 +43,11 @@ export default memo(
       if (disabled || selected) iconName = 'selected';
 
       return iconName ? (
-        <Svg iconStyle={styles.itemIcon} color={disabled ? defaultColors.bg16 : undefined} icon={iconName} />
+        <Svg
+          iconStyle={styles.itemIcon}
+          color={disabled ? defaultColors.bg16 : selected ? defaultColors.primaryColor : undefined}
+          icon={iconName}
+        />
       ) : null;
     }, [disabled, multiple, selected]);
 
@@ -64,7 +68,7 @@ export default memo(
       </Touchable>
     );
   },
-  (preProps, nextProps) => preProps.selected === nextProps.selected,
+  (preProps, nextProps) => preProps.selected === nextProps.selected && preProps.disabled === nextProps.disabled,
 );
 
 const styles = StyleSheet.create({

@@ -60,6 +60,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { NavigateMultiLevelParams } from 'types/navigate';
 import { isCrossChain } from '@portkey-wallet/utils/aelf';
 import { useGetTransferFee } from 'hooks/transfer';
+import { useReportUnsetLoginGuardian } from 'hooks/authentication';
 
 export type RouterParams = {
   loginAccount?: string;
@@ -113,6 +114,7 @@ export default function GuardianApproval() {
   } = useRouterParams<RouterParams & MultiLevelParams>();
   const dispatch = useAppDispatch();
   const checkRouteExistInRouteStack = useCheckRouteExistInRouteStack();
+  const reportUnsetLoginAccount = useReportUnsetLoginGuardian();
 
   const onEmitDapp = useThrottleCallback(
     (guardiansApproved?: GuardiansApproved) => {
@@ -190,6 +192,8 @@ export default function GuardianApproval() {
 
   const guardianCount = useMemo(() => getApprovalCount(userGuardiansList?.length || 0), [userGuardiansList?.length]);
   const isSuccess = useMemo(() => guardianCount <= approvedList.length, [guardianCount, approvedList.length]);
+  const hasAutoConfirmed = useRef<boolean>(false);
+
   const onSetGuardianStatus = useCallback(
     (data: { key: string; status: GuardiansStatusItem }) => {
       setGuardianStatus(data.key, data.status);
@@ -210,10 +214,14 @@ export default function GuardianApproval() {
     };
   });
   const isFocused = useIsFocused();
+  const latestIsFocused = useLatestRef(isFocused);
   useEffect(() => {
-    if (isSuccess && isFocused && !isExpired) onFinish();
+    if (isSuccess && !hasAutoConfirmed.current && latestIsFocused.current && !isExpired) {
+      hasAutoConfirmed.current = true;
+      onFinish();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSuccess, isFocused, isExpired]);
+  }, [isSuccess, isExpired, latestIsFocused.current]);
   const onBack = useCallback(() => {
     lastOnEmitDapp.current();
     switch (approvalType) {
@@ -252,24 +260,6 @@ export default function GuardianApproval() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guardiansStatus, userGuardiansList]);
   const registerAccount = useCallback(() => {
-    console.log(
-      {
-        managerInfo: {
-          verificationType: VerificationType.communityRecovery,
-          loginAccount,
-          type: loginType,
-        } as ManagerInfo,
-        guardiansApproved: handleGuardiansApproved(
-          guardiansStatus as GuardiansStatus,
-          userGuardiansList as UserGuardianItem[],
-        ) as GuardiansApproved,
-        verifierInfo,
-      },
-      guardiansStatus,
-      userGuardiansList,
-      '=====registerAccount',
-    );
-
     onRequestOrSetPin({
       managerInfo: {
         verificationType: VerificationType.communityRecovery,
@@ -597,6 +587,14 @@ export default function GuardianApproval() {
         guardiansStatus,
       );
       if (req && !req.error) {
+        const { identifierHash } = guardianItem;
+        try {
+          await reportUnsetLoginAccount({
+            caHash,
+            unsetGuardianIdentifierHash: identifierHash,
+            chainId: originChainId,
+          });
+        } catch (ignored) {}
         myEvents.refreshGuardiansList.emit();
         myEvents.setLoginAccount.emit({
           guardian: {
@@ -623,6 +621,8 @@ export default function GuardianApproval() {
     guardianItem,
     guardiansStatus,
     managerAddress,
+    originChainId,
+    reportUnsetLoginAccount,
     setLoginAccountNavigate,
     t,
     userGuardiansList,

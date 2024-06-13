@@ -3,7 +3,7 @@ import InputLogin from '../InputLogin';
 import SocialLogin from '../SocialLogin';
 import { LoginInfo } from 'store/reducers/loginCache/type';
 import { SocialLoginFinishHandler, ValidateHandler } from 'types/wallet';
-import { LoginKey } from '@portkey-wallet/types/types-ca/wallet';
+import { ISocialLogin, LoginKey } from '@portkey-wallet/types/types-ca/wallet';
 import { useNavigateState } from 'hooks/router';
 
 enum STEP {
@@ -14,9 +14,11 @@ export default function SignCard({
   onFinish,
   validateEmail,
   validatePhone,
+  onSocialStart,
   onSocialSignFinish,
 }: {
   onFinish: (data: LoginInfo) => void;
+  onSocialStart: (type: ISocialLogin) => void;
   validateEmail?: ValidateHandler;
   validatePhone?: ValidateHandler;
   onSocialSignFinish: SocialLoginFinishHandler;
@@ -42,6 +44,7 @@ export default function SignCard({
         <SocialLogin
           type="Sign up"
           onFinish={onSocialSignFinish}
+          onSocialStart={onSocialStart}
           switchLogin={(type) => {
             setStep(STEP.inputLogin);
             setDefaultKey(type);

@@ -7,91 +7,86 @@
   display: flex;
   flex-direction: column;
 
-  .token-detail-title {
-    padding: 13px 0;
-  }
-  .setting-header-wrapper {
-    height: 64px;
-    padding: 0 16px;
-    align-items: center;
-    border: none;
-    background-color: @bg-11;
-
-    .title-left-col {
-      margin-right: 8px;
-    }
-
-    .title-center {
-      font-size: 16px;
-      line-height: 22px;
-      font-weight: 500;
-      .title {
-        .symbol {
-          line-height: 22px;
-          font-size: 16px;
-          font-weight: 500;
-          color: @font-11;
-        }
-        .network {
-          line-height: 16px;
-          font-size: 12px;
-          color: @font-13;
-        }
-      }
-    }
-  }
-
   .token-detail-content {
-    background-color: @bg-11;
-    box-shadow: @shadow-1 0 7px 5px -5px;
-    z-index: 1;
-    .balance-amount {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 32px 0 28px;
 
-      .amount {
-        font-size: 32px;
-        color: @font-11;
-        font-weight: 500;
-        margin: 0 0 4px;
-        height: 38px;
-        line-height: 38px;
+    .token-detail-balance {
+      gap: 24px;
+      padding: 24px 16px;
+      background-color: @neutral-default-bg;
+      border-bottom: 1px solid @neutral-divider;
+      .balance-amount {
+        gap: 4px;
+        &.is-prompt {
+          align-items: center;
+        }
+        .amount-number {
+          font-size: 32px;
+          line-height: 40px;
+          font-weight: 500;
+          color: @neutral-primary-text;
+          .@{app-prefix}-skeleton-avatar {
+            width: 148px;
+            height: 40px;
+          }
+          &.amount-number-long {
+            font-size: 28px;
+            line-height: 36px;
+          }
+        }
+        .amount-convert {
+          height: 20px;
+          font-size: 14px;
+          line-height: 20px;
+          color: @neutral-tertiary-text;
+          .@{app-prefix}-skeleton-avatar {
+            width: 80px;
+            height: 20px;
+          }
+          &.hidden-amount-convert {
+            visibility: hidden;
+          }
+        }
       }
+    }
 
-      .convert {
+    &.token-detail-content-popup {
+      overflow: scroll;
+      .token-detail-balance {
+        position: sticky;
+        top: -100px;
+        z-index: 5;
+      }
+    }
+
+    .banner-wrap {
+      border-bottom: 1px solid @neutral-divider;
+    }
+
+    .token-detail-activity {
+      flex: 1;
+      margin-top: 8px;
+      background-color: @neutral-default-bg;
+      .token-detail-activity-title {
+        padding: 10px 16px;
         font-size: 16px;
-        color: @font-13;
-        height: 22px;
-        line-height: 22px;
+        line-height: 24px;
+        font-weight: 500;
+        color: @neutral-primary-text;
       }
     }
-  }
-
-  .token-detail-history {
-    flex: 1;
-    .adm-list-body {
-      border-top: 0;
-    }
-  }
-  .empty {
-    display: flex;
-    justify-content: center;
-    margin-top: 60px;
   }
 }
 
 .portkey-prompt {
+  .token-detail-title {
+    border-bottom: 1px solid @neutral-divider;
+  }
   @media screen and (min-width: 768px) {
     .token-detail {
-      .setting-header-wrapper {
-        padding: 0 24px;
-      }
       .token-detail-history {
         .activity-wrapper {
           .activity-list {
-            background: @bg-11;
+            background: @neutral-default-bg;
             margin-bottom: 24px;
           }
         }

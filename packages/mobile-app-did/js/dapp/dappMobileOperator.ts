@@ -34,10 +34,12 @@ import { getGuardiansApprovedByApprove } from 'utils/guardian';
 import { ChainId } from '@portkey-wallet/types';
 import { checkSecuritySafe } from 'utils/security';
 import AElf from 'aelf-sdk';
+import { getApproveSymbol } from '@portkey-wallet/utils/token';
 
 const SEND_METHOD: { [key: string]: true } = {
   [MethodsBase.SEND_TRANSACTION]: true,
   [MethodsBase.REQUEST_ACCOUNTS]: true,
+  [MethodsBase.SET_WALLET_CONFIG_OPTIONS]: true,
   [MethodsWallet.GET_WALLET_SIGNATURE]: true,
   [MethodsWallet.GET_WALLET_TRANSACTION_SIGNATURE]: true,
 };
@@ -76,6 +78,7 @@ export default class DappMobileOperator extends Operator {
   protected dappOverlay: IDappOverlay;
   public isLockDapp?: boolean;
   public isDiscover?: boolean;
+  public config: { [key: string]: boolean };
   constructor({ stream, origin, dappManager, dappOverlay, isDiscover }: DappMobileOperatorOptions) {
     super(stream);
     this.dapp = { origin };
@@ -84,6 +87,7 @@ export default class DappMobileOperator extends Operator {
     this.dappManager = dappManager;
     this.dappOverlay = dappOverlay;
     this.isDiscover = isDiscover;
+    this.config = {};
   }
   private onCreate = () => {
     DappEventBus.registerOperator(this);
@@ -150,8 +154,13 @@ export default class DappMobileOperator extends Operator {
     if (ACTIVE_VIEW_METHOD[method]) {
       return this.handleActiveViewRequest(request);
     }
+
     switch (method) {
       case MethodsBase.ACCOUNTS: {
+        if (DAPP_WHITELIST.includes(this.dapp.origin)) {
+          await this.autoApprove();
+        }
+
         return generateNormalResponse({
           eventName,
           data: await this.dappManager.accounts(this.dapp.origin),
@@ -183,6 +192,10 @@ export default class DappMobileOperator extends Operator {
         });
       }
       case MethodsWallet.GET_WALLET_STATE: {
+        if (DAPP_WHITELIST.includes(this.dapp.origin)) {
+          await this.autoApprove();
+        }
+
         const [isActive, isLocked] = await Promise.all([this.isActive(), this.dappManager.isLocked()]);
         const data: WalletState = { isConnected: isActive, isUnlocked: !isLocked };
         if (isActive) {
@@ -360,6 +373,7 @@ export default class DappMobileOperator extends Operator {
   protected handleApprove = async (request: IRequestParams) => {
     const { payload, eventName } = request || {};
     const { params } = payload || {};
+
     const { symbol, amount, spender } = params?.paramsOption || {};
     // check approve input && check valid amount
     if (!(symbol && amount && spender) || ZERO.plus(amount).isNaN() || ZERO.plus(amount).lte(0))
@@ -376,7 +390,6 @@ export default class DappMobileOperator extends Operator {
 
     if (tokenInfo?.error || isNaN(tokenInfo?.data.decimals))
       return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS, msg: `${symbol} error` });
-
     const info = await this.dappOverlay.approve(this.dapp, {
       approveInfo: {
         ...params?.paramsOption,
@@ -385,9 +398,14 @@ export default class DappMobileOperator extends Operator {
       },
       isDiscover: this.isDiscover,
       eventName,
+      batchApproveNFT: this.config?.batchApproveNFT,
     });
+
     if (!info) return this.userDenied(eventName);
     const { guardiansApproved, approveInfo } = info;
+
+    const finallyApproveSymbol = this.config?.batchApproveNFT ? getApproveSymbol(approveInfo.symbol) : symbol;
+
     const caHash = getCurrentCaHash();
     return this.handleSendTransaction(eventName, {
       ...payload,
@@ -397,7 +415,7 @@ export default class DappMobileOperator extends Operator {
         paramsOption: {
           caHash,
           spender: approveInfo.spender,
-          symbol: approveInfo.symbol,
+          symbol: finallyApproveSymbol,
           amount: approveInfo.amount,
           guardiansApproved: getGuardiansApprovedByApprove(guardiansApproved),
         },
@@ -427,6 +445,16 @@ export default class DappMobileOperator extends Operator {
 
     let callBack: SendRequest, payload: any;
     switch (method) {
+      case MethodsBase.SET_WALLET_CONFIG_OPTIONS: {
+        payload = request.payload;
+        this.config = payload;
+        console.log(this.config, '=====this.config');
+        return generateNormalResponse({
+          eventName,
+          data: true,
+          code: ResponseCode.SUCCESS,
+        });
+      }
       case MethodsBase.REQUEST_ACCOUNTS: {
         if (isActive)
           return generateNormalResponse({

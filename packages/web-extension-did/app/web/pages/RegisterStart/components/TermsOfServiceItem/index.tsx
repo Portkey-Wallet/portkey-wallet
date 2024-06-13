@@ -3,7 +3,7 @@ import './index.less';
 
 export default function TermsOfServiceItem() {
   return (
-    <div className="terms-of-service-item">
+    <div className="terms-of-service">
       <span>By proceeding, you agree to the</span>&nbsp;
       <a href={`${OfficialWebsite}/terms-of-service`} target="_blank" rel="noreferrer" className="terms-text-link">
         Terms of Service

@@ -1,4 +1,3 @@
-/* eslint-disable no-inline-styles/no-inline-styles */
 import { useCallback, useMemo } from 'react';
 import CustomSvg from 'components/CustomSvg';
 import { useTranslation } from 'react-i18next';
@@ -7,81 +6,82 @@ import { useCommonState } from 'store/Provider/hooks';
 import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/wallet';
 import './index.less';
 
-export interface BalanceCardProps {
-  accountInfo?: any;
-  amount?: string | number;
+export interface MainCardsProps {
+  className?: string;
   isShowFaucet?: boolean;
-  isShowBuyEntry?: boolean;
-  isShowDeposit?: boolean;
-  isShowDepositUSDT?: boolean;
-  isShowWithdrawUSDT?: boolean;
-  onBuy?: () => void;
   onSend?: () => void;
   onReceive?: () => void;
+  onBuy?: () => void;
+  onClickSwap?: () => void;
   onClickDeposit?: () => void;
-  onClickDepositUSDT?: () => void;
-  onClickWithdrawUSDT?: () => void;
 }
 
-export default function BalanceCard({
+export default function MainCards({
+  className,
+  isShowFaucet,
   onSend,
   onReceive,
-  onClickDeposit,
-  isShowBuyEntry,
-  isShowFaucet,
-  isShowDeposit,
-  isShowDepositUSDT,
-  isShowWithdrawUSDT,
   onBuy,
-  onClickDepositUSDT,
-  onClickWithdrawUSDT,
-}: BalanceCardProps) {
+  onClickSwap,
+  onClickDeposit,
+}: MainCardsProps) {
   const { t } = useTranslation();
   const { isNotLessThan768 } = useCommonState();
 
-  const renderBuyEntry = useMemo(
+  const renderSend = useMemo(
     () =>
-      !!isShowBuyEntry && (
-        <span className="send btn" onClick={onBuy}>
-          <CustomSvg type="BuyEntry" style={{ width: 36, height: 36 }} />
+      !!onSend && (
+        <div className="card-item send-card flex-column-center" onClick={onSend}>
+          <CustomSvg type="DirectionArrow" className="flex-center" />
+          <span className="btn-name">{t('Send')}</span>
+        </div>
+      ),
+    [onSend, t],
+  );
+
+  const renderReceive = useMemo(
+    () =>
+      !!onReceive && (
+        <div className="card-item receive-card flex-column-center" onClick={onReceive}>
+          <CustomSvg type="DirectionArrow" className="flex-center" />
+          <span className="btn-name">{t('Receive')}</span>
+        </div>
+      ),
+    [onReceive, t],
+  );
+
+  const renderBuy = useMemo(
+    () =>
+      !!onBuy && (
+        <div className="buy-card card-item flex-column-center" onClick={onBuy}>
+          <CustomSvg type="Addition" className="flex-center" />
           <span className="btn-name">{t('Buy')}</span>
-        </span>
+        </div>
       ),
-    [isShowBuyEntry, onBuy, t],
-  );
-
-  const renderDepositUSDT = useMemo(
-    () =>
-      !!isShowDepositUSDT && (
-        <span className="send btn" onClick={onClickDepositUSDT}>
-          <CustomSvg type="Deposit" style={{ width: 36, height: 36 }} />
-          <span className="btn-name">{t('Deposit')}</span>
-        </span>
-      ),
-    [isShowDepositUSDT, onClickDepositUSDT, t],
-  );
-
-  const renderWithdrawUSDT = useMemo(
-    () =>
-      !!isShowWithdrawUSDT && (
-        <span className="send btn" onClick={onClickWithdrawUSDT}>
-          <CustomSvg type="Withdraw" style={{ width: 36, height: 36 }} />
-          <span className="btn-name">{t('Withdraw')}</span>
-        </span>
-      ),
-    [isShowWithdrawUSDT, onClickWithdrawUSDT, t],
+    [onBuy, t],
   );
 
   const renderDeposit = useMemo(() => {
     return (
-      !!isShowDeposit && (
-        <span className="deposit btn" onClick={onClickDeposit}>
-          <CustomSvg type="Deposit" style={{ width: 36, height: 36 }} />
+      !!onClickDeposit && (
+        <div className="deposit-card card-item flex-column-center" onClick={onClickDeposit}>
+          <CustomSvg type="Deposit" className="flex-center" />
           <span className="btn-name">{t('Deposit')}</span>
-        </span>
+        </div>
       )
     );
-  }, [isShowDeposit, onClickDeposit, t]);
+  }, [onClickDeposit, t]);
+
+  const renderSwap = useMemo(() => {
+    return (
+      !!onClickSwap && (
+        <div className="swap-card card-item flex-column-center" onClick={onClickSwap}>
+          <CustomSvg type="Swap" className="flex-center" />
+          <span className="btn-name">{t('Swap')}</span>
+        </div>
+      )
+    );
+  }, [onClickSwap, t]);
 
   const handleClickFaucet = useCallback(() => {
     const openWinder = window.open(FAUCET_URL, '_blank');
@@ -93,40 +93,39 @@ export default function BalanceCard({
   const renderFaucet = useMemo(
     () =>
       isShowFaucet && (
-        <span className="send btn" onClick={handleClickFaucet}>
-          <CustomSvg type="Faucet" style={{ width: 36, height: 36 }} />
+        <div className="faucet-card card-item flex-column-center" onClick={handleClickFaucet}>
+          <CustomSvg type="Faucet" className="flex-center" />
           <span className="btn-name">{t('Faucet')}</span>
-        </span>
+        </div>
       ),
     [handleClickFaucet, isShowFaucet, t],
   );
 
   const showCardNum = useMemo(
     () =>
-      (renderBuyEntry ? 1 : 0) +
+      (renderSend ? 1 : 0) +
+      (renderReceive ? 1 : 0) +
+      (renderBuy ? 1 : 0) +
+      (renderSwap ? 1 : 0) +
       (renderDeposit ? 1 : 0) +
-      (renderDepositUSDT ? 1 : 0) +
-      (renderWithdrawUSDT ? 1 : 0) +
       (renderFaucet ? 1 : 0),
-    [renderBuyEntry, renderDeposit, renderDepositUSDT, renderFaucet, renderWithdrawUSDT],
+    [renderBuy, renderDeposit, renderFaucet, renderReceive, renderSend, renderSwap],
   );
+
+  const cardNumClassName = useMemo(() => {
+    if (isNotLessThan768) return 'prompt-card';
+    if (showCardNum < 5) return 'popup-card-num-less-than-5';
+    return 'popup-card-num-more-than-or-equal-5';
+  }, [isNotLessThan768, showCardNum]);
+
   return (
-    <div className="balance-card">
-      <div className={clsx(['balance-btn', showCardNum > 1 && !isNotLessThan768 && 'popup-card-num-more-than-3'])}>
-        {renderBuyEntry}
-        {renderDeposit}
-        <span className="send btn" onClick={onSend}>
-          <CustomSvg type="RightTop" style={{ width: 36, height: 36 }} />
-          <span className="btn-name">{t('Send')}</span>
-        </span>
-        <span className="receive btn" onClick={onReceive}>
-          <CustomSvg type="RightDown" style={{ width: 36, height: 36 }} />
-          <span className="btn-name">{t('Receive')}</span>
-        </span>
-        {renderDepositUSDT}
-        {renderWithdrawUSDT}
-        {renderFaucet}
-      </div>
+    <div className={clsx('main-card-list-wrap flex-center', className, cardNumClassName)}>
+      {renderSend}
+      {renderReceive}
+      {renderBuy}
+      {renderSwap}
+      {renderDeposit}
+      {renderFaucet}
     </div>
   );
 }

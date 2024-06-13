@@ -5,7 +5,7 @@ import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import PageContainer from 'components/PageContainer';
 import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
-import { useUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import CommonAvatar from 'components/CommonAvatar';
 import { TextL, TextM, TextXXXL } from 'components/CommonText';
 import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
@@ -15,13 +15,13 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 const ChatQrCodePage: React.FC = () => {
   const isMainnet = useIsMainnet();
-  const { avatar = '', userId = '', nickName = '' } = useUserInfo() || {};
+  const { avatar = '', userId = '', nickName = '' } = useCurrentUserInfo();
 
   const qrCodeData = useMemo(() => `${LinkPortkeyPath.addContact}${userId}`, [userId]);
 
   return (
     <PageContainer
-      safeAreaColor={['blue', 'white']}
+      safeAreaColor={['white', 'white']}
       scrollViewProps={{ disabled: false }}
       hideTouchable={true}
       titleDom="My QR Code"
@@ -32,6 +32,7 @@ const ChatQrCodePage: React.FC = () => {
         title={nickName}
         avatarSize={pTd(80)}
         style={PageStyle.avatar}
+        titleStyle={PageStyle.avatarTitleStyle}
         imageUrl={avatar}
       />
       <TextXXXL numberOfLines={1} style={GStyles.marginTop(pTd(8))}>
@@ -69,6 +70,8 @@ export const PageStyle = StyleSheet.create({
   },
   avatar: {
     marginTop: pTd(24),
+  },
+  avatarTitleStyle: {
     fontSize: pTd(40),
   },
   qrCodeWrap: {

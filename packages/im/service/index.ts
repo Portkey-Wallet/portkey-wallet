@@ -52,8 +52,22 @@ import {
   UnPinParams,
   GetPinListResult,
   UnPinAllParams,
+  SearchChannelMembersParams,
+  SearchChannelMembersResult,
+  TBlockUserParams,
+  TCheckIsBlockedParams,
+  TUnBlockUserParams,
+  TReportMessageParams,
 } from '../types/service';
-import { ChannelInfo, ChannelMemberInfo, Message, MessageCount, RedPackageConfigType } from '../types';
+import {
+  ChannelInfo,
+  ChannelMemberInfo,
+  IChannelContactItem,
+  Message,
+  MessageCount,
+  RedPackageConfigType,
+  TDeleteMessageByGroupOwnerParams,
+} from '../types';
 import { sleep } from '@portkey-wallet/utils';
 import { ContactItemType, IContactProfile } from '@portkey-wallet/types/types-ca/contact';
 import { RequireAtLeastOne } from '@portkey-wallet/types/common';
@@ -144,9 +158,32 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       method: 'POST',
     });
   }
-  getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<ChannelInfo> {
+  getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<
+    Omit<ChannelInfo, 'members' | 'totalCount'> & {
+      memberInfos: {
+        members: ChannelMemberInfo[];
+        totalCount: number;
+      };
+    }
+  > {
     return this._request.send({
-      url: '/api/v1/channelContacts/channelDetailInfo',
+      url: '/api/v2/channelContacts/channelDetailInfo',
+      params,
+      method: 'GET',
+    });
+  }
+  getChannelContacts(
+    params: GetChannelInfoParams,
+  ): IMServiceCommon<{ contacts: IChannelContactItem[]; totalCount: number }> {
+    return this._request.send({
+      url: '/api/v1/channelContacts/contacts',
+      params,
+      method: 'GET',
+    });
+  }
+  searchChannelMembers(params: SearchChannelMembersParams): IMServiceCommon<SearchChannelMembersResult> {
+    return this._request.send({
+      url: '/api/v1/channelContacts/searchMembers',
       params,
       method: 'GET',
     });
@@ -182,6 +219,13 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
   deleteMessage(params: DeleteMessageParams): IMServiceCommon<null> {
     return this._request.send({
       url: '/api/v1/message/hide',
+      params,
+      method: 'POST',
+    });
+  }
+  deleteMessageByGroupOwner(params: TDeleteMessageByGroupOwnerParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/message/hideByLeader',
       params,
       method: 'POST',
     });
@@ -376,6 +420,40 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
   unPinAll(params: UnPinAllParams): IMServiceCommon<null> {
     return this._request.send({
       url: '/api/v1/pin/cancelAll',
+      params,
+      method: 'POST',
+    });
+  }
+  blockUser(params: TBlockUserParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/users/block',
+      params,
+      method: 'POST',
+    });
+  }
+  unBlockUser(params: TUnBlockUserParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/users/unBlock',
+      params,
+      method: 'POST',
+    });
+  }
+  checkIsBlocked(params: TCheckIsBlockedParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/users/isBlock',
+      params,
+      method: 'GET',
+    });
+  }
+  fetchBlockedList(): IMServiceCommon<string[]> {
+    return this._request.send({
+      url: '/api/v1/users/blockList',
+      method: 'GET',
+    });
+  }
+  reportMessage(params: TReportMessageParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/users/report',
       params,
       method: 'POST',
     });

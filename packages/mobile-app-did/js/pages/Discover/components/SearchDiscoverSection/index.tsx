@@ -46,9 +46,11 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
           <View style={itemStyle.right}>
             <View style={itemStyle.infoWrap}>
               <TextWithProtocolIcon title={item?.title} url={item?.url} />
-              <TextS numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font3, itemStyle.gameInfo]}>
-                {item?.description}
-              </TextS>
+              {item?.description && (
+                <TextS numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font3, itemStyle.gameInfo]}>
+                  {item.description}
+                </TextS>
+              )}
             </View>
           </View>
         </Touchable>

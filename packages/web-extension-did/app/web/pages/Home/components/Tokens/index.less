@@ -1,0 +1,65 @@
+@import '../../../../assets/theme/color.less';
+@import '../../../../assets/theme/constants.less';
+
+.tab-token {
+  .token-list {
+    .token-list-item {
+      gap: 10px;
+      cursor: pointer;
+      padding: 12px 16px;
+      &:hover {
+        background-color: @neutral-hover-bg;
+      }
+
+      @media screen and (min-width: 768px) {
+        padding: 24px;
+      }
+
+      .token-icon {
+        flex-shrink: 0;
+      }
+      .token-desc {
+        flex: 1;
+        .info {
+          gap: 4px;
+          span {
+            font-size: 16px;
+            color: @neutral-primary-text;
+            line-height: 24px;
+            word-break: break-all;
+            .text-overflow(1);
+          }
+        }
+        .amount {
+          gap: 4px;
+          span {
+            font-size: 12px;
+            line-height: 16px;
+            color: @neutral-tertiary-text;
+            word-break: break-all;
+            .text-overflow(1);
+          }
+        }
+      }
+    }
+  }
+  .add-token-wrapper {
+    height: 64px;
+    margin-bottom: 24px;
+    .add-token-text {
+      font-size: 14px;
+      line-height: 22px;
+      color: @brand-normal;
+      cursor: pointer;
+    } 
+
+    @media screen and (min-width: 768px) {
+      margin-bottom: 40px;
+    }
+  }
+  &.hidden-loading-more {
+    .adm-infinite-scroll {
+      display: none;
+    }
+  }
+}

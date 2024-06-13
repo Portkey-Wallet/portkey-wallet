@@ -46,7 +46,7 @@ export default function HeaderPinSection(props: HeaderPinSection) {
           {isImg ? 'Photo' : lastPinMessage?.content}
         </TextM>
       </View>
-      <Svg icon="pin-list-icon" size={pTd(20)} />
+      <Svg icon="pin-list-icon" size={pTd(20)} color={defaultColors.primaryColor} />
     </Touchable>
   );
 }
@@ -60,10 +60,7 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg1,
     borderBottomColor: defaultColors.border6,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    shadowColor: defaultColors.shadow1,
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 2,
+    marginTop: -StyleSheet.hairlineWidth,
   },
   leftBlue: {
     width: pTd(3),

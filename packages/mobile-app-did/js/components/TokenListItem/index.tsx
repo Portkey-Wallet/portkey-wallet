@@ -1,5 +1,5 @@
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { defaultColors } from 'assets/theme';
 import { FontStyles } from 'assets/theme/styles';
 import CommonAvatar from 'components/CommonAvatar';
@@ -10,30 +10,28 @@ import { StyleSheet, View } from 'react-native';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
 import Svg from 'components/Svg';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import Touchable from 'components/Touchable';
+import GStyles from 'assets/theme/GStyles';
 interface TokenListItemType {
   currentSymbol?: string;
   currentChainId?: ChainId;
   noBalanceShow?: boolean;
   item: TokenItemShowType;
   onPress?: (item: TokenItemShowType) => void;
+  hideBalance?: boolean;
 }
 
 const TokenListItem: React.FC<TokenListItemType> = props => {
-  const { noBalanceShow = false, onPress, item, currentSymbol, currentChainId } = props;
+  const { noBalanceShow = false, onPress, item, currentSymbol, currentChainId, hideBalance = false } = props;
   const { currentNetwork } = useWallet();
   const defaultToken = useDefaultToken();
 
-  const isTokenHasPrice = useIsTokenHasPrice(item?.symbol);
   const isMainnet = useIsMainnet();
   const symbolImages = useSymbolImages();
-
-  const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
 
   return (
     <Touchable style={itemStyle.wrap} onPress={() => onPress?.(item)}>
@@ -41,17 +39,19 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
         hasBorder
         style={itemStyle.left}
         title={item?.symbol}
-        avatarSize={pTd(48)}
+        avatarSize={pTd(36)}
         // elf token icon is fixed , only use white background color
         svgName={item?.symbol === defaultToken.symbol ? 'testnet' : undefined}
         imageUrl={item?.imageUrl || symbolImages[item?.symbol]}
+        titleStyle={FontStyles.font11}
+        borderStyle={GStyles.hairlineBorder}
       />
       <View style={itemStyle.right}>
         <View style={itemStyle.infoWrap}>
           <TextL numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.tokenName}>
             {item?.symbol}
           </TextL>
-          <TextS numberOfLines={1} style={[FontStyles.font3, itemStyle.chainInfo]}>
+          <TextS numberOfLines={1} style={[FontStyles.font11, itemStyle.chainInfo]}>
             {formatChainInfoToShow(item?.chainId, currentNetwork)}
           </TextS>
         </View>
@@ -59,20 +59,15 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
         {!noBalanceShow && (
           <View style={itemStyle.balanceWrap}>
             <TextL style={itemStyle.token} numberOfLines={1} ellipsizeMode={'tail'}>
-              {formatAmountShow(divDecimals(item?.balance, item.decimals))}
+              {hideBalance ? '****' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
             </TextL>
             <TextS numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.dollar}>
-              {isMainnet &&
-                isTokenHasPrice &&
-                `$ ${formatAmountShow(
-                  divDecimals(item?.balance, item.decimals).multipliedBy(tokenPriceObject[item?.symbol]),
-                  2,
-                )}`}
+              {isMainnet && (hideBalance && item.balanceInUsd ? '****' : formatAmountUSDShow(item.balanceInUsd))}
             </TextS>
           </View>
         )}
         {noBalanceShow && currentSymbol === item?.symbol && currentChainId === item?.chainId && (
-          <Svg icon="selected" size={pTd(24)} />
+          <Svg icon="selected" size={pTd(24)} color={defaultColors.primaryColor} />
         )}
       </View>
     </Touchable>
@@ -83,7 +78,7 @@ export default memo(TokenListItem);
 
 const itemStyle = StyleSheet.create({
   wrap: {
-    height: pTd(72),
+    height: pTd(64),
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -94,15 +89,13 @@ const itemStyle = StyleSheet.create({
   },
   right: {
     height: pTd(72),
-    marginLeft: pTd(16),
+    marginLeft: pTd(10),
     paddingRight: pTd(16),
     flex: 1,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomColor: defaultColors.border6,
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   infoWrap: {
     flex: 1,
@@ -112,11 +105,12 @@ const itemStyle = StyleSheet.create({
     alignItems: 'flex-start',
   },
   tokenName: {
-    lineHeight: pTd(22),
+    lineHeight: pTd(24),
   },
   chainInfo: {
     lineHeight: pTd(16),
     marginTop: pTd(2),
+    height: pTd(20),
     width: pTd(150),
   },
   balanceWrap: {
@@ -128,12 +122,13 @@ const itemStyle = StyleSheet.create({
   },
   token: {
     color: defaultColors.font5,
-    lineHeight: pTd(22),
+    lineHeight: pTd(24),
     overflow: 'hidden',
   },
   dollar: {
     marginTop: pTd(2),
     lineHeight: pTd(16),
-    color: defaultColors.font7,
+    height: pTd(20),
+    color: defaultColors.font11,
   },
 });

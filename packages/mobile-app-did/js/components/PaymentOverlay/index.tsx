@@ -35,6 +35,7 @@ import { InsufficientTransactionFee } from 'hooks/useCalculateRedPacketFee';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import NFTAvatar from 'components/NFTAvatar';
+import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
 
 export type PaymentAssetInfo = {
   symbol: string;
@@ -105,10 +106,8 @@ const PaymentModal = ({
   }, [accountAssetList, assetInfo.symbol, assetMap, chainId]);
 
   const { isBuySectionShow } = useAppRampEntryShow();
-  const isCanBuy = useMemo(
-    () => assetInfo.symbol === defaultToken.symbol && isBuySectionShow,
-    [assetInfo.symbol, defaultToken.symbol, isBuySectionShow],
-  );
+  const { buy } = checkEnabledFunctionalTypes(assetInfo.symbol, chainId === 'AELF');
+  const isCanBuy = useMemo(() => buy && isBuySectionShow, [buy, isBuySectionShow]);
 
   // update AccountTokenList
   useEffectOnce(() => {

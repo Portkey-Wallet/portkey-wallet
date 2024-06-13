@@ -61,7 +61,7 @@ export default function CryptoGifts() {
             <div className="rules-content flex-column">
               {CRYPTO_GIFT_RULES.map((item, index) => (
                 <div key={index}>
-                  <div className="rule-title">{`${index + 1}\\. ${item.title}`}</div>
+                  <div className="rule-title">{`${index + 1}- ${item.title}`}</div>
                   <div>{item.content}</div>
                 </div>
               ))}

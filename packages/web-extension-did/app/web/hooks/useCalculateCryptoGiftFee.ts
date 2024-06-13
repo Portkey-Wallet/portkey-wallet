@@ -1,5 +1,5 @@
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
+import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { useCallback, useEffect, useRef } from 'react';
@@ -8,7 +8,7 @@ import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic
 
 type CalculateCryptoGiftFeeParams = {
   count: string | number;
-  chainInfo: ChainItemType;
+  chainInfo: IChainItemType;
   caAddress: string;
   cryptoGiftFee: number | string;
   token: ICryptoBoxAssetItemType;

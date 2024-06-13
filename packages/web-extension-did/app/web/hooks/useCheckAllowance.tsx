@@ -1,11 +1,11 @@
 import { getAvailableAllowance } from '@portkey-wallet/utils/contract';
 import { sleep } from '@portkey-wallet/utils';
-import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { ZERO } from '@portkey-wallet/im-ui-web';
 import { ChainId } from '@portkey-wallet/types';
 import { useCallback, useEffect, useRef } from 'react';
 import getSeed from 'utils/getSeed';
 import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
+import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 
 type TTokenDetail = {
   chainId: ChainId;
@@ -19,7 +19,7 @@ export interface ICheckAllowanceAndApproveParams {
   tokenInfo: TTokenDetail;
   spender: string;
   bigAmount: number | string;
-  chainInfo: ChainItemType;
+  chainInfo: IChainItemType;
   caAddress: string;
 }
 export const useCheckAllowance = () => {

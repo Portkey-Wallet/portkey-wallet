@@ -21,6 +21,8 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import Divider from 'components/Divider';
+import Loading from 'components/Loading';
+import CommonToast from 'components/CommonToast';
 
 export default function GiftDetail() {
   const { t } = useLanguage();
@@ -28,7 +30,16 @@ export default function GiftDetail() {
   const { info, list, next, init } = useGetCryptoGiftDetail(id);
   const currentNetworkInfo = useCurrentNetworkInfo();
   useEffect(() => {
-    init();
+    (async () => {
+      try {
+        Loading.show();
+        await init();
+      } catch (e) {
+        CommonToast.failError(e);
+      } finally {
+        Loading.hide();
+      }
+    })();
   }, [init]);
   const renderItem = useCallback(
     ({ item }: { item: RedPackageGrabInfoItem }) => {
@@ -92,7 +103,7 @@ export default function GiftDetail() {
   }, [currentNetworkInfo.referralUrl, id]);
   const onSharePress = useCallback(async () => {
     await Share.share({
-      message: 'Crypto Gift',
+      message: shareUrl,
       url: shareUrl,
       title: 'Crypto Gift',
     }).catch(shareError => {

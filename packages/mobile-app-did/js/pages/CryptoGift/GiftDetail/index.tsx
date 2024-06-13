@@ -2,21 +2,17 @@ import PageContainer from 'components/PageContainer';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import { useLanguage } from 'i18n/hooks';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { FlatList } from 'react-native-gesture-handler';
 import { pTd } from 'utils/unit';
-import HistoryCard from '../components/HistoryCard';
-import { ImageBackground, Share, StyleSheet } from 'react-native';
+import { Share, StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import HeaderCard from '../components/HeaderCard';
 import { View } from 'react-native';
-import Packet_Detail_Header_Bg from '../img/Packet_Detail_Header_Bg.png';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import GStyles from 'assets/theme/GStyles';
-import navigationService from 'utils/navigationService';
 import { TextM } from 'components/CommonText';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
-import CommonAvatar from 'components/CommonAvatar';
 import ReceiverItem from '../components/ReceiverItem';
 import { useGetCryptoGiftDetail } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 import { RedPackageGrabInfoItem } from '@portkey-wallet/im';
@@ -24,7 +20,8 @@ import { CryptoGiftOriginalStatus } from '@portkey-wallet/types/types-ca/cryptog
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
-const data: RedPackageGrabInfoItem[] = Array.from({ length: 11 });
+import Divider from 'components/Divider';
+
 export default function GiftDetail() {
   const { t } = useLanguage();
   const { id } = useRouterParams<{ id: string }>();
@@ -35,7 +32,6 @@ export default function GiftDetail() {
   }, [init]);
   const renderItem = useCallback(
     ({ item }: { item: RedPackageGrabInfoItem }) => {
-      console.log('wfs123', item);
       return (
         <ReceiverItem
           item={item}
@@ -48,7 +44,7 @@ export default function GiftDetail() {
     [info?.decimal, info?.luckKingId, info?.symbol],
   );
   const renderDivider = useCallback(() => {
-    return <View style={styles.divider} />;
+    return <Divider style={styles.divider} />;
   }, []);
   const nextList = useCallback(() => {
     next();
@@ -69,14 +65,14 @@ export default function GiftDetail() {
       );
     } else if (info?.status === CryptoGiftOriginalStatus.FullyClaimed) {
       return t(
-        `Expired, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
+        `All claimed, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
           info?.grabbedAmount ? formatTokenAmountShowWithDecimals(info?.grabbedAmount, info?.decimal) : '--'
         }/${info?.totalAmount ? formatTokenAmountShowWithDecimals(info?.totalAmount, info?.decimal) : '--'} ${
           info?.symbol || 'token'
         } claimed.`,
       );
     }
-    return `All claimed, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
+    return `Expired, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
       info?.grabbedAmount ? formatTokenAmountShowWithDecimals(info?.grabbedAmount, info?.decimal) : '--'
     }/${info?.totalAmount ? formatTokenAmountShowWithDecimals(info?.totalAmount, info?.decimal) : '--'} ${
       info?.symbol || 'token'
@@ -114,7 +110,6 @@ export default function GiftDetail() {
       containerStyles={styles.pageStyles}
       safeAreaColor={['white']}>
       <FlatList
-        // ref={flatListRef}
         ListHeaderComponent={() => (
           <>
             <HeaderCard memo={info?.memo} />
@@ -134,18 +129,10 @@ export default function GiftDetail() {
         )}
         onEndReached={nextList}
         contentContainerStyle={{ paddingBottom: pTd(10) }}
-        // style={{ minHeight: pTd(512) }}
         showsVerticalScrollIndicator={false}
-        // nestedScrollEnabled
         data={list}
         renderItem={renderItem}
         keyExtractor={(item: any, index: number) => '' + (item?.id || index)}
-        // ListFooterComponentStyle={styles.listFooterComponentStyle}
-        // ListFooterComponent={() => (
-        //   <TextM style={styles.bottomTips}>
-        //     {t('Unclaimed tokens/NFTs have been automatically returned to the sender.')}
-        //   </TextM>
-        // )}
       />
     </PageContainer>
   );

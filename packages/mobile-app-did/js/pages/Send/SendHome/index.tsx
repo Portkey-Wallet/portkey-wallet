@@ -21,6 +21,10 @@ import NFTInfo from '../NFTInfo';
 import CommonButton from 'components/CommonButton';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentChain, useDefaultToken, useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import {
+  CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL,
+  useCrossTransferByEtransfer,
+} from '@portkey-wallet/hooks/hooks-ca/useWithdrawByETransfer';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import { IToSendHomeParamsType, IToSendPreviewParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 
@@ -48,6 +52,7 @@ import { useGetTransferFee } from 'hooks/transfer';
 import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { useAppETransShow } from 'hooks/cms';
+import { usePin } from 'hooks/store';
 import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
 import { checkIsValidEtransferAddress } from '@portkey-wallet/utils/check';
@@ -72,6 +77,14 @@ const SendHome: React.FC = () => {
   const isFixedToContact = useMemo(() => !!imTransferInfo?.channelId, [imTransferInfo?.channelId]);
 
   const { max: maxFee, crossChain: crossFee } = useGetTxFee(assetInfo?.chainId);
+
+  const pin = usePin();
+  const crossTransferByEtransfer = useCrossTransferByEtransfer(pin);
+
+  const isSupportCross = useMemo(
+    () => CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(assetInfo.symbol),
+    [assetInfo.symbol],
+  );
 
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
 
@@ -452,8 +465,30 @@ const SendHome: React.FC = () => {
 
     // transaction fee check
     let fee;
+    let receiveAmount: string | undefined;
+    let receiveAmountUsd: string | undefined;
+    let isEtransferCrossInLimit = false;
     try {
-      fee = await getTransactionFee(isCross);
+      if (isCross && isSupportCross) {
+        const { withdrawInfo } = await crossTransferByEtransfer.withdrawPreview({
+          symbol: assetInfo.symbol,
+          address: selectedToContact.address,
+          chainId: assetInfo.chainId,
+          amount: sendNumber,
+        });
+        fee = withdrawInfo?.aelfTransactionFee;
+        const maxAmount = Number(withdrawInfo?.maxAmount);
+        const minAmount = Number(withdrawInfo?.minAmount);
+        isEtransferCrossInLimit = Number(sendNumber) >= minAmount && Number(sendNumber) <= maxAmount;
+        if (isEtransferCrossInLimit) {
+          receiveAmount = withdrawInfo?.receiveAmount;
+          receiveAmountUsd = withdrawInfo?.receiveAmountUsd;
+        } else {
+          fee = await getTransactionFee(isCross);
+        }
+      } else {
+        fee = await getTransactionFee(isCross);
+      }
       console.log('fee', fee);
       setTransactionFee(fee || '0');
     } catch (err: any) {
@@ -466,24 +501,26 @@ const SendHome: React.FC = () => {
       Loading.hide();
     }
 
-    return { status: true, fee };
+    return { status: true, fee, receiveAmount, receiveAmountUsd, isEtransferCrossInLimit };
   }, [
     chainInfo,
-    checkManagerSyncState,
-    sendNumber,
-    assetInfo.decimals,
-    assetInfo.chainId,
-    assetInfo.symbol,
     balance,
     selectedToContact.address,
+    assetInfo.chainId,
+    assetInfo.decimals,
+    assetInfo.symbol,
+    sendNumber,
     sendType,
+    checkManagerSyncState,
+    defaultToken.symbol,
+    defaultToken.decimals,
+    crossFee,
     securitySafeCheckAndToast,
     getCAContract,
     checkTransferLimitWithJump,
     previewParamsWithoutFee,
-    defaultToken.symbol,
-    defaultToken.decimals,
-    crossFee,
+    isSupportCross,
+    crossTransferByEtransfer,
     getTransactionFee,
   ]);
 
@@ -494,6 +531,9 @@ const SendHome: React.FC = () => {
     navigationService.navigate('SendPreview', {
       ...previewParamsWithoutFee,
       transactionFee: result?.fee || '0',
+      receiveAmount: result?.receiveAmount,
+      receiveAmountUsd: result?.receiveAmountUsd,
+      isEtransferCrossInLimit: result?.isEtransferCrossInLimit,
     });
   }, [checkCanPreview, previewParamsWithoutFee]);
 
@@ -585,7 +625,7 @@ const SendHome: React.FC = () => {
   return (
     <PageContainer
       safeAreaColor={['white']}
-      titleDom={`${t('Send')}${sendType === 'token' ? ' ' + assetInfo.symbol : ''}`}
+      titleDom={`${t('Send')}${sendType === 'token' ? ' ' + (assetInfo.label || assetInfo.symbol) : ''}`}
       rightDom={
         sendType === 'token' && !isFixedToContact ? (
           <Touchable

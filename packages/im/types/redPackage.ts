@@ -65,8 +65,8 @@ export type RedPackageDetail = {
   assetType: AssetType;
   isSeed?: boolean;
   seedType?: SeedTypeEnum;
-  // only for crypto gift
   status?: CryptoGiftOriginalStatus;
+  // only for crypto gift
   displayStatus?: CryptoGiftStatus;
   label?: string;
 };

@@ -60,6 +60,9 @@ import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from 'pages/components/DisclaimerModal';
 import { getDisclaimerData } from 'utils/disclaimer';
 import { TradeTypeEnum } from 'constants/trade';
+import { useCrossTransferByEtransfer } from 'hooks/useCrossTransferByEtransfer';
+import { CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL } from '@portkey-wallet/utils/withdraw';
+import { TWithdrawInfo } from '@etransfer/services';
 
 export type ToAccount = { address: string; name?: string };
 
@@ -98,18 +101,24 @@ export default function Send() {
   const isValidSuffix = useIsValidSuffix();
   const checkManagerSyncState = useCheckManagerSyncState();
   const [txFee, setTxFee] = useState<string>();
+  const [withdrawInfo, setWithdrawInfo] = useState<TWithdrawInfo>();
+
   const currentChain = useCurrentChain(chainId);
   const { checkDappIsConfirmed } = useDisclaimer();
   const disclaimerData = useRef<IDisclaimerProps>(initDisclaimerData);
   const [disclaimerOpen, setDisclaimerOpen] = useState<boolean>(false);
+
+  const { withdraw, withdrawPreview } = useCrossTransferByEtransfer();
+
   const dappShowFn = useMemo(
     () => checkEnabledFunctionalTypes(state.symbol, state.chainId === MAIN_CHAIN_ID),
     [state.chainId, state.symbol],
   );
   const { isETransWithdrawShow } = useExtensionETransShow();
   const isSideChainSend = useMemo(() => state.chainId !== MAIN_CHAIN_ID, [state.chainId]);
+
   useFetchTxFee();
-  const { crossChain: crossChainFee } = useGetTxFee(chainId);
+
   const tokenInfo: BaseToken = useMemo(
     () => ({
       chainId: chainId,
@@ -261,7 +270,7 @@ export default function Send() {
       if (!tokenInfo) throw 'No Symbol info';
 
       if (isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF')) {
-        await crossChainTransfer({
+        const crossParams = {
           chainInfo,
           chainType: currentNetwork.walletType,
           privateKey,
@@ -272,7 +281,22 @@ export default function Send() {
           toAddress: toAccount.address,
           fee: timesDecimals(txFee, defaultToken.decimals).toFixed(),
           guardiansApproved: oneTimeApprovalList.current,
-        });
+        };
+
+        const isGTMax = withdrawInfo?.maxAmount ? ZERO.plus(amount).lte(withdrawInfo?.maxAmount) : true;
+        const isLTMin = withdrawInfo?.minAmount ? ZERO.plus(amount).gte(withdrawInfo?.minAmount) : true;
+        const amountAllowed = withdrawInfo ? isGTMax && isLTMin : false;
+
+        if (CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(crossParams.tokenInfo.symbol) && amountAllowed) {
+          await withdraw({
+            chainId,
+            toAddress: crossParams.toAddress,
+            amount,
+            tokenInfo,
+          });
+        } else {
+          await crossChainTransfer(crossParams);
+        }
       } else {
         await sameChainTransfer({
           chainInfo,
@@ -303,6 +327,7 @@ export default function Send() {
     }
   }, [
     amount,
+    chainId,
     chainInfo,
     currentNetwork.walletType,
     defaultToken.decimals,
@@ -315,6 +340,8 @@ export default function Send() {
     txFee,
     wallet.address,
     wallet?.caHash,
+    withdraw,
+    withdrawInfo,
   ]);
 
   const checkLimit = useCheckLimit(tokenInfo.chainId);
@@ -333,6 +360,7 @@ export default function Send() {
     };
     InternalMessage.payload(PortkeyMessageTypes.SEND, JSON.stringify(params)).send();
   }, [amount, balance, chainId, isPrompt, stage, toAccount, tokenInfo, type]);
+  const { crossChain: crossChainFee } = useGetTxFee(chainId);
 
   const onCloseGuardianApprove = useCallback(() => {
     setOpenGuardiansApprove(false);
@@ -364,7 +392,9 @@ export default function Send() {
       setLoading(true);
       if (!ZERO.plus(amount).toNumber()) return 'Please input amount';
       if (!currentChain) return 'currentChain is not exist';
-
+      const tokenSymbol = tokenInfo.symbol;
+      console.log(tokenInfo, 'tokenInfo===handleCheckPreview');
+      const caAddress = wallet?.[chainId]?.caAddress || '';
       // CHECK 1: manager sync
       const _isManagerSynced = await checkManagerSyncState(chainId);
       if (!_isManagerSynced) {
@@ -381,7 +411,7 @@ export default function Send() {
         address: tokenInfo.address,
         chainType: currentNetwork.walletType,
         paramsOption: {
-          owner: wallet?.[chainId]?.caAddress || '',
+          owner: caAddress,
           symbol: tokenInfo.symbol,
         },
       });
@@ -427,10 +457,36 @@ export default function Send() {
         onOneTimeApproval: handleOneTimeApproval,
       });
       if (!limitRes) return ExceedLimit;
-
       // CHECK 5: tx fee
+      if (
+        isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF') &&
+        CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(tokenSymbol)
+      ) {
+        try {
+          const { withdrawInfo } = await withdrawPreview({
+            chainId,
+            address: toAccount.address,
+            symbol: tokenSymbol,
+            amount,
+          });
+          const isGTMax = withdrawInfo?.maxAmount ? ZERO.plus(amount).lte(withdrawInfo.maxAmount) : true;
+          const isLTMin = withdrawInfo?.minAmount ? ZERO.plus(amount).gte(withdrawInfo.minAmount) : true;
+
+          const amountAllowed = withdrawInfo ? isGTMax && isLTMin : false;
+
+          if (amountAllowed) {
+            setTxFee(withdrawInfo.aelfTransactionFee);
+            setWithdrawInfo(withdrawInfo);
+            return '';
+          }
+        } catch (error) {
+          console.error(handleErrorMessage(error));
+        }
+      }
       const fee = await getTranslationInfo();
       console.log('---getTranslationInfo', fee);
+      setWithdrawInfo(undefined);
+
       if (fee) {
         setTxFee(fee);
       } else {
@@ -448,28 +504,23 @@ export default function Send() {
     setLoading,
     amount,
     currentChain,
-    tokenInfo.address,
-    tokenInfo.symbol,
-    tokenInfo.chainId,
-    tokenInfo.decimals,
-    tokenInfo.imageUrl,
-    tokenInfo.alias,
-    tokenInfo.tokenId,
-    currentNetwork.walletType,
+    tokenInfo,
     wallet,
     chainId,
     checkManagerSyncState,
     checkSecurity,
+    currentNetwork.walletType,
     type,
     checkLimit,
     stage,
     toAccount,
     handleOneTimeApproval,
-    getTranslationInfo,
     chainInfo?.chainId,
+    getTranslationInfo,
     symbol,
     defaultToken.symbol,
     crossChainFee,
+    withdrawPreview,
   ]);
 
   const sendHandler = useCallback(async (): Promise<string | void> => {
@@ -643,6 +694,8 @@ export default function Send() {
             imageUrl={tokenInfo.imageUrl || ''}
             chainId={chainId}
             transactionFee={txFee || ''}
+            receiveAmount={withdrawInfo?.receiveAmount}
+            receiveAmountUsd={withdrawInfo?.receiveAmountUsd}
             isCross={isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF')}
             tokenId={tokenInfo.tokenId || ''}
             isSeed={state.isSeed}
@@ -664,6 +717,8 @@ export default function Send() {
       getTranslationInfo,
       chainInfo?.chainId,
       txFee,
+      withdrawInfo?.receiveAmount,
+      withdrawInfo?.receiveAmountUsd,
       state.isSeed,
       state.seedType,
       state.label,

@@ -166,7 +166,7 @@ export default function AddToken() {
         <div className="token-item-content">
           <TokenImageDisplay className="custom-logo" width={28} symbol={item.symbol} src={item.imageUrl} />
           <p className="token-info">
-            <span className="token-item-symbol">{item.symbol}</span>
+            <span className="token-item-symbol">{item.label ?? item.symbol}</span>
             <span className="token-item-net">{transNetworkText(item.chainId, !isMainnet)}</span>
           </p>
         </div>

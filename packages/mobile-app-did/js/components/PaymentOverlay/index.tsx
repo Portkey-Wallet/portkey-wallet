@@ -347,6 +347,7 @@ const PaymentModal = ({
             textColor={defaultColors.font5}
             amountShow={amount}
             symbol={assetInfo.assetType === AssetType.nft ? '' : assetInfo.symbol}
+            label={assetInfo.label}
           />
           {!!tokenPriceObject[currentAssetInfo?.symbol || ''] && assetInfo.assetType === AssetType.ft && (
             <TextM style={GStyles.marginTop(pTd(2))}>

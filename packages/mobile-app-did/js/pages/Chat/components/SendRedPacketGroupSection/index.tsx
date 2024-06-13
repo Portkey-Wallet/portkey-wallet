@@ -245,8 +245,8 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
     () =>
       selectToken.assetType === AssetType.nft
         ? `${selectToken.alias} #${selectToken.tokenId}` || selectToken.symbol
-        : selectToken.symbol,
-    [selectToken.alias, selectToken.assetType, selectToken.symbol, selectToken.tokenId],
+        : selectToken.label || selectToken.symbol,
+    [selectToken.alias, selectToken.assetType, selectToken.label, selectToken.symbol, selectToken.tokenId],
   );
 
   return (
@@ -360,6 +360,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
           componentType="sendPacketPage"
           amountShow={amountShowStr}
           symbol={selectToken.symbol}
+          label={selectToken.label}
           textColor={defaultColors.font5}
           wrapStyle={GStyles.marginTop(pTd(8))}
         />

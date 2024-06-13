@@ -178,6 +178,10 @@ export const BackEndNetWorkMap: {
     portkeyFinanceUrl: 'https://portkey.finance/',
     portkeyOpenLoginUrl: 'https://openlogin.portkey.finance/',
     eBridgeUrl: 'https://test.ebridge.exchange',
+    eTransferCA: {
+      AELF: '4xWFvoLvi5anZERDuJvzfMoZsb6WZLATEzqzCVe8sQnCp2XGS',
+      tDVW: '2AgU8BfyKyrxUrmskVCUukw63Wk96MVfVoJzDDbwKszafioCN1',
+    },
     eTransferUrl: 'https://test.etransfer.exchange',
     awakenUrl: 'https://test.awaken.finance',
     schrodingerUrl: 'https://schrodingerai.com',
@@ -200,6 +204,10 @@ export const BackEndNetWorkMap: {
     portkeyOpenLoginUrl: 'https://openlogin.portkey.finance/',
     eBridgeUrl: 'https://test.ebridge.exchange',
     eTransferUrl: 'https://test.etransfer.exchange',
+    eTransferCA: {
+      AELF: '4xWFvoLvi5anZERDuJvzfMoZsb6WZLATEzqzCVe8sQnCp2XGS',
+      tDVW: '2AgU8BfyKyrxUrmskVCUukw63Wk96MVfVoJzDDbwKszafioCN1',
+    },
     awakenUrl: 'https://test.awaken.finance',
     schrodingerUrl: 'https://schrodingerai.com',
   },
@@ -225,6 +233,10 @@ export const BackEndNetWorkMap: {
     imWsUrl: 'wss://diok8uqxgvc3.cloudfront.net/ws/',
     imS3Bucket: 'portkey-im',
     eBridgeUrl: 'https://ebridge.exchange',
+    eTransferCA: {
+      AELF: '2w13DqbuuiadvaSY2ZyKi2UoXg354zfHLM3kwRKKy85cViw4ZF',
+      tDVV: 'x4CTSuM8typUbpdfxRZDTqYVa42RdxrwwPkXX7WUJHeRmzE6k',
+    },
     eTransferUrl: 'https://etransfer.exchange',
     awakenUrl: 'https://awaken.finance',
     schrodingerUrl: 'https://schrodingernft.ai/',
@@ -253,6 +265,10 @@ export const BackEndNetWorkMap: {
     imS3Bucket: 'portkey-im',
     eBridgeUrl: 'https://ebridge.exchange',
     eTransferUrl: 'https://etransfer.exchange',
+    eTransferCA: {
+      AELF: '2w13DqbuuiadvaSY2ZyKi2UoXg354zfHLM3kwRKKy85cViw4ZF',
+      tDVV: 'x4CTSuM8typUbpdfxRZDTqYVa42RdxrwwPkXX7WUJHeRmzE6k',
+    },
     awakenUrl: 'https://awaken.finance',
     schrodingerUrl: 'https://schrodingernft.ai',
   },

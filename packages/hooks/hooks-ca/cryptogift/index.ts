@@ -14,7 +14,6 @@ import { useCurrentWalletInfo, useCurrentUserInfo } from '../wallet';
 import { ChainId } from '@portkey-wallet/types';
 import { useCurrentNetworkInfo } from '../network';
 import { setRedPackageConfig } from '@portkey-wallet/store/store-ca/cryptoGift/actions';
-import { DeviceEventEmitter } from 'react-native';
 export const useCryptoGiftConfigMapState = () => useAppCASelector(state => state.cryptoGift.redPackageConfigMap);
 export const CryptoGiftCreateSuccess = 'CryptoGiftCreateSuccess';
 export const useGetFirstCryptoGift = () => {
@@ -38,18 +37,11 @@ export const useGetFirstCryptoGift = () => {
   useEffectOnce(() => {
     getFirstCryptoGift();
   });
-  useEffect(() => {
-    const eventListener = DeviceEventEmitter.addListener(CryptoGiftCreateSuccess, () => {
-      getFirstCryptoGift();
-    });
-    return () => {
-      eventListener.remove();
-    };
-  }, [getFirstCryptoGift]);
   return {
     firstCryptoGift,
     loading,
     error,
+    getFirstCryptoGift,
   };
 };
 

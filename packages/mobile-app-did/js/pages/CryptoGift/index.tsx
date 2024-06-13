@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import PageContainer from 'components/PageContainer';
-import { StyleSheet, Text, View } from 'react-native';
+import { DeviceEventEmitter, StyleSheet, Text, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
 import { TextL, TextM, TextS, TextXXXL } from 'components/CommonText';
@@ -10,13 +10,21 @@ import GStyles from 'assets/theme/GStyles';
 import Svg from 'components/Svg';
 import CommonButton from 'components/CommonButton';
 import HistoryCard from './components/HistoryCard';
-import { useGetFirstCryptoGift } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
+import { CryptoGiftCreateSuccess, useGetFirstCryptoGift } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 import navigationService from 'utils/navigationService';
 import fonts from 'assets/theme/fonts';
 
 export default function CryptoGift() {
   const { t } = useLanguage();
-  const { firstCryptoGift, loading } = useGetFirstCryptoGift();
+  const { firstCryptoGift, loading, getFirstCryptoGift } = useGetFirstCryptoGift();
+  useEffect(() => {
+    const eventListener = DeviceEventEmitter.addListener(CryptoGiftCreateSuccess, () => {
+      getFirstCryptoGift();
+    });
+    return () => {
+      eventListener.remove();
+    };
+  }, [getFirstCryptoGift]);
   const onGiftCreatePress = useCallback(() => {
     navigationService.navigate('SendPacketGroupPage', {
       isCryptoGift: true,

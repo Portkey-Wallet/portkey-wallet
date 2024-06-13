@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   historyCard: {
     flexDirection: 'column',
     height: pTd(98),
-    borderWidth: pTd(0.5),
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: defaultColors.neutralBorder,
     borderRadius: pTd(6),
     padding: pTd(12),

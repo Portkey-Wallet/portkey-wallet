@@ -65,14 +65,14 @@ export default function GiftDetail() {
       );
     } else if (info?.status === CryptoGiftOriginalStatus.FullyClaimed) {
       return t(
-        `Expired, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
+        `All claimed, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
           info?.grabbedAmount ? formatTokenAmountShowWithDecimals(info?.grabbedAmount, info?.decimal) : '--'
         }/${info?.totalAmount ? formatTokenAmountShowWithDecimals(info?.totalAmount, info?.decimal) : '--'} ${
           info?.symbol || 'token'
         } claimed.`,
       );
     }
-    return `All claimed, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
+    return `Expired, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
       info?.grabbedAmount ? formatTokenAmountShowWithDecimals(info?.grabbedAmount, info?.decimal) : '--'
     }/${info?.totalAmount ? formatTokenAmountShowWithDecimals(info?.totalAmount, info?.decimal) : '--'} ${
       info?.symbol || 'token'

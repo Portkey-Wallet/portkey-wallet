@@ -122,8 +122,8 @@ export default function HistoryCard(props: IHistoryCardProps) {
                 <TextS style={styles.claimText}>Claimed:</TextS>
                 <TextS style={styles.claimValue}>
                   {getClaimedShow(
-                    formatTokenAmountShowWithDecimals(redPacketDetail?.grabbedAmount, redPacketDetail?.decimal),
-                    formatTokenAmountShowWithDecimals(redPacketDetail?.totalAmount, redPacketDetail?.decimal),
+                    formatTokenAmountShowWithDecimals(redPacketDetail?.grabbedAmount, redPacketDetail?.decimals),
+                    formatTokenAmountShowWithDecimals(redPacketDetail?.totalAmount, redPacketDetail?.decimals),
                     redPacketDetail?.symbol || 'ELF',
                   )}
                 </TextS>

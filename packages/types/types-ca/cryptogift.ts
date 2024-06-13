@@ -18,7 +18,7 @@ export type CryptoGiftItem = {
   id: string;
   totalAmount: number;
   grabbedAmount: number;
-  decimal: number;
+  decimals: number;
   memo: string;
   displayStatus: CryptoGiftStatus;
   status: CryptoGiftOriginalStatus;

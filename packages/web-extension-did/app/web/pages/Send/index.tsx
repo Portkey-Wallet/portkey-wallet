@@ -282,9 +282,11 @@ export default function Send() {
           fee: timesDecimals(txFee, defaultToken.decimals).toFixed(),
           guardiansApproved: oneTimeApprovalList.current,
         };
-        const amountAllowed =
-          (withdrawInfo?.maxAmount ? ZERO.plus(amount).lte(withdrawInfo?.maxAmount) : true) &&
-          (withdrawInfo?.minAmount ? ZERO.plus(amount).gte(withdrawInfo?.minAmount) : true);
+
+        const isGTMax = withdrawInfo?.maxAmount ? ZERO.plus(amount).lte(withdrawInfo?.maxAmount) : true;
+        const isLTMin = withdrawInfo?.minAmount ? ZERO.plus(amount).gte(withdrawInfo?.minAmount) : true;
+        const amountAllowed = withdrawInfo ? isGTMax && isLTMin : false;
+
         if (CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(crossParams.tokenInfo.symbol) && amountAllowed) {
           await withdraw({
             chainId,
@@ -339,8 +341,7 @@ export default function Send() {
     wallet.address,
     wallet?.caHash,
     withdraw,
-    withdrawInfo?.maxAmount,
-    withdrawInfo?.minAmount,
+    withdrawInfo,
   ]);
 
   const checkLimit = useCheckLimit(tokenInfo.chainId);
@@ -455,24 +456,35 @@ export default function Send() {
         isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF') &&
         CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(tokenSymbol)
       ) {
-        const { withdrawInfo } = await withdrawPreview({
-          chainId,
-          address: toAccount.address,
-          symbol: tokenSymbol,
-          amount,
-        });
-        setTxFee(withdrawInfo.aelfTransactionFee);
-        setWithdrawInfo(withdrawInfo);
-      } else {
-        const fee = await getTranslationInfo();
-        console.log('---getTranslationInfo', fee);
-        setWithdrawInfo(undefined);
+        try {
+          const { withdrawInfo } = await withdrawPreview({
+            chainId,
+            address: toAccount.address,
+            symbol: tokenSymbol,
+            amount,
+          });
+          const isGTMax = withdrawInfo?.maxAmount ? ZERO.plus(amount).lte(withdrawInfo.maxAmount) : true;
+          const isLTMin = withdrawInfo?.minAmount ? ZERO.plus(amount).gte(withdrawInfo.minAmount) : true;
 
-        if (fee) {
-          setTxFee(fee);
-        } else {
-          return TransactionError.FEE_NOT_ENOUGH;
+          const amountAllowed = withdrawInfo ? isGTMax && isLTMin : false;
+
+          if (amountAllowed) {
+            setTxFee(withdrawInfo.aelfTransactionFee);
+            setWithdrawInfo(withdrawInfo);
+            return '';
+          }
+        } catch (error) {
+          console.error(handleErrorMessage(error));
         }
+      }
+      const fee = await getTranslationInfo();
+      console.log('---getTranslationInfo', fee);
+      setWithdrawInfo(undefined);
+
+      if (fee) {
+        setTxFee(fee);
+      } else {
+        return TransactionError.FEE_NOT_ENOUGH;
       }
 
       return '';

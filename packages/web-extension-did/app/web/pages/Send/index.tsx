@@ -287,11 +287,7 @@ export default function Send() {
         const isLTMin = withdrawInfo?.minAmount ? ZERO.plus(amount).gte(withdrawInfo?.minAmount) : true;
         const amountAllowed = withdrawInfo ? isGTMax && isLTMin : false;
 
-        if (
-          CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(crossParams.tokenInfo.symbol) &&
-          withdrawInfo &&
-          amountAllowed
-        ) {
+        if (CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(crossParams.tokenInfo.symbol) && amountAllowed) {
           await withdraw({
             chainId,
             toAddress: crossParams.toAddress,

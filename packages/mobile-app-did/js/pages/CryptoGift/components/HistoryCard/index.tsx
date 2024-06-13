@@ -14,6 +14,7 @@ import { formatTransferTime } from '@portkey-wallet/utils/time';
 import { getClaimedShow } from 'pages/Chat/utils/format';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { CryptoGiftItem, CryptoGiftOriginalStatus } from '@portkey-wallet/types/types-ca/cryptogift';
+import fonts from 'assets/theme/fonts';
 export interface IHistoryCardProps {
   containerStyle?: StyleProp<ViewStyle>;
   showTitle?: boolean;
@@ -64,7 +65,6 @@ export default function HistoryCard(props: IHistoryCardProps) {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => {
-              // todo goto history list
               navigationService.navigate('GiftHistory');
             }}>
             <View style={styles.rightIcon}>
@@ -77,7 +77,6 @@ export default function HistoryCard(props: IHistoryCardProps) {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => {
-          // todo goto this card
           navigationService.navigate('GiftDetail', {
             id: redPacketDetail?.id,
           });
@@ -151,9 +150,7 @@ const styles = StyleSheet.create({
     marginRight: pTd(4),
   },
   textTitle: {
-    // fontStyle: 'italic',
-    // fontSize: 20,
-    // fontWeight: 'normal',
+    ...fonts.mediumFont,
   },
   historyCard: {
     flexDirection: 'column',
@@ -218,9 +215,5 @@ const styles = StyleSheet.create({
   claimValue: {
     flex: 1,
     marginLeft: pTd(8),
-    // color: '#101114',
-    // fontSize: 12,
-    // fontWeight: '400',
-    // lineHeight: 16,
   },
 });

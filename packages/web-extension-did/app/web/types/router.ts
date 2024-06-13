@@ -291,3 +291,13 @@ export type TWalletNameLocationState = {
 export type THomePageLocationState = {
   key: BalanceTab;
 };
+
+// CryptoGift history detail
+export type TCryptoGiftDetailLocationState = {
+  id: string;
+};
+
+// CryptoGift create success
+export type TCryptoGiftSuccessLocationState = {
+  id: string;
+};

@@ -25,7 +25,7 @@ import getTransferFee from './utils/getTransferFee';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { TransactionError } from '@portkey-wallet/constants/constants-ca/assets';
 import { the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/activity';
-import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
+import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
 import { AddressCheckError } from '@portkey-wallet/store/store-ca/assets/type';
@@ -360,6 +360,7 @@ export default function Send() {
     };
     InternalMessage.payload(PortkeyMessageTypes.SEND, JSON.stringify(params)).send();
   }, [amount, balance, chainId, isPrompt, stage, toAccount, tokenInfo, type]);
+  const { crossChain: crossChainFee } = useGetTxFee(chainId);
 
   const onCloseGuardianApprove = useCallback(() => {
     setOpenGuardiansApprove(false);
@@ -422,6 +423,11 @@ export default function Send() {
         // insufficient balance check
         if (timesDecimals(amount, tokenInfo.decimals).isGreaterThan(balance)) {
           return TransactionError.TOKEN_NOT_ENOUGH;
+        }
+        if (isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF') && symbol === defaultToken.symbol) {
+          if (ZERO.plus(crossChainFee).isGreaterThanOrEqualTo(amount)) {
+            return TransactionError.CROSS_NOT_ENOUGH;
+          }
         }
       } else if (type === 'nft') {
         if (ZERO.plus(amount).isGreaterThan(balance)) {
@@ -510,8 +516,11 @@ export default function Send() {
     toAccount,
     handleOneTimeApproval,
     chainInfo?.chainId,
-    withdrawPreview,
     getTranslationInfo,
+    symbol,
+    defaultToken.symbol,
+    crossChainFee,
+    withdrawPreview,
   ]);
 
   const sendHandler = useCallback(async (): Promise<string | void> => {

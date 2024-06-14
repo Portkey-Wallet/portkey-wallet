@@ -17,7 +17,7 @@ import { useCommonState } from 'store/Provider/hooks';
 import './index.less';
 
 interface ISelectAssetProps extends ModalProps, DrawerProps {
-  onSelectAsset: (i: ICryptoBoxAssetItemType) => void;
+  onSelectAsset: (cur: ICryptoBoxAssetItemType, other?: ICryptoBoxAssetItemType) => void;
   onClose: () => void;
 }
 
@@ -70,7 +70,8 @@ export default function SelectAsset(props: ISelectAssetProps) {
         className="asset-item flex"
         key={`${item.symbol}_${item.chainId}_${index}`}
         onClick={() => {
-          onSelectAsset(item);
+          const other = allList.find((temp) => temp.symbol === item.symbol && temp.chainId !== item.chainId);
+          onSelectAsset(item, other);
           onClose();
         }}>
         <div className="icon flex-center">
@@ -81,7 +82,7 @@ export default function SelectAsset(props: ISelectAssetProps) {
           )}
         </div>
         <div className="info flex-column">
-          <p className="symbol">{item.label ?? item.symbol}</p>
+          <p className="symbol">{item.label ?? item.alias ?? item.symbol}</p>
           <p className="network">{transNetworkText(item.chainId, !isMainnet)}</p>
         </div>
       </div>

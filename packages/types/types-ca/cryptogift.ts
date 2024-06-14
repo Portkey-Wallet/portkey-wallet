@@ -24,4 +24,6 @@ export type CryptoGiftItem = {
   status: CryptoGiftOriginalStatus;
   symbol: string;
   createTime: number;
+  label?: string;
+  alias?: string;
 };

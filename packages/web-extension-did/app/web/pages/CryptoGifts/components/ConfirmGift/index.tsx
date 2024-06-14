@@ -124,7 +124,9 @@ export default function ConfirmGift(props: IConfirmGiftProps) {
                     balanceNotEnough && showTransfer && otherChainToken && txFee === '--' ? 'fee' : 'balance'
                   }`}</div>
                   {balanceNotEnough && showTransfer && otherChainToken && (
-                    <div className="balance-tip">You can transfer some ELF from your MainChain address</div>
+                    <div className="balance-tip">{`You can transfer some ${
+                      token.label ?? token.alias ?? token.symbol
+                    } from your ${otherChainToken.chainId} address`}</div>
                   )}
                 </>
               ) : (

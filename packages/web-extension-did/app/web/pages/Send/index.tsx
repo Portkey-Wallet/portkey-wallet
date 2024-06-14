@@ -696,6 +696,8 @@ export default function Send() {
             transactionFee={txFee || ''}
             receiveAmount={withdrawInfo?.receiveAmount}
             receiveAmountUsd={withdrawInfo?.receiveAmountUsd}
+            crossChainFee={withdrawInfo?.transactionFee || crossChainFee}
+            crossChainFeeUnit={withdrawInfo?.transactionUnit}
             isCross={isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF')}
             tokenId={tokenInfo.tokenId || ''}
             isSeed={state.isSeed}
@@ -717,8 +719,8 @@ export default function Send() {
       getTranslationInfo,
       chainInfo?.chainId,
       txFee,
-      withdrawInfo?.receiveAmount,
-      withdrawInfo?.receiveAmountUsd,
+      withdrawInfo,
+      crossChainFee,
       state.isSeed,
       state.seedType,
       state.label,

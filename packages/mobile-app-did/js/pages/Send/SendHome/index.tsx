@@ -477,12 +477,13 @@ const SendHome: React.FC = () => {
           amount: sendNumber,
         });
         fee = withdrawInfo?.aelfTransactionFee;
-        receiveAmount = withdrawInfo?.receiveAmount;
-        receiveAmountUsd = withdrawInfo?.receiveAmountUsd;
         const maxAmount = Number(withdrawInfo?.maxAmount);
         const minAmount = Number(withdrawInfo?.minAmount);
         isEtransferCrossInLimit = Number(sendNumber) >= minAmount && Number(sendNumber) <= maxAmount;
-        if (!isEtransferCrossInLimit) {
+        if (isEtransferCrossInLimit) {
+          receiveAmount = withdrawInfo?.receiveAmount;
+          receiveAmountUsd = withdrawInfo?.receiveAmountUsd;
+        } else {
           fee = await getTransactionFee(isCross);
         }
       } else {

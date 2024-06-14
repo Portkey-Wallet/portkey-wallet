@@ -392,7 +392,7 @@ const PaymentModal = ({
                 {!!(crossSufficientItem && fee.error) && (
                   <TextS style={[FontStyles.font6, styles.marginTop4]}>
                     {`You can transfer some ${
-                      assetInfo.assetType === AssetType.ft ? assetInfo.symbol : assetInfo.alias
+                      assetInfo.assetType === AssetType.ft ? assetInfo.label || assetInfo.symbol : assetInfo.alias
                     } from your ${formatChainInfoToShow(crossSufficientItem?.chainId, currentNetwork)} address`}
                   </TextS>
                 )}

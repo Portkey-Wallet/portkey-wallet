@@ -7,6 +7,14 @@
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
   }
+  .confirm-gift-btn {
+    padding: 16px;
+    button {
+      width: 100%;
+      height: 48px;
+      border-radius: 6px;
+    }
+  }
   .confirm-gift-container {
     padding: 0 16px;
     font-size: 14px;
@@ -51,13 +59,34 @@
       .balance-detail {
         font-size: 16px;
         line-height: 22px;
+        .balance-symbol {
+          button {
+            width: auto;
+            padding: 4px 8px;
+            height: 24px;
+            border-radius: 6px;
+            line-height: 16px;
+            font-size: 500;
+          }
+        }
         .balance-amount {
           margin-top: 5px;
           font-size: 12px;
           line-height: 16px;
           color: @neutral-tertiary-text;
+          .balance-amount-usd {
+            margin-left: 8px;
+          }
         }
-
+        .balance-tip {
+          margin-top: 4px;
+          font-size: 12px;
+          line-height: 16px;
+          color: @functional-warning-default;
+        }
+      }
+      &.balance-container-unable {
+        opacity: 0.7;
       }
     }
     .gift-container-fee {
@@ -68,14 +97,6 @@
         line-height: 16px;
         color: @neutral-tertiary-text;
       }
-    }
-  }
-  .confirm-gift-btn {
-    padding: 16px;
-    button {
-      width: 100%;
-      height: 48px;
-      border-radius: 6px;
     }
   }
 }

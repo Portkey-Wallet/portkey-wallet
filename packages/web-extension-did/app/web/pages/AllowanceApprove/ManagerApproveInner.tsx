@@ -17,6 +17,7 @@ import getSeed from 'utils/getSeed';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 import SetAllowance, { IAllowanceConfirmProps } from 'pages/components/SetAllowance';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
+import { SvgType } from 'components/CustomSvg';
 
 export enum ManagerApproveStep {
   SetAllowance = 'SetAllowance',
@@ -29,6 +30,7 @@ export interface IManagerApproveInnerProps {
   caHash: string;
   amount: string;
   dappInfo?: { icon?: string; href?: string; name?: string };
+  defaultIcon?: SvgType;
   symbol: string;
   networkType: NetworkType;
   batchApproveNFT: boolean;
@@ -44,6 +46,7 @@ export default function ManagerApproveInner({
   amount,
   dappInfo,
   symbol,
+  defaultIcon,
   batchApproveNFT,
   onCancel,
   onFinish,
@@ -191,6 +194,7 @@ export default function ManagerApproveInner({
           onCancel={onCancel}
           onAllowanceChange={setAllowance}
           onConfirm={allowanceConfirm}
+          defaultIcon={defaultIcon}
         />
       )}
 

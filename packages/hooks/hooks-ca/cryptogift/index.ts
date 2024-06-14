@@ -1,4 +1,4 @@
-import { useCallback, useState, useRef, useMemo, useEffect } from 'react';
+import { useCallback, useState, useRef, useMemo } from 'react';
 import { request } from '@portkey-wallet/api/api-did';
 import { RedPackageDetail, RedPackageGrabInfoItem, RedPackageTypeEnum } from '@portkey-wallet/im';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';

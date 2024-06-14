@@ -22,7 +22,11 @@ export default function HistoryList() {
         <CommonHeader title="History" onLeftBack={() => navigate('/crypto-gifts')} />
         <div className="history-list flex-column">
           {(cryptoGiftHistories ?? []).map((item, index) => (
-            <HistoryBox key={index} {...item} onClick={() => navigate('/crypto-gifts/detail')} />
+            <HistoryBox
+              key={index}
+              {...item}
+              onClick={() => navigate('/crypto-gifts/detail', { state: { id: item.id } })}
+            />
           ))}
         </div>
       </div>

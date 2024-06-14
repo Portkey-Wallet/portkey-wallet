@@ -23,7 +23,7 @@ export default function SuccessPage() {
   const { isPrompt } = useCommonState();
   const [, setCopied] = useCopyToClipboard();
   const onClickShare = useCallback(() => {
-    setCopied(`${referralUrl}/${state.id}`);
+    setCopied(`${referralUrl}/cryptoGift?id=${state.id}`);
     singleMessage.success('Copy Success');
   }, [referralUrl, setCopied, state.id]);
 
@@ -38,18 +38,18 @@ export default function SuccessPage() {
             <CustomSvg type="BoxClose" />
             <div className="created flex-center">
               <CustomSvg type="MsgSuccess" />
-              Crypto Gifts has been created
+              The crypto gift is packaged.
             </div>
             <div className="view-details" onClick={() => navigate('/crypto-gifts/detail', { state })}>
               View Details
             </div>
           </div>
         </div>
-        <div className="tip-msg">Send to Your Friends Right Now!</div>
+        <div className="tip-msg">Share the surprise with your friends NOW!</div>
         <div className="share-btn">
           <Button type="primary" className="flex-center" onClick={onClickShare}>
             <CustomSvg type="CopyInteractive" />
-            Copy Crypto Gifts link
+            Copy Link
           </Button>
         </div>
       </div>

@@ -29,6 +29,9 @@ export enum FromPageEnum {
   chatGroupInfo = 'chat-group-info',
   chatMemberList = 'chat-member-list',
   accountCancelation = 'accountCancelation',
+  cryptoGiftHome = 'cryptoGiftHome',
+  cryptoGiftHistory = 'cryptoGiftHistory',
+  cryptoGiftSuccess = 'cryptoGiftSuccess',
 }
 
 // Guardians
@@ -293,8 +296,15 @@ export type THomePageLocationState = {
 };
 
 // CryptoGift history detail
+
+export type TCryptoGiftDetailFromPage =
+  | FromPageEnum.cryptoGiftHome
+  | FromPageEnum.cryptoGiftHistory
+  | FromPageEnum.cryptoGiftSuccess;
+
 export type TCryptoGiftDetailLocationState = {
   id: string;
+  fromPage: TCryptoGiftDetailFromPage;
 };
 
 // CryptoGift create success

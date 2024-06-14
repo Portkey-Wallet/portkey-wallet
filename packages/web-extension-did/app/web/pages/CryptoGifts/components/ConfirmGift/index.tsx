@@ -14,6 +14,9 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { SendStage } from 'pages/Send';
 import AsyncButton from 'components/AsyncButton';
 import { ZERO } from '@portkey-wallet/im-ui-web';
+import { transNetworkText } from '@portkey-wallet/utils/activity';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { chianInfoShow } from 'pages/CryptoGifts/utils';
 import './index.less';
 
 interface IConfirmGiftProps extends ModalProps, DrawerProps {
@@ -51,10 +54,14 @@ export default function ConfirmGift(props: IConfirmGiftProps) {
   const wallet = useCurrentWalletInfo();
   const navigate = useNavigateState<TSendLocationState | TRampLocationState>();
   const { isNotLessThan768 } = useCommonState();
+  const isMainnet = useIsMainnet();
   const balanceNotEnough = useMemo(() => {
     if (balance === '--') return true;
     return ZERO.plus(balance).lt(totalAmount);
   }, [balance, totalAmount]);
+  const canConfirm = useMemo(() => {
+    return !balanceNotEnough && txFee !== '--';
+  }, [balanceNotEnough, txFee]);
   const onClickBuy = useCallback(() => {
     const tokenInfo = {
       symbol: token.symbol,
@@ -101,14 +108,14 @@ export default function ConfirmGift(props: IConfirmGiftProps) {
             <div className="gift-container-usd">{totalAmountUsdShow ? `≈${totalAmountUsdShow}` : ''}</div>
           )}
           <div className="balance-label">balance</div>
-          <div className={clsx('balance-container', 'flex', balance === '--' && 'balance-container-unable')}>
+          <div className={clsx('balance-container', 'flex', !canConfirm && 'balance-container-unable')}>
             <TokenImageDisplay width={24} className="symbol-icon" symbol={token.symbol} src={token.imageUrl} />
             <div className="balance-detail flex-1">
               <div className="balance-symbol flex-between-center">
-                <div className="flex-1">{`${token.label ?? token.alias ?? token.symbol} (${
-                  token.chainId === 'AELF' ? 'MainChain' : 'SideChain'
-                } ${token.chainId})`}</div>
-                {showTransfer && otherChainToken && txFee !== '--' ? (
+                <div className="flex-1">{`${token.label ?? token.alias ?? token.symbol} (${chianInfoShow(
+                  token.chainId,
+                )})`}</div>
+                {showTransfer ? (
                   <Button className="flex-center" type="primary" onClick={onClickTransfer}>{`Transfer ${
                     token.label ?? token.alias ?? token.symbol
                   }`}</Button>
@@ -118,15 +125,13 @@ export default function ConfirmGift(props: IConfirmGiftProps) {
                   }`}</Button>
                 ) : null}
               </div>
-              {balanceNotEnough || txFee === '--' ? (
+              {!canConfirm ? (
                 <>
-                  <div className="balance-amount">{`Insufficient ${
-                    balanceNotEnough && showTransfer && otherChainToken && txFee === '--' ? 'fee' : 'balance'
-                  }`}</div>
-                  {balanceNotEnough && showTransfer && otherChainToken && (
+                  <div className="balance-amount">{`Insufficient balance`}</div>
+                  {showTransfer && otherChainToken && (
                     <div className="balance-tip">{`You can transfer some ${
                       token.label ?? token.alias ?? token.symbol
-                    } from your ${otherChainToken.chainId} address`}</div>
+                    } from your ${transNetworkText(otherChainToken.chainId, !isMainnet)} address`}</div>
                   )}
                 </>
               ) : (
@@ -137,7 +142,7 @@ export default function ConfirmGift(props: IConfirmGiftProps) {
               )}
             </div>
           </div>
-          {txFee === '--' ? null : (
+          {canConfirm ? (
             <div className="gift-container-fee flex-between">
               <div>Transaction Fee</div>
               <div>
@@ -147,10 +152,10 @@ export default function ConfirmGift(props: IConfirmGiftProps) {
                 {txFeeInUsd && <div className="fee-usd">{txFeeInUsd}</div>}
               </div>
             </div>
-          )}
+          ) : null}
         </div>
         <div className="confirm-gift-btn">
-          <AsyncButton type="primary" disabled={balanceNotEnough || txFee == '--'} onClick={onConfirm}>
+          <AsyncButton type="primary" disabled={!canConfirm} onClick={onConfirm}>
             Confirm
           </AsyncButton>
         </div>
@@ -159,7 +164,8 @@ export default function ConfirmGift(props: IConfirmGiftProps) {
     [
       balance,
       balanceInUsd,
-      balanceNotEnough,
+      canConfirm,
+      isMainnet,
       isShowBuy,
       onClickBuy,
       onClickTransfer,

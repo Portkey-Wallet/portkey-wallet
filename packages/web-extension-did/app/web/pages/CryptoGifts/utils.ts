@@ -1,4 +1,6 @@
+import { MAIN_CHAIN, MAIN_CHAIN_ID, SIDE_CHAIN } from '@portkey-wallet/constants/constants-ca/activity';
 import { fetchTokenPrices } from '@portkey-wallet/store/store-ca/assets/api';
+import { ChainId } from '@portkey-wallet/types';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 
 export const DEFAULT_GIFT_TOKEN: ICryptoBoxAssetItemType = {
@@ -43,4 +45,8 @@ export const getPrice = async (symbol: string) => {
     console.log('===fetchTokenPrices error', error);
     return 0;
   }
+};
+
+export const chianInfoShow = (chainId: ChainId) => {
+  return `${chainId === MAIN_CHAIN_ID ? MAIN_CHAIN : SIDE_CHAIN} ${chainId}`;
 };

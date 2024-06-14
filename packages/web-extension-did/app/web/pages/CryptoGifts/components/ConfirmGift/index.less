@@ -86,7 +86,17 @@
         }
       }
       &.balance-container-unable {
-        opacity: 0.7;
+        .symbol-icon {
+          opacity: 0.6;
+        }
+        .balance-detail {
+          .balance-symbol {
+            color: @neutral-tertiary-text;
+          }
+          .balance-amount {
+            color: @neutral-tertiary-text;
+          }
+        }
       }
     }
     .gift-container-fee {

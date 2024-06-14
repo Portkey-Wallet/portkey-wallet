@@ -6,7 +6,7 @@ import singleMessage from 'utils/singleMessage';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
-import { TCryptoGiftDetailLocationState } from 'types/router';
+import { FromPageEnum, TCryptoGiftDetailLocationState } from 'types/router';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import './index.less';
@@ -40,7 +40,11 @@ export default function SuccessPage() {
               <CustomSvg type="MsgSuccess" />
               The crypto gift is packaged.
             </div>
-            <div className="view-details" onClick={() => navigate('/crypto-gifts/detail', { state })}>
+            <div
+              className="view-details"
+              onClick={() =>
+                navigate('/crypto-gifts/detail', { state: { id: state.id, fromPage: FromPageEnum.cryptoGiftSuccess } })
+              }>
               View Details
             </div>
           </div>

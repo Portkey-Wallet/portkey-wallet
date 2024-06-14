@@ -10,7 +10,7 @@ import { useGetFirstCryptoGift } from '@portkey-wallet/hooks/hooks-ca/cryptogift
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import InternalMessage from 'messages/InternalMessage';
 import { useNavigateState } from 'hooks/router';
-import { TCryptoGiftDetailLocationState } from 'types/router';
+import { FromPageEnum, TCryptoGiftDetailLocationState } from 'types/router';
 import { CRYPTO_GIFT_RULES } from '@portkey-wallet/constants/constants-ca/cryptoGift';
 import './index.less';
 
@@ -52,7 +52,11 @@ export default function CryptoGifts() {
               </div>
               <HistoryBox
                 {...firstCryptoGift}
-                onClick={() => navigate('/crypto-gifts/detail', { state: { id: firstCryptoGift.id } })}
+                onClick={() =>
+                  navigate('/crypto-gifts/detail', {
+                    state: { id: firstCryptoGift.id, fromPage: FromPageEnum.cryptoGiftHome },
+                  })
+                }
               />
             </div>
           )}
@@ -61,7 +65,7 @@ export default function CryptoGifts() {
             <div className="rules-content flex-column">
               {CRYPTO_GIFT_RULES.map((item, index) => (
                 <div key={index}>
-                  <div className="rule-title">{`${index + 1}- ${item.title}`}</div>
+                  <div className="rule-title">{item.title}</div>
                   <div>{item.content}</div>
                 </div>
               ))}

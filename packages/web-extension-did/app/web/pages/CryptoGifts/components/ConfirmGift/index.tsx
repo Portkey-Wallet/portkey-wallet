@@ -108,7 +108,7 @@ export default function ConfirmGift(props: IConfirmGiftProps) {
                 <div className="flex-1">{`${token.label ?? token.alias ?? token.symbol} (${
                   token.chainId === 'AELF' ? 'MainChain' : 'SideChain'
                 } ${token.chainId})`}</div>
-                {showTransfer && otherChainToken ? (
+                {showTransfer && otherChainToken && txFee !== '--' ? (
                   <Button className="flex-center" type="primary" onClick={onClickTransfer}>{`Transfer ${
                     token.label ?? token.alias ?? token.symbol
                   }`}</Button>
@@ -120,7 +120,9 @@ export default function ConfirmGift(props: IConfirmGiftProps) {
               </div>
               {balanceNotEnough || txFee === '--' ? (
                 <>
-                  <div className="balance-amount">Insufficient balance</div>
+                  <div className="balance-amount">{`Insufficient ${
+                    balanceNotEnough && showTransfer && otherChainToken && txFee === '--' ? 'fee' : 'balance'
+                  }`}</div>
                   {balanceNotEnough && showTransfer && otherChainToken && (
                     <div className="balance-tip">You can transfer some ELF from your MainChain address</div>
                   )}

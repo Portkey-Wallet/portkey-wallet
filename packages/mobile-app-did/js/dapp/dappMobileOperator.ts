@@ -547,7 +547,10 @@ export default class DappMobileOperator extends Operator {
           });
           return generateNormalResponse({
             eventName,
-            data: result.action === Share.sharedAction,
+            data: {
+              // true shareSuccess, false dismissShare dialog
+              shareSuccess: result.action === Share.sharedAction,
+            },
             code: ResponseCode.SUCCESS,
           });
         } catch (e) {

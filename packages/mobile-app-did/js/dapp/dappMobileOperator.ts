@@ -539,18 +539,23 @@ export default class DappMobileOperator extends Operator {
     switch (method) {
       case NATIVE_METHOD_MAP.Share: {
         payload = request.payload;
-        await Share.share({
-          message: payload.url,
-          url: payload.url,
-          title: payload.title || '',
-        }).catch(shareError => {
-          console.log(shareError);
-        });
-        return generateNormalResponse({
-          eventName,
-          data: true,
-          code: ResponseCode.SUCCESS,
-        });
+        try {
+          const result = await Share.share({
+            message: payload.url,
+            url: payload.url,
+            title: payload.title || '',
+          });
+          return generateNormalResponse({
+            eventName,
+            data: result.action === Share.sharedAction,
+            code: ResponseCode.SUCCESS,
+          });
+        } catch (e) {
+          return generateErrorResponse({
+            eventName,
+            code: ResponseCode.INTERNAL_ERROR,
+          });
+        }
       }
     }
     return this.sendRequest({

@@ -1,5 +1,5 @@
 import CommonHeader from 'components/CommonHeader';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import RadioTab from 'pages/components/RadioTab';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Input, Switch } from 'antd';
@@ -40,6 +40,7 @@ import { useCheckAllowance } from 'hooks/useCheckAllowance';
 import { IGuardiansApproved } from '@portkey/did-ui-react';
 import { isNFT } from '@portkey-wallet/utils/token';
 import './index.less';
+import googleAnalytics from 'utils/googleAnalytics';
 
 export const Gift_TAB: {
   value: RedPackageTypeEnum;
@@ -57,6 +58,7 @@ export const Gift_TAB: {
 
 export default function Create() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isPrompt } = useCommonState();
   const formatAmountInUsdShow = useAmountInUsdShow();
   const [curTab, setCurTab] = useState(RedPackageTypeEnum.RANDOM);
@@ -108,6 +110,10 @@ export default function Create() {
   );
   const loadRef = useRef<boolean>(false);
   const { setLoading } = useLoading();
+
+  useEffectOnce(() => {
+    googleAnalytics.firePageViewEvent('CryptoGift-Create', location.pathname);
+  });
 
   // totalAmount
   const totalAmount = useMemo(() => {

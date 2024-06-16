@@ -9,12 +9,21 @@ import clsx from 'clsx';
 import { FromPageEnum, TCryptoGiftDetailLocationState } from 'types/router';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useLocation } from 'react-router';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+import googleAnalytics from 'utils/googleAnalytics';
 import './index.less';
 
 export default function SuccessPage() {
   const navigate = useNavigateState<TCryptoGiftDetailLocationState>();
   const { state } = useLocationState<TCryptoGiftDetailLocationState>();
   const { referralUrl } = useCurrentNetworkInfo();
+  const location = useLocation();
+
+  useEffectOnce(() => {
+    googleAnalytics.firePageViewEvent('CryptoGift-Success', location.pathname);
+  });
+
   useEffect(() => {
     if (!state.id) {
       navigate('/crypto-gifts');

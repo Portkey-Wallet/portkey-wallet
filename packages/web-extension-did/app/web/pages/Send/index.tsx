@@ -530,7 +530,7 @@ export default function Send() {
 
           if (amountAllowed && allowance.gte(amount)) _etransferFee = 0;
 
-          if (ZERO.plus(amount).plus(_etransferFee).gte(divDecimals(balance, tokenInfo.decimals)))
+          if (ZERO.plus(amount).plus(_etransferFee).gt(divDecimals(balance, tokenInfo.decimals)))
             return TransactionError.TOKEN_NOT_ENOUGH;
 
           if (amountAllowed) {

@@ -1,8 +1,6 @@
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import NftInput from './NftInput';
 import TokenInput from './TokenInput';
-import { IWithdrawPreviewParams } from '@portkey-wallet/utils/withdraw/types';
-import { TGetWithdrawInfoResult } from '@etransfer/services';
 
 export default function AmountInput({
   fromAccount,
@@ -24,7 +22,7 @@ export default function AmountInput({
   errorMsg: string;
   onChange: (params: { amount: string; balance: string }) => void;
   getTranslationInfo: (num: string) => any;
-  getEtransferwithdrawInfo: (params: IWithdrawPreviewParams) => Promise<TGetWithdrawInfoResult>;
+  getEtransferwithdrawInfo: (params: { amount: string }) => Promise<string>;
   setErrorMsg: (v: string) => void;
 }) {
   return type === 'token' ? (

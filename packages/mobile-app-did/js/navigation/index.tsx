@@ -35,7 +35,7 @@ import CryptoGift from 'pages/CryptoGift';
 import GiftHistory from 'pages/CryptoGift/GiftHistory';
 import GiftDetail from 'pages/CryptoGift/GiftDetail';
 import GiftResult from 'pages/CryptoGift/GiftResult';
-  
+
 // key: page route key, value: is page show
 const PageShowMap = new Map<string, boolean>();
 

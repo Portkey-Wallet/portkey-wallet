@@ -231,7 +231,7 @@ export default function Send() {
         const { privateKey } = await getSeed();
         if (!privateKey) throw t(WalletError.invalidPrivateKey);
         if (!currentChain) throw 'No ChainInfo';
-        const _caAddress = wallet?.[(state.chainId as ChainId) || defaultToken.symbol]?.caAddress;
+        const _caAddress = wallet?.[chainId]?.caAddress;
         const feeRes = await getTransferFee({
           caAddress: _caAddress || '',
           managerAddress: wallet.address,
@@ -248,17 +248,7 @@ export default function Send() {
         console.log('getFee===error', error);
       }
     },
-    [
-      amount,
-      currentChain,
-      currentNetwork.walletType,
-      defaultToken.symbol,
-      state.chainId,
-      t,
-      toAccount?.address,
-      tokenInfo,
-      wallet,
-    ],
+    [amount, chainId, currentChain, currentNetwork.walletType, t, toAccount?.address, tokenInfo, wallet],
   );
 
   const sendTransfer = useCallback(async () => {
@@ -664,6 +654,7 @@ export default function Send() {
               setTipMsg('');
             }}
             getTranslationInfo={getTranslationInfo}
+            getEtransferwithdrawInfo={withdrawPreview}
             setErrorMsg={setTipMsg}
           />
         ),
@@ -717,6 +708,7 @@ export default function Send() {
       amount,
       tipMsg,
       getTranslationInfo,
+      withdrawPreview,
       chainInfo?.chainId,
       txFee,
       withdrawInfo,

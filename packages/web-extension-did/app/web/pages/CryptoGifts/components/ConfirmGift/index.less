@@ -1,0 +1,112 @@
+@import '../../../../assets/theme/constants.less';
+
+.confirm-gift-wrapper {
+  height: 544px;
+  width: 100%;
+  .common-header {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+  }
+  .confirm-gift-btn {
+    padding: 16px;
+    button {
+      width: 100%;
+      height: 48px;
+      border-radius: 6px;
+    }
+  }
+  .confirm-gift-container {
+    padding: 0 16px;
+    font-size: 14px;
+    line-height: 20px;
+    color: @neutral-primary-text;
+    .gift-container-amount {
+      gap: 8px;
+      margin-top: 12px;
+      align-items: flex-end;
+      .amount-number {
+        font-size: 30px;
+        line-height: 34px;
+        font-weight: 700;
+        color: @neutral-primary-text;
+      }
+      .amount-symbol {
+        margin: 2px 0;
+        font-weight: 500;
+      }
+    }
+    .gift-container-usd {
+      margin-top: 4px;
+      color: @neutral-tertiary-text;
+    }
+    .balance-label {
+      align-self: flex-start;
+      margin-top: 40px;
+      font-size: 12px;
+      line-height: 16px;
+      color: @neutral-secondary-text;
+    }
+    .balance-container {
+      width: 100%;
+      gap: 8px;
+      margin-top: 8px;
+      padding: 14px 12px;
+      border-radius: 6px;
+      background-color: @neutral-hover-bg;
+      .symbol-icon {
+        flex-shrink: 0;
+      }
+      .balance-detail {
+        font-size: 16px;
+        line-height: 22px;
+        .balance-symbol {
+          button {
+            width: auto;
+            padding: 4px 8px;
+            height: 24px;
+            border-radius: 6px;
+            line-height: 16px;
+            font-size: 500;
+          }
+        }
+        .balance-amount {
+          margin-top: 5px;
+          font-size: 12px;
+          line-height: 16px;
+          color: @neutral-tertiary-text;
+          .balance-amount-usd {
+            margin-left: 8px;
+          }
+        }
+        .balance-tip {
+          margin-top: 4px;
+          font-size: 12px;
+          line-height: 16px;
+          color: @functional-warning-default;
+        }
+      }
+      &.balance-container-unable {
+        .symbol-icon {
+          opacity: 0.6;
+        }
+        .balance-detail {
+          .balance-symbol {
+            color: @neutral-tertiary-text;
+          }
+          .balance-amount {
+            color: @neutral-tertiary-text;
+          }
+        }
+      }
+    }
+    .gift-container-fee {
+      width: 100%;
+      margin-top: 16px;
+      .fee-usd {
+        font-size: 12px;
+        line-height: 16px;
+        color: @neutral-tertiary-text;
+      }
+    }
+  }
+}

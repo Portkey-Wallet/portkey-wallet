@@ -124,3 +124,12 @@ export const getEllipsisTokenShow = (amountShow: string, symbol: string, digits 
 
   return `${amountShow} ${symbol}`;
 };
+export const getClaimedShow = (grabbedAmountShow: string, totalAmountShow: string, symbol: string, digits = 38) => {
+  const grabbedAmountShowLen = grabbedAmountShow?.length || 0;
+  const totalAmountShowLen = totalAmountShow?.length || 0;
+  const symbolLen = symbol?.length || 0;
+  if (grabbedAmountShowLen + 3 + totalAmountShowLen + symbolLen > digits)
+    return `${grabbedAmountShow} / ${totalAmountShow.slice(0, digits - symbolLen)}... ${symbol}`;
+
+  return `${grabbedAmountShow} / ${totalAmountShow} ${symbol}`;
+};

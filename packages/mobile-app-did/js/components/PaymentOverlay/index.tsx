@@ -35,6 +35,7 @@ import { InsufficientTransactionFee } from 'hooks/useCalculateRedPacketFee';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import NFTAvatar from 'components/NFTAvatar';
+import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
 
 export type PaymentAssetInfo = {
   symbol: string;
@@ -105,10 +106,8 @@ const PaymentModal = ({
   }, [accountAssetList, assetInfo.symbol, assetMap, chainId]);
 
   const { isBuySectionShow } = useAppRampEntryShow();
-  const isCanBuy = useMemo(
-    () => assetInfo.symbol === defaultToken.symbol && isBuySectionShow,
-    [assetInfo.symbol, defaultToken.symbol, isBuySectionShow],
-  );
+  const { buy } = checkEnabledFunctionalTypes(assetInfo.symbol, chainId === 'AELF');
+  const isCanBuy = useMemo(() => buy && isBuySectionShow, [buy, isBuySectionShow]);
 
   // update AccountTokenList
   useEffectOnce(() => {
@@ -393,7 +392,7 @@ const PaymentModal = ({
                 {!!(crossSufficientItem && fee.error) && (
                   <TextS style={[FontStyles.font6, styles.marginTop4]}>
                     {`You can transfer some ${
-                      assetInfo.assetType === AssetType.ft ? assetInfo.symbol : assetInfo.alias
+                      assetInfo.assetType === AssetType.ft ? assetInfo.label || assetInfo.symbol : assetInfo.alias
                     } from your ${formatChainInfoToShow(crossSufficientItem?.chainId, currentNetwork)} address`}
                   </TextS>
                 )}
@@ -430,10 +429,13 @@ export const show = (props: Omit<PaymentOverlayProps, 'onConfirm'>) => {
 export const showRedPacket = (props: Omit<PaymentOverlayProps, 'onConfirm' | 'title'>) => {
   return show({ ...props, title: 'Portkey Crypto Box' });
 };
-
+export const showCryptoGift = (props: Omit<PaymentOverlayProps, 'onConfirm' | 'title'>) => {
+  return show({ ...props, title: 'Crypto Gift' });
+};
 export default {
   show,
   showRedPacket,
+  showCryptoGift,
 };
 
 export const styles = StyleSheet.create({

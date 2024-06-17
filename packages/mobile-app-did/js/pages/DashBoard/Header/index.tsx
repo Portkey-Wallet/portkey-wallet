@@ -29,6 +29,10 @@ const DashBoardHeader: React.FC<DashBoardHeaderProps> = ({ title, scrollY }) => 
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const { shouldShowSetNewWalletNameIcon, handleSetNewWalletName } = useSetNewWalletName();
 
+  const onGiftClick = useCallback(() => {
+    navigationService.navigate('CryptoGift');
+  }, []);
+
   const onCopyAddress = useCallback(() => {
     showCopyUserAddress();
   }, []);
@@ -137,6 +141,9 @@ const DashBoardHeader: React.FC<DashBoardHeaderProps> = ({ title, scrollY }) => 
   const rightDom = useMemo(() => {
     return (
       <View style={styles.rightDomWrap}>
+        <Touchable style={styles.svgWrap} onPress={onGiftClick}>
+          <Svg icon="crypto-gift" size={pTd(17)} />
+        </Touchable>
         <Touchable style={styles.svgWrap} onPress={onCopyAddress}>
           <Svg icon="copy" size={pTd(22)} color={defaultColors.font8} />
         </Touchable>
@@ -207,6 +214,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginRight: pTd(8),
     marginLeft: pTd(8),
+    alignItems: 'center',
   },
   svgWrap: {
     padding: pTd(8),

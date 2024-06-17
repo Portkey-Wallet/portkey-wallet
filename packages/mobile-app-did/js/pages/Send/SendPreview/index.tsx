@@ -585,7 +585,7 @@ const SendPreview: React.FC = () => {
               <Text style={[styles.divider, styles.marginTop0]} />
             </>
           )}
-          {isCrossChainTransfer && isSupportEtransferCross && assetInfo.symbol === defaultToken.symbol && (
+          {isCrossChainTransfer && assetInfo.symbol === defaultToken.symbol && (
             <View style={styles.section}>
               <View style={[styles.flexSpaceBetween]}>
                 <TextM style={[styles.blackFontColor, styles.fontBold, styles.leftTitle, GStyles.alignEnd]}>

@@ -1,6 +1,7 @@
 @import '../../../assets/theme/color.less';
 
-.copy-address-drawer {
+.copy-address-drawer,
+.copy-address-modal {
   .address-list {
     gap: 16px;
     padding: 0 16px;
@@ -28,5 +29,11 @@
         }
       }
     }
+  }
+}
+
+.copy-address-modal {
+  &.base-modal {
+    height: 280px;
   }
 }

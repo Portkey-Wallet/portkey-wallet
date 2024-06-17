@@ -18,6 +18,8 @@ export const DEFAULT_TOKEN = {
 export const InitialTxFee = {
   ach: 0.0041,
   crossChain: 0.0041,
+
+  etransfer: 0.01,
   max: 0.0041,
   redPackage: 0.009,
 };

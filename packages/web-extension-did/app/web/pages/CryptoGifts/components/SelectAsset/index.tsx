@@ -72,7 +72,7 @@ export default function SelectAsset(props: ISelectAssetProps) {
         onClick={() => {
           const other = allList.find((temp) => temp.symbol === item.symbol && temp.chainId !== item.chainId);
           onSelectAsset(item, other);
-          onClose();
+          onCloseSelectAsset();
         }}>
         <div className="icon flex-center">
           {item.assetType === AssetType.ft ? (
@@ -82,12 +82,12 @@ export default function SelectAsset(props: ISelectAssetProps) {
           )}
         </div>
         <div className="info flex-column">
-          <p className="symbol">{item.label ?? item.alias ?? item.symbol}</p>
+          <p className="symbol">{item.label || item.alias || item.symbol}</p>
           <p className="network">{transNetworkText(item.chainId, !isMainnet)}</p>
         </div>
       </div>
     ));
-  }, [allList, filter, filterList, isMainnet, onClose, onSelectAsset]);
+  }, [allList, filter, filterList, isMainnet, onCloseSelectAsset, onSelectAsset]);
 
   const mainContent = useMemo(
     () => (

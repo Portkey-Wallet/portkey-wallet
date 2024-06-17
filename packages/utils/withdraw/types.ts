@@ -19,7 +19,7 @@ export interface IWithdrawPreviewParams {
   chainId: ChainId;
   address: string;
   symbol: string;
-  amount: string;
+  amount?: string;
 }
 
 export interface IWithdrawParams {

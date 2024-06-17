@@ -1,5 +1,5 @@
 import CommonHeader from 'components/CommonHeader';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import RadioTab from 'pages/components/RadioTab';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Input, Switch } from 'antd';
@@ -11,7 +11,7 @@ import clsx from 'clsx';
 import PromptFrame from 'pages/components/PromptFrame';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import SelectAsset from '../components/SelectAsset';
-import { DEFAULT_GIFT_TOKEN, TDVV_CHAIN_GIFT_TOKEN, TDVW_CHAIN_GIFT_TOKEN, getPrice } from '../utils';
+import { DEFAULT_GIFT_TOKEN, TDVV_CHAIN_GIFT_TOKEN, TDVW_CHAIN_GIFT_TOKEN, chianInfoShow, getPrice } from '../utils';
 import { useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { ZERO } from '@portkey-wallet/im-ui-web';
 import { divDecimals, formatAmountShow, formatAmountUSDShow, timesDecimals } from '@portkey-wallet/utils/converter';
@@ -40,6 +40,7 @@ import { useCheckAllowance } from 'hooks/useCheckAllowance';
 import { IGuardiansApproved } from '@portkey/did-ui-react';
 import { isNFT } from '@portkey-wallet/utils/token';
 import './index.less';
+import googleAnalytics from 'utils/googleAnalytics';
 
 export const Gift_TAB: {
   value: RedPackageTypeEnum;
@@ -57,6 +58,7 @@ export const Gift_TAB: {
 
 export default function Create() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isPrompt } = useCommonState();
   const formatAmountInUsdShow = useAmountInUsdShow();
   const [curTab, setCurTab] = useState(RedPackageTypeEnum.RANDOM);
@@ -109,15 +111,19 @@ export default function Create() {
   const loadRef = useRef<boolean>(false);
   const { setLoading } = useLoading();
 
+  useEffectOnce(() => {
+    googleAnalytics.firePageViewEvent('CryptoGift-Create', location.pathname);
+  });
+
   // totalAmount
   const totalAmount = useMemo(() => {
     if (!(amount && quantity)) return 0;
     return curTab === RedPackageTypeEnum.RANDOM ? amount : ZERO.plus(quantity).times(amount).toFixed();
   }, [amount, curTab, quantity]);
   const totalAmountShow = useMemo(() => {
-    if (!totalAmount) return '0.00';
-    return formatAmountShow(totalAmount, 0);
-  }, [totalAmount]);
+    if (!totalAmount) return token.decimals == 0 ? '0' : '0.00';
+    return formatAmountShow(totalAmount, token.decimals);
+  }, [token.decimals, totalAmount]);
   const totalAmountUsdShow = useMemo(() => {
     if (!(totalAmount && tokenPrice)) return '';
     return formatAmountUSDShow(ZERO.plus(totalAmount).times(tokenPrice));
@@ -160,11 +166,11 @@ export default function Create() {
 
   // check show transfer
   const checkShowTransfer = useCallback(async () => {
-    if (!otherChainToken.current) {
+    if (!otherChainToken.current || txFee == '--') {
       setShowTransfer(false);
       return;
     }
-    if (!totalAmount || (balance !== '--' && ZERO.plus(balance).gte(totalAmount))) {
+    if (ZERO.plus(balance).gte(totalAmount)) {
       setShowTransfer(false);
       return;
     }
@@ -190,7 +196,7 @@ export default function Create() {
       console.log('===get other chain balance error', error);
       setShowTransfer(false);
     }
-  }, [allChainList, balance, token.chainId, token.decimals, token.symbol, totalAmount, wallet?.caAddress]);
+  }, [allChainList, balance, token.chainId, token.decimals, token.symbol, totalAmount, txFee, wallet?.caAddress]);
   useEffect(() => {
     checkShowTransfer();
   }, [checkShowTransfer]);
@@ -232,7 +238,7 @@ export default function Create() {
       if (!totalAmount) throw 'amount is invalid';
       if (!chainInfo) throw 'can not find chainInfo';
       const _fee = await getCalculateCryptoGiftFee({
-        count: totalAmount,
+        amount: totalAmount,
         chainInfo,
         caAddress: wallet?.caAddress ?? '',
         cryptoGiftFee: cryptoGiftFee,
@@ -299,7 +305,7 @@ export default function Create() {
           totalAmount: timesDecimals(totalAmount, token.decimals).toFixed(),
           type: curTab,
           count: Number(quantity),
-          memo: memo?.trim() ?? RED_PACKAGE_DEFAULT_MEMO,
+          memo: memo?.trim() || RED_PACKAGE_DEFAULT_MEMO,
           caContract,
           token,
           isNewUsersOnly: newUserFlag,
@@ -366,7 +372,7 @@ export default function Create() {
         totalAmount: timesDecimals(totalAmount, token.decimals).toFixed(),
         type: curTab,
         count: Number(quantity),
-        memo: memo?.trim() ?? RED_PACKAGE_DEFAULT_MEMO,
+        memo: memo?.trim() || RED_PACKAGE_DEFAULT_MEMO,
         caContract,
         token,
         isNewUsersOnly: newUserFlag,
@@ -402,6 +408,10 @@ export default function Create() {
         setAmountErr('Please input valid amount');
         return;
       }
+      if (token.decimals == 0 && curTab === RedPackageTypeEnum.RANDOM && ZERO.plus(amount ?? '').lt(quantity ?? '')) {
+        setAmountErr(`At least 1 ${token.label || token.alias || token.symbol} for each crypto gift`);
+        return;
+      }
       setBtnLoading(true);
       // check manager sync
       const _isManagerSynced = await checkManagerSyncState(token.chainId);
@@ -418,7 +428,18 @@ export default function Create() {
     } finally {
       setBtnLoading(false);
     }
-  }, [amount, checkManagerSyncState, checkSecurity, quantity, token.chainId]);
+  }, [
+    amount,
+    checkManagerSyncState,
+    checkSecurity,
+    curTab,
+    quantity,
+    token.alias,
+    token.chainId,
+    token.decimals,
+    token.label,
+    token.symbol,
+  ]);
 
   const mainContent = useMemo(
     () => (
@@ -453,7 +474,7 @@ export default function Create() {
               placeholder="Enter amount"
               value={amount}
               onChange={(e) => {
-                const _v = parseInputNumberChange(e.target.value, undefined, 8);
+                const _v = parseInputNumberChange(e.target.value, undefined, Number(token.decimals));
                 setAmountErr('');
                 setAmount(_v);
               }}
@@ -465,7 +486,10 @@ export default function Create() {
                     src={token.imageUrl}
                     symbol={token.symbol}
                   />
-                  <div className="select-asset-symbol flex-1">{token.label ?? token.alias ?? token.symbol}</div>
+                  <div className="select-asset-token flex-1">
+                    <div className="asset-token-symbol">{token.label || token.alias || token.symbol}</div>
+                    <div className="asset-token-chain">{chianInfoShow(token.chainId)}</div>
+                  </div>
                   <CustomSvg className="flex-center" type="DownDeposit" />
                 </div>
               }
@@ -500,7 +524,7 @@ export default function Create() {
           </div>
           <div className="crypto-gift-total-amount">
             <span className="total-amount-number">{totalAmountShow}</span>
-            <span className="total-amount-symbol">{token.label ?? token.alias ?? token.symbol}</span>
+            <span className="total-amount-symbol">{token.label || token.alias || token.symbol}</span>
           </div>
           <Button
             className="crypto-gift-btn"
@@ -528,6 +552,8 @@ export default function Create() {
       token.symbol,
       token.label,
       token.alias,
+      token.chainId,
+      token.decimals,
       amountErr,
       amountUsdShow,
       memo,
@@ -546,6 +572,7 @@ export default function Create() {
         onClose={() => setSelectAssetOpen(false)}
         onSelectAsset={(item, other) => {
           setToken(item);
+          setAmount(undefined);
           otherChainToken.current = other;
         }}
       />

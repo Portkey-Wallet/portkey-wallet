@@ -9,6 +9,7 @@ import CommonCloseHeader from 'components/CommonCloseHeader';
 import Copy, { CopySize } from 'components/CopyAddress';
 import BaseDrawer from '../BaseDrawer';
 import { useCommonState } from 'store/Provider/hooks';
+import BaseModal from 'components/BaseModal';
 import './index.less';
 
 export interface ICopyAddressDrawerOrModalInstance {
@@ -66,8 +67,10 @@ const CopyAddressDrawerOrModal = forwardRef((_, ref) => {
   );
 
   return isNotLessThan768 ? (
-    // TODO: CopyAddressModal
-    <></>
+    <BaseModal {...commonProps} centered closable={false} className="copy-address-modal" maskClosable>
+      <CommonCloseHeader title="Copy Address" onClose={handleClose} />
+      {renderAddressList()}
+    </BaseModal>
   ) : (
     <BaseDrawer
       {...commonProps}

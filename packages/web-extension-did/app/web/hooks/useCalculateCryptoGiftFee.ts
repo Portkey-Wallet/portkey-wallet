@@ -1,4 +1,5 @@
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { ZERO } from '@portkey-wallet/im-ui-web';
 import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
@@ -7,7 +8,7 @@ import getSeed from 'utils/getSeed';
 import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
 
 type CalculateCryptoGiftFeeParams = {
-  count: string | number;
+  amount: string | number;
   chainInfo: IChainItemType;
   caAddress: string;
   cryptoGiftFee: number | string;
@@ -30,10 +31,7 @@ export function useCalculateCryptoGiftFee() {
 
   return useCallback(
     async (params: CalculateCryptoGiftFeeParams) => {
-      const { count, chainInfo, caAddress, cryptoGiftFee: fee, token } = params;
-
-      const amount = timesDecimals(count, token.decimals);
-      const bigFee = timesDecimals(fee, defaultToken.decimals);
+      const { amount, chainInfo, caAddress, cryptoGiftFee: cryptoGiftFee, token } = params;
 
       const contract = new ExtensionContractBasic({
         privateKey: privateKeyRef.current,
@@ -62,12 +60,12 @@ export function useCalculateCryptoGiftFee() {
       if (feeBalance?.error) throw feeBalance.error;
 
       if (feeBalance?.data) {
-        if (bigFee.gt(feeBalance?.data.balance) || amount.gt(currentBalance?.data.balance))
-          throw new Error(InsufficientTransactionFee);
+        if (ZERO.plus(cryptoGiftFee).gt(feeBalance?.data.balance)) throw new Error(InsufficientTransactionFee);
       } else {
-        if (amount.plus(bigFee).gt(currentBalance?.data.balance)) throw new Error(InsufficientTransactionFee);
+        if (ZERO.plus(amount).plus(cryptoGiftFee).gt(currentBalance?.data.balance))
+          throw new Error(InsufficientTransactionFee);
       }
-      return timesDecimals(fee, defaultToken.decimals).toString();
+      return timesDecimals(cryptoGiftFee, defaultToken.decimals).toString();
     },
     [defaultToken.decimals, defaultToken.symbol],
   );

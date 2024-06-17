@@ -12,7 +12,7 @@ import { useEffectOnce } from '@portkey-wallet/hooks';
 import { DisplayType } from '@portkey-wallet/im/types/redPackage';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { useLocationState, useNavigateState } from 'hooks/router';
-import { TCryptoGiftDetailLocationState } from 'types/router';
+import { FromPageEnum, TCryptoGiftDetailLocationState } from 'types/router';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { CryptoGiftOriginalStatus } from '@portkey-wallet/types/types-ca/cryptogift';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
@@ -55,11 +55,22 @@ export default function CryptoGiftsDetail() {
       console.log('===getCryptoGiftDetail more error', error);
     }
   }, [next]);
+  const goBack = useCallback(() => {
+    if (state.fromPage === FromPageEnum.cryptoGiftHistory) {
+      navigate('/crypto-gifts/history');
+      return;
+    }
+    if (state.fromPage === FromPageEnum.cryptoGiftSuccess) {
+      navigate('/crypto-gifts/success', { state: { id: state.id } });
+      return;
+    }
+    navigate('/crypto-gifts');
+  }, [navigate, state.fromPage, state.id]);
   const mainContent = useMemo(
     () => (
       <div className={clsx('crypto-gifts-detail', 'flex-column', isPrompt && 'prompt-page')}>
         <CommonHeader
-          onLeftBack={() => navigate('/crypto-gifts')}
+          onLeftBack={goBack}
           rightElementList={
             isActive
               ? [
@@ -84,7 +95,7 @@ export default function CryptoGiftsDetail() {
               info?.grabbedAmount ?? 0,
               info?.decimal,
             )}/${formatTokenAmountShowWithDecimals(info?.totalAmount ?? 0, info?.decimal)} ${
-              info?.label ?? info?.alias ?? info?.symbol ?? ''
+              info?.label || info?.alias || info?.symbol || ''
             } claimed.`}</div>
             {(list ?? []).map((item, index) => (
               <div key={index} className="claimed-info flex-row-center">
@@ -106,7 +117,7 @@ export default function CryptoGiftsDetail() {
                     <div className="top-right flex-1">{`${formatTokenAmountShowWithDecimals(
                       item.amount ?? 0,
                       info?.decimal,
-                    )} ${info?.label ?? info?.alias ?? info?.symbol ?? ''}`}</div>
+                    )} ${info?.label || info?.alias || info?.symbol || ''}`}</div>
                   </div>
                   <div className="claimed-info-bottom flex-between-center">
                     <div className="bottom-left">{formatTransferTime(item.grabTime)}</div>
@@ -134,7 +145,7 @@ export default function CryptoGiftsDetail() {
         </div>
       </div>
     ),
-    [hasMore, info, isActive, isPrompt, list, loadMore, navigate, onClickShare],
+    [goBack, hasMore, info, isActive, isPrompt, list, loadMore, onClickShare],
   );
 
   return <>{isPrompt ? <PromptFrame content={mainContent} /> : mainContent}</>;

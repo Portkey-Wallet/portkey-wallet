@@ -6,15 +6,24 @@ import singleMessage from 'utils/singleMessage';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
-import { TCryptoGiftDetailLocationState } from 'types/router';
+import { FromPageEnum, TCryptoGiftDetailLocationState } from 'types/router';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useLocation } from 'react-router';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+import googleAnalytics from 'utils/googleAnalytics';
 import './index.less';
 
 export default function SuccessPage() {
   const navigate = useNavigateState<TCryptoGiftDetailLocationState>();
   const { state } = useLocationState<TCryptoGiftDetailLocationState>();
   const { referralUrl } = useCurrentNetworkInfo();
+  const location = useLocation();
+
+  useEffectOnce(() => {
+    googleAnalytics.firePageViewEvent('CryptoGift-Success', location.pathname);
+  });
+
   useEffect(() => {
     if (!state.id) {
       navigate('/crypto-gifts');
@@ -40,7 +49,11 @@ export default function SuccessPage() {
               <CustomSvg type="MsgSuccess" />
               The crypto gift is packaged.
             </div>
-            <div className="view-details" onClick={() => navigate('/crypto-gifts/detail', { state })}>
+            <div
+              className="view-details"
+              onClick={() =>
+                navigate('/crypto-gifts/detail', { state: { id: state.id, fromPage: FromPageEnum.cryptoGiftSuccess } })
+              }>
               View Details
             </div>
           </div>

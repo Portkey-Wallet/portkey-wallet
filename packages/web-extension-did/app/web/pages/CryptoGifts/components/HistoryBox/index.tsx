@@ -51,7 +51,7 @@ export default function HistoryBox({
           <div className="gift-opened-content">{`${formatTokenAmountShowWithDecimals(
             grabbedAmount,
             decimals,
-          )} / ${formatTokenAmountShowWithDecimals(totalAmount, decimals)} ${label ?? alias ?? symbol}`}</div>
+          )} / ${formatTokenAmountShowWithDecimals(totalAmount, decimals)} ${label || alias || symbol}`}</div>
         </div>
       </div>
     </div>

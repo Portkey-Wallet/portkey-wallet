@@ -24,6 +24,7 @@ export default function TokenInput({
   errorMsg,
   onChange,
   getTranslationInfo,
+  getEtransferwithdrawInfo,
   setErrorMsg,
 }: {
   fromAccount: { address: string; AESEncryptPrivateKey: string };
@@ -33,10 +34,13 @@ export default function TokenInput({
   errorMsg: string;
   onChange: (params: { amount: string; balance: string }) => void;
   getTranslationInfo: (num: string) => any;
+  getEtransferwithdrawInfo: (params: { amount: string }) => Promise<string>;
+
   setErrorMsg: (v: string) => void;
 }) {
   const currentNetwork = useCurrentNetworkInfo();
   const currentChain = useCurrentChain(token.chainId as ChainId);
+
   const isMainnet = useIsMainnet();
   const { t } = useTranslation();
   const [amount, setAmount] = useState<string>(value ? `${value} ${token.label ?? token.symbol}` : '');
@@ -86,32 +90,35 @@ export default function TokenInput({
       setMaxAmount('0');
       return;
     }
+    const balanceBN = divDecimals(balance, token.decimals);
+
+    const balanceStr = balanceBN.toString();
     if (token.symbol === defaultToken.symbol) {
       if (ZERO.plus(divDecimals(balance, token.decimals)).isLessThanOrEqualTo(maxFee)) {
-        setMaxAmount(divDecimals(balance, token.decimals).toString());
+        setMaxAmount(balanceStr);
         return;
       }
       const _isManagerSynced = await checkManagerSyncState(token.chainId);
       setIsManagerSynced(_isManagerSynced);
       if (!_isManagerSynced) return;
-      const fee = await getTranslationInfo(divDecimals(balance, token.decimals).toString());
+      const fee = await getTranslationInfo(balanceStr);
+      const etransferFee = await getEtransferwithdrawInfo({ amount: balanceStr });
       if (fee) {
-        setMaxAmount(divDecimals(balance, token.decimals).toString());
+        setMaxAmount(balanceBN.minus(etransferFee).toString());
       } else {
-        setMaxAmount(ZERO.plus(divDecimals(balance, token.decimals)).minus(maxFee).toString());
+        setMaxAmount(ZERO.plus(divDecimals(balance, token.decimals)).minus(maxFee).minus(etransferFee).toString());
       }
     } else {
-      setMaxAmount(divDecimals(balance, token.decimals).toString());
+      setMaxAmount(balanceStr);
     }
   }, [
     balance,
     checkManagerSyncState,
     defaultToken.symbol,
+    getEtransferwithdrawInfo,
     getTranslationInfo,
     maxFee,
-    token.chainId,
-    token.decimals,
-    token.symbol,
+    token,
   ]);
 
   useEffect(() => {
@@ -179,6 +186,7 @@ export default function TokenInput({
               onBlur={handleAmountBlur}
               onChange={(e) => {
                 const _v = parseInputNumberChange(e.target.value, undefined, token.decimals);
+                console.log(_v, '_v====');
                 setAmount(_v);
                 onChange({ amount: _v, balance });
               }}

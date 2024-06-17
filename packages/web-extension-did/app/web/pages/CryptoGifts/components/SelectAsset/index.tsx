@@ -82,7 +82,7 @@ export default function SelectAsset(props: ISelectAssetProps) {
           )}
         </div>
         <div className="info flex-column">
-          <p className="symbol">{item.label ?? item.alias ?? item.symbol}</p>
+          <p className="symbol">{item.label || item.alias || item.symbol}</p>
           <p className="network">{transNetworkText(item.chainId, !isMainnet)}</p>
         </div>
       </div>

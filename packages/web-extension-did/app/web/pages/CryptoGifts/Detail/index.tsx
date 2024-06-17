@@ -95,7 +95,7 @@ export default function CryptoGiftsDetail() {
               info?.grabbedAmount ?? 0,
               info?.decimal,
             )}/${formatTokenAmountShowWithDecimals(info?.totalAmount ?? 0, info?.decimal)} ${
-              info?.label ?? info?.alias ?? info?.symbol ?? ''
+              info?.label || info?.alias || info?.symbol || ''
             } claimed.`}</div>
             {(list ?? []).map((item, index) => (
               <div key={index} className="claimed-info flex-row-center">
@@ -117,7 +117,7 @@ export default function CryptoGiftsDetail() {
                     <div className="top-right flex-1">{`${formatTokenAmountShowWithDecimals(
                       item.amount ?? 0,
                       info?.decimal,
-                    )} ${info?.label ?? info?.alias ?? info?.symbol ?? ''}`}</div>
+                    )} ${info?.label || info?.alias || info?.symbol || ''}`}</div>
                   </div>
                   <div className="claimed-info-bottom flex-between-center">
                     <div className="bottom-left">{formatTransferTime(item.grabTime)}</div>

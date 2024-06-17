@@ -102,7 +102,7 @@ export default function ConfirmGift(props: IConfirmGiftProps) {
           <div className="gift-container-title">Crypto Gift</div>
           <div className="gift-container-amount flex-center">
             <div className="amount-number">{totalAmountShow}</div>
-            <div className="amount-symbol">{token.label ?? token.alias ?? token.symbol}</div>
+            <div className="amount-symbol">{token.label || token.alias || token.symbol}</div>
           </div>
           {totalAmountUsdShow && (
             <div className="gift-container-usd">{totalAmountUsdShow ? `≈${totalAmountUsdShow}` : ''}</div>
@@ -112,16 +112,16 @@ export default function ConfirmGift(props: IConfirmGiftProps) {
             <TokenImageDisplay width={24} className="symbol-icon" symbol={token.symbol} src={token.imageUrl} />
             <div className="balance-detail flex-1">
               <div className="balance-symbol flex-between-center">
-                <div className="flex-1">{`${token.label ?? token.alias ?? token.symbol} (${chianInfoShow(
+                <div className="flex-1">{`${token.label || token.alias || token.symbol} (${chianInfoShow(
                   token.chainId,
                 )})`}</div>
                 {showTransfer ? (
                   <Button className="flex-center" type="primary" onClick={onClickTransfer}>{`Transfer ${
-                    token.label ?? token.alias ?? token.symbol
+                    token.label || token.alias || token.symbol
                   }`}</Button>
                 ) : isShowBuy ? (
                   <Button className="flex-center" type="primary" onClick={onClickBuy}>{`Buy ${
-                    token.label ?? token.alias ?? token.symbol
+                    token.label || token.alias || token.symbol
                   }`}</Button>
                 ) : null}
               </div>
@@ -130,13 +130,13 @@ export default function ConfirmGift(props: IConfirmGiftProps) {
                   <div className="balance-amount">{`Insufficient balance`}</div>
                   {showTransfer && otherChainToken && (
                     <div className="balance-tip">{`You can transfer some ${
-                      token.label ?? token.alias ?? token.symbol
+                      token.label || token.alias || token.symbol
                     } from your ${transNetworkText(otherChainToken.chainId, !isMainnet)} address`}</div>
                   )}
                 </>
               ) : (
                 <div className="balance-amount flex-row-center">
-                  <div>{`${balance} ${token.label ?? token.alias ?? token.symbol}`}</div>
+                  <div>{`${balance} ${token.label || token.alias || token.symbol}`}</div>
                   {balanceInUsd && <div className="balance-amount-usd">{` ${balanceInUsd}`}</div>}
                 </div>
               )}

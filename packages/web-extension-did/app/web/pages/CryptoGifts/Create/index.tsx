@@ -121,7 +121,7 @@ export default function Create() {
     return curTab === RedPackageTypeEnum.RANDOM ? amount : ZERO.plus(quantity).times(amount).toFixed();
   }, [amount, curTab, quantity]);
   const totalAmountShow = useMemo(() => {
-    if (!totalAmount) return '0.00';
+    if (!totalAmount) return token.decimals == 0 ? '0' : '0.00';
     return formatAmountShow(totalAmount, token.decimals);
   }, [token.decimals, totalAmount]);
   const totalAmountUsdShow = useMemo(() => {
@@ -409,7 +409,7 @@ export default function Create() {
         return;
       }
       if (token.decimals == 0 && curTab === RedPackageTypeEnum.RANDOM && ZERO.plus(amount ?? '').lt(quantity ?? '')) {
-        setAmountErr(`At least 1 ${token.label ?? token.alias ?? token.symbol} for each crypto gift`);
+        setAmountErr(`At least 1 ${token.label || token.alias || token.symbol} for each crypto gift`);
         return;
       }
       setBtnLoading(true);
@@ -487,7 +487,7 @@ export default function Create() {
                     symbol={token.symbol}
                   />
                   <div className="select-asset-token flex-1">
-                    <div className="asset-token-symbol">{token.label ?? token.alias ?? token.symbol}</div>
+                    <div className="asset-token-symbol">{token.label || token.alias || token.symbol}</div>
                     <div className="asset-token-chain">{chianInfoShow(token.chainId)}</div>
                   </div>
                   <CustomSvg className="flex-center" type="DownDeposit" />
@@ -524,7 +524,7 @@ export default function Create() {
           </div>
           <div className="crypto-gift-total-amount">
             <span className="total-amount-number">{totalAmountShow}</span>
-            <span className="total-amount-symbol">{token.label ?? token.alias ?? token.symbol}</span>
+            <span className="total-amount-symbol">{token.label || token.alias || token.symbol}</span>
           </div>
           <Button
             className="crypto-gift-btn"

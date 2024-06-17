@@ -3,6 +3,7 @@ import { ENV_NAME } from '@portkey-wallet/constants/constants-ca/network';
 export const enum CUSTOM_EVENT_ENUM {
   LOGIN = 'login_custom',
   PAGESHOW = 'page_show',
+  NAV_BACK = 'nav_back',
 }
 
 export const enum NETWORK_TYPE {

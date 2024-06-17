@@ -19,3 +19,4 @@ export const reportUserCurrentNetwork = (networkType?: string) => {
 
 export const reportLogin = reportEventCurrying(CUSTOM_EVENT_ENUM.LOGIN);
 export const reportPageShow = reportEventCurrying(CUSTOM_EVENT_ENUM.PAGESHOW);
+export const reportNavBack = reportEventCurrying(CUSTOM_EVENT_ENUM.NAV_BACK);

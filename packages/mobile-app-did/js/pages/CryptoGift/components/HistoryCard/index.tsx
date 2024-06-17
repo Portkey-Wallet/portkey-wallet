@@ -105,7 +105,9 @@ export default function HistoryCard(props: IHistoryCardProps) {
                 <View style={styles.giftIconBg}>
                   <Svg icon="crypto-gift" size={pTd(12)} />
                 </View>
-                <TextM style={styles.text}>{redPacketDetail?.memo || 'Best Wishes'}</TextM>
+                <TextM style={styles.text} numberOfLines={1}>
+                  {redPacketDetail?.memo || 'Best Wishes'}
+                </TextM>
                 {redPacketDetail?.displayStatus && (
                   <View style={[styles.statusContainer, statusStyles.bg]}>
                     <TextS style={[styles.statusText, statusStyles.textColor]}>{redPacketDetail?.displayStatus}</TextS>
@@ -155,7 +157,7 @@ const styles = StyleSheet.create({
   historyCard: {
     flexDirection: 'column',
     height: pTd(98),
-    borderWidth: pTd(0.5),
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: defaultColors.neutralBorder,
     borderRadius: pTd(6),
     padding: pTd(12),

@@ -9,7 +9,7 @@ export interface INewUserOnlyProps {
 }
 export default function NewUserOnly(props: INewUserOnlyProps) {
   const { onSwitchChanged } = props;
-  const [isEnabled, setIsEnabled] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(true);
 
   const toggleSwitch = () => {
     setIsEnabled(previousState => {

@@ -25,7 +25,7 @@ import getTransferFee from './utils/getTransferFee';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { TransactionError } from '@portkey-wallet/constants/constants-ca/assets';
 import { the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/activity';
-import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
+import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
 import { AddressCheckError } from '@portkey-wallet/store/store-ca/assets/type';
@@ -282,7 +282,12 @@ export default function Send() {
           fee: timesDecimals(txFee, defaultToken.decimals).toFixed(),
           guardiansApproved: oneTimeApprovalList.current,
         };
-        if (CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(crossParams.tokenInfo.symbol)) {
+
+        const isGTMax = withdrawInfo?.maxAmount ? ZERO.plus(amount).lte(withdrawInfo?.maxAmount) : true;
+        const isLTMin = withdrawInfo?.minAmount ? ZERO.plus(amount).gte(withdrawInfo?.minAmount) : true;
+        const amountAllowed = withdrawInfo ? isGTMax && isLTMin : false;
+
+        if (CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(crossParams.tokenInfo.symbol) && amountAllowed) {
           await withdraw({
             chainId,
             toAddress: crossParams.toAddress,
@@ -336,6 +341,7 @@ export default function Send() {
     wallet.address,
     wallet?.caHash,
     withdraw,
+    withdrawInfo,
   ]);
 
   const checkLimit = useCheckLimit(tokenInfo.chainId);
@@ -354,6 +360,7 @@ export default function Send() {
     };
     InternalMessage.payload(PortkeyMessageTypes.SEND, JSON.stringify(params)).send();
   }, [amount, balance, chainId, isPrompt, stage, toAccount, tokenInfo, type]);
+  const { crossChain: crossChainFee } = useGetTxFee(chainId);
 
   const onCloseGuardianApprove = useCallback(() => {
     setOpenGuardiansApprove(false);
@@ -417,6 +424,11 @@ export default function Send() {
         if (timesDecimals(amount, tokenInfo.decimals).isGreaterThan(balance)) {
           return TransactionError.TOKEN_NOT_ENOUGH;
         }
+        if (isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF') && symbol === defaultToken.symbol) {
+          if (ZERO.plus(crossChainFee).isGreaterThanOrEqualTo(amount)) {
+            return TransactionError.CROSS_NOT_ENOUGH;
+          }
+        }
       } else if (type === 'nft') {
         if (ZERO.plus(amount).isGreaterThan(balance)) {
           return TransactionError.NFT_NOT_ENOUGH;
@@ -450,24 +462,35 @@ export default function Send() {
         isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF') &&
         CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(tokenSymbol)
       ) {
-        const { withdrawInfo } = await withdrawPreview({
-          chainId,
-          address: toAccount.address,
-          symbol: tokenSymbol,
-          amount,
-        });
-        setTxFee(withdrawInfo.aelfTransactionFee);
-        setWithdrawInfo(withdrawInfo);
-      } else {
-        const fee = await getTranslationInfo();
-        console.log('---getTranslationInfo', fee);
-        setWithdrawInfo(undefined);
+        try {
+          const { withdrawInfo } = await withdrawPreview({
+            chainId,
+            address: toAccount.address,
+            symbol: tokenSymbol,
+            amount,
+          });
+          const isGTMax = withdrawInfo?.maxAmount ? ZERO.plus(amount).lte(withdrawInfo.maxAmount) : true;
+          const isLTMin = withdrawInfo?.minAmount ? ZERO.plus(amount).gte(withdrawInfo.minAmount) : true;
 
-        if (fee) {
-          setTxFee(fee);
-        } else {
-          return TransactionError.FEE_NOT_ENOUGH;
+          const amountAllowed = withdrawInfo ? isGTMax && isLTMin : false;
+
+          if (amountAllowed) {
+            setTxFee(withdrawInfo.aelfTransactionFee);
+            setWithdrawInfo(withdrawInfo);
+            return '';
+          }
+        } catch (error) {
+          console.error(handleErrorMessage(error));
         }
+      }
+      const fee = await getTranslationInfo();
+      console.log('---getTranslationInfo', fee);
+      setWithdrawInfo(undefined);
+
+      if (fee) {
+        setTxFee(fee);
+      } else {
+        return TransactionError.FEE_NOT_ENOUGH;
       }
 
       return '';
@@ -493,8 +516,11 @@ export default function Send() {
     toAccount,
     handleOneTimeApproval,
     chainInfo?.chainId,
-    withdrawPreview,
     getTranslationInfo,
+    symbol,
+    defaultToken.symbol,
+    crossChainFee,
+    withdrawPreview,
   ]);
 
   const sendHandler = useCallback(async (): Promise<string | void> => {

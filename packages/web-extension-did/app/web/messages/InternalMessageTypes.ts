@@ -26,6 +26,9 @@ export const PromptRouteTypes = {
 
   SEND: 'SEND',
   RAMP: 'RAMP',
+
+  // crypto gift
+  CRYPTO_GIFT: 'CRYPTO_GIFT',
 } as const;
 
 export const WalletMessageTypes = walletMessage;
@@ -77,6 +80,9 @@ export const PortkeyMessageTypes = {
 
   SEND: 'SEND',
   RAMP: 'RAMP',
+
+  // crypto gift
+  CRYPTO_GIFT: 'CRYPTO_GIFT',
 } as const;
 
 /**

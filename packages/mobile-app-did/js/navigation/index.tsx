@@ -4,6 +4,7 @@ import { NavigationContainer, NavigationContainerRef } from '@react-navigation/n
 import { type ParamListBase } from '@react-navigation/core';
 import { createStackNavigator, StackNavigationProp, CardStyleInterpolators } from '@react-navigation/stack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { reportPageShow } from 'utils/analysisiReport';
 
 import Tab, { IRenderTabMenuItem } from './Tab';
 import navigationService from 'utils/navigationService';
@@ -30,8 +31,11 @@ import TabsDrawer from 'components/TabsDrawer';
 import ChatNav from 'pages/Chat/routes';
 import ProviderWebPage from 'pages/ProviderWebPage';
 import MarketSection from 'pages/Discover/components/MarketSection';
-import { reportPageShow } from 'utils/analysisiReport';
-
+import CryptoGift from 'pages/CryptoGift';
+import GiftHistory from 'pages/CryptoGift/GiftHistory';
+import GiftDetail from 'pages/CryptoGift/GiftDetail';
+import GiftResult from 'pages/CryptoGift/GiftResult';
+  
 // key: page route key, value: is page show
 const PageShowMap = new Map<string, boolean>();
 
@@ -45,6 +49,10 @@ export const productionNav = [
   { name: 'NFTDetail', component: NFTDetail },
   { name: 'ProviderWebPage', component: ProviderWebPage },
   { name: 'Deposit', component: Deposit },
+  { name: 'CryptoGift', component: CryptoGift },
+  { name: 'GiftHistory', component: GiftHistory },
+  { name: 'GiftDetail', component: GiftDetail },
+  { name: 'GiftResult', component: GiftResult },
 
   ...QrCodeNav,
   ...GuardianNav,

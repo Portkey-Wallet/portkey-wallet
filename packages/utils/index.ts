@@ -261,6 +261,7 @@ export const handleLoopFetch = async <T>({
 }): Promise<T> => {
   try {
     const result = await fetch();
+    console.log('wfs=== handleLoopFetch result', result);
     if (checkIsContinue) {
       const isContinue = checkIsContinue(result);
       if (!isContinue) return result;

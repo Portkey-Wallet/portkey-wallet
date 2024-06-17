@@ -20,6 +20,7 @@ import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
 import { cmsSlice } from '@portkey-wallet/store/store-ca/cms/slice';
 import { txFeeSlice } from '@portkey-wallet/store/store-ca/txFee/slice';
 import imSlice from '@portkey-wallet/store/store-ca/im/slice';
+import cryptoGiftSlice from '@portkey-wallet/store/store-ca/cryptoGift/slice';
 import { chatSlice } from './chat/slice';
 import securitySlice from '@portkey-wallet/store/store-ca/security/slice';
 import { rampSlice } from '@portkey-wallet/store/store-ca/ramp/slice';
@@ -64,6 +65,7 @@ const rootReducer = combineReducers({
   [discoverSlice.name]: discoverReducer,
   [txFeeSlice.name]: txFeeSlice.reducer,
   [imSlice.name]: imReducer,
+  [cryptoGiftSlice.name]: cryptoGiftSlice.reducer,
   [securitySlice.name]: securitySlice.reducer,
   [chatSlice.name]: chatSlice.reducer,
   [rampSlice.name]: rampSlice.reducer,

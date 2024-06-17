@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useRef, useCallback } from 'react';
-import { NavigationContainer, NavigationContainerRef, NavigationState } from '@react-navigation/native';
+import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
 import { type ParamListBase } from '@react-navigation/core';
 import { createStackNavigator, StackNavigationProp, CardStyleInterpolators } from '@react-navigation/stack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -32,6 +32,7 @@ import ProviderWebPage from 'pages/ProviderWebPage';
 import MarketSection from 'pages/Discover/components/MarketSection';
 import { reportPageShow } from 'utils/analysisiReport';
 
+// key: page route key, value: is page show
 const PageShowMap = new Map<string, boolean>();
 
 const Stack = isIOS ? createNativeStackNavigator() : createStackNavigator();

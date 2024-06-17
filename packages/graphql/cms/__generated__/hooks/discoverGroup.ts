@@ -92,6 +92,8 @@ export type DiscoverGroupQuery = {
       url?: string | null;
       user_created?: string | null;
       user_updated?: string | null;
+      appLink?: string | null;
+      extensionLink?: string | null;
       date_created_func?: {
         __typename?: 'datetime_functions';
         year?: number | null;
@@ -160,6 +162,8 @@ export type DiscoverGroupQuery = {
           url?: string | null;
           user_created?: string | null;
           user_updated?: string | null;
+          appLink?: string | null;
+          extensionLink?: string | null;
           imgUrl?: {
             __typename?: 'directus_files';
             id: string;
@@ -394,6 +398,8 @@ export const DiscoverGroupDocument = gql`
             url
             user_created
             user_updated
+            appLink
+            extensionLink
           }
           items_func {
             count
@@ -407,6 +413,8 @@ export const DiscoverGroupDocument = gql`
         url
         user_created
         user_updated
+        appLink
+        extensionLink
       }
       items_func {
         count

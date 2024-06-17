@@ -86,6 +86,8 @@ export type TokenDetailBanner_PortkeyCard_By_IdQuery = {
           buttonTitle?: string | null;
           url?: string | null;
           type?: number | null;
+          appLink?: string | null;
+          extensionLink?: string | null;
           imgUrl?: {
             __typename?: 'directus_files';
             id: string;
@@ -148,6 +150,8 @@ export type TokenDetailBanner_PortkeyCard_By_IdQuery = {
       buttonTitle?: string | null;
       url?: string | null;
       type?: number | null;
+      appLink?: string | null;
+      extensionLink?: string | null;
     } | null;
   } | null;
 };
@@ -290,6 +294,8 @@ export const TokenDetailBanner_PortkeyCard_By_IdDocument = gql`
             }
             url
             type
+            appLink
+            extensionLink
           }
         }
       }
@@ -303,6 +309,8 @@ export const TokenDetailBanner_PortkeyCard_By_IdDocument = gql`
         buttonTitle
         url
         type
+        appLink
+        extensionLink
       }
     }
   }

@@ -72,6 +72,8 @@ query discoverLearnBanner_portkeyCard($filter: discoverLearnBanner_filter, $sort
                     }
                     url
                     type
+                    appLink
+                    extensionLink
                 }
             }
         }
@@ -85,6 +87,8 @@ query discoverLearnBanner_portkeyCard($filter: discoverLearnBanner_filter, $sort
             buttonTitle
             url
             type
+            appLink
+            extensionLink
         }
     }
 }

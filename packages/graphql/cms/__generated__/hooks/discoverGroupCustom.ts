@@ -36,6 +36,8 @@ export type DiscoverGroupCustomQuery = {
       title?: string | null;
       description?: string | null;
       url?: string | null;
+      appLink?: string | null;
+      extensionLink?: string | null;
       imgUrl?: { __typename?: 'directus_files'; filename_disk?: string | null } | null;
     } | null> | null;
   }>;
@@ -68,6 +70,8 @@ export const DiscoverGroupCustomDocument = gql`
         title
         description
         url
+        appLink
+        extensionLink
         imgUrl {
           filename_disk
         }

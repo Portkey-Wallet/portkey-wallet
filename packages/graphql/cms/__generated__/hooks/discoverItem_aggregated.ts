@@ -36,6 +36,8 @@ export type DiscoverItem_AggregatedQuery = {
       url?: number | null;
       user_created?: number | null;
       user_updated?: number | null;
+      appLink?: number | null;
+      extensionLink?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'discoverItem_aggregated_count';
@@ -52,6 +54,8 @@ export type DiscoverItem_AggregatedQuery = {
       url?: number | null;
       user_created?: number | null;
       user_updated?: number | null;
+      appLink?: number | null;
+      extensionLink?: number | null;
     } | null;
     avg?: {
       __typename?: 'discoverItem_aggregated_fields';
@@ -133,6 +137,8 @@ export const DiscoverItem_AggregatedDocument = gql`
         url
         user_created
         user_updated
+        appLink
+        extensionLink
       }
       countDistinct {
         date_created
@@ -148,6 +154,8 @@ export const DiscoverItem_AggregatedDocument = gql`
         url
         user_created
         user_updated
+        appLink
+        extensionLink
       }
       avg {
         group

@@ -85,6 +85,8 @@ export type DiscoverLearnGroupQuery = {
             buttonTitle?: string | null;
             url?: string | null;
             type?: number | null;
+            appLink?: string | null;
+            extensionLink?: string | null;
             imgUrl?: {
               __typename?: 'directus_files';
               id: string;
@@ -277,6 +279,8 @@ export const DiscoverLearnGroupDocument = gql`
               }
               url
               type
+              appLink
+              extensionLink
             }
           }
           items_func {

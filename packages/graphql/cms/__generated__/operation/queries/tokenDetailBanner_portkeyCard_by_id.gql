@@ -76,6 +76,8 @@ query tokenDetailBanner_portkeyCard_by_id($filter: tokenDetailBanner_filter, $so
                     }
                     url
                     type
+                    appLink
+                    extensionLink
                 }
             }
         }
@@ -89,6 +91,8 @@ query tokenDetailBanner_portkeyCard_by_id($filter: tokenDetailBanner_filter, $so
             buttonTitle
             url
             type
+            appLink
+            extensionLink
         }
     }
 }

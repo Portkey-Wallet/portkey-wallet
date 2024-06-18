@@ -30,6 +30,8 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { TabRouteNameEnum } from 'types/navigate';
 import { useGetCryptoGiftConfig, useSendCryptoGift } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { reportEnterSendCryptoGiftPage, reportSendCryptoGiftSuccess } from 'utils/analysisiReport';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 export interface ISendPacketGroupPageProps {
   isCryptoGift?: boolean;
 }
@@ -48,6 +50,11 @@ export default function SendPacketGroupPage() {
   const { getCryptoGiftContractAddress } = useGetCryptoGiftConfig();
   const reportAnalyticsEvent = useReportAnalyticsEvent();
   const sendCryptoGift = useSendCryptoGift();
+
+  useEffectOnce(() => {
+    if (isCryptoGift) reportEnterSendCryptoGiftPage();
+  });
+
   const onPressBtn = useLockCallback(
     async (values: CryptoValuesType) => {
       const { token } = values;
@@ -144,6 +151,7 @@ export default function SendPacketGroupPage() {
             token,
             isNewUsersOnly: values.isNewUserOnly,
           });
+          reportSendCryptoGiftSuccess();
           navigationService.navigate('GiftResult', {
             giftId,
           });

@@ -7,7 +7,7 @@ import {
 
 const firebaseAnalytics = analytics();
 
-const reportEventCurrying = (eventName: CUSTOM_EVENT_ENUM) => {
+export const reportEventCurrying = (eventName: CUSTOM_EVENT_ENUM) => {
   return (params?: eventParamsType) => firebaseAnalytics.logEvent(eventName, params);
 };
 
@@ -18,3 +18,7 @@ export const reportUserCurrentNetwork = (networkType?: string) => {
 };
 
 export const reportLogin = reportEventCurrying(CUSTOM_EVENT_ENUM.LOGIN);
+export const reportPageShow = reportEventCurrying(CUSTOM_EVENT_ENUM.PAGESHOW);
+export const reportNavBack = reportEventCurrying(CUSTOM_EVENT_ENUM.NAV_BACK);
+export const reportEnterSendCryptoGiftPage = reportEventCurrying(CUSTOM_EVENT_ENUM.ENTER_SEND_CRYPTO_GIFT_PAGE);
+export const reportSendCryptoGiftSuccess = reportEventCurrying(CUSTOM_EVENT_ENUM.SEND_CRYPTO_GIFT_SUCCESS);

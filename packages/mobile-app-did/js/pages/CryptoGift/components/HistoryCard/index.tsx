@@ -7,7 +7,6 @@ import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import { FontStyles } from 'assets/theme/styles';
 import navigationService from 'utils/navigationService';
-import { RedPackageDetail, RedPackageStatusEnum } from '@portkey-wallet/im';
 import PortkeySkeleton from 'components/PortkeySkeleton';
 import GStyles from 'assets/theme/GStyles';
 import { formatTransferTime } from '@portkey-wallet/utils/time';
@@ -125,7 +124,7 @@ export default function HistoryCard(props: IHistoryCardProps) {
                   {getClaimedShow(
                     formatTokenAmountShowWithDecimals(redPacketDetail?.grabbedAmount, redPacketDetail?.decimals),
                     formatTokenAmountShowWithDecimals(redPacketDetail?.totalAmount, redPacketDetail?.decimals),
-                    redPacketDetail?.symbol || 'ELF',
+                    redPacketDetail?.label || redPacketDetail?.alias || redPacketDetail?.symbol || '--',
                   )}
                 </TextS>
               </View>

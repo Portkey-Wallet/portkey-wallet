@@ -161,11 +161,9 @@ export const useMarket = () => {
         if (sortDir) {
           params.sortDir = sortDir;
         }
-        console.log('wfs=== getCryptoCurrencyList params', params);
         const result = await request.discover.getCryptoCurrencyList({
           params: params,
         });
-        console.log('wfs=== fetchCryptoCurrencyList result', result);
         return result;
       } catch (e) {
         console.log('wfs=== fetchCryptoCurrencyList error', e);

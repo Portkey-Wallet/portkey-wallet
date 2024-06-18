@@ -1,7 +1,10 @@
 import * as React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { useRef, useCallback } from 'react';
+import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
+import { type ParamListBase } from '@react-navigation/core';
 import { createStackNavigator, StackNavigationProp, CardStyleInterpolators } from '@react-navigation/stack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { reportPageShow } from 'utils/analysisiReport';
 
 import Tab, { IRenderTabMenuItem } from './Tab';
 import navigationService from 'utils/navigationService';
@@ -32,6 +35,9 @@ import CryptoGift from 'pages/CryptoGift';
 import GiftHistory from 'pages/CryptoGift/GiftHistory';
 import GiftDetail from 'pages/CryptoGift/GiftDetail';
 import GiftResult from 'pages/CryptoGift/GiftResult';
+
+// key: page route key, value: is page show
+const PageShowMap = new Map<string, boolean>();
 
 const Stack = isIOS ? createNativeStackNavigator() : createStackNavigator();
 export const productionNav = [
@@ -76,8 +82,23 @@ export type RootStackName = typeof devNav[number]['name'];
 
 export type RootNavigationProp = StackNavigationProp<RootStackParamList>;
 export default function NavigationRoot() {
+  const navigationRef = useRef<NavigationContainerRef<ParamListBase>>();
+  const refHandler = (ref: any) => {
+    navigationRef.current = ref;
+    navigationService.setTopLevelNavigator(ref);
+  };
+
+  const onNavigationStateChange = useCallback(async () => {
+    const currentRouteName = navigationRef?.current?.getCurrentRoute()?.name;
+    const currentRouteKey = navigationRef?.current?.getCurrentRoute()?.key;
+    if (!currentRouteName || !currentRouteKey) return;
+    if (PageShowMap.get(currentRouteKey)) return;
+    reportPageShow({ page_name: currentRouteName });
+    PageShowMap.set(currentRouteKey, true);
+  }, []);
+
   return (
-    <NavigationContainer ref={navigationService.setTopLevelNavigator}>
+    <NavigationContainer ref={refHandler} onStateChange={onNavigationStateChange}>
       <TabsDrawer>
         <Stack.Navigator
           initialRouteName="Referral"

@@ -157,7 +157,7 @@ const DashBoardHeader: React.FC<DashBoardHeaderProps> = ({ title, scrollY }) => 
         </Touchable>
       </View>
     );
-  }, [onCopyAddress, qrScanPermissionAndToast]);
+  }, [onCopyAddress, onGiftClick, qrScanPermissionAndToast]);
 
   return (
     <View style={styles.container}>

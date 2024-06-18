@@ -4,6 +4,8 @@ export const enum CUSTOM_EVENT_ENUM {
   LOGIN = 'login_custom',
   PAGESHOW = 'page_show',
   NAV_BACK = 'nav_back',
+  ENTER_SEND_CRYPTO_GIFT_PAGE = 'enter_send_crypto_gift_page',
+  SEND_CRYPTO_GIFT_SUCCESS = 'send_crypto_gift_success',
 }
 
 export const enum NETWORK_TYPE {

@@ -103,9 +103,7 @@ export default function GiftDetail() {
   }, [currentNetworkInfo.referralUrl, id]);
   const onSharePress = useCallback(async () => {
     await Share.share({
-      message: shareUrl,
       url: shareUrl,
-      title: 'Crypto Gift',
     }).catch(shareError => {
       console.log(shareError);
     });

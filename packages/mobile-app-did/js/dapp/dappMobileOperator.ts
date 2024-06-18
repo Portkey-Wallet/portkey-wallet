@@ -541,7 +541,7 @@ export default class DappMobileOperator extends Operator {
         payload = request.payload;
         try {
           const result = await Share.share({
-            message: payload.url,
+            message: payload.message,
             url: payload.url,
             title: payload.title || '',
           });

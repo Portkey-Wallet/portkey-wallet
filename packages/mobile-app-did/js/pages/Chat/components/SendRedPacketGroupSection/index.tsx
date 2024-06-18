@@ -61,7 +61,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
   const { getTokenInfo } = useGetRedPackageConfig();
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
 
-  const isNewUserOnly = useRef<boolean>(false);
+  const isNewUserOnly = useRef<boolean>(true);
 
   const defaultToken = useDefaultToken(MAIN_CHAIN_ID);
 

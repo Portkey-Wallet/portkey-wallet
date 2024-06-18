@@ -46,13 +46,13 @@ export default function GiftDetail() {
       return (
         <ReceiverItem
           item={item}
-          symbol={info?.symbol || 'token'}
+          symbol={info?.label || info?.alias || info?.symbol || ''}
           isLuckyKing={!!item && item.userId === info?.luckKingId}
           decimals={info?.decimal}
         />
       );
     },
-    [info?.decimal, info?.luckKingId, info?.symbol],
+    [info?.alias, info?.decimal, info?.label, info?.luckKingId, info?.symbol],
   );
   const renderDivider = useCallback(() => {
     return <Divider style={styles.divider} />;
@@ -71,7 +71,7 @@ export default function GiftDetail() {
         `Active, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
           info?.grabbedAmount ? formatTokenAmountShowWithDecimals(info?.grabbedAmount, info?.decimal) : '--'
         }/${info?.totalAmount ? formatTokenAmountShowWithDecimals(info?.totalAmount, info?.decimal) : '--'} ${
-          info?.symbol || 'token'
+          info?.label || info?.alias || info?.symbol || ''
         } claimed.`,
       );
     } else if (info?.status === CryptoGiftOriginalStatus.FullyClaimed) {
@@ -79,23 +79,25 @@ export default function GiftDetail() {
         `All claimed, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
           info?.grabbedAmount ? formatTokenAmountShowWithDecimals(info?.grabbedAmount, info?.decimal) : '--'
         }/${info?.totalAmount ? formatTokenAmountShowWithDecimals(info?.totalAmount, info?.decimal) : '--'} ${
-          info?.symbol || 'token'
+          info?.label || info?.alias || info?.symbol || ''
         } claimed.`,
       );
     }
     return `Expired, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
       info?.grabbedAmount ? formatTokenAmountShowWithDecimals(info?.grabbedAmount, info?.decimal) : '--'
     }/${info?.totalAmount ? formatTokenAmountShowWithDecimals(info?.totalAmount, info?.decimal) : '--'} ${
-      info?.symbol || 'token'
+      info?.label || info?.alias || info?.symbol || ''
     } claimed.`;
   }, [
     info?.status,
     info?.grabbed,
     info?.count,
     info?.grabbedAmount,
-    info?.totalAmount,
-    info?.symbol,
     info?.decimal,
+    info?.totalAmount,
+    info?.label,
+    info?.alias,
+    info?.symbol,
     t,
   ]);
   const shareUrl = useMemo(() => {
@@ -103,6 +105,7 @@ export default function GiftDetail() {
   }, [currentNetworkInfo.referralUrl, id]);
   const onSharePress = useCallback(async () => {
     await Share.share({
+      // message: 'msg',
       url: shareUrl,
     }).catch(shareError => {
       console.log(shareError);

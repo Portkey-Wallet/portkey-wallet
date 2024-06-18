@@ -19,6 +19,7 @@ export default function useJump() {
             },
           });
         } else if (type === 'native') {
+          console.log('wfs=== typeof params', params.toTab);
           navigationService.navigate(location as NavigateName, params);
         } else {
           Linking.openURL(location);

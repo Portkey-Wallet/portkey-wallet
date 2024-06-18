@@ -6,6 +6,7 @@ export interface ICryptoBoxAssetItemType {
   chainId: ChainId;
   address: string;
   symbol: string;
+  label?: string;
   imageUrl: string;
   decimals: number | string;
   alias?: string;
@@ -13,4 +14,5 @@ export interface ICryptoBoxAssetItemType {
   assetType?: AssetType;
   isSeed?: boolean;
   seedType?: SeedTypeEnum;
+  tokenContractAddress?: string;
 }

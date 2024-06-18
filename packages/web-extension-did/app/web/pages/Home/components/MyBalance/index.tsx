@@ -50,6 +50,7 @@ import { useEffectOnce } from '@portkey-wallet/hooks';
 import SkeletonCom from 'pages/components/SkeletonCom';
 import CommonBanner from 'components/CommonBanner';
 import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
+import BigScreenHeader from 'pages/components/BigScreenHeader';
 
 export interface TransactionResult {
   total: number;
@@ -154,6 +155,7 @@ export default function MyBalance() {
         tokenId: isNFT ? v.nftInfo?.tokenId : '',
         isSeed: isNFT ? v.nftInfo?.isSeed : false,
         seedType: isNFT ? v.nftInfo?.seedType : SeedTypeEnum.None,
+        label: v.label,
       };
       navigate(`/${navTarget}/${type}/${v.symbol}`, { state });
     },
@@ -249,7 +251,7 @@ export default function MyBalance() {
   }, [isBuySectionShow, isRampShow, navigate]);
 
   const onBalanceWrapScroll = useCallback(() => {
-    const height = isPrompt ? 72 : 60;
+    const height = isPrompt ? (isNotLessThan768 ? 132 : 72) : 60;
     const targetEle = document.querySelector('.balance-tab');
     const targetTop = targetEle?.getBoundingClientRect()?.top ?? 0;
     if (targetTop <= height) {
@@ -257,7 +259,7 @@ export default function MyBalance() {
     } else {
       setDetailScroll(false);
     }
-  }, [isPrompt]);
+  }, [isNotLessThan768, isPrompt]);
 
   const renderUsdShow = useCallback(() => {
     let text = '';
@@ -307,6 +309,7 @@ export default function MyBalance() {
 
   return (
     <div className={clsx('balance', detailScroll && 'detail-scroll')} onScroll={onBalanceWrapScroll}>
+      <BigScreenHeader />
       <div className="main-content-wrap flex-column">
         <div className={clsx('balance-amount-wrap', 'flex-column', isPrompt && 'is-prompt')}>
           <div className="wallet-name-wrap flex-row-center">

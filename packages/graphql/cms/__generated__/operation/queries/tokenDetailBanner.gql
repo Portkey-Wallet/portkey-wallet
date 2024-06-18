@@ -72,6 +72,8 @@ query tokenDetailBanner($filter: directus_files_filter, $sort: [String], $limit:
                         }
                         url
                         type
+                        appLink
+                        extensionLink
                     }
                 }
                 items_func{

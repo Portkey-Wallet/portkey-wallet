@@ -2573,6 +2573,47 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
+"@etransfer/core@^1.0.0-alpha.9":
+  version "1.0.0-alpha.9"
+  resolved "https://registry.yarnpkg.com/@etransfer/core/-/core-1.0.0-alpha.9.tgz#ad66e96be392f6fcc756b5fd1257727850139aa5"
+  integrity sha512-A234yA/VLYmrZD5e41oesgIPwLboIta3kQOBjL1haqWH1tIgzLYVGHJLvK2PL8nLJcgOyxqdn00XdMTk7CHzbw==
+  dependencies:
+    "@etransfer/services" "^1.0.0-alpha.9"
+    "@etransfer/types" "^1.0.0-alpha.9"
+    "@etransfer/utils" "^1.0.0-alpha.9"
+
+"@etransfer/request@^1.0.0-alpha.9":
+  version "1.0.0-alpha.9"
+  resolved "https://registry.yarnpkg.com/@etransfer/request/-/request-1.0.0-alpha.9.tgz#59738a50997ad871520f0b3928dd2e38ad22438b"
+  integrity sha512-dz3lZlYvqTHLMODLmaMUIDJqm0PQ+K5HeZgFGpj0yk0Qh1vUuA/u4lyXXnEZMR4LyDpXpTHnyP3pWi+MUKMJkA==
+  dependencies:
+    "@etransfer/types" "^1.0.0-alpha.9"
+    "@etransfer/utils" "^1.0.0-alpha.9"
+    axios "^0.24.0"
+
+"@etransfer/services@^1.0.0-alpha.9":
+  version "1.0.0-alpha.9"
+  resolved "https://registry.yarnpkg.com/@etransfer/services/-/services-1.0.0-alpha.9.tgz#53ff70b9691d238d02cd154710408c198cea676f"
+  integrity sha512-xC1kbrw+YZpcQW6bxqyKKd2dBRuDQqiqTj0iqAqI0XQ+cTfqtSY6+5FAnBOTZpSASB6Lw1x74FPWnJgxgI+zAQ==
+  dependencies:
+    "@etransfer/request" "^1.0.0-alpha.9"
+    "@etransfer/types" "^1.0.0-alpha.9"
+    "@etransfer/utils" "^1.0.0-alpha.9"
+    "@portkey/types" "2.4.0"
+
+"@etransfer/types@^1.0.0-alpha.9":
+  version "1.0.0-alpha.9"
+  resolved "https://registry.yarnpkg.com/@etransfer/types/-/types-1.0.0-alpha.9.tgz#e298ff63c7da1f8077b096404b55e314d0125fe0"
+  integrity sha512-pl8JY0UxJDkNOFzB2gKuunr4YIwe6T7CbHxviAnStGXOgG1domdcQcUqBJw5wo8eThfgTBIbTQpOylc867UYiw==
+
+"@etransfer/utils@^1.0.0-alpha.9":
+  version "1.0.0-alpha.9"
+  resolved "https://registry.yarnpkg.com/@etransfer/utils/-/utils-1.0.0-alpha.9.tgz#93d7d97b26dd68c339d6fbf633a72be70a487167"
+  integrity sha512-EX5BBaFLgl2pnz5/ciMm2b8fAirFq1WeiaYxf5ld7T80MWZxxWI1OBc4kro60hfD27Itnx3APO5wZkhSZtntqQ==
+  dependencies:
+    "@etransfer/services" "^1.0.0-alpha.9"
+    "@etransfer/types" "^1.0.0-alpha.9"
+
 "@expo/bunyan@4.0.0", "@expo/bunyan@^4.0.0":
   version "4.0.0"
   resolved "https://registry.npmmirror.com/@expo/bunyan/-/bunyan-4.0.0.tgz#be0c1de943c7987a9fbd309ea0b1acd605890c7b"
@@ -5717,6 +5758,11 @@
   integrity sha512-5RtTDXjPfTvxCWQf+5WvDHDIDpG03me1Dlhjw4wrWGh1BE/hKaaQ/Rz/eg//RXFjbv/g5IjL8xuF/XJQPu9KsA==
   dependencies:
     "@abp/signalr" "^7.0.0"
+
+"@portkey/types@2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@portkey/types/-/types-2.4.0.tgz#9ee1fb494831f3c0d4be4ccbebaf3c7a3e9531da"
+  integrity sha512-U/VRg9Y0uV9KYC0cRtMicL4Us950l7w1OiP+aSncSKdi4Cj2/LBgSzVo3L84BrBhuEUa8UnonpuUcsejcvldKQ==
 
 "@portkey/types@^2.0.0-alpha.0":
   version "2.0.0-alpha.0"
@@ -9548,6 +9594,13 @@ axios@^0.21.0, axios@^0.21.4:
   integrity sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==
   dependencies:
     follow-redirects "^1.14.0"
+
+axios@^0.24.0:
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.24.0.tgz#804e6fa1e4b9c5288501dd9dff56a7a0940d20d6"
+  integrity sha512-Q6cWsys88HoPgAaFAVUb0WpPk0O8iTeisR9IMqy9G8AbO4NlpVknrnQS03zzF9PGAWgO3cgletO3VjV/P7VztA==
+  dependencies:
+    follow-redirects "^1.14.4"
 
 axios@^0.27.2:
   version "0.27.2"
@@ -16042,6 +16095,11 @@ follow-redirects@^1.0.0, follow-redirects@^1.10.0, follow-redirects@^1.14.0, fol
   version "1.15.2"
   resolved "https://registry.npmmirror.com/follow-redirects/-/follow-redirects-1.15.2.tgz#b460864144ba63f2681096f274c4e57026da2c13"
   integrity sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==
+
+follow-redirects@^1.14.4:
+  version "1.15.6"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.6.tgz#7f815c0cda4249c74ff09e95ef97c23b5fd0399b"
+  integrity sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==
 
 fontfaceobserver@^2.1.0:
   version "2.3.0"

@@ -10,5 +10,7 @@ enum SandboxEventTypes {
   getTransactionRaw = 'getTransactionRaw',
 
   initViewContract = 'initViewContract',
+  // cross etransfer
+  etransferCrossTransfer = 'etransferCrossTransfer',
 }
 export default SandboxEventTypes;

@@ -58,5 +58,7 @@ query portkeyCard_by_id($filter: directus_files_filter, $sort: [String], $limit:
         }
         url
         type
+        appLink
+        extensionLink
     }
 }

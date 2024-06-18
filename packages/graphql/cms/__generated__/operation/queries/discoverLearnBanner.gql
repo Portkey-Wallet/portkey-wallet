@@ -68,6 +68,8 @@ query discoverLearnBanner($filter: directus_files_filter, $sort: [String], $limi
                         }
                         url
                         type
+                        appLink
+                        extensionLink
                     }
                 }
                 items_func{

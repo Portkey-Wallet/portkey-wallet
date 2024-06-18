@@ -5,6 +5,7 @@ import type { SendType } from './send';
 
 export interface IToSendHomeAssetParamsBaseType {
   symbol: string;
+  label?: string;
   chainId: ChainId;
   balance: string;
   imageUrl: string;
@@ -53,4 +54,7 @@ export interface IToSendPreviewParamsType extends IToSendHomeParamsType {
   successNavigateName?: any;
   guardiansApproved?: GuardiansApprovedType[];
   isAutoSend?: boolean;
+  receiveAmount?: string;
+  receiveAmountUsd?: string;
+  isEtransferCrossInLimit?: boolean;
 }

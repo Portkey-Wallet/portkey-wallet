@@ -28,6 +28,10 @@ import TabsDrawer from 'components/TabsDrawer';
 import ChatNav from 'pages/Chat/routes';
 import ProviderWebPage from 'pages/ProviderWebPage';
 import MarketSection from 'pages/Discover/components/MarketSection';
+import CryptoGift from 'pages/CryptoGift';
+import GiftHistory from 'pages/CryptoGift/GiftHistory';
+import GiftDetail from 'pages/CryptoGift/GiftDetail';
+import GiftResult from 'pages/CryptoGift/GiftResult';
 
 const Stack = isIOS ? createNativeStackNavigator() : createStackNavigator();
 export const productionNav = [
@@ -39,6 +43,10 @@ export const productionNav = [
   { name: 'NFTDetail', component: NFTDetail },
   { name: 'ProviderWebPage', component: ProviderWebPage },
   { name: 'Deposit', component: Deposit },
+  { name: 'CryptoGift', component: CryptoGift },
+  { name: 'GiftHistory', component: GiftHistory },
+  { name: 'GiftDetail', component: GiftDetail },
+  { name: 'GiftResult', component: GiftResult },
 
   ...QrCodeNav,
   ...GuardianNav,

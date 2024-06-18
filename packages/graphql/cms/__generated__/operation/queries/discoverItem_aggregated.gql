@@ -16,6 +16,8 @@ query discoverItem_aggregated($groupBy: [String], $filter: discoverItem_filter, 
             url
             user_created
             user_updated
+            appLink
+            extensionLink
         }
         countDistinct{
             date_created
@@ -31,6 +33,8 @@ query discoverItem_aggregated($groupBy: [String], $filter: discoverItem_filter, 
             url
             user_created
             user_updated
+            appLink
+            extensionLink
         }
         avg{
             group

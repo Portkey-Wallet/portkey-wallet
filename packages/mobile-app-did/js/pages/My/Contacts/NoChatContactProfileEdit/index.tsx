@@ -14,7 +14,6 @@ import ContactAddress from '../ContactEdit/components/ContactAddress';
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
 import ChainOverlay from 'components/ChainOverlay';
 import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
-import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import CommonToast from 'components/CommonToast';
 import ActionSheet from 'components/ActionSheet';
@@ -29,6 +28,7 @@ import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { defaultColors } from 'assets/theme';
 import myEvents from 'utils/deviceEvent';
 import { useInputFocus } from 'hooks/useInputFocus';
+import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 
 type RouterParams = {
   contact?: ContactItemType;
@@ -41,7 +41,7 @@ interface EditContactType extends EditContactItemApiType {
   addresses: EditAddressType[];
 }
 
-type CustomChainItemType = ChainItemType & {
+type CustomChainItemType = IChainItemType & {
   customChainName: string;
 };
 

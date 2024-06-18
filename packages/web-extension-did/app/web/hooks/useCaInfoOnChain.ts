@@ -2,8 +2,8 @@ import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useInterval from '@portkey-wallet/hooks/useInterval';
 import { setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
-import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { ChainId, ChainType } from '@portkey-wallet/types';
+import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 import { isAddress } from '@portkey-wallet/utils';
 import { useCallback } from 'react';
 import { useAppDispatch } from 'store/Provider/hooks';
@@ -24,7 +24,7 @@ export const useCaInfoOnChain = () => {
       pin,
     }: {
       pin: string;
-      chain: ChainItemType;
+      chain: IChainItemType;
       caHash: string;
       walletType: ChainType;
     }) => {

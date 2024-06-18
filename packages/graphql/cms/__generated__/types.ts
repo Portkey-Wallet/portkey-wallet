@@ -1753,11 +1753,13 @@ export type DiscoverGroup_Filter = {
 
 export type DiscoverItem = {
   __typename?: 'discoverItem';
+  appLink?: Maybe<Scalars['String']>;
   date_created?: Maybe<Scalars['Date']>;
   date_created_func?: Maybe<Datetime_Functions>;
   date_updated?: Maybe<Scalars['Date']>;
   date_updated_func?: Maybe<Datetime_Functions>;
   description?: Maybe<Scalars['String']>;
+  extensionLink?: Maybe<Scalars['String']>;
   group?: Maybe<DiscoverGroup>;
   id: Scalars['ID'];
   imgUrl?: Maybe<Directus_Files>;
@@ -1804,9 +1806,11 @@ export type DiscoverItem_Aggregated = {
 
 export type DiscoverItem_Aggregated_Count = {
   __typename?: 'discoverItem_aggregated_count';
+  appLink?: Maybe<Scalars['Int']>;
   date_created?: Maybe<Scalars['Int']>;
   date_updated?: Maybe<Scalars['Int']>;
   description?: Maybe<Scalars['Int']>;
+  extensionLink?: Maybe<Scalars['Int']>;
   group?: Maybe<Scalars['Int']>;
   id?: Maybe<Scalars['Int']>;
   /** Not support svg */
@@ -1831,11 +1835,13 @@ export type DiscoverItem_Aggregated_Fields = {
 export type DiscoverItem_Filter = {
   _and?: InputMaybe<Array<InputMaybe<DiscoverItem_Filter>>>;
   _or?: InputMaybe<Array<InputMaybe<DiscoverItem_Filter>>>;
+  appLink?: InputMaybe<String_Filter_Operators>;
   date_created?: InputMaybe<Date_Filter_Operators>;
   date_created_func?: InputMaybe<Datetime_Function_Filter_Operators>;
   date_updated?: InputMaybe<Date_Filter_Operators>;
   date_updated_func?: InputMaybe<Datetime_Function_Filter_Operators>;
   description?: InputMaybe<String_Filter_Operators>;
+  extensionLink?: InputMaybe<String_Filter_Operators>;
   group?: InputMaybe<DiscoverGroup_Filter>;
   id?: InputMaybe<Number_Filter_Operators>;
   imgUrl?: InputMaybe<Directus_Files_Filter>;
@@ -3256,8 +3262,10 @@ export type OfficialSocialMedia_Filter = {
 
 export type PortkeyCard = {
   __typename?: 'portkeyCard';
+  appLink?: Maybe<Scalars['String']>;
   buttonTitle?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  extensionLink?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
   imgUrl?: Maybe<Directus_Files>;
   index?: Maybe<Scalars['GraphQLBigInt']>;
@@ -3293,8 +3301,10 @@ export type PortkeyCard_Aggregated = {
 
 export type PortkeyCard_Aggregated_Count = {
   __typename?: 'portkeyCard_aggregated_count';
+  appLink?: Maybe<Scalars['Int']>;
   buttonTitle?: Maybe<Scalars['Int']>;
   description?: Maybe<Scalars['Int']>;
+  extensionLink?: Maybe<Scalars['Int']>;
   id?: Maybe<Scalars['Int']>;
   imgUrl?: Maybe<Scalars['Int']>;
   index?: Maybe<Scalars['Int']>;
@@ -3315,8 +3325,10 @@ export type PortkeyCard_Aggregated_Fields = {
 export type PortkeyCard_Filter = {
   _and?: InputMaybe<Array<InputMaybe<PortkeyCard_Filter>>>;
   _or?: InputMaybe<Array<InputMaybe<PortkeyCard_Filter>>>;
+  appLink?: InputMaybe<String_Filter_Operators>;
   buttonTitle?: InputMaybe<String_Filter_Operators>;
   description?: InputMaybe<String_Filter_Operators>;
+  extensionLink?: InputMaybe<String_Filter_Operators>;
   id?: InputMaybe<Number_Filter_Operators>;
   imgUrl?: InputMaybe<Directus_Files_Filter>;
   index?: InputMaybe<Number_Filter_Operators>;

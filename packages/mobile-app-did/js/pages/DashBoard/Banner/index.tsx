@@ -13,7 +13,7 @@ export const DashBoardBanner: React.FC = () => {
     return homeBannerList.map(item => {
       return {
         // url: item.url,
-        appLink: parseLink(item.appLink),
+        appLink: parseLink(item.appLink, item.url),
         imgUrl: getS3ImageUrl(item.imgUrl.filename_disk),
       };
     });

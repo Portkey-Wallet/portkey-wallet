@@ -8,13 +8,13 @@ import { defaultColors } from 'assets/theme';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import ChainOverlay from 'components/ChainOverlay';
-import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
+import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 
 interface SelectChainProps {
   currentNetwork: NetworkType;
   chainId: ChainId;
-  chainList: ChainItemType[];
+  chainList: IChainItemType[];
   onChainPress: (chainId: ChainId) => void;
 }
 

@@ -68,6 +68,8 @@ query homeBanner($filter: directus_files_filter, $sort: [String], $limit: Int, $
                         }
                         url
                         type
+                        appLink
+                        extensionLink
                     }
                 }
                 items_func{

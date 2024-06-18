@@ -35,9 +35,11 @@ import { InsufficientTransactionFee } from 'hooks/useCalculateRedPacketFee';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import NFTAvatar from 'components/NFTAvatar';
+import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
 
 export type PaymentAssetInfo = {
   symbol: string;
+  label?: string;
   decimals: number | string;
   alias?: string;
   tokenId?: string;
@@ -104,10 +106,8 @@ const PaymentModal = ({
   }, [accountAssetList, assetInfo.symbol, assetMap, chainId]);
 
   const { isBuySectionShow } = useAppRampEntryShow();
-  const isCanBuy = useMemo(
-    () => assetInfo.symbol === defaultToken.symbol && isBuySectionShow,
-    [assetInfo.symbol, defaultToken.symbol, isBuySectionShow],
-  );
+  const { buy } = checkEnabledFunctionalTypes(assetInfo.symbol, chainId === 'AELF');
+  const isCanBuy = useMemo(() => buy && isBuySectionShow, [buy, isBuySectionShow]);
 
   // update AccountTokenList
   useEffectOnce(() => {
@@ -266,7 +266,11 @@ const PaymentModal = ({
               !!crossSufficientItem || !!isCanBuy ? GStyles.maxWidth(pTd(80)) : GStyles.maxWidth(pTd(180)),
             ]}
             numberOfLines={1}>
-            {`${assetInfo.assetType === AssetType.nft ? assetInfo.alias + ' #' + assetInfo.tokenId : assetInfo.symbol}`}
+            {`${
+              assetInfo.assetType === AssetType.nft
+                ? assetInfo.alias + ' #' + assetInfo.tokenId
+                : assetInfo.label || assetInfo.symbol
+            }`}
           </TextL>
           <TextS style={FontStyles.font5} numberOfLines={1}>
             {' ' + formatChainInfoToShow(chainId, currentNetwork)}
@@ -277,7 +281,8 @@ const PaymentModal = ({
   }, [
     assetInfo.alias,
     assetInfo.assetType,
-    assetInfo?.imageUrl,
+    assetInfo.imageUrl,
+    assetInfo.label,
     assetInfo.symbol,
     assetInfo.tokenId,
     chainId,
@@ -304,7 +309,7 @@ const PaymentModal = ({
         <TextS style={FontStyles.font3}>
           {formatTokenAmountShowWithDecimals(currentAssetInfo?.balance, currentAssetInfo?.decimals)}
         </TextS>
-        <TextS style={FontStyles.font3}>{` ${currentAssetInfo?.symbol || ''}`}</TextS>
+        <TextS style={FontStyles.font3}>{` ${currentAssetInfo?.label || currentAssetInfo?.symbol || ''}`}</TextS>
         {!!tokenPriceObject[currentAssetInfo?.symbol || ''] && (
           <TextS style={FontStyles.font3}>
             {`  ${convertAmountUSDShow(
@@ -319,8 +324,10 @@ const PaymentModal = ({
     assetInfo.assetType,
     currentAssetInfo?.balance,
     currentAssetInfo?.decimals,
+    currentAssetInfo?.label,
     currentAssetInfo?.symbol,
-    currentNft,
+    currentNft?.balance,
+    currentNft?.decimals,
     isInsufficientTransactionFee,
     tokenPriceObject,
   ]);
@@ -340,6 +347,7 @@ const PaymentModal = ({
             textColor={defaultColors.font5}
             amountShow={amount}
             symbol={assetInfo.assetType === AssetType.nft ? '' : assetInfo.symbol}
+            label={assetInfo.label}
           />
           {!!tokenPriceObject[currentAssetInfo?.symbol || ''] && assetInfo.assetType === AssetType.ft && (
             <TextM style={GStyles.marginTop(pTd(2))}>
@@ -384,7 +392,7 @@ const PaymentModal = ({
                 {!!(crossSufficientItem && fee.error) && (
                   <TextS style={[FontStyles.font6, styles.marginTop4]}>
                     {`You can transfer some ${
-                      assetInfo.assetType === AssetType.ft ? assetInfo.symbol : assetInfo.alias
+                      assetInfo.assetType === AssetType.ft ? assetInfo.label || assetInfo.symbol : assetInfo.alias
                     } from your ${formatChainInfoToShow(crossSufficientItem?.chainId, currentNetwork)} address`}
                   </TextS>
                 )}
@@ -421,10 +429,13 @@ export const show = (props: Omit<PaymentOverlayProps, 'onConfirm'>) => {
 export const showRedPacket = (props: Omit<PaymentOverlayProps, 'onConfirm' | 'title'>) => {
   return show({ ...props, title: 'Portkey Crypto Box' });
 };
-
+export const showCryptoGift = (props: Omit<PaymentOverlayProps, 'onConfirm' | 'title'>) => {
+  return show({ ...props, title: 'Crypto Gift' });
+};
 export default {
   show,
   showRedPacket,
+  showCryptoGift,
 };
 
 export const styles = StyleSheet.create({

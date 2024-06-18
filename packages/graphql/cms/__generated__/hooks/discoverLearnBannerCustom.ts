@@ -17,6 +17,8 @@ export type DiscoverLearnBannerCustomQuery = {
         status?: string | null;
         title?: string | null;
         url?: string | null;
+        appLink?: string | null;
+        extensionLink?: string | null;
         index?: any | null;
         value?: string | null;
         description?: string | null;
@@ -36,6 +38,8 @@ export const DiscoverLearnBannerCustomDocument = gql`
           status
           title
           url
+          appLink
+          extensionLink
           index
           value
           description

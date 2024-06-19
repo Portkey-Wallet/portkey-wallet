@@ -76,6 +76,8 @@ export type TokenDetailBanner_By_IdQuery = {
             buttonTitle?: string | null;
             url?: string | null;
             type?: number | null;
+            appLink?: string | null;
+            extensionLink?: string | null;
             imgUrl?: {
               __typename?: 'directus_files';
               id: string;
@@ -254,6 +256,8 @@ export const TokenDetailBanner_By_IdDocument = gql`
               }
               url
               type
+              appLink
+              extensionLink
             }
           }
           items_func {

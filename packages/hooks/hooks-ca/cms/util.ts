@@ -37,6 +37,7 @@ export const DEFAULT_ENTRANCE_SHOW: IEntrance = {
   eTransDeposit: false,
   eTransWithdraw: false,
   swap: false,
+  freeMintNft: false,
 };
 
 const checkIsEntranceShow = (

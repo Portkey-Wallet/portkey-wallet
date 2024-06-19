@@ -109,7 +109,7 @@ export default function SendPreview(props: ISendPreviewProps) {
   ]);
 
   const renderEstimateAmount = useMemo(() => {
-    if (ZERO.plus(amount).isLessThanOrEqualTo(crossChainFee) && symbol === defaultToken.decimals) {
+    if (ZERO.plus(amount).isLessThanOrEqualTo(crossChainFee) && symbol === defaultToken.symbol) {
       return (
         <>
           <div className="amount">{`0 ${label ?? symbol}`}</div>
@@ -119,7 +119,7 @@ export default function SendPreview(props: ISendPreviewProps) {
     } else {
       return receiveAmountInner;
     }
-  }, [amount, crossChainFee, defaultToken.decimals, isMainnet, label, receiveAmountInner, symbol]);
+  }, [amount, crossChainFee, defaultToken.symbol, isMainnet, label, receiveAmountInner, symbol]);
 
   return (
     <div className="send-preview">

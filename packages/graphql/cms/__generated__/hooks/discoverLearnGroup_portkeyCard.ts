@@ -95,6 +95,8 @@ export type DiscoverLearnGroup_PortkeyCardQuery = {
           buttonTitle?: string | null;
           url?: string | null;
           type?: number | null;
+          appLink?: string | null;
+          extensionLink?: string | null;
           imgUrl?: {
             __typename?: 'directus_files';
             id: string;
@@ -157,6 +159,8 @@ export type DiscoverLearnGroup_PortkeyCardQuery = {
       buttonTitle?: string | null;
       url?: string | null;
       type?: number | null;
+      appLink?: string | null;
+      extensionLink?: string | null;
     } | null;
   }>;
 };
@@ -313,6 +317,8 @@ export const DiscoverLearnGroup_PortkeyCardDocument = gql`
             }
             url
             type
+            appLink
+            extensionLink
           }
         }
       }
@@ -326,6 +332,8 @@ export const DiscoverLearnGroup_PortkeyCardDocument = gql`
         buttonTitle
         url
         type
+        appLink
+        extensionLink
       }
     }
   }

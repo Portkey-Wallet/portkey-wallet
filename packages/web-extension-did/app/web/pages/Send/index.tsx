@@ -528,7 +528,7 @@ export default function Send() {
 
           const amountAllowed = withdrawInfo ? isGTMax && isLTMin : false;
 
-          if (amountAllowed && allowance.gte(amount)) _etransferFee = 0;
+          if ((amountAllowed && allowance.gte(amount)) || tokenSymbol !== defaultToken.symbol) _etransferFee = 0;
 
           if (ZERO.plus(amount).plus(_etransferFee).gt(divDecimals(balance, tokenInfo.decimals)))
             return TransactionError.TOKEN_NOT_ENOUGH;

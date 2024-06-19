@@ -23,6 +23,7 @@ import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/convert
 import Divider from 'components/Divider';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
+import { isValidUserId } from '@portkey-wallet/utils';
 
 export default function GiftDetail() {
   const { t } = useLanguage();
@@ -47,7 +48,9 @@ export default function GiftDetail() {
         <ReceiverItem
           item={item}
           symbol={info?.label || info?.alias || info?.symbol || ''}
-          isLuckyKing={!!item && item.userId === info?.luckKingId}
+          isLuckyKing={
+            !!item && isValidUserId(item.userId) && isValidUserId(info?.luckKingId) && item.userId === info?.luckKingId
+          }
           decimals={info?.decimal}
         />
       );

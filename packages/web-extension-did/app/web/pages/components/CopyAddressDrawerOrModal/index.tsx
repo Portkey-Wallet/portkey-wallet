@@ -67,7 +67,7 @@ const CopyAddressDrawerOrModal = forwardRef((_, ref) => {
   );
 
   return isNotLessThan768 ? (
-    <BaseModal {...commonProps} centered closable={false} className="copy-address-modal" maskClosable>
+    <BaseModal {...commonProps} footer={false} centered closable={false} className="copy-address-modal" maskClosable>
       <CommonCloseHeader title="Copy Address" onClose={handleClose} />
       {renderAddressList()}
     </BaseModal>

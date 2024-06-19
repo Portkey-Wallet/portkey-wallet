@@ -60,6 +60,6 @@ export interface IToSendPreviewParamsType extends IToSendHomeParamsType {
   receiveAmount?: string;
   receiveAmountUsd?: string;
   isEtransferCrossInLimit?: boolean;
-  crossChainFee?: number | string;
+  crossChainFee: number | string;
   crossChainFeeUnit?: string;
 }

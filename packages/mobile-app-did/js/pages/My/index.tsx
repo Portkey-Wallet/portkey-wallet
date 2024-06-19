@@ -13,7 +13,8 @@ import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 import useEffectOnce from 'hooks/useEffectOnce';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet, useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { NetworkList } from '@portkey-wallet/constants/constants-ca/network';
 
 interface MenuItemType {
   name: RootStackName;
@@ -26,6 +27,7 @@ interface MenuItemType {
 export default function MyMenu() {
   const { t } = useLanguage();
   const isImputation = useIsImputation();
+  const currentNetworkInfo = useCurrentNetworkInfo();
 
   const { setViewReferralStatusStatus, getReferralLink, referralLink = '' } = useReferral();
   const isMainnet = useIsMainnet();
@@ -37,11 +39,6 @@ export default function MyMenu() {
       console.log(error);
     }
   }, [getReferralLink]);
-
-  const referralUrl = useMemo(() => {
-    const host = isMainnet ? 'https://referral.portkey.finance/' : 'https://test-referral.portkey.finance/';
-    return `${host}/referral?shortLink=${encodeURIComponent(referralLink)}`;
-  }, []);
 
   useEffectOnce(() => {
     getLink();
@@ -81,7 +78,10 @@ export default function MyMenu() {
         suffixDom: <TextS style={styles.newStyle}>New</TextS>,
         onPress: () => {
           setViewReferralStatusStatus();
-          navigationService.navigate('ProviderWebPage', { title: 'Portkey Referral Program', url: referralUrl });
+          navigationService.navigate('ProviderWebPage', {
+            title: 'Portkey Referral Program',
+            url: `${currentNetworkInfo.referralUrl}/referral?shortLink=${encodeURIComponent(referralLink)}`,
+          });
         },
       },
     ],

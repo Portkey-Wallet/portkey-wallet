@@ -71,7 +71,6 @@ export default function Receive() {
     return (
       <View style={styles.qrcodeContainer}>
         <AccountCard toCaAddress={toCaAddress} tokenInfo={tokenItem} style={styles.accountCardStyle} />
-
         <View style={[GStyles.flexCol, GStyles.itemStart, GStyles.spaceBetween, styles.addressWrap]}>
           <TextS style={styles.aelfAddressTitle}>{'Your aelf address'}</TextS>
           <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, GStyles.width100]}>

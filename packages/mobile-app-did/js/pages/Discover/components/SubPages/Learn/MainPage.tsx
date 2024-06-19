@@ -37,7 +37,6 @@ export const LearnPage = () => {
     return learnBannerList.map(it => {
       return {
         imgUrl: getS3ImgUrl(it.imgUrl.filename_disk),
-        // url: it.url,
         appLink: parseLink(it.appLink, it.url),
       };
     });

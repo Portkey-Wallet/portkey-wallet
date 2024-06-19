@@ -40,7 +40,6 @@ const CarouselComponent: React.FC<CarouselProps> = ({
   showDivider = false,
   dotStyle = 'Dark',
 }) => {
-  // const jumpToWebview = useDiscoverJumpWithNetWork();
   const jump = useJump();
   const [showSkeleton, setShowSkeleton] = useState(true);
 
@@ -51,12 +50,6 @@ const CarouselComponent: React.FC<CarouselProps> = ({
         onClick({ index, item });
       } else {
         jump(item.appLink);
-        // jumpToWebview({
-        //   item: {
-        //     name: item.url,
-        //     url: item.url,
-        //   },
-        // });
       }
     };
 

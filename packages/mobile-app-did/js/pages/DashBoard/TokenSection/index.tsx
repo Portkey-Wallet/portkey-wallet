@@ -33,7 +33,6 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
   const caAddressInfosList = useLatestRef(caAddressInfos);
 
   const onNavigate = useCallback((tokenItem: TokenItemShowType) => {
-    console.log('{ tokenInfo: tokenItem }', { tokenInfo: tokenItem });
     navigationService.navigate('TokenDetail', { tokenInfo: tokenItem });
   }, []);
 

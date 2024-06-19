@@ -40,7 +40,6 @@ export function DiscoverCmsListSection() {
     return dappBannerList.map(it => {
       return {
         imgUrl: getS3ImgUrl(it.imgUrl.filename_disk),
-        // url: it.url,
         appLink: parseLink(it.appLink, it.url),
       };
     });

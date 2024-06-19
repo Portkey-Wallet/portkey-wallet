@@ -201,7 +201,6 @@ const TokenDetail: React.FC = () => {
   const bannerItemsList = useMemo(() => {
     return getTokenDetailBannerList(tokenInfo.chainId, tokenInfo.symbol).map(item => {
       return {
-        // url: item.url,
         appLink: parseLink(item.appLink, item.url),
         imgUrl: getS3ImageUrl(item.imgUrl.filename_disk),
       };

@@ -200,111 +200,61 @@ export const filterLoginModeListToOther = (loginModeList: ILoginModeItem[], devi
   return loginModeList.filter(item => !item[recommendKey]).sort((a, b) => a[indexKey] - b[indexKey]);
 };
 
-// export function parseLink(link: string, defaultUrl?: string): TLink {
-//   console.log('wfs link is===', link);
-//   if (!link) {
-//     return {
-//       type: isExtension() ? 'external' : 'internal',
-//       location: defaultUrl || '',
-//       params: {},
-//     };
-//   }
-//   const protocolMatch = link.match(/^(.*):\/\/(external|internal|native)?/);
-//   console.log('protocolMatch is', protocolMatch);
-//   const type = protocolMatch && protocolMatch[2] ? protocolMatch[2] : 'internal';
-//   const rest = protocolMatch ? link.slice(protocolMatch[0].length) : link;
-//   const locationMatch = rest.match(/location=([^&]*)/);
-//   const location = locationMatch ? decodeURIComponent(locationMatch[1]) : defaultUrl || '';
-//   console.log('location', location);
-//   const paramsMatch = rest.match(/params=([^&]*)/);
-//   const params = paramsMatch ? JSON.parse(decodeURIComponent(paramsMatch[1])) : {};
-//   console.log('wfs parseLink is===', {
-//     type: type as TLinkType,
-//     location,
-//     params,
-//   });
-//   return {
-//     type: type as TLinkType,
-//     location,
-//     params,
-//   };
-// }
-// export function parseLink(link?: string, defaultUrl?: string): TLink {
-//   if (!link) {
-//     return {
-//       type: isExtension() ? 'external' : 'internal',
-//       location: defaultUrl || '',
-//       params: {},
-//     };
-//   }
-//   const protocolMatch = link.match(/^portkey:\/\/(external|internal|native)\?/);
-//   const type = protocolMatch ? protocolMatch[1] : 'internal'; // 默认为internal
-
-//   const queryString = link.split('?')[1];
-//   const queryParams = new URLSearchParams(queryString);
-//   const location = queryParams.get('location') || '';
-//   let params = {};
-
-//   const paramsString = queryParams.get('params');
-//   if (paramsString) {
-//     try {
-//       params = JSON.parse(decodeURIComponent(paramsString));
-//     } catch (error) {
-//       console.error('parse failed:', error);
-//     }
-//   }
-
-//   return {
-//     type,
-//     location,
-//     params,
-//   };
-// }
 export function parseLink(link?: string, defaultUrl?: string): TLink {
-  console.log('parseLink===', link, 'defaultUrl', defaultUrl);
-  if (!link) {
+  try {
+    console.log('parseLink===', link, 'defaultUrl', defaultUrl);
+    const realLink = link?.trim();
+    if (!realLink) {
+      return {
+        type: isExtension() ? 'external' : 'internal',
+        location: defaultUrl || '',
+        params: {},
+      };
+    }
+    const protocolMatch = realLink.match(/^portkey:\/\/(external|internal|native)\?/);
+    const type = protocolMatch ? (protocolMatch[1] as TLinkType) : 'external'; // default is external
+
+    const queryString = realLink.split('?')[1] || '';
+    const queryParams = queryString.split('&').reduce((acc, current) => {
+      const [key, value] = current.split('=');
+      if (key && value) {
+        acc[key] = decodeURIComponent(value);
+      }
+      return acc;
+    }, {} as { [key: string]: string });
+    const location = queryParams['location'] || '';
+    const paramsObj = Object.keys(queryParams).reduce((acc, key) => {
+      if (key !== 'location') {
+        acc[key] = queryParams[key];
+      }
+      return acc;
+    }, {} as { [key: string]: string });
+    let params;
+    if (isExtension()) {
+      params = paramsObj.params;
+    } else {
+      try {
+        params = JSON.parse(paramsObj.params);
+      } catch (e) {
+        params = {};
+      }
+    }
+    console.log('parseLink===result', {
+      type,
+      location,
+      params,
+    });
+    return {
+      type,
+      location,
+      params,
+    };
+  } catch (e) {
+    console.error('parseLink failed', e);
     return {
       type: isExtension() ? 'external' : 'internal',
       location: defaultUrl || '',
       params: {},
     };
   }
-  const protocolMatch = link.match(/^portkey:\/\/(external|internal|native)\?/);
-  const type = protocolMatch ? (protocolMatch[1] as TLinkType) : 'external'; // 默认为internal
-
-  const queryString = link.split('?')[1] || '';
-  const queryParams = queryString.split('&').reduce((acc, current) => {
-    const [key, value] = current.split('=');
-    if (key && value) {
-      acc[key] = decodeURIComponent(value);
-    }
-    return acc;
-  }, {} as { [key: string]: string });
-  const location = queryParams['location'] || '';
-  const paramsObj = Object.keys(queryParams).reduce((acc, key) => {
-    if (key !== 'location') {
-      acc[key] = queryParams[key];
-    }
-    return acc;
-  }, {} as { [key: string]: string });
-  let params;
-  if (isExtension()) {
-    params = paramsObj.params;
-  } else {
-    try {
-      params = JSON.parse(paramsObj.params);
-    } catch (e) {
-      params = {};
-    }
-  }
-  console.log('parseLink===result', {
-    type,
-    location,
-    params,
-  });
-  return {
-    type,
-    location,
-    params,
-  };
 }

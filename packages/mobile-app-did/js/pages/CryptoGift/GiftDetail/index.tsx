@@ -47,12 +47,12 @@ export default function GiftDetail() {
         <ReceiverItem
           item={item}
           symbol={info?.label || info?.alias || info?.symbol || ''}
-          isLuckyKing={!!item && item.userId === info?.luckKingId}
+          isLuckyKing={false}
           decimals={info?.decimal}
         />
       );
     },
-    [info?.alias, info?.decimal, info?.label, info?.luckKingId, info?.symbol],
+    [info?.alias, info?.decimal, info?.label, info?.symbol],
   );
   const renderDivider = useCallback(() => {
     return <Divider style={styles.divider} />;

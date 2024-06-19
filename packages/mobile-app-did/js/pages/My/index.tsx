@@ -11,6 +11,10 @@ import { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
+import { useDiscoverJumpWithNetWork } from 'hooks/discover';
+import useEffectOnce from 'hooks/useEffectOnce';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 interface MenuItemType {
   name: RootStackName;
@@ -24,7 +28,26 @@ export default function MyMenu() {
   const { t } = useLanguage();
   const isImputation = useIsImputation();
 
-  const { setViewReferralStatusStatus } = useReferral();
+  const discoverJump = useDiscoverJumpWithNetWork();
+  const { setViewReferralStatusStatus, getReferralLink, referralLink = '' } = useReferral();
+  const isMainnet = useIsMainnet();
+
+  const getLink = useLockCallback(async () => {
+    try {
+      await getReferralLink();
+    } catch (error) {
+      console.log(error);
+    }
+  }, [getReferralLink]);
+
+  const referralUrl = useMemo(() => {
+    const host = isMainnet ? 'https://referral.portkey.finance/' : 'https://test-referral.portkey.finance/';
+    return `${host}/referral?shortLink=${encodeURIComponent(referralLink)}`;
+  }, []);
+
+  useEffectOnce(() => {
+    getLink();
+  });
 
   const MenuList: Array<MenuItemType> = useMemo(
     () => [
@@ -60,7 +83,12 @@ export default function MyMenu() {
         suffixDom: <TextS style={styles.newStyle}>New</TextS>,
         onPress: () => {
           setViewReferralStatusStatus();
-          navigationService.navigate('UserReferral');
+          discoverJump({
+            item: {
+              name: 'Portkey Referral Program',
+              url: referralUrl,
+            },
+          });
         },
       },
     ],

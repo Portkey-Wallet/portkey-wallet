@@ -76,6 +76,8 @@ const SendPreview: React.FC = () => {
     receiveAmount,
     receiveAmountUsd,
     isEtransferCrossInLimit = false,
+    crossChainFee,
+    crossChainFeeUnit,
   } = routerParams;
 
   const isApproved = useMemo(() => guardiansApproved && guardiansApproved.length > 0, [guardiansApproved]);
@@ -555,7 +557,7 @@ const SendPreview: React.FC = () => {
             )}
           </View>
 
-          {isCrossChainTransfer && !isSupportEtransferCross && (
+          {isCrossChainTransfer && (
             <>
               <Text style={[styles.divider, styles.marginTop0]} />
               <View style={styles.section}>
@@ -564,9 +566,11 @@ const SendPreview: React.FC = () => {
                     {t('Estimated CrossChain Transfer')}
                   </TextM>
                   <View>
-                    <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>{`${unitConverter(
-                      crossDefaultFee,
-                    )} ${defaultToken.symbol}`}</TextM>
+                    <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>
+                      {isSupportEtransferCross
+                        ? `${crossChainFee} ${crossChainFeeUnit}`
+                        : `${unitConverter(crossDefaultFee)} ${defaultToken.symbol}`}
+                    </TextM>
                     {isMainnet ? (
                       <TextS
                         style={[

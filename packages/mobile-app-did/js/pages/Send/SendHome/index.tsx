@@ -62,7 +62,6 @@ import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useEtransferFee } from 'hooks/etransfer';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { TWithdrawInfo } from '@etransfer/services';
 
 const SendHome: React.FC = () => {
   const {
@@ -72,7 +71,6 @@ const SendHome: React.FC = () => {
   useFetchTxFee();
   const isValidChainId = useIsValidSuffix();
   const defaultToken = useDefaultToken();
-  const [theWithdrawInfo, setTheWithdrawInfo] = useState<TWithdrawInfo>();
 
   const wallet = useCurrentWalletInfo();
   const chainInfo = useCurrentChain(assetInfo?.chainId);
@@ -482,6 +480,8 @@ const SendHome: React.FC = () => {
     let fee;
     let receiveAmount: string | undefined;
     let receiveAmountUsd: string | undefined;
+    let transactionFee: string | undefined;
+    let transactionUnit: string | undefined;
     let isEtransferCrossInLimit = false;
     try {
       if (isCross && isSupportCross) {
@@ -491,10 +491,11 @@ const SendHome: React.FC = () => {
           chainId: assetInfo.chainId,
           amount: sendNumber,
         });
-        setTheWithdrawInfo(withdrawInfo);
         fee = withdrawInfo?.aelfTransactionFee;
         const maxAmount = Number(withdrawInfo?.maxAmount);
         const minAmount = Number(withdrawInfo?.minAmount);
+        transactionFee = withdrawInfo.transactionFee;
+        transactionUnit = withdrawInfo.transactionUnit;
         isEtransferCrossInLimit = Number(sendNumber) >= minAmount && Number(sendNumber) <= maxAmount;
         if (isEtransferCrossInLimit) {
           receiveAmount = withdrawInfo?.receiveAmount;
@@ -516,7 +517,15 @@ const SendHome: React.FC = () => {
       Loading.hide();
     }
 
-    return { status: true, fee, receiveAmount, receiveAmountUsd, isEtransferCrossInLimit };
+    return {
+      status: true,
+      fee,
+      receiveAmount,
+      receiveAmountUsd,
+      isEtransferCrossInLimit,
+      transactionFee,
+      transactionUnit,
+    };
   }, [
     chainInfo,
     balance,
@@ -549,16 +558,10 @@ const SendHome: React.FC = () => {
       receiveAmount: result?.receiveAmount,
       receiveAmountUsd: result?.receiveAmountUsd,
       isEtransferCrossInLimit: result?.isEtransferCrossInLimit,
-      crossChainFee: theWithdrawInfo?.transactionFee || crossFee,
-      crossChainFeeUnit: theWithdrawInfo?.transactionUnit,
+      crossChainFee: result?.transactionFee || crossFee,
+      crossChainFeeUnit: result?.transactionUnit || '',
     });
-  }, [
-    checkCanPreview,
-    crossFee,
-    previewParamsWithoutFee,
-    theWithdrawInfo?.transactionFee,
-    theWithdrawInfo?.transactionUnit,
-  ]);
+  }, [checkCanPreview, crossFee, previewParamsWithoutFee]);
 
   const ButtonUI = useMemo(() => {
     return (

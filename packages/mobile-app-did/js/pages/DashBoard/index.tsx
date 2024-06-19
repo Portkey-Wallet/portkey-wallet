@@ -56,9 +56,10 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const title = useMemo(() => {
-    return isMainnet ? formatAmountUSDShow(accountBalanceUSD) : 'Dev Mode';
-  }, [isMainnet, accountBalanceUSD]);
+  const title = useMemo(
+    () => (isMainnet ? formatAmountUSDShow(accountBalanceUSD) : 'Dev Mode'),
+    [isMainnet, accountBalanceUSD],
+  );
 
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.white]}>

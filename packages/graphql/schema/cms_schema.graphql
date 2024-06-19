@@ -605,6 +605,8 @@ type discoverItem {
   url: String
   user_created: String
   user_updated: String
+  appLink: String
+  extensionLink: String
 }
 
 type discoverItem_aggregated {
@@ -636,6 +638,8 @@ type discoverItem_aggregated_count {
   url: Int
   user_created: Int
   user_updated: Int
+  appLink: Int
+  extensionLink: Int
 }
 
 type discoverItem_aggregated_fields {
@@ -1400,6 +1404,8 @@ type portkeyCard {
   imgUrl(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   url: String
   type: Int
+  appLink: String
+  extensionLink: String
 }
 
 type portkeyCard_aggregated {
@@ -1426,6 +1432,8 @@ type portkeyCard_aggregated_count {
   imgUrl: Int
   url: Int
   type: Int
+  appLink: Int
+  extensionLink: Int
 }
 
 type portkeyCard_aggregated_fields {
@@ -2019,6 +2027,8 @@ input discoverItem_filter {
   url: string_filter_operators
   user_created: string_filter_operators
   user_updated: string_filter_operators
+  appLink: string_filter_operators
+  extensionLink: string_filter_operators
   _and: [discoverItem_filter]
   _or: [discoverItem_filter]
 }
@@ -2322,6 +2332,8 @@ input portkeyCard_filter {
   imgUrl: directus_files_filter
   url: string_filter_operators
   type: number_filter_operators
+  appLink: string_filter_operators
+  extensionLink: string_filter_operators
   _and: [portkeyCard_filter]
   _or: [portkeyCard_filter]
 }

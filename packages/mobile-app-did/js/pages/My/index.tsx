@@ -11,7 +11,6 @@ import { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
-import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import useEffectOnce from 'hooks/useEffectOnce';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -28,7 +27,6 @@ export default function MyMenu() {
   const { t } = useLanguage();
   const isImputation = useIsImputation();
 
-  const discoverJump = useDiscoverJumpWithNetWork();
   const { setViewReferralStatusStatus, getReferralLink, referralLink = '' } = useReferral();
   const isMainnet = useIsMainnet();
 
@@ -83,12 +81,7 @@ export default function MyMenu() {
         suffixDom: <TextS style={styles.newStyle}>New</TextS>,
         onPress: () => {
           setViewReferralStatusStatus();
-          discoverJump({
-            item: {
-              name: 'Portkey Referral Program',
-              url: referralUrl,
-            },
-          });
+          navigationService.navigate('ProviderWebPage', { title: 'Portkey Referral Program', url: referralUrl });
         },
       },
     ],

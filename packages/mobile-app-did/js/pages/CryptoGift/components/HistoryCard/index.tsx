@@ -60,14 +60,14 @@ export default function HistoryCard(props: IHistoryCardProps) {
     <View style={[styles.historyContainer, props.containerStyle]}>
       {showTitle && (
         <View style={styles.titleContainer}>
-          <TextL style={styles.textTitle}>Crypto Gift Sent</TextL>
+          <TextL style={[styles.textTitle, GStyles.lineHeight(pTd(24))]}>Crypto Gift Sent</TextL>
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => {
               navigationService.navigate('GiftHistory');
             }}>
             <View style={styles.rightIcon}>
-              <TextS style={[FontStyles.brandNormal, styles.viewAll]}> View All</TextS>
+              <TextS style={[FontStyles.brandNormal, styles.viewAll, GStyles.lineHeight(pTd(16))]}> View All</TextS>
               <Svg icon="right-arrow2" size={pTd(12)} color={defaultColors.brandNormal} />
             </View>
           </TouchableOpacity>
@@ -104,23 +104,27 @@ export default function HistoryCard(props: IHistoryCardProps) {
                 <View style={styles.giftIconBg}>
                   <Svg icon="crypto-gift" size={pTd(12)} />
                 </View>
-                <TextM style={styles.text} numberOfLines={1}>
+                <TextM style={[styles.text, GStyles.lineHeight(pTd(22))]} numberOfLines={1}>
                   {redPacketDetail?.memo || 'Best Wishes'}
                 </TextM>
                 {redPacketDetail?.displayStatus && (
                   <View style={[styles.statusContainer, statusStyles.bg]}>
-                    <TextS style={[styles.statusText, statusStyles.textColor]}>{redPacketDetail?.displayStatus}</TextS>
+                    <TextS style={[styles.statusText, statusStyles.textColor, GStyles.lineHeight(pTd(16))]}>
+                      {redPacketDetail?.displayStatus}
+                    </TextS>
                   </View>
                 )}
               </View>
               {/* <Text style={styles.dateText}>May 28 at 4:11 pm</Text> */}
               <View style={styles.dateContainer}>
-                <TextS style={styles.dateText}>{formatTransferTime(redPacketDetail?.createTime || 1)}</TextS>
+                <TextS style={[styles.dateText, GStyles.lineHeight(pTd(16))]}>
+                  {formatTransferTime(redPacketDetail?.createTime || 1)}
+                </TextS>
               </View>
               <View style={styles.divider} />
               <View style={styles.claimContainer}>
-                <TextS style={styles.claimText}>Claimed:</TextS>
-                <TextS style={styles.claimValue}>
+                <TextS style={[styles.claimText, GStyles.lineHeight(pTd(16))]}>Claimed:</TextS>
+                <TextS style={[styles.claimValue, GStyles.lineHeight(pTd(16))]}>
                   {getClaimedShow(
                     formatTokenAmountShowWithDecimals(redPacketDetail?.grabbedAmount, redPacketDetail?.decimals),
                     formatTokenAmountShowWithDecimals(redPacketDetail?.totalAmount, redPacketDetail?.decimals),
@@ -156,7 +160,7 @@ const styles = StyleSheet.create({
   historyCard: {
     flexDirection: 'column',
     height: pTd(98),
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: pTd(1),
     borderColor: defaultColors.neutralBorder,
     borderRadius: pTd(6),
     padding: pTd(12),

@@ -19,6 +19,7 @@ import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { DeviceEventEmitter } from 'react-native';
 import { CryptoGiftCreateSuccess } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
+import { isIOS } from '@rneui/base';
 
 export interface IGiftResultProps {
   giftId: string;
@@ -40,6 +41,7 @@ export default function GiftResult() {
   }, [shareUrl]);
   const onSharePress = useCallback(async () => {
     await Share.share({
+      message: isIOS ? '' : shareUrl,
       url: shareUrl,
     }).catch(shareError => {
       console.log(shareError);

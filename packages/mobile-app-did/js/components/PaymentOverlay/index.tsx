@@ -152,7 +152,7 @@ const PaymentModal = ({
             </View>
             <View style={GStyles.alignEnd}>
               {!!defaultTokenPrice && (
-                <TextS style={FontStyles.font3}>
+                <TextS style={FontStyles.neutralTertiaryText}>
                   {convertAmountUSDShow(divDecimals(fee.value, defaultToken.decimals), defaultTokenPrice)}
                 </TextS>
               )}
@@ -298,7 +298,7 @@ const PaymentModal = ({
     if (assetInfo.assetType === AssetType.nft)
       return (
         <Text style={styles.marginTop4}>
-          <TextS style={FontStyles.font3}>
+          <TextS style={FontStyles.neutralTertiaryText}>
             {formatTokenAmountShowWithDecimals(currentNft?.balance, currentNft?.decimals)}
           </TextS>
         </Text>
@@ -306,12 +306,14 @@ const PaymentModal = ({
 
     return (
       <Text style={styles.marginTop4}>
-        <TextS style={FontStyles.font3}>
+        <TextS style={FontStyles.neutralTertiaryText}>
           {formatTokenAmountShowWithDecimals(currentAssetInfo?.balance, currentAssetInfo?.decimals)}
         </TextS>
-        <TextS style={FontStyles.font3}>{` ${currentAssetInfo?.label || currentAssetInfo?.symbol || ''}`}</TextS>
+        <TextS style={FontStyles.neutralTertiaryText}>{` ${
+          currentAssetInfo?.label || currentAssetInfo?.symbol || ''
+        }`}</TextS>
         {!!tokenPriceObject[currentAssetInfo?.symbol || ''] && (
-          <TextS style={FontStyles.font3}>
+          <TextS style={FontStyles.neutralTertiaryText}>
             {`  ${convertAmountUSDShow(
               divDecimals(currentAssetInfo?.balance, currentAssetInfo?.decimals),
               tokenPriceObject[currentAssetInfo?.symbol || ''],
@@ -442,7 +444,7 @@ export const styles = StyleSheet.create({
   containerStyle: {
     paddingTop: pTd(16),
     paddingBottom: pTd(16),
-    paddingHorizontal: pTd(20),
+    paddingHorizontal: pTd(16),
     flex: 1,
   },
   titleStyle: {
@@ -450,7 +452,7 @@ export const styles = StyleSheet.create({
     marginBottom: pTd(12),
   },
   balanceLabelStyle: {
-    color: defaultColors.font3,
+    color: defaultColors.secondaryTextColor,
     marginLeft: pTd(8),
   },
   lottieStyle: {

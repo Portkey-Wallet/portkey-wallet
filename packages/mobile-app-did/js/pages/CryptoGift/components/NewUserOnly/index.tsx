@@ -2,13 +2,15 @@ import { defaultColors } from 'assets/theme';
 import CommonSwitch from 'components/CommonSwitch';
 import { TextM } from 'components/CommonText';
 import React, { useState } from 'react';
+import { StyleProp, ViewStyle } from 'react-native';
 import { View, Text, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 export interface INewUserOnlyProps {
+  containerStyle?: StyleProp<ViewStyle>;
   onSwitchChanged?: (selected: boolean) => void;
 }
 export default function NewUserOnly(props: INewUserOnlyProps) {
-  const { onSwitchChanged } = props;
+  const { onSwitchChanged, containerStyle } = props;
   const [isEnabled, setIsEnabled] = useState(true);
 
   const toggleSwitch = () => {
@@ -18,7 +20,7 @@ export default function NewUserOnly(props: INewUserOnlyProps) {
     });
   };
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, containerStyle]}>
       <View style={styles.textContainer}>
         <TextM style={styles.title}>New Users Only</TextM>
         <Text style={styles.description}>

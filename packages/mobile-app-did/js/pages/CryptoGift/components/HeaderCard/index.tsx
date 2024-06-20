@@ -7,6 +7,9 @@ import fonts from 'assets/theme/fonts';
 import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
+import boxClose from 'assets/image/pngs/box-close.png';
+import { Image } from 'react-native';
+
 export interface IHeaderCardProps {
   showViewDetails?: boolean;
   memo?: string;
@@ -16,7 +19,7 @@ export default function HeaderCard(props: IHeaderCardProps) {
   const { showViewDetails, memo, giftId } = props;
   return (
     <View style={styles.container}>
-      <Svg icon="gift-box-close" oblongSize={[pTd(171.5), pTd(120)]} />
+      <Image resizeMode="contain" source={boxClose} style={{ width: pTd(171.5), height: pTd(120) }} />
       <View style={styles.titleWrapper}>
         {showViewDetails && <Svg icon="success" size={pTd(20)} iconStyle={styles.icon} />}
         <TextL style={{ ...fonts.mediumFont }}>
@@ -44,6 +47,7 @@ const styles = StyleSheet.create({
   titleWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingHorizontal: pTd(16),
   },
   icon: {
     marginRight: pTd(8),

@@ -1,7 +1,7 @@
 @import '../../../../assets/theme/constants.less';
 
 .confirm-gift-wrapper {
-  height: 544px;
+  height: 100%;
   width: 100%;
   .common-header {
     border-top-left-radius: 6px;
@@ -102,10 +102,13 @@
     .gift-container-fee {
       width: 100%;
       margin-top: 16px;
-      .fee-usd {
-        font-size: 12px;
-        line-height: 16px;
-        color: @neutral-tertiary-text;
+      .fee-show {
+        text-align: right;
+        .fee-usd {
+          font-size: 12px;
+          line-height: 16px;
+          color: @neutral-tertiary-text;
+        }
       }
     }
   }

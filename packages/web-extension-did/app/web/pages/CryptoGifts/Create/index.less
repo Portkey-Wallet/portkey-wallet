@@ -97,6 +97,8 @@
     .crypto-gift-new-users {
       padding: 8px 12px;
       gap: 5px;
+      background-color: @neutral-hover-bg;
+      border-radius: 6px;
       .gift-new-users-tip {
         gap: 4px;
         .tip-content {
@@ -139,7 +141,8 @@
     }
   }
   &.prompt-page {
-    height: auto;
+    height: calc(100vh - 72px - 24px);
+    background-color: @neutral-default-bg;
     .create-crypto-gift-body {
       padding: 0 24px 68px;
     }

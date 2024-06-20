@@ -145,7 +145,7 @@ export default function ConfirmGift(props: IConfirmGiftProps) {
           {canConfirm ? (
             <div className="gift-container-fee flex-between">
               <div>Transaction Fee</div>
-              <div>
+              <div className="fee-show">
                 <div>
                   {txFee} {DEFAULT_TOKEN.symbol}
                 </div>

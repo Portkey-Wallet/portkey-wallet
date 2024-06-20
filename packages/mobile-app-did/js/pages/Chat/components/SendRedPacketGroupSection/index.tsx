@@ -57,7 +57,6 @@ const AMOUNT_LABEL_MAP = {
 
 export default function SendRedPacketGroupSection(props: SendRedPacketGroupSectionPropsType) {
   const { type, groupMemberCount, isCryptoGift, onPressButton } = props;
-  console.log('wfs=== isCryptoGift', isCryptoGift);
   const { getTokenInfo } = useGetRedPackageConfig();
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
 
@@ -329,6 +328,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
           maxLength={80}
           inputContainerStyle={styles.inputWrap}
           onChangeText={onMemoChange}
+          containerStyle={styles.packetNumWrap}
         />
       </FormItem>
       {isCryptoGift && (
@@ -337,6 +337,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
             console.log('wfs=== NewUserOnly', selected);
             isNewUserOnly.current = selected;
           }}
+          containerStyle={{ marginBottom: pTd(16) }}
         />
       )}
       {selectToken.assetType === AssetType.nft ? (
@@ -387,12 +388,14 @@ const styles = StyleSheet.create({
     borderColor: defaultColors.neutralBorder,
     borderWidth: 0.5,
     borderBottomWidth: 0.5,
+    height: pTd(52),
   },
   inputContainerStyle: {
     height: pTd(64),
   },
   packetNumWrap: {
-    marginBottom: pTd(8),
+    marginBottom: pTd(16),
+    height: pTd(52),
   },
   amountTipsGap: {
     marginBottom: pTd(8),

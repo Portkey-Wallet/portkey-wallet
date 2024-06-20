@@ -24,6 +24,7 @@ import Divider from 'components/Divider';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import { isValidUserId } from '@portkey-wallet/utils';
+import { isIOS } from '@rneui/base';
 
 export default function GiftDetail() {
   const { t } = useLanguage();
@@ -108,7 +109,7 @@ export default function GiftDetail() {
   }, [currentNetworkInfo.referralUrl, id]);
   const onSharePress = useCallback(async () => {
     await Share.share({
-      // message: 'msg',
+      message: isIOS ? '' : shareUrl,
       url: shareUrl,
     }).catch(shareError => {
       console.log(shareError);
@@ -129,7 +130,7 @@ export default function GiftDetail() {
           <>
             <HeaderCard memo={info?.memo} />
             {renderDivider()}
-            <TextM style={[FontStyles.neutralTertiaryText, GStyles.marginTop(pTd(16)), GStyles.paddingArg(0, pTd(16))]}>
+            <TextM style={[FontStyles.neutralTertiaryText, GStyles.marginTop(pTd(16)), GStyles.paddingArg(0, pTd(12))]}>
               {statusTextShow}
             </TextM>
             <View

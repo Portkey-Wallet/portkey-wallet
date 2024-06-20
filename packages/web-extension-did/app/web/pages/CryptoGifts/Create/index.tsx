@@ -419,7 +419,7 @@ export default function Create() {
 
       // check security
       const securityRes = await checkSecurity(token.chainId);
-      if (!securityRes) throw 'wallet is not security';
+      if (!securityRes) return;
 
       setConfirmOpen(true);
     } catch (error) {

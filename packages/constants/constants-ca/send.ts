@@ -1,6 +1,7 @@
 export enum AddressError {
   SAME_ADDRESS = 'The sender and recipient address are identical',
   INVALID_ADDRESS = 'Recipient address is invalid',
+  OTHER_CHAIN_ADDRESS = 'The To address is not on the aelf network. If you intend to send assets cross-chain, please try using $ETransfer$.',
 }
 
 export enum TransactionError {
@@ -35,3 +36,34 @@ export const RECEIVE_SIDE_CHAIN_TOKEN_TIP_CONTENT = [
 ];
 export const RECEIVE_SIDE_CHAIN_TOKEN_TIP_MODAL_REMEMBER_TEXT = `Don't show this again`;
 export const RECEIVE_SIDE_CHAIN_TOKEN_TIP_MODAL_BUTTON_TEXT = `I Know`;
+
+export const RECEIVE_MAIN_CHAIN_ELF_TIP = `If you wish to receive assets from exchanges, please switch to the "Exchanges" tab on the right.`;
+
+export enum ReceiveTabEnum {
+  QRCode = 'QRCode',
+  Exchanges = 'Exchanges',
+  Buy = 'Buy',
+  Deposit = 'Deposit',
+}
+
+export const ALL_RECEIVE_TAB: {
+  value: ReceiveTabEnum;
+  label: string;
+}[] = [
+  {
+    value: ReceiveTabEnum.QRCode,
+    label: 'QR Code',
+  },
+  {
+    value: ReceiveTabEnum.Exchanges,
+    label: 'Exchanges',
+  },
+  {
+    value: ReceiveTabEnum.Buy,
+    label: 'Buy',
+  },
+  {
+    value: ReceiveTabEnum.Deposit,
+    label: 'Deposit',
+  },
+];

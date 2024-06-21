@@ -2,11 +2,12 @@
 
 .send-transaction {
   width: 328px;
-  margin: 40px auto 16px;
+  margin: auto;
+  padding: 40px 16px;
   flex-direction: column;
   font-size: 12px;
   line-height: 16px;
-  color: @font-13;
+  color: @neutral-secondary-text;
   .circle-loading {
     display: inline-block;
     width: 12px;
@@ -16,13 +17,13 @@
   font-size: 14px;
   line-height: 20px;
   font-weight: 500;
-  color: @font-11;
+  color: @neutral-primary-text;
   }
   .chain {
     align-self: center;
     padding: 8px 16px;
     border-radius: 24px;
-    border: 1px solid @border-2;
+    border: 1px solid @neutral-divider;
     font-weight: 500;
     .aelf-icon, .elf-icon-icon {
       width: 24px;
@@ -39,11 +40,11 @@
     margin: 24px auto 0;
     padding: 17px 15px;
     width: 328px;
-    border: 1px solid @border-2;
+    border: 1px solid @neutral-divider;
     border-radius: 6px;
     align-items: center;
     gap: 44px;
-    color: @font-1;
+    color: @neutral-primary-text;
     .address,
     .name {
       flex: 1;
@@ -64,7 +65,7 @@
       position: absolute;
       left: 50%;
       height: 100%;
-      border-left: 1px solid @border-2;
+      border-left: 1px solid @neutral-divider;
     }
   }
   .amount {
@@ -74,20 +75,20 @@
   }
   .method {
     margin-top: 16px;
-    color: @font-13;
+    color: @neutral-secondary-text;
     .method-name {
       margin-top: 4px;
     }
   }
   .detail {
     margin-top: 16px;
-    color: @font-13;
+    color: @neutral-secondary-text;
     .title {
       margin-bottom: 4px;
     }
     .amount {
       padding: 16px;
-      border: 1px solid @border-2;
+      border: 1px solid @neutral-divider;
       border-radius: 6px;
     }
     .fee, .total {
@@ -105,7 +106,7 @@
       width: 328px;
       padding: 16px;
       margin-top: 4px;
-      border: 1px solid @border-2;
+      border: 1px solid @neutral-divider;
       border-radius: 6px;
       .content {
         margin-top: 4px;
@@ -129,7 +130,7 @@
     color: @font-14;
   }
   .error-message.error-warning {
-    color: @font-8;
+    color: @functional-warning-default;
   }
   .dapp-session {
     margin-top: 32px;
@@ -137,6 +138,7 @@
   .btn {
     width: 100%;
     margin-top: 40px;
+    gap: 16px;
     .@{app-prefix}-btn {
       width: 156px;
       height: 48px;
@@ -146,13 +148,13 @@
       border-radius: 24px;
     }
     .@{app-prefix}-btn-text {
-      border: 1px solid @border-3;
-      color: @font-9;
-      background-color: @bg-11;
+      border: 1px solid @brand-normal;
+      color: @brand-normal;
+      background-color: @neutral-default-bg;
     }
     .@{app-prefix}-btn-primary {
-      color: @font-5;
-      background-color: @bg-7;
+      color: @neutral-white-text;
+      background-color: @brand-normal;
     }
   }
 }

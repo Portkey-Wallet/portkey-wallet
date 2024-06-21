@@ -22,8 +22,9 @@ import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import fonts from 'assets/theme/fonts';
-import { formatChainInfoToShow, sleep } from '@portkey-wallet/utils';
+import { sleep } from '@portkey-wallet/utils';
 import BuyButton from 'components/BuyButton';
+import Carousel from 'components/Carousel';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 import CommonToolButton from 'components/CommonToolButton';
@@ -38,13 +39,14 @@ import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import { pTd } from 'utils/unit';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { SHOW_RAMP_SYMBOL_LIST } from '@portkey-wallet/constants/constants-ca/ramp';
-import { ETransTokenList } from '@portkey-wallet/constants/constants-ca/dapp';
-import { useAppETransShow } from 'hooks/cms';
+import { useAppETransShow, useAppSwapButtonShow } from 'hooks/cms';
 import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
-import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
-import CommonAvatar from 'components/CommonAvatar';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
+import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
 import FaucetButton from 'components/FaucetButton';
+import { TokenTitle } from 'components/TokenTitle';
+import { ReceivePageTabType } from 'pages/Receive/types';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -65,21 +67,27 @@ const TokenDetail: React.FC = () => {
   const navigation = useNavigation();
   const dispatch = useAppCommonDispatch();
   const activity = useAppCASelector(state => state.activity);
-  const defaultToken = useDefaultToken();
-  const { eTransferUrl = '', awakenUrl = 'https://awaken.finance/' } = useCurrentNetworkInfo();
+  const defaultToken = useDefaultToken(tokenInfo.chainId);
+  const { awakenUrl = 'https://awaken.finance/' } = useCurrentNetworkInfo();
   const { isETransDepositShow } = useAppETransShow();
+  const { isSwapShow } = useAppSwapButtonShow();
   const onDisclaimerModalPress = useOnDisclaimerModalPress();
   const { buy, swap, deposit } = checkEnabledFunctionalTypes(tokenInfo.symbol, tokenInfo.chainId === 'AELF');
   const { isRampShow } = useAppRampEntryShow();
+  const getS3ImageUrl = useGetS3ImageUrl();
+  const { getTokenDetailBannerList } = useCmsBanner();
   const isBuyButtonShow = useMemo(
-    () => SHOW_RAMP_SYMBOL_LIST.includes(tokenInfo.symbol) && tokenInfo.chainId === 'AELF' && isRampShow && buy,
-    [buy, isRampShow, tokenInfo.chainId, tokenInfo.symbol],
+    () =>
+      SHOW_RAMP_SYMBOL_LIST.includes(tokenInfo.symbol) &&
+      tokenInfo.chainId === 'AELF' &&
+      isRampShow &&
+      isMainnet &&
+      buy,
+    [buy, isMainnet, isRampShow, tokenInfo.chainId, tokenInfo.symbol],
   );
-  const isETransToken = useMemo(() => ETransTokenList.includes(tokenInfo.symbol), [tokenInfo.symbol]);
-  const isDepositShow = useMemo(
-    () => isETransToken && isETransDepositShow && deposit,
-    [isETransToken, isETransDepositShow, deposit],
-  );
+
+  const isDepositShow = useMemo(() => isETransDepositShow && deposit, [isETransDepositShow, deposit]);
+
   const isFaucetButtonShow = useMemo(
     () => !isMainnet && tokenInfo.symbol === defaultToken.symbol && tokenInfo.chainId === 'AELF',
     [defaultToken.symbol, isMainnet, tokenInfo.chainId, tokenInfo.symbol],
@@ -96,7 +104,6 @@ const TokenDetail: React.FC = () => {
   );
   const currentActivityRef = useRef(currentActivity);
   currentActivityRef.current = currentActivity;
-  const symbolImages = useSymbolImages();
 
   const fixedParamObj = useMemo(
     () => ({
@@ -109,10 +116,6 @@ const TokenDetail: React.FC = () => {
   const pageInfoRef = useRef({
     ...INIT_PAGE_INFO,
   });
-
-  const iconImg = useMemo(() => {
-    return tokenInfo?.imageUrl ?? symbolImages[tokenInfo?.symbol] ?? '';
-  }, [symbolImages, tokenInfo?.imageUrl, tokenInfo?.symbol]);
 
   const [isLoading, setIsLoading] = useState(ListLoadingEnum.hide);
   const getActivityList = useLockCallback(
@@ -153,11 +156,11 @@ const TokenDetail: React.FC = () => {
     let count = 3;
     if (isBuyButtonShow) count++;
     if (isDepositShow) count++;
-    if (swap) count++;
+    if (isSwapShow && swap) count++;
     // FaucetButton
     if (isFaucetButtonShow) count++;
     return count;
-  }, [isBuyButtonShow, isDepositShow, isFaucetButtonShow, swap]);
+  }, [isBuyButtonShow, isDepositShow, isFaucetButtonShow, isSwapShow, swap]);
 
   const buttonGroupWrapStyle = useMemo(() => {
     if (buttonCount >= 5) {
@@ -194,84 +197,70 @@ const TokenDetail: React.FC = () => {
     return balanceShow?.length > 18;
   }, [balanceShow]);
 
-  return (
-    <PageContainer
-      type="leftBack"
-      backTitle={t('')}
-      titleDom={
-        <View>
-          <View style={styles.mainTitleLine}>
-            <CommonAvatar
-              hasBorder
-              style={styles.mainTitleIcon}
-              title={tokenInfo.symbol}
-              avatarSize={pTd(18)}
-              svgName={tokenInfo?.symbol === defaultToken.symbol ? 'testnet' : undefined}
-              imageUrl={iconImg}
-              titleStyle={Object.assign({}, FontStyles.font11, { fontSize: pTd(12) })}
-              borderStyle={GStyles.hairlineBorder}
-            />
-            <TextL style={[GStyles.textAlignCenter, FontStyles.font16, fonts.mediumFont]}>{tokenInfo.symbol}</TextL>
-          </View>
-          <TextS style={[GStyles.textAlignCenter, FontStyles.font11, styles.subTitle]}>
-            {formatChainInfoToShow(tokenInfo.chainId)}
-          </TextS>
-        </View>
-      }
-      safeAreaColor={['white']}
-      leftCallback={() => navigation.goBack()}
-      containerStyles={styles.pageWrap}
-      scrollViewProps={{ disabled: true }}>
-      <View style={styles.card}>
-        <Text style={[styles.tokenBalance, amountTextOverflow ? styles.textOverflow : {}]}>{`${balanceShow}`}</Text>
-        {isMainnet && (
-          <TextS style={[styles.dollarBalance]}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</TextS>
-        )}
-        <View style={[styles.buttonGroupWrap, buttonGroupWrapStyle]}>
-          <SendButton themeType="innerPage" sentToken={currentTokenInfo} wrapStyle={buttonWrapStyle} />
-          <ReceiveButton currentTokenInfo={currentTokenInfo} themeType="innerPage" wrapStyle={buttonWrapStyle} />
-          {buy && isMainnet && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
-          {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}
-          {swap && (
-            <CommonToolButton
-              title="Swap"
-              icon="swap"
-              onPress={() => {
-                onDisclaimerModalPress(
-                  DepositModalMap.AwakenSwap,
-                  stringifyETrans({
-                    url: `${awakenUrl}/trading/ELF_USDT_0.05` || '',
-                  }),
-                );
-              }}
-              themeType="innerPage"
-              wrapStyle={buttonWrapStyle}
-            />
-          )}
-          {deposit && (
-            <CommonToolButton
-              title="Deposit"
-              icon="deposit"
-              onPress={() =>
-                onDisclaimerModalPress(
-                  DepositModalMap.eTransfer,
-                  stringifyETrans({
-                    url: eTransferUrl || '',
-                    query: {
-                      tokenSymbol: tokenInfo?.symbol,
-                      type: 'Deposit',
-                      chainId: tokenInfo?.chainId,
-                    },
-                  }),
-                )
-              }
-              themeType="innerPage"
-              wrapStyle={buttonWrapStyle}
-            />
-          )}
-        </View>
-      </View>
+  const bannerItemsList = useMemo(() => {
+    return getTokenDetailBannerList(tokenInfo.chainId, tokenInfo.symbol).map(item => {
+      return {
+        url: item.url,
+        imgUrl: getS3ImageUrl(item.imgUrl.filename_disk),
+      };
+    });
+  }, [getS3ImageUrl, getTokenDetailBannerList, tokenInfo.chainId, tokenInfo.symbol]);
 
+  const renderButtonItems = useCallback(() => {
+    return (
+      <View style={[styles.buttonGroupWrap, buttonGroupWrapStyle]}>
+        <SendButton themeType="innerPage" sentToken={currentTokenInfo} wrapStyle={buttonWrapStyle} />
+        <ReceiveButton currentTokenInfo={currentTokenInfo} themeType="innerPage" wrapStyle={buttonWrapStyle} />
+        {isBuyButtonShow && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} tokenInfo={tokenInfo} />}
+        {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}
+        {isSwapShow && swap && (
+          <CommonToolButton
+            title="Swap"
+            icon="swap"
+            onPress={() => {
+              onDisclaimerModalPress(
+                DepositModalMap.AwakenSwap,
+                stringifyETrans({
+                  url: `${awakenUrl}/trading/ELF_USDT_0.05` || '',
+                }),
+              );
+            }}
+            themeType="innerPage"
+            wrapStyle={buttonWrapStyle}
+          />
+        )}
+        {deposit && (
+          <CommonToolButton
+            title="Deposit"
+            icon="deposit"
+            onPress={() =>
+              navigationService.navigate(
+                'Receive',
+                Object.assign({}, tokenInfo, { targetScene: ReceivePageTabType.DEPOSIT }),
+              )
+            }
+            themeType="innerPage"
+            wrapStyle={buttonWrapStyle}
+          />
+        )}
+      </View>
+    );
+  }, [
+    awakenUrl,
+    buttonGroupWrapStyle,
+    buttonWrapStyle,
+    currentTokenInfo,
+    deposit,
+    isBuyButtonShow,
+    isFaucetButtonShow,
+    isSwapShow,
+    onDisclaimerModalPress,
+    swap,
+    tokenInfo,
+  ]);
+
+  const renderActivityList = useCallback(() => {
+    return (
       <FlashList
         refreshing={isLoading === ListLoadingEnum.header}
         data={currentActivity?.data || []}
@@ -292,8 +281,8 @@ const TokenDetail: React.FC = () => {
         }}
         onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListHeaderComponent={
-          <View style={styles.divide}>
-            <TextL style={[FontStyles.font16, styles.listFront]}>{'Activity'}</TextL>
+          <View>
+            <TextL style={[FontStyles.font16, styles.listFront, fonts.mediumFont]}>{'Activity'}</TextL>
           </View>
         }
         ListFooterComponent={
@@ -304,6 +293,35 @@ const TokenDetail: React.FC = () => {
           init();
         }}
       />
+    );
+  }, [currentActivity?.data, getActivityList, init, isEmpty, isLoading, onRefreshList, renderItem, t]);
+
+  const renderBanner = useCallback(() => {
+    return bannerItemsList?.length > 0 ? (
+      <Carousel items={bannerItemsList} containerStyle={styles.banner} showDivider={true} />
+    ) : (
+      <View />
+    );
+  }, [bannerItemsList]);
+
+  return (
+    <PageContainer
+      type="leftBack"
+      backTitle={t('')}
+      titleDom={<TokenTitle tokenInfo={tokenInfo} />}
+      safeAreaColor={['white']}
+      leftCallback={() => navigation.goBack()}
+      containerStyles={styles.pageWrap}
+      scrollViewProps={{ disabled: true }}>
+      <View style={styles.card}>
+        <Text style={[styles.tokenBalance, amountTextOverflow ? styles.textOverflow : {}]}>{`${balanceShow}`}</Text>
+        {isMainnet && (
+          <TextS style={[styles.dollarBalance]}>{formatAmountUSDShow(currentTokenInfo?.balanceInUsd)}</TextS>
+        )}
+        {renderButtonItems()}
+      </View>
+      {renderBanner()}
+      {renderActivityList()}
     </PageContainer>
   );
 };

@@ -1,44 +1,62 @@
-import { IPopoverMenuListData, PopoverMenuList } from '@portkey-wallet/im-ui-web';
-import { Popover } from 'antd';
+import { useMemo } from 'react';
+import { Avatar, IAvatarProps, IPopoverMenuListData, PopoverMenuList } from '@portkey-wallet/im-ui-web';
+import CommonHeader from 'components/CommonHeader';
 import CustomSvg from 'components/CustomSvg';
-import SettingHeader from 'pages/components/SettingHeader';
-import { ReactNode } from 'react';
+import './index.less';
 
 export interface IChatBoxHeaderProps {
   popVisible: boolean;
   popMenuData: IPopoverMenuListData[];
-  renderTitle: ReactNode;
+  avatarProps: IAvatarProps;
+  titleName?: string;
+  isMute?: boolean;
   goBack: () => void;
   setPopVisible: (v: boolean) => void;
+  handleClickTitle: () => void;
 }
 export default function ChatBoxHeader({
   popVisible,
-  renderTitle,
   popMenuData,
+  avatarProps,
+  titleName,
+  isMute,
   goBack,
   setPopVisible,
+  handleClickTitle,
 }: IChatBoxHeaderProps) {
+  const renderTitle = useMemo(
+    () => (
+      <div className="title-element flex">
+        <div className="title-content flex-center" onClick={handleClickTitle}>
+          <Avatar className="title-avatar" {...avatarProps} />
+          <div className="title-name">{titleName || ''}</div>
+        </div>
+        {isMute && <CustomSvg type="Mute" />}
+      </div>
+    ),
+    [handleClickTitle, avatarProps, titleName, isMute],
+  );
+
   return (
-    <div className="chat-box-top">
-      <SettingHeader
-        title={renderTitle}
-        leftCallBack={goBack}
-        rightElement={
-          <div className="flex-center right-element">
-            <Popover
-              open={popVisible}
-              overlayClassName="chat-box-popover"
-              trigger="click"
-              showArrow={false}
-              content={<PopoverMenuList data={popMenuData} />}>
-              <div className="chat-box-more" onClick={() => setPopVisible(!popVisible)}>
-                <CustomSvg type="More" />
-              </div>
-            </Popover>
-            <CustomSvg type="Close2" onClick={goBack} />
-          </div>
-        }
-      />
-    </div>
+    <CommonHeader
+      className="chat-box-top"
+      showBottomBorder
+      title={renderTitle}
+      rightElementList={[
+        {
+          customSvgWrapClassName: 'chat-box-more',
+          customSvgType: 'More',
+          popoverProps: {
+            overlayClassName: 'chat-box-popover',
+            open: popVisible,
+            trigger: 'click',
+            showArrow: false,
+            content: <PopoverMenuList data={popMenuData} />,
+          },
+          onClick: () => setPopVisible(!popVisible),
+        },
+      ]}
+      onLeftBack={goBack}
+    />
   );
 }

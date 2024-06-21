@@ -7,48 +7,15 @@
   display: flex;
   flex-direction: column;
 
-  .token-detail-title {
-    gap: 12px;
-    height: 60px;
-    padding: 10px 16px;
-    align-items: center;
-    background-color: @bg-11;
-    .newrightarrow-icon {
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
-      svg {
-        width: 100%;
-        height: 100%;
-        transform: rotate(180deg);
-      }
-    }
-    .title-center {
-      .symbol {
-        gap: 6px;
-        line-height: 24px;
-        font-size: 16px;
-        font-weight: 500;
-        color: @font-11;
-      }
-      .network {
-        line-height: 16px;
-        font-size: 12px;
-        color: @Neutral-3;
-      }
-    }
-  }
-  
   .token-detail-content {
-    &.token-detail-content-popup {
-      overflow: scroll;
-    }
 
     .token-detail-balance {
       gap: 24px;
       padding: 24px 16px;
-      background-color: @bg-11;
+      background-color: @neutral-default-bg;
+      border-bottom: 1px solid @neutral-divider;
       .balance-amount {
+        gap: 4px;
         &.is-prompt {
           align-items: center;
         }
@@ -56,16 +23,25 @@
           font-size: 32px;
           line-height: 40px;
           font-weight: 500;
-          color: @font-11;
+          color: @neutral-primary-text;
+          .@{app-prefix}-skeleton-avatar {
+            width: 148px;
+            height: 40px;
+          }
           &.amount-number-long {
             font-size: 28px;
             line-height: 36px;
           }
         }
         .amount-convert {
+          height: 20px;
           font-size: 14px;
           line-height: 20px;
-          color: @Neutral-3;
+          color: @neutral-tertiary-text;
+          .@{app-prefix}-skeleton-avatar {
+            width: 80px;
+            height: 20px;
+          }
           &.hidden-amount-convert {
             visibility: hidden;
           }
@@ -73,16 +49,29 @@
       }
     }
 
+    &.token-detail-content-popup {
+      overflow: scroll;
+      .token-detail-balance {
+        position: sticky;
+        top: -100px;
+        z-index: 5;
+      }
+    }
+
+    .banner-wrap {
+      border-bottom: 1px solid @neutral-divider;
+    }
+
     .token-detail-activity {
       flex: 1;
-      background-color: @bg-11;
+      margin-top: 8px;
+      background-color: @neutral-default-bg;
       .token-detail-activity-title {
         padding: 10px 16px;
         font-size: 16px;
         line-height: 24px;
         font-weight: 500;
-        color: @font-11;
-        border-bottom: 1px solid @Neutral-6;
+        color: @neutral-primary-text;
       }
     }
   }
@@ -90,17 +79,14 @@
 
 .portkey-prompt {
   .token-detail-title {
-    border-bottom: 1px solid @border-2;
+    border-bottom: 1px solid @neutral-divider;
   }
   @media screen and (min-width: 768px) {
     .token-detail {
-      .setting-header-wrapper {
-        padding: 0 24px;
-      }
       .token-detail-history {
         .activity-wrapper {
           .activity-list {
-            background: @bg-11;
+            background: @neutral-default-bg;
             margin-bottom: 24px;
           }
         }

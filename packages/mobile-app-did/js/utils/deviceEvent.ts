@@ -10,6 +10,7 @@ const EventList = [
   'refreshGuardiansList',
   'setCountry',
   'refreshDeviceList',
+  'refreshAllowanceList',
   'nestScrollViewScrolledTop',
   'nestScrollViewLayout',
   'setAuthenticationInfo',

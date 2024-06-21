@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     marginTop: pTd(24),
     textAlign: 'center',
     color: defaultColors.primaryColor,
-    backgroundColor: defaultColors.bg9,
+    backgroundColor: defaultColors.brandLight,
     ...GStyles.paddingArg(2, 8),
   },
   signTitle: {

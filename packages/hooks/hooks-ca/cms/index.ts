@@ -16,9 +16,7 @@ import {
   getLoginControlListAsync,
 } from '@portkey-wallet/store/store-ca/cms/actions';
 import { DEFAULT_LOGIN_MODE_LIST } from '@portkey-wallet/constants/constants-ca/cms';
-
 import { getFaviconUrl, getOrigin } from '@portkey-wallet/utils/dapp/browser';
-
 import { checkSiteIsInBlackList } from '@portkey-wallet/utils/session';
 import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import {
@@ -213,10 +211,7 @@ export const useETransShow = (config: IEntranceMatchValueConfig) => {
   const { entrance, refresh } = useEntrance(config);
   const { eTransferUrl } = useCurrentNetworkInfo();
 
-  const isETransDepositShow = useMemo(
-    () => !!(entrance.eTransDeposit && eTransferUrl),
-    [eTransferUrl, entrance.eTransDeposit],
-  );
+  const isETransDepositShow = useMemo(() => !!entrance.eTransDeposit, [entrance.eTransDeposit]);
 
   const isETransWithdrawShow = useMemo(
     () => !!(entrance.eTransWithdraw && eTransferUrl),
@@ -258,6 +253,15 @@ export const useBridgeButtonShow = (config: IEntranceMatchValueConfig) => {
 
   return {
     isBridgeShow,
+  };
+};
+
+export const useSwapButtonShow = (config: IEntranceMatchValueConfig) => {
+  const { entrance } = useEntrance(config);
+  const isSwapShow = useMemo(() => entrance?.swap, [entrance.swap]);
+
+  return {
+    isSwapShow,
   };
 };
 
@@ -401,4 +405,15 @@ export const useGetFormattedLoginModeList = (
       loginModeListToOther: filterLoginModeListToOther(DEFAULT_LOGIN_MODE_LIST, deviceType),
     };
   }, [currentNetworkLoginModeList, deviceType, matchValueMap]);
+};
+
+export const useGetS3ImageUrl = () => {
+  const { s3Url } = useCurrentNetworkInfo();
+
+  return useCallback(
+    (filename_disk: string) => {
+      return `${s3Url}/${filename_disk}`;
+    },
+    [s3Url],
+  );
 };

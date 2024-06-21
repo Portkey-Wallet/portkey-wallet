@@ -1,5 +1,6 @@
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import CustomSvg from 'components/CustomSvg';
+import CommonHeader, { CustomSvgPlaceholderSize } from 'components/CommonHeader';
 import DropdownSearch from 'components/DropdownSearch';
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +22,7 @@ import { useCommonState } from 'store/Provider/hooks';
 import clsx from 'clsx';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import './index.less';
+import useGAReport from 'hooks/useGAReport';
 
 export interface ICustomTokenListProps {
   onChange?: (v: IAssetItemType, type: 'token' | 'nft') => void;
@@ -69,6 +71,12 @@ export default function CustomTokenList({
   ]);
   useFreshTokenPrice();
 
+  const { startReport, endReport } = useGAReport();
+
+  useEffectOnce(() => {
+    startReport(drawerType === 'send' ? 'Send-TokenList' : 'Receive-TokenList');
+  });
+
   const getInitData = useCallback(async () => {
     try {
       if (drawerType === 'send') {
@@ -90,11 +98,12 @@ export default function CustomTokenList({
     } catch (error) {
       console.log('===getInitData error', error);
     }
+    return drawerType;
   }, [caAddressInfos, chainIdArray, drawerType, fetchAccountAssetsInfoList, fetchTokenInfoList]);
 
   useEffectOnce(() => {
     setFilterWord('');
-    getInitData();
+    getInitData().then((res) => endReport(res === 'send' ? 'Send-TokenList' : 'Receive-TokenList'));
   });
 
   const setData = useCallback(() => {
@@ -164,10 +173,10 @@ export default function CustomTokenList({
           key={`${token.symbol}_${token.chainId}`}
           onClick={onChange?.bind(undefined, token, 'token')}>
           <div className="icon flex-center">
-            <TokenImageDisplay symbol={token?.symbol} src={token.tokenInfo?.imageUrl} />
+            <TokenImageDisplay symbol={token.label ?? token?.symbol} src={token.tokenInfo?.imageUrl} />
           </div>
           <div className="info flex-column">
-            <p className="symbol">{`${token.symbol}`}</p>
+            <p className="symbol">{`${token.label ?? token.symbol}`}</p>
             <p className="network">{transNetworkText(token.chainId, !isMainnet)}</p>
           </div>
           <div className="amount flex-column">
@@ -195,6 +204,7 @@ export default function CustomTokenList({
           balanceInUsd: token.balanceInUsd || '',
           tokenContractAddress: token.address,
         },
+        label: token.label,
       };
       return (
         <div
@@ -202,10 +212,10 @@ export default function CustomTokenList({
           key={`${token.symbol}_${token.chainId}`}
           onClick={onChange?.bind(undefined, tokenTmp, 'token')}>
           <div className="icon flex-center">
-            <TokenImageDisplay symbol={token?.symbol} src={token?.imageUrl} />
+            <TokenImageDisplay symbol={token.label ?? token?.symbol} src={token?.imageUrl} />
           </div>
           <div className="info">
-            <p className="symbol">{`${token.symbol}`}</p>
+            <p className="symbol">{`${token.label ?? token.symbol}`}</p>
             <p className="network">{transNetworkText(token.chainId, !isMainnet)}</p>
           </div>
         </div>
@@ -245,10 +255,17 @@ export default function CustomTokenList({
 
   return (
     <div className="custom-token-list">
-      <div className="header">
-        <p>{title || 'Select Assets'}</p>
-        <CustomSvg type="Close2" onClick={onClose} />
-      </div>
+      <CommonHeader
+        className="header"
+        title={title || 'Select Assets'}
+        rightElementList={[
+          {
+            customSvgType: 'SuggestClose',
+            customSvgPlaceholderSize: CustomSvgPlaceholderSize.MD,
+            onClick: onClose,
+          },
+        ]}
+      />
       <DropdownSearch
         overlayClassName="empty-dropdown"
         open={openDrop}

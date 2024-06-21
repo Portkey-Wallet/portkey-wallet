@@ -1,8 +1,11 @@
+import { useRef } from 'react';
+import CommonHeader from 'components/CommonHeader';
 import CustomSvg from 'components/CustomSvg';
 import Avatar from '../Avatar';
 import AccountConnect from '../AccountConnect';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import UnReadBadge from '../UnReadBadge';
+import CopyAddressDrawerOrModal, { ICopyAddressDrawerOrModalInstance } from '../CopyAddressDrawerOrModal';
 import './index.less';
 
 export interface IHomeHeaderProps {
@@ -11,23 +14,30 @@ export interface IHomeHeaderProps {
 }
 export default function HomeHeader({ onUserClick, unReadShow }: IHomeHeaderProps) {
   const userInfo = useCurrentUserInfo();
+  const copyAddressDrawerOrModalRef = useRef<ICopyAddressDrawerOrModalInstance | null>(null);
   return (
-    <div className="portkey-home-header flex-between">
-      <div className="home-header-left">
-        <CustomSvg type="PortkeyLogoV2" />
-      </div>
-      <div className="home-header-right flex">
-        <AccountConnect />
-        <div className="user-avatar-wrap">
-          <Avatar
-            size="small"
-            avatarUrl={userInfo?.avatar}
-            nameIndex={userInfo?.nickName.substring(0, 1).toLocaleUpperCase() || ''}
-            onClick={onUserClick}
-          />
-          {unReadShow && <UnReadBadge />}
-        </div>
-      </div>
-    </div>
+    <>
+      <CommonHeader
+        className="portkey-home-header"
+        title={<CustomSvg type="PortkeyLogoV2" />}
+        rightElementList={[
+          {
+            customSvgType: 'Copy5',
+            onClick: () => copyAddressDrawerOrModalRef.current?.open(),
+          },
+          <AccountConnect key="accountConnect" />,
+          <div key="userAvatar" className="user-avatar-wrap">
+            <Avatar
+              size="small"
+              avatarUrl={userInfo?.avatar}
+              nameIndex={userInfo?.nickName.substring(0, 1).toLocaleUpperCase() || ''}
+              onClick={onUserClick}
+            />
+            {unReadShow && <UnReadBadge />}
+          </div>,
+        ]}
+      />
+      <CopyAddressDrawerOrModal ref={copyAddressDrawerOrModalRef} />
+    </>
   );
 }

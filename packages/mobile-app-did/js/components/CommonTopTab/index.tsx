@@ -6,6 +6,7 @@ import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
+import { useThrottleCallback } from '@portkey-wallet/hooks';
 
 export interface TabItemTypes {
   name: string;
@@ -15,6 +16,7 @@ export interface TabItemTypes {
 export type CommonTopTabProps = {
   swipeEnabled?: boolean;
   hasTabBarBorderRadius?: boolean;
+  hasBottomBorder?: boolean;
   initialRouteName?: string;
   tabItemStyleProps?: any;
   tabList: TabItemTypes[];
@@ -23,13 +25,19 @@ export type CommonTopTabProps = {
 const Tab = createMaterialTopTabNavigator();
 
 const CommonTopTab: React.FC<CommonTopTabProps> = props => {
-  const { tabList, initialRouteName, hasTabBarBorderRadius, swipeEnabled = false } = props;
+  const { tabList, initialRouteName, hasTabBarBorderRadius, swipeEnabled = false, hasBottomBorder = true } = props;
 
   return (
     <Tab.Navigator
       initialRouteName={initialRouteName}
       initialLayout={{ width: screenWidth }}
-      tabBar={prop => <CustomizedTopTabBar {...prop} hasTabBarBorderRadius={hasTabBarBorderRadius} />}
+      tabBar={prop => (
+        <CustomizedTopTabBar
+          {...prop}
+          hasTabBarBorderRadius={hasTabBarBorderRadius}
+          hasBottomBorder={hasBottomBorder}
+        />
+      )}
       screenOptions={{
         swipeEnabled,
         tabBarScrollEnabled: false,
@@ -48,14 +56,29 @@ const CustomizedTopTabBar = ({
   descriptors,
   navigation,
   hasTabBarBorderRadius = false,
+  hasBottomBorder = false,
 }: {
   state: { routes: any[]; index: number };
   descriptors: any;
   navigation: any;
   hasTabBarBorderRadius?: boolean;
+  hasBottomBorder?: boolean;
 }) => {
+  const onPress = useThrottleCallback(
+    (name, params) => {
+      navigation.navigate(name, params);
+    },
+    [navigation],
+    600,
+  );
+
   return (
-    <View style={[toolBarStyle.container, hasTabBarBorderRadius ? styles.radiusTarBarStyle : {}]}>
+    <View
+      style={[
+        toolBarStyle.container,
+        hasBottomBorder ? styles.bottomBorder : {},
+        hasTabBarBorderRadius ? styles.radiusTarBarStyle : {},
+      ]}>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label =
@@ -67,14 +90,10 @@ const CustomizedTopTabBar = ({
 
         const isFocused = state.index === index;
 
-        const onPress = () => {
-          navigation.navigate(route.name, route.params);
-        };
-
         return (
           <TouchableOpacity
             testID={options.tabBarTestID}
-            onPress={onPress}
+            onPress={() => onPress(route.name, route.params)}
             disabled={isFocused}
             key={label}
             style={[toolBarStyle.label, { paddingRight: index !== state.routes.length - 1 ? pTd(32) : 0 }]}>
@@ -106,6 +125,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
   },
+  bottomBorder: {
+    borderBottomColor: defaultColors.border6,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
   radiusTarBarStyle: {
     borderTopLeftRadius: pTd(8),
     borderTopRightRadius: pTd(8),
@@ -120,8 +143,6 @@ const toolBarStyle = StyleSheet.create({
   container: {
     flexDirection: 'row',
     paddingHorizontal: pTd(16),
-    borderBottomColor: defaultColors.border6,
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   label: {},
   labelText: {

@@ -36,6 +36,7 @@ export const DEFAULT_ENTRANCE_SHOW: IEntrance = {
   bridge: false,
   eTransDeposit: false,
   eTransWithdraw: false,
+  swap: false,
 };
 
 const checkIsEntranceShow = (

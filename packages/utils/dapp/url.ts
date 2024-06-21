@@ -7,6 +7,7 @@ type StringifyETransParams = {
   type?: ETransType;
   chainId?: ChainId;
   tokenSymbol?: string;
+  withdrawAddress?: string;
 };
 
 export function stringifyETrans(params: { url: string; query?: StringifyETransParams }) {

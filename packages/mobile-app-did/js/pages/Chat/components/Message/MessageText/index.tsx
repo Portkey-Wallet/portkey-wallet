@@ -6,11 +6,10 @@ import { StyleSheet, Text, TextStyle, View, Image } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
-import ChatOverlay from '../../ChatOverlay';
 import { useChatsDispatch, useCurrentChannelId } from 'pages/Chat/context/hooks';
 import { useDeleteMessage } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ChatMessage } from 'pages/Chat/types';
-import { ShowChatPopoverParams } from '../../ChatOverlay/chatPopover';
+import { ShowChatPopoverParams } from '../../../../../components/FloatOverlay/Popover';
 import isEqual from 'lodash/isEqual';
 import { copyText } from 'utils';
 import { TextM } from 'components/CommonText';
@@ -25,6 +24,8 @@ import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat
 import { useIMPin } from '@portkey-wallet/hooks/hooks-ca/im/pin';
 import ActionSheet from 'components/ActionSheet';
 import OverlayModal from 'components/OverlayModal';
+import { showReportOverlay } from '../../ReportOverlay';
+import FloatOverlay from 'components/FloatOverlay';
 
 const PIN_UNICODE_SPACE = '\u00A0\u00A0\u00A0\u00A0';
 const TIME_UNICODE_SPACE = isIOS
@@ -179,6 +180,7 @@ function MessageText(
         });
       }
 
+      // delete other's message
       if (isGroupChat && isAdmin && position === 'left') {
         list.push({
           title: 'Delete',
@@ -194,6 +196,7 @@ function MessageText(
         });
       }
 
+      // delete my message
       if (currentMessage)
         if (position === 'right')
           list.push({
@@ -209,10 +212,24 @@ function MessageText(
             },
           });
 
+      // report
+      if (position === 'left')
+        list.push({
+          title: 'Report',
+          iconName: 'chat-report',
+          onPress: async () => {
+            showReportOverlay({
+              messageId: currentMessage?.id || '',
+              message: currentMessage?.text || '',
+              reportedRelationId: currentMessage?.from || '',
+            });
+          },
+        });
+
       list = isNotSupported ? [] : list;
 
       list.length &&
-        ChatOverlay.showChatPopover({
+        FloatOverlay.showFloatPopover({
           list,
           px: pageX,
           py: pageY,
@@ -410,7 +427,7 @@ const replyMessageImageStyles = StyleSheet.create({
     alignItems: 'center',
   },
   rightWrap: {
-    backgroundColor: defaultColors.bg25,
+    backgroundColor: defaultColors.bg40,
   },
   blueBlank: {
     position: 'absolute',

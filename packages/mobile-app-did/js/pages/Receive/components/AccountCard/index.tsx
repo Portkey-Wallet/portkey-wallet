@@ -34,6 +34,7 @@ export default function AccountCard({
     },
     assetInfo: {
       symbol: tokenInfo?.symbol,
+      label: tokenInfo.label,
       tokenContractAddress: tokenInfo?.tokenContractAddress || tokenInfo?.address,
       chainId: tokenInfo?.chainId,
       decimals: tokenInfo?.decimals || 0,
@@ -54,12 +55,8 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg1,
     padding: pTd(16),
     borderRadius: pTd(12),
-    // Shadow
-    shadowColor: defaultColors.shadow1,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 2,
+    borderWidth: 0.5,
+    borderColor: defaultColors.border8,
   },
   textStyle: {
     marginTop: pTd(10),

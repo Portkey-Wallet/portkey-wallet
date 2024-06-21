@@ -70,7 +70,7 @@ const renderProviderCard = (
     <View style={[styles.providerWrap, isActive && styles.providerActiveStyle]}>
       {isActive && (
         <View style={styles.providerActiveTagWrap}>
-          <Svg oblongSize={[pTd(9), pTd(7)]} icon="selected4" />
+          <Svg oblongSize={[pTd(9), pTd(7)]} icon="selected4" color={defaultColors.primaryColor} />
         </View>
       )}
       <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemCenter, GStyles.marginBottom(24)]}>
@@ -262,7 +262,7 @@ export default function RampPreview() {
 
   return (
     <PageContainer
-      safeAreaColor={['blue', 'white']}
+      safeAreaColor={['white', 'white']}
       titleDom={`${isBuy ? 'Buy' : 'Sell'} ${defaultToken.symbol} `}
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>

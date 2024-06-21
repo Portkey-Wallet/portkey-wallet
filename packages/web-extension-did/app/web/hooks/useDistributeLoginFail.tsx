@@ -1,10 +1,12 @@
 import { contractQueries } from '@portkey-wallet/graphql';
 import { setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
+import { LoginMethod } from '@portkey-wallet/types/types-ca/wallet';
 import { VerificationType } from '@portkey-wallet/types/verifier';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { useAppDispatch } from 'store/Provider/hooks';
+import googleAnalytics from 'utils/googleAnalytics';
 import { getCurrentChainInfo } from 'utils/lib/SWGetReduxStore';
 import { getHolderInfoByContract } from 'utils/sandboxUtil/getHolderInfo';
 
@@ -59,6 +61,11 @@ const useDistributeLoginFail = () => {
               }),
             );
             const path = VerificationType.register === verificationType ? 'register' : 'login';
+
+            googleAnalytics.loginEndEvent(
+              VerificationType.register === verificationType ? LoginMethod.Signup : LoginMethod.SocialRecovery,
+            );
+
             navigate(`/success-page/${path}`);
             return true;
           }

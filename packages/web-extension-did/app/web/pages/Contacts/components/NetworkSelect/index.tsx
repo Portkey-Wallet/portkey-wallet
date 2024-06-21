@@ -43,7 +43,7 @@ export default function NetworkSelect({ onClose, onChange }: INetworkSelectProps
     <div className="network-select">
       <div className="header">
         <p>{t('Select Network')}</p>
-        <CustomSvg type="Close2" onClick={onClose} />
+        <CustomSvg type="SuggestClose" onClick={onClose} />
       </div>
       <DropdownSearch
         overlayClassName="switch-network-empty-dropdown"

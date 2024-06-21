@@ -38,3 +38,5 @@ export const DAPP_WHITELIST_ACTION_WHITELIST: string[] = [
 export { DAPP_WHITELIST };
 
 export const ETransTokenList = ['USDT'];
+
+export const BATCH_APPROVAL_SYMBOL = '*';

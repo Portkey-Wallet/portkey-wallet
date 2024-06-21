@@ -11,6 +11,7 @@ import { ToAccount, SendStage } from 'pages/Send';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { GuardianItem } from './guardians';
 import { NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
+import { ReceiveTabEnum } from '@portkey-wallet/constants/constants-ca/send';
 
 export enum FromPageEnum {
   register = 'register',
@@ -184,6 +185,9 @@ export type TRampPreviewLocationState = {
   tokenInfo?: TTokenDetailLocationState;
   openGuardiansApprove?: boolean;
   approveList?: GuardianItem[];
+  mainPageInfo?: {
+    pageName: string;
+  };
 };
 
 // AddContact
@@ -228,8 +232,11 @@ export type TReceiveLocationState = {
   balance: string;
   imageUrl: string;
   address: string;
-  balanceInUsd: string;
+  balanceInUsd?: string;
   decimals: string | number;
+  label?: string;
+  pageSide?: ReceiveTabEnum;
+  extraData?: any;
 };
 
 // Send
@@ -263,7 +270,8 @@ export type TTokenDetailLocationState = {
   decimals: number;
   tokenContractAddress: string;
   balanceInUsd?: string;
-  imgUrl?: string;
+  imageUrl?: string;
+  label?: string;
 };
 
 export type TWalletNameFromPage =

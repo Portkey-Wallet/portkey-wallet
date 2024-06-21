@@ -11,6 +11,7 @@ import { BorderStyles } from 'assets/theme/styles';
 import { useChangeNetwork } from 'hooks/network';
 import { ParamListBase, RouteProp } from '@react-navigation/native';
 import { ModalBody } from 'components/ModalBody';
+import { defaultColors } from 'assets/theme';
 
 const showSwitchChain = () => {
   console.log('');
@@ -45,7 +46,9 @@ function Network({
           {network.name}
         </TextL>
       </View>
-      {isSelect && <Svg iconStyle={styles.selectIconStyle} icon="selected" size={21} />}
+      {isSelect && (
+        <Svg iconStyle={styles.selectIconStyle} icon="selected" color={defaultColors.primaryColor} size={21} />
+      )}
     </Touchable>
   );
 }

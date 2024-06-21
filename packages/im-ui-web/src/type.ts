@@ -64,6 +64,7 @@ export interface IMessageEvent {
   onClickAvatar?: MessageEvent;
   onClickUrl?: (v: string) => void;
   onClickUnSupportMsg?: () => void;
+  onReportMsg?: MessageEvent;
 }
 
 export type IMessageShowPage = 'PIN-PAGE' | 'MSG-PAGE';

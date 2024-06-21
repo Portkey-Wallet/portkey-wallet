@@ -10,7 +10,7 @@ import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { addressFormat, getExploreLink } from '@portkey-wallet/utils';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import TitleWrapper from 'components/TitleWrapper';
+import CommonHeader from 'components/CommonHeader';
 import './index.less';
 import ActivityList from 'pages/components/ActivityList';
 import {
@@ -46,7 +46,6 @@ export default function RecentDetail() {
     data: [],
     totalRecordCount: 0,
   });
-  const [lastPageSize, setLastPageSize] = useState<number>(0);
   const { passwordSeed } = useUserInfo();
   const { isPrompt } = useCommonState();
   const isMainnet = useIsMainnet();
@@ -102,7 +101,6 @@ export default function RecentDetail() {
       fetchRecentContactActivities(fetchParams)
         .then((res) => {
           setActivityList(res);
-          setLastPageSize(res?.data?.length || 0);
         })
         .catch((error) => {
           throw Error(JSON.stringify(error));
@@ -126,7 +124,6 @@ export default function RecentDetail() {
         .then((res) => {
           setLoading(false);
           setActivityList({ ...res, data: [...activityInfo.data, ...res.data] });
-          setLastPageSize(res?.data?.length || 0);
         })
         .catch((error) => {
           setLoading(false);
@@ -136,18 +133,13 @@ export default function RecentDetail() {
   }, [activityInfo, fetchParams, loading]);
 
   const isHasMore = useMemo(() => {
-    return activityInfo.data.length < activityInfo.totalRecordCount && lastPageSize !== 0;
-  }, [activityInfo.data.length, activityInfo.totalRecordCount, lastPageSize]);
+    return !!activityInfo.hasNextPage;
+  }, [activityInfo.hasNextPage]);
 
   const mainContent = () => {
     return (
       <div className={clsx(['recent-detail', isPrompt && 'detail-page-prompt'])}>
-        <TitleWrapper
-          className="recent-detail-header"
-          title="Details"
-          leftCallBack={onClose}
-          rightElement={<CustomSvg type="Close2" onClick={onClose} />}
-        />
+        <CommonHeader className="recent-detail-header" title="Details" onLeftBack={onClose} />
         <div className="recent-detail-body">
           <div className="recent-detail-address-wrap">
             {state?.name && (

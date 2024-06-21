@@ -1,3 +1,4 @@
+import { NetworkType } from '@portkey-wallet/types';
 import { AElfInterface } from '@portkey-wallet/types/aelf';
 
 export type SendOptions = {
@@ -7,6 +8,8 @@ export type SendOptions = {
   value?: number | string;
   nonce?: number;
   onMethod: 'transactionHash' | 'receipt' | 'confirmation';
+  caAddress?: string;
+  currentNetwork?: NetworkType;
 };
 
 export interface ContractProps {

@@ -22,10 +22,11 @@ interface TokenListItemType {
   noBalanceShow?: boolean;
   item: TokenItemShowType;
   onPress?: (item: TokenItemShowType) => void;
+  hideBalance?: boolean;
 }
 
 const TokenListItem: React.FC<TokenListItemType> = props => {
-  const { noBalanceShow = false, onPress, item, currentSymbol, currentChainId } = props;
+  const { noBalanceShow = false, onPress, item, currentSymbol, currentChainId, hideBalance = false } = props;
   const { currentNetwork } = useWallet();
   const defaultToken = useDefaultToken();
 
@@ -48,7 +49,7 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
       <View style={itemStyle.right}>
         <View style={itemStyle.infoWrap}>
           <TextL numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.tokenName}>
-            {item?.symbol}
+            {item?.label || item?.symbol}
           </TextL>
           <TextS numberOfLines={1} style={[FontStyles.font11, itemStyle.chainInfo]}>
             {formatChainInfoToShow(item?.chainId, currentNetwork)}
@@ -58,15 +59,15 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
         {!noBalanceShow && (
           <View style={itemStyle.balanceWrap}>
             <TextL style={itemStyle.token} numberOfLines={1} ellipsizeMode={'tail'}>
-              {formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
+              {hideBalance ? '****' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}
             </TextL>
             <TextS numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.dollar}>
-              {isMainnet && formatAmountUSDShow(item.balanceInUsd)}
+              {isMainnet && (hideBalance && item.balanceInUsd ? '****' : formatAmountUSDShow(item.balanceInUsd))}
             </TextS>
           </View>
         )}
         {noBalanceShow && currentSymbol === item?.symbol && currentChainId === item?.chainId && (
-          <Svg icon="selected" size={pTd(24)} />
+          <Svg icon="selected" size={pTd(24)} color={defaultColors.primaryColor} />
         )}
       </View>
     </Touchable>
@@ -109,6 +110,7 @@ const itemStyle = StyleSheet.create({
   chainInfo: {
     lineHeight: pTd(16),
     marginTop: pTd(2),
+    height: pTd(20),
     width: pTd(150),
   },
   balanceWrap: {
@@ -126,6 +128,7 @@ const itemStyle = StyleSheet.create({
   dollar: {
     marginTop: pTd(2),
     lineHeight: pTd(16),
+    height: pTd(20),
     color: defaultColors.font11,
   },
 });

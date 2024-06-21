@@ -23,6 +23,7 @@ import { formatSetUnsetGuardianValue } from '../utils/formatSetUnsetLoginGuardia
 import singleMessage from 'utils/singleMessage';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { FromPageEnum, TGuardianRecoveryLocationState } from 'types/router';
+import { useReportUnsetLoginGuardian } from 'hooks/authentication';
 
 export const useGuardianRecovery = () => {
   const { setLoading } = useLoading();
@@ -37,6 +38,7 @@ export const useGuardianRecovery = () => {
   const { userGuardianStatus, opGuardian, preGuardian } = useGuardiansInfo();
   const accelerateChainId: ChainId = useMemo(() => state?.accelerateChainId || originChainId, [state, originChainId]);
   const accelerateChainInfo = useCurrentChain(accelerateChainId);
+  const reportUnsetLoginAccount = useReportUnsetLoginGuardian();
 
   return useCallback(async () => {
     try {
@@ -91,6 +93,17 @@ export const useGuardianRecovery = () => {
           },
         },
       });
+      try {
+        if (methodName === GuardianMth.UnsetGuardianTypeForLogin) {
+          await reportUnsetLoginAccount({
+            caHash: walletInfo?.caHash || '',
+            unsetGuardianIdentifierHash: opGuardian?.identifierHash || '',
+            chainId: originChainId,
+          });
+        }
+      } catch (error) {
+        console.log('======reportUnsetLoginAccount error', error);
+      }
       try {
         if (from === FromPageEnum.guardiansAdd && accelerateChainId !== originChainId) {
           if (!accelerateChainInfo?.endPoint) return;

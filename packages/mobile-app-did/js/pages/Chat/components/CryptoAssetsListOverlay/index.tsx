@@ -63,7 +63,7 @@ const AssetItem = (props: {
         noBalanceShow
         currentSymbol={currentSymbol}
         currentChainId={currentChainId}
-        item={{ name: '', ...item, tokenContractAddress: address, decimals: Number(item.decimals || 0) }}
+        item={{ ...item, tokenContractAddress: address, decimals: Number(item.decimals || 0) }}
         onPress={() => onPress(item)}
       />
     );
@@ -90,7 +90,7 @@ const AssetItem = (props: {
             </TextS>
           </View>
           {currentSymbol === symbol && currentChainId === item?.chainId && (
-            <Svg icon="selected" size={pTd(24)} iconStyle={GStyles.flexEnd} />
+            <Svg icon="selected" size={pTd(24)} color={defaultColors.primaryColor} iconStyle={GStyles.flexEnd} />
           )}
         </View>
       </TouchableOpacity>

@@ -44,7 +44,13 @@ export default function SelectFiatListWrap({
       />
     </CustomPromptModal>
   ) : (
-    <BaseDrawer {...props} onClose={onClose} className="ramp-fiat-drawer" destroyOnClose>
+    <BaseDrawer
+      {...props}
+      onClose={onClose}
+      className="ramp-fiat-drawer"
+      height={528}
+      placement="bottom"
+      destroyOnClose>
       <SelectFiatList
         title={title}
         searchPlaceHolder={searchPlaceHolder}

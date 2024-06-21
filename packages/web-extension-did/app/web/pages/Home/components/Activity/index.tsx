@@ -1,4 +1,4 @@
-import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
+import { useAppCASelector, useAppCommonDispatch, useEffectOnce } from '@portkey-wallet/hooks';
 import ActivityList from 'pages/components/ActivityList';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,12 +10,14 @@ import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { ChainId } from '@portkey-wallet/types';
 import CustomSvg from 'components/CustomSvg';
 import './index.less';
+import useGAReport from 'hooks/useGAReport';
 
 export interface ActivityProps {
   appendData?: Function;
   clearData?: Function;
   chainId?: ChainId;
   symbol?: string;
+  pageKey?: 'Home-Activity' | 'Token-Activity';
 }
 
 export enum EmptyTipMessage {
@@ -26,7 +28,7 @@ export enum EmptyTipMessage {
 const MAX_RESULT_COUNT = 20;
 const SKIP_COUNT = 0;
 
-export default function Activity({ chainId, symbol }: ActivityProps) {
+export default function Activity({ chainId, symbol, pageKey = 'Home-Activity' }: ActivityProps) {
   const { t } = useTranslation();
   const activity = useAppCASelector((state) => state.activity);
   const caAddressInfos = useCaAddressInfoList();
@@ -37,10 +39,11 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
         maxResultCount: 0,
         skipCount: 0,
         totalRecordCount: 0,
+        hasNextPage: false,
       }
     );
   }, [activity.activityMap, chainId, symbol]);
-  const [hasMore, setHasMore] = useState(currentActivity.data.length < currentActivity?.totalRecordCount);
+  const [hasMore, setHasMore] = useState(!!currentActivity.hasNextPage);
   const dispatch = useAppCommonDispatch();
   const { passwordSeed } = useUserInfo();
   const [initLoading, setInitLoading] = useState(false);
@@ -58,6 +61,12 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
     setNoDataLoading();
   }, [setNoDataLoading]);
 
+  const { startReport, endReport } = useGAReport();
+
+  useEffectOnce(() => {
+    startReport(pageKey);
+  });
+
   useEffect(() => {
     if (passwordSeed) {
       const params: IActivitiesApiParams = {
@@ -70,11 +79,12 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
       setInitLoading(true);
       dispatch(getActivityListAsync(params))
         .then((res: any) => {
+          endReport(pageKey);
           if (res.payload) {
-            if (res.payload.data?.length + res.payload.skipCount === res.payload.totalRecordCount) {
-              setHasMore(false);
-            } else {
+            if (res.payload.hasNextPage) {
               setHasMore(true);
+            } else {
+              setHasMore(false);
             }
           }
         })
@@ -82,7 +92,7 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
           setInitLoading(false);
         });
     }
-  }, [caAddressInfos, chainId, dispatch, passwordSeed, symbol]);
+  }, [caAddressInfos, chainId, dispatch, endReport, pageKey, passwordSeed, symbol]);
 
   const loadMoreActivities = useCallback(async () => {
     const { data, maxResultCount, skipCount, totalRecordCount } = currentActivity;
@@ -96,7 +106,7 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
       };
       const res = await dispatch(getActivityListAsync(params));
       if (res.payload) {
-        if (res.payload.data?.length + res.payload.skipCount === res.payload.totalRecordCount) {
+        if (!res.payload.hasNextPage) {
           setHasMore(false);
         }
       } else {

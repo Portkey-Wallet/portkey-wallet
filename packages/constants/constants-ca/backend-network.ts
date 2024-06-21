@@ -177,6 +177,7 @@ export const BackEndNetWorkMap: {
     imApiUrl: 'https://im-api-test.portkey.finance',
     imWsUrl: 'wss://im-api-test.portkey.finance/message/ws/',
     referralUrl: 'https://test-referral.portkey.finance/referral',
+    cryptoGiftUrl: 'https://test-cryptogift.portkey.finance',
     portkeyFinanceUrl: 'https://portkey.finance/',
     portkeyOpenLoginUrl: 'https://openlogin.portkey.finance/',
     eBridgeUrl: 'https://test.ebridge.exchange',
@@ -254,6 +255,7 @@ export const BackEndNetWorkMap: {
     cmsUrl: 'https://cms-aa.portkey.finance/graphql',
     s3Url: 'https://portkey-cms-mainnet.s3.ap-northeast-1.amazonaws.com',
     referralUrl: 'https://referral.portkey.finance/referral',
+    cryptoGiftUrl: 'https://cryptogift.portkey.finance',
     portkeyFinanceUrl: 'https://portkey.finance',
     portkeyOpenLoginUrl: 'https://openlogin.portkey.finance/',
     buyConfig: {

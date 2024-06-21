@@ -36,7 +36,6 @@ export default function CryptoGift() {
       noCenterDom
       safeAreaColor={['white']}
       containerStyles={styles.pageStyles}
-      pageSafeBottomPadding
       scrollViewProps={{ disabled: false }}>
       <TextXXXL style={[styles.title, FontStyles.size30, GStyles.textAlignCenter, GStyles.lineHeight(pTd(38))]}>
         Crypto Gift
@@ -97,6 +96,7 @@ const styles = StyleSheet.create({
   pageStyles: {
     backgroundColor: defaultColors.neutralDefaultBG,
     flex: 1,
+    paddingBottom: pTd(40),
   },
   title: {
     marginTop: pTd(16),

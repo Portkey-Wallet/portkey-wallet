@@ -119,9 +119,11 @@ export default function GiftDetail() {
     <PageContainer
       noCenterDom
       rightDom={
-        <Touchable onPress={onSharePress}>
-          <Svg size={pTd(22)} icon="share-gift" iconStyle={styles.iconMargin} />
-        </Touchable>
+        info?.status && info?.status <= CryptoGiftOriginalStatus.Claimed ? (
+          <Touchable onPress={onSharePress}>
+            <Svg size={pTd(22)} icon="share-gift" iconStyle={styles.iconMargin} />
+          </Touchable>
+        ) : null
       }
       containerStyles={styles.pageStyles}
       safeAreaColor={['white']}>

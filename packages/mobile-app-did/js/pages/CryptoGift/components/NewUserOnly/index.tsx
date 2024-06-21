@@ -43,9 +43,9 @@ export default function NewUserOnly(props: INewUserOnlyProps) {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
     height: pTd(74),
-    padding: pTd(12),
+    paddingLeft: pTd(12),
+    paddingRight: pTd(4),
     backgroundColor: defaultColors.neutralHoverBG,
     borderRadius: pTd(6),
     flexDirection: 'row',

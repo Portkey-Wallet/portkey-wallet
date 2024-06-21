@@ -105,8 +105,8 @@ export default function GiftDetail() {
     t,
   ]);
   const shareUrl = useMemo(() => {
-    return `${currentNetworkInfo.referralUrl}/cryptoGift?id=${id}`;
-  }, [currentNetworkInfo.referralUrl, id]);
+    return `${currentNetworkInfo.cryptoGiftUrl}/cryptoGift?id=${id}`;
+  }, [currentNetworkInfo.cryptoGiftUrl, id]);
   const onSharePress = useCallback(async () => {
     await Share.share({
       message: isIOS ? '' : shareUrl,

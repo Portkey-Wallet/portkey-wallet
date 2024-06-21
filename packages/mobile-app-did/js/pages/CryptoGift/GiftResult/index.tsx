@@ -11,7 +11,7 @@ import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
 import giftResultBg from 'assets/image/pngs/giftResultBg.png';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
-import { TextL, TextM, TextTitle, TextXL } from 'components/CommonText';
+import { TextL, TextM, TextTitle } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';
 import { copyText } from 'utils';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
@@ -30,8 +30,8 @@ export default function GiftResult() {
   const { t } = useLanguage();
   const currentNetworkInfo = useCurrentNetworkInfo();
   const shareUrl = useMemo(() => {
-    return `${currentNetworkInfo.referralUrl}/cryptoGift?id=${giftId}`;
-  }, [currentNetworkInfo.referralUrl, giftId]);
+    return `${currentNetworkInfo.cryptoGiftUrl}/cryptoGift?id=${giftId}`;
+  }, [currentNetworkInfo.cryptoGiftUrl, giftId]);
   const onDone = useCallback(() => {
     console.log('onDone clicked!!');
     navigationService.navigate('CryptoGift');

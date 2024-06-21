@@ -17,7 +17,7 @@ import './index.less';
 export default function SuccessPage() {
   const navigate = useNavigateState<TCryptoGiftDetailLocationState>();
   const { state } = useLocationState<TCryptoGiftDetailLocationState>();
-  const { referralUrl } = useCurrentNetworkInfo();
+  const { cryptoGiftUrl } = useCurrentNetworkInfo();
   const location = useLocation();
 
   useEffectOnce(() => {
@@ -32,9 +32,9 @@ export default function SuccessPage() {
   const { isPrompt } = useCommonState();
   const [, setCopied] = useCopyToClipboard();
   const onClickShare = useCallback(() => {
-    setCopied(`${referralUrl}/cryptoGift?id=${state.id}`);
+    setCopied(`${cryptoGiftUrl}/cryptoGift?id=${state.id}`);
     singleMessage.success('Copy Success');
-  }, [referralUrl, setCopied, state.id]);
+  }, [cryptoGiftUrl, setCopied, state.id]);
 
   const mainContent = useMemo(
     () => (

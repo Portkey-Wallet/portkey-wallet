@@ -22,7 +22,7 @@ import './index.less';
 
 export default function CryptoGiftsDetail() {
   const navigate = useNavigateState();
-  const { referralUrl } = useCurrentNetworkInfo();
+  const { cryptoGiftUrl } = useCurrentNetworkInfo();
   const { state } = useLocationState<TCryptoGiftDetailLocationState>();
   useEffect(() => {
     if (!state.id) {
@@ -34,9 +34,9 @@ export default function CryptoGiftsDetail() {
   const [, setCopied] = useCopyToClipboard();
   const hasMore = useMemo(() => list.length < (info?.totalCount ?? 0), [info?.totalCount, list.length]);
   const onClickShare = useCallback(() => {
-    setCopied(`${referralUrl}/cryptoGift?id=${state.id}`);
+    setCopied(`${cryptoGiftUrl}/cryptoGift?id=${state.id}`);
     singleMessage.success('Copy Success');
-  }, [referralUrl, setCopied, state.id]);
+  }, [cryptoGiftUrl, setCopied, state.id]);
   useEffectOnce(() => {
     init();
   });

@@ -13,6 +13,7 @@ export type NetworkItem = {
   cmsUrl?: string;
   s3Url?: string;
   referralUrl?: string;
+  cryptoGiftUrl?: string;
   portkeyFinanceUrl?: string; // portkey website url
   portkeyOpenLoginUrl?: string; // web page
   buyConfig?: {

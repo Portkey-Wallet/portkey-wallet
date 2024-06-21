@@ -13,7 +13,7 @@ import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
 import useEffectOnce from 'hooks/useEffectOnce';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { useIsMainnet, useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
 interface MenuItemType {
   name: RootStackName;
@@ -29,7 +29,6 @@ export default function MyMenu() {
   const currentNetworkInfo = useCurrentNetworkInfo();
 
   const { setViewReferralStatusStatus, getReferralLink, referralLink = '' } = useReferral();
-  const isMainnet = useIsMainnet();
 
   const getLink = useLockCallback(async () => {
     try {
@@ -79,12 +78,12 @@ export default function MyMenu() {
           setViewReferralStatusStatus();
           navigationService.navigate('ProviderWebPage', {
             title: 'Portkey Referral Program',
-            url: `${currentNetworkInfo.referralUrl}/referral?shortLink=${encodeURIComponent(referralLink)}`,
+            url: `${currentNetworkInfo.referralUrl}?shortLink=${encodeURIComponent(referralLink)}`,
           });
         },
       },
     ],
-    [setViewReferralStatusStatus],
+    [currentNetworkInfo.referralUrl, referralLink, setViewReferralStatusStatus],
   );
 
   return (

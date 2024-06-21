@@ -78,7 +78,7 @@ export default function MyMenu() {
           setViewReferralStatusStatus();
           navigationService.navigate('ProviderWebPage', {
             title: 'Portkey Referral Program',
-            url: `${currentNetworkInfo.referralUrl}?shortLink=${encodeURIComponent(referralLink)}`,
+            url: `${currentNetworkInfo.referralUrl}/referral?shortLink=${encodeURIComponent(referralLink)}`,
           });
         },
       },

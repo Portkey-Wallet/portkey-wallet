@@ -12,7 +12,7 @@ export const useClickReferral = (setReferralStatus = true) => {
       return;
     }
     setReferralStatus && setViewReferralStatusStatus();
-    const url = `${currentNetworkInfo?.referralUrl}?shortLink=${encodeURIComponent(referralLink)}`;
+    const url = `${currentNetworkInfo?.referralUrl}/referral?shortLink=${encodeURIComponent(referralLink)}`;
     const openWinder = window.open(url, '_blank');
     if (openWinder) {
       openWinder.opener = null;

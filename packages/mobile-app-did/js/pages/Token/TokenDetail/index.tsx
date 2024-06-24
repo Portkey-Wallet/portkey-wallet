@@ -47,6 +47,7 @@ import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
 import FaucetButton from 'components/FaucetButton';
 import { TokenTitle } from 'components/TokenTitle';
 import { ReceivePageTabType } from 'pages/Receive/types';
+import { parseLink } from '@portkey-wallet/hooks/hooks-ca/cms/util';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -200,7 +201,7 @@ const TokenDetail: React.FC = () => {
   const bannerItemsList = useMemo(() => {
     return getTokenDetailBannerList(tokenInfo.chainId, tokenInfo.symbol).map(item => {
       return {
-        url: item.url,
+        appLink: parseLink(item.appLink, item.url),
         imgUrl: getS3ImageUrl(item.imgUrl.filename_disk),
       };
     });

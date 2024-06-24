@@ -111,3 +111,12 @@ export type TDiscoverDappBannerList = TBaseCardItemType[];
 export type TDiscoverTabList = TBaseTabItemType[];
 export type TDiscoverEarnList = TBaseCardItemType[];
 export type TDiscoverLearnGroupList = TDiscoverLearnGroupItemType[];
+
+export type TLinkType = 'external' | 'internal' | 'native';
+export type TLink = {
+  type: TLinkType;
+  location: string;
+  params?: any;
+};
+export type TAppLink = TLink;
+export type TExtensionLink = TLink;

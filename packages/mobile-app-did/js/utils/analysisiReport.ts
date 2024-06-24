@@ -22,3 +22,4 @@ export const reportPageShow = reportEventCurrying(CUSTOM_EVENT_ENUM.PAGESHOW);
 export const reportNavBack = reportEventCurrying(CUSTOM_EVENT_ENUM.NAV_BACK);
 export const reportEnterSendCryptoGiftPage = reportEventCurrying(CUSTOM_EVENT_ENUM.ENTER_SEND_CRYPTO_GIFT_PAGE);
 export const reportSendCryptoGiftSuccess = reportEventCurrying(CUSTOM_EVENT_ENUM.SEND_CRYPTO_GIFT_SUCCESS);
+export const reportReferralClick = reportEventCurrying(CUSTOM_EVENT_ENUM.REFERRAL_CLICK);

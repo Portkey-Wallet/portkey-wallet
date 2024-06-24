@@ -8,8 +8,7 @@ import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { TBaseCardItemType } from '@portkey-wallet/types/types-ca/cms';
 import { isUrl } from '@portkey-wallet/utils';
 import './index.less';
-import { parseLink } from '@portkey-wallet/hooks/hooks-ca/cms/util';
-import { useNavigate } from 'react-router';
+import usePortkeyLink from 'hooks/usePortkeyLink';
 
 interface ICommonBannerProps {
   wrapClassName?: string;
@@ -20,7 +19,7 @@ const SWIPER_AUTOPLAY_INTERVAL = 5000;
 
 export default function CommonBanner({ wrapClassName, bannerList }: ICommonBannerProps) {
   const commonBannerRef = useRef<SwiperRef | null>(null);
-  const navigate = useNavigate();
+  const openPortkeyLink = usePortkeyLink();
   const getS3ImageUrl = useGetS3ImageUrl();
 
   const [isShowSkeleton, setIsShowSkeleton] = useState(true);
@@ -61,19 +60,12 @@ export default function CommonBanner({ wrapClassName, bannerList }: ICommonBanne
             preview={false}
             onLoad={() => handleImageLoad(index)}
             onClick={() => {
-              if (isUrl(item?.url)) {
-                const extensionLink = parseLink(item.extensionLink, item.url);
-                if (extensionLink.type === 'native') {
-                  navigate(`${extensionLink.location}${extensionLink.params}`);
-                } else {
-                  window.open(extensionLink.location, '_blank');
-                }
-              }
+              openPortkeyLink(item);
             }}
           />
         </Swiper.Item>
       )),
-    [bannerList, getS3ImageUrl, handleImageLoad, navigate],
+    [bannerList, getS3ImageUrl, handleImageLoad, openPortkeyLink],
   );
 
   const swiperIndicator: SwiperProps['indicator'] = (total, current) => {

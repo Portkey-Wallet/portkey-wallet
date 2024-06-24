@@ -23,6 +23,8 @@ import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/convert
 import Divider from 'components/Divider';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
+import { isValidUserId } from '@portkey-wallet/utils';
+import { isIOS } from '@rneui/base';
 
 export default function GiftDetail() {
   const { t } = useLanguage();
@@ -46,13 +48,15 @@ export default function GiftDetail() {
       return (
         <ReceiverItem
           item={item}
-          symbol={info?.symbol || 'token'}
-          isLuckyKing={!!item && item.userId === info?.luckKingId}
+          symbol={info?.label || info?.alias || info?.symbol || ''}
+          isLuckyKing={
+            !!item && isValidUserId(item.userId) && isValidUserId(info?.luckKingId) && item.userId === info?.luckKingId
+          }
           decimals={info?.decimal}
         />
       );
     },
-    [info?.decimal, info?.luckKingId, info?.symbol],
+    [info?.alias, info?.decimal, info?.label, info?.luckKingId, info?.symbol],
   );
   const renderDivider = useCallback(() => {
     return <Divider style={styles.divider} />;
@@ -71,7 +75,7 @@ export default function GiftDetail() {
         `Active, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
           info?.grabbedAmount ? formatTokenAmountShowWithDecimals(info?.grabbedAmount, info?.decimal) : '--'
         }/${info?.totalAmount ? formatTokenAmountShowWithDecimals(info?.totalAmount, info?.decimal) : '--'} ${
-          info?.symbol || 'token'
+          info?.label || info?.alias || info?.symbol || ''
         } claimed.`,
       );
     } else if (info?.status === CryptoGiftOriginalStatus.FullyClaimed) {
@@ -79,33 +83,34 @@ export default function GiftDetail() {
         `All claimed, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
           info?.grabbedAmount ? formatTokenAmountShowWithDecimals(info?.grabbedAmount, info?.decimal) : '--'
         }/${info?.totalAmount ? formatTokenAmountShowWithDecimals(info?.totalAmount, info?.decimal) : '--'} ${
-          info?.symbol || 'token'
+          info?.label || info?.alias || info?.symbol || ''
         } claimed.`,
       );
     }
     return `Expired, with ${info?.grabbed || '0'}/${info?.count || '--'} crypto gift(s) opened and ${
       info?.grabbedAmount ? formatTokenAmountShowWithDecimals(info?.grabbedAmount, info?.decimal) : '--'
     }/${info?.totalAmount ? formatTokenAmountShowWithDecimals(info?.totalAmount, info?.decimal) : '--'} ${
-      info?.symbol || 'token'
+      info?.label || info?.alias || info?.symbol || ''
     } claimed.`;
   }, [
     info?.status,
     info?.grabbed,
     info?.count,
     info?.grabbedAmount,
-    info?.totalAmount,
-    info?.symbol,
     info?.decimal,
+    info?.totalAmount,
+    info?.label,
+    info?.alias,
+    info?.symbol,
     t,
   ]);
   const shareUrl = useMemo(() => {
-    return `${currentNetworkInfo.referralUrl}/cryptoGift?id=${id}`;
-  }, [currentNetworkInfo.referralUrl, id]);
+    return `${currentNetworkInfo.cryptoGiftUrl}/cryptoGift?id=${id}`;
+  }, [currentNetworkInfo.cryptoGiftUrl, id]);
   const onSharePress = useCallback(async () => {
     await Share.share({
-      message: shareUrl,
+      message: isIOS ? '' : shareUrl,
       url: shareUrl,
-      title: 'Crypto Gift',
     }).catch(shareError => {
       console.log(shareError);
     });
@@ -114,9 +119,11 @@ export default function GiftDetail() {
     <PageContainer
       noCenterDom
       rightDom={
-        <Touchable onPress={onSharePress}>
-          <Svg size={pTd(22)} icon="share-gift" iconStyle={styles.iconMargin} />
-        </Touchable>
+        info?.status && info?.status <= CryptoGiftOriginalStatus.Claimed ? (
+          <Touchable onPress={onSharePress}>
+            <Svg size={pTd(22)} icon="share-gift" iconStyle={styles.iconMargin} />
+          </Touchable>
+        ) : null
       }
       containerStyles={styles.pageStyles}
       safeAreaColor={['white']}>
@@ -125,7 +132,7 @@ export default function GiftDetail() {
           <>
             <HeaderCard memo={info?.memo} />
             {renderDivider()}
-            <TextM style={[FontStyles.neutralTertiaryText, GStyles.marginTop(pTd(16)), GStyles.paddingArg(0, pTd(16))]}>
+            <TextM style={[FontStyles.neutralTertiaryText, GStyles.marginTop(pTd(16)), GStyles.paddingArg(0, pTd(12))]}>
               {statusTextShow}
             </TextM>
             <View

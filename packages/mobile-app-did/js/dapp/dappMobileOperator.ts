@@ -541,7 +541,7 @@ export default class DappMobileOperator extends Operator {
         payload = request.payload;
         try {
           const result = await Share.share({
-            message: payload.url,
+            message: payload.message,
             url: payload.url,
             title: payload.title || '',
           });
@@ -579,6 +579,7 @@ export default class DappMobileOperator extends Operator {
   };
 
   handleRequest = async (request: IRequestParams): Promise<IResponseType> => {
+    console.log('handleRequest==== params', request);
     // dapp is not in the foreground
     if (this.isLockDapp) return this.userDenied(request.eventName);
     if (NATIVE_METHOD.includes(request.method)) {

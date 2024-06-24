@@ -259,7 +259,7 @@ export default function SendPacketGroupPage() {
             tabHeaderStyle={styles.tabHeaderStyle}
           />
         </View>
-        <View style={GStyles.flex1}>{tabList.find(item => item.type === selectTab)?.component}</View>
+        <View>{tabList.find(item => item.type === selectTab)?.component}</View>
         <TextM style={styles.tips}>
           {`A crypto ${
             isCryptoGift ? 'gift' : 'box'
@@ -279,16 +279,16 @@ const styles = StyleSheet.create({
   },
   scrollStyle: {
     minHeight: '100%',
-    ...GStyles.paddingArg(16, 20),
+    ...GStyles.paddingArg(16, 16),
   },
   tips: {
-    marginTop: pTd(40),
+    marginTop: pTd(24),
     textAlign: 'center',
     color: defaultColors.font3,
     marginBottom: isIOS ? 0 : pTd(16),
   },
   tabHeaderStyle: {
     width: pTd(190),
-    marginBottom: pTd(32),
+    marginBottom: pTd(24),
   },
 });

@@ -9,6 +9,9 @@ import singleMessage from 'utils/singleMessage';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { useNavigateState } from 'hooks/router';
 import { FromPageEnum, TCryptoGiftDetailLocationState } from 'types/router';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+import googleAnalytics from 'utils/googleAnalytics';
+import { useLocation } from 'react-router';
 import './index.less';
 
 export default function HistoryList() {
@@ -16,6 +19,12 @@ export default function HistoryList() {
   const { cryptoGiftHistories, loading, error } = useGetCryptoGiftHistories();
   const { setLoading } = useLoading();
   const navigate = useNavigateState<TCryptoGiftDetailLocationState>();
+  const location = useLocation();
+
+  useEffectOnce(() => {
+    googleAnalytics.firePageViewEvent('CryptoGift-History', location.pathname);
+  });
+
   useEffect(() => {
     setLoading(loading);
   }, [loading, setLoading]);

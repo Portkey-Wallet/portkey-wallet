@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import PageContainer from 'components/PageContainer';
-import { DeviceEventEmitter, StyleSheet, Text, View } from 'react-native';
+import { DeviceEventEmitter, Image, StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
 import { TextL, TextM, TextS, TextXXXL } from 'components/CommonText';
@@ -13,6 +13,7 @@ import HistoryCard from './components/HistoryCard';
 import { CryptoGiftCreateSuccess, useGetFirstCryptoGift } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 import navigationService from 'utils/navigationService';
 import fonts from 'assets/theme/fonts';
+import boxOpen from 'assets/image/pngs/box-open.png';
 
 export default function CryptoGift() {
   const { t } = useLanguage();
@@ -36,11 +37,20 @@ export default function CryptoGift() {
       safeAreaColor={['white']}
       containerStyles={styles.pageStyles}
       scrollViewProps={{ disabled: false }}>
-      <TextXXXL style={[styles.title, FontStyles.size30, GStyles.textAlignCenter]}>Crypto Gift</TextXXXL>
-      <TextM style={[styles.subTitle, FontStyles.neutralSecondaryTextColor, GStyles.textAlignCenter]}>
+      <TextXXXL style={[styles.title, FontStyles.size30, GStyles.textAlignCenter, GStyles.lineHeight(pTd(38))]}>
+        Crypto Gift
+      </TextXXXL>
+      <TextM
+        style={[
+          styles.subTitle,
+          FontStyles.neutralSecondaryTextColor,
+          GStyles.textAlignCenter,
+          GStyles.lineHeight(pTd(22)),
+        ]}>
         Send crypto assets as a gift
       </TextM>
-      <Svg icon="gift-box-open" oblongSize={[pTd(343), pTd(240)]} />
+      <Image resizeMode="contain" source={boxOpen} style={{ width: pTd(343), height: pTd(240) }} />
+
       <CommonButton containerStyle={styles.buttonContainer} type="primary" disabled={false} onPress={onGiftCreatePress}>
         <TextL style={styles.buttonText}>{t('Send Crypto Gift')}</TextL>
       </CommonButton>
@@ -86,6 +96,7 @@ const styles = StyleSheet.create({
   pageStyles: {
     backgroundColor: defaultColors.neutralDefaultBG,
     flex: 1,
+    paddingBottom: pTd(40),
   },
   title: {
     marginTop: pTd(16),
@@ -113,13 +124,16 @@ const styles = StyleSheet.create({
   },
   noteTextTitle: {
     ...fonts.mediumFont,
+    ...GStyles.lineHeight(pTd(22)),
   },
   noteTextQuestion: {
     ...fonts.regularFont,
+    ...GStyles.lineHeight(pTd(22)),
   },
   noteTextAnswer: {
     color: defaultColors.neutralTertiaryText,
     marginTop: pTd(4),
+    ...GStyles.lineHeight(pTd(16)),
   },
   hsCardContainer: {
     marginBottom: pTd(16),

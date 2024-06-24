@@ -72,6 +72,8 @@ query discoverDappBanner_portkeyCard_by_id($filter: discoverDappBanner_filter, $
                     }
                     url
                     type
+                    appLink
+                    extensionLink
                 }
             }
         }
@@ -85,6 +87,8 @@ query discoverDappBanner_portkeyCard_by_id($filter: discoverDappBanner_filter, $
             buttonTitle
             url
             type
+            appLink
+            extensionLink
         }
     }
 }

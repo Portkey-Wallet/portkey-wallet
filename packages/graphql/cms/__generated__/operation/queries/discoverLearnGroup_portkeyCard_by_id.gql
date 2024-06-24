@@ -78,6 +78,8 @@ query discoverLearnGroup_portkeyCard_by_id($filter: discoverLearnGroup_filter, $
                     }
                     url
                     type
+                    appLink
+                    extensionLink
                 }
             }
         }
@@ -91,6 +93,8 @@ query discoverLearnGroup_portkeyCard_by_id($filter: discoverLearnGroup_filter, $
             buttonTitle
             url
             type
+            appLink
+            extensionLink
         }
     }
 }

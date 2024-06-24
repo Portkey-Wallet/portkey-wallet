@@ -6,7 +6,7 @@ import { IClickAddressProps } from '@portkey-wallet/types/types-ca/contact';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { getAddressChainId, handleErrorMessage, isDIDAddress } from '@portkey-wallet/utils';
 import { getAelfAddress, getEntireDIDAelfAddress, isCrossChain, isEqAddress } from '@portkey-wallet/utils/aelf';
-import { timesDecimals } from '@portkey-wallet/utils/converter';
+import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import { Button, Modal } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import CommonHeader from 'components/CommonHeader';
@@ -63,6 +63,8 @@ import { TradeTypeEnum } from 'constants/trade';
 import { useCrossTransferByEtransfer } from 'hooks/useCrossTransferByEtransfer';
 import { CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL } from '@portkey-wallet/utils/withdraw';
 import { TWithdrawInfo } from '@etransfer/services';
+import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
+import { COMMON_PRIVATE } from '@portkey-wallet/constants';
 
 export type ToAccount = { address: string; name?: string };
 
@@ -231,7 +233,7 @@ export default function Send() {
         const { privateKey } = await getSeed();
         if (!privateKey) throw t(WalletError.invalidPrivateKey);
         if (!currentChain) throw 'No ChainInfo';
-        const _caAddress = wallet?.[(state.chainId as ChainId) || defaultToken.symbol]?.caAddress;
+        const _caAddress = wallet?.[chainId]?.caAddress;
         const feeRes = await getTransferFee({
           caAddress: _caAddress || '',
           managerAddress: wallet.address,
@@ -248,17 +250,7 @@ export default function Send() {
         console.log('getFee===error', error);
       }
     },
-    [
-      amount,
-      currentChain,
-      currentNetwork.walletType,
-      defaultToken.symbol,
-      state.chainId,
-      t,
-      toAccount?.address,
-      tokenInfo,
-      wallet,
-    ],
+    [amount, chainId, currentChain, currentNetwork.walletType, t, toAccount?.address, tokenInfo, wallet],
   );
 
   const sendTransfer = useCallback(async () => {
@@ -344,6 +336,63 @@ export default function Send() {
     withdrawInfo,
   ]);
 
+  const { crossChain: crossChainFee, etransfer: etransferFee } = useGetTxFee(chainId);
+
+  const getEtransferCAAllowance = useCallback(
+    async (token: BaseToken) => {
+      if (!currentChain) throw 'No currentChain';
+
+      const tokenContract = new ExtensionContractBasic({
+        rpcUrl: currentChain.endPoint,
+        contractAddress: currentChain.defaultToken.address,
+        privateKey: COMMON_PRIVATE,
+      });
+      const allowanceRes = await tokenContract.callViewMethod('GetAllowance', {
+        symbol: token.symbol,
+        owner: wallet[chainId]?.caAddress,
+        spender: currentNetwork.eTransferCA?.[token.chainId],
+      });
+
+      if (allowanceRes?.error) throw allowanceRes?.error;
+      const allowance = divDecimals(allowanceRes.data.allowance ?? allowanceRes.data.amount ?? 0, token.decimals);
+      return allowance;
+    },
+    [chainId, currentChain, currentNetwork.eTransferCA, wallet],
+  );
+
+  const getEtransferMaxFee = useCallback(
+    // approve fee
+    async ({ amount }: { amount: string }) => {
+      const token = tokenInfo;
+      try {
+        const [{ withdrawInfo }, allowance] = await Promise.all([
+          withdrawPreview({
+            chainId: token.chainId,
+            address: toAccount.address,
+            symbol: token.symbol,
+          }),
+          getEtransferCAAllowance(token),
+        ]);
+
+        console.log(withdrawInfo, allowance, 'checkEtransferMaxFee==');
+
+        let _etransferFee = etransferFee;
+
+        const isGTMax = withdrawInfo?.maxAmount ? ZERO.plus(amount).lte(withdrawInfo.maxAmount) : true;
+        const isLTMin = withdrawInfo?.minAmount ? ZERO.plus(amount).gte(withdrawInfo.minAmount) : true;
+        const amountAllowed = withdrawInfo ? isGTMax && isLTMin : false;
+
+        if (amountAllowed && allowance.gte(amount)) _etransferFee = 0;
+        console.log(_etransferFee, '_etransferFee==checkEtransferMaxFee');
+        return _etransferFee.toString();
+      } catch (error) {
+        console.error('checkEtransferMaxFee:', error);
+        return etransferFee.toString();
+      }
+    },
+    [tokenInfo, withdrawPreview, toAccount.address, getEtransferCAAllowance, etransferFee],
+  );
+
   const checkLimit = useCheckLimit(tokenInfo.chainId);
   const handleOneTimeApproval = useCallback(() => {
     if (isPrompt) return setOpenGuardiansApprove(true);
@@ -360,7 +409,6 @@ export default function Send() {
     };
     InternalMessage.payload(PortkeyMessageTypes.SEND, JSON.stringify(params)).send();
   }, [amount, balance, chainId, isPrompt, stage, toAccount, tokenInfo, type]);
-  const { crossChain: crossChainFee } = useGetTxFee(chainId);
 
   const onCloseGuardianApprove = useCallback(() => {
     setOpenGuardiansApprove(false);
@@ -463,16 +511,27 @@ export default function Send() {
         CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(tokenSymbol)
       ) {
         try {
-          const { withdrawInfo } = await withdrawPreview({
-            chainId,
-            address: toAccount.address,
-            symbol: tokenSymbol,
-            amount,
-          });
+          const [{ withdrawInfo }, allowance] = await Promise.all([
+            withdrawPreview({
+              chainId,
+              address: toAccount.address,
+              symbol: tokenSymbol,
+              amount,
+            }),
+            getEtransferCAAllowance(tokenInfo),
+          ]);
+
+          let _etransferFee = etransferFee;
+
           const isGTMax = withdrawInfo?.maxAmount ? ZERO.plus(amount).lte(withdrawInfo.maxAmount) : true;
           const isLTMin = withdrawInfo?.minAmount ? ZERO.plus(amount).gte(withdrawInfo.minAmount) : true;
 
           const amountAllowed = withdrawInfo ? isGTMax && isLTMin : false;
+
+          if ((amountAllowed && allowance.gte(amount)) || tokenSymbol !== defaultToken.symbol) _etransferFee = 0;
+
+          if (ZERO.plus(amount).plus(_etransferFee).gt(divDecimals(balance, tokenInfo.decimals)))
+            return TransactionError.TOKEN_NOT_ENOUGH;
 
           if (amountAllowed) {
             setTxFee(withdrawInfo.aelfTransactionFee);
@@ -521,6 +580,8 @@ export default function Send() {
     defaultToken.symbol,
     crossChainFee,
     withdrawPreview,
+    getEtransferCAAllowance,
+    etransferFee,
   ]);
 
   const sendHandler = useCallback(async (): Promise<string | void> => {
@@ -664,6 +725,7 @@ export default function Send() {
               setTipMsg('');
             }}
             getTranslationInfo={getTranslationInfo}
+            getEtransferwithdrawInfo={getEtransferMaxFee}
             setErrorMsg={setTipMsg}
           />
         ),
@@ -696,6 +758,8 @@ export default function Send() {
             transactionFee={txFee || ''}
             receiveAmount={withdrawInfo?.receiveAmount}
             receiveAmountUsd={withdrawInfo?.receiveAmountUsd}
+            crossChainFee={withdrawInfo?.transactionFee || crossChainFee}
+            crossChainFeeUnit={withdrawInfo?.transactionUnit}
             isCross={isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF')}
             tokenId={tokenInfo.tokenId || ''}
             isSeed={state.isSeed}
@@ -715,10 +779,14 @@ export default function Send() {
       amount,
       tipMsg,
       getTranslationInfo,
+      getEtransferMaxFee,
       chainInfo?.chainId,
       txFee,
       withdrawInfo?.receiveAmount,
       withdrawInfo?.receiveAmountUsd,
+      withdrawInfo?.transactionFee,
+      withdrawInfo?.transactionUnit,
+      crossChainFee,
       state.isSeed,
       state.seedType,
       state.label,

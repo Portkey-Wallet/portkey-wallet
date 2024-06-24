@@ -148,6 +148,8 @@ query discoverItem($filter: discoverGroup_filter, $sort: [String], $limit: Int, 
                 url
                 user_created
                 user_updated
+                appLink
+                extensionLink
             }
         }
         id
@@ -181,5 +183,7 @@ query discoverItem($filter: discoverGroup_filter, $sort: [String], $limit: Int, 
         url
         user_created
         user_updated
+        appLink
+        extensionLink
     }
 }

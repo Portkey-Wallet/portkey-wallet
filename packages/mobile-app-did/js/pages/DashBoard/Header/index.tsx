@@ -142,7 +142,7 @@ const DashBoardHeader: React.FC<DashBoardHeaderProps> = ({ title, scrollY }) => 
     return (
       <View style={styles.rightDomWrap}>
         <Touchable style={styles.svgWrap} onPress={onGiftClick}>
-          <Svg icon="crypto-gift" size={pTd(17)} />
+          <Svg icon="crypto-gift" size={pTd(20)} />
         </Touchable>
         <Touchable style={styles.svgWrap} onPress={onCopyAddress}>
           <Svg icon="copy" size={pTd(22)} color={defaultColors.font8} />

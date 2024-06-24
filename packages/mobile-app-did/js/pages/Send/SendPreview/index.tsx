@@ -37,7 +37,11 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { sleep } from '@portkey-wallet/utils';
 import { FontStyles } from 'assets/theme/styles';
 import { ChainId } from '@portkey-wallet/types';
-import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import {
+  useAmountInUsdShow,
+  useGetCurrentAccountTokenPrice,
+  useIsTokenHasPrice,
+} from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { useCheckTransferLimitWithJump } from 'hooks/security';
@@ -76,12 +80,15 @@ const SendPreview: React.FC = () => {
     receiveAmount,
     receiveAmountUsd,
     isEtransferCrossInLimit = false,
+    crossChainFee,
+    crossChainFeeUnit,
   } = routerParams;
 
   const isApproved = useMemo(() => guardiansApproved && guardiansApproved.length > 0, [guardiansApproved]);
 
   useFetchTxFee();
   const { crossChain: crossDefaultFee } = useGetTxFee(assetInfo.chainId);
+  const amountInUsdShow = useAmountInUsdShow();
 
   const dispatch = useAppCommonDispatch();
   const pin = usePin();
@@ -117,6 +124,38 @@ const SendPreview: React.FC = () => {
     () => timesDecimals(sendNumber, assetInfo.decimals).toFixed(),
     [assetInfo.decimals, sendNumber],
   );
+
+  const EstimateAmount = useMemo(() => {
+    if (ZERO.plus(amount).isLessThanOrEqualTo(crossChainFee) && assetInfo.symbol === defaultToken.symbol)
+      return {
+        estimateAmount: `0 ${assetInfo?.label || assetInfo?.symbol}`,
+        estimateAmountUsd: isMainnet ? '$ 0' : '',
+      };
+
+    let _amount = amount;
+    let amountUsd;
+    if (receiveAmount) _amount = receiveAmount;
+    else _amount = formatAmountShow(ZERO.plus(_amount).minus(crossChainFee), Number(defaultToken.decimals));
+
+    if (receiveAmountUsd) amountUsd = formatAmountUSDShow(receiveAmountUsd);
+    else amountUsd = amountInUsdShow(ZERO.plus(_amount).minus(crossChainFee).toFixed(), 0, assetInfo.symbol);
+
+    return {
+      estimateAmount: `${_amount} ${assetInfo.label || assetInfo.symbol}`,
+      estimateAmountUsd: isMainnet ? amountUsd : '',
+    };
+  }, [
+    amount,
+    amountInUsdShow,
+    assetInfo.label,
+    assetInfo.symbol,
+    crossChainFee,
+    defaultToken.decimals,
+    defaultToken.symbol,
+    isMainnet,
+    receiveAmount,
+    receiveAmountUsd,
+  ]);
 
   const showRetry = useCallback(
     (retryFunc: () => void) => {
@@ -555,7 +594,7 @@ const SendPreview: React.FC = () => {
             )}
           </View>
 
-          {isCrossChainTransfer && !isSupportEtransferCross && (
+          {isCrossChainTransfer && (
             <>
               <Text style={[styles.divider, styles.marginTop0]} />
               <View style={styles.section}>
@@ -564,9 +603,11 @@ const SendPreview: React.FC = () => {
                     {t('Estimated CrossChain Transfer')}
                   </TextM>
                   <View>
-                    <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>{`${unitConverter(
-                      crossDefaultFee,
-                    )} ${defaultToken.symbol}`}</TextM>
+                    <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>
+                      {isSupportEtransferCross
+                        ? `${crossChainFee} ${crossChainFeeUnit}`
+                        : `${unitConverter(crossDefaultFee)} ${defaultToken.symbol}`}
+                    </TextM>
                     {isMainnet ? (
                       <TextS
                         style={[
@@ -585,7 +626,7 @@ const SendPreview: React.FC = () => {
               <Text style={[styles.divider, styles.marginTop0]} />
             </>
           )}
-          {isCrossChainTransfer && assetInfo.symbol === defaultToken.symbol && (
+          {isCrossChainTransfer && (isSupportEtransferCross || assetInfo.symbol === defaultToken.symbol) && (
             <View style={styles.section}>
               <View style={[styles.flexSpaceBetween]}>
                 <TextM style={[styles.blackFontColor, styles.fontBold, styles.leftTitle, GStyles.alignEnd]}>
@@ -593,27 +634,11 @@ const SendPreview: React.FC = () => {
                 </TextM>
                 <View>
                   <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>
-                    {receiveAmount ??
-                      (ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(crossDefaultFee))
-                        ? '0'
-                        : formatAmountShow(
-                            ZERO.plus(sendNumber).minus(ZERO.plus(crossDefaultFee)),
-                            defaultToken.decimals,
-                          ))}{' '}
-                    {defaultToken.symbol}
+                    {EstimateAmount.estimateAmount}
                   </TextM>
                   {isMainnet ? (
                     <TextS style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>
-                      {receiveAmountUsd ??
-                        `${
-                          ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(crossDefaultFee))
-                            ? '$ 0'
-                            : formatAmountUSDShow(
-                                ZERO.plus(sendNumber)
-                                  .minus(ZERO.plus(crossDefaultFee))
-                                  .times(tokenPriceObject[defaultToken.symbol]),
-                              )
-                        }`}
+                      {EstimateAmount.estimateAmountUsd}
                     </TextS>
                   ) : (
                     <TextM />

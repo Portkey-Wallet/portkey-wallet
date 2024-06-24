@@ -1,7 +1,14 @@
 import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
 import { ChainId } from '..';
 
-export type IEntranceModuleName = 'buy' | 'sell' | 'bridge' | 'eTransDeposit' | 'eTransWithdraw' | 'swap';
+export type IEntranceModuleName =
+  | 'buy'
+  | 'sell'
+  | 'bridge'
+  | 'eTransDeposit'
+  | 'eTransWithdraw'
+  | 'swap'
+  | 'freeMintNft';
 export type IEntranceMatchKey = 'version' | 'installationTime' | 'deviceType';
 export type IEntranceMatchRuleType = 'String' | 'BigNumber' | 'Regex';
 
@@ -71,6 +78,8 @@ export type TBaseCardItemType = {
     filename_disk: string;
   };
   url: string;
+  appLink?: string;
+  extensionLink?: string;
 };
 
 export type TDiscoverTabValue = 'Dapp' | 'Earn' | 'Market' | 'Learn';

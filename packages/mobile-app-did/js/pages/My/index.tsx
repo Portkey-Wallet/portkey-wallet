@@ -11,6 +11,7 @@ import { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
+import { reportReferralClick } from 'utils/analysisiReport';
 import useEffectOnce from 'hooks/useEffectOnce';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -75,6 +76,7 @@ export default function MyMenu() {
         icon: 'referral',
         suffixDom: <TextS style={styles.newStyle}>New</TextS>,
         onPress: () => {
+          reportReferralClick();
           setViewReferralStatusStatus();
           navigationService.navigate('ProviderWebPage', {
             title: 'Portkey Referral Program',

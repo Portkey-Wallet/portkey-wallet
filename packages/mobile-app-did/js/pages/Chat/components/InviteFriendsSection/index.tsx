@@ -11,11 +11,20 @@ import fonts from 'assets/theme/fonts';
 
 import InviteFriends from 'assets/image/pngs/invite-friends.png';
 import navigationService from 'utils/navigationService';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export default function InviteFriendsSection() {
+  const currentNetworkInfo = useCurrentNetworkInfo();
   return (
     <View style={BGStyles.bg6}>
-      <Touchable style={styles.itemWrap} onPress={() => navigationService.navigate('UserReferral')}>
+      <Touchable
+        style={styles.itemWrap}
+        onPress={() => {
+          navigationService.navigate('ProviderWebPage', {
+            title: 'Portkey Referral Program',
+            url: `${currentNetworkInfo.referralUrl}/referral`,
+          });
+        }}>
         <Image source={InviteFriends} style={styles.image} />
         <View style={styles.itemContent}>
           <TextM style={[fonts.mediumFont, FontStyles.font5]}>Invite Friends</TextM>

@@ -18,6 +18,7 @@ import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import navigationService from 'utils/navigationService';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { Skeleton } from '@rneui/base';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 interface DashBoardHeaderProps {
   title: string;
@@ -28,7 +29,7 @@ const DashBoardHeader: React.FC<DashBoardHeaderProps> = ({ title, scrollY }) => 
   const userInfo = useCurrentUserInfo();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const { shouldShowSetNewWalletNameIcon, handleSetNewWalletName } = useSetNewWalletName();
-
+  const isMainnet = useIsMainnet();
   const onGiftClick = useCallback(() => {
     navigationService.navigate('CryptoGift');
   }, []);
@@ -141,9 +142,11 @@ const DashBoardHeader: React.FC<DashBoardHeaderProps> = ({ title, scrollY }) => 
   const rightDom = useMemo(() => {
     return (
       <View style={styles.rightDomWrap}>
-        <Touchable style={styles.svgWrap} onPress={onGiftClick}>
-          <Svg icon="crypto-gift" size={pTd(20)} />
-        </Touchable>
+        {isMainnet && (
+          <Touchable style={styles.svgWrap} onPress={onGiftClick}>
+            <Svg icon="crypto-gift" size={pTd(20)} />
+          </Touchable>
+        )}
         <Touchable style={styles.svgWrap} onPress={onCopyAddress}>
           <Svg icon="copy" size={pTd(22)} color={defaultColors.font8} />
         </Touchable>

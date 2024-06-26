@@ -39,7 +39,7 @@ export default function SendPacketGroupPage() {
   const { isCryptoGift } = useRouterParams<ISendPacketGroupPageProps>();
   const currentChannelId = useCurrentChannelId();
   const calculateRedPacketFee = useCalculateRedPacketFee();
-  const { groupInfo } = useGroupChannelInfo(currentChannelId || '', true);
+  const { groupInfo } = useGroupChannelInfo(isCryptoGift ? '' : currentChannelId || '', true);
   const [selectTab, setSelectTab] = useState<GroupRedPacketTabEnum>(GroupRedPacketTabEnum.Random);
   const sendRedPackage = useSendRedPackage();
   const getCAContract = useGetCAContract();

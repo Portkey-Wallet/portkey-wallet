@@ -126,13 +126,13 @@ const SendPreview: React.FC = () => {
   );
 
   const EstimateAmount = useMemo(() => {
-    if (ZERO.plus(amount).isLessThanOrEqualTo(crossChainFee) && assetInfo.symbol === defaultToken.symbol)
+    if (ZERO.plus(sendNumber).isLessThanOrEqualTo(crossChainFee) && assetInfo.symbol === defaultToken.symbol)
       return {
         estimateAmount: `0 ${assetInfo?.label || assetInfo?.symbol}`,
         estimateAmountUsd: isMainnet ? '$ 0' : '',
       };
 
-    let _amount = amount;
+    let _amount = sendNumber;
     let amountUsd;
     if (receiveAmount) _amount = receiveAmount;
     else _amount = formatAmountShow(ZERO.plus(_amount).minus(crossChainFee), Number(defaultToken.decimals));
@@ -145,7 +145,6 @@ const SendPreview: React.FC = () => {
       estimateAmountUsd: isMainnet ? amountUsd : '',
     };
   }, [
-    amount,
     amountInUsdShow,
     assetInfo.label,
     assetInfo.symbol,
@@ -155,6 +154,7 @@ const SendPreview: React.FC = () => {
     isMainnet,
     receiveAmount,
     receiveAmountUsd,
+    sendNumber,
   ]);
 
   const showRetry = useCallback(

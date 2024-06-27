@@ -19,3 +19,4 @@ jobs:
         with:
           args: >
             -Dsonar.projectKey=portkey-wallet
+            -Dsonar.exclusions=packages/mobile-app-did/ios/**,packages/mobile-app-did/android/**,

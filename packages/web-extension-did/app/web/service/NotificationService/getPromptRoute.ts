@@ -35,6 +35,7 @@ const routMap: { [x in keyof typeof PromptRouteTypes]?: string } = {
     '#/setting/wallet-security/payment-security/guardian-approval',
   [PromptRouteTypes.SEND]: '#/send',
   [PromptRouteTypes.RAMP]: '#/buy',
+  [PromptRouteTypes.CRYPTO_GIFT]: '#/crypto-gifts/create',
 };
 
 export interface PromptMessage {

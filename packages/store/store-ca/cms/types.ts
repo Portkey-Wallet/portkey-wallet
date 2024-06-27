@@ -37,6 +37,8 @@ export interface DiscoverItem {
   imgUrl?: {
     filename_disk?: string;
   };
+  appLink?: string;
+  extensionLink?: string;
 }
 export interface DiscoverGroup {
   id: string;

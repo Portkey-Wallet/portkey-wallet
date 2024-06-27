@@ -56,6 +56,9 @@ import TradePage from 'pages/Trade';
 import TokenAllowance from 'pages/WalletSecurity/TokenAllowance';
 import TokenAllowanceDetail from 'pages/WalletSecurity/TokenAllowance/TokenAllowanceDetail';
 import DepositHome from 'pages/DepositHome';
+import CryptoGifts from 'pages/CryptoGifts/Home';
+import HistoryList from 'pages/CryptoGifts/History';
+import CryptoGiftsDetail from 'pages/CryptoGifts/Detail';
 
 export const PageRouter = () =>
   useRoutes([
@@ -310,6 +313,18 @@ export const PageRouter = () =>
     {
       path: '/unlock',
       element: <Unlock />,
+    },
+    {
+      path: '/crypto-gifts',
+      element: <CryptoGifts />,
+    },
+    {
+      path: '/crypto-gifts/history',
+      element: <HistoryList />,
+    },
+    {
+      path: '/crypto-gifts/detail',
+      element: <CryptoGiftsDetail />,
     },
     {
       path: '*',

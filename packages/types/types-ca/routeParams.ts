@@ -36,14 +36,17 @@ export type ImTransferInfoType = {
   name?: string;
   addresses?: { address: string; chainId: ChainId; chainName?: string }[];
 };
+
+export interface TToInfo {
+  address: string;
+  name: string;
+  chainId?: ChainId;
+  chainType?: ChainType;
+}
+
 export interface IToSendHomeParamsType {
   sendType: SendType;
-  toInfo: {
-    address: string;
-    name: string;
-    chainId?: ChainId;
-    chainType?: ChainType;
-  };
+  toInfo: TToInfo;
   assetInfo: IToSendAssetParamsType;
   imTransferInfo?: ImTransferInfoType;
 }
@@ -54,4 +57,9 @@ export interface IToSendPreviewParamsType extends IToSendHomeParamsType {
   successNavigateName?: any;
   guardiansApproved?: GuardiansApprovedType[];
   isAutoSend?: boolean;
+  receiveAmount?: string;
+  receiveAmountUsd?: string;
+  isEtransferCrossInLimit?: boolean;
+  crossChainFee: number | string;
+  crossChainFeeUnit?: string;
 }

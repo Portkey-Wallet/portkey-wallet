@@ -72,6 +72,8 @@ query discoverEarnData_portkeyCard_by_id($filter: discoverEarnData_filter, $sort
                     }
                     url
                     type
+                    appLink
+                    extensionLink
                 }
             }
         }
@@ -85,6 +87,8 @@ query discoverEarnData_portkeyCard_by_id($filter: discoverEarnData_filter, $sort
             buttonTitle
             url
             type
+            appLink
+            extensionLink
         }
     }
 }

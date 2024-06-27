@@ -1,4 +1,3 @@
-import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { ChainType } from '@portkey-wallet/types';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { getChainIdByAddress } from '@portkey-wallet/utils';
@@ -12,6 +11,7 @@ import { DEFAULT_TOKEN } from '@portkey-wallet/constants/constants-ca/wallet';
 import { getTokenInfo } from './getTokenInfo';
 import { GuardianItem } from 'types/guardians';
 import { managerForwardCall } from './managerForwardCall';
+import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 
 export type CrossChainTransferIntervalParams = Omit<CrossChainTransferParams, 'caHash' | 'fee'> & {
   issueChainId: number;
@@ -57,7 +57,7 @@ export const intervalCrossChainTransfer = async (params: CrossChainTransferInter
 };
 
 interface CrossChainTransferParams {
-  chainInfo: ChainItemType;
+  chainInfo: IChainItemType;
   chainType: ChainType;
   privateKey: string;
   managerAddress: string;

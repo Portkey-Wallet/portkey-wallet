@@ -60,6 +60,8 @@ export type DiscoverItem_By_IdQuery = {
     url?: string | null;
     user_created?: string | null;
     user_updated?: string | null;
+    appLink?: string | null;
+    extensionLink?: string | null;
     date_created_func?: {
       __typename?: 'datetime_functions';
       year?: number | null;
@@ -128,6 +130,8 @@ export type DiscoverItem_By_IdQuery = {
         url?: string | null;
         user_created?: string | null;
         user_updated?: string | null;
+        appLink?: string | null;
+        extensionLink?: string | null;
         date_created_func?: {
           __typename?: 'datetime_functions';
           year?: number | null;
@@ -423,6 +427,8 @@ export const DiscoverItem_By_IdDocument = gql`
           url
           user_created
           user_updated
+          appLink
+          extensionLink
         }
       }
       id
@@ -456,6 +462,8 @@ export const DiscoverItem_By_IdDocument = gql`
       url
       user_created
       user_updated
+      appLink
+      extensionLink
     }
   }
 `;

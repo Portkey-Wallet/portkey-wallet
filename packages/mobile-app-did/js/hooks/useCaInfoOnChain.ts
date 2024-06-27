@@ -2,13 +2,13 @@ import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useInterval from '@portkey-wallet/hooks/useInterval';
 import { setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
-import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { ChainId, ChainType } from '@portkey-wallet/types';
 import { isAddress } from '@portkey-wallet/utils';
 import { useCallback } from 'react';
 import { useAppDispatch } from 'store/hooks';
 import { useGetHolderInfoByViewContract } from './guardian';
 import { usePin } from './store';
+import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 export const useCaInfoOnChain = () => {
   const { walletInfo, chainList } = useCurrentWallet();
   const currentNetwork = useCurrentNetworkInfo();
@@ -17,7 +17,7 @@ export const useCaInfoOnChain = () => {
   const pin = usePin();
   const originChainId = useOriginChainId();
   const getHolderInfoByChainId = useCallback(
-    async ({ chain, caHash }: { chain: ChainItemType; caHash: string; walletType: ChainType }) => {
+    async ({ chain, caHash }: { chain: IChainItemType; caHash: string; walletType: ChainType }) => {
       if (!pin) return;
       try {
         const result = await getHolderInfo({ caHash }, chain);

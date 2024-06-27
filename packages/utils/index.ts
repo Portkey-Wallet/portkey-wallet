@@ -261,6 +261,7 @@ export const handleLoopFetch = async <T>({
 }): Promise<T> => {
   try {
     const result = await fetch();
+    console.log('wfs=== handleLoopFetch result', result);
     if (checkIsContinue) {
       const isContinue = checkIsContinue(result);
       if (!isContinue) return result;
@@ -310,7 +311,13 @@ export const formatNameWithRules = (
   });
   return result;
 };
-
+const DEFAULT_USER_ID = '00000000-0000-0000-0000-000000000000';
+export function isValidUserId(id?: string): boolean {
+  if (!id) {
+    return false;
+  }
+  return id !== DEFAULT_USER_ID;
+}
 export enum FormatNameRuleList {
   NO_BRACKETS = 'NO_BRACKETS',
   NO_UNDERLINE = 'NO_UNDERLINE',

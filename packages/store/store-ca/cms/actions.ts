@@ -176,6 +176,8 @@ export const getHomeBannerListAsync = createAsyncThunk<Required<Pick<CMSState, '
             imgUrl: ele?.portkeyCard_id?.imgUrl,
             index: ele?.portkeyCard_id?.index,
             url: ele?.portkeyCard_id?.url,
+            appLink: ele?.portkeyCard_id?.appLink,
+            extensionLink: ele?.portkeyCard_id?.extensionLink,
           }))
           ?.sort((a, b) => Number(a.index) - Number(b.index)) as TBaseCardItemType[];
       }
@@ -206,6 +208,8 @@ export const getDiscoverDappBannerAsync = createAsyncThunk<
         ?.map(ele => ({
           index: ele?.portkeyCard_id?.index,
           url: ele?.portkeyCard_id?.url,
+          appLink: ele?.portkeyCard_id?.appLink,
+          extensionLink: ele?.portkeyCard_id?.extensionLink,
           imgUrl: {
             filename_disk: ele?.portkeyCard_id?.imgUrl?.filename_disk,
           },
@@ -238,6 +242,8 @@ export const getDiscoverLearnBannerAsync = createAsyncThunk<
         ?.map(ele => ({
           index: ele?.portkeyCard_id?.index,
           url: ele?.portkeyCard_id?.url,
+          appLink: ele?.portkeyCard_id?.appLink,
+          extensionLink: ele?.portkeyCard_id?.extensionLink,
           imgUrl: {
             filename_disk: ele?.portkeyCard_id?.imgUrl?.filename_disk,
           },
@@ -276,6 +282,8 @@ export const getTokenDetailBannerAsync = createAsyncThunk<
           ?.map(ele => ({
             index: ele?.portkeyCard_id?.index,
             url: ele?.portkeyCard_id?.url,
+            appLink: ele?.portkeyCard_id?.appLink,
+            extensionLink: ele?.portkeyCard_id?.extensionLink,
             imgUrl: {
               filename_disk: ele?.portkeyCard_id?.imgUrl?.filename_disk,
             },

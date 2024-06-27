@@ -33,6 +33,8 @@ export type PortkeyCardQuery = {
     buttonTitle?: string | null;
     url?: string | null;
     type?: number | null;
+    appLink?: string | null;
+    extensionLink?: string | null;
     imgUrl?: {
       __typename?: 'directus_files';
       id: string;
@@ -158,6 +160,8 @@ export const PortkeyCardDocument = gql`
       }
       url
       type
+      appLink
+      extensionLink
     }
   }
 `;

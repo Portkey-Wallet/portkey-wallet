@@ -4,6 +4,7 @@ import { RootStackParamList, TabParamList } from 'navigation';
 import merge from 'lodash/merge';
 import { NavigateMultiLevelOptions, TabRouteNameEnum } from 'types/navigate';
 import myEvents from './deviceEvent';
+import { reportNavBack } from './analysisiReport';
 
 type MultiLevelParamsIds = string[];
 let TempMultiLevelParams: {
@@ -90,6 +91,9 @@ function navigateByMultiLevelParams(
 }
 
 function goBack() {
+  const key = _navigator.getCurrentRoute()?.name;
+  reportNavBack({ page_name: key });
+
   _navigator?.dispatch(CommonActions.goBack());
 }
 

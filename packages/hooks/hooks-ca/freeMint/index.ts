@@ -2,6 +2,7 @@ import { request } from '@portkey-wallet/api/api-did';
 import { FreeMintStatus, ICollectionData, ITokenDetails } from '@portkey-wallet/types/types-ca/freeMint';
 import { useCallback, useEffect, useState } from 'react';
 import { useEffectOnce } from '../..';
+import { handleLoopFetch } from '@portkey-wallet/utils';
 
 export const useRecentStatus = () => {
   const [recentStatus, setRecentStatus] = useState<FreeMintStatus>(FreeMintStatus.NONE);
@@ -29,7 +30,7 @@ export const useFreeMinInput = () => {
     }
   }, [imgPath, inputDescription, inputName]);
 
-  const cancel = useCallback(() => {
+  const reset = useCallback(() => {
     setInputName('');
     setInputDescription('');
     setImgPath('');
@@ -51,7 +52,7 @@ export const useFreeMinInput = () => {
     setInputName,
     setInputDescription,
     setImgPath,
-    cancel,
+    reset,
     nextClick,
     enableNext,
     collectionData,
@@ -75,18 +76,42 @@ export const useConfirmMint = () => {
 export const useMintStatus = (itemId: string) => {
   const [mintStatus, setMintStatus] = useState<FreeMintStatus>(FreeMintStatus.NONE);
   const [mintDetail, setMintDetail] = useState<ITokenDetails>();
+  const loopMintStatus = useLoopMintStatus();
   useEffectOnce(() => {
     (async () => {
       const mintStatus = await request.freeMintApi.getMintStatus({ params: { itemId } });
-      const mintDetail = await request.freeMintApi.getMintDetail({ params: { itemId } });
       setMintStatus(mintStatus.status);
+      if (mintStatus === FreeMintStatus.PENDING) {
+        const updateStatus = await loopMintStatus(itemId);
+        setMintStatus(updateStatus);
+      }
+      const mintDetail = await request.freeMintApi.getMintDetail({ params: { itemId } });
       setMintDetail(mintDetail);
     })();
   });
   const mintAgain = useCallback(() => {
     (async () => {
-      await request.freeMintApi.confirmAgain({ params: { itemId } });
+      if (mintStatus === FreeMintStatus.FAIL) {
+        await request.freeMintApi.confirmAgain({ params: { itemId } });
+      }
     })();
   }, [itemId]);
   return { mintStatus, mintDetail, mintAgain };
+};
+export const useLoopMintStatus = () => {
+  return useCallback(async (itemId: string) => {
+    const creationStatus = await handleLoopFetch({
+      fetch: () => {
+        return request.freeMintApi.getMintStatus({
+          params: { itemId },
+        });
+      },
+      times: 10,
+      interval: 2000,
+      checkIsContinue: _creationStatusResult => {
+        return _creationStatusResult?.status === FreeMintStatus.PENDING;
+      },
+    });
+    return creationStatus.state;
+  }, []);
 };

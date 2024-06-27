@@ -144,6 +144,8 @@ query discoverGroup_by_id($filter: directus_files_filter, $sort: [String], $limi
                     url
                     user_created
                     user_updated
+                    appLink
+                    extensionLink
                 }
                 items_func{
                     count
@@ -157,6 +159,8 @@ query discoverGroup_by_id($filter: directus_files_filter, $sort: [String], $limi
             url
             user_created
             user_updated
+            appLink
+            extensionLink
         }
         items_func{
             count

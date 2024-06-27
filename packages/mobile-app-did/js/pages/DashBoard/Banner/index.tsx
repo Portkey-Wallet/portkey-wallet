@@ -4,6 +4,7 @@ import Carousel from 'components/Carousel';
 import { useCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
 import { useGetS3ImageUrl } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { pTd } from 'utils/unit';
+import { parseLink } from '@portkey-wallet/hooks/hooks-ca/cms/util';
 
 export const DashBoardBanner: React.FC = () => {
   const getS3ImageUrl = useGetS3ImageUrl();
@@ -11,7 +12,7 @@ export const DashBoardBanner: React.FC = () => {
   const list = useMemo(() => {
     return homeBannerList.map(item => {
       return {
-        url: item.url,
+        appLink: parseLink(item.appLink, item.url),
         imgUrl: getS3ImageUrl(item.imgUrl.filename_disk),
       };
     });

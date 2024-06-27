@@ -11,11 +11,15 @@ import {
   TLoginModeIndexKey,
   TLoginModeRecommendKey,
   IMatchListItem,
+  TLink,
+  TLinkType,
 } from '@portkey-wallet/types/types-ca/cms';
 import BigNumber from 'bignumber.js';
 import { getEntrance as getEntranceGraphQL, getCodePushControl } from '@portkey-wallet/graphql/cms/queries';
 import { NetworkType } from '@portkey-wallet/types';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { isExtension } from '@portkey-wallet/utils';
+import 'query-string';
 
 const createEntranceMatchRule = (type: IEntranceMatchRuleType, params: string): any => {
   switch (type) {
@@ -37,6 +41,7 @@ export const DEFAULT_ENTRANCE_SHOW: IEntrance = {
   eTransDeposit: false,
   eTransWithdraw: false,
   swap: false,
+  freeMintNft: false,
 };
 
 const checkIsEntranceShow = (
@@ -194,3 +199,62 @@ export const filterLoginModeListToOther = (loginModeList: ILoginModeItem[], devi
 
   return loginModeList.filter(item => !item[recommendKey]).sort((a, b) => a[indexKey] - b[indexKey]);
 };
+
+export function parseLink(link?: string, defaultUrl?: string): TLink {
+  try {
+    console.log('parseLink===', link, 'defaultUrl', defaultUrl);
+    const realLink = link?.trim();
+    if (!realLink) {
+      return {
+        type: isExtension() ? 'external' : 'internal',
+        location: defaultUrl || '',
+        params: {},
+      };
+    }
+    const protocolMatch = realLink.match(/^portkey:\/\/(external|internal|native)\?/);
+    const type = protocolMatch ? (protocolMatch[1] as TLinkType) : 'external'; // default is external
+
+    const queryString = realLink.split('?')[1] || '';
+    const queryParams = queryString.split('&').reduce((acc, current) => {
+      const [key, value] = current.split('=');
+      if (key && value) {
+        acc[key] = decodeURIComponent(value);
+      }
+      return acc;
+    }, {} as { [key: string]: string });
+    const location = queryParams['location'] || '';
+    const paramsObj = Object.keys(queryParams).reduce((acc, key) => {
+      if (key !== 'location') {
+        acc[key] = queryParams[key];
+      }
+      return acc;
+    }, {} as { [key: string]: string });
+    let params;
+    if (isExtension()) {
+      params = paramsObj.params;
+    } else {
+      try {
+        params = JSON.parse(paramsObj.params);
+      } catch (e) {
+        params = {};
+      }
+    }
+    console.log('parseLink===result', {
+      type,
+      location,
+      params,
+    });
+    return {
+      type,
+      location,
+      params,
+    };
+  } catch (e) {
+    console.error('parseLink failed', e);
+    return {
+      type: isExtension() ? 'external' : 'internal',
+      location: defaultUrl || '',
+      params: {},
+    };
+  }
+}

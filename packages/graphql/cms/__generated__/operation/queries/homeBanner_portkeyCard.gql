@@ -72,6 +72,8 @@ query homeBanner_portkeyCard($filter: homeBanner_filter, $sort: [String], $limit
                     }
                     url
                     type
+                    appLink
+                    extensionLink
                 }
             }
         }
@@ -85,6 +87,8 @@ query homeBanner_portkeyCard($filter: homeBanner_filter, $sort: [String], $limit
             buttonTitle
             url
             type
+            appLink
+            extensionLink
         }
     }
 }

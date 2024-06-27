@@ -33,6 +33,7 @@ export const useGetTransferFee = () => {
       chainId,
     }: GetTransferFeeParams) => {
       const methodName = 'ManagerForwardCall';
+
       const calculateParams = {
         caHash: wallet.caHash,
         contractAddress: tokenContractAddress,

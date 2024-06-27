@@ -35,6 +35,7 @@ import { InsufficientTransactionFee } from 'hooks/useCalculateRedPacketFee';
 import { useAppRampEntryShow } from 'hooks/ramp';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import NFTAvatar from 'components/NFTAvatar';
+import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
 
 export type PaymentAssetInfo = {
   symbol: string;
@@ -105,10 +106,8 @@ const PaymentModal = ({
   }, [accountAssetList, assetInfo.symbol, assetMap, chainId]);
 
   const { isBuySectionShow } = useAppRampEntryShow();
-  const isCanBuy = useMemo(
-    () => assetInfo.symbol === defaultToken.symbol && isBuySectionShow,
-    [assetInfo.symbol, defaultToken.symbol, isBuySectionShow],
-  );
+  const { buy } = checkEnabledFunctionalTypes(assetInfo.symbol, chainId === 'AELF');
+  const isCanBuy = useMemo(() => buy && isBuySectionShow, [buy, isBuySectionShow]);
 
   // update AccountTokenList
   useEffectOnce(() => {
@@ -153,7 +152,7 @@ const PaymentModal = ({
             </View>
             <View style={GStyles.alignEnd}>
               {!!defaultTokenPrice && (
-                <TextS style={FontStyles.font3}>
+                <TextS style={FontStyles.neutralTertiaryText}>
                   {convertAmountUSDShow(divDecimals(fee.value, defaultToken.decimals), defaultTokenPrice)}
                 </TextS>
               )}
@@ -299,7 +298,7 @@ const PaymentModal = ({
     if (assetInfo.assetType === AssetType.nft)
       return (
         <Text style={styles.marginTop4}>
-          <TextS style={FontStyles.font3}>
+          <TextS style={FontStyles.neutralTertiaryText}>
             {formatTokenAmountShowWithDecimals(currentNft?.balance, currentNft?.decimals)}
           </TextS>
         </Text>
@@ -307,12 +306,14 @@ const PaymentModal = ({
 
     return (
       <Text style={styles.marginTop4}>
-        <TextS style={FontStyles.font3}>
+        <TextS style={FontStyles.neutralTertiaryText}>
           {formatTokenAmountShowWithDecimals(currentAssetInfo?.balance, currentAssetInfo?.decimals)}
         </TextS>
-        <TextS style={FontStyles.font3}>{` ${currentAssetInfo?.label || currentAssetInfo?.symbol || ''}`}</TextS>
+        <TextS style={FontStyles.neutralTertiaryText}>{` ${
+          currentAssetInfo?.label || currentAssetInfo?.symbol || ''
+        }`}</TextS>
         {!!tokenPriceObject[currentAssetInfo?.symbol || ''] && (
-          <TextS style={FontStyles.font3}>
+          <TextS style={FontStyles.neutralTertiaryText}>
             {`  ${convertAmountUSDShow(
               divDecimals(currentAssetInfo?.balance, currentAssetInfo?.decimals),
               tokenPriceObject[currentAssetInfo?.symbol || ''],
@@ -393,7 +394,7 @@ const PaymentModal = ({
                 {!!(crossSufficientItem && fee.error) && (
                   <TextS style={[FontStyles.font6, styles.marginTop4]}>
                     {`You can transfer some ${
-                      assetInfo.assetType === AssetType.ft ? assetInfo.symbol : assetInfo.alias
+                      assetInfo.assetType === AssetType.ft ? assetInfo.label || assetInfo.symbol : assetInfo.alias
                     } from your ${formatChainInfoToShow(crossSufficientItem?.chainId, currentNetwork)} address`}
                   </TextS>
                 )}
@@ -430,17 +431,20 @@ export const show = (props: Omit<PaymentOverlayProps, 'onConfirm'>) => {
 export const showRedPacket = (props: Omit<PaymentOverlayProps, 'onConfirm' | 'title'>) => {
   return show({ ...props, title: 'Portkey Crypto Box' });
 };
-
+export const showCryptoGift = (props: Omit<PaymentOverlayProps, 'onConfirm' | 'title'>) => {
+  return show({ ...props, title: 'Crypto Gift' });
+};
 export default {
   show,
   showRedPacket,
+  showCryptoGift,
 };
 
 export const styles = StyleSheet.create({
   containerStyle: {
     paddingTop: pTd(16),
     paddingBottom: pTd(16),
-    paddingHorizontal: pTd(20),
+    paddingHorizontal: pTd(16),
     flex: 1,
   },
   titleStyle: {
@@ -448,7 +452,7 @@ export const styles = StyleSheet.create({
     marginBottom: pTd(12),
   },
   balanceLabelStyle: {
-    color: defaultColors.font3,
+    color: defaultColors.secondaryTextColor,
     marginLeft: pTd(8),
   },
   lottieStyle: {

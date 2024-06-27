@@ -37,11 +37,19 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { sleep } from '@portkey-wallet/utils';
 import { FontStyles } from 'assets/theme/styles';
 import { ChainId } from '@portkey-wallet/types';
-import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import {
+  useAmountInUsdShow,
+  useGetCurrentAccountTokenPrice,
+  useIsTokenHasPrice,
+} from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { useCheckTransferLimitWithJump } from 'hooks/security';
 import { useSendIMTransfer } from '@portkey-wallet/hooks/hooks-ca/im/transfer';
+import {
+  CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL,
+  useCrossTransferByEtransfer,
+} from '@portkey-wallet/hooks/hooks-ca/useWithdrawByETransfer';
 import { TransferTypeEnum } from '@portkey-wallet/im';
 import { useJumpToChatDetails, useJumpToChatGroupDetails } from 'hooks/chat';
 import { useFocusEffect } from '@react-navigation/native';
@@ -69,12 +77,18 @@ const SendPreview: React.FC = () => {
     guardiansApproved,
     isAutoSend = false,
     imTransferInfo,
+    receiveAmount,
+    receiveAmountUsd,
+    isEtransferCrossInLimit = false,
+    crossChainFee,
+    crossChainFeeUnit,
   } = routerParams;
 
   const isApproved = useMemo(() => guardiansApproved && guardiansApproved.length > 0, [guardiansApproved]);
 
   useFetchTxFee();
   const { crossChain: crossDefaultFee } = useGetTxFee(assetInfo.chainId);
+  const amountInUsdShow = useAmountInUsdShow();
 
   const dispatch = useAppCommonDispatch();
   const pin = usePin();
@@ -97,6 +111,12 @@ const SendPreview: React.FC = () => {
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const isTokenHasPrice = useIsTokenHasPrice(assetInfo.symbol);
 
+  const crossTransferByEtransfer = useCrossTransferByEtransfer(pin);
+  const isSupportEtransferCross = useMemo(
+    () => CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(assetInfo.symbol) && isEtransferCrossInLimit,
+    [assetInfo.symbol, isEtransferCrossInLimit],
+  );
+
   const isCrossChainTransfer = isCrossChain(toInfo.address, assetInfo.chainId);
   const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
 
@@ -104,6 +124,38 @@ const SendPreview: React.FC = () => {
     () => timesDecimals(sendNumber, assetInfo.decimals).toFixed(),
     [assetInfo.decimals, sendNumber],
   );
+
+  const EstimateAmount = useMemo(() => {
+    if (ZERO.plus(sendNumber).isLessThanOrEqualTo(crossChainFee) && assetInfo.symbol === defaultToken.symbol)
+      return {
+        estimateAmount: `0 ${assetInfo?.label || assetInfo?.symbol}`,
+        estimateAmountUsd: isMainnet ? '$ 0' : '',
+      };
+
+    let _amount = sendNumber;
+    let amountUsd;
+    if (receiveAmount) _amount = receiveAmount;
+    else _amount = formatAmountShow(ZERO.plus(_amount).minus(crossChainFee), Number(defaultToken.decimals));
+
+    if (receiveAmountUsd) amountUsd = formatAmountUSDShow(receiveAmountUsd);
+    else amountUsd = amountInUsdShow(ZERO.plus(_amount).minus(crossChainFee).toFixed(), 0, assetInfo.symbol);
+
+    return {
+      estimateAmount: `${_amount} ${assetInfo.label || assetInfo.symbol}`,
+      estimateAmountUsd: isMainnet ? amountUsd : '',
+    };
+  }, [
+    amountInUsdShow,
+    assetInfo.label,
+    assetInfo.symbol,
+    crossChainFee,
+    defaultToken.decimals,
+    defaultToken.symbol,
+    isMainnet,
+    receiveAmount,
+    receiveAmountUsd,
+    sendNumber,
+  ]);
 
   const showRetry = useCallback(
     (retryFunc: () => void) => {
@@ -174,20 +226,36 @@ const SendPreview: React.FC = () => {
       }
       const tokenContract = tokenContractRef.current;
 
-      const crossChainTransferResult = await crossChainTransfer({
-        tokenContract,
-        contract,
-        chainType: currentNetwork.walletType ?? 'aelf',
-        managerAddress: wallet.address,
-        tokenInfo: { ...assetInfo, address: assetInfo.tokenContractAddress } as unknown as BaseToken,
-        caHash: wallet.caHash || '',
-        amount,
-        crossDefaultFee,
-        toAddress: toInfo.address,
-        guardiansApproved,
-      });
+      if (isSupportEtransferCross) {
+        const crossTransferByEtransferResult = await crossTransferByEtransfer.withdraw({
+          chainId: chainInfo.chainId,
+          tokenContract,
+          portkeyContract: contract,
+          toAddress: toInfo.address,
+          amount: String(sendNumber),
+          tokenInfo: {
+            symbol: assetInfo.symbol,
+            decimals: Number(assetInfo.decimals),
+            address: assetInfo.tokenContractAddress,
+          },
+        });
+        console.log('crossTransferByEtransferResult', crossTransferByEtransferResult);
+      } else {
+        const crossChainTransferResult = await crossChainTransfer({
+          tokenContract,
+          contract,
+          chainType: currentNetwork.walletType ?? 'aelf',
+          managerAddress: wallet.address,
+          tokenInfo: { ...assetInfo, address: assetInfo.tokenContractAddress } as unknown as BaseToken,
+          caHash: wallet.caHash || '',
+          amount,
+          crossDefaultFee,
+          toAddress: toInfo.address,
+          guardiansApproved,
+        });
 
-      console.log('crossChainTransferResult', crossChainTransferResult);
+        console.log('crossChainTransferResult', crossChainTransferResult);
+      }
     } else {
       console.log('sameChainTransfers==sendHandler', tokenInfo);
       const sameTransferResult = await sameChainTransfer({
@@ -236,12 +304,14 @@ const SendPreview: React.FC = () => {
     chainInfo,
     checkTransferLimitWithJump,
     crossDefaultFee,
+    crossTransferByEtransfer,
     currentNetwork.walletType,
     fetchAccountNFTCollectionInfoList,
     fetchAccountTokenInfoList,
     guardiansApproved,
     isApproved,
     isCrossChainTransfer,
+    isSupportEtransferCross,
     pin,
     routerParams,
     sendNumber,
@@ -533,9 +603,11 @@ const SendPreview: React.FC = () => {
                     {t('Estimated CrossChain Transfer')}
                   </TextM>
                   <View>
-                    <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>{`${unitConverter(
-                      crossDefaultFee,
-                    )} ${defaultToken.symbol}`}</TextM>
+                    <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>
+                      {isSupportEtransferCross
+                        ? `${crossChainFee} ${crossChainFeeUnit}`
+                        : `${unitConverter(crossDefaultFee)} ${defaultToken.symbol}`}
+                    </TextM>
                     {isMainnet ? (
                       <TextS
                         style={[
@@ -554,7 +626,7 @@ const SendPreview: React.FC = () => {
               <Text style={[styles.divider, styles.marginTop0]} />
             </>
           )}
-          {isCrossChainTransfer && assetInfo.symbol === defaultToken.symbol && (
+          {isCrossChainTransfer && (isSupportEtransferCross || assetInfo.symbol === defaultToken.symbol) && (
             <View style={styles.section}>
               <View style={[styles.flexSpaceBetween]}>
                 <TextM style={[styles.blackFontColor, styles.fontBold, styles.leftTitle, GStyles.alignEnd]}>
@@ -562,24 +634,12 @@ const SendPreview: React.FC = () => {
                 </TextM>
                 <View>
                   <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>
-                    {ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(crossDefaultFee))
-                      ? '0'
-                      : formatAmountShow(
-                          ZERO.plus(sendNumber).minus(ZERO.plus(crossDefaultFee)),
-                          defaultToken.decimals,
-                        )}{' '}
-                    {defaultToken.symbol}
+                    {EstimateAmount.estimateAmount}
                   </TextM>
                   {isMainnet ? (
-                    <TextS style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`${
-                      ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(crossDefaultFee))
-                        ? '$ 0'
-                        : formatAmountUSDShow(
-                            ZERO.plus(sendNumber)
-                              .minus(ZERO.plus(crossDefaultFee))
-                              .times(tokenPriceObject[defaultToken.symbol]),
-                          )
-                    }`}</TextS>
+                    <TextS style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>
+                      {EstimateAmount.estimateAmountUsd}
+                    </TextS>
                   ) : (
                     <TextM />
                   )}

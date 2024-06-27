@@ -33,6 +33,8 @@ export type PortkeyCard_AggregatedQuery = {
       imgUrl?: number | null;
       url?: number | null;
       type?: number | null;
+      appLink?: number | null;
+      extensionLink?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'portkeyCard_aggregated_count';
@@ -46,6 +48,8 @@ export type PortkeyCard_AggregatedQuery = {
       imgUrl?: number | null;
       url?: number | null;
       type?: number | null;
+      appLink?: number | null;
+      extensionLink?: number | null;
     } | null;
     avg?: {
       __typename?: 'portkeyCard_aggregated_fields';
@@ -118,6 +122,8 @@ export const PortkeyCard_AggregatedDocument = gql`
         imgUrl
         url
         type
+        appLink
+        extensionLink
       }
       countDistinct {
         id
@@ -130,6 +136,8 @@ export const PortkeyCard_AggregatedDocument = gql`
         imgUrl
         url
         type
+        appLink
+        extensionLink
       }
       avg {
         id

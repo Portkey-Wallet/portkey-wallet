@@ -6,6 +6,8 @@ query discoverEarnDataCustom {
         status
         title
         url
+        appLink
+        extensionLink
         index
         value
         description

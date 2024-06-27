@@ -180,7 +180,19 @@ class Analytics {
       console.error('Google Analytics request failed with an exception', e);
     }
   }
+  async referralEnterClickEvent() {
+    try {
+      const params = { timestamp: Date.now() };
+      const { currentNetwork } = await getWalletState();
 
+      return this.fireEvent('extension_referral_enter_click', {
+        ...params,
+        networkType: currentNetwork,
+      });
+    } catch (error) {
+      console.error('Google Analytics request failed with an exception', error);
+    }
+  }
   // Fire an error event.
   async fireErrorEvent(error: any, additionalParams = {}) {
     // Note: 'error' is a reserved event name and cannot be used

@@ -206,4 +206,7 @@ export default {
   fontSize: function (n: number) {
     return { fontSize: n };
   },
+  lineHeight: function (n: number) {
+    return { lineHeight: n };
+  },
 } as const;

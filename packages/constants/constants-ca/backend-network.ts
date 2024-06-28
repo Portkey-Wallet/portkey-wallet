@@ -186,6 +186,7 @@ export const BackEndNetWorkMap: {
     eTransferUrl: 'https://test.etransfer.exchange',
     awakenUrl: 'https://test.awaken.finance',
     schrodingerUrl: 'https://schrodingerai.com',
+    eForestUrl: 'https://test.eforest.finance',
   },
   'back-end-testnet': {
     name: 'aelf Testnet',
@@ -273,5 +274,6 @@ export const BackEndNetWorkMap: {
     },
     awakenUrl: 'https://awaken.finance',
     schrodingerUrl: 'https://schrodingernft.ai',
+    eForestUrl: 'https://www.eforest.finance',
   },
 };

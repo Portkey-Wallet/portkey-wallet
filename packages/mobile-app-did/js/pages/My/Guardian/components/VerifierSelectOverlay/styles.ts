@@ -34,9 +34,11 @@ const styles = StyleSheet.create({
     borderRadius: pTd(6),
     padding: pTd(12),
     flexDirection: 'row',
-    alignItems: 'center',
     marginTop: pTd(16),
     marginHorizontal: pTd(20),
+  },
+  warningIcon: {
+    marginTop: pTd(2),
   },
   warnLabelWrap: {
     color: defaultColors.font3,

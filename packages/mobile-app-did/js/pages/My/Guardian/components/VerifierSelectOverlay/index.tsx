@@ -65,8 +65,12 @@ const SelectList = ({ callBack, id, editGuardian }: SelectListProps) => {
           );
         })}
         <View style={styles.warnWrap}>
-          <Svg icon="warning2" size={pTd(16)} color={defaultColors.icon1} />
-          <TextM style={styles.warnLabelWrap}>{'Used verifiers cannot be selected.'}</TextM>
+          <Svg icon="warning2" size={pTd(16)} color={defaultColors.icon1} iconStyle={styles.warningIcon} />
+          <TextM style={styles.warnLabelWrap}>
+            {
+              'Used Verifiers other than zkLogin cannot be selected. Only Google and Apple type accounts can choose zkLogin as Verifier.'
+            }
+          </TextM>
         </View>
       </ScrollView>
     </ModalBody>

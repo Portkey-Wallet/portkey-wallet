@@ -1,7 +1,7 @@
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import CommonButton, { CommonButtonProps } from 'components/CommonButton';
-import { TextM, TextS } from 'components/CommonText';
+import { TextM } from 'components/CommonText';
 import Svg from 'components/Svg';
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -258,26 +258,14 @@ export default function GuardianItem({
   }, [guardianItem]);
 
   const renderGuardianAccount = useCallback(() => {
-    if (!guardianItem.firstName) {
-      return (
-        <TextM
-          numberOfLines={AuthTypes.includes(guardianItem.guardianType) ? 1 : 2}
-          style={[styles.nameStyle, GStyles.flex1]}>
-          {guardianAccount}
-        </TextM>
-      );
-    }
     return (
-      <View style={[styles.nameStyle, GStyles.flex1]}>
-        <TextM style={styles.firstNameStyle} numberOfLines={1}>
-          {guardianItem.firstName}
-        </TextM>
-        <TextS style={FontStyles.font3} numberOfLines={1}>
-          {guardianAccount}
-        </TextS>
-      </View>
+      <TextM
+        numberOfLines={AuthTypes.includes(guardianItem.guardianType) ? 1 : 2}
+        style={[styles.nameStyle, GStyles.flex1]}>
+        {guardianAccount}
+      </TextM>
     );
-  }, [guardianAccount, guardianItem.firstName, guardianItem.guardianType]);
+  }, [guardianAccount, guardianItem.guardianType]);
 
   return (
     <View style={[styles.itemRow, isBorderHide && styles.itemWithoutBorder, disabled && styles.disabledStyle]}>
@@ -351,9 +339,6 @@ const styles = StyleSheet.create({
   },
   nameStyle: {
     marginLeft: pTd(12),
-  },
-  firstNameStyle: {
-    marginBottom: pTd(2),
   },
   buttonStyle: {
     height: pTd(24),

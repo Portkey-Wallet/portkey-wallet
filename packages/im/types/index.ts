@@ -3,7 +3,7 @@ export type ParsedContent = string | ParsedImage | ParsedRedPackage | ParsedTran
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import { PIN_OPERATION_TYPE_ENUM } from './pin';
 import { RedPackageStatusInfo } from './redPackage';
-import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { ContactItemType, ContactType } from '@portkey-wallet/types/types-ca/contact';
 
 export type ChainId = 'AELF' | 'tDVV' | 'tDVW';
 
@@ -166,6 +166,7 @@ export type ChannelItem = {
   pinAt: string;
   toRelationId?: string;
   redPackage?: RedPackageStatusInfo;
+  contactType?: ContactType;
 };
 
 export enum IMStatusEnum {

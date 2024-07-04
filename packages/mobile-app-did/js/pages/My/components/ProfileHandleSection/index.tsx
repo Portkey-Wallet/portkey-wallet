@@ -11,14 +11,14 @@ import { pTd } from 'utils/unit';
 type ProfileHandleSectionPropsType = {
   isAdded?: boolean;
   isBlocked?: boolean;
+  isBot?: boolean;
   onPressAdded: () => void;
   onPressChat: () => void;
   onPressMore: (event: GestureResponderEvent) => void;
 };
 
 const ProfileHandleSection: React.FC<ProfileHandleSectionPropsType> = props => {
-  const { isAdded, isBlocked, onPressAdded, onPressChat, onPressMore } = props;
-
+  const { isAdded, isBlocked, isBot, onPressAdded, onPressChat, onPressMore } = props;
   const handleList = useMemo((): {
     disabled?: boolean;
     label: string;
@@ -27,13 +27,13 @@ const ProfileHandleSection: React.FC<ProfileHandleSectionPropsType> = props => {
     icon: IconName;
     onPress: (event: GestureResponderEvent) => void;
   }[] => {
-    return [
+    const allList = [
       {
         disabled: isAdded,
         label: isAdded ? 'Added' : 'Add Contact',
         color: isAdded ? defaultColors.font21 : defaultColors.primaryColor,
         colorStyle: { color: isAdded ? defaultColors.font21 : defaultColors.primaryColor },
-        icon: isAdded ? 'chat-added' : 'chat-add-contact',
+        icon: isAdded ? ('chat-added' as IconName) : ('chat-add-contact' as IconName),
         onPress: () => {
           if (isAdded) return;
           onPressAdded();
@@ -44,7 +44,7 @@ const ProfileHandleSection: React.FC<ProfileHandleSectionPropsType> = props => {
         label: 'Chat',
         color: isBlocked ? defaultColors.font21 : defaultColors.primaryColor,
         colorStyle: { color: isBlocked ? defaultColors.font21 : defaultColors.primaryColor },
-        icon: 'chat-chat',
+        icon: 'chat-chat' as IconName,
         onPress: onPressChat,
       },
       {
@@ -52,16 +52,24 @@ const ProfileHandleSection: React.FC<ProfileHandleSectionPropsType> = props => {
         label: 'More',
         color: defaultColors.primaryColor,
         colorStyle: { color: defaultColors.primaryColor },
-        icon: 'more',
+        icon: 'more' as IconName,
         onPress: onPressMore,
       },
     ];
-  }, [isAdded, isBlocked, onPressAdded, onPressChat, onPressMore]);
+    if (isBot) {
+      allList.pop();
+    }
+    return allList;
+  }, [isAdded, isBlocked, isBot, onPressAdded, onPressChat, onPressMore]);
 
   return (
     <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.wrap]}>
       {handleList.map((ele, index) => (
-        <Touchable disabled={ele.disabled} key={index} style={[GStyles.center, styles.itemWrap]} onPress={ele.onPress}>
+        <Touchable
+          disabled={ele.disabled}
+          key={index}
+          style={[GStyles.center, styles.itemWrap, isBot && styles.itemBotWidth]}
+          onPress={ele.onPress}>
           <Svg icon={ele.icon} size={pTd(24)} color={ele.color} />
           <TextM style={[GStyles.marginTop(4), ele.colorStyle]}>{ele.label}</TextM>
         </Touchable>
@@ -82,6 +90,9 @@ const styles = StyleSheet.create({
     padding: pTd(8),
     borderRadius: pTd(6),
     backgroundColor: defaultColors.bg1,
+  },
+  itemBotWidth: {
+    width: pTd(167.5),
   },
   content: {
     marginBottom: pTd(8),

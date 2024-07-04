@@ -35,6 +35,7 @@ import { measurePageY } from 'utils/measure';
 import { useIsFocused } from '@react-navigation/native';
 import { TabRouteNameEnum } from 'types/navigate';
 import FloatOverlay from 'components/FloatOverlay';
+import { ContactType } from '@portkey-wallet/types/types-ca/contact';
 
 const ChatDetailsPage = () => {
   const dispatch = useAppCommonDispatch();
@@ -54,6 +55,10 @@ const ChatDetailsPage = () => {
   const avatar = useMemo(() => currentChannelInfo?.channelIcon, [currentChannelInfo?.channelIcon]);
   const pin = useMemo(() => currentChannelInfo?.pin, [currentChannelInfo?.pin]);
   const mute = useMemo(() => currentChannelInfo?.mute, [currentChannelInfo?.mute]);
+  const isBot = useMemo(
+    () => currentChannelInfo?.contactType === ContactType.ChatGptBot,
+    [currentChannelInfo?.contactType],
+  );
 
   const addContact = useLockCallback(async () => {
     try {

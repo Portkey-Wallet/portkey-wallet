@@ -9,6 +9,7 @@ import * as Google from 'expo-auth-session/providers/google';
 import Config from 'react-native-config';
 import useScheme from 'hooks/useScheme';
 import useNotify from 'hooks/useNotifyAction';
+import randomNonce from '@portkey-wallet/utils/nonce';
 
 const INITIAL_STATE = {};
 const InterfaceContext = createContext<any>(INITIAL_STATE);
@@ -58,6 +59,9 @@ export default function Provider({ children }: { children: React.ReactNode }) {
     iosClientId: Config.GOOGLE_IOS_CLIENT_ID,
     androidClientId: Config.GOOGLE_ANDROID_CLIENT_ID,
     shouldAutoExchangeCode: false,
+    extraParams: {
+      nonce: randomNonce(),
+    },
   });
   useScheme();
   useNotify();

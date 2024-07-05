@@ -13,6 +13,8 @@ import {
   parseFacebookToken,
   parseTwitterToken,
 } from '@portkey-wallet/utils/authentication';
+import { randomId } from '@portkey-wallet/utils';
+import { customFetch } from '@portkey-wallet/utils/fetch';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { useInterface } from 'contexts/useInterface';
 import { checkIsUserCancel, handleErrorMessage, sleep } from '@portkey-wallet/utils';
@@ -25,7 +27,11 @@ import FacebookOverlay from 'components/OauthOverlay/facebook';
 import { parseTelegramToken } from '@portkey-wallet/utils/authentication';
 import { useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useLatestRef } from '@portkey-wallet/hooks';
-import { ReportUnsetLoginGuardianProps, VerifyTokenParams } from '@portkey-wallet/types/types-ca/authentication';
+import {
+  ReportUnsetLoginGuardianProps,
+  VerifyTokenParams,
+  VerifyZKLoginParams,
+} from '@portkey-wallet/types/types-ca/authentication';
 import { onAndroidFacebookAuthentication, onTwitterAuthentication } from 'utils/authentication';
 import {
   TAppleAuthentication,
@@ -34,6 +40,7 @@ import {
   TVerifierAuthParams,
 } from 'types/authentication';
 import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
+import generateRandomNonce from '@portkey-wallet/utils/nonce';
 
 if (!isIOS) {
   GoogleSignin.configure({
@@ -302,8 +309,45 @@ export function useAuthenticationSign() {
   );
 }
 
+export function useVerifyZKLogin() {
+  return useCallback(async (params: VerifyZKLoginParams) => {
+    const { jwt, salt, kid } = params;
+    const proofParams = { jwt, salt };
+    const proofResult = await customFetch('https://zklogin-prover-sha256.aelf.dev/v1/prove', {
+      method: 'POST',
+      headers: {
+        Accept: 'text/plain;v=1.0',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(proofParams),
+    });
+    console.log('aaaa proofResult : ', proofResult);
+
+    const verifyParams = {
+      identifierHash: proofResult.identifierHash,
+      salt,
+      nonce: generateRandomNonce(),
+      kid,
+      proof: proofResult.proof,
+    };
+    console.log('aaaa verifyParams : ', verifyParams);
+    const verifyResult = await customFetch('https://zklogin-prover-sha256.aelf.dev//v1/verify', {
+      method: 'POST',
+      headers: {
+        Accept: 'text/plain;v=1.0',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(verifyParams),
+    });
+
+    console.log('aaaa verifyResult : ', verifyResult);
+    return verifyResult;
+  }, []);
+}
+
 export function useVerifyGoogleToken() {
   const { googleSign } = useGoogleAuthentication();
+  const verifyZKLogin = useVerifyZKLogin();
   return useCallback(
     async (params: VerifyTokenParams) => {
       let accessToken = params.accessToken;
@@ -321,16 +365,24 @@ export function useVerifyGoogleToken() {
         accessToken = userInfo?.accessToken;
         if (userInfo.user.id !== params.id) throw new Error('Account does not match your guardian');
       }
-      const rst = await request.verify.verifyGoogleToken({
-        params: { ...params, accessToken },
+      // const rst = await request.verify.verifyGoogleToken({
+      //   params: { ...params, accessToken },
+      // });
+      const idTokenArr = params.idToken?.split('.') ?? [];
+      const spilt1 = Buffer.from(idTokenArr[0], 'base64').toString('utf8');
+      const { kid } = JSON.parse(spilt1) || {};
+      const rst = await verifyZKLogin({
+        jwt: accessToken,
+        salt: randomId(),
+        kid,
       });
-
+      console.log('aaaa rst : ', rst);
       return {
         ...rst,
         accessToken,
       };
     },
-    [googleSign],
+    [googleSign, verifyZKLogin],
   );
 }
 
@@ -504,6 +556,7 @@ export function useVerifierAuth() {
     }: TVerifierAuthParams) => {
       return verifyToken(guardianItem.guardianType, {
         accessToken: authenticationInfo?.[guardianItem.guardianAccount],
+        idToken: authenticationInfo?.idToken,
         id: guardianItem.guardianAccount,
         verifierId: guardianItem.verifier?.id,
         chainId: originChainId,

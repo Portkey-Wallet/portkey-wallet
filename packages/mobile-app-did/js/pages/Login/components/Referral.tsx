@@ -13,7 +13,7 @@ import { PageLoginType, PageType } from '../types';
 import TermsServiceButton from './TermsServiceButton';
 import Divider from 'components/Divider';
 import CommonToast from 'components/CommonToast';
-import { useAuthenticationSign } from 'hooks/authentication';
+import { useAuthenticationSign, useVerifyZKLogin } from 'hooks/authentication';
 import { LoginParams, useOnLogin } from 'hooks/login';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import Loading from 'components/Loading';
@@ -40,6 +40,7 @@ export function useLoginModeMap(
   onPhoneSign: () => void,
 ) {
   const authenticationSign = useAuthenticationSign();
+  const verifyZKLogin = useVerifyZKLogin();
   const onAppleSign = useLockCallback(async () => {
     const loadingKey = Loading.show();
     try {
@@ -62,7 +63,7 @@ export function useLoginModeMap(
       await onLogin({
         loginAccount: userInfo.user.id,
         loginType: LoginType.Google,
-        authenticationInfo: { [userInfo.user.id]: userInfo.accessToken },
+        authenticationInfo: { [userInfo.user.id]: userInfo.accessToken, idToken: userInfo.idToken },
       });
     } catch (error) {
       CommonToast.failError(error);
@@ -177,7 +178,6 @@ export default function Referral({
     config,
     isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android,
   );
-  console.log(loginModeListToRecommend, loginModeListToOther, '====loginModeListToRecommend, loginModeListToOther ');
 
   const loginModeMap = useLoginModeMap(
     onLogin,

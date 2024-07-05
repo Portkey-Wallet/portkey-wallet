@@ -97,7 +97,7 @@ export default function KeyGenieChat() {
           <AIChatMark />
         </View>
         <TextS numberOfLines={1} style={[fonts.regularFont, FontStyles.neutralTertiaryText, styles.subTitle]}>
-          {t('AI Chat - New Chat Experience')}
+          {t('Your intelligent AI chat companion')}
         </TextS>
       </View>
       <Touchable style={styles.chatButton} onPress={chatToKeyGenie}>

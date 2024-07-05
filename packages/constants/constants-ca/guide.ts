@@ -9,7 +9,7 @@ export enum GuideTypeEnum {
 
 export const JOIN_OFFICIAL_GROUP_TITLE = `Join Portkey Official Group!`;
 
-export const JOIN_OFFICIAL_GROUP_CONTENT = `Engage with the Portkey community for the latest updates and discussions.`;
+export const JOIN_OFFICIAL_GROUP_CONTENT = `Engage with the Portkey community for the latest events, updates, and discussions.`;
 
 export const JOIN_OFFICIAL_GROUP_ERROR_TIP = `This group doesn't exist. Please check the Portkey group before you try again.`;
 
@@ -19,13 +19,12 @@ export const JOIN_OFFICIAL_GROUP_BUTTON_TITTLE = 'Join';
 
 export const ADD_AI_CHAT_BUTTON_TITTLE = 'Chat with KeyGenie';
 
-export const ADD_AI_CHAT_TITLE = '💬 New Chat Experience';
+export const ADD_AI_CHAT_TITLE = '💬 AI-Powered Chat';
 
 export const AI_CHAT_ADDITION_CONTENT_TIP =
-  ' In addition, we have an Al chat tool - KeyGenie, which can bring you a brand new chatting experience!';
+  ' Start a conversation with KeyGenie, our AI chatbot, and enjoy a refreshingly intelligent chat experience.';
 
-export const AI_CHAT_CONTENT_TIP =
-  'Portkey has launched KeyGenie, an Al chat tool that allows you to chat with him on a full range of topics, or look up coin prices and more. Come and try it out!';
+export const AI_CHAT_CONTENT_TIP = `KeyGenie is the AI chatbot designed to elevate your chat experience in Portkey. Whether you're engaging in conversation or asking questions, you'll be amazed by the intelligent responses and boundless capabilities.`;
 
 export const KEY_GENIE_AVATAR_URL =
   'https://images.pexels.com/photos/26654753/pexels-photo-26654753.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2';

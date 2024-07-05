@@ -31,6 +31,8 @@ import {
   cleanALLChannelMessagePin,
   setBlockedUserList,
   changeBlockedMap,
+  addBotSending,
+  removeBotSending,
 } from './actions';
 import { formatChannelList } from './util';
 import { MessageTypeEnum, ParsedRedPackage } from '@portkey-wallet/im';
@@ -46,6 +48,7 @@ const initialState: IMStateType = {
   pinListNetMap: {},
   lastPinNetMap: {},
   blockedUserListMap: {},
+  sendingBotRelationIdNetMap: {},
 };
 export const imSlice = createSlice({
   name: 'im',
@@ -567,7 +570,42 @@ export const imSlice = createSlice({
           },
         };
       })
-
+      .addCase(addBotSending, (state, action) => {
+        const { network, targetRelationId } = action.payload;
+        const targetSendingBotRelationIdNetMap = state.sendingBotRelationIdNetMap?.[network] || [];
+        const newSendingBotRelationIdNetMap = [...targetSendingBotRelationIdNetMap];
+        newSendingBotRelationIdNetMap.push(targetRelationId);
+        return {
+          ...state,
+          sendingBotRelationIdNetMap: {
+            ...state.sendingBotRelationIdNetMap,
+            [network]: [...newSendingBotRelationIdNetMap],
+          },
+        };
+      })
+      .addCase(removeBotSending, (state, action) => {
+        const { network, targetRelationId } = action.payload;
+        const targetSendingBotRelationIdNetMap = state.sendingBotRelationIdNetMap?.[network] || [];
+        const index = targetSendingBotRelationIdNetMap.indexOf(targetRelationId);
+        if (index > -1) {
+          const newSendingBotRelationIdNetMap = [...targetSendingBotRelationIdNetMap];
+          newSendingBotRelationIdNetMap.splice(index, 1);
+          return {
+            ...state,
+            sendingBotRelationIdNetMap: {
+              ...state.sendingBotRelationIdNetMap,
+              [network]: [...newSendingBotRelationIdNetMap],
+            },
+          };
+        } else {
+          return {
+            ...state,
+            sendingBotRelationIdNetMap: {
+              ...state.sendingBotRelationIdNetMap,
+            },
+          };
+        }
+      })
       .addCase(resetIm, (state, action) => {
         return {
           ...state,

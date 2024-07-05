@@ -70,7 +70,7 @@ export default function OfficialChatGroup() {
 
   return (
     <View style={styles.containerStyles}>
-      <TextM style={[FontStyles.neutralPrimaryTextColor, styles.title]}>Start Chat with</TextM>
+      <TextM style={[FontStyles.neutralPrimaryTextColor, styles.title]}>Engage in a chat</TextM>
       <View style={styles.itemWrap}>
         <View style={styles.itemAvatar}>
           <GroupAvatarShow logoSize={pTd(14)} avatarSize={pTd(48)} svgName="officialGroup2" />
@@ -80,7 +80,7 @@ export default function OfficialChatGroup() {
             Portkey Official
           </TextL>
           <TextS numberOfLines={1} style={[fonts.regularFont, FontStyles.neutralTertiaryText, styles.subTitle]}>
-            Official Group
+            Stay updated to the latest in Portkey
           </TextS>
         </View>
         <Touchable style={styles.chatButton} onPress={chatInOfficialGroup}>

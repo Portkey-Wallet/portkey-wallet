@@ -9,18 +9,16 @@ const KeyGenieDescription = () => {
   return (
     <View style={styles.container}>
       <View style={styles.section}>
-        <Text style={styles.header}>{t('About Key Genie')}</Text>
+        <Text style={styles.header}>{t('About KeyGenie')}</Text>
         <Text style={styles.bodyText}>
-          {t(
-            'You can chat with me to find more information! You can chat with me to find more information! You can chat with me to find more information!',
-          )}
+          {t('KeyGenie is your intelligent AI chat companion that elevates your chat experience in Portkey.')}
         </Text>
       </View>
       <View style={styles.section}>
-        <Text style={styles.header}>{t('What can KeyGenie do for you?')}</Text>
+        <Text style={styles.header}>{t('What can KeyGenie do')}</Text>
         <Text style={styles.bodyText}>
           {t(
-            'You can chat with me to find more information! You can chat with me to find more information! You can chat with me to find more information!',
+            'Whenever you want a chat or have questions, KeyGenie is here to offer enjoyable interactions and valuable information. Simply dive into a conversation to discover the intelligence and endless possibilities if offers.',
           )}
         </Text>
       </View>

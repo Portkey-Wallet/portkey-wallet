@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
   BubbleProps,
   DayProps,
@@ -40,6 +40,7 @@ import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca
 import CustomView from '../CustomView';
 import UnBlockButton from '../UnBlockButton';
 import { ChannelTypeEnum } from '@portkey-wallet/im';
+import ChatDetailsContext from 'pages/Chat/ChatDetailsPage/ChatDetailContext';
 
 const ListViewProps = {
   // windowSize: 50,
@@ -55,8 +56,9 @@ export default function ChatsDetailContent() {
   const currentChannelId = useCurrentChannelId();
   const dispatch = useChatsDispatch();
   const messageContainerRef = useRef<FlatList>();
+  const { isBot } = useContext(ChatDetailsContext);
 
-  const { list, init, next, hasNext, loading, info } = useChannel(currentChannelId || '', ChannelTypeEnum.P2P);
+  const { list, init, next, hasNext, loading, info } = useChannel(currentChannelId || '', ChannelTypeEnum.P2P, isBot);
   const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {

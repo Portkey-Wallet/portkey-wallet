@@ -4,7 +4,7 @@ import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
-import { IContactProfile } from '@portkey-wallet/types/types-ca/contact';
+import { ContactType, IContactProfile } from '@portkey-wallet/types/types-ca/contact';
 import CommonToast from 'components/CommonToast';
 import { TextM } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';
@@ -90,7 +90,9 @@ const ChatContactProfileEdit: React.FC = () => {
       scrollViewProps={{ disabled: true }}
       hideTouchable={true}>
       <ScrollView alwaysBounceVertical={true} style={pageStyles.contentWrap}>
-        <FormItem title={'Wallet Name'} style={GStyles.marginTop(24)}>
+        <FormItem
+          title={contact?.contactType === ContactType.ChatGptBot ? 'AI Chatbot Name' : 'Wallet Name'}
+          style={GStyles.marginTop(24)}>
           <TextM numberOfLines={1} style={pageStyles.walletName}>
             {contact?.caHolderInfo?.walletName || ''}
           </TextM>
@@ -103,7 +105,7 @@ const ChatContactProfileEdit: React.FC = () => {
             setRemark(v);
           }}
         />
-        <ProfileAddressSection disable addressList={contact?.addresses} />
+        {contact?.addresses && <ProfileAddressSection disable addressList={contact?.addresses} />}
         <ProfileLoginAccountsSection disable list={contact?.loginAccounts || []} />
       </ScrollView>
 

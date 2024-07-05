@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useCallback, useContext, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
@@ -28,6 +28,8 @@ import { showAssetList } from 'pages/DashBoard/AssetsOverlay';
 import im from '@portkey-wallet/im';
 import { useChannelItemInfo } from '@portkey-wallet/hooks/hooks-ca/im';
 import Loading from 'components/Loading';
+import ChatDetailsContext from 'pages/Chat/ChatDetailsPage/ChatDetailContext';
+import useBotSendingStatus from '@portkey-wallet/hooks/hooks-ca/im/useBotSendingStatus';
 
 export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType }) {
   const { t } = useLanguage();
@@ -39,6 +41,9 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
   const currentChannelId = useCurrentChannelId();
   const currentChannelInfo = useChannelItemInfo(currentChannelId || '');
   const { toRelationId } = currentChannelInfo || {};
+
+  const { displayName, isBot } = useContext(ChatDetailsContext);
+  const { canSend } = useBotSendingStatus(toRelationId || '');
 
   const showDialog = useCallback(
     () =>
@@ -101,10 +106,10 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
   }, [sendChannelImage]);
 
   const toolList = useMemo((): { label: string; icon: IconName; onPress: () => void }[] => {
-    return [
+    const list = [
       {
         label: 'Camera',
-        icon: 'chat-camera',
+        icon: 'chat-camera' as IconName,
         onPress: async () => {
           if (!(await requestQrPermission())) return showDialog();
           navigationService.navigate('ChatCameraPage');
@@ -112,13 +117,13 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
       },
       {
         label: 'Album',
-        icon: 'chat-album',
+        icon: 'chat-album' as IconName,
         onPress: selectPhoto,
       },
 
       {
         label: 'Bookmarks',
-        icon: 'chat-bookmark',
+        icon: 'chat-bookmark' as IconName,
         onPress: () =>
           BookmarkOverlay.showBookmarkList({
             onPressCallBack: async item => {
@@ -132,14 +137,14 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
       },
       {
         label: 'Crypto Box',
-        icon: 'send-red-packet-button',
+        icon: 'send-red-packet-button' as IconName,
         onPress: () => {
           navigationService.navigate(currentIsGroupChat ? 'SendPacketGroupPage' : 'SendPacketP2PPage');
         },
       },
       {
         label: 'Transfer',
-        icon: 'chat-transfer',
+        icon: 'chat-transfer' as IconName,
         onPress: async () => {
           if (currentChannel?.currentChannelType === 'P2P') {
             try {
@@ -167,10 +172,16 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
         },
       },
     ];
+    if (isBot) {
+      list.pop();
+      list.pop();
+    }
+    return list;
   }, [
     currentChannel?.currentChannelType,
     currentChannelId,
     currentIsGroupChat,
+    isBot,
     requestQrPermission,
     selectPhoto,
     sendChannelMessage,
@@ -184,7 +195,13 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
         <Touchable
           key={ele.label}
           style={[GStyles.center, styles.toolsItem, index % 4 === 3 && styles.marginRight0]}
-          onPress={ele.onPress}>
+          onPress={() => {
+            if (isBot && !canSend) {
+              CommonToast.message(displayName ? `${displayName} is replying...` : 'replying...');
+              return;
+            }
+            ele.onPress?.();
+          }}>
           <View style={[GStyles.center, styles.toolsItemIconWrap]}>
             <Svg icon={ele.icon} size={pTd(24)} color={defaultColors.font5} />
           </View>

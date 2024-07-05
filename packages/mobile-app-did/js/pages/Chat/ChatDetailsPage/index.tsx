@@ -35,6 +35,8 @@ import { measurePageY } from 'utils/measure';
 import { useIsFocused } from '@react-navigation/native';
 import { TabRouteNameEnum } from 'types/navigate';
 import FloatOverlay from 'components/FloatOverlay';
+import { ContactType } from '@portkey-wallet/types/types-ca/contact';
+import ChatDetailsContext from './ChatDetailContext';
 
 const ChatDetailsPage = () => {
   const dispatch = useAppCommonDispatch();
@@ -44,6 +46,7 @@ const ChatDetailsPage = () => {
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
   const addStranger = useAddStrangerContact();
+
   const currentChannelId = useCurrentChannelId();
   const currentChannelInfo = useChannelItemInfo(currentChannelId || '');
 
@@ -54,6 +57,10 @@ const ChatDetailsPage = () => {
   const avatar = useMemo(() => currentChannelInfo?.channelIcon, [currentChannelInfo?.channelIcon]);
   const pin = useMemo(() => currentChannelInfo?.pin, [currentChannelInfo?.pin]);
   const mute = useMemo(() => currentChannelInfo?.mute, [currentChannelInfo?.mute]);
+  const isBot = useMemo(
+    () => currentChannelInfo?.contactType === ContactType.ChatGptBot,
+    [currentChannelInfo?.contactType],
+  );
 
   const addContact = useLockCallback(async () => {
     try {
@@ -220,21 +227,23 @@ const ChatDetailsPage = () => {
   );
 
   return (
-    <PageContainer
-      noCenterDom
-      hideTouchable
-      safeAreaColor={['white', 'gray']}
-      scrollViewProps={{ disabled: true }}
-      containerStyles={styles.container}
-      leftDom={leftDom}
-      rightDom={
-        <Touchable style={[GStyles.marginRight(pTd(16))]} onPress={onPressMore}>
-          <Svg size={pTd(20)} icon="more" color={defaultColors.icon5} />
-        </Touchable>
-      }>
-      <FloatingActionButton shouldShowFirstTime={isStranger} onPressButton={addContact} />
-      <ChatsDetailContent />
-    </PageContainer>
+    <ChatDetailsContext.Provider value={{ toRelationId: toRelationId || '', isBot, displayName: displayName || '' }}>
+      <PageContainer
+        noCenterDom
+        hideTouchable
+        safeAreaColor={['white', 'gray']}
+        scrollViewProps={{ disabled: true }}
+        containerStyles={styles.container}
+        leftDom={leftDom}
+        rightDom={
+          <Touchable style={[GStyles.marginRight(pTd(16))]} onPress={onPressMore}>
+            <Svg size={pTd(20)} icon="more" color={defaultColors.icon5} />
+          </Touchable>
+        }>
+        <FloatingActionButton shouldShowFirstTime={isStranger} onPressButton={addContact} />
+        <ChatsDetailContent />
+      </PageContainer>
+    </ChatDetailsContext.Provider>
   );
 };
 

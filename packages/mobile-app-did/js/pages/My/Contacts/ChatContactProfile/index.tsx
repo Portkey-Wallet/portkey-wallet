@@ -3,7 +3,7 @@ import { GestureResponderEvent, ScrollView, StyleSheet, View } from 'react-nativ
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import navigationService from 'utils/navigationService';
-import { IContactProfile } from '@portkey-wallet/types/types-ca/contact';
+import { ContactType, IContactProfile } from '@portkey-wallet/types/types-ca/contact';
 import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
@@ -26,6 +26,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { showActionPopover } from 'pages/My/components/ActionOverlay';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { measurePageY } from 'utils/measure';
+import KeyGenieDescription from 'components/KeyGenieDescription';
 
 type RouterParams = {
   relationId?: string; // if relationId exist, we should fetch
@@ -162,6 +163,7 @@ const ContactProfile: React.FC = () => {
           remark={contactInfo?.name}
         />
         <ProfileHandleSection
+          isBot={contactInfo?.contactType === ContactType.ChatGptBot}
           isBlocked={isBlocked}
           isAdded={!isStranger}
           onPressAdded={addContact}
@@ -226,7 +228,8 @@ const ContactProfile: React.FC = () => {
             });
           }}
         />
-        <ProfileAddressSection addressList={contactInfo?.addresses || []} />
+        {contactInfo?.contactType === ContactType.ChatGptBot && <KeyGenieDescription />}
+        {contactInfo?.addresses && <ProfileAddressSection addressList={contactInfo?.addresses || []} />}
         <ProfileLoginAccountsSection list={contactInfo?.loginAccounts || []} />
         <View style={pageStyles.blank} />
       </ScrollView>

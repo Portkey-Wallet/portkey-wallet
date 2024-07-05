@@ -251,7 +251,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
   return (
     <>
       {type !== RedPackageTypeEnum.P2P && (
-        <FormItem title="Quantity of Crypto Box(es)">
+        <FormItem title={isCryptoGift ? 'Quantity of Crypto Gift(s)' : 'Quantity of Crypto Box(es)'}>
           <CommonInput
             type="general"
             placeholder="Enter quantity"

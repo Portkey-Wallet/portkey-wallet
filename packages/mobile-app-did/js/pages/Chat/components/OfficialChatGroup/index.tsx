@@ -70,15 +70,18 @@ export default function OfficialChatGroup() {
 
   return (
     <View style={styles.containerStyles}>
-      <TextM style={[FontStyles.font3, styles.title]}>Official Group</TextM>
+      <TextM style={[FontStyles.neutralPrimaryTextColor, styles.title]}>Engage in a chat</TextM>
       <View style={styles.itemWrap}>
         <View style={styles.itemAvatar}>
-          <GroupAvatarShow logoSize={pTd(14)} avatarSize={pTd(48)} svgName="officialGroup" />
+          <GroupAvatarShow logoSize={pTd(14)} avatarSize={pTd(48)} svgName="officialGroup2" />
         </View>
         <View style={styles.itemNameWrap}>
           <TextL numberOfLines={1} style={[fonts.mediumFont, FontStyles.font5]}>
-            Portkey Official Group
+            Portkey Official
           </TextL>
+          <TextS numberOfLines={1} style={[fonts.regularFont, FontStyles.neutralTertiaryText, styles.subTitle]}>
+            Stay updated to the latest in Portkey
+          </TextS>
         </View>
         <Touchable style={styles.chatButton} onPress={chatInOfficialGroup}>
           <TextS style={[FontStyles.font2, styles.chatText]}>Chat</TextS>
@@ -94,8 +97,11 @@ const styles = StyleSheet.create({
   },
   title: {
     marginTop: pTd(32),
-    marginLeft: pTd(20),
+    marginLeft: pTd(16),
     marginBottom: pTd(8),
+  },
+  subTitle: {
+    marginTop: pTd(2),
   },
   top: {
     ...GStyles.paddingArg(16, 20, 8),
@@ -107,7 +113,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    ...GStyles.paddingArg(0, 20),
+    ...GStyles.paddingArg(0, 16),
   },
   chatButton: {
     backgroundColor: defaultColors.bg5,

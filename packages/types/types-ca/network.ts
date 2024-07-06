@@ -29,6 +29,7 @@ export type NetworkItem = {
   eTransferUrl?: string;
   awakenUrl?: string;
   schrodingerUrl?: string;
+  sgrSchrodingerUrl?: string;
   eTransferCA?: {
     [x in ChainId]?: string;
   };

@@ -60,10 +60,19 @@ export enum OperationTypeEnum {
   revokeAccount = 12,
 }
 
+export interface ZKJwtAuthInfo {
+  identifierHash: string;
+  salt: string;
+  zkProof: string;
+  jwt: string;
+  nonce: string;
+}
+
 export interface VerifierInfo {
   verifierId: string;
   verificationDoc: string;
   signature: string;
+  zkJwtAuthInfo: ZKJwtAuthInfo;
 }
 
 export interface AuthenticationInfo {

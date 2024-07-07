@@ -11,7 +11,7 @@ import useScheme from 'hooks/useScheme';
 import useNotify from 'hooks/useNotifyAction';
 import randomNonce from '@portkey-wallet/utils/nonce';
 
-const INITIAL_STATE = {};
+const INITIAL_STATE = { googleAuthNonce: randomNonce() };
 const InterfaceContext = createContext<any>(INITIAL_STATE);
 
 export function useInterface(): [State, any] {
@@ -43,6 +43,9 @@ function reducer(state: State, { type, payload }: any) {
         }),
       });
     }
+    case InterfaceActions.updateGoogleAuthNonce: {
+      return Object.assign({}, state, { googleAuthNonce: randomNonce() });
+    }
     default: {
       const { destroy } = payload;
       if (destroy) return Object.assign({}, payload);
@@ -60,7 +63,7 @@ export default function Provider({ children }: { children: React.ReactNode }) {
     androidClientId: Config.GOOGLE_ANDROID_CLIENT_ID,
     shouldAutoExchangeCode: false,
     extraParams: {
-      nonce: randomNonce(),
+      nonce: state.googleAuthNonce,
     },
   });
   useScheme();

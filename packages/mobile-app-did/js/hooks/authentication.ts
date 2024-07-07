@@ -32,6 +32,7 @@ import {
   VerifyTokenParams,
   VerifyZKLoginParams,
 } from '@portkey-wallet/types/types-ca/authentication';
+import { ZKJwtAuthInfo } from '@portkey-wallet/types/verifier';
 import { onAndroidFacebookAuthentication, onTwitterAuthentication } from 'utils/authentication';
 import {
   TAppleAuthentication,
@@ -40,7 +41,6 @@ import {
   TVerifierAuthParams,
 } from 'types/authentication';
 import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
-import generateRandomNonce from '@portkey-wallet/utils/nonce';
 
 if (!isIOS) {
   GoogleSignin.configure({
@@ -311,8 +311,9 @@ export function useAuthenticationSign() {
 
 export function useVerifyZKLogin() {
   return useCallback(async (params: VerifyZKLoginParams) => {
-    const { jwt, salt, kid } = params;
+    const { jwt, salt, kid, nonce } = params;
     const proofParams = { jwt, salt };
+    console.log('aaaa proofParams : ', proofParams);
     const proofResult = await customFetch('https://zklogin-prover-sha256.aelf.dev/v1/prove', {
       method: 'POST',
       headers: {
@@ -326,7 +327,7 @@ export function useVerifyZKLogin() {
     const verifyParams = {
       identifierHash: proofResult.identifierHash,
       salt,
-      nonce: generateRandomNonce(),
+      nonce,
       kid,
       proof: proofResult.proof,
     };
@@ -341,13 +342,25 @@ export function useVerifyZKLogin() {
     });
 
     console.log('aaaa verifyResult : ', verifyResult);
-    return verifyResult;
+    if (verifyResult.valid) {
+      const zkJwtAuthInfo: ZKJwtAuthInfo = {
+        identifierHash: verifyParams.identifierHash,
+        salt: verifyParams.salt,
+        zkProof: verifyParams.proof,
+        jwt: jwt ?? '',
+        nonce: nonce ?? '',
+      };
+      return { zkJwtAuthInfo };
+    } else {
+      throw new Error('zkLogin verification failed');
+    }
   }, []);
 }
 
 export function useVerifyGoogleToken() {
   const { googleSign } = useGoogleAuthentication();
   const verifyZKLogin = useVerifyZKLogin();
+  const [{ googleAuthNonce }] = useInterface();
   return useCallback(
     async (params: VerifyTokenParams) => {
       let accessToken = params.accessToken;
@@ -365,24 +378,27 @@ export function useVerifyGoogleToken() {
         accessToken = userInfo?.accessToken;
         if (userInfo.user.id !== params.id) throw new Error('Account does not match your guardian');
       }
-      // const rst = await request.verify.verifyGoogleToken({
-      //   params: { ...params, accessToken },
-      // });
       const idTokenArr = params.idToken?.split('.') ?? [];
       const spilt1 = Buffer.from(idTokenArr[0], 'base64').toString('utf8');
       const { kid } = JSON.parse(spilt1) || {};
-      const rst = await verifyZKLogin({
-        jwt: accessToken,
-        salt: randomId(),
-        kid,
-      });
-      console.log('aaaa rst : ', rst);
-      return {
-        ...rst,
-        accessToken,
-      };
+      try {
+        const rst = await verifyZKLogin({
+          jwt: params.idToken,
+          salt: randomId(),
+          kid,
+          nonce: googleAuthNonce,
+        });
+        console.log('aaaa rst : ', rst);
+        return {
+          ...rst,
+          accessToken,
+        };
+      } catch (error) {
+        console.log('aaaa error : ', error);
+        throw error;
+      }
     },
-    [googleSign, verifyZKLogin],
+    [googleAuthNonce, googleSign, verifyZKLogin],
   );
 }
 

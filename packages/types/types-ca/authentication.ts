@@ -16,6 +16,7 @@ export type VerifyZKLoginParams = {
   jwt?: string;
   salt: string;
   kid: string;
+  nonce?: string;
 };
 
 export type ReportUnsetLoginGuardianProps = {

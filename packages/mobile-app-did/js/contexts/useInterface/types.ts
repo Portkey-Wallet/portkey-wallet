@@ -11,4 +11,5 @@ export type State = {
   googleRequest: any | null;
   response: AuthSessionResult | null;
   promptAsync: (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>;
+  googleAuthNonce: string;
 };

@@ -7,7 +7,7 @@ import CommonTopTab from 'components/CommonTopTab';
 import { DepositModalMap } from 'hooks/deposit';
 import navigationService from 'utils/navigationService';
 import { TabRouteNameEnum } from 'types/navigate';
-import { useAppBridgeButtonShow } from 'hooks/cms';
+import { useAppBridgeButtonShow, useAppNFTTabShow } from 'hooks/cms';
 
 export const TradeHomePage: React.FC = () => {
   const {
@@ -16,6 +16,7 @@ export const TradeHomePage: React.FC = () => {
     eForestUrl = 'https://www.eforest.finance',
   } = useCurrentNetworkInfo();
   const { isBridgeShow } = useAppBridgeButtonShow();
+  const { isNFTTabShow } = useAppNFTTabShow();
 
   const navBackToHome = useCallback(() => {
     navigationService.navigate('Tab');
@@ -67,9 +68,9 @@ export const TradeHomePage: React.FC = () => {
     };
     list.push(swapTabItem);
     if (isBridgeShow) list.push(bridgeTabItem);
-    list.push(NFTTabItem);
+    if (isNFTTabShow) list.push(NFTTabItem);
     return list;
-  }, [awakenUrl, eBridgeUrl, eForestUrl, isBridgeShow, navBackToHome]);
+  }, [awakenUrl, eBridgeUrl, eForestUrl, isBridgeShow, isNFTTabShow, navBackToHome]);
 
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.white]}>

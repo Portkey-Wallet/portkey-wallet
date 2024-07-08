@@ -8,7 +8,8 @@ export type IEntranceModuleName =
   | 'eTransDeposit'
   | 'eTransWithdraw'
   | 'swap'
-  | 'freeMintNft';
+  | 'freeMintNft'
+  | 'nft';
 export type IEntranceMatchKey = 'version' | 'installationTime' | 'deviceType';
 export type IEntranceMatchRuleType = 'String' | 'BigNumber' | 'Regex';
 

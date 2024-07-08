@@ -29,3 +29,5 @@ export const AI_CHAT_CONTENT_TIP = `KeyGenie is the AI chatbot designed to eleva
 export const KEY_GENIE_AVATAR_URL =
   'https://images.pexels.com/photos/26654753/pexels-photo-26654753.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2';
 export const KEY_GENIE_NAME = 'KeyGenie';
+
+export const KEY_GENIE_GREETINGS = 'Your intelligent AI chat companion';

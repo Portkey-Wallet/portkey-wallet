@@ -92,13 +92,19 @@ const ContactsList: React.FC<ContactsListProps> = ({
       }
     });
     if (isTransaction) {
-      console.log('_flashListData1', _flashListData.length);
       _flashListData = _flashListData.filter(item => {
-        const shouldFilter = !item.index && (item as ContactItemType).contactType === ContactType.ChatGptBot;
-        console.log('shouldFilter', shouldFilter);
+        let shouldFilter = false;
+        if ('contacts' in item) {
+          const originItem = item as ContactIndexType;
+          shouldFilter =
+            !!originItem.contacts &&
+            originItem.contacts.length === 1 &&
+            originItem.contacts[0].contactType === ContactType.ChatGptBot;
+        } else {
+          shouldFilter = (item as ContactItemType).contactType === ContactType.ChatGptBot;
+        }
         return !shouldFilter;
       });
-      console.log('_flashListData2', _flashListData.length);
     }
     return _flashListData;
   }, [isTransaction, justChatContact, list]);

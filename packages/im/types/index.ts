@@ -167,6 +167,7 @@ export type ChannelItem = {
   toRelationId?: string;
   redPackage?: RedPackageStatusInfo;
   contactType?: ContactType;
+  botChannel?: boolean;
 };
 
 export enum IMStatusEnum {

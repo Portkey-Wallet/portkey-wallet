@@ -14,7 +14,13 @@ import { checkEmail } from '@portkey-wallet/utils/check';
 import { useGuardiansInfo } from 'hooks/store';
 import { LOGIN_TYPE_LIST, T_LOGIN_TYPE_LIST_ITEM } from 'constants/misc';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
-import { ApprovalType, VerificationType, OperationTypeEnum, VerifierItem } from '@portkey-wallet/types/verifier';
+import {
+  ApprovalType,
+  VerificationType,
+  OperationTypeEnum,
+  VerifierItem,
+  zkLoginVerifierItem,
+} from '@portkey-wallet/types/verifier';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR, ErrorType } from '@portkey-wallet/constants/constants-ca/common';
 import GuardianTypeSelectOverlay from '../components/GuardianTypeSelectOverlay';
 import VerifierSelectOverlay from '../components/VerifierSelectOverlay';
@@ -24,7 +30,7 @@ import { FontStyles } from 'assets/theme/styles';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import useRouterParams, { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { LoginType, isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
 import { useAppDispatch } from 'store/hooks';
 import { setPreGuardianAction } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { VerifierImage } from 'pages/Guardian/components/VerifierImage';
@@ -108,6 +114,10 @@ const GuardianEdit: React.FC = () => {
     approveParams?.isDiscover && dispatch(changeDrawerOpenStatus(true));
   }, [approveParams?.isDiscover, dispatch, isFocused]);
   const lastOnEmitDapp = useLatestRef(onEmitDapp);
+  const isSelectedVerifierDisabled = useMemo(() => {
+    if (!selectedType) return true;
+    return isZKLoginSupported(selectedType.value);
+  }, [selectedType]);
 
   useEffectOnce(() => {
     return () => {
@@ -426,8 +436,13 @@ const GuardianEdit: React.FC = () => {
     (_type: TypeItemType) => {
       setSelectedType(_type);
       clearAccount();
+      if (isZKLoginSupported(_type.value)) {
+        setSelectedVerifier(zkLoginVerifierItem);
+      } else if (selectedVerifier?.id === zkLoginVerifierItem.id) {
+        setSelectedVerifier(undefined);
+      }
     },
-    [clearAccount],
+    [clearAccount, selectedVerifier?.id],
   );
 
   const onAppleSign = useCallback(async () => {
@@ -707,6 +722,7 @@ const GuardianEdit: React.FC = () => {
         <TextM style={pageStyles.titleLabel}>{'Verifier'}</TextM>
         <ListItem
           onPress={() => {
+            if (isSelectedVerifierDisabled) return;
             VerifierSelectOverlay.showList({
               id: selectedVerifier?.id,
               callBack: onChooseVerifier,

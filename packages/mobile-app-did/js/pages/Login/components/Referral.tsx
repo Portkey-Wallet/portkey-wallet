@@ -13,7 +13,7 @@ import { PageLoginType, PageType } from '../types';
 import TermsServiceButton from './TermsServiceButton';
 import Divider from 'components/Divider';
 import CommonToast from 'components/CommonToast';
-import { useAuthenticationSign, useVerifyZKLogin } from 'hooks/authentication';
+import { useAuthenticationSign } from 'hooks/authentication';
 import { LoginParams, useOnLogin } from 'hooks/login';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import Loading from 'components/Loading';
@@ -40,7 +40,6 @@ export function useLoginModeMap(
   onPhoneSign: () => void,
 ) {
   const authenticationSign = useAuthenticationSign();
-  const verifyZKLogin = useVerifyZKLogin();
   const onAppleSign = useLockCallback(async () => {
     const loadingKey = Loading.show();
     try {

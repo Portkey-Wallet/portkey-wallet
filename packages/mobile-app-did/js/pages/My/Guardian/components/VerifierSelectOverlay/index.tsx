@@ -10,7 +10,7 @@ import { useLanguage } from 'i18n/hooks';
 import { VerifierImage } from 'pages/Guardian/components/VerifierImage';
 import { ModalBody } from 'components/ModalBody';
 import { useGuardiansInfo } from 'hooks/store';
-import { VerifierItem } from '@portkey-wallet/types/verifier';
+import { VerifierItem, zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { defaultColors } from 'assets/theme';
 
@@ -31,6 +31,9 @@ const SelectList = ({ callBack, id, editGuardian }: SelectListProps) => {
     guardianList.forEach(item => {
       map[item.verifier?.id || ''] = true;
     });
+    if (!editGuardian) {
+      map[zkLoginVerifierItem.id] = true;
+    }
     return map;
   }, [editGuardian, userGuardiansList]);
 

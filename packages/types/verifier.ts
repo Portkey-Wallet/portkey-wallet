@@ -10,6 +10,12 @@ export interface VerifierItem {
   imageUrl: string;
 }
 
+export const zkLoginVerifierItem: VerifierItem = {
+  id: 'zkLogin',
+  name: 'zkLogin',
+  imageUrl: '', // todo_wade: add image url
+};
+
 // 0: register, 1: community recovery, 2: Add Guardian 3: Set LoginAccount 4: addManager
 export enum VerificationType {
   register,

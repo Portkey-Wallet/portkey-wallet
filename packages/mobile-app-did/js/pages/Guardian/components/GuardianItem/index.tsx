@@ -22,7 +22,7 @@ import {
 } from '@portkey-wallet/types/verifier';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { LOGIN_GUARDIAN_TYPE_ICON } from 'constants/misc';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { LoginType, isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
 import { VerifierImage } from '../VerifierImage';
 import { GuardiansStatus, GuardiansStatusItem } from 'pages/Guardian/types';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
@@ -257,6 +257,10 @@ export default function GuardianItem({
     return guardianItem.thirdPartyEmail || '';
   }, [guardianItem]);
 
+  const isVerifierReplacedByZk = useMemo(() => {
+    return isZKLoginSupported(guardianItem.guardianType) && !guardianItem.isUseZkVerifier;
+  }, [guardianItem.guardianType, guardianItem.isUseZkVerifier]);
+
   const renderGuardianAccount = useCallback(() => {
     return (
       <TextM
@@ -275,16 +279,23 @@ export default function GuardianItem({
         </View>
       )}
       <View style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flex1]}>
-        <View style={[GStyles.center, styles.loginTypeIconWrap]}>
-          <Svg icon={LOGIN_GUARDIAN_TYPE_ICON[guardianItem.guardianType]} size={pTd(18)} />
-        </View>
+        <View style={[GStyles.flexRowWrap, GStyles.itemCenter]}>
+          <View style={[GStyles.center, styles.loginTypeIconWrap]}>
+            <Svg icon={LOGIN_GUARDIAN_TYPE_ICON[guardianItem.guardianType]} size={pTd(18)} />
+          </View>
 
-        <VerifierImage
-          size={pTd(32)}
-          label={guardianItem?.verifier?.name}
-          uri={guardianItem.verifier?.imageUrl}
-          style={styles.iconStyle}
-        />
+          <VerifierImage
+            size={pTd(32)}
+            label={guardianItem?.verifier?.name}
+            uri={guardianItem.verifier?.imageUrl}
+            style={styles.iconStyle}
+          />
+          {isVerifierReplacedByZk && (
+            <View style={styles.zkLoginWaterMarkWrap}>
+              <Svg icon={'zklogin_watermark'} iconStyle={styles.zkLoginWaterMarkIcon} />
+            </View>
+          )}
+        </View>
         {renderGuardianAccount()}
       </View>
       {!isButtonHide && (
@@ -372,5 +383,14 @@ const styles = StyleSheet.create({
     width: pTd(32),
     height: pTd(32),
     borderRadius: pTd(16),
+  },
+  zkLoginWaterMarkWrap: {
+    position: 'absolute',
+    width: '100%',
+    bottom: pTd(-10), // todo_wade: fix position
+    alignItems: 'center',
+  },
+  zkLoginWaterMarkIcon: {
+    borderRadius: pTd(3),
   },
 });

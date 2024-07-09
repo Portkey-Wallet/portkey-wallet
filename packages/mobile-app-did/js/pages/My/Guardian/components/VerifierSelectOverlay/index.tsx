@@ -13,6 +13,7 @@ import { useGuardiansInfo } from 'hooks/store';
 import { VerifierItem, zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { defaultColors } from 'assets/theme';
+import { isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
 
 type SelectListProps = {
   id?: string;
@@ -31,8 +32,11 @@ const SelectList = ({ callBack, id, editGuardian }: SelectListProps) => {
     guardianList.forEach(item => {
       map[item.verifier?.id || ''] = true;
     });
-    if (!editGuardian) {
-      map[zkLoginVerifierItem.id] = true;
+    if (editGuardian) {
+      map[zkLoginVerifierItem.id] =
+        !isZKLoginSupported(editGuardian.guardianType) || (editGuardian.isUseZkVerifier ?? false);
+    } else {
+      map[zkLoginVerifierItem.id] = true; // zkLogin verifier can not be selected by user when add guardian
     }
     return map;
   }, [editGuardian, userGuardiansList]);

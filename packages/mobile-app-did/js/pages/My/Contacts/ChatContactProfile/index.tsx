@@ -229,7 +229,9 @@ const ContactProfile: React.FC = () => {
           }}
         />
         {contactInfo?.contactType === ContactType.ChatGptBot && <KeyGenieDescription />}
-        {contactInfo?.addresses && <ProfileAddressSection addressList={contactInfo?.addresses || []} />}
+        {contactInfo?.addresses && contactInfo?.addresses.length > 0 && (
+          <ProfileAddressSection addressList={contactInfo?.addresses || []} />
+        )}
         <ProfileLoginAccountsSection list={contactInfo?.loginAccounts || []} />
         <View style={pageStyles.blank} />
       </ScrollView>

@@ -41,6 +41,7 @@ import CustomView from '../CustomView';
 import UnBlockButton from '../UnBlockButton';
 import { ChannelTypeEnum } from '@portkey-wallet/im';
 import ChatDetailsContext from 'pages/Chat/ChatDetailsPage/ChatDetailContext';
+import useBotSendingStatus from '@portkey-wallet/hooks/hooks-ca/im/useBotSendingStatus';
 
 const ListViewProps = {
   // windowSize: 50,
@@ -60,6 +61,7 @@ export default function ChatsDetailContent() {
 
   const { list, init, next, hasNext, loading, info } = useChannel(currentChannelId || '', ChannelTypeEnum.P2P, isBot);
   const [initializing, setInitializing] = useState(true);
+  const { changeToRepliedStatus } = useBotSendingStatus(info?.toRelationId || '');
 
   useEffect(() => {
     if (!initializing && !loading) return;
@@ -74,6 +76,12 @@ export default function ChatsDetailContent() {
   const { relationId } = useRelationId();
   const user = useMemo(() => ({ _id: relationId || '' }), [relationId]);
   const { isBlocked } = useBlockAndReport(info?.toRelationId || '');
+  const lastMessage = useMemo(() => formattedList[0], [formattedList]);
+  useEffect(() => {
+    if (!!lastMessage && !lastMessage?.isOwner) {
+      changeToRepliedStatus();
+    }
+  }, [changeToRepliedStatus, info?.toRelationId, lastMessage, lastMessage?.isOwner]);
 
   const onLoadEarlier = useLockCallback(async () => {
     try {

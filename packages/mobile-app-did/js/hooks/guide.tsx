@@ -60,12 +60,21 @@ export function useJoinOfficialGroupAndAiChatTipModal() {
       const res = await getGuideItem([GuideTypeEnum.FinishAiChat]);
       const targetGuide = res?.find((_guide: TGuideInfoRes) => _guide.guideType === GuideTypeEnum.FinishAiChat);
       if (targetGuide) {
-        return !!targetGuide.status;
+        return {
+          status: !!targetGuide.status,
+          relationId: targetGuide.externalMap?.relationId,
+          name: targetGuide.externalMap?.name,
+          avatar: targetGuide.externalMap?.avatar,
+        };
       }
-      return true;
+      return {
+        status: true,
+      };
     } catch (error) {
       console.log('===getGuideItem error', error);
-      return true;
+      return {
+        status: true,
+      };
     }
   }, [getGuideItem]);
 
@@ -111,14 +120,13 @@ export function useJoinOfficialGroupAndAiChatTipModal() {
     const aiChatStatus = await hasShownAiChatTip();
     console.log('===showJoinOfficialGroupTip', status);
     const type =
-      !status && !aiChatStatus
+      !status && !aiChatStatus?.status
         ? ModalType.JoinGroup_And_AiChat
         : !status
         ? ModalType.JoinGroup
         : !aiChatStatus
         ? ModalType.AiChat
         : ModalType.None;
-    // const type = ModalType.AiChat;
     if (type === ModalType.JoinGroup || type === ModalType.JoinGroup_And_AiChat) {
       handleCancel();
       if (type === ModalType.JoinGroup_And_AiChat) {
@@ -146,9 +154,9 @@ export function useJoinOfficialGroupAndAiChatTipModal() {
         message2: (
           <View style={styles.outerContainer}>
             <View style={styles.innerContainer}>
-              <CommonAvatar imageUrl={KEYGENIE_AVATAR_URL} resizeMode="cover" />
+              <CommonAvatar imageUrl={aiChatStatus?.avatar || KEYGENIE_AVATAR_URL} resizeMode="cover" />
               <View style={styles.textContainer}>
-                <TextL style={[fonts.mediumFont, styles.title]}>{t('KeyGenie')}</TextL>
+                <TextL style={[fonts.mediumFont, styles.title]}>{t(aiChatStatus?.name || 'KeyGenie')}</TextL>
                 <TextS style={[fonts.regularFont, styles.subtitle]}>{t('AI Chat - New Chat Experience')}</TextS>
               </View>
             </View>

@@ -81,7 +81,7 @@ const ChatContactProfileEdit: React.FC = () => {
       ],
     });
   }, [contact, deleteContact, t]);
-
+  console.log('wfs 22222', contact);
   return (
     <PageContainer
       titleDom={'Edit Contact'}
@@ -94,7 +94,9 @@ const ChatContactProfileEdit: React.FC = () => {
           title={contact?.contactType === ContactType.ChatGptBot ? 'AI Chatbot Name' : 'Wallet Name'}
           style={GStyles.marginTop(24)}>
           <TextM numberOfLines={1} style={pageStyles.walletName}>
-            {contact?.caHolderInfo?.walletName || ''}
+            {contact?.contactType === ContactType.ChatGptBot
+              ? contact.imInfo?.name
+              : contact?.caHolderInfo?.walletName || ''}
           </TextM>
         </FormItem>
         <ProfileRemarkSection

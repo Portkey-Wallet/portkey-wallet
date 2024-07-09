@@ -135,6 +135,7 @@ export const useCreateP2pChannel = () => {
       });
 
       const channelUuid = result.data.channelUuid;
+      const botChannel = result.data.botChannel;
       channel = {
         status: ChannelStatusEnum.NORMAL,
         channelUuid,
@@ -150,6 +151,7 @@ export const useCreateP2pChannel = () => {
         pin: false,
         pinAt: '0',
         toRelationId: relationId,
+        botChannel: botChannel,
       };
       dispatch(
         addChannel({

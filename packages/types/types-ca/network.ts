@@ -27,8 +27,10 @@ export type NetworkItem = {
   imS3Bucket?: string;
   eBridgeUrl?: string;
   eTransferUrl?: string;
+  eForestUrl?: string;
   awakenUrl?: string;
   schrodingerUrl?: string;
+  sgrSchrodingerUrl?: string;
   eTransferCA?: {
     [x in ChainId]?: string;
   };

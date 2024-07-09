@@ -13,6 +13,7 @@ import {
   ADD_AI_CHAT_ERROR_TIP,
   GuideTypeEnum,
   KEY_GENIE_AVATAR_URL,
+  KEY_GENIE_GREETINGS,
   KEY_GENIE_NAME,
 } from '@portkey-wallet/constants/constants-ca/guide';
 import CommonToast from 'components/CommonToast';
@@ -58,7 +59,7 @@ export default function KeyGenieChat() {
   const checkIsChatToKeyGenie = useCallback(async () => {
     try {
       const res = await getGuideItem([GuideTypeEnum.AiChat]);
-      const target = res?.find((_r: TGuideInfoRes) => _r.guideType === GuideTypeEnum.JoinOfficialGroup);
+      const target = res?.find((_r: TGuideInfoRes) => _r.guideType === GuideTypeEnum.AiChat);
       let status = true;
       if (target) {
         status = !!target.status;
@@ -68,6 +69,7 @@ export default function KeyGenieChat() {
           avatar: target.externalMap?.avatar,
         };
       }
+      console.log('wfs===checkIsChatToKeyGenie', 'status', status, 'res', JSON.stringify(res));
       setIsChatToKeyGenie(status);
     } catch (error) {
       console.log('===Failed to get guide info error', error);
@@ -77,7 +79,7 @@ export default function KeyGenieChat() {
   useEffect(() => {
     checkIsChatToKeyGenie();
   }, [checkIsChatToKeyGenie]);
-
+  console.log('isChatToKeyGenie', isChatToKeyGenie);
   if (isChatToKeyGenie) return null;
 
   return (
@@ -97,7 +99,7 @@ export default function KeyGenieChat() {
           <AIChatMark />
         </View>
         <TextS numberOfLines={1} style={[fonts.regularFont, FontStyles.neutralTertiaryText, styles.subTitle]}>
-          {t('Your intelligent AI chat companion')}
+          {t(KEY_GENIE_GREETINGS)}
         </TextS>
       </View>
       <Touchable style={styles.chatButton} onPress={chatToKeyGenie}>

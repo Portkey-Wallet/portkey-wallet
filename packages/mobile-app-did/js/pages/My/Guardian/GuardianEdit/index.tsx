@@ -115,7 +115,7 @@ const GuardianEdit: React.FC = () => {
   }, [approveParams?.isDiscover, dispatch, isFocused]);
   const lastOnEmitDapp = useLatestRef(onEmitDapp);
   const isSelectedVerifierDisabled = useMemo(() => {
-    if (!selectedType) return true;
+    if (!selectedType) return false;
     if (isEdit) {
       return isZKLoginSupported(selectedType.value) && editGuardian?.isUseZkVerifier;
     } else {

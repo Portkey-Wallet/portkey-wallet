@@ -41,6 +41,8 @@ import {
   TVerifierAuthParams,
 } from 'types/authentication';
 import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
+import generateRandomNonce from '@portkey-wallet/utils/nonce';
+import AElf from 'aelf-sdk';
 
 if (!isIOS) {
   GoogleSignin.configure({
@@ -132,6 +134,7 @@ export function useAppleAuthentication() {
   const [response, setResponse] = useState<TAppleAuthentication>();
   const [androidResponse, setAndroidResponse] = useState<TAppleAuthentication>();
   const isMainnet = useIsMainnet();
+  const [nonce] = useState(generateRandomNonce());
 
   useEffect(() => {
     if (isIOS) return;
@@ -140,8 +143,9 @@ export function useAppleAuthentication() {
       redirectUri: isMainnet ? Config.APPLE_MAIN_REDIRECT_URI : Config.APPLE_TESTNET_REDIRECT_URI,
       scope: appleAuthAndroid.Scope.ALL,
       responseType: appleAuthAndroid.ResponseType.ALL,
+      nonce,
     });
-  }, [isMainnet]);
+  }, [isMainnet, nonce]);
 
   const iosPromptAsync = useCallback(async () => {
     setResponse(undefined);
@@ -149,6 +153,7 @@ export function useAppleAuthentication() {
       const appleInfo = await appleAuth.performRequest({
         requestedOperation: appleAuth.Operation.LOGIN,
         requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+        nonce,
       });
 
       const user = parseAppleIdentityToken(appleInfo.identityToken);
@@ -170,7 +175,11 @@ export function useAppleAuthentication() {
           console.log(error, '======error');
         }
       }
-      const userInfo = { ...appleInfo, user: { ...user, id: user?.userId } } as TAppleAuthentication;
+      const userInfo = {
+        ...appleInfo,
+        user: { ...user, id: user?.userId },
+        nonce: AElf.utils.sha256(appleInfo.nonce),
+      } as TAppleAuthentication;
       setResponse(userInfo);
       return userInfo;
     } catch (error: any) {
@@ -180,7 +189,7 @@ export function useAppleAuthentication() {
       // : 'It seems that the authorization with your Apple ID has failed.';
       throw { ...error, message };
     }
-  }, []);
+  }, [nonce]);
 
   const androidPromptAsync = useCallback(async () => {
     setAndroidResponse(undefined);
@@ -212,6 +221,7 @@ export function useAppleAuthentication() {
           familyName: appleInfo.user?.name?.lastName,
         },
         user: { ...user, id: user?.userId },
+        nonce: AElf.utils.sha256(appleInfo.nonce),
       } as TAppleAuthentication;
       setAndroidResponse(userInfo);
       return userInfo;

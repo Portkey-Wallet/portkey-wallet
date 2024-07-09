@@ -22,6 +22,7 @@ const AwakenUrlList = NetworkList.map(i => i.awakenUrl).filter(i => !!i) as stri
 const SchrodingerList = NetworkList.map(i => i.schrodingerUrl).filter(i => !!i) as string[];
 const SGRSchrodingerList = NetworkList.map(i => i.sgrSchrodingerUrl).filter(i => !!i) as string[];
 const ReferralList = NetworkList.map(i => i.referralUrl).filter(i => !!i) as string[];
+const ForestUrlList = NetworkList.map(i => i.eForestUrl).filter(i => !!i) as string[];
 
 export const DAPP_WHITELIST: string[] = [
   ...EBridgeList,
@@ -30,6 +31,7 @@ export const DAPP_WHITELIST: string[] = [
   ...SchrodingerList,
   ...SGRSchrodingerList,
   ...ReferralList,
+  ...ForestUrlList,
 ];
 
 export const LinkPortkeyWebsite = OfficialWebsite;

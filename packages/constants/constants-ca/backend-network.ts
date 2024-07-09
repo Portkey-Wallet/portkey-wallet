@@ -186,6 +186,7 @@ export const BackEndNetWorkMap: {
     eTransferUrl: 'https://test.etransfer.exchange',
     awakenUrl: 'https://test.awaken.finance',
     schrodingerUrl: 'https://schrodingerai.com',
+    eForestUrl: 'https://test.eforest.finance',
     sgrSchrodingerUrl: 'https://sgr.schrodingerai.com',
   },
   'back-end-testnet': {
@@ -276,6 +277,7 @@ export const BackEndNetWorkMap: {
     },
     awakenUrl: 'https://awaken.finance',
     schrodingerUrl: 'https://schrodingernft.ai',
+    eForestUrl: 'https://www.eforest.finance',
     sgrSchrodingerUrl: 'https://sgr.schrodingernft.ai',
   },
 };

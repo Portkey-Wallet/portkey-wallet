@@ -146,14 +146,16 @@ export function useJoinOfficialGroupAndAiChatTipModal() {
       avatar: aiChatStatus?.avatar,
     };
     console.log('===showJoinOfficialGroupTip', status);
+    console.log('===aiChatStatus', aiChatStatus?.status);
     const type =
       !status && !aiChatStatus?.status
         ? ModalType.JoinGroup_And_AiChat
         : !status
         ? ModalType.JoinGroup
-        : !aiChatStatus
+        : !aiChatStatus?.status
         ? ModalType.AiChat
         : ModalType.None;
+    console.log('===type', type);
     if (type === ModalType.JoinGroup || type === ModalType.JoinGroup_And_AiChat) {
       handleCancel();
       if (type === ModalType.JoinGroup_And_AiChat) {

@@ -107,7 +107,9 @@ const ChatContactProfileEdit: React.FC = () => {
             setRemark(v);
           }}
         />
-        {contact?.addresses && <ProfileAddressSection disable addressList={contact?.addresses} />}
+        {contact?.addresses && contact?.addresses.length > 0 && (
+          <ProfileAddressSection disable addressList={contact?.addresses} />
+        )}
         <ProfileLoginAccountsSection disable list={contact?.loginAccounts || []} />
       </ScrollView>
 

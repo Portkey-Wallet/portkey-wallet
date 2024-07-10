@@ -44,6 +44,7 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
 
   const { displayName, isBot } = useContext(ChatDetailsContext);
   const { canSend } = useBotSendingStatus(toRelationId || '');
+  const { changeToRepliedStatus } = useBotSendingStatus(toRelationId || '');
 
   const showDialog = useCallback(
     () =>
@@ -93,7 +94,16 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
             title: 'Send',
             type: 'primary',
             onPress: async () => {
-              await sendChannelImage(result);
+              try {
+                await sendChannelImage(result);
+              } catch (error) {
+                if (isBot) {
+                  console.log('removeBotSending===sendChannelImage', error);
+                  changeToRepliedStatus();
+                }
+                console.log(error);
+                CommonToast.fail('Failed to send message');
+              }
             },
           },
         ],
@@ -103,7 +113,7 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
     } finally {
       changeCanLock(true);
     }
-  }, [sendChannelImage]);
+  }, [changeToRepliedStatus, isBot, sendChannelImage]);
 
   const toolList = useMemo((): { label: string; icon: IconName; onPress: () => void }[] => {
     const list = [
@@ -129,9 +139,18 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
             onPressCallBack: async item => {
               OverlayModal.hide();
               await sleep(200);
-              sendChannelMessage({
-                content: item.url,
-              });
+              try {
+                await sendChannelMessage({
+                  content: item.url,
+                });
+              } catch (error) {
+                if (isBot) {
+                  console.log('removeBotSending===sendChannelMessage', error);
+                  changeToRepliedStatus();
+                }
+                console.log(error);
+                CommonToast.fail('Failed to send message');
+              }
             },
           }),
       },
@@ -197,7 +216,7 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
           style={[GStyles.center, styles.toolsItem, index % 4 === 3 && styles.marginRight0]}
           onPress={() => {
             if (isBot && !canSend) {
-              CommonToast.message(displayName ? `${displayName} is replying...` : 'replying...');
+              CommonToast.message(displayName ? `${displayName} is replying...` : 'replying...', 2000, 'center');
               return;
             }
             ele.onPress?.();

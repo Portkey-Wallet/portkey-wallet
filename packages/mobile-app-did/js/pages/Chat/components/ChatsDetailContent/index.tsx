@@ -78,7 +78,7 @@ export default function ChatsDetailContent() {
   const { isBlocked } = useBlockAndReport(info?.toRelationId || '');
   const lastMessage = useMemo(() => formattedList[0], [formattedList]);
   useEffect(() => {
-    if (!!lastMessage && !lastMessage?.isOwner) {
+    if (!!lastMessage && lastMessage?.isOwner !== undefined && !lastMessage?.isOwner) {
       changeToRepliedStatus();
     }
   }, [changeToRepliedStatus, info?.toRelationId, lastMessage, lastMessage?.isOwner]);

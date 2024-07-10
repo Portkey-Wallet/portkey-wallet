@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
@@ -16,6 +16,9 @@ import { useSendCurrentChannelMessage } from '../components/hooks';
 import CommonToast from 'components/CommonToast';
 import ActionSheet from 'components/ActionSheet';
 import { useLanguage } from 'i18n/hooks';
+import useBotSendingStatus from '@portkey-wallet/hooks/hooks-ca/im/useBotSendingStatus';
+import { useCurrentChannelId } from '../context/hooks';
+import { useChannelItemInfo } from '@portkey-wallet/hooks/hooks-ca/im';
 
 const ChatCameraPage: React.FC = () => {
   const cameraRef = useRef<Camera>(null);
@@ -23,7 +26,11 @@ const ChatCameraPage: React.FC = () => {
   const [img, setImgUrl] = useState<CameraCapturedPicture>();
   const [, requestCameraPermission] = Camera.useCameraPermissions();
   const { sendChannelImage } = useSendCurrentChannelMessage();
+  const currentChannelId = useCurrentChannelId();
+  const currentChannelInfo = useChannelItemInfo(currentChannelId || '');
   const { t } = useLanguage();
+  const { changeToRepliedStatus } = useBotSendingStatus(currentChannelInfo?.toRelationId || '');
+  const isBot = useMemo(() => currentChannelInfo?.botChannel, [currentChannelInfo?.botChannel]);
 
   const showDialog = useCallback(
     () =>
@@ -118,6 +125,9 @@ const ChatCameraPage: React.FC = () => {
                   await sendChannelImage(img);
                   navigationService.goBack();
                 } catch (error) {
+                  if (isBot) {
+                    changeToRepliedStatus();
+                  }
                   console.log(error);
                   CommonToast.fail('Failed to send message');
                 } finally {

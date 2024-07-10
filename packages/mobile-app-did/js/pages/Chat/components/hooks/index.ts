@@ -14,6 +14,7 @@ import { formatRNImage } from '@portkey-wallet/utils/s3';
 import { bindUriToLocalImage } from 'utils/fs/img';
 import s3Instance from '@portkey-wallet/utils/s3';
 import { pTd } from 'utils/unit';
+import useBotSendingStatus from '@portkey-wallet/hooks/hooks-ca/im/useBotSendingStatus';
 
 export const TopSpacing = isIOS ? bottomBarHeight : isXiaoMi ? Math.max(-bottomBarHeight, -10) : 0;
 
@@ -68,16 +69,21 @@ export function useSendCurrentChannelMessage() {
   const currentChannelId = useCurrentChannelId();
   const currentChannelInfo = useChannelItemInfo(currentChannelId || '');
   const { sendMessageToPeople, sendChannelMessage, sendChannelImageByS3Result } = useSendChannelMessage();
-
+  const { changeToSendingStatus } = useBotSendingStatus(currentChannelInfo?.toRelationId || '');
+  const isBot = useMemo(() => currentChannelInfo?.botChannel, [currentChannelInfo?.botChannel]);
   return useMemo(
     () => ({
-      sendMessageToPeople: ({ type, content }: { content: string; type?: MessageType }) =>
-        sendMessageToPeople({
+      sendMessageToPeople: ({ type, content }: { content: string; type?: MessageType }) => {
+        if (isBot) {
+          changeToSendingStatus();
+        }
+        return sendMessageToPeople({
           toRelationId: currentChannelInfo?.toRelationId,
           channelId: currentChannelId || '',
           content,
           type,
-        }),
+        });
+      },
       sendChannelMessage: ({
         content,
         type,
@@ -86,14 +92,21 @@ export function useSendCurrentChannelMessage() {
         content: string;
         type?: MessageType;
         quoteMessage?: Message;
-      }) =>
-        sendChannelMessage({
+      }) => {
+        if (isBot) {
+          changeToSendingStatus();
+        }
+        return sendChannelMessage({
           channelId: currentChannelId || '',
           content,
           type,
           quoteMessage,
-        }),
+        });
+      },
       sendChannelImage: async (file: { uri: string; width: number; height: number }) => {
+        if (isBot) {
+          changeToSendingStatus();
+        }
         const fileBase64 = await readFile(file.uri, { encoding: 'base64' });
         const data = formatRNImage(file, fileBase64);
         const s3Result = await s3Instance.uploadFile({
@@ -110,8 +123,10 @@ export function useSendCurrentChannelMessage() {
       },
     }),
     [
+      changeToSendingStatus,
       currentChannelId,
       currentChannelInfo?.toRelationId,
+      isBot,
       sendChannelImageByS3Result,
       sendChannelMessage,
       sendMessageToPeople,

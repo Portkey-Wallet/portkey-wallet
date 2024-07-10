@@ -1,5 +1,5 @@
 import Svg from 'components/Svg';
-import React, { ReactNode, memo, useCallback, useContext, useEffect, useRef } from 'react';
+import React, { ReactNode, useCallback, useContext, useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Actions } from 'react-native-gifted-chat';
 import { pTd } from 'utils/unit';
@@ -69,7 +69,7 @@ export function BottomBarContainer({
   const { currentChannelType } = useCurrentChannel() || {};
 
   const { toRelationId, displayName, isBot } = useContext(ChatDetailsContext);
-  const { canSend, changeToSendingStatus, changeToRepliedStatus } = useBotSendingStatus(toRelationId);
+  const { canSend, changeToRepliedStatus } = useBotSendingStatus(toRelationId);
   const inputFocus = useCallback(
     (autoHide?: boolean) => {
       textInputRef.current?.focus(autoHide);
@@ -84,7 +84,7 @@ export function BottomBarContainer({
   const onPressActionButton = useCallback(
     (status: ChatBottomBarStatus) => {
       if (status === ChatBottomBarStatus.tools && isBot && !canSend) {
-        CommonToast.message(displayName ? `${displayName} is replying...` : 'replying...');
+        CommonToast.message(displayName ? `${displayName} is replying...` : 'replying...', 2000, 'center');
         return;
       }
       if (bottomBarStatus === status) {
@@ -112,7 +112,7 @@ export function BottomBarContainer({
 
   const onSend = useCallback(async () => {
     if (isBot && !canSend) {
-      CommonToast.message(displayName ? `${displayName} is replying...` : 'replying...');
+      CommonToast.message(displayName ? `${displayName} is replying...` : 'replying...', 2000, 'center');
       return;
     }
     dispatch(setChatText(''));
@@ -122,9 +122,6 @@ export function BottomBarContainer({
     try {
       scrollToBottom?.();
       if (typeof text === 'string') {
-        if (isBot) {
-          changeToSendingStatus();
-        }
         currentChannelType === 'Group'
           ? await sendChannelMessage({
               content: text.trim(),
@@ -156,7 +153,7 @@ export function BottomBarContainer({
     }
   }, [
     canSend,
-    changeToSendingStatus,
+    changeToRepliedStatus,
     currentChannelType,
     dispatch,
     displayName,

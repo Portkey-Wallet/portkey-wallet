@@ -1,4 +1,4 @@
-import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { ContactItemType, ContactType } from '@portkey-wallet/types/types-ca/contact';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
@@ -6,6 +6,7 @@ import CommonAvatar from 'components/CommonAvatar';
 import { TextL, TextS } from 'components/CommonText';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
+import AIChatMark from 'pages/Chat/components/AIChatMark';
 import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
@@ -37,9 +38,12 @@ const ContactItem: React.FC<ItemType> = props => {
           />
         </View>
         <View style={styles.itemNameWrap}>
-          <TextL numberOfLines={1} style={FontStyles.font5}>
-            {contact?.name || contact?.caHolderInfo?.walletName || contact.imInfo?.name}
-          </TextL>
+          <View style={GStyles.flexRow}>
+            <TextL numberOfLines={1} style={FontStyles.font5}>
+              {contact?.name || contact?.caHolderInfo?.walletName || contact.imInfo?.name}
+            </TextL>
+            {contact?.contactType === ContactType.ChatGptBot && <AIChatMark />}
+          </View>
           {isShowContactIcon && (
             <View style={[GStyles.marginTop(pTd(2)), GStyles.flexRow, styles.contactIconWrap]}>
               <Svg icon="chat-added" size={pTd(14)} color={defaultColors.primaryColor} />

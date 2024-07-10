@@ -62,7 +62,7 @@ export default function Home() {
     fetchAndSetBlockList();
   });
   initIm();
-  console.log('wallet data', JSON.stringify(store.getState().wallet));
+
   return (
     <div className={clsx(['portkey-home', 'flex-column', isPrompt && 'portkey-prompt'])}>
       {isPrompt && isNotLessThan768 ? (

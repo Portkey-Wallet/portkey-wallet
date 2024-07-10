@@ -6,7 +6,6 @@ export const getContactList = (
   baseURL: string,
   { page, size, modificationTime, keyword }: IGetContactListParams,
 ): Promise<GetContractListApiType> => {
-  console.log('wfs==getContactList');
   return request.es.getContactList({
     baseURL,
     params: {
@@ -24,7 +23,6 @@ export const getContactEventList = (
   baseURL: string,
   { page, size, modificationTime, fetchTime, keyword }: IGetContactListParams & { fetchTime: string },
 ): Promise<GetContractListApiType> => {
-  console.log('wfs==getContactEventList');
   return request.es.getContactList({
     baseURL,
     params: {

@@ -7,11 +7,16 @@ import CommonTopTab from 'components/CommonTopTab';
 import { DepositModalMap } from 'hooks/deposit';
 import navigationService from 'utils/navigationService';
 import { TabRouteNameEnum } from 'types/navigate';
-import { useAppBridgeButtonShow } from 'hooks/cms';
+import { useAppBridgeButtonShow, useAppNFTTabShow } from 'hooks/cms';
 
 export const TradeHomePage: React.FC = () => {
-  const { awakenUrl = 'https://awaken.finance/', eBridgeUrl = 'https://ebridge.exchange' } = useCurrentNetworkInfo();
+  const {
+    awakenUrl = 'https://awaken.finance/',
+    eBridgeUrl = 'https://ebridge.exchange',
+    eForestUrl = 'https://www.eforest.finance',
+  } = useCurrentNetworkInfo();
   const { isBridgeShow } = useAppBridgeButtonShow();
+  const { isNFTTabShow } = useAppNFTTabShow();
 
   const navBackToHome = useCallback(() => {
     navigationService.navigate('Tab');
@@ -48,11 +53,24 @@ export const TradeHomePage: React.FC = () => {
         />
       ),
     };
+    const NFTTabItem = {
+      name: 'NFT',
+      tabItemDom: (
+        <ProviderWebPageComponent
+          needInnerDisclaimerCheck
+          title={DepositModalMap.eForest.title}
+          url={eForestUrl + '/collections'}
+          icon={DepositModalMap.eForest.icon}
+          disclaimerInfo={DepositModalMap.eForest}
+          disclaimerCheckFailCallBack={navBackToHome}
+        />
+      ),
+    };
     list.push(swapTabItem);
     if (isBridgeShow) list.push(bridgeTabItem);
-
+    if (isNFTTabShow) list.push(NFTTabItem);
     return list;
-  }, [awakenUrl, eBridgeUrl, isBridgeShow, navBackToHome]);
+  }, [awakenUrl, eBridgeUrl, eForestUrl, isBridgeShow, isNFTTabShow, navBackToHome]);
 
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.white]}>

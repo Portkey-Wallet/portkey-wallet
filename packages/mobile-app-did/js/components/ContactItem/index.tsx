@@ -22,7 +22,7 @@ export interface ItemType {
 
 const ContactItem: React.FC<ItemType> = props => {
   const { isShowChat = false, isShowWarning, isShowContactIcon = false, contact, onPress, onPressChat } = props;
-  console.log('wfs contact===', contact.name);
+
   return (
     <Touchable onPress={() => onPress?.(contact)}>
       <View style={styles.itemWrap}>

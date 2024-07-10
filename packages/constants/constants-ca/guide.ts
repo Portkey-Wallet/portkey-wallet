@@ -27,7 +27,7 @@ export const AI_CHAT_ADDITION_CONTENT_TIP =
 export const AI_CHAT_CONTENT_TIP = `KeyGenie is the AI chatbot designed to elevate your chat experience in Portkey. Whether you're engaging in conversation or asking questions, you'll be amazed by the intelligent responses and boundless capabilities.`;
 
 export const KEY_GENIE_AVATAR_URL =
-  'https://images.pexels.com/photos/26654753/pexels-photo-26654753.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2';
+  'https://portkey-im-testnet.s3.ap-northeast-1.amazonaws.com/68f847fd3df04c7fafce10bd56c86345-1720164020093';
 export const KEY_GENIE_NAME = 'KeyGenie';
 
 export const KEY_GENIE_GREETINGS = 'Your intelligent AI chat companion';

@@ -73,7 +73,7 @@ export default function OfficialChatGroup() {
       <TextM style={[FontStyles.neutralPrimaryTextColor, styles.title]}>Engage in a chat</TextM>
       <View style={styles.itemWrap}>
         <View style={styles.itemAvatar}>
-          <GroupAvatarShow logoSize={pTd(14)} avatarSize={pTd(48)} svgName="officialGroup2" />
+          <GroupAvatarShow logoSize={pTd(14)} avatarSize={pTd(48)} svgName="officialGroup" />
         </View>
         <View style={styles.itemNameWrap}>
           <TextL numberOfLines={1} style={[fonts.mediumFont, FontStyles.font5]}>

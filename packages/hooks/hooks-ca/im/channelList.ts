@@ -95,7 +95,7 @@ export const useChannelList = () => {
 
   const rawList = useMemo(() => channelListNetMap?.[networkType]?.list || [], [channelListNetMap, networkType]);
 
-  const list = useMemo(() => rawList.filter(item => !!item.lastPostAt), [rawList]);
+  const list = useMemo(() => rawList.filter(item => !!item.lastPostAt || item.isInit), [rawList]);
 
   const init = useCallback(() => {
     return next(true);

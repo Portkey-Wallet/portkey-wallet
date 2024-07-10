@@ -69,9 +69,7 @@ export function BottomBarContainer({
   const { currentChannelType } = useCurrentChannel() || {};
 
   const { toRelationId, displayName, isBot } = useContext(ChatDetailsContext);
-  console.log('wfs ChatDetailsContext===', useContext(ChatDetailsContext));
   const { canSend, changeToSendingStatus } = useBotSendingStatus(toRelationId);
-  console.log('wfs canSend===', canSend);
   const inputFocus = useCallback(
     (autoHide?: boolean) => {
       textInputRef.current?.focus(autoHide);

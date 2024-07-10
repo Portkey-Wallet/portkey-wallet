@@ -11,7 +11,8 @@ import {
   ADD_AI_CHAT_TITLE,
   AI_CHAT_CONTENT_TIP,
   ADD_AI_CHAT_BUTTON_TITTLE,
-  KEYGENIE_AVATAR_URL,
+  KEY_GENIE_AVATAR_URL,
+  ADD_AI_CHAT_ERROR_TIP,
 } from '@portkey-wallet/constants/constants-ca/guide';
 import useGuide, { TGuideInfoRes } from '@portkey-wallet/hooks/hooks-ca/guide';
 import { useJoinGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
@@ -19,12 +20,13 @@ import { ALREADY_JOINED_GROUP_CODE } from '@portkey-wallet/constants/constants-c
 import CommonToast from 'components/CommonToast';
 import ActionSheet from 'components/ActionSheet';
 import joinGroupBgImage from 'assets/image/pngs/joinGroupBgImage.png';
-import { useJumpToChatGroupDetails } from './chat';
+import { useJumpToChatDetails, useJumpToChatGroupDetails } from './chat';
 import { TextL, TextS } from 'components/CommonText';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import CommonAvatar from 'components/CommonAvatar';
 import fonts from 'assets/theme/fonts';
+import { IKeyGenieInfo } from 'pages/Chat/components/KeyGenieChat';
 enum ModalType {
   JoinGroup_And_AiChat,
   JoinGroup,
@@ -36,8 +38,10 @@ export function useJoinOfficialGroupAndAiChatTipModal() {
   const { t } = useTranslation();
   const { getGuideItem, finishGuideItem } = useGuide();
   const officialGroupRef = useRef<string>('');
+  const keyGenieInfoRef = useRef<IKeyGenieInfo>();
   const joinGroupChannel = useJoinGroupChannel();
   const jumpToChatGroupDetails = useJumpToChatGroupDetails();
+  const jumpToChatDetails = useJumpToChatDetails();
 
   const hasShownJoinOfficialGroupTip = useCallback(async () => {
     try {
@@ -60,12 +64,21 @@ export function useJoinOfficialGroupAndAiChatTipModal() {
       const res = await getGuideItem([GuideTypeEnum.FinishAiChat]);
       const targetGuide = res?.find((_guide: TGuideInfoRes) => _guide.guideType === GuideTypeEnum.FinishAiChat);
       if (targetGuide) {
-        return !!targetGuide.status;
+        return {
+          status: !!targetGuide.status,
+          relationId: targetGuide.externalMap?.relationId,
+          name: targetGuide.externalMap?.name,
+          avatar: targetGuide.externalMap?.avatar,
+        };
       }
-      return true;
+      return {
+        status: true,
+      };
     } catch (error) {
       console.log('===getGuideItem error', error);
-      return true;
+      return {
+        status: true,
+      };
     }
   }, [getGuideItem]);
 
@@ -105,20 +118,42 @@ export function useJoinOfficialGroupAndAiChatTipModal() {
       }
     }
   }, [finishGuideItem, joinGroupChannel, jumpToChatGroupDetails]);
-
+  const chatToKeyGenie = useCallback(async () => {
+    if (!keyGenieInfoRef.current) {
+      return CommonToast.fail(ADD_AI_CHAT_ERROR_TIP);
+    }
+    try {
+      await finishGuideItem(GuideTypeEnum.AiChat);
+    } catch (error) {
+      console.log('===finishGuideItem AiChat error', error);
+    }
+    try {
+      // await joinGroupChannel(officialGroupIdRef.current);
+      // const { channelUuid } = await createChannel(relationIdRef.current || 'e7i7y-giaaa-aaaaj-2ooma-cai');
+      await jumpToChatDetails({ toRelationId: keyGenieInfoRef.current?.relationId });
+    } catch (error: any) {
+      // already joined
+      CommonToast.fail(ADD_AI_CHAT_ERROR_TIP);
+      console.log('===Failed to chat Ai error', error);
+    }
+  }, [finishGuideItem, jumpToChatDetails]);
   return useCallback(async () => {
     const status = await hasShownJoinOfficialGroupTip();
     const aiChatStatus = await hasShownAiChatTip();
+    keyGenieInfoRef.current = {
+      relationId: aiChatStatus?.relationId,
+      name: aiChatStatus?.name,
+      avatar: aiChatStatus?.avatar,
+    };
     console.log('===showJoinOfficialGroupTip', status);
     const type =
-      !status && !aiChatStatus
+      !status && !aiChatStatus?.status
         ? ModalType.JoinGroup_And_AiChat
         : !status
         ? ModalType.JoinGroup
         : !aiChatStatus
         ? ModalType.AiChat
         : ModalType.None;
-    // const type = ModalType.AiChat;
     if (type === ModalType.JoinGroup || type === ModalType.JoinGroup_And_AiChat) {
       handleCancel();
       if (type === ModalType.JoinGroup_And_AiChat) {
@@ -146,9 +181,9 @@ export function useJoinOfficialGroupAndAiChatTipModal() {
         message2: (
           <View style={styles.outerContainer}>
             <View style={styles.innerContainer}>
-              <CommonAvatar imageUrl={KEYGENIE_AVATAR_URL} resizeMode="cover" />
+              <CommonAvatar imageUrl={aiChatStatus?.avatar || KEY_GENIE_AVATAR_URL} resizeMode="cover" />
               <View style={styles.textContainer}>
-                <TextL style={[fonts.mediumFont, styles.title]}>{t('KeyGenie')}</TextL>
+                <TextL style={[fonts.mediumFont, styles.title]}>{t(aiChatStatus?.name || 'KeyGenie')}</TextL>
                 <TextS style={[fonts.regularFont, styles.subtitle]}>{t('AI Chat - New Chat Experience')}</TextS>
               </View>
             </View>
@@ -157,7 +192,7 @@ export function useJoinOfficialGroupAndAiChatTipModal() {
         buttons: [
           {
             title: ADD_AI_CHAT_BUTTON_TITTLE,
-            onPress: toJoinOfficialGroup,
+            onPress: chatToKeyGenie,
           },
         ],
       });

@@ -81,7 +81,7 @@ const ChatContactProfileEdit: React.FC = () => {
       ],
     });
   }, [contact, deleteContact, t]);
-  console.log('wfs 22222', contact);
+
   return (
     <PageContainer
       titleDom={'Edit Contact'}

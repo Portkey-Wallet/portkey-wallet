@@ -43,7 +43,7 @@ export default function KeyGenieChat() {
     try {
       await finishGuideItem(GuideTypeEnum.AiChat);
     } catch (error) {
-      console.log('===finishGuideItem JoinOfficialGroup error', error);
+      console.log('===finishGuideItem AiChat error', error);
     }
     try {
       // await joinGroupChannel(officialGroupIdRef.current);
@@ -52,7 +52,7 @@ export default function KeyGenieChat() {
     } catch (error: any) {
       // already joined
       CommonToast.fail(ADD_AI_CHAT_ERROR_TIP);
-      console.log('===Failed to join official group error', error);
+      console.log('===Failed to chat Ai error', error);
     }
   }, [finishGuideItem, jumpToChatDetails]);
 

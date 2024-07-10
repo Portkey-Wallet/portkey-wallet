@@ -69,7 +69,7 @@ export function BottomBarContainer({
   const { currentChannelType } = useCurrentChannel() || {};
 
   const { toRelationId, displayName, isBot } = useContext(ChatDetailsContext);
-  const { canSend, changeToSendingStatus } = useBotSendingStatus(toRelationId);
+  const { canSend, changeToSendingStatus, changeToRepliedStatus } = useBotSendingStatus(toRelationId);
   const inputFocus = useCallback(
     (autoHide?: boolean) => {
       textInputRef.current?.focus(autoHide);
@@ -122,6 +122,9 @@ export function BottomBarContainer({
     try {
       scrollToBottom?.();
       if (typeof text === 'string') {
+        if (isBot) {
+          changeToSendingStatus();
+        }
         currentChannelType === 'Group'
           ? await sendChannelMessage({
               content: text.trim(),
@@ -131,10 +134,10 @@ export function BottomBarContainer({
               content: text.trim(),
             });
       }
-      if (isBot) {
-        changeToSendingStatus();
-      }
     } catch (error: any) {
+      if (isBot) {
+        changeToRepliedStatus();
+      }
       if (error?.code === NO_LONGER_IN_GROUP) {
         hideChannel();
         return ActionSheet.alert({

@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { Keyboard, View } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
@@ -15,7 +15,7 @@ import { WebViewMessageEvent } from 'react-native-webview';
 import { InjectFacebookOpenJavaScript, FBAuthPush, FB_FUN, PATHS } from './config';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import { parseFacebookToken } from '@portkey-wallet/utils/authentication';
+import { parseFacebookToken, parseFacebookJWTToken } from '@portkey-wallet/utils/authentication';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { TFacebookAuthentication } from 'types/authentication';
 import generateRandomNonce from '@portkey-wallet/utils/nonce';
@@ -45,9 +45,10 @@ function FacebookSign({ onConfirm, onReject }: FacebookProps) {
         if (payload.error) {
           onReject(USER_CANCELED);
         } else {
-          const info = JSON.parse(payload.response.access_token);
-          if (type === FB_FUN.Login_Success && info.token) {
-            const fbInfo = await parseFacebookToken(payload.response.access_token);
+          const idToken = payload.response.id_token;
+          const accessToken = payload.response.access_token;
+          if (type === FB_FUN.Login_Success && idToken && accessToken) {
+            const fbInfo = parseFacebookJWTToken(idToken, accessToken);
             if (!fbInfo) throw new Error('Failed to parse Facebook token');
             console.log('aaaa fb payload : ', JSON.stringify(payload));
             onConfirm({ accessToken: payload.response.access_token, user: fbInfo, nonce });
@@ -78,9 +79,9 @@ function FacebookSign({ onConfirm, onReject }: FacebookProps) {
         <WebView
           ref={ref as any}
           source={{
-            uri: `${portkeyOpenLoginUrl}${PATHS.LoadFB}?redirectURI=${
+            uri: `${portkeyOpenLoginUrl}${PATHS.LoadFB}?socialType=zklogin&nonce=${nonce}&redirectURI=${
               domain || apiUrl
-            }${FBAuthPush}&socialType=zklogin&nonce=${nonce}`,
+            }${FBAuthPush}`,
           }}
           originWhitelist={['*']}
           injectedJavaScript={InjectFacebookOpenJavaScript}

@@ -91,6 +91,7 @@ export type TFacebookUserInfo = {
   isPrivate: boolean;
   name: string;
   accessToken: string;
+  idToken: string;
 };
 
 const fbUserInfo: { [key: string]: TFacebookUserInfo } = {};
@@ -98,7 +99,7 @@ const fbUserInfo: { [key: string]: TFacebookUserInfo } = {};
 export async function parseFacebookToken(tokenStr?: string | null): Promise<TFacebookUserInfo | undefined> {
   if (!tokenStr) return;
   try {
-    const { userId, token: accessToken, expiredTime } = JSON.parse(tokenStr);
+    const { userId, token: accessToken, expiredTime, idToken } = JSON.parse(tokenStr);
 
     const expirationTime = Number(expiredTime) * 1000;
     const isExpired = new Date(expirationTime) < new Date();
@@ -123,6 +124,7 @@ export async function parseFacebookToken(tokenStr?: string | null): Promise<TFac
         lastName,
         picture: result?.picture?.data?.url,
         accessToken: accessToken,
+        idToken,
       };
     }
 
@@ -177,4 +179,11 @@ export function parseTwitterToken(tokenStr?: string | null): TwitterUserInfo | u
   } catch (error) {
     return;
   }
+}
+
+export function parseKidFromJWTToken(token: string) {
+  const idTokenArr = token.split('.') ?? [];
+  const spilt1 = Buffer.from(idTokenArr[0], 'base64').toString('utf8');
+  const { kid } = JSON.parse(spilt1) || {};
+  return kid;
 }

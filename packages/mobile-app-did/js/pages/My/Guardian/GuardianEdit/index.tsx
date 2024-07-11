@@ -72,6 +72,7 @@ type RouterParams = {
 type thirdPartyInfoType = {
   id: string;
   accessToken: string;
+  nonce?: string;
 };
 
 type TypeItemType = typeof LOGIN_TYPE_LIST[number];
@@ -208,6 +209,7 @@ const GuardianEdit: React.FC = () => {
       const rst = await verifyToken(guardianType, {
         accessToken: thirdPartyInfo.accessToken,
         id: thirdPartyInfo.id,
+        nonce: thirdPartyInfo.nonce,
         verifierId: verifierInfo.id,
         chainId: originChainId,
         operationType: OperationTypeEnum.addGuardian,
@@ -552,6 +554,7 @@ const GuardianEdit: React.FC = () => {
       thirdPartyInfoRef.current = {
         id: userInfo.user.id,
         accessToken: userInfo.accessToken,
+        nonce: userInfo.nonce,
       };
     } catch (error) {
       CommonToast.failError(error);

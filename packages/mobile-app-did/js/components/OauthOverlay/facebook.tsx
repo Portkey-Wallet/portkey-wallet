@@ -14,11 +14,11 @@ import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
 import { WebViewMessageEvent } from 'react-native-webview';
 import { InjectFacebookOpenJavaScript, FBAuthPush, FB_FUN, PATHS } from './config';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { OpenLogin } from '@portkey-wallet/constants/constants-ca/network';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { parseFacebookToken } from '@portkey-wallet/utils/authentication';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { TFacebookAuthentication } from 'types/authentication';
+import generateRandomNonce from '@portkey-wallet/utils/nonce';
 
 type FacebookProps = {
   onConfirm: (userInfo: TFacebookAuthentication) => void;
@@ -28,7 +28,8 @@ type FacebookProps = {
 function FacebookSign({ onConfirm, onReject }: FacebookProps) {
   const [loading, setLoading] = useState(true);
   const ref = useRef<WebView>();
-  const { domain, apiUrl } = useCurrentNetworkInfo();
+  const { domain, apiUrl, portkeyOpenLoginUrl } = useCurrentNetworkInfo();
+  const [nonce] = useState(generateRandomNonce());
 
   const onLoadStart = useCallback(({ nativeEvent }: WebViewNavigationEvent) => {
     if (nativeEvent.url.includes(FBAuthPush)) {
@@ -48,7 +49,8 @@ function FacebookSign({ onConfirm, onReject }: FacebookProps) {
           if (type === FB_FUN.Login_Success && info.token) {
             const fbInfo = await parseFacebookToken(payload.response.access_token);
             if (!fbInfo) throw new Error('Failed to parse Facebook token');
-            onConfirm({ accessToken: payload.response.access_token, user: fbInfo });
+            console.log('aaaa fb payload : ', JSON.stringify(payload));
+            onConfirm({ accessToken: payload.response.access_token, user: fbInfo, nonce });
             OverlayModal.hide();
           } else {
             onReject(USER_CANCELED);
@@ -58,7 +60,7 @@ function FacebookSign({ onConfirm, onReject }: FacebookProps) {
         onReject(handleErrorMessage(error));
       }
     },
-    [onConfirm, onReject],
+    [nonce, onConfirm, onReject],
   );
   return (
     <ModalBody title="Facebook Login" modalBodyType="bottom">
@@ -75,7 +77,11 @@ function FacebookSign({ onConfirm, onReject }: FacebookProps) {
         )}
         <WebView
           ref={ref as any}
-          source={{ uri: `${OpenLogin}${PATHS.LoadFB}?redirectURI=${domain || apiUrl}${FBAuthPush}` }}
+          source={{
+            uri: `${portkeyOpenLoginUrl}${PATHS.LoadFB}?redirectURI=${
+              domain || apiUrl
+            }${FBAuthPush}&socialType=zklogin&nonce=${nonce}`,
+          }}
           originWhitelist={['*']}
           injectedJavaScript={InjectFacebookOpenJavaScript}
           javaScriptCanOpenWindowsAutomatically={true}

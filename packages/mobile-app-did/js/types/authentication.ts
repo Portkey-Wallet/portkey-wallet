@@ -26,11 +26,13 @@ export type TAppleAuthentication = {
     givenName?: string;
     familyName?: string;
   };
+  nonce: string;
 };
 
 export type TFacebookAuthentication = {
   user: TFacebookUserInfo;
   accessToken: string;
+  nonce: string;
 };
 
 export type TelegramAuthentication = {

@@ -47,7 +47,11 @@ export function useLoginModeMap(
       await onLogin({
         loginAccount: userInfo.user.id,
         loginType: LoginType.Apple,
-        authenticationInfo: { [userInfo.user.id]: userInfo.identityToken as string },
+        authenticationInfo: {
+          [userInfo.user.id]: userInfo.identityToken as string,
+          idToken: userInfo.identityToken,
+          nonce: userInfo.nonce,
+        },
       });
     } catch (error) {
       CommonToast.failError(error);

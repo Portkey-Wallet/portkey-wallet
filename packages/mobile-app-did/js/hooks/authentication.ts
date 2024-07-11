@@ -24,7 +24,7 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import TelegramOverlay from 'components/OauthOverlay/telegram';
 import FacebookOverlay from 'components/OauthOverlay/facebook';
-import { parseTelegramToken } from '@portkey-wallet/utils/authentication';
+import { parseTelegramToken, parseKidFromJWTToken } from '@portkey-wallet/utils/authentication';
 import { useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import {
@@ -388,25 +388,19 @@ export function useVerifyGoogleToken() {
         accessToken = userInfo?.accessToken;
         if (userInfo.user.id !== params.id) throw new Error('Account does not match your guardian');
       }
-      const idTokenArr = params.idToken?.split('.') ?? [];
-      const spilt1 = Buffer.from(idTokenArr[0], 'base64').toString('utf8');
-      const { kid } = JSON.parse(spilt1) || {};
-      try {
-        const rst = await verifyZKLogin({
-          jwt: params.idToken,
-          salt: randomId(),
-          kid,
-          nonce: googleAuthNonce,
-        });
-        console.log('aaaa rst : ', rst);
-        return {
-          ...rst,
-          accessToken,
-        };
-      } catch (error) {
-        console.log('aaaa error : ', error);
-        throw error;
+      if (!params?.idToken) {
+        throw new Error('Invalid idToken');
       }
+      const rst = await verifyZKLogin({
+        jwt: params.idToken,
+        salt: randomId(),
+        kid: parseKidFromJWTToken(params.idToken),
+        nonce: googleAuthNonce,
+      });
+      return {
+        ...rst,
+        accessToken,
+      };
     },
     [googleAuthNonce, googleSign, verifyZKLogin],
   );
@@ -414,8 +408,10 @@ export function useVerifyGoogleToken() {
 
 export function useVerifyAppleToken() {
   const { appleSign } = useAppleAuthentication();
+  const verifyZKLogin = useVerifyZKLogin();
   return useCallback(
     async (params: VerifyTokenParams) => {
+      const { nonce, idToken } = params;
       let accessToken = params.accessToken;
       const { isExpired: tokenIsExpired } = parseAppleIdentityToken(accessToken) || {};
       if (!accessToken || tokenIsExpired) {
@@ -425,8 +421,14 @@ export function useVerifyAppleToken() {
       const { userId } = parseAppleIdentityToken(accessToken) || {};
       if (userId !== params.id) throw new Error('Account does not match your guardian');
 
-      const rst = await request.verify.verifyAppleToken({
-        params: { ...params, accessToken },
+      if (!idToken) {
+        throw new Error('Invalid idToken');
+      }
+      const rst = await verifyZKLogin({
+        jwt: params.idToken,
+        salt: randomId(),
+        kid: parseKidFromJWTToken(idToken),
+        nonce,
       });
 
       return {
@@ -434,7 +436,7 @@ export function useVerifyAppleToken() {
         accessToken,
       };
     },
-    [appleSign],
+    [appleSign, verifyZKLogin],
   );
 }
 export function useVerifyTelegramToken() {
@@ -492,20 +494,28 @@ export function useVerifyTwitterToken() {
 
 export function useVerifyFacebookToken() {
   const { facebookSign } = useFacebookAuthentication();
+  const verifyZKLogin = useVerifyZKLogin();
   return useCallback(
     async (params: VerifyTokenParams) => {
       let accessToken = params.accessToken;
+      const nonce = params.nonce;
       const { isExpired: tokenIsExpired } = (await parseFacebookToken(accessToken)) || {};
       if (!accessToken || tokenIsExpired) {
         const info = await facebookSign();
         accessToken = info.accessToken || undefined;
       }
-      const { userId, accessToken: accessFacebookToken } = (await parseFacebookToken(accessToken)) || {};
+      const { userId, idToken } = (await parseFacebookToken(accessToken)) || {};
 
       if (userId !== params.id) throw new Error('Account does not match your guardian');
 
-      const rst = await request.verify.verifyFacebookToken({
-        params: { ...params, accessToken: accessFacebookToken },
+      if (!idToken) {
+        throw new Error('Invalid idToken');
+      }
+      const rst = await verifyZKLogin({
+        jwt: params.idToken,
+        salt: randomId(),
+        kid: parseKidFromJWTToken(idToken),
+        nonce,
       });
 
       return {
@@ -513,7 +523,7 @@ export function useVerifyFacebookToken() {
         accessToken,
       };
     },
-    [facebookSign],
+    [facebookSign, verifyZKLogin],
   );
 }
 
@@ -583,6 +593,7 @@ export function useVerifierAuth() {
       return verifyToken(guardianItem.guardianType, {
         accessToken: authenticationInfo?.[guardianItem.guardianAccount],
         idToken: authenticationInfo?.idToken,
+        nonce: authenticationInfo?.nonce,
         id: guardianItem.guardianAccount,
         verifierId: guardianItem.verifier?.id,
         chainId: originChainId,

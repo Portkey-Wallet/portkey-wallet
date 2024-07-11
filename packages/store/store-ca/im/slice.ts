@@ -645,6 +645,10 @@ export const imSlice = createSlice({
             ...state.blockedUserListMap,
             [action.payload]: undefined,
           },
+          sendingBotRelationIdNetMap: {
+            ...state.sendingBotRelationIdNetMap,
+            [action.payload]: undefined,
+          },
         };
       });
   },

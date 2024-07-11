@@ -221,7 +221,7 @@ const ChatDetailsPage = () => {
         {mute && <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.font11} />}
       </View>
     ),
-    [avatar, currentChannelInfo?.displayName, displayName, mute, onBack, toRelationId],
+    [avatar, currentChannelInfo?.displayName, displayName, isBot, mute, onBack, toRelationId],
   );
 
   return (

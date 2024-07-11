@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, useEffect } from 'react';
+import { useCallback, useMemo, useState, useEffect, useRef } from 'react';
 import { useCurrentNetworkInfo } from '../network';
 import { useAppCommonDispatch } from '../..';
 import { addBotSending, removeBotSending } from '@portkey-wallet/store/store-ca/im/actions';
@@ -10,7 +10,7 @@ export const useBotSendingStatus = (targetRelationId: string) => {
   const sendingBotNetMap = useImSendingBotNetMapState();
   const [canSend, setCanSend] = useState<boolean>(true);
   const sendingBotMap = useMemo(() => sendingBotNetMap?.[networkType] || [], [sendingBotNetMap, networkType]);
-
+  const timerRef = useRef<any>();
   useEffect(() => {
     setCanSend(sendingBotMap.indexOf(targetRelationId) === -1);
   }, [sendingBotMap, targetRelationId]);
@@ -24,11 +24,23 @@ export const useBotSendingStatus = (targetRelationId: string) => {
         targetRelationId,
       }),
     );
+    timerRef.current = setTimeout(() => {
+      dispatch(
+        removeBotSending({
+          network: networkType,
+          targetRelationId,
+        }),
+      );
+    }, 10000);
+    return () => {
+      timerRef.current && clearTimeout(timerRef.current);
+    };
   }, [dispatch, networkType, targetRelationId]);
   const changeToRepliedStatus = useCallback(() => {
     if (!targetRelationId) {
       return;
     }
+    timerRef.current && clearTimeout(timerRef.current);
     dispatch(
       removeBotSending({
         network: networkType,

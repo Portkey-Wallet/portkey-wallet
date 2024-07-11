@@ -36,6 +36,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { TabRouteNameEnum } from 'types/navigate';
 import FloatOverlay from 'components/FloatOverlay';
 import ChatDetailsContext from './ChatDetailContext';
+import AIChatMark from '../components/AIChatMark';
 
 const ChatDetailsPage = () => {
   const dispatch = useAppCommonDispatch();
@@ -214,6 +215,7 @@ const ChatDetailsPage = () => {
             ]}>
             {displayName}
           </TextL>
+          {isBot && <AIChatMark />}
         </Touchable>
 
         {mute && <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.font11} />}

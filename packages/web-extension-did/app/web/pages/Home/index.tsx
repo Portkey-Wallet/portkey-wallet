@@ -20,7 +20,6 @@ import HomeHeader from 'pages/components/HomeHeader';
 import BottomBar from 'pages/components/BottomBar';
 import SetNewWalletNameModal from './components/SetNewWalletNameModal';
 import { useBlockAndReport } from '@portkey-wallet/hooks/hooks-ca/im';
-import { store } from 'store/Provider/store';
 
 export default function Home() {
   const navigate = useNavigate();

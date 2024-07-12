@@ -1,5 +1,6 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { PlatFormInHeader } from '@portkey-wallet/api/api-did/types';
+import im from '@portkey-wallet/im';
 import { did } from '@portkey/did-ui-react';
 import BigNumber from 'bignumber.js';
 
@@ -9,6 +10,8 @@ export function initConfig() {
 
 export function initRequest() {
   request.set('headers', { version: `${process.env.SDK_VERSION}`, platform: PlatFormInHeader.EXTENSION });
+  im.setHeader('version', `${process.env.SDK_VERSION}`);
+  im.setHeader('platform', PlatFormInHeader.EXTENSION);
 }
 
 export async function getDidReactSDKToken() {

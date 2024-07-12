@@ -32,5 +32,6 @@ const styles = StyleSheet.create({
   },
   mark: {
     lineHeight: pTd(12),
+    fontSize: pTd(10),
   },
 });

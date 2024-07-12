@@ -33,7 +33,7 @@ export default function InviteFriendsSection() {
             Chat with your friends in Portkey
           </TextS>
         </View>
-        <Svg icon="direction-right" size={pTd(20)} />
+        <Svg icon="direction-right" size={pTd(16)} />
       </Touchable>
     </View>
   );

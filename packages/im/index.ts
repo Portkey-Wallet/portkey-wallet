@@ -48,7 +48,11 @@ export class IM {
 
     this.rewriteFetch();
   }
-
+  setHeader(key: string, value: string) {
+    if (this.fetchRequest) {
+      this.fetchRequest.setHeader(key, value);
+    }
+  }
   async init(account: AElfWallet, caHash: string, token?: string) {
     this.status = IMStatusEnum.INIT;
     this._account = account;

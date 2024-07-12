@@ -199,7 +199,15 @@ export function useJoinOfficialGroupAndAiChatTipModal() {
         ],
       });
     }
-  }, [handleCancel, handleCancelAiChat, hasShownAiChatTip, hasShownJoinOfficialGroupTip, t, toJoinOfficialGroup]);
+  }, [
+    chatToKeyGenie,
+    handleCancel,
+    handleCancelAiChat,
+    hasShownAiChatTip,
+    hasShownJoinOfficialGroupTip,
+    t,
+    toJoinOfficialGroup,
+  ]);
 }
 const styles = StyleSheet.create({
   outerContainer: {

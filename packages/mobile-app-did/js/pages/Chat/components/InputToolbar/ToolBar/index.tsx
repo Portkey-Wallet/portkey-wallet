@@ -197,6 +197,7 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
     }
     return list;
   }, [
+    changeToRepliedStatus,
     currentChannel?.currentChannelType,
     currentChannelId,
     currentIsGroupChat,

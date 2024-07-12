@@ -62,13 +62,13 @@ export function BottomBarContainer({
   const text = useChatText();
   const replyMessageInfo = useChatReplyMessageInfo();
   const textInputRef = useRef<ChatInput>(null);
-  const keyboardAnim = useKeyboardAnim({ textInputRef });
+  const { toRelationId, displayName, isBot } = useContext(ChatDetailsContext);
+  const keyboardAnim = useKeyboardAnim({ textInputRef, isBot });
   const timer = useRef<NodeJS.Timeout>();
   const { sendChannelMessage, sendMessageToPeople } = useSendCurrentChannelMessage();
   const hideChannel = useHideCurrentChannel();
   const { currentChannelType } = useCurrentChannel() || {};
 
-  const { toRelationId, displayName, isBot } = useContext(ChatDetailsContext);
   const { canSend, changeToRepliedStatus } = useBotSendingStatus(toRelationId);
   const inputFocus = useCallback(
     (autoHide?: boolean) => {

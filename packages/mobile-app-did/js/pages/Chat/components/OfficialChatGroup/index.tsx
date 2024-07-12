@@ -70,7 +70,7 @@ export default function OfficialChatGroup() {
 
   return (
     <View style={styles.containerStyles}>
-      <TextM style={[FontStyles.neutralPrimaryTextColor, styles.title]}>Engage in a chat</TextM>
+      <TextM style={[FontStyles.neutralPrimaryTextColor, styles.title, fonts.mediumFont]}>Engage in a chat</TextM>
       <View style={styles.itemWrap}>
         <View style={styles.itemAvatar}>
           <GroupAvatarShow logoSize={pTd(14)} avatarSize={pTd(48)} svgName="officialGroup" />
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg1,
   },
   title: {
-    marginTop: pTd(32),
+    marginTop: pTd(24),
     marginLeft: pTd(16),
     marginBottom: pTd(8),
   },

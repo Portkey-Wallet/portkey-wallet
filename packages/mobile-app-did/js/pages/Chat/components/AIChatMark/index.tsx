@@ -12,12 +12,13 @@ export default memo(function AIChatMark(props: { containerStyle?: StyleProp<View
     <View
       style={[
         BGStyles.brandNormal,
-        GStyles.paddingArg(pTd(2), pTd(6)),
+        GStyles.paddingArg(pTd(0), pTd(6)),
         GStyles.radiusArg(pTd(4)),
         GStyles.marginLeft(pTd(4)),
         GStyles.marginRight(pTd(4)),
         GStyles.center,
         containerStyle,
+        styles.container,
       ]}>
       <TextS numberOfLines={1} style={[fonts.mediumFont, FontStyles.neutralDefaultBG, styles.mark]}>
         AI Chat
@@ -26,6 +27,9 @@ export default memo(function AIChatMark(props: { containerStyle?: StyleProp<View
   );
 });
 const styles = StyleSheet.create({
+  container: {
+    height: pTd(16),
+  },
   mark: {
     lineHeight: pTd(12),
   },

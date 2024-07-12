@@ -3,6 +3,7 @@ import fonts from 'assets/theme/fonts';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { TextS } from 'components/CommonText';
 import React, { memo } from 'react';
+import { StyleSheet } from 'react-native';
 import { StyleProp, View, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 export default memo(function AIChatMark(props: { containerStyle?: StyleProp<ViewStyle> }) {
@@ -15,11 +16,17 @@ export default memo(function AIChatMark(props: { containerStyle?: StyleProp<View
         GStyles.radiusArg(pTd(4)),
         GStyles.marginLeft(pTd(4)),
         GStyles.marginRight(pTd(4)),
+        GStyles.center,
         containerStyle,
       ]}>
-      <TextS numberOfLines={1} style={[fonts.regularFont, FontStyles.neutralDefaultBG]}>
+      <TextS numberOfLines={1} style={[fonts.mediumFont, FontStyles.neutralDefaultBG, styles.mark]}>
         AI Chat
       </TextS>
     </View>
   );
+});
+const styles = StyleSheet.create({
+  mark: {
+    lineHeight: pTd(12),
+  },
 });

@@ -20,7 +20,7 @@ export const TopSpacing = isIOS ? bottomBarHeight : isXiaoMi ? Math.max(-bottomB
 
 const ToolsHeight = pTd(196);
 
-export function useKeyboardAnim({ textInputRef }: { textInputRef: React.RefObject<TextInput> }) {
+export function useKeyboardAnim({ textInputRef, isBot }: { textInputRef: React.RefObject<TextInput>; isBot: boolean }) {
   const keyboardAnim = useRef(new Animated.Value(0)).current;
   const bottomBarStatus = useBottomBarStatus();
   const animatedRef = useRef<{ [key: number]: Animated.CompositeAnimation }>();
@@ -32,8 +32,9 @@ export function useKeyboardAnim({ textInputRef }: { textInputRef: React.RefObjec
   const { keyboardHeight, isKeyboardOpened } = useKeyboard(TopSpacing);
 
   const toValue = useMemo(() => {
-    if (bottomBarStatus === ChatBottomBarStatus.tools) return ToolsHeight;
+    if (bottomBarStatus === ChatBottomBarStatus.tools) return isBot ? ToolsHeight / 2 : ToolsHeight;
     return showTools || isKeyboardOpened ? keyboardHeight : 0;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bottomBarStatus, isKeyboardOpened, keyboardHeight, showTools]);
   // const toValue = useMemo(
   //   () => (showTools || isKeyboardOpened ? keyboardHeight : 0),

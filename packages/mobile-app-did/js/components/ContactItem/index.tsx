@@ -42,7 +42,7 @@ const ContactItem: React.FC<ItemType> = props => {
             <TextL numberOfLines={1} style={FontStyles.font5}>
               {contact?.name || contact?.caHolderInfo?.walletName || contact.imInfo?.name}
             </TextL>
-            {contact?.contactType === ContactType.ChatGptBot && <AIChatMark />}
+            {contact?.contactType === ContactType.ChatGptBot && <AIChatMark containerStyle={styles.aiMark} />}
           </View>
           {isShowContactIcon && (
             <View style={[GStyles.marginTop(pTd(2)), GStyles.flexRow, styles.contactIconWrap]}>
@@ -113,5 +113,9 @@ export const styles = StyleSheet.create({
     paddingVertical: pTd(2),
     borderRadius: pTd(4),
     backgroundColor: defaultColors.brandLight,
+  },
+  aiMark: {
+    alignSelf: 'flex-end',
+    marginBottom: pTd(2),
   },
 });

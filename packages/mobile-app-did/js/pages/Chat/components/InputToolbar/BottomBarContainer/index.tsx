@@ -170,7 +170,7 @@ export function BottomBarContainer({
     <View style={styles.wrap}>
       <ReplyContent />
       <View style={[BGStyles.bg6, GStyles.flexRow, GStyles.itemEnd, styles.barWrap]}>
-        <ActionsIcon onPress={() => onPressActionButton(ChatBottomBarStatus.tools)} canSend={canSend} />
+        {!isBot && <ActionsIcon onPress={() => onPressActionButton(ChatBottomBarStatus.tools)} canSend={canSend} />}
         <ChatInputBar ref={textInputRef} onPressActionButton={onPressActionButton} />
         <SendMessageButton
           text={text}

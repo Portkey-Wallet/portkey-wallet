@@ -8,6 +8,7 @@ export interface IContext {
 }
 
 export enum PlatFormInHeader {
-  APP = 'app',
+  ANDROID = 'android',
+  IOS = 'ios',
   EXTENSION = 'extension',
 }

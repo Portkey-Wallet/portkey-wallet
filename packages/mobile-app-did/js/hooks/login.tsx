@@ -262,7 +262,8 @@ export function useGoGuardianApproval(isLogin?: boolean) {
   const requestOrSetPin = useCallback(
     async ({ guardianItem, originChainId, authenticationInfo }: TVerifierAuthParams) => {
       const req = await onVerifierAuth({ guardianItem, originChainId, authenticationInfo });
-      const verifierInfo: VerifierInfo = { ...req, verifierId: guardianItem?.verifier?.id };
+      const verifierInfo: VerifierInfo = { ...req, verifierId: guardianItem?.verifier?.id ?? '' };
+      console.log(verifierInfo, '=======verifierInfo');
       const key = guardianItem.key as string;
       dispatch(setOriginChainId(originChainId));
       return onRequestOrSetPin({
@@ -404,6 +405,8 @@ export function useGoSelectVerifier(isLogin?: boolean) {
       try {
         const rst = await verifyToken(loginType, {
           accessToken: authenticationInfo?.[loginAccount || ''],
+          idToken: authenticationInfo?.idToken,
+          nonce: authenticationInfo?.nonce,
           id: loginAccount,
           verifierId: selectedVerifier?.id,
           chainId,
@@ -602,6 +605,7 @@ export function useOnLogin(isLogin?: boolean) {
           });
         }
       } catch (error) {
+        console.log(error, '=======error');
         if (handleErrorCode(error) === '3002') {
           await goSelectVerifier({
             showLoginAccount: showLoginAccount || loginAccount,

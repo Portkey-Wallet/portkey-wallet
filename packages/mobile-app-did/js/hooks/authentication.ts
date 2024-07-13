@@ -356,9 +356,10 @@ export function useVerifyZKLogin() {
       const zkJwtAuthInfo: ZKJwtAuthInfo = {
         identifierHash: verifyParams.identifierHash,
         salt: verifyParams.salt,
-        zkProof: verifyParams.proof,
+        zkProof: decodeURIComponent(verifyParams.proof),
         jwt: jwt ?? '',
         nonce: nonce ?? '',
+        circuitId: proofResult.circuitId,
       };
       return { zkJwtAuthInfo };
     } else {

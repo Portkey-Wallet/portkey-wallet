@@ -72,12 +72,13 @@ export interface ZKJwtAuthInfo {
   zkProof: string;
   jwt: string;
   nonce: string;
+  circuitId: string;
 }
 
 export interface VerifierInfo {
   verifierId: string;
-  verificationDoc: string;
-  signature: string;
+  verificationDoc?: string;
+  signature?: string;
   zkJwtAuthInfo: ZKJwtAuthInfo;
 }
 

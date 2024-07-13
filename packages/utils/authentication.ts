@@ -134,6 +134,28 @@ export async function parseFacebookToken(tokenStr?: string | null): Promise<TFac
   }
 }
 
+export function parseFacebookJWTToken(tokenStr?: string | null, accessToken?: string): TFacebookUserInfo | undefined {
+  if (!tokenStr) return;
+  const idTokenArr = tokenStr.split('.') ?? [];
+  if (idTokenArr.length < 2) return;
+  const spilt2 = Buffer.from(idTokenArr[1], 'base64').toString('utf8');
+  const { sub: userId, name, family_name, given_name, exp: expirationTime, email, picture } = JSON.parse(spilt2) || {};
+  const isExpired = new Date(expirationTime) < new Date();
+  return {
+    userId,
+    id: userId,
+    name: name,
+    isExpired,
+    expirationTime,
+    isPrivate: true,
+    firstName: given_name,
+    lastName: family_name,
+    picture,
+    accessToken: accessToken,
+    idToken: tokenStr,
+  } as TFacebookUserInfo;
+}
+
 export interface TwitterUserInfo {
   isExpired: boolean;
   userId: string;

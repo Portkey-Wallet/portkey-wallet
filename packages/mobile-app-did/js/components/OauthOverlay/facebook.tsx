@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { Keyboard, View } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
@@ -15,7 +15,7 @@ import { WebViewMessageEvent } from 'react-native-webview';
 import { InjectFacebookOpenJavaScript, FBAuthPush, FB_FUN, PATHS } from './config';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import { parseFacebookToken, parseFacebookJWTToken } from '@portkey-wallet/utils/authentication';
+import { parseFacebookJWTToken } from '@portkey-wallet/utils/authentication';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { TFacebookAuthentication } from 'types/authentication';
 import generateRandomNonce from '@portkey-wallet/utils/nonce';

@@ -66,7 +66,7 @@ export enum OperationTypeEnum {
   revokeAccount = 12,
 }
 
-export interface ZKJwtAuthInfo {
+export interface ZKLoginInfo {
   identifierHash: string;
   salt: string;
   zkProof: string;
@@ -79,7 +79,7 @@ export interface VerifierInfo {
   verifierId: string;
   verificationDoc?: string;
   signature?: string;
-  zkJwtAuthInfo: ZKJwtAuthInfo;
+  zkLoginInfo: ZKLoginInfo;
 }
 
 export interface AuthenticationInfo {

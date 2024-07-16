@@ -32,7 +32,7 @@ import {
   VerifyTokenParams,
   VerifyZKLoginParams,
 } from '@portkey-wallet/types/types-ca/authentication';
-import { ZKJwtAuthInfo } from '@portkey-wallet/types/verifier';
+import { ZKLoginInfo } from '@portkey-wallet/types/verifier';
 import { onAndroidFacebookAuthentication, onTwitterAuthentication } from 'utils/authentication';
 import {
   TAppleAuthentication,
@@ -353,7 +353,7 @@ export function useVerifyZKLogin() {
 
     console.log('aaaa verifyResult : ', verifyResult);
     if (verifyResult.valid) {
-      const zkJwtAuthInfo: ZKJwtAuthInfo = {
+      const zkLoginInfo: ZKLoginInfo = {
         identifierHash: verifyParams.identifierHash,
         salt: verifyParams.salt,
         zkProof: decodeURIComponent(verifyParams.proof),
@@ -361,7 +361,7 @@ export function useVerifyZKLogin() {
         nonce: nonce ?? '',
         circuitId: proofResult.circuitId,
       };
-      return { zkJwtAuthInfo };
+      return { zkLoginInfo };
     } else {
       throw new Error('zkLogin verification failed');
     }

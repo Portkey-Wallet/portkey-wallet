@@ -60,6 +60,12 @@ import {
 } from './__generated__/hooks/discoverLearnBannerCustom';
 
 import {
+  MyReferralBannerCustomDocument,
+  MyReferralBannerCustomQuery,
+  MyReferralBannerCustomQueryVariables,
+} from './__generated__/hooks/myReferralBannerCustom';
+
+import {
   DiscoverTabDataCustomDocument,
   DiscoverTabDataCustomQuery,
   DiscoverTabDataCustomQueryVariables,
@@ -195,6 +201,17 @@ const getDiscoverLearnBanner = async (network: NetworkType, params: DiscoverLear
   });
   return result;
 };
+
+// my referral banner
+const getMyReferralBanner = async (network: NetworkType, params: MyReferralBannerCustomQueryVariables) => {
+  const apolloClient = getApolloClient(network);
+  const result = await apolloClient.query<MyReferralBannerCustomQuery>({
+    query: MyReferralBannerCustomDocument,
+    variables: params,
+  });
+  return result;
+};
+
 // get discover tab list
 const getDiscoverTabList = async (network: NetworkType, params: DiscoverTabDataCustomQueryVariables) => {
   const apolloClient = getApolloClient(network);
@@ -237,6 +254,7 @@ export {
   getTokenDetailBanner,
   getDiscoverDappBanner,
   getDiscoverLearnBanner,
+  getMyReferralBanner,
   getDiscoverTabList,
   getDiscoverEarnList,
   getDiscoverLearnGroupList,

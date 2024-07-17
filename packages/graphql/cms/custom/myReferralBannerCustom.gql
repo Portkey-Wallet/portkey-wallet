@@ -1,0 +1,21 @@
+query myReferralBannerCustom {
+  myReferralBanner {
+    status
+    items {
+      portkeyCard_id {
+        status
+        title
+        url
+        appLink
+        extensionLink
+        index
+        value
+        description
+        buttonTitle
+        imgUrl {
+          filename_disk
+        }
+      }
+    }
+  }
+}

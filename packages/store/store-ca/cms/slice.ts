@@ -13,6 +13,7 @@ import {
   getDiscoverTabAsync,
   getDiscoverEarnAsync,
   getDiscoverLearnAsync,
+  getMyReferralBannerAsync,
 } from './actions';
 import { CMSState, CmsWebsiteMapItem } from './types';
 
@@ -29,6 +30,7 @@ const initialState: CMSState = {
   discoverTabListMap: {},
   discoverEarnListMap: {},
   discoverLearnGroupListMap: {},
+  myReferralBannerListMap: {},
 };
 export const cmsSlice = createSlice({
   name: 'cms',
@@ -97,6 +99,12 @@ export const cmsSlice = createSlice({
         state.tokenDetailBannerListMap = {
           ...(state.tokenDetailBannerListMap ?? {}),
           ...action.payload.tokenDetailBannerListMap,
+        };
+      })
+      .addCase(getMyReferralBannerAsync.fulfilled, (state, action) => {
+        state.myReferralBannerListMap = {
+          ...(state.myReferralBannerListMap ?? {}),
+          ...action.payload.myReferralBannerListMap,
         };
       })
       .addCase(getDiscoverDappBannerAsync.fulfilled, (state, action) => {

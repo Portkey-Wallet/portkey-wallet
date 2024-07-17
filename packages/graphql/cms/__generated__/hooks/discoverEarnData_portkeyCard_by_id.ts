@@ -10,7 +10,7 @@ export type DiscoverEarnData_PortkeyCard_By_IdQueryVariables = Types.Exact<{
   offset?: Types.InputMaybe<Types.Scalars['Int']>;
   page?: Types.InputMaybe<Types.Scalars['Int']>;
   search?: Types.InputMaybe<Types.Scalars['String']>;
-  filter1?: Types.InputMaybe<Types.Directus_Files_Filter>;
+  filter1?: Types.InputMaybe<Types.CardType_Filter>;
   sort1?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -73,81 +73,40 @@ export type DiscoverEarnData_PortkeyCard_By_IdQuery = {
         } | null;
         portkeyCard_id?: {
           __typename?: 'portkeyCard';
-          id: string;
-          status?: string | null;
-          index?: any | null;
-          title?: string | null;
-          value?: string | null;
-          description?: string | null;
-          buttonTitle?: string | null;
-          url?: string | null;
-          type?: number | null;
           appLink?: string | null;
+          buttonTitle?: string | null;
+          description?: string | null;
           extensionLink?: string | null;
-          imgUrl?: {
-            __typename?: 'directus_files';
+          id: string;
+          imgUrl?: string | null;
+          index?: any | null;
+          status?: string | null;
+          title?: string | null;
+          url?: string | null;
+          value?: string | null;
+          type?: {
+            __typename?: 'cardType';
             id: string;
-            storage: string;
-            filename_disk?: string | null;
-            filename_download: string;
-            title?: string | null;
-            type?: string | null;
-            folder?: string | null;
-            uploaded_by?: string | null;
-            uploaded_on?: any | null;
-            modified_by?: string | null;
-            modified_on?: any | null;
-            charset?: string | null;
-            filesize?: any | null;
-            width?: number | null;
-            height?: number | null;
-            duration?: number | null;
-            embed?: string | null;
-            description?: string | null;
-            location?: string | null;
-            tags?: any | null;
-            metadata?: any | null;
-            uploaded_on_func?: {
-              __typename?: 'datetime_functions';
-              year?: number | null;
-              month?: number | null;
-              week?: number | null;
-              day?: number | null;
-              weekday?: number | null;
-              hour?: number | null;
-              minute?: number | null;
-              second?: number | null;
-            } | null;
-            modified_on_func?: {
-              __typename?: 'datetime_functions';
-              year?: number | null;
-              month?: number | null;
-              week?: number | null;
-              day?: number | null;
-              weekday?: number | null;
-              hour?: number | null;
-              minute?: number | null;
-              second?: number | null;
-            } | null;
-            tags_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-            metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+            label?: string | null;
+            status?: string | null;
+            value?: string | null;
           } | null;
         } | null;
       } | null> | null;
     } | null;
     portkeyCard_id?: {
       __typename?: 'portkeyCard';
-      id: string;
-      status?: string | null;
-      index?: any | null;
-      title?: string | null;
-      value?: string | null;
-      description?: string | null;
-      buttonTitle?: string | null;
-      url?: string | null;
-      type?: number | null;
       appLink?: string | null;
+      buttonTitle?: string | null;
+      description?: string | null;
       extensionLink?: string | null;
+      id: string;
+      imgUrl?: string | null;
+      index?: any | null;
+      status?: string | null;
+      title?: string | null;
+      url?: string | null;
+      value?: string | null;
     } | null;
   } | null;
 };
@@ -160,7 +119,7 @@ export const DiscoverEarnData_PortkeyCard_By_IdDocument = gql`
     $offset: Int
     $page: Int
     $search: String
-    $filter1: directus_files_filter
+    $filter1: cardType_filter
     $sort1: [String]
     $limit1: Int
     $offset1: Int
@@ -193,7 +152,6 @@ export const DiscoverEarnData_PortkeyCard_By_IdDocument = gql`
     $id: ID!
   ) {
     discoverEarnData_portkeyCard_by_id(id: $id) {
-      id
       discoverEarnData_id(
         filter: $filter4
         sort: $sort4
@@ -205,7 +163,6 @@ export const DiscoverEarnData_PortkeyCard_By_IdDocument = gql`
         id
         status
         items(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3) {
-          id
           discoverEarnData_id(
             filter: $filter
             sort: $sort
@@ -220,6 +177,7 @@ export const DiscoverEarnData_PortkeyCard_By_IdDocument = gql`
               count
             }
           }
+          id
           portkeyCard_id(
             filter: $filter2
             sort: $sort2
@@ -228,81 +186,39 @@ export const DiscoverEarnData_PortkeyCard_By_IdDocument = gql`
             page: $page2
             search: $search2
           ) {
-            id
-            status
-            index
-            title
-            value
-            description
+            appLink
             buttonTitle
-            imgUrl(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1) {
+            description
+            extensionLink
+            id
+            imgUrl
+            index
+            status
+            title
+            type(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1) {
               id
-              storage
-              filename_disk
-              filename_download
-              title
-              type
-              folder
-              uploaded_by
-              uploaded_on
-              uploaded_on_func {
-                year
-                month
-                week
-                day
-                weekday
-                hour
-                minute
-                second
-              }
-              modified_by
-              modified_on
-              modified_on_func {
-                year
-                month
-                week
-                day
-                weekday
-                hour
-                minute
-                second
-              }
-              charset
-              filesize
-              width
-              height
-              duration
-              embed
-              description
-              location
-              tags
-              tags_func {
-                count
-              }
-              metadata
-              metadata_func {
-                count
-              }
+              label
+              status
+              value
             }
             url
-            type
-            appLink
-            extensionLink
+            value
           }
         }
       }
+      id
       portkeyCard_id(filter: $filter5, sort: $sort5, limit: $limit5, offset: $offset5, page: $page5, search: $search5) {
-        id
-        status
-        index
-        title
-        value
-        description
-        buttonTitle
-        url
-        type
         appLink
+        buttonTitle
+        description
         extensionLink
+        id
+        imgUrl
+        index
+        status
+        title
+        url
+        value
       }
     }
   }

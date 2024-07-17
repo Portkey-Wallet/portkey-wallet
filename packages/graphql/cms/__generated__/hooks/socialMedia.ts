@@ -4,20 +4,12 @@ import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
 export type SocialMediaQueryVariables = Types.Exact<{
-  filter?: Types.InputMaybe<Types.Directus_Files_Filter>;
+  filter?: Types.InputMaybe<Types.SocialMedia_Filter>;
   sort?: Types.InputMaybe<Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>>;
   limit?: Types.InputMaybe<Types.Scalars['Int']>;
   offset?: Types.InputMaybe<Types.Scalars['Int']>;
   page?: Types.InputMaybe<Types.Scalars['Int']>;
   search?: Types.InputMaybe<Types.Scalars['String']>;
-  filter1?: Types.InputMaybe<Types.SocialMedia_Filter>;
-  sort1?: Types.InputMaybe<
-    Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
-  >;
-  limit1?: Types.InputMaybe<Types.Scalars['Int']>;
-  offset1?: Types.InputMaybe<Types.Scalars['Int']>;
-  page1?: Types.InputMaybe<Types.Scalars['Int']>;
-  search1?: Types.InputMaybe<Types.Scalars['String']>;
 }>;
 
 export type SocialMediaQuery = {
@@ -31,6 +23,7 @@ export type SocialMediaQuery = {
     link?: string | null;
     sort?: number | null;
     status?: string | null;
+    svgUrl?: string | null;
     title?: string | null;
     user_created?: string | null;
     user_updated?: string | null;
@@ -56,73 +49,19 @@ export type SocialMediaQuery = {
       minute?: number | null;
       second?: number | null;
     } | null;
-    svgUrl?: {
-      __typename?: 'directus_files';
-      id: string;
-      storage: string;
-      filename_disk?: string | null;
-      filename_download: string;
-      title?: string | null;
-      type?: string | null;
-      folder?: string | null;
-      uploaded_by?: string | null;
-      uploaded_on?: any | null;
-      modified_by?: string | null;
-      modified_on?: any | null;
-      charset?: string | null;
-      filesize?: any | null;
-      width?: number | null;
-      height?: number | null;
-      duration?: number | null;
-      embed?: string | null;
-      description?: string | null;
-      location?: string | null;
-      tags?: any | null;
-      metadata?: any | null;
-      uploaded_on_func?: {
-        __typename?: 'datetime_functions';
-        year?: number | null;
-        month?: number | null;
-        week?: number | null;
-        day?: number | null;
-        weekday?: number | null;
-        hour?: number | null;
-        minute?: number | null;
-        second?: number | null;
-      } | null;
-      modified_on_func?: {
-        __typename?: 'datetime_functions';
-        year?: number | null;
-        month?: number | null;
-        week?: number | null;
-        day?: number | null;
-        weekday?: number | null;
-        hour?: number | null;
-        minute?: number | null;
-        second?: number | null;
-      } | null;
-      tags_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-      metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-    } | null;
   }>;
 };
 
 export const SocialMediaDocument = gql`
   query socialMedia(
-    $filter: directus_files_filter
+    $filter: socialMedia_filter
     $sort: [String]
     $limit: Int
     $offset: Int
     $page: Int
     $search: String
-    $filter1: socialMedia_filter
-    $sort1: [String]
-    $limit1: Int
-    $offset1: Int
-    $page1: Int
-    $search1: String
   ) {
-    socialMedia(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1) {
+    socialMedia(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
       date_created
       date_created_func {
         year
@@ -150,55 +89,7 @@ export const SocialMediaDocument = gql`
       link
       sort
       status
-      svgUrl(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
-        id
-        storage
-        filename_disk
-        filename_download
-        title
-        type
-        folder
-        uploaded_by
-        uploaded_on
-        uploaded_on_func {
-          year
-          month
-          week
-          day
-          weekday
-          hour
-          minute
-          second
-        }
-        modified_by
-        modified_on
-        modified_on_func {
-          year
-          month
-          week
-          day
-          weekday
-          hour
-          minute
-          second
-        }
-        charset
-        filesize
-        width
-        height
-        duration
-        embed
-        description
-        location
-        tags
-        tags_func {
-          count
-        }
-        metadata
-        metadata_func {
-          count
-        }
-      }
+      svgUrl
       title
       user_created
       user_updated
@@ -224,12 +115,6 @@ export const SocialMediaDocument = gql`
  *      offset: // value for 'offset'
  *      page: // value for 'page'
  *      search: // value for 'search'
- *      filter1: // value for 'filter1'
- *      sort1: // value for 'sort1'
- *      limit1: // value for 'limit1'
- *      offset1: // value for 'offset1'
- *      page1: // value for 'page1'
- *      search1: // value for 'search1'
  *   },
  * });
  */

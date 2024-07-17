@@ -1,4 +1,10 @@
 type Query {
+  ActivityModalConfig(filter: ActivityModalConfig_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [ActivityModalConfig!]!
+  ActivityModalConfig_by_id(id: ID!): ActivityModalConfig
+  ActivityModalConfig_aggregated(groupBy: [String], filter: ActivityModalConfig_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [ActivityModalConfig_aggregated!]!
+  appVersion(filter: appVersion_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [appVersion!]!
+  appVersion_by_id(id: ID!): appVersion
+  appVersion_aggregated(groupBy: [String], filter: appVersion_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [appVersion_aggregated!]!
   bottomMenu(filter: bottomMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [bottomMenu!]!
   bottomMenu_by_id(id: ID!): bottomMenu
   bottomMenu_aggregated(groupBy: [String], filter: bottomMenu_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [bottomMenu_aggregated!]!
@@ -6,9 +12,18 @@ type Query {
   bottomSecondMenu_by_id(id: ID!): bottomSecondMenu
   bottomSecondMenu_aggregated(groupBy: [String], filter: bottomSecondMenu_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [bottomSecondMenu_aggregated!]!
   buyButton: buyButton
+  cardType(filter: cardType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [cardType!]!
+  cardType_by_id(id: ID!): cardType
+  cardType_aggregated(groupBy: [String], filter: cardType_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [cardType_aggregated!]!
+  clientType(filter: clientType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [clientType!]!
+  clientType_by_id(id: ID!): clientType
+  clientType_aggregated(groupBy: [String], filter: clientType_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [clientType_aggregated!]!
   codePushControl(filter: codePushControl_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [codePushControl!]!
   codePushControl_by_id(id: ID!): codePushControl
   codePushControl_aggregated(groupBy: [String], filter: codePushControl_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [codePushControl_aggregated!]!
+  country(filter: country_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [country!]!
+  country_by_id(id: ID!): country
+  country_aggregated(groupBy: [String], filter: country_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [country_aggregated!]!
   deviceBrand(filter: deviceBrand_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [deviceBrand!]!
   deviceBrand_by_id(id: ID!): deviceBrand
   deviceBrand_aggregated(groupBy: [String], filter: deviceBrand_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [deviceBrand_aggregated!]!
@@ -82,6 +97,10 @@ type Query {
   mediaKitPage_mediaKit(filter: mediaKitPage_mediaKit_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [mediaKitPage_mediaKit!]!
   mediaKitPage_mediaKit_by_id(id: ID!): mediaKitPage_mediaKit
   mediaKitPage_mediaKit_aggregated(groupBy: [String], filter: mediaKitPage_mediaKit_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [mediaKitPage_mediaKit_aggregated!]!
+  myReferralBanner: myReferralBanner
+  myReferralBanner_portkeyCard(filter: myReferralBanner_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [myReferralBanner_portkeyCard!]!
+  myReferralBanner_portkeyCard_by_id(id: ID!): myReferralBanner_portkeyCard
+  myReferralBanner_portkeyCard_aggregated(groupBy: [String], filter: myReferralBanner_portkeyCard_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [myReferralBanner_portkeyCard_aggregated!]!
   navigationType(filter: navigationType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [navigationType!]!
   navigationType_by_id(id: ID!): navigationType
   navigationType_aggregated(groupBy: [String], filter: navigationType_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [navigationType_aggregated!]!
@@ -94,6 +113,7 @@ type Query {
   rememberMeBlackListSites(filter: rememberMeBlackListSites_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [rememberMeBlackListSites!]!
   rememberMeBlackListSites_by_id(id: ID!): rememberMeBlackListSites
   rememberMeBlackListSites_aggregated(groupBy: [String], filter: rememberMeBlackListSites_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [rememberMeBlackListSites_aggregated!]!
+  serviceSuspension: serviceSuspension
   socialMedia(filter: socialMedia_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [socialMedia!]!
   socialMedia_by_id(id: ID!): socialMedia
   socialMedia_aggregated(groupBy: [String], filter: socialMedia_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [socialMedia_aggregated!]!
@@ -103,6 +123,9 @@ type Query {
   tabType(filter: tabType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [tabType!]!
   tabType_by_id(id: ID!): tabType
   tabType_aggregated(groupBy: [String], filter: tabType_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [tabType_aggregated!]!
+  timingType(filter: timingType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [timingType!]!
+  timingType_by_id(id: ID!): timingType
+  timingType_aggregated(groupBy: [String], filter: timingType_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [timingType_aggregated!]!
   tokenDetailBanner(filter: tokenDetailBanner_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [tokenDetailBanner!]!
   tokenDetailBanner_by_id(id: ID!): tokenDetailBanner
   tokenDetailBanner_aggregated(groupBy: [String], filter: tokenDetailBanner_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [tokenDetailBanner_aggregated!]!
@@ -115,6 +138,24 @@ type Query {
   topSecondMenu(filter: topSecondMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [topSecondMenu!]!
   topSecondMenu_by_id(id: ID!): topSecondMenu
   topSecondMenu_aggregated(groupBy: [String], filter: topSecondMenu_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [topSecondMenu_aggregated!]!
+  upgradePush(filter: upgradePush_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [upgradePush!]!
+  upgradePush_by_id(id: ID!): upgradePush
+  upgradePush_aggregated(groupBy: [String], filter: upgradePush_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [upgradePush_aggregated!]!
+  upgradePush_appVersion(filter: upgradePush_appVersion_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [upgradePush_appVersion!]!
+  upgradePush_appVersion_by_id(id: ID!): upgradePush_appVersion
+  upgradePush_appVersion_aggregated(groupBy: [String], filter: upgradePush_appVersion_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [upgradePush_appVersion_aggregated!]!
+  upgradePush_country(filter: upgradePush_country_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [upgradePush_country!]!
+  upgradePush_country_by_id(id: ID!): upgradePush_country
+  upgradePush_country_aggregated(groupBy: [String], filter: upgradePush_country_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [upgradePush_country_aggregated!]!
+  upgradePush_deviceBrand(filter: upgradePush_deviceBrand_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [upgradePush_deviceBrand!]!
+  upgradePush_deviceBrand_by_id(id: ID!): upgradePush_deviceBrand
+  upgradePush_deviceBrand_aggregated(groupBy: [String], filter: upgradePush_deviceBrand_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [upgradePush_deviceBrand_aggregated!]!
+  upgradePush_deviceType(filter: upgradePush_deviceType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [upgradePush_deviceType!]!
+  upgradePush_deviceType_by_id(id: ID!): upgradePush_deviceType
+  upgradePush_deviceType_aggregated(groupBy: [String], filter: upgradePush_deviceType_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [upgradePush_deviceType_aggregated!]!
+  upgradeStyle(filter: upgradeStyle_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [upgradeStyle!]!
+  upgradeStyle_by_id(id: ID!): upgradeStyle
+  upgradeStyle_aggregated(groupBy: [String], filter: upgradeStyle_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [upgradeStyle_aggregated!]!
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -153,6 +194,121 @@ scalar JSON
 The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
 """
 scalar String
+
+type ActivityModalConfig {
+  clientType(filter: clientType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): clientType
+
+  description: String
+
+  headerImg: String
+  id: ID!
+  label: String
+
+  negativeTitle: String
+
+  negtiveTitle: String
+
+  positiveAction: String
+
+  positiveTitle: String
+
+  show: Boolean
+
+  showClose: Boolean
+  timingOperation: String
+  timingType(filter: timingType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): timingType
+
+  title: String
+}
+
+type ActivityModalConfig_aggregated {
+  group: JSON
+  countAll: Int
+  count: ActivityModalConfig_aggregated_count
+  countDistinct: ActivityModalConfig_aggregated_count
+  avg: ActivityModalConfig_aggregated_fields
+  sum: ActivityModalConfig_aggregated_fields
+  avgDistinct: ActivityModalConfig_aggregated_fields
+  sumDistinct: ActivityModalConfig_aggregated_fields
+  min: ActivityModalConfig_aggregated_fields
+  max: ActivityModalConfig_aggregated_fields
+}
+
+type ActivityModalConfig_aggregated_count {
+  clientType: Int
+
+  description: Int
+
+  headerImg: Int
+  id: Int
+  label: Int
+
+  negativeTitle: Int
+
+  negtiveTitle: Int
+
+  positiveAction: Int
+
+  positiveTitle: Int
+
+  show: Int
+
+  showClose: Int
+  timingOperation: Int
+  timingType: Int
+
+  title: Int
+}
+
+type ActivityModalConfig_aggregated_fields {
+  clientType: Float
+  id: Float
+  timingType: Float
+}
+
+type appVersion {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  label: String
+  sort: Int
+  status: String
+  user_created: String
+  user_updated: String
+  value: String
+}
+
+type appVersion_aggregated {
+  group: JSON
+  countAll: Int
+  count: appVersion_aggregated_count
+  countDistinct: appVersion_aggregated_count
+  avg: appVersion_aggregated_fields
+  sum: appVersion_aggregated_fields
+  avgDistinct: appVersion_aggregated_fields
+  sumDistinct: appVersion_aggregated_fields
+  min: appVersion_aggregated_fields
+  max: appVersion_aggregated_fields
+}
+
+type appVersion_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  label: Int
+  sort: Int
+  status: Int
+  user_created: Int
+  user_updated: Int
+  value: Int
+}
+
+type appVersion_aggregated_fields {
+  id: Float
+  sort: Float
+}
 
 type bottomMenu {
   date_created: Date
@@ -279,23 +435,81 @@ type buyButton {
   user_updated: String
 }
 
-type codePushControl {
+type cardType {
   id: ID!
+  label: String
   status: String
-  sort: Int
-  user_created: String
+  value: String
+}
+
+type cardType_aggregated {
+  group: JSON
+  countAll: Int
+  count: cardType_aggregated_count
+  countDistinct: cardType_aggregated_count
+  avg: cardType_aggregated_fields
+  sum: cardType_aggregated_fields
+  avgDistinct: cardType_aggregated_fields
+  sumDistinct: cardType_aggregated_fields
+  min: cardType_aggregated_fields
+  max: cardType_aggregated_fields
+}
+
+type cardType_aggregated_count {
+  id: Int
+  label: Int
+  status: Int
+  value: Int
+}
+
+type cardType_aggregated_fields {
+  id: Float
+}
+
+type clientType {
+  id: ID!
+  name: String
+}
+
+type clientType_aggregated {
+  group: JSON
+  countAll: Int
+  count: clientType_aggregated_count
+  countDistinct: clientType_aggregated_count
+  avg: clientType_aggregated_fields
+  sum: clientType_aggregated_fields
+  avgDistinct: clientType_aggregated_fields
+  sumDistinct: clientType_aggregated_fields
+  min: clientType_aggregated_fields
+  max: clientType_aggregated_fields
+}
+
+type clientType_aggregated_count {
+  id: Int
+  name: Int
+}
+
+type clientType_aggregated_fields {
+  id: Float
+}
+
+type codePushControl {
+  content: String
   date_created: Date
   date_created_func: datetime_functions
-  user_updated: String
   date_updated: Date
   date_updated_func: datetime_functions
-  version: String
-  label: String
-  title: String
-  content: String
+  id: ID!
   isForceUpdate: Boolean
-  updatedTitle: String
+  label: String
+  sort: Int
+  status: String
+  title: String
   updatedContent: String
+  updatedTitle: String
+  user_created: String
+  user_updated: String
+  version: String
 }
 
 type codePushControl_aggregated {
@@ -312,20 +526,20 @@ type codePushControl_aggregated {
 }
 
 type codePushControl_aggregated_count {
-  id: Int
-  status: Int
-  sort: Int
-  user_created: Int
-  date_created: Int
-  user_updated: Int
-  date_updated: Int
-  version: Int
-  label: Int
-  title: Int
   content: Int
+  date_created: Int
+  date_updated: Int
+  id: Int
   isForceUpdate: Int
-  updatedTitle: Int
+  label: Int
+  sort: Int
+  status: Int
+  title: Int
   updatedContent: Int
+  updatedTitle: Int
+  user_created: Int
+  user_updated: Int
+  version: Int
 }
 
 type codePushControl_aggregated_fields {
@@ -335,6 +549,50 @@ type codePushControl_aggregated_fields {
 
 type count_functions {
   count: Int
+}
+
+type country {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  label: String
+  sort: Int
+  status: String
+  user_created: String
+  user_updated: String
+  value: String
+}
+
+type country_aggregated {
+  group: JSON
+  countAll: Int
+  count: country_aggregated_count
+  countDistinct: country_aggregated_count
+  avg: country_aggregated_fields
+  sum: country_aggregated_fields
+  avgDistinct: country_aggregated_fields
+  sumDistinct: country_aggregated_fields
+  min: country_aggregated_fields
+  max: country_aggregated_fields
+}
+
+type country_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  label: Int
+  sort: Int
+  status: Int
+  user_created: Int
+  user_updated: Int
+  value: Int
+}
+
+type country_aggregated_fields {
+  id: Float
+  sort: Float
 }
 
 type datetime_functions {
@@ -437,34 +695,6 @@ type deviceType_aggregated_fields {
   value: Float
 }
 
-type directus_files {
-  id: ID!
-  storage: String!
-  filename_disk: String
-  filename_download: String!
-  title: String
-  type: String
-  folder: String
-  uploaded_by: String
-  uploaded_on: Date
-  uploaded_on_func: datetime_functions
-  modified_by: String
-  modified_on: Date
-  modified_on_func: datetime_functions
-  charset: String
-  filesize: GraphQLBigInt
-  width: Int
-  height: Int
-  duration: Int
-  embed: String
-  description: String
-  location: String
-  tags: JSON
-  tags_func: count_functions
-  metadata: JSON
-  metadata_func: count_functions
-}
-
 type discoverDappBanner {
   id: ID!
   status: String
@@ -473,8 +703,8 @@ type discoverDappBanner {
 }
 
 type discoverDappBanner_portkeyCard {
-  id: ID!
   discoverDappBanner_id(filter: discoverDappBanner_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): discoverDappBanner
+  id: ID!
   portkeyCard_id(filter: portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): portkeyCard
 }
 
@@ -492,14 +722,14 @@ type discoverDappBanner_portkeyCard_aggregated {
 }
 
 type discoverDappBanner_portkeyCard_aggregated_count {
-  id: Int
   discoverDappBanner_id: Int
+  id: Int
   portkeyCard_id: Int
 }
 
 type discoverDappBanner_portkeyCard_aggregated_fields {
-  id: Float
   discoverDappBanner_id: Float
+  id: Float
   portkeyCard_id: Float
 }
 
@@ -511,8 +741,8 @@ type discoverEarnData {
 }
 
 type discoverEarnData_portkeyCard {
-  id: ID!
   discoverEarnData_id(filter: discoverEarnData_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): discoverEarnData
+  id: ID!
   portkeyCard_id(filter: portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): portkeyCard
 }
 
@@ -530,14 +760,14 @@ type discoverEarnData_portkeyCard_aggregated {
 }
 
 type discoverEarnData_portkeyCard_aggregated_count {
-  id: Int
   discoverEarnData_id: Int
+  id: Int
   portkeyCard_id: Int
 }
 
 type discoverEarnData_portkeyCard_aggregated_fields {
-  id: Float
   discoverEarnData_id: Float
+  id: Float
   portkeyCard_id: Float
 }
 
@@ -590,14 +820,18 @@ type discoverGroup_aggregated_fields {
 }
 
 type discoverItem {
+  appLink: String
   date_created: Date
   date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
   description: String
+  extensionLink: String
   group(filter: discoverGroup_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): discoverGroup
   id: ID!
-  imgUrl(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+
+  """Not support svg"""
+  imgUrl: String
   index: Int
   sort: Int
   status: String
@@ -605,8 +839,6 @@ type discoverItem {
   url: String
   user_created: String
   user_updated: String
-  appLink: String
-  extensionLink: String
 }
 
 type discoverItem_aggregated {
@@ -623,9 +855,11 @@ type discoverItem_aggregated {
 }
 
 type discoverItem_aggregated_count {
+  appLink: Int
   date_created: Int
   date_updated: Int
   description: Int
+  extensionLink: Int
   group: Int
   id: Int
 
@@ -638,8 +872,6 @@ type discoverItem_aggregated_count {
   url: Int
   user_created: Int
   user_updated: Int
-  appLink: Int
-  extensionLink: Int
 }
 
 type discoverItem_aggregated_fields {
@@ -657,8 +889,8 @@ type discoverLearnBanner {
 }
 
 type discoverLearnBanner_portkeyCard {
-  id: ID!
   discoverLearnBanner_id(filter: discoverLearnBanner_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): discoverLearnBanner
+  id: ID!
   portkeyCard_id(filter: portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): portkeyCard
 }
 
@@ -676,21 +908,21 @@ type discoverLearnBanner_portkeyCard_aggregated {
 }
 
 type discoverLearnBanner_portkeyCard_aggregated_count {
-  id: Int
   discoverLearnBanner_id: Int
+  id: Int
   portkeyCard_id: Int
 }
 
 type discoverLearnBanner_portkeyCard_aggregated_fields {
-  id: Float
   discoverLearnBanner_id: Float
+  id: Float
   portkeyCard_id: Float
 }
 
 type discoverLearnGroup {
   id: ID!
-  status: String
   index: GraphQLBigInt
+  status: String
   title: String
   value: String
   items(filter: discoverLearnGroup_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverLearnGroup_portkeyCard]
@@ -712,8 +944,8 @@ type discoverLearnGroup_aggregated {
 
 type discoverLearnGroup_aggregated_count {
   id: Int
-  status: Int
   index: Int
+  status: Int
   title: Int
   value: Int
   items: Int
@@ -725,8 +957,8 @@ type discoverLearnGroup_aggregated_fields {
 }
 
 type discoverLearnGroup_portkeyCard {
-  id: ID!
   discoverLearnGroup_id(filter: discoverLearnGroup_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): discoverLearnGroup
+  id: ID!
   portkeyCard_id(filter: portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): portkeyCard
 }
 
@@ -744,22 +976,22 @@ type discoverLearnGroup_portkeyCard_aggregated {
 }
 
 type discoverLearnGroup_portkeyCard_aggregated_count {
-  id: Int
   discoverLearnGroup_id: Int
+  id: Int
   portkeyCard_id: Int
 }
 
 type discoverLearnGroup_portkeyCard_aggregated_fields {
-  id: Float
   discoverLearnGroup_id: Float
+  id: Float
   portkeyCard_id: Float
 }
 
 type discoverTabData {
   id: ID!
-  status: String
   index: GraphQLBigInt
   name: String
+  status: String
   value: String
 }
 
@@ -778,9 +1010,9 @@ type discoverTabData_aggregated {
 
 type discoverTabData_aggregated_count {
   id: Int
-  status: Int
   index: Int
   name: Int
+  status: Int
   value: Int
 }
 
@@ -791,29 +1023,29 @@ type discoverTabData_aggregated_fields {
 
 type download {
   androidDownloadUrl: String
-  androidProductImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
-  androidQRCode(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  androidProductImage: String
+  androidQRCode: String
   date_updated: Date
   date_updated_func: datetime_functions
   extensionDownloadUrl: String
-  extensionProductImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  extensionProductImage: String
   id: ID!
   iosDownloadUrl: String
-  iosProductImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
-  iosQRCode(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  iosProductImage: String
+  iosQRCode: String
   user_updated: String
 }
 
 type entrance {
-  id: ID!
-  user_created: String
   date_created: Date
   date_created_func: datetime_functions
-  user_updated: String
   date_updated: Date
   date_updated_func: datetime_functions
-  moduleName(filter: entranceModuleName_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): entranceModuleName
   defaultSwitch: Boolean
+  id: ID!
+  moduleName(filter: entranceModuleName_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): entranceModuleName
+  user_created: String
+  user_updated: String
   matchList(filter: entrance_entranceMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entrance_entranceMatch]
   matchList_func: count_functions
 }
@@ -832,13 +1064,13 @@ type entrance_aggregated {
 }
 
 type entrance_aggregated_count {
-  id: Int
-  user_created: Int
   date_created: Int
-  user_updated: Int
   date_updated: Int
-  moduleName: Int
   defaultSwitch: Int
+  id: Int
+  moduleName: Int
+  user_created: Int
+  user_updated: Int
   matchList: Int
 }
 
@@ -848,9 +1080,9 @@ type entrance_aggregated_fields {
 }
 
 type entrance_entranceMatch {
-  id: ID!
   entrance_id(filter: entrance_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): entrance
   entranceMatch_id(filter: entranceMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): entranceMatch
+  id: ID!
 }
 
 type entrance_entranceMatch_aggregated {
@@ -867,31 +1099,31 @@ type entrance_entranceMatch_aggregated {
 }
 
 type entrance_entranceMatch_aggregated_count {
-  id: Int
   entrance_id: Int
   entranceMatch_id: Int
+  id: Int
 }
 
 type entrance_entranceMatch_aggregated_fields {
-  id: Float
   entrance_id: Float
   entranceMatch_id: Float
+  id: Float
 }
 
 type entranceMatch {
-  id: ID!
-  status: String
-  user_created: String
   date_created: Date
   date_created_func: datetime_functions
-  user_updated: String
   date_updated: Date
   date_updated_func: datetime_functions
+  description: String
+  id: ID!
   matchRuleList: JSON
   matchRuleList_func: count_functions
-  weight: Int
   matchSwitch: Boolean
-  description: String
+  status: String
+  user_created: String
+  user_updated: String
+  weight: Int
 }
 
 type entranceMatch_aggregated {
@@ -908,16 +1140,16 @@ type entranceMatch_aggregated {
 }
 
 type entranceMatch_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  description: Int
   id: Int
+  matchRuleList: Int
+  matchSwitch: Int
   status: Int
   user_created: Int
-  date_created: Int
   user_updated: Int
-  date_updated: Int
-  matchRuleList: Int
   weight: Int
-  matchSwitch: Int
-  description: Int
 }
 
 type entranceMatch_aggregated_fields {
@@ -926,15 +1158,15 @@ type entranceMatch_aggregated_fields {
 }
 
 type entranceModuleName {
-  id: ID!
-  user_created: String
   date_created: Date
   date_created_func: datetime_functions
-  user_updated: String
   date_updated: Date
   date_updated_func: datetime_functions
-  value: String
   description: String
+  id: ID!
+  user_created: String
+  user_updated: String
+  value: String
 }
 
 type entranceModuleName_aggregated {
@@ -951,13 +1183,13 @@ type entranceModuleName_aggregated {
 }
 
 type entranceModuleName_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  description: Int
   id: Int
   user_created: Int
-  date_created: Int
   user_updated: Int
-  date_updated: Int
   value: Int
-  description: Int
 }
 
 type entranceModuleName_aggregated_fields {
@@ -965,12 +1197,12 @@ type entranceModuleName_aggregated_fields {
 }
 
 type home {
+  dAppSectionTitle: String
   date_updated: Date
   date_updated_func: datetime_functions
-  focusImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  focusImage: String
   id: ID!
   user_updated: String
-  dAppSectionTitle: String
   videoContent: String
   videoTitle: String
   videoUrl: String
@@ -1017,8 +1249,8 @@ type homeBanner {
 }
 
 type homeBanner_portkeyCard {
-  id: ID!
   homeBanner_id(filter: homeBanner_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): homeBanner
+  id: ID!
   portkeyCard_id(filter: portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): portkeyCard
 }
 
@@ -1036,27 +1268,27 @@ type homeBanner_portkeyCard_aggregated {
 }
 
 type homeBanner_portkeyCard_aggregated_count {
-  id: Int
   homeBanner_id: Int
+  id: Int
   portkeyCard_id: Int
 }
 
 type homeBanner_portkeyCard_aggregated_fields {
-  id: Float
   homeBanner_id: Float
+  id: Float
   portkeyCard_id: Float
 }
 
 type loginMode {
-  id: ID!
-  status: String
-  extensionIndex: GraphQLBigInt!
-  iOSIndex: GraphQLBigInt!
   androidIndex: GraphQLBigInt!
-  extensionRecommend: Boolean!
-  iOSRecommend: Boolean!
   androidRecommend: Boolean!
   defaultSwitch: Boolean!
+  extensionIndex: GraphQLBigInt!
+  extensionRecommend: Boolean!
+  id: ID!
+  iOSIndex: GraphQLBigInt!
+  iOSRecommend: Boolean!
+  status: String
   type(filter: loginType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): loginType
   matchList(filter: loginMode_loginModeMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [loginMode_loginModeMatch]
   matchList_func: count_functions
@@ -1076,24 +1308,24 @@ type loginMode_aggregated {
 }
 
 type loginMode_aggregated_count {
-  id: Int
-  status: Int
-  extensionIndex: Int
-  iOSIndex: Int
   androidIndex: Int
-  extensionRecommend: Int
-  iOSRecommend: Int
   androidRecommend: Int
   defaultSwitch: Int
+  extensionIndex: Int
+  extensionRecommend: Int
+  id: Int
+  iOSIndex: Int
+  iOSRecommend: Int
+  status: Int
   type: Int
   matchList: Int
 }
 
 type loginMode_aggregated_fields {
-  id: Float
-  extensionIndex: Float
-  iOSIndex: Float
   androidIndex: Float
+  extensionIndex: Float
+  id: Float
+  iOSIndex: Float
   type: Float
 }
 
@@ -1129,13 +1361,13 @@ type loginMode_loginModeMatch_aggregated_fields {
 }
 
 type loginModeMatch {
+  description: String!
   id: ID!
-  status: String
-  weight: GraphQLBigInt!
-  matchSwitch: Boolean!
   matchRuleList: JSON!
   matchRuleList_func: count_functions
-  description: String!
+  matchSwitch: Boolean!
+  status: String
+  weight: GraphQLBigInt!
 }
 
 type loginModeMatch_aggregated {
@@ -1152,12 +1384,12 @@ type loginModeMatch_aggregated {
 }
 
 type loginModeMatch_aggregated_count {
+  description: Int
   id: Int
+  matchRuleList: Int
+  matchSwitch: Int
   status: Int
   weight: Int
-  matchSwitch: Int
-  matchRuleList: Int
-  description: Int
 }
 
 type loginModeMatch_aggregated_fields {
@@ -1167,8 +1399,8 @@ type loginModeMatch_aggregated_fields {
 
 type loginType {
   id: ID!
-  status: String
   label: String!
+  status: String
   value: String!
 }
 
@@ -1187,8 +1419,8 @@ type loginType_aggregated {
 
 type loginType_aggregated_count {
   id: Int
-  status: Int
   label: Int
+  status: Int
   value: Int
 }
 
@@ -1205,10 +1437,10 @@ type mediaKit {
   id: ID!
   index: Int
   name: String!
-  png(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  png: String
   sort: Int
   status: String
-  svg(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  svg: String
   user_created: String
   user_updated: String
 }
@@ -1248,28 +1480,28 @@ type mediaKit_aggregated_fields {
 }
 
 type mediaKitPage {
-  allMediaKitZip(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  allMediaKitZip: String
+  boilerplateContent: String
+  boilerplateTitle: String
   content: String!
   date_created: Date
   date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
   id: ID!
+  mediaKitDescription: String
   status: String
   title: String!
   user_created: String
   user_updated: String
-  boilerplateContent: String
-  boilerplateTitle: String
-  mediaKitDescription: String
   mediaKitList(filter: mediaKitPage_mediaKit_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [mediaKitPage_mediaKit]
   mediaKitList_func: count_functions
 }
 
 type mediaKitPage_mediaKit {
   id: ID!
-  mediaKitPage_id(filter: mediaKitPage_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): mediaKitPage
   mediaKit_id(filter: mediaKit_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): mediaKit
+  mediaKitPage_id(filter: mediaKitPage_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): mediaKitPage
 }
 
 type mediaKitPage_mediaKit_aggregated {
@@ -1287,14 +1519,52 @@ type mediaKitPage_mediaKit_aggregated {
 
 type mediaKitPage_mediaKit_aggregated_count {
   id: Int
-  mediaKitPage_id: Int
   mediaKit_id: Int
+  mediaKitPage_id: Int
 }
 
 type mediaKitPage_mediaKit_aggregated_fields {
   id: Float
-  mediaKitPage_id: Float
   mediaKit_id: Float
+  mediaKitPage_id: Float
+}
+
+type myReferralBanner {
+  id: ID!
+  status: String
+  items(filter: myReferralBanner_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [myReferralBanner_portkeyCard]
+  items_func: count_functions
+}
+
+type myReferralBanner_portkeyCard {
+  id: ID!
+  myReferralBanner_id(filter: myReferralBanner_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): myReferralBanner
+  portkeyCard_id(filter: portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): portkeyCard
+}
+
+type myReferralBanner_portkeyCard_aggregated {
+  group: JSON
+  countAll: Int
+  count: myReferralBanner_portkeyCard_aggregated_count
+  countDistinct: myReferralBanner_portkeyCard_aggregated_count
+  avg: myReferralBanner_portkeyCard_aggregated_fields
+  sum: myReferralBanner_portkeyCard_aggregated_fields
+  avgDistinct: myReferralBanner_portkeyCard_aggregated_fields
+  sumDistinct: myReferralBanner_portkeyCard_aggregated_fields
+  min: myReferralBanner_portkeyCard_aggregated_fields
+  max: myReferralBanner_portkeyCard_aggregated_fields
+}
+
+type myReferralBanner_portkeyCard_aggregated_count {
+  id: Int
+  myReferralBanner_id: Int
+  portkeyCard_id: Int
+}
+
+type myReferralBanner_portkeyCard_aggregated_fields {
+  id: Float
+  myReferralBanner_id: Float
+  portkeyCard_id: Float
 }
 
 type navigationType {
@@ -1343,7 +1613,7 @@ type navigationType_aggregated_fields {
 }
 
 type officialSocialMedia {
-  activeSvg(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  activeSvg: String
   date_created: Date
   date_created_func: datetime_functions
   date_updated: Date
@@ -1354,7 +1624,7 @@ type officialSocialMedia {
   name: String!
   sort: Int
   status: String
-  svg(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  svg: String
   user_created: String
   user_updated: String
 }
@@ -1394,18 +1664,18 @@ type officialSocialMedia_aggregated_fields {
 }
 
 type portkeyCard {
-  id: ID!
-  status: String
-  index: GraphQLBigInt
-  title: String
-  value: String
-  description: String
-  buttonTitle: String
-  imgUrl(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
-  url: String
-  type: Int
   appLink: String
+  buttonTitle: String
+  description: String
   extensionLink: String
+  id: ID!
+  imgUrl: String
+  index: GraphQLBigInt
+  status: String
+  title: String
+  type(filter: cardType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): cardType
+  url: String
+  value: String
 }
 
 type portkeyCard_aggregated {
@@ -1422,18 +1692,18 @@ type portkeyCard_aggregated {
 }
 
 type portkeyCard_aggregated_count {
-  id: Int
-  status: Int
-  index: Int
-  title: Int
-  value: Int
-  description: Int
-  buttonTitle: Int
-  imgUrl: Int
-  url: Int
-  type: Int
   appLink: Int
+  buttonTitle: Int
+  description: Int
   extensionLink: Int
+  id: Int
+  imgUrl: Int
+  index: Int
+  status: Int
+  title: Int
+  type: Int
+  url: Int
+  value: Int
 }
 
 type portkeyCard_aggregated_fields {
@@ -1486,6 +1756,20 @@ type rememberMeBlackListSites_aggregated_fields {
   sort: Float
 }
 
+type serviceSuspension {
+  androidUrl: String
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  extensionUrl: String
+  id: ID!
+  iOSUrl: String
+  isSuspended: Boolean
+  user_created: String
+  user_updated: String
+}
+
 type socialMedia {
   date_created: Date
   date_created_func: datetime_functions
@@ -1496,7 +1780,9 @@ type socialMedia {
   link: String
   sort: Int
   status: String
-  svgUrl(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+
+  """Only support svg"""
+  svgUrl: String
   title: String
   user_created: String
   user_updated: String
@@ -1629,10 +1915,37 @@ type tabType_aggregated_fields {
   sort: Float
 }
 
+type timingType {
+  id: ID!
+  name: String
+}
+
+type timingType_aggregated {
+  group: JSON
+  countAll: Int
+  count: timingType_aggregated_count
+  countDistinct: timingType_aggregated_count
+  avg: timingType_aggregated_fields
+  sum: timingType_aggregated_fields
+  avgDistinct: timingType_aggregated_fields
+  sumDistinct: timingType_aggregated_fields
+  min: timingType_aggregated_fields
+  max: timingType_aggregated_fields
+}
+
+type timingType_aggregated_count {
+  id: Int
+  name: Int
+}
+
+type timingType_aggregated_fields {
+  id: Float
+}
+
 type tokenDetailBanner {
+  chainId: String
   id: ID!
   status: String
-  chainId: String
   symbol: String
   items(filter: tokenDetailBanner_portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [tokenDetailBanner_portkeyCard]
   items_func: count_functions
@@ -1652,9 +1965,9 @@ type tokenDetailBanner_aggregated {
 }
 
 type tokenDetailBanner_aggregated_count {
+  chainId: Int
   id: Int
   status: Int
-  chainId: Int
   symbol: Int
   items: Int
 }
@@ -1665,8 +1978,8 @@ type tokenDetailBanner_aggregated_fields {
 
 type tokenDetailBanner_portkeyCard {
   id: ID!
-  tokenDetailBanner_id(filter: tokenDetailBanner_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): tokenDetailBanner
   portkeyCard_id(filter: portkeyCard_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): portkeyCard
+  tokenDetailBanner_id(filter: tokenDetailBanner_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): tokenDetailBanner
 }
 
 type tokenDetailBanner_portkeyCard_aggregated {
@@ -1684,14 +1997,14 @@ type tokenDetailBanner_portkeyCard_aggregated {
 
 type tokenDetailBanner_portkeyCard_aggregated_count {
   id: Int
-  tokenDetailBanner_id: Int
   portkeyCard_id: Int
+  tokenDetailBanner_id: Int
 }
 
 type tokenDetailBanner_portkeyCard_aggregated_fields {
   id: Float
-  tokenDetailBanner_id: Float
   portkeyCard_id: Float
+  tokenDetailBanner_id: Float
 }
 
 type topMenu {
@@ -1800,6 +2113,283 @@ type topSecondMenu_aggregated_fields {
   type: Float
 }
 
+type upgradePush {
+  appId: String
+  content: String
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  downloadUrl: String
+  id: ID!
+  isApproved: Boolean
+  isForceUpdate: Boolean
+  operatingSystemVersions: JSON
+  operatingSystemVersions_func: count_functions
+  sort: Int
+  status: String
+  styleType(filter: upgradeStyle_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): upgradeStyle
+  targetVersion(filter: appVersion_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): appVersion
+  title: String
+  user_created: String
+  user_updated: String
+  appVersions(filter: upgradePush_appVersion_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [upgradePush_appVersion]
+  appVersions_func: count_functions
+  countries(filter: upgradePush_country_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [upgradePush_country]
+  countries_func: count_functions
+  deviceBrands(filter: upgradePush_deviceBrand_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [upgradePush_deviceBrand]
+  deviceBrands_func: count_functions
+  deviceTypes(filter: upgradePush_deviceType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [upgradePush_deviceType]
+  deviceTypes_func: count_functions
+}
+
+type upgradePush_aggregated {
+  group: JSON
+  countAll: Int
+  count: upgradePush_aggregated_count
+  countDistinct: upgradePush_aggregated_count
+  avg: upgradePush_aggregated_fields
+  sum: upgradePush_aggregated_fields
+  avgDistinct: upgradePush_aggregated_fields
+  sumDistinct: upgradePush_aggregated_fields
+  min: upgradePush_aggregated_fields
+  max: upgradePush_aggregated_fields
+}
+
+type upgradePush_aggregated_count {
+  appId: Int
+  content: Int
+  date_created: Int
+  date_updated: Int
+  downloadUrl: Int
+  id: Int
+  isApproved: Int
+  isForceUpdate: Int
+  operatingSystemVersions: Int
+  sort: Int
+  status: Int
+  styleType: Int
+  targetVersion: Int
+  title: Int
+  user_created: Int
+  user_updated: Int
+  appVersions: Int
+  countries: Int
+  deviceBrands: Int
+  deviceTypes: Int
+}
+
+type upgradePush_aggregated_fields {
+  id: Float
+  sort: Float
+  styleType: Float
+  targetVersion: Float
+}
+
+type upgradePush_appVersion {
+  appVersion_id(filter: appVersion_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): appVersion
+  id: ID!
+  upgradePush_id(filter: upgradePush_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): upgradePush
+}
+
+type upgradePush_appVersion_aggregated {
+  group: JSON
+  countAll: Int
+  count: upgradePush_appVersion_aggregated_count
+  countDistinct: upgradePush_appVersion_aggregated_count
+  avg: upgradePush_appVersion_aggregated_fields
+  sum: upgradePush_appVersion_aggregated_fields
+  avgDistinct: upgradePush_appVersion_aggregated_fields
+  sumDistinct: upgradePush_appVersion_aggregated_fields
+  min: upgradePush_appVersion_aggregated_fields
+  max: upgradePush_appVersion_aggregated_fields
+}
+
+type upgradePush_appVersion_aggregated_count {
+  appVersion_id: Int
+  id: Int
+  upgradePush_id: Int
+}
+
+type upgradePush_appVersion_aggregated_fields {
+  appVersion_id: Float
+  id: Float
+  upgradePush_id: Float
+}
+
+type upgradePush_country {
+  country_id(filter: country_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): country
+  id: ID!
+  upgradePush_id(filter: upgradePush_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): upgradePush
+}
+
+type upgradePush_country_aggregated {
+  group: JSON
+  countAll: Int
+  count: upgradePush_country_aggregated_count
+  countDistinct: upgradePush_country_aggregated_count
+  avg: upgradePush_country_aggregated_fields
+  sum: upgradePush_country_aggregated_fields
+  avgDistinct: upgradePush_country_aggregated_fields
+  sumDistinct: upgradePush_country_aggregated_fields
+  min: upgradePush_country_aggregated_fields
+  max: upgradePush_country_aggregated_fields
+}
+
+type upgradePush_country_aggregated_count {
+  country_id: Int
+  id: Int
+  upgradePush_id: Int
+}
+
+type upgradePush_country_aggregated_fields {
+  country_id: Float
+  id: Float
+  upgradePush_id: Float
+}
+
+type upgradePush_deviceBrand {
+  deviceBrand_id(filter: deviceBrand_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): deviceBrand
+  id: ID!
+  upgradePush_id(filter: upgradePush_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): upgradePush
+}
+
+type upgradePush_deviceBrand_aggregated {
+  group: JSON
+  countAll: Int
+  count: upgradePush_deviceBrand_aggregated_count
+  countDistinct: upgradePush_deviceBrand_aggregated_count
+  avg: upgradePush_deviceBrand_aggregated_fields
+  sum: upgradePush_deviceBrand_aggregated_fields
+  avgDistinct: upgradePush_deviceBrand_aggregated_fields
+  sumDistinct: upgradePush_deviceBrand_aggregated_fields
+  min: upgradePush_deviceBrand_aggregated_fields
+  max: upgradePush_deviceBrand_aggregated_fields
+}
+
+type upgradePush_deviceBrand_aggregated_count {
+  deviceBrand_id: Int
+  id: Int
+  upgradePush_id: Int
+}
+
+type upgradePush_deviceBrand_aggregated_fields {
+  deviceBrand_id: Float
+  id: Float
+  upgradePush_id: Float
+}
+
+type upgradePush_deviceType {
+  deviceType_id(filter: deviceType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): deviceType
+  id: ID!
+  upgradePush_id(filter: upgradePush_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): upgradePush
+}
+
+type upgradePush_deviceType_aggregated {
+  group: JSON
+  countAll: Int
+  count: upgradePush_deviceType_aggregated_count
+  countDistinct: upgradePush_deviceType_aggregated_count
+  avg: upgradePush_deviceType_aggregated_fields
+  sum: upgradePush_deviceType_aggregated_fields
+  avgDistinct: upgradePush_deviceType_aggregated_fields
+  sumDistinct: upgradePush_deviceType_aggregated_fields
+  min: upgradePush_deviceType_aggregated_fields
+  max: upgradePush_deviceType_aggregated_fields
+}
+
+type upgradePush_deviceType_aggregated_count {
+  deviceType_id: Int
+  id: Int
+  upgradePush_id: Int
+}
+
+type upgradePush_deviceType_aggregated_fields {
+  deviceType_id: Float
+  id: Float
+  upgradePush_id: Float
+}
+
+type upgradeStyle {
+  attribute: String
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  sort: Int
+  status: String
+  user_created: String
+  user_updated: String
+  value: Int
+}
+
+type upgradeStyle_aggregated {
+  group: JSON
+  countAll: Int
+  count: upgradeStyle_aggregated_count
+  countDistinct: upgradeStyle_aggregated_count
+  avg: upgradeStyle_aggregated_fields
+  sum: upgradeStyle_aggregated_fields
+  avgDistinct: upgradeStyle_aggregated_fields
+  sumDistinct: upgradeStyle_aggregated_fields
+  min: upgradeStyle_aggregated_fields
+  max: upgradeStyle_aggregated_fields
+}
+
+type upgradeStyle_aggregated_count {
+  attribute: Int
+  date_created: Int
+  date_updated: Int
+  id: Int
+  sort: Int
+  status: Int
+  user_created: Int
+  user_updated: Int
+  value: Int
+}
+
+type upgradeStyle_aggregated_fields {
+  id: Float
+  sort: Float
+  value: Float
+}
+
+input ActivityModalConfig_filter {
+  clientType: clientType_filter
+  description: string_filter_operators
+  headerImg: string_filter_operators
+  id: number_filter_operators
+  label: string_filter_operators
+  negativeTitle: string_filter_operators
+  negtiveTitle: string_filter_operators
+  positiveAction: string_filter_operators
+  positiveTitle: string_filter_operators
+  show: boolean_filter_operators
+  showClose: boolean_filter_operators
+  timingOperation: string_filter_operators
+  timingType: timingType_filter
+  title: string_filter_operators
+  _and: [ActivityModalConfig_filter]
+  _or: [ActivityModalConfig_filter]
+}
+
+input appVersion_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  label: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  value: string_filter_operators
+  _and: [appVersion_filter]
+  _or: [appVersion_filter]
+}
+
 input boolean_filter_operators {
   _eq: Boolean
   _neq: Boolean
@@ -1846,29 +2436,61 @@ input bottomSecondMenu_filter {
   _or: [bottomSecondMenu_filter]
 }
 
-input codePushControl_filter {
+input cardType_filter {
   id: number_filter_operators
+  label: string_filter_operators
   status: string_filter_operators
-  sort: number_filter_operators
-  user_created: string_filter_operators
+  value: string_filter_operators
+  _and: [cardType_filter]
+  _or: [cardType_filter]
+}
+
+input clientType_filter {
+  id: number_filter_operators
+  name: string_filter_operators
+  _and: [clientType_filter]
+  _or: [clientType_filter]
+}
+
+input codePushControl_filter {
+  content: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  user_updated: string_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  version: string_filter_operators
-  label: string_filter_operators
-  title: string_filter_operators
-  content: string_filter_operators
+  id: number_filter_operators
   isForceUpdate: boolean_filter_operators
-  updatedTitle: string_filter_operators
+  label: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
   updatedContent: string_filter_operators
+  updatedTitle: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  version: string_filter_operators
   _and: [codePushControl_filter]
   _or: [codePushControl_filter]
 }
 
 input count_function_filter_operators {
   count: number_filter_operators
+}
+
+input country_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  label: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  value: string_filter_operators
+  _and: [country_filter]
+  _or: [country_filter]
 }
 
 input date_filter_operators {
@@ -1929,36 +2551,6 @@ input deviceType_filter {
   _or: [deviceType_filter]
 }
 
-input directus_files_filter {
-  id: string_filter_operators
-  storage: string_filter_operators
-  filename_disk: string_filter_operators
-  filename_download: string_filter_operators
-  title: string_filter_operators
-  type: string_filter_operators
-  folder: string_filter_operators
-  uploaded_by: string_filter_operators
-  uploaded_on: date_filter_operators
-  uploaded_on_func: datetime_function_filter_operators
-  modified_by: string_filter_operators
-  modified_on: date_filter_operators
-  modified_on_func: datetime_function_filter_operators
-  charset: string_filter_operators
-  filesize: number_filter_operators
-  width: number_filter_operators
-  height: number_filter_operators
-  duration: number_filter_operators
-  embed: string_filter_operators
-  description: string_filter_operators
-  location: string_filter_operators
-  tags: string_filter_operators
-  tags_func: count_function_filter_operators
-  metadata: string_filter_operators
-  metadata_func: count_function_filter_operators
-  _and: [directus_files_filter]
-  _or: [directus_files_filter]
-}
-
 input discoverDappBanner_filter {
   id: number_filter_operators
   status: string_filter_operators
@@ -1969,8 +2561,8 @@ input discoverDappBanner_filter {
 }
 
 input discoverDappBanner_portkeyCard_filter {
-  id: number_filter_operators
   discoverDappBanner_id: discoverDappBanner_filter
+  id: number_filter_operators
   portkeyCard_id: portkeyCard_filter
   _and: [discoverDappBanner_portkeyCard_filter]
   _or: [discoverDappBanner_portkeyCard_filter]
@@ -1986,8 +2578,8 @@ input discoverEarnData_filter {
 }
 
 input discoverEarnData_portkeyCard_filter {
-  id: number_filter_operators
   discoverEarnData_id: discoverEarnData_filter
+  id: number_filter_operators
   portkeyCard_id: portkeyCard_filter
   _and: [discoverEarnData_portkeyCard_filter]
   _or: [discoverEarnData_portkeyCard_filter]
@@ -2012,14 +2604,16 @@ input discoverGroup_filter {
 }
 
 input discoverItem_filter {
+  appLink: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
   description: string_filter_operators
+  extensionLink: string_filter_operators
   group: discoverGroup_filter
   id: number_filter_operators
-  imgUrl: directus_files_filter
+  imgUrl: string_filter_operators
   index: number_filter_operators
   sort: number_filter_operators
   status: string_filter_operators
@@ -2027,8 +2621,6 @@ input discoverItem_filter {
   url: string_filter_operators
   user_created: string_filter_operators
   user_updated: string_filter_operators
-  appLink: string_filter_operators
-  extensionLink: string_filter_operators
   _and: [discoverItem_filter]
   _or: [discoverItem_filter]
 }
@@ -2043,8 +2635,8 @@ input discoverLearnBanner_filter {
 }
 
 input discoverLearnBanner_portkeyCard_filter {
-  id: number_filter_operators
   discoverLearnBanner_id: discoverLearnBanner_filter
+  id: number_filter_operators
   portkeyCard_id: portkeyCard_filter
   _and: [discoverLearnBanner_portkeyCard_filter]
   _or: [discoverLearnBanner_portkeyCard_filter]
@@ -2052,8 +2644,8 @@ input discoverLearnBanner_portkeyCard_filter {
 
 input discoverLearnGroup_filter {
   id: number_filter_operators
-  status: string_filter_operators
   index: number_filter_operators
+  status: string_filter_operators
   title: string_filter_operators
   value: string_filter_operators
   items: discoverLearnGroup_portkeyCard_filter
@@ -2063,8 +2655,8 @@ input discoverLearnGroup_filter {
 }
 
 input discoverLearnGroup_portkeyCard_filter {
-  id: number_filter_operators
   discoverLearnGroup_id: discoverLearnGroup_filter
+  id: number_filter_operators
   portkeyCard_id: portkeyCard_filter
   _and: [discoverLearnGroup_portkeyCard_filter]
   _or: [discoverLearnGroup_portkeyCard_filter]
@@ -2072,32 +2664,32 @@ input discoverLearnGroup_portkeyCard_filter {
 
 input discoverTabData_filter {
   id: number_filter_operators
-  status: string_filter_operators
   index: number_filter_operators
   name: string_filter_operators
+  status: string_filter_operators
   value: string_filter_operators
   _and: [discoverTabData_filter]
   _or: [discoverTabData_filter]
 }
 
 input entrance_entranceMatch_filter {
-  id: number_filter_operators
   entrance_id: entrance_filter
   entranceMatch_id: entranceMatch_filter
+  id: number_filter_operators
   _and: [entrance_entranceMatch_filter]
   _or: [entrance_entranceMatch_filter]
 }
 
 input entrance_filter {
-  id: number_filter_operators
-  user_created: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  user_updated: string_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  moduleName: entranceModuleName_filter
   defaultSwitch: boolean_filter_operators
+  id: number_filter_operators
+  moduleName: entranceModuleName_filter
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
   matchList: entrance_entranceMatch_filter
   matchList_func: count_function_filter_operators
   _and: [entrance_filter]
@@ -2105,33 +2697,33 @@ input entrance_filter {
 }
 
 input entranceMatch_filter {
-  id: number_filter_operators
-  status: string_filter_operators
-  user_created: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  user_updated: string_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
+  description: string_filter_operators
+  id: number_filter_operators
   matchRuleList: string_filter_operators
   matchRuleList_func: count_function_filter_operators
-  weight: number_filter_operators
   matchSwitch: boolean_filter_operators
-  description: string_filter_operators
+  status: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  weight: number_filter_operators
   _and: [entranceMatch_filter]
   _or: [entranceMatch_filter]
 }
 
 input entranceModuleName_filter {
-  id: number_filter_operators
-  user_created: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  user_updated: string_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  value: string_filter_operators
   description: string_filter_operators
+  id: number_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  value: string_filter_operators
   _and: [entranceModuleName_filter]
   _or: [entranceModuleName_filter]
 }
@@ -2145,12 +2737,12 @@ input home_dApp_filter {
 }
 
 input home_filter {
+  dAppSectionTitle: string_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  focusImage: directus_files_filter
+  focusImage: string_filter_operators
   id: number_filter_operators
   user_updated: string_filter_operators
-  dAppSectionTitle: string_filter_operators
   videoContent: string_filter_operators
   videoTitle: string_filter_operators
   videoUrl: string_filter_operators
@@ -2170,23 +2762,23 @@ input homeBanner_filter {
 }
 
 input homeBanner_portkeyCard_filter {
-  id: number_filter_operators
   homeBanner_id: homeBanner_filter
+  id: number_filter_operators
   portkeyCard_id: portkeyCard_filter
   _and: [homeBanner_portkeyCard_filter]
   _or: [homeBanner_portkeyCard_filter]
 }
 
 input loginMode_filter {
-  id: number_filter_operators
-  status: string_filter_operators
-  extensionIndex: number_filter_operators
-  iOSIndex: number_filter_operators
   androidIndex: number_filter_operators
-  extensionRecommend: boolean_filter_operators
-  iOSRecommend: boolean_filter_operators
   androidRecommend: boolean_filter_operators
   defaultSwitch: boolean_filter_operators
+  extensionIndex: number_filter_operators
+  extensionRecommend: boolean_filter_operators
+  id: number_filter_operators
+  iOSIndex: number_filter_operators
+  iOSRecommend: boolean_filter_operators
+  status: string_filter_operators
   type: loginType_filter
   matchList: loginMode_loginModeMatch_filter
   matchList_func: count_function_filter_operators
@@ -2203,21 +2795,21 @@ input loginMode_loginModeMatch_filter {
 }
 
 input loginModeMatch_filter {
+  description: string_filter_operators
   id: number_filter_operators
-  status: string_filter_operators
-  weight: number_filter_operators
-  matchSwitch: boolean_filter_operators
   matchRuleList: string_filter_operators
   matchRuleList_func: count_function_filter_operators
-  description: string_filter_operators
+  matchSwitch: boolean_filter_operators
+  status: string_filter_operators
+  weight: number_filter_operators
   _and: [loginModeMatch_filter]
   _or: [loginModeMatch_filter]
 }
 
 input loginType_filter {
   id: number_filter_operators
-  status: string_filter_operators
   label: string_filter_operators
+  status: string_filter_operators
   value: string_filter_operators
   _and: [loginType_filter]
   _or: [loginType_filter]
@@ -2232,10 +2824,10 @@ input mediaKit_filter {
   id: number_filter_operators
   index: number_filter_operators
   name: string_filter_operators
-  png: directus_files_filter
+  png: string_filter_operators
   sort: number_filter_operators
   status: string_filter_operators
-  svg: directus_files_filter
+  svg: string_filter_operators
   user_created: string_filter_operators
   user_updated: string_filter_operators
   _and: [mediaKit_filter]
@@ -2243,20 +2835,20 @@ input mediaKit_filter {
 }
 
 input mediaKitPage_filter {
-  allMediaKitZip: directus_files_filter
+  allMediaKitZip: string_filter_operators
+  boilerplateContent: string_filter_operators
+  boilerplateTitle: string_filter_operators
   content: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
   id: number_filter_operators
+  mediaKitDescription: string_filter_operators
   status: string_filter_operators
   title: string_filter_operators
   user_created: string_filter_operators
   user_updated: string_filter_operators
-  boilerplateContent: string_filter_operators
-  boilerplateTitle: string_filter_operators
-  mediaKitDescription: string_filter_operators
   mediaKitList: mediaKitPage_mediaKit_filter
   mediaKitList_func: count_function_filter_operators
   _and: [mediaKitPage_filter]
@@ -2265,10 +2857,27 @@ input mediaKitPage_filter {
 
 input mediaKitPage_mediaKit_filter {
   id: number_filter_operators
-  mediaKitPage_id: mediaKitPage_filter
   mediaKit_id: mediaKit_filter
+  mediaKitPage_id: mediaKitPage_filter
   _and: [mediaKitPage_mediaKit_filter]
   _or: [mediaKitPage_mediaKit_filter]
+}
+
+input myReferralBanner_filter {
+  id: number_filter_operators
+  status: string_filter_operators
+  items: myReferralBanner_portkeyCard_filter
+  items_func: count_function_filter_operators
+  _and: [myReferralBanner_filter]
+  _or: [myReferralBanner_filter]
+}
+
+input myReferralBanner_portkeyCard_filter {
+  id: number_filter_operators
+  myReferralBanner_id: myReferralBanner_filter
+  portkeyCard_id: portkeyCard_filter
+  _and: [myReferralBanner_portkeyCard_filter]
+  _or: [myReferralBanner_portkeyCard_filter]
 }
 
 input navigationType_filter {
@@ -2303,7 +2912,7 @@ input number_filter_operators {
 }
 
 input officialSocialMedia_filter {
-  activeSvg: directus_files_filter
+  activeSvg: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
@@ -2314,7 +2923,7 @@ input officialSocialMedia_filter {
   name: string_filter_operators
   sort: number_filter_operators
   status: string_filter_operators
-  svg: directus_files_filter
+  svg: string_filter_operators
   user_created: string_filter_operators
   user_updated: string_filter_operators
   _and: [officialSocialMedia_filter]
@@ -2322,18 +2931,18 @@ input officialSocialMedia_filter {
 }
 
 input portkeyCard_filter {
-  id: number_filter_operators
-  status: string_filter_operators
-  index: number_filter_operators
-  title: string_filter_operators
-  value: string_filter_operators
-  description: string_filter_operators
-  buttonTitle: string_filter_operators
-  imgUrl: directus_files_filter
-  url: string_filter_operators
-  type: number_filter_operators
   appLink: string_filter_operators
+  buttonTitle: string_filter_operators
+  description: string_filter_operators
   extensionLink: string_filter_operators
+  id: number_filter_operators
+  imgUrl: string_filter_operators
+  index: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  type: cardType_filter
+  url: string_filter_operators
+  value: string_filter_operators
   _and: [portkeyCard_filter]
   _or: [portkeyCard_filter]
 }
@@ -2364,7 +2973,7 @@ input socialMedia_filter {
   link: string_filter_operators
   sort: number_filter_operators
   status: string_filter_operators
-  svgUrl: directus_files_filter
+  svgUrl: string_filter_operators
   title: string_filter_operators
   user_created: string_filter_operators
   user_updated: string_filter_operators
@@ -2423,10 +3032,17 @@ input tabType_filter {
   _or: [tabType_filter]
 }
 
+input timingType_filter {
+  id: number_filter_operators
+  name: string_filter_operators
+  _and: [timingType_filter]
+  _or: [timingType_filter]
+}
+
 input tokenDetailBanner_filter {
+  chainId: string_filter_operators
   id: number_filter_operators
   status: string_filter_operators
-  chainId: string_filter_operators
   symbol: string_filter_operators
   items: tokenDetailBanner_portkeyCard_filter
   items_func: count_function_filter_operators
@@ -2436,8 +3052,8 @@ input tokenDetailBanner_filter {
 
 input tokenDetailBanner_portkeyCard_filter {
   id: number_filter_operators
-  tokenDetailBanner_id: tokenDetailBanner_filter
   portkeyCard_id: portkeyCard_filter
+  tokenDetailBanner_id: tokenDetailBanner_filter
   _and: [tokenDetailBanner_portkeyCard_filter]
   _or: [tokenDetailBanner_portkeyCard_filter]
 }
@@ -2479,4 +3095,84 @@ input topSecondMenu_filter {
   user_updated: string_filter_operators
   _and: [topSecondMenu_filter]
   _or: [topSecondMenu_filter]
+}
+
+input upgradePush_appVersion_filter {
+  appVersion_id: appVersion_filter
+  id: number_filter_operators
+  upgradePush_id: upgradePush_filter
+  _and: [upgradePush_appVersion_filter]
+  _or: [upgradePush_appVersion_filter]
+}
+
+input upgradePush_country_filter {
+  country_id: country_filter
+  id: number_filter_operators
+  upgradePush_id: upgradePush_filter
+  _and: [upgradePush_country_filter]
+  _or: [upgradePush_country_filter]
+}
+
+input upgradePush_deviceBrand_filter {
+  deviceBrand_id: deviceBrand_filter
+  id: number_filter_operators
+  upgradePush_id: upgradePush_filter
+  _and: [upgradePush_deviceBrand_filter]
+  _or: [upgradePush_deviceBrand_filter]
+}
+
+input upgradePush_deviceType_filter {
+  deviceType_id: deviceType_filter
+  id: number_filter_operators
+  upgradePush_id: upgradePush_filter
+  _and: [upgradePush_deviceType_filter]
+  _or: [upgradePush_deviceType_filter]
+}
+
+input upgradePush_filter {
+  appId: string_filter_operators
+  content: string_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  downloadUrl: string_filter_operators
+  id: number_filter_operators
+  isApproved: boolean_filter_operators
+  isForceUpdate: boolean_filter_operators
+  operatingSystemVersions: string_filter_operators
+  operatingSystemVersions_func: count_function_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  styleType: upgradeStyle_filter
+  targetVersion: appVersion_filter
+  title: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  appVersions: upgradePush_appVersion_filter
+  appVersions_func: count_function_filter_operators
+  countries: upgradePush_country_filter
+  countries_func: count_function_filter_operators
+  deviceBrands: upgradePush_deviceBrand_filter
+  deviceBrands_func: count_function_filter_operators
+  deviceTypes: upgradePush_deviceType_filter
+  deviceTypes_func: count_function_filter_operators
+  _and: [upgradePush_filter]
+  _or: [upgradePush_filter]
+}
+
+input upgradeStyle_filter {
+  attribute: string_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  value: number_filter_operators
+  _and: [upgradeStyle_filter]
+  _or: [upgradeStyle_filter]
 }

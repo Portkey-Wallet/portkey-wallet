@@ -3,71 +3,71 @@ query loginMode_aggregated($groupBy: [String], $filter: loginMode_filter, $limit
         group
         countAll
         count{
-            id
-            status
-            extensionIndex
-            iOSIndex
             androidIndex
-            extensionRecommend
-            iOSRecommend
             androidRecommend
             defaultSwitch
+            extensionIndex
+            extensionRecommend
+            id
+            iOSIndex
+            iOSRecommend
+            status
             type
             matchList
         }
         countDistinct{
-            id
-            status
-            extensionIndex
-            iOSIndex
             androidIndex
-            extensionRecommend
-            iOSRecommend
             androidRecommend
             defaultSwitch
+            extensionIndex
+            extensionRecommend
+            id
+            iOSIndex
+            iOSRecommend
+            status
             type
             matchList
         }
         avg{
-            id
-            extensionIndex
-            iOSIndex
             androidIndex
+            extensionIndex
+            id
+            iOSIndex
             type
         }
         sum{
-            id
-            extensionIndex
-            iOSIndex
             androidIndex
+            extensionIndex
+            id
+            iOSIndex
             type
         }
         avgDistinct{
-            id
-            extensionIndex
-            iOSIndex
             androidIndex
+            extensionIndex
+            id
+            iOSIndex
             type
         }
         sumDistinct{
-            id
-            extensionIndex
-            iOSIndex
             androidIndex
+            extensionIndex
+            id
+            iOSIndex
             type
         }
         min{
-            id
-            extensionIndex
-            iOSIndex
             androidIndex
+            extensionIndex
+            id
+            iOSIndex
             type
         }
         max{
-            id
-            extensionIndex
-            iOSIndex
             androidIndex
+            extensionIndex
+            id
+            iOSIndex
             type
         }
     }

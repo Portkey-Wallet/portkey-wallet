@@ -14,15 +14,15 @@ export type LoginTypeQueryVariables = Types.Exact<{
 
 export type LoginTypeQuery = {
   __typename?: 'Query';
-  loginType: Array<{ __typename?: 'loginType'; id: string; status?: string | null; label: string; value: string }>;
+  loginType: Array<{ __typename?: 'loginType'; id: string; label: string; status?: string | null; value: string }>;
 };
 
 export const LoginTypeDocument = gql`
   query loginType($filter: loginType_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String) {
     loginType(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
       id
-      status
       label
+      status
       value
     }
   }

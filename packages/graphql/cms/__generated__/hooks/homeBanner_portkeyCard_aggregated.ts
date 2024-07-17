@@ -23,50 +23,50 @@ export type HomeBanner_PortkeyCard_AggregatedQuery = {
     countAll?: number | null;
     count?: {
       __typename?: 'homeBanner_portkeyCard_aggregated_count';
-      id?: number | null;
       homeBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'homeBanner_portkeyCard_aggregated_count';
-      id?: number | null;
       homeBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     avg?: {
       __typename?: 'homeBanner_portkeyCard_aggregated_fields';
-      id?: number | null;
       homeBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     sum?: {
       __typename?: 'homeBanner_portkeyCard_aggregated_fields';
-      id?: number | null;
       homeBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     avgDistinct?: {
       __typename?: 'homeBanner_portkeyCard_aggregated_fields';
-      id?: number | null;
       homeBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     sumDistinct?: {
       __typename?: 'homeBanner_portkeyCard_aggregated_fields';
-      id?: number | null;
       homeBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     min?: {
       __typename?: 'homeBanner_portkeyCard_aggregated_fields';
-      id?: number | null;
       homeBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     max?: {
       __typename?: 'homeBanner_portkeyCard_aggregated_fields';
-      id?: number | null;
       homeBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
   }>;
@@ -94,43 +94,43 @@ export const HomeBanner_PortkeyCard_AggregatedDocument = gql`
       group
       countAll
       count {
-        id
         homeBanner_id
+        id
         portkeyCard_id
       }
       countDistinct {
-        id
         homeBanner_id
+        id
         portkeyCard_id
       }
       avg {
-        id
         homeBanner_id
+        id
         portkeyCard_id
       }
       sum {
-        id
         homeBanner_id
+        id
         portkeyCard_id
       }
       avgDistinct {
-        id
         homeBanner_id
+        id
         portkeyCard_id
       }
       sumDistinct {
-        id
         homeBanner_id
+        id
         portkeyCard_id
       }
       min {
-        id
         homeBanner_id
+        id
         portkeyCard_id
       }
       max {
-        id
         homeBanner_id
+        id
         portkeyCard_id
       }
     }

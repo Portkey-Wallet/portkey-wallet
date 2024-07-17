@@ -24,17 +24,17 @@ export type DiscoverTabData_AggregatedQuery = {
     count?: {
       __typename?: 'discoverTabData_aggregated_count';
       id?: number | null;
-      status?: number | null;
       index?: number | null;
       name?: number | null;
+      status?: number | null;
       value?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'discoverTabData_aggregated_count';
       id?: number | null;
-      status?: number | null;
       index?: number | null;
       name?: number | null;
+      status?: number | null;
       value?: number | null;
     } | null;
     avg?: { __typename?: 'discoverTabData_aggregated_fields'; id?: number | null; index?: number | null } | null;
@@ -77,16 +77,16 @@ export const DiscoverTabData_AggregatedDocument = gql`
       countAll
       count {
         id
-        status
         index
         name
+        status
         value
       }
       countDistinct {
         id
-        status
         index
         name
+        status
         value
       }
       avg {

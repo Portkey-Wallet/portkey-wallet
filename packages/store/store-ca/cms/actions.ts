@@ -11,6 +11,7 @@ import {
   getDiscoverDappBanner,
   getTokenDetailBanner,
   getDiscoverLearnBanner,
+  getMyReferralBanner,
   getDiscoverTabList,
   getDiscoverEarnList,
   getDiscoverLearnGroupList,
@@ -331,6 +332,40 @@ export const getDiscoverTabAsync = createAsyncThunk<Required<Pick<CMSState, 'dis
     }
   },
 );
+
+export const getMyReferralBannerAsync = createAsyncThunk<
+  Required<Pick<CMSState, 'myReferralBannerListMap'>>,
+  NetworkType
+>('cms/getMyReferralBannerAsync', async (network: NetworkType) => {
+  let returnList: TBaseCardItemType[] = [];
+  try {
+    const result = await getMyReferralBanner(network, {});
+    if (result.data?.myReferralBanner?.status === 'published') {
+      returnList = result?.data?.myReferralBanner?.items
+        ?.filter(ele => ele?.portkeyCard_id?.status === 'published')
+        ?.map(ele => ({
+          index: ele?.portkeyCard_id?.index,
+          url: ele?.portkeyCard_id?.url,
+          appLink: ele?.portkeyCard_id?.appLink,
+          extensionLink: ele?.portkeyCard_id?.extensionLink,
+          imgUrl: {
+            filename_disk: ele?.portkeyCard_id?.imgUrl?.filename_disk,
+          },
+        }))
+        ?.sort((a, b) => Number(a.index) - Number(b.index)) as TBaseCardItemType[];
+    }
+
+    console.log('getMyReferralBannerAsync', returnList);
+
+    return {
+      myReferralBannerListMap: {
+        [network]: returnList,
+      },
+    };
+  } catch (error) {
+    throw new Error('getMyReferralBannerAsync error');
+  }
+});
 
 export const getDiscoverEarnAsync = createAsyncThunk<Required<Pick<CMSState, 'discoverEarnListMap'>>, NetworkType>(
   'cms/getDiscoverEarnAsync',

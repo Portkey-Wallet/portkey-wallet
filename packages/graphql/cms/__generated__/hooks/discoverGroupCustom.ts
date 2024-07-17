@@ -38,7 +38,7 @@ export type DiscoverGroupCustomQuery = {
       url?: string | null;
       appLink?: string | null;
       extensionLink?: string | null;
-      imgUrl?: { __typename?: 'directus_files'; filename_disk?: string | null } | null;
+      imgUrl?: never | null;
     } | null> | null;
   }>;
 };

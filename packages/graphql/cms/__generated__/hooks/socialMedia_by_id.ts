@@ -4,12 +4,6 @@ import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
 export type SocialMedia_By_IdQueryVariables = Types.Exact<{
-  filter?: Types.InputMaybe<Types.Directus_Files_Filter>;
-  sort?: Types.InputMaybe<Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>>;
-  limit?: Types.InputMaybe<Types.Scalars['Int']>;
-  offset?: Types.InputMaybe<Types.Scalars['Int']>;
-  page?: Types.InputMaybe<Types.Scalars['Int']>;
-  search?: Types.InputMaybe<Types.Scalars['String']>;
   id: Types.Scalars['ID'];
 }>;
 
@@ -24,6 +18,7 @@ export type SocialMedia_By_IdQuery = {
     link?: string | null;
     sort?: number | null;
     status?: string | null;
+    svgUrl?: string | null;
     title?: string | null;
     user_created?: string | null;
     user_updated?: string | null;
@@ -49,67 +44,11 @@ export type SocialMedia_By_IdQuery = {
       minute?: number | null;
       second?: number | null;
     } | null;
-    svgUrl?: {
-      __typename?: 'directus_files';
-      id: string;
-      storage: string;
-      filename_disk?: string | null;
-      filename_download: string;
-      title?: string | null;
-      type?: string | null;
-      folder?: string | null;
-      uploaded_by?: string | null;
-      uploaded_on?: any | null;
-      modified_by?: string | null;
-      modified_on?: any | null;
-      charset?: string | null;
-      filesize?: any | null;
-      width?: number | null;
-      height?: number | null;
-      duration?: number | null;
-      embed?: string | null;
-      description?: string | null;
-      location?: string | null;
-      tags?: any | null;
-      metadata?: any | null;
-      uploaded_on_func?: {
-        __typename?: 'datetime_functions';
-        year?: number | null;
-        month?: number | null;
-        week?: number | null;
-        day?: number | null;
-        weekday?: number | null;
-        hour?: number | null;
-        minute?: number | null;
-        second?: number | null;
-      } | null;
-      modified_on_func?: {
-        __typename?: 'datetime_functions';
-        year?: number | null;
-        month?: number | null;
-        week?: number | null;
-        day?: number | null;
-        weekday?: number | null;
-        hour?: number | null;
-        minute?: number | null;
-        second?: number | null;
-      } | null;
-      tags_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-      metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-    } | null;
   } | null;
 };
 
 export const SocialMedia_By_IdDocument = gql`
-  query socialMedia_by_id(
-    $filter: directus_files_filter
-    $sort: [String]
-    $limit: Int
-    $offset: Int
-    $page: Int
-    $search: String
-    $id: ID!
-  ) {
+  query socialMedia_by_id($id: ID!) {
     socialMedia_by_id(id: $id) {
       date_created
       date_created_func {
@@ -138,55 +77,7 @@ export const SocialMedia_By_IdDocument = gql`
       link
       sort
       status
-      svgUrl(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
-        id
-        storage
-        filename_disk
-        filename_download
-        title
-        type
-        folder
-        uploaded_by
-        uploaded_on
-        uploaded_on_func {
-          year
-          month
-          week
-          day
-          weekday
-          hour
-          minute
-          second
-        }
-        modified_by
-        modified_on
-        modified_on_func {
-          year
-          month
-          week
-          day
-          weekday
-          hour
-          minute
-          second
-        }
-        charset
-        filesize
-        width
-        height
-        duration
-        embed
-        description
-        location
-        tags
-        tags_func {
-          count
-        }
-        metadata
-        metadata_func {
-          count
-        }
-      }
+      svgUrl
       title
       user_created
       user_updated
@@ -206,12 +97,6 @@ export const SocialMedia_By_IdDocument = gql`
  * @example
  * const { data, loading, error } = useSocialMedia_By_IdQuery({
  *   variables: {
- *      filter: // value for 'filter'
- *      sort: // value for 'sort'
- *      limit: // value for 'limit'
- *      offset: // value for 'offset'
- *      page: // value for 'page'
- *      search: // value for 'search'
  *      id: // value for 'id'
  *   },
  * });

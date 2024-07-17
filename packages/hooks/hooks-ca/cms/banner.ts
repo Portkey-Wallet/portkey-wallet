@@ -14,6 +14,7 @@ import {
   getDiscoverLearnBannerAsync,
   getHomeBannerListAsync,
   getTokenDetailBannerAsync,
+  getMyReferralBannerAsync,
 } from '@portkey-wallet/store/store-ca/cms/actions';
 
 export const useCMS = () => useAppCASelector(state => state.cms);
@@ -68,6 +69,11 @@ export const useCmsBanner = () => {
     [dispatch, networkType],
   );
 
+  const fetchMyReferralBannerBannerAsync = useCallback(
+    () => dispatch(getMyReferralBannerAsync(networkType)),
+    [dispatch, networkType],
+  );
+
   const fetchDiscoverLearnBannerAsync = useCallback(
     () => dispatch(getDiscoverLearnBannerAsync(networkType)),
     [dispatch, networkType],
@@ -81,6 +87,7 @@ export const useCmsBanner = () => {
     fetchHomeBannerListAsync,
     fetchDiscoverDappBannerAsync,
     fetchTokenDetailBannerAsync,
+    fetchMyReferralBannerBannerAsync,
     fetchDiscoverLearnBannerAsync,
   };
 };
@@ -92,6 +99,7 @@ export const useInitCmsBanner = () => {
   useEffect(() => {
     networkList.forEach(item => {
       dispatch(getTokenDetailBannerAsync(item.networkType));
+      dispatch(getMyReferralBannerAsync(item.networkType));
       dispatch(getHomeBannerListAsync(item.networkType));
       dispatch(getDiscoverDappBannerAsync(item.networkType));
     });

@@ -1,6 +1,18 @@
 const fs = require('fs');
 const path = require('path');
 
+module.exports.ActivityModalConfig = fs.readFileSync(path.join(__dirname, 'ActivityModalConfig.gql'), 'utf8');
+module.exports.ActivityModalConfig_by_id = fs.readFileSync(
+  path.join(__dirname, 'ActivityModalConfig_by_id.gql'),
+  'utf8',
+);
+module.exports.ActivityModalConfig_aggregated = fs.readFileSync(
+  path.join(__dirname, 'ActivityModalConfig_aggregated.gql'),
+  'utf8',
+);
+module.exports.appVersion = fs.readFileSync(path.join(__dirname, 'appVersion.gql'), 'utf8');
+module.exports.appVersion_by_id = fs.readFileSync(path.join(__dirname, 'appVersion_by_id.gql'), 'utf8');
+module.exports.appVersion_aggregated = fs.readFileSync(path.join(__dirname, 'appVersion_aggregated.gql'), 'utf8');
 module.exports.bottomMenu = fs.readFileSync(path.join(__dirname, 'bottomMenu.gql'), 'utf8');
 module.exports.bottomMenu_by_id = fs.readFileSync(path.join(__dirname, 'bottomMenu_by_id.gql'), 'utf8');
 module.exports.bottomMenu_aggregated = fs.readFileSync(path.join(__dirname, 'bottomMenu_aggregated.gql'), 'utf8');
@@ -11,12 +23,21 @@ module.exports.bottomSecondMenu_aggregated = fs.readFileSync(
   'utf8',
 );
 module.exports.buyButton = fs.readFileSync(path.join(__dirname, 'buyButton.gql'), 'utf8');
+module.exports.cardType = fs.readFileSync(path.join(__dirname, 'cardType.gql'), 'utf8');
+module.exports.cardType_by_id = fs.readFileSync(path.join(__dirname, 'cardType_by_id.gql'), 'utf8');
+module.exports.cardType_aggregated = fs.readFileSync(path.join(__dirname, 'cardType_aggregated.gql'), 'utf8');
+module.exports.clientType = fs.readFileSync(path.join(__dirname, 'clientType.gql'), 'utf8');
+module.exports.clientType_by_id = fs.readFileSync(path.join(__dirname, 'clientType_by_id.gql'), 'utf8');
+module.exports.clientType_aggregated = fs.readFileSync(path.join(__dirname, 'clientType_aggregated.gql'), 'utf8');
 module.exports.codePushControl = fs.readFileSync(path.join(__dirname, 'codePushControl.gql'), 'utf8');
 module.exports.codePushControl_by_id = fs.readFileSync(path.join(__dirname, 'codePushControl_by_id.gql'), 'utf8');
 module.exports.codePushControl_aggregated = fs.readFileSync(
   path.join(__dirname, 'codePushControl_aggregated.gql'),
   'utf8',
 );
+module.exports.country = fs.readFileSync(path.join(__dirname, 'country.gql'), 'utf8');
+module.exports.country_by_id = fs.readFileSync(path.join(__dirname, 'country_by_id.gql'), 'utf8');
+module.exports.country_aggregated = fs.readFileSync(path.join(__dirname, 'country_aggregated.gql'), 'utf8');
 module.exports.deviceBrand = fs.readFileSync(path.join(__dirname, 'deviceBrand.gql'), 'utf8');
 module.exports.deviceBrand_by_id = fs.readFileSync(path.join(__dirname, 'deviceBrand_by_id.gql'), 'utf8');
 module.exports.deviceBrand_aggregated = fs.readFileSync(path.join(__dirname, 'deviceBrand_aggregated.gql'), 'utf8');
@@ -162,6 +183,19 @@ module.exports.mediaKitPage_mediaKit_aggregated = fs.readFileSync(
   path.join(__dirname, 'mediaKitPage_mediaKit_aggregated.gql'),
   'utf8',
 );
+module.exports.myReferralBanner = fs.readFileSync(path.join(__dirname, 'myReferralBanner.gql'), 'utf8');
+module.exports.myReferralBanner_portkeyCard = fs.readFileSync(
+  path.join(__dirname, 'myReferralBanner_portkeyCard.gql'),
+  'utf8',
+);
+module.exports.myReferralBanner_portkeyCard_by_id = fs.readFileSync(
+  path.join(__dirname, 'myReferralBanner_portkeyCard_by_id.gql'),
+  'utf8',
+);
+module.exports.myReferralBanner_portkeyCard_aggregated = fs.readFileSync(
+  path.join(__dirname, 'myReferralBanner_portkeyCard_aggregated.gql'),
+  'utf8',
+);
 module.exports.navigationType = fs.readFileSync(path.join(__dirname, 'navigationType.gql'), 'utf8');
 module.exports.navigationType_by_id = fs.readFileSync(path.join(__dirname, 'navigationType_by_id.gql'), 'utf8');
 module.exports.navigationType_aggregated = fs.readFileSync(
@@ -189,6 +223,7 @@ module.exports.rememberMeBlackListSites_aggregated = fs.readFileSync(
   path.join(__dirname, 'rememberMeBlackListSites_aggregated.gql'),
   'utf8',
 );
+module.exports.serviceSuspension = fs.readFileSync(path.join(__dirname, 'serviceSuspension.gql'), 'utf8');
 module.exports.socialMedia = fs.readFileSync(path.join(__dirname, 'socialMedia.gql'), 'utf8');
 module.exports.socialMedia_by_id = fs.readFileSync(path.join(__dirname, 'socialMedia_by_id.gql'), 'utf8');
 module.exports.socialMedia_aggregated = fs.readFileSync(path.join(__dirname, 'socialMedia_aggregated.gql'), 'utf8');
@@ -198,6 +233,9 @@ module.exports.tabMenu_aggregated = fs.readFileSync(path.join(__dirname, 'tabMen
 module.exports.tabType = fs.readFileSync(path.join(__dirname, 'tabType.gql'), 'utf8');
 module.exports.tabType_by_id = fs.readFileSync(path.join(__dirname, 'tabType_by_id.gql'), 'utf8');
 module.exports.tabType_aggregated = fs.readFileSync(path.join(__dirname, 'tabType_aggregated.gql'), 'utf8');
+module.exports.timingType = fs.readFileSync(path.join(__dirname, 'timingType.gql'), 'utf8');
+module.exports.timingType_by_id = fs.readFileSync(path.join(__dirname, 'timingType_by_id.gql'), 'utf8');
+module.exports.timingType_aggregated = fs.readFileSync(path.join(__dirname, 'timingType_aggregated.gql'), 'utf8');
 module.exports.tokenDetailBanner = fs.readFileSync(path.join(__dirname, 'tokenDetailBanner.gql'), 'utf8');
 module.exports.tokenDetailBanner_by_id = fs.readFileSync(path.join(__dirname, 'tokenDetailBanner_by_id.gql'), 'utf8');
 module.exports.tokenDetailBanner_aggregated = fs.readFileSync(
@@ -222,3 +260,45 @@ module.exports.topMenu_aggregated = fs.readFileSync(path.join(__dirname, 'topMen
 module.exports.topSecondMenu = fs.readFileSync(path.join(__dirname, 'topSecondMenu.gql'), 'utf8');
 module.exports.topSecondMenu_by_id = fs.readFileSync(path.join(__dirname, 'topSecondMenu_by_id.gql'), 'utf8');
 module.exports.topSecondMenu_aggregated = fs.readFileSync(path.join(__dirname, 'topSecondMenu_aggregated.gql'), 'utf8');
+module.exports.upgradePush = fs.readFileSync(path.join(__dirname, 'upgradePush.gql'), 'utf8');
+module.exports.upgradePush_by_id = fs.readFileSync(path.join(__dirname, 'upgradePush_by_id.gql'), 'utf8');
+module.exports.upgradePush_aggregated = fs.readFileSync(path.join(__dirname, 'upgradePush_aggregated.gql'), 'utf8');
+module.exports.upgradePush_appVersion = fs.readFileSync(path.join(__dirname, 'upgradePush_appVersion.gql'), 'utf8');
+module.exports.upgradePush_appVersion_by_id = fs.readFileSync(
+  path.join(__dirname, 'upgradePush_appVersion_by_id.gql'),
+  'utf8',
+);
+module.exports.upgradePush_appVersion_aggregated = fs.readFileSync(
+  path.join(__dirname, 'upgradePush_appVersion_aggregated.gql'),
+  'utf8',
+);
+module.exports.upgradePush_country = fs.readFileSync(path.join(__dirname, 'upgradePush_country.gql'), 'utf8');
+module.exports.upgradePush_country_by_id = fs.readFileSync(
+  path.join(__dirname, 'upgradePush_country_by_id.gql'),
+  'utf8',
+);
+module.exports.upgradePush_country_aggregated = fs.readFileSync(
+  path.join(__dirname, 'upgradePush_country_aggregated.gql'),
+  'utf8',
+);
+module.exports.upgradePush_deviceBrand = fs.readFileSync(path.join(__dirname, 'upgradePush_deviceBrand.gql'), 'utf8');
+module.exports.upgradePush_deviceBrand_by_id = fs.readFileSync(
+  path.join(__dirname, 'upgradePush_deviceBrand_by_id.gql'),
+  'utf8',
+);
+module.exports.upgradePush_deviceBrand_aggregated = fs.readFileSync(
+  path.join(__dirname, 'upgradePush_deviceBrand_aggregated.gql'),
+  'utf8',
+);
+module.exports.upgradePush_deviceType = fs.readFileSync(path.join(__dirname, 'upgradePush_deviceType.gql'), 'utf8');
+module.exports.upgradePush_deviceType_by_id = fs.readFileSync(
+  path.join(__dirname, 'upgradePush_deviceType_by_id.gql'),
+  'utf8',
+);
+module.exports.upgradePush_deviceType_aggregated = fs.readFileSync(
+  path.join(__dirname, 'upgradePush_deviceType_aggregated.gql'),
+  'utf8',
+);
+module.exports.upgradeStyle = fs.readFileSync(path.join(__dirname, 'upgradeStyle.gql'), 'utf8');
+module.exports.upgradeStyle_by_id = fs.readFileSync(path.join(__dirname, 'upgradeStyle_by_id.gql'), 'utf8');
+module.exports.upgradeStyle_aggregated = fs.readFileSync(path.join(__dirname, 'upgradeStyle_aggregated.gql'), 'utf8');

@@ -4,7 +4,7 @@ import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
 export type DiscoverLearnGroup_By_IdQueryVariables = Types.Exact<{
-  filter?: Types.InputMaybe<Types.Directus_Files_Filter>;
+  filter?: Types.InputMaybe<Types.CardType_Filter>;
   sort?: Types.InputMaybe<Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>>;
   limit?: Types.InputMaybe<Types.Scalars['Int']>;
   offset?: Types.InputMaybe<Types.Scalars['Int']>;
@@ -50,8 +50,8 @@ export type DiscoverLearnGroup_By_IdQuery = {
   discoverLearnGroup_by_id?: {
     __typename?: 'discoverLearnGroup';
     id: string;
-    status?: string | null;
     index?: any | null;
+    status?: string | null;
     title?: string | null;
     value?: string | null;
     items?: Array<{
@@ -60,8 +60,8 @@ export type DiscoverLearnGroup_By_IdQuery = {
       discoverLearnGroup_id?: {
         __typename?: 'discoverLearnGroup';
         id: string;
-        status?: string | null;
         index?: any | null;
+        status?: string | null;
         title?: string | null;
         value?: string | null;
         items?: Array<{
@@ -69,64 +69,23 @@ export type DiscoverLearnGroup_By_IdQuery = {
           id: string;
           portkeyCard_id?: {
             __typename?: 'portkeyCard';
-            id: string;
-            status?: string | null;
-            index?: any | null;
-            title?: string | null;
-            value?: string | null;
-            description?: string | null;
-            buttonTitle?: string | null;
-            url?: string | null;
-            type?: number | null;
             appLink?: string | null;
+            buttonTitle?: string | null;
+            description?: string | null;
             extensionLink?: string | null;
-            imgUrl?: {
-              __typename?: 'directus_files';
+            id: string;
+            imgUrl?: string | null;
+            index?: any | null;
+            status?: string | null;
+            title?: string | null;
+            url?: string | null;
+            value?: string | null;
+            type?: {
+              __typename?: 'cardType';
               id: string;
-              storage: string;
-              filename_disk?: string | null;
-              filename_download: string;
-              title?: string | null;
-              type?: string | null;
-              folder?: string | null;
-              uploaded_by?: string | null;
-              uploaded_on?: any | null;
-              modified_by?: string | null;
-              modified_on?: any | null;
-              charset?: string | null;
-              filesize?: any | null;
-              width?: number | null;
-              height?: number | null;
-              duration?: number | null;
-              embed?: string | null;
-              description?: string | null;
-              location?: string | null;
-              tags?: any | null;
-              metadata?: any | null;
-              uploaded_on_func?: {
-                __typename?: 'datetime_functions';
-                year?: number | null;
-                month?: number | null;
-                week?: number | null;
-                day?: number | null;
-                weekday?: number | null;
-                hour?: number | null;
-                minute?: number | null;
-                second?: number | null;
-              } | null;
-              modified_on_func?: {
-                __typename?: 'datetime_functions';
-                year?: number | null;
-                month?: number | null;
-                week?: number | null;
-                day?: number | null;
-                weekday?: number | null;
-                hour?: number | null;
-                minute?: number | null;
-                second?: number | null;
-              } | null;
-              tags_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-              metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+              label?: string | null;
+              status?: string | null;
+              value?: string | null;
             } | null;
           } | null;
         } | null> | null;
@@ -139,7 +98,7 @@ export type DiscoverLearnGroup_By_IdQuery = {
 
 export const DiscoverLearnGroup_By_IdDocument = gql`
   query discoverLearnGroup_by_id(
-    $filter: directus_files_filter
+    $filter: cardType_filter
     $sort: [String]
     $limit: Int
     $offset: Int
@@ -173,12 +132,11 @@ export const DiscoverLearnGroup_By_IdDocument = gql`
   ) {
     discoverLearnGroup_by_id(id: $id) {
       id
-      status
       index
+      status
       title
       value
       items(filter: $filter4, sort: $sort4, limit: $limit4, offset: $offset4, page: $page4, search: $search4) {
-        id
         discoverLearnGroup_id(
           filter: $filter3
           sort: $sort3
@@ -188,8 +146,8 @@ export const DiscoverLearnGroup_By_IdDocument = gql`
           search: $search3
         ) {
           id
-          status
           index
+          status
           title
           value
           items(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2) {
@@ -202,72 +160,30 @@ export const DiscoverLearnGroup_By_IdDocument = gql`
               page: $page1
               search: $search1
             ) {
-              id
-              status
-              index
-              title
-              value
-              description
+              appLink
               buttonTitle
-              imgUrl(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
+              description
+              extensionLink
+              id
+              imgUrl
+              index
+              status
+              title
+              type(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
                 id
-                storage
-                filename_disk
-                filename_download
-                title
-                type
-                folder
-                uploaded_by
-                uploaded_on
-                uploaded_on_func {
-                  year
-                  month
-                  week
-                  day
-                  weekday
-                  hour
-                  minute
-                  second
-                }
-                modified_by
-                modified_on
-                modified_on_func {
-                  year
-                  month
-                  week
-                  day
-                  weekday
-                  hour
-                  minute
-                  second
-                }
-                charset
-                filesize
-                width
-                height
-                duration
-                embed
-                description
-                location
-                tags
-                tags_func {
-                  count
-                }
-                metadata
-                metadata_func {
-                  count
-                }
+                label
+                status
+                value
               }
               url
-              type
-              appLink
-              extensionLink
+              value
             }
           }
           items_func {
             count
           }
         }
+        id
       }
       items_func {
         count

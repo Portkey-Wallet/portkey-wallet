@@ -11,7 +11,7 @@ import { useAppBridgeButtonShow, useAppNFTTabShow } from 'hooks/cms';
 
 export const TradeHomePage: React.FC = () => {
   const {
-    awakenUrl = 'https://awaken.finance/',
+    awakenUrl = 'https://app.awaken.finance/',
     eBridgeUrl = 'https://ebridge.exchange',
     eForestUrl = 'https://www.eforest.finance',
   } = useCurrentNetworkInfo();

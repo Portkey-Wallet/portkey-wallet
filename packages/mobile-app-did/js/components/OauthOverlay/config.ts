@@ -63,6 +63,7 @@ export enum PATHS {
   CallPortkey = '/api/app/telegramAuth/receive/portkey',
   Load = '/social-login/Telegram?from=portkey',
   LoadFB = '/social-login/Facebook',
+  LoadGoogle = '/social-login/Google',
 }
 
 export const TGAuthResult = '#tgAuthResult=';

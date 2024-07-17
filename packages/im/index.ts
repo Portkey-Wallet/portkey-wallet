@@ -5,8 +5,7 @@ import { IMStatusEnum, MessageCount, SocketMessage } from './types';
 import { sleep } from '@portkey-wallet/utils';
 import { IIMService } from './types/service';
 import { IMConfig } from './config';
-import { FetchRequest } from './request';
-import { IBaseRequest } from '@portkey/types';
+import { FetchRequest, IFetchRequest } from './request';
 import { IMService } from './service';
 import { IM_TOKEN_ERROR_ARRAY } from './constant';
 import { request } from '@portkey-wallet/api/api-did';
@@ -31,7 +30,7 @@ export class IM {
 
   public config: IMConfig;
   public service: IIMService;
-  public fetchRequest: IBaseRequest;
+  public fetchRequest: IFetchRequest;
 
   constructor() {
     this.config = new IMConfig({

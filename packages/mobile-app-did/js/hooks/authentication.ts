@@ -1,6 +1,6 @@
 import * as WebBrowser from 'expo-web-browser';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import { GoogleSignin, statusCodes, GoogleOneTapSignIn } from '@react-native-google-signin/google-signin';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import * as Google from 'expo-auth-session/providers/google';
 import Config from 'react-native-config';
@@ -45,10 +45,11 @@ import generateRandomNonce from '@portkey-wallet/utils/nonce';
 import AElf from 'aelf-sdk';
 
 if (!isIOS) {
-  GoogleSignin.configure({
-    offlineAccess: true,
-    webClientId: Config.GOOGLE_WEB_CLIENT_ID,
-  });
+  // todo_wade: fix the issue of GoogleSignin.configure
+  // GoogleSignin.configure({
+  //   offlineAccess: true,
+  //   webClientId: Config.GOOGLE_WEB_CLIENT_ID,
+  // });
 } else {
   WebBrowser.maybeCompleteAuthSession();
 }
@@ -112,14 +113,33 @@ export function useGoogleAuthentication() {
     }
   }, []);
 
+  const androidPromptAsyncOneTap = useCallback(async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleOneTapSignIn.signIn({
+        webClientId: Config.GOOGLE_WEB_CLIENT_ID,
+        nonce: googleRequest?.nonce,
+      });
+      const token = await GoogleSignin.getTokens();
+      await GoogleSignin.signOut();
+      const googleResponse = { ...userInfo, ...token, nonce: googleRequest?.nonce } as TGoogleAuthResponse;
+      setResponse(googleResponse);
+      return googleResponse;
+    } catch (error: any) {
+      const message = error.code === statusCodes.SIGN_IN_CANCELLED ? '' : handleErrorMessage(error);
+      // : 'It seems that the authorization with your Google account has failed.';
+      throw { ...error, message };
+    }
+  }, [googleRequest?.nonce]);
+
   const googleSign = useCallback(async () => {
     changeCanLock(false);
     try {
-      return await (isIOS ? iosPromptAsync : androidPromptAsync)();
+      return await (isIOS ? iosPromptAsync : androidPromptAsyncOneTap)();
     } finally {
       changeCanLock(true);
     }
-  }, [androidPromptAsync, iosPromptAsync]);
+  }, [androidPromptAsyncOneTap, iosPromptAsync]);
 
   return useMemo(
     () => ({

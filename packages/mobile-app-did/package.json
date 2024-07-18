@@ -66,7 +66,7 @@
     "@react-native-firebase/crashlytics": "^18.5.0",
     "@react-native-firebase/messaging": "^18.5.0",
     "@react-native-firebase/perf": "^18.5.0",
-    "@react-native-google-signin/google-signin": "^8.0.0",
+    "@react-native-google-signin/google-signin": "12.2.2",
     "@react-navigation/bottom-tabs": "^6.3.2",
     "@react-navigation/drawer": "^6.5.0",
     "@react-navigation/material-top-tabs": "^6.2.4",

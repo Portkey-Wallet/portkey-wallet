@@ -112,6 +112,7 @@ export const rampPersistConfig = {
 export const cmsPersistConfig = {
   key: cmsSlice.name,
   storage: localStorage,
+  blacklist: ['activityModalListLoaded', 'currentShowedAcModalListMap'],
 };
 
 export const imPersistConfig = {

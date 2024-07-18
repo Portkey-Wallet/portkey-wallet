@@ -121,3 +121,29 @@ export type TLink = {
 };
 export type TAppLink = TLink;
 export type TExtensionLink = TLink;
+export enum TimingType {
+  Tab = 1,
+  Page = 2,
+  AppOpen = 3,
+  AppOpenOnce = 4,
+}
+export type ActivityModalConfig = {
+  id: number;
+  showClose?: boolean;
+  headerImg?: string;
+  title: string;
+  description: string;
+  negtiveTitle: string;
+  positiveTitle: string;
+  positiveAction?: string;
+  timingOperation?: string;
+  timingType: TimingType;
+  // client param, control dialog whether show
+  showed?: boolean;
+  // currentTimeShowed?: boolean;
+  [key: string]: any;
+};
+export type CurrentShowedActivityModal = {
+  currentTimeShowed?: boolean;
+  id: number;
+};

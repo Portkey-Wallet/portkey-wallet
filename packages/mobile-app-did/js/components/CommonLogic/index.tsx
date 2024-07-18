@@ -1,6 +1,8 @@
-import { useEffectOnce } from '@portkey-wallet/hooks';
+import { useAppCommonDispatch, useEffectOnce } from '@portkey-wallet/hooks';
 import { useActivityModalConfig } from '@portkey-wallet/hooks/hooks-ca/api';
 import { parseLink } from '@portkey-wallet/hooks/hooks-ca/cms/util';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { setActivityModalCurrentTimeShowed, setActivityModalShowed } from '@portkey-wallet/store/store-ca/cms/actions';
 import { ActivityModalConfig, TimingType } from '@portkey-wallet/types/types-ca/cms';
 import { useRoute } from '@react-navigation/native';
 import ActionSheet from 'components/ActionSheet';
@@ -11,6 +13,8 @@ import { memo, useCallback } from 'react';
 const CommonLogic = (props: { timingTypeArray: TimingType[] }) => {
   const { timingTypeArray } = props;
   const { name } = useRoute();
+  const dispatch = useAppCommonDispatch();
+  const { networkType } = useCurrentNetworkInfo();
   const jump = useJump();
   const getModalConfig = useActivityModalConfig();
   const showModal = useCallback(
@@ -48,10 +52,24 @@ const CommonLogic = (props: { timingTypeArray: TimingType[] }) => {
             buttons,
             onDismiss,
           });
+          if (configItem.timingType !== TimingType.AppOpen) {
+            dispatch(
+              setActivityModalShowed({
+                network: networkType,
+                id: configItem.id || 0,
+              }),
+            );
+          }
+          dispatch(
+            setActivityModalCurrentTimeShowed({
+              network: networkType,
+              id: configItem.id || 0,
+            }),
+          );
         }
       });
     },
-    [jump],
+    [dispatch, jump, networkType],
   );
   const renderActivityModal = useCallback(
     (config: ActivityModalConfig[], index: number) => {

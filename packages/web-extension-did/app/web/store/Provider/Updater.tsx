@@ -1,5 +1,5 @@
 import useVerifierList from 'hooks/useVerifierList';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { keepAliveOnPages } from 'utils/keepSWActive';
 import useUpdateRedux from './useUpdateRedux';
 import { useChainListFetch } from '@portkey-wallet/hooks/hooks-ca/chainList';
@@ -30,6 +30,9 @@ import { useSetTokenConfig } from 'hooks/useSetTokenConfig';
 import { useInitLoginModeList } from 'hooks/loginModal';
 import { useUserInfo } from './hooks';
 import { useInitCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
+import { useActivityModalConfig } from '@portkey-wallet/hooks/hooks-ca/api';
+import { TimingType } from '@portkey-wallet/types/types-ca/cms';
+import CustomActivityModal, { CustomModalType } from 'components/CustomActivityModal';
 
 keepAliveOnPages({});
 request.setExceptionManager(exceptionManager);
@@ -42,6 +45,22 @@ export default function Updater() {
   const isMainnet = useIsMainnet();
   const initLoginModeList = useInitLoginModeList();
   const { passwordSeed } = useUserInfo();
+  const getModalConfig = useActivityModalConfig();
+  const modalRef = useRef<CustomModalType>();
+  console.log('pathname', pathname);
+  useEffect(() => {
+    setTimeout(() => {
+      const timingTypeList = [TimingType.Page];
+      if (pathname === '/') {
+        timingTypeList.push(TimingType.AppOpen);
+        timingTypeList.push(TimingType.AppOpenOnce);
+      }
+      getModalConfig(timingTypeList, pathname, (configList) => {
+        console.log('wfs configList', configList, 'modalRef.current', modalRef.current);
+        modalRef.current?.updateDataList(configList);
+      });
+    }, 50);
+  }, [getModalConfig, pathname]);
 
   const { apiUrl, imApiUrl, imWsUrl, imS3Bucket } = useCurrentNetworkInfo();
   useMemo(async () => {
@@ -106,5 +125,5 @@ export default function Updater() {
     initRequest();
     initLoginModeList();
   });
-  return null;
+  return <CustomActivityModal ref={modalRef} />;
 }

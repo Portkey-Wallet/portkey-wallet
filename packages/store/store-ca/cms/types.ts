@@ -1,5 +1,7 @@
 import { NetworkType } from '@portkey-wallet/types';
 import {
+  ActivityModalConfig,
+  CurrentShowedActivityModal,
   IEntrance,
   ILoginModeItem,
   TDiscoverDappBannerList,
@@ -107,5 +109,14 @@ export interface CMSState {
   };
   discoverLearnGroupListMap: {
     [T in NetworkType]?: TDiscoverLearnGroupList;
+  };
+  activityModalListMap: {
+    [T in NetworkType]?: ActivityModalConfig[];
+  };
+  activityModalListLoaded: {
+    [T in NetworkType]?: boolean;
+  };
+  currentShowedAcModalListMap: {
+    [T in NetworkType]?: CurrentShowedActivityModal[];
   };
 }

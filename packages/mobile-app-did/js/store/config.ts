@@ -53,7 +53,7 @@ const reduxPersistConfig = {
     assetsSlice.name,
     activitySlice.name,
     dappSlice.name,
-    cmsSlice.name,
+    // cmsSlice.name,
     txFeeSlice.name,
     securitySlice.name,
     rampSlice.name,

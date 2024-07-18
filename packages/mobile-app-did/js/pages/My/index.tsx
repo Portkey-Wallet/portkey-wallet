@@ -15,6 +15,7 @@ import { reportReferralClick } from 'utils/analysisiReport';
 import useEffectOnce from 'hooks/useEffectOnce';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import CommonLogic from 'components/CommonLogic';
 
 interface MenuItemType {
   name: RootStackName;
@@ -90,6 +91,7 @@ export default function MyMenu() {
 
   return (
     <PageContainer leftDom={<TextM />} titleDom={t('My')} safeAreaColor={['white']} containerStyles={styles.container}>
+      <CommonLogic timingTypeArray={[TimingType.Tab]} />
       {MenuList.map(ele => {
         return (
           <MenuItem

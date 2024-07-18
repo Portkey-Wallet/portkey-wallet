@@ -33,6 +33,7 @@ import singleMessage from 'utils/singleMessage';
 import { ChainId } from '@portkey/provider-types';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useMiscSetting } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { resetCms } from '@portkey-wallet/store/store-ca/cms/actions';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
@@ -53,6 +54,7 @@ export default function useLogOut() {
       resetStore();
       im.destroy();
       dispatch(resetIm(currentNetwork));
+      dispatch(resetCms(currentNetwork));
       dispatch(resetDisclaimerConfirmedDapp(currentNetwork));
       dispatch(resetSecurity(currentNetwork));
       dispatch(reSetCheckManagerExceed(currentNetwork));

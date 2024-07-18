@@ -12,7 +12,23 @@ function usePortkeyLink() {
       if (extensionLink.type === 'native') {
         navigate(`${extensionLink.location}${extensionLink.params}`);
       } else {
-        if (isUrl(item?.url)) {
+        if (isUrl(extensionLink.location)) {
+          window.open(extensionLink.location, '_blank');
+        }
+      }
+    },
+    [navigate],
+  );
+}
+export function usePortkeyCommonLink() {
+  const navigate = useNavigate();
+  return useCallback(
+    (extensionLinkString: string) => {
+      const extensionLink = parseLink(extensionLinkString, '');
+      if (extensionLink.type === 'native') {
+        navigate(`${extensionLink.location}${extensionLink.params}`);
+      } else {
+        if (isUrl(extensionLink.location)) {
           window.open(extensionLink.location, '_blank');
         }
       }

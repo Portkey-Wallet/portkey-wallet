@@ -177,7 +177,53 @@
     }
   }
 }
-
+.@{app-prefix}-custom-modal {
+  width: 320px !important;
+  height: 160px !important;
+  .@{app-prefix}-modal-content {
+    .@{app-prefix}-modal-confirm-content {
+      padding: 0;
+    }
+    .@{app-prefix}-modal-footer {
+      padding: 16px;  
+      border-top: 1px solid #ebebec;
+      .@{app-prefix}-btn {
+        height: 48px;
+        border-radius: 24px;
+      }
+      .@{app-prefix}-btn-default {
+        margin-left: 0 !important;
+        margin-top: 16px;
+      }
+    }
+  }
+  .join-official-group-tip-modal-container {
+    position: relative;
+    .closenew-icon {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      cursor: pointer;
+      z-index: 999;
+    }
+    .join-official-group-icon {
+      background-color: @bg-30;
+      width: 320px;
+      height: 160px;
+      .joinofficialgroup-icon {
+        width: 193px;
+        height: 128px;
+      }
+    }
+    .modal-title {
+      padding: 16px 0;
+      text-align: center;
+    }
+    .modal-content {
+      padding: 0 20px 32px;
+    }
+  }
+}
 .light-modal-content {
   gap: 16px;
   .light-modal-content-title {

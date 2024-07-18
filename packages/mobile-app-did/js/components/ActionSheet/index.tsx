@@ -64,6 +64,7 @@ type AlertBodyProps = {
   messageStyle?: TextStyleType;
   titleStyle?: TextStyleType;
   bgImage?: ImageSourcePropType;
+  onDismiss?: () => void;
 };
 
 function AlertBody({
@@ -79,6 +80,7 @@ function AlertBody({
   messageStyle,
   titleStyle,
   bgImage,
+  onDismiss,
 }: AlertBodyProps) {
   return (
     <View style={[styles.alertBox, styles.wrapStyle]}>
@@ -87,6 +89,7 @@ function AlertBody({
         <View
           onTouchEnd={() => {
             OverlayModal.hide();
+            onDismiss?.();
           }}
           style={styles.closeWrap}>
           <Svg icon={'suggest-close'} size={pTd(20)} color={defaultColors.font7} />
@@ -97,6 +100,7 @@ function AlertBody({
           <View
             onTouchEnd={() => {
               OverlayModal.hide();
+              onDismiss?.();
             }}
             style={styles.closeWrap}>
             <Svg icon={'suggest-close'} size={pTd(20)} color={defaultColors.font7} />
@@ -139,7 +143,10 @@ function AlertBody({
             buttons={buttons?.map(i => ({
               ...i,
               onPress: () => {
-                if (autoClose) OverlayModal.hide();
+                if (autoClose) {
+                  OverlayModal.hide();
+                  onDismiss?.();
+                }
                 i.onPress?.();
               },
             }))}
@@ -149,7 +156,10 @@ function AlertBody({
             buttons={buttons?.map(i => ({
               ...i,
               onPress: () => {
-                if (autoClose) OverlayModal.hide();
+                if (autoClose) {
+                  OverlayModal.hide();
+                  onDismiss?.();
+                }
                 i.onPress?.();
               },
             }))}

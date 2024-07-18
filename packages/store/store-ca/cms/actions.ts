@@ -16,6 +16,7 @@ import {
   getDiscoverLearnGroupList,
 } from '@portkey-wallet/graphql/cms/queries';
 import {
+  ActivityModalConfig,
   IEntrance,
   ILoginModeItem,
   TBaseCardItemType,
@@ -23,6 +24,7 @@ import {
   TDiscoverLearnGroupList,
   TDiscoverTabList,
   TTokenDetailBannerItemType,
+  TimingType,
 } from '@portkey-wallet/types/types-ca/cms';
 
 export const getSocialMediaAsync = createAsyncThunk<Required<Pick<CMSState, 'socialMediaListNetMap'>>, NetworkType>(
@@ -397,7 +399,150 @@ export const getDiscoverLearnAsync = createAsyncThunk<
   }
 });
 
+export const getActivityModalAsync = createAsyncThunk<Required<Pick<CMSState, 'activityModalListMap'>>, NetworkType>(
+  'cms/activityModalListMap',
+  async (network: NetworkType) => {
+    let returnList: ActivityModalConfig[] = [];
+    console.log('rightTimingConfig start getActivityModalAsync');
+    try {
+      // todo wfs request api for ActivityModalConfig
+      returnList = await new Promise<ActivityModalConfig[]>(resolve => {
+        // 模拟异步 API 请求
+        setTimeout(() => {
+          // 假设这是从 API 请求返回的数据
+          const fetchedData: ActivityModalConfig[] = [
+            {
+              id: 1,
+              showClose: true,
+              headerImg: '',
+              title: '标题1',
+              description:
+                '描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1描述1',
+              negtiveTitle: '取消1',
+              positiveTitle: '确认1',
+              positiveAction: '',
+              timingOperation: 'Tab',
+              timingType: TimingType.Page,
+            },
+            {
+              id: 2,
+              showClose: false,
+              headerImg: 'https://cdn.pixabay.com/photo/2016/12/23/12/40/night-1927265_1280.jpg',
+              title: '标题2 change03',
+              description:
+                '描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2',
+              negtiveTitle: '取消2',
+              positiveTitle: '确认2',
+              positiveAction: '',
+              timingOperation: 'Tab',
+              timingType: TimingType.Page,
+            },
+            {
+              id: 3,
+              showClose: false,
+              headerImg: 'https://cdn.pixabay.com/photo/2016/12/23/12/40/night-1927265_1280.jpg',
+              title: '标题3',
+              description:
+                '描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2',
+              negtiveTitle: '取消3',
+              positiveTitle: '确认3',
+              positiveAction: '',
+              timingOperation: 'Discover',
+              timingType: TimingType.Tab,
+            },
+            {
+              id: 4,
+              showClose: true,
+              headerImg: 'https://cdn.pixabay.com/photo/2016/12/23/12/40/night-1927265_1280.jpg',
+              title: '标题4',
+              description:
+                '描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2',
+              negtiveTitle: '取消4',
+              positiveTitle: '确认4',
+              positiveAction: '',
+              timingOperation: '/',
+              timingType: TimingType.Page,
+            },
+            {
+              id: 5,
+              showClose: false,
+              headerImg: 'https://cdn.pixabay.com/photo/2016/12/23/12/40/night-1927265_1280.jpg',
+              title: '标题5 change10',
+              description:
+                '描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2',
+              negtiveTitle: '取消5',
+              positiveTitle: '确认5',
+              positiveAction: '',
+              timingOperation: '/',
+              timingType: TimingType.Page,
+            },
+            {
+              id: 6,
+              showClose: false,
+              headerImg: 'https://cdn.pixabay.com/photo/2016/12/23/12/40/night-1927265_1280.jpg',
+              title: '标题6',
+              description:
+                '描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2',
+              negtiveTitle: '取消6',
+              positiveTitle: '确认6',
+              positiveAction: '',
+              timingOperation: '/',
+              timingType: TimingType.AppOpen,
+            },
+            {
+              id: 7,
+              showClose: false,
+              headerImg: 'https://cdn.pixabay.com/photo/2016/12/23/12/40/night-1927265_1280.jpg',
+              title: '标题7',
+              description:
+                '描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2',
+              negtiveTitle: '取消7',
+              positiveTitle: '确认7',
+              positiveAction: '',
+              timingOperation: '/buy',
+              timingType: TimingType.Page,
+            },
+            {
+              id: 8,
+              showClose: true,
+              headerImg: 'https://cdn.pixabay.com/photo/2016/12/23/12/40/night-1927265_1280.jpg',
+              title: '标题8',
+              description:
+                '描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2描述2',
+              negtiveTitle: '取消8',
+              positiveTitle: '确认8',
+              positiveAction: '',
+              timingOperation: '/chat-list',
+              timingType: TimingType.Page,
+            },
+          ];
+          resolve(fetchedData);
+        }, 2000);
+      });
+      console.log('rightTimingConfig getActivityModalAsync list ', returnList);
+      return {
+        activityModalListMap: {
+          [network]: returnList,
+        },
+      };
+    } catch (error) {
+      throw new Error('getActivityModalAsync error');
+    }
+  },
+);
+
 export const setEntrance = createAction<{
   network: NetworkType;
   value: IEntrance;
 }>('cms/setEntrance');
+
+export const setActivityModalShowed = createAction<{
+  network: NetworkType;
+  id: number;
+}>('cms/setActivityModalShowed');
+export const setActivityModalCurrentTimeShowed = createAction<{
+  network: NetworkType;
+  id: number;
+}>('cms/setActivityModalCurrentTimeShowed');
+
+export const resetCms = createAction<NetworkType>('cms/resetCms');

@@ -24,6 +24,7 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useOnTouchAndPopUp } from 'components/FloatOverlay/touch';
 import { ListItemType } from 'components/FloatOverlay/Popover';
 import KeyGenieChat from '../components/KeyGenieChat';
+import CommonLogic from 'components/CommonLogic';
 
 export default function ChatHomePage() {
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
@@ -122,6 +123,7 @@ export default function ChatHomePage() {
 
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.white]}>
+      <CommonLogic timingTypeArray={[TimingType.Tab]} />
       <Touchable activeOpacity={1} onPressIn={emitCloseSwiped}>
         <CustomHeader noLeftDom themeType="white" titleDom="Chats" rightDom={RightDom} />
       </Touchable>

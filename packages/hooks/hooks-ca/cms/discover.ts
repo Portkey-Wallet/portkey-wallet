@@ -4,6 +4,7 @@ import { TDiscoverTabList, TDiscoverLearnGroupList, TDiscoverEarnList } from '@p
 import { useAppCommonDispatch } from '../..';
 import { useCurrentNetworkInfo, useNetworkList } from '../network';
 import {
+  getActivityModalAsync,
   getDiscoverEarnAsync,
   getDiscoverLearnAsync,
   getDiscoverTabAsync,
@@ -75,4 +76,13 @@ export const useInitCMSDiscoverNewData = () => {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+};
+
+export const useInitActivityModalData = () => {
+  const dispatch = useAppCommonDispatch();
+  const { networkType } = useCurrentNetworkInfo();
+
+  useEffect(() => {
+    dispatch(getActivityModalAsync(networkType));
+  }, [dispatch, networkType]);
 };

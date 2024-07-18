@@ -35,6 +35,15 @@ import CryptoGift from 'pages/CryptoGift';
 import GiftHistory from 'pages/CryptoGift/GiftHistory';
 import GiftDetail from 'pages/CryptoGift/GiftDetail';
 import GiftResult from 'pages/CryptoGift/GiftResult';
+import { useActivityModalConfig } from '@portkey-wallet/hooks/hooks-ca/api';
+import useJump from 'hooks/useJump';
+import { ActivityModalConfig, TimingType } from '@portkey-wallet/types/types-ca/cms';
+import { ButtonRowProps } from 'components/ButtonRow';
+import { parseLink } from '@portkey-wallet/hooks/hooks-ca/cms/util';
+import ActionSheet from 'components/ActionSheet';
+import { useAppCommonDispatch } from '@portkey-wallet/hooks';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { setActivityModalCurrentTimeShowed, setActivityModalShowed } from '@portkey-wallet/store/store-ca/cms/actions';
 
 // key: page route key, value: is page show
 const PageShowMap = new Map<string, boolean>();
@@ -81,8 +90,81 @@ export type TabParamList = {
 export type RootStackName = typeof devNav[number]['name'];
 
 export type RootNavigationProp = StackNavigationProp<RootStackParamList>;
+let lastPage: string | undefined;
 export default function NavigationRoot() {
   const navigationRef = useRef<NavigationContainerRef<ParamListBase>>();
+  const dispatch = useAppCommonDispatch();
+  const { networkType } = useCurrentNetworkInfo();
+
+  const jump = useJump();
+  const getModalConfig = useActivityModalConfig();
+  const showModal = useCallback(
+    async (configItem: ActivityModalConfig): Promise<boolean> => {
+      return new Promise(resolve => {
+        if (configItem.showed) {
+          resolve(true);
+        } else {
+          const buttons: ButtonRowProps['buttons'] = [];
+          if (configItem.positiveTitle) {
+            buttons.push({
+              title: configItem.positiveTitle,
+              onPress: () => {
+                const link = parseLink(configItem.positiveAction, '');
+                console.log('link', link);
+                if (link.location) {
+                  jump(link);
+                }
+              },
+            });
+          }
+          if (configItem.negtiveTitle) {
+            buttons.push({
+              title: configItem.negtiveTitle,
+            });
+          }
+          const onDismiss = () => {
+            resolve(true);
+          };
+          ActionSheet.alert({
+            isCloseShow: configItem.showClose,
+            bgImage: configItem.headerImg ? { uri: configItem.headerImg } : undefined,
+            title: configItem.title,
+            message: configItem.description,
+            buttons,
+            onDismiss,
+          });
+          if (configItem.timingType !== TimingType.AppOpen) {
+            dispatch(
+              setActivityModalShowed({
+                network: networkType,
+                id: configItem.id || 0,
+              }),
+            );
+          }
+          dispatch(
+            setActivityModalCurrentTimeShowed({
+              network: networkType,
+              id: configItem.id || 0,
+            }),
+          );
+        }
+      });
+    },
+    [dispatch, jump, networkType],
+  );
+  const renderActivityModal = useCallback(
+    (config: ActivityModalConfig[], index: number) => {
+      if (index >= config.length) {
+        return;
+      }
+      showModal(config[index]).then(value => {
+        if (value) {
+          renderActivityModal(config, index + 1);
+        }
+      });
+    },
+    [showModal],
+  );
   const refHandler = (ref: any) => {
     navigationRef.current = ref;
     navigationService.setTopLevelNavigator(ref);
@@ -90,12 +172,29 @@ export default function NavigationRoot() {
 
   const onNavigationStateChange = useCallback(async () => {
     const currentRouteName = navigationRef?.current?.getCurrentRoute()?.name;
+    const routesLength = navigationRef.current?.getState()?.routes?.length || 0;
+    if (routesLength > 0) {
+      const lastElement = navigationRef.current?.getState()?.routes[routesLength - 1];
+      if (lastElement?.name !== lastPage) {
+        const timingTypeArray = [TimingType.Page];
+        // if the latest page is tab page
+        if (lastElement?.name === 'Tab') {
+          timingTypeArray.push(TimingType.AppOpen);
+          timingTypeArray.push(TimingType.AppOpenOnce);
+        }
+        console.log('current Page is: ', lastElement?.name);
+        getModalConfig(timingTypeArray, lastElement?.name || '', config => {
+          renderActivityModal(config, 0);
+        });
+      }
+      lastPage = lastElement?.name;
+    }
     const currentRouteKey = navigationRef?.current?.getCurrentRoute()?.key;
     if (!currentRouteName || !currentRouteKey) return;
     if (PageShowMap.get(currentRouteKey)) return;
     reportPageShow({ page_name: currentRouteName });
     PageShowMap.set(currentRouteKey, true);
-  }, []);
+  }, [getModalConfig, renderActivityModal]);
 
   return (
     <NavigationContainer ref={refHandler} onStateChange={onNavigationStateChange}>
@@ -114,7 +213,12 @@ export default function NavigationRoot() {
                 }
           }>
           {stackNav.map((item, index) => (
-            <Stack.Screen options={(item as any).options} key={index} {...(item as any)} />
+            <Stack.Screen
+              options={(item as any).options}
+              key={index}
+              {...(item as any)}
+              initialParams={{ type: 'Page111' }}
+            />
           ))}
         </Stack.Navigator>
       </TabsDrawer>

@@ -36,7 +36,7 @@ import useInterval from '@portkey-wallet/hooks/useInterval';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import MatchValueMap from 'utils/matchValueMap';
 import { useInitCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
-import { useInitCMSDiscoverNewData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
+import { useInitActivityModalData, useInitCMSDiscoverNewData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
 
 request.setExceptionManager(exceptionManager);
 
@@ -124,6 +124,7 @@ export default function Updater() {
   useDiscoverGroupList(true);
   useInitCmsBanner();
   useInitCMSDiscoverNewData();
+  useInitActivityModalData();
   useAppEntrance(true);
   useRememberMeBlackList(true);
   useCheckContactMap();

@@ -49,10 +49,15 @@ const imPersistConfig = {
     'sendingBotRelationIdNetMap',
   ],
 };
-
+const cmsPersistConfig = {
+  key: cmsSlice.name,
+  storage: AsyncStorage,
+  blacklist: ['activityModalListLoaded', 'currentShowedAcModalListMap'],
+};
 export const userReducer = persistReducer(userPersistConfig, userSlice.reducer);
 export const discoverReducer = persistReducer(discoverPersistConfig, discoverSlice.reducer);
 export const imReducer = persistReducer(imPersistConfig, imSlice.reducer);
+export const cmsReducer = persistReducer(cmsPersistConfig, cmsSlice.reducer);
 
 const rootReducer = combineReducers({
   [walletSlice.name]: walletSlice.reducer,
@@ -66,7 +71,7 @@ const rootReducer = combineReducers({
   [activitySlice.name]: activitySlice.reducer,
   [tokenManagementSlice.name]: tokenManagementSlice.reducer,
   [dappSlice.name]: dappSlice.reducer,
-  [cmsSlice.name]: cmsSlice.reducer,
+  [cmsSlice.name]: cmsReducer,
   [userSlice.name]: userReducer,
   [discoverSlice.name]: discoverReducer,
   [txFeeSlice.name]: txFeeSlice.reducer,

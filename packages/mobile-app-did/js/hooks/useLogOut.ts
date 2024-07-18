@@ -36,6 +36,7 @@ import { deleteFCMToken } from 'utils/FCM';
 import { resetBadge } from 'utils/notifee';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useMiscSetting } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { resetCms } from '@portkey-wallet/store/store-ca/cms/actions';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
@@ -57,6 +58,7 @@ export default function useLogOut() {
       signalrFCM.exitWallet();
 
       dispatch(resetIm(currentNetwork));
+      dispatch(resetCms(currentNetwork));
       dispatch(resetSecurity(currentNetwork));
       dispatch(reSetCheckManagerExceed(currentNetwork));
       resetCurrentNetworkSetting();

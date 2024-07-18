@@ -8,6 +8,8 @@ import { DepositModalMap } from 'hooks/deposit';
 import navigationService from 'utils/navigationService';
 import { TabRouteNameEnum } from 'types/navigate';
 import { useAppBridgeButtonShow, useAppNFTTabShow } from 'hooks/cms';
+import CommonLogic from 'components/CommonLogic';
+import { TimingType } from '@portkey-wallet/types/types-ca/cms';
 
 export const TradeHomePage: React.FC = () => {
   const {
@@ -75,6 +77,7 @@ export const TradeHomePage: React.FC = () => {
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.white]}>
       <CommonTopTab hasTabBarBorderRadius={false} tabList={tabList} />
+      <CommonLogic timingTypeArray={[TimingType.Tab]} />
     </SafeAreaBox>
   );
 };

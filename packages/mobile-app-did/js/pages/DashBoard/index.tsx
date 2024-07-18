@@ -19,8 +19,13 @@ import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import { formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import { useInitCmsBanner } from '@portkey-wallet/hooks/hooks-ca/cms/banner';
 import { useDiscoverData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
+import { useRoute } from '@react-navigation/native';
+import CommonLogic from 'components/CommonLogic';
+import { TimingType } from '@portkey-wallet/types/types-ca/cms';
 
 const DashBoard: React.FC<any> = ({ navigation }) => {
+  const route = useRoute();
+  console.log('DashBoard route name is:', route.name, 'navigation', navigation);
   const isMainnet = useIsMainnet();
   const reportAnalyticsEvent = useReportAnalyticsEvent();
   const { getViewReferralStatusStatus, getReferralLink } = useReferral();
@@ -80,6 +85,7 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
         )}
         <DashBoardTab />
       </NestedScrollView>
+      <CommonLogic timingTypeArray={[TimingType.Tab]} />
     </SafeAreaBox>
   );
 };

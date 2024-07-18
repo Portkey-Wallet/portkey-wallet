@@ -23,6 +23,8 @@ import { useOnTouchAndPopUp } from 'components/FloatOverlay/touch';
 import { ListItemType } from 'components/FloatOverlay/Popover';
 import { ArchivedTabEnum } from '../types';
 import DiscoverTab from '../components/DiscoverTopTab';
+import CommonLogic from 'components/CommonLogic';
+import { TimingType } from '@portkey-wallet/types/types-ca/cms';
 
 export default function DiscoverHome() {
   useCheckAndInitNetworkDiscoverMap();
@@ -92,6 +94,7 @@ export default function DiscoverHome() {
 
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={BGStyles.white}>
+      <CommonLogic timingTypeArray={[TimingType.Tab]} />
       <View style={styles.functionalLine}>
         <SimulatedInputBox onClickInput={() => navigationService.navigate('DiscoverSearch')} rightDom={scanQRIcon} />
         {showAllTabsIcon}

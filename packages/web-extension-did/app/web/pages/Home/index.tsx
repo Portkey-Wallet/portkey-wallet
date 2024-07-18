@@ -20,6 +20,7 @@ import HomeHeader from 'pages/components/HomeHeader';
 import BottomBar from 'pages/components/BottomBar';
 import SetNewWalletNameModal from './components/SetNewWalletNameModal';
 import { useBlockAndReport } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useInitActivityModalData } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -37,6 +38,7 @@ export default function Home() {
   const handleAchSell = useHandleAchSell();
   const locked = useStorage('locked');
   const { fetchAndSetBlockList } = useBlockAndReport();
+  useInitActivityModalData();
 
   const checkAchSell = useCallback(async () => {
     if (search) {

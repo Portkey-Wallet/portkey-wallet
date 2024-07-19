@@ -94,6 +94,7 @@ export default function Buy() {
         });
         return;
       }
+      navigate('/');
     } else {
       navigate('/');
     }

@@ -94,9 +94,8 @@ export default function Buy() {
         });
         return;
       }
-    } else {
-      navigate('/');
     }
+    navigate('/');
   }, [navigate, state]);
 
   const mainContent = useMemo(

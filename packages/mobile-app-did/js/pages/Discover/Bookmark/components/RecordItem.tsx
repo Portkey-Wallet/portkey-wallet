@@ -82,10 +82,11 @@ export default memo(
 
     const recordInfo = useMemo(() => {
       return {
-        title: getCmsWebsiteInfoName(item.url || ''),
+        title: getCmsWebsiteInfoName(item.url) || item.name || '',
         imageUrl: getCmsWebsiteInfoImageUrl(item.url || ''),
+        url: item.url || '',
       };
-    }, [getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName, item.url]);
+    }, [getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName, item.name, item.url]);
 
     return (
       <ScaleDecorator activeScale={1.05}>
@@ -110,9 +111,13 @@ export default memo(
             {EditDom}
             <DiscoverWebsiteImage size={pTd(40)} style={styles.websiteIconStyle} imageUrl={recordInfo.imageUrl} />
             <View style={styles.infoWrap}>
-              <TextWithProtocolIcon url={item?.url} title={recordInfo?.title || item.url} textFontSize={pTd(16)} />
+              <TextWithProtocolIcon
+                title={recordInfo?.title || item.url}
+                url={recordInfo?.url}
+                textFontSize={pTd(16)}
+              />
               <TextS numberOfLines={1} ellipsizeMode="tail" style={[FontStyles.font7]}>
-                {recordInfo?.title || item.url}
+                {item.url || ''}
               </TextS>
             </View>
 

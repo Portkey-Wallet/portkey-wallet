@@ -88,6 +88,7 @@ export type CreateChannelParams = {
 
 export type CreateChannelResult = {
   channelUuid: string;
+  botChannel: boolean;
 };
 
 export type GetChannelInfoParams = {

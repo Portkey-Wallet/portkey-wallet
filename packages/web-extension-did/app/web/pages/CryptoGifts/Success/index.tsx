@@ -42,7 +42,7 @@ export default function SuccessPage() {
         <div className="success-show-background">
           <div className="success-show-icon flex-column-center">
             <div className="header flex-center">
-              <span onClick={() => navigate('/crypto-gifts')}>done</span>
+              <span onClick={() => navigate('/crypto-gifts')}>Done</span>
             </div>
             <CustomSvg type="BoxClose" />
             <div className="created flex-center">

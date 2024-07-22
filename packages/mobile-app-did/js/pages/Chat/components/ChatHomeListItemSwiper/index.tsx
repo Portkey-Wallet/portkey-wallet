@@ -19,6 +19,9 @@ import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat
 import GroupAvatarShow from 'pages/Chat/components/GroupAvatarShow';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
+import AIChatMark from '../AIChatMark';
+import { ContactType } from '@portkey-wallet/types/types-ca/contact';
+import { KEY_GENIE_GREETINGS } from '@portkey-wallet/constants/constants-ca/guide';
 
 type ChatHomeListItemSwipedType<T> = {
   item: T;
@@ -96,7 +99,10 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
     } else {
       message = UN_SUPPORTED_FORMAT;
     }
-
+    // if this is bot init channel,show greeting message
+    if (item.botChannel && item.isInit) {
+      message = KEY_GENIE_GREETINGS;
+    }
     return (
       <TextS numberOfLines={1} style={[FontStyles.font7, styles.message]}>
         {message}
@@ -204,6 +210,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
                 <TextL style={[FontStyles.font5, GStyles.marginRight(4)]} numberOfLines={1}>
                   {item.displayName}
                 </TextL>
+                {!!item.botChannel && <AIChatMark containerStyle={styles.aiMarkContainer} />}
                 {item.mute && <Svg size={pTd(12)} icon="chat-mute" color={defaultColors.font7} />}
               </View>
               <TextS style={FontStyles.font7}>{formatChatListTime(item.lastPostAt)}</TextS>
@@ -289,5 +296,9 @@ const styles = StyleSheet.create({
   muteMessage: {
     borderColor: defaultColors.bg7,
     backgroundColor: defaultColors.bg7,
+  },
+  aiMarkContainer: {
+    marginLeft: 0,
+    marginRight: pTd(4),
   },
 });

@@ -264,7 +264,14 @@ export const useFreeMintShow = (config: IEntranceMatchValueConfig) => {
     isFreeMintNftShow,
   };
 };
+export const useNFTTabShow = (config: IEntranceMatchValueConfig) => {
+  const { entrance } = useEntrance(config);
+  const isNFTTabShow = useMemo(() => entrance?.nft, [entrance.nft]);
 
+  return {
+    isNFTTabShow,
+  };
+};
 export const useSwapButtonShow = (config: IEntranceMatchValueConfig) => {
   const { entrance } = useEntrance(config);
   const isSwapShow = useMemo(() => entrance?.swap, [entrance.swap]);

@@ -89,10 +89,19 @@ function AlertBody({
             OverlayModal.hide();
           }}
           style={styles.closeWrap}>
-          <Svg icon={'close'} size={pTd(12.5)} color={defaultColors.font7} />
+          <Svg icon={'suggest-close'} size={pTd(20)} color={defaultColors.font7} />
         </View>
       )}
       <View style={styles.alertBox}>
+        {isCloseShow && !bgImage && (
+          <View
+            onTouchEnd={() => {
+              OverlayModal.hide();
+            }}
+            style={styles.closeWrap}>
+            <Svg icon={'suggest-close'} size={pTd(20)} color={defaultColors.font7} />
+          </View>
+        )}
         {title ? <TextTitle style={[styles.alertTitle, titleStyle]}>{title}</TextTitle> : null}
         {typeof title2 === 'string' ? <TextL style={styles.alertTitle2}>{title2}</TextL> : title2}
         <ScrollView

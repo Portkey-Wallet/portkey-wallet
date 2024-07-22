@@ -14,7 +14,13 @@ import SelectAsset from '../components/SelectAsset';
 import { DEFAULT_GIFT_TOKEN, TDVV_CHAIN_GIFT_TOKEN, TDVW_CHAIN_GIFT_TOKEN, chianInfoShow, getPrice } from '../utils';
 import { useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { ZERO } from '@portkey-wallet/im-ui-web';
-import { divDecimals, formatAmountShow, formatAmountUSDShow, timesDecimals } from '@portkey-wallet/utils/converter';
+import {
+  divDecimals,
+  divDecimalsStr,
+  formatAmountShow,
+  formatAmountUSDShow,
+  timesDecimals,
+} from '@portkey-wallet/utils/converter';
 import ConfirmGift from '../components/ConfirmGift';
 import { useGetCryptoGiftConfig, useSendCryptoGift } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 import { RedPackageTypeEnum } from '@portkey-wallet/im/types/redPackage';
@@ -39,6 +45,7 @@ import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useCheckAllowance } from 'hooks/useCheckAllowance';
 import { IGuardiansApproved } from '@portkey/did-ui-react';
 import { isNFT } from '@portkey-wallet/utils/token';
+import { useGetRedPackageConfig } from '@portkey-wallet/hooks/hooks-ca/im';
 import './index.less';
 import googleAnalytics from 'utils/googleAnalytics';
 
@@ -96,6 +103,7 @@ export default function Create() {
   const checkAllowance = useCheckAllowance();
   const privateKeyRef = useRef<string>('');
   const [btnLoading, setBtnLoading] = useState(false);
+  const { getTokenInfo, refresh } = useGetRedPackageConfig();
   useFetchTxFee();
   const { redPackage: cryptoGiftFee } = useGetTxFee(token.chainId);
   const getCalculateCryptoGiftFee = useCalculateCryptoGiftFee();
@@ -138,6 +146,7 @@ export default function Create() {
   useEffectOnce(() => {
     init();
     getInitState();
+    refresh();
   });
 
   const updateAmountUsdShow = useCallback(async () => {
@@ -204,7 +213,9 @@ export default function Create() {
   const changeCurTab = useCallback((target: RedPackageTypeEnum) => {
     setCurTab(target);
     setQuantity(undefined);
+    setQuantityErr('');
     setAmount(undefined);
+    setAmountErr('');
     setToken(DEFAULT_GIFT_TOKEN);
     setMemo(undefined);
     setNewUserFlag(true);
@@ -408,10 +419,21 @@ export default function Create() {
         setAmountErr('Please input valid amount');
         return;
       }
-      if (token.decimals == 0 && curTab === RedPackageTypeEnum.RANDOM && ZERO.plus(amount ?? '').lt(quantity ?? '')) {
-        setAmountErr(`At least 1 ${token.label || token.alias || token.symbol} for each crypto gift`);
-        return;
+      const tokenConfig = getTokenInfo(token.chainId, token.symbol);
+      const minAmount = tokenConfig?.minAmount || '1';
+      if (curTab === RedPackageTypeEnum.RANDOM) {
+        const totalMinAmount = ZERO.plus(minAmount).times(quantity || '1');
+
+        if (timesDecimals(amount, token.decimals).lt(totalMinAmount)) {
+          setAmountErr(
+            `At least ${divDecimalsStr(minAmount, token.decimals || 1)} ${
+              token.label || token.alias || token.symbol
+            } for each crypto gift`,
+          );
+          return;
+        }
       }
+
       setBtnLoading(true);
       // check manager sync
       const _isManagerSynced = await checkManagerSyncState(token.chainId);
@@ -433,6 +455,7 @@ export default function Create() {
     checkManagerSyncState,
     checkSecurity,
     curTab,
+    getTokenInfo,
     quantity,
     token.alias,
     token.chainId,
@@ -573,6 +596,7 @@ export default function Create() {
         onSelectAsset={(item, other) => {
           setToken(item);
           setAmount(undefined);
+          setAmountErr('');
           otherChainToken.current = other;
         }}
       />

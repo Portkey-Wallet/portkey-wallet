@@ -11,11 +11,14 @@ import { FontStyles } from 'assets/theme/styles';
 import boxOpen from 'assets/image/pngs/box-open.png';
 import fonts from 'assets/theme/fonts';
 import Divider from 'components/Divider';
+import MintEditModal from '../MintEdit';
 
 const MintHome = () => {
   const { t } = useLanguage();
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const onMintPress = useCallback(() => {}, []);
+  const onMintPress = useCallback(() => {
+    MintEditModal.showMintEdit();
+  }, []);
   return (
     <PageContainer
       noCenterDom

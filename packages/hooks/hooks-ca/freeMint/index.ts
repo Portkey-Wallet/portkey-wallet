@@ -47,6 +47,7 @@ export const useFreeMinInput = () => {
         // imageUrl: result.collectionInfo.imageUrl,
       };
     }
+    return {};
   }, [enableNext, inputDescription, inputName]);
   return {
     setInputName,
@@ -133,7 +134,7 @@ export const useLoopMintStatus = () => {
         return _creationStatusResult?.status === FreeMintStatus.PENDING;
       },
     });
-    return creationStatus.state;
+    return creationStatus.status;
   }, []);
 };
 

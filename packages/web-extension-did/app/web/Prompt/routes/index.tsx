@@ -70,6 +70,7 @@ import HistoryList from 'pages/CryptoGifts/History';
 import CryptoGiftsDetail from 'pages/CryptoGifts/Detail';
 import Create from 'pages/CryptoGifts/Create';
 import Success from 'pages/CryptoGifts/Success';
+import FreeMint from 'pages/FreeMint';
 // import TokenNetworkList from 'pages/DepositHome/components/TokenNetworkList';
 
 export const PageRouter = () => {
@@ -151,6 +152,10 @@ export const PageRouter = () => {
     {
       path: '/nft',
       element: <NFT />,
+    },
+    {
+      path: '/free-mint',
+      element: <FreeMint />,
     },
     {
       path: '/unlock',

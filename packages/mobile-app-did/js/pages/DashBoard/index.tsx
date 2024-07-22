@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Animated } from 'react-native';
+import { Animated, View } from 'react-native';
 import { NestedScrollView, NestedScrollViewHeader } from '@sdcx/nested-scroll';
 import Card from './Card';
 import DashBoardTab from './DashBoardTab';
@@ -80,6 +80,9 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
         )}
         <DashBoardTab />
       </NestedScrollView>
+      {/* <View style={{ position: 'absolute', bottom: pTd(40) }}>
+        <MintStatusLine />
+      </View> */}
     </SafeAreaBox>
   );
 };

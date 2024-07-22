@@ -13,6 +13,8 @@ import { useRoute } from '@react-navigation/native';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION } from '@portkey-wallet/constants/constants-ca/assets';
+import NFTHint from 'pages/FreeMint/components/NFTHint';
+import MintStatusLine from 'pages/FreeMint/components/MintStatusLine';
 
 export interface OpenCollectionObjType {
   // key = symbol+chainId
@@ -147,14 +149,17 @@ export default function NFTSection() {
         contentContainerStyle={styles.contentContainerStyle}
         data={totalRecordCount === 0 ? [] : accountNFTList || []}
         ListEmptyComponent={() => (
-          <Touchable>
-            <NoData
-              icon={'no-data-nft'}
-              message={t('No NFTs yet ')}
-              topDistance={pTd(40)}
-              oblongSize={[pTd(64), pTd(64)]}
-            />
-          </Touchable>
+          <View>
+            <Touchable>
+              <NoData
+                icon={'no-data-nft'}
+                message={t('No NFTs yet ')}
+                topDistance={pTd(40)}
+                oblongSize={[pTd(64), pTd(64)]}
+              />
+            </Touchable>
+            {/* <NFTHint /> */}
+          </View>
         )}
         renderItem={({ item }: { item: NFTCollectionItemShowType }) => (
           <NFTCollection
@@ -175,6 +180,10 @@ export default function NFTSection() {
         }}
         onEndReached={() => getNFTCollectionsAsync()}
       />
+      <View style={styles.hintContainer}>
+        {/* <MintStatusLine /> */}
+        <NFTHint />
+      </View>
     </View>
   );
 }
@@ -190,5 +199,9 @@ const styles = StyleSheet.create({
   },
   contentContainerStyle: {
     paddingBottom: pTd(16),
+  },
+  hintContainer: {
+    position: 'absolute',
+    bottom: pTd(343),
   },
 });

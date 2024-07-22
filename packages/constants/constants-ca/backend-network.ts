@@ -188,6 +188,7 @@ export const BackEndNetWorkMap: {
     schrodingerUrl: 'https://schrodingerai.com',
     eForestUrl: 'https://test.eforest.finance',
     sgrSchrodingerUrl: 'https://cat.schrodingerai.com',
+    tomorrowDAOUrl: 'https://test.tmrwdao.com',
   },
   'back-end-testnet': {
     name: 'aelf Testnet',
@@ -214,6 +215,7 @@ export const BackEndNetWorkMap: {
     awakenUrl: 'https://test-app.awaken.finance',
     schrodingerUrl: 'https://schrodingerai.com',
     sgrSchrodingerUrl: 'https://cat.schrodingerai.com',
+    tomorrowDAOUrl: 'https://test.tmrwdao.com',
   },
   'back-end-mainnet': {
     name: 'aelf Mainnet',
@@ -245,6 +247,7 @@ export const BackEndNetWorkMap: {
     awakenUrl: 'https://app.awaken.finance',
     schrodingerUrl: 'https://schrodingernft.ai/',
     sgrSchrodingerUrl: 'https://cat.schrodingernft.ai/',
+    tomorrowDAOUrl: 'https://tmrwdao.com',
   },
   'back-end-mainnet-v2': {
     name: 'aelf Mainnet',
@@ -279,5 +282,6 @@ export const BackEndNetWorkMap: {
     schrodingerUrl: 'https://schrodingernft.ai',
     eForestUrl: 'https://www.eforest.finance',
     sgrSchrodingerUrl: 'https://cat.schrodingernft.ai',
+    tomorrowDAOUrl: 'https://tmrwdao.com',
   },
 };

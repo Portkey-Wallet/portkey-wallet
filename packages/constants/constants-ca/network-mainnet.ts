@@ -22,6 +22,7 @@ const ETransferList = NetworkList.map(i => i.eTransferUrl).filter(i => !!i) as s
 const AwakenUrlList = NetworkList.map(i => i.awakenUrl).filter(i => !!i) as string[];
 const SchrodingerList = NetworkList.map(i => i.schrodingerUrl).filter(i => !!i) as string[];
 const SGRSchrodingerList = NetworkList.map(i => i.sgrSchrodingerUrl).filter(i => !!i) as string[];
+const TomorrowDAOUrlList = NetworkList.map(i => i.tomorrowDAOUrl).filter(i => !!i) as string[];
 
 export const DAPP_WHITELIST: string[] = [
   ...EBridgeList,
@@ -29,6 +30,7 @@ export const DAPP_WHITELIST: string[] = [
   ...AwakenUrlList,
   ...SchrodingerList,
   ...SGRSchrodingerList,
+  ...TomorrowDAOUrlList
 ];
 
 export const LinkPortkeyWebsite = OfficialWebsite;

@@ -59,9 +59,30 @@ export const useFreeMinInput = () => {
   };
 };
 
+export const useFreeMintInfo = () => {
+  return useCallback(async () => {
+    try {
+      const result = await request.freeMintApi.getMintInfo();
+      return result;
+    } catch (error) {
+      return null;
+    }
+  }, []);
+};
+
 export const useConfirmMint = () => {
   const confirm = useCallback(
-    async (name: string, description: string, tokenId: string, imageUrl: string): Promise<string> => {
+    async ({
+      name,
+      description,
+      tokenId,
+      imageUrl,
+    }: {
+      name: string;
+      description: string;
+      tokenId: string;
+      imageUrl: string;
+    }): Promise<string> => {
       const result = await request.freeMintApi.confirmMint({
         params: { imageUrl, name, tokenId, description },
       });
@@ -95,7 +116,7 @@ export const useMintStatus = (itemId: string) => {
         await request.freeMintApi.confirmAgain({ params: { itemId } });
       }
     })();
-  }, [itemId]);
+  }, [itemId, mintStatus]);
   return { mintStatus, mintDetail, mintAgain };
 };
 export const useLoopMintStatus = () => {
@@ -108,10 +129,21 @@ export const useLoopMintStatus = () => {
       },
       times: 10,
       interval: 2000,
-      checkIsContinue: _creationStatusResult => {
+      checkIsContinue: (_creationStatusResult: any) => {
         return _creationStatusResult?.status === FreeMintStatus.PENDING;
       },
     });
     return creationStatus.state;
+  }, []);
+};
+
+export const useGetMintItemInfo = () => {
+  return useCallback(async (itemId: string) => {
+    try {
+      const res = await request.freeMintApi.getMintItemInfo({ params: { itemId } });
+      return res;
+    } catch (error) {
+      return null;
+    }
   }, []);
 };

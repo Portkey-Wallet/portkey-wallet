@@ -17,5 +17,8 @@ export default {
     target: '/api/app/mint/detail',
     config: { method: 'GET' },
   },
-  editHolderInfo: '/api/app/account/holderInfo',
+  getMintItemInfo: {
+    target: '/api/app/mint/itemInfo',
+    config: { method: 'GET' },
+  },
 } as const;

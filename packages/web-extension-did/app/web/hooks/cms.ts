@@ -1,4 +1,4 @@
-import { useETransShow, useEntrance, useBridgeButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useETransShow, useEntrance, useBridgeButtonShow, useNFTTabShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { IEntranceMatchValueMap } from '@portkey-wallet/types/types-ca/cms';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 
@@ -21,4 +21,8 @@ export const useExtensionETransShow = () => {
 export const useExtensionBridgeButtonShow = () => {
   const config = useEntranceConfig();
   return useBridgeButtonShow(config);
+};
+export const useExtensionNFTTabShow = () => {
+  const config = useEntranceConfig();
+  return useNFTTabShow(config);
 };

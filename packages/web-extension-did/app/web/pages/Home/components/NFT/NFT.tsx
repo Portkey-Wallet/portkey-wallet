@@ -4,7 +4,6 @@ import { NFTCollectionItemShowType, NFTItemBaseType } from '@portkey-wallet/type
 import { Collapse, Skeleton } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import { useCallback, useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router';
 import clsx from 'clsx';
 import { useCommonState } from 'store/Provider/hooks';
 import './index.less';
@@ -22,9 +21,13 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import useGAReport from 'hooks/useGAReport';
 import { useEffectOnce } from 'react-use';
+import { useRecentStatus } from '@portkey-wallet/hooks/hooks-ca/freeMint';
+import { FreeMintStatus } from '@portkey-wallet/types/types-ca/freeMint';
+import { useNavigate } from 'react-router';
 
 export default function NFT() {
   const nav = useNavigate();
+  const { recentStatus, itemId } = useRecentStatus();
   const [openPanel, setOpenPanel] = useState<string[]>([]);
   const [nftNum, setNftNum] = useState<Record<string, number>>({});
   const [openOp, setOpenOp] = useState<boolean>(true);
@@ -201,13 +204,77 @@ export default function NFT() {
     [nftNum, calSkeletonLength, maxNftNum, isMainnet, openOp, nav, getMoreNFTItem],
   );
 
+  const handleClickMint = useCallback(() => {
+    if (itemId && (recentStatus === FreeMintStatus.PENDING || recentStatus === FreeMintStatus.FAIL)) {
+      nav('/free-mint', { state: { itemId, status: recentStatus } });
+      return;
+    }
+    nav('/free-mint');
+  }, [itemId, nav, recentStatus]);
+
+  const renderFreeMintTip = useMemo(() => {
+    let leftText = '';
+    let rightText = '';
+    if (recentStatus === FreeMintStatus.PENDING) {
+      leftText = 'Your NFT is being minted.';
+      rightText = 'View';
+    } else if (recentStatus === FreeMintStatus.FAIL) {
+      leftText = 'Mint failed.';
+      rightText = 'Try Again';
+    } else {
+      leftText = 'Mint NFTs for free!';
+      rightText = 'Mint Now';
+    }
+    return (
+      <div className="flex-between-center free-mint-tip-container">
+        <div className="left-text">{leftText}</div>
+        <div className="flex-row-center right-container" onClick={handleClickMint}>
+          <span className="right-text">{rightText}</span>
+          <CustomSvg className="flex-center" type="NewRightArrow" />
+        </div>
+      </div>
+    );
+  }, [handleClickMint, recentStatus]);
+
+  const renderNoNFT = useCallback(() => {
+    return (
+      <div className={clsx('empty-nft-container', 'flex-column-between', isPrompt ? 'prompt-page' : 'ss')}>
+        <div className="flex-column-center empty-nft-list">
+          <CustomSvg type="NoNFTs" />
+          <div>No NFTs yet</div>
+        </div>
+        {recentStatus === FreeMintStatus.PENDING || recentStatus === FreeMintStatus.FAIL ? (
+          renderFreeMintTip
+        ) : (
+          <div className="free-mint-container flex-column">
+            <div>Get your own NFTs to start</div>
+            <div className="flex-row-center free-mint-list">
+              <div className="list-item-number flex-center">1</div>
+              <div className="flex-row-center list-item-text list-item-text-primary" onClick={() => nav('/free-mint')}>
+                <span>Free Mint</span>
+                <CustomSvg className="flex-center" type="NewRightArrow" />
+              </div>
+            </div>
+            <div className="flex-row-center free-mint-list">
+              <div className="list-item-number flex-center">2</div>
+              <div className="flex list-item-text">
+                <span>Buy on NFT Marketplace -</span>
+                <div className="flex-row-center list-item-text-primary">
+                  <span>&nbsp;Forest</span>
+                  <CustomSvg className="flex-center" type="NewRightArrow" />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }, [isPrompt, nav, recentStatus, renderFreeMintTip]);
+
   return (
     <div className="tab-nft">
       {accountNFTList.length === 0 ? (
-        <div className="empty-nft-list flex-column-center">
-          <CustomSvg type="NoNFTs" />
-          No NFTs yet
-        </div>
+        renderNoNFT()
       ) : (
         <div className={clsx('nft-list', !hasMoreNFTCollection && 'hidden-loading-more')}>
           <Collapse
@@ -219,6 +286,7 @@ export default function NFT() {
             {accountNFTList.map((item) => renderItem(item))}
           </Collapse>
           <LoadingMore hasMore={hasMoreNFTCollection} loadMore={getMoreNFTCollection} className="load-more" />
+          {renderFreeMintTip}
         </div>
       )}
     </div>

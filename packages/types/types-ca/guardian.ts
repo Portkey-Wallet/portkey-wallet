@@ -1,3 +1,4 @@
+import { ZKLoginInfo } from '../verifier';
 import { LoginKeyType, LoginType } from './wallet';
 export interface Verifier {
   id: string; // aelf.Hash
@@ -13,6 +14,7 @@ export interface Guardian {
   isPrivate?: boolean;
   firstName?: string;
   lastName?: string;
+  manuallySupportForZk?: boolean;
 }
 
 export interface GuardianAccount {
@@ -36,4 +38,5 @@ export type GuardiansApprovedType = {
     signature: number[];
     verificationDoc: string;
   };
+  zkLoginInfo: ZKLoginInfo | undefined;
 };

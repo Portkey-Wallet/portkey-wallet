@@ -1,6 +1,6 @@
 import * as WebBrowser from 'expo-web-browser';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { GoogleSignin, statusCodes, GoogleOneTapSignIn } from '@react-native-google-signin/google-signin';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import * as Google from 'expo-auth-session/providers/google';
 import Config from 'react-native-config';
@@ -56,7 +56,7 @@ if (!isIOS) {
 
 export function useGoogleAuthentication() {
   const [androidResponse, setResponse] = useState<any>();
-  const [{ googleRequest, response, promptAsync }] = useInterface();
+  const [{ googleRequest, response, promptAsync, googleAuthNonce }] = useInterface();
   const iosPromptAsync: () => Promise<TGoogleAuthResponse> = useCallback(async () => {
     await sleep(2000);
     if (AppState.currentState !== 'active') throw { message: '' };
@@ -83,12 +83,13 @@ export function useGoogleAuthentication() {
           givenName: userInfo.given_name,
         },
         ...authentication,
+        nonce: googleAuthNonce,
       } as TGoogleAuthResponse;
     }
     const message =
       info.type === 'cancel' ? '' : 'It seems that the authorization with your Google account has failed.';
     throw { ...info, message };
-  }, [promptAsync, googleRequest?.codeVerifier]);
+  }, [promptAsync, googleRequest?.codeVerifier, googleAuthNonce]);
 
   const androidPromptAsync = useCallback(async () => {
     // sleep show loading
@@ -103,7 +104,7 @@ export function useGoogleAuthentication() {
       const userInfo = await GoogleSignin.signIn();
       const token = await GoogleSignin.getTokens();
       await GoogleSignin.signOut();
-      const googleResponse = { ...userInfo, ...token } as TGoogleAuthResponse;
+      const googleResponse = { ...userInfo, ...token, nonce: googleAuthNonce } as TGoogleAuthResponse;
       setResponse(googleResponse);
       return googleResponse;
     } catch (error: any) {
@@ -113,6 +114,7 @@ export function useGoogleAuthentication() {
     }
   }, []);
 
+  /*
   const androidPromptAsyncOneTap = useCallback(async () => {
     try {
       await GoogleSignin.hasPlayServices();
@@ -131,15 +133,16 @@ export function useGoogleAuthentication() {
       throw { ...error, message };
     }
   }, [googleRequest?.nonce]);
+  */
 
   const googleSign = useCallback(async () => {
     changeCanLock(false);
     try {
-      return await (isIOS ? iosPromptAsync : androidPromptAsyncOneTap)();
+      return await (isIOS ? iosPromptAsync : androidPromptAsync)();
     } finally {
       changeCanLock(true);
     }
-  }, [androidPromptAsyncOneTap, iosPromptAsync]);
+  }, [androidPromptAsync, iosPromptAsync]);
 
   return useMemo(
     () => ({
@@ -372,11 +375,13 @@ export function useVerifyZKLogin() {
     });
 
     console.log('aaaa verifyResult : ', verifyResult);
+    const zkProof = decodeURIComponent(verifyParams.proof);
     if (verifyResult.valid) {
       const zkLoginInfo: ZKLoginInfo = {
         identifierHash: verifyParams.identifierHash,
         salt: verifyParams.salt,
-        zkProof: decodeURIComponent(verifyParams.proof),
+        zkProof,
+        zkProofInfo: JSON.parse(zkProof),
         jwt: jwt ?? '',
         nonce: nonce ?? '',
         circuitId: proofResult.circuitId,
@@ -395,6 +400,7 @@ export function useVerifyGoogleToken() {
   return useCallback(
     async (params: VerifyTokenParams) => {
       let accessToken = params.accessToken;
+      let idToken = params.idToken;
       let isRequest = !accessToken;
       if (accessToken) {
         try {
@@ -407,15 +413,16 @@ export function useVerifyGoogleToken() {
       if (isRequest) {
         const userInfo = await googleSign();
         accessToken = userInfo?.accessToken;
+        idToken = userInfo?.idToken;
         if (userInfo.user.id !== params.id) throw new Error('Account does not match your guardian');
       }
-      if (!params?.idToken) {
+      if (!idToken) {
         throw new Error('Invalid idToken');
       }
       const rst = await verifyZKLogin({
-        jwt: params.idToken,
+        jwt: idToken,
         salt: randomId(),
-        kid: parseKidFromJWTToken(params.idToken),
+        kid: parseKidFromJWTToken(idToken),
         nonce: googleAuthNonce,
       });
       return {

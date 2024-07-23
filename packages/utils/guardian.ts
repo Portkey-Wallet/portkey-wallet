@@ -2,7 +2,7 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { GuardiansInfo } from '@portkey-wallet/types/types-ca/guardian';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { VerifierItem } from '@portkey-wallet/types/verifier';
+import { VerifierItem, VerifierInfo } from '@portkey-wallet/types/verifier';
 import BigNumber from 'bignumber.js';
 import { handleErrorMessage } from '.';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
@@ -12,6 +12,17 @@ const APPROVAL_COUNT = ZERO.plus(3).div(5);
 export function getApprovalCount(length: number) {
   if (length <= 3) return length;
   return APPROVAL_COUNT.times(length).dp(0, BigNumber.ROUND_DOWN).plus(1).toNumber();
+}
+
+export function handleVerifierInfo(verifierInfo?: VerifierInfo) {
+  if (!verifierInfo) return { identifierHash: '' };
+  if (verifierInfo.zkLoginInfo) {
+    const identifierHash = verifierInfo.zkLoginInfo.identifierHash;
+    return { identifierHash };
+  } else {
+    const { guardianIdentifier } = handleVerificationDoc(verifierInfo.verificationDoc ?? '');
+    return { identifierHash: guardianIdentifier };
+  }
 }
 
 export function handleVerificationDoc(verificationDoc: string) {

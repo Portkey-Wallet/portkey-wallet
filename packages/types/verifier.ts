@@ -11,7 +11,7 @@ export interface VerifierItem {
 }
 
 export const zkLoginVerifierItem: VerifierItem = {
-  id: 'zkLogin',
+  id: '53961cca496a1cfaa7bf2dda210afb4f6430283cce4239be099ade5647091928', // sha256('zkLogin')
   name: 'zkLogin',
   imageUrl: '', // todo_wade: add image url
 };
@@ -70,6 +70,7 @@ export interface ZKLoginInfo {
   identifierHash: string;
   salt: string;
   zkProof: string;
+  zkProofInfo: any;
   jwt: string;
   nonce: string;
   circuitId: string;

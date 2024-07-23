@@ -128,9 +128,10 @@ function GuardianItemButton({
   const onVerifierAuth = useCallback(async () => {
     try {
       Loading.show();
-
       const rst = await verifyToken(guardianItem.guardianType, {
         accessToken: authenticationInfo?.[guardianItem.guardianAccount],
+        idToken: authenticationInfo?.idToken,
+        nonce: authenticationInfo?.nonce,
         id: guardianItem.guardianAccount,
         verifierId: guardianItem.verifier?.id,
         chainId: originChainId,

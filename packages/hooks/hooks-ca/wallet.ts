@@ -221,6 +221,26 @@ export const useSetUserInfo = () => {
   );
 };
 
+export const useSetUserAvatar = () => {
+  const dispatch = useAppCommonDispatch();
+  const networkInfo = useCurrentNetworkInfo();
+  const { nickName } = useCurrentUserInfo();
+  return useCallback(
+    async (avatar: string) => {
+      const params = {
+        nickName,
+        avatar,
+      };
+      await request.wallet.editHolderInfo({
+        baseURL: networkInfo.apiUrl,
+        params,
+      });
+      dispatch(setNickNameAndAvatarAction({ ...params, networkType: networkInfo.networkType }));
+    },
+    [dispatch, networkInfo.apiUrl, networkInfo.networkType, nickName],
+  );
+};
+
 export const useSetHideAssets = () => {
   const dispatch = useAppCommonDispatch();
   return useCallback(

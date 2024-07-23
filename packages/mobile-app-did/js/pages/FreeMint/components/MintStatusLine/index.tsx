@@ -1,18 +1,53 @@
+import { FreeMintStatus } from '@portkey-wallet/types/types-ca/freeMint';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
-import React from 'react';
+import Touchable from 'components/Touchable';
+import React, { useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
-
-const MintStatusLine = () => {
+import { FreeMintStep, showFreeMintModal } from '../FreeMintModal';
+import navigationService from 'utils/navigationService';
+export interface MintStatus {
+  recentStatus: FreeMintStatus;
+  itemId: string;
+}
+const MintStatusLine = (props: MintStatus) => {
+  const { recentStatus, itemId } = props;
+  const info = useMemo(() => {
+    if (recentStatus === FreeMintStatus.PENDING) {
+      return {
+        title: 'Your NFT is being minted.',
+        buttonText: 'View',
+      };
+    } else if (recentStatus === FreeMintStatus.FAIL) {
+      return {
+        title: 'Mint failed.',
+        buttonText: 'Try Again',
+      };
+    }
+    return {
+      title: 'Mint NFTs for free!',
+      buttonText: 'Mint Now',
+    };
+  }, [recentStatus]);
+  const handleClickMint = useCallback(() => {
+    navigationService.navigate('FreeMintHome');
+    if (recentStatus === FreeMintStatus.FAIL) {
+      showFreeMintModal(itemId, FreeMintStep.mintNft);
+    } else if (recentStatus === FreeMintStatus.PENDING) {
+      showFreeMintModal(itemId, FreeMintStep.mintResult);
+    }
+  }, [itemId, recentStatus]);
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Mint NFTs for free!</Text>
-      <View style={styles.mintNowContainer}>
-        <Text style={styles.mintNowText}>Mint Now</Text>
-        <Svg icon="right-arrow" color={defaultColors.brandNormal} size={pTd(14)} />
-      </View>
+      <Text style={styles.text}>{info.title}</Text>
+      <Touchable onPress={handleClickMint}>
+        <View style={styles.mintNowContainer}>
+          <Text style={styles.mintNowText}>{info.buttonText}</Text>
+          <Svg icon="right-arrow" color={defaultColors.brandNormal} size={pTd(14)} />
+        </View>
+      </Touchable>
     </View>
   );
 };

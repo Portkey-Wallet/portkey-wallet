@@ -1,11 +1,7 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import OverlayModal from 'components/OverlayModal';
+import React, { useState, useCallback, useEffect, useRef, SetStateAction, Dispatch } from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
-import { ModalBody } from 'components/ModalBody';
 import { pTd } from 'utils/unit';
-import { useLanguage } from 'i18n/hooks';
 import { defaultColors } from 'assets/theme';
-import { useGStyles } from 'assets/theme/useGStyles';
 import Svg from 'components/Svg';
 import FormItem from 'components/FormItem';
 import CommonInput from 'components/CommonInput';
@@ -13,15 +9,21 @@ import CommonButton from 'components/CommonButton';
 import { ScrollView } from 'react-native';
 import Touchable from 'components/Touchable';
 import deleteImage from 'assets/image/pngs/deleteImage.png';
-import ImageWithUploadFunc, { ImageShowType, ImageWithUploadFuncInstance } from 'components/ImageWithUploadFunc';
+import ImageWithUploadFunc, { ImageShowType, ImageWithUploadFuncInstance } from 'components/ImageWithUploadFuncV2';
+import { FreeMintStep } from '../components/FreeMintModal';
+import { useGetMintItemInfo } from '@portkey-wallet/hooks/hooks-ca/freeMint';
 
-// export type ShowMintEditParamsType = {};
-type EditConfig = {
+export type EditConfig = {
   imageUri: string;
   name: string;
   description: string;
 };
-const MintEdit = () => {
+const MintEdit = (props: {
+  itemId: string;
+  setStep: Dispatch<SetStateAction<FreeMintStep>>;
+  onEditCallback: (name: string, description: string, imageUrl: string) => void;
+}) => {
+  const { itemId, setStep, onEditCallback } = props;
   const [value, setValue] = useState<EditConfig>({
     imageUri: '',
     name: '',
@@ -30,8 +32,16 @@ const MintEdit = () => {
   const [canNext, setNext] = useState<boolean>(false);
   const uploadRef = useRef<ImageWithUploadFuncInstance>(null);
   const [showDeleteIcon, setShowDeleteIcon] = useState<boolean>(false);
-  const { t } = useLanguage();
-  const gStyles = useGStyles();
+  const getMintItemInfo = useGetMintItemInfo();
+  useEffect(() => {
+    if (!itemId) {
+      return;
+    }
+    (async () => {
+      const res = await getMintItemInfo(itemId);
+      setValue(prev => ({ ...prev, name: res.name, description: res.description, imageUri: res.imageUrl }));
+    })();
+  }, [getMintItemInfo, itemId]);
   const onChooseSuccess = useCallback((result: { uri: any }) => {
     setValue(prev => ({ ...prev, imageUri: result.uri || '' }));
   }, []);
@@ -42,16 +52,19 @@ const MintEdit = () => {
   const onChangeDescriptionText = useCallback((valueDescription: string) => {
     setValue(prev => ({ ...prev, description: valueDescription }));
   }, []);
-  const onNext = useCallback(() => {
+  const onNext = useCallback(async () => {
     // todo wfs onNext
-  }, []);
+    const s3Url = await uploadRef.current?.uploadPhoto();
+    onEditCallback(value.name, value.description, s3Url || '');
+    setStep && setStep(FreeMintStep.preview);
+  }, [onEditCallback, setStep, value]);
   useEffect(() => {
-    if (value.imageUri && value.name && value.description) {
+    if (value.imageUri && value.name) {
       setNext(true);
     } else {
       setNext(false);
     }
-  }, [value.imageUri, value.name, value.description]);
+  }, [value.imageUri, value.name]);
   useEffect(() => {
     if (value.imageUri) {
       setShowDeleteIcon(true);
@@ -60,87 +73,92 @@ const MintEdit = () => {
     }
   }, [setShowDeleteIcon, value.imageUri]);
   return (
-    <ModalBody modalBodyType="bottom" title={t('Mint NFT')} style={gStyles.overlayStyle}>
-      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainerStyle}>
-        <View style={styles.uploadContainer}>
-          {/* <Touchable style={GStyles.center} onPress={() => uploadRef.current?.selectPhoto()}> */}
-          {showDeleteIcon && (
-            <Touchable
-              style={styles.deleteIconStyle}
-              activeOpacity={1}
-              onPress={() => {
-                uploadRef.current?.clear();
-              }}>
-              <Image resizeMode="contain" source={deleteImage} style={{ width: pTd(28), height: pTd(28) }} />
-            </Touchable>
-          )}
-          <View style={{ marginTop: pTd(8) }}>
-            <ImageWithUploadFunc
-              avatarSize={pTd(280)}
-              ref={uploadRef}
-              title={''}
-              type={ImageShowType.NORMAL}
-              imageUrl={''}
-              defaultComponent={
-                <View style={styles.uploadBox}>
-                  <Svg icon="suggest-add" size={pTd(48)} />
-                  <Text style={styles.uploadText}>
-                    Upload a picture{'\n'}Formats supported: JPG, PNG, and GIF.{'\n'}Max size: 10 MB.
-                  </Text>
-                </View>
-              }
-              onChooseSuccess={onChooseSuccess}
-            />
-          </View>
-          {/* </Touchable> */}
-          <FormItem title="Name" style={styles.formItemContainer}>
-            <CommonInput
-              type="general"
-              // value={'111'}
-              placeholder={'Give your NFT a unique name'}
-              maxLength={30}
-              inputContainerStyle={styles.inputWrap}
-              onChangeText={onChangeNameText}
-              containerStyle={styles.contentWrap}
-            />
-          </FormItem>
-          <FormItem title="Description (Optional)" style={styles.formItemContainer}>
-            <CommonInput
-              type="general"
-              // value={'111'}
-              placeholder={'Tell people more about your NFT'}
-              maxLength={1000}
-              multiline
-              inputContainerStyle={[styles.inputWrap, styles.contentDescriptionWrap]}
-              inputStyle={styles.descriptionInput}
-              onChangeText={onChangeDescriptionText}
-              containerStyle={styles.contentDescriptionWrap}
-            />
-          </FormItem>
-          <CommonButton
-            disabled={!canNext}
-            type="primary"
-            title={'Next'}
-            containerStyle={styles.btnStyle}
-            onPress={onNext}
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainerStyle}>
+      <View style={styles.uploadContainer}>
+        {/* <Touchable style={GStyles.center} onPress={() => uploadRef.current?.selectPhoto()}> */}
+        {showDeleteIcon && (
+          <Touchable
+            style={styles.deleteIconStyle}
+            activeOpacity={1}
+            onPress={() => {
+              uploadRef.current?.clear();
+            }}>
+            <Image resizeMode="contain" source={deleteImage} style={{ width: pTd(28), height: pTd(28) }} />
+          </Touchable>
+        )}
+        <View style={{ marginTop: pTd(8) }}>
+          <ImageWithUploadFunc
+            avatarSize={pTd(280)}
+            ref={uploadRef}
+            title={''}
+            type={ImageShowType.NORMAL}
+            imageUrl={value.imageUri}
+            defaultComponent={
+              <View style={styles.uploadBox}>
+                <Svg icon="suggest-add" size={pTd(48)} />
+                <Text style={styles.uploadText}>
+                  Upload a picture{'\n'}Formats supported: JPG, PNG, and GIF.{'\n'}Max size: 10 MB.
+                </Text>
+              </View>
+            }
+            onChooseSuccess={onChooseSuccess}
           />
         </View>
-      </ScrollView>
-    </ModalBody>
+        {/* </Touchable> */}
+        <FormItem title="Name" style={styles.formItemContainer}>
+          <CommonInput
+            type="general"
+            value={value.name}
+            placeholder={'Give your NFT a unique name'}
+            maxLength={30}
+            inputContainerStyle={styles.inputWrap}
+            onChangeText={onChangeNameText}
+            containerStyle={styles.contentWrap}
+          />
+        </FormItem>
+        <FormItem title="Description (Optional)" style={styles.formItemContainer}>
+          <CommonInput
+            type="general"
+            value={value.description}
+            placeholder={'Tell people more about your NFT'}
+            maxLength={1000}
+            multiline
+            inputContainerStyle={[styles.inputWrap, styles.contentDescriptionWrap]}
+            inputStyle={styles.descriptionInput}
+            onChangeText={onChangeDescriptionText}
+            containerStyle={styles.contentDescriptionWrap}
+          />
+        </FormItem>
+        <CommonButton
+          disabled={!canNext}
+          type="primary"
+          title={'Next'}
+          containerStyle={styles.btnStyle}
+          onPress={onNext}
+        />
+      </View>
+    </ScrollView>
   );
 };
+// const MintEditWrapper = () => {
+//   const gStyles = useGStyles();
+//   const { t } = useLanguage();
+//   return (
+//     <ModalBody modalBodyType="bottom" title={t('Mint NFT')} style={gStyles.overlayStyle}>
+//       <MintEdit setStep={undefined} onEditCallback={undefined} />
+//     </ModalBody>
+//   );
+// };
 
-export const showMintEdit = (params?: ShowAssetListParamsType) => {
-  OverlayModal.show(<MintEdit {...params} />, {
-    position: 'bottom',
-    autoKeyboardInsets: false,
-    enabledNestScrollView: true,
-  });
-};
+// export const showMintEdit = (params?: ShowAssetListParamsType) => {
+//   OverlayModal.show(<MintEditWrapper {...params} />, {
+//     position: 'bottom',
+//     autoKeyboardInsets: false,
+//     enabledNestScrollView: true,
+//   });
+// };
 
-export default {
-  showMintEdit,
-};
+export default MintEdit;
 
 const styles = StyleSheet.create({
   contentContainerStyle: {
@@ -158,7 +176,7 @@ const styles = StyleSheet.create({
   },
   deleteIconStyle: {
     position: 'absolute',
-    right: pTd(39),
+    right: pTd(18),
     top: 0,
     zIndex: 999,
   },

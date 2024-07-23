@@ -5,6 +5,7 @@ import Touchable from 'components/Touchable';
 import { useAppNFTTabShow } from 'hooks/cms';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { TabRouteNameEnum } from 'types/navigate';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 
@@ -22,7 +23,7 @@ const NFTHint = () => {
             onPress={() => {
               navigationService.navigate('FreeMintHome');
             }}>
-            <Text style={styles.mainText}>Free Mint2</Text>
+            <Text style={styles.mainText}>Free Mint</Text>
           </Touchable>
           <Svg icon="right-arrow" color={defaultColors.brandNormal} size={pTd(14)} />
         </View>
@@ -34,7 +35,13 @@ const NFTHint = () => {
           </View>
           <View style={styles.rowContent}>
             <Text style={[styles.mainText, styles.primaryText]}>
-              Buy on NFT marketplace - <Text style={styles.highlightText}>Forest</Text>
+              Buy on NFT marketplace -{' '}
+              <Touchable
+                onPress={() => {
+                  navigationService.navToBottomTab(TabRouteNameEnum.TRADE, { initTab: 'NFT' });
+                }}>
+                <Text style={styles.highlightText}>Forest</Text>
+              </Touchable>
             </Text>
             <Svg icon="right-arrow" color={defaultColors.brandNormal} size={pTd(14)} />
           </View>

@@ -8,8 +8,11 @@ import { DepositModalMap } from 'hooks/deposit';
 import navigationService from 'utils/navigationService';
 import { TabRouteNameEnum } from 'types/navigate';
 import { useAppBridgeButtonShow, useAppNFTTabShow } from 'hooks/cms';
+import { useFocusEffect } from '@react-navigation/native';
 
-export const TradeHomePage: React.FC = () => {
+export const TradeHomePage: React.FC = (props: any) => {
+  const { navigation, route } = props;
+  console.log('propssssssss', props);
   const {
     awakenUrl = 'https://awaken.finance/',
     eBridgeUrl = 'https://ebridge.exchange',
@@ -17,12 +20,16 @@ export const TradeHomePage: React.FC = () => {
   } = useCurrentNetworkInfo();
   const { isBridgeShow } = useAppBridgeButtonShow();
   const { isNFTTabShow } = useAppNFTTabShow();
-
   const navBackToHome = useCallback(() => {
     navigationService.navigate('Tab');
     navigationService.navToBottomTab(TabRouteNameEnum.WALLET);
   }, []);
 
+  useFocusEffect(
+    useCallback(() => {
+      navigation && route.params.initTab && navigation.jumpTo(route.params.initTab);
+    }, [navigation, route.params.initTab]),
+  );
   const tabList = useMemo(() => {
     const list = [];
 
@@ -74,7 +81,7 @@ export const TradeHomePage: React.FC = () => {
 
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.white]}>
-      <CommonTopTab hasTabBarBorderRadius={false} tabList={tabList} />
+      <CommonTopTab hasTabBarBorderRadius={false} tabList={tabList} initialRouteName={props.route.params.initTab} />
     </SafeAreaBox>
   );
 };

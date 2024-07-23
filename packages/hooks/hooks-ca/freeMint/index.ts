@@ -1,5 +1,10 @@
 import { request } from '@portkey-wallet/api/api-did';
-import { FreeMintStatus, ICollectionData, ITokenDetails } from '@portkey-wallet/types/types-ca/freeMint';
+import {
+  FreeMintStatus,
+  ICollectionData,
+  IConfirmMintRes,
+  ITokenDetails,
+} from '@portkey-wallet/types/types-ca/freeMint';
 import { useCallback, useEffect, useState } from 'react';
 import { useEffectOnce } from '../..';
 import { handleLoopFetch } from '@portkey-wallet/utils';
@@ -76,19 +81,19 @@ export const useConfirmMint = () => {
     async ({
       name,
       description,
-      tokenId,
       imageUrl,
+      itemId,
     }: {
       name: string;
       description: string;
-      tokenId: string;
       imageUrl: string;
-    }): Promise<string> => {
+      itemId?: string;
+    }): Promise<IConfirmMintRes> => {
       const result = await request.freeMintApi.confirmMint({
-        params: { imageUrl, name, tokenId, description },
+        params: { imageUrl, name, description, itemId },
       });
       console.log('useConfirmMint result===', result);
-      return result.itemId;
+      return result;
     },
     [],
   );

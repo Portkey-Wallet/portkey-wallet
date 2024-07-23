@@ -3,7 +3,7 @@ import PromptFrame from 'pages/components/PromptFrame';
 import CommonHeader from 'components/CommonHeader';
 import { useCommonState } from 'store/Provider/hooks';
 import clsx from 'clsx';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { FreeMintStepEnum, NOTICE, freeMintTip } from './constants';
 import BaseDrawer from 'components/BaseDrawer';
@@ -44,12 +44,17 @@ export default function FreeMint() {
   const [nftName, setNftName] = useState<string>('');
   const [desc, setDesc] = useState('');
   const setUserAvatar = useSetUserAvatar();
-  const targetNftItemRef = useRef<IMintNFTItemInfo | undefined>();
+  const [tokenId, setTokenId] = useState<string>('');
+  const [itemId, setItemId] = useState(state?.itemId);
+
+  const updateMintInfo = useCallback(async () => {
+    const res = await fetchMintInfo();
+    setMintInfo(res);
+  }, [fetchMintInfo]);
 
   useEffectOnce(() => {
     (async () => {
-      const res = await fetchMintInfo();
-      setMintInfo(res);
+      updateMintInfo();
       if (state?.itemId) {
         try {
           const targetNftItem: IMintNFTItemInfo = await getMintItemInfo(state.itemId);
@@ -90,6 +95,7 @@ export default function FreeMint() {
   });
 
   const handleCloseModal = useCallback(() => {
+    updateMintInfo();
     setOpen(false);
     setPreviewFile('');
     setNftName('');
@@ -97,8 +103,9 @@ export default function FreeMint() {
     setStep(FreeMintStepEnum.edit);
     setStatus(FreeMintStatus.NONE);
     setNewAvatarS3File('');
-    targetNftItemRef.current = undefined;
-  }, []);
+    setTokenId('');
+    setItemId('');
+  }, [updateMintInfo]);
 
   const modalTitle = useMemo(() => {
     if (step === FreeMintStepEnum.edit) {
@@ -126,18 +133,23 @@ export default function FreeMint() {
       setStatus(FreeMintStatus.PENDING);
       const params = {
         imageUrl: newAvatarS3File,
-        name: nftName.trim(),
-        tokenId: targetNftItemRef.current ? targetNftItemRef.current.tokenId : `${mintInfo?.tokenId}`,
+        name: nftName?.trim(),
         description: desc?.trim(),
+        itemId: itemId,
       };
       const confirmMintRes = await confirmMint(params);
-      const _status: FreeMintStatus = await loopStatus(confirmMintRes);
+      setTokenId(confirmMintRes.tokenId);
+      updateMintInfo();
+      const _status: FreeMintStatus = await loopStatus(confirmMintRes.itemId);
       setStatus(_status);
+      if (_status === FreeMintStatus.SUCCESS) {
+        setItemId('');
+      }
     } catch (error) {
       console.log('===handleMintConfirm error', error);
       setStatus(FreeMintStatus.FAIL);
     }
-  }, [confirmMint, desc, loopStatus, mintInfo?.tokenId, newAvatarS3File, nftName]);
+  }, [confirmMint, desc, itemId, loopStatus, newAvatarS3File, nftName, updateMintInfo]);
 
   const renderModalContent = useCallback(() => {
     if (step === FreeMintStepEnum.edit) {
@@ -171,6 +183,8 @@ export default function FreeMint() {
       const props = {
         previewFile,
         status,
+        tokenId,
+        nftName,
         onClickClose: () => navigate('/'),
         onSetAvatar: handleSetAvatar,
         onClickViewInWallet: () => navigate('/'),
@@ -184,14 +198,15 @@ export default function FreeMint() {
     return null;
   }, [
     step,
-    nftName,
-    newAvatarS3File,
     previewFile,
+    nftName,
     desc,
+    newAvatarS3File,
     mintInfo,
     handleCloseModal,
     handleMintConfirm,
     status,
+    tokenId,
     handleSetAvatar,
     navigate,
   ]);
@@ -209,7 +224,14 @@ export default function FreeMint() {
             <Button
               type="primary"
               onClick={() => {
-                setOpen(true);
+                if (mintInfo?.isLimitExceed) {
+                  singleMessage.error(
+                    `You have reached the daily limit of ${mintInfo?.limitCount} free mint NFTs. Take a rest and come back tomorrow!`,
+                  );
+                  return;
+                } else {
+                  setOpen(true);
+                }
               }}>
               Get Started
             </Button>
@@ -232,7 +254,7 @@ export default function FreeMint() {
         </div>
       </div>
     );
-  }, [isPrompt, navigate]);
+  }, [isPrompt, mintInfo?.isLimitExceed, mintInfo?.limitCount, navigate]);
 
   const handleCloseModalOrDrawer = useCallback(() => {
     if (status === FreeMintStatus.PENDING || status === FreeMintStatus.FAIL) {

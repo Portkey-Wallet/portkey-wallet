@@ -15,8 +15,9 @@ export interface IFreeMintRecentStatus extends IStatus {
 
 export interface ICollectionData {
   collectionInfo: ICollectionInfo;
-  tokenId: string;
   transactionFee: number;
+  limitCount: number;
+  isLimitExceed: boolean;
 }
 export interface ICollectionInfo {
   imageUrl: string;
@@ -33,6 +34,12 @@ export interface IItemRequest {
 }
 export interface IItem {
   itemId: string;
+}
+
+export interface IConfirmMintRes {
+  itemId: string;
+  tokenId: string;
+  name: string;
 }
 
 export interface ITokenDetails {

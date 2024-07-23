@@ -16,6 +16,7 @@ import {
   setManagerInfo,
   setOriginChainId,
   setNickNameAndAvatarAction,
+  setAvatarAction,
   resetCurrentUserInfoAction,
   updateCASyncState,
   setHideAssetsAction,
@@ -145,6 +146,16 @@ export const walletSlice = createSlice({
           [networkType]: {
             ...(state?.userInfo?.[networkType] || {}),
             nickName,
+            avatar,
+          },
+        };
+      })
+      .addCase(setAvatarAction, (state, action) => {
+        const { avatar, networkType = 'MAINNET' } = action.payload;
+        state.userInfo = {
+          ...(state.userInfo || {}),
+          [networkType]: {
+            ...(state?.userInfo?.[networkType] || {}),
             avatar,
           },
         };

@@ -15,7 +15,6 @@ export interface IFreeMintRecentStatus extends IStatus {
 
 export interface ICollectionData {
   collectionInfo: ICollectionInfo;
-  tokenId: string;
 }
 export interface ICollectionInfo {
   imageUrl: string;

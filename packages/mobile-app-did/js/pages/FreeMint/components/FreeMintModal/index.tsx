@@ -44,7 +44,7 @@ export const FreeMintModal = ({ itemId, freeMintStep }: { itemId?: string; freeM
       <View style={styles.contentWrap}>
         {step === FreeMintStep.mintNft && (
           <MintEdit
-            itemId={itemId}
+            itemId={itemId || ''}
             setStep={setStep}
             onEditCallback={(name, description, imageUrl) => {
               setEditInfo({

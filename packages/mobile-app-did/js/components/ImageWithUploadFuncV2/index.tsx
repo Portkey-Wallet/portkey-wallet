@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import CommonAvatar from 'components/CommonAvatar';
 import * as ImagePicker from 'expo-image-picker';
 import { getInfo } from 'utils/fs';
@@ -10,31 +10,52 @@ import FastImage from 'react-native-fast-image';
 import Loading from 'components/Loading';
 import { isValidAvatarFile } from '@portkey-wallet/utils/reg';
 import CommonToast from 'components/CommonToast';
+export enum ImageShowType {
+  CIRCLE,
+  NORMAL,
+}
 
 type UploadImageType = {
   title: string;
   imageUrl?: string;
   avatarSize?: number;
   onChangeImage?: (url: string) => void;
+  defaultComponent?: React.ReactNode;
+  type?: ImageShowType;
+  onChooseSuccess?: (obj: ImagePicker.ImageInfo) => void;
 };
 
 export type ImageWithUploadFuncInstance = {
   selectPhoto: () => boolean;
   uploadPhoto: () => string;
+  clear: () => string;
 };
 
-const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: UploadImageType, ref) {
-  const { title, imageUrl, avatarSize = pTd(48), onChangeImage } = props;
+const ImageWithUploadFuncV2 = forwardRef(function ImageWithUploadFuncV2(props: UploadImageType, ref) {
+  const { title, imageUrl, avatarSize = pTd(48), onChangeImage, defaultComponent, type, onChooseSuccess } = props;
   const [localPhotoFile, setLocalPhotoFile] = useState<ImagePicker.ImageInfo>();
-
-  const sizeStyle = useMemo(
-    () => ({
+  useEffect(() => {
+    setLocalPhotoFile({
+      uri: imageUrl || '',
+      width: avatarSize,
+      height: avatarSize,
+      cancelled: true,
+    });
+  }, [avatarSize, imageUrl]);
+  const sizeStyle = useMemo(() => {
+    if (!!type && type === ImageShowType.NORMAL) {
+      return {
+        width: Number(avatarSize),
+        height: Number(avatarSize),
+        borderRadius: pTd(12),
+      };
+    }
+    return {
       width: Number(avatarSize),
       height: Number(avatarSize),
       borderRadius: Number(avatarSize) / 2,
-    }),
-    [avatarSize],
-  );
+    };
+  }, [avatarSize, type]);
   const selectPhoto = useCallback(async () => {
     try {
       Loading.show();
@@ -55,6 +76,7 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
       if (!result?.fileSize || result.fileSize > MAX_FILE_SIZE_BYTE) return;
 
       setLocalPhotoFile(result);
+      onChooseSuccess?.(result);
       return true;
     } catch (error) {
       console.log('==', error);
@@ -62,7 +84,7 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
     } finally {
       Loading.hide();
     }
-  }, []);
+  }, [onChooseSuccess]);
 
   const uploadPhoto = useCallback(async () => {
     console.log('localPhotoFile', localPhotoFile);
@@ -81,24 +103,38 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
     }
   }, [localPhotoFile, onChangeImage]);
 
+  const clear = useCallback(async () => {
+    setLocalPhotoFile(undefined);
+    onChooseSuccess?.({
+      uri: '',
+      width: 0,
+      height: 0,
+      cancelled: false,
+    });
+  }, [onChooseSuccess]);
+
   useImperativeHandle(
     ref,
     () => {
       return {
         selectPhoto,
         uploadPhoto,
+        clear,
       };
     },
-    [selectPhoto, uploadPhoto],
+    [selectPhoto, uploadPhoto, clear],
   );
 
-  if (localPhotoFile)
+  if (localPhotoFile && localPhotoFile.uri) {
     return (
       <Touchable onPress={selectPhoto}>
         <FastImage style={[sizeStyle]} resizeMode="cover" source={{ uri: localPhotoFile.uri }} />
       </Touchable>
     );
-
+  }
+  if (defaultComponent) {
+    return <Touchable onPress={selectPhoto}>{defaultComponent}</Touchable>;
+  }
   return (
     <Touchable onPress={selectPhoto}>
       <CommonAvatar
@@ -107,10 +143,11 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
         avatarSize={avatarSize}
         imageUrl={imageUrl}
         resizeMode="cover"
-        shapeType="circular"
+        shapeType="square"
+        style={{ borderRadius: pTd(12) }}
       />
     </Touchable>
   );
 });
 
-export default ImageWithUploadFunc;
+export default ImageWithUploadFuncV2;

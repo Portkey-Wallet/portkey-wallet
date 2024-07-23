@@ -12,14 +12,14 @@ import boxOpen from 'assets/image/pngs/box-open.png';
 import fonts from 'assets/theme/fonts';
 import Divider from 'components/Divider';
 import { showFreeMintModal } from '../components/FreeMintModal';
-import MintEditModal from '../MintEdit';
+import Svg from 'components/Svg';
 
 const MintHome = () => {
   const { t } = useLanguage();
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const onMintPress = useCallback(() => {
     showFreeMintModal();
-    MintEditModal.showMintEdit();
+    // MintEditModal.showMintEdit();
   }, []);
   return (
     <PageContainer
@@ -64,6 +64,14 @@ const MintHome = () => {
             <TextM style={styles.explainContent}>Give your NFT a name and description to make it stand out.</TextM>
           </View>
         </View>
+      </View>
+      <View style={styles.hintContainer}>
+        <Svg icon="suggest-circle" size={pTd(16)} />
+        <TextS style={styles.hintText}>
+          {t(
+            `Notice: If you want to send the NFT to the MainChain after it's minted, please wait around 15 minutes for data synchronisation.`,
+          )}
+        </TextS>
       </View>
     </PageContainer>
   );
@@ -132,6 +140,15 @@ const styles = StyleSheet.create({
   divider: {
     height: pTd(16),
     backgroundColor: 'transparent',
+  },
+  hintContainer: {
+    flexDirection: 'row',
+    marginTop: pTd(16),
+    marginRight: pTd(16),
+  },
+  hintText: {
+    color: defaultColors.neutralSecondaryTextColor,
+    marginLeft: pTd(6),
   },
 });
 

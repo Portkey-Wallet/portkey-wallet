@@ -9,8 +9,12 @@ import GStyles from 'assets/theme/GStyles';
 import { IconName } from 'components/Svg';
 import MintPreview from '../MintPreview';
 import MintStatusSection, { MintStatus } from '../MintStatusSection';
+import MintEdit, { EditConfig } from 'pages/FreeMint/MintEdit';
+import { useFreeMintInfo, useGetMintItemInfo } from '@portkey-wallet/hooks/hooks-ca/freeMint';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+import { ICollectionData } from '@portkey-wallet/types/types-ca/freeMint';
 
-enum FreeMintStep {
+export enum FreeMintStep {
   mintNft = 'Mint NFT',
   preview = 'Preview',
   mintResult = '',
@@ -23,14 +27,34 @@ export type DisclaimerModalProps = {
   icon?: IconName;
 };
 
-export const FreeMintModal = () => {
+export const FreeMintModal = ({ itemId, freeMintStep }: { itemId?: string; freeMintStep?: FreeMintStep }) => {
   const { t } = useLanguage();
-  const [step, setStep] = useState<FreeMintStep>(FreeMintStep.mintResult);
-
+  const [step, setStep] = useState<FreeMintStep>(freeMintStep ? freeMintStep : FreeMintStep.mintNft);
+  const fetchMintInfo = useFreeMintInfo();
+  const [mintInfo, setMintInfo] = useState<ICollectionData | undefined>(undefined);
+  const [editInfo, setEditInfo] = useState<EditConfig>();
+  useEffectOnce(() => {
+    (async () => {
+      const res = await fetchMintInfo();
+      setMintInfo(res);
+    })();
+  });
   return (
-    <ModalBody modalBodyType="bottom" title={step} isShowLeftBackIcon={step === FreeMintStep.preview}>
+    <ModalBody modalBodyType="bottom" title={t(step)} isShowLeftBackIcon={step === FreeMintStep.preview}>
       <View style={styles.contentWrap}>
-        {step === FreeMintStep.mintNft && <MintPreview />}
+        {step === FreeMintStep.mintNft && (
+          <MintEdit
+            itemId={itemId}
+            setStep={setStep}
+            onEditCallback={(name, description, imageUrl) => {
+              setEditInfo({
+                name,
+                description,
+                imageUri: imageUrl,
+              });
+            }}
+          />
+        )}
         {step === FreeMintStep.preview && <MintPreview />}
         {step === FreeMintStep.mintResult && <MintStatusSection status={MintStatus.Minted} />}
       </View>
@@ -38,8 +62,8 @@ export const FreeMintModal = () => {
   );
 };
 
-export const showFreeMintModal = () => {
-  OverlayModal.show(<FreeMintModal />, {
+export const showFreeMintModal = (itemId?: string, freeMintStep?: FreeMintStep) => {
+  OverlayModal.show(<FreeMintModal itemId={itemId} freeMintStep={freeMintStep} />, {
     position: 'bottom',
     enabledNestScrollView: true,
   });

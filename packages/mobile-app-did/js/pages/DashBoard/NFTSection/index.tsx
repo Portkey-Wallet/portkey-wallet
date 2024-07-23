@@ -14,7 +14,9 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION } from '@portkey-wallet/constants/constants-ca/assets';
 import NFTHint from 'pages/FreeMint/components/NFTHint';
+import { useRecentStatus } from '@portkey-wallet/hooks/hooks-ca/freeMint';
 import MintStatusLine from 'pages/FreeMint/components/MintStatusLine';
+import { FreeMintStatus } from '@portkey-wallet/types/types-ca/freeMint';
 
 export interface OpenCollectionObjType {
   // key = symbol+chainId
@@ -54,6 +56,7 @@ const NFTCollection: React.FC<NFTCollectionProps> = memo(function NFTCollection(
 
 export default function NFTSection() {
   const { t } = useLanguage();
+  const { recentStatus, itemId } = useRecentStatus();
   const caAddressInfos = useCaAddressInfoList();
   const { fetchAccountNFTCollectionInfoList, fetchAccountNFTItem, accountNFTList, totalRecordCount } =
     useAccountNFTCollectionInfo();
@@ -181,8 +184,11 @@ export default function NFTSection() {
         onEndReached={() => getNFTCollectionsAsync()}
       />
       <View style={styles.hintContainer}>
-        {/* <MintStatusLine /> */}
-        <NFTHint />
+        {(totalRecordCount === 0 ? [] : accountNFTList || []).length < 1 && recentStatus === FreeMintStatus.NONE ? (
+          <NFTHint />
+        ) : (
+          <MintStatusLine recentStatus={recentStatus} itemId={itemId || ''} />
+        )}
       </View>
     </View>
   );

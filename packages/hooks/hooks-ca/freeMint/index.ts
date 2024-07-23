@@ -23,12 +23,12 @@ export const useFreeMinInput = () => {
   const [enableNext, setEnableNext] = useState<boolean>(false);
   const [collectionData, setCollectionData] = useState<ICollectionData>();
   useEffect(() => {
-    if ((inputName && inputDescription) || imgPath) {
+    if (inputName && imgPath) {
       setEnableNext(true);
     } else {
       setEnableNext(false);
     }
-  }, [imgPath, inputDescription, inputName]);
+  }, [imgPath, inputName]);
 
   const reset = useCallback(() => {
     setInputName('');
@@ -56,6 +56,8 @@ export const useFreeMinInput = () => {
     nextClick,
     enableNext,
     collectionData,
+    inputName,
+    inputDescription,
   };
 };
 

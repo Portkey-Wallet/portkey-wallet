@@ -12,12 +12,14 @@ import boxOpen from 'assets/image/pngs/box-open.png';
 import fonts from 'assets/theme/fonts';
 import Divider from 'components/Divider';
 import { showFreeMintModal } from '../components/FreeMintModal';
+import MintEditModal from '../MintEdit';
 
 const MintHome = () => {
   const { t } = useLanguage();
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const onMintPress = useCallback(() => {
     showFreeMintModal();
+    MintEditModal.showMintEdit();
   }, []);
   return (
     <PageContainer

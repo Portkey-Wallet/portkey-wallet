@@ -73,8 +73,7 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
           title: 'Close',
           type: 'outline',
           onPress: () => {
-            // OverlayModal.hide();
-            changeStep?.(FreeMintStep.mintNft);
+            OverlayModal.hide();
           },
         },
       ];
@@ -90,9 +89,8 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
           title: 'View in Wallet',
           type: 'outline',
           onPress: () => {
-            // OverlayModal.hide();
-            // navigationService.navigate('WalletName');
-            changeStep?.(FreeMintStep.mintNft);
+            OverlayModal.hide();
+            navigationService.navigate('WalletName');
           },
         },
       ];

@@ -4,6 +4,7 @@ import CustomSvg from 'components/CustomSvg';
 import ImageDisplay from 'pages/components/ImageDisplay';
 import { useMemo } from 'react';
 import { FreeMintStatus } from '@portkey-wallet/types/types-ca/freeMint';
+import AsyncButton from 'components/AsyncButton';
 import './index.less';
 
 export interface IFreeMintResult {
@@ -13,7 +14,7 @@ export interface IFreeMintResult {
   tokenId: string;
   onClickClose(): void;
   onSetAvatar(): void;
-  onClickViewInWallet(): void;
+  onClickViewInWallet(): Promise<void>;
   onClickTryAgain(): void;
 }
 
@@ -95,9 +96,9 @@ export default function Result({
             <Button type="primary" onClick={onSetAvatar}>
               Set as Profile Photo
             </Button>
-            <Button className="warning" onClick={onClickViewInWallet}>
+            <AsyncButton className="warning" onClick={onClickViewInWallet}>
               View in Wallet
-            </Button>
+            </AsyncButton>
           </>
         )}
         {status === FreeMintStatus.FAIL && (

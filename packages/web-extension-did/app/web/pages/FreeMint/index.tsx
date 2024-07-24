@@ -14,6 +14,7 @@ import {
   useConfirmMint,
   useLoopMintStatus,
   useGetMintItemInfo,
+  useLoopMintNFTDetail,
 } from '@portkey-wallet/hooks/hooks-ca/freeMint';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import CustomSvg from 'components/CustomSvg';
@@ -25,7 +26,6 @@ import Preview from './component/Preview';
 import Result from './component/Result';
 import { FreeMintStatus, ICollectionData, IMintNFTItemInfo } from '@portkey-wallet/types/types-ca/freeMint';
 import { TFreeMintLocationState } from 'types/router';
-import { useNFTItemDetail } from '@portkey-wallet/hooks/hooks-ca/assets';
 import './index.less';
 
 export default function FreeMint() {
@@ -48,7 +48,7 @@ export default function FreeMint() {
   const [tokenId, setTokenId] = useState<string>('');
   const [itemId, setItemId] = useState(state?.itemId);
   const [symbol, setSymbol] = useState('');
-  const fetchNFTItemDetail = useNFTItemDetail();
+  const loopFetchNFTItemDetail = useLoopMintNFTDetail();
 
   const updateMintInfo = useCallback(async () => {
     const res = await fetchMintInfo();
@@ -159,7 +159,7 @@ export default function FreeMint() {
   }, [confirmMint, desc, itemId, loopStatus, newAvatarS3File, nftName, updateMintInfo]);
   const goToNFTDetail = useCallback(async () => {
     try {
-      const detail = await fetchNFTItemDetail({ symbol, chainId: mintInfo?.collectionInfo.chainId ?? 'AELF' });
+      const detail = await loopFetchNFTItemDetail({ symbol, chainId: mintInfo?.collectionInfo.chainId ?? 'AELF' });
       navigate('/nft', {
         state: {
           ...detail,
@@ -171,7 +171,7 @@ export default function FreeMint() {
       console.log('===goToNFTDetail error', error);
       singleMessage.error(handleErrorMessage(error) ?? 'get NFT detail error, try again');
     }
-  }, [fetchNFTItemDetail, mintInfo, navigate, symbol]);
+  }, [loopFetchNFTItemDetail, mintInfo, navigate, symbol]);
   const renderModalContent = useCallback(() => {
     if (step === FreeMintStepEnum.edit) {
       const props = {

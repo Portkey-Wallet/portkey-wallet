@@ -5,6 +5,7 @@ export enum FreeMintStatus {
   NONE = 'NONE',
   SUCCESS = 'SUCCESS',
   FAIL = 'FAIL',
+  LimitExceed = 'LimitExceed',
 }
 export interface IStatus {
   status: FreeMintStatus;
@@ -15,8 +16,9 @@ export interface IFreeMintRecentStatus extends IStatus {
 
 export interface ICollectionData {
   collectionInfo: ICollectionInfo;
-  tokenId: string;
   transactionFee: number;
+  limitCount: number;
+  isLimitExceed: boolean;
 }
 export interface ICollectionInfo {
   imageUrl: string;
@@ -33,6 +35,13 @@ export interface IItemRequest {
 }
 export interface IItem {
   itemId: string;
+}
+
+export interface IConfirmMintRes {
+  itemId: string;
+  tokenId: string;
+  name: string;
+  symbol: string;
 }
 
 export interface ITokenDetails {
@@ -58,4 +67,5 @@ export interface IMintNFTItemInfo {
   name: string;
   status: FreeMintStatus;
   tokenId: string;
+  symbol: string;
 }

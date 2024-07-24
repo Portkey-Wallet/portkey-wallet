@@ -9,6 +9,8 @@ import './index.less';
 export interface IFreeMintResult {
   previewFile: string;
   status: FreeMintStatus;
+  nftName: string;
+  tokenId: string;
   onClickClose(): void;
   onSetAvatar(): void;
   onClickViewInWallet(): void;
@@ -18,6 +20,8 @@ export interface IFreeMintResult {
 export default function Result({
   previewFile,
   status,
+  tokenId,
+  nftName,
   onClickClose,
   onSetAvatar,
   onClickViewInWallet,
@@ -71,6 +75,7 @@ export default function Result({
   return (
     <div className="free-mint-status flex-column-between flex-1">
       <div className="status-container flex-1 flex-column-center">
+        <div className="status-container-name">{`${nftName} #${tokenId}`}</div>
         <div className="status-container-image">
           <ImageDisplay defaultHeight={200} src={previewFile} />
           {renderStatusIcon}

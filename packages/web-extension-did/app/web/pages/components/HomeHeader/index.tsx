@@ -42,7 +42,7 @@ export default function HomeHeader({ onUserClick, unReadShow }: IHomeHeaderProps
             <Avatar
               size="small"
               avatarUrl={userInfo?.avatar}
-              nameIndex={userInfo?.nickName.substring(0, 1).toLocaleUpperCase() || ''}
+              nameIndex={userInfo?.nickName?.substring(0, 1).toLocaleUpperCase() || ''}
               onClick={onUserClick}
             />
             {unReadShow && <UnReadBadge />}

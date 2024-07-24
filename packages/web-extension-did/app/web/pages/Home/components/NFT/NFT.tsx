@@ -13,7 +13,7 @@ import {
   PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION,
 } from '@portkey-wallet/constants/constants-ca/assets';
 import { PAGE_SIZE_IN_NFT_ITEM_PROMPT } from 'constants/index';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { getSeedTypeTag } from 'utils/assets';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
@@ -31,6 +31,7 @@ export default function NFT() {
   const [openPanel, setOpenPanel] = useState<string[]>([]);
   const [nftNum, setNftNum] = useState<Record<string, number>>({});
   const [openOp, setOpenOp] = useState<boolean>(true);
+  const { eForestUrl = '' } = useCurrentNetworkInfo();
   const isMainnet = useIsMainnet();
   const { accountNFTList, totalRecordCount, fetchAccountNFTCollectionInfoList, fetchAccountNFTItem, isFetching } =
     useAccountNFTCollectionInfo();
@@ -122,6 +123,13 @@ export default function NFT() {
     },
     [caAddressInfos, fetchAccountNFTItem, openPanel],
   );
+
+  const handleClickForest = useCallback(() => {
+    const openWinder = window.open(`${eForestUrl}/collections`, '_blank');
+    if (openWinder) {
+      openWinder.opener = null;
+    }
+  }, [eForestUrl]);
 
   const renderItem = useCallback(
     (nft: NFTCollectionItemShowType) => {
@@ -259,7 +267,7 @@ export default function NFT() {
               <div className="list-item-number flex-center">2</div>
               <div className="flex list-item-text">
                 <span>Buy on NFT Marketplace -</span>
-                <div className="flex-row-center list-item-text-primary">
+                <div className="flex-row-center list-item-text-primary" onClick={handleClickForest}>
                   <span>&nbsp;Forest</span>
                   <CustomSvg className="flex-center" type="NewRightArrow" />
                 </div>
@@ -269,7 +277,7 @@ export default function NFT() {
         )}
       </div>
     );
-  }, [isPrompt, nav, recentStatus, renderFreeMintTip]);
+  }, [handleClickForest, isPrompt, nav, recentStatus, renderFreeMintTip]);
 
   return (
     <div className="tab-nft">

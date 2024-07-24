@@ -75,7 +75,7 @@ export default function Result({
   return (
     <div className="free-mint-status flex-column-between flex-1">
       <div className="status-container flex-1 flex-column-center">
-        <div className="status-container-name">{`${nftName} #${tokenId}`}</div>
+        <div className="status-container-name">{`${nftName} ${tokenId ? '#' : ''}${tokenId}`}</div>
         <div className="status-container-image">
           <ImageDisplay defaultHeight={200} src={previewFile} />
           {renderStatusIcon}

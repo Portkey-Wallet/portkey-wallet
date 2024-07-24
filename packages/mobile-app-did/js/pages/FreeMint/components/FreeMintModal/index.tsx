@@ -46,6 +46,7 @@ export const FreeMintModal = ({ itemId, freeMintStep }: { itemId?: string; freeM
           <MintEdit
             itemId={itemId || ''}
             setStep={setStep}
+            editInfo={editInfo}
             onEditCallback={(name, description, imageUrl) => {
               setEditInfo({
                 name,

@@ -21,9 +21,10 @@ export type EditConfig = {
 const MintEdit = (props: {
   itemId: string;
   setStep: Dispatch<SetStateAction<FreeMintStep>>;
+  editInfo?: EditConfig;
   onEditCallback: (name: string, description: string, imageUrl: string) => void;
 }) => {
-  const { itemId, setStep, onEditCallback } = props;
+  const { itemId, setStep, editInfo, onEditCallback } = props;
   const [value, setValue] = useState<EditConfig>({
     imageUri: '',
     name: '',
@@ -34,6 +35,15 @@ const MintEdit = (props: {
   const [showDeleteIcon, setShowDeleteIcon] = useState<boolean>(false);
   const getMintItemInfo = useGetMintItemInfo();
   useEffect(() => {
+    if (editInfo) {
+      setValue(prev => ({
+        ...prev,
+        name: editInfo.name,
+        description: editInfo.description,
+        imageUri: editInfo.imageUri,
+      }));
+      return;
+    }
     if (!itemId) {
       return;
     }
@@ -41,7 +51,7 @@ const MintEdit = (props: {
       const res = await getMintItemInfo(itemId);
       setValue(prev => ({ ...prev, name: res.name, description: res.description, imageUri: res.imageUrl }));
     })();
-  }, [getMintItemInfo, itemId]);
+  }, [editInfo, getMintItemInfo, itemId]);
   const onChooseSuccess = useCallback((result: { uri: any }) => {
     setValue(prev => ({ ...prev, imageUri: result.uri || '' }));
   }, []);

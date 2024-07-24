@@ -16,19 +16,33 @@ import Svg from 'components/Svg';
 import { FreeMintStatus } from '@portkey-wallet/types/types-ca/freeMint';
 import CommonToast from 'components/CommonToast';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { useFreeMintInfo } from '@portkey-wallet/hooks/hooks-ca/freeMint';
+import Loading from 'components/Loading';
 
 const MintHome = () => {
   const { recentStatus } = useRouterParams<{ recentStatus: FreeMintStatus }>();
+  const fetchMintInfo = useFreeMintInfo();
   const { t } = useLanguage();
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const onMintPress = useCallback(() => {
-    if (recentStatus === FreeMintStatus.LimitExceed) {
-      CommonToast.fail('You have reached the daily limit of 5 free mint NFTs. Take a rest and come back tomorrow!');
-      return;
+  const onMintPress = useCallback(async () => {
+    try {
+      Loading.show();
+      const { isLimitExceed } = await fetchMintInfo();
+      if (isLimitExceed) {
+        CommonToast.fail('You have reached the daily limit of 5 free mint NFTs. Take a rest and come back tomorrow!');
+        return;
+      }
+      showFreeMintModal();
+    } finally {
+      Loading.hide();
+      if (recentStatus === FreeMintStatus.LimitExceed) {
+        CommonToast.fail('You have reached the daily limit of 5 free mint NFTs. Take a rest and come back tomorrow!');
+      } else {
+        showFreeMintModal();
+      }
     }
-    showFreeMintModal();
     // MintEditModal.showMintEdit();
-  }, [recentStatus]);
+  }, [fetchMintInfo, recentStatus]);
   return (
     <PageContainer
       noCenterDom

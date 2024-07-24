@@ -14,7 +14,7 @@ interface MintStatus {
   itemId: string;
 }
 const NFTHint = (props: MintStatus) => {
-  const { recentStatus, itemId } = props;
+  const { recentStatus } = props;
   const { isNFTTabShow } = useAppNFTTabShow();
   return (
     <View style={styles.container}>

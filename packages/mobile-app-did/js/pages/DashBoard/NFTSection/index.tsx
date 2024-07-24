@@ -182,14 +182,23 @@ export default function NFTSection() {
           getNFTCollectionsAsync(true);
         }}
         onEndReached={() => getNFTCollectionsAsync()}
+        ListFooterComponent={() => (
+          <View style={styles.hintContainer}>
+            {(totalRecordCount === 0 ? [] : accountNFTList || []).length < 1 && recentStatus === FreeMintStatus.NONE ? (
+              <NFTHint recentStatus={recentStatus} itemId={itemId || ''} />
+            ) : (
+              <MintStatusLine recentStatus={recentStatus} itemId={itemId || ''} />
+            )}
+          </View>
+        )}
       />
-      <View style={styles.hintContainer}>
+      {/* <View style={styles.hintContainer}>
         {(totalRecordCount === 0 ? [] : accountNFTList || []).length < 1 && recentStatus === FreeMintStatus.NONE ? (
           <NFTHint recentStatus={recentStatus} itemId={itemId || ''} />
         ) : (
           <MintStatusLine recentStatus={recentStatus} itemId={itemId || ''} />
         )}
-      </View>
+      </View> */}
     </View>
   );
 }
@@ -207,7 +216,9 @@ const styles = StyleSheet.create({
     paddingBottom: pTd(16),
   },
   hintContainer: {
-    position: 'absolute',
-    bottom: pTd(343),
+    marginTop: pTd(24),
+    // backgroundColor: 'blue',
+    // position: 'absolute',
+    // bottom: pTd(40),
   },
 });

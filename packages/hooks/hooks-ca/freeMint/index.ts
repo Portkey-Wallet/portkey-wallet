@@ -8,6 +8,8 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { useEffectOnce } from '../..';
 import { handleLoopFetch } from '@portkey-wallet/utils';
+import { ChainId } from '@portkey-wallet/types';
+import { useNFTItemDetail } from '../assets';
 
 export const useRecentStatus = () => {
   const [recentStatus, setRecentStatus] = useState<FreeMintStatus>(FreeMintStatus.NONE);
@@ -152,4 +154,24 @@ export const useGetMintItemInfo = () => {
       return null;
     }
   }, []);
+};
+
+export const useLoopMintNFTDetail = () => {
+  const fetchNFTItemDetail = useNFTItemDetail();
+  return useCallback(
+    async ({ symbol, chainId }: { symbol: string; chainId: ChainId }) => {
+      const creationStatus = await handleLoopFetch({
+        fetch: () => {
+          return fetchNFTItemDetail({ symbol, chainId });
+        },
+        times: 10,
+        interval: 1000,
+        checkIsContinue: (_creationStatusResult: any) => {
+          return !_creationStatusResult?.symbol;
+        },
+      });
+      return creationStatus;
+    },
+    [fetchNFTItemDetail],
+  );
 };

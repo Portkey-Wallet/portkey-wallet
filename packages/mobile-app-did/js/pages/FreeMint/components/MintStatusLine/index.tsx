@@ -32,7 +32,7 @@ const MintStatusLine = (props: MintStatus) => {
     };
   }, [recentStatus]);
   const handleClickMint = useCallback(() => {
-    navigationService.navigate('FreeMintHome');
+    navigationService.navigate('FreeMintHome', { recentStatus: recentStatus });
     if (recentStatus === FreeMintStatus.FAIL) {
       showFreeMintModal(itemId, FreeMintStep.mintNft);
     } else if (recentStatus === FreeMintStatus.PENDING) {

@@ -5,6 +5,7 @@ export enum FreeMintStatus {
   NONE = 'NONE',
   SUCCESS = 'SUCCESS',
   FAIL = 'FAIL',
+  LimitExceed = 'LimitExceed',
 }
 export interface IStatus {
   status: FreeMintStatus;

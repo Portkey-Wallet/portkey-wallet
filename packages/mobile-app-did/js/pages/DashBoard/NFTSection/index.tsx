@@ -185,7 +185,7 @@ export default function NFTSection() {
       />
       <View style={styles.hintContainer}>
         {(totalRecordCount === 0 ? [] : accountNFTList || []).length < 1 && recentStatus === FreeMintStatus.NONE ? (
-          <NFTHint />
+          <NFTHint recentStatus={recentStatus} itemId={itemId || ''} />
         ) : (
           <MintStatusLine recentStatus={recentStatus} itemId={itemId || ''} />
         )}

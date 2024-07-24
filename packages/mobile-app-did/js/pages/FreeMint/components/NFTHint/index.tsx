@@ -1,3 +1,4 @@
+import { FreeMintStatus } from '@portkey-wallet/types/types-ca/freeMint';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
@@ -8,8 +9,12 @@ import { View, Text, StyleSheet } from 'react-native';
 import { TabRouteNameEnum } from 'types/navigate';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
-
-const NFTHint = () => {
+interface MintStatus {
+  recentStatus: FreeMintStatus;
+  itemId: string;
+}
+const NFTHint = (props: MintStatus) => {
+  const { recentStatus, itemId } = props;
   const { isNFTTabShow } = useAppNFTTabShow();
   return (
     <View style={styles.container}>
@@ -21,7 +26,7 @@ const NFTHint = () => {
         <View style={styles.rowContent}>
           <Touchable
             onPress={() => {
-              navigationService.navigate('FreeMintHome');
+              navigationService.navigate('FreeMintHome', { recentStatus });
             }}>
             <Text style={styles.mainText}>Free Mint</Text>
           </Touchable>

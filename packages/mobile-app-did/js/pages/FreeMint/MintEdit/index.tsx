@@ -190,8 +190,6 @@ const styles = StyleSheet.create({
   },
   uploadContainer: {
     alignSelf: 'stretch',
-    paddingLeft: pTd(16),
-    paddingRight: pTd(16),
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',

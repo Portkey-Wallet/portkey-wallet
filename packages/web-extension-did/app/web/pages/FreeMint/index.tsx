@@ -25,6 +25,7 @@ import Preview from './component/Preview';
 import Result from './component/Result';
 import { FreeMintStatus, ICollectionData, IMintNFTItemInfo } from '@portkey-wallet/types/types-ca/freeMint';
 import { TFreeMintLocationState } from 'types/router';
+import { useNFTItemDetail } from '@portkey-wallet/hooks/hooks-ca/assets';
 import './index.less';
 
 export default function FreeMint() {
@@ -46,6 +47,8 @@ export default function FreeMint() {
   const setUserAvatar = useSetUserAvatar();
   const [tokenId, setTokenId] = useState<string>('');
   const [itemId, setItemId] = useState(state?.itemId);
+  const [symbol, setSymbol] = useState('');
+  const fetchNFTItemDetail = useNFTItemDetail();
 
   const updateMintInfo = useCallback(async () => {
     const res = await fetchMintInfo();
@@ -63,6 +66,7 @@ export default function FreeMint() {
           setDesc(targetNftItem.description);
           setPreviewFile(targetNftItem.imageUrl);
           setTokenId(targetNftItem.tokenId);
+          setSymbol(targetNftItem.symbol);
           if (targetNftItem.status === FreeMintStatus.SUCCESS) {
             setOpen(true);
             setStep(FreeMintStepEnum.result);
@@ -106,6 +110,7 @@ export default function FreeMint() {
     setNewAvatarS3File('');
     setTokenId('');
     setItemId('');
+    setSymbol('');
   }, [updateMintInfo]);
 
   const modalTitle = useMemo(() => {
@@ -140,6 +145,7 @@ export default function FreeMint() {
       };
       const confirmMintRes = await confirmMint(params);
       setTokenId(confirmMintRes.tokenId);
+      setSymbol(confirmMintRes.symbol);
       updateMintInfo();
       const _status: FreeMintStatus = await loopStatus(confirmMintRes.itemId);
       setStatus(_status);
@@ -151,7 +157,21 @@ export default function FreeMint() {
       setStatus(FreeMintStatus.FAIL);
     }
   }, [confirmMint, desc, itemId, loopStatus, newAvatarS3File, nftName, updateMintInfo]);
-
+  const goToNFTDetail = useCallback(async () => {
+    try {
+      const detail = await fetchNFTItemDetail({ symbol, chainId: mintInfo?.collectionInfo.chainId ?? 'AELF' });
+      navigate('/nft', {
+        state: {
+          ...detail,
+          collectionName: mintInfo?.collectionInfo.collectionName,
+          collectionImageUrl: mintInfo?.collectionInfo.imageUrl,
+        },
+      });
+    } catch (error) {
+      console.log('===goToNFTDetail error', error);
+      singleMessage.error(handleErrorMessage(error) ?? 'get NFT detail error, try again');
+    }
+  }, [fetchNFTItemDetail, mintInfo, navigate, symbol]);
   const renderModalContent = useCallback(() => {
     if (step === FreeMintStepEnum.edit) {
       const props = {
@@ -188,7 +208,7 @@ export default function FreeMint() {
         nftName,
         onClickClose: () => navigate('/'),
         onSetAvatar: handleSetAvatar,
-        onClickViewInWallet: () => navigate('/'),
+        onClickViewInWallet: goToNFTDetail,
         onClickTryAgain: () => {
           setStep(FreeMintStepEnum.edit);
           setStatus(FreeMintStatus.NONE);
@@ -209,6 +229,7 @@ export default function FreeMint() {
     status,
     tokenId,
     handleSetAvatar,
+    goToNFTDetail,
     navigate,
   ]);
 

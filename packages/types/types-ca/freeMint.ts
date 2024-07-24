@@ -40,6 +40,7 @@ export interface IConfirmMintRes {
   itemId: string;
   tokenId: string;
   name: string;
+  symbol: string;
 }
 
 export interface ITokenDetails {
@@ -65,4 +66,5 @@ export interface IMintNFTItemInfo {
   name: string;
   status: FreeMintStatus;
   tokenId: string;
+  symbol: string;
 }

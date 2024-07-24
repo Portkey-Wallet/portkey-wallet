@@ -13,7 +13,7 @@ import MintEdit, { EditConfig } from 'pages/FreeMint/MintEdit';
 import { useConfirmMint, useFreeMintInfo } from '@portkey-wallet/hooks/hooks-ca/freeMint';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { ICollectionData, IConfirmMintRes } from '@portkey-wallet/types/types-ca/freeMint';
-import { sleep } from '@portkey-wallet/utils';
+
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 
@@ -94,7 +94,12 @@ export const FreeMintModal = ({ itemId, freeMintStep }: { itemId?: string; freeM
           <MintPreview mintInfo={mintInfo} editInfo={editInfo} onMintPress={onMintConfirm} />
         )}
         {step === FreeMintStep.mintResult && (
-          <MintStatusSection changeStep={changeStep} editInfo={editInfo} confirmMintResponse={confirmMintResponse} />
+          <MintStatusSection
+            changeStep={changeStep}
+            editInfo={editInfo}
+            mintInfo={mintInfo}
+            confirmMintResponse={confirmMintResponse}
+          />
         )}
       </View>
     </ModalBody>

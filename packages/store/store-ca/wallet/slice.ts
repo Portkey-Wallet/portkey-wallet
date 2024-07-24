@@ -141,12 +141,19 @@ export const walletSlice = createSlice({
       })
       .addCase(setNickNameAndAvatarAction, (state, action) => {
         const { avatar, nickName, networkType = 'MAINNET' } = action.payload;
+
+        const tmpInfo = {
+          nickName: nickName || state.userInfo?.[networkType]?.nickName || '',
+          avatar: avatar || state.userInfo?.[networkType]?.avatar || '',
+        };
+
+        console.log('====tmpInfo', tmpInfo);
+
         state.userInfo = {
           ...(state.userInfo || {}),
           [networkType]: {
             ...(state?.userInfo?.[networkType] || {}),
-            nickName,
-            avatar,
+            ...tmpInfo,
           },
         };
       })

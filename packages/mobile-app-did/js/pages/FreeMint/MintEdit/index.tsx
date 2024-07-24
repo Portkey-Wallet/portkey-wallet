@@ -140,6 +140,7 @@ const MintEdit = (props: {
             containerStyle={styles.contentWrap}
           />
         </FormItem>
+
         <FormItem title="Description (Optional)" style={styles.formItemContainer}>
           <CommonInput
             type="general"

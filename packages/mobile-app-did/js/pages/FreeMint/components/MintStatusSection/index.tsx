@@ -10,13 +10,15 @@ import ButtonCol, { ButtonRowProps } from 'components/ButtonCol';
 import { FontStyles } from 'assets/theme/styles';
 import { FreeMintStep } from '../FreeMintModal';
 import { useLoopMintStatus } from '@portkey-wallet/hooks/hooks-ca/freeMint';
-import { FreeMintStatus, IConfirmMintRes } from '@portkey-wallet/types/types-ca/freeMint';
+import { FreeMintStatus, ICollectionData, IConfirmMintRes } from '@portkey-wallet/types/types-ca/freeMint';
 import { EditConfig } from 'pages/FreeMint/MintEdit';
 import { useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import OverlayModal from 'components/OverlayModal';
 import navigationService from 'utils/navigationService';
+import { useNFTItemDetail } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { handleLoopFetch } from '@portkey-wallet/utils';
 
 export enum MintStatus {
   Minting = 'Minting...',
@@ -27,18 +29,21 @@ export enum MintStatus {
 const mintTextObj = {
   [MintStatus.Minting]: 'Your NFT is being minted.',
   [MintStatus.Minted]: 'Your NFT has been successfully minted.',
-  [MintStatus.MintFailed]: `Mint failure could be due to network issues. Pleaset try again.`,
+  [MintStatus.MintFailed]: `Mint failure could be due to network issues. Please try again.`,
 };
 
 interface MintStatusSectionProps {
   editInfo?: EditConfig;
+  mintInfo?: ICollectionData;
   confirmMintResponse?: IConfirmMintRes;
   changeStep?: (step: FreeMintStep) => void;
 }
 
 const MintStatusSection = (props: MintStatusSectionProps) => {
-  const { editInfo, confirmMintResponse, changeStep } = props;
+  const { editInfo, mintInfo, confirmMintResponse, changeStep } = props;
   const setUserInfo = useSetUserInfo();
+  const fetchNFTItemDetail = useNFTItemDetail();
+  const [btnLoading, setBtnLoading] = useState(false);
 
   const getMintStatus = useLoopMintStatus();
   const [status, setStatus] = useState<MintStatus>(MintStatus.Minting);
@@ -51,6 +56,47 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const fetchNftItemInfo = useCallback(async () => {
+    if (!confirmMintResponse?.symbol || !mintInfo?.collectionInfo.chainId) return;
+
+    try {
+      setBtnLoading(true);
+
+      const nftDetail = await handleLoopFetch({
+        fetch: () => {
+          return fetchNFTItemDetail({
+            symbol: confirmMintResponse?.symbol,
+            chainId: mintInfo?.collectionInfo.chainId,
+          });
+        },
+        times: 10,
+        interval: 3000,
+        checkIsContinue: (result: any) => {
+          return !result.tokenId;
+        },
+      });
+
+      OverlayModal.hide();
+      navigationService.navigate('NFTDetail', {
+        ...nftDetail,
+        collectionInfo: {
+          imageUrl: mintInfo.collectionInfo.imageUrl,
+          collectionName: mintInfo.collectionInfo.collectionName,
+        },
+      });
+    } catch (error) {
+      CommonToast.failError(error);
+    } finally {
+      setBtnLoading(false);
+    }
+  }, [
+    confirmMintResponse?.symbol,
+    fetchNFTItemDetail,
+    mintInfo?.collectionInfo.chainId,
+    mintInfo?.collectionInfo.collectionName,
+    mintInfo?.collectionInfo.imageUrl,
+  ]);
 
   const setAvatar = useCallback(async () => {
     try {
@@ -86,11 +132,11 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
           onPress: setAvatar,
         },
         {
+          loading: btnLoading,
           title: 'View in Wallet',
           type: 'outline',
           onPress: () => {
-            OverlayModal.hide();
-            navigationService.navigate('WalletName');
+            fetchNftItemInfo();
           },
         },
       ];
@@ -105,7 +151,7 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
           },
         },
       ];
-  }, [changeStep, setAvatar, status]);
+  }, [btnLoading, changeStep, fetchNftItemInfo, setAvatar, status]);
 
   return (
     <>

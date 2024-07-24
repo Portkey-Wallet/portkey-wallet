@@ -32,7 +32,6 @@ const MintHome = () => {
         CommonToast.fail('You have reached the daily limit of 5 free mint NFTs. Take a rest and come back tomorrow!');
         return;
       }
-      showFreeMintModal();
     } finally {
       Loading.hide();
       if (recentStatus === FreeMintStatus.LimitExceed) {
@@ -41,7 +40,6 @@ const MintHome = () => {
         showFreeMintModal();
       }
     }
-    showFreeMintModal();
   }, [fetchMintInfo, recentStatus]);
   return (
     <PageContainer

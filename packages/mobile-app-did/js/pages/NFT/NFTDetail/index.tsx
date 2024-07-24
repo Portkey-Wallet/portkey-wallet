@@ -95,7 +95,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
     return [
       {
         title: 'Set as Profile Photo',
-        iconName: 'my',
+        iconName: 'my-avatar',
         onPress: async () => {
           try {
             Loading.show();
@@ -111,7 +111,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
         },
       },
     ];
-  }, [imageUrl, setUserInfo]);
+  }, [imageUrl, setUserInfo, t]);
 
   const onPressMore = useCallback(
     async (event: GestureResponderEvent) => {

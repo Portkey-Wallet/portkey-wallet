@@ -16,6 +16,7 @@ import { ICollectionData, IConfirmMintRes } from '@portkey-wallet/types/types-ca
 
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
+import myEvents from 'utils/deviceEvent';
 
 export enum FreeMintStep {
   mintNft = 'Mint NFT',
@@ -57,6 +58,7 @@ export const FreeMintModal = ({ itemId, freeMintStep }: { itemId?: string; freeM
       console.log('error', error);
       CommonToast.failError(error);
     } finally {
+      myEvents.updateMintStatus.emit();
       Loading.hide();
     }
   }, [changeStep, confirmMint, editInfo?.description, editInfo?.imageUri, editInfo?.name]);

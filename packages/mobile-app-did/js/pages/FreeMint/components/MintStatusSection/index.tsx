@@ -19,6 +19,7 @@ import OverlayModal from 'components/OverlayModal';
 import navigationService from 'utils/navigationService';
 import { useNFTItemDetail } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { handleLoopFetch } from '@portkey-wallet/utils';
+import myEvents from 'utils/deviceEvent';
 
 export enum MintStatus {
   Minting = 'Minting...',
@@ -51,8 +52,14 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
   useEffect(() => {
     (async () => {
       const result = await getMintStatus(confirmMintResponse?.itemId || '');
-      if (result === FreeMintStatus.FAIL) setStatus(MintStatus.MintFailed);
-      if (result === FreeMintStatus.SUCCESS) setStatus(MintStatus.Minted);
+      if (result === FreeMintStatus.FAIL) {
+        myEvents.updateMintStatus.emit();
+        setStatus(MintStatus.MintFailed);
+      }
+      if (result === FreeMintStatus.SUCCESS) {
+        myEvents.updateMintStatus.emit();
+        setStatus(MintStatus.Minted);
+      }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

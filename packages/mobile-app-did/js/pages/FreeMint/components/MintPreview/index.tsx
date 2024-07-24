@@ -15,6 +15,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 import { FreeMintStep } from '../FreeMintModal';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 interface MintPreviewProps {
   mintInfo?: ICollectionData;
@@ -27,6 +28,7 @@ interface MintPreviewProps {
 const MintPreview = (props: MintPreviewProps) => {
   const { t } = useLanguage();
   const { currentNetwork } = useWallet();
+  const defaultToken = useDefaultToken();
   const { mintInfo, editInfo, onCancelPress, onMintPress } = props;
 
   return (
@@ -67,7 +69,7 @@ const MintPreview = (props: MintPreviewProps) => {
           <TextM style={[styles.leftTitle, FontStyles.font3, GStyles.flex(2)]}>{t('Transaction Fee')}</TextM>
           <View style={styles.blank} />
           <View>
-            <TextM style={styles.rightValue}>{mintInfo?.transactionFee}</TextM>
+            <TextM style={styles.rightValue}>{`${mintInfo?.transactionFee} ${defaultToken.symbol}`}</TextM>
             <TextS style={[FontStyles.neutralPrimaryTextColor, styles.rightValue]}>{`$ 0`}</TextS>
           </View>
         </View>

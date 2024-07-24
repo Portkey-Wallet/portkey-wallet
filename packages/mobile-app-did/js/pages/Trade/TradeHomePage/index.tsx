@@ -14,7 +14,7 @@ export const TradeHomePage: React.FC = (props: any) => {
   const { navigation, route } = props;
   console.log('propssssssss', props);
   const {
-    awakenUrl = 'https://awaken.finance/',
+    awakenUrl = 'https://app.awaken.finance/',
     eBridgeUrl = 'https://ebridge.exchange',
     eForestUrl = 'https://www.eforest.finance',
   } = useCurrentNetworkInfo();

@@ -12,6 +12,7 @@ import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { GuardianItem } from './guardians';
 import { NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
 import { ReceiveTabEnum } from '@portkey-wallet/constants/constants-ca/send';
+import { FreeMintStatus } from '@portkey-wallet/types/types-ca/freeMint';
 
 export enum FromPageEnum {
   register = 'register',
@@ -310,4 +311,9 @@ export type TCryptoGiftDetailLocationState = {
 // CryptoGift create success
 export type TCryptoGiftSuccessLocationState = {
   id: string;
+};
+
+export type TFreeMintLocationState = {
+  itemId: string;
+  status: FreeMintStatus;
 };

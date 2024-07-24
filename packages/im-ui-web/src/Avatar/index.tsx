@@ -61,7 +61,7 @@ const Avatar: React.FC<IAvatarProps> = ({
             />
           )
         ) : (
-          <div className="avatar-letter flex-center">{letter.substring(0, 1).toUpperCase() || 'A'}</div>
+          <div className="avatar-letter flex-center">{letter?.substring(0, 1).toUpperCase() || 'A'}</div>
         )}
       </>
     ),

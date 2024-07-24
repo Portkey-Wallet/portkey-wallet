@@ -5,13 +5,15 @@ import {
   IConfirmMintRes,
   ITokenDetails,
 } from '@portkey-wallet/types/types-ca/freeMint';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { useEffectOnce } from '../..';
 import { handleLoopFetch } from '@portkey-wallet/utils';
+import { REFRESH_TIME } from '@portkey-wallet/constants/constants-ca/assets';
 
 export const useRecentStatus = () => {
   const [recentStatus, setRecentStatus] = useState<FreeMintStatus>(FreeMintStatus.NONE);
   const [itemId, setItemId] = useState<string>();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
     (async () => {
       const result = await request.freeMintApi.getRecentStatus();
@@ -19,6 +21,17 @@ export const useRecentStatus = () => {
       setItemId(result.itemId);
     })();
   }, [recentStatus]);
+  useEffect(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(async () => {
+      const result = await request.freeMintApi.getRecentStatus();
+      setRecentStatus(result.status);
+      setItemId(result.itemId);
+    }, REFRESH_TIME);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [setRecentStatus, setItemId, timerRef]);
   return { recentStatus, itemId };
 };
 export const useFreeMinInput = () => {

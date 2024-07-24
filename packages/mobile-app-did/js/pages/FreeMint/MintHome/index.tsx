@@ -8,7 +8,7 @@ import CommonButton from 'components/CommonButton';
 import { useLanguage } from 'i18n/hooks';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
-import boxOpen from 'assets/image/pngs/box-open.png';
+import freeMintLogo from 'assets/image/pngs/freeMintLogo.png';
 import fonts from 'assets/theme/fonts';
 import Divider from 'components/Divider';
 import { showFreeMintModal } from '../components/FreeMintModal';
@@ -61,7 +61,7 @@ const MintHome = () => {
         ]}>
         Send crypto assets as a gift
       </TextM> */}
-      <Image resizeMode="contain" source={boxOpen} style={{ width: pTd(343), height: pTd(240) }} />
+      <Image resizeMode="contain" source={freeMintLogo} style={{ width: pTd(343), height: pTd(240) }} />
 
       <CommonButton containerStyle={styles.buttonContainer} type="primary" disabled={false} onPress={onMintPress}>
         <TextL style={styles.buttonText}>{t('Get Started')}</TextL>

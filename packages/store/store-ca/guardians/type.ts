@@ -5,7 +5,6 @@ type VerifyName = string;
 export interface BaseGuardianItem {
   isLoginAccount: boolean | undefined;
   verifier?: VerifierItem;
-  isUseZkVerifier?: boolean;
   guardianAccount: string;
   guardianType: LoginType;
   key: string; // `${loginGuardianType}&${verifier?.name}`,
@@ -15,6 +14,7 @@ export interface BaseGuardianItem {
   isPrivate?: boolean;
   firstName?: string;
   lastName?: string;
+  manuallySupportForZk?: boolean;
 }
 
 export interface IVerifierInfo {

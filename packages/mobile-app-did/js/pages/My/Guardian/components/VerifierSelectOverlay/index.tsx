@@ -34,7 +34,7 @@ const SelectList = ({ callBack, id, editGuardian }: SelectListProps) => {
     });
     if (editGuardian) {
       map[zkLoginVerifierItem.id] =
-        !isZKLoginSupported(editGuardian.guardianType) || (editGuardian.isUseZkVerifier ?? false);
+        !isZKLoginSupported(editGuardian.guardianType) || (editGuardian.manuallySupportForZk ?? false);
     } else {
       map[zkLoginVerifierItem.id] = true; // zkLogin verifier can not be selected by user when add guardian
     }

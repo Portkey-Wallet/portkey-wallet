@@ -19,6 +19,7 @@ import {
   OperationTypeEnum,
   VerifierInfo,
   VerifyStatus,
+  zkLoginVerifierItem,
 } from '@portkey-wallet/types/verifier';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { LOGIN_GUARDIAN_TYPE_ICON } from 'constants/misc';
@@ -259,8 +260,8 @@ export default function GuardianItem({
   }, [guardianItem]);
 
   const isVerifierReplacedByZk = useMemo(() => {
-    return isZKLoginSupported(guardianItem.guardianType) && !guardianItem.isUseZkVerifier;
-  }, [guardianItem.guardianType, guardianItem.isUseZkVerifier]);
+    return isZKLoginSupported(guardianItem.guardianType) && !guardianItem.manuallySupportForZk;
+  }, [guardianItem.guardianType, guardianItem.manuallySupportForZk]);
 
   const renderGuardianAccount = useCallback(() => {
     return (
@@ -271,6 +272,14 @@ export default function GuardianItem({
       </TextM>
     );
   }, [guardianAccount, guardianItem.guardianType]);
+
+  const verifierName = useMemo(() => {
+    return guardianItem.manuallySupportForZk ? zkLoginVerifierItem.name : guardianItem.verifier?.name || '';
+  }, [guardianItem]);
+
+  const verifierImageUrl = useMemo(() => {
+    return guardianItem.manuallySupportForZk ? zkLoginVerifierItem.imageUrl : guardianItem.verifier?.name || '';
+  }, [guardianItem]);
 
   return (
     <View style={[styles.itemRow, isBorderHide && styles.itemWithoutBorder, disabled && styles.disabledStyle]}>
@@ -285,12 +294,7 @@ export default function GuardianItem({
             <Svg icon={LOGIN_GUARDIAN_TYPE_ICON[guardianItem.guardianType]} size={pTd(18)} />
           </View>
 
-          <VerifierImage
-            size={pTd(32)}
-            label={guardianItem?.verifier?.name}
-            uri={guardianItem.verifier?.imageUrl}
-            style={styles.iconStyle}
-          />
+          <VerifierImage size={pTd(32)} label={verifierName} uri={verifierImageUrl} style={styles.iconStyle} />
           {isVerifierReplacedByZk && (
             <View style={styles.zkLoginWaterMarkWrap}>
               <Image source={require('assets/image/pngs/zklogin_verifier.png')} style={styles.zkLoginWaterMarkIcon} />

@@ -120,11 +120,11 @@ const GuardianEdit: React.FC = () => {
   const isSelectedVerifierDisabled = useMemo(() => {
     if (!selectedType) return false;
     if (isEdit) {
-      return isZKLoginSupported(selectedType.value) && editGuardian?.isUseZkVerifier;
+      return isZKLoginSupported(selectedType.value) && editGuardian?.manuallySupportForZk;
     } else {
       return isZKLoginSupported(selectedType.value);
     }
-  }, [editGuardian?.isUseZkVerifier, isEdit, selectedType]);
+  }, [editGuardian?.manuallySupportForZk, isEdit, selectedType]);
 
   useEffectOnce(() => {
     return () => {

@@ -14,7 +14,6 @@ export interface Guardian {
   isPrivate?: boolean;
   firstName?: string;
   lastName?: string;
-  manuallySupportForZk?: boolean;
 }
 
 export interface GuardianAccount {

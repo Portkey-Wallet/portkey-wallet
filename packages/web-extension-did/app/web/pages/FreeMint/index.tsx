@@ -62,6 +62,7 @@ export default function FreeMint() {
           setNftName(targetNftItem.name);
           setDesc(targetNftItem.description);
           setPreviewFile(targetNftItem.imageUrl);
+          setTokenId(targetNftItem.tokenId);
           if (targetNftItem.status === FreeMintStatus.SUCCESS) {
             setOpen(true);
             setStep(FreeMintStepEnum.result);

@@ -133,8 +133,8 @@ function getState() {
   return _navigator?.getState();
 }
 
-function navToBottomTab(tabName: TabRouteNameEnum) {
-  myEvents.navToBottomTab.emit({ tabName });
+function navToBottomTab(tabName: TabRouteNameEnum, params?: any) {
+  myEvents.navToBottomTab.emit({ tabName, params });
 }
 
 export default {

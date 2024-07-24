@@ -30,7 +30,7 @@ export const DAPP_WHITELIST: string[] = [
   ...AwakenUrlList,
   ...SchrodingerList,
   ...SGRSchrodingerList,
-  ...TomorrowDAOUrlList
+  ...TomorrowDAOUrlList,
 ];
 
 export const LinkPortkeyWebsite = OfficialWebsite;

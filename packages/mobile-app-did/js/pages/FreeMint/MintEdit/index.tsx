@@ -26,13 +26,26 @@ const MintEdit = (props: {
   setStep: Dispatch<SetStateAction<FreeMintStep>>;
   onEditCallback: (name: string, description: string, imageUrl: string) => void;
 }) => {
-  const { itemId, editInfo, setStep, onEditCallback } = props;
-  const [value, setValue] = useState<EditConfig>(editInfo || { imageUri: '', name: '', description: '' });
+  const { itemId, setStep, editInfo, onEditCallback } = props;
+  const [value, setValue] = useState<EditConfig>({
+    imageUri: '',
+    name: '',
+    description: '',
+  });
   const [canNext, setNext] = useState<boolean>(false);
   const uploadRef = useRef<ImageWithUploadFuncInstance>(null);
   const [showDeleteIcon, setShowDeleteIcon] = useState<boolean>(false);
   const getMintItemInfo = useGetMintItemInfo();
   useEffect(() => {
+    if (editInfo) {
+      setValue(prev => ({
+        ...prev,
+        name: editInfo.name,
+        description: editInfo.description,
+        imageUri: editInfo.imageUri,
+      }));
+      return;
+    }
     if (!itemId) {
       return;
     }
@@ -40,7 +53,7 @@ const MintEdit = (props: {
       const res = await getMintItemInfo(itemId);
       setValue(prev => ({ ...prev, name: res.name, description: res.description, imageUri: res.imageUrl }));
     })();
-  }, [getMintItemInfo, itemId]);
+  }, [editInfo, getMintItemInfo, itemId]);
   const onChooseSuccess = useCallback((result: { uri: any }) => {
     setValue(prev => ({ ...prev, imageUri: result.uri || '' }));
   }, []);

@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, StatusBar, View, ScrollView } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { StyleSheet, StatusBar, View, ScrollView, GestureResponderEvent } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
@@ -15,7 +15,7 @@ import SafeAreaBox from 'components/SafeAreaBox';
 import Svg from 'components/Svg';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { ScreenWidth } from '@rneui/base';
-import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
+import { bottomBarHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { copyText } from 'utils';
 import { formatTransferTime } from '@portkey-wallet/utils/time';
 import Touchable from 'components/Touchable';
@@ -26,6 +26,12 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useNFTItemDetail } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import PortkeySkeleton from 'components/PortkeySkeleton';
+import FloatOverlay from 'components/FloatOverlay';
+import { ListItemType } from 'components/FloatOverlay/Popover';
+import { measurePageY } from 'utils/measure';
+import { useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import Loading from 'components/Loading';
+import CommonToast from 'components/CommonToast';
 
 export interface TokenDetailProps {
   route?: any;
@@ -40,10 +46,10 @@ interface INftDetailPage extends NFTItemBaseType {
 
 const NFTDetail: React.FC<TokenDetailProps> = () => {
   const { t } = useLanguage();
-
   const timerRef = useRef<NodeJS.Timeout>();
   const nftItem = useRouterParams<INftDetailPage>();
   const fetchNftDetail = useNFTItemDetail();
+  const setUserInfo = useSetUserInfo();
 
   const [nftDetailInfo, setNftDetailInfo] = useState<INftDetailPage>(nftItem);
 
@@ -81,31 +87,74 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
       setNftDetailInfo(pre => ({ ...pre, ...result }));
     } catch (error) {
       console.log('fetchDetail error', error);
+      CommonToast.failError(error);
     }
   }, [fetchNftDetail, chainId, symbol]);
 
-  useEffectOnce(() => {
+  const handleList = useMemo((): ListItemType[] => {
+    return [
+      {
+        title: 'Set as Profile Photo',
+        iconName: 'my-avatar',
+        onPress: async () => {
+          try {
+            Loading.show();
+            await setUserInfo({
+              avatar: imageUrl,
+            });
+            CommonToast.success(t('Set as Profile Photo Successful'));
+          } catch (error) {
+            console.log('error', error);
+          } finally {
+            Loading.hide();
+          }
+        },
+      },
+    ];
+  }, [imageUrl, setUserInfo, t]);
+
+  const onPressMore = useCallback(
+    async (event: GestureResponderEvent) => {
+      const { pageY } = event.nativeEvent;
+
+      const top = await measurePageY(event.target);
+      FloatOverlay.showFloatPopover({
+        list: handleList,
+        formatType: 'dynamicWidth',
+        customPosition: { right: pTd(8), top: (top || pageY) + 30 },
+        customBounds: {
+          x: screenWidth - pTd(20),
+          y: pageY,
+          width: 0,
+          height: 0,
+        },
+      });
+    },
+    [handleList],
+  );
+
+  useEffect(() => {
     if (traitsPercentages && recommendedRefreshSeconds) {
       fetchDetail();
       timerRef.current = setInterval(async () => {
         await fetchDetail();
       }, recommendedRefreshSeconds * 1000);
     }
-  });
-
-  useEffect(
-    () => () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    },
-    [nftDetailInfo.traits],
-  );
+    return () => timerRef.current && clearInterval(timerRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <SafeAreaBox style={styles.pageWrap}>
       <StatusBar barStyle={'default'} />
-      <Touchable style={styles.iconWrap} onPress={() => navigationService.goBack()}>
-        <Svg icon="left-arrow" size={20} />
-      </Touchable>
+      <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemCenter]}>
+        <Touchable style={styles.iconWrap} onPress={() => navigationService.goBack()}>
+          <Svg icon="left-arrow" size={pTd(22)} />
+        </Touchable>
+        <Touchable onPress={onPressMore}>
+          <Svg icon="more-vertical" size={pTd(22)} color={defaultColors.bg34} />
+        </Touchable>
+      </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={[styles.collection, GStyles.flexRow, GStyles.itemCenter]}>

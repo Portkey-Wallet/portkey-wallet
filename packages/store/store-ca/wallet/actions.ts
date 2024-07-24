@@ -156,6 +156,9 @@ export const setNickNameAndAvatarAction = createAction<
   RequireAtLeastOne<{ nickName: string; avatar: string; networkType: NetworkType }>
 >('wallet/setUserNameAndAvatarAction');
 
+export const setAvatarAction =
+  createAction<RequireAtLeastOne<{ avatar: string; networkType: NetworkType }>>('wallet/setAvatarAction');
+
 export const setHideAssetsAction =
   createAction<RequireAtLeastOne<{ hideAssets: boolean }>>('wallet/setHideAssetsAction');
 

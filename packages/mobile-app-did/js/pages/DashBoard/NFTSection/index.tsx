@@ -60,13 +60,14 @@ export default function NFTSection() {
   const { t } = useLanguage();
   const { recentStatus, itemId, setRecentStatus, setItemId } = useRecentStatus();
   const getRecentStatus = useGetRecentStatus();
-  useEffectOnce(() => {
-    myEvents.updateMintStatus.addListener(async () => {
+  useEffect(() => {
+    const listener = myEvents.updateMintStatus.addListener(async () => {
       const res = await getRecentStatus();
       setRecentStatus(res.status);
       setItemId(res.itemId);
     });
-  });
+    return () => listener.remove();
+  }, [getRecentStatus, setItemId, setRecentStatus]);
   const caAddressInfos = useCaAddressInfoList();
   const { fetchAccountNFTCollectionInfoList, fetchAccountNFTItem, accountNFTList, totalRecordCount } =
     useAccountNFTCollectionInfo();

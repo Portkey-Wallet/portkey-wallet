@@ -13,7 +13,7 @@ export interface VerifierItem {
 export const zkLoginVerifierItem: VerifierItem = {
   id: '53961cca496a1cfaa7bf2dda210afb4f6430283cce4239be099ade5647091928', // sha256('zkLogin')
   name: 'zkLogin',
-  imageUrl: '', // todo_wade: add image url
+  imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/zklogin_verifier.png',
 };
 
 // 0: register, 1: community recovery, 2: Add Guardian 3: Set LoginAccount 4: addManager
@@ -70,10 +70,28 @@ export interface ZKLoginInfo {
   identifierHash: string;
   salt: string;
   zkProof: string;
-  zkProofInfo: any;
   jwt: string;
   nonce: string;
   circuitId: string;
+}
+
+export interface ZKProofInfo {
+  zkProofPiA: string;
+  zkProofPiB_1: string;
+  zkProofPiB_2: string;
+  zkProofPiB_3: string;
+  zkProofPiC: string;
+}
+
+export interface ZKLoginInfoInContract {
+  identifierHash: string;
+  salt: string;
+  kid: string;
+  circuitId: string;
+  zkProof: string;
+  zkProofInfo: ZKProofInfo;
+  nonce: string;
+  issuer: string;
 }
 
 export interface VerifierInfo {

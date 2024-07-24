@@ -27,6 +27,7 @@ import VerifierSelectOverlay from '../components/VerifierSelectOverlay';
 import ActionSheet from 'components/ActionSheet';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { FontStyles } from 'assets/theme/styles';
+import { defaultColors } from 'assets/theme';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import useRouterParams, { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
@@ -752,7 +753,10 @@ const GuardianEdit: React.FC = () => {
           }
           titleStyle={[GStyles.flexRowWrap, GStyles.itemCenter]}
           titleTextStyle={[pageStyles.titleTextStyle, !selectedVerifier && FontStyles.font7]}
-          style={pageStyles.verifierWrap}
+          style={[
+            pageStyles.verifierWrap,
+            { backgroundColor: isSelectedVerifierDisabled ? defaultColors.neutralContainerBG : defaultColors.white },
+          ]}
           title={selectedVerifier?.name || 'Select guardian verifiers'}
           rightElement={<Svg size={pTd(20)} icon="down-arrow" />}
         />

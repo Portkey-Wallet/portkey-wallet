@@ -2,7 +2,7 @@ import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type'
 import { VerifierInfo } from '@portkey-wallet/types/verifier';
 import { GuardiansApproved, GuardiansStatus } from 'pages/Guardian/types';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
-import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
+import { handleVerifierInfo, handleZKLoginInfo } from '@portkey-wallet/utils/guardian';
 import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
 
@@ -14,15 +14,19 @@ export const getGuardiansApproved = (
     .filter(item => guardiansStatus[item.key] && guardiansStatus[item.key].verifierInfo)
     .map(guardian => {
       const verificationDoc = guardiansStatus[guardian.key].verifierInfo?.verificationDoc || '';
-      const { guardianIdentifier } = handleVerificationDoc(verificationDoc);
+      const { identifierHash } = handleVerifierInfo(guardiansStatus[guardian.key].verifierInfo);
+      const signature = guardiansStatus[guardian.key].verifierInfo?.signature
+        ? Object.values(Buffer.from(guardiansStatus[guardian.key].verifierInfo?.signature as any, 'hex'))
+        : [];
       return {
-        identifierHash: guardianIdentifier,
+        identifierHash: identifierHash,
         type: guardian.guardianType,
         verificationInfo: {
           id: guardian.verifier?.id,
-          signature: Object.values(Buffer.from(guardiansStatus[guardian.key].verifierInfo?.signature as any, 'hex')),
+          signature,
           verificationDoc,
         },
+        zkLoginInfo: handleZKLoginInfo(guardiansStatus[guardian.key].verifierInfo?.zkLoginInfo),
       };
     });
 };
@@ -74,15 +78,16 @@ export function addGuardian(
   userGuardiansList: UserGuardianItem[],
   guardiansStatus: GuardiansStatus,
 ) {
-  const { guardianIdentifier } = handleVerificationDoc(verifierInfo.verificationDoc);
+  const { identifierHash } = handleVerifierInfo(verifierInfo);
   const guardianToAdd = {
-    identifierHash: guardianIdentifier,
+    identifierHash,
     type: guardianItem.guardianType,
     verificationInfo: {
       id: guardianItem.verifier?.id,
-      signature: Object.values(Buffer.from(verifierInfo.signature as any, 'hex')),
+      signature: verifierInfo.signature ? Object.values(Buffer.from(verifierInfo.signature as any, 'hex')) : [],
       verificationDoc: verifierInfo.verificationDoc,
     },
+    zkLoginInfo: handleZKLoginInfo(verifierInfo.zkLoginInfo),
   };
   const guardiansApproved = getGuardiansApproved(userGuardiansList, guardiansStatus);
   return contract?.callSendMethod('AddGuardian', address, {

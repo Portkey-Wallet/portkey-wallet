@@ -4,7 +4,7 @@ import CommonButton, { CommonButtonProps } from 'components/CommonButton';
 import { TextM } from 'components/CommonText';
 import Svg from 'components/Svg';
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import fonts from 'assets/theme/fonts';
@@ -293,7 +293,7 @@ export default function GuardianItem({
           />
           {isVerifierReplacedByZk && (
             <View style={styles.zkLoginWaterMarkWrap}>
-              <Svg icon={'zklogin_watermark'} iconStyle={styles.zkLoginWaterMarkIcon} />
+              <Image source={require('assets/image/pngs/zklogin_verifier.png')} style={styles.zkLoginWaterMarkIcon} />
             </View>
           )}
         </View>
@@ -388,10 +388,12 @@ const styles = StyleSheet.create({
   zkLoginWaterMarkWrap: {
     position: 'absolute',
     width: '100%',
-    bottom: pTd(-10), // todo_wade: fix position
+    bottom: pTd(-6),
     alignItems: 'center',
   },
   zkLoginWaterMarkIcon: {
     borderRadius: pTd(3),
+    width: pTd(44),
+    height: pTd(14),
   },
 });

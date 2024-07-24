@@ -381,7 +381,6 @@ export function useVerifyZKLogin() {
         identifierHash: verifyParams.identifierHash,
         salt: verifyParams.salt,
         zkProof,
-        zkProofInfo: JSON.parse(zkProof),
         jwt: jwt ?? '',
         nonce: nonce ?? '',
         circuitId: proofResult.circuitId,

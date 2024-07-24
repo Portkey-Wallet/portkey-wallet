@@ -1,4 +1,4 @@
-import { ZKLoginInfo } from '../verifier';
+import { ZKLoginInfoInContract } from '../verifier';
 import { LoginKeyType, LoginType } from './wallet';
 export interface Verifier {
   id: string; // aelf.Hash
@@ -38,5 +38,5 @@ export type GuardiansApprovedType = {
     signature: number[];
     verificationDoc: string;
   };
-  zkLoginInfo: ZKLoginInfo | undefined;
+  zkLoginInfo?: ZKLoginInfoInContract | undefined;
 };

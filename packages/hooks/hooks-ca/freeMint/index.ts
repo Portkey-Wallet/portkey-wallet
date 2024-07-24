@@ -32,7 +32,7 @@ export const useRecentStatus = () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [setRecentStatus, setItemId, timerRef]);
-  return { recentStatus, itemId };
+  return { recentStatus, itemId, setRecentStatus, setItemId };
 };
 export const useFreeMinInput = () => {
   const [inputName, setInputName] = useState<string>();
@@ -162,6 +162,16 @@ export const useGetMintItemInfo = () => {
   return useCallback(async (itemId: string) => {
     try {
       const res = await request.freeMintApi.getMintItemInfo({ params: { itemId } });
+      return res;
+    } catch (error) {
+      return null;
+    }
+  }, []);
+};
+export const useGetRecentStatus = () => {
+  return useCallback(async () => {
+    try {
+      const res = await request.freeMintApi.getRecentStatus();
       return res;
     } catch (error) {
       return null;

@@ -12,6 +12,8 @@ import deleteImage from 'assets/image/pngs/deleteImage.png';
 import ImageWithUploadFunc, { ImageShowType, ImageWithUploadFuncInstance } from 'components/ImageWithUploadFuncV2';
 import { FreeMintStep } from '../components/FreeMintModal';
 import { useGetMintItemInfo } from '@portkey-wallet/hooks/hooks-ca/freeMint';
+import CommonToast from 'components/CommonToast';
+import Loading from 'components/Loading';
 
 export type EditConfig = {
   imageUri: string;
@@ -20,15 +22,12 @@ export type EditConfig = {
 };
 const MintEdit = (props: {
   itemId: string;
+  editInfo?: EditConfig;
   setStep: Dispatch<SetStateAction<FreeMintStep>>;
   onEditCallback: (name: string, description: string, imageUrl: string) => void;
 }) => {
-  const { itemId, setStep, onEditCallback } = props;
-  const [value, setValue] = useState<EditConfig>({
-    imageUri: '',
-    name: '',
-    description: '',
-  });
+  const { itemId, editInfo, setStep, onEditCallback } = props;
+  const [value, setValue] = useState<EditConfig>(editInfo || { imageUri: '', name: '', description: '' });
   const [canNext, setNext] = useState<boolean>(false);
   const uploadRef = useRef<ImageWithUploadFuncInstance>(null);
   const [showDeleteIcon, setShowDeleteIcon] = useState<boolean>(false);
@@ -54,7 +53,19 @@ const MintEdit = (props: {
   }, []);
   const onNext = useCallback(async () => {
     // todo wfs onNext
-    const s3Url = await uploadRef.current?.uploadPhoto();
+    let s3Url = value.imageUri || '';
+    if (!s3Url) {
+      try {
+        Loading.show();
+        s3Url = (await uploadRef.current?.uploadPhoto()) || '';
+      } catch (error) {
+        console.log(error);
+        CommonToast.failError(error);
+      } finally {
+        Loading.hide();
+      }
+    }
+
     onEditCallback(value.name, value.description, s3Url || '');
     setStep && setStep(FreeMintStep.preview);
   }, [onEditCallback, setStep, value]);

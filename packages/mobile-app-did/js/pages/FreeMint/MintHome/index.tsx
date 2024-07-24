@@ -18,8 +18,8 @@ import CommonToast from 'components/CommonToast';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 
 const MintHome = () => {
-  const { recentStatus } = useRouterParams<{ recentStatus: FreeMintStatus }>();
   const { t } = useLanguage();
+  const { recentStatus } = useRouterParams<{ recentStatus: FreeMintStatus }>();
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const onMintPress = useCallback(() => {
     if (recentStatus === FreeMintStatus.LimitExceed) {
@@ -27,7 +27,6 @@ const MintHome = () => {
       return;
     }
     showFreeMintModal();
-    // MintEditModal.showMintEdit();
   }, [recentStatus]);
   return (
     <PageContainer

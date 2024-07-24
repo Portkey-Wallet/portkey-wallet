@@ -1,14 +1,22 @@
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { defaultColors } from 'assets/theme';
 import NFTAvatar from 'components/NFTAvatar';
-import React, { useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 import StatusIcon from '../StatusIcon';
-import { TextM, TextXXL } from 'components/CommonText';
+import { TextL, TextM, TextXXL } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
 import ButtonCol, { ButtonRowProps } from 'components/ButtonCol';
 import { FontStyles } from 'assets/theme/styles';
+import { FreeMintStep } from '../FreeMintModal';
+import { useLoopMintStatus } from '@portkey-wallet/hooks/hooks-ca/freeMint';
+import { FreeMintStatus, IConfirmMintRes } from '@portkey-wallet/types/types-ca/freeMint';
+import { EditConfig } from 'pages/FreeMint/MintEdit';
+import { useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import Loading from 'components/Loading';
+import CommonToast from 'components/CommonToast';
+import OverlayModal from 'components/OverlayModal';
+import navigationService from 'utils/navigationService';
 
 export enum MintStatus {
   Minting = 'Minting...',
@@ -23,11 +31,40 @@ const mintTextObj = {
 };
 
 interface MintStatusSectionProps {
-  status: MintStatus;
+  editInfo?: EditConfig;
+  confirmMintResponse?: IConfirmMintRes;
+  changeStep?: (step: FreeMintStep) => void;
 }
 
 const MintStatusSection = (props: MintStatusSectionProps) => {
-  const { status } = props;
+  const { editInfo, confirmMintResponse, changeStep } = props;
+  const setUserInfo = useSetUserInfo();
+
+  const getMintStatus = useLoopMintStatus();
+  const [status, setStatus] = useState<MintStatus>(MintStatus.Minting);
+
+  useEffect(() => {
+    (async () => {
+      const result = await getMintStatus(confirmMintResponse?.itemId || '');
+      if (result === FreeMintStatus.FAIL) setStatus(MintStatus.MintFailed);
+      if (result === FreeMintStatus.SUCCESS) setStatus(MintStatus.Minted);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const setAvatar = useCallback(async () => {
+    try {
+      Loading.show();
+      await setUserInfo({
+        avatar: editInfo?.imageUri || '',
+      });
+      CommonToast.success('Set as Profile Photo Successful');
+    } catch (error) {
+      console.log('error', error);
+    } finally {
+      Loading.hide();
+    }
+  }, [editInfo?.imageUri, setUserInfo]);
 
   const buttonList = useMemo<ButtonRowProps['buttons']>(() => {
     if (MintStatus.Minting === status)
@@ -36,7 +73,8 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
           title: 'Close',
           type: 'outline',
           onPress: () => {
-            console.log('Close');
+            // OverlayModal.hide();
+            changeStep?.(FreeMintStep.mintNft);
           },
         },
       ];
@@ -46,40 +84,46 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
         {
           title: 'Set as Profile Photo',
           type: 'primary',
-          onPress: () => {
-            console.log('Set as Profile Photo');
-          },
+          onPress: setAvatar,
         },
         {
           title: 'View in Wallet',
           type: 'outline',
           onPress: () => {
-            console.log('View in Wallet');
+            // OverlayModal.hide();
+            // navigationService.navigate('WalletName');
+            changeStep?.(FreeMintStep.mintNft);
           },
         },
       ];
+
     if (MintStatus.MintFailed === status)
       return [
         {
           title: 'Try Again',
           type: 'primary',
           onPress: () => {
-            console.log('try again');
+            changeStep?.(FreeMintStep.mintNft);
           },
         },
       ];
-  }, [status]);
+  }, [changeStep, setAvatar, status]);
 
   return (
     <>
       <View style={styles.topSection}>
+        <TextL
+          style={[
+            GStyles.marginTop(pTd(32)),
+            GStyles.width100,
+            GStyles.textAlignCenter,
+          ]}>{`${confirmMintResponse?.name} #${confirmMintResponse?.tokenId}`}</TextL>
         <View style={styles.nftWrap}>
           <NFTAvatar
             disabled
             nftSize={pTd(200)}
             data={{
-              imageUrl:
-                'https://hamster-mainnet.s3.ap-northeast-1.amazonaws.com/aa633483-b730-4e71-8ae4-1b523d48a409.png',
+              imageUrl: editInfo?.imageUri || '',
             }}
             style={styles.nftAvatar}
           />
@@ -124,10 +168,10 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    marginTop: pTd(20),
   },
   nftWrap: {
     position: 'relative',
+    marginTop: pTd(12),
     width: pTd(200),
     height: pTd(200),
     marginHorizontal: 'auto',

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -8,11 +8,14 @@ import { ModalBody } from 'components/ModalBody';
 import GStyles from 'assets/theme/GStyles';
 import { IconName } from 'components/Svg';
 import MintPreview from '../MintPreview';
-import MintStatusSection, { MintStatus } from '../MintStatusSection';
+import MintStatusSection from '../MintStatusSection';
 import MintEdit, { EditConfig } from 'pages/FreeMint/MintEdit';
-import { useFreeMintInfo, useGetMintItemInfo } from '@portkey-wallet/hooks/hooks-ca/freeMint';
+import { useConfirmMint, useFreeMintInfo } from '@portkey-wallet/hooks/hooks-ca/freeMint';
 import { useEffectOnce } from '@portkey-wallet/hooks';
-import { ICollectionData } from '@portkey-wallet/types/types-ca/freeMint';
+import { ICollectionData, IConfirmMintRes } from '@portkey-wallet/types/types-ca/freeMint';
+import { sleep } from '@portkey-wallet/utils';
+import Loading from 'components/Loading';
+import CommonToast from 'components/CommonToast';
 
 export enum FreeMintStep {
   mintNft = 'Mint NFT',
@@ -33,19 +36,51 @@ export const FreeMintModal = ({ itemId, freeMintStep }: { itemId?: string; freeM
   const fetchMintInfo = useFreeMintInfo();
   const [mintInfo, setMintInfo] = useState<ICollectionData | undefined>(undefined);
   const [editInfo, setEditInfo] = useState<EditConfig>();
+  const [confirmMintResponse, setConfirmMintResponse] = useState<IConfirmMintRes | undefined>(undefined);
+
+  const { confirm: confirmMint } = useConfirmMint();
+
+  const changeStep = useCallback((_step: FreeMintStep) => setStep(_step), []);
+
+  const onMintConfirm = useCallback(async () => {
+    try {
+      Loading.show();
+
+      const res = await confirmMint({
+        name: editInfo?.name || '',
+        description: editInfo?.description || '',
+        imageUrl: editInfo?.imageUri || '',
+      });
+      setConfirmMintResponse(res);
+      changeStep?.(FreeMintStep.mintResult);
+    } catch (error) {
+      console.log('error', error);
+      CommonToast.failError(error);
+    } finally {
+      Loading.hide();
+    }
+  }, [changeStep, confirmMint, editInfo?.description, editInfo?.imageUri, editInfo?.name]);
+
   useEffectOnce(() => {
     (async () => {
       const res = await fetchMintInfo();
       setMintInfo(res);
     })();
   });
+
   return (
-    <ModalBody modalBodyType="bottom" title={t(step)} isShowLeftBackIcon={step === FreeMintStep.preview}>
+    <ModalBody
+      preventBack
+      modalBodyType="bottom"
+      title={t(step)}
+      onBack={() => changeStep(FreeMintStep.mintNft)}
+      isShowLeftBackIcon={step === FreeMintStep.preview}>
       <View style={styles.contentWrap}>
         {step === FreeMintStep.mintNft && (
           <MintEdit
             itemId={itemId || ''}
             setStep={setStep}
+            editInfo={editInfo}
             onEditCallback={(name, description, imageUrl) => {
               setEditInfo({
                 name,
@@ -55,8 +90,12 @@ export const FreeMintModal = ({ itemId, freeMintStep }: { itemId?: string; freeM
             }}
           />
         )}
-        {step === FreeMintStep.preview && <MintPreview />}
-        {step === FreeMintStep.mintResult && <MintStatusSection status={MintStatus.Minted} />}
+        {step === FreeMintStep.preview && (
+          <MintPreview mintInfo={mintInfo} editInfo={editInfo} onMintPress={onMintConfirm} />
+        )}
+        {step === FreeMintStep.mintResult && (
+          <MintStatusSection changeStep={changeStep} editInfo={editInfo} confirmMintResponse={confirmMintResponse} />
+        )}
       </View>
     </ModalBody>
   );

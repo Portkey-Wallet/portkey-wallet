@@ -1,3 +1,6 @@
+import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { ICollectionData } from '@portkey-wallet/types/types-ca/freeMint';
+import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
@@ -5,31 +8,38 @@ import ButtonRow from 'components/ButtonRow';
 import CommonAvatar from 'components/CommonAvatar';
 import { TextL, TextM, TextS } from 'components/CommonText';
 import NFTAvatar from 'components/NFTAvatar';
+import OverlayModal from 'components/OverlayModal';
 import { useLanguage } from 'i18n/hooks';
+import { EditConfig } from 'pages/FreeMint/MintEdit';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
+import { FreeMintStep } from '../FreeMintModal';
 
 interface MintPreviewProps {
+  mintInfo?: ICollectionData;
+  editInfo?: EditConfig;
   onCancelPress?: () => void;
   onMintPress?: () => void;
+  changeStep?: (step: FreeMintStep) => void;
 }
 
 const MintPreview = (props: MintPreviewProps) => {
   const { t } = useLanguage();
-  const { onCancelPress, onMintPress } = props;
+  const { currentNetwork } = useWallet();
+  const { mintInfo, editInfo, onCancelPress, onMintPress } = props;
 
   return (
     <>
       <View style={styles.topSection}>
-        <NFTAvatar disabled nftSize={pTd(64)} data={{ imageUrl: '' }} style={styles.nftAvatar} />
+        <NFTAvatar disabled nftSize={pTd(64)} data={{ imageUrl: editInfo?.imageUri || '' }} style={styles.nftAvatar} />
         <View style={styles.nftInfo}>
           <TextL numberOfLines={1} ellipsizeMode="middle">
-            AAABBB #123
+            {editInfo?.name}
           </TextL>
           <View style={GStyles.height(pTd(4))} />
           <TextS numberOfLines={2} ellipsizeMode="middle" style={FontStyles.neutralTertiaryText}>
-            kitty meowmeowmoew lovely cat lovely cat, meowmeowmoew lovely cat lovely.
+            {editInfo?.description}
           </TextS>
         </View>
       </View>
@@ -38,7 +48,7 @@ const MintPreview = (props: MintPreviewProps) => {
           <TextM style={[styles.leftTitle, FontStyles.font3, GStyles.flex(2)]}>{t('Chain')}</TextM>
           <View style={styles.blank} />
           <TextM style={[styles.rightValue, styles.rightValue, FontStyles.font5, GStyles.flex(3)]}>
-            MianChain AELF
+            {formatChainInfoToShow(mintInfo?.collectionInfo.chainId, currentNetwork)}
           </TextM>
         </View>
 
@@ -46,14 +56,9 @@ const MintPreview = (props: MintPreviewProps) => {
           <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Collection')}</TextM>
           <View style={styles.blank} />
           <View style={[GStyles.flexRow, GStyles.center]}>
-            <CommonAvatar
-              imageUrl={
-                'https://hamster-mainnet.s3.ap-northeast-1.amazonaws.com/aa633483-b730-4e71-8ae4-1b523d48a409.png'
-              }
-              style={styles.nftCollectionAvatar}
-            />
+            <CommonAvatar imageUrl={mintInfo?.collectionInfo?.imageUrl} style={styles.nftCollectionAvatar} />
             <TextM style={[styles.rightValue, FontStyles.neutralPrimaryTextColor, GStyles.marginLeft(pTd(4))]}>
-              Portkey Free Mint
+              {mintInfo?.collectionInfo?.collectionName}
             </TextM>
           </View>
         </View>
@@ -62,7 +67,7 @@ const MintPreview = (props: MintPreviewProps) => {
           <TextM style={[styles.leftTitle, FontStyles.font3, GStyles.flex(2)]}>{t('Transaction Fee')}</TextM>
           <View style={styles.blank} />
           <View>
-            <TextM style={styles.rightValue}>{`0`}</TextM>
+            <TextM style={styles.rightValue}>{mintInfo?.transactionFee}</TextM>
             <TextS style={[FontStyles.neutralPrimaryTextColor, styles.rightValue]}>{`$ 0`}</TextS>
           </View>
         </View>
@@ -75,6 +80,7 @@ const MintPreview = (props: MintPreviewProps) => {
             type: 'outline',
             onPress: () => {
               onCancelPress?.();
+              OverlayModal.hide();
             },
           },
           {

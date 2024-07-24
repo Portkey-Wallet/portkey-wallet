@@ -87,6 +87,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
       setNftDetailInfo(pre => ({ ...pre, ...result }));
     } catch (error) {
       console.log('fetchDetail error', error);
+      CommonToast.failError(error);
     }
   }, [fetchNftDetail, chainId, symbol]);
 

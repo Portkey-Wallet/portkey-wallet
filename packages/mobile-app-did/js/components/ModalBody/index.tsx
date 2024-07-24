@@ -17,7 +17,6 @@ import { ViewStyleType } from 'types/styles';
 export interface ModalBodyProps extends ViewProps {
   title?: string;
   isShowLeftBackIcon?: boolean;
-  onPressLeftIcon?: () => void;
   preventBack?: boolean;
   isShowRightCloseIcon?: boolean;
   modalBodyType?: 'center' | 'bottom';

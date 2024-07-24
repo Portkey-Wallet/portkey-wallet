@@ -27,8 +27,8 @@ export const TradeHomePage: React.FC = (props: any) => {
 
   useFocusEffect(
     useCallback(() => {
-      navigation && route.params.initTab && navigation.jumpTo(route.params.initTab);
-    }, [navigation, route.params.initTab]),
+      navigation && route.params && route.params.initTab && navigation.jumpTo(route.params.initTab);
+    }, [navigation, route.params]),
   );
   const tabList = useMemo(() => {
     const list = [];
@@ -81,7 +81,11 @@ export const TradeHomePage: React.FC = (props: any) => {
 
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.white]}>
-      <CommonTopTab hasTabBarBorderRadius={false} tabList={tabList} initialRouteName={props.route.params.initTab} />
+      <CommonTopTab
+        hasTabBarBorderRadius={false}
+        tabList={tabList}
+        initialRouteName={props.route && props.route.params ? props.route.params.initTab : undefined}
+      />
     </SafeAreaBox>
   );
 };

@@ -236,9 +236,9 @@ const styles = StyleSheet.create({
   },
   nftStatusWrapIcon: {
     position: 'absolute',
-    bottom: pTd(-20),
+    bottom: -pTd(20),
     width: pTd(200),
-    height: pTd(24),
+    height: pTd(40),
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

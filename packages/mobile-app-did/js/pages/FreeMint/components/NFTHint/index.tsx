@@ -39,15 +39,13 @@ const NFTHint = (props: MintStatus) => {
             <Text style={styles.numberText}>2</Text>
           </View>
           <View style={styles.rowContent}>
-            <Text style={[styles.mainText, styles.primaryText]}>
-              Buy on NFT marketplace -{' '}
-              <Touchable
-                onPress={() => {
-                  navigationService.navToBottomTab(TabRouteNameEnum.TRADE, { initTab: 'NFT' });
-                }}>
-                <Text style={styles.highlightText}>Forest</Text>
-              </Touchable>
-            </Text>
+            <Text style={[styles.mainText, styles.primaryText]}>Buy on NFT marketplace - </Text>
+            <Touchable
+              onPress={() => {
+                navigationService.navToBottomTab(TabRouteNameEnum.TRADE, { initTab: 'NFT' });
+              }}>
+              <Text style={styles.highlightText}>Forest</Text>
+            </Touchable>
             <Svg icon="right-arrow" color={defaultColors.brandNormal} size={pTd(14)} />
           </View>
         </View>
@@ -110,6 +108,8 @@ const styles = StyleSheet.create({
   },
   highlightText: {
     color: defaultColors.brandNormal,
+    textAlign: 'center',
+    alignSelf: 'center',
   },
   primaryText: {
     color: defaultColors.primaryTextColor,

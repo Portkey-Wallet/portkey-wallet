@@ -9,7 +9,7 @@ import GStyles from 'assets/theme/GStyles';
 import ButtonCol, { ButtonRowProps } from 'components/ButtonCol';
 import { FontStyles } from 'assets/theme/styles';
 import { FreeMintStep } from '../FreeMintModal';
-import { useLoopMintStatus } from '@portkey-wallet/hooks/hooks-ca/freeMint';
+import { useLoopMintNFTDetail, useLoopMintStatus } from '@portkey-wallet/hooks/hooks-ca/freeMint';
 import { FreeMintStatus, ICollectionData, IConfirmMintRes } from '@portkey-wallet/types/types-ca/freeMint';
 import { EditConfig } from 'pages/FreeMint/MintEdit';
 import { useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -17,8 +17,6 @@ import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import OverlayModal from 'components/OverlayModal';
 import navigationService from 'utils/navigationService';
-import { useNFTItemDetail } from '@portkey-wallet/hooks/hooks-ca/assets';
-import { handleLoopFetch } from '@portkey-wallet/utils';
 import myEvents from 'utils/deviceEvent';
 
 export enum MintStatus {
@@ -43,7 +41,7 @@ interface MintStatusSectionProps {
 const MintStatusSection = (props: MintStatusSectionProps) => {
   const { editInfo, mintInfo, confirmMintResponse, changeStep } = props;
   const setUserInfo = useSetUserInfo();
-  const fetchNFTItemDetail = useNFTItemDetail();
+  const loopFetchNFTItemDetail = useLoopMintNFTDetail();
   const [btnLoading, setBtnLoading] = useState(false);
 
   const getMintStatus = useLoopMintStatus();
@@ -70,18 +68,9 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
     try {
       setBtnLoading(true);
 
-      const nftDetail = await handleLoopFetch({
-        fetch: () => {
-          return fetchNFTItemDetail({
-            symbol: confirmMintResponse?.symbol,
-            chainId: mintInfo?.collectionInfo.chainId,
-          });
-        },
-        times: 10,
-        interval: 3000,
-        checkIsContinue: (result: any) => {
-          return !result.tokenId;
-        },
+      const nftDetail = await loopFetchNFTItemDetail({
+        symbol: confirmMintResponse?.symbol,
+        chainId: mintInfo?.collectionInfo.chainId ?? 'AELF',
       });
 
       OverlayModal.hide();
@@ -99,7 +88,7 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
     }
   }, [
     confirmMintResponse?.symbol,
-    fetchNFTItemDetail,
+    loopFetchNFTItemDetail,
     mintInfo?.collectionInfo.chainId,
     mintInfo?.collectionInfo.collectionName,
     mintInfo?.collectionInfo.imageUrl,

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef, SetStateAction, Dispatch } from 'react';
+import React, { useState, useCallback, useEffect, useRef, SetStateAction, Dispatch, useMemo } from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
@@ -36,6 +36,8 @@ const MintEdit = (props: {
   const uploadRef = useRef<ImageWithUploadFuncInstance>(null);
   const [showDeleteIcon, setShowDeleteIcon] = useState<boolean>(false);
   const getMintItemInfo = useGetMintItemInfo();
+  const hasUploadImage = useMemo(() => !!editInfo?.imageUri, [editInfo?.imageUri]);
+
   useEffect(() => {
     if (editInfo) {
       setValue(prev => ({
@@ -65,9 +67,11 @@ const MintEdit = (props: {
     setValue(prev => ({ ...prev, description: valueDescription }));
   }, []);
   const onNext = useCallback(async () => {
+    if (!value.imageUri) return;
+
     // todo wfs onNext
     let s3Url = value.imageUri || '';
-    if (!s3Url) {
+    if (!hasUploadImage) {
       try {
         Loading.show();
         s3Url = (await uploadRef.current?.uploadPhoto()) || '';
@@ -79,9 +83,10 @@ const MintEdit = (props: {
       }
     }
 
-    onEditCallback(value.name, value.description, s3Url || '');
+    onEditCallback(value.name, value.description, s3Url);
     setStep && setStep(FreeMintStep.preview);
-  }, [onEditCallback, setStep, value]);
+  }, [hasUploadImage, onEditCallback, setStep, value.description, value.imageUri, value.name]);
+
   useEffect(() => {
     if (value.imageUri && value.name) {
       setNext(true);

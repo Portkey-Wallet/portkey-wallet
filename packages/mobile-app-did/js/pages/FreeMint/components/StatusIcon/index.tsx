@@ -23,9 +23,19 @@ const MintStatusIcon = (props: MintStatusIconProps) => {
       </View>
     );
 
-  if (status === MintStatus.Minted) return <Svg icon="minted" size={pTd(40)} iconStyle={styles.iconShade} />;
+  if (status === MintStatus.Minted)
+    return (
+      <View style={[styles.iconShade, styles.borderRadios]}>
+        <Svg icon="minted" size={pTd(40)} />
+      </View>
+    );
 
-  if (status === MintStatus.MintFailed) return <Svg icon="mintFail" size={pTd(40)} iconStyle={styles.iconShade} />;
+  if (status === MintStatus.MintFailed)
+    return (
+      <View style={[styles.iconShade, styles.borderRadios]}>
+        <Svg icon="mintFail" size={pTd(40)} />
+      </View>
+    );
 
   return null;
 };
@@ -49,6 +59,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 4,
+  },
+  borderRadios: {
+    borderRadius: pTd(20),
   },
 });
 

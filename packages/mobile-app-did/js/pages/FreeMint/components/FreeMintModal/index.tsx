@@ -121,7 +121,7 @@ export default {
 
 const styles = StyleSheet.create({
   contentWrap: {
-    paddingHorizontal: pTd(20),
+    paddingHorizontal: pTd(16),
     paddingTop: pTd(8),
     flex: 1,
     display: 'flex',

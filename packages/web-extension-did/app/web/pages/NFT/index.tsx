@@ -185,9 +185,9 @@ export default function NFT() {
         onClick: async () => {
           try {
             await setUserAvatar(nftDetail.imageUrl);
-            singleMessage.success('Set Avatar Success');
+            singleMessage.success('Profile photo is set.');
           } catch (error) {
-            singleMessage.error('Set Avatar Failed');
+            singleMessage.error('Failed to set profile photo. Please try again.');
           }
         },
       },

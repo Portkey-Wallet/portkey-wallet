@@ -173,7 +173,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
           </TextM>
         </View>
         <TextXXL style={styles.tokenId}>{`${alias} #${tokenId}`}</TextXXL>
-        <NFTAvatar
+        {/* <NFTAvatar
           disabled
           isSeed={isSeed}
           seedType={seedType}
@@ -185,7 +185,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
             tokenId,
           }}
           style={styles.image}
-        />
+        /> */}
 
         <View style={styles.infoWrap}>
           {/* Basic Info */}

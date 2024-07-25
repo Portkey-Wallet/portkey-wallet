@@ -100,8 +100,9 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
       await setUserInfo({
         avatar: editInfo?.imageUri || '',
       });
-      CommonToast.success('Set as Profile Photo Successful');
+      CommonToast.success('Profile photo is set.');
     } catch (error) {
+      CommonToast.success('Failed to set profile photo. Please try again.');
       console.log('error', error);
     } finally {
       Loading.hide();

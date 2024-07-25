@@ -28,11 +28,11 @@ export default function FreeMintUpload({
     () => ({
       className: 'free-mint-upload',
       showUploadList: false,
-      accept: 'image/*',
+      accept: 'image/png,image/jpeg,image/jpg,image/gif',
       beforeUpload: async (paramFile: RcFile) => {
         const sizeOk = ZERO.plus(paramFile.size / 1024 / 1024).isLessThanOrEqualTo(MAX_FILE_SIZE);
         if (!sizeOk) {
-          singleMessage.info('File too large');
+          singleMessage.info('The file is too large.');
           return false;
         }
         try {
@@ -79,7 +79,7 @@ export default function FreeMintUpload({
               <CustomSvg type="FreeMintPlus" />
               <div className="flex-column-center upload-container-text">
                 <div>Upload a picture</div>
-                <div>Formats supported: JPG, PNG, and GIF.</div>
+                <div>Formats supported: JPG, JPEG, PNG, and GIF. </div>
                 <div>Max size: 10 MB.</div>
               </div>
             </div>

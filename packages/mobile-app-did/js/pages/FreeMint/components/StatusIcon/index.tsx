@@ -18,14 +18,14 @@ const MintStatusIcon = (props: MintStatusIconProps) => {
 
   if (status === MintStatus.Minting)
     return (
-      <View style={styles.iconWrap}>
+      <View style={[styles.iconWrap, styles.iconShade]}>
         <Lottie style={commonStyles.loadingStyle} source={require('assets/lottieFiles/loading.json')} autoPlay loop />
       </View>
     );
 
-  if (status === MintStatus.Minted) return <Svg icon="minted" size={pTd(40)} />;
+  if (status === MintStatus.Minted) return <Svg icon="minted" size={pTd(40)} iconStyle={styles.iconShade} />;
 
-  if (status === MintStatus.MintFailed) return <Svg icon="mintFail" size={pTd(40)} />;
+  if (status === MintStatus.MintFailed) return <Svg icon="mintFail" size={pTd(40)} iconStyle={styles.iconShade} />;
 
   return null;
 };
@@ -41,6 +41,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: defaultColors.neutralContainerBG,
+  },
+  iconShade: {
+    shadowOffset: { width: 0, height: 4 },
+    backgroundColor: defaultColors.bg1,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
   },
 });
 

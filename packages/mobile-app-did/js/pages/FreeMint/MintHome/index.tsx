@@ -55,7 +55,11 @@ const MintHome = () => {
         ]}>
         Send crypto assets as a gift
       </TextM> */}
-      <Image resizeMode="contain" source={freeMintLogo} style={{ width: pTd(343), height: pTd(240) }} />
+      <Image
+        resizeMode="contain"
+        source={freeMintLogo}
+        style={{ width: pTd(343), height: pTd(240), marginTop: pTd(32) }}
+      />
 
       <CommonButton containerStyle={styles.buttonContainer} type="primary" disabled={false} onPress={onMintPress}>
         <TextL style={styles.buttonText}>{t('Get Started')}</TextL>

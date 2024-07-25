@@ -79,7 +79,7 @@ export default function FreeMintUpload({
               <CustomSvg type="FreeMintPlus" />
               <div className="flex-column-center upload-container-text">
                 <div>Upload a picture</div>
-                <div>Formats supported: JPG, JPEG, PNG, and GIF. </div>
+                <div>Formats supported: JPG, JPEG and PNG. </div>
                 <div>Max size: 10 MB.</div>
               </div>
             </div>

@@ -186,7 +186,7 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
       </View>
 
       <View style={GStyles.flex1} />
-      {status === MintStatus.MintFailed && (
+      {status === MintStatus.Minting && (
         <TextM
           style={[
             FontStyles.neutralTertiaryText,

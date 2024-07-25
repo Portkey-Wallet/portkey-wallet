@@ -118,7 +118,7 @@ export default function FreeMint() {
       return 'Mint NFT';
     }
     if (step === FreeMintStepEnum.preview) {
-      return 'Confirm Mint';
+      return 'Preview';
     }
     return '';
   }, [step]);
@@ -126,11 +126,11 @@ export default function FreeMint() {
     try {
       if (!newAvatarS3File) return;
       await setUserAvatar(newAvatarS3File);
-      singleMessage.success('Set Avatar Success');
+      singleMessage.success('Profile photo is set.');
       handleCloseModal();
     } catch (error) {
       console.log('===handleSetAvatar error', error);
-      singleMessage.error('Set Avatar Failed');
+      singleMessage.error('Failed to set profile photo. Please try again.');
     }
   }, [handleCloseModal, newAvatarS3File, setUserAvatar]);
   const handleMintConfirm = useCallback(async () => {

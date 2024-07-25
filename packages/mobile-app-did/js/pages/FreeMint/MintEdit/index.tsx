@@ -15,6 +15,8 @@ import { useGetMintItemInfo } from '@portkey-wallet/hooks/hooks-ca/freeMint';
 import CommonToast from 'components/CommonToast';
 import Loading from 'components/Loading';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import GStyles from 'assets/theme/GStyles';
+import ButtonRow from 'components/ButtonRow';
 
 export type EditConfig = {
   imageUri: string;
@@ -164,12 +166,16 @@ const MintEdit = (props: {
             containerStyle={styles.contentDescriptionWrap}
           />
         </FormItem>
-        <CommonButton
-          disabled={!canNext}
-          type="primary"
-          title={'Next'}
-          containerStyle={styles.btnStyle}
-          onPress={onNext}
+        <View style={GStyles.flex1} />
+        <ButtonRow
+          buttons={[
+            {
+              disabled: !canNext,
+              type: 'primary',
+              title: 'Next',
+              onPress: onNext,
+            },
+          ]}
         />
       </View>
     </KeyboardAwareScrollView>

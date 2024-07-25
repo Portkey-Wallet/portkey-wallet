@@ -13,7 +13,16 @@ export type VerifyTokenParams = {
   operationDetails?: string;
 };
 
+export type VerifyZKPortkeyParams = {
+  type: string;
+  accessToken?: string;
+  verifierId?: string;
+  chainId: ChainId;
+  operationType: OperationTypeEnum;
+};
+
 export type VerifyZKLoginParams = {
+  verifyToken: VerifyZKPortkeyParams;
   jwt?: string;
   salt: string;
   kid: string;

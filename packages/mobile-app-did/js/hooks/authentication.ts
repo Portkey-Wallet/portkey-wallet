@@ -15,7 +15,7 @@ import {
 } from '@portkey-wallet/utils/authentication';
 import { randomId } from '@portkey-wallet/utils';
 import { customFetch } from '@portkey-wallet/utils/fetch';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { LoginType, SocialLoginEnum } from '@portkey-wallet/types/types-ca/wallet';
 import { useInterface } from 'contexts/useInterface';
 import { checkIsUserCancel, handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { changeCanLock } from 'utils/LockManager';
@@ -112,7 +112,7 @@ export function useGoogleAuthentication() {
       // : 'It seems that the authorization with your Google account has failed.';
       throw { ...error, message };
     }
-  }, []);
+  }, [googleAuthNonce]);
 
   /*
   const androidPromptAsyncOneTap = useCallback(async () => {
@@ -344,7 +344,7 @@ export function useAuthenticationSign() {
 
 export function useVerifyZKLogin() {
   return useCallback(async (params: VerifyZKLoginParams) => {
-    const { jwt, salt, kid, nonce } = params;
+    const { verifyToken, jwt, salt, kid, nonce } = params;
     const proofParams = { jwt, salt };
     console.log('aaaa proofParams : ', proofParams);
     const proofResult = await customFetch('https://zklogin-prover-sha256.aelf.dev/v1/prove', {
@@ -355,7 +355,6 @@ export function useVerifyZKLogin() {
       },
       body: JSON.stringify(proofParams),
     });
-    console.log('aaaa proofResult : ', proofResult);
 
     const verifyParams = {
       identifierHash: proofResult.identifierHash,
@@ -364,7 +363,6 @@ export function useVerifyZKLogin() {
       kid,
       proof: proofResult.proof,
     };
-    console.log('aaaa verifyParams : ', verifyParams);
     const verifyResult = await customFetch('https://zklogin-prover-sha256.aelf.dev//v1/verify', {
       method: 'POST',
       headers: {
@@ -374,7 +372,13 @@ export function useVerifyZKLogin() {
       body: JSON.stringify(verifyParams),
     });
 
-    console.log('aaaa verifyResult : ', verifyResult);
+    const portkeyVerifyResult = await request.verify.verifyZKLogin({
+      params: verifyToken,
+    });
+
+    console.log('portkeyVerifyResult : ', portkeyVerifyResult);
+
+    console.log('verifyResult : ', verifyResult);
     const zkProof = decodeURIComponent(verifyParams.proof);
     if (verifyResult.valid) {
       const zkLoginInfo: ZKLoginInfo = {
@@ -419,6 +423,13 @@ export function useVerifyGoogleToken() {
         throw new Error('Invalid idToken');
       }
       const rst = await verifyZKLogin({
+        verifyToken: {
+          type: SocialLoginEnum.Google,
+          accessToken,
+          verifierId: params.verifierId,
+          chainId: params.chainId,
+          operationType: params.operationType,
+        },
         jwt: idToken,
         salt: randomId(),
         kid: parseKidFromJWTToken(idToken),
@@ -452,6 +463,13 @@ export function useVerifyAppleToken() {
         throw new Error('Invalid idToken');
       }
       const rst = await verifyZKLogin({
+        verifyToken: {
+          type: SocialLoginEnum.Apple,
+          accessToken,
+          verifierId: params.verifierId,
+          chainId: params.chainId,
+          operationType: params.operationType,
+        },
         jwt: params.idToken,
         salt: randomId(),
         kid: parseKidFromJWTToken(idToken),
@@ -539,6 +557,13 @@ export function useVerifyFacebookToken() {
         throw new Error('Invalid idToken');
       }
       const rst = await verifyZKLogin({
+        verifyToken: {
+          type: SocialLoginEnum.Facebook,
+          accessToken,
+          verifierId: params.verifierId,
+          chainId: params.chainId,
+          operationType: params.operationType,
+        },
         jwt: params.idToken,
         salt: randomId(),
         kid: parseKidFromJWTToken(idToken),

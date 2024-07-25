@@ -74,7 +74,7 @@ const ImageWithUploadFuncV2 = forwardRef(function ImageWithUploadFuncV2(props: U
         const info = await getInfo(result.uri);
         result.fileSize = info.size;
       }
-      if (!result?.fileSize || result.fileSize > MAX_FILE_SIZE_BYTE) return;
+      if (!result?.fileSize || result.fileSize > MAX_FILE_SIZE_BYTE) return CommonToast.fail('The file is too large.');
 
       setLocalPhotoFile(result);
       onChooseSuccess?.(result);

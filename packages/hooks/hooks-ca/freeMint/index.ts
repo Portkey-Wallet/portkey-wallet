@@ -189,8 +189,8 @@ export const useLoopMintNFTDetail = () => {
         fetch: () => {
           return fetchNFTItemDetail({ symbol, chainId });
         },
-        times: 10,
-        interval: 1000,
+        times: 30,
+        interval: 2000,
         checkIsContinue: (_creationStatusResult: any) => {
           return !_creationStatusResult?.symbol;
         },

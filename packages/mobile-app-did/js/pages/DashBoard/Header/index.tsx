@@ -142,7 +142,7 @@ const DashBoardHeader: React.FC<DashBoardHeaderProps> = ({ title, scrollY }) => 
   const rightDom = useMemo(() => {
     return (
       <View style={styles.rightDomWrap}>
-        {true && (
+        {isMainnet && (
           <Touchable style={styles.svgWrap} onPress={onGiftClick}>
             <Svg icon="crypto-gift" size={pTd(20)} />
           </Touchable>

@@ -25,6 +25,7 @@ import { ReferralStatusEnum } from '@portkey-wallet/store/store-ca/referral/type
 import { SvgXml } from 'react-native-svg';
 import svgs from 'assets/image/svgs';
 import { TabRouteNameEnum } from 'types/navigate';
+import myEvents from 'utils/deviceEvent';
 
 const Tab = createBottomTabNavigator();
 
@@ -92,7 +93,15 @@ export default function TabRoot() {
   const rotateAnimate = useRef(new Animated.Value(0)).current;
   const rotatedActiveRef = useRef(false);
   const logOut = useLogOut();
-
+  useEffect(() => {
+    const listener = myEvents.navToBottomTab.addListener(({ tabName }) => {
+      if (tabName === 'Trade') {
+        rotateButton(false);
+      }
+    });
+    return () => listener.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const tabMenuList = useMemo(() => {
     if (__DEV__) return Object.values(tabMenuTypeMap);
 

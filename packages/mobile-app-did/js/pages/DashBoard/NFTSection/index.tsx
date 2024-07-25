@@ -1,4 +1,4 @@
-import React, { useState, useCallback, memo, useEffect } from 'react';
+import React, { useState, useCallback, memo, useEffect, useRef } from 'react';
 import NoData from 'components/NoData';
 import { StyleSheet, View, FlatList } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -12,13 +12,12 @@ import { ChainId } from '@portkey-wallet/types';
 import { useRoute } from '@react-navigation/native';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
-import { PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION } from '@portkey-wallet/constants/constants-ca/assets';
+import { PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION, REFRESH_TIME } from '@portkey-wallet/constants/constants-ca/assets';
 import NFTHint from 'pages/FreeMint/components/NFTHint';
 import { useGetRecentStatus, useRecentStatus } from '@portkey-wallet/hooks/hooks-ca/freeMint';
 import MintStatusLine from 'pages/FreeMint/components/MintStatusLine';
 import { FreeMintStatus } from '@portkey-wallet/types/types-ca/freeMint';
 import myEvents from 'utils/deviceEvent';
-import { useEffectOnce } from '@portkey-wallet/hooks';
 
 export interface OpenCollectionObjType {
   // key = symbol+chainId
@@ -58,16 +57,9 @@ const NFTCollection: React.FC<NFTCollectionProps> = memo(function NFTCollection(
 
 export default function NFTSection() {
   const { t } = useLanguage();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const { recentStatus, itemId, setRecentStatus, setItemId } = useRecentStatus();
   const getRecentStatus = useGetRecentStatus();
-  useEffect(() => {
-    const listener = myEvents.updateMintStatus.addListener(async () => {
-      const res = await getRecentStatus();
-      setRecentStatus(res.status);
-      setItemId(res.itemId);
-    });
-    return () => listener.remove();
-  }, [getRecentStatus, setItemId, setRecentStatus]);
   const caAddressInfos = useCaAddressInfoList();
   const { fetchAccountNFTCollectionInfoList, fetchAccountNFTItem, accountNFTList, totalRecordCount } =
     useAccountNFTCollectionInfo();
@@ -88,6 +80,28 @@ export default function NFTSection() {
     },
     [accountNFTList.length, caAddressInfos, fetchAccountNFTCollectionInfoList, totalRecordCount],
   );
+  useEffect(() => {
+    const listener = myEvents.updateMintStatus.addListener(async () => {
+      const res = await getRecentStatus();
+      setRecentStatus(res.status);
+      setItemId(res.itemId);
+      getNFTCollectionsAsync(true);
+    });
+    return () => listener.remove();
+  }, [getNFTCollectionsAsync, getRecentStatus, setItemId, setRecentStatus]);
+
+  useEffect(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(async () => {
+      const res = await getRecentStatus();
+      setRecentStatus(res.status);
+      setItemId(res.itemId);
+      getNFTCollectionsAsync(true);
+    }, REFRESH_TIME);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [setRecentStatus, setItemId, timerRef, getRecentStatus, getNFTCollectionsAsync]);
 
   useEffect(() => {
     getNFTCollectionsAsync(true);
@@ -194,7 +208,8 @@ export default function NFTSection() {
         }}
         onEndReached={() => getNFTCollectionsAsync()}
         ListFooterComponent={() => (
-          <View style={styles.hintContainer}>
+          <View
+            style={{ marginTop: (totalRecordCount === 0 ? [] : accountNFTList || []).length < 1 ? pTd(40) : pTd(24) }}>
             {(totalRecordCount === 0 ? [] : accountNFTList || []).length < 1 && recentStatus === FreeMintStatus.NONE ? (
               <NFTHint recentStatus={recentStatus} itemId={itemId || ''} />
             ) : (
@@ -203,13 +218,6 @@ export default function NFTSection() {
           </View>
         )}
       />
-      {/* <View style={styles.hintContainer}>
-        {(totalRecordCount === 0 ? [] : accountNFTList || []).length < 1 && recentStatus === FreeMintStatus.NONE ? (
-          <NFTHint recentStatus={recentStatus} itemId={itemId || ''} />
-        ) : (
-          <MintStatusLine recentStatus={recentStatus} itemId={itemId || ''} />
-        )}
-      </View> */}
     </View>
   );
 }
@@ -225,11 +233,5 @@ const styles = StyleSheet.create({
   },
   contentContainerStyle: {
     paddingBottom: pTd(16),
-  },
-  hintContainer: {
-    marginTop: pTd(24),
-    // backgroundColor: 'blue',
-    // position: 'absolute',
-    // bottom: pTd(40),
   },
 });

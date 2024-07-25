@@ -15,6 +15,7 @@ import {
   getDiscoverLearnAsync,
 } from './actions';
 import { CMSState, CmsWebsiteMapItem } from './types';
+import { deepEqual } from './deepEqual';
 
 const initialState: CMSState = {
   socialMediaListNetMap: {},
@@ -76,6 +77,9 @@ export const cmsSlice = createSlice({
         };
       })
       .addCase(setEntrance, (state, action) => {
+        if (state.entranceNetMap && deepEqual(state.entranceNetMap[action.payload.network], action.payload.value)) {
+          return;
+        }
         state.entranceNetMap = {
           ...state.entranceNetMap,
           [action.payload.network]: action.payload.value,

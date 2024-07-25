@@ -27,20 +27,16 @@ const MintHome = () => {
   const onMintPress = useCallback(async () => {
     try {
       Loading.show();
-      const { isLimitExceed } = await fetchMintInfo();
-      if (isLimitExceed) {
-        CommonToast.fail('You have reached the daily limit of 5 free mint NFTs. Take a rest and come back tomorrow!');
-        return;
-      }
+      const { isLimitExceed, limitCount } = await fetchMintInfo();
+      if (isLimitExceed)
+        return CommonToast.fail(
+          `You have reached the daily limit of ${limitCount || 5} free mint NFTs. Take a rest and come back tomorrow!`,
+        );
+      showFreeMintModal();
     } finally {
       Loading.hide();
-      if (recentStatus === FreeMintStatus.LimitExceed) {
-        CommonToast.fail('You have reached the daily limit of 5 free mint NFTs. Take a rest and come back tomorrow!');
-      } else {
-        showFreeMintModal();
-      }
     }
-  }, [fetchMintInfo, recentStatus]);
+  }, [fetchMintInfo]);
   return (
     <PageContainer
       noCenterDom

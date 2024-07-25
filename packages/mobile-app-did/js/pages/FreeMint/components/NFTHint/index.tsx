@@ -4,7 +4,7 @@ import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import { useAppNFTTabShow } from 'hooks/cms';
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { TabRouteNameEnum } from 'types/navigate';
 import navigationService from 'utils/navigationService';
@@ -116,4 +116,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NFTHint;
+export default memo(NFTHint);

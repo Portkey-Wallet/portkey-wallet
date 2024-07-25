@@ -1,6 +1,7 @@
 import { FreeMintStatus } from '@portkey-wallet/types/types-ca/freeMint';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { defaultColors } from 'assets/theme';
+import fonts from 'assets/theme/fonts';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import { useAppNFTTabShow } from 'hooks/cms';
@@ -28,7 +29,7 @@ const NFTHint = (props: MintStatus) => {
             onPress={() => {
               navigationService.navigate('FreeMintHome', { recentStatus });
             }}>
-            <Text style={styles.mainText}>Free Mint</Text>
+            <Text style={[styles.mainText, styles.mediumText]}>Free Mint</Text>
           </Touchable>
           <Svg icon="right-arrow" color={defaultColors.brandNormal} size={pTd(14)} />
         </View>
@@ -39,12 +40,12 @@ const NFTHint = (props: MintStatus) => {
             <Text style={styles.numberText}>2</Text>
           </View>
           <View style={styles.rowContent}>
-            <Text style={[styles.mainText, styles.primaryText]}>Buy on NFT marketplace - </Text>
+            <Text style={[styles.mainText, styles.primaryText, styles.mediumText]}>Buy on NFT marketplace - </Text>
             <Touchable
               onPress={() => {
                 navigationService.navToBottomTab(TabRouteNameEnum.TRADE, { initTab: 'NFT' });
               }}>
-              <Text style={styles.highlightText}>Forest</Text>
+              <Text style={[styles.highlightText, styles.mediumText]}>Forest</Text>
             </Touchable>
             <Svg icon="right-arrow" color={defaultColors.brandNormal} size={pTd(14)} />
           </View>
@@ -72,6 +73,9 @@ const styles = StyleSheet.create({
     fontSize: pTd(14),
     fontWeight: '400',
     lineHeight: pTd(22),
+  },
+  mediumText: {
+    ...fonts.mediumFont,
   },
   row: {
     flexDirection: 'row',

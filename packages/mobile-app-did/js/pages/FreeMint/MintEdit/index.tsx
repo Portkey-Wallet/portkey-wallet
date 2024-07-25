@@ -14,6 +14,7 @@ import { FreeMintStep } from '../components/FreeMintModal';
 import { useGetMintItemInfo } from '@portkey-wallet/hooks/hooks-ca/freeMint';
 import CommonToast from 'components/CommonToast';
 import Loading from 'components/Loading';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export type EditConfig = {
   imageUri: string;
@@ -102,7 +103,11 @@ const MintEdit = (props: {
     }
   }, [setShowDeleteIcon, value.imageUri]);
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainerStyle}>
+    <KeyboardAwareScrollView
+      enableOnAndroid={true}
+      style={styles.container}
+      contentContainerStyle={styles.contentContainerStyle}>
+      {/* <ScrollView style={styles.container} contentContainerStyle={styles.contentContainerStyle}> */}
       <View style={styles.uploadContainer}>
         {/* <Touchable style={GStyles.center} onPress={() => uploadRef.current?.selectPhoto()}> */}
         {showDeleteIcon && (
@@ -126,7 +131,7 @@ const MintEdit = (props: {
               <View style={styles.uploadBox}>
                 <Svg icon="suggest-add" size={pTd(48)} />
                 <Text style={styles.uploadText}>
-                  Upload a picture{'\n'}Formats supported: JPG, JPEG, PNG, and GIF. {'\n'}Max size: 10 MB.
+                  Upload a picture{'\n'}Formats supported: JPG, JPEG and PNG. {'\n'}Max size: 10 MB.
                 </Text>
               </View>
             }
@@ -167,7 +172,7 @@ const MintEdit = (props: {
           onPress={onNext}
         />
       </View>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 };
 // const MintEditWrapper = () => {
@@ -249,12 +254,13 @@ const styles = StyleSheet.create({
   inputWrap: {
     backgroundColor: defaultColors.bg1,
     borderColor: defaultColors.neutralBorder,
-    borderWidth: pTd(0.5),
-    borderBottomWidth: pTd(0.5),
+    borderWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     height: pTd(52),
   },
   descriptionInput: {
-    height: pTd(96),
+    height: pTd(120),
+    textAlignVertical: 'top',
   },
   contentWrap: {
     height: pTd(52),

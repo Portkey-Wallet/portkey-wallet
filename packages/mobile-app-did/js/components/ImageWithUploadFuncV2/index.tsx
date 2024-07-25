@@ -10,6 +10,8 @@ import FastImage from 'react-native-fast-image';
 import Loading from 'components/Loading';
 import { isValidAvatarFile } from '@portkey-wallet/utils/reg';
 import CommonToast from 'components/CommonToast';
+import { View } from 'react-native';
+import { defaultColors } from 'assets/theme';
 export enum ImageShowType {
   CIRCLE,
   NORMAL,
@@ -67,8 +69,7 @@ const ImageWithUploadFuncV2 = forwardRef(function ImageWithUploadFuncV2(props: U
       });
       if (result.cancelled || !result.uri) return;
 
-      if (!isValidAvatarFile(result.uri))
-        return CommonToast.fail('Unsupported format. Please use jpeg, jpg, png or gif.');
+      if (!isValidAvatarFile(result.uri)) return CommonToast.fail('Unsupported format. Please use jpeg, jpg or png.');
 
       if (!result?.fileSize) {
         const info = await getInfo(result.uri);
@@ -129,7 +130,11 @@ const ImageWithUploadFuncV2 = forwardRef(function ImageWithUploadFuncV2(props: U
   if (localPhotoFile && localPhotoFile.uri) {
     return (
       <Touchable onPress={selectPhoto}>
-        <FastImage style={[sizeStyle]} resizeMode="cover" source={{ uri: localPhotoFile.uri }} />
+        {/* eslint-disable-next-line react-native/no-inline-styles */}
+        <View style={{ borderWidth: pTd(1), borderRadius: pTd(12), borderColor: defaultColors.neutralBorder }}>
+          <CommonAvatar avatarSize={avatarSize} shapeType="square" imageUrl={imageUrl} />
+        </View>
+        {/* <FastImage style={[sizeStyle]} resizeMode="contain" source={{ uri: localPhotoFile.uri }} /> */}
       </Touchable>
     );
   }

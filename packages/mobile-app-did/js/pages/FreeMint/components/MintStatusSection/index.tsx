@@ -18,6 +18,7 @@ import CommonToast from 'components/CommonToast';
 import OverlayModal from 'components/OverlayModal';
 import navigationService from 'utils/navigationService';
 import myEvents from 'utils/deviceEvent';
+import fonts from 'assets/theme/fonts';
 
 export enum MintStatus {
   Minting = 'Minting...',
@@ -158,6 +159,7 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
             GStyles.marginTop(pTd(32)),
             GStyles.width100,
             GStyles.textAlignCenter,
+            styles.mediumText,
           ]}>{`${confirmMintResponse?.name} #${confirmMintResponse?.tokenId}`}</TextL>
         <View style={styles.nftWrap}>
           <NFTAvatar
@@ -179,7 +181,7 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
             GStyles.paddingRight(pTd(36)),
             GStyles.width100,
           ]}>
-          <TextXXL style={GStyles.textAlignCenter}>{status}</TextXXL>
+          <TextXXL style={[GStyles.textAlignCenter, styles.mediumText]}>{status}</TextXXL>
           <TextM style={[GStyles.textAlignCenter, GStyles.marginTop(pTd(4)), FontStyles.neutralTertiaryText]}>
             {mintTextObj[status]}
           </TextM>
@@ -187,7 +189,7 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
       </View>
 
       <View style={GStyles.flex1} />
-      {status === MintStatus.MintFailed && (
+      {status === MintStatus.Minting && (
         <TextM
           style={[
             FontStyles.neutralTertiaryText,
@@ -240,6 +242,9 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  mediumText: {
+    ...fonts.mediumFont,
   },
 });
 

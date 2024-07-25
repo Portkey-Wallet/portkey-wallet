@@ -47,7 +47,7 @@ const MintPreview = (props: MintPreviewProps) => {
       </View>
       <View style={GStyles.marginTop(pTd(24))}>
         <View style={[GStyles.flexRow, styles.rowWrap]}>
-          <TextM style={[styles.leftTitle, FontStyles.font3, GStyles.flex(2)]}>{t('Chain')}</TextM>
+          <TextM style={[styles.leftTitle, FontStyles.neutralTertiaryText, GStyles.flex(2)]}>{t('Chain')}</TextM>
           <View style={styles.blank} />
           <TextM style={[styles.rightValue, styles.rightValue, FontStyles.font5, GStyles.flex(3)]}>
             {formatChainInfoToShow(mintInfo?.collectionInfo.chainId, currentNetwork)}
@@ -55,7 +55,7 @@ const MintPreview = (props: MintPreviewProps) => {
         </View>
 
         <View style={[GStyles.flexRow, styles.rowWrap, GStyles.itemCenter, GStyles.marginTop(pTd(16))]}>
-          <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Collection')}</TextM>
+          <TextM style={[styles.leftTitle, FontStyles.neutralTertiaryText]}>{t('Collection')}</TextM>
           <View style={styles.blank} />
           <View style={[GStyles.flexRow, GStyles.center]}>
             <CommonAvatar imageUrl={mintInfo?.collectionInfo?.imageUrl} style={styles.nftCollectionAvatar} />
@@ -66,11 +66,13 @@ const MintPreview = (props: MintPreviewProps) => {
         </View>
 
         <View style={[GStyles.flexRow, styles.rowWrap, GStyles.marginTop(16)]}>
-          <TextM style={[styles.leftTitle, FontStyles.font3, GStyles.flex(2)]}>{t('Transaction Fee')}</TextM>
+          <TextM style={[styles.leftTitle, FontStyles.neutralTertiaryText, GStyles.flex(2)]}>
+            {t('Transaction Fee')}
+          </TextM>
           <View style={styles.blank} />
           <View>
             <TextM style={styles.rightValue}>{`${mintInfo?.transactionFee} ${defaultToken.symbol}`}</TextM>
-            <TextS style={[FontStyles.neutralPrimaryTextColor, styles.rightValue]}>{`$ 0`}</TextS>
+            <TextS style={[FontStyles.neutralTertiaryText, styles.rightValue]}>{`$ 0`}</TextS>
           </View>
         </View>
       </View>

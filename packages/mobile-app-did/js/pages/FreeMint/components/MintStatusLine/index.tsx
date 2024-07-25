@@ -8,6 +8,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 import { FreeMintStep, showFreeMintModal } from '../FreeMintModal';
 import navigationService from 'utils/navigationService';
+import fonts from 'assets/theme/fonts';
 export interface MintStatus {
   recentStatus: FreeMintStatus;
   itemId: string;
@@ -41,10 +42,10 @@ const MintStatusLine = (props: MintStatus) => {
   }, [itemId, recentStatus]);
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>{info.title}</Text>
+      <Text style={[styles.text, styles.mediumText]}>{info.title}</Text>
       <Touchable onPress={handleClickMint}>
         <View style={styles.mintNowContainer}>
-          <Text style={styles.mintNowText}>{info.buttonText}</Text>
+          <Text style={[styles.mintNowText, styles.mediumText]}>{info.buttonText}</Text>
           <Svg icon="right-arrow" color={defaultColors.brandNormal} size={pTd(14)} />
         </View>
       </Touchable>
@@ -72,6 +73,9 @@ const styles = StyleSheet.create({
     fontSize: pTd(14),
     fontWeight: '500',
     lineHeight: pTd(22),
+  },
+  mediumText: {
+    ...fonts.mediumFont,
   },
   mintNowContainer: {
     flexDirection: 'row',

@@ -35,4 +35,5 @@ export type NetworkItem = {
   eTransferCA?: {
     [x in ChainId]?: string;
   };
+  hamsterUrl?: string;
 };

@@ -69,8 +69,7 @@ const ImageWithUploadFuncV2 = forwardRef(function ImageWithUploadFuncV2(props: U
       });
       if (result.cancelled || !result.uri) return;
 
-      if (!isValidAvatarFile(result.uri))
-        return CommonToast.fail('Unsupported format. Please use jpeg, jpg, png or gif.');
+      if (!isValidAvatarFile(result.uri)) return CommonToast.fail('Unsupported format. Please use jpeg, jpg or png.');
 
       if (!result?.fileSize) {
         const info = await getInfo(result.uri);

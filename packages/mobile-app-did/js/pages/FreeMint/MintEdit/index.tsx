@@ -131,7 +131,7 @@ const MintEdit = (props: {
               <View style={styles.uploadBox}>
                 <Svg icon="suggest-add" size={pTd(48)} />
                 <Text style={styles.uploadText}>
-                  Upload a picture{'\n'}Formats supported: JPG, JPEG, PNG, and GIF. {'\n'}Max size: 10 MB.
+                  Upload a picture{'\n'}Formats supported: JPG, JPEG and PNG. {'\n'}Max size: 10 MB.
                 </Text>
               </View>
             }

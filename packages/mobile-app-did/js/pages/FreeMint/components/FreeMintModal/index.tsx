@@ -77,7 +77,7 @@ export const FreeMintModal = ({ itemId, freeMintStep }: { itemId?: string; freeM
       title={t(step)}
       onBack={() => changeStep(FreeMintStep.mintNft)}
       isShowLeftBackIcon={step === FreeMintStep.preview}>
-      <View style={styles.contentWrap}>
+      <>
         {step === FreeMintStep.mintNft && (
           <MintEdit
             itemId={itemId || ''}
@@ -93,17 +93,21 @@ export const FreeMintModal = ({ itemId, freeMintStep }: { itemId?: string; freeM
           />
         )}
         {step === FreeMintStep.preview && (
-          <MintPreview mintInfo={mintInfo} editInfo={editInfo} onMintPress={onMintConfirm} />
+          <View style={styles.contentWrap}>
+            <MintPreview mintInfo={mintInfo} editInfo={editInfo} onMintPress={onMintConfirm} />
+          </View>
         )}
         {step === FreeMintStep.mintResult && (
-          <MintStatusSection
-            changeStep={changeStep}
-            editInfo={editInfo}
-            mintInfo={mintInfo}
-            confirmMintResponse={confirmMintResponse}
-          />
+          <View style={styles.contentWrap}>
+            <MintStatusSection
+              changeStep={changeStep}
+              editInfo={editInfo}
+              mintInfo={mintInfo}
+              confirmMintResponse={confirmMintResponse}
+            />
+          </View>
         )}
-      </View>
+      </>
     </ModalBody>
   );
 };

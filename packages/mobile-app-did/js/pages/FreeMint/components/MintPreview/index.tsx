@@ -33,16 +33,14 @@ const MintPreview = (props: MintPreviewProps) => {
 
   return (
     <>
-      <View style={styles.topSection}>
+      <View style={[styles.topSection, !editInfo?.description && GStyles.itemCenter]}>
         <NFTAvatar disabled nftSize={pTd(64)} data={{ imageUrl: editInfo?.imageUri || '' }} style={styles.nftAvatar} />
         <View style={styles.nftInfo}>
           <TextL numberOfLines={1} ellipsizeMode="middle">
             {editInfo?.name}
           </TextL>
-          <View style={GStyles.height(pTd(4))} />
-          <TextS numberOfLines={2} ellipsizeMode="middle" style={FontStyles.neutralTertiaryText}>
-            {editInfo?.description}
-          </TextS>
+          {editInfo?.description && <View style={GStyles.height(pTd(4))} />}
+          {editInfo?.description && <TextS style={FontStyles.neutralTertiaryText}>{editInfo?.description}</TextS>}
         </View>
       </View>
       <View style={GStyles.marginTop(pTd(24))}>
@@ -108,7 +106,7 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   nftAvatar: {
     width: pTd(64),

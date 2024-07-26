@@ -201,6 +201,7 @@ export function useAppleAuthentication() {
       const userInfo = {
         ...appleInfo,
         user: { ...user, id: user?.userId },
+        idToken: appleInfo.identityToken,
         nonce: AElf.utils.sha256(appleInfo.nonce),
       } as TAppleAuthentication;
       setResponse(userInfo);

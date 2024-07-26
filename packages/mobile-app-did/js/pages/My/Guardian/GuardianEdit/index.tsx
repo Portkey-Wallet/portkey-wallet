@@ -468,6 +468,8 @@ const GuardianEdit: React.FC = () => {
       thirdPartyInfoRef.current = {
         id: userInfo.user.id,
         accessToken: userInfo.identityToken || '',
+        idToken: userInfo.idToken,
+        nonce: userInfo.nonce,
       };
     } catch (error) {
       CommonToast.failError(error);

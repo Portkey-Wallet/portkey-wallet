@@ -284,7 +284,7 @@ export default function GuardianItem({
   const verifierImageUrl = useMemo(() => {
     return guardianItem.verifiedByZk || guardianItem.manuallySupportForZk
       ? zkLoginVerifierItem.imageUrl
-      : guardianItem.verifier?.name || '';
+      : guardianItem.verifier?.imageUrl || '';
   }, [guardianItem]);
 
   return (

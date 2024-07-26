@@ -3,10 +3,10 @@
 
 .free-mint-page {
   height: 100%;
-  background: @neutral-default-bg;
   .free-mint-body {
     gap: 32px;
     padding: 0 16px 24px;
+    background: @neutral-default-bg;
     .free-mint-title {
       font-size: 30px;
       line-height: 38px;
@@ -35,8 +35,10 @@
     }
     .free-mint-tip {
       gap: 16px;
-      padding: 16px 12px 0;
+      padding: 16px 12px;
       align-items: flex-start;
+      border-radius: 6px;
+      background-color: @neutral-hover-bg;
       .free-mint-tip-item {
         gap: 8px;
         .tip-item-number {
@@ -64,6 +66,7 @@
       }
     }
     .free-mint-notice {
+      margin-top: -16px;
       gap: 8px;
       font-size: 12px;
       line-height: 16px;
@@ -75,7 +78,6 @@
 .free-mint-prompt {
   .free-mint-page {
     position: relative;
-    background: @neutral-default-bg;
 
     .picture {
       width: 320px;

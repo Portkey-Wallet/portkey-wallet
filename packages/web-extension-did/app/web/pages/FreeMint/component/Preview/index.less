@@ -11,6 +11,14 @@
       border-radius: 6px;
       .mint-detail-image {
         flex-shrink: 0;
+        border-radius: 6px;
+        border: 1px solid @neutral-border;
+        img {
+          object-fit: contain;
+        }
+      }
+      .mint-detail-basic {
+        justify-content: center;
       }
       .mint-detail-name {
         font-size: 16px;
@@ -58,6 +66,7 @@
       flex: 1;
       height: 48px;
       border-radius: 6px;
+      font-size: 16px;
     }
   }
 }

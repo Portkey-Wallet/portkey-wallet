@@ -5,34 +5,26 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { MAX_FILE_SIZE } from '@portkey-wallet/constants/constants-ca/im';
 import singleMessage from 'utils/singleMessage';
 import CustomSvg from 'components/CustomSvg';
-import uploadImageToS3 from 'utils/compressAndUploadToS3';
 import './index.less';
 
 export interface ICustomUploadProps {
   getFile?(file: File | undefined): void;
   getPreviewFile(file: string): void;
-  setNewAvatarS3File(file: string): void;
   previewFile?: string;
   className?: string;
 }
 
-export default function FreeMintUpload({
-  getFile,
-  getPreviewFile,
-  setNewAvatarS3File,
-  className,
-  previewFile,
-}: ICustomUploadProps) {
+export default function FreeMintUpload({ getFile, getPreviewFile, className, previewFile }: ICustomUploadProps) {
   const [previewImage, setPreviewImage] = useState<string>(previewFile ?? '');
   const uploadProps = useMemo(
     () => ({
       className: 'free-mint-upload',
       showUploadList: false,
-      accept: 'image/png,image/jpeg,image/jpg,image/gif',
+      accept: 'image/png,image/jpeg,image/jpg',
       beforeUpload: async (paramFile: RcFile) => {
         const sizeOk = ZERO.plus(paramFile.size / 1024 / 1024).isLessThanOrEqualTo(MAX_FILE_SIZE);
         if (!sizeOk) {
-          singleMessage.info('The file is too large.');
+          singleMessage.warning('The file is too large.');
           return false;
         }
         try {
@@ -49,22 +41,19 @@ export default function FreeMintUpload({
           getFile?.(paramFile);
           setPreviewImage(src as string);
           getPreviewFile(src as string);
-          const s3Url = await uploadImageToS3(paramFile);
-          setNewAvatarS3File(s3Url);
         } catch (e) {
           console.log('===image beforeUpload error', e);
         }
         return false;
       },
     }),
-    [getFile, getPreviewFile, setNewAvatarS3File],
+    [getFile, getPreviewFile],
   );
   const handleDeleteImage = useCallback(() => {
     setPreviewImage('');
     getPreviewFile('');
     getFile?.(undefined);
-    setNewAvatarS3File('');
-  }, [getFile, getPreviewFile, setNewAvatarS3File]);
+  }, [getFile, getPreviewFile]);
   return (
     <div className={className}>
       {previewImage ? (
@@ -79,7 +68,7 @@ export default function FreeMintUpload({
               <CustomSvg type="FreeMintPlus" />
               <div className="flex-column-center upload-container-text">
                 <div>Upload a picture</div>
-                <div>Formats supported: JPG, JPEG and PNG. </div>
+                <div>Formats supported: JPG, JPEG, and PNG.</div>
                 <div>Max size: 10 MB.</div>
               </div>
             </div>

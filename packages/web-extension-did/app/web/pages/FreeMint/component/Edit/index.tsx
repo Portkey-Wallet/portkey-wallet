@@ -5,7 +5,6 @@ import './index.less';
 export interface IFreeMintEdit {
   getFile?(file: File | undefined): void;
   getPreviewFile(file: string): void;
-  setNewAvatarS3File(file: string): void;
   previewFile?: string;
   nftName: string;
   onNftNameChange(v: string): void;
@@ -18,7 +17,6 @@ export interface IFreeMintEdit {
 export default function Edit({
   getFile,
   getPreviewFile,
-  setNewAvatarS3File,
   previewFile,
   nftName,
   onNftNameChange,
@@ -35,7 +33,6 @@ export default function Edit({
           getFile={getFile}
           getPreviewFile={getPreviewFile}
           previewFile={previewFile}
-          setNewAvatarS3File={setNewAvatarS3File}
         />
         <div className="flex-column gap-8">
           <div className="label">Name</div>

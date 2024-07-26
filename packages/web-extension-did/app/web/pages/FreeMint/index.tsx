@@ -27,6 +27,7 @@ import Result from './component/Result';
 import { FreeMintStatus, ICollectionData, IMintNFTItemInfo } from '@portkey-wallet/types/types-ca/freeMint';
 import { TFreeMintLocationState } from 'types/router';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
+import uploadImageToS3 from 'utils/compressAndUploadToS3';
 import './index.less';
 
 export default function FreeMint() {
@@ -34,6 +35,7 @@ export default function FreeMint() {
   const { state } = useLocationState<TFreeMintLocationState | undefined>();
   const { isPrompt, isNotLessThan768 } = useCommonState();
   const [open, setOpen] = useState<boolean>(false);
+  const [file, setFile] = useState<File | undefined>();
   const [previewFile, setPreviewFile] = useState('');
   const [newAvatarS3File, setNewAvatarS3File] = useState('');
   const [step, setStep] = useState<FreeMintStepEnum>(FreeMintStepEnum.edit);
@@ -112,6 +114,7 @@ export default function FreeMint() {
     setTokenId('');
     setItemId('');
     setSymbol('');
+    setFile(undefined);
   }, [updateMintInfo]);
 
   const handleSetAvatar = useCallback(async () => {
@@ -129,8 +132,16 @@ export default function FreeMint() {
     try {
       setStep(FreeMintStepEnum.result);
       setStatus(FreeMintStatus.PENDING);
+
+      let s3Url = '';
+      if (newAvatarS3File) {
+        s3Url = newAvatarS3File;
+      } else {
+        s3Url = await uploadImageToS3(file!);
+      }
+
       const params = {
-        imageUrl: newAvatarS3File,
+        imageUrl: s3Url,
         name: nftName?.trim(),
         description: desc?.trim(),
         itemId: itemId,
@@ -148,7 +159,7 @@ export default function FreeMint() {
       console.log('===handleMintConfirm error', error);
       setStatus(FreeMintStatus.FAIL);
     }
-  }, [confirmMint, desc, itemId, loopStatus, newAvatarS3File, nftName, updateMintInfo]);
+  }, [confirmMint, desc, file, itemId, loopStatus, newAvatarS3File, nftName, updateMintInfo]);
   const goToNFTDetail = useCallback(async () => {
     try {
       const detail = await loopFetchNFTItemDetail({ symbol, chainId: mintInfo?.collectionInfo.chainId ?? 'AELF' });
@@ -174,9 +185,13 @@ export default function FreeMint() {
         onNftNameChange: setNftName,
         desc,
         onDescChange: setDesc,
-        btnDisabled: !(nftName.trim() && newAvatarS3File),
+        btnDisabled: !(nftName.trim() && (newAvatarS3File || file)),
         onClickNext: () => {
           setStep(FreeMintStepEnum.preview);
+        },
+        getFile: (file: File | undefined) => {
+          setFile(file);
+          setNewAvatarS3File('');
         },
       };
       return <Edit {...props} />;
@@ -215,6 +230,7 @@ export default function FreeMint() {
     nftName,
     desc,
     newAvatarS3File,
+    file,
     mintInfo,
     handleCloseModal,
     handleMintConfirm,

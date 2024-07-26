@@ -105,80 +105,83 @@ const MintEdit = (props: {
     }
   }, [setShowDeleteIcon, value.imageUri]);
   return (
-    <KeyboardAwareScrollView
-      enableOnAndroid={true}
-      style={styles.container}
-      contentContainerStyle={styles.contentContainerStyle}>
-      {/* <ScrollView style={styles.container} contentContainerStyle={styles.contentContainerStyle}> */}
-      <View style={styles.uploadContainer}>
-        {/* <Touchable style={GStyles.center} onPress={() => uploadRef.current?.selectPhoto()}> */}
-        {showDeleteIcon && (
-          <Touchable
-            style={styles.deleteIconStyle}
-            activeOpacity={1}
-            onPress={() => {
-              uploadRef.current?.clear();
-            }}>
-            <Image resizeMode="contain" source={deleteImage} style={{ width: pTd(28), height: pTd(28) }} />
-          </Touchable>
-        )}
-        <View style={{ marginTop: pTd(8) }}>
-          <ImageWithUploadFunc
-            avatarSize={pTd(280)}
-            ref={uploadRef}
-            title={''}
-            type={ImageShowType.NORMAL}
-            imageUrl={value.imageUri}
-            defaultComponent={
-              <View style={styles.uploadBox}>
-                <Svg icon="suggest-add" size={pTd(48)} />
-                <Text style={styles.uploadText}>
-                  Upload a picture{'\n'}Formats supported: JPG, JPEG, and PNG.{'\n'}Max size: 10 MB.
-                </Text>
-              </View>
-            }
-            onChooseSuccess={onChooseSuccess}
-          />
+    <>
+      <KeyboardAwareScrollView
+        enableOnAndroid={true}
+        style={styles.container}
+        contentContainerStyle={styles.contentContainerStyle}>
+        {/* <ScrollView style={styles.container} contentContainerStyle={styles.contentContainerStyle}> */}
+        <View style={styles.uploadContainer}>
+          {/* <Touchable style={GStyles.center} onPress={() => uploadRef.current?.selectPhoto()}> */}
+          {showDeleteIcon && (
+            <Touchable
+              style={styles.deleteIconStyle}
+              activeOpacity={1}
+              onPress={() => {
+                uploadRef.current?.clear();
+              }}>
+              <Image resizeMode="contain" source={deleteImage} style={{ width: pTd(28), height: pTd(28) }} />
+            </Touchable>
+          )}
+          <View style={{ marginTop: pTd(8) }}>
+            <ImageWithUploadFunc
+              avatarSize={pTd(280)}
+              ref={uploadRef}
+              title={''}
+              type={ImageShowType.NORMAL}
+              imageUrl={value.imageUri}
+              defaultComponent={
+                <View style={styles.uploadBox}>
+                  <Svg icon="suggest-add" size={pTd(48)} />
+                  <Text style={styles.uploadText}>
+                    Upload a picture{'\n'}Formats supported: JPG, JPEG, and PNG.{'\n'}Max size: 10 MB.
+                  </Text>
+                </View>
+              }
+              onChooseSuccess={onChooseSuccess}
+            />
+          </View>
+          {/* </Touchable> */}
+          <FormItem title="Name" style={styles.formItemContainer}>
+            <CommonInput
+              type="general"
+              value={value.name}
+              placeholder={'Give your NFT a unique name'}
+              maxLength={30}
+              inputContainerStyle={styles.inputWrap}
+              onChangeText={onChangeNameText}
+              containerStyle={styles.contentWrap}
+            />
+          </FormItem>
+          <FormItem title="Description (Optional)" style={styles.formItemContainer}>
+            <CommonInput
+              type="general"
+              value={value.description}
+              placeholder={'Tell people more about your NFT'}
+              maxLength={1000}
+              multiline
+              style={[GStyles.paddingTop(12), GStyles.paddingBottom(12)]}
+              inputContainerStyle={[styles.inputWrap, styles.contentDescriptionWrap]}
+              inputStyle={styles.descriptionInput}
+              onChangeText={onChangeDescriptionText}
+              containerStyle={styles.contentDescriptionWrap}
+            />
+          </FormItem>
         </View>
-        {/* </Touchable> */}
-        <FormItem title="Name" style={styles.formItemContainer}>
-          <CommonInput
-            type="general"
-            value={value.name}
-            placeholder={'Give your NFT a unique name'}
-            maxLength={30}
-            inputContainerStyle={styles.inputWrap}
-            onChangeText={onChangeNameText}
-            containerStyle={styles.contentWrap}
-          />
-        </FormItem>
-        <FormItem title="Description (Optional)" style={styles.formItemContainer}>
-          <CommonInput
-            type="general"
-            value={value.description}
-            placeholder={'Tell people more about your NFT'}
-            maxLength={1000}
-            multiline
-            style={[GStyles.paddingTop(12), GStyles.paddingBottom(12)]}
-            inputContainerStyle={[styles.inputWrap, styles.contentDescriptionWrap]}
-            inputStyle={styles.descriptionInput}
-            onChangeText={onChangeDescriptionText}
-            containerStyle={styles.contentDescriptionWrap}
-          />
-        </FormItem>
+      </KeyboardAwareScrollView>
 
-        <ButtonRow
-          buttons={[
-            {
-              disabled: !canNext,
-              type: 'primary',
-              title: 'Next',
-              onPress: onNext,
-            },
-          ]}
-        />
-      </View>
-    </KeyboardAwareScrollView>
+      <ButtonRow
+        style={[GStyles.paddingLeft(pTd(16)), GStyles.paddingRight(pTd(16))]}
+        buttons={[
+          {
+            disabled: !canNext,
+            type: 'primary',
+            title: 'Next',
+            onPress: onNext,
+          },
+        ]}
+      />
+    </>
   );
 };
 
@@ -215,6 +218,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: pTd(8),
     borderTopRightRadius: pTd(8),
     flexDirection: 'column',
+    paddingHorizontal: pTd(16),
   },
   deleteIconStyle: {
     position: 'absolute',

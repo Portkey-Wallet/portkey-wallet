@@ -14,6 +14,7 @@ export interface BaseGuardianItem {
   isPrivate?: boolean;
   firstName?: string;
   lastName?: string;
+  verifiedByZk?: boolean;
   manuallySupportForZk?: boolean;
 }
 

@@ -78,12 +78,14 @@ export function addGuardian(
   userGuardiansList: UserGuardianItem[],
   guardiansStatus: GuardiansStatus,
 ) {
-  const { identifierHash } = handleVerifierInfo(verifierInfo);
+  // const { identifierHash } = handleVerifierInfo(verifierInfo); // todo_wade: confirm this
   const guardianToAdd = {
-    identifierHash,
+    identifierHash: verifierInfo.zkLoginInfo.guardianIdentifierHash,
     type: guardianItem.guardianType,
     verificationInfo: {
-      id: guardianItem.verifier?.id,
+      id: guardianItem.verifier?.id
+        ? guardianItem.verifier?.id
+        : '0745df56b7a450d3a5d66447515ec2306b5a207277a5a82e9eb50488d19f5a37', // todo_wade: select verifier randomly
       signature: verifierInfo.signature ? Object.values(Buffer.from(verifierInfo.signature as any, 'hex')) : [],
       verificationDoc: verifierInfo.verificationDoc,
     },
@@ -144,9 +146,10 @@ export function setLoginAccount(
     type: guardianItem.guardianType,
     verificationInfo: {
       id: guardianItem.verifier?.id,
-      signature: Object.values(Buffer.from(verifierInfo.signature as any, 'hex')),
+      signature: verifierInfo.signature ? Object.values(Buffer.from(verifierInfo.signature as any, 'hex')) : [],
       verificationDoc: verifierInfo.verificationDoc,
     },
+    zkLoginInfo: handleZKLoginInfo(verifierInfo.zkLoginInfo),
   };
   const guardiansApproved = getGuardiansApproved(userGuardiansList, guardiansStatus);
   return contract?.callSendMethod('SetGuardianForLogin', address, {
@@ -170,9 +173,10 @@ export function unsetLoginAccount(
     type: guardianItem.guardianType,
     verificationInfo: {
       id: guardianItem.verifier?.id,
-      signature: Object.values(Buffer.from(verifierInfo.signature as any, 'hex')),
+      signature: verifierInfo.signature ? Object.values(Buffer.from(verifierInfo.signature as any, 'hex')) : [],
       verificationDoc: verifierInfo.verificationDoc,
     },
+    zkLoginInfo: handleZKLoginInfo(verifierInfo.zkLoginInfo),
   };
   const guardiansApproved = getGuardiansApproved(userGuardiansList, guardiansStatus);
   return contract?.callSendMethod('UnsetGuardianForLogin', address, {

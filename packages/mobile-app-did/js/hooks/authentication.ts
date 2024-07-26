@@ -382,6 +382,7 @@ export function useVerifyZKLogin() {
     const zkProof = decodeURIComponent(verifyParams.proof);
     if (verifyResult.valid) {
       const zkLoginInfo: ZKLoginInfo = {
+        guardianIdentifierHash: portkeyVerifyResult.guardianIdentifierHash,
         identifierHash: verifyParams.identifierHash,
         salt: verifyParams.salt,
         zkProof,

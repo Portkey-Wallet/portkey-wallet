@@ -27,6 +27,7 @@ export type TAppleAuthentication = {
     givenName?: string;
     familyName?: string;
   };
+  idToken: string;
   nonce: string;
 };
 

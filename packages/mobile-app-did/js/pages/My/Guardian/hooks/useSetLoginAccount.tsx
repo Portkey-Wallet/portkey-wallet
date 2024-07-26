@@ -127,6 +127,8 @@ export const useSetLoginAccount = (isEdit = false) => {
 
         const rst = await verifyToken(currentGuardian.guardianType, {
           accessToken,
+          idToken: userInfo?.idToken,
+          nonce: userInfo?.nonce,
           id: currentGuardian.guardianAccount,
           verifierId: currentGuardian.verifier?.id,
           chainId: originChainId,

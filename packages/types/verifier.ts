@@ -11,7 +11,8 @@ export interface VerifierItem {
 }
 
 export const zkLoginVerifierItem: VerifierItem = {
-  id: '53961cca496a1cfaa7bf2dda210afb4f6430283cce4239be099ade5647091928', // sha256('zkLogin')
+  // id: '53961cca496a1cfaa7bf2dda210afb4f6430283cce4239be099ade5647091928', // sha256('zkLogin')
+  id: '',
   name: 'zkLogin',
   imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/zklogin_verifier.png',
 };
@@ -67,6 +68,7 @@ export enum OperationTypeEnum {
 }
 
 export interface ZKLoginInfo {
+  guardianIdentifierHash: string;
   identifierHash: string;
   salt: string;
   zkProof: string;

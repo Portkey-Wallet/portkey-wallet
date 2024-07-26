@@ -120,11 +120,13 @@ const GuardianEdit: React.FC = () => {
   const isSelectedVerifierDisabled = useMemo(() => {
     if (!selectedType) return false;
     if (isEdit) {
-      return isZKLoginSupported(selectedType.value) && editGuardian?.manuallySupportForZk;
+      return (
+        editGuardian?.verifiedByZk || (isZKLoginSupported(selectedType.value) && editGuardian?.manuallySupportForZk)
+      );
     } else {
       return isZKLoginSupported(selectedType.value);
     }
-  }, [editGuardian?.manuallySupportForZk, isEdit, selectedType]);
+  }, [editGuardian, isEdit, selectedType]);
 
   useEffectOnce(() => {
     return () => {
@@ -140,7 +142,11 @@ const GuardianEdit: React.FC = () => {
       } else {
         setAccount(editGuardian.guardianAccount);
       }
-      setSelectedVerifier(verifierList.find(item => item.name === editGuardian?.verifier?.name));
+      if (editGuardian?.verifiedByZk) {
+        setSelectedVerifier(zkLoginVerifierItem);
+      } else {
+        setSelectedVerifier(verifierList.find(item => item.name === editGuardian?.verifier?.name));
+      }
     }
   }, [editGuardian, verifierList]);
 

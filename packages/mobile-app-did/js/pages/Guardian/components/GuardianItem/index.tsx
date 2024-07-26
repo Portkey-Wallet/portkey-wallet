@@ -260,8 +260,10 @@ export default function GuardianItem({
   }, [guardianItem]);
 
   const isVerifierReplacedByZk = useMemo(() => {
-    return isZKLoginSupported(guardianItem.guardianType) && !guardianItem.manuallySupportForZk;
-  }, [guardianItem.guardianType, guardianItem.manuallySupportForZk]);
+    return (
+      isZKLoginSupported(guardianItem.guardianType) && !guardianItem.verifiedByZk && !guardianItem.manuallySupportForZk
+    );
+  }, [guardianItem]);
 
   const renderGuardianAccount = useCallback(() => {
     return (
@@ -274,11 +276,15 @@ export default function GuardianItem({
   }, [guardianAccount, guardianItem.guardianType]);
 
   const verifierName = useMemo(() => {
-    return guardianItem.manuallySupportForZk ? zkLoginVerifierItem.name : guardianItem.verifier?.name || '';
+    return guardianItem.verifiedByZk || guardianItem.manuallySupportForZk
+      ? zkLoginVerifierItem.name
+      : guardianItem.verifier?.name || '';
   }, [guardianItem]);
 
   const verifierImageUrl = useMemo(() => {
-    return guardianItem.manuallySupportForZk ? zkLoginVerifierItem.imageUrl : guardianItem.verifier?.name || '';
+    return guardianItem.verifiedByZk || guardianItem.manuallySupportForZk
+      ? zkLoginVerifierItem.imageUrl
+      : guardianItem.verifier?.name || '';
   }, [guardianItem]);
 
   return (

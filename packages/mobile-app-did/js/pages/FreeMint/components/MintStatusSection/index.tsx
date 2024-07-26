@@ -18,6 +18,7 @@ import CommonToast from 'components/CommonToast';
 import OverlayModal from 'components/OverlayModal';
 import navigationService from 'utils/navigationService';
 import myEvents from 'utils/deviceEvent';
+import fonts from 'assets/theme/fonts';
 
 export enum MintStatus {
   Minting = 'Minting...',
@@ -100,8 +101,9 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
       await setUserInfo({
         avatar: editInfo?.imageUri || '',
       });
-      CommonToast.success('Set as Profile Photo Successful');
+      CommonToast.success('Profile photo is set.');
     } catch (error) {
+      CommonToast.success('Failed to set profile photo. Please try again.');
       console.log('error', error);
     } finally {
       Loading.hide();
@@ -157,6 +159,7 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
             GStyles.marginTop(pTd(32)),
             GStyles.width100,
             GStyles.textAlignCenter,
+            styles.mediumText,
           ]}>{`${confirmMintResponse?.name} #${confirmMintResponse?.tokenId}`}</TextL>
         <View style={styles.nftWrap}>
           <NFTAvatar
@@ -178,7 +181,7 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
             GStyles.paddingRight(pTd(36)),
             GStyles.width100,
           ]}>
-          <TextXXL style={GStyles.textAlignCenter}>{status}</TextXXL>
+          <TextXXL style={[GStyles.textAlignCenter, styles.mediumText]}>{status}</TextXXL>
           <TextM style={[GStyles.textAlignCenter, GStyles.marginTop(pTd(4)), FontStyles.neutralTertiaryText]}>
             {mintTextObj[status]}
           </TextM>
@@ -186,7 +189,7 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
       </View>
 
       <View style={GStyles.flex1} />
-      {status === MintStatus.MintFailed && (
+      {status === MintStatus.Minting && (
         <TextM
           style={[
             FontStyles.neutralTertiaryText,
@@ -233,12 +236,15 @@ const styles = StyleSheet.create({
   },
   nftStatusWrapIcon: {
     position: 'absolute',
-    bottom: pTd(-20),
+    bottom: -pTd(20),
     width: pTd(200),
-    height: pTd(24),
+    height: pTd(40),
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  mediumText: {
+    ...fonts.mediumFont,
   },
 });
 

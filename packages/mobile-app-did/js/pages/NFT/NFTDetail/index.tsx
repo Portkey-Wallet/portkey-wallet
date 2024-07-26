@@ -102,8 +102,9 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
             await setUserInfo({
               avatar: imageUrl,
             });
-            CommonToast.success(t('Set as Profile Photo Successful'));
+            CommonToast.success('Profile photo is set.');
           } catch (error) {
+            CommonToast.fail('Failed to set profile photo. Please try again.');
             console.log('error', error);
           } finally {
             Loading.hide();
@@ -111,7 +112,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
         },
       },
     ];
-  }, [imageUrl, setUserInfo, t]);
+  }, [imageUrl, setUserInfo]);
 
   const onPressMore = useCallback(
     async (event: GestureResponderEvent) => {

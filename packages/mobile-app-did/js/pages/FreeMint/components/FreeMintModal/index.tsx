@@ -10,7 +10,7 @@ import { IconName } from 'components/Svg';
 import MintPreview from '../MintPreview';
 import MintStatusSection from '../MintStatusSection';
 import MintEdit, { EditConfig } from 'pages/FreeMint/MintEdit';
-import { useConfirmMint, useFreeMintInfo } from '@portkey-wallet/hooks/hooks-ca/freeMint';
+import { useConfirmMint, useFreeMintInfo, useGetMintItemInfo } from '@portkey-wallet/hooks/hooks-ca/freeMint';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { ICollectionData, IConfirmMintRes } from '@portkey-wallet/types/types-ca/freeMint';
 
@@ -33,12 +33,12 @@ export type DisclaimerModalProps = {
 
 export const FreeMintModal = ({ itemId, freeMintStep }: { itemId?: string; freeMintStep?: FreeMintStep }) => {
   const { t } = useLanguage();
-  const [step, setStep] = useState<FreeMintStep>(freeMintStep ? freeMintStep : FreeMintStep.mintNft);
+  const [step, setStep] = useState<FreeMintStep>(freeMintStep !== undefined ? freeMintStep : FreeMintStep.mintNft);
   const fetchMintInfo = useFreeMintInfo();
   const [mintInfo, setMintInfo] = useState<ICollectionData | undefined>(undefined);
   const [editInfo, setEditInfo] = useState<EditConfig>();
   const [confirmMintResponse, setConfirmMintResponse] = useState<IConfirmMintRes | undefined>(undefined);
-
+  const getMintItemInfo = useGetMintItemInfo();
   const { confirm: confirmMint } = useConfirmMint();
 
   const changeStep = useCallback((_step: FreeMintStep) => setStep(_step), []);
@@ -67,6 +67,18 @@ export const FreeMintModal = ({ itemId, freeMintStep }: { itemId?: string; freeM
     (async () => {
       const res = await fetchMintInfo();
       setMintInfo(res);
+    })();
+  });
+
+  useEffectOnce(() => {
+    (async () => {
+      if (!itemId) return;
+      const res = await getMintItemInfo(itemId);
+      setEditInfo({
+        ...res,
+        imageUri: res.imageUrl || '',
+      });
+      setConfirmMintResponse(res);
     })();
   });
 
@@ -100,9 +112,10 @@ export const FreeMintModal = ({ itemId, freeMintStep }: { itemId?: string; freeM
         {step === FreeMintStep.mintResult && (
           <View style={styles.contentWrap}>
             <MintStatusSection
-              changeStep={changeStep}
+              itemId={itemId}
               editInfo={editInfo}
               mintInfo={mintInfo}
+              changeStep={changeStep}
               confirmMintResponse={confirmMintResponse}
             />
           </View>

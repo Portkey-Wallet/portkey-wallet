@@ -33,6 +33,7 @@ const mintTextObj = {
 };
 
 interface MintStatusSectionProps {
+  itemId?: string;
   editInfo?: EditConfig;
   mintInfo?: ICollectionData;
   confirmMintResponse?: IConfirmMintRes;
@@ -40,7 +41,7 @@ interface MintStatusSectionProps {
 }
 
 const MintStatusSection = (props: MintStatusSectionProps) => {
-  const { editInfo, mintInfo, confirmMintResponse, changeStep } = props;
+  const { itemId, editInfo, mintInfo, confirmMintResponse, changeStep } = props;
   const setUserInfo = useSetUserInfo();
   const loopFetchNFTItemDetail = useLoopMintNFTDetail();
   const [btnLoading, setBtnLoading] = useState(false);
@@ -50,7 +51,7 @@ const MintStatusSection = (props: MintStatusSectionProps) => {
 
   useEffect(() => {
     (async () => {
-      const result = await getMintStatus(confirmMintResponse?.itemId || '');
+      const result = await getMintStatus(confirmMintResponse?.itemId || itemId || '');
       if (result === FreeMintStatus.FAIL) {
         myEvents.updateMintStatus.emit();
         setStatus(MintStatus.MintFailed);

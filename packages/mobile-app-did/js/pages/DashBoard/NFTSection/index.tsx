@@ -45,7 +45,8 @@ function areEqual(prevProps: NFTCollectionProps, nextProps: NFTCollectionProps) 
   return (
     nextProps.isCollapsed === prevProps.isCollapsed &&
     prevNftObj?.pageNum === nextNftObj?.pageNum &&
-    nextProps.isFetching === prevProps.isFetching
+    nextProps.isFetching === prevProps.isFetching &&
+    nextProps.itemCount === prevProps.itemCount
   );
 }
 
@@ -96,6 +97,7 @@ export default function NFTSection() {
       const res = await getRecentStatus();
       setRecentStatus(res.status);
       setItemId(res.itemId);
+      setOpenCollectionObj({});
       getNFTCollectionsAsync(true);
     }, REFRESH_TIME);
     return () => {

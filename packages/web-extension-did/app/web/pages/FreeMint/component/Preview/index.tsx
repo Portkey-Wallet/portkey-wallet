@@ -29,7 +29,7 @@ export default function Preview({
       <div className="preview-container flex-1 flex-column gap-16">
         <div className="mint-detail flex">
           <ImageDisplay className="mint-detail-image" defaultHeight={64} src={previewFile} />
-          <div className="flex-column">
+          <div className="flex-column mint-detail-basic">
             <div className="mint-detail-name">{nftName}</div>
             <div className="mint-detail-desc">{desc}</div>
           </div>

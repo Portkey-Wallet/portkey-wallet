@@ -26,6 +26,7 @@ import Preview from './component/Preview';
 import Result from './component/Result';
 import { FreeMintStatus, ICollectionData, IMintNFTItemInfo } from '@portkey-wallet/types/types-ca/freeMint';
 import { TFreeMintLocationState } from 'types/router';
+import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import './index.less';
 
 export default function FreeMint() {
@@ -113,15 +114,6 @@ export default function FreeMint() {
     setSymbol('');
   }, [updateMintInfo]);
 
-  const modalTitle = useMemo(() => {
-    if (step === FreeMintStepEnum.edit) {
-      return 'Mint NFT';
-    }
-    if (step === FreeMintStepEnum.preview) {
-      return 'Preview';
-    }
-    return '';
-  }, [step]);
   const handleSetAvatar = useCallback(async () => {
     try {
       if (!newAvatarS3File) return;
@@ -274,6 +266,7 @@ export default function FreeMint() {
             <div>{NOTICE}</div>
           </div>
         </div>
+        {isPrompt && <PromptEmptyElement />}
       </div>
     );
   }, [isPrompt, mintInfo?.isLimitExceed, mintInfo?.limitCount, navigate]);
@@ -285,6 +278,23 @@ export default function FreeMint() {
       handleCloseModal();
     }
   }, [handleCloseModal, navigate, status]);
+
+  const modalCloseHeaderProps = useMemo(() => {
+    if (step === FreeMintStepEnum.edit) {
+      return {
+        title: 'Mint NFT',
+        onClose: handleCloseModalOrDrawer,
+      };
+    }
+    if (step === FreeMintStepEnum.preview) {
+      return {
+        onLeftBack: () => setStep(FreeMintStepEnum.edit),
+        title: 'Preview',
+        onClose: handleCloseModalOrDrawer,
+      };
+    }
+    return { title: '', onClose: handleCloseModalOrDrawer };
+  }, [handleCloseModalOrDrawer, step]);
 
   return (
     <>
@@ -298,7 +308,7 @@ export default function FreeMint() {
           closable={false}
           className="free-mint-modal"
           maskClosable>
-          <CommonCloseHeader title={modalTitle} onClose={handleCloseModalOrDrawer} />
+          <CommonCloseHeader {...modalCloseHeaderProps} />
           {renderModalContent()}
         </BaseModal>
       ) : (
@@ -309,7 +319,7 @@ export default function FreeMint() {
           height="580"
           maskClosable
           placement="bottom">
-          <CommonCloseHeader title={modalTitle} onClose={handleCloseModalOrDrawer} />
+          <CommonCloseHeader {...modalCloseHeaderProps} />
           {renderModalContent()}
         </BaseDrawer>
       )}

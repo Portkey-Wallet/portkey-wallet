@@ -10,7 +10,7 @@ import FastImage from 'react-native-fast-image';
 import Loading from 'components/Loading';
 import { isValidAvatarFile } from '@portkey-wallet/utils/reg';
 import CommonToast from 'components/CommonToast';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 export enum ImageShowType {
   CIRCLE,
@@ -130,8 +130,7 @@ const ImageWithUploadFuncV2 = forwardRef(function ImageWithUploadFuncV2(props: U
   if (localPhotoFile && localPhotoFile.uri) {
     return (
       <Touchable onPress={selectPhoto}>
-        {/* eslint-disable-next-line react-native/no-inline-styles */}
-        <View style={{ borderWidth: pTd(1), borderRadius: pTd(12), borderColor: defaultColors.neutralBorder }}>
+        <View style={styles.avatarWrap}>
           <CommonAvatar avatarSize={avatarSize} shapeType="square" imageUrl={imageUrl} />
         </View>
         {/* <FastImage style={[sizeStyle]} resizeMode="contain" source={{ uri: localPhotoFile.uri }} /> */}
@@ -157,3 +156,12 @@ const ImageWithUploadFuncV2 = forwardRef(function ImageWithUploadFuncV2(props: U
 });
 
 export default ImageWithUploadFuncV2;
+
+const styles = StyleSheet.create({
+  avatarWrap: {
+    overflow: 'hidden',
+    borderWidth: pTd(1),
+    borderRadius: pTd(12),
+    borderColor: defaultColors.neutralBorder,
+  },
+});

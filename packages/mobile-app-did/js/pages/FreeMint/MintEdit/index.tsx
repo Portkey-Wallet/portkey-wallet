@@ -152,7 +152,6 @@ const MintEdit = (props: {
             containerStyle={styles.contentWrap}
           />
         </FormItem>
-
         <FormItem title="Description (Optional)" style={styles.formItemContainer}>
           <CommonInput
             type="general"
@@ -160,13 +159,14 @@ const MintEdit = (props: {
             placeholder={'Tell people more about your NFT'}
             maxLength={1000}
             multiline
+            style={[GStyles.paddingTop(12), GStyles.paddingBottom(12)]}
             inputContainerStyle={[styles.inputWrap, styles.contentDescriptionWrap]}
             inputStyle={styles.descriptionInput}
             onChangeText={onChangeDescriptionText}
             containerStyle={styles.contentDescriptionWrap}
           />
         </FormItem>
-        <View style={GStyles.flex1} />
+
         <ButtonRow
           buttons={[
             {
@@ -181,6 +181,7 @@ const MintEdit = (props: {
     </KeyboardAwareScrollView>
   );
 };
+
 // const MintEditWrapper = () => {
 //   const gStyles = useGStyles();
 //   const { t } = useLanguage();
@@ -237,6 +238,7 @@ const styles = StyleSheet.create({
     gap: pTd(24),
   },
   uploadBox: {
+    overflow: 'hidden',
     width: pTd(280),
     height: pTd(280),
     padding: pTd(24),
@@ -273,5 +275,7 @@ const styles = StyleSheet.create({
   },
   contentDescriptionWrap: {
     height: pTd(120),
+    paddingTop: pTd(12),
+    paddingBottom: pTd(12),
   },
 });

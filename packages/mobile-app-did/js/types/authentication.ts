@@ -34,6 +34,7 @@ export type TAppleAuthentication = {
 export type TFacebookAuthentication = {
   user: TFacebookUserInfo;
   accessToken: string;
+  idToken: string;
   nonce: string;
 };
 

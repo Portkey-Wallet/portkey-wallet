@@ -566,6 +566,7 @@ const GuardianEdit: React.FC = () => {
       setFirstName(userInfo.user.firstName || undefined);
       thirdPartyInfoRef.current = {
         id: userInfo.user.id,
+        idToken: userInfo.idToken,
         accessToken: userInfo.accessToken,
         nonce: userInfo.nonce,
       };

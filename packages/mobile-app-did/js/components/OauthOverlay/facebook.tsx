@@ -51,7 +51,7 @@ function FacebookSign({ onConfirm, onReject }: FacebookProps) {
             const fbInfo = parseFacebookJWTToken(idToken, accessToken);
             if (!fbInfo) throw new Error('Failed to parse Facebook token');
             console.log('aaaa fb payload : ', JSON.stringify(payload));
-            onConfirm({ accessToken: payload.response.access_token, user: fbInfo, nonce });
+            onConfirm({ accessToken: payload.response.access_token, idToken, user: fbInfo, nonce });
             OverlayModal.hide();
           } else {
             onReject(USER_CANCELED);

@@ -11,6 +11,7 @@ import {
   getGoogleUserInfo,
   parseAppleIdentityToken,
   parseFacebookToken,
+  parseFacebookJWTToken,
   parseTwitterToken,
 } from '@portkey-wallet/utils/authentication';
 import { randomId } from '@portkey-wallet/utils';
@@ -545,13 +546,15 @@ export function useVerifyFacebookToken() {
   return useCallback(
     async (params: VerifyTokenParams) => {
       let accessToken = params.accessToken;
+      let idToken = params.idToken;
       const nonce = params.nonce;
-      const { isExpired: tokenIsExpired } = (await parseFacebookToken(accessToken)) || {};
+      const { isExpired: tokenIsExpired } = parseFacebookJWTToken(idToken, accessToken) || {};
       if (!accessToken || tokenIsExpired) {
         const info = await facebookSign();
         accessToken = info.accessToken || undefined;
+        idToken = info.idToken || undefined;
       }
-      const { userId, idToken } = (await parseFacebookToken(accessToken)) || {};
+      const { userId } = parseFacebookJWTToken(idToken, accessToken) || {};
 
       if (userId !== params.id) throw new Error('Account does not match your guardian');
 
@@ -566,7 +569,7 @@ export function useVerifyFacebookToken() {
           chainId: params.chainId,
           operationType: params.operationType,
         },
-        jwt: params.idToken,
+        jwt: idToken,
         salt: randomId(),
         kid: parseKidFromJWTToken(idToken),
         nonce,

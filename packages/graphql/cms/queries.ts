@@ -76,6 +76,7 @@ import {
   DiscoverLearnGroupCustomQuery,
   DiscoverLearnGroupCustomQueryVariables,
 } from './__generated__/hooks/discoverLearnGroupCustom';
+import { DappListDocument, DappListQuery, DappListQueryVariables } from './__generated__/hooks/dappWhiteListCustom';
 
 // SocialMedia
 const getSocialMedia = async (network: NetworkType, params: SocialMediaCustomQueryVariables) => {
@@ -225,6 +226,16 @@ const getDiscoverLearnGroupList = async (network: NetworkType, params: DiscoverL
   return result;
 };
 
+// get learnGroupList
+const getDappWhiteListCustom = async (network: NetworkType, params: DappListQueryVariables) => {
+  const apolloClient = getApolloClient(network);
+  const result = await apolloClient.query<DappListQuery>({
+    query: DappListDocument,
+    variables: params,
+  });
+  return result;
+};
+
 export {
   getSocialMedia,
   getTabMenu,
@@ -240,4 +251,5 @@ export {
   getDiscoverTabList,
   getDiscoverEarnList,
   getDiscoverLearnGroupList,
+  getDappWhiteListCustom,
 };

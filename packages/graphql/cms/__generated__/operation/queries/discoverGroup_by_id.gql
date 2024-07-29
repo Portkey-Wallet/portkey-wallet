@@ -1,4 +1,4 @@
-query discoverGroup_by_id($filter: directus_files_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String, $filter1: discoverItem_filter, $sort1: [String], $limit1: Int, $offset1: Int, $page1: Int, $search1: String, $filter2: discoverGroup_filter, $sort2: [String], $limit2: Int, $offset2: Int, $page2: Int, $search2: String, $filter3: discoverItem_filter, $sort3: [String], $limit3: Int, $offset3: Int, $page3: Int, $search3: String, $id: ID!){
+query discoverGroup_by_id($filter: discoverItem_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String, $filter1: discoverGroup_filter, $sort1: [String], $limit1: Int, $offset1: Int, $page1: Int, $search1: String, $filter2: discoverItem_filter, $sort2: [String], $limit2: Int, $offset2: Int, $page2: Int, $search2: String, $id: ID!){
     discoverGroup_by_id(id: $id){
         date_created
         date_created_func{
@@ -29,7 +29,8 @@ query discoverGroup_by_id($filter: directus_files_filter, $sort: [String], $limi
         title
         user_created
         user_updated
-        items(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3){
+        items(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2){
+            appLink
             date_created
             date_created_func{
                 year
@@ -53,7 +54,8 @@ query discoverGroup_by_id($filter: directus_files_filter, $sort: [String], $limi
                 second
             }
             description
-            group(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2){
+            extensionLink
+            group(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1){
                 date_created
                 date_created_func{
                     year
@@ -83,60 +85,14 @@ query discoverGroup_by_id($filter: directus_files_filter, $sort: [String], $limi
                 title
                 user_created
                 user_updated
-                items(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1){
+                items(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
+                    appLink
                     date_created
                     date_updated
                     description
+                    extensionLink
                     id
-                    imgUrl(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
-                        id
-                        storage
-                        filename_disk
-                        filename_download
-                        title
-                        type
-                        folder
-                        uploaded_by
-                        uploaded_on
-                        uploaded_on_func{
-                            year
-                            month
-                            week
-                            day
-                            weekday
-                            hour
-                            minute
-                            second
-                        }
-                        modified_by
-                        modified_on
-                        modified_on_func{
-                            year
-                            month
-                            week
-                            day
-                            weekday
-                            hour
-                            minute
-                            second
-                        }
-                        charset
-                        filesize
-                        width
-                        height
-                        duration
-                        embed
-                        description
-                        location
-                        tags
-                        tags_func{
-                            count
-                        }
-                        metadata
-                        metadata_func{
-                            count
-                        }
-                    }
+                    imgUrl
                     index
                     sort
                     status
@@ -144,14 +100,13 @@ query discoverGroup_by_id($filter: directus_files_filter, $sort: [String], $limi
                     url
                     user_created
                     user_updated
-                    appLink
-                    extensionLink
                 }
                 items_func{
                     count
                 }
             }
             id
+            imgUrl
             index
             sort
             status
@@ -159,8 +114,6 @@ query discoverGroup_by_id($filter: directus_files_filter, $sort: [String], $limi
             url
             user_created
             user_updated
-            appLink
-            extensionLink
         }
         items_func{
             count

@@ -24,50 +24,50 @@ export type LoginMode_LoginModeMatch_AggregatedQuery = {
     count?: {
       __typename?: 'loginMode_loginModeMatch_aggregated_count';
       id?: number | null;
-      loginMode_id?: number | null;
       loginModeMatch_id?: number | null;
+      loginMode_id?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'loginMode_loginModeMatch_aggregated_count';
       id?: number | null;
-      loginMode_id?: number | null;
       loginModeMatch_id?: number | null;
+      loginMode_id?: number | null;
     } | null;
     avg?: {
       __typename?: 'loginMode_loginModeMatch_aggregated_fields';
       id?: number | null;
-      loginMode_id?: number | null;
       loginModeMatch_id?: number | null;
+      loginMode_id?: number | null;
     } | null;
     sum?: {
       __typename?: 'loginMode_loginModeMatch_aggregated_fields';
       id?: number | null;
-      loginMode_id?: number | null;
       loginModeMatch_id?: number | null;
+      loginMode_id?: number | null;
     } | null;
     avgDistinct?: {
       __typename?: 'loginMode_loginModeMatch_aggregated_fields';
       id?: number | null;
-      loginMode_id?: number | null;
       loginModeMatch_id?: number | null;
+      loginMode_id?: number | null;
     } | null;
     sumDistinct?: {
       __typename?: 'loginMode_loginModeMatch_aggregated_fields';
       id?: number | null;
-      loginMode_id?: number | null;
       loginModeMatch_id?: number | null;
+      loginMode_id?: number | null;
     } | null;
     min?: {
       __typename?: 'loginMode_loginModeMatch_aggregated_fields';
       id?: number | null;
-      loginMode_id?: number | null;
       loginModeMatch_id?: number | null;
+      loginMode_id?: number | null;
     } | null;
     max?: {
       __typename?: 'loginMode_loginModeMatch_aggregated_fields';
       id?: number | null;
-      loginMode_id?: number | null;
       loginModeMatch_id?: number | null;
+      loginMode_id?: number | null;
     } | null;
   }>;
 };
@@ -95,43 +95,43 @@ export const LoginMode_LoginModeMatch_AggregatedDocument = gql`
       countAll
       count {
         id
-        loginMode_id
         loginModeMatch_id
+        loginMode_id
       }
       countDistinct {
         id
-        loginMode_id
         loginModeMatch_id
+        loginMode_id
       }
       avg {
         id
-        loginMode_id
         loginModeMatch_id
+        loginMode_id
       }
       sum {
         id
-        loginMode_id
         loginModeMatch_id
+        loginMode_id
       }
       avgDistinct {
         id
-        loginMode_id
         loginModeMatch_id
+        loginMode_id
       }
       sumDistinct {
         id
-        loginMode_id
         loginModeMatch_id
+        loginMode_id
       }
       min {
         id
-        loginMode_id
         loginModeMatch_id
+        loginMode_id
       }
       max {
         id
-        loginMode_id
         loginModeMatch_id
+        loginMode_id
       }
     }
   }

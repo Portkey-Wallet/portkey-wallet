@@ -4,13 +4,13 @@ import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
 export type Entrance_EntranceMatch_By_IdQueryVariables = Types.Exact<{
-  filter?: Types.InputMaybe<Types.EntranceModuleName_Filter>;
+  filter?: Types.InputMaybe<Types.EntranceMatch_Filter>;
   sort?: Types.InputMaybe<Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>>;
   limit?: Types.InputMaybe<Types.Scalars['Int']>;
   offset?: Types.InputMaybe<Types.Scalars['Int']>;
   page?: Types.InputMaybe<Types.Scalars['Int']>;
   search?: Types.InputMaybe<Types.Scalars['String']>;
-  filter1?: Types.InputMaybe<Types.Entrance_Filter>;
+  filter1?: Types.InputMaybe<Types.EntranceModuleName_Filter>;
   sort1?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -26,7 +26,7 @@ export type Entrance_EntranceMatch_By_IdQueryVariables = Types.Exact<{
   offset2?: Types.InputMaybe<Types.Scalars['Int']>;
   page2?: Types.InputMaybe<Types.Scalars['Int']>;
   search2?: Types.InputMaybe<Types.Scalars['String']>;
-  filter3?: Types.InputMaybe<Types.Entrance_EntranceMatch_Filter>;
+  filter3?: Types.InputMaybe<Types.Entrance_Filter>;
   sort3?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -34,7 +34,7 @@ export type Entrance_EntranceMatch_By_IdQueryVariables = Types.Exact<{
   offset3?: Types.InputMaybe<Types.Scalars['Int']>;
   page3?: Types.InputMaybe<Types.Scalars['Int']>;
   search3?: Types.InputMaybe<Types.Scalars['String']>;
-  filter4?: Types.InputMaybe<Types.Entrance_Filter>;
+  filter4?: Types.InputMaybe<Types.Entrance_EntranceMatch_Filter>;
   sort4?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -42,7 +42,7 @@ export type Entrance_EntranceMatch_By_IdQueryVariables = Types.Exact<{
   offset4?: Types.InputMaybe<Types.Scalars['Int']>;
   page4?: Types.InputMaybe<Types.Scalars['Int']>;
   search4?: Types.InputMaybe<Types.Scalars['String']>;
-  filter5?: Types.InputMaybe<Types.EntranceMatch_Filter>;
+  filter5?: Types.InputMaybe<Types.Entrance_Filter>;
   sort5?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -58,14 +58,50 @@ export type Entrance_EntranceMatch_By_IdQuery = {
   entrance_entranceMatch_by_id?: {
     __typename?: 'entrance_entranceMatch';
     id: string;
+    entranceMatch_id?: {
+      __typename?: 'entranceMatch';
+      date_created?: any | null;
+      date_updated?: any | null;
+      description?: string | null;
+      id: string;
+      matchRuleList?: any | null;
+      matchSwitch?: boolean | null;
+      status?: string | null;
+      user_created?: string | null;
+      user_updated?: string | null;
+      weight?: number | null;
+      date_created_func?: {
+        __typename?: 'datetime_functions';
+        year?: number | null;
+        month?: number | null;
+        week?: number | null;
+        day?: number | null;
+        weekday?: number | null;
+        hour?: number | null;
+        minute?: number | null;
+        second?: number | null;
+      } | null;
+      date_updated_func?: {
+        __typename?: 'datetime_functions';
+        year?: number | null;
+        month?: number | null;
+        week?: number | null;
+        day?: number | null;
+        weekday?: number | null;
+        hour?: number | null;
+        minute?: number | null;
+        second?: number | null;
+      } | null;
+      matchRuleList_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+    } | null;
     entrance_id?: {
       __typename?: 'entrance';
-      id: string;
-      user_created?: string | null;
       date_created?: any | null;
-      user_updated?: string | null;
       date_updated?: any | null;
       defaultSwitch?: boolean | null;
+      id: string;
+      user_created?: string | null;
+      user_updated?: string | null;
       date_created_func?: {
         __typename?: 'datetime_functions';
         year?: number | null;
@@ -90,13 +126,13 @@ export type Entrance_EntranceMatch_By_IdQuery = {
       } | null;
       moduleName?: {
         __typename?: 'entranceModuleName';
+        date_created?: any | null;
+        date_updated?: any | null;
+        description?: string | null;
         id: string;
         user_created?: string | null;
-        date_created?: any | null;
         user_updated?: string | null;
-        date_updated?: any | null;
         value?: string | null;
-        description?: string | null;
         date_created_func?: {
           __typename?: 'datetime_functions';
           year?: number | null;
@@ -123,79 +159,43 @@ export type Entrance_EntranceMatch_By_IdQuery = {
       matchList?: Array<{
         __typename?: 'entrance_entranceMatch';
         id: string;
-        entrance_id?: {
-          __typename?: 'entrance';
-          id: string;
-          user_created?: string | null;
-          date_created?: any | null;
-          user_updated?: string | null;
-          date_updated?: any | null;
-          defaultSwitch?: boolean | null;
-          matchList_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-        } | null;
         entranceMatch_id?: {
           __typename?: 'entranceMatch';
+          date_created?: any | null;
+          date_updated?: any | null;
+          description?: string | null;
           id: string;
+          matchRuleList?: any | null;
+          matchSwitch?: boolean | null;
           status?: string | null;
           user_created?: string | null;
-          date_created?: any | null;
           user_updated?: string | null;
-          date_updated?: any | null;
-          matchRuleList?: any | null;
           weight?: number | null;
-          matchSwitch?: boolean | null;
-          description?: string | null;
-          date_created_func?: {
-            __typename?: 'datetime_functions';
-            year?: number | null;
-            month?: number | null;
-            week?: number | null;
-            day?: number | null;
-            weekday?: number | null;
-            hour?: number | null;
-            minute?: number | null;
-            second?: number | null;
-          } | null;
-          date_updated_func?: {
-            __typename?: 'datetime_functions';
-            year?: number | null;
-            month?: number | null;
-            week?: number | null;
-            day?: number | null;
-            weekday?: number | null;
-            hour?: number | null;
-            minute?: number | null;
-            second?: number | null;
-          } | null;
-          matchRuleList_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+        } | null;
+        entrance_id?: {
+          __typename?: 'entrance';
+          date_created?: any | null;
+          date_updated?: any | null;
+          defaultSwitch?: boolean | null;
+          id: string;
+          user_created?: string | null;
+          user_updated?: string | null;
+          matchList_func?: { __typename?: 'count_functions'; count?: number | null } | null;
         } | null;
       } | null> | null;
-    } | null;
-    entranceMatch_id?: {
-      __typename?: 'entranceMatch';
-      id: string;
-      status?: string | null;
-      user_created?: string | null;
-      date_created?: any | null;
-      user_updated?: string | null;
-      date_updated?: any | null;
-      matchRuleList?: any | null;
-      weight?: number | null;
-      matchSwitch?: boolean | null;
-      description?: string | null;
     } | null;
   } | null;
 };
 
 export const Entrance_EntranceMatch_By_IdDocument = gql`
   query entrance_entranceMatch_by_id(
-    $filter: entranceModuleName_filter
+    $filter: entranceMatch_filter
     $sort: [String]
     $limit: Int
     $offset: Int
     $page: Int
     $search: String
-    $filter1: entrance_filter
+    $filter1: entranceModuleName_filter
     $sort1: [String]
     $limit1: Int
     $offset1: Int
@@ -207,19 +207,19 @@ export const Entrance_EntranceMatch_By_IdDocument = gql`
     $offset2: Int
     $page2: Int
     $search2: String
-    $filter3: entrance_entranceMatch_filter
+    $filter3: entrance_filter
     $sort3: [String]
     $limit3: Int
     $offset3: Int
     $page3: Int
     $search3: String
-    $filter4: entrance_filter
+    $filter4: entrance_entranceMatch_filter
     $sort4: [String]
     $limit4: Int
     $offset4: Int
     $page4: Int
     $search4: String
-    $filter5: entranceMatch_filter
+    $filter5: entrance_filter
     $sort5: [String]
     $limit5: Int
     $offset5: Int
@@ -228,10 +228,7 @@ export const Entrance_EntranceMatch_By_IdDocument = gql`
     $id: ID!
   ) {
     entrance_entranceMatch_by_id(id: $id) {
-      id
-      entrance_id(filter: $filter4, sort: $sort4, limit: $limit4, offset: $offset4, page: $page4, search: $search4) {
-        id
-        user_created
+      entranceMatch_id(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
         date_created
         date_created_func {
           year
@@ -243,7 +240,6 @@ export const Entrance_EntranceMatch_By_IdDocument = gql`
           minute
           second
         }
-        user_updated
         date_updated
         date_updated_func {
           year
@@ -255,9 +251,44 @@ export const Entrance_EntranceMatch_By_IdDocument = gql`
           minute
           second
         }
-        moduleName(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
-          id
-          user_created
+        description
+        id
+        matchRuleList
+        matchRuleList_func {
+          count
+        }
+        matchSwitch
+        status
+        user_created
+        user_updated
+        weight
+      }
+      entrance_id(filter: $filter5, sort: $sort5, limit: $limit5, offset: $offset5, page: $page5, search: $search5) {
+        date_created
+        date_created_func {
+          year
+          month
+          week
+          day
+          weekday
+          hour
+          minute
+          second
+        }
+        date_updated
+        date_updated_func {
+          year
+          month
+          week
+          day
+          weekday
+          hour
+          minute
+          second
+        }
+        defaultSwitch
+        id
+        moduleName(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1) {
           date_created
           date_created_func {
             year
@@ -269,7 +300,6 @@ export const Entrance_EntranceMatch_By_IdDocument = gql`
             minute
             second
           }
-          user_updated
           date_updated
           date_updated_func {
             year
@@ -281,30 +311,15 @@ export const Entrance_EntranceMatch_By_IdDocument = gql`
             minute
             second
           }
-          value
           description
-        }
-        defaultSwitch
-        matchList(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3) {
           id
-          entrance_id(
-            filter: $filter1
-            sort: $sort1
-            limit: $limit1
-            offset: $offset1
-            page: $page1
-            search: $search1
-          ) {
-            id
-            user_created
-            date_created
-            user_updated
-            date_updated
-            defaultSwitch
-            matchList_func {
-              count
-            }
-          }
+          user_created
+          user_updated
+          value
+        }
+        user_created
+        user_updated
+        matchList(filter: $filter4, sort: $sort4, limit: $limit4, offset: $offset4, page: $page4, search: $search4) {
           entranceMatch_id(
             filter: $filter2
             sort: $sort2
@@ -313,61 +328,39 @@ export const Entrance_EntranceMatch_By_IdDocument = gql`
             page: $page2
             search: $search2
           ) {
+            date_created
+            date_updated
+            description
             id
+            matchRuleList
+            matchSwitch
             status
             user_created
-            date_created
-            date_created_func {
-              year
-              month
-              week
-              day
-              weekday
-              hour
-              minute
-              second
-            }
             user_updated
+            weight
+          }
+          entrance_id(
+            filter: $filter3
+            sort: $sort3
+            limit: $limit3
+            offset: $offset3
+            page: $page3
+            search: $search3
+          ) {
+            date_created
             date_updated
-            date_updated_func {
-              year
-              month
-              week
-              day
-              weekday
-              hour
-              minute
-              second
-            }
-            matchRuleList
-            matchRuleList_func {
+            defaultSwitch
+            id
+            user_created
+            user_updated
+            matchList_func {
               count
             }
-            weight
-            matchSwitch
-            description
           }
+          id
         }
       }
-      entranceMatch_id(
-        filter: $filter5
-        sort: $sort5
-        limit: $limit5
-        offset: $offset5
-        page: $page5
-        search: $search5
-      ) {
-        id
-        status
-        user_created
-        date_created
-        user_updated
-        date_updated
-        matchRuleList
-        weight
-        matchSwitch
-        description
-      }
+      id
     }
   }
 `;

@@ -23,78 +23,78 @@ export type LoginMode_AggregatedQuery = {
     countAll?: number | null;
     count?: {
       __typename?: 'loginMode_aggregated_count';
-      id?: number | null;
-      status?: number | null;
-      extensionIndex?: number | null;
-      iOSIndex?: number | null;
       androidIndex?: number | null;
-      extensionRecommend?: number | null;
-      iOSRecommend?: number | null;
       androidRecommend?: number | null;
       defaultSwitch?: number | null;
+      extensionIndex?: number | null;
+      extensionRecommend?: number | null;
+      iOSIndex?: number | null;
+      iOSRecommend?: number | null;
+      id?: number | null;
+      status?: number | null;
       type?: number | null;
       matchList?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'loginMode_aggregated_count';
-      id?: number | null;
-      status?: number | null;
-      extensionIndex?: number | null;
-      iOSIndex?: number | null;
       androidIndex?: number | null;
-      extensionRecommend?: number | null;
-      iOSRecommend?: number | null;
       androidRecommend?: number | null;
       defaultSwitch?: number | null;
+      extensionIndex?: number | null;
+      extensionRecommend?: number | null;
+      iOSIndex?: number | null;
+      iOSRecommend?: number | null;
+      id?: number | null;
+      status?: number | null;
       type?: number | null;
       matchList?: number | null;
     } | null;
     avg?: {
       __typename?: 'loginMode_aggregated_fields';
-      id?: number | null;
+      androidIndex?: number | null;
       extensionIndex?: number | null;
       iOSIndex?: number | null;
-      androidIndex?: number | null;
+      id?: number | null;
       type?: number | null;
     } | null;
     sum?: {
       __typename?: 'loginMode_aggregated_fields';
-      id?: number | null;
+      androidIndex?: number | null;
       extensionIndex?: number | null;
       iOSIndex?: number | null;
-      androidIndex?: number | null;
+      id?: number | null;
       type?: number | null;
     } | null;
     avgDistinct?: {
       __typename?: 'loginMode_aggregated_fields';
-      id?: number | null;
+      androidIndex?: number | null;
       extensionIndex?: number | null;
       iOSIndex?: number | null;
-      androidIndex?: number | null;
+      id?: number | null;
       type?: number | null;
     } | null;
     sumDistinct?: {
       __typename?: 'loginMode_aggregated_fields';
-      id?: number | null;
+      androidIndex?: number | null;
       extensionIndex?: number | null;
       iOSIndex?: number | null;
-      androidIndex?: number | null;
+      id?: number | null;
       type?: number | null;
     } | null;
     min?: {
       __typename?: 'loginMode_aggregated_fields';
-      id?: number | null;
+      androidIndex?: number | null;
       extensionIndex?: number | null;
       iOSIndex?: number | null;
-      androidIndex?: number | null;
+      id?: number | null;
       type?: number | null;
     } | null;
     max?: {
       __typename?: 'loginMode_aggregated_fields';
-      id?: number | null;
+      androidIndex?: number | null;
       extensionIndex?: number | null;
       iOSIndex?: number | null;
-      androidIndex?: number | null;
+      id?: number | null;
       type?: number | null;
     } | null;
   }>;
@@ -122,71 +122,71 @@ export const LoginMode_AggregatedDocument = gql`
       group
       countAll
       count {
-        id
-        status
-        extensionIndex
-        iOSIndex
         androidIndex
-        extensionRecommend
-        iOSRecommend
         androidRecommend
         defaultSwitch
+        extensionIndex
+        extensionRecommend
+        iOSIndex
+        iOSRecommend
+        id
+        status
         type
         matchList
       }
       countDistinct {
-        id
-        status
-        extensionIndex
-        iOSIndex
         androidIndex
-        extensionRecommend
-        iOSRecommend
         androidRecommend
         defaultSwitch
+        extensionIndex
+        extensionRecommend
+        iOSIndex
+        iOSRecommend
+        id
+        status
         type
         matchList
       }
       avg {
-        id
+        androidIndex
         extensionIndex
         iOSIndex
-        androidIndex
+        id
         type
       }
       sum {
-        id
+        androidIndex
         extensionIndex
         iOSIndex
-        androidIndex
+        id
         type
       }
       avgDistinct {
-        id
+        androidIndex
         extensionIndex
         iOSIndex
-        androidIndex
+        id
         type
       }
       sumDistinct {
-        id
+        androidIndex
         extensionIndex
         iOSIndex
-        androidIndex
+        id
         type
       }
       min {
-        id
+        androidIndex
         extensionIndex
         iOSIndex
-        androidIndex
+        id
         type
       }
       max {
-        id
+        androidIndex
         extensionIndex
         iOSIndex
-        androidIndex
+        id
         type
       }
     }

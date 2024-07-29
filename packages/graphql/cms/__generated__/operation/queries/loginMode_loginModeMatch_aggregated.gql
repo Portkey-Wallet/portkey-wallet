@@ -4,43 +4,43 @@ query loginMode_loginModeMatch_aggregated($groupBy: [String], $filter: loginMode
         countAll
         count{
             id
-            loginMode_id
             loginModeMatch_id
+            loginMode_id
         }
         countDistinct{
             id
-            loginMode_id
             loginModeMatch_id
+            loginMode_id
         }
         avg{
             id
-            loginMode_id
             loginModeMatch_id
+            loginMode_id
         }
         sum{
             id
-            loginMode_id
             loginModeMatch_id
+            loginMode_id
         }
         avgDistinct{
             id
-            loginMode_id
             loginModeMatch_id
+            loginMode_id
         }
         sumDistinct{
             id
-            loginMode_id
             loginModeMatch_id
+            loginMode_id
         }
         min{
             id
-            loginMode_id
             loginModeMatch_id
+            loginMode_id
         }
         max{
             id
-            loginMode_id
             loginModeMatch_id
+            loginMode_id
         }
     }
 }

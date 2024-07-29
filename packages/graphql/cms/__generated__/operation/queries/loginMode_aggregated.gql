@@ -3,71 +3,71 @@ query loginMode_aggregated($groupBy: [String], $filter: loginMode_filter, $limit
         group
         countAll
         count{
-            id
-            status
-            extensionIndex
-            iOSIndex
             androidIndex
-            extensionRecommend
-            iOSRecommend
             androidRecommend
             defaultSwitch
+            extensionIndex
+            extensionRecommend
+            iOSIndex
+            iOSRecommend
+            id
+            status
             type
             matchList
         }
         countDistinct{
-            id
-            status
-            extensionIndex
-            iOSIndex
             androidIndex
-            extensionRecommend
-            iOSRecommend
             androidRecommend
             defaultSwitch
+            extensionIndex
+            extensionRecommend
+            iOSIndex
+            iOSRecommend
+            id
+            status
             type
             matchList
         }
         avg{
-            id
+            androidIndex
             extensionIndex
             iOSIndex
-            androidIndex
+            id
             type
         }
         sum{
-            id
+            androidIndex
             extensionIndex
             iOSIndex
-            androidIndex
+            id
             type
         }
         avgDistinct{
-            id
+            androidIndex
             extensionIndex
             iOSIndex
-            androidIndex
+            id
             type
         }
         sumDistinct{
-            id
+            androidIndex
             extensionIndex
             iOSIndex
-            androidIndex
+            id
             type
         }
         min{
-            id
+            androidIndex
             extensionIndex
             iOSIndex
-            androidIndex
+            id
             type
         }
         max{
-            id
+            androidIndex
             extensionIndex
             iOSIndex
-            androidIndex
+            id
             type
         }
     }

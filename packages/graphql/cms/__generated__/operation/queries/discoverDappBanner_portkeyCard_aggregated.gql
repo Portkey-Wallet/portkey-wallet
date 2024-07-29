@@ -3,43 +3,43 @@ query discoverDappBanner_portkeyCard_aggregated($groupBy: [String], $filter: dis
         group
         countAll
         count{
-            id
             discoverDappBanner_id
+            id
             portkeyCard_id
         }
         countDistinct{
-            id
             discoverDappBanner_id
+            id
             portkeyCard_id
         }
         avg{
-            id
             discoverDappBanner_id
+            id
             portkeyCard_id
         }
         sum{
-            id
             discoverDappBanner_id
+            id
             portkeyCard_id
         }
         avgDistinct{
-            id
             discoverDappBanner_id
+            id
             portkeyCard_id
         }
         sumDistinct{
-            id
             discoverDappBanner_id
+            id
             portkeyCard_id
         }
         min{
-            id
             discoverDappBanner_id
+            id
             portkeyCard_id
         }
         max{
-            id
             discoverDappBanner_id
+            id
             portkeyCard_id
         }
     }

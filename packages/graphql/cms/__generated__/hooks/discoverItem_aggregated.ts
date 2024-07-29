@@ -23,9 +23,11 @@ export type DiscoverItem_AggregatedQuery = {
     countAll?: number | null;
     count?: {
       __typename?: 'discoverItem_aggregated_count';
+      appLink?: number | null;
       date_created?: number | null;
       date_updated?: number | null;
       description?: number | null;
+      extensionLink?: number | null;
       group?: number | null;
       id?: number | null;
       imgUrl?: number | null;
@@ -36,14 +38,14 @@ export type DiscoverItem_AggregatedQuery = {
       url?: number | null;
       user_created?: number | null;
       user_updated?: number | null;
-      appLink?: number | null;
-      extensionLink?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'discoverItem_aggregated_count';
+      appLink?: number | null;
       date_created?: number | null;
       date_updated?: number | null;
       description?: number | null;
+      extensionLink?: number | null;
       group?: number | null;
       id?: number | null;
       imgUrl?: number | null;
@@ -54,8 +56,6 @@ export type DiscoverItem_AggregatedQuery = {
       url?: number | null;
       user_created?: number | null;
       user_updated?: number | null;
-      appLink?: number | null;
-      extensionLink?: number | null;
     } | null;
     avg?: {
       __typename?: 'discoverItem_aggregated_fields';
@@ -124,9 +124,11 @@ export const DiscoverItem_AggregatedDocument = gql`
       group
       countAll
       count {
+        appLink
         date_created
         date_updated
         description
+        extensionLink
         group
         id
         imgUrl
@@ -137,13 +139,13 @@ export const DiscoverItem_AggregatedDocument = gql`
         url
         user_created
         user_updated
-        appLink
-        extensionLink
       }
       countDistinct {
+        appLink
         date_created
         date_updated
         description
+        extensionLink
         group
         id
         imgUrl
@@ -154,8 +156,6 @@ export const DiscoverItem_AggregatedDocument = gql`
         url
         user_created
         user_updated
-        appLink
-        extensionLink
       }
       avg {
         group

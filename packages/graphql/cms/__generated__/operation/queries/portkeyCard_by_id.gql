@@ -1,64 +1,21 @@
-query portkeyCard_by_id($filter: directus_files_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String, $id: ID!){
+query portkeyCard_by_id($filter: cardType_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String, $id: ID!){
     portkeyCard_by_id(id: $id){
-        id
-        status
-        index
-        title
-        value
-        description
+        appLink
         buttonTitle
-        imgUrl(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
+        description
+        extensionLink
+        id
+        imgUrl
+        index
+        status
+        title
+        type(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
             id
-            storage
-            filename_disk
-            filename_download
-            title
-            type
-            folder
-            uploaded_by
-            uploaded_on
-            uploaded_on_func{
-                year
-                month
-                week
-                day
-                weekday
-                hour
-                minute
-                second
-            }
-            modified_by
-            modified_on
-            modified_on_func{
-                year
-                month
-                week
-                day
-                weekday
-                hour
-                minute
-                second
-            }
-            charset
-            filesize
-            width
-            height
-            duration
-            embed
-            description
-            location
-            tags
-            tags_func{
-                count
-            }
-            metadata
-            metadata_func{
-                count
-            }
+            label
+            status
+            value
         }
         url
-        type
-        appLink
-        extensionLink
+        value
     }
 }

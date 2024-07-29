@@ -1,0 +1,24 @@
+query ActivityModalConfig($filter: clientType_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String, $filter1: timingType_filter, $sort1: [String], $limit1: Int, $offset1: Int, $page1: Int, $search1: String, $filter2: ActivityModalConfig_filter, $sort2: [String], $limit2: Int, $offset2: Int, $page2: Int, $search2: String){
+    ActivityModalConfig(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2){
+        id
+        clientType(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
+            id
+            name
+        }
+        timingType(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1){
+            id
+            name
+        }
+        show
+        showClose
+        headerImg
+        title
+        description
+        negtiveTitle
+        positiveTitle
+        positiveAction
+        timingOperation
+        label
+        negativeTitle
+    }
+}

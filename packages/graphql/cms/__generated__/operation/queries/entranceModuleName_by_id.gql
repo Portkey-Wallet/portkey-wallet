@@ -1,7 +1,5 @@
 query entranceModuleName_by_id($id: ID!){
     entranceModuleName_by_id(id: $id){
-        id
-        user_created
         date_created
         date_created_func{
             year
@@ -13,7 +11,6 @@ query entranceModuleName_by_id($id: ID!){
             minute
             second
         }
-        user_updated
         date_updated
         date_updated_func{
             year
@@ -25,7 +22,10 @@ query entranceModuleName_by_id($id: ID!){
             minute
             second
         }
-        value
         description
+        id
+        user_created
+        user_updated
+        value
     }
 }

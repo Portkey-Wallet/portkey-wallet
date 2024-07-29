@@ -1,56 +1,10 @@
-query mediaKitPage_mediaKit($filter: directus_files_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String, $filter1: mediaKitPage_filter, $sort1: [String], $limit1: Int, $offset1: Int, $page1: Int, $search1: String, $filter2: directus_files_filter, $sort2: [String], $limit2: Int, $offset2: Int, $page2: Int, $search2: String, $filter3: directus_files_filter, $sort3: [String], $limit3: Int, $offset3: Int, $page3: Int, $search3: String, $filter4: mediaKit_filter, $sort4: [String], $limit4: Int, $offset4: Int, $page4: Int, $search4: String, $filter5: mediaKitPage_mediaKit_filter, $sort5: [String], $limit5: Int, $offset5: Int, $page5: Int, $search5: String, $filter6: mediaKitPage_filter, $sort6: [String], $limit6: Int, $offset6: Int, $page6: Int, $search6: String, $filter7: mediaKit_filter, $sort7: [String], $limit7: Int, $offset7: Int, $page7: Int, $search7: String, $filter8: mediaKitPage_mediaKit_filter, $sort8: [String], $limit8: Int, $offset8: Int, $page8: Int, $search8: String){
-    mediaKitPage_mediaKit(filter: $filter8, sort: $sort8, limit: $limit8, offset: $offset8, page: $page8, search: $search8){
+query mediaKitPage_mediaKit($filter: mediaKitPage_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String, $filter1: mediaKit_filter, $sort1: [String], $limit1: Int, $offset1: Int, $page1: Int, $search1: String, $filter2: mediaKitPage_mediaKit_filter, $sort2: [String], $limit2: Int, $offset2: Int, $page2: Int, $search2: String, $filter3: mediaKitPage_filter, $sort3: [String], $limit3: Int, $offset3: Int, $page3: Int, $search3: String, $filter4: mediaKit_filter, $sort4: [String], $limit4: Int, $offset4: Int, $page4: Int, $search4: String, $filter5: mediaKitPage_mediaKit_filter, $sort5: [String], $limit5: Int, $offset5: Int, $page5: Int, $search5: String){
+    mediaKitPage_mediaKit(filter: $filter5, sort: $sort5, limit: $limit5, offset: $offset5, page: $page5, search: $search5){
         id
-        mediaKitPage_id(filter: $filter6, sort: $sort6, limit: $limit6, offset: $offset6, page: $page6, search: $search6){
-            allMediaKitZip(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
-                id
-                storage
-                filename_disk
-                filename_download
-                title
-                type
-                folder
-                uploaded_by
-                uploaded_on
-                uploaded_on_func{
-                    year
-                    month
-                    week
-                    day
-                    weekday
-                    hour
-                    minute
-                    second
-                }
-                modified_by
-                modified_on
-                modified_on_func{
-                    year
-                    month
-                    week
-                    day
-                    weekday
-                    hour
-                    minute
-                    second
-                }
-                charset
-                filesize
-                width
-                height
-                duration
-                embed
-                description
-                location
-                tags
-                tags_func{
-                    count
-                }
-                metadata
-                metadata_func{
-                    count
-                }
-            }
+        mediaKitPage_id(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3){
+            allMediaKitZip
+            boilerplateContent
+            boilerplateTitle
             content
             date_created
             date_created_func{
@@ -75,32 +29,31 @@ query mediaKitPage_mediaKit($filter: directus_files_filter, $sort: [String], $li
                 second
             }
             id
+            mediaKitDescription
             status
             title
             user_created
             user_updated
-            boilerplateContent
-            boilerplateTitle
-            mediaKitDescription
-            mediaKitList(filter: $filter5, sort: $sort5, limit: $limit5, offset: $offset5, page: $page5, search: $search5){
+            mediaKitList(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2){
                 id
-                mediaKitPage_id(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1){
+                mediaKitPage_id(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
+                    allMediaKitZip
+                    boilerplateContent
+                    boilerplateTitle
                     content
                     date_created
                     date_updated
                     id
+                    mediaKitDescription
                     status
                     title
                     user_created
                     user_updated
-                    boilerplateContent
-                    boilerplateTitle
-                    mediaKitDescription
                     mediaKitList_func{
                         count
                     }
                 }
-                mediaKit_id(filter: $filter4, sort: $sort4, limit: $limit4, offset: $offset4, page: $page4, search: $search4){
+                mediaKit_id(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1){
                     backgroundColor
                     date_created
                     date_created_func{
@@ -127,120 +80,26 @@ query mediaKitPage_mediaKit($filter: directus_files_filter, $sort: [String], $li
                     id
                     index
                     name
-                    png(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2){
-                        id
-                        storage
-                        filename_disk
-                        filename_download
-                        title
-                        type
-                        folder
-                        uploaded_by
-                        uploaded_on
-                        uploaded_on_func{
-                            year
-                            month
-                            week
-                            day
-                            weekday
-                            hour
-                            minute
-                            second
-                        }
-                        modified_by
-                        modified_on
-                        modified_on_func{
-                            year
-                            month
-                            week
-                            day
-                            weekday
-                            hour
-                            minute
-                            second
-                        }
-                        charset
-                        filesize
-                        width
-                        height
-                        duration
-                        embed
-                        description
-                        location
-                        tags
-                        tags_func{
-                            count
-                        }
-                        metadata
-                        metadata_func{
-                            count
-                        }
-                    }
+                    png
                     sort
                     status
-                    svg(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3){
-                        id
-                        storage
-                        filename_disk
-                        filename_download
-                        title
-                        type
-                        folder
-                        uploaded_by
-                        uploaded_on
-                        uploaded_on_func{
-                            year
-                            month
-                            week
-                            day
-                            weekday
-                            hour
-                            minute
-                            second
-                        }
-                        modified_by
-                        modified_on
-                        modified_on_func{
-                            year
-                            month
-                            week
-                            day
-                            weekday
-                            hour
-                            minute
-                            second
-                        }
-                        charset
-                        filesize
-                        width
-                        height
-                        duration
-                        embed
-                        description
-                        location
-                        tags
-                        tags_func{
-                            count
-                        }
-                        metadata
-                        metadata_func{
-                            count
-                        }
-                    }
+                    svg
                     user_created
                     user_updated
                 }
             }
         }
-        mediaKit_id(filter: $filter7, sort: $sort7, limit: $limit7, offset: $offset7, page: $page7, search: $search7){
+        mediaKit_id(filter: $filter4, sort: $sort4, limit: $limit4, offset: $offset4, page: $page4, search: $search4){
             backgroundColor
             date_created
             date_updated
             id
             index
             name
+            png
             sort
             status
+            svg
             user_created
             user_updated
         }

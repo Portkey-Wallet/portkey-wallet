@@ -26,7 +26,7 @@ export type DiscoverLearnGroupCustomQuery = {
         value?: string | null;
         description?: string | null;
         buttonTitle?: string | null;
-        imgUrl?: { __typename?: 'directus_files'; filename_disk?: string | null } | null;
+        imgUrl?: never | null;
       } | null;
     } | null> | null;
   }>;

@@ -20,7 +20,7 @@ export type SocialMediaCustomQuery = {
     link?: string | null;
     sort?: number | null;
     title?: string | null;
-    svgUrl?: { __typename?: 'directus_files'; filename_disk?: string | null } | null;
+    svgUrl?: never | null;
   }>;
 };
 

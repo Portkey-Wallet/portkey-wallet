@@ -1,0 +1,46 @@
+query upgradePush_appVersion_aggregated($groupBy: [String], $filter: upgradePush_appVersion_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
+    upgradePush_appVersion_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
+        group
+        countAll
+        count{
+            appVersion_id
+            id
+            upgradePush_id
+        }
+        countDistinct{
+            appVersion_id
+            id
+            upgradePush_id
+        }
+        avg{
+            appVersion_id
+            id
+            upgradePush_id
+        }
+        sum{
+            appVersion_id
+            id
+            upgradePush_id
+        }
+        avgDistinct{
+            appVersion_id
+            id
+            upgradePush_id
+        }
+        sumDistinct{
+            appVersion_id
+            id
+            upgradePush_id
+        }
+        min{
+            appVersion_id
+            id
+            upgradePush_id
+        }
+        max{
+            appVersion_id
+            id
+            upgradePush_id
+        }
+    }
+}

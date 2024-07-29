@@ -4,13 +4,13 @@ import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
 export type DiscoverGroupQueryVariables = Types.Exact<{
-  filter?: Types.InputMaybe<Types.Directus_Files_Filter>;
+  filter?: Types.InputMaybe<Types.DiscoverItem_Filter>;
   sort?: Types.InputMaybe<Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>>;
   limit?: Types.InputMaybe<Types.Scalars['Int']>;
   offset?: Types.InputMaybe<Types.Scalars['Int']>;
   page?: Types.InputMaybe<Types.Scalars['Int']>;
   search?: Types.InputMaybe<Types.Scalars['String']>;
-  filter1?: Types.InputMaybe<Types.DiscoverItem_Filter>;
+  filter1?: Types.InputMaybe<Types.DiscoverGroup_Filter>;
   sort1?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -18,7 +18,7 @@ export type DiscoverGroupQueryVariables = Types.Exact<{
   offset1?: Types.InputMaybe<Types.Scalars['Int']>;
   page1?: Types.InputMaybe<Types.Scalars['Int']>;
   search1?: Types.InputMaybe<Types.Scalars['String']>;
-  filter2?: Types.InputMaybe<Types.DiscoverGroup_Filter>;
+  filter2?: Types.InputMaybe<Types.DiscoverItem_Filter>;
   sort2?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -26,7 +26,7 @@ export type DiscoverGroupQueryVariables = Types.Exact<{
   offset2?: Types.InputMaybe<Types.Scalars['Int']>;
   page2?: Types.InputMaybe<Types.Scalars['Int']>;
   search2?: Types.InputMaybe<Types.Scalars['String']>;
-  filter3?: Types.InputMaybe<Types.DiscoverItem_Filter>;
+  filter3?: Types.InputMaybe<Types.DiscoverGroup_Filter>;
   sort3?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -34,14 +34,6 @@ export type DiscoverGroupQueryVariables = Types.Exact<{
   offset3?: Types.InputMaybe<Types.Scalars['Int']>;
   page3?: Types.InputMaybe<Types.Scalars['Int']>;
   search3?: Types.InputMaybe<Types.Scalars['String']>;
-  filter4?: Types.InputMaybe<Types.DiscoverGroup_Filter>;
-  sort4?: Types.InputMaybe<
-    Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
-  >;
-  limit4?: Types.InputMaybe<Types.Scalars['Int']>;
-  offset4?: Types.InputMaybe<Types.Scalars['Int']>;
-  page4?: Types.InputMaybe<Types.Scalars['Int']>;
-  search4?: Types.InputMaybe<Types.Scalars['String']>;
 }>;
 
 export type DiscoverGroupQuery = {
@@ -81,10 +73,13 @@ export type DiscoverGroupQuery = {
     } | null;
     items?: Array<{
       __typename?: 'discoverItem';
+      appLink?: string | null;
       date_created?: any | null;
       date_updated?: any | null;
       description?: string | null;
+      extensionLink?: string | null;
       id: string;
+      imgUrl?: string | null;
       index?: number | null;
       sort?: number | null;
       status?: string | null;
@@ -92,8 +87,6 @@ export type DiscoverGroupQuery = {
       url?: string | null;
       user_created?: string | null;
       user_updated?: string | null;
-      appLink?: string | null;
-      extensionLink?: string | null;
       date_created_func?: {
         __typename?: 'datetime_functions';
         year?: number | null;
@@ -151,10 +144,13 @@ export type DiscoverGroupQuery = {
         } | null;
         items?: Array<{
           __typename?: 'discoverItem';
+          appLink?: string | null;
           date_created?: any | null;
           date_updated?: any | null;
           description?: string | null;
+          extensionLink?: string | null;
           id: string;
+          imgUrl?: string | null;
           index?: number | null;
           sort?: number | null;
           status?: string | null;
@@ -162,56 +158,6 @@ export type DiscoverGroupQuery = {
           url?: string | null;
           user_created?: string | null;
           user_updated?: string | null;
-          appLink?: string | null;
-          extensionLink?: string | null;
-          imgUrl?: {
-            __typename?: 'directus_files';
-            id: string;
-            storage: string;
-            filename_disk?: string | null;
-            filename_download: string;
-            title?: string | null;
-            type?: string | null;
-            folder?: string | null;
-            uploaded_by?: string | null;
-            uploaded_on?: any | null;
-            modified_by?: string | null;
-            modified_on?: any | null;
-            charset?: string | null;
-            filesize?: any | null;
-            width?: number | null;
-            height?: number | null;
-            duration?: number | null;
-            embed?: string | null;
-            description?: string | null;
-            location?: string | null;
-            tags?: any | null;
-            metadata?: any | null;
-            uploaded_on_func?: {
-              __typename?: 'datetime_functions';
-              year?: number | null;
-              month?: number | null;
-              week?: number | null;
-              day?: number | null;
-              weekday?: number | null;
-              hour?: number | null;
-              minute?: number | null;
-              second?: number | null;
-            } | null;
-            modified_on_func?: {
-              __typename?: 'datetime_functions';
-              year?: number | null;
-              month?: number | null;
-              week?: number | null;
-              day?: number | null;
-              weekday?: number | null;
-              hour?: number | null;
-              minute?: number | null;
-              second?: number | null;
-            } | null;
-            tags_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-            metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-          } | null;
         } | null> | null;
         items_func?: { __typename?: 'count_functions'; count?: number | null } | null;
       } | null;
@@ -222,38 +168,32 @@ export type DiscoverGroupQuery = {
 
 export const DiscoverGroupDocument = gql`
   query discoverGroup(
-    $filter: directus_files_filter
+    $filter: discoverItem_filter
     $sort: [String]
     $limit: Int
     $offset: Int
     $page: Int
     $search: String
-    $filter1: discoverItem_filter
+    $filter1: discoverGroup_filter
     $sort1: [String]
     $limit1: Int
     $offset1: Int
     $page1: Int
     $search1: String
-    $filter2: discoverGroup_filter
+    $filter2: discoverItem_filter
     $sort2: [String]
     $limit2: Int
     $offset2: Int
     $page2: Int
     $search2: String
-    $filter3: discoverItem_filter
+    $filter3: discoverGroup_filter
     $sort3: [String]
     $limit3: Int
     $offset3: Int
     $page3: Int
     $search3: String
-    $filter4: discoverGroup_filter
-    $sort4: [String]
-    $limit4: Int
-    $offset4: Int
-    $page4: Int
-    $search4: String
   ) {
-    discoverGroup(filter: $filter4, sort: $sort4, limit: $limit4, offset: $offset4, page: $page4, search: $search4) {
+    discoverGroup(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3) {
       date_created
       date_created_func {
         year
@@ -283,7 +223,8 @@ export const DiscoverGroupDocument = gql`
       title
       user_created
       user_updated
-      items(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3) {
+      items(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2) {
+        appLink
         date_created
         date_created_func {
           year
@@ -307,7 +248,8 @@ export const DiscoverGroupDocument = gql`
           second
         }
         description
-        group(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2) {
+        extensionLink
+        group(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1) {
           date_created
           date_created_func {
             year
@@ -337,60 +279,14 @@ export const DiscoverGroupDocument = gql`
           title
           user_created
           user_updated
-          items(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1) {
+          items(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
+            appLink
             date_created
             date_updated
             description
+            extensionLink
             id
-            imgUrl(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
-              id
-              storage
-              filename_disk
-              filename_download
-              title
-              type
-              folder
-              uploaded_by
-              uploaded_on
-              uploaded_on_func {
-                year
-                month
-                week
-                day
-                weekday
-                hour
-                minute
-                second
-              }
-              modified_by
-              modified_on
-              modified_on_func {
-                year
-                month
-                week
-                day
-                weekday
-                hour
-                minute
-                second
-              }
-              charset
-              filesize
-              width
-              height
-              duration
-              embed
-              description
-              location
-              tags
-              tags_func {
-                count
-              }
-              metadata
-              metadata_func {
-                count
-              }
-            }
+            imgUrl
             index
             sort
             status
@@ -398,14 +294,13 @@ export const DiscoverGroupDocument = gql`
             url
             user_created
             user_updated
-            appLink
-            extensionLink
           }
           items_func {
             count
           }
         }
         id
+        imgUrl
         index
         sort
         status
@@ -413,8 +308,6 @@ export const DiscoverGroupDocument = gql`
         url
         user_created
         user_updated
-        appLink
-        extensionLink
       }
       items_func {
         count
@@ -459,12 +352,6 @@ export const DiscoverGroupDocument = gql`
  *      offset3: // value for 'offset3'
  *      page3: // value for 'page3'
  *      search3: // value for 'search3'
- *      filter4: // value for 'filter4'
- *      sort4: // value for 'sort4'
- *      limit4: // value for 'limit4'
- *      offset4: // value for 'offset4'
- *      page4: // value for 'page4'
- *      search4: // value for 'search4'
  *   },
  * });
  */

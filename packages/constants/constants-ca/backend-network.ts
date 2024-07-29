@@ -183,11 +183,13 @@ export const BackEndNetWorkMap: {
       AELF: '4xWFvoLvi5anZERDuJvzfMoZsb6WZLATEzqzCVe8sQnCp2XGS',
       tDVW: '2AgU8BfyKyrxUrmskVCUukw63Wk96MVfVoJzDDbwKszafioCN1',
     },
-    eTransferUrl: 'https://test.etransfer.exchange',
+    eTransferUrl: 'https://test-app.etransfer.exchange',
     awakenUrl: 'https://test-app.awaken.finance',
     schrodingerUrl: 'https://schrodingerai.com',
     eForestUrl: 'https://test.eforest.finance',
     sgrSchrodingerUrl: 'https://cat.schrodingerai.com',
+    tomorrowDAOUrl: 'https://test.tmrwdao.com',
+    hamsterUrl: 'https://test-hamster.beangotown.com',
   },
   'back-end-testnet': {
     name: 'aelf Testnet',
@@ -206,7 +208,7 @@ export const BackEndNetWorkMap: {
     portkeyFinanceUrl: 'https://test.portkey.finance',
     portkeyOpenLoginUrl: 'https://openlogin.portkey.finance/',
     eBridgeUrl: 'https://test.ebridge.exchange',
-    eTransferUrl: 'https://test.etransfer.exchange',
+    eTransferUrl: 'https://test-app.etransfer.exchange',
     eTransferCA: {
       AELF: '4xWFvoLvi5anZERDuJvzfMoZsb6WZLATEzqzCVe8sQnCp2XGS',
       tDVW: '2AgU8BfyKyrxUrmskVCUukw63Wk96MVfVoJzDDbwKszafioCN1',
@@ -214,6 +216,8 @@ export const BackEndNetWorkMap: {
     awakenUrl: 'https://test-app.awaken.finance',
     schrodingerUrl: 'https://schrodingerai.com',
     sgrSchrodingerUrl: 'https://cat.schrodingerai.com',
+    tomorrowDAOUrl: 'https://test.tmrwdao.com',
+    hamsterUrl: 'https://test-hamster.beangotown.com',
   },
   'back-end-mainnet': {
     name: 'aelf Mainnet',
@@ -241,10 +245,12 @@ export const BackEndNetWorkMap: {
       AELF: '2w13DqbuuiadvaSY2ZyKi2UoXg354zfHLM3kwRKKy85cViw4ZF',
       tDVV: 'x4CTSuM8typUbpdfxRZDTqYVa42RdxrwwPkXX7WUJHeRmzE6k',
     },
-    eTransferUrl: 'https://etransfer.exchange',
+    eTransferUrl: 'https://app.etransfer.exchange',
     awakenUrl: 'https://app.awaken.finance',
     schrodingerUrl: 'https://schrodingernft.ai/',
     sgrSchrodingerUrl: 'https://cat.schrodingernft.ai/',
+    tomorrowDAOUrl: 'https://tmrwdao.com',
+    hamsterUrl: 'https://hamster.beangotown.com',
   },
   'back-end-mainnet-v2': {
     name: 'aelf Mainnet',
@@ -270,7 +276,7 @@ export const BackEndNetWorkMap: {
     imWsUrl: 'wss://im-socket.portkey.finance/ws/',
     imS3Bucket: 'portkey-im',
     eBridgeUrl: 'https://ebridge.exchange',
-    eTransferUrl: 'https://etransfer.exchange',
+    eTransferUrl: 'https://app.etransfer.exchange',
     eTransferCA: {
       AELF: '2w13DqbuuiadvaSY2ZyKi2UoXg354zfHLM3kwRKKy85cViw4ZF',
       tDVV: 'x4CTSuM8typUbpdfxRZDTqYVa42RdxrwwPkXX7WUJHeRmzE6k',
@@ -279,5 +285,7 @@ export const BackEndNetWorkMap: {
     schrodingerUrl: 'https://schrodingernft.ai',
     eForestUrl: 'https://www.eforest.finance',
     sgrSchrodingerUrl: 'https://cat.schrodingernft.ai',
+    tomorrowDAOUrl: 'https://tmrwdao.com',
+    hamsterUrl: 'https://hamster.beangotown.com',
   },
 };

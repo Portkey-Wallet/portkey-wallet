@@ -77,7 +77,7 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
         result.fileSize = info.size;
       }
 
-      if (!result?.fileSize || result.fileSize > MAX_FILE_SIZE_BYTE) return CommonToast.fail('File too large');
+      if (!result?.fileSize || result.fileSize > MAX_FILE_SIZE_BYTE) return CommonToast.fail('The file is too large');
 
       SendPicModal.showSendPic({
         uri: result.uri,

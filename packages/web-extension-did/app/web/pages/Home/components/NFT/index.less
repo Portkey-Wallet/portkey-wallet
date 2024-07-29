@@ -2,18 +2,97 @@
 @import '../../../../assets/theme/constants.less';
 
 .tab-nft {
-  .empty-nft-list {
-    gap: 8px;
-    margin-top: 40px;
-    line-height: 22px;
-    color: @neutral-tertiary-text;
+  .free-mint-tip-container {
+    margin: 24px 16px;
+    padding: 12px;
+    border-radius: 8px;
     font-size: 14px;
-    .nonfts-icon {
-      width: 64px;
-      height: 64px;
+    line-height: 22px;
+    font-weight: 500;
+    background-color: @neutral-container-bg;
+    .left-text {
+      color: @neutral-primary-text;
+    }
+    .right-container {
+      cursor: pointer;
+    }
+    .right-text {
+      margin-right: 2px;
+      color: @brand-normal;
+    }
+    .newrightarrow-icon {
+      width: 14px;
+      height: 14px;
       svg {
-        width: 100%;
-        height: 100%;
+        width: 14px;
+        height: 14px;
+        path {
+          fill: @brand-normal;
+        }
+      }
+    }
+  }
+  .empty-nft-container {
+    gap: 40px;
+    padding: 40px 16px 24px;
+    &.prompt-page {
+      gap: 126px;
+    }
+    .empty-nft-list {
+      gap: 8px;
+      line-height: 22px;
+      color: @neutral-tertiary-text;
+      font-size: 14px;
+      .nonfts-icon {
+        width: 64px;
+        height: 64px;
+        svg {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+    .free-mint-container {
+      gap: 10px;
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 22px;
+      color: @neutral-tertiary-text;
+      background-color: @neutral-container-bg;
+      .free-mint-list {
+        gap: 8px;
+        font-weight: 500px;
+        .list-item-number {
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background-color: @neutral-divider;
+          font-size: 12px;
+          line-height: 16px;
+          color: @neutral-secondary-text;
+        }
+        .list-item-text {
+          color: @neutral-primary-text;
+          font-weight: 500;
+        }
+        .list-item-text-primary {
+          gap: 2px;
+          color: @brand-normal;
+          cursor: pointer;
+          .newrightarrow-icon {
+            width: 14px;
+            height: 14px;
+            svg {
+              width: 14px;
+              height: 14px;
+              path {
+                fill: @brand-normal;
+              }
+            }
+          }
+        }
       }
     }
   }

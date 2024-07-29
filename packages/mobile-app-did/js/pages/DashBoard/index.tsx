@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Animated } from 'react-native';
+import { Animated, View } from 'react-native';
 import { NestedScrollView, NestedScrollViewHeader } from '@sdcx/nested-scroll';
 import Card from './Card';
 import DashBoardTab from './DashBoardTab';
@@ -32,10 +32,10 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
 
   const [scrollY, setScrollY] = useState(new Animated.Value(0));
 
-  const navToChat = useCallback(
-    (tabName: RootStackName) => {
+  const navToBottomTab = useCallback(
+    (tabName: RootStackName, params: any) => {
       if (navigation && navigation.jumpTo) {
-        navigation.jumpTo(tabName);
+        navigation.jumpTo(tabName, params);
       }
     },
     [navigation],
@@ -51,7 +51,7 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
 
   // nav's to chat tab
   useEffect(() => {
-    const listener = myEvents.navToBottomTab.addListener(({ tabName }) => navToChat(tabName));
+    const listener = myEvents.navToBottomTab.addListener(({ tabName, params }) => navToBottomTab(tabName, params));
     return () => listener.remove();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -80,6 +80,9 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
         )}
         <DashBoardTab />
       </NestedScrollView>
+      {/* <View style={{ position: 'absolute', bottom: pTd(40) }}>
+        <MintStatusLine />
+      </View> */}
     </SafeAreaBox>
   );
 };

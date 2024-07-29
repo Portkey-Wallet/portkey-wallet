@@ -1,0 +1,100 @@
+@import '../../assets/theme/color.less';
+@import '../../assets/theme/constants.less';
+
+.free-mint-page {
+  height: 100%;
+  .free-mint-body {
+    gap: 32px;
+    padding: 0 16px 24px;
+    background: @neutral-default-bg;
+    .free-mint-title {
+      font-size: 30px;
+      line-height: 38px;
+      font-weight: 500px;
+      color: @neutral-primary-text;
+    }
+    .free-mint-logo {
+      width: 100%;
+      height: 240px;
+      .freemintlogo-icon {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+    }
+    .free-mint-btn {
+      background: @neutral-default-bg;
+      width: 100%;
+      button {
+        height: 48px;
+        border-radius: 6px;
+        line-height: 24px;
+        font-size: 16px;
+        font-weight: 500;
+      }
+    }
+    .free-mint-tip {
+      gap: 16px;
+      padding: 16px 12px;
+      align-items: flex-start;
+      border-radius: 6px;
+      background-color: @neutral-hover-bg;
+      .free-mint-tip-item {
+        gap: 8px;
+        .tip-item-number {
+          width: 24px;
+          height: 24px;
+          font-size: 12px;
+          line-height: 16px;
+          font-weight: 500;
+          color: @brand-normal;
+          border-radius: 50%;
+          background-color: @brand-light;
+        }
+        .tip-item-title {
+          font-size: 16px;
+          line-height: 24px;
+          font-weight: 500px;
+          color: @neutral-primary-text;
+        }
+
+        .tip-item-content {
+          font-size: 14px;
+          line-height: 22px;
+          color: @neutral-secondary-text;
+        }
+      }
+    }
+    .free-mint-notice {
+      margin-top: -16px;
+      gap: 8px;
+      font-size: 12px;
+      line-height: 16px;
+      color: @neutral-secondary-text;
+    }
+  }
+}
+
+.free-mint-prompt {
+  .free-mint-page {
+    position: relative;
+
+    .picture {
+      width: 320px;
+      height: 320px;
+    }
+
+    .btn-wrap {
+      width: 100%;
+    }
+  }
+}
+
+.free-mint-drawer,
+.free-mint-modal {
+  .@{app-prefix}-modal-body,
+  .@{app-prefix}-drawer-body {
+    display: flex;
+    flex-direction: column;
+  }
+}

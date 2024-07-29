@@ -59,6 +59,7 @@ import DepositHome from 'pages/DepositHome';
 import CryptoGifts from 'pages/CryptoGifts/Home';
 import HistoryList from 'pages/CryptoGifts/History';
 import CryptoGiftsDetail from 'pages/CryptoGifts/Detail';
+import FreeMint from 'pages/FreeMint';
 
 export const PageRouter = () =>
   useRoutes([
@@ -157,6 +158,10 @@ export const PageRouter = () =>
     {
       path: '/nft',
       element: <NFT />,
+    },
+    {
+      path: '/free-mint',
+      element: <FreeMint />,
     },
     {
       path: 'setting/contacts',

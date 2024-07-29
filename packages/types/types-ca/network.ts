@@ -31,7 +31,9 @@ export type NetworkItem = {
   awakenUrl?: string;
   schrodingerUrl?: string;
   sgrSchrodingerUrl?: string;
+  tomorrowDAOUrl?: string;
   eTransferCA?: {
     [x in ChainId]?: string;
   };
+  hamsterUrl?: string;
 };

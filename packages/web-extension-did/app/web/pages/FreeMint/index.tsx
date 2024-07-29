@@ -138,6 +138,7 @@ export default function FreeMint() {
         s3Url = newAvatarS3File;
       } else {
         s3Url = await uploadImageToS3(file!);
+        setNewAvatarS3File(s3Url);
       }
 
       const params = {

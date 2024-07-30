@@ -2,7 +2,7 @@ import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type'
 import { VerifierInfo } from '@portkey-wallet/types/verifier';
 import { GuardiansApproved, GuardiansStatus } from 'pages/Guardian/types';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
-import { handleVerifierInfo, handleZKLoginInfo } from '@portkey-wallet/utils/guardian';
+import { handleVerifierInfo, handleZKLoginInfo, handleVerificationDoc } from '@portkey-wallet/utils/guardian';
 import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
 
@@ -78,9 +78,9 @@ export function addGuardian(
   userGuardiansList: UserGuardianItem[],
   guardiansStatus: GuardiansStatus,
 ) {
-  // const { identifierHash } = handleVerifierInfo(verifierInfo); // todo_wade: confirm this
+  const { identifierHash } = handleVerifierInfo(verifierInfo);
   const guardianToAdd = {
-    identifierHash: verifierInfo.zkLoginInfo.guardianIdentifierHash,
+    identifierHash: verifierInfo?.zkLoginInfo?.guardianIdentifierHash ?? identifierHash,
     type: guardianItem.guardianType,
     verificationInfo: {
       id: guardianItem.verifier?.id

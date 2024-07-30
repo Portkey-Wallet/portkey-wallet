@@ -10,7 +10,6 @@ import { request } from '@portkey-wallet/api/api-did';
 import {
   getGoogleUserInfo,
   parseAppleIdentityToken,
-  parseFacebookToken,
   parseFacebookJWTToken,
   parseTwitterToken,
 } from '@portkey-wallet/utils/authentication';
@@ -57,7 +56,16 @@ if (!isIOS) {
 
 export function useGoogleAuthentication() {
   const [androidResponse, setResponse] = useState<any>();
-  const [{ googleRequest, response, promptAsync, googleAuthNonce }] = useInterface();
+  const [googleAuthNonce] = useState(generateRandomNonce());
+  // const [{ googleRequest, response, promptAsync, googleAuthNonce }, dispatch] = useInterface();
+  const [googleRequest, response, promptAsync] = Google.useAuthRequest({
+    iosClientId: Config.GOOGLE_IOS_CLIENT_ID,
+    androidClientId: Config.GOOGLE_ANDROID_CLIENT_ID,
+    shouldAutoExchangeCode: false,
+    extraParams: {
+      nonce: googleAuthNonce,
+    },
+  });
   const iosPromptAsync: () => Promise<TGoogleAuthResponse> = useCallback(async () => {
     await sleep(2000);
     if (AppState.currentState !== 'active') throw { message: '' };
@@ -402,12 +410,12 @@ export function useVerifyZKLogin() {
 export function useVerifyGoogleToken() {
   const { googleSign } = useGoogleAuthentication();
   const verifyZKLogin = useVerifyZKLogin();
-  const [{ googleAuthNonce }] = useInterface();
   return useCallback(
     async (params: VerifyTokenParams) => {
       let accessToken = params.accessToken;
       let idToken = params.idToken;
       let isRequest = !accessToken;
+      let nonce = params.nonce;
       if (accessToken) {
         try {
           const { id } = await getGoogleUserInfo(accessToken);
@@ -420,6 +428,7 @@ export function useVerifyGoogleToken() {
         const userInfo = await googleSign();
         accessToken = userInfo?.accessToken;
         idToken = userInfo?.idToken;
+        nonce = userInfo?.nonce;
         if (userInfo.user.id !== params.id) throw new Error('Account does not match your guardian');
       }
       if (!idToken) {
@@ -436,14 +445,14 @@ export function useVerifyGoogleToken() {
         jwt: idToken,
         salt: randomId(),
         kid: parseKidFromJWTToken(idToken),
-        nonce: googleAuthNonce,
+        nonce,
       });
       return {
         ...rst,
         accessToken,
       };
     },
-    [googleAuthNonce, googleSign, verifyZKLogin],
+    [googleSign, verifyZKLogin],
   );
 }
 
@@ -452,12 +461,15 @@ export function useVerifyAppleToken() {
   const verifyZKLogin = useVerifyZKLogin();
   return useCallback(
     async (params: VerifyTokenParams) => {
-      const { nonce, idToken } = params;
       let accessToken = params.accessToken;
+      let idToken = params.idToken;
+      let nonce = params.nonce;
       const { isExpired: tokenIsExpired } = parseAppleIdentityToken(accessToken) || {};
       if (!accessToken || tokenIsExpired) {
         const info = await appleSign();
         accessToken = info.identityToken || undefined;
+        idToken = info.idToken;
+        nonce = info.nonce;
       }
       const { userId } = parseAppleIdentityToken(accessToken) || {};
       if (userId !== params.id) throw new Error('Account does not match your guardian');
@@ -545,6 +557,7 @@ export function useVerifyFacebookToken() {
   const verifyZKLogin = useVerifyZKLogin();
   return useCallback(
     async (params: VerifyTokenParams) => {
+      console.log('useVerifyFacebookToken params : ', params);
       let accessToken = params.accessToken;
       let idToken = params.idToken;
       const nonce = params.nonce;
@@ -564,6 +577,7 @@ export function useVerifyFacebookToken() {
       const rst = await verifyZKLogin({
         verifyToken: {
           type: SocialLoginEnum.Facebook,
+          jwt: idToken,
           accessToken,
           verifierId: params.verifierId,
           chainId: params.chainId,

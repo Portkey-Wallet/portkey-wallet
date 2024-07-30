@@ -16,6 +16,7 @@ export type VerifyTokenParams = {
 export type VerifyZKPortkeyParams = {
   type: string;
   accessToken?: string;
+  jwt?: string;
   verifierId?: string;
   chainId: ChainId;
   operationType: OperationTypeEnum;

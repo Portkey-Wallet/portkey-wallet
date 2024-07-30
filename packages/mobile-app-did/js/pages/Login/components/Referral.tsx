@@ -66,7 +66,11 @@ export function useLoginModeMap(
       await onLogin({
         loginAccount: userInfo.user.id,
         loginType: LoginType.Google,
-        authenticationInfo: { [userInfo.user.id]: userInfo.accessToken, idToken: userInfo.idToken },
+        authenticationInfo: {
+          [userInfo.user.id]: userInfo.accessToken,
+          idToken: userInfo.idToken,
+          nonce: userInfo.nonce,
+        },
       });
     } catch (error) {
       CommonToast.failError(error);

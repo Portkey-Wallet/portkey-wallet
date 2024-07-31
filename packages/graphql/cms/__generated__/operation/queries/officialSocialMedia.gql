@@ -1,6 +1,54 @@
-query officialSocialMedia($filter: officialSocialMedia_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String){
-    officialSocialMedia(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
-        activeSvg
+query officialSocialMedia($filter: directus_files_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String, $filter1: directus_files_filter, $sort1: [String], $limit1: Int, $offset1: Int, $page1: Int, $search1: String, $filter2: officialSocialMedia_filter, $sort2: [String], $limit2: Int, $offset2: Int, $page2: Int, $search2: String){
+    officialSocialMedia(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2){
+        activeSvg(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
+            charset
+            description
+            duration
+            embed
+            filename_disk
+            filename_download
+            filesize
+            folder
+            height
+            id
+            location
+            metadata
+            metadata_func{
+                count
+            }
+            modified_by
+            modified_on
+            modified_on_func{
+                year
+                month
+                week
+                day
+                weekday
+                hour
+                minute
+                second
+            }
+            storage
+            tags
+            tags_func{
+                count
+            }
+            title
+            type
+            uploaded_by
+            uploaded_on
+            uploaded_on_func{
+                year
+                month
+                week
+                day
+                weekday
+                hour
+                minute
+                second
+            }
+            width
+        }
         date_created
         date_created_func{
             year
@@ -29,7 +77,55 @@ query officialSocialMedia($filter: officialSocialMedia_filter, $sort: [String], 
         name
         sort
         status
-        svg
+        svg(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1){
+            charset
+            description
+            duration
+            embed
+            filename_disk
+            filename_download
+            filesize
+            folder
+            height
+            id
+            location
+            metadata
+            metadata_func{
+                count
+            }
+            modified_by
+            modified_on
+            modified_on_func{
+                year
+                month
+                week
+                day
+                weekday
+                hour
+                minute
+                second
+            }
+            storage
+            tags
+            tags_func{
+                count
+            }
+            title
+            type
+            uploaded_by
+            uploaded_on
+            uploaded_on_func{
+                year
+                month
+                week
+                day
+                weekday
+                hour
+                minute
+                second
+            }
+            width
+        }
         user_created
         user_updated
     }

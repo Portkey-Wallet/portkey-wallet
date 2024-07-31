@@ -1,9 +1,9 @@
-query discoverLearnBanner_portkeyCard_by_id($filter: discoverLearnBanner_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String, $filter1: cardType_filter, $sort1: [String], $limit1: Int, $offset1: Int, $page1: Int, $search1: String, $filter2: portkeyCard_filter, $sort2: [String], $limit2: Int, $offset2: Int, $page2: Int, $search2: String, $filter3: discoverLearnBanner_portkeyCard_filter, $sort3: [String], $limit3: Int, $offset3: Int, $page3: Int, $search3: String, $filter4: discoverLearnBanner_filter, $sort4: [String], $limit4: Int, $offset4: Int, $page4: Int, $search4: String, $filter5: portkeyCard_filter, $sort5: [String], $limit5: Int, $offset5: Int, $page5: Int, $search5: String, $id: ID!){
+query discoverLearnBanner_portkeyCard_by_id($filter: discoverLearnBanner_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String, $filter1: directus_files_filter, $sort1: [String], $limit1: Int, $offset1: Int, $page1: Int, $search1: String, $filter2: cardType_filter, $sort2: [String], $limit2: Int, $offset2: Int, $page2: Int, $search2: String, $filter3: portkeyCard_filter, $sort3: [String], $limit3: Int, $offset3: Int, $page3: Int, $search3: String, $filter4: discoverLearnBanner_portkeyCard_filter, $sort4: [String], $limit4: Int, $offset4: Int, $page4: Int, $search4: String, $filter5: discoverLearnBanner_filter, $sort5: [String], $limit5: Int, $offset5: Int, $page5: Int, $search5: String, $filter6: portkeyCard_filter, $sort6: [String], $limit6: Int, $offset6: Int, $page6: Int, $search6: String, $id: ID!){
     discoverLearnBanner_portkeyCard_by_id(id: $id){
-        discoverLearnBanner_id(filter: $filter4, sort: $sort4, limit: $limit4, offset: $offset4, page: $page4, search: $search4){
+        discoverLearnBanner_id(filter: $filter5, sort: $sort5, limit: $limit5, offset: $offset5, page: $page5, search: $search5){
             id
             status
-            items(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3){
+            items(filter: $filter4, sort: $sort4, limit: $limit4, offset: $offset4, page: $page4, search: $search4){
                 discoverLearnBanner_id(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
                     id
                     status
@@ -12,17 +12,65 @@ query discoverLearnBanner_portkeyCard_by_id($filter: discoverLearnBanner_filter,
                     }
                 }
                 id
-                portkeyCard_id(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2){
+                portkeyCard_id(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3){
                     appLink
                     buttonTitle
                     description
                     extensionLink
                     id
-                    imgUrl
+                    imgUrl(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1){
+                        charset
+                        description
+                        duration
+                        embed
+                        filename_disk
+                        filename_download
+                        filesize
+                        folder
+                        height
+                        id
+                        location
+                        metadata
+                        metadata_func{
+                            count
+                        }
+                        modified_by
+                        modified_on
+                        modified_on_func{
+                            year
+                            month
+                            week
+                            day
+                            weekday
+                            hour
+                            minute
+                            second
+                        }
+                        storage
+                        tags
+                        tags_func{
+                            count
+                        }
+                        title
+                        type
+                        uploaded_by
+                        uploaded_on
+                        uploaded_on_func{
+                            year
+                            month
+                            week
+                            day
+                            weekday
+                            hour
+                            minute
+                            second
+                        }
+                        width
+                    }
                     index
                     status
                     title
-                    type(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1){
+                    type(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2){
                         id
                         label
                         status
@@ -34,13 +82,12 @@ query discoverLearnBanner_portkeyCard_by_id($filter: discoverLearnBanner_filter,
             }
         }
         id
-        portkeyCard_id(filter: $filter5, sort: $sort5, limit: $limit5, offset: $offset5, page: $page5, search: $search5){
+        portkeyCard_id(filter: $filter6, sort: $sort6, limit: $limit6, offset: $offset6, page: $page6, search: $search6){
             appLink
             buttonTitle
             description
             extensionLink
             id
-            imgUrl
             index
             status
             title

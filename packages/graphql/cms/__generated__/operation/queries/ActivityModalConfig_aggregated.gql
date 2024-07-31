@@ -3,65 +3,65 @@ query ActivityModalConfig_aggregated($groupBy: [String], $filter: ActivityModalC
         group
         countAll
         count{
-            id
             clientType
-            timingType
-            show
-            showClose
-            headerImg
-            title
             description
-            negtiveTitle
-            positiveTitle
-            positiveAction
-            timingOperation
+            headerImg
+            id
             label
             negativeTitle
+            negtiveTitle
+            positiveAction
+            positiveTitle
+            show
+            showClose
+            timingOperation
+            timingType
+            title
         }
         countDistinct{
-            id
             clientType
-            timingType
-            show
-            showClose
-            headerImg
-            title
             description
-            negtiveTitle
-            positiveTitle
-            positiveAction
-            timingOperation
+            headerImg
+            id
             label
             negativeTitle
+            negtiveTitle
+            positiveAction
+            positiveTitle
+            show
+            showClose
+            timingOperation
+            timingType
+            title
         }
         avg{
-            id
             clientType
+            id
             timingType
         }
         sum{
-            id
             clientType
+            id
             timingType
         }
         avgDistinct{
-            id
             clientType
+            id
             timingType
         }
         sumDistinct{
-            id
             clientType
+            id
             timingType
         }
         min{
-            id
             clientType
+            id
             timingType
         }
         max{
-            id
             clientType
+            id
             timingType
         }
     }

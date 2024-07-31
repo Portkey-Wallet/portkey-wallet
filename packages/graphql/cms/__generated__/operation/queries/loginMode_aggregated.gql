@@ -8,9 +8,9 @@ query loginMode_aggregated($groupBy: [String], $filter: loginMode_filter, $limit
             defaultSwitch
             extensionIndex
             extensionRecommend
+            id
             iOSIndex
             iOSRecommend
-            id
             status
             type
             matchList
@@ -21,9 +21,9 @@ query loginMode_aggregated($groupBy: [String], $filter: loginMode_filter, $limit
             defaultSwitch
             extensionIndex
             extensionRecommend
+            id
             iOSIndex
             iOSRecommend
-            id
             status
             type
             matchList
@@ -31,43 +31,43 @@ query loginMode_aggregated($groupBy: [String], $filter: loginMode_filter, $limit
         avg{
             androidIndex
             extensionIndex
-            iOSIndex
             id
+            iOSIndex
             type
         }
         sum{
             androidIndex
             extensionIndex
-            iOSIndex
             id
+            iOSIndex
             type
         }
         avgDistinct{
             androidIndex
             extensionIndex
-            iOSIndex
             id
+            iOSIndex
             type
         }
         sumDistinct{
             androidIndex
             extensionIndex
-            iOSIndex
             id
+            iOSIndex
             type
         }
         min{
             androidIndex
             extensionIndex
-            iOSIndex
             id
+            iOSIndex
             type
         }
         max{
             androidIndex
             extensionIndex
-            iOSIndex
             id
+            iOSIndex
             type
         }
     }

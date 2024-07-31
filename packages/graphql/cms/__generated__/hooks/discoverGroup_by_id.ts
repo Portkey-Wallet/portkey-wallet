@@ -4,13 +4,13 @@ import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
 export type DiscoverGroup_By_IdQueryVariables = Types.Exact<{
-  filter?: Types.InputMaybe<Types.DiscoverItem_Filter>;
+  filter?: Types.InputMaybe<Types.Directus_Files_Filter>;
   sort?: Types.InputMaybe<Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>>;
   limit?: Types.InputMaybe<Types.Scalars['Int']>;
   offset?: Types.InputMaybe<Types.Scalars['Int']>;
   page?: Types.InputMaybe<Types.Scalars['Int']>;
   search?: Types.InputMaybe<Types.Scalars['String']>;
-  filter1?: Types.InputMaybe<Types.DiscoverGroup_Filter>;
+  filter1?: Types.InputMaybe<Types.DiscoverItem_Filter>;
   sort1?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -18,7 +18,7 @@ export type DiscoverGroup_By_IdQueryVariables = Types.Exact<{
   offset1?: Types.InputMaybe<Types.Scalars['Int']>;
   page1?: Types.InputMaybe<Types.Scalars['Int']>;
   search1?: Types.InputMaybe<Types.Scalars['String']>;
-  filter2?: Types.InputMaybe<Types.DiscoverItem_Filter>;
+  filter2?: Types.InputMaybe<Types.DiscoverGroup_Filter>;
   sort2?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -26,6 +26,14 @@ export type DiscoverGroup_By_IdQueryVariables = Types.Exact<{
   offset2?: Types.InputMaybe<Types.Scalars['Int']>;
   page2?: Types.InputMaybe<Types.Scalars['Int']>;
   search2?: Types.InputMaybe<Types.Scalars['String']>;
+  filter3?: Types.InputMaybe<Types.DiscoverItem_Filter>;
+  sort3?: Types.InputMaybe<
+    Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
+  >;
+  limit3?: Types.InputMaybe<Types.Scalars['Int']>;
+  offset3?: Types.InputMaybe<Types.Scalars['Int']>;
+  page3?: Types.InputMaybe<Types.Scalars['Int']>;
+  search3?: Types.InputMaybe<Types.Scalars['String']>;
   id: Types.Scalars['ID'];
 }>;
 
@@ -72,7 +80,6 @@ export type DiscoverGroup_By_IdQuery = {
       description?: string | null;
       extensionLink?: string | null;
       id: string;
-      imgUrl?: string | null;
       index?: number | null;
       sort?: number | null;
       status?: string | null;
@@ -143,7 +150,6 @@ export type DiscoverGroup_By_IdQuery = {
           description?: string | null;
           extensionLink?: string | null;
           id: string;
-          imgUrl?: string | null;
           index?: number | null;
           sort?: number | null;
           status?: string | null;
@@ -151,6 +157,54 @@ export type DiscoverGroup_By_IdQuery = {
           url?: string | null;
           user_created?: string | null;
           user_updated?: string | null;
+          imgUrl?: {
+            __typename?: 'directus_files';
+            charset?: string | null;
+            description?: string | null;
+            duration?: number | null;
+            embed?: string | null;
+            filename_disk?: string | null;
+            filename_download: string;
+            filesize?: any | null;
+            folder?: string | null;
+            height?: number | null;
+            id: string;
+            location?: string | null;
+            metadata?: any | null;
+            modified_by?: string | null;
+            modified_on?: any | null;
+            storage: string;
+            tags?: any | null;
+            title?: string | null;
+            type?: string | null;
+            uploaded_by?: string | null;
+            uploaded_on?: any | null;
+            width?: number | null;
+            metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+            modified_on_func?: {
+              __typename?: 'datetime_functions';
+              year?: number | null;
+              month?: number | null;
+              week?: number | null;
+              day?: number | null;
+              weekday?: number | null;
+              hour?: number | null;
+              minute?: number | null;
+              second?: number | null;
+            } | null;
+            tags_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+            uploaded_on_func?: {
+              __typename?: 'datetime_functions';
+              year?: number | null;
+              month?: number | null;
+              week?: number | null;
+              day?: number | null;
+              weekday?: number | null;
+              hour?: number | null;
+              minute?: number | null;
+              second?: number | null;
+            } | null;
+          } | null;
         } | null> | null;
         items_func?: { __typename?: 'count_functions'; count?: number | null } | null;
       } | null;
@@ -161,24 +215,30 @@ export type DiscoverGroup_By_IdQuery = {
 
 export const DiscoverGroup_By_IdDocument = gql`
   query discoverGroup_by_id(
-    $filter: discoverItem_filter
+    $filter: directus_files_filter
     $sort: [String]
     $limit: Int
     $offset: Int
     $page: Int
     $search: String
-    $filter1: discoverGroup_filter
+    $filter1: discoverItem_filter
     $sort1: [String]
     $limit1: Int
     $offset1: Int
     $page1: Int
     $search1: String
-    $filter2: discoverItem_filter
+    $filter2: discoverGroup_filter
     $sort2: [String]
     $limit2: Int
     $offset2: Int
     $page2: Int
     $search2: String
+    $filter3: discoverItem_filter
+    $sort3: [String]
+    $limit3: Int
+    $offset3: Int
+    $page3: Int
+    $search3: String
     $id: ID!
   ) {
     discoverGroup_by_id(id: $id) {
@@ -211,7 +271,7 @@ export const DiscoverGroup_By_IdDocument = gql`
       title
       user_created
       user_updated
-      items(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2) {
+      items(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3) {
         appLink
         date_created
         date_created_func {
@@ -237,7 +297,7 @@ export const DiscoverGroup_By_IdDocument = gql`
         }
         description
         extensionLink
-        group(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1) {
+        group(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2) {
           date_created
           date_created_func {
             year
@@ -267,14 +327,62 @@ export const DiscoverGroup_By_IdDocument = gql`
           title
           user_created
           user_updated
-          items(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
+          items(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1) {
             appLink
             date_created
             date_updated
             description
             extensionLink
             id
-            imgUrl
+            imgUrl(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
+              charset
+              description
+              duration
+              embed
+              filename_disk
+              filename_download
+              filesize
+              folder
+              height
+              id
+              location
+              metadata
+              metadata_func {
+                count
+              }
+              modified_by
+              modified_on
+              modified_on_func {
+                year
+                month
+                week
+                day
+                weekday
+                hour
+                minute
+                second
+              }
+              storage
+              tags
+              tags_func {
+                count
+              }
+              title
+              type
+              uploaded_by
+              uploaded_on
+              uploaded_on_func {
+                year
+                month
+                week
+                day
+                weekday
+                hour
+                minute
+                second
+              }
+              width
+            }
             index
             sort
             status
@@ -288,7 +396,6 @@ export const DiscoverGroup_By_IdDocument = gql`
           }
         }
         id
-        imgUrl
         index
         sort
         status
@@ -334,6 +441,12 @@ export const DiscoverGroup_By_IdDocument = gql`
  *      offset2: // value for 'offset2'
  *      page2: // value for 'page2'
  *      search2: // value for 'search2'
+ *      filter3: // value for 'filter3'
+ *      sort3: // value for 'sort3'
+ *      limit3: // value for 'limit3'
+ *      offset3: // value for 'offset3'
+ *      page3: // value for 'page3'
+ *      search3: // value for 'search3'
  *      id: // value for 'id'
  *   },
  * });

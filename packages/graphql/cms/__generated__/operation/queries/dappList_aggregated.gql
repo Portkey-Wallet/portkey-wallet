@@ -3,14 +3,14 @@ query dappList_aggregated($groupBy: [String], $filter: dappList_filter, $limit: 
         group
         countAll
         count{
-            id
-            domainName
             Dapp_Name
+            domainName
+            id
         }
         countDistinct{
-            id
-            domainName
             Dapp_Name
+            domainName
+            id
         }
         avg{
             id

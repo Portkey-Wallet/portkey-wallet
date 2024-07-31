@@ -32,18 +32,18 @@ export type ActivityModalConfigQuery = {
   __typename?: 'Query';
   ActivityModalConfig: Array<{
     __typename?: 'ActivityModalConfig';
-    id: string;
-    show?: boolean | null;
-    showClose?: boolean | null;
-    headerImg?: string | null;
-    title?: string | null;
     description?: string | null;
-    negtiveTitle?: string | null;
-    positiveTitle?: string | null;
-    positiveAction?: string | null;
-    timingOperation?: string | null;
+    headerImg?: string | null;
+    id: string;
     label?: string | null;
     negativeTitle?: string | null;
+    negtiveTitle?: string | null;
+    positiveAction?: string | null;
+    positiveTitle?: string | null;
+    show?: boolean | null;
+    showClose?: boolean | null;
+    timingOperation?: string | null;
+    title?: string | null;
     clientType?: { __typename?: 'clientType'; id: string; name?: string | null } | null;
     timingType?: { __typename?: 'timingType'; id: string; name?: string | null } | null;
   }>;
@@ -78,26 +78,26 @@ export const ActivityModalConfigDocument = gql`
       page: $page2
       search: $search2
     ) {
-      id
       clientType(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
         id
         name
       }
+      description
+      headerImg
+      id
+      label
+      negativeTitle
+      negtiveTitle
+      positiveAction
+      positiveTitle
+      show
+      showClose
+      timingOperation
       timingType(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1) {
         id
         name
       }
-      show
-      showClose
-      headerImg
       title
-      description
-      negtiveTitle
-      positiveTitle
-      positiveAction
-      timingOperation
-      label
-      negativeTitle
     }
   }
 `;

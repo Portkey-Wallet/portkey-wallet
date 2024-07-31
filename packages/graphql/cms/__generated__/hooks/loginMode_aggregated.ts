@@ -28,9 +28,9 @@ export type LoginMode_AggregatedQuery = {
       defaultSwitch?: number | null;
       extensionIndex?: number | null;
       extensionRecommend?: number | null;
+      id?: number | null;
       iOSIndex?: number | null;
       iOSRecommend?: number | null;
-      id?: number | null;
       status?: number | null;
       type?: number | null;
       matchList?: number | null;
@@ -42,9 +42,9 @@ export type LoginMode_AggregatedQuery = {
       defaultSwitch?: number | null;
       extensionIndex?: number | null;
       extensionRecommend?: number | null;
+      id?: number | null;
       iOSIndex?: number | null;
       iOSRecommend?: number | null;
-      id?: number | null;
       status?: number | null;
       type?: number | null;
       matchList?: number | null;
@@ -53,48 +53,48 @@ export type LoginMode_AggregatedQuery = {
       __typename?: 'loginMode_aggregated_fields';
       androidIndex?: number | null;
       extensionIndex?: number | null;
-      iOSIndex?: number | null;
       id?: number | null;
+      iOSIndex?: number | null;
       type?: number | null;
     } | null;
     sum?: {
       __typename?: 'loginMode_aggregated_fields';
       androidIndex?: number | null;
       extensionIndex?: number | null;
-      iOSIndex?: number | null;
       id?: number | null;
+      iOSIndex?: number | null;
       type?: number | null;
     } | null;
     avgDistinct?: {
       __typename?: 'loginMode_aggregated_fields';
       androidIndex?: number | null;
       extensionIndex?: number | null;
-      iOSIndex?: number | null;
       id?: number | null;
+      iOSIndex?: number | null;
       type?: number | null;
     } | null;
     sumDistinct?: {
       __typename?: 'loginMode_aggregated_fields';
       androidIndex?: number | null;
       extensionIndex?: number | null;
-      iOSIndex?: number | null;
       id?: number | null;
+      iOSIndex?: number | null;
       type?: number | null;
     } | null;
     min?: {
       __typename?: 'loginMode_aggregated_fields';
       androidIndex?: number | null;
       extensionIndex?: number | null;
-      iOSIndex?: number | null;
       id?: number | null;
+      iOSIndex?: number | null;
       type?: number | null;
     } | null;
     max?: {
       __typename?: 'loginMode_aggregated_fields';
       androidIndex?: number | null;
       extensionIndex?: number | null;
-      iOSIndex?: number | null;
       id?: number | null;
+      iOSIndex?: number | null;
       type?: number | null;
     } | null;
   }>;
@@ -127,9 +127,9 @@ export const LoginMode_AggregatedDocument = gql`
         defaultSwitch
         extensionIndex
         extensionRecommend
+        id
         iOSIndex
         iOSRecommend
-        id
         status
         type
         matchList
@@ -140,9 +140,9 @@ export const LoginMode_AggregatedDocument = gql`
         defaultSwitch
         extensionIndex
         extensionRecommend
+        id
         iOSIndex
         iOSRecommend
-        id
         status
         type
         matchList
@@ -150,43 +150,43 @@ export const LoginMode_AggregatedDocument = gql`
       avg {
         androidIndex
         extensionIndex
-        iOSIndex
         id
+        iOSIndex
         type
       }
       sum {
         androidIndex
         extensionIndex
-        iOSIndex
         id
+        iOSIndex
         type
       }
       avgDistinct {
         androidIndex
         extensionIndex
-        iOSIndex
         id
+        iOSIndex
         type
       }
       sumDistinct {
         androidIndex
         extensionIndex
-        iOSIndex
         id
+        iOSIndex
         type
       }
       min {
         androidIndex
         extensionIndex
-        iOSIndex
         id
+        iOSIndex
         type
       }
       max {
         androidIndex
         extensionIndex
-        iOSIndex
         id
+        iOSIndex
         type
       }
     }

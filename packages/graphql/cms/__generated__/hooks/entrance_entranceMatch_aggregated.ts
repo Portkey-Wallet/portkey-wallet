@@ -23,50 +23,50 @@ export type Entrance_EntranceMatch_AggregatedQuery = {
     countAll?: number | null;
     count?: {
       __typename?: 'entrance_entranceMatch_aggregated_count';
-      entranceMatch_id?: number | null;
       entrance_id?: number | null;
+      entranceMatch_id?: number | null;
       id?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'entrance_entranceMatch_aggregated_count';
-      entranceMatch_id?: number | null;
       entrance_id?: number | null;
+      entranceMatch_id?: number | null;
       id?: number | null;
     } | null;
     avg?: {
       __typename?: 'entrance_entranceMatch_aggregated_fields';
-      entranceMatch_id?: number | null;
       entrance_id?: number | null;
+      entranceMatch_id?: number | null;
       id?: number | null;
     } | null;
     sum?: {
       __typename?: 'entrance_entranceMatch_aggregated_fields';
-      entranceMatch_id?: number | null;
       entrance_id?: number | null;
+      entranceMatch_id?: number | null;
       id?: number | null;
     } | null;
     avgDistinct?: {
       __typename?: 'entrance_entranceMatch_aggregated_fields';
-      entranceMatch_id?: number | null;
       entrance_id?: number | null;
+      entranceMatch_id?: number | null;
       id?: number | null;
     } | null;
     sumDistinct?: {
       __typename?: 'entrance_entranceMatch_aggregated_fields';
-      entranceMatch_id?: number | null;
       entrance_id?: number | null;
+      entranceMatch_id?: number | null;
       id?: number | null;
     } | null;
     min?: {
       __typename?: 'entrance_entranceMatch_aggregated_fields';
-      entranceMatch_id?: number | null;
       entrance_id?: number | null;
+      entranceMatch_id?: number | null;
       id?: number | null;
     } | null;
     max?: {
       __typename?: 'entrance_entranceMatch_aggregated_fields';
-      entranceMatch_id?: number | null;
       entrance_id?: number | null;
+      entranceMatch_id?: number | null;
       id?: number | null;
     } | null;
   }>;
@@ -94,43 +94,43 @@ export const Entrance_EntranceMatch_AggregatedDocument = gql`
       group
       countAll
       count {
-        entranceMatch_id
         entrance_id
+        entranceMatch_id
         id
       }
       countDistinct {
-        entranceMatch_id
         entrance_id
+        entranceMatch_id
         id
       }
       avg {
-        entranceMatch_id
         entrance_id
+        entranceMatch_id
         id
       }
       sum {
-        entranceMatch_id
         entrance_id
+        entranceMatch_id
         id
       }
       avgDistinct {
-        entranceMatch_id
         entrance_id
+        entranceMatch_id
         id
       }
       sumDistinct {
-        entranceMatch_id
         entrance_id
+        entranceMatch_id
         id
       }
       min {
-        entranceMatch_id
         entrance_id
+        entranceMatch_id
         id
       }
       max {
-        entranceMatch_id
         entrance_id
+        entranceMatch_id
         id
       }
     }

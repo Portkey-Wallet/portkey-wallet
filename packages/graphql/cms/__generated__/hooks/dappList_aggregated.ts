@@ -23,15 +23,15 @@ export type DappList_AggregatedQuery = {
     countAll?: number | null;
     count?: {
       __typename?: 'dappList_aggregated_count';
-      id?: number | null;
-      domainName?: number | null;
       Dapp_Name?: number | null;
+      domainName?: number | null;
+      id?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'dappList_aggregated_count';
-      id?: number | null;
-      domainName?: number | null;
       Dapp_Name?: number | null;
+      domainName?: number | null;
+      id?: number | null;
     } | null;
     avg?: { __typename?: 'dappList_aggregated_fields'; id?: number | null } | null;
     sum?: { __typename?: 'dappList_aggregated_fields'; id?: number | null } | null;
@@ -64,14 +64,14 @@ export const DappList_AggregatedDocument = gql`
       group
       countAll
       count {
-        id
-        domainName
         Dapp_Name
+        domainName
+        id
       }
       countDistinct {
-        id
-        domainName
         Dapp_Name
+        domainName
+        id
       }
       avg {
         id

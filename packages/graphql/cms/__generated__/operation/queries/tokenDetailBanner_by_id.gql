@@ -1,22 +1,70 @@
-query tokenDetailBanner_by_id($filter: cardType_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String, $filter1: portkeyCard_filter, $sort1: [String], $limit1: Int, $offset1: Int, $page1: Int, $search1: String, $filter2: tokenDetailBanner_portkeyCard_filter, $sort2: [String], $limit2: Int, $offset2: Int, $page2: Int, $search2: String, $filter3: tokenDetailBanner_filter, $sort3: [String], $limit3: Int, $offset3: Int, $page3: Int, $search3: String, $filter4: tokenDetailBanner_portkeyCard_filter, $sort4: [String], $limit4: Int, $offset4: Int, $page4: Int, $search4: String, $id: ID!){
+query tokenDetailBanner_by_id($filter: directus_files_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String, $filter1: cardType_filter, $sort1: [String], $limit1: Int, $offset1: Int, $page1: Int, $search1: String, $filter2: portkeyCard_filter, $sort2: [String], $limit2: Int, $offset2: Int, $page2: Int, $search2: String, $filter3: tokenDetailBanner_portkeyCard_filter, $sort3: [String], $limit3: Int, $offset3: Int, $page3: Int, $search3: String, $filter4: tokenDetailBanner_filter, $sort4: [String], $limit4: Int, $offset4: Int, $page4: Int, $search4: String, $filter5: tokenDetailBanner_portkeyCard_filter, $sort5: [String], $limit5: Int, $offset5: Int, $page5: Int, $search5: String, $id: ID!){
     tokenDetailBanner_by_id(id: $id){
         chainId
         id
         status
         symbol
-        items(filter: $filter4, sort: $sort4, limit: $limit4, offset: $offset4, page: $page4, search: $search4){
+        items(filter: $filter5, sort: $sort5, limit: $limit5, offset: $offset5, page: $page5, search: $search5){
             id
-            portkeyCard_id(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1){
+            portkeyCard_id(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2){
                 appLink
                 buttonTitle
                 description
                 extensionLink
                 id
-                imgUrl
+                imgUrl(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
+                    charset
+                    description
+                    duration
+                    embed
+                    filename_disk
+                    filename_download
+                    filesize
+                    folder
+                    height
+                    id
+                    location
+                    metadata
+                    metadata_func{
+                        count
+                    }
+                    modified_by
+                    modified_on
+                    modified_on_func{
+                        year
+                        month
+                        week
+                        day
+                        weekday
+                        hour
+                        minute
+                        second
+                    }
+                    storage
+                    tags
+                    tags_func{
+                        count
+                    }
+                    title
+                    type
+                    uploaded_by
+                    uploaded_on
+                    uploaded_on_func{
+                        year
+                        month
+                        week
+                        day
+                        weekday
+                        hour
+                        minute
+                        second
+                    }
+                    width
+                }
                 index
                 status
                 title
-                type(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
+                type(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1){
                     id
                     label
                     status
@@ -25,12 +73,12 @@ query tokenDetailBanner_by_id($filter: cardType_filter, $sort: [String], $limit:
                 url
                 value
             }
-            tokenDetailBanner_id(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3){
+            tokenDetailBanner_id(filter: $filter4, sort: $sort4, limit: $limit4, offset: $offset4, page: $page4, search: $search4){
                 chainId
                 id
                 status
                 symbol
-                items(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2){
+                items(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3){
                     id
                 }
                 items_func{

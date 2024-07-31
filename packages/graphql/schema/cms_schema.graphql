@@ -199,38 +199,38 @@ The `String` scalar type represents textual data, represented as UTF-8 character
 scalar String
 
 type ActivityModalConfig {
-  id: ID!
   clientType(filter: clientType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): clientType
-  timingType(filter: timingType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): timingType
+
+  """弹框内容文案"""
+  description: String
+
+  """头图URL"""
+  headerImg: String
+  id: ID!
+  label: String
+
+  """取消按钮文案"""
+  negativeTitle: String
+
+  """取消按钮文案"""
+  negtiveTitle: String
+
+  """确认按钮点击后触发的路由事件"""
+  positiveAction: String
+
+  """确认按钮文案"""
+  positiveTitle: String
 
   """控制弹框是否显示"""
   show: Boolean
 
   """控制是否显示右上角的关闭icon"""
   showClose: Boolean
-
-  """头图URL"""
-  headerImg: String
+  timingOperation: String
+  timingType(filter: timingType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): timingType
 
   """标题"""
   title: String
-
-  """弹框内容文案"""
-  description: String
-
-  """取消按钮文案"""
-  negtiveTitle: String
-
-  """确认按钮文案"""
-  positiveTitle: String
-
-  """确认按钮点击后触发的路由事件"""
-  positiveAction: String
-  timingOperation: String
-  label: String
-
-  """取消按钮文案"""
-  negativeTitle: String
 }
 
 type ActivityModalConfig_aggregated {
@@ -247,43 +247,43 @@ type ActivityModalConfig_aggregated {
 }
 
 type ActivityModalConfig_aggregated_count {
-  id: Int
   clientType: Int
-  timingType: Int
+
+  """弹框内容文案"""
+  description: Int
+
+  """头图URL"""
+  headerImg: Int
+  id: Int
+  label: Int
+
+  """取消按钮文案"""
+  negativeTitle: Int
+
+  """取消按钮文案"""
+  negtiveTitle: Int
+
+  """确认按钮点击后触发的路由事件"""
+  positiveAction: Int
+
+  """确认按钮文案"""
+  positiveTitle: Int
 
   """控制弹框是否显示"""
   show: Int
 
   """控制是否显示右上角的关闭icon"""
   showClose: Int
-
-  """头图URL"""
-  headerImg: Int
+  timingOperation: Int
+  timingType: Int
 
   """标题"""
   title: Int
-
-  """弹框内容文案"""
-  description: Int
-
-  """取消按钮文案"""
-  negtiveTitle: Int
-
-  """确认按钮文案"""
-  positiveTitle: Int
-
-  """确认按钮点击后触发的路由事件"""
-  positiveAction: Int
-  timingOperation: Int
-  label: Int
-
-  """取消按钮文案"""
-  negativeTitle: Int
 }
 
 type ActivityModalConfig_aggregated_fields {
-  id: Float
   clientType: Float
+  id: Float
   timingType: Float
 }
 
@@ -617,9 +617,9 @@ type country_aggregated_fields {
 }
 
 type dappList {
-  id: ID!
-  domainName: String
   Dapp_Name: String
+  domainName: String
+  id: ID!
 }
 
 type dappList_aggregated {
@@ -636,9 +636,9 @@ type dappList_aggregated {
 }
 
 type dappList_aggregated_count {
-  id: Int
-  domainName: Int
   Dapp_Name: Int
+  domainName: Int
+  id: Int
 }
 
 type dappList_aggregated_fields {
@@ -743,6 +743,34 @@ type deviceType_aggregated_fields {
   id: Float
   sort: Float
   value: Float
+}
+
+type directus_files {
+  charset: String
+  description: String
+  duration: Int
+  embed: String
+  filename_disk: String
+  filename_download: String!
+  filesize: GraphQLBigInt
+  folder: String
+  height: Int
+  id: ID!
+  location: String
+  metadata: JSON
+  metadata_func: count_functions
+  modified_by: String
+  modified_on: Date
+  modified_on_func: datetime_functions
+  storage: String!
+  tags: JSON
+  tags_func: count_functions
+  title: String
+  type: String
+  uploaded_by: String
+  uploaded_on: Date
+  uploaded_on_func: datetime_functions
+  width: Int
 }
 
 type discoverDappBanner {
@@ -879,9 +907,7 @@ type discoverItem {
   extensionLink: String
   group(filter: discoverGroup_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): discoverGroup
   id: ID!
-
-  """Not support svg"""
-  imgUrl: String
+  imgUrl(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   index: Int
   sort: Int
   status: String
@@ -1073,16 +1099,16 @@ type discoverTabData_aggregated_fields {
 
 type download {
   androidDownloadUrl: String
-  androidProductImage: String
-  androidQRCode: String
+  androidProductImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  androidQRCode(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   date_updated: Date
   date_updated_func: datetime_functions
   extensionDownloadUrl: String
-  extensionProductImage: String
+  extensionProductImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   id: ID!
   iosDownloadUrl: String
-  iosProductImage: String
-  iosQRCode: String
+  iosProductImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  iosQRCode(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   user_updated: String
 }
 
@@ -1130,8 +1156,8 @@ type entrance_aggregated_fields {
 }
 
 type entrance_entranceMatch {
-  entranceMatch_id(filter: entranceMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): entranceMatch
   entrance_id(filter: entrance_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): entrance
+  entranceMatch_id(filter: entranceMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): entranceMatch
   id: ID!
 }
 
@@ -1149,14 +1175,14 @@ type entrance_entranceMatch_aggregated {
 }
 
 type entrance_entranceMatch_aggregated_count {
-  entranceMatch_id: Int
   entrance_id: Int
+  entranceMatch_id: Int
   id: Int
 }
 
 type entrance_entranceMatch_aggregated_fields {
-  entranceMatch_id: Float
   entrance_id: Float
+  entranceMatch_id: Float
   id: Float
 }
 
@@ -1250,7 +1276,7 @@ type home {
   dAppSectionTitle: String
   date_updated: Date
   date_updated_func: datetime_functions
-  focusImage: String
+  focusImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   id: ID!
   user_updated: String
   videoContent: String
@@ -1335,9 +1361,9 @@ type loginMode {
   defaultSwitch: Boolean!
   extensionIndex: GraphQLBigInt!
   extensionRecommend: Boolean!
+  id: ID!
   iOSIndex: GraphQLBigInt!
   iOSRecommend: Boolean!
-  id: ID!
   status: String
   type(filter: loginType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): loginType
   matchList(filter: loginMode_loginModeMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [loginMode_loginModeMatch]
@@ -1363,9 +1389,9 @@ type loginMode_aggregated_count {
   defaultSwitch: Int
   extensionIndex: Int
   extensionRecommend: Int
+  id: Int
   iOSIndex: Int
   iOSRecommend: Int
-  id: Int
   status: Int
   type: Int
   matchList: Int
@@ -1374,15 +1400,15 @@ type loginMode_aggregated_count {
 type loginMode_aggregated_fields {
   androidIndex: Float
   extensionIndex: Float
-  iOSIndex: Float
   id: Float
+  iOSIndex: Float
   type: Float
 }
 
 type loginMode_loginModeMatch {
   id: ID!
-  loginModeMatch_id(filter: loginModeMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): loginModeMatch
   loginMode_id(filter: loginMode_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): loginMode
+  loginModeMatch_id(filter: loginModeMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): loginModeMatch
 }
 
 type loginMode_loginModeMatch_aggregated {
@@ -1400,14 +1426,14 @@ type loginMode_loginModeMatch_aggregated {
 
 type loginMode_loginModeMatch_aggregated_count {
   id: Int
-  loginModeMatch_id: Int
   loginMode_id: Int
+  loginModeMatch_id: Int
 }
 
 type loginMode_loginModeMatch_aggregated_fields {
   id: Float
-  loginModeMatch_id: Float
   loginMode_id: Float
+  loginModeMatch_id: Float
 }
 
 type loginModeMatch {
@@ -1487,10 +1513,10 @@ type mediaKit {
   id: ID!
   index: Int
   name: String!
-  png: String
+  png(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   sort: Int
   status: String
-  svg: String
+  svg(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   user_created: String
   user_updated: String
 }
@@ -1530,7 +1556,7 @@ type mediaKit_aggregated_fields {
 }
 
 type mediaKitPage {
-  allMediaKitZip: String
+  allMediaKitZip(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   boilerplateContent: String
   boilerplateTitle: String
   content: String!
@@ -1550,8 +1576,8 @@ type mediaKitPage {
 
 type mediaKitPage_mediaKit {
   id: ID!
-  mediaKitPage_id(filter: mediaKitPage_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): mediaKitPage
   mediaKit_id(filter: mediaKit_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): mediaKit
+  mediaKitPage_id(filter: mediaKitPage_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): mediaKitPage
 }
 
 type mediaKitPage_mediaKit_aggregated {
@@ -1569,14 +1595,14 @@ type mediaKitPage_mediaKit_aggregated {
 
 type mediaKitPage_mediaKit_aggregated_count {
   id: Int
-  mediaKitPage_id: Int
   mediaKit_id: Int
+  mediaKitPage_id: Int
 }
 
 type mediaKitPage_mediaKit_aggregated_fields {
   id: Float
-  mediaKitPage_id: Float
   mediaKit_id: Float
+  mediaKitPage_id: Float
 }
 
 type myReferralBanner {
@@ -1663,7 +1689,7 @@ type navigationType_aggregated_fields {
 }
 
 type officialSocialMedia {
-  activeSvg: String
+  activeSvg(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   date_created: Date
   date_created_func: datetime_functions
   date_updated: Date
@@ -1674,7 +1700,7 @@ type officialSocialMedia {
   name: String!
   sort: Int
   status: String
-  svg: String
+  svg(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   user_created: String
   user_updated: String
 }
@@ -1719,7 +1745,7 @@ type portkeyCard {
   description: String
   extensionLink: String
   id: ID!
-  imgUrl: String
+  imgUrl(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   index: GraphQLBigInt
   status: String
   title: String
@@ -1813,8 +1839,8 @@ type serviceSuspension {
   date_updated: Date
   date_updated_func: datetime_functions
   extensionUrl: String
-  iOSUrl: String
   id: ID!
+  iOSUrl: String
   isSuspended: Boolean
   user_created: String
   user_updated: String
@@ -1830,9 +1856,7 @@ type socialMedia {
   link: String
   sort: Int
   status: String
-
-  """Only support svg"""
-  svgUrl: String
+  svgUrl(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   title: String
   user_created: String
   user_updated: String
@@ -2406,20 +2430,20 @@ type upgradeStyle_aggregated_fields {
 }
 
 input ActivityModalConfig_filter {
-  id: number_filter_operators
   clientType: clientType_filter
-  timingType: timingType_filter
-  show: boolean_filter_operators
-  showClose: boolean_filter_operators
-  headerImg: string_filter_operators
-  title: string_filter_operators
   description: string_filter_operators
-  negtiveTitle: string_filter_operators
-  positiveTitle: string_filter_operators
-  positiveAction: string_filter_operators
-  timingOperation: string_filter_operators
+  headerImg: string_filter_operators
+  id: number_filter_operators
   label: string_filter_operators
   negativeTitle: string_filter_operators
+  negtiveTitle: string_filter_operators
+  positiveAction: string_filter_operators
+  positiveTitle: string_filter_operators
+  show: boolean_filter_operators
+  showClose: boolean_filter_operators
+  timingOperation: string_filter_operators
+  timingType: timingType_filter
+  title: string_filter_operators
   _and: [ActivityModalConfig_filter]
   _or: [ActivityModalConfig_filter]
 }
@@ -2544,9 +2568,9 @@ input country_filter {
 }
 
 input dappList_filter {
-  id: number_filter_operators
-  domainName: string_filter_operators
   Dapp_Name: string_filter_operators
+  domainName: string_filter_operators
+  id: number_filter_operators
   _and: [dappList_filter]
   _or: [dappList_filter]
 }
@@ -2607,6 +2631,36 @@ input deviceType_filter {
   value: number_filter_operators
   _and: [deviceType_filter]
   _or: [deviceType_filter]
+}
+
+input directus_files_filter {
+  charset: string_filter_operators
+  description: string_filter_operators
+  duration: number_filter_operators
+  embed: string_filter_operators
+  filename_disk: string_filter_operators
+  filename_download: string_filter_operators
+  filesize: number_filter_operators
+  folder: string_filter_operators
+  height: number_filter_operators
+  id: string_filter_operators
+  location: string_filter_operators
+  metadata: string_filter_operators
+  metadata_func: count_function_filter_operators
+  modified_by: string_filter_operators
+  modified_on: date_filter_operators
+  modified_on_func: datetime_function_filter_operators
+  storage: string_filter_operators
+  tags: string_filter_operators
+  tags_func: count_function_filter_operators
+  title: string_filter_operators
+  type: string_filter_operators
+  uploaded_by: string_filter_operators
+  uploaded_on: date_filter_operators
+  uploaded_on_func: datetime_function_filter_operators
+  width: number_filter_operators
+  _and: [directus_files_filter]
+  _or: [directus_files_filter]
 }
 
 input discoverDappBanner_filter {
@@ -2671,7 +2725,7 @@ input discoverItem_filter {
   extensionLink: string_filter_operators
   group: discoverGroup_filter
   id: number_filter_operators
-  imgUrl: string_filter_operators
+  imgUrl: directus_files_filter
   index: number_filter_operators
   sort: number_filter_operators
   status: string_filter_operators
@@ -2731,8 +2785,8 @@ input discoverTabData_filter {
 }
 
 input entrance_entranceMatch_filter {
-  entranceMatch_id: entranceMatch_filter
   entrance_id: entrance_filter
+  entranceMatch_id: entranceMatch_filter
   id: number_filter_operators
   _and: [entrance_entranceMatch_filter]
   _or: [entrance_entranceMatch_filter]
@@ -2798,7 +2852,7 @@ input home_filter {
   dAppSectionTitle: string_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  focusImage: string_filter_operators
+  focusImage: directus_files_filter
   id: number_filter_operators
   user_updated: string_filter_operators
   videoContent: string_filter_operators
@@ -2833,9 +2887,9 @@ input loginMode_filter {
   defaultSwitch: boolean_filter_operators
   extensionIndex: number_filter_operators
   extensionRecommend: boolean_filter_operators
+  id: number_filter_operators
   iOSIndex: number_filter_operators
   iOSRecommend: boolean_filter_operators
-  id: number_filter_operators
   status: string_filter_operators
   type: loginType_filter
   matchList: loginMode_loginModeMatch_filter
@@ -2846,8 +2900,8 @@ input loginMode_filter {
 
 input loginMode_loginModeMatch_filter {
   id: number_filter_operators
-  loginModeMatch_id: loginModeMatch_filter
   loginMode_id: loginMode_filter
+  loginModeMatch_id: loginModeMatch_filter
   _and: [loginMode_loginModeMatch_filter]
   _or: [loginMode_loginModeMatch_filter]
 }
@@ -2882,10 +2936,10 @@ input mediaKit_filter {
   id: number_filter_operators
   index: number_filter_operators
   name: string_filter_operators
-  png: string_filter_operators
+  png: directus_files_filter
   sort: number_filter_operators
   status: string_filter_operators
-  svg: string_filter_operators
+  svg: directus_files_filter
   user_created: string_filter_operators
   user_updated: string_filter_operators
   _and: [mediaKit_filter]
@@ -2893,7 +2947,7 @@ input mediaKit_filter {
 }
 
 input mediaKitPage_filter {
-  allMediaKitZip: string_filter_operators
+  allMediaKitZip: directus_files_filter
   boilerplateContent: string_filter_operators
   boilerplateTitle: string_filter_operators
   content: string_filter_operators
@@ -2915,8 +2969,8 @@ input mediaKitPage_filter {
 
 input mediaKitPage_mediaKit_filter {
   id: number_filter_operators
-  mediaKitPage_id: mediaKitPage_filter
   mediaKit_id: mediaKit_filter
+  mediaKitPage_id: mediaKitPage_filter
   _and: [mediaKitPage_mediaKit_filter]
   _or: [mediaKitPage_mediaKit_filter]
 }
@@ -2970,7 +3024,7 @@ input number_filter_operators {
 }
 
 input officialSocialMedia_filter {
-  activeSvg: string_filter_operators
+  activeSvg: directus_files_filter
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
@@ -2981,7 +3035,7 @@ input officialSocialMedia_filter {
   name: string_filter_operators
   sort: number_filter_operators
   status: string_filter_operators
-  svg: string_filter_operators
+  svg: directus_files_filter
   user_created: string_filter_operators
   user_updated: string_filter_operators
   _and: [officialSocialMedia_filter]
@@ -2994,7 +3048,7 @@ input portkeyCard_filter {
   description: string_filter_operators
   extensionLink: string_filter_operators
   id: number_filter_operators
-  imgUrl: string_filter_operators
+  imgUrl: directus_files_filter
   index: number_filter_operators
   status: string_filter_operators
   title: string_filter_operators
@@ -3031,7 +3085,7 @@ input socialMedia_filter {
   link: string_filter_operators
   sort: number_filter_operators
   status: string_filter_operators
-  svgUrl: string_filter_operators
+  svgUrl: directus_files_filter
   title: string_filter_operators
   user_created: string_filter_operators
   user_updated: string_filter_operators

@@ -14,15 +14,15 @@ export type DappListQueryVariables = Types.Exact<{
 
 export type DappListQuery = {
   __typename?: 'Query';
-  dappList: Array<{ __typename?: 'dappList'; id: string; domainName?: string | null; Dapp_Name?: string | null }>;
+  dappList: Array<{ __typename?: 'dappList'; Dapp_Name?: string | null; domainName?: string | null; id: string }>;
 };
 
 export const DappListDocument = gql`
   query dappList($filter: dappList_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String) {
     dappList(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
-      id
-      domainName
       Dapp_Name
+      domainName
+      id
     }
   }
 `;

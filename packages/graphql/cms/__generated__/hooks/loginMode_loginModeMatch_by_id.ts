@@ -4,13 +4,13 @@ import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
 export type LoginMode_LoginModeMatch_By_IdQueryVariables = Types.Exact<{
-  filter?: Types.InputMaybe<Types.LoginModeMatch_Filter>;
+  filter?: Types.InputMaybe<Types.LoginType_Filter>;
   sort?: Types.InputMaybe<Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>>;
   limit?: Types.InputMaybe<Types.Scalars['Int']>;
   offset?: Types.InputMaybe<Types.Scalars['Int']>;
   page?: Types.InputMaybe<Types.Scalars['Int']>;
   search?: Types.InputMaybe<Types.Scalars['String']>;
-  filter1?: Types.InputMaybe<Types.LoginType_Filter>;
+  filter1?: Types.InputMaybe<Types.LoginMode_Filter>;
   sort1?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -26,7 +26,7 @@ export type LoginMode_LoginModeMatch_By_IdQueryVariables = Types.Exact<{
   offset2?: Types.InputMaybe<Types.Scalars['Int']>;
   page2?: Types.InputMaybe<Types.Scalars['Int']>;
   search2?: Types.InputMaybe<Types.Scalars['String']>;
-  filter3?: Types.InputMaybe<Types.LoginMode_Filter>;
+  filter3?: Types.InputMaybe<Types.LoginMode_LoginModeMatch_Filter>;
   sort3?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -34,7 +34,7 @@ export type LoginMode_LoginModeMatch_By_IdQueryVariables = Types.Exact<{
   offset3?: Types.InputMaybe<Types.Scalars['Int']>;
   page3?: Types.InputMaybe<Types.Scalars['Int']>;
   search3?: Types.InputMaybe<Types.Scalars['String']>;
-  filter4?: Types.InputMaybe<Types.LoginMode_LoginModeMatch_Filter>;
+  filter4?: Types.InputMaybe<Types.LoginMode_Filter>;
   sort4?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -42,7 +42,7 @@ export type LoginMode_LoginModeMatch_By_IdQueryVariables = Types.Exact<{
   offset4?: Types.InputMaybe<Types.Scalars['Int']>;
   page4?: Types.InputMaybe<Types.Scalars['Int']>;
   search4?: Types.InputMaybe<Types.Scalars['String']>;
-  filter5?: Types.InputMaybe<Types.LoginMode_Filter>;
+  filter5?: Types.InputMaybe<Types.LoginModeMatch_Filter>;
   sort5?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -58,16 +58,6 @@ export type LoginMode_LoginModeMatch_By_IdQuery = {
   loginMode_loginModeMatch_by_id?: {
     __typename?: 'loginMode_loginModeMatch';
     id: string;
-    loginModeMatch_id?: {
-      __typename?: 'loginModeMatch';
-      description: string;
-      id: string;
-      matchRuleList: any;
-      matchSwitch: boolean;
-      status?: string | null;
-      weight: any;
-      matchRuleList_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-    } | null;
     loginMode_id?: {
       __typename?: 'loginMode';
       androidIndex: any;
@@ -75,14 +65,27 @@ export type LoginMode_LoginModeMatch_By_IdQuery = {
       defaultSwitch: boolean;
       extensionIndex: any;
       extensionRecommend: boolean;
+      id: string;
       iOSIndex: any;
       iOSRecommend: boolean;
-      id: string;
       status?: string | null;
       type?: { __typename?: 'loginType'; id: string; label: string; status?: string | null; value: string } | null;
       matchList?: Array<{
         __typename?: 'loginMode_loginModeMatch';
         id: string;
+        loginMode_id?: {
+          __typename?: 'loginMode';
+          androidIndex: any;
+          androidRecommend: boolean;
+          defaultSwitch: boolean;
+          extensionIndex: any;
+          extensionRecommend: boolean;
+          id: string;
+          iOSIndex: any;
+          iOSRecommend: boolean;
+          status?: string | null;
+          matchList_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+        } | null;
         loginModeMatch_id?: {
           __typename?: 'loginModeMatch';
           description: string;
@@ -91,34 +94,31 @@ export type LoginMode_LoginModeMatch_By_IdQuery = {
           matchSwitch: boolean;
           status?: string | null;
           weight: any;
-        } | null;
-        loginMode_id?: {
-          __typename?: 'loginMode';
-          androidIndex: any;
-          androidRecommend: boolean;
-          defaultSwitch: boolean;
-          extensionIndex: any;
-          extensionRecommend: boolean;
-          iOSIndex: any;
-          iOSRecommend: boolean;
-          id: string;
-          status?: string | null;
-          matchList_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+          matchRuleList_func?: { __typename?: 'count_functions'; count?: number | null } | null;
         } | null;
       } | null> | null;
+    } | null;
+    loginModeMatch_id?: {
+      __typename?: 'loginModeMatch';
+      description: string;
+      id: string;
+      matchRuleList: any;
+      matchSwitch: boolean;
+      status?: string | null;
+      weight: any;
     } | null;
   } | null;
 };
 
 export const LoginMode_LoginModeMatch_By_IdDocument = gql`
   query loginMode_loginModeMatch_by_id(
-    $filter: loginModeMatch_filter
+    $filter: loginType_filter
     $sort: [String]
     $limit: Int
     $offset: Int
     $page: Int
     $search: String
-    $filter1: loginType_filter
+    $filter1: loginMode_filter
     $sort1: [String]
     $limit1: Int
     $offset1: Int
@@ -130,19 +130,19 @@ export const LoginMode_LoginModeMatch_By_IdDocument = gql`
     $offset2: Int
     $page2: Int
     $search2: String
-    $filter3: loginMode_filter
+    $filter3: loginMode_loginModeMatch_filter
     $sort3: [String]
     $limit3: Int
     $offset3: Int
     $page3: Int
     $search3: String
-    $filter4: loginMode_loginModeMatch_filter
+    $filter4: loginMode_filter
     $sort4: [String]
     $limit4: Int
     $offset4: Int
     $page4: Int
     $search4: String
-    $filter5: loginMode_filter
+    $filter5: loginModeMatch_filter
     $sort5: [String]
     $limit5: Int
     $offset5: Int
@@ -152,35 +152,45 @@ export const LoginMode_LoginModeMatch_By_IdDocument = gql`
   ) {
     loginMode_loginModeMatch_by_id(id: $id) {
       id
-      loginModeMatch_id(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
-        description
-        id
-        matchRuleList
-        matchRuleList_func {
-          count
-        }
-        matchSwitch
-        status
-        weight
-      }
-      loginMode_id(filter: $filter5, sort: $sort5, limit: $limit5, offset: $offset5, page: $page5, search: $search5) {
+      loginMode_id(filter: $filter4, sort: $sort4, limit: $limit4, offset: $offset4, page: $page4, search: $search4) {
         androidIndex
         androidRecommend
         defaultSwitch
         extensionIndex
         extensionRecommend
+        id
         iOSIndex
         iOSRecommend
-        id
         status
-        type(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1) {
+        type(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
           id
           label
           status
           value
         }
-        matchList(filter: $filter4, sort: $sort4, limit: $limit4, offset: $offset4, page: $page4, search: $search4) {
+        matchList(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3) {
           id
+          loginMode_id(
+            filter: $filter1
+            sort: $sort1
+            limit: $limit1
+            offset: $offset1
+            page: $page1
+            search: $search1
+          ) {
+            androidIndex
+            androidRecommend
+            defaultSwitch
+            extensionIndex
+            extensionRecommend
+            id
+            iOSIndex
+            iOSRecommend
+            status
+            matchList_func {
+              count
+            }
+          }
           loginModeMatch_id(
             filter: $filter2
             sort: $sort2
@@ -192,32 +202,29 @@ export const LoginMode_LoginModeMatch_By_IdDocument = gql`
             description
             id
             matchRuleList
+            matchRuleList_func {
+              count
+            }
             matchSwitch
             status
             weight
           }
-          loginMode_id(
-            filter: $filter3
-            sort: $sort3
-            limit: $limit3
-            offset: $offset3
-            page: $page3
-            search: $search3
-          ) {
-            androidIndex
-            androidRecommend
-            defaultSwitch
-            extensionIndex
-            extensionRecommend
-            iOSIndex
-            iOSRecommend
-            id
-            status
-            matchList_func {
-              count
-            }
-          }
         }
+      }
+      loginModeMatch_id(
+        filter: $filter5
+        sort: $sort5
+        limit: $limit5
+        offset: $offset5
+        page: $page5
+        search: $search5
+      ) {
+        description
+        id
+        matchRuleList
+        matchSwitch
+        status
+        weight
       }
     }
   }

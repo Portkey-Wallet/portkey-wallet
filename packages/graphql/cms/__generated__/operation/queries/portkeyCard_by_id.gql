@@ -1,15 +1,63 @@
-query portkeyCard_by_id($filter: cardType_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String, $id: ID!){
+query portkeyCard_by_id($filter: directus_files_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String, $filter1: cardType_filter, $sort1: [String], $limit1: Int, $offset1: Int, $page1: Int, $search1: String, $id: ID!){
     portkeyCard_by_id(id: $id){
         appLink
         buttonTitle
         description
         extensionLink
         id
-        imgUrl
+        imgUrl(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
+            charset
+            description
+            duration
+            embed
+            filename_disk
+            filename_download
+            filesize
+            folder
+            height
+            id
+            location
+            metadata
+            metadata_func{
+                count
+            }
+            modified_by
+            modified_on
+            modified_on_func{
+                year
+                month
+                week
+                day
+                weekday
+                hour
+                minute
+                second
+            }
+            storage
+            tags
+            tags_func{
+                count
+            }
+            title
+            type
+            uploaded_by
+            uploaded_on
+            uploaded_on_func{
+                year
+                month
+                week
+                day
+                weekday
+                hour
+                minute
+                second
+            }
+            width
+        }
         index
         status
         title
-        type(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
+        type(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1){
             id
             label
             status

@@ -24,8 +24,8 @@ query serviceSuspension{
             second
         }
         extensionUrl
-        iOSUrl
         id
+        iOSUrl
         isSuspended
         user_created
         user_updated

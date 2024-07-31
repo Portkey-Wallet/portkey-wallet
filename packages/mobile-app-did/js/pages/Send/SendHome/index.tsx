@@ -39,6 +39,7 @@ import {
   TransactionErrorArray,
   AddressError,
   AddressErrorArray,
+  CROSS_CHAIN_INTERCEPTED_CONTENT,
 } from '@portkey-wallet/constants/constants-ca/send';
 import { getAddressChainId, isSameAddresses } from '@portkey-wallet/utils';
 import { useCheckManagerSyncState } from 'hooks/wallet';
@@ -291,16 +292,7 @@ const SendHome: React.FC = () => {
         case 'crossChainInterception':
           ActionSheet.alert({
             title: t('Notice'),
-            message: (
-              <TextM style={styles.alertMessage}>
-                {t(
-                  'Sorry, please create the corresponding asset on the chain you are trying to switch to first, otherwise ',
-                )}
-                <TextM style={[styles.alertMessage, { color: defaultColors.functionalRedDefault }]}>
-                  {t('the asset will be lost.')}
-                </TextM>
-              </TextM>
-            ),
+            message: <TextM style={styles.alertMessage}>{t(CROSS_CHAIN_INTERCEPTED_CONTENT)}</TextM>,
             buttons: [
               {
                 title: t('Got it'),
@@ -443,14 +435,14 @@ const SendHome: React.FC = () => {
     Loading.show();
     try {
       // cross chain interception
-      const sendChainId = selectedToContact.chainId || (getChainIdByAddress(selectedToContact.address) as ChainId);
-      if (sendChainId !== assetInfo.chainId) {
+      if (isCrossChain(selectedToContact.address, assetInfo.chainId)) {
+        const sendChainId = selectedToContact.chainId || (getChainIdByAddress(selectedToContact.address) as ChainId);
         const interceptResult = await getAssetsEstimation({
           symbol: assetInfo.symbol,
           chainId: sendChainId,
           type: sendType,
         });
-        if (interceptResult) {
+        if (!interceptResult) {
           showDialog('crossChainInterception');
           return;
         }

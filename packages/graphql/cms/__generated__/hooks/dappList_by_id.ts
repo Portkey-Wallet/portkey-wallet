@@ -11,18 +11,18 @@ export type DappList_By_IdQuery = {
   __typename?: 'Query';
   dappList_by_id?: {
     __typename?: 'dappList';
-    id: string;
-    domainName?: string | null;
     Dapp_Name?: string | null;
+    domainName?: string | null;
+    id: string;
   } | null;
 };
 
 export const DappList_By_IdDocument = gql`
   query dappList_by_id($id: ID!) {
     dappList_by_id(id: $id) {
-      id
-      domainName
       Dapp_Name
+      domainName
+      id
     }
   }
 `;

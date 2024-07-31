@@ -3,43 +3,43 @@ query entrance_entranceMatch_aggregated($groupBy: [String], $filter: entrance_en
         group
         countAll
         count{
-            entranceMatch_id
             entrance_id
+            entranceMatch_id
             id
         }
         countDistinct{
-            entranceMatch_id
             entrance_id
+            entranceMatch_id
             id
         }
         avg{
-            entranceMatch_id
             entrance_id
+            entranceMatch_id
             id
         }
         sum{
-            entranceMatch_id
             entrance_id
+            entranceMatch_id
             id
         }
         avgDistinct{
-            entranceMatch_id
             entrance_id
+            entranceMatch_id
             id
         }
         sumDistinct{
-            entranceMatch_id
             entrance_id
+            entranceMatch_id
             id
         }
         min{
-            entranceMatch_id
             entrance_id
+            entranceMatch_id
             id
         }
         max{
-            entranceMatch_id
             entrance_id
+            entranceMatch_id
             id
         }
     }

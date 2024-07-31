@@ -23,72 +23,72 @@ export type ActivityModalConfig_AggregatedQuery = {
     countAll?: number | null;
     count?: {
       __typename?: 'ActivityModalConfig_aggregated_count';
-      id?: number | null;
       clientType?: number | null;
-      timingType?: number | null;
-      show?: number | null;
-      showClose?: number | null;
-      headerImg?: number | null;
-      title?: number | null;
       description?: number | null;
-      negtiveTitle?: number | null;
-      positiveTitle?: number | null;
-      positiveAction?: number | null;
-      timingOperation?: number | null;
+      headerImg?: number | null;
+      id?: number | null;
       label?: number | null;
       negativeTitle?: number | null;
+      negtiveTitle?: number | null;
+      positiveAction?: number | null;
+      positiveTitle?: number | null;
+      show?: number | null;
+      showClose?: number | null;
+      timingOperation?: number | null;
+      timingType?: number | null;
+      title?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'ActivityModalConfig_aggregated_count';
-      id?: number | null;
       clientType?: number | null;
-      timingType?: number | null;
-      show?: number | null;
-      showClose?: number | null;
-      headerImg?: number | null;
-      title?: number | null;
       description?: number | null;
-      negtiveTitle?: number | null;
-      positiveTitle?: number | null;
-      positiveAction?: number | null;
-      timingOperation?: number | null;
+      headerImg?: number | null;
+      id?: number | null;
       label?: number | null;
       negativeTitle?: number | null;
+      negtiveTitle?: number | null;
+      positiveAction?: number | null;
+      positiveTitle?: number | null;
+      show?: number | null;
+      showClose?: number | null;
+      timingOperation?: number | null;
+      timingType?: number | null;
+      title?: number | null;
     } | null;
     avg?: {
       __typename?: 'ActivityModalConfig_aggregated_fields';
-      id?: number | null;
       clientType?: number | null;
+      id?: number | null;
       timingType?: number | null;
     } | null;
     sum?: {
       __typename?: 'ActivityModalConfig_aggregated_fields';
-      id?: number | null;
       clientType?: number | null;
+      id?: number | null;
       timingType?: number | null;
     } | null;
     avgDistinct?: {
       __typename?: 'ActivityModalConfig_aggregated_fields';
-      id?: number | null;
       clientType?: number | null;
+      id?: number | null;
       timingType?: number | null;
     } | null;
     sumDistinct?: {
       __typename?: 'ActivityModalConfig_aggregated_fields';
-      id?: number | null;
       clientType?: number | null;
+      id?: number | null;
       timingType?: number | null;
     } | null;
     min?: {
       __typename?: 'ActivityModalConfig_aggregated_fields';
-      id?: number | null;
       clientType?: number | null;
+      id?: number | null;
       timingType?: number | null;
     } | null;
     max?: {
       __typename?: 'ActivityModalConfig_aggregated_fields';
-      id?: number | null;
       clientType?: number | null;
+      id?: number | null;
       timingType?: number | null;
     } | null;
   }>;
@@ -116,65 +116,65 @@ export const ActivityModalConfig_AggregatedDocument = gql`
       group
       countAll
       count {
-        id
         clientType
-        timingType
-        show
-        showClose
-        headerImg
-        title
         description
-        negtiveTitle
-        positiveTitle
-        positiveAction
-        timingOperation
+        headerImg
+        id
         label
         negativeTitle
+        negtiveTitle
+        positiveAction
+        positiveTitle
+        show
+        showClose
+        timingOperation
+        timingType
+        title
       }
       countDistinct {
-        id
         clientType
-        timingType
-        show
-        showClose
-        headerImg
-        title
         description
-        negtiveTitle
-        positiveTitle
-        positiveAction
-        timingOperation
+        headerImg
+        id
         label
         negativeTitle
+        negtiveTitle
+        positiveAction
+        positiveTitle
+        show
+        showClose
+        timingOperation
+        timingType
+        title
       }
       avg {
-        id
         clientType
+        id
         timingType
       }
       sum {
-        id
         clientType
+        id
         timingType
       }
       avgDistinct {
-        id
         clientType
+        id
         timingType
       }
       sumDistinct {
-        id
         clientType
+        id
         timingType
       }
       min {
-        id
         clientType
+        id
         timingType
       }
       max {
-        id
         clientType
+        id
         timingType
       }
     }

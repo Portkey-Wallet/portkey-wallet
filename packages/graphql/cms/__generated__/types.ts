@@ -2168,6 +2168,65 @@ export type DeviceType_Filter = {
   value?: InputMaybe<Number_Filter_Operators>;
 };
 
+export type Directus_Files = {
+  __typename?: 'directus_files';
+  charset?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  duration?: Maybe<Scalars['Int']>;
+  embed?: Maybe<Scalars['String']>;
+  filename_disk?: Maybe<Scalars['String']>;
+  filename_download: Scalars['String'];
+  filesize?: Maybe<Scalars['GraphQLBigInt']>;
+  folder?: Maybe<Scalars['String']>;
+  height?: Maybe<Scalars['Int']>;
+  id: Scalars['ID'];
+  location?: Maybe<Scalars['String']>;
+  metadata?: Maybe<Scalars['JSON']>;
+  metadata_func?: Maybe<Count_Functions>;
+  modified_by?: Maybe<Scalars['String']>;
+  modified_on?: Maybe<Scalars['Date']>;
+  modified_on_func?: Maybe<Datetime_Functions>;
+  storage: Scalars['String'];
+  tags?: Maybe<Scalars['JSON']>;
+  tags_func?: Maybe<Count_Functions>;
+  title?: Maybe<Scalars['String']>;
+  type?: Maybe<Scalars['String']>;
+  uploaded_by?: Maybe<Scalars['String']>;
+  uploaded_on?: Maybe<Scalars['Date']>;
+  uploaded_on_func?: Maybe<Datetime_Functions>;
+  width?: Maybe<Scalars['Int']>;
+};
+
+export type Directus_Files_Filter = {
+  _and?: InputMaybe<Array<InputMaybe<Directus_Files_Filter>>>;
+  _or?: InputMaybe<Array<InputMaybe<Directus_Files_Filter>>>;
+  charset?: InputMaybe<String_Filter_Operators>;
+  description?: InputMaybe<String_Filter_Operators>;
+  duration?: InputMaybe<Number_Filter_Operators>;
+  embed?: InputMaybe<String_Filter_Operators>;
+  filename_disk?: InputMaybe<String_Filter_Operators>;
+  filename_download?: InputMaybe<String_Filter_Operators>;
+  filesize?: InputMaybe<Number_Filter_Operators>;
+  folder?: InputMaybe<String_Filter_Operators>;
+  height?: InputMaybe<Number_Filter_Operators>;
+  id?: InputMaybe<String_Filter_Operators>;
+  location?: InputMaybe<String_Filter_Operators>;
+  metadata?: InputMaybe<String_Filter_Operators>;
+  metadata_func?: InputMaybe<Count_Function_Filter_Operators>;
+  modified_by?: InputMaybe<String_Filter_Operators>;
+  modified_on?: InputMaybe<Date_Filter_Operators>;
+  modified_on_func?: InputMaybe<Datetime_Function_Filter_Operators>;
+  storage?: InputMaybe<String_Filter_Operators>;
+  tags?: InputMaybe<String_Filter_Operators>;
+  tags_func?: InputMaybe<Count_Function_Filter_Operators>;
+  title?: InputMaybe<String_Filter_Operators>;
+  type?: InputMaybe<String_Filter_Operators>;
+  uploaded_by?: InputMaybe<String_Filter_Operators>;
+  uploaded_on?: InputMaybe<Date_Filter_Operators>;
+  uploaded_on_func?: InputMaybe<Datetime_Function_Filter_Operators>;
+  width?: InputMaybe<Number_Filter_Operators>;
+};
+
 export type DiscoverDappBanner = {
   __typename?: 'discoverDappBanner';
   id: Scalars['ID'];
@@ -2432,8 +2491,7 @@ export type DiscoverItem = {
   extensionLink?: Maybe<Scalars['String']>;
   group?: Maybe<DiscoverGroup>;
   id: Scalars['ID'];
-  /** Not support svg */
-  imgUrl?: Maybe<Scalars['String']>;
+  imgUrl?: Maybe<Directus_Files>;
   index?: Maybe<Scalars['Int']>;
   sort?: Maybe<Scalars['Int']>;
   status?: Maybe<Scalars['String']>;
@@ -2445,6 +2503,15 @@ export type DiscoverItem = {
 
 export type DiscoverItemGroupArgs = {
   filter?: InputMaybe<DiscoverGroup_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type DiscoverItemImgUrlArgs = {
+  filter?: InputMaybe<Directus_Files_Filter>;
   limit?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
   page?: InputMaybe<Scalars['Int']>;
@@ -2506,7 +2573,7 @@ export type DiscoverItem_Filter = {
   extensionLink?: InputMaybe<String_Filter_Operators>;
   group?: InputMaybe<DiscoverGroup_Filter>;
   id?: InputMaybe<Number_Filter_Operators>;
-  imgUrl?: InputMaybe<String_Filter_Operators>;
+  imgUrl?: InputMaybe<Directus_Files_Filter>;
   index?: InputMaybe<Number_Filter_Operators>;
   sort?: InputMaybe<Number_Filter_Operators>;
   status?: InputMaybe<String_Filter_Operators>;
@@ -2777,17 +2844,62 @@ export type DiscoverTabData_Filter = {
 export type Download = {
   __typename?: 'download';
   androidDownloadUrl?: Maybe<Scalars['String']>;
-  androidProductImage?: Maybe<Scalars['String']>;
-  androidQRCode?: Maybe<Scalars['String']>;
+  androidProductImage?: Maybe<Directus_Files>;
+  androidQRCode?: Maybe<Directus_Files>;
   date_updated?: Maybe<Scalars['Date']>;
   date_updated_func?: Maybe<Datetime_Functions>;
   extensionDownloadUrl?: Maybe<Scalars['String']>;
-  extensionProductImage?: Maybe<Scalars['String']>;
+  extensionProductImage?: Maybe<Directus_Files>;
   id: Scalars['ID'];
   iosDownloadUrl?: Maybe<Scalars['String']>;
-  iosProductImage?: Maybe<Scalars['String']>;
-  iosQRCode?: Maybe<Scalars['String']>;
+  iosProductImage?: Maybe<Directus_Files>;
+  iosQRCode?: Maybe<Directus_Files>;
   user_updated?: Maybe<Scalars['String']>;
+};
+
+export type DownloadAndroidProductImageArgs = {
+  filter?: InputMaybe<Directus_Files_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type DownloadAndroidQrCodeArgs = {
+  filter?: InputMaybe<Directus_Files_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type DownloadExtensionProductImageArgs = {
+  filter?: InputMaybe<Directus_Files_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type DownloadIosProductImageArgs = {
+  filter?: InputMaybe<Directus_Files_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type DownloadIosQrCodeArgs = {
+  filter?: InputMaybe<Directus_Files_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
 export type Entrance = {
@@ -3065,7 +3177,7 @@ export type Home = {
   dAppSectionTitle?: Maybe<Scalars['String']>;
   date_updated?: Maybe<Scalars['Date']>;
   date_updated_func?: Maybe<Datetime_Functions>;
-  focusImage?: Maybe<Scalars['String']>;
+  focusImage?: Maybe<Directus_Files>;
   id: Scalars['ID'];
   user_updated?: Maybe<Scalars['String']>;
   videoContent?: Maybe<Scalars['String']>;
@@ -3075,6 +3187,15 @@ export type Home = {
 
 export type HomeDAppListArgs = {
   filter?: InputMaybe<Home_DApp_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type HomeFocusImageArgs = {
+  filter?: InputMaybe<Directus_Files_Filter>;
   limit?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
   page?: InputMaybe<Scalars['Int']>;
@@ -3229,7 +3350,7 @@ export type Home_Filter = {
   dAppSectionTitle?: InputMaybe<String_Filter_Operators>;
   date_updated?: InputMaybe<Date_Filter_Operators>;
   date_updated_func?: InputMaybe<Datetime_Function_Filter_Operators>;
-  focusImage?: InputMaybe<String_Filter_Operators>;
+  focusImage?: InputMaybe<Directus_Files_Filter>;
   id?: InputMaybe<Number_Filter_Operators>;
   user_updated?: InputMaybe<String_Filter_Operators>;
   videoContent?: InputMaybe<String_Filter_Operators>;
@@ -3494,17 +3615,35 @@ export type MediaKit = {
   id: Scalars['ID'];
   index?: Maybe<Scalars['Int']>;
   name: Scalars['String'];
-  png?: Maybe<Scalars['String']>;
+  png?: Maybe<Directus_Files>;
   sort?: Maybe<Scalars['Int']>;
   status?: Maybe<Scalars['String']>;
-  svg?: Maybe<Scalars['String']>;
+  svg?: Maybe<Directus_Files>;
   user_created?: Maybe<Scalars['String']>;
   user_updated?: Maybe<Scalars['String']>;
 };
 
+export type MediaKitPngArgs = {
+  filter?: InputMaybe<Directus_Files_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type MediaKitSvgArgs = {
+  filter?: InputMaybe<Directus_Files_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
 export type MediaKitPage = {
   __typename?: 'mediaKitPage';
-  allMediaKitZip?: Maybe<Scalars['String']>;
+  allMediaKitZip?: Maybe<Directus_Files>;
   boilerplateContent?: Maybe<Scalars['String']>;
   boilerplateTitle?: Maybe<Scalars['String']>;
   content: Scalars['String'];
@@ -3522,6 +3661,15 @@ export type MediaKitPage = {
   user_updated?: Maybe<Scalars['String']>;
 };
 
+export type MediaKitPageAllMediaKitZipArgs = {
+  filter?: InputMaybe<Directus_Files_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
 export type MediaKitPageMediaKitListArgs = {
   filter?: InputMaybe<MediaKitPage_MediaKit_Filter>;
   limit?: InputMaybe<Scalars['Int']>;
@@ -3534,7 +3682,7 @@ export type MediaKitPageMediaKitListArgs = {
 export type MediaKitPage_Filter = {
   _and?: InputMaybe<Array<InputMaybe<MediaKitPage_Filter>>>;
   _or?: InputMaybe<Array<InputMaybe<MediaKitPage_Filter>>>;
-  allMediaKitZip?: InputMaybe<String_Filter_Operators>;
+  allMediaKitZip?: InputMaybe<Directus_Files_Filter>;
   boilerplateContent?: InputMaybe<String_Filter_Operators>;
   boilerplateTitle?: InputMaybe<String_Filter_Operators>;
   content?: InputMaybe<String_Filter_Operators>;
@@ -3661,10 +3809,10 @@ export type MediaKit_Filter = {
   id?: InputMaybe<Number_Filter_Operators>;
   index?: InputMaybe<Number_Filter_Operators>;
   name?: InputMaybe<String_Filter_Operators>;
-  png?: InputMaybe<String_Filter_Operators>;
+  png?: InputMaybe<Directus_Files_Filter>;
   sort?: InputMaybe<Number_Filter_Operators>;
   status?: InputMaybe<String_Filter_Operators>;
-  svg?: InputMaybe<String_Filter_Operators>;
+  svg?: InputMaybe<Directus_Files_Filter>;
   user_created?: InputMaybe<String_Filter_Operators>;
   user_updated?: InputMaybe<String_Filter_Operators>;
 };
@@ -3838,7 +3986,7 @@ export type Number_Filter_Operators = {
 
 export type OfficialSocialMedia = {
   __typename?: 'officialSocialMedia';
-  activeSvg?: Maybe<Scalars['String']>;
+  activeSvg?: Maybe<Directus_Files>;
   date_created?: Maybe<Scalars['Date']>;
   date_created_func?: Maybe<Datetime_Functions>;
   date_updated?: Maybe<Scalars['Date']>;
@@ -3849,9 +3997,27 @@ export type OfficialSocialMedia = {
   name: Scalars['String'];
   sort?: Maybe<Scalars['Int']>;
   status?: Maybe<Scalars['String']>;
-  svg?: Maybe<Scalars['String']>;
+  svg?: Maybe<Directus_Files>;
   user_created?: Maybe<Scalars['String']>;
   user_updated?: Maybe<Scalars['String']>;
+};
+
+export type OfficialSocialMediaActiveSvgArgs = {
+  filter?: InputMaybe<Directus_Files_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type OfficialSocialMediaSvgArgs = {
+  filter?: InputMaybe<Directus_Files_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
 export type OfficialSocialMedia_Aggregated = {
@@ -3894,7 +4060,7 @@ export type OfficialSocialMedia_Aggregated_Fields = {
 export type OfficialSocialMedia_Filter = {
   _and?: InputMaybe<Array<InputMaybe<OfficialSocialMedia_Filter>>>;
   _or?: InputMaybe<Array<InputMaybe<OfficialSocialMedia_Filter>>>;
-  activeSvg?: InputMaybe<String_Filter_Operators>;
+  activeSvg?: InputMaybe<Directus_Files_Filter>;
   date_created?: InputMaybe<Date_Filter_Operators>;
   date_created_func?: InputMaybe<Datetime_Function_Filter_Operators>;
   date_updated?: InputMaybe<Date_Filter_Operators>;
@@ -3905,7 +4071,7 @@ export type OfficialSocialMedia_Filter = {
   name?: InputMaybe<String_Filter_Operators>;
   sort?: InputMaybe<Number_Filter_Operators>;
   status?: InputMaybe<String_Filter_Operators>;
-  svg?: InputMaybe<String_Filter_Operators>;
+  svg?: InputMaybe<Directus_Files_Filter>;
   user_created?: InputMaybe<String_Filter_Operators>;
   user_updated?: InputMaybe<String_Filter_Operators>;
 };
@@ -3917,13 +4083,22 @@ export type PortkeyCard = {
   description?: Maybe<Scalars['String']>;
   extensionLink?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
-  imgUrl?: Maybe<Scalars['String']>;
+  imgUrl?: Maybe<Directus_Files>;
   index?: Maybe<Scalars['GraphQLBigInt']>;
   status?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
   type?: Maybe<CardType>;
   url?: Maybe<Scalars['String']>;
   value?: Maybe<Scalars['String']>;
+};
+
+export type PortkeyCardImgUrlArgs = {
+  filter?: InputMaybe<Directus_Files_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
 export type PortkeyCardTypeArgs = {
@@ -3980,7 +4155,7 @@ export type PortkeyCard_Filter = {
   description?: InputMaybe<String_Filter_Operators>;
   extensionLink?: InputMaybe<String_Filter_Operators>;
   id?: InputMaybe<Number_Filter_Operators>;
-  imgUrl?: InputMaybe<String_Filter_Operators>;
+  imgUrl?: InputMaybe<Directus_Files_Filter>;
   index?: InputMaybe<Number_Filter_Operators>;
   status?: InputMaybe<String_Filter_Operators>;
   title?: InputMaybe<String_Filter_Operators>;
@@ -4079,11 +4254,19 @@ export type SocialMedia = {
   link?: Maybe<Scalars['String']>;
   sort?: Maybe<Scalars['Int']>;
   status?: Maybe<Scalars['String']>;
-  /** Only support svg */
-  svgUrl?: Maybe<Scalars['String']>;
+  svgUrl?: Maybe<Directus_Files>;
   title?: Maybe<Scalars['String']>;
   user_created?: Maybe<Scalars['String']>;
   user_updated?: Maybe<Scalars['String']>;
+};
+
+export type SocialMediaSvgUrlArgs = {
+  filter?: InputMaybe<Directus_Files_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
 export type SocialMedia_Aggregated = {
@@ -4135,7 +4318,7 @@ export type SocialMedia_Filter = {
   link?: InputMaybe<String_Filter_Operators>;
   sort?: InputMaybe<Number_Filter_Operators>;
   status?: InputMaybe<String_Filter_Operators>;
-  svgUrl?: InputMaybe<String_Filter_Operators>;
+  svgUrl?: InputMaybe<Directus_Files_Filter>;
   title?: InputMaybe<String_Filter_Operators>;
   user_created?: InputMaybe<String_Filter_Operators>;
   user_updated?: InputMaybe<String_Filter_Operators>;

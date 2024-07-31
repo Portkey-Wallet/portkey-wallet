@@ -4,13 +4,13 @@ import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
 export type PortkeyCardQueryVariables = Types.Exact<{
-  filter?: Types.InputMaybe<Types.CardType_Filter>;
+  filter?: Types.InputMaybe<Types.Directus_Files_Filter>;
   sort?: Types.InputMaybe<Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>>;
   limit?: Types.InputMaybe<Types.Scalars['Int']>;
   offset?: Types.InputMaybe<Types.Scalars['Int']>;
   page?: Types.InputMaybe<Types.Scalars['Int']>;
   search?: Types.InputMaybe<Types.Scalars['String']>;
-  filter1?: Types.InputMaybe<Types.PortkeyCard_Filter>;
+  filter1?: Types.InputMaybe<Types.CardType_Filter>;
   sort1?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
@@ -18,6 +18,14 @@ export type PortkeyCardQueryVariables = Types.Exact<{
   offset1?: Types.InputMaybe<Types.Scalars['Int']>;
   page1?: Types.InputMaybe<Types.Scalars['Int']>;
   search1?: Types.InputMaybe<Types.Scalars['String']>;
+  filter2?: Types.InputMaybe<Types.PortkeyCard_Filter>;
+  sort2?: Types.InputMaybe<
+    Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
+  >;
+  limit2?: Types.InputMaybe<Types.Scalars['Int']>;
+  offset2?: Types.InputMaybe<Types.Scalars['Int']>;
+  page2?: Types.InputMaybe<Types.Scalars['Int']>;
+  search2?: Types.InputMaybe<Types.Scalars['String']>;
 }>;
 
 export type PortkeyCardQuery = {
@@ -29,12 +37,59 @@ export type PortkeyCardQuery = {
     description?: string | null;
     extensionLink?: string | null;
     id: string;
-    imgUrl?: string | null;
     index?: any | null;
     status?: string | null;
     title?: string | null;
     url?: string | null;
     value?: string | null;
+    imgUrl?: {
+      __typename?: 'directus_files';
+      charset?: string | null;
+      description?: string | null;
+      duration?: number | null;
+      embed?: string | null;
+      filename_disk?: string | null;
+      filename_download: string;
+      filesize?: any | null;
+      folder?: string | null;
+      height?: number | null;
+      id: string;
+      location?: string | null;
+      metadata?: any | null;
+      modified_by?: string | null;
+      modified_on?: any | null;
+      storage: string;
+      tags?: any | null;
+      title?: string | null;
+      type?: string | null;
+      uploaded_by?: string | null;
+      uploaded_on?: any | null;
+      width?: number | null;
+      metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+      modified_on_func?: {
+        __typename?: 'datetime_functions';
+        year?: number | null;
+        month?: number | null;
+        week?: number | null;
+        day?: number | null;
+        weekday?: number | null;
+        hour?: number | null;
+        minute?: number | null;
+        second?: number | null;
+      } | null;
+      tags_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+      uploaded_on_func?: {
+        __typename?: 'datetime_functions';
+        year?: number | null;
+        month?: number | null;
+        week?: number | null;
+        day?: number | null;
+        weekday?: number | null;
+        hour?: number | null;
+        minute?: number | null;
+        second?: number | null;
+      } | null;
+    } | null;
     type?: {
       __typename?: 'cardType';
       id: string;
@@ -47,30 +102,84 @@ export type PortkeyCardQuery = {
 
 export const PortkeyCardDocument = gql`
   query portkeyCard(
-    $filter: cardType_filter
+    $filter: directus_files_filter
     $sort: [String]
     $limit: Int
     $offset: Int
     $page: Int
     $search: String
-    $filter1: portkeyCard_filter
+    $filter1: cardType_filter
     $sort1: [String]
     $limit1: Int
     $offset1: Int
     $page1: Int
     $search1: String
+    $filter2: portkeyCard_filter
+    $sort2: [String]
+    $limit2: Int
+    $offset2: Int
+    $page2: Int
+    $search2: String
   ) {
-    portkeyCard(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1) {
+    portkeyCard(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2) {
       appLink
       buttonTitle
       description
       extensionLink
       id
-      imgUrl
+      imgUrl(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
+        charset
+        description
+        duration
+        embed
+        filename_disk
+        filename_download
+        filesize
+        folder
+        height
+        id
+        location
+        metadata
+        metadata_func {
+          count
+        }
+        modified_by
+        modified_on
+        modified_on_func {
+          year
+          month
+          week
+          day
+          weekday
+          hour
+          minute
+          second
+        }
+        storage
+        tags
+        tags_func {
+          count
+        }
+        title
+        type
+        uploaded_by
+        uploaded_on
+        uploaded_on_func {
+          year
+          month
+          week
+          day
+          weekday
+          hour
+          minute
+          second
+        }
+        width
+      }
       index
       status
       title
-      type(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
+      type(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1) {
         id
         label
         status
@@ -106,6 +215,12 @@ export const PortkeyCardDocument = gql`
  *      offset1: // value for 'offset1'
  *      page1: // value for 'page1'
  *      search1: // value for 'search1'
+ *      filter2: // value for 'filter2'
+ *      sort2: // value for 'sort2'
+ *      limit2: // value for 'limit2'
+ *      offset2: // value for 'offset2'
+ *      page2: // value for 'page2'
+ *      search2: // value for 'search2'
  *   },
  * });
  */

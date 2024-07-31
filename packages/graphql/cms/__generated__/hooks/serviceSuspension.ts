@@ -13,8 +13,8 @@ export type ServiceSuspensionQuery = {
     date_created?: any | null;
     date_updated?: any | null;
     extensionUrl?: string | null;
-    iOSUrl?: string | null;
     id: string;
+    iOSUrl?: string | null;
     isSuspended?: boolean | null;
     user_created?: string | null;
     user_updated?: string | null;
@@ -70,8 +70,8 @@ export const ServiceSuspensionDocument = gql`
         second
       }
       extensionUrl
-      iOSUrl
       id
+      iOSUrl
       isSuspended
       user_created
       user_updated

@@ -6,6 +6,7 @@ import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import { NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
 import { ChainId } from '@portkey-wallet/types';
 import { ITokenAllowance } from '@portkey-wallet/types/types-ca/allowance';
+import { SendType } from '@portkey-wallet/types/types-ca/send';
 
 type ITokenItemResponse = Omit<TokenItemShowType, 'name' | 'address'>;
 
@@ -160,6 +161,23 @@ export function fetchTokenBalance({
       symbol,
       chainId,
       caAddress,
+    },
+  });
+}
+export function getAssetsEstimation({
+  symbol,
+  chainId,
+  type,
+}: {
+  symbol: string;
+  chainId: ChainId;
+  type: SendType;
+}): Promise<boolean> {
+  return request.assets.getAssetsEstimation({
+    params: {
+      symbol,
+      chainId,
+      type,
     },
   });
 }

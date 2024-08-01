@@ -13,6 +13,7 @@ import {
   getDiscoverTabAsync,
   getDiscoverEarnAsync,
   getDiscoverLearnAsync,
+  getDappWhiteListAsync,
 } from './actions';
 import { CMSState, CmsWebsiteMapItem } from './types';
 import { deepEqual } from './deepEqual';
@@ -30,6 +31,7 @@ const initialState: CMSState = {
   discoverTabListMap: {},
   discoverEarnListMap: {},
   discoverLearnGroupListMap: {},
+  dappWhiteListMap: {},
 };
 export const cmsSlice = createSlice({
   name: 'cms',
@@ -131,6 +133,12 @@ export const cmsSlice = createSlice({
         state.discoverLearnGroupListMap = {
           ...(state.discoverLearnGroupListMap ?? {}),
           ...action.payload.discoverLearnGroupListMap,
+        };
+      })
+      .addCase(getDappWhiteListAsync.fulfilled, (state, action) => {
+        state.dappWhiteListMap = {
+          ...(state.dappWhiteListMap ?? {}),
+          ...action.payload.dappWhiteListMap,
         };
       });
   },

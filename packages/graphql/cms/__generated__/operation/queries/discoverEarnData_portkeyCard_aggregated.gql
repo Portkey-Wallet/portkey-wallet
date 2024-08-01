@@ -3,43 +3,43 @@ query discoverEarnData_portkeyCard_aggregated($groupBy: [String], $filter: disco
         group
         countAll
         count{
-            id
             discoverEarnData_id
+            id
             portkeyCard_id
         }
         countDistinct{
-            id
             discoverEarnData_id
+            id
             portkeyCard_id
         }
         avg{
-            id
             discoverEarnData_id
+            id
             portkeyCard_id
         }
         sum{
-            id
             discoverEarnData_id
+            id
             portkeyCard_id
         }
         avgDistinct{
-            id
             discoverEarnData_id
+            id
             portkeyCard_id
         }
         sumDistinct{
-            id
             discoverEarnData_id
+            id
             portkeyCard_id
         }
         min{
-            id
             discoverEarnData_id
+            id
             portkeyCard_id
         }
         max{
-            id
             discoverEarnData_id
+            id
             portkeyCard_id
         }
     }

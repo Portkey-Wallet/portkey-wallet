@@ -27,24 +27,20 @@ query mediaKit_by_id($filter: directus_files_filter, $sort: [String], $limit: In
         index
         name
         png(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
-            id
-            storage
+            charset
+            description
+            duration
+            embed
             filename_disk
             filename_download
-            title
-            type
+            filesize
             folder
-            uploaded_by
-            uploaded_on
-            uploaded_on_func{
-                year
-                month
-                week
-                day
-                weekday
-                hour
-                minute
-                second
+            height
+            id
+            location
+            metadata
+            metadata_func{
+                count
             }
             modified_by
             modified_on
@@ -58,44 +54,44 @@ query mediaKit_by_id($filter: directus_files_filter, $sort: [String], $limit: In
                 minute
                 second
             }
-            charset
-            filesize
-            width
-            height
-            duration
-            embed
-            description
-            location
+            storage
             tags
             tags_func{
                 count
             }
-            metadata
-            metadata_func{
-                count
+            title
+            type
+            uploaded_by
+            uploaded_on
+            uploaded_on_func{
+                year
+                month
+                week
+                day
+                weekday
+                hour
+                minute
+                second
             }
+            width
         }
         sort
         status
         svg(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1){
-            id
-            storage
+            charset
+            description
+            duration
+            embed
             filename_disk
             filename_download
-            title
-            type
+            filesize
             folder
-            uploaded_by
-            uploaded_on
-            uploaded_on_func{
-                year
-                month
-                week
-                day
-                weekday
-                hour
-                minute
-                second
+            height
+            id
+            location
+            metadata
+            metadata_func{
+                count
             }
             modified_by
             modified_on
@@ -109,22 +105,26 @@ query mediaKit_by_id($filter: directus_files_filter, $sort: [String], $limit: In
                 minute
                 second
             }
-            charset
-            filesize
-            width
-            height
-            duration
-            embed
-            description
-            location
+            storage
             tags
             tags_func{
                 count
             }
-            metadata
-            metadata_func{
-                count
+            title
+            type
+            uploaded_by
+            uploaded_on
+            uploaded_on_func{
+                year
+                month
+                week
+                day
+                weekday
+                hour
+                minute
+                second
             }
+            width
         }
         user_created
         user_updated

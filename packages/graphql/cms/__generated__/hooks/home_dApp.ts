@@ -52,10 +52,10 @@ export type Home_DAppQuery = {
     id: string;
     home_id?: {
       __typename?: 'home';
+      dAppSectionTitle?: string | null;
       date_updated?: any | null;
       id: string;
       user_updated?: string | null;
-      dAppSectionTitle?: string | null;
       videoContent?: string | null;
       videoTitle?: string | null;
       videoUrl?: string | null;
@@ -72,38 +72,28 @@ export type Home_DAppQuery = {
       } | null;
       focusImage?: {
         __typename?: 'directus_files';
-        id: string;
-        storage: string;
-        filename_disk?: string | null;
-        filename_download: string;
-        title?: string | null;
-        type?: string | null;
-        folder?: string | null;
-        uploaded_by?: string | null;
-        uploaded_on?: any | null;
-        modified_by?: string | null;
-        modified_on?: any | null;
         charset?: string | null;
-        filesize?: any | null;
-        width?: number | null;
-        height?: number | null;
+        description?: string | null;
         duration?: number | null;
         embed?: string | null;
-        description?: string | null;
+        filename_disk?: string | null;
+        filename_download: string;
+        filesize?: any | null;
+        folder?: string | null;
+        height?: number | null;
+        id: string;
         location?: string | null;
-        tags?: any | null;
         metadata?: any | null;
-        uploaded_on_func?: {
-          __typename?: 'datetime_functions';
-          year?: number | null;
-          month?: number | null;
-          week?: number | null;
-          day?: number | null;
-          weekday?: number | null;
-          hour?: number | null;
-          minute?: number | null;
-          second?: number | null;
-        } | null;
+        modified_by?: string | null;
+        modified_on?: any | null;
+        storage: string;
+        tags?: any | null;
+        title?: string | null;
+        type?: string | null;
+        uploaded_by?: string | null;
+        uploaded_on?: any | null;
+        width?: number | null;
+        metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
         modified_on_func?: {
           __typename?: 'datetime_functions';
           year?: number | null;
@@ -116,7 +106,17 @@ export type Home_DAppQuery = {
           second?: number | null;
         } | null;
         tags_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-        metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+        uploaded_on_func?: {
+          __typename?: 'datetime_functions';
+          year?: number | null;
+          month?: number | null;
+          week?: number | null;
+          day?: number | null;
+          weekday?: number | null;
+          hour?: number | null;
+          minute?: number | null;
+          second?: number | null;
+        } | null;
       } | null;
       dAppList?: Array<{
         __typename?: 'home_dApp';
@@ -124,10 +124,10 @@ export type Home_DAppQuery = {
         id: string;
         home_id?: {
           __typename?: 'home';
+          dAppSectionTitle?: string | null;
           date_updated?: any | null;
           id: string;
           user_updated?: string | null;
-          dAppSectionTitle?: string | null;
           videoContent?: string | null;
           videoTitle?: string | null;
           videoUrl?: string | null;
@@ -174,6 +174,7 @@ export const Home_DAppDocument = gql`
     home_dApp(filter: $filter4, sort: $sort4, limit: $limit4, offset: $offset4, page: $page4, search: $search4) {
       dApp_id
       home_id(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3) {
+        dAppSectionTitle
         date_updated
         date_updated_func {
           year
@@ -186,24 +187,20 @@ export const Home_DAppDocument = gql`
           second
         }
         focusImage(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
-          id
-          storage
+          charset
+          description
+          duration
+          embed
           filename_disk
           filename_download
-          title
-          type
+          filesize
           folder
-          uploaded_by
-          uploaded_on
-          uploaded_on_func {
-            year
-            month
-            week
-            day
-            weekday
-            hour
-            minute
-            second
+          height
+          id
+          location
+          metadata
+          metadata_func {
+            count
           }
           modified_by
           modified_on
@@ -217,36 +214,39 @@ export const Home_DAppDocument = gql`
             minute
             second
           }
-          charset
-          filesize
-          width
-          height
-          duration
-          embed
-          description
-          location
+          storage
           tags
           tags_func {
             count
           }
-          metadata
-          metadata_func {
-            count
+          title
+          type
+          uploaded_by
+          uploaded_on
+          uploaded_on_func {
+            year
+            month
+            week
+            day
+            weekday
+            hour
+            minute
+            second
           }
+          width
         }
         id
         user_updated
-        dAppSectionTitle
         videoContent
         videoTitle
         videoUrl
         dAppList(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2) {
           dApp_id
           home_id(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1) {
+            dAppSectionTitle
             date_updated
             id
             user_updated
-            dAppSectionTitle
             videoContent
             videoTitle
             videoUrl

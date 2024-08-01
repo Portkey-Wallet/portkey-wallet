@@ -98,6 +98,8 @@ export type TDiscoverLearnGroupItemType = {
   items?: TBaseCardItemType[];
 };
 
+export type TDappWhiteListItemType = string;
+
 export type TTokenDetailBannerItemType = {
   chainId: ChainId;
   symbol: string;
@@ -112,6 +114,7 @@ export type TDiscoverDappBannerList = TBaseCardItemType[];
 export type TDiscoverTabList = TBaseTabItemType[];
 export type TDiscoverEarnList = TBaseCardItemType[];
 export type TDiscoverLearnGroupList = TDiscoverLearnGroupItemType[];
+export type TWhiteListDappList = TDappWhiteListItemType[];
 
 export type TLinkType = 'external' | 'internal' | 'native';
 export type TLink = {

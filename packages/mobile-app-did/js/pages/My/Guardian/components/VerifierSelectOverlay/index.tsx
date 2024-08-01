@@ -32,14 +32,19 @@ const SelectList = ({ callBack, id, editGuardian }: SelectListProps) => {
     guardianList.forEach(item => {
       map[item.verifier?.id || ''] = true;
     });
-    if (editGuardian) {
-      map[zkLoginVerifierItem.id] =
-        !isZKLoginSupported(editGuardian.guardianType) || (editGuardian.manuallySupportForZk ?? false);
+    if (editGuardian && isZKLoginSupported(editGuardian.guardianType)) {
+      verifierList.forEach(item => {
+        if (item.id !== zkLoginVerifierItem.id) {
+          map[item.id] = true;
+        } else {
+          map[item.id] = false;
+        }
+      });
     } else {
-      map[zkLoginVerifierItem.id] = true; // zkLogin verifier can not be selected by user when add guardian
+      map[zkLoginVerifierItem.id] = true;
     }
     return map;
-  }, [editGuardian, userGuardiansList]);
+  }, [editGuardian, userGuardiansList, verifierList]);
 
   return (
     <ModalBody title={t('Select Verifier')} modalBodyType="bottom">

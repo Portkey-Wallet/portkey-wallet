@@ -143,7 +143,7 @@ const GuardianEdit: React.FC = () => {
         setAccount(editGuardian.guardianAccount);
       }
       if (editGuardian?.verifiedByZk) {
-        setSelectedVerifier(zkLoginVerifierItem);
+        setSelectedVerifier({ ...zkLoginVerifierItem, id: editGuardian?.verifier?.id ?? '' });
       } else {
         setSelectedVerifier(verifierList.find(item => item.name === editGuardian?.verifier?.name));
       }

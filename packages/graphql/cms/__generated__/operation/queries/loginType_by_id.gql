@@ -1,8 +1,8 @@
 query loginType_by_id($id: ID!){
     loginType_by_id(id: $id){
         id
-        status
         label
+        status
         value
     }
 }

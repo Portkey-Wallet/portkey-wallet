@@ -23,50 +23,50 @@ export type DiscoverDappBanner_PortkeyCard_AggregatedQuery = {
     countAll?: number | null;
     count?: {
       __typename?: 'discoverDappBanner_portkeyCard_aggregated_count';
-      id?: number | null;
       discoverDappBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'discoverDappBanner_portkeyCard_aggregated_count';
-      id?: number | null;
       discoverDappBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     avg?: {
       __typename?: 'discoverDappBanner_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverDappBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     sum?: {
       __typename?: 'discoverDappBanner_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverDappBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     avgDistinct?: {
       __typename?: 'discoverDappBanner_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverDappBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     sumDistinct?: {
       __typename?: 'discoverDappBanner_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverDappBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     min?: {
       __typename?: 'discoverDappBanner_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverDappBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
     max?: {
       __typename?: 'discoverDappBanner_portkeyCard_aggregated_fields';
-      id?: number | null;
       discoverDappBanner_id?: number | null;
+      id?: number | null;
       portkeyCard_id?: number | null;
     } | null;
   }>;
@@ -94,43 +94,43 @@ export const DiscoverDappBanner_PortkeyCard_AggregatedDocument = gql`
       group
       countAll
       count {
-        id
         discoverDappBanner_id
+        id
         portkeyCard_id
       }
       countDistinct {
-        id
         discoverDappBanner_id
+        id
         portkeyCard_id
       }
       avg {
-        id
         discoverDappBanner_id
+        id
         portkeyCard_id
       }
       sum {
-        id
         discoverDappBanner_id
+        id
         portkeyCard_id
       }
       avgDistinct {
-        id
         discoverDappBanner_id
+        id
         portkeyCard_id
       }
       sumDistinct {
-        id
         discoverDappBanner_id
+        id
         portkeyCard_id
       }
       min {
-        id
         discoverDappBanner_id
+        id
         portkeyCard_id
       }
       max {
-        id
         discoverDappBanner_id
+        id
         portkeyCard_id
       }
     }

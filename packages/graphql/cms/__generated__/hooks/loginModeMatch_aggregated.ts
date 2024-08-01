@@ -23,21 +23,21 @@ export type LoginModeMatch_AggregatedQuery = {
     countAll?: number | null;
     count?: {
       __typename?: 'loginModeMatch_aggregated_count';
+      description?: number | null;
       id?: number | null;
+      matchRuleList?: number | null;
+      matchSwitch?: number | null;
       status?: number | null;
       weight?: number | null;
-      matchSwitch?: number | null;
-      matchRuleList?: number | null;
-      description?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'loginModeMatch_aggregated_count';
+      description?: number | null;
       id?: number | null;
+      matchRuleList?: number | null;
+      matchSwitch?: number | null;
       status?: number | null;
       weight?: number | null;
-      matchSwitch?: number | null;
-      matchRuleList?: number | null;
-      description?: number | null;
     } | null;
     avg?: { __typename?: 'loginModeMatch_aggregated_fields'; id?: number | null; weight?: number | null } | null;
     sum?: { __typename?: 'loginModeMatch_aggregated_fields'; id?: number | null; weight?: number | null } | null;
@@ -78,20 +78,20 @@ export const LoginModeMatch_AggregatedDocument = gql`
       group
       countAll
       count {
+        description
         id
+        matchRuleList
+        matchSwitch
         status
         weight
-        matchSwitch
-        matchRuleList
-        description
       }
       countDistinct {
+        description
         id
+        matchRuleList
+        matchSwitch
         status
         weight
-        matchSwitch
-        matchRuleList
-        description
       }
       avg {
         id

@@ -14,6 +14,7 @@ import {
   getDiscoverTabList,
   getDiscoverEarnList,
   getDiscoverLearnGroupList,
+  getDappWhiteListCustom,
 } from '@portkey-wallet/graphql/cms/queries';
 import {
   IEntrance,
@@ -23,6 +24,7 @@ import {
   TDiscoverLearnGroupList,
   TDiscoverTabList,
   TTokenDetailBannerItemType,
+  TWhiteListDappList,
 } from '@portkey-wallet/types/types-ca/cms';
 
 export const getSocialMediaAsync = createAsyncThunk<Required<Pick<CMSState, 'socialMediaListNetMap'>>, NetworkType>(
@@ -396,6 +398,28 @@ export const getDiscoverLearnAsync = createAsyncThunk<
     throw new Error('getDiscoverLearnAsync error');
   }
 });
+
+export const getDappWhiteListAsync = createAsyncThunk<Required<Pick<CMSState, 'dappWhiteListMap'>>, NetworkType>(
+  'cms/getDappWhiteListAsync',
+  async (network: NetworkType) => {
+    let returnList: TWhiteListDappList = [];
+
+    try {
+      const result = await getDappWhiteListCustom(network, {});
+      returnList = result?.data?.dappList.map(item => item.domainName || '') || [];
+
+      console.log('getDappWhiteListAsync list ', returnList);
+
+      return {
+        dappWhiteListMap: {
+          [network]: returnList,
+        },
+      };
+    } catch (error) {
+      throw new Error('getDiscoverLearnAsync error');
+    }
+  },
+);
 
 export const setEntrance = createAction<{
   network: NetworkType;

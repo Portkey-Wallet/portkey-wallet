@@ -9,6 +9,7 @@ import {
   TDiscoverTabList,
   THomeBannerList,
   TTokenDetailBannerList,
+  TWhiteListDappList,
 } from '@portkey-wallet/types/types-ca/cms';
 
 export interface SocialMediaItem {
@@ -107,5 +108,8 @@ export interface CMSState {
   };
   discoverLearnGroupListMap: {
     [T in NetworkType]?: TDiscoverLearnGroupList;
+  };
+  dappWhiteListMap: {
+    [T in NetworkType]?: TWhiteListDappList;
   };
 }

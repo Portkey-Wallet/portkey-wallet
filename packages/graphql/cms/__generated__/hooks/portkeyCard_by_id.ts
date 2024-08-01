@@ -10,6 +10,14 @@ export type PortkeyCard_By_IdQueryVariables = Types.Exact<{
   offset?: Types.InputMaybe<Types.Scalars['Int']>;
   page?: Types.InputMaybe<Types.Scalars['Int']>;
   search?: Types.InputMaybe<Types.Scalars['String']>;
+  filter1?: Types.InputMaybe<Types.CardType_Filter>;
+  sort1?: Types.InputMaybe<
+    Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
+  >;
+  limit1?: Types.InputMaybe<Types.Scalars['Int']>;
+  offset1?: Types.InputMaybe<Types.Scalars['Int']>;
+  page1?: Types.InputMaybe<Types.Scalars['Int']>;
+  search1?: Types.InputMaybe<Types.Scalars['String']>;
   id: Types.Scalars['ID'];
 }>;
 
@@ -17,51 +25,40 @@ export type PortkeyCard_By_IdQuery = {
   __typename?: 'Query';
   portkeyCard_by_id?: {
     __typename?: 'portkeyCard';
-    id: string;
-    status?: string | null;
-    index?: any | null;
-    title?: string | null;
-    value?: string | null;
-    description?: string | null;
-    buttonTitle?: string | null;
-    url?: string | null;
-    type?: number | null;
     appLink?: string | null;
+    buttonTitle?: string | null;
+    description?: string | null;
     extensionLink?: string | null;
+    id: string;
+    index?: any | null;
+    status?: string | null;
+    title?: string | null;
+    url?: string | null;
+    value?: string | null;
     imgUrl?: {
       __typename?: 'directus_files';
-      id: string;
-      storage: string;
-      filename_disk?: string | null;
-      filename_download: string;
-      title?: string | null;
-      type?: string | null;
-      folder?: string | null;
-      uploaded_by?: string | null;
-      uploaded_on?: any | null;
-      modified_by?: string | null;
-      modified_on?: any | null;
       charset?: string | null;
-      filesize?: any | null;
-      width?: number | null;
-      height?: number | null;
+      description?: string | null;
       duration?: number | null;
       embed?: string | null;
-      description?: string | null;
+      filename_disk?: string | null;
+      filename_download: string;
+      filesize?: any | null;
+      folder?: string | null;
+      height?: number | null;
+      id: string;
       location?: string | null;
-      tags?: any | null;
       metadata?: any | null;
-      uploaded_on_func?: {
-        __typename?: 'datetime_functions';
-        year?: number | null;
-        month?: number | null;
-        week?: number | null;
-        day?: number | null;
-        weekday?: number | null;
-        hour?: number | null;
-        minute?: number | null;
-        second?: number | null;
-      } | null;
+      modified_by?: string | null;
+      modified_on?: any | null;
+      storage: string;
+      tags?: any | null;
+      title?: string | null;
+      type?: string | null;
+      uploaded_by?: string | null;
+      uploaded_on?: any | null;
+      width?: number | null;
+      metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
       modified_on_func?: {
         __typename?: 'datetime_functions';
         year?: number | null;
@@ -74,7 +71,24 @@ export type PortkeyCard_By_IdQuery = {
         second?: number | null;
       } | null;
       tags_func?: { __typename?: 'count_functions'; count?: number | null } | null;
-      metadata_func?: { __typename?: 'count_functions'; count?: number | null } | null;
+      uploaded_on_func?: {
+        __typename?: 'datetime_functions';
+        year?: number | null;
+        month?: number | null;
+        week?: number | null;
+        day?: number | null;
+        weekday?: number | null;
+        hour?: number | null;
+        minute?: number | null;
+        second?: number | null;
+      } | null;
+    } | null;
+    type?: {
+      __typename?: 'cardType';
+      id: string;
+      label?: string | null;
+      status?: string | null;
+      value?: string | null;
     } | null;
   } | null;
 };
@@ -87,35 +101,35 @@ export const PortkeyCard_By_IdDocument = gql`
     $offset: Int
     $page: Int
     $search: String
+    $filter1: cardType_filter
+    $sort1: [String]
+    $limit1: Int
+    $offset1: Int
+    $page1: Int
+    $search1: String
     $id: ID!
   ) {
     portkeyCard_by_id(id: $id) {
-      id
-      status
-      index
-      title
-      value
-      description
+      appLink
       buttonTitle
+      description
+      extensionLink
+      id
       imgUrl(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
-        id
-        storage
+        charset
+        description
+        duration
+        embed
         filename_disk
         filename_download
-        title
-        type
+        filesize
         folder
-        uploaded_by
-        uploaded_on
-        uploaded_on_func {
-          year
-          month
-          week
-          day
-          weekday
-          hour
-          minute
-          second
+        height
+        id
+        location
+        metadata
+        metadata_func {
+          count
         }
         modified_by
         modified_on
@@ -129,27 +143,38 @@ export const PortkeyCard_By_IdDocument = gql`
           minute
           second
         }
-        charset
-        filesize
-        width
-        height
-        duration
-        embed
-        description
-        location
+        storage
         tags
         tags_func {
           count
         }
-        metadata
-        metadata_func {
-          count
+        title
+        type
+        uploaded_by
+        uploaded_on
+        uploaded_on_func {
+          year
+          month
+          week
+          day
+          weekday
+          hour
+          minute
+          second
         }
+        width
+      }
+      index
+      status
+      title
+      type(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1) {
+        id
+        label
+        status
+        value
       }
       url
-      type
-      appLink
-      extensionLink
+      value
     }
   }
 `;
@@ -172,6 +197,12 @@ export const PortkeyCard_By_IdDocument = gql`
  *      offset: // value for 'offset'
  *      page: // value for 'page'
  *      search: // value for 'search'
+ *      filter1: // value for 'filter1'
+ *      sort1: // value for 'sort1'
+ *      limit1: // value for 'limit1'
+ *      offset1: // value for 'offset1'
+ *      page1: // value for 'page1'
+ *      search1: // value for 'search1'
  *      id: // value for 'id'
  *   },
  * });

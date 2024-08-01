@@ -75,16 +75,18 @@ export type DappMobileOperatorOptions = {
   dappManager: IDappManager;
   dappOverlay: IDappOverlay;
   isDiscover?: boolean;
+  dappWhiteList?: string[];
 };
 export default class DappMobileOperator extends Operator {
   public dapp: DappStoreItem;
   protected stream: IDappInteractionStream;
   protected dappManager: IDappManager;
   protected dappOverlay: IDappOverlay;
+  protected dappWhiteList: string[];
   public isLockDapp?: boolean;
   public isDiscover?: boolean;
   public config: { [key: string]: boolean };
-  constructor({ stream, origin, dappManager, dappOverlay, isDiscover }: DappMobileOperatorOptions) {
+  constructor({ stream, origin, dappManager, dappOverlay, isDiscover, dappWhiteList }: DappMobileOperatorOptions) {
     super(stream);
     this.dapp = { origin };
     this.onCreate();
@@ -93,6 +95,7 @@ export default class DappMobileOperator extends Operator {
     this.dappOverlay = dappOverlay;
     this.isDiscover = isDiscover;
     this.config = {};
+    this.dappWhiteList = dappWhiteList || DAPP_WHITELIST;
   }
   private onCreate = () => {
     DappEventBus.registerOperator(this);
@@ -161,7 +164,7 @@ export default class DappMobileOperator extends Operator {
 
     switch (method) {
       case MethodsBase.ACCOUNTS: {
-        if (DAPP_WHITELIST.includes(this.dapp.origin)) {
+        if (this.dappWhiteList.includes(this.dapp.origin)) {
           await this.autoApprove();
         }
 
@@ -196,7 +199,7 @@ export default class DappMobileOperator extends Operator {
         });
       }
       case MethodsWallet.GET_WALLET_STATE: {
-        if (DAPP_WHITELIST.includes(this.dapp.origin)) {
+        if (this.dappWhiteList.includes(this.dapp.origin)) {
           await this.autoApprove();
         }
 
@@ -360,7 +363,7 @@ export default class DappMobileOperator extends Operator {
     callBack: SendRequest;
   }) {
     // is whitelist && is whitelist actions
-    if (DAPP_WHITELIST.includes(this.dapp.origin) && DAPP_WHITELIST_ACTION_WHITELIST.includes(method))
+    if (this.dappWhiteList.includes(this.dapp.origin) && DAPP_WHITELIST_ACTION_WHITELIST.includes(method))
       return callBack(eventName, params);
 
     const validSession = await this.verifySessionInfo();

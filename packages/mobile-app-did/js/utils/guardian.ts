@@ -77,15 +77,14 @@ export function addGuardian(
   guardianItem: UserGuardianItem,
   userGuardiansList: UserGuardianItem[],
   guardiansStatus: GuardiansStatus,
+  randomlyVerifierId: string,
 ) {
   const { identifierHash } = handleVerifierInfo(verifierInfo);
   const guardianToAdd = {
     identifierHash: verifierInfo?.zkLoginInfo?.guardianIdentifierHash ?? identifierHash,
     type: guardianItem.guardianType,
     verificationInfo: {
-      id: guardianItem.verifier?.id
-        ? guardianItem.verifier?.id
-        : '0745df56b7a450d3a5d66447515ec2306b5a207277a5a82e9eb50488d19f5a37', // todo_wade: select verifier randomly
+      id: guardianItem.verifier?.id ? guardianItem.verifier?.id : randomlyVerifierId,
       signature: verifierInfo.signature ? Object.values(Buffer.from(verifierInfo.signature as any, 'hex')) : [],
       verificationDoc: verifierInfo.verificationDoc,
     },

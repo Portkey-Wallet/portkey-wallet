@@ -115,7 +115,11 @@ export function useLoginModeMap(
       await onLogin({
         loginAccount: userInfo.user.userId,
         loginType: LoginType.Facebook,
-        authenticationInfo: { [userInfo.user.userId]: userInfo.accessToken },
+        authenticationInfo: {
+          [userInfo.user.userId]: userInfo.accessToken,
+          idToken: userInfo.idToken,
+          nonce: userInfo.nonce,
+        },
       });
     } catch (error) {
       if (!checkIsUserCancel(error)) CommonToast.failError(error);

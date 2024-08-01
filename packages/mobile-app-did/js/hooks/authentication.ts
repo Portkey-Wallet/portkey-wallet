@@ -485,7 +485,7 @@ export function useVerifyAppleToken() {
           chainId: params.chainId,
           operationType: params.operationType,
         },
-        jwt: params.idToken,
+        jwt: idToken,
         salt: randomId(),
         kid: parseKidFromJWTToken(idToken),
         nonce,

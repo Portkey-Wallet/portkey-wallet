@@ -226,7 +226,7 @@ const getDiscoverLearnGroupList = async (network: NetworkType, params: DiscoverL
   return result;
 };
 
-// get learnGroupList
+// get dapp whiteList
 const getDappWhiteListCustom = async (network: NetworkType, params: DappListQueryVariables) => {
   const apolloClient = getApolloClient(network);
   const result = await apolloClient.query<DappListQuery>({

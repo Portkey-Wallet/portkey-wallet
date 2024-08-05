@@ -356,7 +356,7 @@ export function useVerifyZKLogin() {
   return useCallback(async (params: VerifyZKLoginParams) => {
     const { verifyToken, jwt, salt, kid, nonce } = params;
     const proofParams = { jwt, salt };
-    console.log('aaaa proofParams : ', proofParams);
+    console.log('aaaa useVerifyZKLogin params: ', proofParams);
     const proofResult = await customFetch('https://zklogin-prover-sha256.aelf.dev/v1/prove', {
       method: 'POST',
       headers: {
@@ -383,7 +383,11 @@ export function useVerifyZKLogin() {
     });
 
     const portkeyVerifyResult = await request.verify.verifyZKLogin({
-      params: verifyToken,
+      params: {
+        ...verifyToken,
+        identifierHash: proofResult.identifierHash,
+        salt,
+      },
     });
 
     console.log('portkeyVerifyResult : ', portkeyVerifyResult);
@@ -443,7 +447,7 @@ export function useVerifyGoogleToken() {
           operationType: params.operationType,
         },
         jwt: idToken,
-        salt: randomId(),
+        salt: params.salt ? params.salt : randomId(),
         kid: parseKidFromJWTToken(idToken),
         nonce,
       });
@@ -486,7 +490,7 @@ export function useVerifyAppleToken() {
           operationType: params.operationType,
         },
         jwt: idToken,
-        salt: randomId(),
+        salt: params.salt ? params.salt : randomId(),
         kid: parseKidFromJWTToken(idToken),
         nonce,
       });
@@ -584,7 +588,7 @@ export function useVerifyFacebookToken() {
           operationType: params.operationType,
         },
         jwt: idToken,
-        salt: randomId(),
+        salt: params.salt ? params.salt : randomId(),
         kid: parseKidFromJWTToken(idToken),
         nonce,
       });
@@ -665,6 +669,7 @@ export function useVerifierAuth() {
         accessToken: authenticationInfo?.[guardianItem.guardianAccount],
         idToken: authenticationInfo?.idToken,
         nonce: authenticationInfo?.nonce,
+        salt: guardianItem?.salt,
         id: guardianItem.guardianAccount,
         verifierId: guardianItem.verifier?.id,
         chainId: originChainId,

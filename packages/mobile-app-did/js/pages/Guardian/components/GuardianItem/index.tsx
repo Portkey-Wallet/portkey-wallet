@@ -133,6 +133,7 @@ function GuardianItemButton({
         accessToken: authenticationInfo?.[guardianItem.guardianAccount],
         idToken: authenticationInfo?.idToken,
         nonce: authenticationInfo?.nonce,
+        salt: guardianItem.salt,
         id: guardianItem.guardianAccount,
         verifierId: guardianItem.verifier?.id,
         chainId: originChainId,

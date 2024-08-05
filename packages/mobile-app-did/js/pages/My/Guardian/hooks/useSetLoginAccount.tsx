@@ -129,6 +129,7 @@ export const useSetLoginAccount = (isEdit = false) => {
           accessToken,
           idToken: userInfo?.idToken,
           nonce: userInfo?.nonce,
+          salt: currentGuardian.salt,
           id: currentGuardian.guardianAccount,
           verifierId: currentGuardian.verifier?.id,
           chainId: originChainId,

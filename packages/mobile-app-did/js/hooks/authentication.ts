@@ -1,6 +1,5 @@
 import * as WebBrowser from 'expo-web-browser';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import * as Google from 'expo-auth-session/providers/google';
 import Config from 'react-native-config';
@@ -44,20 +43,16 @@ import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authe
 import generateRandomNonce from '@portkey-wallet/utils/nonce';
 import AElf from 'aelf-sdk';
 
-if (!isIOS) {
-  // todo_wade: fix the issue of GoogleSignin.configure
-  // GoogleSignin.configure({
-  //   offlineAccess: true,
-  //   webClientId: Config.GOOGLE_WEB_CLIENT_ID,
-  // });
-} else {
-  WebBrowser.maybeCompleteAuthSession();
-}
+// todo_wade: fix the issue of GoogleSignin.configure
+// GoogleSignin.configure({
+//   offlineAccess: true,
+//   webClientId: Config.GOOGLE_WEB_CLIENT_ID,
+// });
+WebBrowser.maybeCompleteAuthSession();
 
 export function useGoogleAuthentication() {
   const [androidResponse, setResponse] = useState<any>();
   const [googleAuthNonce] = useState(generateRandomNonce());
-  // const [{ googleRequest, response, promptAsync, googleAuthNonce }, dispatch] = useInterface();
   const [googleRequest, response, promptAsync] = Google.useAuthRequest({
     iosClientId: Config.GOOGLE_IOS_CLIENT_ID,
     androidClientId: Config.GOOGLE_ANDROID_CLIENT_ID,
@@ -65,6 +60,9 @@ export function useGoogleAuthentication() {
     extraParams: {
       nonce: googleAuthNonce,
     },
+    redirectUri: makeRedirectUri({
+      native: `${Application.applicationId}:/oauthredirect`,
+    }),
   });
   const iosPromptAsync: () => Promise<TGoogleAuthResponse> = useCallback(async () => {
     await sleep(2000);
@@ -103,6 +101,41 @@ export function useGoogleAuthentication() {
   const androidPromptAsync = useCallback(async () => {
     // sleep show loading
     await sleep(500);
+    const redirectUri = makeRedirectUri({
+      native: `${Application.applicationId}:/oauthredirect`,
+    });
+    console.log('aaaa redirectUri: ', redirectUri);
+    const info = await promptAsync();
+    console.log('aaaa info: ', info);
+    if (info.type === 'success') {
+      const exchangeRequest = new AccessTokenRequest({
+        clientId: Config.GOOGLE_ANDROID_CLIENT_ID,
+        redirectUri: makeRedirectUri({
+          native: `${Application.applicationId}:/oauthredirect`,
+        }),
+        code: info.params.code,
+        extraParams: {
+          code_verifier: googleRequest?.codeVerifier || '',
+        },
+      });
+      const authentication = await exchangeRequest.performAsync(Google.discovery);
+
+      const userInfo = await getGoogleUserInfo(authentication?.accessToken);
+      return {
+        user: {
+          ...userInfo,
+          photo: userInfo.picture,
+          familyName: userInfo.family_name,
+          givenName: userInfo.given_name,
+        },
+        ...authentication,
+        nonce: googleAuthNonce,
+      } as TGoogleAuthResponse;
+    }
+    const message =
+      info.type === 'cancel' ? '' : 'It seems that the authorization with your Google account has failed.';
+    throw { ...info, message };
+    /*
     try {
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       // google services are available
@@ -120,29 +153,8 @@ export function useGoogleAuthentication() {
       const message = error.code === statusCodes.SIGN_IN_CANCELLED ? '' : handleErrorMessage(error);
       // : 'It seems that the authorization with your Google account has failed.';
       throw { ...error, message };
-    }
-  }, [googleAuthNonce]);
-
-  /*
-  const androidPromptAsyncOneTap = useCallback(async () => {
-    try {
-      await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleOneTapSignIn.signIn({
-        webClientId: Config.GOOGLE_WEB_CLIENT_ID,
-        nonce: googleRequest?.nonce,
-      });
-      const token = await GoogleSignin.getTokens();
-      await GoogleSignin.signOut();
-      const googleResponse = { ...userInfo, ...token, nonce: googleRequest?.nonce } as TGoogleAuthResponse;
-      setResponse(googleResponse);
-      return googleResponse;
-    } catch (error: any) {
-      const message = error.code === statusCodes.SIGN_IN_CANCELLED ? '' : handleErrorMessage(error);
-      // : 'It seems that the authorization with your Google account has failed.';
-      throw { ...error, message };
-    }
-  }, [googleRequest?.nonce]);
-  */
+    }*/
+  }, [googleAuthNonce, googleRequest?.codeVerifier, promptAsync]);
 
   const googleSign = useCallback(async () => {
     changeCanLock(false);

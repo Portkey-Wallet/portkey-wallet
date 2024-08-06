@@ -295,7 +295,7 @@ const SendHome: React.FC = () => {
             message: <TextM style={styles.alertMessage}>{t(CROSS_CHAIN_INTERCEPTED_CONTENT)}</TextM>,
             buttons: [
               {
-                title: t('Got it'),
+                title: t('OK'),
                 type: 'primary',
               },
             ],

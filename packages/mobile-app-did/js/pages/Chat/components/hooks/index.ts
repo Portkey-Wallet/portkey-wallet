@@ -14,12 +14,13 @@ import { formatRNImage } from '@portkey-wallet/utils/s3';
 import { bindUriToLocalImage } from 'utils/fs/img';
 import s3Instance from '@portkey-wallet/utils/s3';
 import { pTd } from 'utils/unit';
+import useBotSendingStatus from '@portkey-wallet/hooks/hooks-ca/im/useBotSendingStatus';
 
 export const TopSpacing = isIOS ? bottomBarHeight : isXiaoMi ? Math.max(-bottomBarHeight, -10) : 0;
 
 const ToolsHeight = pTd(196);
 
-export function useKeyboardAnim({ textInputRef }: { textInputRef: React.RefObject<TextInput> }) {
+export function useKeyboardAnim({ textInputRef, isBot }: { textInputRef: React.RefObject<TextInput>; isBot: boolean }) {
   const keyboardAnim = useRef(new Animated.Value(0)).current;
   const bottomBarStatus = useBottomBarStatus();
   const animatedRef = useRef<{ [key: number]: Animated.CompositeAnimation }>();
@@ -31,8 +32,9 @@ export function useKeyboardAnim({ textInputRef }: { textInputRef: React.RefObjec
   const { keyboardHeight, isKeyboardOpened } = useKeyboard(TopSpacing);
 
   const toValue = useMemo(() => {
-    if (bottomBarStatus === ChatBottomBarStatus.tools) return ToolsHeight;
+    if (bottomBarStatus === ChatBottomBarStatus.tools) return isBot ? ToolsHeight / 2 : ToolsHeight;
     return showTools || isKeyboardOpened ? keyboardHeight : 0;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bottomBarStatus, isKeyboardOpened, keyboardHeight, showTools]);
   // const toValue = useMemo(
   //   () => (showTools || isKeyboardOpened ? keyboardHeight : 0),
@@ -68,16 +70,21 @@ export function useSendCurrentChannelMessage() {
   const currentChannelId = useCurrentChannelId();
   const currentChannelInfo = useChannelItemInfo(currentChannelId || '');
   const { sendMessageToPeople, sendChannelMessage, sendChannelImageByS3Result } = useSendChannelMessage();
-
+  const { changeToSendingStatus } = useBotSendingStatus(currentChannelInfo?.toRelationId || '');
+  const isBot = useMemo(() => currentChannelInfo?.botChannel, [currentChannelInfo?.botChannel]);
   return useMemo(
     () => ({
-      sendMessageToPeople: ({ type, content }: { content: string; type?: MessageType }) =>
-        sendMessageToPeople({
+      sendMessageToPeople: ({ type, content }: { content: string; type?: MessageType }) => {
+        if (isBot) {
+          changeToSendingStatus();
+        }
+        return sendMessageToPeople({
           toRelationId: currentChannelInfo?.toRelationId,
           channelId: currentChannelId || '',
           content,
           type,
-        }),
+        });
+      },
       sendChannelMessage: ({
         content,
         type,
@@ -86,14 +93,21 @@ export function useSendCurrentChannelMessage() {
         content: string;
         type?: MessageType;
         quoteMessage?: Message;
-      }) =>
-        sendChannelMessage({
+      }) => {
+        if (isBot) {
+          changeToSendingStatus();
+        }
+        return sendChannelMessage({
           channelId: currentChannelId || '',
           content,
           type,
           quoteMessage,
-        }),
+        });
+      },
       sendChannelImage: async (file: { uri: string; width: number; height: number }) => {
+        if (isBot) {
+          changeToSendingStatus();
+        }
         const fileBase64 = await readFile(file.uri, { encoding: 'base64' });
         const data = formatRNImage(file, fileBase64);
         const s3Result = await s3Instance.uploadFile({
@@ -110,8 +124,10 @@ export function useSendCurrentChannelMessage() {
       },
     }),
     [
+      changeToSendingStatus,
       currentChannelId,
       currentChannelInfo?.toRelationId,
+      isBot,
       sendChannelImageByS3Result,
       sendChannelMessage,
       sendMessageToPeople,

@@ -39,6 +39,7 @@ import {
   TransactionErrorArray,
   AddressError,
   AddressErrorArray,
+  CROSS_CHAIN_INTERCEPTED_CONTENT,
 } from '@portkey-wallet/constants/constants-ca/send';
 import { getAddressChainId, isSameAddresses } from '@portkey-wallet/utils';
 import { useCheckManagerSyncState } from 'hooks/wallet';
@@ -62,6 +63,9 @@ import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useEtransferFee } from 'hooks/etransfer';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { getAssetsEstimation } from '@portkey-wallet/store/store-ca/assets/api';
+import { getChainIdByAddress } from '@portkey-wallet/utils';
+import { ChainId } from '@portkey-wallet/types';
 
 const SendHome: React.FC = () => {
   const {
@@ -236,7 +240,7 @@ const SendHome: React.FC = () => {
 
   // warning dialog
   const showDialog = useCallback(
-    (type: 'clearAddress' | 'crossChain' | 'exchange', confirmCallBack?: () => void) => {
+    (type: 'clearAddress' | 'crossChain' | 'exchange' | 'crossChainInterception', confirmCallBack?: () => void) => {
       switch (type) {
         case 'clearAddress':
           ActionSheet.alert({
@@ -285,7 +289,18 @@ const SendHome: React.FC = () => {
             ],
           });
           break;
-
+        case 'crossChainInterception':
+          ActionSheet.alert({
+            title: t('Notice'),
+            message: <TextM style={styles.alertMessage}>{t(CROSS_CHAIN_INTERCEPTED_CONTENT)}</TextM>,
+            buttons: [
+              {
+                title: t('OK'),
+                type: 'primary',
+              },
+            ],
+          });
+          break;
         default:
           break;
       }
@@ -417,19 +432,31 @@ const SendHome: React.FC = () => {
         return { status: false };
       }
     }
-
     Loading.show();
-    // check is security safe
     try {
+      // cross chain interception
+      if (isCrossChain(selectedToContact.address, assetInfo.chainId)) {
+        const sendChainId = selectedToContact.chainId || (getChainIdByAddress(selectedToContact.address) as ChainId);
+        const interceptResult = await getAssetsEstimation({
+          symbol: assetInfo.symbol,
+          chainId: sendChainId,
+          type: sendType,
+        });
+        if (!interceptResult) {
+          showDialog('crossChainInterception');
+          return;
+        }
+      }
+      // check is security safe
       const securitySafeResult = await securitySafeCheckAndToast(assetInfo.chainId);
       if (!securitySafeResult) {
-        Loading.hide();
         return { status: false };
       }
     } catch (err) {
       CommonToast.failError(err);
-      Loading.hide();
       return { status: false };
+    } finally {
+      Loading.hide();
     }
 
     // checkTransferLimitResult
@@ -530,6 +557,7 @@ const SendHome: React.FC = () => {
     chainInfo,
     balance,
     selectedToContact.address,
+    selectedToContact.chainId,
     assetInfo.chainId,
     assetInfo.decimals,
     assetInfo.symbol,

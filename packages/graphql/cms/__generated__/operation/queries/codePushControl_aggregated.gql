@@ -3,36 +3,36 @@ query codePushControl_aggregated($groupBy: [String], $filter: codePushControl_fi
         group
         countAll
         count{
-            id
-            status
-            sort
-            user_created
-            date_created
-            user_updated
-            date_updated
-            version
-            label
-            title
             content
+            date_created
+            date_updated
+            id
             isForceUpdate
-            updatedTitle
+            label
+            sort
+            status
+            title
             updatedContent
+            updatedTitle
+            user_created
+            user_updated
+            version
         }
         countDistinct{
-            id
-            status
-            sort
-            user_created
-            date_created
-            user_updated
-            date_updated
-            version
-            label
-            title
             content
+            date_created
+            date_updated
+            id
             isForceUpdate
-            updatedTitle
+            label
+            sort
+            status
+            title
             updatedContent
+            updatedTitle
+            user_created
+            user_updated
+            version
         }
         avg{
             id

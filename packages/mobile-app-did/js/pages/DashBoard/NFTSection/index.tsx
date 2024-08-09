@@ -1,4 +1,4 @@
-import React, { useState, useCallback, memo, useEffect } from 'react';
+import React, { useState, useCallback, memo, useEffect, useRef } from 'react';
 import NoData from 'components/NoData';
 import { StyleSheet, View, FlatList } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -12,7 +12,12 @@ import { ChainId } from '@portkey-wallet/types';
 import { useRoute } from '@react-navigation/native';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useAccountNFTCollectionInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
-import { PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION } from '@portkey-wallet/constants/constants-ca/assets';
+import { PAGE_SIZE_IN_ACCOUNT_NFT_COLLECTION, REFRESH_TIME } from '@portkey-wallet/constants/constants-ca/assets';
+import NFTHint from 'pages/FreeMint/components/NFTHint';
+import { useGetRecentStatus, useRecentStatus } from '@portkey-wallet/hooks/hooks-ca/freeMint';
+import MintStatusLine from 'pages/FreeMint/components/MintStatusLine';
+import { FreeMintStatus } from '@portkey-wallet/types/types-ca/freeMint';
+import myEvents from 'utils/deviceEvent';
 
 export interface OpenCollectionObjType {
   // key = symbol+chainId
@@ -40,7 +45,8 @@ function areEqual(prevProps: NFTCollectionProps, nextProps: NFTCollectionProps) 
   return (
     nextProps.isCollapsed === prevProps.isCollapsed &&
     prevNftObj?.pageNum === nextNftObj?.pageNum &&
-    nextProps.isFetching === prevProps.isFetching
+    nextProps.isFetching === prevProps.isFetching &&
+    nextProps.itemCount === prevProps.itemCount
   );
 }
 
@@ -52,6 +58,9 @@ const NFTCollection: React.FC<NFTCollectionProps> = memo(function NFTCollection(
 
 export default function NFTSection() {
   const { t } = useLanguage();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const { recentStatus, itemId, setRecentStatus, setItemId } = useRecentStatus();
+  const getRecentStatus = useGetRecentStatus();
   const caAddressInfos = useCaAddressInfoList();
   const { fetchAccountNFTCollectionInfoList, fetchAccountNFTItem, accountNFTList, totalRecordCount } =
     useAccountNFTCollectionInfo();
@@ -72,6 +81,29 @@ export default function NFTSection() {
     },
     [accountNFTList.length, caAddressInfos, fetchAccountNFTCollectionInfoList, totalRecordCount],
   );
+  useEffect(() => {
+    const listener = myEvents.updateMintStatus.addListener(async () => {
+      const res = await getRecentStatus();
+      setRecentStatus(res.status);
+      setItemId(res.itemId);
+      getNFTCollectionsAsync(true);
+    });
+    return () => listener.remove();
+  }, [getNFTCollectionsAsync, getRecentStatus, setItemId, setRecentStatus]);
+
+  useEffect(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(async () => {
+      const res = await getRecentStatus();
+      setRecentStatus(res.status);
+      setItemId(res.itemId);
+      setOpenCollectionObj({});
+      getNFTCollectionsAsync(true);
+    }, REFRESH_TIME);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [setRecentStatus, setItemId, timerRef, getRecentStatus, getNFTCollectionsAsync]);
 
   useEffect(() => {
     getNFTCollectionsAsync(true);
@@ -147,14 +179,17 @@ export default function NFTSection() {
         contentContainerStyle={styles.contentContainerStyle}
         data={totalRecordCount === 0 ? [] : accountNFTList || []}
         ListEmptyComponent={() => (
-          <Touchable>
-            <NoData
-              icon={'no-data-nft'}
-              message={t('No NFTs yet ')}
-              topDistance={pTd(40)}
-              oblongSize={[pTd(64), pTd(64)]}
-            />
-          </Touchable>
+          <View>
+            <Touchable>
+              <NoData
+                icon={'no-data-nft'}
+                message={t('No NFTs yet ')}
+                topDistance={pTd(40)}
+                oblongSize={[pTd(64), pTd(64)]}
+              />
+            </Touchable>
+            {/* <NFTHint /> */}
+          </View>
         )}
         renderItem={({ item }: { item: NFTCollectionItemShowType }) => (
           <NFTCollection
@@ -174,6 +209,16 @@ export default function NFTSection() {
           getNFTCollectionsAsync(true);
         }}
         onEndReached={() => getNFTCollectionsAsync()}
+        ListFooterComponent={() => (
+          <View
+            style={{ marginTop: (totalRecordCount === 0 ? [] : accountNFTList || []).length < 1 ? pTd(40) : pTd(24) }}>
+            {(totalRecordCount === 0 ? [] : accountNFTList || []).length < 1 && recentStatus === FreeMintStatus.NONE ? (
+              <NFTHint recentStatus={recentStatus} itemId={itemId || ''} />
+            ) : (
+              <MintStatusLine recentStatus={recentStatus} itemId={itemId || ''} />
+            )}
+          </View>
+        )}
       />
     </View>
   );

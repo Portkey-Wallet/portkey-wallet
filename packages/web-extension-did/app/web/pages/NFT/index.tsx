@@ -3,7 +3,7 @@ import PromptFrame from 'pages/components/PromptFrame';
 import CommonHeader from 'components/CommonHeader';
 import { useCommonState } from 'store/Provider/hooks';
 import clsx from 'clsx';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { addressFormat } from '@portkey-wallet/utils';
 import Copy from 'components/Copy';
@@ -20,6 +20,9 @@ import { formatTransferTime } from '@portkey-wallet/utils/time';
 import { SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
 import { useNFTItemDetail } from '@portkey-wallet/hooks/hooks-ca/assets';
 import useInterval from '@portkey-wallet/hooks/useInterval';
+import { PopoverMenuList } from '@portkey-wallet/im-ui-web';
+import { useSetUserAvatar } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import singleMessage from 'utils/singleMessage';
 import './index.less';
 
 export default function NFT() {
@@ -29,6 +32,7 @@ export default function NFT() {
   const isMainNet = useIsMainnet();
   const currentNetwork = useCurrentNetworkInfo();
   const [nftDetail, setNftDetail] = useState<TNFTLocationState>(state);
+  const setUserAvatar = useSetUserAvatar();
   const refreshTime = useMemo(() => {
     if (nftDetail.recommendedRefreshSeconds && nftDetail.traitsPercentages) {
       return nftDetail.recommendedRefreshSeconds * 1000;
@@ -170,7 +174,42 @@ export default function NFT() {
       </div>
     ) : null;
   }, [nftDetail]);
+  const [popVisible, setPopVisible] = useState(false);
 
+  const moreData = useMemo(() => {
+    return [
+      {
+        key: 'profile',
+        leftIcon: <CustomSvg type="Profile" />,
+        children: 'Set as Profile Photo',
+        onClick: async () => {
+          try {
+            await setUserAvatar(nftDetail.imageUrl);
+            singleMessage.success('Profile photo is set.');
+          } catch (error) {
+            singleMessage.error('Failed to set profile photo. Please try again.');
+          }
+        },
+      },
+    ];
+  }, [nftDetail.imageUrl, setUserAvatar]);
+
+  const hidePop = useCallback((e: Event) => {
+    try {
+      const _target = e?.target as Element;
+      const _className = _target?.className;
+      const isFunc = _className.includes instanceof Function;
+      if (isFunc && !_className.includes('nft-detail-more')) {
+        setPopVisible(false);
+      }
+    } catch (e) {
+      console.log('===chat box hidePop error', e);
+    }
+  }, []);
+  useEffect(() => {
+    document.addEventListener('click', hidePop);
+    return () => document.removeEventListener('click', hidePop);
+  }, [hidePop]);
   const mainContent = useCallback(() => {
     const { collectionName, collectionImageUrl, tokenId, imageUrl, symbol, balance, alias, decimals = 0 } = nftDetail;
     const seedTypeTag = getSeedTypeTag(nftDetail, NFTSizeEnum.large);
@@ -178,7 +217,25 @@ export default function NFT() {
     return (
       <div id="nft-detail" className={clsx(['nft-detail', isPrompt && 'detail-page-prompt'])}>
         <div className="nft-detail-body">
-          <CommonHeader onLeftBack={() => navigate('/', { state: { key: BalanceTab.NFT } })} />
+          <CommonHeader
+            onLeftBack={() => navigate('/', { state: { key: BalanceTab.NFT } })}
+            rightElementList={[
+              {
+                customSvgWrapClassName: 'nft-detail-more',
+                customSvgType: 'More',
+                popoverProps: {
+                  overlayClassName: `nft-detail-popover ${isPrompt ? '' : 'nft-detail-popover-popup'}`,
+                  open: popVisible,
+                  trigger: 'click',
+                  showArrow: false,
+                  placement: 'bottomLeft',
+                  getPopupContainer: (triggerNode: any) => triggerNode.parentNode,
+                  content: <PopoverMenuList data={moreData} />,
+                },
+                onClick: () => setPopVisible(!popVisible),
+              },
+            ]}
+          />
           <div className="collection flex-start-center">
             <div className="img">
               {collectionImageUrl ? (
@@ -228,14 +285,16 @@ export default function NFT() {
       </div>
     );
   }, [
+    nftDetail,
     isPrompt,
-    navigate,
+    popVisible,
+    moreData,
     renderBasicInfo,
-    renderGenerationInfo,
-    renderInscriptionInfo,
     renderIsSeedInfo,
     renderTraitsInfo,
-    nftDetail,
+    renderGenerationInfo,
+    renderInscriptionInfo,
+    navigate,
   ]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} className="nft-detail-prompt" /> : mainContent()}</>;

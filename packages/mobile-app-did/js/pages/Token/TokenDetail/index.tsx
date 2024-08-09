@@ -69,7 +69,7 @@ const TokenDetail: React.FC = () => {
   const dispatch = useAppCommonDispatch();
   const activity = useAppCASelector(state => state.activity);
   const defaultToken = useDefaultToken(tokenInfo.chainId);
-  const { awakenUrl = 'https://awaken.finance/' } = useCurrentNetworkInfo();
+  const { awakenUrl = 'https://app.awaken.finance/' } = useCurrentNetworkInfo();
   const { isETransDepositShow } = useAppETransShow();
   const { isSwapShow } = useAppSwapButtonShow();
   const onDisclaimerModalPress = useOnDisclaimerModalPress();

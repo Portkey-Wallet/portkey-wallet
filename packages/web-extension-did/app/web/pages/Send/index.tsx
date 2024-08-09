@@ -4,7 +4,7 @@ import { useCurrentUserInfo, useCurrentWalletInfo } from '@portkey-wallet/hooks/
 import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
 import { IClickAddressProps } from '@portkey-wallet/types/types-ca/contact';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
-import { getAddressChainId, handleErrorMessage, isDIDAddress } from '@portkey-wallet/utils';
+import { getAddressChainId, getChainIdByAddress, handleErrorMessage, isDIDAddress } from '@portkey-wallet/utils';
 import { getAelfAddress, getEntireDIDAelfAddress, isCrossChain, isEqAddress } from '@portkey-wallet/utils/aelf';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import { Button, Modal } from 'antd';
@@ -34,7 +34,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import './index.less';
 import { useCheckLimit, useCheckSecurity } from 'hooks/useSecurity';
-import { ExceedLimit, WalletIsNotSecure } from 'constants/security';
+import { CrossChainIntercepted, ExceedLimit, WalletIsNotSecure } from 'constants/security';
 import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import GuardianApproveModal from 'pages/components/GuardianApprovalModal';
 import { GuardianItem } from 'types/guardians';
@@ -43,6 +43,7 @@ import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import CustomModal from 'pages/components/CustomModal';
 import {
+  CROSS_CHAIN_INTERCEPTED_CONTENT,
   SEND_SIDE_CHAIN_TOKEN_TIP_CONTENT,
   SEND_SIDE_CHAIN_TOKEN_TIP_TITLE,
 } from '@portkey-wallet/constants/constants-ca/send';
@@ -65,6 +66,8 @@ import { CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL } from '@portkey-wallet/utils/with
 import { TWithdrawInfo } from '@etransfer/services';
 import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
 import { COMMON_PRIVATE } from '@portkey-wallet/constants';
+import { getAssetsEstimation } from '@portkey-wallet/store/store-ca/assets/api';
+import { SendType } from '@portkey-wallet/types/types-ca/send';
 
 export type ToAccount = { address: string; name?: string };
 
@@ -435,6 +438,25 @@ export default function Send() {
   );
 
   const checkSecurity = useCheckSecurity();
+  const showCrossChainAssetsModal = useCallback(() => {
+    const modal = CustomModal({
+      className: 'cross-chain-modal',
+      content: (
+        <div>
+          <div className="modal-title">Notice</div>
+          <div>
+            {[CROSS_CHAIN_INTERCEPTED_CONTENT].map((item, i) => (
+              <div key={`send_modal_${i}`}>{item}</div>
+            ))}
+          </div>
+        </div>
+      ),
+      okText: 'OK',
+      onOk: () => {
+        modal.destroy();
+      },
+    });
+  }, []);
   const handleCheckPreview = useCallback(async () => {
     try {
       setLoading(true);
@@ -443,17 +465,31 @@ export default function Send() {
       const tokenSymbol = tokenInfo.symbol;
       console.log(tokenInfo, 'tokenInfo===handleCheckPreview');
       const caAddress = wallet?.[chainId]?.caAddress || '';
-      // CHECK 1: manager sync
+      // CHECK 1: cross chain whether has assets
+      if (isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF')) {
+        const sendChainId = getChainIdByAddress(toAccount.address) as ChainId;
+        const interceptResult = await getAssetsEstimation({
+          symbol: tokenSymbol,
+          chainId: sendChainId,
+          type: type as SendType,
+        });
+        if (!interceptResult) {
+          showCrossChainAssetsModal();
+          return CrossChainIntercepted;
+        }
+      }
+
+      // CHECK 2: manager sync
       const _isManagerSynced = await checkManagerSyncState(chainId);
       if (!_isManagerSynced) {
         return 'Synchronizing on-chain account information...';
       }
 
-      // CHECK 2: wallet security
+      // CHECK 3: wallet security
       const securityRes = await checkSecurity(tokenInfo.chainId);
       if (!securityRes) return WalletIsNotSecure;
 
-      // CHECK 3: balance
+      // CHECK 4: balance
       const result = await getBalance({
         rpcUrl: currentChain.endPoint,
         address: tokenInfo.address,
@@ -485,7 +521,7 @@ export default function Send() {
         return 'input error';
       }
 
-      // CHECK 4: transfer limit
+      // CHECK 5: transfer limit
       const limitRes = await checkLimit({
         chainId: tokenInfo.chainId,
         symbol: tokenInfo.symbol,
@@ -505,7 +541,7 @@ export default function Send() {
         onOneTimeApproval: handleOneTimeApproval,
       });
       if (!limitRes) return ExceedLimit;
-      // CHECK 5: tx fee
+      // CHECK 6: tx fee
       if (
         isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF') &&
         CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(tokenSymbol)
@@ -554,7 +590,7 @@ export default function Send() {
 
       return '';
     } catch (error: any) {
-      console.log('checkTransactionValue===', error);
+      console.log('checkTransactionValue===', error, 'typeof');
       return TransactionError.FEE_NOT_ENOUGH;
     } finally {
       setLoading(false);
@@ -566,16 +602,17 @@ export default function Send() {
     tokenInfo,
     wallet,
     chainId,
+    toAccount,
+    chainInfo?.chainId,
     checkManagerSyncState,
     checkSecurity,
     currentNetwork.walletType,
     type,
     checkLimit,
     stage,
-    toAccount,
     handleOneTimeApproval,
-    chainInfo?.chainId,
     getTranslationInfo,
+    showCrossChainAssetsModal,
     symbol,
     defaultToken.symbol,
     crossChainFee,
@@ -644,7 +681,6 @@ export default function Send() {
       },
     });
   }, [sendHandler]);
-
   const StageObj: TypeStageObj = useMemo(
     () => ({
       0: {
@@ -692,7 +728,7 @@ export default function Send() {
         btnText: 'Preview',
         handler: async () => {
           const res = await handleCheckPreview();
-          if (res === ExceedLimit || res === WalletIsNotSecure) return;
+          if (res === ExceedLimit || res === WalletIsNotSecure || res === CrossChainIntercepted) return;
           if (!res) {
             setTipMsg('');
             setStage(SendStage.Preview);

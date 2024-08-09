@@ -1,0 +1,46 @@
+query upgradePush_deviceBrand_aggregated($groupBy: [String], $filter: upgradePush_deviceBrand_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
+    upgradePush_deviceBrand_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
+        group
+        countAll
+        count{
+            deviceBrand_id
+            id
+            upgradePush_id
+        }
+        countDistinct{
+            deviceBrand_id
+            id
+            upgradePush_id
+        }
+        avg{
+            deviceBrand_id
+            id
+            upgradePush_id
+        }
+        sum{
+            deviceBrand_id
+            id
+            upgradePush_id
+        }
+        avgDistinct{
+            deviceBrand_id
+            id
+            upgradePush_id
+        }
+        sumDistinct{
+            deviceBrand_id
+            id
+            upgradePush_id
+        }
+        min{
+            deviceBrand_id
+            id
+            upgradePush_id
+        }
+        max{
+            deviceBrand_id
+            id
+            upgradePush_id
+        }
+    }
+}

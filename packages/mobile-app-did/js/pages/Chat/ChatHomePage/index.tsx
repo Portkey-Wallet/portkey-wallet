@@ -18,18 +18,19 @@ import useRequestNotifyPermission from 'hooks/usePermission';
 import InviteFriendsSection from '../components/InviteFriendsSection';
 import OfficialChatGroup from '../components/OfficialChatGroup';
 
-import { useJoinOfficialGroupTipModal } from 'hooks/guide';
+import { useJoinOfficialGroupAndAiChatTipModal } from 'hooks/guide';
 import { useChannelList } from '@portkey-wallet/hooks/hooks-ca/im';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useOnTouchAndPopUp } from 'components/FloatOverlay/touch';
 import { ListItemType } from 'components/FloatOverlay/Popover';
+import KeyGenieChat from '../components/KeyGenieChat';
 
 export default function ChatHomePage() {
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const emitCloseSwiped = useCallback(() => myEvents.chatHomeListCloseSwiped.emit(''), []);
   const lastEmitCloseSwiped = useLatestRef(emitCloseSwiped);
   const requestNotifyPermission = useRequestNotifyPermission();
-  const joinOfficialGroupModal = useJoinOfficialGroupTipModal();
+  const joinOfficialGroupAndAiChatModal = useJoinOfficialGroupAndAiChatTipModal();
   const { list: channelList, init: initChannelList } = useChannelList();
   const [hasFinishInit, setHasFinishInit] = useState(false);
   const popUpList: ListItemType[] = useMemo(() => {
@@ -94,9 +95,9 @@ export default function ChatHomePage() {
   const checkModal = useThrottleCallback(
     async () => {
       const isShowNotice = await requestNotifyPermission();
-      if (!isShowNotice) await joinOfficialGroupModal();
+      if (!isShowNotice) await joinOfficialGroupAndAiChatModal();
     },
-    [joinOfficialGroupModal, requestNotifyPermission],
+    [joinOfficialGroupAndAiChatModal, requestNotifyPermission],
     1000,
   );
 
@@ -130,6 +131,7 @@ export default function ChatHomePage() {
             <>
               <InviteFriendsSection />
               <OfficialChatGroup />
+              <KeyGenieChat />
             </>
           ) : (
             <SessionList />

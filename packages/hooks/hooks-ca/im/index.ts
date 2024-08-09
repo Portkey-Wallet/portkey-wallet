@@ -32,6 +32,7 @@ export const useRedPackageConfigMapState = () => useAppCASelector(state => state
 export const useIMPinListNetMapState = () => useAppCASelector(state => state.im.pinListNetMap);
 export const useIMLastPinNetMapState = () => useAppCASelector(state => state.im.lastPinNetMap);
 export const useImBlockedMapState = () => useAppCASelector(state => state.im.blockedUserListMap);
+export const useImSendingBotNetMapState = () => useAppCASelector(state => state.im.sendingBotRelationIdNetMap);
 
 export const useUnreadCount = () => {
   const [unreadCount, setUnreadCount] = useState(0);

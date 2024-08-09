@@ -156,8 +156,6 @@ export function useGoogleAuthentication() {
     changeCanLock(false);
     try {
       return await (isIOS ? iosPromptAsync : androidPromptAsync)();
-    } catch (error) {
-      console.log('googleSign error: ', error);
     } finally {
       changeCanLock(true);
     }

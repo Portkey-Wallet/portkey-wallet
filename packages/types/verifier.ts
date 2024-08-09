@@ -68,8 +68,9 @@ export enum OperationTypeEnum {
 }
 
 export interface ZKLoginInfo {
-  guardianIdentifierHash: string;
   identifierHash: string;
+  poseidonIdentifierHash: string;
+  identifierHashType: number;
   salt: string;
   zkProof: string;
   jwt: string;
@@ -87,6 +88,7 @@ export interface ZKProofInfo {
 
 export interface ZKLoginInfoInContract {
   identifierHash: string;
+  poseidonIdentifierHash: string;
   salt: string;
   kid: string;
   circuitId: string;

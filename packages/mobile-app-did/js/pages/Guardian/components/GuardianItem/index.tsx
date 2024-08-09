@@ -161,6 +161,7 @@ function GuardianItemButton({
     authenticationInfo,
     guardianItem.guardianAccount,
     guardianItem.guardianType,
+    guardianItem.salt,
     guardianItem.verifier?.id,
     onSetGuardianStatus,
     operationType,

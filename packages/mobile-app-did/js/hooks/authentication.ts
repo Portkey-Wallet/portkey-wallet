@@ -367,7 +367,7 @@ export function useVerifyZKLogin() {
     const { verifyToken, jwt, salt, kid, nonce } = params;
     const proofParams = { jwt, salt };
     console.log('aaaa useVerifyZKLogin params: ', proofParams);
-    const proofResult = await customFetch('https://zklogin-prover-sha256.aelf.dev/v1/prove', {
+    const proofResult = await customFetch('https://zklogin-prover-dev.aelf.dev/v1/prove', {
       method: 'POST',
       headers: {
         Accept: 'text/plain;v=1.0',
@@ -383,7 +383,8 @@ export function useVerifyZKLogin() {
       kid,
       proof: proofResult.proof,
     };
-    const verifyResult = await customFetch('https://zklogin-prover-sha256.aelf.dev//v1/verify', {
+    // todo_wade: remove this
+    const verifyResult = await customFetch('https://zklogin-prover-dev.aelf.dev/v1/verify', {
       method: 'POST',
       headers: {
         Accept: 'text/plain;v=1.0',
@@ -395,7 +396,7 @@ export function useVerifyZKLogin() {
     const portkeyVerifyResult = await request.verify.verifyZKLogin({
       params: {
         ...verifyToken,
-        identifierHash: proofResult.identifierHash,
+        poseidonIdentifierHash: proofResult.identifierHash,
         salt,
       },
     });
@@ -406,8 +407,9 @@ export function useVerifyZKLogin() {
     const zkProof = decodeURIComponent(verifyParams.proof);
     if (verifyResult.valid) {
       const zkLoginInfo: ZKLoginInfo = {
-        guardianIdentifierHash: portkeyVerifyResult.guardianIdentifierHash,
-        identifierHash: verifyParams.identifierHash,
+        identifierHash: portkeyVerifyResult.guardianIdentifierHash,
+        poseidonIdentifierHash: verifyParams.identifierHash,
+        identifierHashType: 1,
         salt: verifyParams.salt,
         zkProof,
         jwt: jwt ?? '',

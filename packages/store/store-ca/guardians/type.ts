@@ -9,6 +9,7 @@ export interface BaseGuardianItem {
   guardianType: LoginType;
   key: string; // `${loginGuardianType}&${verifier?.name}`,
   identifierHash: string;
+  poseidonIdentifierHash: string;
   salt: string;
   thirdPartyEmail?: string;
   isPrivate?: boolean;

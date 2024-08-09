@@ -81,7 +81,7 @@ export function addGuardian(
 ) {
   const { identifierHash } = handleVerifierInfo(verifierInfo);
   const guardianToAdd = {
-    identifierHash: verifierInfo?.zkLoginInfo?.guardianIdentifierHash ?? identifierHash,
+    identifierHash: verifierInfo?.zkLoginInfo?.identifierHash ?? identifierHash,
     type: guardianItem.guardianType,
     verificationInfo: {
       id: guardianItem.verifier?.id ? guardianItem.verifier?.id : randomlyVerifierId,
@@ -95,7 +95,6 @@ export function addGuardian(
     caHash,
     guardianToAdd: guardianToAdd,
     guardiansApproved: guardiansApproved,
-    pass: true, // todo_wade: confirm
   });
 }
 

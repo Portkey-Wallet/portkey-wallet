@@ -105,7 +105,8 @@ export function useGoogleAuthentication() {
         subscriptionRef.current && subscriptionRef.current.remove();
         subscriptionRef.current = null;
 
-        WebBrowser.openBrowserAsync(authUrl);
+        // WebBrowser.openBrowserAsync(authUrl);
+        Linking.openURL(authUrl);
         subscriptionRef.current = Linking.addEventListener('url', (event: any) => {
           const { url } = event;
           if (url && url.length > 0) {
@@ -130,9 +131,12 @@ export function useGoogleAuthentication() {
     // sleep show loading
     await sleep(500);
     const redirectUri = 'https://test.portkey.finance/google-auth';
-    const info = await androidGoogleSignin(
-      `https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?response_type=id_token%20token&scope=openid%20email%20profile&prompt=select_account&client_id=${Config.GOOGLE_WEB_CLIENT_ID}&redirect_uri=${redirectUri}&nonce=${googleAuthNonce}&service=lso&o2v=2&ddm=0&flowName=GeneralOAuthFlow`,
-    );
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?response_type=id_token%20token&scope=openid%20email%20profile&prompt=select_account&client_id=${Config.GOOGLE_WEB_CLIENT_ID}&redirect_uri=${redirectUri}&nonce=${googleAuthNonce}&service=lso&o2v=2&ddm=0&flowName=GeneralOAuthFlow`;
+    const canOpen = await Linking.canOpenURL(authUrl);
+    if (!canOpen) {
+      throw { type: 'error', message: 'Cannot open external web browser to finish Google auth.' };
+    }
+    const info = await androidGoogleSignin(authUrl);
     if (info.type === 'success') {
       const userInfo = await getGoogleUserInfo(info.params?.access_token);
       return {

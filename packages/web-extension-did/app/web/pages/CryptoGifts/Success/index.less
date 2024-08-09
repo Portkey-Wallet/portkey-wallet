@@ -1,0 +1,102 @@
+@import '../../../assets/theme/constants.less';
+
+.crypto-gift-success {
+  width: 100%;
+  height: 600px;
+  min-width: 360px;
+  max-width: 440px;
+  background-color: @neutral-default-bg;
+  overflow: auto;
+  .copyinteractive-icon {
+    width: 20px;
+    height: 20px;
+    svg {
+      width: 100%;
+      height: 100%;
+      path {
+        fill: @neutral-default-bg;
+      }
+    }
+  }
+  .success-show-background {
+    width: 100%;
+    height: 305px;
+    background-color: @brand-light;
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+    .success-show-icon {
+      padding-bottom: 32px;
+      background: url('../../../assets/svgIcon/GiftMask.svg') center;
+      background-size: cover;
+      .header {
+        width: 100%;
+        height: 60px;
+        padding: 16px;
+        justify-content: flex-end;
+        font-size: 14px;
+        line-height: 22px;
+        color: @brand-normal;
+        span {
+          cursor: pointer;
+        }
+      }
+      .boxclose-icon {
+        margin-top: 31px;
+        width: 172px;
+        height: 120px;
+        svg {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .created {
+        gap: 8px;
+        margin-top: 8px;
+        font-size: 16px;
+        line-height: 24px;
+        font-weight: 500;
+        color: @neutral-primary-text;
+        .ssgsuccess-icon {
+          width: 20px;
+          height: 20px;
+          svg {
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+      .view-details {
+        margin-top: 8px;
+        font-size: 14px;
+        line-height: 22px;
+        color: @brand-normal;
+        cursor: pointer;
+  
+      }
+    }
+  }
+  .tip-msg {
+    margin: 40px 16px 32px;
+    font-size: 18px;
+    line-height: 26px;
+    font-weight: 500;
+    color: @neutral-primary-text;
+  }
+  .share-btn {
+    width: 100%;
+    padding: 0 16px;
+    button {
+      gap: 8px;
+      width: 100%;
+      height: 48px;
+      border-radius: 6px;
+    }
+  }
+  &.prompt-page {
+    height: calc(100vh - 72px - 24px);
+    background-color: @neutral-default-bg;
+    .share-btn {
+      padding: 0 24px 40px;
+    }
+  }
+}

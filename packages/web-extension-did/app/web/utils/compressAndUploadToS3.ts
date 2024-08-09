@@ -16,8 +16,14 @@ const uploadImageToS3 = async (paramFile: RcFile | File, isCompress = false) => 
     compressionFile = await imageCompression(paramFile, compressOptions);
   }
 
+  let suffix = '';
+  if (paramFile.type) {
+    suffix = paramFile.type.split('/')?.[1] || '';
+  }
+
   const s3Result = await s3Instance.uploadFile({
     body: compressionFile,
+    suffix,
   });
   return s3Result.url;
 };

@@ -6,6 +6,8 @@ query homeBannerCustom {
         status
         title
         url
+        appLink
+        extensionLink
         index
         value
         description

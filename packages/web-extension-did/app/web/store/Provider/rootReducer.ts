@@ -8,6 +8,7 @@ import tokenSlice from '@portkey-wallet/store/store-ca/tokenManagement/slice';
 import assetsSlice from '@portkey-wallet/store/store-ca/assets/slice';
 import activitySlice from '@portkey-wallet/store/store-ca/activity/slice';
 import recentSlice from '@portkey-wallet/store/store-ca/recent/slice';
+import cryptoGiftSlice from '@portkey-wallet/store/store-ca/cryptoGift/slice';
 import ModalSlice from 'store/reducers/modal/slice';
 import CommonSlice from 'store/reducers/common/slice';
 import { customCombineReducers } from 'store/utils/customCombineReducers';
@@ -28,6 +29,7 @@ import {
   discoverPersistConfig,
   txFeePersistConfig,
   imPersistConfig,
+  cryptoGiftConfig,
 } from './config';
 import { miscSlice } from '@portkey-wallet/store/store-ca/misc/slice';
 import { guardiansSlice } from '@portkey-wallet/store/store-ca/guardians/slice';
@@ -55,6 +57,7 @@ export const dappReducer = persistReducer(dappPersistConfig, dappSlice.reducer);
 export const discoverReducer = persistReducer(discoverPersistConfig, discoverSlice.reducer);
 export const txFeeReducer = persistReducer(txFeePersistConfig, txFeeSlice.reducer);
 export const imReducer = persistReducer(imPersistConfig, imSlice.reducer);
+export const cryptoGiftReducer = persistReducer(cryptoGiftConfig, cryptoGiftSlice.reducer);
 
 const rootReducer = customCombineReducers({
   [walletSlice.name]: walletReducer,
@@ -79,6 +82,7 @@ const rootReducer = customCombineReducers({
   [imSlice.name]: imReducer,
   [securitySlice.name]: securitySlice.reducer,
   [referralSlice.name]: referralSlice.reducer,
+  [cryptoGiftSlice.name]: cryptoGiftSlice.reducer,
 });
 
 export default rootReducer;

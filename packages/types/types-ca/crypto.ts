@@ -14,4 +14,5 @@ export interface ICryptoBoxAssetItemType {
   assetType?: AssetType;
   isSeed?: boolean;
   seedType?: SeedTypeEnum;
+  tokenContractAddress?: string;
 }

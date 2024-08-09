@@ -1,0 +1,32 @@
+query timingType_aggregated($groupBy: [String], $filter: timingType_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
+    timingType_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
+        group
+        countAll
+        count{
+            id
+            name
+        }
+        countDistinct{
+            id
+            name
+        }
+        avg{
+            id
+        }
+        sum{
+            id
+        }
+        avgDistinct{
+            id
+        }
+        sumDistinct{
+            id
+        }
+        min{
+            id
+        }
+        max{
+            id
+        }
+    }
+}

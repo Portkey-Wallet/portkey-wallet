@@ -27,12 +27,13 @@ import CodePush from 'react-native-code-push';
 import 'utils/sentryInit';
 import 'utils/logBox';
 import 'utils/initExceptionManager';
-import 'utils/initRequest';
+import { initRequest } from 'utils/initRequest';
 import './js/headlessTask';
 import { initFCMSignalR } from 'utils/FCM';
 import { initNotifications } from 'utils/notifee';
 import { logBoxTextColorSaver } from 'utils/textColor';
 import { CODE_PUSH_OPTIONS } from 'constants/codePush';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 
 if (__DEV__) {
   logBoxTextColorSaver();
@@ -62,7 +63,9 @@ const App = () => {
     // Lock the screen orientation Right-side up portrait only.
     lockScreenOrientation();
   }, []);
-
+  useEffectOnce(() => {
+    initRequest();
+  });
   return (
     <SafeAreaProvider>
       <ErrorBoundary view="root">

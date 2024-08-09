@@ -7,6 +7,10 @@ export default {
   verifyTelegramToken: '/api/app/account/verifyTelegramToken',
   verifyTwitterToken: '/api/app/account/verifyTwitterToken',
   verifyFacebookToken: '/api/app/account/verifyFacebookToken',
+  verifyZKLogin: {
+    target: '/api/app/account/verifiedzk',
+    config: { method: 'POST' },
+  },
   sendAppleUserExtraInfo: '/api/app/userExtraInfo/appleUserExtraInfo',
   getAppleUserExtraInfo: {
     target: `/api/app/userExtraInfo`,

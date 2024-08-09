@@ -36,7 +36,7 @@ export default function WalletName() {
   const state: IProfileDetailDataProps = useMemo(
     () => ({
       avatar,
-      index: nickName.substring(0, 1).toLocaleUpperCase(),
+      index: nickName?.substring(0, 1).toLocaleUpperCase(),
       addresses: transAddresses, // TODO fetch profile for chain image
       caHolderInfo: { userId, walletName: nickName },
       isShowRemark: false,

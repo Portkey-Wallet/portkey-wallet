@@ -1,10 +1,10 @@
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import CommonButton, { CommonButtonProps } from 'components/CommonButton';
-import { TextM, TextS } from 'components/CommonText';
+import { TextM } from 'components/CommonText';
 import Svg from 'components/Svg';
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import fonts from 'assets/theme/fonts';
@@ -19,10 +19,11 @@ import {
   OperationTypeEnum,
   VerifierInfo,
   VerifyStatus,
+  zkLoginVerifierItem,
 } from '@portkey-wallet/types/verifier';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { LOGIN_GUARDIAN_TYPE_ICON } from 'constants/misc';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { LoginType, isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
 import { VerifierImage } from '../VerifierImage';
 import { GuardiansStatus, GuardiansStatusItem } from 'pages/Guardian/types';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
@@ -128,9 +129,11 @@ function GuardianItemButton({
   const onVerifierAuth = useCallback(async () => {
     try {
       Loading.show();
-
       const rst = await verifyToken(guardianItem.guardianType, {
         accessToken: authenticationInfo?.[guardianItem.guardianAccount],
+        idToken: authenticationInfo?.idToken,
+        nonce: authenticationInfo?.nonce,
+        salt: guardianItem.salt,
         id: guardianItem.guardianAccount,
         verifierId: guardianItem.verifier?.id,
         chainId: originChainId,
@@ -158,6 +161,7 @@ function GuardianItemButton({
     authenticationInfo,
     guardianItem.guardianAccount,
     guardianItem.guardianType,
+    guardianItem.salt,
     guardianItem.verifier?.id,
     onSetGuardianStatus,
     operationType,
@@ -257,27 +261,33 @@ export default function GuardianItem({
     return guardianItem.thirdPartyEmail || '';
   }, [guardianItem]);
 
-  const renderGuardianAccount = useCallback(() => {
-    if (!guardianItem.firstName) {
-      return (
-        <TextM
-          numberOfLines={AuthTypes.includes(guardianItem.guardianType) ? 1 : 2}
-          style={[styles.nameStyle, GStyles.flex1]}>
-          {guardianAccount}
-        </TextM>
-      );
-    }
+  const isVerifierReplacedByZk = useMemo(() => {
     return (
-      <View style={[styles.nameStyle, GStyles.flex1]}>
-        <TextM style={styles.firstNameStyle} numberOfLines={1}>
-          {guardianItem.firstName}
-        </TextM>
-        <TextS style={FontStyles.font3} numberOfLines={1}>
-          {guardianAccount}
-        </TextS>
-      </View>
+      isZKLoginSupported(guardianItem.guardianType) && !guardianItem.verifiedByZk && !guardianItem.manuallySupportForZk
     );
-  }, [guardianAccount, guardianItem.firstName, guardianItem.guardianType]);
+  }, [guardianItem]);
+
+  const renderGuardianAccount = useCallback(() => {
+    return (
+      <TextM
+        numberOfLines={AuthTypes.includes(guardianItem.guardianType) ? 1 : 2}
+        style={[styles.nameStyle, GStyles.flex1]}>
+        {guardianAccount}
+      </TextM>
+    );
+  }, [guardianAccount, guardianItem.guardianType]);
+
+  const verifierName = useMemo(() => {
+    return guardianItem.verifiedByZk || guardianItem.manuallySupportForZk
+      ? zkLoginVerifierItem.name
+      : guardianItem.verifier?.name || '';
+  }, [guardianItem]);
+
+  const verifierImageUrl = useMemo(() => {
+    return guardianItem.verifiedByZk || guardianItem.manuallySupportForZk
+      ? zkLoginVerifierItem.imageUrl
+      : guardianItem.verifier?.imageUrl || '';
+  }, [guardianItem]);
 
   return (
     <View style={[styles.itemRow, isBorderHide && styles.itemWithoutBorder, disabled && styles.disabledStyle]}>
@@ -287,16 +297,18 @@ export default function GuardianItem({
         </View>
       )}
       <View style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flex1]}>
-        <View style={[GStyles.center, styles.loginTypeIconWrap]}>
-          <Svg icon={LOGIN_GUARDIAN_TYPE_ICON[guardianItem.guardianType]} size={pTd(18)} />
-        </View>
+        <View style={[GStyles.flexRowWrap, GStyles.itemCenter]}>
+          <View style={[GStyles.center, styles.loginTypeIconWrap]}>
+            <Svg icon={LOGIN_GUARDIAN_TYPE_ICON[guardianItem.guardianType]} size={pTd(18)} />
+          </View>
 
-        <VerifierImage
-          size={pTd(32)}
-          label={guardianItem?.verifier?.name}
-          uri={guardianItem.verifier?.imageUrl}
-          style={styles.iconStyle}
-        />
+          <VerifierImage size={pTd(32)} label={verifierName} uri={verifierImageUrl} style={styles.iconStyle} />
+          {isVerifierReplacedByZk && (
+            <View style={styles.zkLoginWaterMarkWrap}>
+              <Image source={require('assets/image/pngs/zklogin_verifier.png')} style={styles.zkLoginWaterMarkIcon} />
+            </View>
+          )}
+        </View>
         {renderGuardianAccount()}
       </View>
       {!isButtonHide && (
@@ -352,9 +364,6 @@ const styles = StyleSheet.create({
   nameStyle: {
     marginLeft: pTd(12),
   },
-  firstNameStyle: {
-    marginBottom: pTd(2),
-  },
   buttonStyle: {
     height: pTd(24),
     minWidth: pTd(54),
@@ -387,5 +396,16 @@ const styles = StyleSheet.create({
     width: pTd(32),
     height: pTd(32),
     borderRadius: pTd(16),
+  },
+  zkLoginWaterMarkWrap: {
+    position: 'absolute',
+    width: '100%',
+    bottom: pTd(-6),
+    alignItems: 'center',
+  },
+  zkLoginWaterMarkIcon: {
+    borderRadius: pTd(3),
+    width: pTd(44),
+    height: pTd(14),
   },
 });

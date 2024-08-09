@@ -21,6 +21,12 @@ export enum LoginType {
   Twitter,
 }
 
+export const ZKLoginSupportedLoginType = [LoginType.Apple, LoginType.Google, LoginType.Facebook];
+
+export function isZKLoginSupported(type: LoginType) {
+  return ZKLoginSupportedLoginType.includes(type);
+}
+
 export enum LoginMethod {
   Signup = 'Signup',
   SocialRecovery = 'SocialRecovery',

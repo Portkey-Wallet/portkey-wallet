@@ -14,17 +14,24 @@ import { checkEmail } from '@portkey-wallet/utils/check';
 import { useGuardiansInfo } from 'hooks/store';
 import { LOGIN_TYPE_LIST, T_LOGIN_TYPE_LIST_ITEM } from 'constants/misc';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
-import { ApprovalType, VerificationType, OperationTypeEnum, VerifierItem } from '@portkey-wallet/types/verifier';
+import {
+  ApprovalType,
+  VerificationType,
+  OperationTypeEnum,
+  VerifierItem,
+  zkLoginVerifierItem,
+} from '@portkey-wallet/types/verifier';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR, ErrorType } from '@portkey-wallet/constants/constants-ca/common';
 import GuardianTypeSelectOverlay from '../components/GuardianTypeSelectOverlay';
 import VerifierSelectOverlay from '../components/VerifierSelectOverlay';
 import ActionSheet from 'components/ActionSheet';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { FontStyles } from 'assets/theme/styles';
+import { defaultColors } from 'assets/theme';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import useRouterParams, { useRouterEffectParams } from '@portkey-wallet/hooks/useRouterParams';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { LoginType, isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
 import { useAppDispatch } from 'store/hooks';
 import { setPreGuardianAction } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { VerifierImage } from 'pages/Guardian/components/VerifierImage';
@@ -66,6 +73,8 @@ type RouterParams = {
 type thirdPartyInfoType = {
   id: string;
   accessToken: string;
+  idToken?: string;
+  nonce?: string;
 };
 
 type TypeItemType = typeof LOGIN_TYPE_LIST[number];
@@ -108,6 +117,16 @@ const GuardianEdit: React.FC = () => {
     approveParams?.isDiscover && dispatch(changeDrawerOpenStatus(true));
   }, [approveParams?.isDiscover, dispatch, isFocused]);
   const lastOnEmitDapp = useLatestRef(onEmitDapp);
+  const isSelectedVerifierDisabled = useMemo(() => {
+    if (!selectedType) return false;
+    if (isEdit) {
+      return (
+        editGuardian?.verifiedByZk || (isZKLoginSupported(selectedType.value) && editGuardian?.manuallySupportForZk)
+      );
+    } else {
+      return isZKLoginSupported(selectedType.value);
+    }
+  }, [editGuardian, isEdit, selectedType]);
 
   useEffectOnce(() => {
     return () => {
@@ -123,7 +142,11 @@ const GuardianEdit: React.FC = () => {
       } else {
         setAccount(editGuardian.guardianAccount);
       }
-      setSelectedVerifier(verifierList.find(item => item.name === editGuardian?.verifier?.name));
+      if (editGuardian?.verifiedByZk) {
+        setSelectedVerifier({ ...zkLoginVerifierItem, id: editGuardian?.verifier?.id ?? '' });
+      } else {
+        setSelectedVerifier(verifierList.find(item => item.name === editGuardian?.verifier?.name));
+      }
     }
   }, [editGuardian, verifierList]);
 
@@ -194,6 +217,8 @@ const GuardianEdit: React.FC = () => {
       const rst = await verifyToken(guardianType, {
         accessToken: thirdPartyInfo.accessToken,
         id: thirdPartyInfo.id,
+        idToken: thirdPartyInfo.idToken,
+        nonce: thirdPartyInfo.nonce,
         verifierId: verifierInfo.id,
         chainId: originChainId,
         operationType: OperationTypeEnum.addGuardian,
@@ -426,8 +451,13 @@ const GuardianEdit: React.FC = () => {
     (_type: TypeItemType) => {
       setSelectedType(_type);
       clearAccount();
+      if (isZKLoginSupported(_type.value)) {
+        setSelectedVerifier(zkLoginVerifierItem);
+      } else if (selectedVerifier?.id === zkLoginVerifierItem.id) {
+        setSelectedVerifier(undefined);
+      }
     },
-    [clearAccount],
+    [clearAccount, selectedVerifier?.id],
   );
 
   const onAppleSign = useCallback(async () => {
@@ -438,6 +468,8 @@ const GuardianEdit: React.FC = () => {
       thirdPartyInfoRef.current = {
         id: userInfo.user.id,
         accessToken: userInfo.identityToken || '',
+        idToken: userInfo.idToken,
+        nonce: userInfo.nonce,
       };
     } catch (error) {
       CommonToast.failError(error);
@@ -486,6 +518,8 @@ const GuardianEdit: React.FC = () => {
       thirdPartyInfoRef.current = {
         id: userInfo.user.id,
         accessToken: userInfo.accessToken,
+        idToken: userInfo.idToken,
+        nonce: userInfo.nonce,
       };
     } catch (error) {
       CommonToast.failError(error);
@@ -532,7 +566,9 @@ const GuardianEdit: React.FC = () => {
       setFirstName(userInfo.user.firstName || undefined);
       thirdPartyInfoRef.current = {
         id: userInfo.user.id,
+        idToken: userInfo.idToken,
         accessToken: userInfo.accessToken,
+        nonce: userInfo.nonce,
       };
     } catch (error) {
       CommonToast.failError(error);
@@ -707,6 +743,7 @@ const GuardianEdit: React.FC = () => {
         <TextM style={pageStyles.titleLabel}>{'Verifier'}</TextM>
         <ListItem
           onPress={() => {
+            if (isSelectedVerifierDisabled) return;
             VerifierSelectOverlay.showList({
               id: selectedVerifier?.id,
               callBack: onChooseVerifier,
@@ -725,7 +762,10 @@ const GuardianEdit: React.FC = () => {
           }
           titleStyle={[GStyles.flexRowWrap, GStyles.itemCenter]}
           titleTextStyle={[pageStyles.titleTextStyle, !selectedVerifier && FontStyles.font7]}
-          style={pageStyles.verifierWrap}
+          style={[
+            pageStyles.verifierWrap,
+            { backgroundColor: isSelectedVerifierDisabled ? defaultColors.neutralContainerBG : defaultColors.white },
+          ]}
           title={selectedVerifier?.name || 'Select guardian verifiers'}
           rightElement={<Svg size={pTd(20)} icon="down-arrow" />}
         />

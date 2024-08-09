@@ -13,8 +13,10 @@ import {
   getDiscoverTabAsync,
   getDiscoverEarnAsync,
   getDiscoverLearnAsync,
+  getDappWhiteListAsync,
 } from './actions';
 import { CMSState, CmsWebsiteMapItem } from './types';
+import { deepEqual } from './deepEqual';
 
 const initialState: CMSState = {
   socialMediaListNetMap: {},
@@ -29,6 +31,7 @@ const initialState: CMSState = {
   discoverTabListMap: {},
   discoverEarnListMap: {},
   discoverLearnGroupListMap: {},
+  dappWhiteListMap: {},
 };
 export const cmsSlice = createSlice({
   name: 'cms',
@@ -76,6 +79,9 @@ export const cmsSlice = createSlice({
         };
       })
       .addCase(setEntrance, (state, action) => {
+        if (state.entranceNetMap && deepEqual(state.entranceNetMap[action.payload.network], action.payload.value)) {
+          return;
+        }
         state.entranceNetMap = {
           ...state.entranceNetMap,
           [action.payload.network]: action.payload.value,
@@ -127,6 +133,12 @@ export const cmsSlice = createSlice({
         state.discoverLearnGroupListMap = {
           ...(state.discoverLearnGroupListMap ?? {}),
           ...action.payload.discoverLearnGroupListMap,
+        };
+      })
+      .addCase(getDappWhiteListAsync.fulfilled, (state, action) => {
+        state.dappWhiteListMap = {
+          ...(state.dappWhiteListMap ?? {}),
+          ...action.payload.dappWhiteListMap,
         };
       });
   },

@@ -2,7 +2,7 @@ import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type'
 import { VerifierInfo } from '@portkey-wallet/types/verifier';
 import { GuardiansApproved, GuardiansStatus } from 'pages/Guardian/types';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
-import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
+import { handleVerifierInfo, handleZKLoginInfo, handleVerificationDoc } from '@portkey-wallet/utils/guardian';
 import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
 
@@ -14,15 +14,19 @@ export const getGuardiansApproved = (
     .filter(item => guardiansStatus[item.key] && guardiansStatus[item.key].verifierInfo)
     .map(guardian => {
       const verificationDoc = guardiansStatus[guardian.key].verifierInfo?.verificationDoc || '';
-      const { guardianIdentifier } = handleVerificationDoc(verificationDoc);
+      // const { identifierHash } = handleVerifierInfo(guardiansStatus[guardian.key].verifierInfo); // todo_wade: confirm this
+      const signature = guardiansStatus[guardian.key].verifierInfo?.signature
+        ? Object.values(Buffer.from(guardiansStatus[guardian.key].verifierInfo?.signature as any, 'hex'))
+        : [];
       return {
-        identifierHash: guardianIdentifier,
+        identifierHash: guardian.identifierHash,
         type: guardian.guardianType,
         verificationInfo: {
           id: guardian.verifier?.id,
-          signature: Object.values(Buffer.from(guardiansStatus[guardian.key].verifierInfo?.signature as any, 'hex')),
+          signature,
           verificationDoc,
         },
+        zkLoginInfo: handleZKLoginInfo(guardiansStatus[guardian.key].verifierInfo?.zkLoginInfo),
       };
     });
 };
@@ -73,16 +77,18 @@ export function addGuardian(
   guardianItem: UserGuardianItem,
   userGuardiansList: UserGuardianItem[],
   guardiansStatus: GuardiansStatus,
+  randomlyVerifierId: string,
 ) {
-  const { guardianIdentifier } = handleVerificationDoc(verifierInfo.verificationDoc);
+  const { identifierHash } = handleVerifierInfo(verifierInfo);
   const guardianToAdd = {
-    identifierHash: guardianIdentifier,
+    identifierHash: verifierInfo?.zkLoginInfo?.identifierHash ?? identifierHash,
     type: guardianItem.guardianType,
     verificationInfo: {
-      id: guardianItem.verifier?.id,
-      signature: Object.values(Buffer.from(verifierInfo.signature as any, 'hex')),
+      id: guardianItem.verifier?.id ? guardianItem.verifier?.id : randomlyVerifierId,
+      signature: verifierInfo.signature ? Object.values(Buffer.from(verifierInfo.signature as any, 'hex')) : [],
       verificationDoc: verifierInfo.verificationDoc,
     },
+    zkLoginInfo: handleZKLoginInfo(verifierInfo.zkLoginInfo),
   };
   const guardiansApproved = getGuardiansApproved(userGuardiansList, guardiansStatus);
   return contract?.callSendMethod('AddGuardian', address, {
@@ -138,9 +144,10 @@ export function setLoginAccount(
     type: guardianItem.guardianType,
     verificationInfo: {
       id: guardianItem.verifier?.id,
-      signature: Object.values(Buffer.from(verifierInfo.signature as any, 'hex')),
+      signature: verifierInfo.signature ? Object.values(Buffer.from(verifierInfo.signature as any, 'hex')) : [],
       verificationDoc: verifierInfo.verificationDoc,
     },
+    zkLoginInfo: handleZKLoginInfo(verifierInfo.zkLoginInfo),
   };
   const guardiansApproved = getGuardiansApproved(userGuardiansList, guardiansStatus);
   return contract?.callSendMethod('SetGuardianForLogin', address, {
@@ -164,9 +171,10 @@ export function unsetLoginAccount(
     type: guardianItem.guardianType,
     verificationInfo: {
       id: guardianItem.verifier?.id,
-      signature: Object.values(Buffer.from(verifierInfo.signature as any, 'hex')),
+      signature: verifierInfo.signature ? Object.values(Buffer.from(verifierInfo.signature as any, 'hex')) : [],
       verificationDoc: verifierInfo.verificationDoc,
     },
+    zkLoginInfo: handleZKLoginInfo(verifierInfo.zkLoginInfo),
   };
   const guardiansApproved = getGuardiansApproved(userGuardiansList, guardiansStatus);
   return contract?.callSendMethod('UnsetGuardianForLogin', address, {

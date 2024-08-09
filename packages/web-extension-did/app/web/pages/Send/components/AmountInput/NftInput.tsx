@@ -76,12 +76,12 @@ export default function NftInput({
             <p className="alias">{token.alias}</p>
             <p className="token-id">#{token.tokenId}</p>
           </div>
-          <p className="quantity flex-row-center">
+          <div className="quantity flex-row-center">
             Balance:
             <span>
               {balanceLoading ? <CircleLoading /> : ` ${formatTokenAmountShowWithDecimals(balance, token.decimals)}`}
             </span>
-          </p>
+          </div>
         </div>
       </div>
       <div className="item amount">

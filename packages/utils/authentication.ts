@@ -1,3 +1,4 @@
+import { ZKProofInfo } from '@portkey-wallet/types/verifier';
 import { customFetch } from './fetch';
 
 export type AppleUserInfo = {
@@ -91,6 +92,7 @@ export type TFacebookUserInfo = {
   isPrivate: boolean;
   name: string;
   accessToken: string;
+  idToken: string;
 };
 
 const fbUserInfo: { [key: string]: TFacebookUserInfo } = {};
@@ -98,7 +100,7 @@ const fbUserInfo: { [key: string]: TFacebookUserInfo } = {};
 export async function parseFacebookToken(tokenStr?: string | null): Promise<TFacebookUserInfo | undefined> {
   if (!tokenStr) return;
   try {
-    const { userId, token: accessToken, expiredTime } = JSON.parse(tokenStr);
+    const { userId, token: accessToken, expiredTime, idToken } = JSON.parse(tokenStr);
 
     const expirationTime = Number(expiredTime) * 1000;
     const isExpired = new Date(expirationTime) < new Date();
@@ -123,6 +125,7 @@ export async function parseFacebookToken(tokenStr?: string | null): Promise<TFac
         lastName,
         picture: result?.picture?.data?.url,
         accessToken: accessToken,
+        idToken,
       };
     }
 
@@ -130,6 +133,28 @@ export async function parseFacebookToken(tokenStr?: string | null): Promise<TFac
   } catch (error) {
     return;
   }
+}
+
+export function parseFacebookJWTToken(tokenStr?: string | null, accessToken?: string): TFacebookUserInfo | undefined {
+  if (!tokenStr) return;
+  const idTokenArr = tokenStr.split('.') ?? [];
+  if (idTokenArr.length < 2) return;
+  const spilt2 = Buffer.from(idTokenArr[1], 'base64').toString('utf8');
+  const { sub: userId, name, family_name, given_name, exp: expirationTime, email, picture } = JSON.parse(spilt2) || {};
+  const isExpired = new Date(expirationTime * 1000) < new Date();
+  return {
+    userId,
+    id: userId,
+    name: name,
+    isExpired,
+    expirationTime,
+    isPrivate: true,
+    firstName: given_name,
+    lastName: family_name,
+    picture,
+    accessToken: accessToken,
+    idToken: tokenStr,
+  } as TFacebookUserInfo;
 }
 
 export interface TwitterUserInfo {
@@ -177,4 +202,34 @@ export function parseTwitterToken(tokenStr?: string | null): TwitterUserInfo | u
   } catch (error) {
     return;
   }
+}
+
+export function parseKidFromJWTToken(token: string) {
+  const idTokenArr = token.split('.') ?? [];
+  const spilt1 = Buffer.from(idTokenArr[0], 'base64').toString('utf8');
+  const { kid } = JSON.parse(spilt1) || {};
+  return kid;
+}
+
+export function parseJWTToken(token: string) {
+  const idTokenArr = token.split('.') ?? [];
+  const spilt1 = Buffer.from(idTokenArr[0], 'base64').toString('utf8');
+  const { kid } = JSON.parse(spilt1) || {};
+
+  const spilt2 = Buffer.from(idTokenArr[1], 'base64').toString('utf8');
+  const { iss } = JSON.parse(spilt2) || {};
+  return { kid, issuer: iss };
+}
+
+export function parseZKProof(zkProof: string) {
+  const { pi_a, pi_b, pi_c } = JSON.parse(zkProof);
+  let zkProofPiB_1 = '';
+  let zkProofPiB_2 = '';
+  let zkProofPiB_3 = '';
+  if (Array.isArray(pi_b) && pi_b.length) {
+    zkProofPiB_1 = pi_b[0];
+    zkProofPiB_2 = pi_b[1];
+    zkProofPiB_3 = pi_b[2];
+  }
+  return { zkProofPiA: pi_a, zkProofPiB_1, zkProofPiB_2, zkProofPiB_3, zkProofPiC: pi_c } as ZKProofInfo;
 }

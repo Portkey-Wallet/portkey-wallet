@@ -25,6 +25,7 @@ import { txFeeSlice } from '@portkey-wallet/store/store-ca/txFee/slice';
 import imSlice from '@portkey-wallet/store/store-ca/im/slice';
 import securitySlice from '@portkey-wallet/store/store-ca/security/slice';
 import { referralSlice } from '@portkey-wallet/store/store-ca/referral/slice';
+import cryptoGiftSlice from '@portkey-wallet/store/store-ca/cryptoGift/slice';
 
 interface ThunkOptions<E = any> {
   extraArgument: E;
@@ -117,6 +118,11 @@ export const imPersistConfig = {
   key: imSlice.name,
   storage: localStorage,
   blacklist: ['channelMessageListNetMap', 'groupInfoMapNetMap', 'pinListNetMap', 'lastPinNetMap'],
+};
+
+export const cryptoGiftConfig = {
+  key: cryptoGiftSlice.name,
+  storage: localStorage,
 };
 
 export const referralPersistConfig = {

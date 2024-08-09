@@ -83,13 +83,19 @@ export default function Buy() {
   );
 
   const handleBack = useCallback(() => {
-    if (state && state.tokenInfo) {
-      navigate('/token-detail', {
-        state: state.tokenInfo,
-      });
-    } else {
-      navigate('/');
+    if (state) {
+      if (state.mainPageInfo?.pageName === 'crypto-gift') {
+        navigate('/crypto-gifts/create');
+        return;
+      }
+      if (state.tokenInfo) {
+        navigate('/token-detail', {
+          state: state.tokenInfo,
+        });
+        return;
+      }
     }
+    navigate('/');
   }, [navigate, state]);
 
   const mainContent = useMemo(

@@ -1,4 +1,4 @@
-import { ChainType, NetworkType } from '@portkey-wallet/types';
+import { ChainId, ChainType, NetworkType } from '@portkey-wallet/types';
 export type NetworkItem = {
   name: string;
   walletType: ChainType;
@@ -13,6 +13,7 @@ export type NetworkItem = {
   cmsUrl?: string;
   s3Url?: string;
   referralUrl?: string;
+  cryptoGiftUrl?: string;
   portkeyFinanceUrl?: string; // portkey website url
   portkeyOpenLoginUrl?: string; // web page
   buyConfig?: {
@@ -26,6 +27,13 @@ export type NetworkItem = {
   imS3Bucket?: string;
   eBridgeUrl?: string;
   eTransferUrl?: string;
+  eForestUrl?: string;
   awakenUrl?: string;
   schrodingerUrl?: string;
+  sgrSchrodingerUrl?: string;
+  tomorrowDAOUrl?: string;
+  eTransferCA?: {
+    [x in ChainId]?: string;
+  };
+  hamsterUrl?: string;
 };

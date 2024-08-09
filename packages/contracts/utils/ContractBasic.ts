@@ -81,7 +81,7 @@ export class AElfContractBasic {
   public callSendMethod: AElfCallSendMethod = async (functionName, paramsOption, sendOptions) => {
     if (!this.aelfContract) return { error: { code: 401, message: 'Contract init error' } };
 
-    console.log('paramsOption', paramsOption);
+    console.log('paramsOption', JSON.stringify(paramsOption));
 
     try {
       const { onMethod = 'receipt' } = sendOptions || {};

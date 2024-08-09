@@ -23,7 +23,6 @@ export default function FormItem(props: FormItemType) {
 
 const styles = StyleSheet.create({
   titleStyle: {
-    paddingLeft: pTd(8),
     marginBottom: pTd(8),
     color: defaultColors.font3,
   },

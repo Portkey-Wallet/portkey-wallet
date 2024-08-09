@@ -53,6 +53,11 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
 			<intent-filter>
+        <data
+          android:host="oauthredirect"
+          android:scheme="com.portkey.finance" />
+      </intent-filter>
+			<intent-filter>
         <data android:scheme="portkey.finance"/>
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>

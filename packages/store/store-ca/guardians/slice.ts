@@ -1,4 +1,4 @@
-import { VerifierItem, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { VerifierItem, VerifyStatus, zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
 import { createSlice } from '@reduxjs/toolkit';
 import moment from 'moment';
 import {
@@ -41,6 +41,7 @@ export const guardiansSlice = createSlice({
         action.payload.forEach((item: VerifierItem) => {
           map[item.id] = item;
         });
+        map[zkLoginVerifierItem.id] = zkLoginVerifierItem;
         state.verifierMap = map;
       })
       .addCase(setGuardiansAction, (state, action) => {

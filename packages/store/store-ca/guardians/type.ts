@@ -9,11 +9,14 @@ export interface BaseGuardianItem {
   guardianType: LoginType;
   key: string; // `${loginGuardianType}&${verifier?.name}`,
   identifierHash: string;
+  poseidonIdentifierHash: string;
   salt: string;
   thirdPartyEmail?: string;
   isPrivate?: boolean;
   firstName?: string;
   lastName?: string;
+  verifiedByZk?: boolean;
+  manuallySupportForZk?: boolean;
 }
 
 export interface IVerifierInfo {

@@ -23,29 +23,33 @@ export type PortkeyCard_AggregatedQuery = {
     countAll?: number | null;
     count?: {
       __typename?: 'portkeyCard_aggregated_count';
-      id?: number | null;
-      status?: number | null;
-      index?: number | null;
-      title?: number | null;
-      value?: number | null;
-      description?: number | null;
+      appLink?: number | null;
       buttonTitle?: number | null;
+      description?: number | null;
+      extensionLink?: number | null;
+      id?: number | null;
       imgUrl?: number | null;
-      url?: number | null;
+      index?: number | null;
+      status?: number | null;
+      title?: number | null;
       type?: number | null;
+      url?: number | null;
+      value?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'portkeyCard_aggregated_count';
-      id?: number | null;
-      status?: number | null;
-      index?: number | null;
-      title?: number | null;
-      value?: number | null;
-      description?: number | null;
+      appLink?: number | null;
       buttonTitle?: number | null;
+      description?: number | null;
+      extensionLink?: number | null;
+      id?: number | null;
       imgUrl?: number | null;
-      url?: number | null;
+      index?: number | null;
+      status?: number | null;
+      title?: number | null;
       type?: number | null;
+      url?: number | null;
+      value?: number | null;
     } | null;
     avg?: {
       __typename?: 'portkeyCard_aggregated_fields';
@@ -108,28 +112,32 @@ export const PortkeyCard_AggregatedDocument = gql`
       group
       countAll
       count {
-        id
-        status
-        index
-        title
-        value
-        description
+        appLink
         buttonTitle
+        description
+        extensionLink
+        id
         imgUrl
-        url
+        index
+        status
+        title
         type
+        url
+        value
       }
       countDistinct {
-        id
-        status
-        index
-        title
-        value
-        description
+        appLink
         buttonTitle
+        description
+        extensionLink
+        id
         imgUrl
-        url
+        index
+        status
+        title
         type
+        url
+        value
       }
       avg {
         id

@@ -78,7 +78,7 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
                 Keyboard.dismiss();
                 OverlayModal.hide();
               }}>
-              <Svg icon="close" size={pTd(12)} />
+              <Svg icon="close3" size={pTd(20)} />
             </View>
           )}
         </View>

@@ -10,7 +10,7 @@ import { request } from '@portkey-wallet/api/api-did';
 import {
   getGoogleUserInfo,
   parseAppleIdentityToken,
-  parseFacebookJWTToken,
+  parseFacebookToken,
   parseTwitterToken,
 } from '@portkey-wallet/utils/authentication';
 import { randomId } from '@portkey-wallet/utils';
@@ -568,39 +568,20 @@ export function useVerifyTwitterToken() {
 
 export function useVerifyFacebookToken() {
   const { facebookSign } = useFacebookAuthentication();
-  const verifyZKLogin = useVerifyZKLogin();
   return useCallback(
     async (params: VerifyTokenParams) => {
-      console.log('useVerifyFacebookToken params : ', params);
       let accessToken = params.accessToken;
-      let idToken = params.idToken;
-      const nonce = params.nonce;
-      const { isExpired: tokenIsExpired } = parseFacebookJWTToken(idToken, accessToken) || {};
+      const { isExpired: tokenIsExpired } = (await parseFacebookToken(accessToken)) || {};
       if (!accessToken || tokenIsExpired) {
         const info = await facebookSign();
         accessToken = info.accessToken || undefined;
-        idToken = info.idToken || undefined;
       }
-      const { userId } = parseFacebookJWTToken(idToken, accessToken) || {};
+      const { userId, accessToken: accessFacebookToken } = (await parseFacebookToken(accessToken)) || {};
 
       if (userId !== params.id) throw new Error('Account does not match your guardian');
 
-      if (!idToken) {
-        throw new Error('Invalid idToken');
-      }
-      const rst = await verifyZKLogin({
-        verifyToken: {
-          type: SocialLoginEnum.Facebook,
-          jwt: idToken,
-          accessToken,
-          verifierId: params.verifierId,
-          chainId: params.chainId,
-          operationType: params.operationType,
-        },
-        jwt: idToken,
-        salt: params.salt ? params.salt : randomId(),
-        kid: parseKidFromJWTToken(idToken),
-        nonce,
+      const rst = await request.verify.verifyFacebookToken({
+        params: { ...params, accessToken: accessFacebookToken },
       });
 
       return {
@@ -608,7 +589,7 @@ export function useVerifyFacebookToken() {
         accessToken,
       };
     },
-    [facebookSign, verifyZKLogin],
+    [facebookSign],
   );
 }
 

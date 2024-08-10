@@ -121,7 +121,7 @@ const GuardianEdit: React.FC = () => {
     if (!selectedType) return false;
     if (isEdit) {
       return (
-        editGuardian?.verifiedByZk || (isZKLoginSupported(selectedType.value) && editGuardian?.manuallySupportForZk)
+        isZKLoginSupported(selectedType.value) && (editGuardian?.verifiedByZk || editGuardian?.manuallySupportForZk)
       );
     } else {
       return isZKLoginSupported(selectedType.value);
@@ -142,7 +142,7 @@ const GuardianEdit: React.FC = () => {
       } else {
         setAccount(editGuardian.guardianAccount);
       }
-      if (editGuardian?.verifiedByZk) {
+      if (isZKLoginSupported(editGuardian?.guardianType) && editGuardian?.verifiedByZk) {
         setSelectedVerifier({ ...zkLoginVerifierItem, id: editGuardian?.verifier?.id ?? '' });
       } else {
         setSelectedVerifier(verifierList.find(item => item.name === editGuardian?.verifier?.name));
@@ -566,9 +566,7 @@ const GuardianEdit: React.FC = () => {
       setFirstName(userInfo.user.firstName || undefined);
       thirdPartyInfoRef.current = {
         id: userInfo.user.id,
-        idToken: userInfo.idToken,
         accessToken: userInfo.accessToken,
-        nonce: userInfo.nonce,
       };
     } catch (error) {
       CommonToast.failError(error);

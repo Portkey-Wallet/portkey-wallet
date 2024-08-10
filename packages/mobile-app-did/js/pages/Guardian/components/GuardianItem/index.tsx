@@ -1,7 +1,7 @@
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import CommonButton, { CommonButtonProps } from 'components/CommonButton';
-import { TextM } from 'components/CommonText';
+import { TextM, TextS } from 'components/CommonText';
 import Svg from 'components/Svg';
 import React, { useCallback, useMemo } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
@@ -268,23 +268,37 @@ export default function GuardianItem({
   }, [guardianItem]);
 
   const renderGuardianAccount = useCallback(() => {
+    if (!guardianItem.firstName) {
+      return (
+        <TextM
+          numberOfLines={AuthTypes.includes(guardianItem.guardianType) ? 1 : 2}
+          style={[styles.nameStyle, GStyles.flex1]}>
+          {guardianAccount}
+        </TextM>
+      );
+    }
     return (
-      <TextM
-        numberOfLines={AuthTypes.includes(guardianItem.guardianType) ? 1 : 2}
-        style={[styles.nameStyle, GStyles.flex1]}>
-        {guardianAccount}
-      </TextM>
+      <View style={[styles.nameStyle, GStyles.flex1]}>
+        <TextM style={styles.firstNameStyle} numberOfLines={1}>
+          {guardianItem.firstName}
+        </TextM>
+        <TextS style={FontStyles.font3} numberOfLines={1}>
+          {guardianAccount}
+        </TextS>
+      </View>
     );
-  }, [guardianAccount, guardianItem.guardianType]);
+  }, [guardianAccount, guardianItem.firstName, guardianItem.guardianType]);
 
   const verifierName = useMemo(() => {
-    return guardianItem.verifiedByZk || guardianItem.manuallySupportForZk
+    return isZKLoginSupported(guardianItem.guardianType) &&
+      (guardianItem.verifiedByZk || guardianItem.manuallySupportForZk)
       ? zkLoginVerifierItem.name
       : guardianItem.verifier?.name || '';
   }, [guardianItem]);
 
   const verifierImageUrl = useMemo(() => {
-    return guardianItem.verifiedByZk || guardianItem.manuallySupportForZk
+    return isZKLoginSupported(guardianItem.guardianType) &&
+      (guardianItem.verifiedByZk || guardianItem.manuallySupportForZk)
       ? zkLoginVerifierItem.imageUrl
       : guardianItem.verifier?.imageUrl || '';
   }, [guardianItem]);
@@ -363,6 +377,9 @@ const styles = StyleSheet.create({
   },
   nameStyle: {
     marginLeft: pTd(12),
+  },
+  firstNameStyle: {
+    marginBottom: pTd(2),
   },
   buttonStyle: {
     height: pTd(24),

@@ -257,6 +257,7 @@ export function useAppleAuthentication() {
       }
       const userInfo = {
         identityToken: appleInfo.id_token,
+        idToken: appleInfo.id_token,
         fullName: {
           givenName: appleInfo.user?.name?.firstName,
           familyName: appleInfo.user?.name?.lastName,

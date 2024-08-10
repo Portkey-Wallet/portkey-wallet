@@ -33,15 +33,27 @@ export const getGuardiansApproved = (
 
 export const getGuardiansApprovedByApprove = (guardiansApprove: GuardiansApproved) => {
   return guardiansApprove.map(item => {
-    const { guardianIdentifier } = handleVerificationDoc(item.verificationDoc);
+    let identifierHash = '';
+    if (item.zkLoginInfo) {
+      identifierHash = item.zkLoginInfo.identifierHash;
+    } else if (item.verificationDoc) {
+      const { guardianIdentifier } = handleVerificationDoc(item.verificationDoc);
+      identifierHash = guardianIdentifier;
+    }
+    const verificationDoc = item?.verificationDoc || '';
+    const signature = item?.signature ? Object.values(Buffer.from(item?.signature as any, 'hex')) : [];
+    if (identifierHash === '') {
+      throw new Error('identifierHash is empty');
+    }
     return {
-      identifierHash: guardianIdentifier,
+      identifierHash,
       type: item.guardianType,
       verificationInfo: {
         id: item.verifierId,
-        signature: Object.values(Buffer.from(item.signature, 'hex')),
-        verificationDoc: item.verificationDoc,
+        signature,
+        verificationDoc,
       },
+      zkLoginInfo: handleZKLoginInfo(item?.zkLoginInfo),
     };
   });
 };

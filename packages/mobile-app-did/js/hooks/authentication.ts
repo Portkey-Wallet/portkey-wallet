@@ -365,7 +365,7 @@ export function useVerifyZKLogin() {
   return useCallback(async (params: VerifyZKLoginParams) => {
     const { verifyToken, jwt, salt, kid, nonce } = params;
     const proofParams = { jwt, salt };
-    console.log('aaaa useVerifyZKLogin params: ', proofParams);
+    console.log('useVerifyZKLogin params: ', proofParams);
     const proofResult = await customFetch('https://zklogin-prover-dev.aelf.dev/v1/prove', {
       method: 'POST',
       headers: {
@@ -382,15 +382,6 @@ export function useVerifyZKLogin() {
       kid,
       proof: proofResult.proof,
     };
-    // todo_wade: remove this
-    const verifyResult = await customFetch('https://zklogin-prover-dev.aelf.dev/v1/verify', {
-      method: 'POST',
-      headers: {
-        Accept: 'text/plain;v=1.0',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(verifyParams),
-    });
 
     const portkeyVerifyResult = await request.verify.verifyZKLogin({
       params: {
@@ -402,23 +393,18 @@ export function useVerifyZKLogin() {
 
     console.log('portkeyVerifyResult : ', portkeyVerifyResult);
 
-    console.log('verifyResult : ', verifyResult);
     const zkProof = decodeURIComponent(verifyParams.proof);
-    if (verifyResult.valid) {
-      const zkLoginInfo: ZKLoginInfo = {
-        identifierHash: portkeyVerifyResult.guardianIdentifierHash,
-        poseidonIdentifierHash: verifyParams.identifierHash,
-        identifierHashType: 1,
-        salt: verifyParams.salt,
-        zkProof,
-        jwt: jwt ?? '',
-        nonce: nonce ?? '',
-        circuitId: proofResult.circuitId,
-      };
-      return { zkLoginInfo };
-    } else {
-      throw new Error('zkLogin verification failed');
-    }
+    const zkLoginInfo: ZKLoginInfo = {
+      identifierHash: portkeyVerifyResult.guardianIdentifierHash,
+      poseidonIdentifierHash: verifyParams.identifierHash,
+      identifierHashType: 1,
+      salt: verifyParams.salt,
+      zkProof,
+      jwt: jwt ?? '',
+      nonce: nonce ?? '',
+      circuitId: proofResult.circuitId,
+    };
+    return { zkLoginInfo };
   }, []);
 }
 

@@ -290,13 +290,15 @@ export default function GuardianItem({
   }, [guardianAccount, guardianItem.firstName, guardianItem.guardianType]);
 
   const verifierName = useMemo(() => {
-    return guardianItem.verifiedByZk || guardianItem.manuallySupportForZk
+    return isZKLoginSupported(guardianItem.guardianType) &&
+      (guardianItem.verifiedByZk || guardianItem.manuallySupportForZk)
       ? zkLoginVerifierItem.name
       : guardianItem.verifier?.name || '';
   }, [guardianItem]);
 
   const verifierImageUrl = useMemo(() => {
-    return guardianItem.verifiedByZk || guardianItem.manuallySupportForZk
+    return isZKLoginSupported(guardianItem.guardianType) &&
+      (guardianItem.verifiedByZk || guardianItem.manuallySupportForZk)
       ? zkLoginVerifierItem.imageUrl
       : guardianItem.verifier?.imageUrl || '';
   }, [guardianItem]);

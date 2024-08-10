@@ -21,6 +21,7 @@ import { checkIsLastLoginAccount } from '@portkey-wallet/utils/guardian';
 import { useSetLoginAccount } from '../hooks/useSetLoginAccount';
 import myEvents from 'utils/deviceEvent';
 import { zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
+import { isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
@@ -118,14 +119,14 @@ export default function GuardianDetail() {
   );
 
   const verifierName = useMemo(() => {
-    if (guardian?.verifiedByZk) {
+    if (guardian && isZKLoginSupported(guardian.guardianType) && guardian?.verifiedByZk) {
       return zkLoginVerifierItem.name;
     }
     return guardian?.verifier?.name;
   }, [guardian]);
 
   const verifierImage = useMemo(() => {
-    if (guardian?.verifiedByZk) {
+    if (guardian && isZKLoginSupported(guardian.guardianType) && guardian?.verifiedByZk) {
       return zkLoginVerifierItem.imageUrl;
     }
     return guardian?.verifier?.imageUrl;

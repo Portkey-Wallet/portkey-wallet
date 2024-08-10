@@ -358,6 +358,7 @@ export default function GuardianApproval() {
     t,
     userGuardiansList,
     verifierInfo,
+    randomVerifierId,
   ]);
 
   const onDeleteGuardian = useCallback(async () => {

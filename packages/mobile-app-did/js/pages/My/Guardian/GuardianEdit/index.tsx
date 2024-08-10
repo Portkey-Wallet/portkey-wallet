@@ -370,11 +370,13 @@ const GuardianEdit: React.FC = () => {
     if (!isValid2) return;
 
     dispatch(setPreGuardianAction(editGuardian));
+    // if the selectedVerifier is zkLoginVerifierItem, then the verifierId should be the original verifierId of the editGuardian
+    const verifierId = selectedVerifier.id ? selectedVerifier.id : editGuardian?.verifier?.id;
     navigationService.navigate('GuardianApproval', {
       approvalType: ApprovalType.editGuardian,
       guardianItem: {
         ...editGuardian,
-        verifier: selectedVerifier,
+        verifier: { ...selectedVerifier, id: verifierId },
       },
     });
   }, [checkCurGuardianRepeat, dispatch, editGuardian, refreshGuardiansList, selectedVerifier, userGuardiansList]);

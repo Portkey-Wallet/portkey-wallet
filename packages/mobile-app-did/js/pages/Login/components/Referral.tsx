@@ -60,7 +60,7 @@ export function useLoginModeMap(
   }, [authenticationSign, onLogin]);
 
   const onGoogleSign = useLockCallback(async () => {
-    const loadingKey = Loading.show();
+    Loading.show();
     try {
       const userInfo = await authenticationSign(LoginType.Google);
       await onLogin({
@@ -75,7 +75,7 @@ export function useLoginModeMap(
     } catch (error) {
       CommonToast.failError(error);
     }
-    Loading.hide(loadingKey);
+    Loading.hide();
   }, [authenticationSign, onLogin]);
 
   const onTelegramSign = useLockCallback(async () => {

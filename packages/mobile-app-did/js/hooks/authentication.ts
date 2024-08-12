@@ -43,6 +43,7 @@ import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authe
 import generateRandomNonce from '@portkey-wallet/utils/nonce';
 import AElf from 'aelf-sdk';
 import queryString from 'query-string';
+import Loading from 'components/Loading';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -107,12 +108,14 @@ export function useGoogleAuthentication() {
 
         // WebBrowser.openBrowserAsync(authUrl);
         Linking.openURL(authUrl);
+        Loading.hide(); // hide loading because the loading will be shown when back from the browser and not select any account
         subscriptionRef.current = Linking.addEventListener('url', (event: any) => {
           const { url } = event;
           if (url && url.length > 0) {
             const parsedUrl = queryString.parseUrl(url);
             const paramsObject: any = parsedUrl.query;
             if (paramsObject.id_token && paramsObject.access_token) {
+              Loading.show(); // show loading when back from the browser and select account
               resolve({ type: 'success', params: paramsObject });
             } else {
               reject({

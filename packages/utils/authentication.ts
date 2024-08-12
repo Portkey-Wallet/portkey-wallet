@@ -38,6 +38,42 @@ type GoogleUserInfo = {
   lastName: string;
 };
 
+export async function getGoogleAuthToken({
+  authCode,
+  clientId,
+  clientSecret,
+  redirectUri,
+}: {
+  authCode: string;
+  clientId: string;
+  clientSecret: string;
+  redirectUri: string;
+}): Promise<{ id_token: string; access_token: string }> {
+  const tokenUrl = 'https://accounts.google.com/o/oauth2/token';
+  const grantType = 'authorization_code';
+
+  const data = {
+    code: authCode,
+    client_id: clientId,
+    client_secret: clientSecret,
+    redirect_uri: redirectUri,
+    grant_type: grantType,
+  };
+
+  const response = await customFetch(tokenUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  return {
+    id_token: response.id_token,
+    access_token: response.access_token,
+  };
+}
+
 const TmpUserInfo: { [key: string]: GoogleUserInfo } = {};
 
 export async function getGoogleUserInfo(accessToken = ''): Promise<GoogleUserInfo> {

@@ -8,6 +8,7 @@ import * as Application from 'expo-application';
 import { AccessTokenRequest, makeRedirectUri } from 'expo-auth-session';
 import { request } from '@portkey-wallet/api/api-did';
 import {
+  getGoogleAuthToken,
   getGoogleUserInfo,
   parseAppleIdentityToken,
   parseFacebookToken,
@@ -100,44 +101,47 @@ export function useGoogleAuthentication() {
     };
   }, [subscriptionRef.current]);
 
-  const androidGoogleSignin = useCallback(
-    (authUrl: string): Promise<{ type: string; params: { access_token: string; id_token: string } }> => {
-      return new Promise((resolve, reject) => {
-        subscriptionRef.current && subscriptionRef.current.remove();
-        subscriptionRef.current = null;
+  const androidGoogleSignin = useCallback((authUrl: string): Promise<{ type: string; params: { code: string } }> => {
+    return new Promise((resolve, reject) => {
+      subscriptionRef.current && subscriptionRef.current.remove();
+      subscriptionRef.current = null;
 
-        // WebBrowser.openBrowserAsync(authUrl);
-        Linking.openURL(authUrl);
-        Loading.hide(); // hide loading because the loading will be shown when back from the browser and not select any account
-        subscriptionRef.current = Linking.addEventListener('url', (event: any) => {
-          const { url } = event;
-          if (url && url.length > 0) {
-            const parsedUrl = queryString.parseUrl(url);
-            const paramsObject: any = parsedUrl.query;
-            if (paramsObject.id_token && paramsObject.access_token) {
-              Loading.show(); // show loading when back from the browser and select account
-              resolve({ type: 'success', params: paramsObject });
-            } else {
-              reject({
-                type: 'error',
-                message: 'It seems that the authorization with your Google account has failed.',
-              });
-            }
+      Linking.openURL(authUrl);
+      Loading.hide(); // hide loading because the loading will be shown when back from the browser and not select any account
+      subscriptionRef.current = Linking.addEventListener('url', (event: any) => {
+        const { url } = event;
+        if (url && url.length > 0) {
+          const parsedUrl = queryString.parseUrl(url);
+          const paramsObject: any = parsedUrl.query;
+          if (paramsObject.code) {
+            Loading.show(); // show loading when back from the browser and select account
+            resolve({ type: 'success', params: paramsObject });
+          } else {
+            reject({
+              type: 'error',
+              message: 'It seems that the authorization with your Google account has failed.',
+            });
           }
-        });
+        }
       });
-    },
-    [],
-  );
+    });
+  }, []);
 
   const androidPromptAsync = useCallback(async () => {
     // sleep show loading
     await sleep(500);
-    const redirectUri = 'https://test.portkey.finance/google-auth';
-    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?response_type=id_token%20token&scope=openid%20email%20profile&prompt=select_account&client_id=${Config.GOOGLE_WEB_CLIENT_ID}&redirect_uri=${redirectUri}&nonce=${googleAuthNonce}&service=lso&o2v=2&ddm=0&flowName=GeneralOAuthFlow`;
+    const redirectUri = 'https://aa-portkey-test.portkey.finance/api/app/account/google-auth-redirect';
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?response_type=code&scope=openid%20email%20profile&prompt=select_account&client_id=${Config.GOOGLE_WEB_CLIENT_ID}&redirect_uri=${redirectUri}&nonce=${googleAuthNonce}&service=lso&o2v=2&ddm=0&flowName=GeneralOAuthFlow`;
     const info = await androidGoogleSignin(authUrl);
     if (info.type === 'success') {
-      const userInfo = await getGoogleUserInfo(info.params?.access_token);
+      const authToken = await getGoogleAuthToken({
+        authCode: info.params.code,
+        clientId: Config.GOOGLE_WEB_CLIENT_ID,
+        clientSecret: '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', // todo_wade: move to env
+        redirectUri,
+      });
+      console.log('google authToken', authToken);
+      const userInfo = await getGoogleUserInfo(authToken.access_token);
       return {
         user: {
           ...userInfo,
@@ -145,8 +149,8 @@ export function useGoogleAuthentication() {
           familyName: userInfo.family_name,
           givenName: userInfo.given_name,
         },
-        accessToken: info.params?.access_token,
-        idToken: info.params?.id_token,
+        accessToken: authToken.access_token,
+        idToken: authToken.id_token,
         nonce: googleAuthNonce,
       } as TGoogleAuthResponse;
     }

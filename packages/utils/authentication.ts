@@ -67,7 +67,6 @@ export async function getGoogleAuthToken({
     },
     body: JSON.stringify(data),
   });
-
   return {
     id_token: response.id_token,
     access_token: response.access_token,
@@ -254,7 +253,14 @@ export function parseJWTToken(token: string) {
 
   const spilt2 = Buffer.from(idTokenArr[1], 'base64').toString('utf8');
   const { iss } = JSON.parse(spilt2) || {};
-  return { kid, issuer: iss };
+  let issuer = iss;
+  const issuerPrefix = 'https://';
+  const googleIssuerWithoutPrefix = 'accounts.google.com';
+  if (issuer === googleIssuerWithoutPrefix) {
+    // on android, the issuer is not prefixed with https://. so we add it here
+    issuer = `${issuerPrefix}${googleIssuerWithoutPrefix}`;
+  }
+  return { kid, issuer };
 }
 
 export function parseZKProof(zkProof: string) {

@@ -140,7 +140,6 @@ export function useGoogleAuthentication() {
         clientSecret: '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', // todo_wade: move to env
         redirectUri,
       });
-      console.log('google authToken', authToken);
       const userInfo = await getGoogleUserInfo(authToken.access_token);
       return {
         user: {

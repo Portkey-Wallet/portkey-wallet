@@ -119,14 +119,22 @@ export default function GuardianDetail() {
   );
 
   const verifierName = useMemo(() => {
-    if (guardian && isZKLoginSupported(guardian.guardianType) && guardian?.verifiedByZk) {
+    if (
+      guardian &&
+      isZKLoginSupported(guardian.guardianType) &&
+      (guardian?.verifiedByZk || guardian?.manuallySupportForZk)
+    ) {
       return zkLoginVerifierItem.name;
     }
     return guardian?.verifier?.name;
   }, [guardian]);
 
   const verifierImage = useMemo(() => {
-    if (guardian && isZKLoginSupported(guardian.guardianType) && guardian?.verifiedByZk) {
+    if (
+      guardian &&
+      isZKLoginSupported(guardian.guardianType) &&
+      (guardian?.verifiedByZk || guardian?.manuallySupportForZk)
+    ) {
       return zkLoginVerifierItem.imageUrl;
     }
     return guardian?.verifier?.imageUrl;

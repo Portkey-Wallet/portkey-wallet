@@ -5,6 +5,7 @@ import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { handleVerifierInfo, handleZKLoginInfo, handleVerificationDoc } from '@portkey-wallet/utils/guardian';
 import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
+import { isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
 
 export const getGuardiansApproved = (
   userGuardiansList: UserGuardianItem[],
@@ -119,12 +120,14 @@ export function editGuardian(
   userGuardiansList: UserGuardianItem[],
   guardiansStatus: GuardiansStatus,
 ) {
+  const isZkLoginType = isZKLoginSupported(guardianItem.guardianType);
   const guardianToUpdatePre = {
     identifierHash: preGuardianItem.identifierHash,
     type: preGuardianItem.guardianType,
     verificationInfo: {
       id: preGuardianItem.verifier?.id,
     },
+    updateSupportZk: false,
   };
   const guardianToUpdateNew = {
     identifierHash: preGuardianItem.identifierHash,
@@ -132,6 +135,7 @@ export function editGuardian(
     verificationInfo: {
       id: guardianItem.verifier?.id,
     },
+    updateSupportZk: isZkLoginType,
   };
   const guardiansApproved = getGuardiansApproved(userGuardiansList, guardiansStatus);
   return contract?.callSendMethod('UpdateGuardian', address, {

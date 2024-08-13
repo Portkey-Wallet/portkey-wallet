@@ -257,6 +257,7 @@ export function parseJWTToken(token: string) {
   const issuerPrefix = 'https://';
   const googleIssuerWithoutPrefix = 'accounts.google.com';
   if (issuer === googleIssuerWithoutPrefix) {
+    // todo_wade: remove this
     // on android, the issuer is not prefixed with https://. so we add it here
     issuer = `${issuerPrefix}${googleIssuerWithoutPrefix}`;
   }
@@ -265,13 +266,13 @@ export function parseJWTToken(token: string) {
 
 export function parseZKProof(zkProof: string) {
   const { pi_a, pi_b, pi_c } = JSON.parse(zkProof);
-  let zkProofPiB_1 = '';
-  let zkProofPiB_2 = '';
-  let zkProofPiB_3 = '';
+  let zkProofPiB1 = '';
+  let zkProofPiB2 = '';
+  let zkProofPiB3 = '';
   if (Array.isArray(pi_b) && pi_b.length) {
-    zkProofPiB_1 = pi_b[0];
-    zkProofPiB_2 = pi_b[1];
-    zkProofPiB_3 = pi_b[2];
+    zkProofPiB1 = pi_b[0];
+    zkProofPiB2 = pi_b[1];
+    zkProofPiB3 = pi_b[2];
   }
-  return { zkProofPiA: pi_a, zkProofPiB_1, zkProofPiB_2, zkProofPiB_3, zkProofPiC: pi_c } as ZKProofInfo;
+  return { zkProofPiA: pi_a, zkProofPiB1, zkProofPiB2, zkProofPiB3, zkProofPiC: pi_c } as ZKProofInfo;
 }

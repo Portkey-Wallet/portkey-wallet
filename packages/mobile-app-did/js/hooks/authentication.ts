@@ -111,6 +111,7 @@ export function useGoogleAuthentication() {
       subscriptionRef.current = Linking.addEventListener('url', (event: any) => {
         const { url } = event;
         if (url && url.length > 0) {
+          // todo_wade: verify host of url
           const parsedUrl = queryString.parseUrl(url);
           const paramsObject: any = parsedUrl.query;
           if (paramsObject.code) {

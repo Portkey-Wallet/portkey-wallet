@@ -75,6 +75,8 @@ export interface ZKLoginInfo {
   zkProof: string;
   jwt: string;
   nonce: string;
+  timestamp: number;
+  managerAddress: string;
   circuitId: string;
 }
 

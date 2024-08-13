@@ -17,11 +17,26 @@ export function getApprovalCount(length: number) {
 
 export function handleZKLoginInfo(zkLoginInfo?: ZKLoginInfo) {
   if (zkLoginInfo) {
-    const { identifierHash, salt, zkProof, jwt, nonce, circuitId, poseidonIdentifierHash, identifierHashType } =
-      zkLoginInfo;
+    const {
+      identifierHash,
+      salt,
+      zkProof,
+      jwt,
+      nonce,
+      circuitId,
+      poseidonIdentifierHash,
+      identifierHashType,
+      timestamp,
+      managerAddress,
+    } = zkLoginInfo;
     const { kid, issuer } = parseJWTToken(jwt);
     const zkProofInfo = parseZKProof(zkProof);
-    const noncePayload = {};
+    const noncePayload = {
+      addManager: {
+        timestamp,
+        managerAddress,
+      },
+    };
     return {
       identifierHash,
       salt,

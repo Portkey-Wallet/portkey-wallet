@@ -29,6 +29,8 @@ export type VerifyZKLoginParams = {
   salt: string;
   kid: string;
   nonce?: string;
+  timestamp: number;
+  managerAddress: string;
 };
 
 export type ReportUnsetLoginGuardianProps = {

@@ -8,6 +8,7 @@ export type TGoogleAuthentication = {
   accessToken: string;
   idToken: string;
   nonce: string;
+  timestamp: number;
   user: {
     email: string;
     familyName: string;
@@ -29,6 +30,7 @@ export type TAppleAuthentication = {
   };
   idToken: string;
   nonce: string;
+  timestamp: number;
 };
 
 export type TFacebookAuthentication = {

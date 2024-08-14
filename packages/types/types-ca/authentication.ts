@@ -5,6 +5,7 @@ export type VerifyTokenParams = {
   accessToken?: string;
   idToken?: string;
   nonce?: string;
+  timestamp?: number;
   salt?: string;
   verifierId?: string;
   chainId: ChainId;

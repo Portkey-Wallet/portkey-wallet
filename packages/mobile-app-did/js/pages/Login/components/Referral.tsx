@@ -28,6 +28,9 @@ import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
 import { TLoginMode } from '@portkey-wallet/types/types-ca/cms';
 import { LOGIN_GUARDIAN_TYPE_ICON } from 'constants/misc';
+import { createNewTmpWallet } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { useAppDispatch } from 'store/hooks';
+import useEffectOnce from 'hooks/useEffectOnce';
 
 const TitlePrefix = {
   [PageType.login]: 'Login with',
@@ -39,6 +42,12 @@ export function useLoginModeMap(
   onEmailSign: () => void,
   onPhoneSign: () => void,
 ) {
+  const dispatch = useAppDispatch();
+  useEffectOnce(() => {
+    // create new wallet when show login page, because we need manager address when execute authenticationSign
+    dispatch(createNewTmpWallet());
+  });
+
   const authenticationSign = useAuthenticationSign();
   const onAppleSign = useLockCallback(async () => {
     const loadingKey = Loading.show();

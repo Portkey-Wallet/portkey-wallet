@@ -1,7 +1,7 @@
 import CustomSvg, { SvgType } from 'components/CustomSvg';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RegisterType, SocialLoginFinishHandler } from 'types/wallet';
+import { RegisterType, SocialLoginFinishHandler, VerifyTypeEnum } from 'types/wallet';
 import DividerCenter from '../DividerCenter';
 import SocialContent from '../SocialContent';
 import TermsOfServiceItem from '../TermsOfServiceItem';
@@ -18,6 +18,7 @@ import { useGetFormattedLoginModeList } from '@portkey-wallet/hooks/hooks-ca/cms
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 import { useEntranceConfig } from 'hooks/cms';
 import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
+import { zkloginGuardianType } from 'constants/guardians';
 
 export type LoginGuardianListType = {
   icon: SvgType;
@@ -71,7 +72,8 @@ export default function SocialLogin({
       try {
         onSocialStart(v);
         setLoading(true);
-        const result = await socialLoginAction(v, currentNetwork);
+        const _verifyType = zkloginGuardianType.includes(v) ? VerifyTypeEnum.zklogin : undefined;
+        const result = await socialLoginAction(v, currentNetwork, _verifyType);
         setLoading(false);
         if (result.error) throw result.message ?? result.Error;
         onFinish?.({

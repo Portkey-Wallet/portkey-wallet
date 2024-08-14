@@ -14,6 +14,8 @@ import { useWalletInfo } from 'store/Provider/hooks';
 import { useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
+import { zkloginGuardianType } from 'constants/guardians';
+import { VerifyTypeEnum } from 'types/wallet';
 
 export function useVerifyGoogleToken() {
   const { currentNetwork } = useWalletInfo();
@@ -30,7 +32,7 @@ export function useVerifyGoogleToken() {
         }
       }
       if (isRequest) {
-        const googleInfo = await socialLoginAction('Google', currentNetwork);
+        const googleInfo = await socialLoginAction('Google', currentNetwork, VerifyTypeEnum.zklogin);
         accessToken = googleInfo?.data?.access_token;
         const { id } = await getGoogleUserInfo(accessToken as string);
         console.log(id, params, googleInfo, 'socialVerifyHandler===id');
@@ -51,7 +53,7 @@ export function useVerifyAppleToken() {
       let accessToken = params.accessToken;
       const { isExpired: tokenIsExpired } = parseAppleIdentityToken(accessToken) || {};
       if (!accessToken || tokenIsExpired) {
-        const info = await socialLoginAction('Apple', currentNetwork);
+        const info = await socialLoginAction('Apple', currentNetwork, VerifyTypeEnum.zklogin);
         accessToken = info?.data?.access_token || undefined;
       }
       const { userId } = parseAppleIdentityToken(accessToken) || {};
@@ -175,7 +177,8 @@ export function useVerifyToken() {
 export function useAuthSocialAccountInfo(type: ISocialLogin) {
   const currentNetwork = useCurrentNetwork();
   return useCallback(async () => {
-    const result = await socialLoginAction(type, currentNetwork);
+    const _verifyType = zkloginGuardianType.includes(type) ? VerifyTypeEnum.zklogin : undefined;
+    const result = await socialLoginAction(type, currentNetwork, _verifyType);
     let identityToken = result.data?.access_token ?? '';
     let userInfo;
     if (type === 'Google') {

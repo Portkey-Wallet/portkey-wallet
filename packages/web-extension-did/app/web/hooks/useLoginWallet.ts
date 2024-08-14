@@ -157,7 +157,7 @@ export default function useLoginWallet(props: ILoginWalletProps) {
       const extraData = await extraDataEncode(getDeviceInfo(DEVICE_TYPE));
 
       const _guardianApprovedList = guardianApprovedList.filter((item) =>
-        Boolean(item.signature && item.verificationDoc),
+        Boolean((item.signature && item.verificationDoc) || item.zkLoginInfo),
       );
 
       const params = {

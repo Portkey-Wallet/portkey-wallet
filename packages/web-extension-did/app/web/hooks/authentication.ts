@@ -1,15 +1,23 @@
 import { useCallback } from 'react';
-import { ReportUnsetLoginGuardianProps, VerifyTokenParams } from '@portkey-wallet/types/types-ca/authentication';
+import {
+  ReportUnsetLoginGuardianProps,
+  VerifyTokenParams,
+  VerifyZKLoginParams,
+} from '@portkey-wallet/types/types-ca/authentication';
+import { ZKLoginInfo } from '@portkey-wallet/types/verifier';
 import {
   getGoogleUserInfo,
   parseAppleIdentityToken,
   parseFacebookToken,
   parseTelegramToken,
   parseTwitterToken,
+  parseKidFromJWTToken,
 } from '@portkey-wallet/utils/authentication';
 import { request } from '@portkey-wallet/api/api-did';
+import { customFetch } from '@portkey-wallet/utils/fetch';
+import { randomId } from '@portkey-wallet/utils';
 import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
-import { ISocialLogin, LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { ISocialLogin, LoginType, SocialLoginEnum } from '@portkey-wallet/types/types-ca/wallet';
 import { useWalletInfo } from 'store/Provider/hooks';
 import { useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useLatestRef } from '@portkey-wallet/hooks';
@@ -17,11 +25,61 @@ import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 import { zkloginGuardianType } from 'constants/guardians';
 import { VerifyTypeEnum } from 'types/wallet';
 
+export function useVerifyZKLogin() {
+  return useCallback(async (params: VerifyZKLoginParams) => {
+    const { verifyToken, jwt, salt, kid, nonce } = params;
+    const proofParams = { jwt, salt };
+    console.log('useVerifyZKLogin params: ', proofParams);
+    const proofResult = await customFetch('https://zklogin-prover-dev.aelf.dev/v1/prove', {
+      method: 'POST',
+      headers: {
+        Accept: 'text/plain;v=1.0',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(proofParams),
+    });
+
+    const verifyParams = {
+      identifierHash: proofResult.identifierHash,
+      salt,
+      nonce,
+      kid,
+      proof: proofResult.proof,
+    };
+
+    const portkeyVerifyResult = await request.verify.verifyZKLogin({
+      params: {
+        ...verifyToken,
+        poseidonIdentifierHash: proofResult.identifierHash,
+        salt,
+      },
+    });
+
+    console.log('portkeyVerifyResult : ', portkeyVerifyResult);
+
+    const zkProof = decodeURIComponent(verifyParams.proof);
+    const zkLoginInfo: ZKLoginInfo = {
+      identifierHash: portkeyVerifyResult.guardianIdentifierHash,
+      poseidonIdentifierHash: verifyParams.identifierHash,
+      identifierHashType: 1,
+      salt: verifyParams.salt,
+      zkProof,
+      jwt: jwt ?? '',
+      nonce: nonce ?? '',
+      circuitId: proofResult.circuitId,
+    };
+    return { zkLoginInfo };
+  }, []);
+}
+
 export function useVerifyGoogleToken() {
   const { currentNetwork } = useWalletInfo();
+  const verifyZKLogin = useVerifyZKLogin();
   return useCallback(
     async (params: VerifyTokenParams) => {
       let accessToken = params.accessToken;
+      let idToken = params.idToken;
+      let nonce = params.nonce;
       let isRequest = !accessToken;
       if (accessToken) {
         try {
@@ -34,36 +92,71 @@ export function useVerifyGoogleToken() {
       if (isRequest) {
         const googleInfo = await socialLoginAction('Google', currentNetwork, VerifyTypeEnum.zklogin);
         accessToken = googleInfo?.data?.access_token;
+        idToken = googleInfo?.data?.id_token;
+        nonce = googleInfo?.data?.nonce;
         const { id } = await getGoogleUserInfo(accessToken as string);
         console.log(id, params, googleInfo, 'socialVerifyHandler===id');
         if (id !== params.id) throw new Error('Account does not match your guardian');
       }
-      return request.verify.verifyGoogleToken({
-        params: { ...params, accessToken },
+      if (!idToken) {
+        throw new Error('Invalid idToken');
+      }
+      const rst = await verifyZKLogin({
+        verifyToken: {
+          type: SocialLoginEnum.Google,
+          accessToken,
+          verifierId: params.verifierId,
+          chainId: params.chainId,
+          operationType: params.operationType,
+        },
+        jwt: idToken,
+        salt: params.salt ? params.salt : randomId(),
+        kid: parseKidFromJWTToken(idToken),
+        nonce,
       });
+      return rst;
     },
-    [currentNetwork],
+    [currentNetwork, verifyZKLogin],
   );
 }
 
 export function useVerifyAppleToken() {
   const { currentNetwork } = useWalletInfo();
+  const verifyZKLogin = useVerifyZKLogin();
   return useCallback(
     async (params: VerifyTokenParams) => {
       let accessToken = params.accessToken;
+      let idToken = params.idToken;
+      let nonce = params.nonce;
       const { isExpired: tokenIsExpired } = parseAppleIdentityToken(accessToken) || {};
       if (!accessToken || tokenIsExpired) {
         const info = await socialLoginAction('Apple', currentNetwork, VerifyTypeEnum.zklogin);
         accessToken = info?.data?.access_token || undefined;
+        idToken = info?.data?.id_token;
+        nonce = info?.data?.nonce;
       }
       const { userId } = parseAppleIdentityToken(accessToken) || {};
       if (userId !== params.id) throw new Error('Account does not match your guardian');
       delete (params as any).id;
-      return request.verify.verifyAppleToken({
-        params: { ...params, accessToken },
+      if (!idToken) {
+        throw new Error('Invalid idToken');
+      }
+      const rst = await verifyZKLogin({
+        verifyToken: {
+          type: SocialLoginEnum.Apple,
+          accessToken,
+          verifierId: params.verifierId,
+          chainId: params.chainId,
+          operationType: params.operationType,
+        },
+        jwt: idToken,
+        salt: params.salt ? params.salt : randomId(),
+        kid: parseKidFromJWTToken(idToken),
+        nonce,
       });
+      return rst;
     },
-    [currentNetwork],
+    [currentNetwork, verifyZKLogin],
   );
 }
 

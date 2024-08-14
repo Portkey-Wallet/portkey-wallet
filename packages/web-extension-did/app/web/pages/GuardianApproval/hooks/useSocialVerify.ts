@@ -31,21 +31,37 @@ export const useSocialVerify = () => {
         setLoading(true);
         const result = await verifyToken(operateGuardian.guardianType, {
           accessToken: loginAccount?.authenticationInfo?.[operateGuardian.guardianAccount],
+          idToken: loginAccount?.authenticationInfo?.idToken,
+          nonce: loginAccount?.authenticationInfo?.nonce, // todo_wade: check salt param
           id: operateGuardian.guardianAccount,
           verifierId: operateGuardian.verifier?.id,
           chainId: originChainId,
           operationType: operationType,
           targetChainId,
         });
-        const verifierInfo: VerifierInfo = { ...result, verifierId: operateGuardian?.verifier?.id };
-        const { guardianIdentifier } = handleVerificationDoc(verifierInfo.verificationDoc);
+        const verifierInfo: VerifierInfo = { ...result, verifierId: operateGuardian?.verifier?.id ?? '' };
+        let identifierHash;
+        if (verifierInfo.verificationDoc) {
+          const { guardianIdentifier } = handleVerificationDoc(verifierInfo.verificationDoc);
+          identifierHash = guardianIdentifier;
+        } else {
+          identifierHash = verifierInfo.zkLoginInfo?.identifierHash;
+        }
         return {
           key: operateGuardian.key,
           signature: verifierInfo.signature,
           verificationDoc: verifierInfo.verificationDoc,
           status: VerifyStatus.Verified,
-          identifierHash: guardianIdentifier,
+          identifierHash,
+          zkLoginInfo: verifierInfo.zkLoginInfo,
         };
+        /** // todo_wade: check if this is needed
+         * ...status?.verifierInfo,
+        value: guardian?.guardianAccount,
+        guardianType: guardian?.guardianType,
+        type: LoginType[guardian?.guardianType as LoginType],
+         * 
+        */
       } catch (error) {
         const msg = handleErrorMessage(error);
         singleMessage.error(msg);

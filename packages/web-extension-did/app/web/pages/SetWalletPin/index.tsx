@@ -72,6 +72,7 @@ export default function SetWalletPin() {
           verifierId: registerVerifier?.verifierId || '',
           verificationDoc: registerVerifier?.verificationDoc || '',
           signature: registerVerifier?.signature || '',
+          zkLoginInfo: registerVerifier?.zkLoginInfo,
         },
       ];
     }

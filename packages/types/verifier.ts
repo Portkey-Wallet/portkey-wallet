@@ -80,9 +80,9 @@ export interface ZKLoginInfo {
 
 export interface ZKProofInfo {
   zkProofPiA: string;
-  zkProofPiB_1: string;
-  zkProofPiB_2: string;
-  zkProofPiB_3: string;
+  zkProofPiB1: string;
+  zkProofPiB2: string;
+  zkProofPiB3: string;
   zkProofPiC: string;
 }
 
@@ -102,7 +102,7 @@ export interface VerifierInfo {
   verifierId: string;
   verificationDoc?: string;
   signature?: string;
-  zkLoginInfo: ZKLoginInfo;
+  zkLoginInfo?: ZKLoginInfo;
 }
 
 export interface AuthenticationInfo {

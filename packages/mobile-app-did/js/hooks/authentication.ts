@@ -5,7 +5,7 @@ import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import * as Google from 'expo-auth-session/providers/google';
 import Config from 'react-native-config';
 import * as Application from 'expo-application';
-import { AccessTokenRequest, makeRedirectUri } from 'expo-auth-session';
+import { AccessTokenRequest, makeRedirectUri, AuthRequest } from 'expo-auth-session';
 import { request } from '@portkey-wallet/api/api-did';
 import {
   getGoogleAuthToken,
@@ -41,7 +41,7 @@ import {
   TVerifierAuthParams,
 } from 'types/authentication';
 import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
-import generateRandomNonce from '@portkey-wallet/utils/nonce';
+import { generateNonceAndTimestamp } from '@portkey-wallet/utils/nonce';
 import AElf from 'aelf-sdk';
 import queryString from 'query-string';
 import Loading from 'components/Loading';
@@ -51,19 +51,35 @@ WebBrowser.maybeCompleteAuthSession();
 export function useGoogleAuthentication() {
   const subscriptionRef = useRef<any>();
   const [androidResponse, setResponse] = useState<any>();
-  const [googleAuthNonce] = useState(generateRandomNonce());
-  const [googleRequest, response, promptAsync] = Google.useAuthRequest({
-    iosClientId: Config.GOOGLE_IOS_CLIENT_ID,
-    androidClientId: Config.GOOGLE_ANDROID_CLIENT_ID,
-    shouldAutoExchangeCode: false,
-    extraParams: {
-      nonce: googleAuthNonce,
-    },
-  });
-  const iosPromptAsync: () => Promise<TGoogleAuthResponse> = useCallback(async () => {
+  // const [googleRequest, response, promptAsync] = Google.useAuthRequest({
+  //   iosClientId: Config.GOOGLE_IOS_CLIENT_ID,
+  //   androidClientId: Config.GOOGLE_ANDROID_CLIENT_ID,
+  //   shouldAutoExchangeCode: false,
+  // todo_wade: remove this
+  // extraParams: {
+  //   nonce: googleAuthNonce,
+  // },
+  // });
+  const iosPromptAsync: (managerAddress: string) => Promise<TGoogleAuthResponse> = useCallback(async managerAddress => {
+    const { nonce, timestamp } = generateNonceAndTimestamp(managerAddress);
+    const googleRequest = new AuthRequest({
+      clientId: Config.GOOGLE_IOS_CLIENT_ID,
+      redirectUri: makeRedirectUri({
+        native: `${Application.applicationId}:/oauthredirect`,
+      }),
+      scopes: ['openid', 'profile', 'email'],
+      extraParams: {
+        nonce,
+      },
+    });
     await sleep(2000);
     if (AppState.currentState !== 'active') throw { message: '' };
-    const info = await promptAsync();
+    const discovery = {
+      authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
+      tokenEndpoint: 'https://oauth2.googleapis.com/token',
+      revocationEndpoint: 'https://oauth2.googleapis.com/revoke',
+    };
+    const info = await googleRequest.promptAsync(discovery);
     if (info.type === 'success') {
       const exchangeRequest = new AccessTokenRequest({
         clientId: Config.GOOGLE_IOS_CLIENT_ID,
@@ -86,13 +102,14 @@ export function useGoogleAuthentication() {
           givenName: userInfo.given_name,
         },
         ...authentication,
-        nonce: googleAuthNonce,
+        nonce,
+        timestamp,
       } as TGoogleAuthResponse;
     }
     const message =
       info.type === 'cancel' ? '' : 'It seems that the authorization with your Google account has failed.';
     throw { ...info, message };
-  }, [promptAsync, googleRequest?.codeVerifier, googleAuthNonce]);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -128,52 +145,59 @@ export function useGoogleAuthentication() {
     });
   }, []);
 
-  const androidPromptAsync = useCallback(async () => {
-    // sleep show loading
-    await sleep(500);
-    const redirectUri = 'https://aa-portkey-test.portkey.finance/api/app/account/google-auth-redirect';
-    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?response_type=code&scope=openid%20email%20profile&prompt=select_account&client_id=${Config.GOOGLE_WEB_CLIENT_ID}&redirect_uri=${redirectUri}&nonce=${googleAuthNonce}&service=lso&o2v=2&ddm=0&flowName=GeneralOAuthFlow`;
-    const info = await androidGoogleSignin(authUrl);
-    if (info.type === 'success') {
-      const authToken = await getGoogleAuthToken({
-        authCode: info.params.code,
-        clientId: Config.GOOGLE_WEB_CLIENT_ID,
-        clientSecret: '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', // todo_wade: move to env
-        redirectUri,
-      });
-      const userInfo = await getGoogleUserInfo(authToken.access_token);
-      return {
-        user: {
-          ...userInfo,
-          photo: userInfo.picture,
-          familyName: userInfo.family_name,
-          givenName: userInfo.given_name,
-        },
-        accessToken: authToken.access_token,
-        idToken: authToken.id_token,
-        nonce: googleAuthNonce,
-      } as TGoogleAuthResponse;
-    }
-    const message =
-      info.type === 'cancel' ? '' : 'It seems that the authorization with your Google account has failed.';
-    throw { ...info, message };
-  }, [androidGoogleSignin, googleAuthNonce]);
+  const androidPromptAsync = useCallback(
+    async (managerAddress: string) => {
+      // sleep show loading
+      await sleep(500);
+      const { nonce, timestamp } = generateNonceAndTimestamp(managerAddress);
+      const redirectUri = 'https://aa-portkey-test.portkey.finance/api/app/account/google-auth-redirect';
+      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?response_type=code&scope=openid%20email%20profile&prompt=select_account&client_id=${Config.GOOGLE_WEB_CLIENT_ID}&redirect_uri=${redirectUri}&nonce=${nonce}&service=lso&o2v=2&ddm=0&flowName=GeneralOAuthFlow`;
+      const info = await androidGoogleSignin(authUrl);
+      if (info.type === 'success') {
+        const authToken = await getGoogleAuthToken({
+          authCode: info.params.code,
+          clientId: Config.GOOGLE_WEB_CLIENT_ID,
+          clientSecret: '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', // todo_wade: move to env
+          redirectUri,
+        });
+        const userInfo = await getGoogleUserInfo(authToken.access_token);
+        return {
+          user: {
+            ...userInfo,
+            photo: userInfo.picture,
+            familyName: userInfo.family_name,
+            givenName: userInfo.given_name,
+          },
+          accessToken: authToken.access_token,
+          idToken: authToken.id_token,
+          nonce: nonce,
+          timestamp,
+        } as TGoogleAuthResponse;
+      }
+      const message =
+        info.type === 'cancel' ? '' : 'It seems that the authorization with your Google account has failed.';
+      throw { ...info, message };
+    },
+    [androidGoogleSignin],
+  );
 
-  const googleSign = useCallback(async () => {
-    changeCanLock(false);
-    try {
-      return await (isIOS ? iosPromptAsync : androidPromptAsync)();
-    } finally {
-      changeCanLock(true);
-    }
-  }, [androidPromptAsync, iosPromptAsync]);
+  const googleSign = useCallback(
+    async (managerAddress: string) => {
+      changeCanLock(false);
+      try {
+        return await (isIOS ? iosPromptAsync : androidPromptAsync)(managerAddress);
+      } finally {
+        changeCanLock(true);
+      }
+    },
+    [androidPromptAsync, iosPromptAsync],
+  );
 
   return useMemo(
     () => ({
-      googleResponse: isIOS ? response : androidResponse,
       googleSign,
     }),
-    [androidResponse, googleSign, response],
+    [googleSign],
   );
 }
 
@@ -181,22 +205,11 @@ export function useAppleAuthentication() {
   const [response, setResponse] = useState<TAppleAuthentication>();
   const [androidResponse, setAndroidResponse] = useState<TAppleAuthentication>();
   const isMainnet = useIsMainnet();
-  const [nonce] = useState(generateRandomNonce());
 
-  useEffect(() => {
-    if (isIOS) return;
-    appleAuthAndroid.configure({
-      clientId: Config.APPLE_CLIENT_ID,
-      redirectUri: isMainnet ? Config.APPLE_MAIN_REDIRECT_URI : Config.APPLE_TESTNET_REDIRECT_URI,
-      scope: appleAuthAndroid.Scope.ALL,
-      responseType: appleAuthAndroid.ResponseType.ALL,
-      nonce,
-    });
-  }, [isMainnet, nonce]);
-
-  const iosPromptAsync = useCallback(async () => {
+  const iosPromptAsync = useCallback(async (managerAddress: string) => {
     setResponse(undefined);
     try {
+      const { nonce, timestamp } = generateNonceAndTimestamp(managerAddress);
       const appleInfo = await appleAuth.performRequest({
         requestedOperation: appleAuth.Operation.LOGIN,
         requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
@@ -227,6 +240,7 @@ export function useAppleAuthentication() {
         user: { ...user, id: user?.userId },
         idToken: appleInfo.identityToken,
         nonce: AElf.utils.sha256(appleInfo.nonce),
+        timestamp,
       } as TAppleAuthentication;
       setResponse(userInfo);
       return userInfo;
@@ -237,58 +251,74 @@ export function useAppleAuthentication() {
       // : 'It seems that the authorization with your Apple ID has failed.';
       throw { ...error, message };
     }
-  }, [nonce]);
-
-  const androidPromptAsync = useCallback(async () => {
-    setAndroidResponse(undefined);
-    try {
-      const appleInfo = await appleAuthAndroid.signIn();
-      const user = parseAppleIdentityToken(appleInfo.id_token);
-      if (appleInfo.user?.name?.lastName) {
-        try {
-          await request.verify.sendAppleUserExtraInfo({
-            params: {
-              identityToken: appleInfo.id_token,
-              userInfo: {
-                name: {
-                  firstName: appleInfo.user.name.firstName,
-                  lastName: appleInfo.user.name.lastName,
-                },
-                email: user?.email || appleInfo.user.email,
-              },
-            },
-          });
-        } catch (error) {
-          console.log(error, '======error');
-        }
-      }
-      const userInfo = {
-        identityToken: appleInfo.id_token,
-        idToken: appleInfo.id_token,
-        fullName: {
-          givenName: appleInfo.user?.name?.firstName,
-          familyName: appleInfo.user?.name?.lastName,
-        },
-        user: { ...user, id: user?.userId },
-        nonce: AElf.utils.sha256(appleInfo.nonce),
-      } as TAppleAuthentication;
-      setAndroidResponse(userInfo);
-      return userInfo;
-    } catch (error: any) {
-      const message = error?.message === appleAuthAndroid.Error.SIGNIN_CANCELLED ? '' : handleErrorMessage(error);
-      // : 'It seems that the authorization with your Apple ID has failed.';
-      throw { ...error, message };
-    }
   }, []);
 
-  const appleSign = useCallback(async () => {
-    changeCanLock(false);
-    try {
-      return await (isIOS ? iosPromptAsync : androidPromptAsync)();
-    } finally {
-      changeCanLock(true);
-    }
-  }, [androidPromptAsync, iosPromptAsync]);
+  const androidPromptAsync = useCallback(
+    async (managerAddress: string) => {
+      setAndroidResponse(undefined);
+      try {
+        const { nonce, timestamp } = generateNonceAndTimestamp(managerAddress);
+        appleAuthAndroid.configure({
+          clientId: Config.APPLE_CLIENT_ID,
+          redirectUri: isMainnet ? Config.APPLE_MAIN_REDIRECT_URI : Config.APPLE_TESTNET_REDIRECT_URI,
+          scope: appleAuthAndroid.Scope.ALL,
+          responseType: appleAuthAndroid.ResponseType.ALL,
+          nonce,
+        });
+
+        const appleInfo = await appleAuthAndroid.signIn();
+        const user = parseAppleIdentityToken(appleInfo.id_token);
+        if (appleInfo.user?.name?.lastName) {
+          try {
+            await request.verify.sendAppleUserExtraInfo({
+              params: {
+                identityToken: appleInfo.id_token,
+                userInfo: {
+                  name: {
+                    firstName: appleInfo.user.name.firstName,
+                    lastName: appleInfo.user.name.lastName,
+                  },
+                  email: user?.email || appleInfo.user.email,
+                },
+              },
+            });
+          } catch (error) {
+            console.log(error, '======error');
+          }
+        }
+        const userInfo = {
+          identityToken: appleInfo.id_token,
+          idToken: appleInfo.id_token,
+          fullName: {
+            givenName: appleInfo.user?.name?.firstName,
+            familyName: appleInfo.user?.name?.lastName,
+          },
+          user: { ...user, id: user?.userId },
+          nonce: AElf.utils.sha256(appleInfo.nonce),
+          timestamp,
+        } as TAppleAuthentication;
+        setAndroidResponse(userInfo);
+        return userInfo;
+      } catch (error: any) {
+        const message = error?.message === appleAuthAndroid.Error.SIGNIN_CANCELLED ? '' : handleErrorMessage(error);
+        // : 'It seems that the authorization with your Apple ID has failed.';
+        throw { ...error, message };
+      }
+    },
+    [isMainnet],
+  );
+
+  const appleSign = useCallback(
+    async (managerAddress: string) => {
+      changeCanLock(false);
+      try {
+        return await (isIOS ? iosPromptAsync : androidPromptAsync)(managerAddress);
+      } finally {
+        changeCanLock(true);
+      }
+    },
+    [androidPromptAsync, iosPromptAsync],
+  );
 
   return useMemo(
     () => ({
@@ -345,15 +375,17 @@ export function useAuthenticationSign() {
   const { telegramSign } = useTelegramAuthentication();
   const { twitterSign } = useTwitterAuthentication();
   const { facebookSign } = useFacebookAuthentication();
+  const verifyManagerAddress = useVerifyManagerAddress();
+  const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
   return useCallback<IAuthenticationSign['sign']>(
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     type => {
       switch (type) {
         case LoginType.Google:
-          return googleSign();
+          return googleSign(latestVerifyManagerAddress.current ?? '');
         case LoginType.Apple:
-          return appleSign();
+          return appleSign(latestVerifyManagerAddress.current ?? '');
         case LoginType.Telegram:
           return telegramSign();
         case LoginType.Twitter:
@@ -364,13 +396,13 @@ export function useAuthenticationSign() {
           throw new Error('Unsupported login type');
       }
     },
-    [appleSign, googleSign, telegramSign, twitterSign, facebookSign],
+    [googleSign, latestVerifyManagerAddress, appleSign, telegramSign, twitterSign, facebookSign],
   );
 }
 
 export function useVerifyZKLogin() {
   return useCallback(async (params: VerifyZKLoginParams) => {
-    const { verifyToken, jwt, salt, kid, nonce } = params;
+    const { verifyToken, jwt, salt, kid, nonce, timestamp, managerAddress } = params;
     const proofParams = { jwt, salt };
     console.log('useVerifyZKLogin params: ', proofParams);
     const proofResult = await customFetch('https://zklogin-prover-dev.aelf.dev/v1/prove', {
@@ -410,6 +442,8 @@ export function useVerifyZKLogin() {
       jwt: jwt ?? '',
       nonce: nonce ?? '',
       circuitId: proofResult.circuitId,
+      timestamp,
+      managerAddress,
     };
     return { zkLoginInfo };
   }, []);
@@ -424,6 +458,8 @@ export function useVerifyGoogleToken() {
       let idToken = params.idToken;
       let isRequest = !accessToken;
       let nonce = params.nonce;
+      let timestamp = params.timestamp;
+      const managerAddress = params.operationDetails ? JSON.parse(params.operationDetails).manager : '';
       if (accessToken) {
         try {
           const { id } = await getGoogleUserInfo(accessToken);
@@ -433,10 +469,11 @@ export function useVerifyGoogleToken() {
         }
       }
       if (isRequest) {
-        const userInfo = await googleSign();
+        const userInfo = await googleSign(managerAddress);
         accessToken = userInfo?.accessToken;
         idToken = userInfo?.idToken;
         nonce = userInfo?.nonce;
+        timestamp = userInfo?.timestamp;
         if (userInfo.user.id !== params.id) throw new Error('Account does not match your guardian');
       }
       if (!idToken) {
@@ -454,11 +491,13 @@ export function useVerifyGoogleToken() {
         salt: params.salt ? params.salt : randomId(),
         kid: parseKidFromJWTToken(idToken),
         nonce,
+        timestamp: timestamp ?? 0,
+        managerAddress,
       });
       return {
         ...rst,
         accessToken,
-      };
+      } as any;
     },
     [googleSign, verifyZKLogin],
   );
@@ -472,12 +511,15 @@ export function useVerifyAppleToken() {
       let accessToken = params.accessToken;
       let idToken = params.idToken;
       let nonce = params.nonce;
+      let timestamp = params.timestamp;
+      const managerAddress = params.operationDetails ? JSON.parse(params.operationDetails).manager : '';
       const { isExpired: tokenIsExpired } = parseAppleIdentityToken(accessToken) || {};
       if (!accessToken || tokenIsExpired) {
-        const info = await appleSign();
+        const info = await appleSign(managerAddress);
         accessToken = info.identityToken || undefined;
         idToken = info.idToken;
         nonce = info.nonce;
+        timestamp = info.timestamp;
       }
       const { userId } = parseAppleIdentityToken(accessToken) || {};
       if (userId !== params.id) throw new Error('Account does not match your guardian');
@@ -497,12 +539,14 @@ export function useVerifyAppleToken() {
         salt: params.salt ? params.salt : randomId(),
         kid: parseKidFromJWTToken(idToken),
         nonce,
+        timestamp: timestamp ?? 0,
+        managerAddress,
       });
 
       return {
         ...rst,
         accessToken,
-      };
+      } as any;
     },
     [appleSign, verifyZKLogin],
   );
@@ -651,9 +695,10 @@ export function useVerifierAuth() {
       authenticationInfo,
     }: TVerifierAuthParams) => {
       return verifyToken(guardianItem.guardianType, {
-        accessToken: authenticationInfo?.[guardianItem.guardianAccount],
-        idToken: authenticationInfo?.idToken,
-        nonce: authenticationInfo?.nonce,
+        accessToken: authenticationInfo?.[guardianItem.guardianAccount] as string,
+        idToken: authenticationInfo?.idToken as string,
+        nonce: authenticationInfo?.nonce as string,
+        timestamp: authenticationInfo?.timestamp as number,
         salt: guardianItem?.salt,
         id: guardianItem.guardianAccount,
         verifierId: guardianItem.verifier?.id,

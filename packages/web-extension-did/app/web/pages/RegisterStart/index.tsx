@@ -398,7 +398,7 @@ export default function RegisterStart() {
         onInputFinish?.({
           guardianAccount: userId, // account
           loginType: LoginType[type],
-          authenticationInfo: { [userId]: data?.access_token },
+          authenticationInfo: { [userId]: data?.access_token, nonce: data?.nonce, idToken: data?.id_token },
           createType: isHasAccount.current ? 'login' : 'register',
         });
       } catch (error) {

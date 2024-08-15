@@ -6,6 +6,8 @@ import { useLoading } from 'store/Provider/hooks';
 import { reCAPTCHAAction, socialLoginAction } from 'utils/lib/serviceWorkerAction';
 import { ISocialLogin } from '@portkey-wallet/types/types-ca/wallet';
 import { sleep } from '@portkey-wallet/utils';
+import { zkloginGuardianType } from 'constants/guardians';
+import { VerifyTypeEnum } from 'types/wallet';
 
 const usePortkeyUIConfig = () => {
   const currentNetwork = useCurrentNetworkInfo();
@@ -23,7 +25,8 @@ const usePortkeyUIConfig = () => {
     async (v: ISocialLogin) => {
       await sleep(10);
       setLoading(true);
-      const result: any = await socialLoginAction(v, currentNetwork.networkType);
+      const _verifyType = zkloginGuardianType.includes(v) ? VerifyTypeEnum.zklogin : undefined;
+      const result: any = await socialLoginAction(v, currentNetwork.networkType, _verifyType);
 
       if (result.error) {
         setLoading(false);

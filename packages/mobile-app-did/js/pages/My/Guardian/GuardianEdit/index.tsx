@@ -48,7 +48,7 @@ import {
 import GuardianAccountItem from '../components/GuardianAccountItem';
 import { request } from '@portkey-wallet/api/api-did';
 import verificationApiConfig from '@portkey-wallet/api/api-did/verification';
-import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useOriginChainId, useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { checkIsLastLoginAccount } from '@portkey-wallet/utils/guardian';
 import { ChainId } from '@portkey-wallet/types';
@@ -75,6 +75,7 @@ type thirdPartyInfoType = {
   accessToken: string;
   idToken?: string;
   nonce?: string;
+  timestamp?: number;
 };
 
 type TypeItemType = typeof LOGIN_TYPE_LIST[number];
@@ -104,6 +105,7 @@ const GuardianEdit: React.FC = () => {
   const { telegramSign } = useTelegramAuthentication();
   const { twitterSign } = useTwitterAuthentication();
   const { facebookSign } = useFacebookAuthentication();
+  const verifyManagerAddress = useVerifyManagerAddress();
 
   const verifyToken = useVerifyToken();
   const [firstName, setFirstName] = useState<string>();
@@ -222,6 +224,7 @@ const GuardianEdit: React.FC = () => {
         id: thirdPartyInfo.id,
         idToken: thirdPartyInfo.idToken,
         nonce: thirdPartyInfo.nonce,
+        timestamp: thirdPartyInfo.timestamp,
         verifierId: verifierInfo.id,
         chainId: originChainId,
         operationType: OperationTypeEnum.addGuardian,
@@ -469,12 +472,13 @@ const GuardianEdit: React.FC = () => {
     Loading.show();
     let userInfo: TAppleAuthentication;
     try {
-      userInfo = await appleSign();
+      userInfo = await appleSign(verifyManagerAddress ?? '');
       thirdPartyInfoRef.current = {
         id: userInfo.user.id,
         accessToken: userInfo.identityToken || '',
         idToken: userInfo.idToken,
         nonce: userInfo.nonce,
+        timestamp: userInfo.timestamp,
       };
     } catch (error) {
       CommonToast.failError(error);
@@ -512,12 +516,12 @@ const GuardianEdit: React.FC = () => {
       }
     }
     Loading.hide();
-  }, [appleSign]);
+  }, [appleSign, verifyManagerAddress]);
 
   const onGoogleSign = useCallback(async () => {
     Loading.show();
     try {
-      const userInfo = await googleSign();
+      const userInfo = await googleSign(verifyManagerAddress ?? '');
       setAccount(userInfo.user.email);
       setFirstName(userInfo.user.givenName || undefined);
       thirdPartyInfoRef.current = {
@@ -525,12 +529,13 @@ const GuardianEdit: React.FC = () => {
         accessToken: userInfo.accessToken,
         idToken: userInfo.idToken,
         nonce: userInfo.nonce,
+        timestamp: userInfo.timestamp,
       };
     } catch (error) {
       CommonToast.failError(error);
     }
     Loading.hide();
-  }, [googleSign]);
+  }, [googleSign, verifyManagerAddress]);
 
   const onTelegramSign = useCallback(async () => {
     Loading.show();

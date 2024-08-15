@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { verification } from 'utils/api';
 import PhoneInput from '../components/PhoneInput';
 import { EmailError } from '@portkey-wallet/utils/check';
-import { guardianTypeList, phoneInit, socialInit } from 'constants/guardians';
+import { guardianTypeList, phoneInit, socialInit, zkloginGuardianType } from 'constants/guardians';
 import { IGuardianType, IPhoneInput, ISocialInput } from 'types/guardians';
 import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
 import {
@@ -34,7 +34,7 @@ import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { request } from '@portkey-wallet/api/api-did';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
-import { OperationTypeEnum, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum, VerifyStatus, zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
 import verificationApiConfig from '@portkey-wallet/api/api-did/verification';
 import GuardianAddPrompt from './Prompt';
 import GuardianAddPopup from './Popup';
@@ -57,6 +57,7 @@ import {
 import BaseGuardianTypeIcon from 'components/BaseGuardianTypeIcon';
 import { useLoginModeList } from 'hooks/loginModal';
 import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
+import { VerifyTypeEnum } from 'types/wallet';
 import './index.less';
 
 export default function AddGuardian() {
@@ -220,22 +221,38 @@ export default function AddGuardian() {
     }
   });
 
-  const guardianTypeChange = useCallback((value: LoginType) => {
-    setVerifierExist(false);
-    setGuardianType(value);
-    setEmailVal('');
-    setPhoneValue(phoneInit);
-    setSocialVale(socialInit);
-    setAccountErr('');
-  }, []);
-
   const verifierChange = useCallback(
     (value: string) => {
-      setVerifierVal(value);
-      setVerifierName(verifierMap?.[value]?.name);
+      if (!value) {
+        setVerifierVal(undefined);
+        setVerifierName(undefined);
+      } else {
+        setVerifierVal(value);
+        setVerifierName(verifierStatusMap?.[value]?.name);
+      }
       setVerifierExist(false);
     },
-    [verifierMap],
+    [verifierStatusMap],
+  );
+
+  const guardianTypeChange = useCallback(
+    (value: LoginType) => {
+      setVerifierExist(false);
+      setGuardianType(value);
+      setEmailVal('');
+      setPhoneValue(phoneInit);
+      setSocialVale(socialInit);
+      setAccountErr('');
+
+      if (zkloginGuardianType.includes(LoginType[value] as any)) {
+        verifierChange(zkLoginVerifierItem.name);
+      } else {
+        if (verifierVal === zkLoginVerifierItem.name) {
+          verifierChange('');
+        }
+      }
+    },
+    [verifierChange, verifierVal],
   );
 
   const handleEmailInputChange = useCallback((v: string) => {
@@ -252,7 +269,8 @@ export default function AddGuardian() {
     async (v: ISocialLogin) => {
       try {
         setLoading(true);
-        const result = await socialLoginAction(v, currentNetwork);
+        const _verifyType = zkloginGuardianType.includes(v) ? VerifyTypeEnum.zklogin : undefined;
+        const result = await socialLoginAction(v, currentNetwork, _verifyType);
         const data = result.data;
         if (!data) throw 'auth error';
         if (v === 'Google') {
@@ -697,7 +715,7 @@ export default function AddGuardian() {
           <div className="input-item">
             <p className="label">{t('Verifier')}</p>
             <CustomSelect
-              className="select"
+              className={clsx('select', verifierVal === zkLoginVerifierItem.name && 'select-zklogin-verify')}
               value={verifierVal}
               placeholder={t('Select guardian verifiers')}
               onChange={verifierChange}

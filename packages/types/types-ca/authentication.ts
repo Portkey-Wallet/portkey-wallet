@@ -5,6 +5,7 @@ export type VerifyTokenParams = {
   accessToken?: string;
   idToken?: string;
   nonce?: string;
+  timestamp?: number;
   salt?: string;
   verifierId?: string;
   chainId: ChainId;
@@ -29,6 +30,8 @@ export type VerifyZKLoginParams = {
   salt: string;
   kid: string;
   nonce?: string;
+  timestamp: number;
+  managerAddress: string;
 };
 
 export type ReportUnsetLoginGuardianProps = {

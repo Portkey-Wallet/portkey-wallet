@@ -6,6 +6,7 @@ import { IconType } from 'types/icon';
 import { zkloginGuardianType } from 'constants/guardians';
 import { useMemo } from 'react';
 import './index.less';
+import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 
 interface VerifierPairProps {
   guardianType?: LoginType;
@@ -13,6 +14,7 @@ interface VerifierPairProps {
   verifierName?: string;
   wrapperClassName?: string;
   size?: number;
+  guardian?: UserGuardianItem;
 }
 
 export const GuardianTypeIcon: Record<LoginType, IconType> = {
@@ -31,10 +33,15 @@ export default function VerifierPair({
   verifierSrc,
   verifierName,
   wrapperClassName,
+  guardian,
 }: VerifierPairProps) {
+  const isZK = useMemo(
+    () => guardian?.verifiedByZk || guardian?.manuallySupportForZk,
+    [guardian?.manuallySupportForZk, guardian?.verifiedByZk],
+  );
   const isShowZkLoginTag = useMemo(() => {
-    return zkloginGuardianType.includes(LoginType[guardianType] as any) && verifierName !== 'zkLogin';
-  }, [guardianType, verifierName]);
+    return zkloginGuardianType.includes(LoginType[guardianType] as any) && !isZK;
+  }, [guardianType, isZK]);
 
   return (
     <div className={clsx('flex-row-center icon-pair', wrapperClassName)}>

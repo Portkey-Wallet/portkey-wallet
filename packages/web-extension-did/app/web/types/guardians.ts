@@ -1,5 +1,6 @@
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { IconType } from './icon';
+import { ZKLoginInfoInContract } from '@portkey-wallet/types/verifier';
 
 export enum GuardianMth {
   addGuardian = 'AddGuardian',
@@ -32,6 +33,7 @@ export interface GuardianItem {
   type: LoginType;
   identifierHash?: string;
   verificationInfo: verificationInfo;
+  zkLoginInfo?: ZKLoginInfoInContract;
 }
 
 export interface IPhoneInput {

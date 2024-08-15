@@ -1,6 +1,7 @@
 import { UserGuardianItem, UserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/type';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { GuardianItem } from 'types/guardians';
+import { formatVerifyInfo } from './formatVerifyInfo';
 
 export const formatEditGuardianValue = ({
   userGuardianStatus,
@@ -30,16 +31,8 @@ export const formatEditGuardianValue = ({
   };
   const guardiansApproved: GuardianItem[] = [];
   Object.values(userGuardianStatus ?? {})?.forEach((item: UserGuardianStatus) => {
-    if (item.signature) {
-      guardiansApproved.push({
-        type: item.guardianType,
-        identifierHash: item.identifierHash,
-        verificationInfo: {
-          id: item.verifier?.id as string,
-          signature: Object.values(Buffer.from(item.signature as any, 'hex')),
-          verificationDoc: item.verificationDoc as string,
-        },
-      });
+    if (item.signature || item.zkLoginInfo) {
+      guardiansApproved.push(formatVerifyInfo(item));
     }
   });
   return { guardianToUpdatePre, guardianToUpdateNew, guardiansApproved };

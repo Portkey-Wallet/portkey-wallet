@@ -114,7 +114,7 @@ export function useVerifyGoogleToken() {
         kid: parseKidFromJWTToken(idToken),
         nonce,
       });
-      return rst;
+      return rst as any;
     },
     [currentNetwork, verifyZKLogin],
   );
@@ -154,7 +154,7 @@ export function useVerifyAppleToken() {
         kid: parseKidFromJWTToken(idToken),
         nonce,
       });
-      return rst;
+      return rst as any;
     },
     [currentNetwork, verifyZKLogin],
   );

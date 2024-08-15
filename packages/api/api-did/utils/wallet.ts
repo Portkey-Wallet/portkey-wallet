@@ -11,8 +11,8 @@ interface RegisterDIDWalletParams extends IContext {
   manager: string;
   extraData: string;
   verifierId: string;
-  verificationDoc: string;
-  signature: string;
+  verificationDoc?: string;
+  signature?: string;
   chainId: string;
 }
 

@@ -102,7 +102,7 @@ export interface VerifierInfo {
   verifierId: string;
   verificationDoc?: string;
   signature?: string;
-  zkLoginInfo: ZKLoginInfo;
+  zkLoginInfo?: ZKLoginInfo;
 }
 
 export interface AuthenticationInfo {

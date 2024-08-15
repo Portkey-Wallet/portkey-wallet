@@ -365,6 +365,8 @@ export default function RegisterStart() {
   const onSocialFinish: SocialLoginFinishHandler = useCallback(
     async ({ type, data }) => {
       try {
+        console.log('aaaa type', type);
+        console.log('aaaa data', data);
         if (!data) throw 'Action error';
         setLoading(true);
         let userId = '';
@@ -398,7 +400,7 @@ export default function RegisterStart() {
         onInputFinish?.({
           guardianAccount: userId, // account
           loginType: LoginType[type],
-          authenticationInfo: { [userId]: data?.access_token },
+          authenticationInfo: { [userId]: data?.access_token, nonce: data?.nonce, idToken: data?.id_token },
           createType: isHasAccount.current ? 'login' : 'register',
         });
       } catch (error) {

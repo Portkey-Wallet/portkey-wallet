@@ -9,6 +9,9 @@ import { getPortkeyFinanceUrl } from 'utils';
 import { getWalletState } from './SWGetReduxStore';
 import { apis } from 'utils/BrowserApis';
 import singleMessage from 'utils/singleMessage';
+import { VerifyTypeEnum } from 'types/wallet';
+import { zkloginGuardianType } from 'constants/guardians';
+import AElf from 'aelf-sdk';
 
 export const timeout = async (timer = 2000) => {
   await sleep(timer);
@@ -52,9 +55,22 @@ export const setPinAction = (pin: string) => InternalMessage.payload(PortkeyMess
 const twitterAuthPath = '/api/app/twitterAuth/receive';
 const facebookAuthPath = '/api/app/facebookAuth/receive';
 
-export const socialLoginAction = async (type: ISocialLogin, network: NetworkType): Promise<SendResponseParams> => {
+export const socialLoginAction = async (
+  type: ISocialLogin,
+  network: NetworkType,
+  verifyType?: VerifyTypeEnum,
+): Promise<SendResponseParams> => {
   const { JOIN_AUTH_URL, JOIN_TELEGRAM_URL, OPEN_LOGIN_URL, domain } = getPortkeyFinanceUrl(network);
   let externalLink = `${JOIN_AUTH_URL}/${network}/${type}?version=v2`;
+
+  let nonce = undefined;
+  if (verifyType === VerifyTypeEnum.zklogin) {
+    if (zkloginGuardianType.includes(type)) {
+      nonce = AElf.utils.sha256(Date.now().toString()); // todo_wade: generate nonce
+      externalLink = `${OPEN_LOGIN_URL}/social-login/${type}?nonce=${nonce}&socialType=${verifyType}`;
+      // externalLink = `http://localhost:3000/social-login/${type}?nonce=a5123a0e9e2881a5db2c85f690d5b1d6e01907baed9423caee79a21823cafb66&socialType=${verifyType}`;
+    }
+  }
   if (type === 'Telegram') {
     externalLink = JOIN_TELEGRAM_URL;
   } else if (type === 'Facebook' || type === 'Twitter') {
@@ -66,6 +82,7 @@ export const socialLoginAction = async (type: ISocialLogin, network: NetworkType
     externalLink,
   }).send();
   if (result.error) throw result.message || 'auth error';
+  result.data = Object.assign(result.data || {}, { nonce });
   return result;
 };
 

@@ -97,6 +97,8 @@ const useCheckVerifier = () => {
 
         const rst = await verifyToken(loginAccount.loginType, {
           accessToken: loginAccount.authenticationInfo?.[loginAccount.guardianAccount || ''],
+          idToken: loginAccount?.authenticationInfo?.idToken,
+          nonce: loginAccount?.authenticationInfo?.nonce, // todo_wade: check salt param
           id: loginAccount.guardianAccount,
           verifierId: verifierItem.id,
           chainId: originChainId,
@@ -105,8 +107,9 @@ const useCheckVerifier = () => {
         dispatch(
           setRegisterVerifierAction({
             verifierId: verifierItem.id as string,
-            verificationDoc: rst.verificationDoc,
-            signature: rst.signature,
+            verificationDoc: rst.verificationDoc, // todo_wade: fix verificationDoc
+            signature: rst.signature, // todo_wade: fix verificationDoc
+            zkLoginInfo: rst.zkLoginInfo,
           }),
         );
         const res = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();

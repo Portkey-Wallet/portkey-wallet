@@ -12,9 +12,9 @@ import {
   setUserGuardianItemStatus,
 } from '@portkey-wallet/store/store-ca/guardians/actions';
 import useGuardianList from 'hooks/useGuardianList';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { ISocialLogin, LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
-import { OperationTypeEnum, VerifierItem } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum, VerifierItem, zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
 import BaseVerifierIcon from 'components/BaseVerifierIcon';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import GuardianEditPrompt from './Prompt';
@@ -33,6 +33,7 @@ import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
 import { FromPageEnum, TGuardianApprovalLocationState, TVerifierAccountLocationState } from 'types/router';
 import BaseGuardianTypeIcon from 'components/BaseGuardianTypeIcon';
+import { zkloginGuardianType } from 'constants/guardians';
 import './index.less';
 
 export default function GuardiansEdit() {
@@ -65,7 +66,13 @@ export default function GuardiansEdit() {
   const selectOptions = useMemo(
     () =>
       Object.values(verifierStatusMap ?? {})?.map((item: VerifierStatusItem) => {
-        const disabled = item.isUsed && item.id !== preGuardian?.verifier?.id;
+        let disabled = false;
+        if (zkloginGuardianType.includes(LoginType[preGuardian?.guardianType || 0] as ISocialLogin)) {
+          const abled = item.id === preGuardian?.verifier?.id || item.name === zkLoginVerifierItem.name;
+          disabled = !abled;
+        } else {
+          disabled = (!!item.isUsed && item.id !== preGuardian?.verifier?.id) || item.name === zkLoginVerifierItem.name;
+        }
         return {
           value: item.id,
           children: (
@@ -77,7 +84,7 @@ export default function GuardiansEdit() {
           disabled,
         };
       }),
-    [preGuardian?.verifier?.id, verifierStatusMap],
+    [preGuardian?.guardianType, preGuardian?.verifier?.id, verifierStatusMap],
   );
   const originChainId = useOriginChainId();
   const { loginAccount } = useLoginInfo();
@@ -354,7 +361,7 @@ export default function GuardiansEdit() {
           <div className="input-item">
             <p className="label">{t('Verifier')}</p>
             <CustomSelect
-              className="select"
+              className={clsx('select', preGuardian?.verifiedByZk && 'select-zklogin-verify')}
               value={selectVal}
               onChange={handleChange}
               items={selectOptions}
@@ -379,6 +386,7 @@ export default function GuardiansEdit() {
       guardiansChangeHandler,
       handleChange,
       opGuardian,
+      preGuardian?.verifiedByZk,
       selectOptions,
       selectVal,
       t,

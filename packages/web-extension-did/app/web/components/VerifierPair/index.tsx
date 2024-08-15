@@ -3,6 +3,8 @@ import clsx from 'clsx';
 import BaseVerifierIcon from 'components/BaseVerifierIcon';
 import CustomSvg from 'components/CustomSvg';
 import { IconType } from 'types/icon';
+import { zkloginGuardianType } from 'constants/guardians';
+import { useMemo } from 'react';
 import './index.less';
 
 interface VerifierPairProps {
@@ -30,6 +32,10 @@ export default function VerifierPair({
   verifierName,
   wrapperClassName,
 }: VerifierPairProps) {
+  const isShowZkLoginTag = useMemo(() => {
+    return zkloginGuardianType.includes(LoginType[guardianType] as any) && verifierName !== 'zkLogin';
+  }, [guardianType, verifierName]);
+
   return (
     <div className={clsx('flex-row-center icon-pair', wrapperClassName)}>
       <div className="guardian-icon flex-center" style={{ width: size, height: size, fontSize: size }}>
@@ -38,6 +44,7 @@ export default function VerifierPair({
       <div className="verifier-icon-border">
         <BaseVerifierIcon src={verifierSrc} fallback={verifierName?.[0]} />
       </div>
+      {isShowZkLoginTag && <div className="zklogin-icon">{`zkLogin`}</div>}
     </div>
   );
 }

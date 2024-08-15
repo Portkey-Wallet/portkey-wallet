@@ -500,7 +500,7 @@ export function useVerifyGoogleToken() {
       return {
         ...rst,
         accessToken,
-      };
+      } as any;
     },
     [googleSign, verifyZKLogin],
   );
@@ -549,7 +549,7 @@ export function useVerifyAppleToken() {
       return {
         ...rst,
         accessToken,
-      };
+      } as any;
     },
     [appleSign, verifyZKLogin],
   );

@@ -72,9 +72,6 @@ export function useGoogleAuthentication() {
         nonce,
       },
     });
-    console.log('aaaa managerAddress: ', managerAddress);
-    console.log('aaaa nonce: ', nonce);
-    console.log('aaaa timestamp: ', timestamp);
     await sleep(2000);
     if (AppState.currentState !== 'active') throw { message: '' };
     const discovery = {
@@ -698,10 +695,10 @@ export function useVerifierAuth() {
       authenticationInfo,
     }: TVerifierAuthParams) => {
       return verifyToken(guardianItem.guardianType, {
-        accessToken: authenticationInfo?.[guardianItem.guardianAccount],
-        idToken: authenticationInfo?.idToken,
-        nonce: authenticationInfo?.nonce,
-        timestamp: authenticationInfo?.timestamp as unknown as number,
+        accessToken: authenticationInfo?.[guardianItem.guardianAccount] as string,
+        idToken: authenticationInfo?.idToken as string,
+        nonce: authenticationInfo?.nonce as string,
+        timestamp: authenticationInfo?.timestamp as number,
         salt: guardianItem?.salt,
         id: guardianItem.guardianAccount,
         verifierId: guardianItem.verifier?.id,

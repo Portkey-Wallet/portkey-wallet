@@ -403,10 +403,10 @@ export function useGoSelectVerifier(isLogin?: boolean) {
 
       try {
         const rst = await verifyToken(loginType, {
-          accessToken: authenticationInfo?.[loginAccount || ''],
-          idToken: authenticationInfo?.idToken,
-          nonce: authenticationInfo?.nonce,
-          timestamp: authenticationInfo?.timestamp as unknown as number,
+          accessToken: authenticationInfo?.[loginAccount || ''] as string,
+          idToken: authenticationInfo?.idToken as string,
+          nonce: authenticationInfo?.nonce as string,
+          timestamp: authenticationInfo?.timestamp as number,
           id: loginAccount,
           verifierId: selectedVerifier?.id,
           chainId,

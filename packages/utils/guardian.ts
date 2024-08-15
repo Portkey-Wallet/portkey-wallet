@@ -2,7 +2,13 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { GuardiansInfo } from '@portkey-wallet/types/types-ca/guardian';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { VerifierItem, VerifierInfo, ZKLoginInfo, ZKLoginInfoInContract } from '@portkey-wallet/types/verifier';
+import {
+  VerifierItem,
+  VerifierInfo,
+  ZKLoginInfo,
+  ZKLoginInfoInContract,
+  ZKLoginInfoNoncePayload,
+} from '@portkey-wallet/types/verifier';
 import BigNumber from 'bignumber.js';
 import { handleErrorMessage } from '.';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
@@ -31,9 +37,9 @@ export function handleZKLoginInfo(zkLoginInfo?: ZKLoginInfo) {
     } = zkLoginInfo;
     const { kid, issuer } = parseJWTToken(jwt);
     const zkProofInfo = parseZKProof(zkProof);
-    const noncePayload = {
-      addManager: {
-        timestamp,
+    const noncePayload: ZKLoginInfoNoncePayload = {
+      addManagerAddress: {
+        timestamp: { seconds: timestamp },
         managerAddress,
       },
     };

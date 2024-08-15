@@ -60,6 +60,7 @@ export function useLoginModeMap(
           [userInfo.user.id]: userInfo.identityToken as string,
           idToken: userInfo.identityToken,
           nonce: userInfo.nonce,
+          timestamp: userInfo.timestamp,
         },
       });
     } catch (error) {
@@ -79,6 +80,7 @@ export function useLoginModeMap(
           [userInfo.user.id]: userInfo.accessToken,
           idToken: userInfo.idToken,
           nonce: userInfo.nonce,
+          timestamp: userInfo.timestamp,
         },
       });
     } catch (error) {

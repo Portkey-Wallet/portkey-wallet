@@ -38,6 +38,41 @@ type GoogleUserInfo = {
   lastName: string;
 };
 
+export async function getGoogleAuthToken({
+  authCode,
+  clientId,
+  clientSecret,
+  redirectUri,
+}: {
+  authCode: string;
+  clientId: string;
+  clientSecret: string;
+  redirectUri: string;
+}): Promise<{ id_token: string; access_token: string }> {
+  const tokenUrl = 'https://accounts.google.com/o/oauth2/token';
+  const grantType = 'authorization_code';
+
+  const data = {
+    code: authCode,
+    client_id: clientId,
+    client_secret: clientSecret,
+    redirect_uri: redirectUri,
+    grant_type: grantType,
+  };
+
+  const response = await customFetch(tokenUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  return {
+    id_token: response.id_token,
+    access_token: response.access_token,
+  };
+}
+
 const TmpUserInfo: { [key: string]: GoogleUserInfo } = {};
 
 export async function getGoogleUserInfo(accessToken = ''): Promise<GoogleUserInfo> {
@@ -218,18 +253,26 @@ export function parseJWTToken(token: string) {
 
   const spilt2 = Buffer.from(idTokenArr[1], 'base64').toString('utf8');
   const { iss } = JSON.parse(spilt2) || {};
-  return { kid, issuer: iss };
+  let issuer = iss;
+  const issuerPrefix = 'https://';
+  const googleIssuerWithoutPrefix = 'accounts.google.com';
+  if (issuer === googleIssuerWithoutPrefix) {
+    // todo_wade: remove this
+    // on android, the issuer is not prefixed with https://. so we add it here
+    issuer = `${issuerPrefix}${googleIssuerWithoutPrefix}`;
+  }
+  return { kid, issuer };
 }
 
 export function parseZKProof(zkProof: string) {
   const { pi_a, pi_b, pi_c } = JSON.parse(zkProof);
-  let zkProofPiB_1 = '';
-  let zkProofPiB_2 = '';
-  let zkProofPiB_3 = '';
+  let zkProofPiB1 = '';
+  let zkProofPiB2 = '';
+  let zkProofPiB3 = '';
   if (Array.isArray(pi_b) && pi_b.length) {
-    zkProofPiB_1 = pi_b[0];
-    zkProofPiB_2 = pi_b[1];
-    zkProofPiB_3 = pi_b[2];
+    zkProofPiB1 = pi_b[0];
+    zkProofPiB2 = pi_b[1];
+    zkProofPiB3 = pi_b[2];
   }
-  return { zkProofPiA: pi_a, zkProofPiB_1, zkProofPiB_2, zkProofPiB_3, zkProofPiC: pi_c } as ZKProofInfo;
+  return { zkProofPiA: pi_a, zkProofPiB1, zkProofPiB2, zkProofPiB3, zkProofPiC: pi_c } as ZKProofInfo;
 }

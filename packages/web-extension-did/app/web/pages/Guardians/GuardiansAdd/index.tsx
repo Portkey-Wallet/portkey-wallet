@@ -9,7 +9,7 @@ import CustomSvg from 'components/CustomSvg';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useGuardiansInfo, useLoading, useWalletInfo } from 'store/Provider/hooks';
 import { EmailReg } from '@portkey-wallet/utils/reg';
-import { ISocialLogin, LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { ISocialLogin, LoginType, isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
 import CustomSelect from 'pages/components/CustomSelect';
 import useGuardianList from 'hooks/useGuardianList';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
@@ -151,7 +151,7 @@ export default function AddGuardian() {
   const verifierOptions = useMemo(
     () =>
       Object.values(verifierStatusMap ?? {})?.map((item) => ({
-        value: item.id,
+        value: item.id || item.name,
         children: (
           <div className={clsx(['flex', 'select-option', item.isUsed && 'no-use'])}>
             <BaseVerifierIcon fallback={item.name[0]} src={item.imageUrl} />
@@ -214,7 +214,7 @@ export default function AddGuardian() {
   useEffectOnce(() => {
     if (locationParams?.previousPage && opGuardian) {
       setGuardianType(opGuardian.guardianType);
-      if (zkloginGuardianType.includes(LoginType[opGuardian.guardianType] as ISocialLogin)) {
+      if (isZKLoginSupported(opGuardian.guardianType)) {
         setVerifierVal(zkLoginVerifierItem.name);
         setVerifierName(zkLoginVerifierItem.name);
       } else {
@@ -264,7 +264,7 @@ export default function AddGuardian() {
       setZKAuth({});
       setAccountErr('');
 
-      if (zkloginGuardianType.includes(LoginType[value] as ISocialLogin)) {
+      if (isZKLoginSupported(value)) {
         verifierChange(zkLoginVerifierItem.name);
       } else {
         if (verifierVal === zkLoginVerifierItem.name) {
@@ -524,7 +524,7 @@ export default function AddGuardian() {
           loginType: walletInfo.managerInfo?.type || LoginType.Email,
         }),
       );
-      const isUseZK = guardianType && zkAuth && zkloginGuardianType.includes(LoginType[guardianType] as ISocialLogin);
+      const isUseZK = guardianType && zkAuth && isZKLoginSupported(guardianType);
       const _verifier = isUseZK ? defaultSelectVerify : selectVerifierItem;
       const newGuardian: StoreUserGuardianItem = {
         isLoginAccount: false,
@@ -694,7 +694,7 @@ export default function AddGuardian() {
       return;
     }
 
-    const isUseZK = zkloginGuardianType.includes(LoginType[guardianType] as ISocialLogin);
+    const isUseZK = isZKLoginSupported(guardianType);
     if (!isUseZK) {
       // 3、check verifier
       if (!selectVerifierItem) return singleMessage.error('Can not get the current verifier message');

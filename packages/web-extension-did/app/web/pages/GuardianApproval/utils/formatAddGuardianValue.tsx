@@ -1,7 +1,6 @@
 import { UserGuardianItem, UserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/type';
-import { ISocialLogin, LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
 import { handleZKLoginInfo } from '@portkey-wallet/utils/guardian';
-import { zkloginGuardianType } from 'constants/guardians';
 import { GuardianItem } from 'types/guardians';
 import { formatVerifyInfo } from './formatVerifyInfo';
 
@@ -18,7 +17,7 @@ export const formatAddGuardianValue = ({
   const guardiansApproved: GuardianItem[] = [];
   Object.values(userGuardianStatus ?? {})?.forEach((item: UserGuardianStatus) => {
     if (item.key === opGuardian?.key) {
-      if (zkloginGuardianType.includes(LoginType[opGuardian.guardianType] as ISocialLogin)) {
+      if (isZKLoginSupported(opGuardian.guardianType)) {
         guardianToAdd = {
           type: item.guardianType,
           identifierHash: item.zkLoginInfo?.identifierHash,

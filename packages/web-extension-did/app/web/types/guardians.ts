@@ -34,6 +34,7 @@ export interface GuardianItem {
   identifierHash?: string;
   verificationInfo: verificationInfo;
   zkLoginInfo?: ZKLoginInfoInContract;
+  updateSupportZk?: boolean;
 }
 
 export interface IPhoneInput {

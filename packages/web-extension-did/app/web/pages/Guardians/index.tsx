@@ -73,6 +73,7 @@ export default function Guardians() {
                 {item.isLoginAccount && <div className="login-icon">{t('Login Account')}</div>}
                 <div className="flex-start-center">
                   <VerifierPair
+                    guardian={item}
                     guardianType={item.guardianType}
                     verifierSrc={item.verifier?.imageUrl}
                     verifierName={item?.verifier?.name}

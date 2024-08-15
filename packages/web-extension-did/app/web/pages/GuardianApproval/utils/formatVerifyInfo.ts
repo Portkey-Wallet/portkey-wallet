@@ -1,10 +1,9 @@
 import { UserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/type';
-import { ISocialLogin, LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
 import { handleZKLoginInfo } from '@portkey-wallet/utils/guardian';
-import { zkloginGuardianType } from 'constants/guardians';
 
 export const formatVerifyInfo = (item: UserGuardianStatus) => {
-  if (zkloginGuardianType.includes(LoginType[item.guardianType] as ISocialLogin)) {
+  if (isZKLoginSupported(item.guardianType)) {
     return {
       type: item.guardianType,
       identifierHash: item.identifierHash,

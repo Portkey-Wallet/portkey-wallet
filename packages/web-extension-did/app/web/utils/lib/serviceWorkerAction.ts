@@ -11,7 +11,7 @@ import { apis } from 'utils/BrowserApis';
 import singleMessage from 'utils/singleMessage';
 import { VerifyTypeEnum } from 'types/wallet';
 import { zkloginGuardianType } from 'constants/guardians';
-import randomNonce from '@portkey-wallet/utils/nonce';
+import AElf from 'aelf-sdk';
 
 export const timeout = async (timer = 2000) => {
   await sleep(timer);
@@ -66,7 +66,7 @@ export const socialLoginAction = async (
   let nonce = undefined;
   if (verifyType === VerifyTypeEnum.zklogin) {
     if (zkloginGuardianType.includes(type)) {
-      nonce = randomNonce(); // todo_wade: generate nonce
+      nonce = AElf.utils.sha256(Date.now().toString()); // todo_wade: generate nonce
       externalLink = `${OPEN_LOGIN_URL}/social-login/${type}?nonce=${nonce}&socialType=${verifyType}`;
       // externalLink = `http://localhost:3000/social-login/${type}?nonce=a5123a0e9e2881a5db2c85f690d5b1d6e01907baed9423caee79a21823cafb66&socialType=${verifyType}`;
     }

@@ -11,4 +11,5 @@ export enum BlockchainNetworkType {
   Tron = 'TRX',
   Binance = 'BSC',
   Avax = 'AVAXC',
+  Ton = 'TON',
 }

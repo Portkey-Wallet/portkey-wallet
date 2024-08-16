@@ -81,7 +81,6 @@ export const socialLoginAction = async (
       }
       zkTimestamp = timestamp;
       externalLink = `${OPEN_LOGIN_URL}/social-login/${type}?nonce=${zkNonce}&socialType=${verifyType}`;
-      // externalLink = `http://localhost:3000/social-login/${type}?nonce=a5123a0e9e2881a5db2c85f690d5b1d6e01907baed9423caee79a21823cafb66&socialType=${verifyType}`;
     }
   }
   if (type === 'Telegram') {

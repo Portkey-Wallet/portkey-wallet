@@ -50,7 +50,11 @@ export default function GuardiansEdit() {
   const guardiansSaveRef = useRef({ verifierMap, userGuardiansList });
   guardiansSaveRef.current = { verifierMap, userGuardiansList };
   const [selectVal, setSelectVal] = useState<string>(
-    opGuardian?.tempToZK ? zkLoginVerifierItem.name : (opGuardian?.verifier?.id as string),
+    opGuardian?.tempToZK
+      ? zkLoginVerifierItem.name
+      : isZK
+      ? zkLoginVerifierItem.name
+      : (opGuardian?.verifier?.id as string),
   );
   const [verifierExist, setVerifierExist] = useState<boolean>(false);
   const { walletInfo } = useCurrentWallet();

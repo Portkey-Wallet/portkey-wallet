@@ -43,7 +43,7 @@ import { OperationTypeEnum, VerifierItem, VerifyStatus } from '@portkey-wallet/t
 import { AssignVerifierLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
 import { getStoreState } from 'store/utils/getStore';
-import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
+import { UserGuardianItem, UserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/type';
 import { verification } from 'utils/api';
 import { setCurrentGuardianAction, setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import singleMessage from 'utils/singleMessage';
@@ -318,7 +318,7 @@ export default function RegisterStart() {
           const userGuardian = _userGuardianStatus[key];
 
           if (guardian && userGuardian) {
-            _userGuardianStatus[key] = { ...userGuardian, ...guardian };
+            _userGuardianStatus[key] = { ...userGuardian, ...guardian } as UserGuardianStatus;
           }
         });
 

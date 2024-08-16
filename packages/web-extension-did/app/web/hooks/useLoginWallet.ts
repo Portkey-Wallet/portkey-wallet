@@ -2,7 +2,13 @@ import { useCallback, useEffect, useRef } from 'react';
 import AElf from 'aelf-sdk';
 import { CreatePendingInfo, AddManagerType, did, OnErrorFunc } from '@portkey/did-ui-react';
 import { LoginResult, RegisterResult } from '@portkey/did';
-import type { AccountType, GuardiansApproved, RegisterStatusResult, RecoverStatusResult } from '@portkey/services';
+import type {
+  AccountType,
+  GuardiansApproved,
+  RegisterStatusResult,
+  RecoverStatusResult,
+  RegisterParams,
+} from '@portkey/services';
 import { ChainId } from '@portkey-wallet/types';
 import { handleErrorMessage, randomId } from '@portkey-wallet/utils';
 import { extraDataEncode } from '@portkey-wallet/utils/device';
@@ -120,7 +126,7 @@ export default function useLoginWallet(props: ILoginWalletProps) {
       const { sessionId } = await did.services.register({
         ...params,
         manager: managerAddress,
-      });
+      } as RegisterParams);
       onCreatePendingRef.current?.({
         sessionId,
         requestId,

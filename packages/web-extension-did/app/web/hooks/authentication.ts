@@ -94,7 +94,13 @@ export function useVerifyGoogleToken() {
         }
       }
       if (isRequest) {
-        const googleInfo = await socialLoginAction('Google', currentNetwork, VerifyTypeEnum.zklogin);
+        const _verifyExtraParams = { managerAddress: managerAddress ?? '' };
+        const googleInfo = await socialLoginAction(
+          'Google',
+          currentNetwork,
+          VerifyTypeEnum.zklogin,
+          _verifyExtraParams,
+        );
         accessToken = googleInfo?.data?.access_token;
         idToken = googleInfo?.data?.id_token;
         nonce = googleInfo?.data?.nonce;
@@ -139,7 +145,8 @@ export function useVerifyAppleToken() {
       const managerAddress = params.operationDetails ? JSON.parse(params.operationDetails).manager : '';
       const { isExpired: tokenIsExpired } = parseAppleIdentityToken(accessToken) || {};
       if (!accessToken || tokenIsExpired) {
-        const info = await socialLoginAction('Apple', currentNetwork, VerifyTypeEnum.zklogin);
+        const _verifyExtraParams = { managerAddress: managerAddress ?? '' };
+        const info = await socialLoginAction('Apple', currentNetwork, VerifyTypeEnum.zklogin, _verifyExtraParams);
         accessToken = info?.data?.access_token || undefined;
         idToken = info?.data?.id_token;
         nonce = info?.data?.nonce;

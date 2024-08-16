@@ -56,4 +56,5 @@ export interface StoreUserGuardianItem extends UserGuardianItem {
     accessToken: string;
     isPrivate?: boolean;
   };
+  tempToZK?: boolean;
 }

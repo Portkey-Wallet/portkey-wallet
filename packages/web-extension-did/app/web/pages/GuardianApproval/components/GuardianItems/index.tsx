@@ -275,6 +275,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
       {item.isLoginAccount && <div className="login-icon">{t('Login Account')}</div>}
       <div className="flex-between-center verifier-item-main">
         <VerifierPair
+          guardian={item}
           guardianType={item.guardianType}
           verifierSrc={item.verifier?.imageUrl}
           verifierName={item?.verifier?.name}

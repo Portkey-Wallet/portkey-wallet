@@ -431,6 +431,7 @@ export default function RegisterStart() {
         <div className="text-content">
           <CustomSvg type="PortKey" />
           <h1>{i18n.t('Welcome to Portkey') as string}</h1>
+          <div className="description">{`Your key to play and earn in Web3`}</div>
         </div>
         <div>
           {type === 'create' && (

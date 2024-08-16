@@ -288,9 +288,11 @@ export function useVerifyToken() {
 
 export function useAuthSocialAccountInfo(type: ISocialLogin) {
   const currentNetwork = useCurrentNetwork();
+  const managerAddress = useVerifyManagerAddress();
   return useCallback(async () => {
     const _verifyType = zkloginGuardianType.includes(type) ? VerifyTypeEnum.zklogin : undefined;
-    const result = await socialLoginAction(type, currentNetwork, _verifyType);
+    const _verifyExtraParams = { managerAddress: managerAddress ?? '' };
+    const result = await socialLoginAction(type, currentNetwork, _verifyType, _verifyExtraParams);
     let identityToken = result.data?.access_token ?? '';
     let userInfo;
     if (type === 'Google') {
@@ -319,5 +321,5 @@ export function useAuthSocialAccountInfo(type: ISocialLogin) {
         id: userInfo?.userId,
       },
     };
-  }, [currentNetwork, type]);
+  }, [currentNetwork, managerAddress, type]);
 }

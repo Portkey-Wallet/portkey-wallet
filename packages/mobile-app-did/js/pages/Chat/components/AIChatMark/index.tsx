@@ -21,7 +21,7 @@ export default memo(function AIChatMark(props: { containerStyle?: StyleProp<View
         styles.container,
       ]}>
       <TextS numberOfLines={1} style={[fonts.mediumFont, FontStyles.neutralDefaultBG, styles.mark]}>
-        AI Chat
+        Beta
       </TextS>
     </View>
   );

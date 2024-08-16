@@ -96,9 +96,10 @@ const useCheckVerifier = () => {
         if (!verifierItem?.id || !verifierItem?.name) return singleMessage.error('Can not get verification');
 
         const rst = await verifyToken(loginAccount.loginType, {
-          accessToken: loginAccount.authenticationInfo?.[loginAccount.guardianAccount || ''],
-          idToken: loginAccount?.authenticationInfo?.idToken,
-          nonce: loginAccount?.authenticationInfo?.nonce, // todo_wade: check salt param
+          accessToken: loginAccount.authenticationInfo?.[loginAccount.guardianAccount || ''] as string,
+          idToken: loginAccount?.authenticationInfo?.idToken as string,
+          nonce: loginAccount?.authenticationInfo?.nonce as string, // todo_wade: check salt param
+          timestamp: loginAccount?.authenticationInfo?.timestamp as number,
           id: loginAccount.guardianAccount,
           verifierId: verifierItem.id,
           chainId: originChainId,

@@ -15,6 +15,8 @@ import { useNavigateState } from 'hooks/router';
 import './index.less';
 import clsx from 'clsx';
 import { useGetFormattedLoginModeList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useLatestRef } from '@portkey-wallet/hooks';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 import { useEntranceConfig } from 'hooks/cms';
 import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
@@ -50,6 +52,8 @@ export default function SocialLogin({
     config,
     VersionDeviceType.Extension,
   );
+  const verifyManagerAddress = useVerifyManagerAddress();
+  const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
   const isLogin = useMemo(() => type === 'Login', [type]);
 
   const renderTitle = useMemo(() => {
@@ -73,7 +77,10 @@ export default function SocialLogin({
         onSocialStart(v);
         setLoading(true);
         const _verifyType = zkloginGuardianType.includes(v) ? VerifyTypeEnum.zklogin : undefined;
-        const result = await socialLoginAction(v, currentNetwork, _verifyType);
+        const _verifyExtraParams = zkloginGuardianType.includes(v)
+          ? { managerAddress: latestVerifyManagerAddress.current ?? '' }
+          : undefined;
+        const result = await socialLoginAction(v, currentNetwork, _verifyType, _verifyExtraParams);
         setLoading(false);
         if (result.error) throw result.message ?? result.Error;
         onFinish?.({
@@ -86,7 +93,7 @@ export default function SocialLogin({
         singleMessage.error(msg);
       }
     },
-    [currentNetwork, onFinish, onSocialStart, setLoading],
+    [currentNetwork, latestVerifyManagerAddress, onFinish, onSocialStart, setLoading],
   );
 
   const allowedLoginGuardianList: LoginGuardianListType[] = useMemo(

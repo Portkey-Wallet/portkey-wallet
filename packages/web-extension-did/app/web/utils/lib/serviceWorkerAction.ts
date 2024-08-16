@@ -11,6 +11,7 @@ import { apis } from 'utils/BrowserApis';
 import singleMessage from 'utils/singleMessage';
 import { VerifyTypeEnum } from 'types/wallet';
 import { zkloginGuardianType } from 'constants/guardians';
+import { generateNonceAndTimestamp } from '@portkey-wallet/utils/nonce';
 import AElf from 'aelf-sdk';
 
 export const timeout = async (timer = 2000) => {
@@ -59,15 +60,27 @@ export const socialLoginAction = async (
   type: ISocialLogin,
   network: NetworkType,
   verifyType?: VerifyTypeEnum,
+  verifyExtraParams?: { managerAddress: string },
 ): Promise<SendResponseParams> => {
   const { JOIN_AUTH_URL, JOIN_TELEGRAM_URL, OPEN_LOGIN_URL, domain } = getPortkeyFinanceUrl(network);
   let externalLink = `${JOIN_AUTH_URL}/${network}/${type}?version=v2`;
 
-  let nonce = undefined;
+  let zkNonce = '';
+  let zkTimestamp = 0;
   if (verifyType === VerifyTypeEnum.zklogin) {
+    if (!verifyExtraParams?.managerAddress) {
+      throw 'managerAddress is required';
+    }
     if (zkloginGuardianType.includes(type)) {
-      nonce = AElf.utils.sha256(Date.now().toString()); // todo_wade: generate nonce
-      externalLink = `${OPEN_LOGIN_URL}/social-login/${type}?nonce=${nonce}&socialType=${verifyType}`;
+      const { nonce, timestamp } = generateNonceAndTimestamp(verifyExtraParams?.managerAddress);
+      // nonce = AElf.utils.sha256(Date.now().toString()); // todo_wade: generate nonce
+      if (type === 'Apple') {
+        zkNonce = AElf.utils.sha256(nonce);
+      } else {
+        zkNonce = nonce;
+      }
+      zkTimestamp = timestamp;
+      externalLink = `${OPEN_LOGIN_URL}/social-login/${type}?nonce=${zkNonce}&socialType=${verifyType}`;
       // externalLink = `http://localhost:3000/social-login/${type}?nonce=a5123a0e9e2881a5db2c85f690d5b1d6e01907baed9423caee79a21823cafb66&socialType=${verifyType}`;
     }
   }
@@ -82,7 +95,7 @@ export const socialLoginAction = async (
     externalLink,
   }).send();
   if (result.error) throw result.message || 'auth error';
-  result.data = Object.assign(result.data || {}, { nonce });
+  result.data = Object.assign(result.data || {}, { nonce: zkNonce, timestamp: zkTimestamp });
   return result;
 };
 

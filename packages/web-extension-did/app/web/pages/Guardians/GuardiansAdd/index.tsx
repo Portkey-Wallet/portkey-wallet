@@ -13,7 +13,7 @@ import { ISocialLogin, LoginType, isZKLoginSupported } from '@portkey-wallet/typ
 import CustomSelect from 'pages/components/CustomSelect';
 import useGuardianList from 'hooks/useGuardianList';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
-import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWallet, useOriginChainId, useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import BaseVerifierIcon from 'components/BaseVerifierIcon';
 import { StoreUserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { useTranslation } from 'react-i18next';
@@ -66,6 +66,7 @@ export interface IZKAuth {
   access_token?: string;
   id_token?: string;
   nonce?: string;
+  timestamp?: number;
 }
 
 export default function AddGuardian() {
@@ -109,6 +110,7 @@ export default function AddGuardian() {
       ?.map((i) => guardianTypeList.find((v) => LOGIN_TYPE_LABEL_MAP[v.value] === i.type?.value))
       .filter((i) => !!i) as IGuardianType[];
   }, [loginModeList]);
+  const verifyManagerAddress = useVerifyManagerAddress();
 
   const disabled = useMemo(() => {
     let check = true;
@@ -290,7 +292,10 @@ export default function AddGuardian() {
       try {
         setLoading(true);
         const _verifyType = zkloginGuardianType.includes(v) ? VerifyTypeEnum.zklogin : undefined;
-        const result = await socialLoginAction(v, currentNetwork, _verifyType);
+        const _verifyExtraParams = zkloginGuardianType.includes(v)
+          ? { managerAddress: verifyManagerAddress ?? '' }
+          : undefined;
+        const result = await socialLoginAction(v, currentNetwork, _verifyType, _verifyExtraParams);
         const data = result.data;
         if (!data) throw 'auth error';
         if (v === 'Google') {
@@ -359,7 +364,7 @@ export default function AddGuardian() {
       }
       setLoading(false);
     },
-    [currentNetwork, setLoading],
+    [currentNetwork, setLoading, verifyManagerAddress],
   );
 
   const handleClearSocialAccount = useCallback(() => {
@@ -555,6 +560,8 @@ export default function AddGuardian() {
           salt: randomId(),
           kid: parseKidFromJWTToken(zkAuth.id_token!),
           nonce: zkAuth.nonce,
+          timestamp: zkAuth.timestamp ?? 0,
+          managerAddress: verifyManagerAddress ?? '',
         });
         const guardianIdentifier = rst.zkLoginInfo.identifierHash;
         dispatch(
@@ -636,6 +643,7 @@ export default function AddGuardian() {
     verifyZKLogin,
     currentChain?.chainId,
     originChainId,
+    verifyManagerAddress,
     verifierVal,
   ]);
 

@@ -130,9 +130,10 @@ function GuardianItemButton({
     try {
       Loading.show();
       const rst = await verifyToken(guardianItem.guardianType, {
-        accessToken: authenticationInfo?.[guardianItem.guardianAccount],
-        idToken: authenticationInfo?.idToken,
-        nonce: authenticationInfo?.nonce,
+        accessToken: authenticationInfo?.[guardianItem.guardianAccount] as string,
+        idToken: authenticationInfo?.idToken as string,
+        timestamp: authenticationInfo?.timestamp as number,
+        nonce: authenticationInfo?.nonce as string,
         salt: guardianItem.salt,
         id: guardianItem.guardianAccount,
         verifierId: guardianItem.verifier?.id,

@@ -10,7 +10,6 @@ export enum InterfaceActions {
   setViewContract = 'setViewContract',
   setCAContract = 'setCAContract',
   setTokenContract = 'setTokenContract',
-  updateGoogleAuthNonce = 'updateGoogleAuthNonce',
   destroy = 'DESTROY',
 }
 
@@ -25,7 +24,6 @@ export const basicInterfaceActions = {
     basicActions(InterfaceActions.setCAContract, { caContract, chainId }),
   setTokenContract: (tokenContract: { [key: string]: ContractBasic }, chainId: ChainId) =>
     basicActions(InterfaceActions.setTokenContract, { tokenContract, chainId }),
-  updateGoogleAuthNonce: () => basicActions(InterfaceActions.updateGoogleAuthNonce),
   interfaceDestroy: () => basicActions(InterfaceActions.destroy),
 };
 
@@ -36,5 +34,4 @@ export const {
   setViewContract,
   setCAContract,
   setTokenContract,
-  updateGoogleAuthNonce,
 } = basicInterfaceActions;

@@ -67,6 +67,15 @@ export enum OperationTypeEnum {
   revokeAccount = 12,
 }
 
+export interface ZKLoginInfoNoncePayload {
+  addManagerAddress: {
+    timestamp: {
+      seconds: number;
+    };
+    managerAddress: string;
+  };
+}
+
 export interface ZKLoginInfo {
   identifierHash: string;
   poseidonIdentifierHash: string;
@@ -75,6 +84,8 @@ export interface ZKLoginInfo {
   zkProof: string;
   jwt: string;
   nonce: string;
+  timestamp: number;
+  managerAddress: string;
   circuitId: string;
 }
 
@@ -95,6 +106,7 @@ export interface ZKLoginInfoInContract {
   zkProof: string;
   zkProofInfo: ZKProofInfo;
   nonce: string;
+  noncePayload: ZKLoginInfoNoncePayload;
   issuer: string;
 }
 
@@ -106,5 +118,5 @@ export interface VerifierInfo {
 }
 
 export interface AuthenticationInfo {
-  [userId: string]: string;
+  [userId: string]: string | number;
 }

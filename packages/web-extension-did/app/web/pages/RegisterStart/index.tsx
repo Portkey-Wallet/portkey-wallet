@@ -365,8 +365,6 @@ export default function RegisterStart() {
   const onSocialFinish: SocialLoginFinishHandler = useCallback(
     async ({ type, data }) => {
       try {
-        console.log('aaaa type', type);
-        console.log('aaaa data', data);
         if (!data) throw 'Action error';
         setLoading(true);
         let userId = '';

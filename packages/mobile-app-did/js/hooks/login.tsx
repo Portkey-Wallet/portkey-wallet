@@ -7,7 +7,6 @@ import {
   useWallet,
 } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import {
-  createNewTmpWallet,
   createWallet,
   resetCaInfo,
   resetWallet,
@@ -404,9 +403,10 @@ export function useGoSelectVerifier(isLogin?: boolean) {
 
       try {
         const rst = await verifyToken(loginType, {
-          accessToken: authenticationInfo?.[loginAccount || ''],
-          idToken: authenticationInfo?.idToken,
-          nonce: authenticationInfo?.nonce,
+          accessToken: authenticationInfo?.[loginAccount || ''] as string,
+          idToken: authenticationInfo?.idToken as string,
+          nonce: authenticationInfo?.nonce as string,
+          timestamp: authenticationInfo?.timestamp as number,
           id: loginAccount,
           verifierId: selectedVerifier?.id,
           chainId,
@@ -569,14 +569,12 @@ export function useOnLogin(isLogin?: boolean) {
   const getChainInfo = useGetChainInfo();
   const goGuardianApproval = useGoGuardianApproval(isLogin);
   const goSelectVerifier = useGoSelectVerifier(isLogin);
-  const dispatch = useAppDispatch();
 
   return useCallback(
     async (params: LoginParams) => {
       const { loginAccount, loginType = LoginType.Email, authenticationInfo, showLoginAccount } = params;
       try {
         await sleep(500);
-        dispatch(createNewTmpWallet());
         let chainInfo = await getChainInfo(DefaultChainId);
         let verifierServers = await getVerifierServers(chainInfo);
 
@@ -618,15 +616,7 @@ export function useOnLogin(isLogin?: boolean) {
         }
       }
     },
-    [
-      dispatch,
-      getChainInfo,
-      getGuardiansInfo,
-      getRegisterInfo,
-      getVerifierServers,
-      goGuardianApproval,
-      goSelectVerifier,
-    ],
+    [getChainInfo, getGuardiansInfo, getRegisterInfo, getVerifierServers, goGuardianApproval, goSelectVerifier],
   );
 }
 

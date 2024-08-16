@@ -27,7 +27,7 @@ import { VerifyTypeEnum } from 'types/wallet';
 
 export function useVerifyZKLogin() {
   return useCallback(async (params: VerifyZKLoginParams) => {
-    const { verifyToken, jwt, salt, kid, nonce } = params;
+    const { verifyToken, jwt, salt, kid, nonce, timestamp, managerAddress } = params;
     const proofParams = { jwt, salt };
     console.log('useVerifyZKLogin params: ', proofParams);
     const proofResult = await customFetch('https://zklogin-prover-dev.aelf.dev/v1/prove', {
@@ -67,6 +67,8 @@ export function useVerifyZKLogin() {
       jwt: jwt ?? '',
       nonce: nonce ?? '',
       circuitId: proofResult.circuitId,
+      timestamp,
+      managerAddress,
     };
     return { zkLoginInfo };
   }, []);
@@ -80,6 +82,8 @@ export function useVerifyGoogleToken() {
       let accessToken = params.accessToken;
       let idToken = params.idToken;
       let nonce = params.nonce;
+      let timestamp = params.timestamp;
+      const managerAddress = params.operationDetails ? JSON.parse(params.operationDetails).manager : '';
       let isRequest = !accessToken;
       if (accessToken) {
         try {
@@ -94,6 +98,7 @@ export function useVerifyGoogleToken() {
         accessToken = googleInfo?.data?.access_token;
         idToken = googleInfo?.data?.id_token;
         nonce = googleInfo?.data?.nonce;
+        timestamp = googleInfo?.data?.timestamp;
         const { id } = await getGoogleUserInfo(accessToken as string);
         console.log(id, params, googleInfo, 'socialVerifyHandler===id');
         if (id !== params.id) throw new Error('Account does not match your guardian');
@@ -113,6 +118,8 @@ export function useVerifyGoogleToken() {
         salt: params.salt ? params.salt : randomId(),
         kid: parseKidFromJWTToken(idToken),
         nonce,
+        timestamp: timestamp ?? 0,
+        managerAddress,
       });
       return rst as any;
     },
@@ -128,12 +135,15 @@ export function useVerifyAppleToken() {
       let accessToken = params.accessToken;
       let idToken = params.idToken;
       let nonce = params.nonce;
+      let timestamp = params.timestamp;
+      const managerAddress = params.operationDetails ? JSON.parse(params.operationDetails).manager : '';
       const { isExpired: tokenIsExpired } = parseAppleIdentityToken(accessToken) || {};
       if (!accessToken || tokenIsExpired) {
         const info = await socialLoginAction('Apple', currentNetwork, VerifyTypeEnum.zklogin);
         accessToken = info?.data?.access_token || undefined;
         idToken = info?.data?.id_token;
         nonce = info?.data?.nonce;
+        timestamp = info?.data?.timestamp;
       }
       const { userId } = parseAppleIdentityToken(accessToken) || {};
       if (userId !== params.id) throw new Error('Account does not match your guardian');
@@ -153,6 +163,8 @@ export function useVerifyAppleToken() {
         salt: params.salt ? params.salt : randomId(),
         kid: parseKidFromJWTToken(idToken),
         nonce,
+        timestamp: timestamp ?? 0,
+        managerAddress,
       });
       return rst as any;
     },

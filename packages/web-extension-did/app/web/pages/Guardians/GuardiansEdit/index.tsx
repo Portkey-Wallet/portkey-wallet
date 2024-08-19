@@ -384,7 +384,7 @@ export default function GuardiansEdit() {
           <Button className="warning" onClick={checkRemove}>
             {t('Remove')}
           </Button>
-          <Button onClick={guardiansChangeHandler} disabled={disabled} type="primary">
+          <Button onClick={guardiansChangeHandler} disabled={isZK || disabled} type="primary">
             {t('Send Request')}
           </Button>
         </div>

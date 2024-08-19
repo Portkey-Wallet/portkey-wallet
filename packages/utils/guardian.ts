@@ -127,3 +127,28 @@ export function removeManager(contract: ContractBasic, address: string, caHash: 
     sendOptions,
   );
 }
+
+/**
+ * @description: when accelerate guardian, the timestamp got from transaction is string, need to convert to seconds
+ */
+export function fixedGuardianParams(guardian: any) {
+  let timestamp = guardian?.zkLoginInfo?.noncePayload?.addManagerAddress?.timestamp;
+  if (typeof timestamp === 'string') {
+    try {
+      const date = new Date(timestamp);
+      guardian.zkLoginInfo.noncePayload.addManagerAddress.timestamp = {
+        seconds: date.getTime() / 1000,
+      };
+    } catch (error) {
+      console.log('fixedGuardianParams', error);
+    } finally {
+      return guardian;
+    }
+  }
+  return guardian;
+}
+
+export function fixedGuardianApprovedParams(guardians: any[]) {
+  if (!Array.isArray(guardians)) return [];
+  return guardians.map(guardian => fixedGuardianParams(guardian));
+}

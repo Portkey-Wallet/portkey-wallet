@@ -51,15 +51,6 @@ WebBrowser.maybeCompleteAuthSession();
 export function useGoogleAuthentication() {
   const subscriptionRef = useRef<any>();
   const [androidResponse, setResponse] = useState<any>();
-  // const [googleRequest, response, promptAsync] = Google.useAuthRequest({
-  //   iosClientId: Config.GOOGLE_IOS_CLIENT_ID,
-  //   androidClientId: Config.GOOGLE_ANDROID_CLIENT_ID,
-  //   shouldAutoExchangeCode: false,
-  // todo_wade: remove this
-  // extraParams: {
-  //   nonce: googleAuthNonce,
-  // },
-  // });
   const iosPromptAsync: (managerAddress: string) => Promise<TGoogleAuthResponse> = useCallback(async managerAddress => {
     const { nonce, timestamp } = generateNonceAndTimestamp(managerAddress);
     const googleRequest = new AuthRequest({

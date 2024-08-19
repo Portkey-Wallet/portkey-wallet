@@ -15,7 +15,7 @@ import useGuardianList from 'hooks/useGuardianList';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import { useCurrentWallet, useOriginChainId, useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import BaseVerifierIcon from 'components/BaseVerifierIcon';
-import { StoreUserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
+import { IZKAuth, StoreUserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { useTranslation } from 'react-i18next';
 import { verification } from 'utils/api';
 import PhoneInput from '../components/PhoneInput';
@@ -61,13 +61,6 @@ import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
 import { VerifyTypeEnum } from 'types/wallet';
 import './index.less';
 import { useVerifyZKLogin } from 'hooks/authentication';
-
-export interface IZKAuth {
-  access_token?: string;
-  id_token?: string;
-  nonce?: string;
-  timestamp?: number;
-}
 
 export default function AddGuardian() {
   const navigate = useNavigateState<TVerifierAccountLocationState | TGuardianApprovalLocationState>();
@@ -215,6 +208,7 @@ export default function AddGuardian() {
 
   useEffectOnce(() => {
     if (locationParams?.previousPage && opGuardian) {
+      setZKAuth(opGuardian.zkAuth || {});
       setGuardianType(opGuardian.guardianType);
       if (isZKLoginSupported(opGuardian.guardianType)) {
         setVerifierVal(zkLoginVerifierItem.name);
@@ -544,6 +538,7 @@ export default function AddGuardian() {
         salt: '',
         phone: phoneValue,
         social: socialValue,
+        zkAuth,
       };
       dispatch(setCurrentGuardianAction(newGuardian));
       dispatch(setOpGuardianAction(newGuardian));

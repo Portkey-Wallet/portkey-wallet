@@ -98,7 +98,7 @@ const useCheckVerifier = () => {
         const rst = await verifyToken(loginAccount.loginType, {
           accessToken: loginAccount.authenticationInfo?.[loginAccount.guardianAccount || ''] as string,
           idToken: loginAccount?.authenticationInfo?.idToken as string,
-          nonce: loginAccount?.authenticationInfo?.nonce as string, // todo_wade: check salt param
+          nonce: loginAccount?.authenticationInfo?.nonce as string,
           timestamp: loginAccount?.authenticationInfo?.timestamp as number,
           id: loginAccount.guardianAccount,
           verifierId: verifierItem.id,
@@ -108,8 +108,8 @@ const useCheckVerifier = () => {
         dispatch(
           setRegisterVerifierAction({
             verifierId: verifierItem.id as string,
-            verificationDoc: rst.verificationDoc, // todo_wade: fix verificationDoc
-            signature: rst.signature, // todo_wade: fix verificationDoc
+            verificationDoc: rst.verificationDoc,
+            signature: rst.signature,
             zkLoginInfo: rst.zkLoginInfo,
           }),
         );

@@ -32,7 +32,8 @@ export const useSocialVerify = () => {
         const result = await verifyToken(operateGuardian.guardianType, {
           accessToken: loginAccount?.authenticationInfo?.[operateGuardian.guardianAccount] as string,
           idToken: loginAccount?.authenticationInfo?.idToken as string,
-          nonce: loginAccount?.authenticationInfo?.nonce as string, // todo_wade: check salt param
+          nonce: loginAccount?.authenticationInfo?.nonce as string,
+          salt: operateGuardian.salt,
           timestamp: loginAccount?.authenticationInfo?.timestamp as number,
           id: operateGuardian.guardianAccount,
           verifierId: operateGuardian.verifier?.id,
@@ -56,13 +57,6 @@ export const useSocialVerify = () => {
           identifierHash,
           zkLoginInfo: verifierInfo.zkLoginInfo,
         };
-        /** // todo_wade: check if this is needed
-         * ...status?.verifierInfo,
-        value: guardian?.guardianAccount,
-        guardianType: guardian?.guardianType,
-        type: LoginType[guardian?.guardianType as LoginType],
-         * 
-        */
       } catch (error) {
         const msg = handleErrorMessage(error);
         singleMessage.error(msg);

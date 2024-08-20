@@ -177,7 +177,7 @@ export const BackEndNetWorkMap: {
     referralUrl: 'https://test-referral.portkey.finance',
     cryptoGiftUrl: 'https://test-cryptogift.portkey.finance',
     portkeyFinanceUrl: 'https://portkey.finance/',
-    portkeyOpenLoginUrl: 'https://openlogin-testnet.portkey.finance/', // todo_wade: confirm effect
+    portkeyOpenLoginUrl: 'https://openlogin-testnet.portkey.finance/',
     eBridgeUrl: 'https://test.ebridge.exchange',
     eTransferCA: {
       AELF: '4xWFvoLvi5anZERDuJvzfMoZsb6WZLATEzqzCVe8sQnCp2XGS',

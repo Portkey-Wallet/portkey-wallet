@@ -3,7 +3,7 @@ import CommonButton from 'components/CommonButton';
 import { TextL, TextM, TextS } from 'components/CommonText';
 import Svg from 'components/Svg';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import PageContainer from 'components/PageContainer';
@@ -772,10 +772,22 @@ const GuardianEdit: React.FC = () => {
           titleTextStyle={[pageStyles.titleTextStyle, !selectedVerifier && FontStyles.font7]}
           style={[
             pageStyles.verifierWrap,
-            { backgroundColor: isSelectedVerifierDisabled ? defaultColors.neutralContainerBG : defaultColors.white },
+            isSelectedVerifierDisabled
+              ? {
+                  backgroundColor: defaultColors.neutralContainerBG,
+                  borderColor: defaultColors.border8,
+                  borderWidth: StyleSheet.hairlineWidth,
+                }
+              : { backgroundColor: defaultColors.white },
           ]}
           title={selectedVerifier?.name || 'Select guardian verifiers'}
-          rightElement={<Svg size={pTd(20)} icon="down-arrow" />}
+          rightElement={
+            <Svg
+              size={pTd(20)}
+              icon="down-arrow"
+              color={isSelectedVerifierDisabled ? defaultColors.neutralDisableText : defaultColors.secondaryTextColor}
+            />
+          }
         />
         {verifierError.isError && <TextS style={pageStyles.errorTips}>{verifierError.errorMsg || ''}</TextS>}
       </View>

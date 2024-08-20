@@ -152,7 +152,7 @@ export function useGoogleAuthentication() {
         const authToken = await getGoogleAuthToken({
           authCode: info.params.code,
           clientId: Config.GOOGLE_WEB_CLIENT_ID,
-          clientSecret: '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', // todo_wade: move to env
+          clientSecret: Config.GOOGLE_WEB_CLIENT_SECRET,
           redirectUri: GOOGLE_AUTH_REDIRECT_URI,
         });
         const userInfo = await getGoogleUserInfo(authToken.access_token);

@@ -49,6 +49,7 @@ import Loading from 'components/Loading';
 
 WebBrowser.maybeCompleteAuthSession();
 
+const AUTH_SCHEME_URL = 'com.portkey.finance://oauthredirect';
 const GOOGLE_AUTH_REDIRECT_URI = 'https://aa-portkey-test.portkey.finance/api/app/account/google-auth-redirect';
 
 export function useGoogleAuthentication() {
@@ -122,17 +123,18 @@ export function useGoogleAuthentication() {
       subscriptionRef.current = Linking.addEventListener('url', (event: any) => {
         const { url } = event;
         if (url && url.length > 0) {
-          // todo_wade: verify host of url
           const parsedUrl = queryString.parseUrl(url);
-          const paramsObject: any = parsedUrl.query;
-          if (paramsObject.code) {
-            Loading.show(); // show loading when back from the browser and select account
-            resolve({ type: 'success', params: paramsObject });
-          } else {
-            reject({
-              type: 'error',
-              message: 'It seems that the authorization with your Google account has failed.',
-            });
+          if (parsedUrl.url.startsWith(AUTH_SCHEME_URL)) {
+            const paramsObject: any = parsedUrl.query;
+            if (paramsObject.code) {
+              Loading.show(); // show loading when back from the browser and select account
+              resolve({ type: 'success', params: paramsObject });
+            } else {
+              reject({
+                type: 'error',
+                message: 'It seems that the authorization with your Google account has failed.',
+              });
+            }
           }
         }
       });
@@ -399,7 +401,6 @@ export function useVerifyZKLogin() {
     async (params: VerifyZKLoginParams) => {
       const { verifyToken, jwt, salt, kid, nonce, timestamp, managerAddress } = params;
       const proofParams = { jwt, salt };
-      console.log('useVerifyZKLogin params: ', proofParams);
       const proofResult = await customFetch(zkLoginVerifyUrl, {
         method: 'POST',
         headers: {
@@ -424,8 +425,6 @@ export function useVerifyZKLogin() {
           salt,
         },
       });
-
-      console.log('portkeyVerifyResult : ', portkeyVerifyResult);
 
       const zkProof = decodeURIComponent(verifyParams.proof);
       const zkLoginInfo: ZKLoginInfo = {

@@ -73,8 +73,12 @@ export const socialLoginAction = async (
     }
     if (zkloginGuardianType.includes(type)) {
       const { nonce, timestamp } = generateNonceAndTimestamp(verifyExtraParams?.managerAddress);
-      // nonce = AElf.utils.sha256(Date.now().toString()); // todo_wade: generate nonce
       if (type === 'Apple') {
+        /**
+         * on App, nonce is hashed by framework,
+         * so the server need to hash the data (timestamp+manager address) twice to verify the nonce.
+         * And also, the extension need to hash the nonce again to verify the nonce.
+         */
         zkNonce = AElf.utils.sha256(nonce);
       } else {
         zkNonce = nonce;

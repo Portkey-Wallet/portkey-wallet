@@ -36,4 +36,5 @@ export type NetworkItem = {
     [x in ChainId]?: string;
   };
   hamsterUrl?: string;
+  zkLoginVerifyUrl?: string;
 };

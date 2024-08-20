@@ -65,9 +65,11 @@ export function handleVerifierInfo(verifierInfo?: VerifierInfo) {
   if (verifierInfo.zkLoginInfo) {
     const identifierHash = verifierInfo.zkLoginInfo.identifierHash;
     return { identifierHash };
-  } else {
-    const { guardianIdentifier } = handleVerificationDoc(verifierInfo.verificationDoc ?? '');
+  } else if (verifierInfo.verificationDoc) {
+    const { guardianIdentifier } = handleVerificationDoc(verifierInfo.verificationDoc);
     return { identifierHash: guardianIdentifier };
+  } else {
+    return { identifierHash: '' };
   }
 }
 

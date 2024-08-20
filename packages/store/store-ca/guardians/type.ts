@@ -57,4 +57,12 @@ export interface StoreUserGuardianItem extends UserGuardianItem {
     isPrivate?: boolean;
   };
   tempToZK?: boolean;
+  zkAuth?: IZKAuth;
+}
+
+export interface IZKAuth {
+  access_token?: string;
+  id_token?: string;
+  nonce?: string;
+  timestamp?: number;
 }

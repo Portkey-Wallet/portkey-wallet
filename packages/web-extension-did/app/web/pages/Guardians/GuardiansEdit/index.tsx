@@ -8,7 +8,6 @@ import {
   resetUserGuardianStatus,
   setCurrentGuardianAction,
   setOpGuardianAction,
-  setPreGuardianAction,
   setUserGuardianItemStatus,
 } from '@portkey-wallet/store/store-ca/guardians/actions';
 import useGuardianList from 'hooks/useGuardianList';
@@ -112,7 +111,7 @@ export default function GuardiansEdit() {
     if (temp) {
       dispatch(setCurrentGuardianAction(temp));
       dispatch(setOpGuardianAction(temp));
-      dispatch(setPreGuardianAction(temp));
+      // dispatch(setPreGuardianAction(temp));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userGuardiansList]);
@@ -384,7 +383,7 @@ export default function GuardiansEdit() {
           <Button className="warning" onClick={checkRemove}>
             {t('Remove')}
           </Button>
-          <Button onClick={guardiansChangeHandler} disabled={disabled} type="primary">
+          <Button onClick={guardiansChangeHandler} disabled={isZK || disabled} type="primary">
             {t('Send Request')}
           </Button>
         </div>

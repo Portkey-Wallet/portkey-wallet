@@ -15,8 +15,7 @@ export const formatEditGuardianValue = ({
 
   preGuardian?: UserGuardianItem;
 }) => {
-  if (!preGuardian?.guardianType) return;
-  const isZkLoginType = isZKLoginSupported(preGuardian.guardianType);
+  const isZkLoginType = isZKLoginSupported(preGuardian?.guardianType ?? 0);
   const guardianToUpdatePre: GuardianItem = {
     identifierHash: preGuardian?.identifierHash,
     type: preGuardian?.guardianType as LoginType,
@@ -29,7 +28,7 @@ export const formatEditGuardianValue = ({
     identifierHash: preGuardian?.identifierHash,
     type: opGuardian?.guardianType as LoginType,
     verificationInfo: {
-      id: preGuardian?.verifier?.id as string,
+      id: opGuardian?.verifier?.id as string,
     },
     updateSupportZk: isZkLoginType,
   };

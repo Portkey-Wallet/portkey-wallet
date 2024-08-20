@@ -253,15 +253,7 @@ export function parseJWTToken(token: string) {
 
   const spilt2 = Buffer.from(idTokenArr[1], 'base64').toString('utf8');
   const { iss } = JSON.parse(spilt2) || {};
-  let issuer = iss;
-  const issuerPrefix = 'https://';
-  const googleIssuerWithoutPrefix = 'accounts.google.com';
-  if (issuer === googleIssuerWithoutPrefix) {
-    // todo_wade: remove this
-    // on android, the issuer is not prefixed with https://. so we add it here
-    issuer = `${issuerPrefix}${googleIssuerWithoutPrefix}`;
-  }
-  return { kid, issuer };
+  return { kid, issuer: iss };
 }
 
 export function parseZKProof(zkProof: string) {

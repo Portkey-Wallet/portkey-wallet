@@ -65,9 +65,11 @@ export function handleVerifierInfo(verifierInfo?: VerifierInfo) {
   if (verifierInfo.zkLoginInfo) {
     const identifierHash = verifierInfo.zkLoginInfo.identifierHash;
     return { identifierHash };
-  } else {
-    const { guardianIdentifier } = handleVerificationDoc(verifierInfo.verificationDoc ?? '');
+  } else if (verifierInfo.verificationDoc) {
+    const { guardianIdentifier } = handleVerificationDoc(verifierInfo.verificationDoc);
     return { identifierHash: guardianIdentifier };
+  } else {
+    return { identifierHash: '' };
   }
 }
 
@@ -126,4 +128,29 @@ export function removeManager(contract: ContractBasic, address: string, caHash: 
     },
     sendOptions,
   );
+}
+
+/**
+ * @description: when accelerate guardian, the timestamp got from transaction is string, need to convert to seconds
+ */
+export function fixedGuardianParams(guardian: any) {
+  let timestamp = guardian?.zkLoginInfo?.noncePayload?.addManagerAddress?.timestamp;
+  if (typeof timestamp === 'string') {
+    try {
+      const date = new Date(timestamp);
+      guardian.zkLoginInfo.noncePayload.addManagerAddress.timestamp = {
+        seconds: date.getTime() / 1000,
+      };
+    } catch (error) {
+      console.log('fixedGuardianParams', error);
+    } finally {
+      return guardian;
+    }
+  }
+  return guardian;
+}
+
+export function fixedGuardianApprovedParams(guardians: any[]) {
+  if (!Array.isArray(guardians)) return [];
+  return guardians.map(guardian => fixedGuardianParams(guardian));
 }

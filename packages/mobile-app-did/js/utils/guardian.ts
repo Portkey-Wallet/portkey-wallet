@@ -15,12 +15,12 @@ export const getGuardiansApproved = (
     .filter(item => guardiansStatus[item.key] && guardiansStatus[item.key].verifierInfo)
     .map(guardian => {
       const verificationDoc = guardiansStatus[guardian.key].verifierInfo?.verificationDoc || '';
-      // const { identifierHash } = handleVerifierInfo(guardiansStatus[guardian.key].verifierInfo); // todo_wade: confirm this
+      const { identifierHash } = handleVerifierInfo(guardiansStatus[guardian.key].verifierInfo);
       const signature = guardiansStatus[guardian.key].verifierInfo?.signature
         ? Object.values(Buffer.from(guardiansStatus[guardian.key].verifierInfo?.signature as any, 'hex'))
         : [];
       return {
-        identifierHash: guardian.identifierHash,
+        identifierHash,
         type: guardian.guardianType,
         verificationInfo: {
           id: guardian.verifier?.id,

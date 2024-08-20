@@ -8,10 +8,12 @@ import { ISocialLogin } from '@portkey-wallet/types/types-ca/wallet';
 import { sleep } from '@portkey-wallet/utils';
 import { zkloginGuardianType } from 'constants/guardians';
 import { VerifyTypeEnum } from 'types/wallet';
+import { useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 const usePortkeyUIConfig = () => {
   const currentNetwork = useCurrentNetworkInfo();
   const { setLoading } = useLoading();
+  const managerAddress = useVerifyManagerAddress();
   const customReCaptchaHandler: () => Promise<{
     type: ReCaptchaResponseType;
     message?: any;
@@ -26,7 +28,8 @@ const usePortkeyUIConfig = () => {
       await sleep(10);
       setLoading(true);
       const _verifyType = zkloginGuardianType.includes(v) ? VerifyTypeEnum.zklogin : undefined;
-      const result: any = await socialLoginAction(v, currentNetwork.networkType, _verifyType);
+      const _verifyExtraParams = { managerAddress: managerAddress ?? '' };
+      const result: any = await socialLoginAction(v, currentNetwork.networkType, _verifyType, _verifyExtraParams);
 
       if (result.error) {
         setLoading(false);

@@ -396,7 +396,7 @@ export function useAuthenticationSign() {
 }
 
 export function useVerifyZKLogin() {
-  const { zkLoginVerifyUrl = 'https://zklogin-prover-dev.aelf.dev/v1/prove' } = useCurrentNetworkInfo();
+  const { zkLoginVerifyUrl = 'https://zklogin-prover.portkey.finance/v1/prove' } = useCurrentNetworkInfo();
   return useCallback(
     async (params: VerifyZKLoginParams) => {
       const { verifyToken, jwt, salt, kid, nonce, timestamp, managerAddress } = params;

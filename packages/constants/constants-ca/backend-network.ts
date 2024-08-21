@@ -190,7 +190,7 @@ export const BackEndNetWorkMap: {
     sgrSchrodingerUrl: 'https://cat.schrodingerai.com',
     tomorrowDAOUrl: 'https://test.tmrwdao.com',
     hamsterUrl: 'https://test-hamster.beangotown.com',
-    zkLoginVerifyUrl: 'https://zklogin-prover-dev.aelf.dev/v1/prove',
+    zkLoginVerifyUrl: 'https://zklogin-prover-test.portkey.finance/v1/prove',
   },
   'back-end-testnet': {
     name: 'aelf Testnet',
@@ -219,7 +219,7 @@ export const BackEndNetWorkMap: {
     sgrSchrodingerUrl: 'https://cat.schrodingerai.com',
     tomorrowDAOUrl: 'https://test.tmrwdao.com',
     hamsterUrl: 'https://test-hamster.beangotown.com',
-    zkLoginVerifyUrl: 'https://zklogin-prover-dev.aelf.dev/v1/prove',
+    zkLoginVerifyUrl: 'https://zklogin-prover-test.portkey.finance/v1/prove',
   },
   'back-end-mainnet': {
     name: 'aelf Mainnet',
@@ -253,7 +253,7 @@ export const BackEndNetWorkMap: {
     sgrSchrodingerUrl: 'https://cat.schrodingernft.ai/',
     tomorrowDAOUrl: 'https://tmrwdao.com',
     hamsterUrl: 'https://hamster.beangotown.com',
-    zkLoginVerifyUrl: 'https://zklogin-prover-dev.aelf.dev/v1/prove',
+    zkLoginVerifyUrl: 'https://zklogin-prover.portkey.finance/v1/prove',
   },
   'back-end-mainnet-v2': {
     name: 'aelf Mainnet',
@@ -290,6 +290,6 @@ export const BackEndNetWorkMap: {
     sgrSchrodingerUrl: 'https://cat.schrodingernft.ai',
     tomorrowDAOUrl: 'https://tmrwdao.com',
     hamsterUrl: 'https://hamster.beangotown.com',
-    zkLoginVerifyUrl: 'https://zklogin-prover-dev.aelf.dev/v1/prove',
+    zkLoginVerifyUrl: 'https://zklogin-prover.portkey.finance/v1/prove',
   },
 };

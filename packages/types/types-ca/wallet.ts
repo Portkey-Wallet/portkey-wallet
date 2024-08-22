@@ -19,6 +19,7 @@ export enum LoginType {
   Telegram,
   Facebook,
   Twitter,
+  Ton,
 }
 
 export enum LoginMethod {
@@ -33,6 +34,7 @@ export enum SocialLoginEnum {
   Telegram = 'Telegram',
   Twitter = 'Twitter',
   Facebook = 'Facebook',
+  Ton = 'Ton',
 }
 
 export type LoginKeyType = string;

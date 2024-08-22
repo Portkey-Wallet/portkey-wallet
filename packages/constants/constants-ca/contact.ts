@@ -19,6 +19,7 @@ export const CONTACT_PRIVACY_TYPE_LABEL_MAP: { [key in LoginType]: string } = {
   [LoginType.Telegram]: 'Telegram Account',
   [LoginType.Facebook]: 'Facebook Account',
   [LoginType.Twitter]: 'Twitter Account',
+  [LoginType.Ton]: 'Ton Account',
 };
 
 export const CONTACT_PRIVACY_TYPE_LOWER_LABEL_MAP: { [key in LoginType]: string } = {
@@ -29,6 +30,7 @@ export const CONTACT_PRIVACY_TYPE_LOWER_LABEL_MAP: { [key in LoginType]: string 
   [LoginType.Telegram]: 'Telegram Account',
   [LoginType.Facebook]: 'Facebook Account',
   [LoginType.Twitter]: 'Twitter Account',
+  [LoginType.Ton]: 'Ton Account',
 };
 
 export const CONTACT_PERMISSION_LIST = [

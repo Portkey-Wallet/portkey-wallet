@@ -10,4 +10,5 @@ export const LOGIN_TYPE_LABEL_MAP: T_LOGIN_TYPE_LABEL_MAP = {
   [LoginType.Telegram]: 'Telegram',
   [LoginType.Twitter]: 'Twitter',
   [LoginType.Facebook]: 'Facebook',
+  [LoginType.Ton]: 'Ton',
 };

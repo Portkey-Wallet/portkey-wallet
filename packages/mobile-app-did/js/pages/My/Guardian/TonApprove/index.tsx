@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { Keyboard, View } from 'react-native';
+import { Keyboard, Linking, View } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
 import WebView from 'react-native-webview';
 import Lottie from 'lottie-react-native';
@@ -13,31 +13,44 @@ import { parseUrl } from 'query-string';
 import { parseTelegramToken } from '@portkey-wallet/utils/authentication';
 import { OpenLogin } from '@portkey-wallet/constants/constants-ca/network';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-
 import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
 import { WebViewMessageEvent } from 'react-native-webview';
 import {
   InjectTelegramLoginJavaScript,
-  InjectTelegramOpenJavaScript,
+  // InjectTelegramOpenJavaScript,
   PATHS,
   TGAuthCallBack,
   TGAuthPush,
   TGAuthResult,
   TG_FUN,
+  TON_FUN,
   parseTGAuthResult,
-} from './config';
+} from 'components/OauthOverlay/config';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
+
+export const InjectTelegramOpenJavaScript = `(()=>{
+  try {
+    window.open = (url)=>{
+      window.ReactNativeWebView.postMessage(JSON.stringify({url,type:'${TON_FUN.Open}'}));
+    },   
+    window.walletStatusChange = (wallet)=>{
+      window.ReactNativeWebView.postMessage(JSON.stringify({wallet,type:'${TON_FUN.WalletInfoChange}'}));
+    }
+  } catch (error) {
+    window.ReactNativeWebView.postMessage(JSON.stringify({type:'${TG_FUN.Error}'}));
+  }
+})()`;
 
 type TelegramSignProps = {
   onConfirm: (userInfo: any) => void;
   onReject: (reason: any) => void;
 };
 
-function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
+export default function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
   const [loading, setLoading] = useState(true);
   const { networkType, apiUrl } = useCurrentNetworkInfo();
-  const [uri, go] = useState(`${OpenLogin}${PATHS.Load}&network=${networkType}`);
+  const [uri, go] = useState(`http://192.168.1.29:3000`);
   const ref = useRef<WebView>();
   const onLoadStart = useCallback(
     ({ nativeEvent }: WebViewNavigationEvent) => {
@@ -55,11 +68,6 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
               if (typeof token === 'string') {
                 const user = parseTelegramToken(token);
                 if (!user) return onReject(new Error('Invalid Token'));
-                const userInfo: any = {
-                  user,
-                  accessToken: token,
-                };
-                onConfirm(userInfo);
               }
             }
           } catch (error) {
@@ -79,14 +87,16 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
   const onMessage = useCallback(
     ({ nativeEvent }: WebViewMessageEvent) => {
       const { data } = nativeEvent;
+
       try {
         const obj = JSON.parse(data);
         const { type } = obj;
-        if (type === TG_FUN.LoginCancel || type === TG_FUN.DeclineRequest || type === TG_FUN.Error) {
+        if (type === TG_FUN.Error) {
           onReject(USER_CANCELED);
           OverlayModal.hide();
-        } else if (!isIOS && type === TG_FUN.Open) {
-          go(obj.url);
+        } else if (type === TON_FUN.Open) {
+          // go(obj.url);
+          Linking.openURL(obj.url);
         }
       } catch (error) {
         console.log(error);
@@ -95,51 +105,28 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
     [onReject],
   );
   return (
-    <ModalBody title="Telegram Login" modalBodyType="bottom">
+    <View style={{ width: '100%', height: '100%' }}>
       <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.container}>
-        {loading && (
-          <View style={styles.loadingBox}>
-            <Lottie
-              source={require('assets/lottieFiles/globalLoading.json')}
-              style={styles.loadingStyle}
-              autoPlay
-              loop
-            />
-          </View>
-        )}
         <WebView
           ref={ref as any}
           source={{ uri }}
           originWhitelist={['*']}
-          injectedJavaScript={!isIOS ? InjectTelegramOpenJavaScript : undefined}
+          injectedJavaScript={InjectTelegramOpenJavaScript}
           javaScriptCanOpenWindowsAutomatically={true}
           onLoadProgress={({ nativeEvent }) => {
             if (nativeEvent.url.includes('telegram.org') && nativeEvent.progress > 0.7) setLoading(false);
           }}
           onMessage={onMessage}
           onLoadEnd={() => {
-            ref.current?.injectJavaScript(InjectTelegramLoginJavaScript);
+            // ref.current?.injectJavaScript(InjectTelegramLoginJavaScript);
           }}
           onLoadStart={onLoadStart}
         />
       </KeyboardAwareScrollView>
-    </ModalBody>
+    </View>
   );
 }
 
-const sign = () => {
-  Keyboard.dismiss();
-  return new Promise<any>((resolve, reject) => {
-    OverlayModal.show(<TelegramSign onConfirm={resolve} onReject={reject} />, {
-      position: 'bottom',
-      onDisappearCompleted: () => reject(new Error(USER_CANCELED)),
-    });
-  });
-};
-
-export default {
-  sign,
-};
 const styles = StyleSheet.create({
   container: {
     flex: 1,

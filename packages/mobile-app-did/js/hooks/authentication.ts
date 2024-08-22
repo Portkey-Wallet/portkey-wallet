@@ -21,6 +21,7 @@ import { AppState } from 'react-native';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import TelegramOverlay from 'components/OauthOverlay/telegram';
+import TonOverlay from 'components/OauthOverlay/tonWallet';
 import FacebookOverlay from 'components/OauthOverlay/facebook';
 import { parseTelegramToken } from '@portkey-wallet/utils/authentication';
 import { useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -244,6 +245,15 @@ export function useTelegramAuthentication() {
   );
 }
 
+export function useTonAuthentication() {
+  return useMemo(
+    () => ({
+      tonSign: TonOverlay.sign,
+    }),
+    [],
+  );
+}
+
 const onFacebookAuthentication = async () => {
   try {
     return await (isIOS ? FacebookOverlay.sign : onAndroidFacebookAuthentication)();
@@ -279,6 +289,8 @@ export function useAuthenticationSign() {
   const { telegramSign } = useTelegramAuthentication();
   const { twitterSign } = useTwitterAuthentication();
   const { facebookSign } = useFacebookAuthentication();
+  const { tonSign } = useTonAuthentication();
+
   return useCallback<IAuthenticationSign['sign']>(
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -294,11 +306,13 @@ export function useAuthenticationSign() {
           return twitterSign();
         case LoginType.Facebook:
           return facebookSign();
+        case LoginType.Ton:
+          return tonSign();
         default:
           throw new Error('Unsupported login type');
       }
     },
-    [appleSign, googleSign, telegramSign, twitterSign, facebookSign],
+    [googleSign, appleSign, telegramSign, twitterSign, facebookSign, tonSign],
   );
 }
 

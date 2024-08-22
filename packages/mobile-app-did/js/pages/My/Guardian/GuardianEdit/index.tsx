@@ -540,6 +540,22 @@ const GuardianEdit: React.FC = () => {
     Loading.hide();
   }, [facebookSign]);
 
+  const onTonWalletSign = useCallback(async () => {
+    Loading.show();
+    try {
+      // const userInfo = await facebookSign();
+      // setAccount(PRIVATE_GUARDIAN_ACCOUNT);
+      // setFirstName(userInfo.user.firstName || undefined);
+      // thirdPartyInfoRef.current = {
+      //   id: userInfo.user.id,
+      //   accessToken: userInfo.accessToken,
+      // };
+    } catch (error) {
+      CommonToast.failError(error);
+    }
+    Loading.hide();
+  }, []);
+
   const renderGuardianAccount = useCallback(() => {
     if (isEdit) {
       return (
@@ -635,25 +651,37 @@ const GuardianEdit: React.FC = () => {
             type={LoginType.Facebook}
           />
         );
+      case LoginType.Ton:
+        return (
+          <GuardianThirdAccount
+            account={account}
+            firstName={firstName}
+            clearAccount={clearAccount}
+            guardianAccountError={guardianAccountError}
+            onPress={onTonWalletSign}
+            type={LoginType.Ton}
+          />
+        );
       default:
         break;
     }
     return null;
   }, [
-    account,
-    clearAccount,
-    country,
-    editGuardian,
-    firstName,
-    guardianAccountError,
     isEdit,
-    onAccountChange,
-    onAppleSign,
-    onGoogleSign,
-    onTelegramSign,
-    onFacebookSign,
-    onTwitterSign,
     selectedType,
+    editGuardian,
+    guardianAccountError,
+    account,
+    onAccountChange,
+    country,
+    firstName,
+    clearAccount,
+    onGoogleSign,
+    onAppleSign,
+    onTelegramSign,
+    onTwitterSign,
+    onFacebookSign,
+    onTonWalletSign,
   ]);
   const goBack = useCallback(() => {
     if (isEdit) return navigationService.navigate('GuardianHome');

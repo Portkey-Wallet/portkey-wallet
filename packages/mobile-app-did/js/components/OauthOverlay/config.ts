@@ -9,6 +9,12 @@ export enum TG_FUN {
   Open = 'tg_open',
 }
 
+export enum TON_FUN {
+  WalletInfoChange = 'ton_walletInfoChange',
+  Error = 'ton_error',
+  Open = 'ton_open',
+}
+
 export enum FB_FUN {
   Login_Success = 'Login_Success',
   Error = 'fb_error',
@@ -56,6 +62,19 @@ export const InjectFacebookOpenJavaScript = `(()=>{
     }
   } catch (error) {
     window.ReactNativeWebView.postMessage(JSON.stringify({type:'${FB_FUN.Error}'}));
+  }
+})()`;
+
+export const InjectTonOpenJavaScript = `(()=>{
+  try {
+    window.open = (url)=>{
+      window.ReactNativeWebView.postMessage(JSON.stringify({url,type:'${TON_FUN.Open}'}));
+    },   
+    window.walletStatusChange = (wallet)=>{
+      window.ReactNativeWebView.postMessage(JSON.stringify({wallet,type:'${TON_FUN.WalletInfoChange}'}));
+    }
+  } catch (error) {
+    window.ReactNativeWebView.postMessage(JSON.stringify({type:'${TG_FUN.Error}'}));
   }
 })()`;
 

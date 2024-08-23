@@ -79,9 +79,7 @@ const SelectList = ({ callBack, id, editGuardian }: SelectListProps) => {
         <View style={styles.warnWrap}>
           <Svg icon="warning2" size={pTd(16)} color={defaultColors.icon1} iconStyle={styles.warningIcon} />
           <TextM style={styles.warnLabelWrap}>
-            {
-              'Used Verifiers other than zkLogin cannot be selected. Only Google and Apple type accounts can choose zkLogin as Verifier.'
-            }
+            {`Except for zkLogin, used verifiers cannot be selected. To choose ZkLogin, the guardian type must be either a Google account or an Apple ID.`}
           </TextM>
         </View>
       </ScrollView>

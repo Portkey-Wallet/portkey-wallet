@@ -24,6 +24,8 @@ export default function NetworkLogo({ network }: { network: string | undefined; 
       return <CustomSvg type="Binance" />;
     case BlockchainNetworkType.Avax:
       return <CustomSvg type="Avax" />;
+    case BlockchainNetworkType.Ton:
+      return <CustomSvg type="Ton" />;
     default:
       // when not match network's type, display first character and uppercase
       return <div className={'deposit-network'}>{network?.charAt(0).toUpperCase()}</div>;

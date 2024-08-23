@@ -342,6 +342,8 @@ export const getNetworkImagePath = (network: string) => {
       return require('../../../assets/image/pngs/third-party-op.png');
     case 'AVAXC':
       return require('../../../assets/image/pngs/third-party-avax.png');
+    case 'TON':
+      return require('../../../assets/image/pngs/third-party-ton.png');
     default: {
       return '';
     }

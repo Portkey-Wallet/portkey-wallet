@@ -177,7 +177,7 @@ export const BackEndNetWorkMap: {
     referralUrl: 'https://test-referral.portkey.finance',
     cryptoGiftUrl: 'https://test-cryptogift.portkey.finance',
     portkeyFinanceUrl: 'https://portkey.finance/',
-    portkeyOpenLoginUrl: 'https://openlogin-testnet.portkey.finance/', // todo_wade: confirm effect
+    portkeyOpenLoginUrl: 'https://openlogin-testnet.portkey.finance/',
     eBridgeUrl: 'https://test.ebridge.exchange',
     eTransferCA: {
       AELF: '4xWFvoLvi5anZERDuJvzfMoZsb6WZLATEzqzCVe8sQnCp2XGS',
@@ -190,7 +190,7 @@ export const BackEndNetWorkMap: {
     sgrSchrodingerUrl: 'https://cat.schrodingerai.com',
     tomorrowDAOUrl: 'https://test.tmrwdao.com',
     hamsterUrl: 'https://test-hamster.beangotown.com',
-    zkLoginVerifyUrl: 'https://zklogin-prover-dev.aelf.dev/v1/prove',
+    zkLoginVerifyUrl: 'https://zklogin-prover-test.portkey.finance/v1/prove',
   },
   'back-end-testnet': {
     name: 'aelf Testnet',
@@ -219,7 +219,7 @@ export const BackEndNetWorkMap: {
     sgrSchrodingerUrl: 'https://cat.schrodingerai.com',
     tomorrowDAOUrl: 'https://test.tmrwdao.com',
     hamsterUrl: 'https://test-hamster.beangotown.com',
-    zkLoginVerifyUrl: 'https://zklogin-prover-dev.aelf.dev/v1/prove',
+    zkLoginVerifyUrl: 'https://zklogin-prover-test.portkey.finance/v1/prove',
   },
   'back-end-mainnet': {
     name: 'aelf Mainnet',
@@ -253,7 +253,7 @@ export const BackEndNetWorkMap: {
     sgrSchrodingerUrl: 'https://cat.schrodingernft.ai/',
     tomorrowDAOUrl: 'https://tmrwdao.com',
     hamsterUrl: 'https://hamster.beangotown.com',
-    zkLoginVerifyUrl: 'https://zklogin-prover-dev.aelf.dev/v1/prove',
+    zkLoginVerifyUrl: 'https://zklogin-prover.portkey.finance/v1/prove',
   },
   'back-end-mainnet-v2': {
     name: 'aelf Mainnet',
@@ -290,6 +290,6 @@ export const BackEndNetWorkMap: {
     sgrSchrodingerUrl: 'https://cat.schrodingernft.ai',
     tomorrowDAOUrl: 'https://tmrwdao.com',
     hamsterUrl: 'https://hamster.beangotown.com',
-    zkLoginVerifyUrl: 'https://zklogin-prover-dev.aelf.dev/v1/prove',
+    zkLoginVerifyUrl: 'https://zklogin-prover.portkey.finance/v1/prove',
   },
 };

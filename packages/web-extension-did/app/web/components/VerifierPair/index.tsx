@@ -1,9 +1,12 @@
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { LoginType, isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
 import clsx from 'clsx';
 import BaseVerifierIcon from 'components/BaseVerifierIcon';
 import CustomSvg from 'components/CustomSvg';
 import { IconType } from 'types/icon';
+import { zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
+import { useMemo } from 'react';
 import './index.less';
+import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 
 interface VerifierPairProps {
   guardianType?: LoginType;
@@ -11,6 +14,7 @@ interface VerifierPairProps {
   verifierName?: string;
   wrapperClassName?: string;
   size?: number;
+  guardian?: UserGuardianItem;
 }
 
 export const GuardianTypeIcon: Record<LoginType, IconType> = {
@@ -29,15 +33,28 @@ export default function VerifierPair({
   verifierSrc,
   verifierName,
   wrapperClassName,
+  guardian,
 }: VerifierPairProps) {
+  const isZK = useMemo(
+    () => guardian?.verifiedByZk || guardian?.manuallySupportForZk,
+    [guardian?.manuallySupportForZk, guardian?.verifiedByZk],
+  );
+  const isShowZkLoginTag = useMemo(() => {
+    return isZKLoginSupported(guardianType) && !isZK;
+  }, [guardianType, isZK]);
+
   return (
     <div className={clsx('flex-row-center icon-pair', wrapperClassName)}>
       <div className="guardian-icon flex-center" style={{ width: size, height: size, fontSize: size }}>
         <CustomSvg className="flex" type={GuardianTypeIcon[guardianType]} />
       </div>
       <div className="verifier-icon-border">
-        <BaseVerifierIcon src={verifierSrc} fallback={verifierName?.[0]} />
+        <BaseVerifierIcon
+          src={isZK ? zkLoginVerifierItem.imageUrl : verifierSrc}
+          fallback={isZK ? zkLoginVerifierItem.name : verifierName?.[0]}
+        />
       </div>
+      {isShowZkLoginTag && <div className="zklogin-icon">{`zkLogin`}</div>}
     </div>
   );
 }

@@ -72,6 +72,7 @@ export default function SetWalletPin() {
           verifierId: registerVerifier?.verifierId || '',
           verificationDoc: registerVerifier?.verificationDoc || '',
           signature: registerVerifier?.signature || '',
+          zkLoginInfo: registerVerifier?.zkLoginInfo,
         },
       ];
     }
@@ -81,6 +82,7 @@ export default function SetWalletPin() {
       verifierId: guardian.verifier?.id || '',
       verificationDoc: guardian.verificationDoc || '',
       signature: guardian.signature || '',
+      zkLoginInfo: guardian.zkLoginInfo,
     }));
   }, [loginAccount, registerVerifier, state, userGuardianStatus]);
 

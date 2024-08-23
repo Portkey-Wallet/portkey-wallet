@@ -1,4 +1,4 @@
-import { VerifierItem, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { VerifierItem, VerifyStatus, zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
 import { createSlice } from '@reduxjs/toolkit';
 import moment from 'moment';
 import {
@@ -41,6 +41,7 @@ export const guardiansSlice = createSlice({
         action.payload.forEach((item: VerifierItem) => {
           map[item.id] = item;
         });
+        map[zkLoginVerifierItem.id] = zkLoginVerifierItem;
         state.verifierMap = map;
       })
       .addCase(setGuardiansAction, (state, action) => {
@@ -109,12 +110,13 @@ export const guardiansSlice = createSlice({
         state.userGuardianStatus = userStatus;
       })
       .addCase(setUserGuardianItemStatus, (state, action) => {
-        const { key, status, signature, verificationDoc, identifierHash } = action.payload;
+        const { key, status, signature, verificationDoc, identifierHash, zkLoginInfo } = action.payload;
         if (!state.userGuardianStatus?.[key]) throw Error("Can't find this item");
         state.userGuardianStatus[key]['status'] = status;
         state.userGuardianStatus[key]['signature'] = signature;
         state.userGuardianStatus[key]['verificationDoc'] = verificationDoc;
         state.userGuardianStatus[key]['identifierHash'] = identifierHash || '';
+        state.userGuardianStatus[key]['zkLoginInfo'] = zkLoginInfo;
         if (!state.guardianExpiredTime && status === VerifyStatus.Verified) {
           state.guardianExpiredTime = moment().add(GUARDIAN_EXPIRED_TIME, 'ms').valueOf();
         }

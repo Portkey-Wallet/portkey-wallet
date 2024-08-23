@@ -10,9 +10,10 @@ import { useLanguage } from 'i18n/hooks';
 import { VerifierImage } from 'pages/Guardian/components/VerifierImage';
 import { ModalBody } from 'components/ModalBody';
 import { useGuardiansInfo } from 'hooks/store';
-import { VerifierItem } from '@portkey-wallet/types/verifier';
+import { VerifierItem, zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { defaultColors } from 'assets/theme';
+import { isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
 
 type SelectListProps = {
   id?: string;
@@ -31,8 +32,19 @@ const SelectList = ({ callBack, id, editGuardian }: SelectListProps) => {
     guardianList.forEach(item => {
       map[item.verifier?.id || ''] = true;
     });
+    if (editGuardian && isZKLoginSupported(editGuardian.guardianType)) {
+      verifierList.forEach(item => {
+        if (item.id !== zkLoginVerifierItem.id) {
+          map[item.id] = true;
+        } else {
+          map[item.id] = false;
+        }
+      });
+    } else {
+      map[zkLoginVerifierItem.id] = true;
+    }
     return map;
-  }, [editGuardian, userGuardiansList]);
+  }, [editGuardian, userGuardiansList, verifierList]);
 
   return (
     <ModalBody title={t('Select Verifier')} modalBodyType="bottom">
@@ -65,8 +77,12 @@ const SelectList = ({ callBack, id, editGuardian }: SelectListProps) => {
           );
         })}
         <View style={styles.warnWrap}>
-          <Svg icon="warning2" size={pTd(16)} color={defaultColors.icon1} />
-          <TextM style={styles.warnLabelWrap}>{'Used verifiers cannot be selected.'}</TextM>
+          <Svg icon="warning2" size={pTd(16)} color={defaultColors.icon1} iconStyle={styles.warningIcon} />
+          <TextM style={styles.warnLabelWrap}>
+            {
+              'Used Verifiers other than zkLogin cannot be selected. Only Google and Apple type accounts can choose zkLogin as Verifier.'
+            }
+          </TextM>
         </View>
       </ScrollView>
     </ModalBody>

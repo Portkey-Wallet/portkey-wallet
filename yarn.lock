@@ -6164,7 +6164,7 @@
 
 "@react-native-google-signin/google-signin@^8.0.0":
   version "8.2.2"
-  resolved "https://registry.npmjs.org/@react-native-google-signin/google-signin/-/google-signin-8.2.2.tgz#c8420fea36f05dfb067eb1fc301d42f442440a65"
+  resolved "https://registry.yarnpkg.com/@react-native-google-signin/google-signin/-/google-signin-8.2.2.tgz#c8420fea36f05dfb067eb1fc301d42f442440a65"
   integrity sha512-y56SDxupkN4nvIsmvnq11OqDMLJKTihbwT4dUtnPZ+FCOO4uX62zCpCyXub5o7/N12Ei8KCHC2umd8OHpMdRFg==
 
 "@react-native/assets@1.0.0":

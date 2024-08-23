@@ -55,7 +55,7 @@ export default function VerifierAccount() {
   const onSuccessInGuardian = useCallback(
     async (res: VerifierInfo) => {
       if (!currentGuardian) return;
-      const { guardianIdentifier } = handleVerificationDoc(res.verificationDoc);
+      const { guardianIdentifier } = handleVerificationDoc(res.verificationDoc ?? '');
       dispatch(
         setUserGuardianItemStatus({
           key: currentGuardian.key,
@@ -73,7 +73,7 @@ export default function VerifierAccount() {
   const onSuccessInRemoveOtherManage = useCallback(
     (res: VerifierInfo) => {
       if (!currentGuardian) return;
-      const { guardianIdentifier } = handleVerificationDoc(res.verificationDoc);
+      const { guardianIdentifier } = handleVerificationDoc(res.verificationDoc ?? '');
       dispatch(
         setUserGuardianItemStatus({
           key: currentGuardian.key,
@@ -91,7 +91,7 @@ export default function VerifierAccount() {
   const onSuccessInSetTransferLimit = useCallback(
     (res: VerifierInfo) => {
       if (!currentGuardian) return;
-      const { guardianIdentifier } = handleVerificationDoc(res.verificationDoc);
+      const { guardianIdentifier } = handleVerificationDoc(res.verificationDoc ?? '');
       dispatch(
         setUserGuardianItemStatus({
           key: currentGuardian.key,

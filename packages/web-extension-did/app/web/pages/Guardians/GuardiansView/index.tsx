@@ -24,7 +24,7 @@ import CustomModal from '../../components/CustomModal';
 import { useCommonState } from 'store/Provider/hooks';
 import AccountShow from '../components/AccountShow';
 import { guardianIconMap } from '../utils';
-import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum, zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
 import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import singleMessage from 'utils/singleMessage';
@@ -61,6 +61,11 @@ export default function GuardiansView() {
     [opGuardian?.guardianType],
   );
   const [btnLoading, setBtnLoading] = useState<boolean>(false);
+
+  const isZK = useMemo(
+    () => opGuardian?.verifiedByZk || opGuardian?.manuallySupportForZk,
+    [opGuardian?.manuallySupportForZk, opGuardian?.verifiedByZk],
+  );
 
   useEffect(() => {
     getGuardianList({ caHash: walletInfo.caHash });
@@ -258,8 +263,11 @@ export default function GuardiansView() {
             <div className="input-item">
               <div className="label">{t('Verifier')}</div>
               <div className="control">
-                <BaseVerifierIcon src={opGuardian?.verifier?.imageUrl} fallback={opGuardian?.verifier?.name[0]} />
-                <span className="name">{opGuardian?.verifier?.name ?? ''}</span>
+                <BaseVerifierIcon
+                  src={isZK ? zkLoginVerifierItem.imageUrl : currentGuardian?.verifier?.imageUrl}
+                  fallback={isZK ? zkLoginVerifierItem.name[0] : currentGuardian?.verifier?.name[0]}
+                />
+                <span className="name">{isZK ? zkLoginVerifierItem.name : currentGuardian?.verifier?.name ?? ''}</span>
               </div>
             </div>
           </div>
@@ -289,7 +297,18 @@ export default function GuardiansView() {
         </div>
       </div>
     ),
-    [opGuardian, t, btnLoading, checkSwitch, editable, dispatch, navigate],
+    [
+      opGuardian,
+      t,
+      isZK,
+      currentGuardian?.verifier?.imageUrl,
+      currentGuardian?.verifier?.name,
+      btnLoading,
+      checkSwitch,
+      editable,
+      dispatch,
+      navigate,
+    ],
   );
 
   const props = useMemo(

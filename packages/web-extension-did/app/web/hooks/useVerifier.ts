@@ -96,7 +96,10 @@ const useCheckVerifier = () => {
         if (!verifierItem?.id || !verifierItem?.name) return singleMessage.error('Can not get verification');
 
         const rst = await verifyToken(loginAccount.loginType, {
-          accessToken: loginAccount.authenticationInfo?.[loginAccount.guardianAccount || ''],
+          accessToken: loginAccount.authenticationInfo?.[loginAccount.guardianAccount || ''] as string,
+          idToken: loginAccount?.authenticationInfo?.idToken as string,
+          nonce: loginAccount?.authenticationInfo?.nonce as string,
+          timestamp: loginAccount?.authenticationInfo?.timestamp as number,
           id: loginAccount.guardianAccount,
           verifierId: verifierItem.id,
           chainId: originChainId,
@@ -107,6 +110,7 @@ const useCheckVerifier = () => {
             verifierId: verifierItem.id as string,
             verificationDoc: rst.verificationDoc,
             signature: rst.signature,
+            zkLoginInfo: rst.zkLoginInfo,
           }),
         );
         const res = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();

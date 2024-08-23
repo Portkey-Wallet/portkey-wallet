@@ -1,6 +1,7 @@
 import { UserGuardianItem, UserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/type';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { LoginType, isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
 import { GuardianItem } from 'types/guardians';
+import { formatVerifyInfo } from './formatVerifyInfo';
 
 export const formatEditGuardianValue = ({
   userGuardianStatus,
@@ -14,12 +15,14 @@ export const formatEditGuardianValue = ({
 
   preGuardian?: UserGuardianItem;
 }) => {
+  const isZkLoginType = isZKLoginSupported(preGuardian?.guardianType ?? 0);
   const guardianToUpdatePre: GuardianItem = {
     identifierHash: preGuardian?.identifierHash,
     type: preGuardian?.guardianType as LoginType,
     verificationInfo: {
       id: preGuardian?.verifier?.id as string,
     },
+    updateSupportZk: false,
   };
   const guardianToUpdateNew: GuardianItem = {
     identifierHash: preGuardian?.identifierHash,
@@ -27,19 +30,12 @@ export const formatEditGuardianValue = ({
     verificationInfo: {
       id: opGuardian?.verifier?.id as string,
     },
+    updateSupportZk: isZkLoginType,
   };
   const guardiansApproved: GuardianItem[] = [];
   Object.values(userGuardianStatus ?? {})?.forEach((item: UserGuardianStatus) => {
-    if (item.signature) {
-      guardiansApproved.push({
-        type: item.guardianType,
-        identifierHash: item.identifierHash,
-        verificationInfo: {
-          id: item.verifier?.id as string,
-          signature: Object.values(Buffer.from(item.signature as any, 'hex')),
-          verificationDoc: item.verificationDoc as string,
-        },
-      });
+    if (item.signature || item.zkLoginInfo) {
+      guardiansApproved.push(formatVerifyInfo(item));
     }
   });
   return { guardianToUpdatePre, guardianToUpdateNew, guardiansApproved };

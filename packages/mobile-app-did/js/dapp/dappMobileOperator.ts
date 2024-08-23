@@ -10,6 +10,7 @@ import {
   NotificationEvents,
   WalletState,
   GetSignatureParams,
+  MethodsType,
 } from '@portkey/provider-types';
 import DappEventBus from './dappEventBus';
 import { generateNormalResponse, generateErrorResponse } from '@portkey/provider-utils';
@@ -35,7 +36,11 @@ import { ChainId } from '@portkey-wallet/types';
 import { checkSecuritySafe } from 'utils/security';
 import AElf from 'aelf-sdk';
 import { getApproveSymbol } from '@portkey-wallet/utils/token';
-
+import { Share } from 'react-native';
+const NATIVE_METHOD: MethodsType[] = ['Share'];
+const NATIVE_METHOD_MAP = {
+  Share: 'Share',
+};
 const SEND_METHOD: { [key: string]: true } = {
   [MethodsBase.SEND_TRANSACTION]: true,
   [MethodsBase.REQUEST_ACCOUNTS]: true,
@@ -70,16 +75,18 @@ export type DappMobileOperatorOptions = {
   dappManager: IDappManager;
   dappOverlay: IDappOverlay;
   isDiscover?: boolean;
+  dappWhiteList?: string[];
 };
 export default class DappMobileOperator extends Operator {
   public dapp: DappStoreItem;
   protected stream: IDappInteractionStream;
   protected dappManager: IDappManager;
   protected dappOverlay: IDappOverlay;
+  protected dappWhiteList: string[];
   public isLockDapp?: boolean;
   public isDiscover?: boolean;
   public config: { [key: string]: boolean };
-  constructor({ stream, origin, dappManager, dappOverlay, isDiscover }: DappMobileOperatorOptions) {
+  constructor({ stream, origin, dappManager, dappOverlay, isDiscover, dappWhiteList }: DappMobileOperatorOptions) {
     super(stream);
     this.dapp = { origin };
     this.onCreate();
@@ -88,6 +95,7 @@ export default class DappMobileOperator extends Operator {
     this.dappOverlay = dappOverlay;
     this.isDiscover = isDiscover;
     this.config = {};
+    this.dappWhiteList = dappWhiteList || DAPP_WHITELIST;
   }
   private onCreate = () => {
     DappEventBus.registerOperator(this);
@@ -117,7 +125,6 @@ export default class DappMobileOperator extends Operator {
     const { eventName, method } = request;
     const isActive = await this.isActive();
     if (!isActive) return this.unauthenticated(eventName);
-
     switch (method) {
       case MethodsWallet.GET_WALLET_NAME: {
         return generateNormalResponse({
@@ -157,7 +164,7 @@ export default class DappMobileOperator extends Operator {
 
     switch (method) {
       case MethodsBase.ACCOUNTS: {
-        if (DAPP_WHITELIST.includes(this.dapp.origin)) {
+        if (this.dappWhiteList.includes(this.dapp.origin)) {
           await this.autoApprove();
         }
 
@@ -192,7 +199,7 @@ export default class DappMobileOperator extends Operator {
         });
       }
       case MethodsWallet.GET_WALLET_STATE: {
-        if (DAPP_WHITELIST.includes(this.dapp.origin)) {
+        if (this.dappWhiteList.includes(this.dapp.origin)) {
           await this.autoApprove();
         }
 
@@ -356,7 +363,7 @@ export default class DappMobileOperator extends Operator {
     callBack: SendRequest;
   }) {
     // is whitelist && is whitelist actions
-    if (DAPP_WHITELIST.includes(this.dapp.origin) && DAPP_WHITELIST_ACTION_WHITELIST.includes(method))
+    if (this.dappWhiteList.includes(this.dapp.origin) && DAPP_WHITELIST_ACTION_WHITELIST.includes(method))
       return callBack(eventName, params);
 
     const validSession = await this.verifySessionInfo();
@@ -523,6 +530,47 @@ export default class DappMobileOperator extends Operator {
       callBack: callBack!,
     });
   };
+  protected handleNativeDeviceRequest = async (request: IRequestParams): Promise<IResponseType> => {
+    const { eventName, origin } = request;
+    const method = request.method;
+    if (this.dapp.origin !== origin)
+      return generateErrorResponse({
+        eventName,
+        code: ResponseCode.ERROR_IN_PARAMS,
+      });
+    let callBack: SendRequest, payload: any;
+    switch (method) {
+      case NATIVE_METHOD_MAP.Share: {
+        payload = request.payload;
+        try {
+          const result = await Share.share({
+            message: payload.message,
+            url: payload.url,
+            title: payload.title || '',
+          });
+          return generateNormalResponse({
+            eventName,
+            data: {
+              // true shareSuccess, false dismissShare dialog
+              shareSuccess: result.action === Share.sharedAction,
+            },
+            code: ResponseCode.SUCCESS,
+          });
+        } catch (e) {
+          return generateErrorResponse({
+            eventName,
+            code: ResponseCode.INTERNAL_ERROR,
+          });
+        }
+      }
+    }
+    return this.sendRequest({
+      eventName,
+      params: payload,
+      method: method as any,
+      callBack: callBack!,
+    });
+  };
   public autoApprove = () => {
     // auto approve
     this.handleSendRequest({
@@ -534,8 +582,12 @@ export default class DappMobileOperator extends Operator {
   };
 
   handleRequest = async (request: IRequestParams): Promise<IResponseType> => {
+    console.log('handleRequest==== params', request);
     // dapp is not in the foreground
     if (this.isLockDapp) return this.userDenied(request.eventName);
+    if (NATIVE_METHOD.includes(request.method)) {
+      return this.handleNativeDeviceRequest(request);
+    }
     if (SEND_METHOD[request.method]) return this.handleSendRequest(request);
     return this.handleViewRequest(request);
   };

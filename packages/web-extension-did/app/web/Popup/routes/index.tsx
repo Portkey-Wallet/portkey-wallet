@@ -56,6 +56,10 @@ import TradePage from 'pages/Trade';
 import TokenAllowance from 'pages/WalletSecurity/TokenAllowance';
 import TokenAllowanceDetail from 'pages/WalletSecurity/TokenAllowance/TokenAllowanceDetail';
 import DepositHome from 'pages/DepositHome';
+import CryptoGifts from 'pages/CryptoGifts/Home';
+import HistoryList from 'pages/CryptoGifts/History';
+import CryptoGiftsDetail from 'pages/CryptoGifts/Detail';
+import FreeMint from 'pages/FreeMint';
 
 export const PageRouter = () =>
   useRoutes([
@@ -154,6 +158,10 @@ export const PageRouter = () =>
     {
       path: '/nft',
       element: <NFT />,
+    },
+    {
+      path: '/free-mint',
+      element: <FreeMint />,
     },
     {
       path: 'setting/contacts',
@@ -310,6 +318,18 @@ export const PageRouter = () =>
     {
       path: '/unlock',
       element: <Unlock />,
+    },
+    {
+      path: '/crypto-gifts',
+      element: <CryptoGifts />,
+    },
+    {
+      path: '/crypto-gifts/history',
+      element: <HistoryList />,
+    },
+    {
+      path: '/crypto-gifts/detail',
+      element: <CryptoGiftsDetail />,
     },
     {
       path: '*',

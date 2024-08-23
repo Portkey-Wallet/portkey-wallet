@@ -2,24 +2,20 @@ query download($filter: directus_files_filter, $sort: [String], $limit: Int, $of
     download{
         androidDownloadUrl
         androidProductImage(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
-            id
-            storage
+            charset
+            description
+            duration
+            embed
             filename_disk
             filename_download
-            title
-            type
+            filesize
             folder
-            uploaded_by
-            uploaded_on
-            uploaded_on_func{
-                year
-                month
-                week
-                day
-                weekday
-                hour
-                minute
-                second
+            height
+            id
+            location
+            metadata
+            metadata_func{
+                count
             }
             modified_by
             modified_on
@@ -33,42 +29,42 @@ query download($filter: directus_files_filter, $sort: [String], $limit: Int, $of
                 minute
                 second
             }
-            charset
-            filesize
-            width
-            height
-            duration
-            embed
-            description
-            location
+            storage
             tags
             tags_func{
                 count
             }
-            metadata
-            metadata_func{
-                count
+            title
+            type
+            uploaded_by
+            uploaded_on
+            uploaded_on_func{
+                year
+                month
+                week
+                day
+                weekday
+                hour
+                minute
+                second
             }
+            width
         }
         androidQRCode(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1){
-            id
-            storage
+            charset
+            description
+            duration
+            embed
             filename_disk
             filename_download
-            title
-            type
+            filesize
             folder
-            uploaded_by
-            uploaded_on
-            uploaded_on_func{
-                year
-                month
-                week
-                day
-                weekday
-                hour
-                minute
-                second
+            height
+            id
+            location
+            metadata
+            metadata_func{
+                count
             }
             modified_by
             modified_on
@@ -82,22 +78,26 @@ query download($filter: directus_files_filter, $sort: [String], $limit: Int, $of
                 minute
                 second
             }
-            charset
-            filesize
-            width
-            height
-            duration
-            embed
-            description
-            location
+            storage
             tags
             tags_func{
                 count
             }
-            metadata
-            metadata_func{
-                count
+            title
+            type
+            uploaded_by
+            uploaded_on
+            uploaded_on_func{
+                year
+                month
+                week
+                day
+                weekday
+                hour
+                minute
+                second
             }
+            width
         }
         date_updated
         date_updated_func{
@@ -112,24 +112,20 @@ query download($filter: directus_files_filter, $sort: [String], $limit: Int, $of
         }
         extensionDownloadUrl
         extensionProductImage(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2){
-            id
-            storage
+            charset
+            description
+            duration
+            embed
             filename_disk
             filename_download
-            title
-            type
+            filesize
             folder
-            uploaded_by
-            uploaded_on
-            uploaded_on_func{
-                year
-                month
-                week
-                day
-                weekday
-                hour
-                minute
-                second
+            height
+            id
+            location
+            metadata
+            metadata_func{
+                count
             }
             modified_by
             modified_on
@@ -143,44 +139,44 @@ query download($filter: directus_files_filter, $sort: [String], $limit: Int, $of
                 minute
                 second
             }
-            charset
-            filesize
-            width
-            height
-            duration
-            embed
-            description
-            location
+            storage
             tags
             tags_func{
                 count
             }
-            metadata
-            metadata_func{
-                count
+            title
+            type
+            uploaded_by
+            uploaded_on
+            uploaded_on_func{
+                year
+                month
+                week
+                day
+                weekday
+                hour
+                minute
+                second
             }
+            width
         }
         id
         iosDownloadUrl
         iosProductImage(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3){
-            id
-            storage
+            charset
+            description
+            duration
+            embed
             filename_disk
             filename_download
-            title
-            type
+            filesize
             folder
-            uploaded_by
-            uploaded_on
-            uploaded_on_func{
-                year
-                month
-                week
-                day
-                weekday
-                hour
-                minute
-                second
+            height
+            id
+            location
+            metadata
+            metadata_func{
+                count
             }
             modified_by
             modified_on
@@ -194,42 +190,42 @@ query download($filter: directus_files_filter, $sort: [String], $limit: Int, $of
                 minute
                 second
             }
-            charset
-            filesize
-            width
-            height
-            duration
-            embed
-            description
-            location
+            storage
             tags
             tags_func{
                 count
             }
-            metadata
-            metadata_func{
-                count
+            title
+            type
+            uploaded_by
+            uploaded_on
+            uploaded_on_func{
+                year
+                month
+                week
+                day
+                weekday
+                hour
+                minute
+                second
             }
+            width
         }
         iosQRCode(filter: $filter4, sort: $sort4, limit: $limit4, offset: $offset4, page: $page4, search: $search4){
-            id
-            storage
+            charset
+            description
+            duration
+            embed
             filename_disk
             filename_download
-            title
-            type
+            filesize
             folder
-            uploaded_by
-            uploaded_on
-            uploaded_on_func{
-                year
-                month
-                week
-                day
-                weekday
-                hour
-                minute
-                second
+            height
+            id
+            location
+            metadata
+            metadata_func{
+                count
             }
             modified_by
             modified_on
@@ -243,22 +239,26 @@ query download($filter: directus_files_filter, $sort: [String], $limit: Int, $of
                 minute
                 second
             }
-            charset
-            filesize
-            width
-            height
-            duration
-            embed
-            description
-            location
+            storage
             tags
             tags_func{
                 count
             }
-            metadata
-            metadata_func{
-                count
+            title
+            type
+            uploaded_by
+            uploaded_on
+            uploaded_on_func{
+                year
+                month
+                week
+                day
+                weekday
+                hour
+                minute
+                second
             }
+            width
         }
         user_updated
     }

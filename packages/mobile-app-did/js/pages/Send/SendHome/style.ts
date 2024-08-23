@@ -56,6 +56,11 @@ export const styles = StyleSheet.create({
     borderRadius: pTd(6),
     backgroundColor: defaultColors.bg18,
   },
+  alertMessage: {
+    color: defaultColors.font3,
+    marginBottom: pTd(12),
+    textAlign: 'center',
+  },
 });
 
 export const thirdGroupStyle = StyleSheet.create({

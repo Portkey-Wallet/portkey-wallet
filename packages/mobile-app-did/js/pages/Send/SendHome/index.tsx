@@ -21,6 +21,10 @@ import NFTInfo from '../NFTInfo';
 import CommonButton from 'components/CommonButton';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentChain, useDefaultToken, useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import {
+  CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL,
+  useCrossTransferByEtransfer,
+} from '@portkey-wallet/hooks/hooks-ca/useWithdrawByETransfer';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import { IToSendHomeParamsType, IToSendPreviewParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 
@@ -35,6 +39,7 @@ import {
   TransactionErrorArray,
   AddressError,
   AddressErrorArray,
+  CROSS_CHAIN_INTERCEPTED_CONTENT,
 } from '@portkey-wallet/constants/constants-ca/send';
 import { getAddressChainId, isSameAddresses } from '@portkey-wallet/utils';
 import { useCheckManagerSyncState } from 'hooks/wallet';
@@ -48,6 +53,7 @@ import { useGetTransferFee } from 'hooks/transfer';
 import { checkEnabledFunctionalTypes } from '@portkey-wallet/utils/compass';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { useAppETransShow } from 'hooks/cms';
+import { usePin } from 'hooks/store';
 import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
 import { checkIsValidEtransferAddress } from '@portkey-wallet/utils/check';
@@ -55,6 +61,11 @@ import { RichText } from 'components/RichText';
 import { DepositModalMap, useOnDisclaimerModalPress } from 'hooks/deposit';
 import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useEtransferFee } from 'hooks/etransfer';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { getAssetsEstimation } from '@portkey-wallet/store/store-ca/assets/api';
+import { getChainIdByAddress } from '@portkey-wallet/utils';
+import { ChainId } from '@portkey-wallet/types';
 
 const SendHome: React.FC = () => {
   const {
@@ -70,8 +81,16 @@ const SendHome: React.FC = () => {
   const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
 
   const isFixedToContact = useMemo(() => !!imTransferInfo?.channelId, [imTransferInfo?.channelId]);
-
   const { max: maxFee, crossChain: crossFee } = useGetTxFee(assetInfo?.chainId);
+  const { getEtransferMaxFee } = useEtransferFee(assetInfo?.chainId);
+
+  const pin = usePin();
+  const crossTransferByEtransfer = useCrossTransferByEtransfer(pin);
+
+  const isSupportCross = useMemo(
+    () => CROSS_CHAIN_ETRANSFER_SUPPORT_SYMBOL.includes(assetInfo.symbol),
+    [assetInfo.symbol],
+  );
 
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
 
@@ -82,7 +101,7 @@ const SendHome: React.FC = () => {
 
   const [sendNumber, setSendNumber] = useState<string>(''); // tokenNumber  like 100
   const debounceSendNumber = useDebounce(sendNumber, 500);
-  const [, setTransactionFee] = useState<string>('0'); // like 1.2ELF
+  const [maxAmountSend, setMaxAmountSend] = useState<string>('0');
 
   const [step, setStep] = useState<1 | 2>(isFixedToContact ? 2 : 1);
   const [isLoading] = useState(false);
@@ -128,53 +147,65 @@ const SendHome: React.FC = () => {
     ],
   );
 
-  const onPressMax = useCallback(async () => {
-    Loading.show();
+  const onGetMaxAmount = useLockCallback(async () => {
+    if (!balance) return setMaxAmountSend('0');
+
+    const balanceBN = divDecimals(balance, assetInfo.decimals);
+    const balanceStr = balanceBN.toString();
+
+    // balance 0
+    if (divDecimals(balance, assetInfo.decimals).isEqualTo(0)) return setMaxAmountSend('0');
+
+    // if other tokens
+    if (assetInfo.symbol !== defaultToken.symbol)
+      return setMaxAmountSend(divDecimals(balance, assetInfo.decimals || '0').toString());
+
+    // elf <= maxFee
+    if (divDecimals(balance, assetInfo.decimals).isLessThanOrEqualTo(maxFee))
+      return setMaxAmountSend(divDecimals(balance, assetInfo.decimals || '0').toString());
+
+    const isCross = isCrossChain(selectedToContact.address, assetInfo.chainId || 'AELF');
+    let fee;
     try {
+      fee = await getTransactionFee(isCross, divDecimals(balance, assetInfo.decimals).toFixed());
+    } catch (error) {
+      fee = '0';
+      console.log('FEE ERROR');
+    }
+    const etransferFee = await getEtransferMaxFee({ amount: balanceStr, toInfo, tokenInfo: assetInfo });
+
+    if (fee) {
+      setMaxAmountSend(balanceBN.minus(etransferFee).toString());
+    } else {
+      setMaxAmountSend(
+        ZERO.plus(divDecimals(balance, assetInfo.decimals)).minus(maxFee).minus(etransferFee).toString(),
+      );
+    }
+  }, [
+    balance,
+    assetInfo,
+    defaultToken.symbol,
+    maxFee,
+    getTransactionFee,
+    getEtransferMaxFee,
+    toInfo,
+    selectedToContact.address,
+  ]);
+
+  const onPressMax = useCallback(async () => {
+    try {
+      Loading.hide();
       // check is SYNCHRONIZING
       const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
       if (!_isManagerSynced) return setErrorMessage([TransactionError.SYNCHRONIZING]);
-
-      // balance 0
-      if (divDecimals(balance, assetInfo.decimals).isEqualTo(0)) return setSendNumber('0');
-
-      // other tokens
-      if (assetInfo.symbol !== defaultToken.symbol)
-        return setSendNumber(divDecimals(balance, assetInfo.decimals || '0').toString());
-
-      // elf <= maxFee
-      if (divDecimals(balance, assetInfo.decimals).isLessThanOrEqualTo(maxFee))
-        return setSendNumber(divDecimals(balance, assetInfo.decimals || '0').toString());
-
-      const isCross = isCrossChain(assetInfo.chainId, selectedToContact.chainId || 'AELF');
-      const fee = await getTransactionFee(isCross, divDecimals(balance, assetInfo.decimals).toFixed());
-      setTransactionFee(fee || '0');
-      setSendNumber(
-        divDecimals(balance, assetInfo.decimals || '0')
-          .minus(fee || '0')
-          .toFixed(),
-      );
-    } catch (err: any) {
-      if (err?.code === 500) {
-        setTransactionFee(String(maxFee));
-        const selectedAssetsNum = divDecimals(balance, assetInfo.decimals || '0');
-        setSendNumber(selectedAssetsNum.minus(maxFee).toFixed());
-      }
+      setSendNumber(maxAmountSend);
+      setErrorMessage([]);
+    } catch (err) {
+      console.log('max err!!', err);
     } finally {
       Loading.hide();
     }
-  }, [
-    checkManagerSyncState,
-    chainInfo?.chainId,
-    balance,
-    assetInfo.decimals,
-    assetInfo.symbol,
-    assetInfo.chainId,
-    defaultToken.symbol,
-    maxFee,
-    selectedToContact.chainId,
-    getTransactionFee,
-  ]);
+  }, [checkManagerSyncState, chainInfo?.chainId, maxAmountSend]);
 
   const getTokenViewContract = useGetTokenViewContract();
   const initBalance = useCallback(async () => {
@@ -209,7 +240,7 @@ const SendHome: React.FC = () => {
 
   // warning dialog
   const showDialog = useCallback(
-    (type: 'clearAddress' | 'crossChain' | 'exchange', confirmCallBack?: () => void) => {
+    (type: 'clearAddress' | 'crossChain' | 'exchange' | 'crossChainInterception', confirmCallBack?: () => void) => {
       switch (type) {
         case 'clearAddress':
           ActionSheet.alert({
@@ -258,7 +289,18 @@ const SendHome: React.FC = () => {
             ],
           });
           break;
-
+        case 'crossChainInterception':
+          ActionSheet.alert({
+            title: t('Notice'),
+            message: <TextM style={styles.alertMessage}>{t(CROSS_CHAIN_INTERCEPTED_CONTENT)}</TextM>,
+            buttons: [
+              {
+                title: t('OK'),
+                type: 'primary',
+              },
+            ],
+          });
+          break;
         default:
           break;
       }
@@ -336,7 +378,6 @@ const SendHome: React.FC = () => {
   }, []);
 
   //when finish send  upDate balance
-
   const previewParamsWithoutFee = useMemo(
     () =>
       ({
@@ -391,19 +432,31 @@ const SendHome: React.FC = () => {
         return { status: false };
       }
     }
-
     Loading.show();
-    // check is security safe
     try {
+      // cross chain interception
+      if (isCrossChain(selectedToContact.address, assetInfo.chainId)) {
+        const sendChainId = selectedToContact.chainId || (getChainIdByAddress(selectedToContact.address) as ChainId);
+        const interceptResult = await getAssetsEstimation({
+          symbol: assetInfo.symbol,
+          chainId: sendChainId,
+          type: sendType,
+        });
+        if (!interceptResult) {
+          showDialog('crossChainInterception');
+          return;
+        }
+      }
+      // check is security safe
       const securitySafeResult = await securitySafeCheckAndToast(assetInfo.chainId);
       if (!securitySafeResult) {
-        Loading.hide();
         return { status: false };
       }
     } catch (err) {
       CommonToast.failError(err);
-      Loading.hide();
       return { status: false };
+    } finally {
+      Loading.hide();
     }
 
     // checkTransferLimitResult
@@ -452,10 +505,35 @@ const SendHome: React.FC = () => {
 
     // transaction fee check
     let fee;
+    let receiveAmount: string | undefined;
+    let receiveAmountUsd: string | undefined;
+    let transactionFee: string | undefined;
+    let transactionUnit: string | undefined;
+    let isEtransferCrossInLimit = false;
     try {
-      fee = await getTransactionFee(isCross);
+      if (isCross && isSupportCross) {
+        const { withdrawInfo } = await crossTransferByEtransfer.withdrawPreview({
+          symbol: assetInfo.symbol,
+          address: selectedToContact.address,
+          chainId: assetInfo.chainId,
+          amount: sendNumber,
+        });
+        fee = withdrawInfo?.aelfTransactionFee;
+        const maxAmount = Number(withdrawInfo?.maxAmount);
+        const minAmount = Number(withdrawInfo?.minAmount);
+        transactionFee = withdrawInfo.transactionFee;
+        transactionUnit = withdrawInfo.transactionUnit;
+        isEtransferCrossInLimit = Number(sendNumber) >= minAmount && Number(sendNumber) <= maxAmount;
+        if (isEtransferCrossInLimit) {
+          receiveAmount = withdrawInfo?.receiveAmount;
+          receiveAmountUsd = withdrawInfo?.receiveAmountUsd;
+        } else {
+          fee = await getTransactionFee(isCross);
+        }
+      } else {
+        fee = await getTransactionFee(isCross);
+      }
       console.log('fee', fee);
-      setTransactionFee(fee || '0');
     } catch (err: any) {
       if (err?.code === 500) {
         setErrorMessage([TransactionError.FEE_NOT_ENOUGH]);
@@ -466,24 +544,35 @@ const SendHome: React.FC = () => {
       Loading.hide();
     }
 
-    return { status: true, fee };
+    return {
+      status: true,
+      fee,
+      receiveAmount,
+      receiveAmountUsd,
+      isEtransferCrossInLimit,
+      transactionFee,
+      transactionUnit,
+    };
   }, [
     chainInfo,
-    checkManagerSyncState,
-    sendNumber,
-    assetInfo.decimals,
-    assetInfo.chainId,
-    assetInfo.symbol,
     balance,
     selectedToContact.address,
+    selectedToContact.chainId,
+    assetInfo.chainId,
+    assetInfo.decimals,
+    assetInfo.symbol,
+    sendNumber,
     sendType,
+    checkManagerSyncState,
+    defaultToken.symbol,
+    defaultToken.decimals,
+    crossFee,
     securitySafeCheckAndToast,
     getCAContract,
     checkTransferLimitWithJump,
     previewParamsWithoutFee,
-    defaultToken.symbol,
-    defaultToken.decimals,
-    crossFee,
+    isSupportCross,
+    crossTransferByEtransfer,
     getTransactionFee,
   ]);
 
@@ -494,8 +583,13 @@ const SendHome: React.FC = () => {
     navigationService.navigate('SendPreview', {
       ...previewParamsWithoutFee,
       transactionFee: result?.fee || '0',
+      receiveAmount: result?.receiveAmount,
+      receiveAmountUsd: result?.receiveAmountUsd,
+      isEtransferCrossInLimit: result?.isEtransferCrossInLimit,
+      crossChainFee: result?.transactionFee || crossFee,
+      crossChainFeeUnit: result?.transactionUnit || '',
     });
-  }, [checkCanPreview, previewParamsWithoutFee]);
+  }, [checkCanPreview, crossFee, previewParamsWithoutFee]);
 
   const ButtonUI = useMemo(() => {
     return (
@@ -581,6 +675,10 @@ const SendHome: React.FC = () => {
     selectedToContact.address,
     showDialog,
   ]);
+
+  useEffect(() => {
+    onGetMaxAmount();
+  }, [onGetMaxAmount]);
 
   return (
     <PageContainer

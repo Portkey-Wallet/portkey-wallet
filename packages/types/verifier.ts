@@ -10,6 +10,13 @@ export interface VerifierItem {
   imageUrl: string;
 }
 
+export const zkLoginVerifierItem: VerifierItem = {
+  // id: '53961cca496a1cfaa7bf2dda210afb4f6430283cce4239be099ade5647091928', // sha256('zkLogin')
+  id: '',
+  name: 'zkLogin',
+  imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/zklogin_verifier.png',
+};
+
 // 0: register, 1: community recovery, 2: Add Guardian 3: Set LoginAccount 4: addManager
 export enum VerificationType {
   register,
@@ -60,12 +67,56 @@ export enum OperationTypeEnum {
   revokeAccount = 12,
 }
 
+export interface ZKLoginInfoNoncePayload {
+  addManagerAddress: {
+    timestamp: {
+      seconds: number;
+    };
+    managerAddress: string;
+  };
+}
+
+export interface ZKLoginInfo {
+  identifierHash: string;
+  poseidonIdentifierHash: string;
+  identifierHashType: number;
+  salt: string;
+  zkProof: string;
+  jwt: string;
+  nonce: string;
+  timestamp: number;
+  managerAddress: string;
+  circuitId: string;
+}
+
+export interface ZKProofInfo {
+  zkProofPiA: string;
+  zkProofPiB1: string;
+  zkProofPiB2: string;
+  zkProofPiB3: string;
+  zkProofPiC: string;
+}
+
+export interface ZKLoginInfoInContract {
+  identifierHash: string;
+  poseidonIdentifierHash: string;
+  salt: string;
+  kid: string;
+  circuitId: string;
+  zkProof: string;
+  zkProofInfo: ZKProofInfo;
+  nonce: string;
+  noncePayload: ZKLoginInfoNoncePayload;
+  issuer: string;
+}
+
 export interface VerifierInfo {
   verifierId: string;
-  verificationDoc: string;
-  signature: string;
+  verificationDoc?: string;
+  signature?: string;
+  zkLoginInfo?: ZKLoginInfo;
 }
 
 export interface AuthenticationInfo {
-  [userId: string]: string;
+  [userId: string]: string | number;
 }

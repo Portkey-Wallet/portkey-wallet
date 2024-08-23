@@ -17,6 +17,7 @@ import { ChainId } from '@portkey/provider-types';
 import { useGetChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { IAccelerateGuardian, getAccelerateGuardianTxId } from '@portkey-wallet/utils/securityTest';
 import { getAelfTxResult } from '@portkey-wallet/utils/aelf';
+import { fixedGuardianParams, fixedGuardianApprovedParams } from '@portkey-wallet/utils/guardian';
 import { TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
 import { useGetCAContract } from 'hooks/contract';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -70,8 +71,8 @@ function AlertBody({
     const caContract = await getCAContract(accelerateChainId);
     const req = await caContract.callSendMethod('AddGuardian', managerAddress, {
       caHash,
-      guardianToAdd: params.guardianToAdd,
-      guardiansApproved: params.guardiansApproved,
+      guardianToAdd: fixedGuardianParams(params.guardianToAdd),
+      guardiansApproved: fixedGuardianApprovedParams(params.guardiansApproved),
     });
 
     if (req && !req.error) {

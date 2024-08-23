@@ -3,7 +3,7 @@ import CustomSvg, { SvgType } from 'components/CustomSvg';
 import CommonHeader from 'components/CommonHeader';
 import BottomBar from 'pages/components/BottomBar';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
-import { useExtensionBridgeButtonShow } from 'hooks/cms';
+import { useExtensionBridgeButtonShow, useExtensionNFTTabShow } from 'hooks/cms';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from 'pages/components/DisclaimerModal';
 import { useCheckSecurity } from 'hooks/useSecurity';
@@ -22,8 +22,9 @@ export default function TradePage() {
   const checkSecurity = useCheckSecurity();
   const { setLoading } = useLoading();
   const originChainId = useOriginChainId();
-  const { eBridgeUrl = '', awakenUrl = '' } = useCurrentNetworkInfo();
+  const { eBridgeUrl = '', awakenUrl = '', eForestUrl = '' } = useCurrentNetworkInfo();
   const { checkDappIsConfirmed } = useDisclaimer();
+  const { isNFTTabShow } = useExtensionNFTTabShow();
   const tradeList = useMemo(
     () => [
       {
@@ -40,12 +41,28 @@ export default function TradePage() {
         desc: 'Bridge assets in and out of aelf via cross-chain bridge - eBridge',
         btnContent: 'Cross-Chain Now',
       },
+      {
+        icon: 'ForestFavicon',
+        key: TradeTypeEnum.eForest,
+        title: 'NFT',
+        desc: 'Create, mint, and trade various NFTs on the marketplace - Forest',
+        btnContent: 'Explore Now',
+      },
     ],
     [],
   );
   const tradeListShow = useMemo(
-    () => tradeList.filter((item) => (item.key === TradeTypeEnum.eBridge ? isBridgeShow : true)),
-    [isBridgeShow, tradeList],
+    () =>
+      tradeList.filter((item) => {
+        if (item.key === TradeTypeEnum.eBridge) {
+          return isBridgeShow;
+        }
+        if (item.key === TradeTypeEnum.eForest) {
+          return isNFTTabShow;
+        }
+        return true;
+      }),
+    [isBridgeShow, isNFTTabShow, tradeList],
   );
 
   const handleCheckSecurity = useCallback(async () => {
@@ -66,25 +83,32 @@ export default function TradePage() {
       const isSecurity = await handleCheckSecurity();
       if (!isSecurity) return;
       let tradeLink = '';
+      let originUrl = '';
       switch (type) {
         case TradeTypeEnum.Swap:
           tradeLink = awakenUrl;
+          originUrl = awakenUrl;
           break;
         case TradeTypeEnum.eBridge:
           tradeLink = eBridgeUrl;
+          originUrl = eBridgeUrl;
+          break;
+        case TradeTypeEnum.eForest:
+          tradeLink = `${eForestUrl}/collections`;
+          originUrl = eForestUrl;
           break;
       }
-      if (checkDappIsConfirmed(tradeLink)) {
+      if (checkDappIsConfirmed(originUrl)) {
         const openWinder = window.open(tradeLink, '_blank');
         if (openWinder) {
           openWinder.opener = null;
         }
       } else {
-        disclaimerData.current = getDisclaimerData({ type, targetUrl: tradeLink, originUrl: tradeLink });
+        disclaimerData.current = getDisclaimerData({ type, targetUrl: tradeLink, originUrl });
         setDisclaimerOpen(true);
       }
     },
-    [awakenUrl, checkDappIsConfirmed, eBridgeUrl, handleCheckSecurity],
+    [awakenUrl, checkDappIsConfirmed, eBridgeUrl, eForestUrl, handleCheckSecurity],
   );
 
   return (

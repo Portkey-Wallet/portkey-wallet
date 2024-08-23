@@ -2,10 +2,19 @@ import { IBaseRequest, RequestOpts, IRequestDefaults } from '@portkey/types';
 import { fetchFormat, timeoutPromise } from './utils';
 import { DEFAULT_FETCH_TIMEOUT } from '@portkey-wallet/constants/misc';
 
-export class FetchRequest implements IBaseRequest {
+export interface IFetchRequest extends IBaseRequest {
+  setHeader(key: string, value: string): void;
+}
+export class FetchRequest implements IFetchRequest {
   protected _defaults: IRequestDefaults;
   constructor(defaults: IRequestDefaults) {
     this._defaults = defaults;
+  }
+  setHeader(key: string, value: string): void {
+    this._defaults.headers = {
+      ...this._defaults.headers,
+      [key]: value,
+    };
   }
   async send(config: RequestOpts): Promise<any> {
     const { headers, baseURL, url, method, timeout = DEFAULT_FETCH_TIMEOUT } = this._defaults || {};

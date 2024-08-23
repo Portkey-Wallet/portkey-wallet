@@ -20,3 +20,7 @@ export type SocialLoginFinishHandler = (value: {
     [x: string]: any;
   };
 }) => void;
+
+export enum VerifyTypeEnum {
+  zklogin = 'zklogin',
+}

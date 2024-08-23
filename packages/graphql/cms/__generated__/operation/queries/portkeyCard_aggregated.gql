@@ -3,28 +3,32 @@ query portkeyCard_aggregated($groupBy: [String], $filter: portkeyCard_filter, $l
         group
         countAll
         count{
-            id
-            status
-            index
-            title
-            value
-            description
+            appLink
             buttonTitle
+            description
+            extensionLink
+            id
             imgUrl
-            url
+            index
+            status
+            title
             type
+            url
+            value
         }
         countDistinct{
-            id
-            status
-            index
-            title
-            value
-            description
+            appLink
             buttonTitle
+            description
+            extensionLink
+            id
             imgUrl
-            url
+            index
+            status
+            title
             type
+            url
+            value
         }
         avg{
             id

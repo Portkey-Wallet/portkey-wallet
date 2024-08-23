@@ -1,8 +1,8 @@
-import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { ChainType } from '@portkey-wallet/types';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { managerForwardCall } from './managerForwardCall';
 import { GuardianItem } from 'types/guardians';
+import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
 
 const sameChainTransfer = async ({
   chainInfo,
@@ -15,7 +15,7 @@ const sameChainTransfer = async ({
   toAddress: to,
   guardiansApproved,
 }: {
-  chainInfo: ChainItemType;
+  chainInfo: IChainItemType;
   chainType: ChainType;
   privateKey: string;
   tokenInfo: BaseToken;

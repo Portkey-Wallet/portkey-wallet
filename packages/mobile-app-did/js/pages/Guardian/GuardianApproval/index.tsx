@@ -135,7 +135,21 @@ export default function GuardianApproval() {
 
   const { init: initGuardian } = useRefreshGuardianList();
 
-  const { userGuardiansList: storeUserGuardiansList, preGuardian } = useGuardiansInfo();
+  const { userGuardiansList: storeUserGuardiansList, preGuardian, verifierMap } = useGuardiansInfo();
+
+  const verifierIdList = useMemo(
+    () =>
+      verifierMap
+        ? Object.values(verifierMap)
+            .map(verifier => verifier.id)
+            .filter(verifierId => verifierId?.length > 0)
+        : [],
+    [verifierMap],
+  );
+  const randomVerifierId = useMemo(() => {
+    const index = Math.floor(Math.random() * verifierIdList.length);
+    return verifierIdList[index];
+  }, [verifierIdList]);
 
   useEffectOnce(() => {
     initGuardian();
@@ -290,6 +304,7 @@ export default function GuardianApproval() {
         guardianItem,
         userGuardiansList,
         guardiansStatus,
+        randomVerifierId,
       );
     } catch (error) {
       CommonToast.failError(error);
@@ -308,6 +323,7 @@ export default function GuardianApproval() {
           guardianItem,
           userGuardiansList,
           guardiansStatus,
+          randomVerifierId,
         );
       } catch (error) {
         console.log('accelerateReq error', error);
@@ -342,6 +358,7 @@ export default function GuardianApproval() {
     t,
     userGuardiansList,
     verifierInfo,
+    randomVerifierId,
   ]);
 
   const onDeleteGuardian = useCallback(async () => {

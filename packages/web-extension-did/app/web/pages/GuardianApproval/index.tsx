@@ -64,11 +64,13 @@ export default function GuardianApproval() {
     const tempGuardianList = Object.values(userGuardianStatus ?? {});
     let filterGuardianList: UserGuardianStatus[] = tempGuardianList;
     const from = locationParams.previousPage;
-    if (from === FromPageEnum.guardiansEdit) {
+    if (FromPageEnum.guardiansEdit === from) {
       filterGuardianList = tempGuardianList.filter((item) => item.key !== preGuardian?.key);
-    } else if (
-      [FromPageEnum.guardiansAdd, FromPageEnum.guardiansDel, FromPageEnum.guardiansLoginGuardian].includes(from)
-    ) {
+    } else if (FromPageEnum.guardiansDel === from) {
+      filterGuardianList = tempGuardianList.filter(
+        (item) => item.key !== preGuardian?.key && item.key !== opGuardian?.key,
+      );
+    } else if ([FromPageEnum.guardiansAdd, FromPageEnum.guardiansLoginGuardian].includes(from)) {
       filterGuardianList = tempGuardianList.filter((item) => item.key !== opGuardian?.key);
     }
     return filterGuardianList;

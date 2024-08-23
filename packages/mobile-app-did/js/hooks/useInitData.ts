@@ -18,6 +18,7 @@ import im from '@portkey-wallet/im';
 import { useInitRamp } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { codePushOperator } from 'utils/update';
+import { useGetCryptoGiftConfig } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 
 export default function useInitData() {
   const dispatch = useAppDispatch();
@@ -31,6 +32,7 @@ export default function useInitData() {
 
   const { refresh: loadBookmarkList } = useBookmarkList();
   const initIM = useInitIM();
+  const { init: initCryptoGiftConfig } = useGetCryptoGiftConfig();
   const initRamp = useInitRamp({
     clientType: isIOS ? 'iOS' : 'Android',
   });
@@ -60,6 +62,7 @@ export default function useInitData() {
 
       loadBookmarkList();
       initRamp();
+      initCryptoGiftConfig();
       codePushOperator.initLocalPackage();
       // getGuardiansInfoWriteStore after getVerifierServers
       // await getVerifierServers();
@@ -69,7 +72,7 @@ export default function useInitData() {
     } catch (error) {
       console.log(error, '====error');
     }
-  }, [dispatch, getCurrentCAViewContract, initGuardianList, initRamp, loadBookmarkList]);
+  }, [dispatch, getCurrentCAViewContract, initCryptoGiftConfig, initGuardianList, initRamp, loadBookmarkList]);
 
   const isChat = useIsChatShow();
   useEffect(() => {

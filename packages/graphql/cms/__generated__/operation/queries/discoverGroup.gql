@@ -30,6 +30,7 @@ query discoverGroup($filter: directus_files_filter, $sort: [String], $limit: Int
         user_created
         user_updated
         items(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3){
+            appLink
             date_created
             date_created_func{
                 year
@@ -53,6 +54,7 @@ query discoverGroup($filter: directus_files_filter, $sort: [String], $limit: Int
                 second
             }
             description
+            extensionLink
             group(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2){
                 date_created
                 date_created_func{
@@ -84,29 +86,27 @@ query discoverGroup($filter: directus_files_filter, $sort: [String], $limit: Int
                 user_created
                 user_updated
                 items(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1){
+                    appLink
                     date_created
                     date_updated
                     description
+                    extensionLink
                     id
                     imgUrl(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
-                        id
-                        storage
+                        charset
+                        description
+                        duration
+                        embed
                         filename_disk
                         filename_download
-                        title
-                        type
+                        filesize
                         folder
-                        uploaded_by
-                        uploaded_on
-                        uploaded_on_func{
-                            year
-                            month
-                            week
-                            day
-                            weekday
-                            hour
-                            minute
-                            second
+                        height
+                        id
+                        location
+                        metadata
+                        metadata_func{
+                            count
                         }
                         modified_by
                         modified_on
@@ -120,22 +120,26 @@ query discoverGroup($filter: directus_files_filter, $sort: [String], $limit: Int
                             minute
                             second
                         }
-                        charset
-                        filesize
-                        width
-                        height
-                        duration
-                        embed
-                        description
-                        location
+                        storage
                         tags
                         tags_func{
                             count
                         }
-                        metadata
-                        metadata_func{
-                            count
+                        title
+                        type
+                        uploaded_by
+                        uploaded_on
+                        uploaded_on_func{
+                            year
+                            month
+                            week
+                            day
+                            weekday
+                            hour
+                            minute
+                            second
                         }
+                        width
                     }
                     index
                     sort

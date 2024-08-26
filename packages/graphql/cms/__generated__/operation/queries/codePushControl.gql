@@ -1,9 +1,6 @@
 query codePushControl($filter: codePushControl_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String){
     codePushControl(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
-        id
-        status
-        sort
-        user_created
+        content
         date_created
         date_created_func{
             year
@@ -15,7 +12,6 @@ query codePushControl($filter: codePushControl_filter, $sort: [String], $limit: 
             minute
             second
         }
-        user_updated
         date_updated
         date_updated_func{
             year
@@ -27,12 +23,16 @@ query codePushControl($filter: codePushControl_filter, $sort: [String], $limit: 
             minute
             second
         }
-        version
-        label
-        title
-        content
+        id
         isForceUpdate
-        updatedTitle
+        label
+        sort
+        status
+        title
         updatedContent
+        updatedTitle
+        user_created
+        user_updated
+        version
     }
 }

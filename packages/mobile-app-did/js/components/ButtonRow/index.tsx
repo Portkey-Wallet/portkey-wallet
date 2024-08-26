@@ -40,6 +40,7 @@ export default function ButtonRow({
             <CommonButton
               disabled={item.disabled}
               loading={item.loading}
+              loadingProps={item.type === 'outline' ? { color: defaultColors.primaryColor } : undefined}
               containerStyle={containerStyle}
               buttonStyle={[buttonStyle, propsButtonStyle]}
               titleStyle={[titleStyle, propsTitleStyle]}

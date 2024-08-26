@@ -7,8 +7,12 @@ import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { extraDataEncode } from '@portkey-wallet/utils/device';
 import { getDeviceInfo } from 'utils/device';
 import { DEVICE_TYPE } from 'constants/index';
-import { recoveryDIDWallet, registerDIDWallet } from '@portkey-wallet/api/api-did/utils/wallet';
-import type { AccountType, GuardiansApproved } from '@portkey/services';
+import {
+  GuardiansApprovedWithZK,
+  recoveryDIDWallet,
+  registerDIDWallet,
+} from '@portkey-wallet/api/api-did/utils/wallet';
+import type { AccountType } from '@portkey/services';
 import { VerificationType, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
 import { setManagerInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -36,7 +40,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   const originChainId = useOriginChainId();
   const latestOriginChainId = useLatestRef(originChainId);
 
-  const getGuardiansApproved: () => GuardiansApproved[] = useCallback(() => {
+  const getGuardiansApproved: () => GuardiansApprovedWithZK[] = useCallback(() => {
     return Object.values(userGuardianStatus ?? {})
       .filter((guardian) => guardian.status === VerifyStatus.Verified)
       .map((guardian) => ({
@@ -45,6 +49,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         verifierId: guardian.verifier?.id || '',
         verificationDoc: guardian.verificationDoc || '',
         signature: guardian.signature || '',
+        zkLoginInfo: guardian.zkLoginInfo,
       }));
   }, [userGuardianStatus]);
 
@@ -92,7 +97,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
       guardiansApprovedList,
     }: {
       managerAddress: string;
-      guardiansApprovedList?: GuardiansApproved[];
+      guardiansApprovedList?: GuardiansApprovedWithZK[];
     }) => {
       const loginAccount = await getLoginAccount();
       if (!loginAccount?.guardianAccount || !LoginType[loginAccount.loginType]) {
@@ -163,16 +168,17 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         if (state === 'register') {
           sessionInfo = await requestRegisterDIDWallet({ managerAddress: _walletInfo.address, verifierParams });
         } else {
-          let guardiansApprovedList: GuardiansApproved[] | undefined = undefined;
+          let guardiansApprovedList: GuardiansApprovedWithZK[] | undefined = undefined;
           if (verifierParams && currentGuardian) {
             guardiansApprovedList = [
               {
                 type: LoginType[currentGuardian.guardianType] as AccountType,
                 identifier: currentGuardian.guardianAccount,
                 verifierId: verifierParams.verifierId,
-                verificationDoc: verifierParams?.verificationDoc,
-                signature: verifierParams.signature,
+                verificationDoc: verifierParams?.verificationDoc ?? '',
+                signature: verifierParams.signature ?? '',
                 identifierHash: currentGuardian.identifierHash,
+                zkLoginInfo: currentGuardian.zkLoginInfo,
               },
             ];
           }

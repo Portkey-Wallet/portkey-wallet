@@ -22,6 +22,8 @@ import * as Application from 'expo-application';
 import { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { PROTOCOL_ALLOW_LIST } from 'constants/web';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCMS } from '@portkey-wallet/hooks/hooks-ca/cms/discover';
 
 export const BLANK_PAGE = 'about:blank';
 
@@ -51,6 +53,8 @@ const ProviderWebview = forwardRef<
   const loadStartRef = useRef<boolean>(false);
   const prePageUrl = useRef<string>();
   const [entryScriptWeb3, setEntryScriptWeb3] = useState<string>();
+  const { networkType } = useCurrentNetworkInfo();
+  const { dappWhiteListMap } = useCMS();
   useEffectOnce(() => {
     const getEntryScriptWeb3 = async () => {
       const script = await EntryScriptWeb3.get();
@@ -90,9 +94,10 @@ const ProviderWebview = forwardRef<
         stream: new MobileStream(webViewRef.current!),
         dappManager: new DappMobileManager({ store: store as any }),
         dappOverlay: new DappOverlay(),
+        dappWhiteList: dappWhiteListMap[networkType],
       });
     },
-    [entryScriptWeb3, props.isDiscover],
+    [dappWhiteListMap, entryScriptWeb3, networkType, props.isDiscover],
   );
 
   const onLoadStart = useCallback(

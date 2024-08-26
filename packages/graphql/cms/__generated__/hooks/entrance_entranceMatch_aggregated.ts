@@ -23,51 +23,51 @@ export type Entrance_EntranceMatch_AggregatedQuery = {
     countAll?: number | null;
     count?: {
       __typename?: 'entrance_entranceMatch_aggregated_count';
-      id?: number | null;
       entrance_id?: number | null;
       entranceMatch_id?: number | null;
+      id?: number | null;
     } | null;
     countDistinct?: {
       __typename?: 'entrance_entranceMatch_aggregated_count';
-      id?: number | null;
       entrance_id?: number | null;
       entranceMatch_id?: number | null;
+      id?: number | null;
     } | null;
     avg?: {
       __typename?: 'entrance_entranceMatch_aggregated_fields';
-      id?: number | null;
       entrance_id?: number | null;
       entranceMatch_id?: number | null;
+      id?: number | null;
     } | null;
     sum?: {
       __typename?: 'entrance_entranceMatch_aggregated_fields';
-      id?: number | null;
       entrance_id?: number | null;
       entranceMatch_id?: number | null;
+      id?: number | null;
     } | null;
     avgDistinct?: {
       __typename?: 'entrance_entranceMatch_aggregated_fields';
-      id?: number | null;
       entrance_id?: number | null;
       entranceMatch_id?: number | null;
+      id?: number | null;
     } | null;
     sumDistinct?: {
       __typename?: 'entrance_entranceMatch_aggregated_fields';
-      id?: number | null;
       entrance_id?: number | null;
       entranceMatch_id?: number | null;
+      id?: number | null;
     } | null;
     min?: {
       __typename?: 'entrance_entranceMatch_aggregated_fields';
-      id?: number | null;
       entrance_id?: number | null;
       entranceMatch_id?: number | null;
+      id?: number | null;
     } | null;
     max?: {
       __typename?: 'entrance_entranceMatch_aggregated_fields';
-      id?: number | null;
       entrance_id?: number | null;
       entranceMatch_id?: number | null;
+      id?: number | null;
     } | null;
   }>;
 };
@@ -94,44 +94,44 @@ export const Entrance_EntranceMatch_AggregatedDocument = gql`
       group
       countAll
       count {
-        id
         entrance_id
         entranceMatch_id
+        id
       }
       countDistinct {
-        id
         entrance_id
         entranceMatch_id
+        id
       }
       avg {
-        id
         entrance_id
         entranceMatch_id
+        id
       }
       sum {
-        id
         entrance_id
         entranceMatch_id
+        id
       }
       avgDistinct {
-        id
         entrance_id
         entranceMatch_id
+        id
       }
       sumDistinct {
-        id
         entrance_id
         entranceMatch_id
+        id
       }
       min {
-        id
         entrance_id
         entranceMatch_id
+        id
       }
       max {
-        id
         entrance_id
         entranceMatch_id
+        id
       }
     }
   }

@@ -3,9 +3,11 @@ query discoverItem_aggregated($groupBy: [String], $filter: discoverItem_filter, 
         group
         countAll
         count{
+            appLink
             date_created
             date_updated
             description
+            extensionLink
             group
             id
             imgUrl
@@ -18,9 +20,11 @@ query discoverItem_aggregated($groupBy: [String], $filter: discoverItem_filter, 
             user_updated
         }
         countDistinct{
+            appLink
             date_created
             date_updated
             description
+            extensionLink
             group
             id
             imgUrl

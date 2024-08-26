@@ -168,6 +168,7 @@ export const useGuardianRecovery = () => {
     opGuardian,
     originChainId,
     preGuardian,
+    reportUnsetLoginAccount,
     setLoading,
     state,
     userGuardianStatus,

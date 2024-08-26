@@ -1,0 +1,6 @@
+query clientType($filter: clientType_filter, $sort: [String], $limit: Int, $offset: Int, $page: Int, $search: String){
+    clientType(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
+        id
+        name
+    }
+}

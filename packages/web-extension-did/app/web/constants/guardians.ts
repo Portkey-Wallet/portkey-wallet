@@ -1,4 +1,4 @@
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { ISocialLogin, LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { IGuardianType, IPhoneInput, ISocialInput } from 'types/guardians';
 
 export const guardianTypeList: IGuardianType[] = [
@@ -23,3 +23,5 @@ export const socialInit: ISocialInput = {
   value: '',
   isPrivate: false,
 };
+
+export const zkloginGuardianType: ISocialLogin[] = ['Google', 'Apple'];

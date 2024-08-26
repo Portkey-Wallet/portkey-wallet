@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import GStyles from 'assets/theme/GStyles';
 import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -29,6 +29,7 @@ import CryptoAssetsListOverlay from '../CryptoAssetsListOverlay';
 import { AssetType } from '@portkey-wallet/constants/constants-ca/assets';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
 import NFTAvatar from 'components/NFTAvatar';
+import NewUserOnly from 'pages/CryptoGift/components/NewUserOnly';
 
 export type TInputValue = {
   packetNum?: string;
@@ -38,11 +39,13 @@ export type TInputValue = {
 
 export type CryptoValuesType = TInputValue & {
   token: ICryptoBoxAssetItemType;
+  isNewUserOnly?: boolean;
 };
 
 export type SendRedPacketGroupSectionPropsType = {
   type?: RedPackageTypeEnum;
   groupMemberCount?: number;
+  isCryptoGift?: boolean;
   onPressButton: (values: CryptoValuesType) => void;
 };
 
@@ -53,9 +56,11 @@ const AMOUNT_LABEL_MAP = {
 };
 
 export default function SendRedPacketGroupSection(props: SendRedPacketGroupSectionPropsType) {
-  const { type, groupMemberCount, onPressButton } = props;
+  const { type, groupMemberCount, isCryptoGift, onPressButton } = props;
   const { getTokenInfo } = useGetRedPackageConfig();
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
+
+  const isNewUserOnly = useRef<boolean>(true);
 
   const defaultToken = useDefaultToken(MAIN_CHAIN_ID);
 
@@ -196,6 +201,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
               .times(values.packetNum || 0)
               .toFixed()
           : ZERO.plus(values.count).toFixed(),
+      isNewUserOnly: isNewUserOnly.current,
     });
   }, [getTokenInfo, onPressButton, selectToken, type, values]);
 
@@ -245,7 +251,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
   return (
     <>
       {type !== RedPackageTypeEnum.P2P && (
-        <FormItem title="Quantity of Crypto Box(es)">
+        <FormItem title={isCryptoGift ? 'Quantity of Crypto Gift(s)' : 'Quantity of Crypto Box(es)'}>
           <CommonInput
             type="general"
             placeholder="Enter quantity"
@@ -322,9 +328,18 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
           maxLength={80}
           inputContainerStyle={styles.inputWrap}
           onChangeText={onMemoChange}
+          containerStyle={styles.packetNumWrap}
         />
       </FormItem>
-
+      {isCryptoGift && (
+        <NewUserOnly
+          onSwitchChanged={selected => {
+            console.log('wfs=== NewUserOnly', selected);
+            isNewUserOnly.current = selected;
+          }}
+          containerStyle={{ marginBottom: pTd(16) }}
+        />
+      )}
       {selectToken.assetType === AssetType.nft ? (
         <>
           <RedPacketAmountShow
@@ -355,7 +370,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
       <CommonButton
         disabled={!isAllowPrepare}
         type="primary"
-        title={'Send Crypto Box'}
+        title={isCryptoGift ? 'Send Crypto Gift' : 'Send Crypto Box'}
         containerStyle={styles.btnStyle}
         onPress={onPreparePress}
       />
@@ -370,14 +385,17 @@ const styles = StyleSheet.create({
   },
   inputWrap: {
     backgroundColor: defaultColors.bg1,
-    borderWidth: 0,
-    borderBottomWidth: 0,
+    borderColor: defaultColors.neutralBorder,
+    borderWidth: 0.5,
+    borderBottomWidth: 0.5,
+    height: pTd(52),
   },
   inputContainerStyle: {
     height: pTd(64),
   },
   packetNumWrap: {
-    marginBottom: pTd(8),
+    marginBottom: pTd(16),
+    height: pTd(52),
   },
   amountTipsGap: {
     marginBottom: pTd(8),

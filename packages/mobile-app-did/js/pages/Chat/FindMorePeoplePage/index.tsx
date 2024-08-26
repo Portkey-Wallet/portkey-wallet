@@ -23,6 +23,7 @@ import { useInputFocus } from 'hooks/useInputFocus';
 import CommonToast from 'components/CommonToast';
 import InviteFriendsSection from '../components/InviteFriendsSection';
 import OfficialChatGroup from '../components/OfficialChatGroup';
+import KeyGenieChat from '../components/KeyGenieChat';
 
 const FindMorePeople = () => {
   const iptRef = useRef<TextInput>(null);
@@ -119,6 +120,7 @@ const FindMorePeople = () => {
         <>
           <InviteFriendsSection />
           <OfficialChatGroup />
+          <KeyGenieChat />
         </>
       )}
       <FlatList

@@ -1,0 +1,46 @@
+query myReferralBanner_portkeyCard_aggregated($groupBy: [String], $filter: myReferralBanner_portkeyCard_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
+    myReferralBanner_portkeyCard_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
+        group
+        countAll
+        count{
+            id
+            myReferralBanner_id
+            portkeyCard_id
+        }
+        countDistinct{
+            id
+            myReferralBanner_id
+            portkeyCard_id
+        }
+        avg{
+            id
+            myReferralBanner_id
+            portkeyCard_id
+        }
+        sum{
+            id
+            myReferralBanner_id
+            portkeyCard_id
+        }
+        avgDistinct{
+            id
+            myReferralBanner_id
+            portkeyCard_id
+        }
+        sumDistinct{
+            id
+            myReferralBanner_id
+            portkeyCard_id
+        }
+        min{
+            id
+            myReferralBanner_id
+            portkeyCard_id
+        }
+        max{
+            id
+            myReferralBanner_id
+            portkeyCard_id
+        }
+    }
+}

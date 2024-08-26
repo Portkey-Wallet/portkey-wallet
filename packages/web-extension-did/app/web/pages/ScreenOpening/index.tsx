@@ -12,7 +12,7 @@ export default function ScreenOpeningPage() {
       <div className="open-page-content">
         <CustomSvg type="LogoWhite" />
         <h1>Welcome to Portkey</h1>
-        <p className="description">Your key to play and earn in Web 3</p>
+        <p className="description">Your key to play and earn in Web3</p>
         <Button onClick={() => navigate('/register/start')}>Get Start</Button>
       </div>
       <div className="version">{`v ${version}`}</div>

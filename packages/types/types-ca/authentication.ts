@@ -8,6 +8,7 @@ export type VerifyTokenParams = {
   id: string;
   operationType: OperationTypeEnum;
   targetChainId?: ChainId;
+  caHash?: string;
   operationDetails?: string;
 };
 

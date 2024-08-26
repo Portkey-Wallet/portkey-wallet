@@ -11,7 +11,7 @@ import { request } from '@portkey-wallet/api/api-did';
 import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
 import { ISocialLogin, LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { useWalletInfo } from 'store/Provider/hooks';
-import { useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo, useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 
@@ -148,6 +148,7 @@ export function useVerifyToken() {
   const verifyFacebook = useVerifyFacebook();
   const verifyManagerAddress = useVerifyManagerAddress();
   const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
+  const { caHash } = useCurrentWalletInfo();
 
   return useCallback(
     (type: LoginType, params: VerifyTokenParams) => {
@@ -164,11 +165,20 @@ export function useVerifyToken() {
         func = verifyFacebook;
       }
       return func({
+        caHash,
         operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
         ...params,
       });
     },
-    [latestVerifyManagerAddress, verifyAppleToken, verifyFacebook, verifyGoogleToken, verifyTelegram, verifyTwitter],
+    [
+      caHash,
+      latestVerifyManagerAddress,
+      verifyAppleToken,
+      verifyFacebook,
+      verifyGoogleToken,
+      verifyTelegram,
+      verifyTwitter,
+    ],
   );
 }
 

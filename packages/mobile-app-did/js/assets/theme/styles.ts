@@ -74,6 +74,7 @@ export const FontStyles = StyleSheet.create({
   functionalRedDefault: { color: defaultColors.functionalRedDefault },
   functionalGreenDefault: { color: defaultColors.functionalGreenDefault },
   neutralDefaultBG: { color: defaultColors.neutralDefaultBG },
+  neutralDisableText: { color: defaultColors.neutralDisableText },
 
   white: { color: defaultColors.white },
 

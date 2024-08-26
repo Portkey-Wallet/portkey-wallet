@@ -18,6 +18,7 @@ export interface SendVerificationConfig extends RequestConfig {
     chainId: string | number;
     operationType: OperationTypeEnum;
     targetChainId?: ChainId;
+    operationDetails?: string;
   };
 }
 

@@ -50,6 +50,20 @@ interface GuardianAccountItemProps {
   approvalType?: ApprovalType;
   authenticationInfo?: AuthenticationInfo;
   targetChainId?: ChainId;
+  extra?: {
+    identifierHash?: string;
+    guardianType?: string;
+    verifierId?: string;
+    preVerifierId?: string;
+    newVerifierId?: string;
+    symbol?: string;
+    amount?: string | number;
+    toAddress?: string;
+    singleLimit?: string;
+    dailyLimit?: string;
+    spender?: string;
+    verifyManagerAddress?: string;
+  };
 }
 
 function GuardianItemButton({

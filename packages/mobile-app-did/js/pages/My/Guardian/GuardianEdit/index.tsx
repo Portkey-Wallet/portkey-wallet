@@ -56,6 +56,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { TAppleAuthentication } from 'types/authentication';
 import { useLoginModeList } from 'hooks/loginMode';
 import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
@@ -293,6 +294,11 @@ const GuardianEdit: React.FC = () => {
                   verifierId: selectedVerifier.id,
                   chainId: originChainId,
                   operationType: OperationTypeEnum.addGuardian,
+                  operationDetails: getOperationDetails(OperationTypeEnum.addGuardian, {
+                    identifierHash: '',
+                    guardianType: guardianType + '',
+                    verifierId: selectedVerifier.id,
+                  }),
                 },
               });
               if (req.verifierSessionId) {
@@ -307,6 +313,11 @@ const GuardianEdit: React.FC = () => {
                     verifierSessionId: req.verifierSessionId,
                   },
                   verificationType: VerificationType.addGuardian,
+                  operationDetails: getOperationDetails(OperationTypeEnum.addGuardian, {
+                    identifierHash: '',
+                    guardianType: guardianType + '',
+                    verifierId: selectedVerifier.id,
+                  }),
                   accelerateChainId,
                 });
               } else {

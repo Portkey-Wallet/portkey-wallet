@@ -23,7 +23,7 @@ import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import TelegramOverlay from 'components/OauthOverlay/telegram';
 import FacebookOverlay from 'components/OauthOverlay/facebook';
 import { parseTelegramToken } from '@portkey-wallet/utils/authentication';
-import { useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo, useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { ReportUnsetLoginGuardianProps, VerifyTokenParams } from '@portkey-wallet/types/types-ca/authentication';
 import { onAndroidFacebookAuthentication, onTwitterAuthentication } from 'utils/authentication';
@@ -455,6 +455,7 @@ export function useVerifyToken() {
   const verifyTwitterToken = useVerifyTwitterToken();
   const verifyFacebookToken = useVerifyFacebookToken();
   const verifyManagerAddress = useVerifyManagerAddress();
+  const { caHash } = useCurrentWalletInfo();
   const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
   return useCallback(
     (type: LoginType, params: VerifyTokenParams) => {
@@ -479,12 +480,14 @@ export function useVerifyToken() {
           throw new Error('Unsupported login type');
       }
       return fun({
+        caHash,
         operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
         ...params,
       });
     },
     [
       verifyGoogleToken,
+      caHash,
       latestVerifyManagerAddress,
       verifyAppleToken,
       verifyTelegramToken,

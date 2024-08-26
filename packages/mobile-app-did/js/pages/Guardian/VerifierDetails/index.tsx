@@ -46,6 +46,7 @@ type RouterParams = {
   targetChainId?: ChainId;
   accelerateChainId?: ChainId;
   autoLogin?: boolean;
+  operationDetails: string;
 };
 function TipText({ guardianAccount, isRegister }: { guardianAccount?: string; isRegister?: boolean }) {
   const [first, last] = useMemo(() => {
@@ -155,6 +156,7 @@ export default function VerifierDetails() {
             chainId: originChainId,
             operationType,
             targetChainId,
+            caHash,
             operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
           },
         });
@@ -233,6 +235,7 @@ export default function VerifierDetails() {
       originChainId,
       operationType,
       targetChainId,
+      caHash,
       latestVerifyManagerAddress,
       onRequestOrSetPin,
       setGuardianStatus,

@@ -7,7 +7,7 @@ import { setUserGuardianSessionIdAction } from '@portkey-wallet/store/store-ca/g
 import { verifyErrorHandler } from 'utils/tryErrorHandler';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { verification } from 'utils/api';
-import { useOriginChainId, useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo, useOriginChainId, useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCommonState } from 'store/Provider/hooks';
 import { useLocation } from 'react-router';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
@@ -57,6 +57,7 @@ export default function VerifierPage({
   const uiRef = useRef<ICodeVerifyUIInterface>();
   const verifyManagerAddress = useVerifyManagerAddress();
   const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
+  const { caHash } = useCurrentWalletInfo();
 
   useEffect(() => {
     setIsFromLoginOrRegister(pathname.includes('register') || pathname.includes('login'));
@@ -82,6 +83,7 @@ export default function VerifierPage({
               chainId: originChainId,
               operationType,
               targetChainId: targetChainId,
+              caHash,
               operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
             },
           });
@@ -106,6 +108,7 @@ export default function VerifierPage({
     },
     [
       guardianType,
+      caHash,
       currentGuardian,
       setLoading,
       originChainId,

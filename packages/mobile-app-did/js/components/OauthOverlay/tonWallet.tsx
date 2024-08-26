@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { Keyboard, View } from 'react-native';
+import { Keyboard, Linking, View } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
 import WebView from 'react-native-webview';
 import Lottie from 'lottie-react-native';
@@ -18,12 +18,13 @@ import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
 import { WebViewMessageEvent } from 'react-native-webview';
 import {
   InjectTelegramLoginJavaScript,
-  InjectTelegramOpenJavaScript,
+  InjectTonOpenJavaScript,
   PATHS,
   TGAuthCallBack,
   TGAuthPush,
   TGAuthResult,
   TG_FUN,
+  TON_FUN,
   parseTGAuthResult,
 } from './config';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -34,10 +35,10 @@ type TelegramSignProps = {
   onReject: (reason: any) => void;
 };
 
-function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
-  const [loading, setLoading] = useState(true);
+function TonSign({ onConfirm, onReject }: TelegramSignProps) {
+  const [loading, setLoading] = useState(false);
   const { networkType, apiUrl } = useCurrentNetworkInfo();
-  const [uri, go] = useState(`${OpenLogin}${PATHS.Load}&network=${networkType}`);
+  const [uri, go] = useState(`http://192.168.1.29:3000`);
   const ref = useRef<WebView>();
   const onLoadStart = useCallback(
     ({ nativeEvent }: WebViewNavigationEvent) => {
@@ -79,14 +80,16 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
   const onMessage = useCallback(
     ({ nativeEvent }: WebViewMessageEvent) => {
       const { data } = nativeEvent;
+
       try {
         const obj = JSON.parse(data);
         const { type } = obj;
-        if (type === TG_FUN.LoginCancel || type === TG_FUN.DeclineRequest || type === TG_FUN.Error) {
+        if (type === TG_FUN.Error) {
           onReject(USER_CANCELED);
           OverlayModal.hide();
-        } else if (!isIOS && type === TG_FUN.Open) {
-          go(obj.url);
+        } else if (type === TON_FUN.Open) {
+          // go(obj.url);
+          Linking.openURL(obj.url);
         }
       } catch (error) {
         console.log(error);
@@ -111,7 +114,7 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
           ref={ref as any}
           source={{ uri }}
           originWhitelist={['*']}
-          injectedJavaScript={!isIOS ? InjectTelegramOpenJavaScript : undefined}
+          injectedJavaScript={InjectTonOpenJavaScript}
           javaScriptCanOpenWindowsAutomatically={true}
           onLoadProgress={({ nativeEvent }) => {
             if (nativeEvent.url.includes('telegram.org') && nativeEvent.progress > 0.7) setLoading(false);
@@ -130,7 +133,7 @@ function TelegramSign({ onConfirm, onReject }: TelegramSignProps) {
 const sign = () => {
   Keyboard.dismiss();
   return new Promise<any>((resolve, reject) => {
-    OverlayModal.show(<TelegramSign onConfirm={resolve} onReject={reject} />, {
+    OverlayModal.show(<TonSign onConfirm={resolve} onReject={reject} />, {
       position: 'bottom',
       onDisappearCompleted: () => reject(new Error(USER_CANCELED)),
     });

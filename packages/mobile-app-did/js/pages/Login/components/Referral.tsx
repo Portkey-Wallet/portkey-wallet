@@ -115,6 +115,21 @@ export function useLoginModeMap(
     Loading.hide(loadingKey);
   }, [authenticationSign, onLogin]);
 
+  const onTonSign = useLockCallback(async () => {
+    const loadingKey = Loading.show();
+    try {
+      const userInfo = await authenticationSign(LoginType.Ton);
+      await onLogin({
+        loginAccount: userInfo.user.userId,
+        loginType: LoginType.Facebook,
+        authenticationInfo: { [userInfo.user.userId]: userInfo.accessToken },
+      });
+    } catch (error) {
+      if (!checkIsUserCancel(error)) CommonToast.failError(error);
+    }
+    Loading.hide(loadingKey);
+  }, [authenticationSign, onLogin]);
+
   return useMemo(() => {
     return {
       [LOGIN_TYPE_LABEL_MAP[LoginType.Apple]]: {
@@ -152,6 +167,11 @@ export function useLoginModeMap(
         icon: LOGIN_GUARDIAN_TYPE_ICON[LoginType.Twitter],
         onPress: onTwitterSign,
       },
+      [LOGIN_TYPE_LABEL_MAP[LoginType.Ton]]: {
+        title: LOGIN_TYPE_LABEL_MAP[LoginType.Ton],
+        icon: LOGIN_GUARDIAN_TYPE_ICON[LoginType.Ton],
+        onPress: onTonSign,
+      },
     } as {
       [key: TLoginMode]: {
         title: string;
@@ -159,7 +179,7 @@ export function useLoginModeMap(
         onPress: () => void;
       };
     };
-  }, [onAppleSign, onEmailSign, onFacebookSign, onGoogleSign, onPhoneSign, onTelegramSign, onTwitterSign]);
+  }, [onAppleSign, onEmailSign, onFacebookSign, onGoogleSign, onPhoneSign, onTelegramSign, onTonSign, onTwitterSign]);
 }
 
 export default function Referral({

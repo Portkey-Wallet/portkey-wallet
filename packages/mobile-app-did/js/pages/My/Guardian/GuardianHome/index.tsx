@@ -13,6 +13,7 @@ import { useRefreshGuardianList } from 'hooks/guardian';
 import useEffectOnce from 'hooks/useEffectOnce';
 import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
+import CommonButton from 'components/CommonButton';
 
 export default function GuardianHome() {
   const { t } = useLanguage();
@@ -83,6 +84,9 @@ export default function GuardianHome() {
           </TextM>
         </View>
       )}
+      <View>
+        <CommonButton onPress={() => navigationService.navigate('TonApprove')}>TonApprove</CommonButton>
+      </View>
     </PageContainer>
   );
 }

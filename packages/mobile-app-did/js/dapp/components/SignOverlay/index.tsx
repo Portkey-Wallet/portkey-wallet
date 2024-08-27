@@ -63,6 +63,7 @@ const SignModal = (props: SignModalPropsType) => {
         }
       } else {
         setShowWarning(false);
+        setLoading(false);
       }
     })();
   }, [getDecodedTxData, isCipherText, signInfo.data]);
@@ -98,25 +99,25 @@ const SignModal = (props: SignModalPropsType) => {
         {/* fix ScrollView scroll */}
         <ScrollView contentContainerStyle={GStyles.paddingBottom(100)}>
           {clearText ? <TransactionDataSection dataInfo={clearText} /> : <TransactionDataSection dataInfo={signInfo} />}
+          {showWarning && (
+            <View
+              style={[
+                GStyles.flexRow,
+                GStyles.itemCenter,
+                GStyles.radiusArg(pTd(8)),
+                GStyles.hairlineBorder,
+                BorderStyles.functionalYellowDisable,
+                BGStyles.functionalYellowLight,
+                GStyles.paddingArg(pTd(9), pTd(12)),
+                GStyles.marginTop(pTd(12)),
+              ]}>
+              <Svg icon={'warning3'} size={pTd(16)} />
+              <TextS style={[FontStyles.neutralPrimaryTextColor, GStyles.marginLeft(pTd(8))]}>
+                Unknown authorization, please proceed with caution
+              </TextS>
+            </View>
+          )}
         </ScrollView>
-        {showWarning && (
-          <View
-            style={[
-              GStyles.flexRow,
-              GStyles.itemCenter,
-              GStyles.radiusArg(pTd(8)),
-              GStyles.hairlineBorder,
-              BorderStyles.functionalYellowDisable,
-              BGStyles.functionalYellowLight,
-              GStyles.paddingArg(pTd(9), pTd(12)),
-              GStyles.marginTop(pTd(12)),
-            ]}>
-            <Svg icon={'warning3'} size={pTd(16)} />
-            <TextS style={[FontStyles.neutralPrimaryTextColor, GStyles.marginLeft(pTd(8))]}>
-              Unknown authorization, please proceed with caution
-            </TextS>
-          </View>
-        )}
       </View>
       <OverlayBottomSection bottomButtonGroup={ButtonList} />
     </ModalBody>

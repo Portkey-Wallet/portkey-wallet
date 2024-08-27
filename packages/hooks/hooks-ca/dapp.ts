@@ -11,6 +11,8 @@ import { SessionExpiredPlan, SessionInfo } from '@portkey-wallet/types/session';
 import { formatExpiredTime, signSession } from '@portkey-wallet/utils/session';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
 import { getRawParams } from '@portkey-wallet/utils/dapp/decodeTx';
+import { useCurrentChain } from './chainList';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 export const useDapp = () => useAppCASelector(state => state.dapp);
 export const useDiscover = () => useAppCASelector(state => state.discover);
 
@@ -81,14 +83,15 @@ export const useUpdateSessionInfo = () => {
   );
 };
 export function useDecodeTx() {
-  const currentNetwork = useCurrentNetwork();
+  const chainInfo = useCurrentChain(MAIN_CHAIN_ID);
+
   const getDecodedTxData = useCallback(
     async (raw: string) => {
-      const instance = new AElf(AElf.providers.HttpProvider(currentNetwork.rpcUrl));
+      const instance = new AElf(new AElf.providers.HttpProvider(chainInfo?.endPoint));
       const res = await getRawParams(instance, raw);
       return res;
     },
-    [currentNetwork.rpcUrl],
+    [chainInfo?.endPoint],
   );
   return getDecodedTxData;
 }

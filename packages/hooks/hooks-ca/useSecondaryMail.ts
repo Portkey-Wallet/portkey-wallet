@@ -1,12 +1,5 @@
-import { did } from '@portkey/did';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { ICodeVerifyUIInterface, MAX_TIMER } from '../../CodeVerifyUI';
-import { Form } from 'antd';
-import { sleep } from '@portkey/utils';
-// import { setLoading } from '../../../utils';
-// import { checkEmail, handleErrorMessage } from '../../../utils';
+import { useCallback, useEffect, useState } from 'react';
 import { request } from '@portkey-wallet/api/api-did';
-import { isValidEmail } from '@portkey-wallet/utils/reg';
 import { checkEmail } from '@portkey-wallet/utils/check';
 import useLockCallback from '../useLockCallback';
 
@@ -72,62 +65,62 @@ export function useSecondaryMail(defaultMail?: string) {
   };
 }
 
-export function useVerifierEmail() {
-  const [verifyCode, setVerifyCode] = useState<string>('');
+// export function useVerifierEmail() {
+//   const [verifyCode, setVerifyCode] = useState<string>('');
 
-  useEffect(() => {
-    return () => {
-      setVerifyCode('');
-    };
-  }, []);
-  const onCodeChange = useCallback((code: string) => {
-    setVerifyCode(code);
-    setCodeError(false);
-  }, []);
-  const onCodeFinish = useCallback(
-    async (code: string) => {
-      try {
-        if (code && code.length === 6) {
-          if (!verifierSessionIdRef.current)
-            throw Error(`VerifierSessionId(${verifierSessionIdRef.current}) is invalid`);
-          setLoading(true);
+//   useEffect(() => {
+//     return () => {
+//       setVerifyCode('');
+//     };
+//   }, []);
+//   const onCodeChange = useCallback((code: string) => {
+//     setVerifyCode(code);
+//     setCodeError(false);
+//   }, []);
+//   const onCodeFinish = useCallback(
+//     async (code: string) => {
+//       try {
+//         if (code && code.length === 6) {
+//           if (!verifierSessionIdRef.current)
+//             throw Error(`VerifierSessionId(${verifierSessionIdRef.current}) is invalid`);
+//           setLoading(true);
 
-          const res = await checkVerifyCode(code, verifierSessionIdRef.current);
-          if (res) {
-            singleMessage.success('Save Success!');
-            onSetSecondaryMailboxSuccess?.();
-          }
-          setVerifyCode('');
-        } else {
-          throw Error('Please check if the PIN code is entered correctly');
-        }
-      } catch (error: any) {
-        setVerifyCode('');
-        setInputError(true);
-        singleMessage.error(error.message);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [checkVerifyCode, onSetSecondaryMailboxSuccess, setInputError],
-  );
-  const onReSend = useCallback(async () => {
-    try {
-      setLoading(true);
-      const result = await sendVerifyCode(value);
-      if (!result.verifierSessionId)
-        return console.warn('The request was rejected, please check whether the parameters are correct');
-      uiRef.current?.setTimer(MAX_TIMER);
-      verifierSessionIdRef.current = result.verifierSessionId;
-    } catch (e: any) {
-      singleMessage.error(e.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [sendVerifyCode, value]);
-  return {
-    onCodeChange,
-    onCodeFinish,
-    onReSend,
-  };
-}
+//           const res = await checkVerifyCode(code, verifierSessionIdRef.current);
+//           if (res) {
+//             singleMessage.success('Save Success!');
+//             onSetSecondaryMailboxSuccess?.();
+//           }
+//           setVerifyCode('');
+//         } else {
+//           throw Error('Please check if the PIN code is entered correctly');
+//         }
+//       } catch (error: any) {
+//         setVerifyCode('');
+//         setInputError(true);
+//         singleMessage.error(error.message);
+//       } finally {
+//         setLoading(false);
+//       }
+//     },
+//     [checkVerifyCode, onSetSecondaryMailboxSuccess, setInputError],
+//   );
+//   const onReSend = useCallback(async () => {
+//     try {
+//       setLoading(true);
+//       const result = await sendVerifyCode(value);
+//       if (!result.verifierSessionId)
+//         return console.warn('The request was rejected, please check whether the parameters are correct');
+//       uiRef.current?.setTimer(MAX_TIMER);
+//       verifierSessionIdRef.current = result.verifierSessionId;
+//     } catch (e: any) {
+//       singleMessage.error(e.message);
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, [sendVerifyCode, value]);
+//   return {
+//     onCodeChange,
+//     onCodeFinish,
+//     onReSend,
+//   };
+// }

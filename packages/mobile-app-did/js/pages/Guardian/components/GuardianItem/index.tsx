@@ -37,6 +37,7 @@ import {
 } from '@portkey-wallet/constants/constants-ca/verifier';
 import { ChainId } from '@portkey-wallet/types';
 import { AuthTypes } from 'constants/guardian';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 
 interface GuardianAccountItemProps {
   guardianItem: UserGuardianItem;
@@ -75,6 +76,7 @@ function GuardianItemButton({
   disabled,
   authenticationInfo,
   targetChainId,
+  extra,
 }: GuardianAccountItemProps & {
   disabled?: boolean;
 }) {
@@ -114,6 +116,7 @@ function GuardianItemButton({
           chainId: originChainId,
           operationType,
           targetChainId,
+          operationDetails: JSON.stringify({ ...extra }),
         },
       });
       if (req.verifierSessionId) {
@@ -127,6 +130,7 @@ function GuardianItemButton({
           ...guardianInfo,
           requestCodeResult: req,
           targetChainId,
+          operationDetails: JSON.stringify({ ...extra }),
         });
       } else {
         throw new Error('send fail');
@@ -137,7 +141,7 @@ function GuardianItemButton({
       CommonToast.failError(error);
     }
     Loading.hide();
-  }, [guardianInfo, originChainId, operationType, targetChainId, onSetGuardianStatus]);
+  }, [guardianInfo, originChainId, operationType, targetChainId, onSetGuardianStatus, extra]);
 
   const onVerifierAuth = useCallback(async () => {
     try {
@@ -150,6 +154,7 @@ function GuardianItemButton({
         chainId: originChainId,
         operationType,
         targetChainId,
+        operationDetails: JSON.stringify({ ...extra }),
       });
 
       if (rst.accessToken) {
@@ -170,6 +175,7 @@ function GuardianItemButton({
     Loading.hide();
   }, [
     authenticationInfo,
+    extra,
     guardianItem.guardianAccount,
     guardianItem.guardianType,
     guardianItem.verifier?.id,
@@ -194,11 +200,12 @@ function GuardianItemButton({
           requestCodeResult,
           targetChainId,
           startResend: true,
+          operationDetails: JSON.stringify({ ...extra }),
         });
         break;
       }
     }
-  }, [guardianItem.guardianType, onVerifierAuth, guardianInfo, requestCodeResult, targetChainId]);
+  }, [guardianItem.guardianType, onVerifierAuth, guardianInfo, requestCodeResult, targetChainId, extra]);
   const buttonProps: CommonButtonProps = useMemo(() => {
     // expired
     if (isExpired && status !== VerifyStatus.Verified) {

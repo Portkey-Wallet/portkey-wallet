@@ -198,6 +198,11 @@ const GuardianEdit: React.FC = () => {
         verifierId: verifierInfo.id,
         chainId: originChainId,
         operationType: OperationTypeEnum.addGuardian,
+        operationDetails: getOperationDetails(OperationTypeEnum.addGuardian, {
+          identifierHash: '',
+          guardianType: guardianType + '',
+          verifierId: selectedVerifier?.id || '',
+        }),
       });
       Loading.hide();
 
@@ -218,7 +223,7 @@ const GuardianEdit: React.FC = () => {
         accelerateChainId,
       });
     },
-    [verifyToken, originChainId, accelerateChainId],
+    [verifyToken, originChainId, selectedVerifier?.id, accelerateChainId],
   );
 
   const onConfirm = useCallback(async () => {

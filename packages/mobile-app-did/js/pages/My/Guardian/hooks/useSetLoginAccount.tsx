@@ -148,6 +148,14 @@ export const useSetLoginAccount = (isEdit = false) => {
           verifierId: currentGuardian.verifier?.id,
           chainId: originChainId,
           operationType: isLoginAccount ? OperationTypeEnum.setLoginAccount : OperationTypeEnum.unsetLoginAccount,
+          operationDetails: getOperationDetails(
+            isLoginAccount ? OperationTypeEnum.setLoginAccount : OperationTypeEnum.unsetLoginAccount,
+            {
+              identifierHash: currentGuardian.identifierHash,
+              guardianType: currentGuardian.guardianType + '',
+              verifierId: currentGuardian.verifier?.id || '',
+            },
+          ),
         });
 
         navigationService.navigateByMultiLevelParams('GuardianApproval', {

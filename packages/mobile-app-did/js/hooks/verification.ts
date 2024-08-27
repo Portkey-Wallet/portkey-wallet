@@ -33,7 +33,6 @@ export const useGetCurrentLoginAccountVerifyFunc = () => {
         verifierId: userGuardiansList?.[0].verifier?.id,
         chainId: originChainId,
         operationType: OperationTypeEnum.revokeAccount,
-        operationDetails: getOperationDetails(OperationTypeEnum.revokeAccount),
       },
     });
 

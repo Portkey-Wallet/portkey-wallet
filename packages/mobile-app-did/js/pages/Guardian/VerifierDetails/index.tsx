@@ -75,6 +75,7 @@ export default function VerifierDetails() {
     targetChainId,
     accelerateChainId,
     autoLogin,
+    operationDetails,
   } = useRouterParams<RouterParams>();
 
   const originChainId = useOriginChainId();
@@ -136,8 +137,8 @@ export default function VerifierDetails() {
   );
 
   const { error: codeError, setError: setCodeError } = useErrorMessage();
-  const verifyManagerAddress = useVerifyManagerAddress();
-  const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
+  // const verifyManagerAddress = useVerifyManagerAddress();
+  // const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
 
   const onGeneralVerify = useLockCallback(
     async (code: string) => {
@@ -157,7 +158,7 @@ export default function VerifierDetails() {
             operationType,
             targetChainId,
             caHash,
-            operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
+            operationDetails: operationDetails,
           },
         });
         !isRequestResult && CommonToast.success('Verified Successfully');
@@ -236,7 +237,7 @@ export default function VerifierDetails() {
       operationType,
       targetChainId,
       caHash,
-      latestVerifyManagerAddress,
+      operationDetails,
       onRequestOrSetPin,
       setGuardianStatus,
       accelerateChainId,
@@ -317,6 +318,7 @@ export default function VerifierDetails() {
           chainId: originChainId,
           operationType,
           targetChainId,
+          operationDetails,
         },
       });
       if (req.verifierSessionId) {

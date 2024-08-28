@@ -103,23 +103,28 @@ export default function VerifierEmail() {
           },
         });
         if (rst.verifiedResult) {
-          const setSecondaryEmailRst = await request.security.setSecondaryEmail({
-            params: {
-              verifierSessionId: verifierSessionIdRef.current,
-            },
-          });
-          if (setSecondaryEmailRst.setResult) {
-            CommonToast.success('Set Secondary Email Successfully');
-            myEvents.updateSecondaryEmail.emit({ email });
-            navigationService.navigate('WalletSecurity');
-          }
+          // const setSecondaryEmailRst = await request.security.setSecondaryEmail({
+          //   params: {
+          //     verifierSessionId: verifierSessionIdRef.current,
+          //   },
+          // });
+          CommonToast.success('Set Secondary Email Successfully');
+          myEvents.updateSecondaryEmail.emit({ email });
+          navigationService.navigate('WalletSecurity');
+          // if (setSecondaryEmailRst.setResult) {
+          //   CommonToast.success('Set Secondary Email Successfully');
+          //   myEvents.updateSecondaryEmail.emit({ email });
+          //   navigationService.navigate('WalletSecurity');
+          // }
+        } else {
+          throw 'Invalid code';
         }
       } catch (error) {
         const _isInvalidCode = checkVerifierIsInvalidCode(error);
         if (_isInvalidCode) {
           setCodeError('', VERIFY_INVALID_TIME);
         } else {
-          CommonToast.failError(error, 'Set Secondary Email  Fail');
+          CommonToast.failError(error, 'Verify Fail');
         }
 
         digitInput.current?.reset();
@@ -129,7 +134,7 @@ export default function VerifierEmail() {
         Loading.hide();
       }
     },
-    [setCodeError],
+    [email, setCodeError],
   );
 
   const resendCode = useLockCallback(async () => {

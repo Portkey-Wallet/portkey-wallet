@@ -71,6 +71,19 @@ export default function WalletSecurity() {
           navigate('/setting/wallet-security/token-allowance');
         },
       },
+      {
+        key: t('Set Secondary Mailbox'),
+        element: (
+          <div className="flex secondary-mailbox">
+            <span>{t('Set Secondary Mailbox')}</span>
+            {/* TODO-SA */}
+            <span className="number">{`Not set`}</span>
+          </div>
+        ),
+        click: () => {
+          navigate('/setting/wallet-security/secondary-mailbox');
+        },
+      },
     ],
     [currentDapp?.length, deviceAmount, navigate, t],
   );

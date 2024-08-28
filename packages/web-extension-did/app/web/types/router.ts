@@ -317,3 +317,13 @@ export type TFreeMintLocationState = {
   itemId: string;
   status: FreeMintStatus;
 };
+
+// SecondaryMailbox verify
+export type TSecondaryMailboxVerifyState = {
+  email: string;
+  sessionid: string;
+};
+
+export type TSecondaryMailboxEditState = {
+  email?: string;
+};

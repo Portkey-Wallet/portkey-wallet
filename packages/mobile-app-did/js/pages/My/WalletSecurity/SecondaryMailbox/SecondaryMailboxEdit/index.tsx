@@ -51,7 +51,7 @@ const SecondaryMailboxEdit: React.FC = () => {
           theme="white-bg"
           type="general"
           keyboardType={'email-address'}
-          value={value}
+          value={email}
           defaultValue={mail}
           placeholder="Enter email"
           onChangeText={onMailInput}
@@ -70,7 +70,7 @@ const SecondaryMailboxEdit: React.FC = () => {
               title2: (
                 <Text>
                   <TextL>{`We will send a verification code to `}</TextL>
-                  <TextL style={FontStyles.weight500}>{value}</TextL>
+                  <TextL style={FontStyles.weight500}>{email}</TextL>
                   <TextL>{` to verify your email address`}</TextL>
                 </Text>
               ),

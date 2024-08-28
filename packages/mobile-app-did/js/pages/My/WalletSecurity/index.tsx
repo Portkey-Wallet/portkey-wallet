@@ -73,25 +73,28 @@ const WalletSecurity: React.FC = () => {
         title="Set Secondary Mailbox"
         suffix={showNotSet ? 'Not Set' : ''}
         onPress={async () => {
-          if (!secondaryEmail) {
-            try {
-              Loading.show();
-              const res = await getSecondaryMail();
-              if (!res) {
-                CommonToast.fail('fetch secondaryEmail failed!');
-                return;
-              }
-              navigationService.navigate('SecondaryMailboxHome', {
-                secondaryEmail: res,
-              });
-            } finally {
-              Loading.hide();
-            }
-          } else {
-            navigationService.navigate('SecondaryMailboxHome', {
-              secondaryEmail,
-            });
-          }
+          navigationService.navigate('SecondaryMailboxHome', {
+            secondaryEmail,
+          });
+          // if (!secondaryEmail) {
+          //   try {
+          //     Loading.show();
+          //     const res = await getSecondaryMail();
+          //     if (!res) {
+          //       CommonToast.fail('fetch secondaryEmail failed!');
+          //       return;
+          //     }
+          //     navigationService.navigate('SecondaryMailboxHome', {
+          //       secondaryEmail: res,
+          //     });
+          //   } finally {
+          //     Loading.hide();
+          //   }
+          // } else {
+          //   navigationService.navigate('SecondaryMailboxHome', {
+          //     secondaryEmail,
+          //   });
+          // }
         }}
       />
     </PageContainer>

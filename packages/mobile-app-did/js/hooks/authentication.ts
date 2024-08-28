@@ -448,6 +448,7 @@ export function useVerifyZKLogin() {
 export function useVerifyGoogleToken() {
   const { googleSign } = useGoogleAuthentication();
   const verifyZKLogin = useVerifyZKLogin();
+  const managerAddress = useVerifyManagerAddress() || '';
   return useCallback(
     async (params: VerifyTokenParams) => {
       let accessToken = params.accessToken;
@@ -455,7 +456,7 @@ export function useVerifyGoogleToken() {
       let isRequest = !accessToken;
       let nonce = params.nonce;
       let timestamp = params.timestamp;
-      const managerAddress = params.operationDetails ? JSON.parse(params.operationDetails).manager : '';
+      // const managerAddress = verifyManagerAddress;
       if (accessToken) {
         try {
           const { id } = await getGoogleUserInfo(accessToken);
@@ -497,20 +498,21 @@ export function useVerifyGoogleToken() {
         accessToken,
       } as any;
     },
-    [googleSign, verifyZKLogin],
+    [googleSign, managerAddress, verifyZKLogin],
   );
 }
 
 export function useVerifyAppleToken() {
   const { appleSign } = useAppleAuthentication();
   const verifyZKLogin = useVerifyZKLogin();
+  const managerAddress = useVerifyManagerAddress() || '';
   return useCallback(
     async (params: VerifyTokenParams) => {
       let accessToken = params.accessToken;
       let idToken = params.idToken;
       let nonce = params.nonce;
       let timestamp = params.timestamp;
-      const managerAddress = params.operationDetails ? JSON.parse(params.operationDetails).manager : '';
+      // const managerAddress = params.operationDetails ? JSON.parse(params.operationDetails).manager : '';
       const { isExpired: tokenIsExpired } = parseAppleIdentityToken(accessToken) || {};
       if (!accessToken || tokenIsExpired) {
         const info = await appleSign(managerAddress);
@@ -548,7 +550,7 @@ export function useVerifyAppleToken() {
         accessToken,
       } as any;
     },
-    [appleSign, verifyZKLogin],
+    [appleSign, managerAddress, verifyZKLogin],
   );
 }
 export function useVerifyTelegramToken() {

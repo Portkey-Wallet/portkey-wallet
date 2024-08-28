@@ -1,13 +1,18 @@
 import { useMemo, useCallback } from 'react';
+import AElf from 'aelf-sdk';
 import { useAppCASelector } from '.';
 import { useCurrentWalletInfo, useWallet } from './wallet';
 import { useAppCommonDispatch } from '../index';
 import { updateSessionInfo } from '@portkey-wallet/store/store-ca/dapp/actions';
 import { useCurrentNetworkInfo } from './network';
+import { useCurrentNetwork } from '../network';
 import { NetworkType } from '@portkey-wallet/types';
 import { SessionExpiredPlan, SessionInfo } from '@portkey-wallet/types/session';
 import { formatExpiredTime, signSession } from '@portkey-wallet/utils/session';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
+import { getRawParams } from '@portkey-wallet/utils/dapp/decodeTx';
+import { useCurrentChain } from './chainList';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 export const useDapp = () => useAppCASelector(state => state.dapp);
 export const useDiscover = () => useAppCASelector(state => state.discover);
 
@@ -77,3 +82,16 @@ export const useUpdateSessionInfo = () => {
     [caHash, dispatch, networkType],
   );
 };
+export function useDecodeTx() {
+  const chainInfo = useCurrentChain(MAIN_CHAIN_ID);
+
+  const getDecodedTxData = useCallback(
+    async (raw: string) => {
+      const instance = new AElf(new AElf.providers.HttpProvider(chainInfo?.endPoint));
+      const res = await getRawParams(instance, raw);
+      return res;
+    },
+    [chainInfo?.endPoint],
+  );
+  return getDecodedTxData;
+}

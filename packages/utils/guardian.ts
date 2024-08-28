@@ -2,16 +2,75 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { GuardiansInfo } from '@portkey-wallet/types/types-ca/guardian';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { VerifierItem } from '@portkey-wallet/types/verifier';
+import {
+  VerifierItem,
+  VerifierInfo,
+  ZKLoginInfo,
+  ZKLoginInfoInContract,
+  ZKLoginInfoNoncePayload,
+} from '@portkey-wallet/types/verifier';
 import BigNumber from 'bignumber.js';
 import { handleErrorMessage } from '.';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { SendOptions } from '@portkey-wallet/contracts/types';
+import { parseJWTToken, parseZKProof } from './authentication';
 
 const APPROVAL_COUNT = ZERO.plus(3).div(5);
 export function getApprovalCount(length: number) {
   if (length <= 3) return length;
   return APPROVAL_COUNT.times(length).dp(0, BigNumber.ROUND_DOWN).plus(1).toNumber();
+}
+
+export function handleZKLoginInfo(zkLoginInfo?: ZKLoginInfo) {
+  if (zkLoginInfo) {
+    const {
+      identifierHash,
+      salt,
+      zkProof,
+      jwt,
+      nonce,
+      circuitId,
+      poseidonIdentifierHash,
+      identifierHashType,
+      timestamp,
+      managerAddress,
+    } = zkLoginInfo;
+    const { kid, issuer } = parseJWTToken(jwt);
+    const zkProofInfo = parseZKProof(zkProof);
+    const noncePayload: ZKLoginInfoNoncePayload = {
+      addManagerAddress: {
+        timestamp: { seconds: timestamp },
+        managerAddress,
+      },
+    };
+    return {
+      identifierHash,
+      salt,
+      zkProof,
+      kid,
+      issuer,
+      nonce,
+      circuitId,
+      zkProofInfo,
+      noncePayload,
+      poseidonIdentifierHash,
+      identifierHashType,
+    } as ZKLoginInfoInContract;
+  }
+  return {} as ZKLoginInfoInContract;
+}
+
+export function handleVerifierInfo(verifierInfo?: VerifierInfo) {
+  if (!verifierInfo) return { identifierHash: '' };
+  if (verifierInfo.zkLoginInfo) {
+    const identifierHash = verifierInfo.zkLoginInfo.identifierHash;
+    return { identifierHash };
+  } else if (verifierInfo.verificationDoc) {
+    const { guardianIdentifier } = handleVerificationDoc(verifierInfo.verificationDoc);
+    return { identifierHash: guardianIdentifier };
+  } else {
+    return { identifierHash: '' };
+  }
 }
 
 export function handleVerificationDoc(verificationDoc: string) {
@@ -69,4 +128,29 @@ export function removeManager(contract: ContractBasic, address: string, caHash: 
     },
     sendOptions,
   );
+}
+
+/**
+ * @description: when accelerate guardian, the timestamp got from transaction is string, need to convert to seconds
+ */
+export function fixedGuardianParams(guardian: any) {
+  let timestamp = guardian?.zkLoginInfo?.noncePayload?.addManagerAddress?.timestamp;
+  if (typeof timestamp === 'string') {
+    try {
+      const date = new Date(timestamp);
+      guardian.zkLoginInfo.noncePayload.addManagerAddress.timestamp = {
+        seconds: date.getTime() / 1000,
+      };
+    } catch (error) {
+      console.log('fixedGuardianParams', error);
+    } finally {
+      return guardian;
+    }
+  }
+  return guardian;
+}
+
+export function fixedGuardianApprovedParams(guardians: any[]) {
+  if (!Array.isArray(guardians)) return [];
+  return guardians.map(guardian => fixedGuardianParams(guardian));
 }

@@ -9,6 +9,10 @@ import { getPortkeyFinanceUrl } from 'utils';
 import { getWalletState } from './SWGetReduxStore';
 import { apis } from 'utils/BrowserApis';
 import singleMessage from 'utils/singleMessage';
+import { VerifyTypeEnum } from 'types/wallet';
+import { zkloginGuardianType } from 'constants/guardians';
+import { generateNonceAndTimestamp } from '@portkey-wallet/utils/nonce';
+import AElf from 'aelf-sdk';
 
 export const timeout = async (timer = 2000) => {
   await sleep(timer);
@@ -52,9 +56,37 @@ export const setPinAction = (pin: string) => InternalMessage.payload(PortkeyMess
 const twitterAuthPath = '/api/app/twitterAuth/receive';
 const facebookAuthPath = '/api/app/facebookAuth/receive';
 
-export const socialLoginAction = async (type: ISocialLogin, network: NetworkType): Promise<SendResponseParams> => {
+export const socialLoginAction = async (
+  type: ISocialLogin,
+  network: NetworkType,
+  verifyType?: VerifyTypeEnum,
+  verifyExtraParams?: { managerAddress: string },
+): Promise<SendResponseParams> => {
   const { JOIN_AUTH_URL, JOIN_TELEGRAM_URL, OPEN_LOGIN_URL, domain } = getPortkeyFinanceUrl(network);
   let externalLink = `${JOIN_AUTH_URL}/${network}/${type}?version=v2`;
+
+  let zkNonce = '';
+  let zkTimestamp = 0;
+  if (verifyType === VerifyTypeEnum.zklogin) {
+    if (!verifyExtraParams?.managerAddress) {
+      throw 'managerAddress is required';
+    }
+    if (zkloginGuardianType.includes(type)) {
+      const { nonce, timestamp } = generateNonceAndTimestamp(verifyExtraParams?.managerAddress);
+      if (type === 'Apple') {
+        /**
+         * on App, nonce is hashed by framework,
+         * so the server need to hash the data (timestamp+manager address) twice to verify the nonce.
+         * And also, the extension need to hash the nonce again to verify the nonce.
+         */
+        zkNonce = AElf.utils.sha256(nonce);
+      } else {
+        zkNonce = nonce;
+      }
+      zkTimestamp = timestamp;
+      externalLink = `${OPEN_LOGIN_URL}/social-login/${type}?nonce=${zkNonce}&socialType=${verifyType}&side=portkey`;
+    }
+  }
   if (type === 'Telegram') {
     externalLink = JOIN_TELEGRAM_URL;
   } else if (type === 'Facebook' || type === 'Twitter') {
@@ -66,6 +98,7 @@ export const socialLoginAction = async (type: ISocialLogin, network: NetworkType
     externalLink,
   }).send();
   if (result.error) throw result.message || 'auth error';
+  result.data = Object.assign(result.data || {}, { nonce: zkNonce, timestamp: zkTimestamp });
   return result;
 };
 

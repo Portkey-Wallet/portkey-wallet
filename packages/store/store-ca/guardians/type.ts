@@ -1,5 +1,6 @@
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { VerifierItem, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { ZKLoginInfo } from '@portkey-wallet/types/verifier';
 
 type VerifyName = string;
 export interface BaseGuardianItem {
@@ -9,11 +10,15 @@ export interface BaseGuardianItem {
   guardianType: LoginType;
   key: string; // `${loginGuardianType}&${verifier?.name}`,
   identifierHash: string;
+  poseidonIdentifierHash?: string;
   salt: string;
   thirdPartyEmail?: string;
   isPrivate?: boolean;
   firstName?: string;
   lastName?: string;
+  verifiedByZk?: boolean;
+  manuallySupportForZk?: boolean;
+  zkLoginInfo?: ZKLoginInfo;
 }
 
 export interface IVerifierInfo {
@@ -51,4 +56,13 @@ export interface StoreUserGuardianItem extends UserGuardianItem {
     accessToken: string;
     isPrivate?: boolean;
   };
+  tempToZK?: boolean;
+  zkAuth?: IZKAuth;
+}
+
+export interface IZKAuth {
+  access_token?: string;
+  id_token?: string;
+  nonce?: string;
+  timestamp?: number;
 }

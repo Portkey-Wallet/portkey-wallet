@@ -28,7 +28,7 @@ import ActionSheet from 'components/ActionSheet';
 import myEvents from 'utils/deviceEvent';
 import Loading from 'components/Loading';
 import { useGuardiansInfo } from 'hooks/store';
-import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo, useOriginChainId, useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import CommonToast from 'components/CommonToast';
 import { useAppDispatch } from 'store/hooks';
 import { setPreGuardianAction } from '@portkey-wallet/store/store-ca/guardians/actions';
@@ -61,6 +61,7 @@ import { NavigateMultiLevelParams } from 'types/navigate';
 import { isCrossChain } from '@portkey-wallet/utils/aelf';
 import { useGetTransferFee } from 'hooks/transfer';
 import { useReportUnsetLoginGuardian } from 'hooks/authentication';
+import { timesDecimals } from '@portkey-wallet/utils/converter';
 
 export type RouterParams = {
   loginAccount?: string;
@@ -112,9 +113,15 @@ export default function GuardianApproval() {
     sendTransferPreviewApprove,
     setLoginAccountNavigate,
   } = useRouterParams<RouterParams & MultiLevelParams>();
+  console.log(
+    'useRouterParams<RouterParams & MultiLevelParams>()',
+    JSON.stringify(useRouterParams<RouterParams & MultiLevelParams>()),
+  );
   const dispatch = useAppDispatch();
   const checkRouteExistInRouteStack = useCheckRouteExistInRouteStack();
   const reportUnsetLoginAccount = useReportUnsetLoginGuardian();
+  const verifyManagerAddress = useVerifyManagerAddress();
+  const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
 
   const onEmitDapp = useThrottleCallback(
     (guardiansApproved?: GuardiansApproved) => {
@@ -135,7 +142,21 @@ export default function GuardianApproval() {
 
   const { init: initGuardian } = useRefreshGuardianList();
 
-  const { userGuardiansList: storeUserGuardiansList, preGuardian } = useGuardiansInfo();
+  const { userGuardiansList: storeUserGuardiansList, preGuardian, verifierMap } = useGuardiansInfo();
+
+  const verifierIdList = useMemo(
+    () =>
+      verifierMap
+        ? Object.values(verifierMap)
+            .map(verifier => verifier.id)
+            .filter(verifierId => verifierId?.length > 0)
+        : [],
+    [verifierMap],
+  );
+  const randomVerifierId = useMemo(() => {
+    const index = Math.floor(Math.random() * verifierIdList.length);
+    return verifierIdList[index];
+  }, [verifierIdList]);
 
   useEffectOnce(() => {
     initGuardian();
@@ -290,6 +311,7 @@ export default function GuardianApproval() {
         guardianItem,
         userGuardiansList,
         guardiansStatus,
+        randomVerifierId,
       );
     } catch (error) {
       CommonToast.failError(error);
@@ -308,6 +330,7 @@ export default function GuardianApproval() {
           guardianItem,
           userGuardiansList,
           guardiansStatus,
+          randomVerifierId,
         );
       } catch (error) {
         console.log('accelerateReq error', error);
@@ -342,6 +365,7 @@ export default function GuardianApproval() {
     t,
     userGuardiansList,
     verifierInfo,
+    randomVerifierId,
   ]);
 
   const onDeleteGuardian = useCallback(async () => {
@@ -679,7 +703,79 @@ export default function GuardianApproval() {
     onModifyTransferLimit,
     onTransferApprove,
   ]);
-
+  const extra = useMemo(() => {
+    const extraObj: any = {};
+    switch (approvalType) {
+      case ApprovalType.communityRecovery:
+        extraObj.verifyManagerAddress = latestVerifyManagerAddress.current;
+        break;
+      case ApprovalType.addGuardian:
+        extraObj.identifierHash = guardianItem?.identifierHash;
+        extraObj.guardianType = guardianItem?.guardianType + '';
+        extraObj.verifierId = guardianItem?.verifier?.id || '' + '';
+        break;
+      case ApprovalType.setLoginAccount:
+        extraObj.identifierHash = guardianItem?.identifierHash;
+        extraObj.guardianType = guardianItem?.guardianType + '';
+        extraObj.verifierId = guardianItem?.verifier?.id || '' + '';
+        break;
+      case ApprovalType.unsetLoginAccount:
+        extraObj.identifierHash = guardianItem?.identifierHash;
+        extraObj.guardianType = guardianItem?.guardianType + '';
+        extraObj.verifierId = guardianItem?.verifier?.id || '' + '';
+        break;
+      case ApprovalType.deleteGuardian:
+        extraObj.identifierHash = guardianItem?.identifierHash;
+        extraObj.guardianType = guardianItem?.guardianType + '';
+        extraObj.verifierId = guardianItem?.verifier?.id || '' + '';
+        break;
+      case ApprovalType.editGuardian:
+        extraObj.identifierHash = guardianItem?.identifierHash;
+        extraObj.guardianType = guardianItem?.guardianType + '';
+        extraObj.preVerifierId = guardianItem?.verifierId + '';
+        extraObj.newVerifierId = guardianItem?.verifier?.id || '' + '';
+        break;
+      case ApprovalType.managerApprove:
+        extraObj.spender = approveParams?.approveInfo?.spender || '';
+        extraObj.amount = approveParams?.approveInfo?.amount || '';
+        extraObj.symbol = approveParams?.approveInfo?.symbol + '';
+        break;
+      case ApprovalType.modifyTransferLimit:
+        extraObj.singleLimit = transferLimitDetail?.singleLimit;
+        extraObj.dailyLimit = transferLimitDetail?.dailyLimit + '';
+        extraObj.symbol = transferLimitDetail?.symbol + '';
+        break;
+      case ApprovalType.transferApprove:
+        extraObj.toAddress = sendTransferPreviewApprove?.params.toInfo.address || '';
+        extraObj.amount =
+          timesDecimals(
+            sendTransferPreviewApprove?.params.sendNumber,
+            sendTransferPreviewApprove?.params?.assetInfo?.decimals,
+          ) + '';
+        extraObj.symbol = sendTransferPreviewApprove?.params?.assetInfo.symbol + '';
+        break;
+      default:
+        break;
+    }
+    return extraObj;
+  }, [
+    approvalType,
+    approveParams?.approveInfo?.amount,
+    approveParams?.approveInfo?.spender,
+    approveParams?.approveInfo?.symbol,
+    guardianItem?.guardianType,
+    guardianItem?.identifierHash,
+    guardianItem?.verifier?.id,
+    guardianItem?.verifierId,
+    latestVerifyManagerAddress,
+    sendTransferPreviewApprove?.params?.assetInfo?.decimals,
+    sendTransferPreviewApprove?.params?.assetInfo.symbol,
+    sendTransferPreviewApprove?.params.sendNumber,
+    sendTransferPreviewApprove?.params.toInfo.address,
+    transferLimitDetail?.dailyLimit,
+    transferLimitDetail?.singleLimit,
+    transferLimitDetail?.symbol,
+  ]);
   return (
     <PageContainer
       scrollViewProps={{ disabled: true }}
@@ -727,6 +823,7 @@ export default function GuardianApproval() {
                     approvalType={approvalType}
                     authenticationInfo={authenticationInfo}
                     targetChainId={targetChainId}
+                    extra={extra}
                   />
                 );
               })}

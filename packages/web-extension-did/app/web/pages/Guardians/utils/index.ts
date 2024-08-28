@@ -1,7 +1,7 @@
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { IconType } from 'types/icon';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
-import { VerifierItem } from '@portkey-wallet/types/verifier';
+import { VerifierItem, zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
 
 export const guardianIconMap: Record<LoginType, IconType> = {
   [LoginType.Email]: 'Email',
@@ -41,11 +41,18 @@ export const getVerifierStatusMap = (
   const verifierStatusMap: { [x: string]: VerifierStatusItem } = {};
   const _userGuardiansList = userGuardiansList.filter((guardian) => guardian.key !== opGuardian?.key);
   Object.values(verifierMap).forEach((verifier) => {
-    const isUsed = _userGuardiansList.some((guardian) => guardian.verifier?.id === verifier.id);
-    verifierStatusMap[verifier.id] = {
-      ...verifier,
-      isUsed,
-    };
+    if (verifier.name === zkLoginVerifierItem.name) {
+      verifierStatusMap[verifier.name] = {
+        ...verifier,
+        isUsed: true,
+      };
+    } else {
+      const isUsed = _userGuardiansList.some((guardian) => guardian.verifier?.id === verifier.id);
+      verifierStatusMap[verifier.id] = {
+        ...verifier,
+        isUsed,
+      };
+    }
   });
   return verifierStatusMap;
 };

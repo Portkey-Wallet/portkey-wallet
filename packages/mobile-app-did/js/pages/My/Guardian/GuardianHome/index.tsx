@@ -1,7 +1,7 @@
 import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
 import React, { useCallback, useMemo } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import PageContainer from 'components/PageContainer';
@@ -12,12 +12,11 @@ import Touchable from 'components/Touchable';
 import { useRefreshGuardianList } from 'hooks/guardian';
 import useEffectOnce from 'hooks/useEffectOnce';
 import GStyles from 'assets/theme/GStyles';
-import { TextM } from 'components/CommonText';
 
 export default function GuardianHome() {
   const { t } = useLanguage();
 
-  const { userGuardiansList, verifierMap } = useGuardiansInfo();
+  const { userGuardiansList } = useGuardiansInfo();
   const guardianList = useMemo(() => {
     if (!userGuardiansList) return [];
     return [...userGuardiansList].reverse();
@@ -33,15 +32,6 @@ export default function GuardianHome() {
     [],
   );
 
-  const isAddAllowed = useMemo(() => {
-    if (guardianList.length === 0) return false;
-    const verifierNum = Object.keys(verifierMap || {}).length;
-    const guardianVerifierMap: Record<string, boolean> = {};
-    guardianList.forEach(item => (guardianVerifierMap[item.verifier?.id || ''] = true));
-    const guardianVerifierNum = Object.keys(guardianVerifierMap).length;
-    return verifierNum > guardianVerifierNum;
-  }, [guardianList, verifierMap]);
-
   return (
     <PageContainer
       safeAreaColor={['white', 'white']}
@@ -49,15 +39,13 @@ export default function GuardianHome() {
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}
       rightDom={
-        isAddAllowed && (
-          <Touchable
-            style={{ padding: pTd(16) }}
-            onPress={() => {
-              navigationService.navigate('GuardianEdit');
-            }}>
-            <Svg icon="add1" size={pTd(20)} color={defaultColors.icon5} />
-          </Touchable>
-        )
+        <Touchable
+          style={{ padding: pTd(16) }}
+          onPress={() => {
+            navigationService.navigate('GuardianEdit');
+          }}>
+          <Svg icon="add1" size={pTd(20)} color={defaultColors.icon5} />
+        </Touchable>
       }>
       <ScrollView showsVerticalScrollIndicator={false}>
         {guardianList.map((guardian, idx) => (
@@ -75,14 +63,6 @@ export default function GuardianHome() {
           </Touchable>
         ))}
       </ScrollView>
-      {!isAddAllowed && guardianList?.length > 0 && (
-        <View style={pageStyles.warnWrap}>
-          <Svg icon="warning2" size={pTd(16)} color={defaultColors.icon1} />
-          <TextM style={pageStyles.warnLabelWrap}>
-            {'The number of guardians has reached the maximum limit. Please delete some before trying to add new ones.'}
-          </TextM>
-        </View>
-      )}
     </PageContainer>
   );
 }

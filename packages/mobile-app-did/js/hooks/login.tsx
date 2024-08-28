@@ -8,7 +8,6 @@ import {
   useWallet,
 } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import {
-  createNewTmpWallet,
   createWallet,
   resetCaInfo,
   resetWallet,
@@ -266,7 +265,8 @@ export function useGoGuardianApproval(isLogin?: boolean) {
   const requestOrSetPin = useCallback(
     async ({ guardianItem, originChainId, authenticationInfo }: TVerifierAuthParams) => {
       const req = await onVerifierAuth({ guardianItem, originChainId, authenticationInfo });
-      const verifierInfo: VerifierInfo = { ...req, verifierId: guardianItem?.verifier?.id };
+      const verifierInfo: VerifierInfo = { ...req, verifierId: guardianItem?.verifier?.id ?? '' };
+      console.log(verifierInfo, '=======verifierInfo');
       const key = guardianItem.key as string;
       dispatch(setOriginChainId(originChainId));
       return onRequestOrSetPin({
@@ -415,7 +415,10 @@ export function useGoSelectVerifier(isLogin?: boolean) {
 
       try {
         const rst = await verifyToken(loginType, {
-          accessToken: authenticationInfo?.[loginAccount || ''],
+          accessToken: authenticationInfo?.[loginAccount || ''] as string,
+          idToken: authenticationInfo?.idToken as string,
+          nonce: authenticationInfo?.nonce as string,
+          timestamp: authenticationInfo?.timestamp as number,
           id: loginAccount,
           verifierId: selectedVerifier?.id,
           chainId,
@@ -581,14 +584,12 @@ export function useOnLogin(isLogin?: boolean) {
   const getChainInfo = useGetChainInfo();
   const goGuardianApproval = useGoGuardianApproval(isLogin);
   const goSelectVerifier = useGoSelectVerifier(isLogin);
-  const dispatch = useAppDispatch();
 
   return useCallback(
     async (params: LoginParams) => {
       const { loginAccount, loginType = LoginType.Email, authenticationInfo, showLoginAccount } = params;
       try {
         await sleep(500);
-        dispatch(createNewTmpWallet());
         let chainInfo = await getChainInfo(DefaultChainId);
         let verifierServers = await getVerifierServers(chainInfo);
 
@@ -617,6 +618,7 @@ export function useOnLogin(isLogin?: boolean) {
           });
         }
       } catch (error) {
+        console.log(error, '=======error');
         if (handleErrorCode(error) === '3002') {
           await goSelectVerifier({
             showLoginAccount: showLoginAccount || loginAccount,
@@ -629,15 +631,7 @@ export function useOnLogin(isLogin?: boolean) {
         }
       }
     },
-    [
-      dispatch,
-      getChainInfo,
-      getGuardiansInfo,
-      getRegisterInfo,
-      getVerifierServers,
-      goGuardianApproval,
-      goSelectVerifier,
-    ],
+    [getChainInfo, getGuardiansInfo, getRegisterInfo, getVerifierServers, goGuardianApproval, goSelectVerifier],
   );
 }
 

@@ -10,7 +10,7 @@ export enum TG_FUN {
 }
 
 export enum TON_FUN {
-  WalletInfoChange = 'ton_walletInfoChange',
+  AuthorizeSuccess = 'ton_authorize_success',
   Error = 'ton_error',
   Open = 'ton_open',
 }
@@ -67,14 +67,15 @@ export const InjectFacebookOpenJavaScript = `(()=>{
 
 export const InjectTonOpenJavaScript = `(()=>{
   try {
+    if(!window.Portkey) window.Portkey = {};
     window.open = (url)=>{
       window.ReactNativeWebView.postMessage(JSON.stringify({url,type:'${TON_FUN.Open}'}));
     },   
-    window.walletStatusChange = (wallet)=>{
-      window.ReactNativeWebView.postMessage(JSON.stringify({wallet,type:'${TON_FUN.WalletInfoChange}'}));
+    window.Portkey.request = ({method,payload})=>{
+      window.ReactNativeWebView.postMessage(JSON.stringify({payload,type:'${TON_FUN.AuthorizeSuccess}'}));
     }
   } catch (error) {
-    window.ReactNativeWebView.postMessage(JSON.stringify({type:'${TG_FUN.Error}'}));
+    window.ReactNativeWebView.postMessage(JSON.stringify({type:'${TON_FUN.Error}'}));
   }
 })()`;
 

@@ -79,6 +79,23 @@ export function parseTelegramToken(token?: string | null): TelegramUserInfo | un
   return { isExpired, userId, expirationTime, firstName, picture, lastName, id: userId, givenName };
 }
 
+export interface TonUserInfo {
+  // TODO: change name
+  userName: string;
+  userId: string;
+  address: string;
+  expirationTime?: number;
+  isExpired?: boolean;
+}
+
+export function parseTonToken(tokenStr?: string | null): TonUserInfo | undefined {
+  if (!tokenStr) return;
+  const { userName, userId, address, expirationTime } = JSON.parse(tokenStr);
+
+  const isExpired = new Date(expirationTime) < new Date();
+  return { isExpired, address, userId, expirationTime, userName };
+}
+
 export type TFacebookUserInfo = {
   isExpired: boolean;
   userId: string;

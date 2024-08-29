@@ -25,6 +25,7 @@ import {
   parseAppleIdentityToken,
   parseFacebookToken,
   parseTelegramToken,
+  parseTonToken,
   parseTwitterToken,
 } from '@portkey-wallet/utils/authentication';
 import { ISocialLogin, LoginType, TAllLoginKey } from '@portkey-wallet/types/types-ca/wallet';
@@ -173,6 +174,7 @@ export default function RegisterStart() {
         case LoginType.Telegram:
         case LoginType.Twitter:
         case LoginType.Facebook:
+        case LoginType.Ton:
           checkAuth(verifierItem, data);
           break;
         default:
@@ -377,6 +379,10 @@ export default function RegisterStart() {
         } else if (type === 'Telegram') {
           const userInfo = parseTelegramToken(data?.access_token);
           if (!userInfo) throw 'Telegram auth error';
+          userId = userInfo?.userId;
+        } else if (type === 'Ton') {
+          const userInfo = parseTonToken(data?.access_token);
+          if (!userInfo) throw 'Ton auth error';
           userId = userInfo?.userId;
         } else if (type === 'Twitter') {
           const userInfo = parseTwitterToken(data?.access_token);

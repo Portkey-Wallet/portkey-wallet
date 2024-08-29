@@ -11,6 +11,7 @@ export const guardianIconMap: Record<LoginType, IconType> = {
   [LoginType.Telegram]: 'Telegram',
   [LoginType.Facebook]: 'Facebook',
   [LoginType.Twitter]: 'Twitter',
+  [LoginType.Ton]: 'Ton',
 };
 
 export interface IGuardianTypeAccount {

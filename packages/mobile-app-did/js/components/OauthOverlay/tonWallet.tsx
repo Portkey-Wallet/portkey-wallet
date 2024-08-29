@@ -28,7 +28,6 @@ import {
   parseTGAuthResult,
 } from './config';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 type TelegramSignProps = {
   onConfirm: (userInfo: any) => void;
@@ -38,7 +37,10 @@ type TelegramSignProps = {
 function TonSign({ onConfirm, onReject }: TelegramSignProps) {
   const [loading, setLoading] = useState(false);
   const { networkType, apiUrl } = useCurrentNetworkInfo();
-  const [uri, go] = useState(`http://192.168.1.29:3000`);
+  const [uri, go] = useState(
+    `http://192.168.1.29:3000/social-login/Ton?from=portkey&manifestUrl=https://raw.githubusercontent.com/alex-beango/ton-config/main/tonconnect-manifest.json`,
+  );
+  // const [uri, go] = useState(`https://ton-config-david.vercel.app`);
   const ref = useRef<WebView>();
   const onLoadStart = useCallback(
     ({ nativeEvent }: WebViewNavigationEvent) => {
@@ -81,6 +83,8 @@ function TonSign({ onConfirm, onReject }: TelegramSignProps) {
     ({ nativeEvent }: WebViewMessageEvent) => {
       const { data } = nativeEvent;
 
+      console.log('onMessage', JSON.parse(data));
+
       try {
         const obj = JSON.parse(data);
         const { type } = obj;
@@ -89,16 +93,23 @@ function TonSign({ onConfirm, onReject }: TelegramSignProps) {
           OverlayModal.hide();
         } else if (type === TON_FUN.Open) {
           // go(obj.url);
-          Linking.openURL(obj.url);
+          console.log('openURL', obj);
+          const tmpUrl = obj.url.replace(/&ret=.*/g, '&ret=portkey.finance://portkey');
+          Linking.openURL(tmpUrl);
+        } else if (type === TON_FUN.AuthorizeSuccess) {
+          OverlayModal.hide();
+          console.log('WalletInfoChange', obj);
+          alert('WalletInfoChange' + JSON.stringify(obj));
+          onConfirm(obj);
         }
       } catch (error) {
         console.log(error);
       }
     },
-    [onReject],
+    [onConfirm, onReject],
   );
   return (
-    <ModalBody title="Telegram Login" modalBodyType="bottom">
+    <ModalBody title="Ton Login" modalBodyType="bottom">
       <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.container}>
         {loading && (
           <View style={styles.loadingBox}>

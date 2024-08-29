@@ -145,6 +145,14 @@ export default function SocialLogin({
           onSocialChange(SocialLoginEnum.Facebook);
         },
       },
+      {
+        icon: 'Ton',
+        type: 'Ton',
+        value: LoginType.Ton,
+        onClick: () => {
+          onSocialChange(SocialLoginEnum.Ton);
+        },
+      },
     ],
     [onSocialChange, switchLogin],
   );
@@ -156,6 +164,8 @@ export default function SocialLogin({
   }, [allowedLoginGuardianList, loginModeListToRecommend]);
 
   const showLoginModeListToOther = useMemo(() => {
+    console.log('loginModeListToOther', loginModeListToOther);
+
     return loginModeListToOther
       ?.map((i) => allowedLoginGuardianList.find((v) => LOGIN_TYPE_LABEL_MAP[v.value] === i.type?.value))
       .filter((i) => !!i) as LoginGuardianListType[];

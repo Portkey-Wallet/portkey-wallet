@@ -70,8 +70,8 @@ const WalletSecurity: React.FC = () => {
       />
       <MenuItem
         style={pageStyles.menuStyle}
-        title="Set Secondary Mailbox"
-        suffix={showNotSet ? 'Not Set' : ''}
+        title="Set up Backup Mailbox"
+        suffix={showNotSet ? 'Not Set up' : ''}
         onPress={async () => {
           navigationService.navigate('SecondaryMailboxHome', {
             secondaryEmail,

@@ -24,13 +24,13 @@ const SecondaryMailboxHome: React.FC = () => {
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View>
-        <TextM style={[FontStyles.secondaryTextColor, GStyles.marginBottom(pTd(8))]}>Secondary Mailbox</TextM>
+        <TextM style={[FontStyles.secondaryTextColor, GStyles.marginBottom(pTd(8))]}>Backup Mailbox</TextM>
         <View style={pageStyles.labelWrap}>
-          <TextL style={[FontStyles.neutralDisableText, fonts.mediumFont]}>{secondaryEmail || `Not Set`}</TextL>
+          <TextL style={[FontStyles.neutralDisableText, fonts.mediumFont]}>{secondaryEmail || `Not Set up`}</TextL>
         </View>
         <TextM style={FontStyles.neutralTertiaryText}>
-          {`When you carry out the operation of authorization, signature, etc., the auxiliary mailbox you set will receive the corresponding notification email.
-\n\nIf your login account can get emails, you will also receive emails.`}
+          {`Before authorising, signing transactions, or performing similar operations, notifications will be sent to the mailbox associated with your login account.
+\n\nIf your login account cannot receive emails, they will be sent to the backup mailbox you have set up.`}
         </TextM>
       </View>
       <CommonButton

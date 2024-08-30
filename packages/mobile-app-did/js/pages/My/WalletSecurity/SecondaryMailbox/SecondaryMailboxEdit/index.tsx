@@ -41,13 +41,13 @@ const SecondaryMailboxEdit: React.FC = () => {
   );
   return (
     <PageContainer
-      titleDom={'Set Secondary Mailbox'}
+      titleDom={'Set up Backup Mailbox'}
       safeAreaColor={['white', 'gray']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View>
         <CommonInput
-          label={'Secondary Mailbox'}
+          label={'Backup Mailbox'}
           theme="white-bg"
           type="general"
           keyboardType={'email-address'}

@@ -113,7 +113,8 @@ const SignModal = (props: SignModalPropsType) => {
               ]}>
               <Svg icon={'warning3'} size={pTd(16)} />
               <TextS style={[FontStyles.neutralPrimaryTextColor, GStyles.marginLeft(pTd(8))]}>
-                Unknown authorization, please proceed with caution
+                Unrecognised authorisation. Please exercise caution and refrain from approving the transaction if you
+                are uncertain.
               </TextS>
             </View>
           )}

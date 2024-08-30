@@ -651,7 +651,7 @@ const GuardianEdit: React.FC = () => {
             type={LoginType.Facebook}
           />
         );
-      case LoginType.Ton:
+      case LoginType.TonWallet:
         return (
           <GuardianThirdAccount
             account={account}
@@ -659,7 +659,7 @@ const GuardianEdit: React.FC = () => {
             clearAccount={clearAccount}
             guardianAccountError={guardianAccountError}
             onPress={onTonWalletSign}
-            type={LoginType.Ton}
+            type={LoginType.TonWallet}
           />
         );
       default:

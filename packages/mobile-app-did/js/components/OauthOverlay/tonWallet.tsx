@@ -109,7 +109,7 @@ function TonSign({ onConfirm, onReject }: TelegramSignProps) {
     [onConfirm, onReject],
   );
   return (
-    <ModalBody title="Ton Login" modalBodyType="bottom">
+    <ModalBody title="TonWallet Login" modalBodyType="bottom">
       <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.container}>
         {loading && (
           <View style={styles.loadingBox}>

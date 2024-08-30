@@ -387,9 +387,9 @@ export default function AddGuardian() {
         element: renderSocialGuardianAccount('Facebook'),
         label: t('Guardian Facebook'),
       },
-      [LoginType.Ton]: {
-        element: renderSocialGuardianAccount('Ton'),
-        label: t('Guardian Ton'),
+      [LoginType.TonWallet]: {
+        element: renderSocialGuardianAccount('TonWallet'),
+        label: t('Guardian TonWallet'),
       },
     }),
     [

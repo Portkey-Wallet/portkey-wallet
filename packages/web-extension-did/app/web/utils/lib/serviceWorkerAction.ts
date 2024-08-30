@@ -57,7 +57,7 @@ export const socialLoginAction = async (type: ISocialLogin, network: NetworkType
   let externalLink = `${JOIN_AUTH_URL}/${network}/${type}?version=v2`;
   if (type === 'Telegram') {
     externalLink = JOIN_TELEGRAM_URL;
-  } else if (type === 'Ton') {
+  } else if (type === 'TonWallet') {
     externalLink = JOIN_TON_URL;
   } else if (type === 'Facebook' || type === 'Twitter') {
     externalLink = `${OPEN_LOGIN_URL}/social-login/${type}?redirectURI=${domain}${

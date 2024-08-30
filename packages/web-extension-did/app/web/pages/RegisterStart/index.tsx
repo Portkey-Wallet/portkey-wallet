@@ -174,7 +174,7 @@ export default function RegisterStart() {
         case LoginType.Telegram:
         case LoginType.Twitter:
         case LoginType.Facebook:
-        case LoginType.Ton:
+        case LoginType.TonWallet:
           checkAuth(verifierItem, data);
           break;
         default:
@@ -380,9 +380,9 @@ export default function RegisterStart() {
           const userInfo = parseTelegramToken(data?.access_token);
           if (!userInfo) throw 'Telegram auth error';
           userId = userInfo?.userId;
-        } else if (type === 'Ton') {
+        } else if (type === 'TonWallet') {
           const userInfo = parseTonToken(data?.access_token);
-          if (!userInfo) throw 'Ton auth error';
+          if (!userInfo) throw 'TonWallet auth error';
           userId = userInfo?.userId;
         } else if (type === 'Twitter') {
           const userInfo = parseTwitterToken(data?.access_token);

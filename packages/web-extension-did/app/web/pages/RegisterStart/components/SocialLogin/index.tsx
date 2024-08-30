@@ -147,10 +147,10 @@ export default function SocialLogin({
       },
       {
         icon: 'Ton',
-        type: 'Ton',
-        value: LoginType.Ton,
+        type: 'TonWallet',
+        value: LoginType.TonWallet,
         onClick: () => {
-          onSocialChange(SocialLoginEnum.Ton);
+          onSocialChange(SocialLoginEnum.TonWallet);
         },
       },
     ],

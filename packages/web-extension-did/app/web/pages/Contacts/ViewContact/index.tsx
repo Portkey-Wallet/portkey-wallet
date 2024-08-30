@@ -131,7 +131,7 @@ export default function ViewContact() {
       Telegram: [],
       Twitter: [],
       Facebook: [],
-      Ton: [],
+      TonWallet: [],
     };
 
     loginAccounts?.forEach((element) => {
@@ -157,8 +157,8 @@ export default function ViewContact() {
         case LoginType.Facebook:
           loginAccountMap.Facebook.push(element);
           break;
-        case LoginType.Ton:
-          loginAccountMap.Ton.push(element);
+        case LoginType.TonWallet:
+          loginAccountMap.TonWallet.push(element);
           break;
         default:
           break;

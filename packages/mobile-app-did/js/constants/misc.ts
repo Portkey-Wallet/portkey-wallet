@@ -10,7 +10,7 @@ export const LOGIN_GUARDIAN_TYPE_ICON: any = {
   [LoginType.Telegram]: 'telegram',
   [LoginType.Twitter]: 'twitter',
   [LoginType.Facebook]: 'facebook',
-  [LoginType.Ton]: 'ton',
+  [LoginType.TonWallet]: 'ton',
 };
 
 export type T_LOGIN_TYPE_LIST_ITEM = {

@@ -118,7 +118,7 @@ export function useLoginModeMap(
   const onTonSign = useLockCallback(async () => {
     const loadingKey = Loading.show();
     try {
-      const userInfo = await authenticationSign(LoginType.Ton);
+      const userInfo = await authenticationSign(LoginType.TonWallet);
       await onLogin({
         loginAccount: userInfo.user.userId,
         loginType: LoginType.Facebook,
@@ -167,9 +167,9 @@ export function useLoginModeMap(
         icon: LOGIN_GUARDIAN_TYPE_ICON[LoginType.Twitter],
         onPress: onTwitterSign,
       },
-      [LOGIN_TYPE_LABEL_MAP[LoginType.Ton]]: {
-        title: LOGIN_TYPE_LABEL_MAP[LoginType.Ton],
-        icon: LOGIN_GUARDIAN_TYPE_ICON[LoginType.Ton],
+      [LOGIN_TYPE_LABEL_MAP[LoginType.TonWallet]]: {
+        title: LOGIN_TYPE_LABEL_MAP[LoginType.TonWallet],
+        icon: LOGIN_GUARDIAN_TYPE_ICON[LoginType.TonWallet],
         onPress: onTonSign,
       },
     } as {

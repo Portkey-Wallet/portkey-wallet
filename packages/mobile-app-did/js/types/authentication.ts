@@ -62,7 +62,7 @@ export interface IAuthenticationSign {
   sign(type: LoginType.Telegram): Promise<TelegramAuthentication>;
   sign(type: LoginType.Twitter): Promise<TTwitterAuthentication>;
   sign(type: LoginType.Facebook): Promise<TFacebookAuthentication>;
-  sign(type: LoginType.Ton): Promise<TFacebookAuthentication>;
+  sign(type: LoginType.TonWallet): Promise<TFacebookAuthentication>;
 }
 
 export type TGoogleAuthResponse = TGoogleAuthentication;

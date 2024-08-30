@@ -21,7 +21,7 @@ export const GuardianTypeIcon: Record<LoginType, IconType> = {
   [LoginType.Telegram]: 'Telegram',
   [LoginType.Facebook]: 'Facebook',
   [LoginType.Twitter]: 'Twitter',
-  [LoginType.Ton]: 'Ton',
+  [LoginType.TonWallet]: 'Ton',
 };
 
 export default function VerifierPair({

@@ -306,7 +306,7 @@ export function useAuthenticationSign() {
           return twitterSign();
         case LoginType.Facebook:
           return facebookSign();
-        case LoginType.Ton:
+        case LoginType.TonWallet:
           return tonSign();
         default:
           throw new Error('Unsupported login type');

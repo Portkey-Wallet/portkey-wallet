@@ -5,18 +5,20 @@ import { Button, Input } from 'antd';
 import clsx from 'clsx';
 import CommonHeader from 'components/CommonHeader';
 import SecondPageHeader from 'pages/components/SecondPageHeader';
+import { useIsSecondaryMailSet } from '@portkey-wallet/hooks/hooks-ca/useSecondaryMail';
 import './index.less';
 
 export default function SecondaryMailbox() {
   const { isNotLessThan768 } = useCommonState();
   const navigate = useNavigateState();
+  const { secondaryEmail } = useIsSecondaryMailSet();
 
   const goBack = useCallback(() => {
     navigate('/setting/wallet-security');
   }, [navigate]);
   const goEdit = useCallback(() => {
-    navigate('/setting/wallet-security/secondary-mailbox-edit');
-  }, [navigate]);
+    navigate('/setting/wallet-security/secondary-mailbox-edit', { state: { email: secondaryEmail } });
+  }, [navigate, secondaryEmail]);
   const mainContent = useMemo(() => {
     return (
       <div
@@ -28,8 +30,8 @@ export default function SecondaryMailbox() {
         )}>
         <div>
           <div className="mailbox-container">
-            <div className="mailbox-label">{`Secondary Mailbox`}</div>
-            <Input placeholder="Not set" disabled />
+            <div className="mailbox-label">{`Backup Mailbox`}</div>
+            <Input placeholder="Not Set up" value={secondaryEmail} disabled />
           </div>
           <div className="mailbox-tip flex-column">
             <div>{`Before authorizing, signing transactions, or performing similar operations, notifications will be sent to the mailbox associated with your login account.`}</div>
@@ -41,7 +43,7 @@ export default function SecondaryMailbox() {
         </Button>
       </div>
     );
-  }, [goEdit, isNotLessThan768]);
+  }, [goEdit, isNotLessThan768, secondaryEmail]);
 
   return isNotLessThan768 ? (
     <div className="secondary-mailbox-page flex-column-between secondary-mailbox-prompt">

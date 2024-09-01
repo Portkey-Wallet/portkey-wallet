@@ -1,13 +1,17 @@
 import { useCommonState } from 'store/Provider/hooks';
 import { useCallback, useMemo, useState } from 'react';
 import { useLocationState, useNavigateState } from 'hooks/router';
-import { Button, Input } from 'antd';
+import { Input } from 'antd';
 import clsx from 'clsx';
 import CommonHeader from 'components/CommonHeader';
 import SecondPageHeader from 'pages/components/SecondPageHeader';
 import { EmailReg } from '@portkey-wallet/utils/reg';
 import { EmailError } from '@portkey-wallet/utils/check';
 import { TSecondaryMailboxEditState, TSecondaryMailboxVerifyState } from 'types/router';
+import { useIsSecondaryMailSet, useSecondaryMail } from '@portkey-wallet/hooks/hooks-ca/useSecondaryMail';
+import singleMessage from 'utils/singleMessage';
+import { handleErrorMessage } from '@portkey-wallet/utils';
+import AsyncButton from 'components/AsyncButton';
 import './index.less';
 
 export default function SecondaryMailboxEdit() {
@@ -16,27 +20,43 @@ export default function SecondaryMailboxEdit() {
   const { state } = useLocationState<TSecondaryMailboxEditState>();
   const [val, setVal] = useState(state?.email || '');
   const [errMsg, setErrMsg] = useState('');
-  const btnDisabled = useMemo(() => !(val && !errMsg), [errMsg, val]);
+  const { setEmail, sendSecondaryEmailCode } = useSecondaryMail(state?.email);
+  const { secondaryEmail } = useIsSecondaryMailSet();
+
+  const btnDisabled = useMemo(() => !(val && !errMsg && val !== secondaryEmail), [errMsg, secondaryEmail, val]);
   const goBack = useCallback(() => {
     navigate('/setting/wallet-security/secondary-mailbox');
   }, [navigate]);
-  const handleEmailInputChange = useCallback((v: string) => {
-    setErrMsg('');
-    setVal(v);
-  }, []);
-  const onSave = useCallback(() => {
+  const handleEmailInputChange = useCallback(
+    (v: string) => {
+      setErrMsg('');
+      setVal(v);
+      setEmail(v);
+    },
+    [setEmail],
+  );
+  const onSave = useCallback(async () => {
     if (!EmailReg.test(val as string)) {
       setErrMsg(EmailError.invalidEmail);
       return;
     }
-    // TODO-SA
-    navigate('/setting/wallet-security/secondary-mailbox-verify', {
-      state: {
-        email: val,
-        sessionid: 'sss',
-      },
-    });
-  }, [navigate, val]);
+    try {
+      const res = await sendSecondaryEmailCode();
+      if (res.verifierSessionId) {
+        navigate('/setting/wallet-security/secondary-mailbox-verify', {
+          state: {
+            email: val,
+            sessionid: res.verifierSessionId,
+          },
+        });
+      } else {
+        throw new Error('send fail');
+      }
+    } catch (error) {
+      console.log('===sendSecondaryEmailCode error', error);
+      singleMessage.error(handleErrorMessage(error || 'send fail'));
+    }
+  }, [navigate, sendSecondaryEmailCode, val]);
   const mainContent = useMemo(() => {
     return (
       <div
@@ -47,7 +67,7 @@ export default function SecondaryMailboxEdit() {
           isNotLessThan768 ? 'secondary-mailbox-body-prompt' : 'secondary-mailbox-body-popup',
         )}>
         <div className="mailbox-container">
-          <div className="mailbox-label">{`Secondary Mailbox`}</div>
+          <div className="mailbox-label">{`Backup Mailbox`}</div>
           <Input
             className="email-input"
             value={val}
@@ -58,9 +78,9 @@ export default function SecondaryMailboxEdit() {
           />
           <div className="err-msg">{errMsg}</div>
         </div>
-        <Button type="primary" onClick={onSave} disabled={btnDisabled}>
+        <AsyncButton type="primary" onClick={onSave} disabled={btnDisabled}>
           Save
-        </Button>
+        </AsyncButton>
       </div>
     );
   }, [isNotLessThan768, val, errMsg, onSave, btnDisabled, handleEmailInputChange]);

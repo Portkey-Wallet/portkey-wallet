@@ -2,7 +2,7 @@ import CommonHeader from 'components/CommonHeader';
 import { useLocationState, useNavigateState } from 'hooks/router';
 import SecondPageHeader from 'pages/components/SecondPageHeader';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useCommonState } from 'store/Provider/hooks';
+import { useCommonState, useLoading } from 'store/Provider/hooks';
 import BaseGuardianTypeIcon from 'components/BaseGuardianTypeIcon';
 import clsx from 'clsx';
 import { PasscodeInput } from 'antd-mobile';
@@ -10,6 +10,10 @@ import { DIGIT_CODE } from '@portkey-wallet/constants/misc';
 import { ThrottleButton } from '@portkey/did-ui-react';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { TSecondaryMailboxVerifyState } from 'types/router';
+import { request } from '@portkey-wallet/api/api-did';
+import singleMessage from 'utils/singleMessage';
+import { handleErrorMessage } from '@portkey-wallet/utils';
+import { useSecondaryMail } from '@portkey-wallet/hooks/hooks-ca/useSecondaryMail';
 import './index.less';
 
 const MAX_TIMER = 60;
@@ -23,6 +27,8 @@ export default function SecondaryMailboxVerify() {
   const [timer, setTimer] = useState<number>(0);
   const timerRef = useRef<NodeJS.Timer>();
   const sessionIdRef = useRef(state.sessionid);
+  const { sendSecondaryEmailCode } = useSecondaryMail(state.email);
+  const { setLoading } = useLoading();
 
   const goBack = useCallback(() => {
     navigate('/setting/wallet-security/secondary-mailbox-edit', { state: { email: state.email } });
@@ -54,22 +60,49 @@ export default function SecondaryMailboxVerify() {
     setCode(pin);
     setCodeErr(false);
   }, []);
-  const reSendCode = useCallback(() => {
-    // TODO-SA
-    sessionIdRef.current = '';
-    setTimer(MAX_TIMER);
-  }, []);
+  const reSendCode = useCallback(async () => {
+    try {
+      const res = await sendSecondaryEmailCode();
+      if (res.verifierSessionId) {
+        sessionIdRef.current = res.verifierSessionId;
+        setTimer(MAX_TIMER);
+      } else {
+        throw new Error('send fail');
+      }
+    } catch (error) {
+      console.log('===sendSecondaryEmailCode error', error);
+      singleMessage.error(handleErrorMessage(error || 'send fail'));
+    }
+  }, [sendSecondaryEmailCode]);
   const btnText = useMemo(() => {
     if (codeErr) return 'Invalid code';
     return timer ? `Resend after (${timer}s)` : 'Resend';
   }, [codeErr, timer]);
   const onCodeFinish = useCallback(
-    (code: string) => {
-      console.log('code', code);
-      // TODO-SA
-      navigate('/setting/wallet-security/secondary-mailbox');
+    async (code: string) => {
+      setLoading(true);
+      try {
+        const rst = await request.security.secondaryEmailCodeCheck({
+          params: {
+            verificationCode: code,
+            verifierSessionId: sessionIdRef.current,
+          },
+        });
+        if (rst.verifiedResult) {
+          singleMessage.success('Set Secondary Email Successfully');
+          navigate('/setting/wallet-security/secondary-mailbox');
+        } else {
+          throw 'Invalid code';
+        }
+      } catch (error) {
+        console.log('===secondaryEmailCodeCheck error', error);
+        singleMessage.error(handleErrorMessage(error || 'Invalid code'));
+        onCodeChange('');
+      } finally {
+        setLoading(false);
+      }
     },
-    [navigate],
+    [navigate, onCodeChange, setLoading],
   );
   const mainContent = useMemo(() => {
     return (

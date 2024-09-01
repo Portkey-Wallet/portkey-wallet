@@ -5,7 +5,6 @@ import { useCurrentWalletInfo, useWallet } from './wallet';
 import { useAppCommonDispatch } from '../index';
 import { updateSessionInfo } from '@portkey-wallet/store/store-ca/dapp/actions';
 import { useCurrentNetworkInfo } from './network';
-import { useCurrentNetwork } from '../network';
 import { NetworkType } from '@portkey-wallet/types';
 import { SessionExpiredPlan, SessionInfo } from '@portkey-wallet/types/session';
 import { formatExpiredTime, signSession } from '@portkey-wallet/utils/session';

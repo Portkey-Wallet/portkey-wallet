@@ -10,8 +10,7 @@ import { SessionExpiredPlan, SessionInfo } from '@portkey-wallet/types/session';
 import { formatExpiredTime, signSession } from '@portkey-wallet/utils/session';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
 import { getRawParams } from '@portkey-wallet/utils/dapp/decodeTx';
-import { useCurrentChain } from './chainList';
-import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { useCurrentChainList } from './chainList';
 export const useDapp = () => useAppCASelector(state => state.dapp);
 export const useDiscover = () => useAppCASelector(state => state.discover);
 
@@ -81,16 +80,55 @@ export const useUpdateSessionInfo = () => {
     [caHash, dispatch, networkType],
   );
 };
-export function useDecodeTx() {
-  const chainInfo = useCurrentChain(MAIN_CHAIN_ID);
 
+export function useDecodeTx() {
+  const currentChainList = useCurrentChainList();
   const getDecodedTxData = useCallback(
     async (raw: string) => {
-      const instance = new AElf(new AElf.providers.HttpProvider(chainInfo?.endPoint));
-      const res = await getRawParams(instance, raw);
-      return res;
+      const instanceList = currentChainList
+        ?.map(item => {
+          if (item?.endPoint) {
+            return new AElf(new AElf.providers.HttpProvider(item.endPoint));
+          }
+          return null;
+        })
+        .filter(instance => instance !== null);
+      if (!instanceList || instanceList.length === 0) {
+        throw new Error('No valid instances found');
+      }
+      const promises = instanceList?.map(instance => getRawParams(instance, raw));
+      if (!promises || promises.length === 0) {
+        throw new Error('Failed to decode transaction on all chains');
+      }
+      function promiseAny<T>(promises: Promise<T>[]): Promise<T> {
+        return new Promise((resolve, reject) => {
+          const errors: any[] = [];
+          let pending = promises.length;
+          if (pending === 0) {
+            return reject('All promises were rejected');
+          }
+          promises.forEach((promise, index) => {
+            Promise.resolve(promise)
+              .then(resolve)
+              .catch(error => {
+                errors[index] = error;
+                pending -= 1;
+                if (pending === 0) {
+                  reject('All promises were rejected');
+                }
+              });
+          });
+        });
+      }
+      try {
+        const res = await promiseAny(promises);
+        return res;
+      } catch (error) {
+        console.error('All promises failed:', error);
+        throw new Error('Failed to decode transaction on all chains');
+      }
     },
-    [chainInfo?.endPoint],
+    [currentChainList],
   );
   return getDecodedTxData;
 }

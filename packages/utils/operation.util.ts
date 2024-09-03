@@ -78,6 +78,8 @@ function getGuardianTypeValue(guardianType?: string) {
     return 5;
   } else if (guardianType === 'Twitter') {
     return 6;
+  } else {
+    return guardianType;
   }
   return 0;
 }

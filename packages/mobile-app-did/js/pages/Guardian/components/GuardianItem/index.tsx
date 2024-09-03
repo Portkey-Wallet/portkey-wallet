@@ -38,7 +38,6 @@ import {
 } from '@portkey-wallet/constants/constants-ca/verifier';
 import { ChainId } from '@portkey-wallet/types';
 import { AuthTypes } from 'constants/guardian';
-import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 
 interface GuardianAccountItemProps {
   guardianItem: UserGuardianItem;

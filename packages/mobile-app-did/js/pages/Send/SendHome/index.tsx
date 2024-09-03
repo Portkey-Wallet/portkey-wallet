@@ -568,6 +568,7 @@ const SendHome: React.FC = () => {
     defaultToken.decimals,
     crossFee,
     securitySafeCheckAndToast,
+    showDialog,
     getCAContract,
     checkTransferLimitWithJump,
     previewParamsWithoutFee,
@@ -579,17 +580,50 @@ const SendHome: React.FC = () => {
   const preview = useCallback(async () => {
     const result = await checkCanPreview();
     if (!result?.status) return;
-
-    navigationService.navigate('SendPreview', {
-      ...previewParamsWithoutFee,
-      transactionFee: result?.fee || '0',
-      receiveAmount: result?.receiveAmount,
-      receiveAmountUsd: result?.receiveAmountUsd,
-      isEtransferCrossInLimit: result?.isEtransferCrossInLimit,
-      crossChainFee: result?.transactionFee || crossFee,
-      crossChainFeeUnit: result?.transactionUnit || '',
-    });
-  }, [checkCanPreview, crossFee, previewParamsWithoutFee]);
+    if (sendType === 'token' && assetInfo.chainId === 'AELF' && assetInfo.symbol === 'ELF') {
+      ActionSheet.alert({
+        title: 'Send to exchange account?',
+        message: (
+          <TextM style={[styles.alertMessage]}>
+            {`Please note that `}
+            <TextM
+              style={[
+                styles.alertMessage,
+                FontStyles.functionalRedDefault,
+              ]}>{`only MainChain ELF can be sent directly to exchanges`}</TextM>
+            {`. If you are sending another asset, please swap it to ELF first or try the withdrawal function in ETransfer.`}
+          </TextM>
+        ),
+        buttons: [
+          { title: 'Cancel', type: 'outline' },
+          {
+            title: 'Confirm',
+            onPress: () => {
+              navigationService.navigate('SendPreview', {
+                ...previewParamsWithoutFee,
+                transactionFee: result?.fee || '0',
+                receiveAmount: result?.receiveAmount,
+                receiveAmountUsd: result?.receiveAmountUsd,
+                isEtransferCrossInLimit: result?.isEtransferCrossInLimit,
+                crossChainFee: result?.transactionFee || crossFee,
+                crossChainFeeUnit: result?.transactionUnit || '',
+              });
+            },
+          },
+        ],
+      });
+    } else {
+      navigationService.navigate('SendPreview', {
+        ...previewParamsWithoutFee,
+        transactionFee: result?.fee || '0',
+        receiveAmount: result?.receiveAmount,
+        receiveAmountUsd: result?.receiveAmountUsd,
+        isEtransferCrossInLimit: result?.isEtransferCrossInLimit,
+        crossChainFee: result?.transactionFee || crossFee,
+        crossChainFeeUnit: result?.transactionUnit || '',
+      });
+    }
+  }, [assetInfo.chainId, assetInfo.symbol, checkCanPreview, crossFee, previewParamsWithoutFee, sendType]);
 
   const ButtonUI = useMemo(() => {
     return (

@@ -20,12 +20,14 @@ export const useSocialVerify = () => {
       operationType,
       loginAccount,
       targetChainId,
+      operationDetails,
     }: {
       operateGuardian: UserGuardianItem;
       originChainId: ChainId;
       targetChainId?: ChainId;
       operationType: OperationTypeEnum;
       loginAccount?: LoginInfo;
+      operationDetails?: string;
     }) => {
       try {
         setLoading(true);
@@ -40,6 +42,7 @@ export const useSocialVerify = () => {
           chainId: originChainId,
           operationType: operationType,
           targetChainId,
+          operationDetails,
         });
         const verifierInfo: VerifierInfo = { ...result, verifierId: operateGuardian?.verifier?.id ?? '' };
         let identifierHash;

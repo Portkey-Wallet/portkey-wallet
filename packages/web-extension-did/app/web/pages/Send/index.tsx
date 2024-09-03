@@ -68,6 +68,7 @@ import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic
 import { COMMON_PRIVATE } from '@portkey-wallet/constants';
 import { getAssetsEstimation } from '@portkey-wallet/store/store-ca/assets/api';
 import { SendType } from '@portkey-wallet/types/types-ca/send';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 
 export type ToAccount = { address: string; name?: string };
 
@@ -731,7 +732,31 @@ export default function Send() {
           if (res === ExceedLimit || res === WalletIsNotSecure || res === CrossChainIntercepted) return;
           if (!res) {
             setTipMsg('');
-            setStage(SendStage.Preview);
+            if (chainId === MAIN_CHAIN_ID && symbol !== 'ELF') {
+              Modal.confirm({
+                width: 320,
+                content: (
+                  <div>
+                    <div className="non-elf-title">Send to exchange account?</div>
+                    <div>
+                      Please note that &nbsp;
+                      <span className="strong-text">{`only MainChain ELF can be sent directly to exchanges.`}</span> If
+                      you are sending another asset, please swap it to ELF first or try the withdrawal function in
+                      ETransfer.
+                    </div>
+                  </div>
+                ),
+                className: 'cross-modal delete-modal',
+                autoFocusButton: null,
+                icon: null,
+                centered: true,
+                okText: 'Confirm',
+                cancelText: 'Cancel',
+                onOk: () => setStage(SendStage.Preview),
+              });
+            } else {
+              setStage(SendStage.Preview);
+            }
           } else {
             setTipMsg(res);
           }
@@ -830,6 +855,7 @@ export default function Send() {
       t,
       navigate,
       handleCheckPreview,
+      symbol,
       isSideChainSend,
       checkSideChainSendModal,
       sendHandler,
@@ -976,6 +1002,13 @@ export default function Send() {
           operationType={OperationTypeEnum.transferApprove}
           onClose={onCloseGuardianApprove}
           getApproveRes={getApproveRes}
+          operationDetails={getOperationDetails(OperationTypeEnum.transferApprove, {
+            symbol: tokenInfo?.symbol,
+            amount,
+            toAddress: toAccount.address,
+            caHash: wallet.caHash,
+            verifyManagerAddress: wallet.address,
+          })}
         />
         <DisclaimerModal open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} {...disclaimerData.current} />
 
@@ -984,6 +1017,7 @@ export default function Send() {
     );
   }, [
     StageObj,
+    amount,
     btnDisabled,
     disclaimerOpen,
     errorMsg,
@@ -1002,8 +1036,11 @@ export default function Send() {
     toAccount,
     tokenInfo.chainId,
     tokenInfo.label,
+    tokenInfo?.symbol,
     type,
     userInfo?.nickName,
+    wallet.address,
+    wallet.caHash,
   ]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;

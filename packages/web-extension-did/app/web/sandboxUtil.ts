@@ -12,6 +12,7 @@ import CrossTransfer from '@portkey-wallet/utils/withdraw';
 import { IStorageSuite } from '@portkey/types';
 import AElf from 'aelf-sdk';
 import { handleErrorMessage } from '@portkey/did-ui-react';
+import { getRawParams } from '@portkey-wallet/utils/dapp/decodeTx';
 const localStore: Record<string, string> = {};
 
 export class BaseAsyncStorage implements IStorageSuite {
@@ -94,6 +95,9 @@ class SandboxUtil {
           break;
         case SandboxEventTypes.etransferCrossTransfer:
           SandboxUtil.etransferCrossTransfer(event, SandboxUtil.callback);
+          break;
+        case SandboxEventTypes.getDecodedTxData:
+          SandboxUtil.getDecodedTxData(event, SandboxUtil.callback);
           break;
 
         default:
@@ -324,6 +328,26 @@ class SandboxUtil {
       callback(event, {
         code: SandboxErrorCode.success,
         message: transaction,
+        sid: data.sid,
+      });
+    } catch (e) {
+      return callback(event, {
+        code: SandboxErrorCode.error,
+        message: e,
+        sid: data.sid,
+      });
+    }
+  }
+
+  static async getDecodedTxData(event: MessageEvent<any>, callback: SendBack) {
+    const data = event.data.data ?? {};
+    try {
+      const instance = new AElf(new AElf.providers.HttpProvider(data.chainInfo?.endPoint));
+      const res = await getRawParams(instance, data.raw);
+
+      callback(event, {
+        code: SandboxErrorCode.success,
+        message: res,
         sid: data.sid,
       });
     } catch (e) {

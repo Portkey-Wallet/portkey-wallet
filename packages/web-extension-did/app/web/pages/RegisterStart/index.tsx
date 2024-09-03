@@ -50,6 +50,8 @@ import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
 import { FromPageEnum, TVerifierAccountLocationState } from 'types/router';
 import googleAnalytics from 'utils/googleAnalytics';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
+import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 export default function RegisterStart() {
   const { type } = useParams();
@@ -63,6 +65,7 @@ export default function RegisterStart() {
   const isMainnet = useIsMainnet();
   const [open, setOpen] = useState<boolean>();
   const { t } = useTranslation();
+  const { address: managerAddress } = useCurrentWalletInfo();
 
   useEffect(() => {
     dispatch(createNewTmpWallet());
@@ -237,6 +240,9 @@ export default function RegisterStart() {
             verifierId: item.verifier?.id || '',
             chainId: originChainId,
             operationType: OperationTypeEnum.communityRecovery,
+            operationDetails: getOperationDetails(OperationTypeEnum.communityRecovery, {
+              verifyManagerAddress: managerAddress,
+            }),
           },
         });
 
@@ -272,7 +278,7 @@ export default function RegisterStart() {
         singleMessage.error(_error);
       }
     },
-    [dispatch, navigate, setLoading],
+    [dispatch, navigate, managerAddress, setLoading],
   );
 
   const socialVerify = useSocialVerify();
@@ -330,7 +336,13 @@ export default function RegisterStart() {
         ) {
           await sendVerifyCode(userGuardianStatusList[0], originChainId);
         } else {
-          navigate('/login/guardian-approval');
+          navigate('/login/guardian-approval', {
+            state: {
+              operationDetails: getOperationDetails(OperationTypeEnum.communityRecovery, {
+                verifyManagerAddress: managerAddress,
+              }),
+            },
+          });
         }
         setLoading(false);
       } catch (error) {
@@ -341,7 +353,17 @@ export default function RegisterStart() {
         setLoading(false);
       }
     },
-    [dispatch, fetchUserVerifier, getRegisterInfo, navigate, saveState, sendVerifyCode, setLoading, socialVerify],
+    [
+      dispatch,
+      fetchUserVerifier,
+      getRegisterInfo,
+      managerAddress,
+      navigate,
+      saveState,
+      sendVerifyCode,
+      setLoading,
+      socialVerify,
+    ],
   );
   const loginInfoRef = useRef<LoginInfo>();
   const onInputFinish = useCallback(

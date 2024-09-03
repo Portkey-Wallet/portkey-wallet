@@ -16,7 +16,8 @@ import AsyncButton from 'components/AsyncButton';
 import AElf from 'aelf-sdk';
 import { IBlockchainWallet } from '@portkey/types';
 import CustomSvg from 'components/CustomSvg';
-import { useDecodeTx } from '@portkey-wallet/hooks/hooks-ca/dapp';
+import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import getDecodedTxData from 'utils/sandboxUtil/getDecodedTxData';
 import './index.less';
 
 export default function GetSignature() {
@@ -30,30 +31,38 @@ export default function GetSignature() {
   }>();
   const { t } = useTranslation();
   const { currentNetwork } = useWalletInfo();
-  const getDecodedTxData = useDecodeTx();
-  const [showData, setShowData] = useState(payload?.data);
+  const [showData, setShowData] = useState<string | object>(payload?.data);
   const { dappMap } = useDapp();
   const curDapp = useMemo(
     () => dappMap[currentNetwork]?.find((item) => item.origin === payload?.origin),
     [currentNetwork, dappMap, payload?.origin],
   );
-  const [showWarning, setShowWarning] = useState(true);
+  const [showWarning, setShowWarning] = useState(false);
+  const chainInfo = useCurrentChain();
+
   useEffect(() => {
     (async () => {
       if (payload?.isCipherText) {
-        setShowWarning(true);
         try {
-          const res = await getDecodedTxData(payload.data);
-          console.log('res', res);
-          setShowData(res.params);
+          const raw = payload?.data;
+          // const raw =
+          //   '0a220a20a4ed11a0c86847b4c24111526f9e6a9174e142e28d26db8bdae761e6e32adbfd12220a2088881d4350a8c77c59a42fc86bbcd796b129e086da7e61d24fb86a6cbb6b2f3b18be9fe17022040608dfff2a124d616e61676572466f727761726443616c6c327f0a220a2009018c2fbd3ea94c99054cda666d23f1b1f6c90802a8b41c34a275a452f75c4412220a202791e992a57f28e75a11f13af2c0aec8b0eb35d2f048d42eba8901c92e0378dc1a085472616e73666572222b0a220a200c214bac7406d99ff80fc03401147840e7bde64cd85bddd4c3312627f2094be81203454c461801';
+          if (!chainInfo) throw 'invalid chainInfo';
+          const res = await getDecodedTxData({ chainInfo, raw, rpcUrl: chainInfo.endPoint });
+          setShowWarning(false);
+          setShowData({
+            methodName: res.result.methodName,
+            params: res.result.params,
+          });
         } catch (error) {
+          setShowWarning(true);
           console.log('===getDecodedTxData error', error);
         }
       } else {
         setShowWarning(false);
       }
     })();
-  }, [getDecodedTxData, payload.data, payload?.isCipherText]);
+  }, [chainInfo, payload?.data, payload?.isCipherText]);
   const renderSite = useMemo(
     () =>
       curDapp && (
@@ -99,6 +108,22 @@ export default function GetSignature() {
     }
   }, [onSignByManager]);
 
+  const renderShowData = useMemo(() => {
+    if (typeof showData === 'object') {
+      return (
+        <div className="data">
+          {Object.entries(showData).map(([key, value], index) => (
+            <div key={index}>
+              <div className="method-name">{key}</div>
+              <div>{showValueToStr(value)}</div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    return <div className="data">{showValueToStr(showData)}</div>;
+  }, [showData]);
+
   return (
     <div className="get-signature flex">
       {renderSite}
@@ -106,12 +131,12 @@ export default function GetSignature() {
       {showWarning && (
         <div className="warning-tip flex">
           <CustomSvg type="WarningFilled" />
-          {`Unknown authorization, please proceed with caution`}
+          {`Unrecognized authorization. Please exercise caution and refrain from approving the transaction if you are uncertain.`}
         </div>
       )}
       <div className="message">
         <div>Message</div>
-        <div className="data">{showValueToStr(showData)}</div>
+        {renderShowData}
       </div>
       <div className="btn flex-between">
         <Button

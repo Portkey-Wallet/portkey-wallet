@@ -78,7 +78,7 @@ export default function WalletSecurity() {
         element: (
           <div className="flex secondary-mailbox">
             <span>{t('Set up Backup Mailbox')}</span>
-            <span className="number">{secondaryEmail ?? `Not Set up`}</span>
+            <span className="number">{secondaryEmail || `Not Set up`}</span>
           </div>
         ),
         click: () => {

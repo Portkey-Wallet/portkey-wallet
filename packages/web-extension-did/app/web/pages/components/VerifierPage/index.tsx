@@ -26,6 +26,7 @@ enum VerificationError {
 
 interface VerifierPageProps {
   operationType: OperationTypeEnum;
+  operationDetails?: string;
   loginAccount?: LoginInfo;
   currentGuardian?: UserGuardianItem;
   guardianType?: LoginType;
@@ -44,6 +45,7 @@ export default function VerifierPage({
   guardianType,
   isInitStatus,
   targetChainId,
+  operationDetails,
   onSuccess,
 }: VerifierPageProps) {
   const { setLoading } = useLoading();
@@ -72,7 +74,7 @@ export default function VerifierPage({
           if (!guardianType && guardianType !== 0) return singleMessage.error('Missing guardiansType');
           if (!currentGuardian?.verifierInfo) throw 'Missing verifierInfo!!!';
           setLoading(true);
-
+          const _operationDetails = operationDetails ? JSON.parse(operationDetails) : {};
           const res = await verification.checkVerificationCode({
             params: {
               type: LoginType[currentGuardian?.guardianType as LoginType],
@@ -84,7 +86,11 @@ export default function VerifierPage({
               operationType,
               targetChainId: targetChainId,
               caHash,
-              operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
+              operationDetails: JSON.stringify({
+                ..._operationDetails,
+                manager: latestVerifyManagerAddress.current,
+                caHash,
+              }),
             },
           });
 
@@ -108,12 +114,13 @@ export default function VerifierPage({
     },
     [
       guardianType,
-      caHash,
       currentGuardian,
       setLoading,
+      operationDetails,
       originChainId,
       operationType,
       targetChainId,
+      caHash,
       latestVerifyManagerAddress,
       onSuccess,
       t,
@@ -134,6 +141,7 @@ export default function VerifierPage({
           chainId: originChainId,
           operationType,
           targetChainId: targetChainId,
+          operationDetails,
         },
       });
       setLoading(false);
@@ -155,7 +163,16 @@ export default function VerifierPage({
       const _error = verifyErrorHandler(error);
       singleMessage.error(_error);
     }
-  }, [currentGuardian, guardianType, originChainId, dispatch, setLoading, operationType, targetChainId]);
+  }, [
+    currentGuardian,
+    guardianType,
+    setLoading,
+    originChainId,
+    operationType,
+    targetChainId,
+    operationDetails,
+    dispatch,
+  ]);
 
   return currentGuardian?.verifier ? (
     <PortkeyStyleProvider>

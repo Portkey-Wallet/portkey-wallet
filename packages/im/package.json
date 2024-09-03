@@ -15,7 +15,7 @@
     "@relationlabs/im": "^0.4.0-beta-3"
   },
   "devDependencies": {
-    "@portkey/services": "2.9.6-alpha.4",
-    "@portkey/types": "2.9.6-alpha.4"
+    "@portkey/services": "2.9.6-alpha.5",
+    "@portkey/types": "2.9.6-alpha.5"
   }
 }

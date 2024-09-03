@@ -35,7 +35,6 @@ const SignModal = (props: SignModalPropsType) => {
   const [showWarning, setShowWarning] = useState<boolean>(true);
   useEffect(() => {
     (async () => {
-      // console.log('isCipherText', isCipherText);
       if (isCipherText) {
         try {
           // const res = await getDecodedTxData(
@@ -43,20 +42,12 @@ const SignModal = (props: SignModalPropsType) => {
           // );
           const res = await getDecodedTxData(signInfo.data);
           console.log('res', res);
-          // if (typeof res.params === 'object') {
-          //   setClearText({
-          //     args: res.params.args,
-          //     methodName: res.params.methodName,
-          //     contractAddress: res.params.contractAddress,
-          //   });
-          // }
           setClearText({
             methodName: res.methodName,
             params: res.params,
           });
           setShowWarning(false);
         } catch (e) {
-          console.log('isCipherText error', e.message);
           setShowWarning(true);
         } finally {
           setLoading(false);

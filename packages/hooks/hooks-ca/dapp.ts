@@ -80,19 +80,6 @@ export const useUpdateSessionInfo = () => {
     [caHash, dispatch, networkType],
   );
 };
-// export function useDecodeTx() {
-//   const chainInfo = useCurrentChain('tDVV');
-//   console.log('chainInfo is:', chainInfo);
-//   const getDecodedTxData = useCallback(
-//     async (raw: string) => {
-//       const instance = new AElf(new AElf.providers.HttpProvider(chainInfo?.endPoint));
-//       const res = await getRawParams(instance, raw);
-//       return res;
-//     },
-//     [chainInfo?.endPoint],
-//   );
-//   return getDecodedTxData;
-// }
 
 export function useDecodeTx() {
   const currentChainList = useCurrentChainList();
@@ -111,7 +98,7 @@ export function useDecodeTx() {
       }
       const promises = instanceList?.map(instance => getRawParams(instance, raw));
       if (!promises || promises.length === 0) {
-        throw new Error('Failed to decode transaction on all chains1');
+        throw new Error('Failed to decode transaction on all chains');
       }
       function promiseAny<T>(promises: Promise<T>[]): Promise<T> {
         return new Promise((resolve, reject) => {
@@ -138,7 +125,7 @@ export function useDecodeTx() {
         return res;
       } catch (error) {
         console.error('All promises failed:', error);
-        throw new Error('Failed to decode transaction on all chains2');
+        throw new Error('Failed to decode transaction on all chains');
       }
     },
     [currentChainList],

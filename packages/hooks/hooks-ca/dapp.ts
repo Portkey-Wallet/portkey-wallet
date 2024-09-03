@@ -121,7 +121,6 @@ export function useDecodeTx() {
         });
       }
       try {
-        console.log('11111111');
         const res = await promiseAny(promises);
         return res;
       } catch (error) {

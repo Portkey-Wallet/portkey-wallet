@@ -580,7 +580,7 @@ const SendHome: React.FC = () => {
   const preview = useCallback(async () => {
     const result = await checkCanPreview();
     if (!result?.status) return;
-    if (sendType === 'token' && assetInfo.chainId === 'AELF' && assetInfo.symbol === 'ELF') {
+    if (sendType === 'token' && assetInfo.chainId === 'AELF' && assetInfo.symbol !== 'ELF') {
       ActionSheet.alert({
         title: 'Send to exchange account?',
         message: (

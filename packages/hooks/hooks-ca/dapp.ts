@@ -105,7 +105,7 @@ export function useDecodeTx() {
           const errors: any[] = [];
           let pending = promises.length;
           if (pending === 0) {
-            return reject(new AggregateError([], 'All promises were rejected'));
+            return reject('All promises were rejected');
           }
           promises.forEach((promise, index) => {
             Promise.resolve(promise)
@@ -114,13 +114,14 @@ export function useDecodeTx() {
                 errors[index] = error;
                 pending -= 1;
                 if (pending === 0) {
-                  reject(new AggregateError(errors, 'All promises were rejected'));
+                  reject('All promises were rejected');
                 }
               });
           });
         });
       }
       try {
+        console.log('11111111');
         const res = await promiseAny(promises);
         return res;
       } catch (error) {

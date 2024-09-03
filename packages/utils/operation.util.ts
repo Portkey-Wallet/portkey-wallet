@@ -81,5 +81,4 @@ function getGuardianTypeValue(guardianType?: string) {
   } else {
     return guardianType;
   }
-  return 0;
 }

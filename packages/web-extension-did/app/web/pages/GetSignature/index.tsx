@@ -16,8 +16,7 @@ import AsyncButton from 'components/AsyncButton';
 import AElf from 'aelf-sdk';
 import { IBlockchainWallet } from '@portkey/types';
 import CustomSvg from 'components/CustomSvg';
-import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import getDecodedTxData from 'utils/sandboxUtil/getDecodedTxData';
+import { useDecodeTx } from 'hooks/dapp';
 import './index.less';
 
 export default function GetSignature() {
@@ -38,7 +37,7 @@ export default function GetSignature() {
     [currentNetwork, dappMap, payload?.origin],
   );
   const [showWarning, setShowWarning] = useState(false);
-  const chainInfo = useCurrentChain();
+  const getDecodedTxData = useDecodeTx();
 
   useEffect(() => {
     (async () => {
@@ -47,8 +46,7 @@ export default function GetSignature() {
           const raw = payload?.data;
           // const raw =
           //   '0a220a20a4ed11a0c86847b4c24111526f9e6a9174e142e28d26db8bdae761e6e32adbfd12220a2088881d4350a8c77c59a42fc86bbcd796b129e086da7e61d24fb86a6cbb6b2f3b18be9fe17022040608dfff2a124d616e61676572466f727761726443616c6c327f0a220a2009018c2fbd3ea94c99054cda666d23f1b1f6c90802a8b41c34a275a452f75c4412220a202791e992a57f28e75a11f13af2c0aec8b0eb35d2f048d42eba8901c92e0378dc1a085472616e73666572222b0a220a200c214bac7406d99ff80fc03401147840e7bde64cd85bddd4c3312627f2094be81203454c461801';
-          if (!chainInfo) throw 'invalid chainInfo';
-          const res = await getDecodedTxData({ chainInfo, raw, rpcUrl: chainInfo.endPoint });
+          const res = await getDecodedTxData(raw);
           setShowWarning(false);
           setShowData({
             methodName: res.result.methodName,
@@ -62,7 +60,7 @@ export default function GetSignature() {
         setShowWarning(false);
       }
     })();
-  }, [chainInfo, payload?.data, payload?.isCipherText]);
+  }, [getDecodedTxData, payload?.data, payload?.isCipherText]);
   const renderSite = useMemo(
     () =>
       curDapp && (

@@ -108,7 +108,7 @@ export default function VerifierEmail() {
           //     verifierSessionId: verifierSessionIdRef.current,
           //   },
           // });
-          CommonToast.success('Set Secondary Email Successfully');
+          CommonToast.success('Set Successfully');
           myEvents.updateSecondaryEmail.emit({ email });
           navigationService.navigate('WalletSecurity');
           // if (setSecondaryEmailRst.setResult) {

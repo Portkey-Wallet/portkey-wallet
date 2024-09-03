@@ -63,5 +63,11 @@ function getGuardianTypeValue(guardianType?: string) {
     return 3;
   } else if (guardianType === 'Telegram') {
     return 4;
+  } else if (guardianType === 'Facebook') {
+    return 5;
+  } else if (guardianType === 'Twitter') {
+    return 6;
+  } else {
+    return guardianType;
   }
 }

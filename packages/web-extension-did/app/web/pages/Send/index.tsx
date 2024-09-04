@@ -732,7 +732,7 @@ export default function Send() {
           if (res === ExceedLimit || res === WalletIsNotSecure || res === CrossChainIntercepted) return;
           if (!res) {
             setTipMsg('');
-            if (chainId === MAIN_CHAIN_ID && symbol !== 'ELF') {
+            if (chainId === MAIN_CHAIN_ID && type === 'token' && symbol !== 'ELF') {
               Modal.confirm({
                 width: 320,
                 content: (

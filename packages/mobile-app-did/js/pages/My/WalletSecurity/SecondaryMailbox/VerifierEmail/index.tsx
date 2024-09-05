@@ -141,7 +141,7 @@ export default function VerifierEmail() {
     digitInput.current?.lockInput();
     Loading.show(undefined, true);
     try {
-      const req = await request.security.sendSecondaryEmailCode({
+      const req = await verification.sendSecondaryVerificationCode({
         params: {
           secondaryEmail: email,
         },

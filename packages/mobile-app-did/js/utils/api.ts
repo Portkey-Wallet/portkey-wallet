@@ -8,10 +8,18 @@ import { IStorage } from '@portkey-wallet/types/storage';
 import { baseStore } from '@portkey-wallet/utils/mobile/storage';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
 import { getAppCheckToken } from './appCheck';
+import { OperationTypeEnum, PlatformType } from '@portkey-wallet/types/verifier';
+import { RequestConfig } from '@portkey-wallet/api/types';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 const NoVerifierSessionIdMessage = 'no verifierSessionId';
 const GetAppCheckTokenFailMessage = 'get appCheckToken fail';
-
+interface SendSecondVerificationConfig extends RequestConfig {
+  params: {
+    secondaryEmail: string;
+    platformType: number;
+  };
+}
 class MobileVerification extends Verification {
   constructor(store: IStorage) {
     super(store);
@@ -77,6 +85,58 @@ class MobileVerification extends Verification {
       const item = this.get(key);
       if (message === IntervalErrorMessage && item) return item;
       throw error;
+    }
+  }
+  public async sendSecondaryVerificationCode(config: SendSecondVerificationConfig) {
+    try {
+      config.params = {
+        ...config.params,
+        platformType: isIOS ? PlatformType.IOS : PlatformType.ANDROID,
+      };
+      const result = await request.verify.checkGoogleRecaptcha({
+        params: {
+          operationType: OperationTypeEnum.setupBackupMailbox,
+        },
+      });
+      const isNeedRecaptcha = !!result;
+      console.log('isNeedRecaptcha', result);
+      if (isNeedRecaptcha) {
+        // app check
+        try {
+          const appCheckToken = await getAppCheckToken(true);
+          if (!appCheckToken) throw Error(GetAppCheckTokenFailMessage);
+
+          config.headers = {
+            acToken: appCheckToken || '',
+          };
+          // config.params = {
+          //   ...config.params,
+          //   platformType: '',
+          // }
+          const responseByAppCheck = await request.security.sendSecondaryEmailCode(config);
+          if (!responseByAppCheck?.verifierSessionId) throw Error(NoVerifierSessionIdMessage);
+          return responseByAppCheck;
+        } catch (err) {
+          console.log('appCheck  error', err);
+        }
+
+        // google  human-machine verification
+        // TODO: add language
+        const reCaptchaToken = await verifyHumanMachine('en');
+        config.headers = {
+          reCaptchaToken: reCaptchaToken as string,
+        };
+
+        const responseByCaptchaToken = await request.security.sendSecondaryEmailCode(config);
+        return responseByCaptchaToken;
+      }
+
+      const req = await request.security.sendSecondaryEmailCode(config);
+      if (!req?.verifierSessionId) throw Error(NoVerifierSessionIdMessage);
+      return req;
+    } catch (error: any) {
+      console.log('isNeedRecaptcha error', error);
+      throw 'send secondary email code failed';
     }
   }
 }

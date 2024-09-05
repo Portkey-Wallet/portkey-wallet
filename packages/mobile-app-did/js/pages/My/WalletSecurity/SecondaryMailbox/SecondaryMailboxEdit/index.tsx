@@ -1,28 +1,20 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback } from 'react';
 import PageContainer from 'components/PageContainer';
 import { StyleSheet, Text, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
-import { ApprovalType } from '@portkey-wallet/types/verifier';
-import { TextL, TextM } from 'components/CommonText';
+import { TextL } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
-import useEffectOnce from 'hooks/useEffectOnce';
 import CommonInput from 'components/CommonInput';
-import CommonSwitch from 'components/CommonSwitch';
-import { INIT_HAS_ERROR, INIT_NONE_ERROR, ErrorType } from '@portkey-wallet/constants/constants-ca/common';
-import { isValidInteger } from '@portkey-wallet/utils/reg';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
-import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
-import { checkEmail } from '@portkey-wallet/utils/check';
 import ActionSheet from 'components/ActionSheet';
 import CommonToast from 'components/CommonToast';
 import Loading from 'components/Loading';
 import { useSecondaryMail } from '@portkey-wallet/hooks/hooks-ca/useSecondaryMail';
+import { verification } from 'utils/api';
 
 interface RouterParams {
   mail?: string;
@@ -30,8 +22,15 @@ interface RouterParams {
 
 const SecondaryMailboxEdit: React.FC = () => {
   const { mail } = useRouterParams<RouterParams>();
-  const { errorMessage, email, setErrorMessage, setEmail, sendSecondaryEmailCode, checkEmailValid } =
-    useSecondaryMail(mail);
+  const { errorMessage, email, setErrorMessage, setEmail, checkEmailValid } = useSecondaryMail(mail);
+  const sendSecondaryEmailCode = useCallback(async () => {
+    const res = await verification.sendSecondaryVerificationCode({
+      params: {
+        secondaryEmail: email,
+      },
+    });
+    return res;
+  }, [email]);
   const onMailInput = useCallback(
     (value: string) => {
       setErrorMessage('');

@@ -145,8 +145,8 @@ export default function TransferSettingsEdit() {
       setLoading(false);
       const operationDetails = getOperationDetails(OperationTypeEnum.modifyTransferLimit, {
         symbol: state.symbol,
-        singleLimit: timesDecimals(singleLimit, state.decimals).toFixed(),
-        dailyLimit: timesDecimals(dailyLimit, state.decimals).toFixed(),
+        singleLimit: restrictedTextRef.current ? timesDecimals(singleLimit, state.decimals).toFixed() : '-1',
+        dailyLimit: restrictedTextRef.current ? timesDecimals(dailyLimit, state.decimals).toFixed() : '-1',
       });
       isPrompt
         ? navigate('/setting/wallet-security/payment-security/guardian-approval', {

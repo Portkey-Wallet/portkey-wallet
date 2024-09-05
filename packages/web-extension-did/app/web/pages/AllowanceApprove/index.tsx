@@ -144,6 +144,7 @@ export default function AllowanceApprove() {
         <ManagerApproveInner
           networkType={currentNetwork}
           originChainId={originChainId}
+          spender={txParams?.params?.paramsOption?.spender}
           targetChainId={chainId}
           caHash={caHash || ''}
           amount={txParams.params.paramsOption.amount}

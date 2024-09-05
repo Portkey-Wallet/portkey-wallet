@@ -18,6 +18,10 @@ import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 import SetAllowance, { IAllowanceConfirmProps } from 'pages/components/SetAllowance';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
 import { SvgType } from 'components/CustomSvg';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
+import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { LoginType, isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
+import { handleZKLoginInfo } from '@portkey-wallet/utils/guardian';
 
 export enum ManagerApproveStep {
   SetAllowance = 'SetAllowance',
@@ -34,6 +38,7 @@ export interface IManagerApproveInnerProps {
   symbol: string;
   networkType: NetworkType;
   batchApproveNFT: boolean;
+  spender?: string;
   onCancel?: () => void;
   onError?: (error: Error) => void;
   onFinish?: (res: { amount: string; guardiansApproved: IGuardiansApproved[]; symbol: string }) => void;
@@ -48,6 +53,7 @@ export default function ManagerApproveInner({
   symbol,
   defaultIcon,
   batchApproveNFT,
+  spender,
   onCancel,
   onFinish,
   onError,
@@ -66,6 +72,7 @@ export default function ManagerApproveInner({
   }>();
   const [guardianList, setGuardianList] = useState<BaseGuardianItem[]>();
   const { setLoading } = useLoading();
+  const { address: managerAddress } = useCurrentWalletInfo();
   const currentNetwork = useCurrentNetwork();
   const [DEFAULT_SYMBOL_DECIMAL, approveSymbol] = useMemo(() => {
     const defaultDecimals = isNFT(symbol) ? DEFAULT_NFT_DECIMAL : DEFAULT_DECIMAL;
@@ -206,16 +213,30 @@ export default function ManagerApproveInner({
           originChainId={originChainId}
           targetChainId={targetChainId}
           guardianList={guardianList}
+          caHash={caHash}
           onConfirm={async (approvalInfo) => {
-            const approved: IGuardiansApproved[] = approvalInfo.map((guardian) => ({
-              type: AccountTypeEnum[guardian.type || 'Google'],
-              identifierHash: guardian.identifierHash || '',
-              verificationInfo: {
-                id: guardian.verifierId,
-                signature: Object.values(Buffer.from(guardian.signature as any, 'hex')),
-                verificationDoc: guardian.verificationDoc,
-              },
-            }));
+            const approved: IGuardiansApproved[] = approvalInfo.map((item) => {
+              if (item.type && isZKLoginSupported(LoginType[item.type])) {
+                return {
+                  type: item?.type ? AccountTypeEnum[item.type] : AccountTypeEnum.Google,
+                  identifierHash: item?.identifierHash || '',
+                  verificationInfo: {
+                    id: item.verifierId,
+                  },
+                  zkLoginInfo: handleZKLoginInfo(item?.zkLoginInfo),
+                };
+              } else {
+                return {
+                  type: item?.type ? AccountTypeEnum[item.type] : AccountTypeEnum.Google,
+                  identifierHash: item?.identifierHash || '',
+                  verificationInfo: {
+                    id: item.verifierId,
+                    signature: Object.values(Buffer.from(item?.signature as any, 'hex')) as any,
+                    verificationDoc: item.verificationDoc,
+                  },
+                };
+              }
+            });
             onFinish?.({
               amount: timesDecimals(allowance, tokenInfo?.decimals || DEFAULT_SYMBOL_DECIMAL).toFixed(0),
               guardiansApproved: approved,
@@ -224,6 +245,13 @@ export default function ManagerApproveInner({
           }}
           onError={(error) => onError?.(Error(handleErrorMessage(error.error)))}
           operationType={OperationTypeEnum.managerApprove}
+          operationDetails={getOperationDetails(OperationTypeEnum.managerApprove, {
+            spender,
+            symbol: approveSymbol,
+            amount: timesDecimals(allowance, tokenInfo?.decimals || DEFAULT_SYMBOL_DECIMAL).toFixed(0),
+            caHash,
+            verifyManagerAddress: managerAddress,
+          })}
         />
       )}
     </div>

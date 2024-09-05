@@ -88,55 +88,69 @@ class MobileVerification extends Verification {
     }
   }
   public async sendSecondaryVerificationCode(config: SendSecondVerificationConfig) {
+    config.params = {
+      ...config.params,
+      platformType: isIOS ? PlatformType.IOS : PlatformType.ANDROID,
+    };
+    const key = 'setupBackupMailbox' + (config.params.secondaryEmail || '') + (config.params.platformType || '');
     try {
-      config.params = {
-        ...config.params,
-        platformType: isIOS ? PlatformType.IOS : PlatformType.ANDROID,
-      };
-      const result = await request.verify.checkGoogleRecaptcha({
-        params: {
-          operationType: OperationTypeEnum.setupBackupMailbox,
-        },
-      });
-      const isNeedRecaptcha = !!result;
-      console.log('isNeedRecaptcha', result);
-      if (isNeedRecaptcha) {
-        // app check
-        try {
-          const appCheckToken = await getAppCheckToken(true);
-          if (!appCheckToken) throw Error(GetAppCheckTokenFailMessage);
+      const item = this.get(key);
+      if (item) {
+        return item;
+      } else {
+        const result = await request.verify.checkGoogleRecaptcha({
+          params: {
+            operationType: OperationTypeEnum.setupBackupMailbox,
+          },
+        });
+        const isNeedRecaptcha = !!result;
+        console.log('isNeedRecaptcha', result);
+        if (isNeedRecaptcha) {
+          // app check
+          try {
+            const appCheckToken = await getAppCheckToken(true);
+            if (!appCheckToken) throw Error(GetAppCheckTokenFailMessage);
 
+            config.headers = {
+              acToken: appCheckToken || '',
+            };
+            // config.params = {
+            //   ...config.params,
+            //   platformType: '',
+            // }
+            const responseByAppCheck = await request.security.sendSecondaryEmailCode(config);
+            if (!responseByAppCheck?.verifierSessionId) throw Error(NoVerifierSessionIdMessage);
+            await this.set(key, { ...responseByAppCheck, time: Date.now() });
+            return responseByAppCheck;
+          } catch (err) {
+            console.log('appCheck  error', err);
+          }
+
+          // google  human-machine verification
+          // TODO: add language
+          const reCaptchaToken = await verifyHumanMachine('en');
           config.headers = {
-            acToken: appCheckToken || '',
+            reCaptchaToken: reCaptchaToken as string,
           };
-          // config.params = {
-          //   ...config.params,
-          //   platformType: '',
-          // }
-          const responseByAppCheck = await request.security.sendSecondaryEmailCode(config);
-          if (!responseByAppCheck?.verifierSessionId) throw Error(NoVerifierSessionIdMessage);
-          return responseByAppCheck;
-        } catch (err) {
-          console.log('appCheck  error', err);
+
+          const responseByCaptchaToken = await request.security.sendSecondaryEmailCode(config);
+          await this.set(key, {
+            ...responseByCaptchaToken,
+            time: Date.now(),
+          });
+          return responseByCaptchaToken;
         }
 
-        // google  human-machine verification
-        // TODO: add language
-        const reCaptchaToken = await verifyHumanMachine('en');
-        config.headers = {
-          reCaptchaToken: reCaptchaToken as string,
-        };
-
-        const responseByCaptchaToken = await request.security.sendSecondaryEmailCode(config);
-        return responseByCaptchaToken;
+        const req = await request.security.sendSecondaryEmailCode(config);
+        if (!req?.verifierSessionId) throw Error(NoVerifierSessionIdMessage);
+        await this.set(key, { ...req, time: Date.now() });
+        return req;
       }
-
-      const req = await request.security.sendSecondaryEmailCode(config);
-      if (!req?.verifierSessionId) throw Error(NoVerifierSessionIdMessage);
-      return req;
     } catch (error: any) {
-      console.log('isNeedRecaptcha error', error);
-      throw 'send secondary email code failed';
+      const { message } = error?.error || error || {};
+      const item = this.get(key);
+      if (message === IntervalErrorMessage && item) return item;
+      throw error;
     }
   }
 }

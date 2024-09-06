@@ -2,9 +2,8 @@ import { IStorage, StorageBaseLoader } from '@portkey-wallet/types/storage';
 import { request } from '@portkey-wallet/api/api-did';
 import { RequestConfig } from '../../types';
 import { LoginKeyType } from '@portkey-wallet/types/types-ca/wallet';
-import { OperationTypeEnum, PlatformType } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { ChainId } from '@portkey-wallet/types';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 type VerifierInfo = {
   verifierSessionId: string;

@@ -174,13 +174,10 @@ const SendHome: React.FC = () => {
     }
     const etransferFee = await getEtransferMaxFee({ amount: balanceStr, toInfo, tokenInfo: assetInfo });
 
-    if (fee) {
-      setMaxAmountSend(balanceBN.minus(etransferFee).toString());
-    } else {
-      setMaxAmountSend(
-        ZERO.plus(divDecimals(balance, assetInfo.decimals)).minus(maxFee).minus(etransferFee).toString(),
-      );
-    }
+    const _max = fee
+      ? balanceBN.minus(etransferFee)
+      : ZERO.plus(divDecimals(balance, assetInfo.decimals)).minus(maxFee).minus(etransferFee);
+    setMaxAmountSend(_max.gt(ZERO) ? _max.toString() : '0');
   }, [
     balance,
     assetInfo,

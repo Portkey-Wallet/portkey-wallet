@@ -1,6 +1,7 @@
 import { request } from '@portkey-wallet/api/api-did';
 import {
   IntervalErrorMessage,
+  SendSecondVerificationConfig,
   SendVerificationConfig,
   Verification,
 } from '@portkey-wallet/api/api-did/verification/utils';
@@ -9,17 +10,11 @@ import { baseStore } from '@portkey-wallet/utils/mobile/storage';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
 import { getAppCheckToken } from './appCheck';
 import { OperationTypeEnum, PlatformType } from '@portkey-wallet/types/verifier';
-import { RequestConfig } from '@portkey-wallet/api/types';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { RequestConfig } from '@portkey-wallet/api/types';
 
 const NoVerifierSessionIdMessage = 'no verifierSessionId';
 const GetAppCheckTokenFailMessage = 'get appCheckToken fail';
-interface SendSecondVerificationConfig extends RequestConfig {
-  params: {
-    secondaryEmail: string;
-    platformType: number;
-  };
-}
 class MobileVerification extends Verification {
   constructor(store: IStorage) {
     super(store);
@@ -152,6 +147,22 @@ class MobileVerification extends Verification {
       if (message === IntervalErrorMessage && item) return item;
       throw error;
     }
+  }
+  public async checkSecondaryVerificationCode(config: RequestConfig) {
+    config.params = {
+      ...config.params,
+      platformType: isIOS ? PlatformType.IOS : PlatformType.ANDROID,
+    };
+    const { secondaryEmail, platformType, verificationCode, verifierSessionId } = config.params || {};
+    const key = 'setupBackupMailbox' + (secondaryEmail || '') + (platformType || '');
+    const req = await request.security.secondaryEmailCodeCheck({
+      params: {
+        verificationCode,
+        verifierSessionId,
+      },
+    });
+    this.delete(key);
+    return req;
   }
 }
 

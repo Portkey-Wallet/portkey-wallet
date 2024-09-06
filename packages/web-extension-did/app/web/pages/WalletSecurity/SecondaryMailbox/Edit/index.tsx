@@ -8,10 +8,13 @@ import SecondPageHeader from 'pages/components/SecondPageHeader';
 import { EmailReg } from '@portkey-wallet/utils/reg';
 import { EmailError } from '@portkey-wallet/utils/check';
 import { TSecondaryMailboxEditState, TSecondaryMailboxVerifyState } from 'types/router';
-import { useIsSecondaryMailSet, useSecondaryMail } from '@portkey-wallet/hooks/hooks-ca/useSecondaryMail';
+import { useIsSecondaryMailSet } from '@portkey-wallet/hooks/hooks-ca/useSecondaryMail';
 import singleMessage from 'utils/singleMessage';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import AsyncButton from 'components/AsyncButton';
+import { verification } from 'utils/api';
+import { SendSecondVerificationConfig } from '@portkey-wallet/api/api-did/verification/utils';
+import { PlatformType } from '@portkey-wallet/types/verifier';
 import './index.less';
 
 export default function SecondaryMailboxEdit() {
@@ -20,28 +23,30 @@ export default function SecondaryMailboxEdit() {
   const { state } = useLocationState<TSecondaryMailboxEditState>();
   const [val, setVal] = useState(state?.email || '');
   const [errMsg, setErrMsg] = useState('');
-  const { setEmail, sendSecondaryEmailCode } = useSecondaryMail(state?.email);
   const { secondaryEmail } = useIsSecondaryMailSet();
 
   const btnDisabled = useMemo(() => !(val && !errMsg && val !== secondaryEmail), [errMsg, secondaryEmail, val]);
   const goBack = useCallback(() => {
     navigate('/setting/wallet-security/secondary-mailbox');
   }, [navigate]);
-  const handleEmailInputChange = useCallback(
-    (v: string) => {
-      setErrMsg('');
-      setVal(v);
-      setEmail(v);
-    },
-    [setEmail],
-  );
+  const handleEmailInputChange = useCallback((v: string) => {
+    setErrMsg('');
+    setVal(v);
+  }, []);
   const onSave = useCallback(async () => {
     if (!EmailReg.test(val as string)) {
       setErrMsg(EmailError.invalidEmail);
       return;
     }
     try {
-      const res = await sendSecondaryEmailCode();
+      const config: SendSecondVerificationConfig = {
+        params: {
+          secondaryEmail: val,
+          platformType: PlatformType.EXTENSION,
+        },
+      };
+      const res = await verification.sendSecondaryVerificationCode(config);
+
       if (res.verifierSessionId) {
         navigate('/setting/wallet-security/secondary-mailbox-verify', {
           state: {
@@ -56,7 +61,7 @@ export default function SecondaryMailboxEdit() {
       console.log('===sendSecondaryEmailCode error', error);
       singleMessage.error(handleErrorMessage(error || 'send fail'));
     }
-  }, [navigate, sendSecondaryEmailCode, val]);
+  }, [navigate, val]);
   const mainContent = useMemo(() => {
     return (
       <div

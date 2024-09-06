@@ -22,6 +22,13 @@ export interface SendVerificationConfig extends RequestConfig {
   };
 }
 
+export interface SendSecondaryVerificationConfig extends RequestConfig {
+  params: {
+    secondaryEmail: string;
+    platformType: number;
+  };
+}
+
 export const IntervalErrorMessage = 'The interval between sending two verification codes is less than 60s';
 export class Verification extends StorageBaseLoader {
   private readonly _defaultKeyName = 'portkey_did_wallet';

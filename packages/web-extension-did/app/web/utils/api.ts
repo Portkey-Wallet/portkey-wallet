@@ -1,6 +1,6 @@
 import {
   IntervalErrorMessage,
-  SendSecondaryVerificationConfig,
+  SendSecondVerificationConfig,
   SendVerificationConfig,
   Verification,
 } from '@portkey-wallet/api/api-did/verification/utils';
@@ -44,7 +44,7 @@ export class ExtensionVerification extends Verification {
     }
   }
 
-  public async sendSecondaryVerificationCode(config: SendSecondaryVerificationConfig) {
+  public async sendSecondaryVerificationCode(config: SendSecondVerificationConfig) {
     const key = 'setupBackupMailbox' + (config.params.secondaryEmail || '') + (config.params.platformType || '');
 
     try {

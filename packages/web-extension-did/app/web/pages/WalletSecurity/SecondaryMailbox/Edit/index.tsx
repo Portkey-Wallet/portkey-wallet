@@ -13,7 +13,7 @@ import singleMessage from 'utils/singleMessage';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import AsyncButton from 'components/AsyncButton';
 import { verification } from 'utils/api';
-import { SendSecondaryVerificationConfig } from '@portkey-wallet/api/api-did/verification/utils';
+import { SendSecondVerificationConfig } from '@portkey-wallet/api/api-did/verification/utils';
 import { PlatformType } from '@portkey-wallet/types/verifier';
 import './index.less';
 
@@ -39,7 +39,7 @@ export default function SecondaryMailboxEdit() {
       return;
     }
     try {
-      const config: SendSecondaryVerificationConfig = {
+      const config: SendSecondVerificationConfig = {
         params: {
           secondaryEmail: val,
           platformType: PlatformType.EXTENSION,

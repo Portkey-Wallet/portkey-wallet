@@ -14,14 +14,16 @@ import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
 import { AccountType } from '@portkey-wallet/types/wallet';
 import './index.less';
 import { GuardianItem } from 'types/guardians';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { LoginType, isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
 import { getAuthToken } from 'store/Provider/initConfig';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
+import { handleZKLoginInfo } from '@portkey-wallet/utils/guardian';
 
 interface GuardianApprovalModalProps {
   open: boolean;
   targetChainId: ChainId;
   operationType: OperationTypeEnum;
+  operationDetails?: string;
   onClose: () => void;
   getApproveRes: (list: GuardianItem[]) => void;
 }
@@ -32,6 +34,7 @@ export default function GuardianApproveModal({
   open,
   targetChainId,
   operationType,
+  operationDetails,
   onClose,
   getApproveRes,
 }: GuardianApprovalModalProps) {
@@ -82,15 +85,28 @@ export default function GuardianApproveModal({
       try {
         setLoading(true);
         const guardiansApproved: GuardianItem[] =
-          approvalInfo?.map((item) => ({
-            type: item?.type ? LoginType[item.type] : LoginType.Email,
-            identifierHash: item?.identifierHash,
-            verificationInfo: {
-              id: item.verifierId,
-              signature: Object.values(Buffer.from(item?.signature as any, 'hex')) as any,
-              verificationDoc: item.verificationDoc,
-            },
-          })) || [];
+          approvalInfo?.map((item) => {
+            if (item.type && isZKLoginSupported(LoginType[item.type])) {
+              return {
+                type: item?.type ? LoginType[item.type] : LoginType.Google,
+                identifierHash: item?.identifierHash,
+                verificationInfo: {
+                  id: item.verifierId,
+                },
+                zkLoginInfo: handleZKLoginInfo(item?.zkLoginInfo),
+              };
+            } else {
+              return {
+                type: item?.type ? LoginType[item.type] : LoginType.Email,
+                identifierHash: item?.identifierHash,
+                verificationInfo: {
+                  id: item.verifierId,
+                  signature: Object.values(Buffer.from(item?.signature as any, 'hex')) as any,
+                  verificationDoc: item.verificationDoc,
+                },
+              };
+            }
+          }) || [];
         getApproveRes(guardiansApproved);
       } catch (error) {
         setLoading(false);
@@ -116,6 +132,8 @@ export default function GuardianApproveModal({
         onConfirm={onApproveSuccess}
         onError={(error) => singleMessage.error(handleErrorMessage(error.error))}
         operationType={operationType as OperationTypeEnumSDK}
+        operationDetails={operationDetails}
+        caHash={walletInfo.caHash}
       />
     </CustomPromptModal>
   );

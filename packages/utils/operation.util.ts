@@ -15,10 +15,13 @@ export function getOperationDetails(
     dailyLimit?: string;
     spender?: string;
     verifyManagerAddress?: string;
+    caHash?: string;
   },
 ) {
+  const caHash = extra?.caHash;
+  const manager = extra?.verifyManagerAddress;
   if (operationType === OperationTypeEnum.register || operationType === OperationTypeEnum.communityRecovery) {
-    return JSON.stringify({ manager: extra?.verifyManagerAddress });
+    return JSON.stringify({ manager, caHash });
   }
   // if (!guardian) return '{}';
   if (
@@ -28,7 +31,13 @@ export function getOperationDetails(
     operationType === OperationTypeEnum.unsetLoginAccount
   ) {
     const { identifierHash, guardianType, verifierId } = extra || {};
-    return JSON.stringify({ identifierHash, guardianType: getGuardianTypeValue(guardianType), verifierId });
+    return JSON.stringify({
+      identifierHash,
+      guardianType: getGuardianTypeValue(guardianType),
+      verifierId,
+      caHash,
+      manager,
+    });
   }
   if (operationType === OperationTypeEnum.editGuardian) {
     const { identifierHash, guardianType } = extra || {};
@@ -38,21 +47,23 @@ export function getOperationDetails(
       guardianType: getGuardianTypeValue(guardianType),
       preVerifierId,
       newVerifierId,
+      caHash,
+      manager,
     });
   }
   if (operationType === OperationTypeEnum.transferApprove) {
     const { symbol, amount, toAddress } = extra || {};
-    return JSON.stringify({ symbol, amount, toAddress });
+    return JSON.stringify({ symbol, amount, toAddress, caHash, manager, managerAddress: manager });
   }
   if (operationType === OperationTypeEnum.managerApprove) {
     const { spender, amount, symbol } = extra || {};
-    return JSON.stringify({ spender, symbol, amount });
+    return JSON.stringify({ spender, symbol, amount, caHash, manager });
   }
   if (operationType === OperationTypeEnum.modifyTransferLimit) {
     const { symbol, singleLimit, dailyLimit } = extra || {};
-    return JSON.stringify({ symbol, singleLimit, dailyLimit });
+    return JSON.stringify({ symbol, singleLimit, dailyLimit, caHash, manager });
   }
-  return '{}';
+  return JSON.stringify({ caHash, manager });
 }
 function getGuardianTypeValue(guardianType?: string) {
   if (guardianType === 'Email') {

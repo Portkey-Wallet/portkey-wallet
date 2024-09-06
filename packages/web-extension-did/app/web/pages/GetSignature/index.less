@@ -4,7 +4,7 @@
 .get-signature {
   width: 328px;
   margin: auto;
-  padding: 40px 16px;
+  padding: 40px 0;
   flex-direction: column;
   font-size: 12px;
   line-height: 16px;
@@ -43,9 +43,26 @@
     font-weight: 700;
     color: @neutral-primary-text;
   }
+  .warning-tip {
+    margin-top: 16px;
+    padding: 12px;
+    gap: 4px;
+    background-color: @functional-warning-light;
+    border: 1px solid @functional-warning-disable;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 16px;
+    color: @neutral-primary-text;
+  }
   .message {
     margin-top: 16px;
     .data {
+      .method-name {
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 500;
+      }
+
       margin-top: 4px;
       padding: 16px;
       border: 1px solid @neutral-divider;

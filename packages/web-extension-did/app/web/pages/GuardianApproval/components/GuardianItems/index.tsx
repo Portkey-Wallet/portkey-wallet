@@ -97,6 +97,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
             verifierId: item?.verifier?.id || '',
             chainId: originChainId,
             operationType,
+            operationDetails: locationParams?.operationDetails,
           },
         });
         setLoading(false);
@@ -150,6 +151,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
             chainId: originChainId,
             operationType,
             targetChainId: targetChainId,
+            operationDetails: locationParams.operationDetails,
           },
         });
         setLoading(false);
@@ -208,6 +210,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
           originChainId,
           loginAccount,
           targetChainId,
+          operationDetails: locationParams.operationDetails,
         });
         verifiedInfo && dispatch(setUserGuardianItemStatus(verifiedInfo));
         return;

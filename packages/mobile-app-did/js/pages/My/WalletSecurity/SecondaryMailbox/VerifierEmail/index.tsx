@@ -96,26 +96,17 @@ export default function VerifierEmail() {
       digitInput.current?.lockInput();
       const loadingKey = Loading.show();
       try {
-        const rst = await request.security.secondaryEmailCodeCheck({
+        const rst = await verification.checkSecondaryVerificationCode({
           params: {
+            secondaryEmail: email,
             verificationCode: code,
             verifierSessionId: verifierSessionIdRef.current,
           },
         });
         if (rst.verifiedResult) {
-          // const setSecondaryEmailRst = await request.security.setSecondaryEmail({
-          //   params: {
-          //     verifierSessionId: verifierSessionIdRef.current,
-          //   },
-          // });
-          CommonToast.success('Set Successfully');
+          CommonToast.success('Successfully');
           myEvents.updateSecondaryEmail.emit({ email });
           navigationService.navigate('WalletSecurity');
-          // if (setSecondaryEmailRst.setResult) {
-          //   CommonToast.success('Set Secondary Email Successfully');
-          //   myEvents.updateSecondaryEmail.emit({ email });
-          //   navigationService.navigate('WalletSecurity');
-          // }
         } else {
           throw 'Invalid code';
         }
@@ -141,7 +132,7 @@ export default function VerifierEmail() {
     digitInput.current?.lockInput();
     Loading.show(undefined, true);
     try {
-      const req = await request.security.sendSecondaryEmailCode({
+      const req = await verification.sendSecondaryVerificationCode({
         params: {
           secondaryEmail: email,
         },

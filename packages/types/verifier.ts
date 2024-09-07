@@ -69,7 +69,7 @@ export enum OperationTypeEnum {
 }
 export enum PlatformType {
   EXTENSION = 0,
-  ANDROID = 1,
+  ANDROID = 2,
   IOS = 2,
 }
 export interface ZKLoginInfoNoncePayload {

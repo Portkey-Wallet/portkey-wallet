@@ -6,9 +6,14 @@ import useLockCallback from '../useLockCallback';
 export function useIsSecondaryMailSet() {
   const [secondaryEmail, setSecondaryEmail] = useState<string>('');
   const [showNotSet, setShowNotSet] = useState<boolean>(true);
+  const [fetching, setFetching] = useState<boolean>(true);
   useEffect(() => {
     (async () => {
-      await getSecondaryMail();
+      try {
+        await getSecondaryMail();
+      } finally {
+        setFetching(false);
+      }
     })();
   });
   const getSecondaryMail = useCallback(async () => {
@@ -29,6 +34,7 @@ export function useIsSecondaryMailSet() {
     setSecondaryEmail(email || '');
   }, []);
   return {
+    fetching,
     secondaryEmail,
     showNotSet,
     getSecondaryMail,

@@ -11,15 +11,13 @@ import MenuItem from '../components/MenuItem';
 import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import { pTd } from 'utils/unit';
 import { useFocusEffect } from '@react-navigation/native';
-import Loading from 'components/Loading';
-import CommonToast from 'components/CommonToast';
 import useEffectOnce from 'hooks/useEffectOnce';
 import myEvents from 'utils/deviceEvent';
 
 const WalletSecurity: React.FC = () => {
   const { deviceAmount, refresh } = useDeviceList({ isAmountOnly: true, isInit: false });
   const dappList = useCurrentDappList();
-  const { showNotSet, secondaryEmail, getSecondaryMail, hideNotSetMark } = useIsSecondaryMailSet();
+  const { showNotSet, secondaryEmail, getSecondaryMail, hideNotSetMark, fetching } = useIsSecondaryMailSet();
 
   useFocusEffect(
     useCallback(() => {
@@ -71,7 +69,7 @@ const WalletSecurity: React.FC = () => {
       <MenuItem
         style={pageStyles.menuStyle}
         title="Set up Backup Mailbox"
-        suffix={showNotSet ? 'Not Set up' : ''}
+        suffix={!fetching && showNotSet ? 'Not Set up' : ''}
         onPress={async () => {
           navigationService.navigate('SecondaryMailboxHome', {
             secondaryEmail,

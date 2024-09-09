@@ -4,7 +4,7 @@ import CommonButton, { CommonButtonProps } from 'components/CommonButton';
 import { TextM, TextS } from 'components/CommonText';
 import Svg from 'components/Svg';
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import fonts from 'assets/theme/fonts';
@@ -19,10 +19,11 @@ import {
   OperationTypeEnum,
   VerifierInfo,
   VerifyStatus,
+  zkLoginVerifierItem,
 } from '@portkey-wallet/types/verifier';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { LOGIN_GUARDIAN_TYPE_ICON } from 'constants/misc';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { LoginType, isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
 import { VerifierImage } from '../VerifierImage';
 import { GuardiansStatus, GuardiansStatusItem } from 'pages/Guardian/types';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
@@ -50,6 +51,20 @@ interface GuardianAccountItemProps {
   approvalType?: ApprovalType;
   authenticationInfo?: AuthenticationInfo;
   targetChainId?: ChainId;
+  extra?: {
+    identifierHash?: string;
+    guardianType?: string;
+    verifierId?: string;
+    preVerifierId?: string;
+    newVerifierId?: string;
+    symbol?: string;
+    amount?: string | number;
+    toAddress?: string;
+    singleLimit?: string;
+    dailyLimit?: string;
+    spender?: string;
+    verifyManagerAddress?: string;
+  };
 }
 
 function GuardianItemButton({
@@ -61,6 +76,7 @@ function GuardianItemButton({
   disabled,
   authenticationInfo,
   targetChainId,
+  extra,
 }: GuardianAccountItemProps & {
   disabled?: boolean;
 }) {
@@ -100,6 +116,7 @@ function GuardianItemButton({
           chainId: originChainId,
           operationType,
           targetChainId,
+          operationDetails: JSON.stringify({ ...extra }),
         },
       });
       if (req.verifierSessionId) {
@@ -113,6 +130,7 @@ function GuardianItemButton({
           ...guardianInfo,
           requestCodeResult: req,
           targetChainId,
+          operationDetails: JSON.stringify({ ...extra }),
         });
       } else {
         throw new Error('send fail');
@@ -123,19 +141,23 @@ function GuardianItemButton({
       CommonToast.failError(error);
     }
     Loading.hide();
-  }, [guardianInfo, originChainId, operationType, targetChainId, onSetGuardianStatus]);
+  }, [guardianInfo, originChainId, operationType, targetChainId, onSetGuardianStatus, extra]);
 
   const onVerifierAuth = useCallback(async () => {
     try {
       Loading.show();
-
       const rst = await verifyToken(guardianItem.guardianType, {
-        accessToken: authenticationInfo?.[guardianItem.guardianAccount],
+        accessToken: authenticationInfo?.[guardianItem.guardianAccount] as string,
+        idToken: authenticationInfo?.idToken as string,
+        timestamp: authenticationInfo?.timestamp as number,
+        nonce: authenticationInfo?.nonce as string,
+        salt: guardianItem.salt,
         id: guardianItem.guardianAccount,
         verifierId: guardianItem.verifier?.id,
         chainId: originChainId,
         operationType,
         targetChainId,
+        operationDetails: JSON.stringify({ ...extra }),
       });
 
       if (rst.accessToken) {
@@ -156,8 +178,10 @@ function GuardianItemButton({
     Loading.hide();
   }, [
     authenticationInfo,
+    extra,
     guardianItem.guardianAccount,
     guardianItem.guardianType,
+    guardianItem.salt,
     guardianItem.verifier?.id,
     onSetGuardianStatus,
     operationType,
@@ -180,11 +204,12 @@ function GuardianItemButton({
           requestCodeResult,
           targetChainId,
           startResend: true,
+          operationDetails: JSON.stringify({ ...extra }),
         });
         break;
       }
     }
-  }, [guardianItem.guardianType, onVerifierAuth, guardianInfo, requestCodeResult, targetChainId]);
+  }, [guardianItem.guardianType, onVerifierAuth, guardianInfo, requestCodeResult, targetChainId, extra]);
   const buttonProps: CommonButtonProps = useMemo(() => {
     // expired
     if (isExpired && status !== VerifyStatus.Verified) {
@@ -245,6 +270,7 @@ export default function GuardianItem({
   approvalType = ApprovalType.communityRecovery,
   authenticationInfo,
   targetChainId,
+  extra,
 }: GuardianAccountItemProps) {
   const itemStatus = useMemo(() => guardiansStatus?.[guardianItem.key], [guardianItem.key, guardiansStatus]);
   const disabled = isSuccess && itemStatus?.status !== VerifyStatus.Verified;
@@ -255,6 +281,12 @@ export default function GuardianItem({
     }
     if (guardianItem.isPrivate) return PRIVATE_GUARDIAN_ACCOUNT;
     return guardianItem.thirdPartyEmail || '';
+  }, [guardianItem]);
+
+  const isVerifierReplacedByZk = useMemo(() => {
+    return (
+      isZKLoginSupported(guardianItem.guardianType) && !guardianItem.verifiedByZk && !guardianItem.manuallySupportForZk
+    );
   }, [guardianItem]);
 
   const renderGuardianAccount = useCallback(() => {
@@ -279,6 +311,20 @@ export default function GuardianItem({
     );
   }, [guardianAccount, guardianItem.firstName, guardianItem.guardianType]);
 
+  const verifierName = useMemo(() => {
+    return isZKLoginSupported(guardianItem.guardianType) &&
+      (guardianItem.verifiedByZk || guardianItem.manuallySupportForZk)
+      ? zkLoginVerifierItem.name
+      : guardianItem.verifier?.name || '';
+  }, [guardianItem]);
+
+  const verifierImageUrl = useMemo(() => {
+    return isZKLoginSupported(guardianItem.guardianType) &&
+      (guardianItem.verifiedByZk || guardianItem.manuallySupportForZk)
+      ? zkLoginVerifierItem.imageUrl
+      : guardianItem.verifier?.imageUrl || '';
+  }, [guardianItem]);
+
   return (
     <View style={[styles.itemRow, isBorderHide && styles.itemWithoutBorder, disabled && styles.disabledStyle]}>
       {guardianItem.isLoginAccount && (
@@ -287,16 +333,18 @@ export default function GuardianItem({
         </View>
       )}
       <View style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flex1]}>
-        <View style={[GStyles.center, styles.loginTypeIconWrap]}>
-          <Svg icon={LOGIN_GUARDIAN_TYPE_ICON[guardianItem.guardianType]} size={pTd(18)} />
-        </View>
+        <View style={[GStyles.flexRowWrap, GStyles.itemCenter]}>
+          <View style={[GStyles.center, styles.loginTypeIconWrap]}>
+            <Svg icon={LOGIN_GUARDIAN_TYPE_ICON[guardianItem.guardianType]} size={pTd(18)} />
+          </View>
 
-        <VerifierImage
-          size={pTd(32)}
-          label={guardianItem?.verifier?.name}
-          uri={guardianItem.verifier?.imageUrl}
-          style={styles.iconStyle}
-        />
+          <VerifierImage size={pTd(32)} label={verifierName} uri={verifierImageUrl} style={styles.iconStyle} />
+          {isVerifierReplacedByZk && (
+            <View style={styles.zkLoginWaterMarkWrap}>
+              <Image source={require('assets/image/pngs/zklogin_verifier.png')} style={styles.zkLoginWaterMarkIcon} />
+            </View>
+          )}
+        </View>
         {renderGuardianAccount()}
       </View>
       {!isButtonHide && (
@@ -309,6 +357,7 @@ export default function GuardianItem({
           approvalType={approvalType}
           authenticationInfo={authenticationInfo}
           targetChainId={targetChainId}
+          extra={extra}
         />
       )}
       {renderBtn && renderBtn(guardianItem)}
@@ -387,5 +436,16 @@ const styles = StyleSheet.create({
     width: pTd(32),
     height: pTd(32),
     borderRadius: pTd(16),
+  },
+  zkLoginWaterMarkWrap: {
+    position: 'absolute',
+    width: '100%',
+    bottom: pTd(-6),
+    alignItems: 'center',
+  },
+  zkLoginWaterMarkIcon: {
+    borderRadius: pTd(3),
+    width: pTd(44),
+    height: pTd(14),
   },
 });

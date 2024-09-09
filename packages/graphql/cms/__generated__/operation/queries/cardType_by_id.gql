@@ -1,0 +1,8 @@
+query cardType_by_id($id: ID!){
+    cardType_by_id(id: $id){
+        id
+        label
+        status
+        value
+    }
+}

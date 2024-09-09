@@ -7,6 +7,7 @@ import {
   getDiscoverEarnAsync,
   getDiscoverLearnAsync,
   getDiscoverTabAsync,
+  getDappWhiteListAsync,
 } from '@portkey-wallet/store/store-ca/cms/actions';
 
 const DEFAULT_DISCOVER_TAB_LIST: TDiscoverTabList = [{ index: 2, name: 'Market', value: 'Market' }];
@@ -53,7 +54,6 @@ export const useDiscoverData = () => {
     () => dispatch(getDiscoverLearnAsync(networkType)),
     [dispatch, networkType],
   );
-
   return {
     discoverHeaderTabList,
     earnList,
@@ -72,6 +72,17 @@ export const useInitCMSDiscoverNewData = () => {
   useEffect(() => {
     networkList.forEach(item => {
       dispatch(getDiscoverTabAsync(item.networkType));
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+};
+
+export const useInitDappWhiteListData = () => {
+  const dispatch = useAppCommonDispatch();
+  const networkList = useNetworkList();
+  useEffect(() => {
+    networkList.forEach(item => {
+      dispatch(getDappWhiteListAsync(item.networkType));
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

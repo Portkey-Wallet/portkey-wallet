@@ -26,4 +26,8 @@ export default {
     target: '/api/app/user/assets/tokenBalance',
     config: { method: 'GET' },
   },
+  getAssetsEstimation: {
+    target: '/api/app/user/assets/asset-estimation',
+    config: { method: 'GET' },
+  },
 } as const;

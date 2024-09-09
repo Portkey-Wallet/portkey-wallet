@@ -16,12 +16,12 @@ export type LoginModeMatchQuery = {
   __typename?: 'Query';
   loginModeMatch: Array<{
     __typename?: 'loginModeMatch';
+    description: string;
     id: string;
+    matchRuleList: any;
+    matchSwitch: boolean;
     status?: string | null;
     weight: any;
-    matchSwitch: boolean;
-    matchRuleList: any;
-    description: string;
     matchRuleList_func?: { __typename?: 'count_functions'; count?: number | null } | null;
   }>;
 };
@@ -36,15 +36,15 @@ export const LoginModeMatchDocument = gql`
     $search: String
   ) {
     loginModeMatch(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
+      description
       id
-      status
-      weight
-      matchSwitch
       matchRuleList
       matchRuleList_func {
         count
       }
-      description
+      matchSwitch
+      status
+      weight
     }
   }
 `;

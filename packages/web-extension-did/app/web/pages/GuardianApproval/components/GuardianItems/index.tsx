@@ -97,6 +97,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
             verifierId: item?.verifier?.id || '',
             chainId: originChainId,
             operationType,
+            operationDetails: locationParams?.operationDetails,
           },
         });
         setLoading(false);
@@ -150,6 +151,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
             chainId: originChainId,
             operationType,
             targetChainId: targetChainId,
+            operationDetails: locationParams.operationDetails,
           },
         });
         setLoading(false);
@@ -208,6 +210,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
           originChainId,
           loginAccount,
           targetChainId,
+          operationDetails: locationParams.operationDetails,
         });
         verifiedInfo && dispatch(setUserGuardianItemStatus(verifiedInfo));
         return;
@@ -275,6 +278,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
       {item.isLoginAccount && <div className="login-icon">{t('Login Account')}</div>}
       <div className="flex-between-center verifier-item-main">
         <VerifierPair
+          guardian={item}
           guardianType={item.guardianType}
           verifierSrc={item.verifier?.imageUrl}
           verifierName={item?.verifier?.name}

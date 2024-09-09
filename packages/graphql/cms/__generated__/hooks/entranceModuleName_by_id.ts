@@ -11,13 +11,13 @@ export type EntranceModuleName_By_IdQuery = {
   __typename?: 'Query';
   entranceModuleName_by_id?: {
     __typename?: 'entranceModuleName';
+    date_created?: any | null;
+    date_updated?: any | null;
+    description?: string | null;
     id: string;
     user_created?: string | null;
-    date_created?: any | null;
     user_updated?: string | null;
-    date_updated?: any | null;
     value?: string | null;
-    description?: string | null;
     date_created_func?: {
       __typename?: 'datetime_functions';
       year?: number | null;
@@ -46,8 +46,6 @@ export type EntranceModuleName_By_IdQuery = {
 export const EntranceModuleName_By_IdDocument = gql`
   query entranceModuleName_by_id($id: ID!) {
     entranceModuleName_by_id(id: $id) {
-      id
-      user_created
       date_created
       date_created_func {
         year
@@ -59,7 +57,6 @@ export const EntranceModuleName_By_IdDocument = gql`
         minute
         second
       }
-      user_updated
       date_updated
       date_updated_func {
         year
@@ -71,8 +68,11 @@ export const EntranceModuleName_By_IdDocument = gql`
         minute
         second
       }
-      value
       description
+      id
+      user_created
+      user_updated
+      value
     }
   }
 `;

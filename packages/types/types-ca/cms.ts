@@ -1,7 +1,15 @@
 import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
 import { ChainId } from '..';
 
-export type IEntranceModuleName = 'buy' | 'sell' | 'bridge' | 'eTransDeposit' | 'eTransWithdraw' | 'swap';
+export type IEntranceModuleName =
+  | 'buy'
+  | 'sell'
+  | 'bridge'
+  | 'eTransDeposit'
+  | 'eTransWithdraw'
+  | 'swap'
+  | 'freeMintNft'
+  | 'nft';
 export type IEntranceMatchKey = 'version' | 'installationTime' | 'deviceType';
 export type IEntranceMatchRuleType = 'String' | 'BigNumber' | 'Regex';
 
@@ -71,6 +79,8 @@ export type TBaseCardItemType = {
     filename_disk: string;
   };
   url: string;
+  appLink?: string;
+  extensionLink?: string;
 };
 
 export type TDiscoverTabValue = 'Dapp' | 'Earn' | 'Market' | 'Learn';
@@ -88,6 +98,8 @@ export type TDiscoverLearnGroupItemType = {
   items?: TBaseCardItemType[];
 };
 
+export type TDappWhiteListItemType = string;
+
 export type TTokenDetailBannerItemType = {
   chainId: ChainId;
   symbol: string;
@@ -102,3 +114,13 @@ export type TDiscoverDappBannerList = TBaseCardItemType[];
 export type TDiscoverTabList = TBaseTabItemType[];
 export type TDiscoverEarnList = TBaseCardItemType[];
 export type TDiscoverLearnGroupList = TDiscoverLearnGroupItemType[];
+export type TWhiteListDappList = TDappWhiteListItemType[];
+
+export type TLinkType = 'external' | 'internal' | 'native';
+export type TLink = {
+  type: TLinkType;
+  location: string;
+  params?: any;
+};
+export type TAppLink = TLink;
+export type TExtensionLink = TLink;

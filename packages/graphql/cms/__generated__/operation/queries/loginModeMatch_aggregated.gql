@@ -3,20 +3,20 @@ query loginModeMatch_aggregated($groupBy: [String], $filter: loginModeMatch_filt
         group
         countAll
         count{
+            description
             id
+            matchRuleList
+            matchSwitch
             status
             weight
-            matchSwitch
-            matchRuleList
-            description
         }
         countDistinct{
+            description
             id
+            matchRuleList
+            matchSwitch
             status
             weight
-            matchSwitch
-            matchRuleList
-            description
         }
         avg{
             id

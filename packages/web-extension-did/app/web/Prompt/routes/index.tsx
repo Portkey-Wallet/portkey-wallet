@@ -65,6 +65,15 @@ import TokenAllowance from 'pages/WalletSecurity/TokenAllowance';
 import TokenAllowanceDetail from 'pages/WalletSecurity/TokenAllowance/TokenAllowanceDetail';
 import DepositHome from 'pages/DepositHome';
 import SelectNetwork from 'pages/DepositHome/components/SelectNetwork';
+import CryptoGifts from 'pages/CryptoGifts/Home';
+import HistoryList from 'pages/CryptoGifts/History';
+import CryptoGiftsDetail from 'pages/CryptoGifts/Detail';
+import Create from 'pages/CryptoGifts/Create';
+import Success from 'pages/CryptoGifts/Success';
+import FreeMint from 'pages/FreeMint';
+import SecondaryMailbox from 'pages/WalletSecurity/SecondaryMailbox';
+import SecondaryMailboxEdit from 'pages/WalletSecurity/SecondaryMailbox/Edit';
+import SecondaryMailboxVerify from 'pages/WalletSecurity/SecondaryMailbox/Verify';
 // import TokenNetworkList from 'pages/DepositHome/components/TokenNetworkList';
 
 export const PageRouter = () => {
@@ -148,6 +157,10 @@ export const PageRouter = () => {
       element: <NFT />,
     },
     {
+      path: '/free-mint',
+      element: <FreeMint />,
+    },
+    {
       path: '/unlock',
       element: <Unlock />,
     },
@@ -201,7 +214,26 @@ export const PageRouter = () => {
       path: '/approve-wallet-security',
       element: <WalletSecurityApprove />,
     },
-
+    {
+      path: '/crypto-gifts',
+      element: <CryptoGifts />,
+    },
+    {
+      path: '/crypto-gifts/create',
+      element: <Create />,
+    },
+    {
+      path: '/crypto-gifts/success',
+      element: <Success />,
+    },
+    {
+      path: '/crypto-gifts/history',
+      element: <HistoryList />,
+    },
+    {
+      path: '/crypto-gifts/detail',
+      element: <CryptoGiftsDetail />,
+    },
     {
       path: '*',
       element: <NotFound />,
@@ -380,6 +412,18 @@ export const PageRouter = () => {
               path: '/setting/wallet-security/token-allowance-detail',
               element: <TokenAllowanceDetail />,
             },
+            {
+              path: '/setting/wallet-security/secondary-mailbox',
+              element: <SecondaryMailbox />,
+            },
+            {
+              path: '/setting/wallet-security/secondary-mailbox-edit',
+              element: <SecondaryMailboxEdit />,
+            },
+            {
+              path: '/setting/wallet-security/secondary-mailbox-verify',
+              element: <SecondaryMailboxVerify />,
+            },
           ],
         },
       ],
@@ -541,6 +585,18 @@ export const PageRouter = () => {
     {
       path: '/setting/wallet-security/token-allowance-detail',
       element: <TokenAllowanceDetail />,
+    },
+    {
+      path: '/setting/wallet-security/secondary-mailbox',
+      element: <SecondaryMailbox />,
+    },
+    {
+      path: '/setting/wallet-security/secondary-mailbox-edit',
+      element: <SecondaryMailboxEdit />,
+    },
+    {
+      path: '/setting/wallet-security/secondary-mailbox-verify',
+      element: <SecondaryMailboxVerify />,
     },
   ];
 

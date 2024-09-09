@@ -4,10 +4,10 @@ import {
   useOriginChainId,
   useOtherNetworkLogged,
   useTmpWalletInfo,
+  useVerifyManagerAddress,
   useWallet,
 } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import {
-  createNewTmpWallet,
   createWallet,
   resetCaInfo,
   resetWallet,
@@ -62,6 +62,7 @@ import { CreateAddressLoading } from '@portkey-wallet/constants/constants-ca/wal
 import { AuthTypes } from 'constants/guardian';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 import { TVerifierAuthParams } from 'types/authentication';
 
 export function useOnResultFail() {
@@ -258,11 +259,14 @@ export function useGoGuardianApproval(isLogin?: boolean) {
   const dispatch = useAppDispatch();
   const onRequestOrSetPin = useOnRequestOrSetPin();
   const onVerifierAuth = useVerifierAuth();
+  const verifyManagerAddress = useVerifyManagerAddress();
+  const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
 
   const requestOrSetPin = useCallback(
     async ({ guardianItem, originChainId, authenticationInfo }: TVerifierAuthParams) => {
       const req = await onVerifierAuth({ guardianItem, originChainId, authenticationInfo });
-      const verifierInfo: VerifierInfo = { ...req, verifierId: guardianItem?.verifier?.id };
+      const verifierInfo: VerifierInfo = { ...req, verifierId: guardianItem?.verifier?.id ?? '' };
+      console.log(verifierInfo, '=======verifierInfo');
       const key = guardianItem.key as string;
       dispatch(setOriginChainId(originChainId));
       return onRequestOrSetPin({
@@ -290,6 +294,9 @@ export function useGoGuardianApproval(isLogin?: boolean) {
           verifierId: guardianItem.verifier?.id,
           chainId: originChainId,
           operationType: OperationTypeEnum.communityRecovery,
+          operationDetails: getOperationDetails(OperationTypeEnum.communityRecovery, {
+            verifyManagerAddress: latestVerifyManagerAddress.current,
+          }),
         },
       });
       if (!req?.verifierSessionId) throw new Error('verifierSessionId does not exist');
@@ -301,9 +308,12 @@ export function useGoGuardianApproval(isLogin?: boolean) {
         guardianItem,
         requestCodeResult: req,
         verificationType: VerificationType.communityRecovery,
+        operationDetails: getOperationDetails(OperationTypeEnum.communityRecovery, {
+          verifyManagerAddress: latestVerifyManagerAddress.current,
+        }),
       });
     },
-    [dispatch],
+    [dispatch, latestVerifyManagerAddress],
   );
   return useCallback(
     async ({
@@ -395,6 +405,8 @@ export function useGoSelectVerifier(isLogin?: boolean) {
   const { address } = useCurrentWalletInfo();
   const verifyToken = useVerifyToken();
   const onRequestOrSetPin = useOnRequestOrSetPin();
+  const verifyManagerAddress = useVerifyManagerAddress();
+  const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
   const onConfirmAuth = useCallback(
     async ({ loginAccount, loginType, authenticationInfo, selectedVerifier, chainId }: LoginAuthParams) => {
       const isRequestResult = !!(pin && address);
@@ -403,7 +415,10 @@ export function useGoSelectVerifier(isLogin?: boolean) {
 
       try {
         const rst = await verifyToken(loginType, {
-          accessToken: authenticationInfo?.[loginAccount || ''],
+          accessToken: authenticationInfo?.[loginAccount || ''] as string,
+          idToken: authenticationInfo?.idToken as string,
+          nonce: authenticationInfo?.nonce as string,
+          timestamp: authenticationInfo?.timestamp as number,
           id: loginAccount,
           verifierId: selectedVerifier?.id,
           chainId,
@@ -450,6 +465,9 @@ export function useGoSelectVerifier(isLogin?: boolean) {
               guardianAccount: loginAccount,
               guardianType: loginType,
             },
+            operationDetails: getOperationDetails(OperationTypeEnum.register, {
+              verifyManagerAddress: latestVerifyManagerAddress.current,
+            }),
           });
         } else {
           throw new Error('send fail');
@@ -566,14 +584,12 @@ export function useOnLogin(isLogin?: boolean) {
   const getChainInfo = useGetChainInfo();
   const goGuardianApproval = useGoGuardianApproval(isLogin);
   const goSelectVerifier = useGoSelectVerifier(isLogin);
-  const dispatch = useAppDispatch();
 
   return useCallback(
     async (params: LoginParams) => {
       const { loginAccount, loginType = LoginType.Email, authenticationInfo, showLoginAccount } = params;
       try {
         await sleep(500);
-        dispatch(createNewTmpWallet());
         let chainInfo = await getChainInfo(DefaultChainId);
         let verifierServers = await getVerifierServers(chainInfo);
 
@@ -602,6 +618,7 @@ export function useOnLogin(isLogin?: boolean) {
           });
         }
       } catch (error) {
+        console.log(error, '=======error');
         if (handleErrorCode(error) === '3002') {
           await goSelectVerifier({
             showLoginAccount: showLoginAccount || loginAccount,
@@ -614,15 +631,7 @@ export function useOnLogin(isLogin?: boolean) {
         }
       }
     },
-    [
-      dispatch,
-      getChainInfo,
-      getGuardiansInfo,
-      getRegisterInfo,
-      getVerifierServers,
-      goGuardianApproval,
-      goSelectVerifier,
-    ],
+    [getChainInfo, getGuardiansInfo, getRegisterInfo, getVerifierServers, goGuardianApproval, goSelectVerifier],
   );
 }
 

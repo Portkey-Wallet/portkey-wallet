@@ -34,7 +34,7 @@ const PortKeyHeader = forwardRef(({ onUserClick, customLogoShow = true, unReadSh
             <Avatar
               wrapperClass="custom-logo"
               avatarUrl={userInfo?.avatar}
-              nameIndex={userInfo?.nickName.substring(0, 1).toLocaleUpperCase() || ''}
+              nameIndex={userInfo?.nickName?.substring(0, 1).toLocaleUpperCase() || ''}
               onClick={onUserClick}
             />
             {unReadShow && <UnReadBadge />}

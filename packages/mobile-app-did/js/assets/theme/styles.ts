@@ -30,6 +30,16 @@ export const BGStyles = StyleSheet.create({
   bg24: { backgroundColor: defaultColors.bg24 },
   white: { backgroundColor: defaultColors.white },
   transparent: { backgroundColor: 'transparent' },
+  brandNormal: { backgroundColor: defaultColors.brandNormal },
+  neutralPrimaryTextColor: { backgroundColor: defaultColors.neutralPrimaryTextColor },
+  neutralSecondaryTextColor: { backgroundColor: defaultColors.neutralSecondaryTextColor },
+  neutralTertiaryText: { backgroundColor: defaultColors.neutralTertiaryText },
+  functionalRedDefault: { backgroundColor: defaultColors.functionalRedDefault },
+  functionalGreenDefault: { backgroundColor: defaultColors.functionalGreenDefault },
+  neutralDivider: { backgroundColor: defaultColors.neutralDivider },
+  neutralDefaultBG: { backgroundColor: defaultColors.neutralDefaultBG },
+  functionalYellowDisable: { backgroundColor: defaultColors.functionalYellowDisable },
+  functionalYellowLight: { backgroundColor: defaultColors.functionalYellowLight },
 });
 
 export const FontStyles = StyleSheet.create({
@@ -59,11 +69,14 @@ export const FontStyles = StyleSheet.create({
   font20: { color: defaultColors.font20 },
   font21: { color: defaultColors.font21 },
   font22: { color: defaultColors.font22 },
+  brandNormal: { color: defaultColors.brandNormal },
   neutralPrimaryTextColor: { color: defaultColors.neutralPrimaryTextColor },
   neutralSecondaryTextColor: { color: defaultColors.neutralSecondaryTextColor },
   neutralTertiaryText: { color: defaultColors.neutralTertiaryText },
   functionalRedDefault: { color: defaultColors.functionalRedDefault },
   functionalGreenDefault: { color: defaultColors.functionalGreenDefault },
+  neutralDefaultBG: { color: defaultColors.neutralDefaultBG },
+  neutralDisableText: { color: defaultColors.neutralDisableText },
 
   white: { color: defaultColors.white },
 
@@ -73,6 +86,7 @@ export const FontStyles = StyleSheet.create({
   size14: { fontSize: pTd(14) },
   size12: { fontSize: pTd(12) },
   size18: { fontSize: pTd(18) },
+  size30: { fontSize: pTd(30) },
 });
 
 export const BorderStyles = StyleSheet.create({
@@ -86,4 +100,5 @@ export const BorderStyles = StyleSheet.create({
   border8: { borderColor: defaultColors.border8 },
   border9: { borderColor: defaultColors.border9 },
   border10: { borderColor: defaultColors.border10 },
+  functionalYellowDisable: { borderColor: defaultColors.functionalYellowDisable },
 });

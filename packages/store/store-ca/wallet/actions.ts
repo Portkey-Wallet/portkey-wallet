@@ -8,7 +8,8 @@ import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import AElf from 'aelf-sdk';
 import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 import { getChainList } from './api';
-import { ChainItemType, WalletState } from './type';
+import { IChainItemType } from '@portkey-wallet/types/types-ca/chain';
+import { WalletState } from './type';
 import walletNameService from '@portkey-wallet/utils/walletName';
 
 export const createWallet =
@@ -91,7 +92,7 @@ export const resetCaInfo = createAction<NetworkType>('wallet/resetCaInfo');
 export const changePin = createAction<{ pin: string; newPin: string }>('wallet/changePin');
 
 export const changeNetworkType = createAction<NetworkType>('wallet/changeNetworkType');
-export const setChainListAction = createAction<{ chainList: ChainItemType[]; networkType: NetworkType }>(
+export const setChainListAction = createAction<{ chainList: IChainItemType[]; networkType: NetworkType }>(
   'wallet/setChainListAction',
 );
 
@@ -128,7 +129,7 @@ export const getCaHolderInfoAsync = createAsyncThunk<
   const baseUrl = NetworkList.find(item => item.networkType === currentNetwork)?.apiUrl;
   const caHash = walletInfo?.caInfo[currentNetwork].AELF?.caHash;
   if (!caHash || !baseUrl) return undefined;
-  let caHolder = undefined;
+  let caHolder;
   try {
     const response = await getCaHolder(baseUrl, {
       caHash,
@@ -154,6 +155,9 @@ export const resetCurrentUserInfoAction = createAction<NetworkType>('wallet/rese
 export const setNickNameAndAvatarAction = createAction<
   RequireAtLeastOne<{ nickName: string; avatar: string; networkType: NetworkType }>
 >('wallet/setUserNameAndAvatarAction');
+
+export const setAvatarAction =
+  createAction<RequireAtLeastOne<{ avatar: string; networkType: NetworkType }>>('wallet/setAvatarAction');
 
 export const setHideAssetsAction =
   createAction<RequireAtLeastOne<{ hideAssets: boolean }>>('wallet/setHideAssetsAction');

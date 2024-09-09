@@ -56,6 +56,13 @@ import TradePage from 'pages/Trade';
 import TokenAllowance from 'pages/WalletSecurity/TokenAllowance';
 import TokenAllowanceDetail from 'pages/WalletSecurity/TokenAllowance/TokenAllowanceDetail';
 import DepositHome from 'pages/DepositHome';
+import CryptoGifts from 'pages/CryptoGifts/Home';
+import HistoryList from 'pages/CryptoGifts/History';
+import CryptoGiftsDetail from 'pages/CryptoGifts/Detail';
+import FreeMint from 'pages/FreeMint';
+import SecondaryMailbox from 'pages/WalletSecurity/SecondaryMailbox';
+import SecondaryMailboxEdit from 'pages/WalletSecurity/SecondaryMailbox/Edit';
+import SecondaryMailboxVerify from 'pages/WalletSecurity/SecondaryMailbox/Verify';
 
 export const PageRouter = () =>
   useRoutes([
@@ -156,6 +163,10 @@ export const PageRouter = () =>
       element: <NFT />,
     },
     {
+      path: '/free-mint',
+      element: <FreeMint />,
+    },
+    {
       path: 'setting/contacts',
       element: <Contacts />,
     },
@@ -252,6 +263,18 @@ export const PageRouter = () =>
       element: <TokenAllowanceDetail />,
     },
     {
+      path: '/setting/wallet-security/secondary-mailbox',
+      element: <SecondaryMailbox />,
+    },
+    {
+      path: '/setting/wallet-security/secondary-mailbox-edit',
+      element: <SecondaryMailboxEdit />,
+    },
+    {
+      path: '/setting/wallet-security/secondary-mailbox-verify',
+      element: <SecondaryMailboxVerify />,
+    },
+    {
       path: '/chat-list',
       element: <ChatList />,
     },
@@ -310,6 +333,18 @@ export const PageRouter = () =>
     {
       path: '/unlock',
       element: <Unlock />,
+    },
+    {
+      path: '/crypto-gifts',
+      element: <CryptoGifts />,
+    },
+    {
+      path: '/crypto-gifts/history',
+      element: <HistoryList />,
+    },
+    {
+      path: '/crypto-gifts/detail',
+      element: <CryptoGiftsDetail />,
     },
     {
       path: '*',

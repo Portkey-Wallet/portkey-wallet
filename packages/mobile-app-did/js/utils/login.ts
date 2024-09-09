@@ -39,5 +39,5 @@ export function handleGuardiansApproved(guardiansStatus: GuardiansStatus, userGu
         type: LoginType[guardian?.guardianType as LoginType],
       };
     })
-    .filter(item => item.signature && item.verificationDoc);
+    .filter(item => (item.signature && item.verificationDoc) || item.zkLoginInfo);
 }

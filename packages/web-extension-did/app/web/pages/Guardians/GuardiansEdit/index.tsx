@@ -8,13 +8,12 @@ import {
   resetUserGuardianStatus,
   setCurrentGuardianAction,
   setOpGuardianAction,
-  setPreGuardianAction,
   setUserGuardianItemStatus,
 } from '@portkey-wallet/store/store-ca/guardians/actions';
 import useGuardianList from 'hooks/useGuardianList';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { LoginType, isZKLoginSupported } from '@portkey-wallet/types/types-ca/wallet';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
-import { OperationTypeEnum, VerifierItem } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum, VerifierItem, zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
 import BaseVerifierIcon from 'components/BaseVerifierIcon';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import GuardianEditPrompt from './Prompt';
@@ -33,6 +32,7 @@ import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
 import { FromPageEnum, TGuardianApprovalLocationState, TVerifierAccountLocationState } from 'types/router';
 import BaseGuardianTypeIcon from 'components/BaseGuardianTypeIcon';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 import './index.less';
 
 export default function GuardiansEdit() {
@@ -43,9 +43,19 @@ export default function GuardiansEdit() {
     () => getVerifierStatusMap(verifierMap, userGuardiansList, preGuardian),
     [preGuardian, userGuardiansList, verifierMap],
   );
+  const isZK = useMemo(
+    () => preGuardian?.verifiedByZk || preGuardian?.manuallySupportForZk,
+    [preGuardian?.manuallySupportForZk, preGuardian?.verifiedByZk],
+  );
   const guardiansSaveRef = useRef({ verifierMap, userGuardiansList });
   guardiansSaveRef.current = { verifierMap, userGuardiansList };
-  const [selectVal, setSelectVal] = useState<string>(opGuardian?.verifier?.id as string);
+  const [selectVal, setSelectVal] = useState<string>(
+    opGuardian?.tempToZK
+      ? zkLoginVerifierItem.name
+      : isZK
+      ? zkLoginVerifierItem.name
+      : (opGuardian?.verifier?.id as string),
+  );
   const [verifierExist, setVerifierExist] = useState<boolean>(false);
   const { walletInfo } = useCurrentWallet();
   const userGuardianList = useGuardianList();
@@ -65,9 +75,15 @@ export default function GuardiansEdit() {
   const selectOptions = useMemo(
     () =>
       Object.values(verifierStatusMap ?? {})?.map((item: VerifierStatusItem) => {
-        const disabled = item.isUsed && item.id !== preGuardian?.verifier?.id;
+        let disabled = false;
+        if (isZKLoginSupported(preGuardian?.guardianType || 0)) {
+          const abled = item.id === preGuardian?.verifier?.id || item.name === zkLoginVerifierItem.name;
+          disabled = !abled;
+        } else {
+          disabled = (!!item.isUsed && item.id !== preGuardian?.verifier?.id) || item.name === zkLoginVerifierItem.name;
+        }
         return {
-          value: item.id,
+          value: item.id || item.name,
           children: (
             <div className={clsx(['flex', 'verifier-option', disabled && 'no-use'])}>
               <BaseVerifierIcon fallback={item.name[0]} src={item.imageUrl} />
@@ -77,7 +93,7 @@ export default function GuardiansEdit() {
           disabled,
         };
       }),
-    [preGuardian?.verifier?.id, verifierStatusMap],
+    [preGuardian?.guardianType, preGuardian?.verifier?.id, verifierStatusMap],
   );
   const originChainId = useOriginChainId();
   const { loginAccount } = useLoginInfo();
@@ -96,7 +112,7 @@ export default function GuardiansEdit() {
     if (temp) {
       dispatch(setCurrentGuardianAction(temp));
       dispatch(setOpGuardianAction(temp));
-      dispatch(setPreGuardianAction(temp));
+      // dispatch(setPreGuardianAction(temp));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userGuardiansList]);
@@ -143,12 +159,19 @@ export default function GuardiansEdit() {
           ...opGuardian!,
           key: `${currentGuardian?.guardianAccount}&${selectVal}`,
           verifier: targetVerifier?.[0],
+          tempToZK: selectVal === zkLoginVerifierItem.name,
         }),
       );
       setLoading(false);
       navigate('/setting/guardians/guardian-approval', {
         state: {
           previousPage: FromPageEnum.guardiansEdit,
+          operationDetails: getOperationDetails(OperationTypeEnum.unsetLoginAccount, {
+            identifierHash: preGuardian?.identifierHash as string,
+            guardianType: LoginType[opGuardian?.guardianType as LoginType],
+            preVerifierId: preGuardian?.verifier?.id || '',
+            newVerifierId: opGuardian?.verifier?.id || '',
+          }),
         },
       });
     } catch (error: any) {
@@ -162,6 +185,8 @@ export default function GuardiansEdit() {
     dispatch,
     navigate,
     opGuardian,
+    preGuardian?.identifierHash,
+    preGuardian?.verifier?.id,
     selectVal,
     setLoading,
     targetVerifier,
@@ -187,13 +212,32 @@ export default function GuardiansEdit() {
     navigate('/setting/guardians/guardian-approval', {
       state: {
         previousPage: FromPageEnum.guardiansDel,
+        operationDetails: getOperationDetails(OperationTypeEnum.deleteGuardian, {
+          identifierHash: preGuardian?.identifierHash as string,
+          guardianType: LoginType[preGuardian?.guardianType as LoginType],
+          verifierId: preGuardian?.verifier?.id || '',
+        }),
       },
     });
-  }, [opGuardian, dispatch, navigate, userGuardianList, walletInfo.caHash]);
+  }, [
+    dispatch,
+    opGuardian,
+    userGuardianList,
+    walletInfo.caHash,
+    navigate,
+    preGuardian?.identifierHash,
+    preGuardian?.guardianType,
+    preGuardian?.verifier?.id,
+  ]);
 
   const handleSocialVerify = useCallback(async () => {
     try {
       setLoading(true);
+      const operationDetails = getOperationDetails(OperationTypeEnum.unsetLoginAccount, {
+        identifierHash: preGuardian?.identifierHash as string,
+        guardianType: LoginType[opGuardian?.guardianType as LoginType],
+        verifierId: preGuardian?.verifier?.id || '',
+      });
 
       const verifiedInfo = await socialVerify({
         operateGuardian: preGuardian as UserGuardianItem,
@@ -201,6 +245,7 @@ export default function GuardiansEdit() {
         originChainId,
         loginAccount,
         targetChainId: originChainId,
+        operationDetails,
       });
       verifiedInfo && dispatch(setUserGuardianItemStatus(verifiedInfo));
 
@@ -209,6 +254,7 @@ export default function GuardiansEdit() {
         state: {
           previousPage: FromPageEnum.guardiansLoginGuardian,
           extra: 'edit',
+          operationDetails,
         },
       });
     } catch (error) {
@@ -217,11 +263,25 @@ export default function GuardiansEdit() {
       singleMessage.error(_error);
       console.log('===handleSocialVerify error', error);
     }
-  }, [setLoading, socialVerify, preGuardian, originChainId, loginAccount, dispatch, navigate]);
+  }, [
+    setLoading,
+    socialVerify,
+    preGuardian,
+    originChainId,
+    loginAccount,
+    opGuardian?.guardianType,
+    dispatch,
+    navigate,
+  ]);
 
   const handleCommonVerify = useCallback(async () => {
     try {
       setLoading(true);
+      const operationDetails = getOperationDetails(OperationTypeEnum.unsetLoginAccount, {
+        identifierHash: preGuardian?.identifierHash as string,
+        guardianType: LoginType[opGuardian?.guardianType as LoginType],
+        verifierId: preGuardian?.verifier?.id || '',
+      });
       const result = await verification.sendVerificationCode({
         params: {
           guardianIdentifier: preGuardian?.guardianAccount as string,
@@ -229,6 +289,7 @@ export default function GuardiansEdit() {
           verifierId: preGuardian?.verifier?.id || '',
           chainId: originChainId,
           operationType: OperationTypeEnum.unsetLoginAccount,
+          operationDetails,
         },
       });
 
@@ -248,6 +309,7 @@ export default function GuardiansEdit() {
           state: {
             previousPage: FromPageEnum.guardiansLoginGuardian,
             extra: 'edit',
+            operationDetails,
           },
         });
       } else {
@@ -354,7 +416,7 @@ export default function GuardiansEdit() {
           <div className="input-item">
             <p className="label">{t('Verifier')}</p>
             <CustomSelect
-              className="select"
+              className={clsx('select', isZK && 'select-zklogin-verify')}
               value={selectVal}
               onChange={handleChange}
               items={selectOptions}
@@ -367,7 +429,7 @@ export default function GuardiansEdit() {
           <Button className="warning" onClick={checkRemove}>
             {t('Remove')}
           </Button>
-          <Button onClick={guardiansChangeHandler} disabled={disabled} type="primary">
+          <Button onClick={guardiansChangeHandler} disabled={isZK || disabled} type="primary">
             {t('Send Request')}
           </Button>
         </div>
@@ -378,6 +440,7 @@ export default function GuardiansEdit() {
       disabled,
       guardiansChangeHandler,
       handleChange,
+      isZK,
       opGuardian,
       selectOptions,
       selectVal,

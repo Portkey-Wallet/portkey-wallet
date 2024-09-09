@@ -5,7 +5,7 @@ import LoginCard from './components/LoginCard';
 import ScanCard from './components/ScanCard';
 import SignCard from './components/SignCard';
 import { useCurrentNetworkInfo, useIsMainnet, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
 import { createNewTmpWallet, setOriginChainId } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
@@ -43,13 +43,15 @@ import { OperationTypeEnum, VerifierItem, VerifyStatus } from '@portkey-wallet/t
 import { AssignVerifierLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
 import { getStoreState } from 'store/utils/getStore';
-import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
+import { UserGuardianItem, UserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/type';
 import { verification } from 'utils/api';
 import { setCurrentGuardianAction, setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
 import { FromPageEnum, TVerifierAccountLocationState } from 'types/router';
 import googleAnalytics from 'utils/googleAnalytics';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
+import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 export default function RegisterStart() {
   const { type } = useParams();
@@ -63,6 +65,11 @@ export default function RegisterStart() {
   const isMainnet = useIsMainnet();
   const [open, setOpen] = useState<boolean>();
   const { t } = useTranslation();
+  const { address: managerAddress } = useCurrentWalletInfo();
+
+  useEffect(() => {
+    dispatch(createNewTmpWallet());
+  }, [dispatch]);
 
   const networkList = useNetworkList();
 
@@ -185,7 +192,6 @@ export default function RegisterStart() {
 
   const onSignFinish = useCallback(
     async (data: LoginInfo) => {
-      dispatch(createNewTmpWallet());
       dispatch(setOriginChainId(DefaultChainId));
       saveState(data);
       dispatch(resetGuardians());
@@ -193,8 +199,6 @@ export default function RegisterStart() {
       setLoading(true, AssignVerifierLoading);
 
       await sleep(2000);
-
-      dispatch(createNewTmpWallet);
 
       // Get the assigned verifier data from the backend api and guaranteed loading display 2s
       try {
@@ -236,6 +240,9 @@ export default function RegisterStart() {
             verifierId: item.verifier?.id || '',
             chainId: originChainId,
             operationType: OperationTypeEnum.communityRecovery,
+            operationDetails: getOperationDetails(OperationTypeEnum.communityRecovery, {
+              verifyManagerAddress: managerAddress,
+            }),
           },
         });
 
@@ -271,7 +278,7 @@ export default function RegisterStart() {
         singleMessage.error(_error);
       }
     },
-    [dispatch, navigate, setLoading],
+    [dispatch, navigate, managerAddress, setLoading],
   );
 
   const socialVerify = useSocialVerify();
@@ -279,7 +286,6 @@ export default function RegisterStart() {
     async (loginInfo: LoginInfo) => {
       try {
         setLoading(true);
-        dispatch(createNewTmpWallet());
         const { originChainId } = await getRegisterInfo({
           loginGuardianIdentifier: loginInfo.guardianAccount,
         });
@@ -318,7 +324,7 @@ export default function RegisterStart() {
           const userGuardian = _userGuardianStatus[key];
 
           if (guardian && userGuardian) {
-            _userGuardianStatus[key] = { ...userGuardian, ...guardian };
+            _userGuardianStatus[key] = { ...userGuardian, ...guardian } as UserGuardianStatus;
           }
         });
 
@@ -330,7 +336,13 @@ export default function RegisterStart() {
         ) {
           await sendVerifyCode(userGuardianStatusList[0], originChainId);
         } else {
-          navigate('/login/guardian-approval');
+          navigate('/login/guardian-approval', {
+            state: {
+              operationDetails: getOperationDetails(OperationTypeEnum.communityRecovery, {
+                verifyManagerAddress: managerAddress,
+              }),
+            },
+          });
         }
         setLoading(false);
       } catch (error) {
@@ -341,7 +353,17 @@ export default function RegisterStart() {
         setLoading(false);
       }
     },
-    [dispatch, fetchUserVerifier, getRegisterInfo, navigate, saveState, sendVerifyCode, setLoading, socialVerify],
+    [
+      dispatch,
+      fetchUserVerifier,
+      getRegisterInfo,
+      managerAddress,
+      navigate,
+      saveState,
+      sendVerifyCode,
+      setLoading,
+      socialVerify,
+    ],
   );
   const loginInfoRef = useRef<LoginInfo>();
   const onInputFinish = useCallback(
@@ -398,7 +420,12 @@ export default function RegisterStart() {
         onInputFinish?.({
           guardianAccount: userId, // account
           loginType: LoginType[type],
-          authenticationInfo: { [userId]: data?.access_token },
+          authenticationInfo: {
+            [userId]: data?.access_token,
+            nonce: data?.nonce,
+            idToken: data?.id_token,
+            timestamp: data?.timestamp,
+          },
           createType: isHasAccount.current ? 'login' : 'register',
         });
       } catch (error) {
@@ -431,6 +458,7 @@ export default function RegisterStart() {
         <div className="text-content">
           <CustomSvg type="PortKey" />
           <h1>{i18n.t('Welcome to Portkey') as string}</h1>
+          <div className="description">{`Your key to play and earn in Web3`}</div>
         </div>
         <div>
           {type === 'create' && (

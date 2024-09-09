@@ -89,19 +89,24 @@ export default function PermissionCheck({
     [],
   );
 
-  const checkNeedUnlock = useCallback(async () => {
-    // Check: Chrome serviceworker is working
-    const res = await getWalletStatus();
-    if (typeof res === 'string') return chrome.runtime.reload();
+  const checkNeedUnlock = useCallback(
+    async (checkOtherNetworkLogged = true) => {
+      // Check: Chrome serviceworker is working
+      const res = await getWalletStatus();
+      if (typeof res === 'string') return chrome.runtime.reload();
 
-    if (!otherNetworkLogged) return false;
+      if (checkOtherNetworkLogged) {
+        if (!otherNetworkLogged) return false;
+      }
 
-    const detail = (res as any)?.data;
-    detail?.privateKey && dispatch(setPasswordSeed(detail.privateKey));
-    if (detail.privateKey) return false;
-    return true;
+      const detail = (res as any)?.data;
+      detail?.privateKey && dispatch(setPasswordSeed(detail.privateKey));
+      if (detail.privateKey) return false;
+      return true;
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getWalletStatus, otherNetworkLogged]);
+    [getWalletStatus, otherNetworkLogged],
+  );
 
   const checkCurrentNetworkRegisterHandler = useCallback(async () => {
     const caInfo = walletInfo?.caInfo?.[currentNetwork];
@@ -135,7 +140,7 @@ export default function PermissionCheck({
     if (location.pathname.includes('/test')) return;
 
     if (locked && !noCheckRegister && !isRegisterPage) {
-      checkNeedUnlock().then((needUnlock) => {
+      checkNeedUnlock(false).then((needUnlock) => {
         needUnlock && navigate('/unlock');
       });
     }

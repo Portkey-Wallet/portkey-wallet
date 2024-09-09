@@ -1,0 +1,36 @@
+query cardType_aggregated($groupBy: [String], $filter: cardType_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
+    cardType_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
+        group
+        countAll
+        count{
+            id
+            label
+            status
+            value
+        }
+        countDistinct{
+            id
+            label
+            status
+            value
+        }
+        avg{
+            id
+        }
+        sum{
+            id
+        }
+        avgDistinct{
+            id
+        }
+        sumDistinct{
+            id
+        }
+        min{
+            id
+        }
+        max{
+            id
+        }
+    }
+}

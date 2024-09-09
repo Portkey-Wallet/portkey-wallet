@@ -2,6 +2,7 @@ query home_dApp($filter: directus_files_filter, $sort: [String], $limit: Int, $o
     home_dApp(filter: $filter4, sort: $sort4, limit: $limit4, offset: $offset4, page: $page4, search: $search4){
         dApp_id
         home_id(filter: $filter3, sort: $sort3, limit: $limit3, offset: $offset3, page: $page3, search: $search3){
+            dAppSectionTitle
             date_updated
             date_updated_func{
                 year
@@ -14,24 +15,20 @@ query home_dApp($filter: directus_files_filter, $sort: [String], $limit: Int, $o
                 second
             }
             focusImage(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search){
-                id
-                storage
+                charset
+                description
+                duration
+                embed
                 filename_disk
                 filename_download
-                title
-                type
+                filesize
                 folder
-                uploaded_by
-                uploaded_on
-                uploaded_on_func{
-                    year
-                    month
-                    week
-                    day
-                    weekday
-                    hour
-                    minute
-                    second
+                height
+                id
+                location
+                metadata
+                metadata_func{
+                    count
                 }
                 modified_by
                 modified_on
@@ -45,36 +42,39 @@ query home_dApp($filter: directus_files_filter, $sort: [String], $limit: Int, $o
                     minute
                     second
                 }
-                charset
-                filesize
-                width
-                height
-                duration
-                embed
-                description
-                location
+                storage
                 tags
                 tags_func{
                     count
                 }
-                metadata
-                metadata_func{
-                    count
+                title
+                type
+                uploaded_by
+                uploaded_on
+                uploaded_on_func{
+                    year
+                    month
+                    week
+                    day
+                    weekday
+                    hour
+                    minute
+                    second
                 }
+                width
             }
             id
             user_updated
-            dAppSectionTitle
             videoContent
             videoTitle
             videoUrl
             dAppList(filter: $filter2, sort: $sort2, limit: $limit2, offset: $offset2, page: $page2, search: $search2){
                 dApp_id
                 home_id(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1){
+                    dAppSectionTitle
                     date_updated
                     id
                     user_updated
-                    dAppSectionTitle
                     videoContent
                     videoTitle
                     videoUrl

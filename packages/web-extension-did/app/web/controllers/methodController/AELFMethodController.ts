@@ -11,7 +11,7 @@ import { ExtensionDappManager } from './ExtensionDappManager';
 import { getCurrentCaHash, getSWReduxState, getWalletState } from 'utils/lib/SWGetReduxStore';
 import ApprovalController from 'controllers/approval/ApprovalController';
 import { CA_METHOD_WHITELIST, REMEMBER_ME_ACTION_WHITELIST } from '@portkey-wallet/constants/constants-ca/dapp';
-import { randomId } from '@portkey-wallet/utils';
+import { checkIsCipherText, randomId } from '@portkey-wallet/utils';
 import { removeLocalStorage, setLocalStorage } from 'utils/storage/chromeStorage';
 import SWEventController from 'controllers/SWEventController';
 import { checkSiteIsInBlackList, hasSessionInfoExpired, verifySession } from '@portkey-wallet/utils/session';
@@ -120,13 +120,17 @@ export default class AELFMethodController {
       case MethodsBase.CA_HASH:
         this.getCAHash(sendResponse, message.payload);
         break;
-      case MethodsWallet.GET_WALLET_SIGNATURE:
+      case MethodsWallet.GET_WALLET_SIGNATURE: {
+        const isCipherText = checkIsCipherText(message.payload.payload.data);
+        message.payload.payload.isCipherText = isCipherText;
         this.getSignature(sendResponse, message.payload);
         break;
+      }
       case MethodsWallet.GET_WALLET_TRANSACTION_SIGNATURE: {
         if (message.payload.payload) message.payload.payload.autoSha256 = true;
         const { hexData, data } = message.payload.payload;
         if (!data && hexData) message.payload.payload.data = hexData;
+        message.payload.payload.isCipherText = true;
         this.getSignature(sendResponse, message.payload);
         break;
       }
@@ -633,6 +637,7 @@ export default class AELFMethodController {
           payload: {
             data: message.payload.data,
             origin: message.origin,
+            isCipherText: message.payload.isCipherText,
           },
         },
         method: MethodsWallet.GET_WALLET_SIGNATURE,

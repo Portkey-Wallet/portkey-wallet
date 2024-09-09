@@ -24,7 +24,7 @@ import CustomModal from '../../components/CustomModal';
 import { useCommonState } from 'store/Provider/hooks';
 import AccountShow from '../components/AccountShow';
 import { guardianIconMap } from '../utils';
-import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum, zkLoginVerifierItem } from '@portkey-wallet/types/verifier';
 import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import singleMessage from 'utils/singleMessage';
@@ -32,6 +32,7 @@ import './index.less';
 import { useNavigateState } from 'hooks/router';
 import { FromPageEnum, TGuardianApprovalLocationState, TVerifierAccountLocationState } from 'types/router';
 import BaseGuardianTypeIcon from 'components/BaseGuardianTypeIcon';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 
 export default function GuardiansView() {
   const { t } = useTranslation();
@@ -62,6 +63,11 @@ export default function GuardiansView() {
   );
   const [btnLoading, setBtnLoading] = useState<boolean>(false);
 
+  const isZK = useMemo(
+    () => opGuardian?.verifiedByZk || opGuardian?.manuallySupportForZk,
+    [opGuardian?.manuallySupportForZk, opGuardian?.verifiedByZk],
+  );
+
   useEffect(() => {
     getGuardianList({ caHash: walletInfo.caHash });
   }, [getGuardianList, walletInfo.caHash]);
@@ -78,6 +84,11 @@ export default function GuardiansView() {
   const handleSocialVerify = useCallback(async () => {
     try {
       setLoading(true);
+      const operationDetails = getOperationDetails(operationType, {
+        identifierHash: opGuardian?.identifierHash as string,
+        guardianType: LoginType[opGuardian?.guardianType as LoginType],
+        verifierId: opGuardian?.verifier?.id || '',
+      });
 
       const verifiedInfo = await socialVerify({
         operateGuardian: opGuardian as UserGuardianItem,
@@ -85,6 +96,7 @@ export default function GuardiansView() {
         originChainId,
         loginAccount,
         targetChainId: originChainId,
+        operationDetails,
       });
       verifiedInfo && dispatch(setUserGuardianItemStatus(verifiedInfo));
 
@@ -92,6 +104,7 @@ export default function GuardiansView() {
       navigate('/setting/guardians/guardian-approval', {
         state: {
           previousPage: FromPageEnum.guardiansLoginGuardian,
+          operationDetails,
         },
       });
     } catch (error) {
@@ -105,6 +118,11 @@ export default function GuardiansView() {
   const handleCommonVerify = useCallback(async () => {
     try {
       setLoading(true);
+      const operationDetails = getOperationDetails(operationType, {
+        identifierHash: opGuardian?.identifierHash as string,
+        guardianType: LoginType[opGuardian?.guardianType as LoginType],
+        verifierId: opGuardian?.verifier?.id || '',
+      });
       const result = await verification.sendVerificationCode({
         params: {
           guardianIdentifier: opGuardian?.guardianAccount as string,
@@ -112,6 +130,7 @@ export default function GuardiansView() {
           verifierId: opGuardian?.verifier?.id || '',
           chainId: originChainId,
           operationType: operationType,
+          operationDetails,
         },
       });
 
@@ -130,6 +149,7 @@ export default function GuardiansView() {
         navigate('/setting/guardians/verifier-account', {
           state: {
             previousPage: FromPageEnum.guardiansLoginGuardian,
+            operationDetails,
           },
         });
       } else {
@@ -209,9 +229,12 @@ export default function GuardiansView() {
           if (error?.error?.code?.toString() === '3002') {
             handleSwitch();
           } else {
-            const _err = handleErrorMessage(error, 'GetHolderInfo error');
             console.log('===set/unset login guardian getHolderInfo error', error);
-            singleMessage.error(_err);
+            CustomModal({
+              type: 'info',
+              okText: 'Close',
+              content: <>{t('This account address is already a login account and cannot be used')}</>,
+            });
           }
         } finally {
           setBtnLoading(false);
@@ -258,8 +281,11 @@ export default function GuardiansView() {
             <div className="input-item">
               <div className="label">{t('Verifier')}</div>
               <div className="control">
-                <BaseVerifierIcon src={opGuardian?.verifier?.imageUrl} fallback={opGuardian?.verifier?.name[0]} />
-                <span className="name">{opGuardian?.verifier?.name ?? ''}</span>
+                <BaseVerifierIcon
+                  src={isZK ? zkLoginVerifierItem.imageUrl : currentGuardian?.verifier?.imageUrl}
+                  fallback={isZK ? zkLoginVerifierItem.name[0] : currentGuardian?.verifier?.name[0]}
+                />
+                <span className="name">{isZK ? zkLoginVerifierItem.name : currentGuardian?.verifier?.name ?? ''}</span>
               </div>
             </div>
           </div>
@@ -289,7 +315,18 @@ export default function GuardiansView() {
         </div>
       </div>
     ),
-    [opGuardian, t, btnLoading, checkSwitch, editable, dispatch, navigate],
+    [
+      opGuardian,
+      t,
+      isZK,
+      currentGuardian?.verifier?.imageUrl,
+      currentGuardian?.verifier?.name,
+      btnLoading,
+      checkSwitch,
+      editable,
+      dispatch,
+      navigate,
+    ],
   );
 
   const props = useMemo(

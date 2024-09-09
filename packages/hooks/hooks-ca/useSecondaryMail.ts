@@ -9,8 +9,11 @@ export function useIsSecondaryMailSet() {
   const [fetching, setFetching] = useState<boolean>(true);
   useEffect(() => {
     (async () => {
-      await getSecondaryMail();
-      setFetching(false);
+      try {
+        await getSecondaryMail();
+      } finally {
+        setFetching(false);
+      }
     })();
   });
   const getSecondaryMail = useCallback(async () => {

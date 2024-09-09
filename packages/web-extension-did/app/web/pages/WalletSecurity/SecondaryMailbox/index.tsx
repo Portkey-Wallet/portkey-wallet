@@ -34,8 +34,8 @@ export default function SecondaryMailbox() {
             <Input placeholder="Not Set up" value={secondaryEmail} disabled />
           </div>
           <div className="mailbox-tip flex-column">
-            <div>{`Before authorizing, signing transactions, or performing similar operations, notifications will be sent to the mailbox associated with your login account.`}</div>
-            <div>{`If your login account cannot receive emails, they will be sent to the backup mailbox you have set up.`}</div>
+            <div>{`Before authorising, signing transactions, or performing similar operations, notifications will be sent to the mailbox associated with your guardian.`}</div>
+            <div>{`If your guardian cannot receive emails, they will be sent to the backup mailbox you have set up.`}</div>
           </div>
         </div>
         <Button type="primary" onClick={goEdit}>

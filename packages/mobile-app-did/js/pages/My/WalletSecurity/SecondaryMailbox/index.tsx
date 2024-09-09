@@ -26,7 +26,13 @@ const SecondaryMailboxHome: React.FC = () => {
       <View>
         <TextM style={[FontStyles.secondaryTextColor, GStyles.marginBottom(pTd(8))]}>Backup Mailbox</TextM>
         <View style={pageStyles.labelWrap}>
-          <TextL style={[FontStyles.neutralDisableText, fonts.mediumFont]}>{secondaryEmail || `Not Set up`}</TextL>
+          <TextL
+            style={[
+              secondaryEmail ? FontStyles.neutralPrimaryTextColor : FontStyles.neutralDisableText,
+              fonts.mediumFont,
+            ]}>
+            {secondaryEmail || `Not Set up`}
+          </TextL>
         </View>
         <TextM style={FontStyles.neutralTertiaryText}>
           {`Before authorising, signing transactions, or performing similar operations, notifications will be sent to the mailbox associated with your guardian.

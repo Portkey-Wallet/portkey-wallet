@@ -38,6 +38,7 @@ const aelfMethodList = [
   MethodsBase.REQUEST_ACCOUNTS,
   MethodsBase.SEND_TRANSACTION,
   MethodsBase.SET_WALLET_CONFIG_OPTIONS,
+  MethodsWallet.GET_WALLET_MANAGER_SIGNATURE,
   MethodsWallet.GET_WALLET_SIGNATURE,
   MethodsBase.NETWORK,
   MethodsWallet.GET_WALLET_STATE,
@@ -131,6 +132,15 @@ export default class AELFMethodController {
         const { hexData, data } = message.payload.payload;
         if (!data && hexData) message.payload.payload.data = hexData;
         message.payload.payload.isCipherText = true;
+        this.getSignature(sendResponse, message.payload);
+        break;
+      }
+      case MethodsWallet.GET_WALLET_MANAGER_SIGNATURE: {
+        if (message.payload.payload) message.payload.payload.autoSha256 = true;
+        const { hexData, data } = message.payload.payload;
+        if (!data && hexData) message.payload.payload.data = hexData;
+        // message.payload.payload.isCipherText = true;
+        message.payload.payload.isManagerSignature = true;
         this.getSignature(sendResponse, message.payload);
         break;
       }
@@ -615,6 +625,9 @@ export default class AELFMethodController {
 
   getSignature: RequestCommonHandler = async (sendResponse, message) => {
     const autoSha256 = message?.payload.autoSha256;
+    const isManagerSignature = message?.payload.isManagerSignature;
+
+    if (isManagerSignature) delete message.payload.isManagerSignature;
     if (autoSha256) delete message.payload.autoSha256;
     try {
       if (
@@ -641,7 +654,8 @@ export default class AELFMethodController {
           },
         },
         method: MethodsWallet.GET_WALLET_SIGNATURE,
-        callBack: (params: any) => this.approvalController.authorizedToGetSignature(params, autoSha256),
+        callBack: (params: any) =>
+          this.approvalController.authorizedToGetSignature(params, autoSha256, isManagerSignature),
       });
 
       if (result.error === 200003)

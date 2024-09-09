@@ -7,6 +7,7 @@ import WalletSecurityPrompt from './Prompt';
 import WalletSecurityPopup from './Popup';
 import { useCommonState, useDapp, useWalletInfo } from 'store/Provider/hooks';
 import { useNavigateState } from 'hooks/router';
+import { useIsSecondaryMailSet } from '@portkey-wallet/hooks/hooks-ca/useSecondaryMail';
 
 export interface IWalletSecurityProps extends BaseHeaderProps {
   menuList: MenuItemInfo[];
@@ -22,6 +23,7 @@ export default function WalletSecurity() {
   const { currentNetwork } = useWalletInfo();
   const { dappMap } = useDapp();
   const currentDapp = useMemo(() => dappMap[currentNetwork] || [], [currentNetwork, dappMap]);
+  const { secondaryEmail, fetching } = useIsSecondaryMailSet();
 
   const MenuListData: MenuItemInfo[] = useMemo(
     () => [
@@ -71,8 +73,20 @@ export default function WalletSecurity() {
           navigate('/setting/wallet-security/token-allowance');
         },
       },
+      {
+        key: t('Set up Backup Mailbox'),
+        element: (
+          <div className="flex secondary-mailbox">
+            <span>{t('Set up Backup Mailbox')}</span>
+            <span className="number">{!fetching && !secondaryEmail ? `Not Set up` : ''}</span>
+          </div>
+        ),
+        click: () => {
+          navigate('/setting/wallet-security/secondary-mailbox');
+        },
+      },
     ],
-    [currentDapp?.length, deviceAmount, navigate, t],
+    [currentDapp.length, deviceAmount, fetching, navigate, secondaryEmail, t],
   );
 
   const title = t('Wallet Security');

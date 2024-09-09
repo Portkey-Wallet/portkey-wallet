@@ -12,5 +12,8 @@ enum SandboxEventTypes {
   initViewContract = 'initViewContract',
   // cross etransfer
   etransferCrossTransfer = 'etransferCrossTransfer',
+
+  // decodedTxData
+  getDecodedTxData = 'getDecodedTxData',
 }
 export default SandboxEventTypes;

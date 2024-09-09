@@ -70,7 +70,7 @@ export default function GuardianApproval() {
       filterGuardianList = tempGuardianList.filter(
         (item) => item.key !== preGuardian?.key && item.key !== opGuardian?.key,
       );
-    } else if ([FromPageEnum.guardiansAdd, FromPageEnum.guardiansLoginGuardian].includes(from)) {
+    } else if (from && [FromPageEnum.guardiansAdd, FromPageEnum.guardiansLoginGuardian].includes(from)) {
       filterGuardianList = tempGuardianList.filter((item) => item.key !== opGuardian?.key);
     }
     return filterGuardianList;
@@ -91,7 +91,7 @@ export default function GuardianApproval() {
 
   const recoveryWallet = useCallback(async () => {
     const from = locationParams.previousPage;
-    if (AllowedGuardianPageArr.includes(from)) {
+    if (from && AllowedGuardianPageArr.includes(from)) {
       console.log('recoveryWallet guardians', '');
       handleGuardianRecovery();
     } else if (from === FromPageEnum.removeManage) {
@@ -221,15 +221,15 @@ export default function GuardianApproval() {
       </div>
     ),
     [
+      t,
+      isExpired,
       alreadyApprovalLength,
       approvalLength,
-      isExpired,
       isNotLessThan768,
-      isPrompt,
-      loginAccount,
-      recoveryWallet,
-      t,
       userVerifiedList,
+      isPrompt,
+      recoveryWallet,
+      loginAccount,
       targetChainId,
     ],
   );

@@ -25,7 +25,7 @@ import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import TelegramOverlay from 'components/OauthOverlay/telegram';
 import FacebookOverlay from 'components/OauthOverlay/facebook';
 import { parseTelegramToken, parseKidFromJWTToken } from '@portkey-wallet/utils/authentication';
-import { useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo, useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import {
@@ -448,6 +448,7 @@ export function useVerifyZKLogin() {
 export function useVerifyGoogleToken() {
   const { googleSign } = useGoogleAuthentication();
   const verifyZKLogin = useVerifyZKLogin();
+  const managerAddress = useVerifyManagerAddress() || '';
   return useCallback(
     async (params: VerifyTokenParams) => {
       let accessToken = params.accessToken;
@@ -455,7 +456,7 @@ export function useVerifyGoogleToken() {
       let isRequest = !accessToken;
       let nonce = params.nonce;
       let timestamp = params.timestamp;
-      const managerAddress = params.operationDetails ? JSON.parse(params.operationDetails).manager : '';
+      // const managerAddress = verifyManagerAddress;
       if (accessToken) {
         try {
           const { id } = await getGoogleUserInfo(accessToken);
@@ -482,6 +483,9 @@ export function useVerifyGoogleToken() {
           verifierId: params.verifierId,
           chainId: params.chainId,
           operationType: params.operationType,
+          caHash: params.caHash,
+          operationDetails: params.operationDetails,
+          targetChainId: params.targetChainId,
         },
         jwt: idToken,
         salt: params.salt ? params.salt : randomId(),
@@ -495,20 +499,21 @@ export function useVerifyGoogleToken() {
         accessToken,
       } as any;
     },
-    [googleSign, verifyZKLogin],
+    [googleSign, managerAddress, verifyZKLogin],
   );
 }
 
 export function useVerifyAppleToken() {
   const { appleSign } = useAppleAuthentication();
   const verifyZKLogin = useVerifyZKLogin();
+  const managerAddress = useVerifyManagerAddress() || '';
   return useCallback(
     async (params: VerifyTokenParams) => {
       let accessToken = params.accessToken;
       let idToken = params.idToken;
       let nonce = params.nonce;
       let timestamp = params.timestamp;
-      const managerAddress = params.operationDetails ? JSON.parse(params.operationDetails).manager : '';
+      // const managerAddress = params.operationDetails ? JSON.parse(params.operationDetails).manager : '';
       const { isExpired: tokenIsExpired } = parseAppleIdentityToken(accessToken) || {};
       if (!accessToken || tokenIsExpired) {
         const info = await appleSign(managerAddress);
@@ -530,6 +535,9 @@ export function useVerifyAppleToken() {
           verifierId: params.verifierId,
           chainId: params.chainId,
           operationType: params.operationType,
+          caHash: params.caHash,
+          operationDetails: params.operationDetails,
+          targetChainId: params.targetChainId,
         },
         jwt: idToken,
         salt: params.salt ? params.salt : randomId(),
@@ -544,7 +552,7 @@ export function useVerifyAppleToken() {
         accessToken,
       } as any;
     },
-    [appleSign, verifyZKLogin],
+    [appleSign, managerAddress, verifyZKLogin],
   );
 }
 export function useVerifyTelegramToken() {
@@ -643,6 +651,7 @@ export function useVerifyToken() {
   const verifyTwitterToken = useVerifyTwitterToken();
   const verifyFacebookToken = useVerifyFacebookToken();
   const verifyManagerAddress = useVerifyManagerAddress();
+  const { caHash } = useCurrentWalletInfo();
   const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
   return useCallback(
     (type: LoginType, params: VerifyTokenParams) => {
@@ -667,12 +676,14 @@ export function useVerifyToken() {
           throw new Error('Unsupported login type');
       }
       return fun({
+        caHash,
         operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
         ...params,
       });
     },
     [
       verifyGoogleToken,
+      caHash,
       latestVerifyManagerAddress,
       verifyAppleToken,
       verifyTelegramToken,

@@ -1,4 +1,5 @@
 @import '../../../assets/theme/color.less';
+@import '../../../assets/theme/constants.less';
 
 .wallet-security-popup {
   .menu-list {
@@ -8,12 +9,17 @@
         line-height: 22px;
         color: @neutral-primary-text;
         .manage-device,
-        .connected-sites {
+        .connected-sites,
+        .secondary-mailbox {
           justify-content: space-between;
           padding-right: 4px;
           .number {
+            max-width: 120px;
             font-size: 14px;
             color: @neutral-tertiary-text;
+            .text-overflow(1);
+
+            display: block;
           }
         }
       }

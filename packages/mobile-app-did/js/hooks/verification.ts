@@ -14,6 +14,7 @@ import { useGuardiansInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
 import { useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import navigationService from 'utils/navigationService';
 import { parseTwitterToken } from '@portkey-wallet/utils/authentication';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 
 export const useGetCurrentLoginAccountVerifyFunc = () => {
   const { appleSign } = useAppleAuthentication();
@@ -44,6 +45,7 @@ export const useGetCurrentLoginAccountVerifyFunc = () => {
           verifierSessionId: req.verifierSessionId,
         },
         verificationType: VerificationType.revokeAccount,
+        operationDetails: getOperationDetails(OperationTypeEnum.revokeAccount),
       });
     } else {
       throw new Error('send email fail');

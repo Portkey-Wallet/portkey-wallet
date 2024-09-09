@@ -210,7 +210,7 @@ export class CodePushOperator extends EventEmitter implements ICodePushOperator 
       },
     });
     ActionSheet.alert({
-      title: 'The download is complete. Is the update immediate?',
+      title: 'The latest version is downloaded. You can update Portkey now.',
       buttons,
     });
   }

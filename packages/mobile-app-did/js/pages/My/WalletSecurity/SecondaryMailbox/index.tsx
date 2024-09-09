@@ -29,8 +29,8 @@ const SecondaryMailboxHome: React.FC = () => {
           <TextL style={[FontStyles.neutralDisableText, fonts.mediumFont]}>{secondaryEmail || `Not Set up`}</TextL>
         </View>
         <TextM style={FontStyles.neutralTertiaryText}>
-          {`Before authorising, signing transactions, or performing similar operations, notifications will be sent to the mailbox associated with your login account.
-\n\nIf your login account cannot receive emails, they will be sent to the backup mailbox you have set up.`}
+          {`Before authorising, signing transactions, or performing similar operations, notifications will be sent to the mailbox associated with your guardian.
+\n\nIf your guardian cannot receive emails, they will be sent to the backup mailbox you have set up.`}
         </TextM>
       </View>
       <CommonButton

@@ -65,8 +65,13 @@ export enum OperationTypeEnum {
   transferApprove = 10,
   unsetLoginAccount = 11,
   revokeAccount = 12,
+  setupBackupMailbox = 13,
 }
-
+export enum PlatformType {
+  EXTENSION = 0,
+  ANDROID = 2,
+  IOS = 2,
+}
 export interface ZKLoginInfoNoncePayload {
   addManagerAddress: {
     timestamp: {

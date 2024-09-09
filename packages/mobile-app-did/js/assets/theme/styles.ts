@@ -38,6 +38,8 @@ export const BGStyles = StyleSheet.create({
   functionalGreenDefault: { backgroundColor: defaultColors.functionalGreenDefault },
   neutralDivider: { backgroundColor: defaultColors.neutralDivider },
   neutralDefaultBG: { backgroundColor: defaultColors.neutralDefaultBG },
+  functionalYellowDisable: { backgroundColor: defaultColors.functionalYellowDisable },
+  functionalYellowLight: { backgroundColor: defaultColors.functionalYellowLight },
 });
 
 export const FontStyles = StyleSheet.create({
@@ -74,6 +76,7 @@ export const FontStyles = StyleSheet.create({
   functionalRedDefault: { color: defaultColors.functionalRedDefault },
   functionalGreenDefault: { color: defaultColors.functionalGreenDefault },
   neutralDefaultBG: { color: defaultColors.neutralDefaultBG },
+  neutralDisableText: { color: defaultColors.neutralDisableText },
 
   white: { color: defaultColors.white },
 
@@ -97,4 +100,5 @@ export const BorderStyles = StyleSheet.create({
   border8: { borderColor: defaultColors.border8 },
   border9: { borderColor: defaultColors.border9 },
   border10: { borderColor: defaultColors.border10 },
+  functionalYellowDisable: { borderColor: defaultColors.functionalYellowDisable },
 });

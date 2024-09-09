@@ -6,13 +6,14 @@ import { useAppDispatch, useGuardiansInfo, useLoading, useLoginInfo } from 'stor
 import { setPinAction } from 'utils/lib/serviceWorkerAction';
 import {
   useCurrentWallet,
+  useCurrentWalletInfo,
   useOriginChainId,
   useOtherNetworkLogged,
   useWallet,
 } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { createWallet, resetCaInfo, resetWallet, setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useTranslation } from 'react-i18next';
-import { VerificationType } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum, VerificationType } from '@portkey-wallet/types/verifier';
 import { isWalletError } from '@portkey-wallet/store/wallet/utils';
 import { useHardwareBack } from 'hooks/useHardwareBack';
 import { setPasswordSeed } from 'store/reducers/user/slice';
@@ -37,6 +38,7 @@ import { useNavigateState } from 'hooks/router';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SetPinAndAddManager from 'pages/components/SetPinAndAddManager';
 import googleAnalytics from 'utils/googleAnalytics';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 
 export default function SetWalletPin() {
   const { t } = useTranslation();
@@ -53,6 +55,7 @@ export default function SetWalletPin() {
   const distributeFail = useDistributeLoginFail();
   const { currentNetwork } = useWallet();
   const otherNetworkLogged = useOtherNetworkLogged();
+  const { address: managerAddress } = useCurrentWalletInfo();
 
   console.log(walletInfo, state, scanWalletInfo, scanCaWalletInfo, 'walletInfo===caWallet');
 
@@ -172,7 +175,7 @@ export default function SetWalletPin() {
         setLoading(false);
       }
     },
-    [state, originChainId, dispatch, navigate, setLoading, currentNetwork, createByScan],
+    [state, originChainId, dispatch, navigate, setLoading, createByScan],
     500,
   );
 
@@ -213,7 +216,13 @@ export default function SetWalletPin() {
         navigate('/register/start/create');
         break;
       case 'login':
-        navigate('/login/guardian-approval');
+        navigate('/login/guardian-approval', {
+          state: {
+            operationDetails: getOperationDetails(OperationTypeEnum.communityRecovery, {
+              verifyManagerAddress: managerAddress,
+            }),
+          },
+        });
         break;
       case 'scan':
         navigate('/register/start/scan');
@@ -221,7 +230,7 @@ export default function SetWalletPin() {
       default:
         navigate(-1);
     }
-  }, [navigate, state]);
+  }, [managerAddress, navigate, state]);
 
   const leftCallBack = useCallback(() => {
     if (state === 'register') return setReturnOpen(true);

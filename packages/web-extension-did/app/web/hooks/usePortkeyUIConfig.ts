@@ -36,7 +36,7 @@ const usePortkeyUIConfig = () => {
         return { error: Error(result.message) };
       }
       return {
-        data: { ...result.data, accessToken: result.data.access_token },
+        data: { ...result.data, accessToken: result.data.access_token, idToken: result.data.id_token },
         error: result.error,
       };
     },

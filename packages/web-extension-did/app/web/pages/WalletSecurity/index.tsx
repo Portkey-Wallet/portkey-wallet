@@ -23,7 +23,7 @@ export default function WalletSecurity() {
   const { currentNetwork } = useWalletInfo();
   const { dappMap } = useDapp();
   const currentDapp = useMemo(() => dappMap[currentNetwork] || [], [currentNetwork, dappMap]);
-  const { secondaryEmail } = useIsSecondaryMailSet();
+  const { secondaryEmail, fetching } = useIsSecondaryMailSet();
 
   const MenuListData: MenuItemInfo[] = useMemo(
     () => [
@@ -78,7 +78,7 @@ export default function WalletSecurity() {
         element: (
           <div className="flex secondary-mailbox">
             <span>{t('Set up Backup Mailbox')}</span>
-            <span className="number">{secondaryEmail || `Not Set up`}</span>
+            <span className="number">{!fetching && !secondaryEmail ? `Not Set up` : ''}</span>
           </div>
         ),
         click: () => {
@@ -86,7 +86,7 @@ export default function WalletSecurity() {
         },
       },
     ],
-    [currentDapp.length, deviceAmount, navigate, secondaryEmail, t],
+    [currentDapp.length, deviceAmount, fetching, navigate, secondaryEmail, t],
   );
 
   const title = t('Wallet Security');

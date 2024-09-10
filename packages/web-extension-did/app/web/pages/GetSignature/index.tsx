@@ -20,13 +20,14 @@ import { useDecodeTx } from 'hooks/dapp';
 import './index.less';
 
 export default function GetSignature() {
-  const { payload, autoSha256 } = usePromptSearch<{
+  const { payload, autoSha256, isManagerSignature } = usePromptSearch<{
     payload: {
       data: string;
       origin: string;
       isCipherText?: boolean;
     };
     autoSha256?: boolean;
+    isManagerSignature?: boolean;
   }>();
   const { t } = useTranslation();
   const { currentNetwork } = useWalletInfo();
@@ -74,6 +75,11 @@ export default function GetSignature() {
 
   const onSignByManager = useCallback(
     (manager: IBlockchainWallet) => {
+      if (isManagerSignature) {
+        return manager.keyPair.sign(AElf.utils.sha256(payload?.data), {
+          canonical: true,
+        });
+      }
       if (autoSha256) {
         return manager.keyPair.sign(AElf.utils.sha256(Buffer.from(payload?.data, 'hex')), {
           canonical: true,
@@ -81,7 +87,7 @@ export default function GetSignature() {
       }
       return manager.keyPair.sign(payload?.data);
     },
-    [autoSha256, payload?.data],
+    [autoSha256, isManagerSignature, payload?.data],
   );
 
   const sendHandler = useCallback(async () => {

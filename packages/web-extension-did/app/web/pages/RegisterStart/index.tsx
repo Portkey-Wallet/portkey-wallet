@@ -504,7 +504,7 @@ export default function RegisterStart() {
           <div className="btn-wrapper">
             <Button onClick={() => setOpenSendVerifyCode(false)}>{t('Cancel')}</Button>
             <Button type="primary" onClick={() => sendVerifyCodeHandler(verifierItem, loginAccountRef.current)}>
-              {t('ConfirmM')}
+              {t('Confirm')}
             </Button>
           </div>
         </CommonModal>

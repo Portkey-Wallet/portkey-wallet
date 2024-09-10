@@ -50,7 +50,7 @@ export async function requestManagerApprove(
 export interface IDappOverlay {
   requestAccounts(dapp: DappStoreItem): Promise<boolean>;
   sendTransaction(dapp: DappStoreItem, params: SendTransactionParams): Promise<boolean>;
-  wallet_getSignature(dapp: DappStoreItem, params: GetSignatureParams, isCipherText: boolean): Promise<boolean>;
+  wallet_getSignature(dapp: DappStoreItem, params: GetSignatureParams, isCipherText?: boolean): Promise<boolean>;
   approve(
     dapp: DappStoreItem,
     params: ApproveParams,

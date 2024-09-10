@@ -33,7 +33,7 @@ const BUTTON_LABEL_MAP: Record<any, string> = {
   [LoginType.Telegram]: 'Click Add Telegram Account',
   [LoginType.Twitter]: 'Click Add Twitter Account',
   [LoginType.Facebook]: 'Click Add Facebook Account',
-  [LoginType.TonWallet]: 'Click Add TonWallet Account',
+  [LoginType.TonWallet]: 'Click Add Ton Wallet Account',
 };
 
 const GuardianThirdAccount = ({

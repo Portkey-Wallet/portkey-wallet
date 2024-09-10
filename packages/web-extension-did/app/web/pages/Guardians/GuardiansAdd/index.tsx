@@ -328,7 +328,7 @@ export default function AddGuardian() {
   }, []);
 
   const renderSocialGuardianAccount = useCallback(
-    (v: ISocialLogin) => (
+    (v: ISocialLogin, label?: string) => (
       <div className="social">
         {socialValue?.id ? (
           <div className="flex-column social-input detail">
@@ -338,7 +338,7 @@ export default function AddGuardian() {
           </div>
         ) : (
           <div className="flex social-input click" onClick={() => handleSocialAuth(v)}>
-            <span className="click-text">{`Click Add ${v} Account`}</span>
+            <span className="click-text">{`Click Add ${label || v} Account`}</span>
           </div>
         )}
       </div>
@@ -388,8 +388,8 @@ export default function AddGuardian() {
         label: t('Guardian Facebook'),
       },
       [LoginType.TonWallet]: {
-        element: renderSocialGuardianAccount('TonWallet'),
-        label: t('Guardian TonWallet'),
+        element: renderSocialGuardianAccount('TonWallet', 'Ton Wallet'),
+        label: t('Guardian Ton Wallet'),
       },
     }),
     [
@@ -508,6 +508,13 @@ export default function AddGuardian() {
         chainId: currentChain?.chainId || originChainId,
         accessToken: socialValue?.accessToken,
         operationType: OperationTypeEnum.addGuardian,
+        verificationDetails: {
+          address: '',
+          publicKey: '',
+          signature: '',
+          timestamp: '',
+          extra: '',
+        },
       };
       let res;
       if (guardianType === LoginType.Apple) {
@@ -530,14 +537,20 @@ export default function AddGuardian() {
         res = await request.verify.verifyFacebookToken({
           params,
         });
+      } else if (guardianType === LoginType.TonWallet) {
+        res = await request.verify.verifyTonWalletToken({
+          params,
+        });
       }
-      const { guardianIdentifier } = handleVerificationDoc(res.verificationDoc);
+      // TODO: identifierHash: guardianIdentifier,
+      const { guardianIdentifier = '' } = res.verificationDoc ? handleVerificationDoc(res.verificationDoc) : {};
+
       dispatch(
         setUserGuardianItemStatus({
           key: curKey,
           status: VerifyStatus.Verified,
-          signature: res.signature,
-          verificationDoc: res.verificationDoc,
+          signature: res?.signature,
+          verificationDoc: res?.verificationDoc,
           identifierHash: guardianIdentifier,
         }),
       );
@@ -698,18 +711,21 @@ export default function AddGuardian() {
               {accountErr && <span className="err-text">{accountErr}</span>}
             </div>
           )}
-          <div className="input-item">
-            <p className="label">{t('Verifier')}</p>
-            <CustomSelect
-              className="select"
-              value={verifierVal}
-              placeholder={t('Select guardian verifiers')}
-              onChange={verifierChange}
-              items={verifierOptions}
-              customChild={OptionTip()}
-            />
-            {verifierExist && <div className="error">{verifierExistTip}</div>}
-          </div>
+          {/* TODO: change it  */}
+          {guardianType !== LoginType.TonWallet && (
+            <div className="input-item">
+              <p className="label">{t('Verifier')}</p>
+              <CustomSelect
+                className="select"
+                value={verifierVal}
+                placeholder={t('Select guardian verifiers')}
+                onChange={verifierChange}
+                items={verifierOptions}
+                customChild={OptionTip()}
+              />
+              {verifierExist && <div className="error">{verifierExistTip}</div>}
+            </div>
+          )}
         </div>
         <div className="btn-wrap">
           <Button type="primary" onClick={handleCheck} disabled={disabled}>

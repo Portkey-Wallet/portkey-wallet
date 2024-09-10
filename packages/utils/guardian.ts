@@ -7,6 +7,7 @@ import BigNumber from 'bignumber.js';
 import { handleErrorMessage } from '.';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { SendOptions } from '@portkey-wallet/contracts/types';
+import { LoginKey } from '@portkey-wallet/types/types-ca/wallet';
 
 const APPROVAL_COUNT = ZERO.plus(3).div(5);
 export function getApprovalCount(length: number) {
@@ -70,3 +71,16 @@ export function removeManager(contract: ContractBasic, address: string, caHash: 
     sendOptions,
   );
 }
+
+export const getGuardianTypeLabel = (v: LoginKey | string): string => {
+  let label;
+  switch (v) {
+    case 'TonWallet':
+      label = 'Ton Wallet';
+      break;
+    default:
+      label = String(v);
+      break;
+  }
+  return label;
+};

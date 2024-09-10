@@ -7,6 +7,7 @@ export default {
   verifyTelegramToken: '/api/app/account/verifyTelegramToken',
   verifyTwitterToken: '/api/app/account/verifyTwitterToken',
   verifyFacebookToken: '/api/app/account/verifyFacebookToken',
+  verifyTonWalletToken: '/api/app/account/verifyTonWalletToken',
   sendAppleUserExtraInfo: '/api/app/userExtraInfo/appleUserExtraInfo',
   getAppleUserExtraInfo: {
     target: `/api/app/userExtraInfo`,

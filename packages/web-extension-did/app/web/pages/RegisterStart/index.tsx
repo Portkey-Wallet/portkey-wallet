@@ -25,7 +25,7 @@ import {
   parseAppleIdentityToken,
   parseFacebookToken,
   parseTelegramToken,
-  parseTonToken,
+  parseTonWalletToken,
   parseTwitterToken,
 } from '@portkey-wallet/utils/authentication';
 import { ISocialLogin, LoginType, TAllLoginKey } from '@portkey-wallet/types/types-ca/wallet';
@@ -167,7 +167,7 @@ export default function RegisterStart() {
 
   // According to the login type, execute different verifier judgment logic
   const confirmRegisterOrLogin = useCallback(
-    async (data: LoginInfo, verifierItem: VerifierItem) => {
+    async (data: LoginInfo, verifierItem?: VerifierItem) => {
       switch (data?.loginType) {
         case LoginType.Apple:
         case LoginType.Google:
@@ -177,6 +177,7 @@ export default function RegisterStart() {
         case LoginType.TonWallet:
           checkAuth(verifierItem, data);
           break;
+
         default:
           setOpenSendVerifyCode(true);
           break;
@@ -187,6 +188,8 @@ export default function RegisterStart() {
 
   const onSignFinish = useCallback(
     async (data: LoginInfo) => {
+      console.log('LoginInfo', data);
+
       dispatch(createNewTmpWallet());
       dispatch(setOriginChainId(DefaultChainId));
       saveState(data);
@@ -200,6 +203,8 @@ export default function RegisterStart() {
 
       // Get the assigned verifier data from the backend api and guaranteed loading display 2s
       try {
+        if (data.loginType === LoginType.TonWallet) return confirmRegisterOrLogin(data);
+
         const verifierReq = await request.verify.getVerifierServer({
           params: {
             chainId: DefaultChainId,
@@ -381,9 +386,10 @@ export default function RegisterStart() {
           if (!userInfo) throw 'Telegram auth error';
           userId = userInfo?.userId;
         } else if (type === 'TonWallet') {
-          const userInfo = parseTonToken(data?.access_token);
+          const userInfo = parseTonWalletToken(data?.access_token);
+          console.log('parseTonToken userInfo', userInfo);
           if (!userInfo) throw 'TonWallet auth error';
-          userId = userInfo?.userId;
+          userId = userInfo?.address || '';
         } else if (type === 'Twitter') {
           const userInfo = parseTwitterToken(data?.access_token);
           if (!userInfo) throw 'Twitter auth error';
@@ -395,10 +401,11 @@ export default function RegisterStart() {
           const { userId: _userId } = userInfo;
           userId = _userId;
         } else {
-          throw `LoginType:${type} is not support`;
+          throw `LoginType: ${type} is not support`;
         }
         if (!userId) throw 'Authorization failed';
 
+        // TODO: check it
         await validateIdentifier(userId);
 
         onInputFinish?.({
@@ -497,7 +504,7 @@ export default function RegisterStart() {
           <div className="btn-wrapper">
             <Button onClick={() => setOpenSendVerifyCode(false)}>{t('Cancel')}</Button>
             <Button type="primary" onClick={() => sendVerifyCodeHandler(verifierItem, loginAccountRef.current)}>
-              {t('Confirm')}
+              {t('ConfirmM')}
             </Button>
           </div>
         </CommonModal>

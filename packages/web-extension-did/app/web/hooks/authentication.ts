@@ -5,6 +5,7 @@ import {
   parseAppleIdentityToken,
   parseFacebookToken,
   parseTelegramToken,
+  parseTonWalletToken,
   parseTwitterToken,
 } from '@portkey-wallet/utils/authentication';
 import { request } from '@portkey-wallet/api/api-did';
@@ -86,6 +87,28 @@ export function useVerifyTelegram() {
   );
 }
 
+// TODO:  change it
+export function useVerifyTonWallet() {
+  const { currentNetwork } = useWalletInfo();
+  return useCallback(
+    async (params: VerifyTokenParams) => {
+      let accessToken = params.accessToken;
+      const { isExpired: tokenIsExpired } = parseTonWalletToken(accessToken) || {};
+      if (!accessToken || tokenIsExpired) {
+        const info = await socialLoginAction('TonWallet', currentNetwork);
+        accessToken = info?.data?.access_token || undefined;
+      }
+      const { userId } = parseTelegramToken(accessToken) || {};
+      if (userId !== params.id) throw new Error('Account does not match your guardian');
+      delete (params as any).id;
+      return request.verify.verifyTonWalletToken({
+        params: { ...params, accessToken },
+      });
+    },
+    [currentNetwork],
+  );
+}
+
 export function useVerifyTwitter() {
   const { currentNetwork } = useWalletInfo();
   return useCallback(
@@ -144,6 +167,7 @@ export function useVerifyToken() {
   const verifyGoogleToken = useVerifyGoogleToken();
   const verifyAppleToken = useVerifyAppleToken();
   const verifyTelegram = useVerifyTelegram();
+  const verifyTonWallet = useVerifyTonWallet();
   const verifyTwitter = useVerifyTwitter();
   const verifyFacebook = useVerifyFacebook();
   const verifyManagerAddress = useVerifyManagerAddress();
@@ -162,13 +186,23 @@ export function useVerifyToken() {
         func = verifyTwitter;
       } else if (type === LoginType.Facebook) {
         func = verifyFacebook;
+      } else if (type === LoginType.TonWallet) {
+        func = verifyTonWallet;
       }
       return func({
         operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
         ...params,
       });
     },
-    [latestVerifyManagerAddress, verifyAppleToken, verifyFacebook, verifyGoogleToken, verifyTelegram, verifyTwitter],
+    [
+      latestVerifyManagerAddress,
+      verifyAppleToken,
+      verifyFacebook,
+      verifyGoogleToken,
+      verifyTelegram,
+      verifyTonWallet,
+      verifyTwitter,
+    ],
   );
 }
 

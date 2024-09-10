@@ -69,7 +69,7 @@ export const getPortkeyFinanceUrl = (currentNetwork: NetworkType) => {
     JOIN_AUTH_URL: `${host}/join`,
     JOIN_TELEGRAM_URL: `${webPageUrl}/social-login/Telegram?from=portkey&network=${networkType}`,
     // TODO: change it
-    JOIN_TON_URL: `${'http://192.168.1.29:3000'}/social-login/Ton?from=portkey&network=${networkType}&manifestUrl=https://raw.githubusercontent.com/alex-beango/ton-config/main/tonconnect-manifest.json`,
+    JOIN_TON_URL: `${'http://192.168.1.29:3000'}/social-login/TonWallet?from=portkey&network=${networkType}&manifestUrl=https://raw.githubusercontent.com/alex-beango/ton-config/main/tonconnect-manifest.json`,
     AUTH_APPLE_URL: `${host}/apple-auth`,
     RECAPTCHA_URL: `${host}/recaptcha-check`,
     OPEN_LOGIN_URL: webPageUrl,

@@ -34,6 +34,7 @@ import { useNavigateState } from 'hooks/router';
 import { FromPageEnum, TGuardianApprovalLocationState, TVerifierAccountLocationState } from 'types/router';
 import BaseGuardianTypeIcon from 'components/BaseGuardianTypeIcon';
 import './index.less';
+import { getGuardianTypeLabel } from '@portkey-wallet/utils/guardian';
 
 export default function GuardiansEdit() {
   const { t } = useTranslation();
@@ -345,23 +346,29 @@ export default function GuardiansEdit() {
       <div className="edit-guardian-content flex-column-between flex-1">
         <div>
           <div className="input-item">
-            <div className="label">{`Guardian ${LoginType[opGuardian?.guardianType || 0]}`}</div>
+            <div className="label">
+              {`Guardian ${getGuardianTypeLabel(LoginType[opGuardian?.guardianType || 0])}
+              `}
+            </div>
             <div className="control">
               <BaseGuardianTypeIcon type={guardianIconMap[opGuardian?.guardianType || 0]} />
               <AccountShow guardian={opGuardian} />
             </div>
           </div>
-          <div className="input-item">
-            <p className="label">{t('Verifier')}</p>
-            <CustomSelect
-              className="select"
-              value={selectVal}
-              onChange={handleChange}
-              items={selectOptions}
-              customChild={OptionTip()}
-            />
-            {verifierExist && <div className="error">{verifierExistTip}</div>}
-          </div>
+          {/* TODO: change it */}
+          {currentGuardian?.guardianType !== LoginType.TonWallet && (
+            <div className="input-item">
+              <p className="label">{t('Verifier')}</p>
+              <CustomSelect
+                className="select"
+                value={selectVal}
+                onChange={handleChange}
+                items={selectOptions}
+                customChild={OptionTip()}
+              />
+              {verifierExist && <div className="error">{verifierExistTip}</div>}
+            </div>
+          )}
         </div>
         <div className="btn-wrap">
           <Button className="warning" onClick={checkRemove}>
@@ -375,6 +382,7 @@ export default function GuardiansEdit() {
     ),
     [
       checkRemove,
+      currentGuardian?.guardianType,
       disabled,
       guardiansChangeHandler,
       handleChange,

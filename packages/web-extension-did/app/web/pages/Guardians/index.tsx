@@ -5,7 +5,7 @@ import useGuardianList from 'hooks/useGuardianList';
 import { useAppDispatch, useCommonState, useGuardiansInfo } from 'store/Provider/hooks';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { setCurrentGuardianAction, setOpGuardianAction } from '@portkey-wallet/store/store-ca/guardians/actions';
-import VerifierPair from 'components/VerifierPair';
+import VerifierPair, { GuardianTypeIcon } from 'components/VerifierPair';
 import { Button } from 'antd';
 import useVerifierList from 'hooks/useVerifierList';
 import GuardiansPopup from './Popup';
@@ -18,6 +18,7 @@ import { guardiansExceedTip } from '@portkey-wallet/constants/constants-ca/guard
 import { useLocationState, useNavigateState } from 'hooks/router';
 import { TAddGuardianLocationState, TGuardiansLocationState } from 'types/router';
 import './index.less';
+import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 
 export default function Guardians() {
   const { t } = useTranslation();
@@ -78,11 +79,19 @@ export default function Guardians() {
               <div className="guardian-item-wrap">
                 {item.isLoginAccount && <div className="login-icon">{t('Login Account')}</div>}
                 <div className="flex-start-center">
-                  <VerifierPair
-                    guardianType={item.guardianType}
-                    verifierSrc={item.verifier?.imageUrl}
-                    verifierName={item?.verifier?.name}
-                  />
+                  {/* TODO: CHANGE THE KEY */}
+                  {item.guardianType === LoginType.TonWallet ? (
+                    <div className="eoa-icon-wrap flex-center">
+                      <CustomSvg className="flex eoa-icon" type={GuardianTypeIcon[item.guardianType]} />
+                    </div>
+                  ) : (
+                    <VerifierPair
+                      guardianType={item.guardianType}
+                      verifierSrc={item.verifier?.imageUrl}
+                      verifierName={item?.verifier?.name}
+                    />
+                  )}
+
                   <AccountShow guardian={item} />
                 </div>
               </div>

@@ -398,6 +398,23 @@ export function useVerifyTelegramToken() {
     [telegramSign],
   );
 }
+export function useVerifyTonWalletToken() {
+  const { tonSign } = useTonAuthentication();
+  return useCallback(
+    async (params: VerifyTokenParams) => {
+      const userInfo = await tonSign();
+
+      const rst = await request.verify.verifyTelegramToken({
+        params: { ...params, ...userInfo },
+      });
+
+      return {
+        ...rst,
+      };
+    },
+    [tonSign],
+  );
+}
 
 export function useVerifyTwitterToken() {
   const { twitterSign } = useTwitterAuthentication();
@@ -467,6 +484,7 @@ export function useVerifyToken() {
   const verifyAppleToken = useVerifyAppleToken();
   const verifyTelegramToken = useVerifyTelegramToken();
   const verifyTwitterToken = useVerifyTwitterToken();
+  const verifyTonWallet = useVerifyTonWalletToken();
   const verifyFacebookToken = useVerifyFacebookToken();
   const verifyManagerAddress = useVerifyManagerAddress();
   const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
@@ -489,6 +507,9 @@ export function useVerifyToken() {
         case LoginType.Facebook:
           fun = verifyFacebookToken;
           break;
+        case LoginType.TonWallet:
+          fun = verifyTonWallet;
+          break;
         default:
           throw new Error('Unsupported login type');
       }
@@ -504,6 +525,7 @@ export function useVerifyToken() {
       verifyTelegramToken,
       verifyTwitterToken,
       verifyFacebookToken,
+      verifyTonWallet,
     ],
   );
 }

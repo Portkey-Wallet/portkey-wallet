@@ -81,19 +81,23 @@ export function parseTelegramToken(token?: string | null): TelegramUserInfo | un
 
 export interface TonUserInfo {
   // TODO: change name
-  userName: string;
+  userName?: string;
   userId: string;
-  address: string;
+  address?: string;
+  publicKey?: string;
+  timestamp?: string;
   expirationTime?: number;
   isExpired?: boolean;
 }
 
-export function parseTonToken(tokenStr?: string | null): TonUserInfo | undefined {
+export function parseTonWalletToken(tokenStr?: string | null): TonUserInfo | undefined {
   if (!tokenStr) return;
-  const { userName, userId, address, expirationTime } = JSON.parse(tokenStr);
+  const str = JSON.parse(tokenStr);
 
-  const isExpired = new Date(expirationTime) < new Date();
-  return { isExpired, address, userId, expirationTime, userName };
+  console.log('!!tokenStr', tokenStr);
+
+  // TODO: isExpired?
+  return { ...JSON.parse(str.token) };
 }
 
 export type TFacebookUserInfo = {

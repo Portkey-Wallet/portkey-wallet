@@ -9,6 +9,13 @@ export type VerifyTokenParams = {
   operationType: OperationTypeEnum;
   targetChainId?: ChainId;
   operationDetails?: string;
+  verificationDetails?: {
+    address: string;
+    publicKey: string;
+    signature: string;
+    timestamp: string;
+    extra?: string;
+  };
 };
 
 export type ReportUnsetLoginGuardianProps = {

@@ -29,16 +29,16 @@ import {
 } from './config';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-type TelegramSignProps = {
+type TonSignProps = {
   onConfirm: (userInfo: any) => void;
   onReject: (reason: any) => void;
 };
 
-function TonSign({ onConfirm, onReject }: TelegramSignProps) {
+function TonSign({ onConfirm, onReject }: TonSignProps) {
   const [loading, setLoading] = useState(false);
   const { networkType, apiUrl } = useCurrentNetworkInfo();
   const [uri, go] = useState(
-    `http://192.168.1.29:3000/social-login/Ton?from=portkey&manifestUrl=https://raw.githubusercontent.com/alex-beango/ton-config/main/tonconnect-manifest.json`,
+    `http://192.168.1.29:3000/social-login/TonWallet?from=portkey&manifestUrl=https://raw.githubusercontent.com/alex-beango/ton-config/main/tonconnect-manifest.json`,
   );
   // const [uri, go] = useState(`https://ton-config-david.vercel.app`);
   const ref = useRef<WebView>();

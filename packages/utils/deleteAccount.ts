@@ -51,7 +51,18 @@ export async function deleteLoginAccount({
     token: string;
     guardianIdentifier?: string;
     verifierSessionId?: string;
-    verifierId: string;
+    verifierId?: string;
+    verificationRequestInfo?: {
+      // TODO: type change
+      verificationType?: number;
+      verificationDetails?: {
+        address: string;
+        publicKey: string;
+        signature: string;
+        timestamp: string;
+        extra: string;
+      };
+    };
   };
 }) {
   const { caContract, managerAddress, caHash, sendOptions } = removeManagerParams;

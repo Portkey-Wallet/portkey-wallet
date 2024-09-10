@@ -32,6 +32,7 @@ import './index.less';
 import { useNavigateState } from 'hooks/router';
 import { FromPageEnum, TGuardianApprovalLocationState, TVerifierAccountLocationState } from 'types/router';
 import BaseGuardianTypeIcon from 'components/BaseGuardianTypeIcon';
+import { getGuardianTypeLabel } from '@portkey-wallet/utils/guardian';
 
 export default function GuardiansView() {
   const { t } = useTranslation();
@@ -249,19 +250,23 @@ export default function GuardiansView() {
         <div>
           <div className="input-content">
             <div className="input-item">
-              <div className="label">{`Guardian ${LoginType[opGuardian?.guardianType || 0]}`}</div>
+              <div className="label">{`Guardian ${getGuardianTypeLabel(
+                LoginType[opGuardian?.guardianType || 0],
+              )}`}</div>
               <div className="control">
                 <BaseGuardianTypeIcon type={guardianIconMap[opGuardian?.guardianType || 0]} />
                 <AccountShow guardian={opGuardian} />
               </div>
             </div>
-            <div className="input-item">
-              <div className="label">{t('Verifier')}</div>
-              <div className="control">
-                <BaseVerifierIcon src={opGuardian?.verifier?.imageUrl} fallback={opGuardian?.verifier?.name[0]} />
-                <span className="name">{opGuardian?.verifier?.name ?? ''}</span>
+            {currentGuardian?.guardianType !== LoginType.TonWallet && (
+              <div className="input-item">
+                <div className="label">{t('Verifier')}</div>
+                <div className="control">
+                  <BaseVerifierIcon src={opGuardian?.verifier?.imageUrl} fallback={opGuardian?.verifier?.name[0]} />
+                  <span className="name">{opGuardian?.verifier?.name ?? ''}</span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
           <div className="login-content">
             <span className="label">{t('Login account')}</span>

@@ -594,7 +594,7 @@ const SendHome: React.FC = () => {
         buttons: [
           { title: 'Cancel', type: 'outline' },
           {
-            title: 'Confirm',
+            title: 'OK',
             onPress: () => {
               navigationService.navigate('SendPreview', {
                 ...previewParamsWithoutFee,

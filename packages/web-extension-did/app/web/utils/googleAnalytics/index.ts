@@ -66,6 +66,7 @@ class Analytics {
 
   // Fires an event with optional params. Event names must only include letters and underscores.
   async fireEvent(name: string, params: any = {}) {
+    return; // TODO: Implement
     // Configure session id and engagement time if not present, for more details see:
     // https://developers.google.com/analytics/devguides/collection/protocol/ga4/sending-events?client_type=gtag#recommended_parameters_for_reports
     if (!params.session_id) {

@@ -451,9 +451,8 @@ const SendHome: React.FC = () => {
       }
     } catch (err) {
       CommonToast.failError(err);
-      return { status: false };
-    } finally {
       Loading.hide();
+      return { status: false };
     }
 
     // checkTransferLimitResult

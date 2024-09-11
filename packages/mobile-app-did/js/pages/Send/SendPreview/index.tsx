@@ -448,8 +448,9 @@ const SendPreview: React.FC = () => {
       } else {
         CommonToast.failError(error);
       }
+    } finally {
+      Loading.hide();
     }
-    Loading.hide();
   }, [dispatch, retryCrossChain, showRetry, transfer]);
 
   const checkAndSend = useCallback(() => {

@@ -664,18 +664,19 @@ export default function Send() {
   const checkSideChainSendModal = useCallback(() => {
     const modal = CustomModal({
       type: 'confirm',
-      className: 'side-chain-modal',
+      className: 'cross-modal side-chain-modal',
       content: (
         <div>
           <div className="modal-title">{SEND_SIDE_CHAIN_TOKEN_TIP_TITLE}</div>
           <div>
-            {SEND_SIDE_CHAIN_TOKEN_TIP_CONTENT.map((item, i) => (
-              <div key={`send_modal_${i}`}>{item}</div>
-            ))}
+            Please note that &nbsp;
+            <span className="strong-text">{`only MainChain ELF can be sent directly to exchanges.`}</span> If you are
+            sending SideChain ELF, please transfer ELF to the MainChain before sending them to your exchange account. If
+            you are sending another asset, please swap it to ELF first or try the withdrawal function in ETransfer.
           </div>
         </div>
       ),
-      okText: 'Confirm',
+      okText: 'OK',
       onOk: () => {
         modal.destroy();
         sendHandler();
@@ -750,7 +751,7 @@ export default function Send() {
                 autoFocusButton: null,
                 icon: null,
                 centered: true,
-                okText: 'Confirm',
+                okText: 'OK',
                 cancelText: 'Cancel',
                 onOk: () => setStage(SendStage.Preview),
               });

@@ -455,17 +455,23 @@ const SendPreview: React.FC = () => {
   const checkAndSend = useCallback(() => {
     if (assetInfo.chainId !== DefaultChainId)
       return ActionSheet.alert({
-        title: t('Send to exchange account?'),
-        message: t(
-          `Please note that assets on the SideChain can't be sent directly to exchanges. You can transfer your SideChain assets to the MainChain before sending them to your exchange account.`,
+        title: 'Send to exchange account?',
+        message: (
+          <TextM style={[styles.alertMessage]}>
+            {`Please note that `}
+            <TextM
+              style={[
+                styles.alertMessage,
+                FontStyles.functionalRedDefault,
+              ]}>{`only MainChain ELF can be sent directly to exchanges.`}</TextM>
+            {`If you are sending SideChain ELF, please transfer ELF to the MainChain before sending them to your exchange account.
+  If you are sending another asset, please swap it to ELF first or try the withdrawal function in ETransfer.`}
+          </TextM>
         ),
         buttons: [
+          { title: 'Cancel', type: 'outline' },
           {
-            type: 'outline',
-            title: 'Cancel',
-          },
-          {
-            title: t('Confirm'),
+            title: t('OK'),
             type: 'primary',
             onPress: GeneralSend,
           },
@@ -842,5 +848,10 @@ export const styles = StyleSheet.create({
   },
   leftEstimatedTitle: {
     width: pTd(180),
+  },
+  alertMessage: {
+    color: defaultColors.font3,
+    marginBottom: pTd(12),
+    textAlign: 'center',
   },
 });

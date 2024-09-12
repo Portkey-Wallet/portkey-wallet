@@ -33,6 +33,7 @@ import Loading from 'components/Loading';
 import { IToSendPreviewParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import { getAelfTxResult } from '@portkey-wallet/utils/aelf';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { sleep } from '@portkey-wallet/utils';
 import { FontStyles } from 'assets/theme/styles';
@@ -240,6 +241,9 @@ const SendPreview: React.FC = () => {
           },
         });
         console.log('crossTransferByEtransferResult', crossTransferByEtransferResult);
+        if (!crossTransferByEtransferResult?.transactionId) throw 'Transfer error';
+        const txResult = await getAelfTxResult(chainInfo.endPoint, crossTransferByEtransferResult.transactionId);
+        console.log(txResult, 'txResult===etransferCrossTransfer');
       } else {
         const crossChainTransferResult = await crossChainTransfer({
           tokenContract,

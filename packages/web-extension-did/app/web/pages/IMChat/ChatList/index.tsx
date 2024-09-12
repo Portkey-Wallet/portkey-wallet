@@ -21,13 +21,14 @@ import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
 import { FromPageEnum, TFindMoreLocationState } from 'types/router';
 import { useJoinOfficialGroupTipModal } from 'hooks/useJoinOfficialGroupTip';
-// import InviteGuideList from 'pages/components/InviteGuideList';
+import InviteGuideList from 'pages/components/InviteGuideList';
 import OfficialGroupGuide from 'pages/components/OfficialGroupGuide';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import BottomBar from 'pages/components/BottomBar';
 import clsx from 'clsx';
 import './index.less';
 import useGAReport from 'hooks/useGAReport';
+import { hideReferral } from '@portkey-wallet/constants/referral';
 
 export default function ChatList() {
   const navigate = useNavigateState<TFindMoreLocationState>();
@@ -162,7 +163,7 @@ export default function ChatList() {
       <div className="chat-list-content flex-1">
         {showGuide && chatList.length === 0 && (
           <div className="flex-column">
-            {/* <InviteGuideList /> */}
+            {!hideReferral && <InviteGuideList />}
             <OfficialGroupGuide />
           </div>
         )}

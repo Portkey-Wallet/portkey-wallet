@@ -21,9 +21,10 @@ import Lottie from 'lottie-react-native';
 import Touchable from 'components/Touchable';
 import { useInputFocus } from 'hooks/useInputFocus';
 import CommonToast from 'components/CommonToast';
-// import InviteFriendsSection from '../components/InviteFriendsSection';
+import InviteFriendsSection from '../components/InviteFriendsSection';
 import OfficialChatGroup from '../components/OfficialChatGroup';
 import KeyGenieChat from '../components/KeyGenieChat';
+import { hideReferral } from '@portkey-wallet/constants/referral';
 
 const FindMorePeople = () => {
   const iptRef = useRef<TextInput>(null);
@@ -118,7 +119,7 @@ const FindMorePeople = () => {
       </View>
       {!debounceWord && (
         <>
-          {/* <InviteFriendsSection /> */}
+          {!hideReferral && <InviteFriendsSection />}
           <OfficialChatGroup />
           <KeyGenieChat />
         </>

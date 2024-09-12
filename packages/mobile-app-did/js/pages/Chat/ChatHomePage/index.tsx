@@ -15,7 +15,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useLatestRef, useThrottleCallback } from '@portkey-wallet/hooks';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import useRequestNotifyPermission from 'hooks/usePermission';
-// import InviteFriendsSection from '../components/InviteFriendsSection';
+import InviteFriendsSection from '../components/InviteFriendsSection';
 import OfficialChatGroup from '../components/OfficialChatGroup';
 
 import { useJoinOfficialGroupAndAiChatTipModal } from 'hooks/guide';
@@ -24,6 +24,7 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useOnTouchAndPopUp } from 'components/FloatOverlay/touch';
 import { ListItemType } from 'components/FloatOverlay/Popover';
 import KeyGenieChat from '../components/KeyGenieChat';
+import { hideReferral } from '@portkey-wallet/constants/referral';
 
 export default function ChatHomePage() {
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
@@ -129,7 +130,7 @@ export default function ChatHomePage() {
         <View style={[BGStyles.bg1, GStyles.flex1]}>
           {hasFinishInit && channelList?.length === 0 ? (
             <>
-              {/* <InviteFriendsSection /> */}
+              {!hideReferral && <InviteFriendsSection />}
               <OfficialChatGroup />
               <KeyGenieChat />
             </>

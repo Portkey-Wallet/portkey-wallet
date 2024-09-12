@@ -7,7 +7,7 @@ import { setUserGuardianSessionIdAction } from '@portkey-wallet/store/store-ca/g
 import { verifyErrorHandler } from 'utils/tryErrorHandler';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { verification } from 'utils/api';
-import { useOriginChainId, useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo, useOriginChainId, useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCommonState } from 'store/Provider/hooks';
 import { useLocation } from 'react-router';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
@@ -26,6 +26,7 @@ enum VerificationError {
 
 interface VerifierPageProps {
   operationType: OperationTypeEnum;
+  operationDetails?: string;
   loginAccount?: LoginInfo;
   currentGuardian?: UserGuardianItem;
   guardianType?: LoginType;
@@ -44,6 +45,7 @@ export default function VerifierPage({
   guardianType,
   isInitStatus,
   targetChainId,
+  operationDetails,
   onSuccess,
 }: VerifierPageProps) {
   const { setLoading } = useLoading();
@@ -57,6 +59,7 @@ export default function VerifierPage({
   const uiRef = useRef<ICodeVerifyUIInterface>();
   const verifyManagerAddress = useVerifyManagerAddress();
   const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
+  const { caHash } = useCurrentWalletInfo();
 
   useEffect(() => {
     setIsFromLoginOrRegister(pathname.includes('register') || pathname.includes('login'));
@@ -71,7 +74,7 @@ export default function VerifierPage({
           if (!guardianType && guardianType !== 0) return singleMessage.error('Missing guardiansType');
           if (!currentGuardian?.verifierInfo) throw 'Missing verifierInfo!!!';
           setLoading(true);
-
+          const _operationDetails = operationDetails ? JSON.parse(operationDetails) : {};
           const res = await verification.checkVerificationCode({
             params: {
               type: LoginType[currentGuardian?.guardianType as LoginType],
@@ -82,7 +85,12 @@ export default function VerifierPage({
               chainId: originChainId,
               operationType,
               targetChainId: targetChainId,
-              operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
+              caHash,
+              operationDetails: JSON.stringify({
+                ..._operationDetails,
+                manager: latestVerifyManagerAddress.current,
+                caHash,
+              }),
             },
           });
 
@@ -108,9 +116,11 @@ export default function VerifierPage({
       guardianType,
       currentGuardian,
       setLoading,
+      operationDetails,
       originChainId,
       operationType,
       targetChainId,
+      caHash,
       latestVerifyManagerAddress,
       onSuccess,
       t,
@@ -131,6 +141,7 @@ export default function VerifierPage({
           chainId: originChainId,
           operationType,
           targetChainId: targetChainId,
+          operationDetails,
         },
       });
       setLoading(false);
@@ -152,7 +163,16 @@ export default function VerifierPage({
       const _error = verifyErrorHandler(error);
       singleMessage.error(_error);
     }
-  }, [currentGuardian, guardianType, originChainId, dispatch, setLoading, operationType, targetChainId]);
+  }, [
+    currentGuardian,
+    guardianType,
+    setLoading,
+    originChainId,
+    operationType,
+    targetChainId,
+    operationDetails,
+    dispatch,
+  ]);
 
   return currentGuardian?.verifier ? (
     <PortkeyStyleProvider>

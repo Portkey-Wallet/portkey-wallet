@@ -1,5 +1,5 @@
 import { IBaseRequest } from '@portkey/types';
-import { BaseService } from '@portkey/services';
+import { BaseService } from './type';
 import {
   AddChannelMembersParams,
   AddStrangerParams,

@@ -13,6 +13,7 @@ import { Text } from 'react-native';
 import { FontStyles } from 'assets/theme/styles';
 import { useAuthenticationSign, useVerifyToken } from 'hooks/authentication';
 import { AuthTypes } from 'constants/guardian';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 
 const THIRD_PART_LOGIN_TYPE = AuthTypes;
 
@@ -34,6 +35,14 @@ export const useSetLoginAccount = (isEdit = false) => {
             verifierId: currentGuardian.verifier?.id,
             chainId: originChainId,
             operationType: isLoginAccount ? OperationTypeEnum.setLoginAccount : OperationTypeEnum.unsetLoginAccount,
+            operationDetails: getOperationDetails(
+              isLoginAccount ? OperationTypeEnum.setLoginAccount : OperationTypeEnum.unsetLoginAccount,
+              {
+                identifierHash: currentGuardian.identifierHash,
+                guardianType: currentGuardian.guardianType + '',
+                verifierId: currentGuardian.verifier?.id,
+              },
+            ),
           },
         });
         if (req.verifierSessionId) {
@@ -44,6 +53,14 @@ export const useSetLoginAccount = (isEdit = false) => {
                 verifierSessionId: req.verifierSessionId,
               },
               verificationType: isLoginAccount ? VerificationType.setLoginAccount : VerificationType.unsetLoginAccount,
+              operationDetails: getOperationDetails(
+                isLoginAccount ? OperationTypeEnum.setLoginAccount : OperationTypeEnum.unsetLoginAccount,
+                {
+                  identifierHash: currentGuardian.identifierHash,
+                  guardianType: currentGuardian.guardianType + '',
+                  verifierId: currentGuardian.verifier?.id,
+                },
+              ),
             },
             multiLevelParams: {
               setLoginAccountNavigate: {
@@ -135,6 +152,14 @@ export const useSetLoginAccount = (isEdit = false) => {
           verifierId: currentGuardian.verifier?.id,
           chainId: originChainId,
           operationType: isLoginAccount ? OperationTypeEnum.setLoginAccount : OperationTypeEnum.unsetLoginAccount,
+          operationDetails: getOperationDetails(
+            isLoginAccount ? OperationTypeEnum.setLoginAccount : OperationTypeEnum.unsetLoginAccount,
+            {
+              identifierHash: currentGuardian.identifierHash,
+              guardianType: currentGuardian.guardianType + '',
+              verifierId: currentGuardian.verifier?.id || '',
+            },
+          ),
         });
 
         navigationService.navigateByMultiLevelParams('GuardianApproval', {

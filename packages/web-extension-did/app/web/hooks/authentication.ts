@@ -19,7 +19,7 @@ import { randomId } from '@portkey-wallet/utils';
 import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
 import { ISocialLogin, LoginType, SocialLoginEnum } from '@portkey-wallet/types/types-ca/wallet';
 import { useWalletInfo } from 'store/Provider/hooks';
-import { useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo, useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useCurrentNetwork, useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { zkloginGuardianType } from 'constants/guardians';
@@ -27,6 +27,7 @@ import { VerifyTypeEnum } from 'types/wallet';
 
 export function useVerifyZKLogin() {
   const { zkLoginVerifyUrl = 'https://zklogin-prover.portkey.finance/v1/prove' } = useCurrentNetworkInfo();
+  const { caHash } = useCurrentWalletInfo();
   return useCallback(
     async (params: VerifyZKLoginParams) => {
       const { verifyToken, jwt, salt, kid, nonce, timestamp, managerAddress } = params;
@@ -48,10 +49,15 @@ export function useVerifyZKLogin() {
         kid,
         proof: proofResult.proof,
       };
+      const _operationDetails = verifyToken.operationDetails ? JSON.parse(verifyToken.operationDetails) : {};
 
       const portkeyVerifyResult = await request.verify.verifyZKLogin({
         params: {
           ...verifyToken,
+          operationDetails: JSON.stringify({
+            ..._operationDetails,
+            caHash,
+          }),
           poseidonIdentifierHash: proofResult.identifierHash,
           salt,
         },
@@ -74,7 +80,7 @@ export function useVerifyZKLogin() {
       };
       return { zkLoginInfo };
     },
-    [zkLoginVerifyUrl],
+    [caHash, zkLoginVerifyUrl],
   );
 }
 
@@ -123,6 +129,9 @@ export function useVerifyGoogleToken() {
           verifierId: params.verifierId,
           chainId: params.chainId,
           operationType: params.operationType,
+          operationDetails: params.operationDetails,
+          targetChainId: params.targetChainId,
+          caHash: params.caHash,
         },
         jwt: idToken,
         salt: params.salt ? params.salt : randomId(),
@@ -169,6 +178,9 @@ export function useVerifyAppleToken() {
           verifierId: params.verifierId,
           chainId: params.chainId,
           operationType: params.operationType,
+          operationDetails: params.operationDetails,
+          targetChainId: params.targetChainId,
+          caHash: params.caHash,
         },
         jwt: idToken,
         salt: params.salt ? params.salt : randomId(),
@@ -266,6 +278,7 @@ export function useVerifyToken() {
   const verifyFacebook = useVerifyFacebook();
   const verifyManagerAddress = useVerifyManagerAddress();
   const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
+  const { caHash } = useCurrentWalletInfo();
 
   return useCallback(
     (type: LoginType, params: VerifyTokenParams) => {
@@ -281,12 +294,22 @@ export function useVerifyToken() {
       } else if (type === LoginType.Facebook) {
         func = verifyFacebook;
       }
+      const _operationDetails = params.operationDetails ? JSON.parse(params.operationDetails) : {};
       return func({
-        operationDetails: JSON.stringify({ manager: latestVerifyManagerAddress.current }),
+        caHash,
         ...params,
+        operationDetails: JSON.stringify({ ..._operationDetails, manager: latestVerifyManagerAddress.current, caHash }),
       });
     },
-    [latestVerifyManagerAddress, verifyAppleToken, verifyFacebook, verifyGoogleToken, verifyTelegram, verifyTwitter],
+    [
+      caHash,
+      latestVerifyManagerAddress,
+      verifyAppleToken,
+      verifyFacebook,
+      verifyGoogleToken,
+      verifyTelegram,
+      verifyTwitter,
+    ],
   );
 }
 

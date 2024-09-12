@@ -103,11 +103,11 @@ export default function TokenInput({
       if (!_isManagerSynced) return;
       const fee = await getTranslationInfo(balanceStr);
       const etransferFee = await getEtransferwithdrawInfo({ amount: balanceStr });
-      if (fee) {
-        setMaxAmount(balanceBN.minus(etransferFee).toString());
-      } else {
-        setMaxAmount(ZERO.plus(divDecimals(balance, token.decimals)).minus(maxFee).minus(etransferFee).toString());
-      }
+
+      const _max = fee
+        ? balanceBN.minus(etransferFee)
+        : ZERO.plus(divDecimals(balance, token.decimals)).minus(maxFee).minus(etransferFee);
+      setMaxAmount(_max.gt(ZERO) ? _max.toString() : '0');
     } else {
       setMaxAmount(balanceStr);
     }

@@ -19,6 +19,8 @@ import { useInitRamp } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { codePushOperator } from 'utils/update';
 import { useGetCryptoGiftConfig } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
+import * as Application from 'expo-application';
+import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 
 export default function useInitData() {
   const dispatch = useAppDispatch();
@@ -79,12 +81,16 @@ export default function useInitData() {
     const timer = setTimeout(() => {
       if (isChat) {
         loadIMRef.current();
+        const currentVersion = Application.nativeApplicationVersion;
+        if (currentVersion || '' >= '2.0.0') {
+          dispatch(fetchContactListAsync(true));
+        }
       } else {
         im.destroy();
       }
     }, 500);
     return () => clearTimeout(timer);
-  }, [isChat]);
+  }, [dispatch, isChat]);
 
   useEffectOnce(() => {
     // init data after transition animation

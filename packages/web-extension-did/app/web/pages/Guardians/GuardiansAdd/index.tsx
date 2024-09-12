@@ -13,7 +13,12 @@ import { ISocialLogin, LoginType, isZKLoginSupported } from '@portkey-wallet/typ
 import CustomSelect from 'pages/components/CustomSelect';
 import useGuardianList from 'hooks/useGuardianList';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
-import { useCurrentWallet, useOriginChainId, useVerifyManagerAddress } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import {
+  useCurrentWallet,
+  useCurrentWalletInfo,
+  useOriginChainId,
+  useVerifyManagerAddress,
+} from '@portkey-wallet/hooks/hooks-ca/wallet';
 import BaseVerifierIcon from 'components/BaseVerifierIcon';
 import { IZKAuth, StoreUserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { useTranslation } from 'react-i18next';
@@ -61,10 +66,12 @@ import { LOGIN_TYPE_LABEL_MAP } from '@portkey-wallet/constants/verifier';
 import { VerifyTypeEnum } from 'types/wallet';
 import './index.less';
 import { useVerifyZKLogin } from 'hooks/authentication';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 
 export default function AddGuardian() {
   const navigate = useNavigateState<TVerifierAccountLocationState | TGuardianApprovalLocationState>();
   const { t } = useTranslation();
+  const { caHash } = useCurrentWalletInfo();
   const { locationParams } = usePromptLocationParams<TAddGuardianLocationState, TAddGuardianLocationSearch>();
   const { verifierMap, userGuardiansList, opGuardian } = useGuardiansInfo();
   const verifierStatusMap = useMemo(
@@ -451,7 +458,11 @@ export default function AddGuardian() {
         setLoading(true);
         dispatch(resetUserGuardianStatus());
         await userGuardianList({ caHash: walletInfo.caHash });
-
+        const operationDetails = getOperationDetails(OperationTypeEnum.addGuardian, {
+          identifierHash: '',
+          guardianType: LoginType[guardianType as LoginType],
+          verifierId: selectVerifierItem?.id || '',
+        });
         const result = await verification.sendVerificationCode({
           params: {
             guardianIdentifier: guardianAccount,
@@ -459,6 +470,7 @@ export default function AddGuardian() {
             verifierId: selectVerifierItem?.id || '',
             chainId: currentChain?.chainId || originChainId,
             operationType: OperationTypeEnum.addGuardian,
+            operationDetails,
           },
         });
         setLoading(false);
@@ -485,6 +497,7 @@ export default function AddGuardian() {
             state: {
               previousPage: FromPageEnum.guardiansAdd,
               accelerateChainId: accelerateChainId,
+              operationDetails,
             },
           });
         }
@@ -542,6 +555,15 @@ export default function AddGuardian() {
       };
       dispatch(setCurrentGuardianAction(newGuardian));
       dispatch(setOpGuardianAction(newGuardian));
+
+      const _operationDetails = JSON.parse(
+        getOperationDetails(OperationTypeEnum.addGuardian, {
+          identifierHash: '',
+          guardianType: LoginType[guardianType as LoginType],
+          verifierId: selectVerifierItem?.id || '',
+        }),
+      );
+      const operationDetails = JSON.stringify({ ..._operationDetails, caHash });
       if (isUseZK) {
         const rst = await verifyZKLogin({
           verifyToken: {
@@ -550,6 +572,7 @@ export default function AddGuardian() {
             verifierId: defaultSelectVerify?.id,
             chainId: currentChain?.chainId || originChainId,
             operationType: OperationTypeEnum.addGuardian,
+            operationDetails,
           },
           jwt: zkAuth.id_token,
           salt: randomId(),
@@ -573,6 +596,7 @@ export default function AddGuardian() {
           chainId: currentChain?.chainId || originChainId,
           accessToken: socialValue?.accessToken,
           operationType: OperationTypeEnum.addGuardian,
+          operationDetails,
         };
         let res;
         if (guardianType === LoginType.Apple) {
@@ -611,6 +635,7 @@ export default function AddGuardian() {
         state: {
           previousPage: FromPageEnum.guardiansAdd,
           accelerateChainId,
+          operationDetails,
         },
       });
     } catch (error) {
@@ -640,6 +665,7 @@ export default function AddGuardian() {
     originChainId,
     verifyManagerAddress,
     verifierVal,
+    caHash,
   ]);
 
   const handleVerify = useCallback(async () => {

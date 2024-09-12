@@ -3,7 +3,7 @@ import { IFindMoreProps } from '..';
 import CommonHeader from 'components/CommonHeader';
 import './index.less';
 import FindMoreItem from 'pages/Contacts/components/FindMoreItem';
-import InviteGuideList from 'pages/components/InviteGuideList';
+// import InviteGuideList from 'pages/components/InviteGuideList';
 import OfficialGroupGuide from 'pages/components/OfficialGroupGuide';
 
 export default function FindMorePopup({
@@ -28,7 +28,7 @@ export default function FindMorePopup({
         )}
         {(!contacts || !Array.isArray(contacts) || contacts?.length === 0) && !isSearch && (
           <div className="flex-column">
-            <InviteGuideList />
+            {/* <InviteGuideList /> */}
             <OfficialGroupGuide />
           </div>
         )}

@@ -15,7 +15,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useLatestRef, useThrottleCallback } from '@portkey-wallet/hooks';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import useRequestNotifyPermission from 'hooks/usePermission';
-import InviteFriendsSection from '../components/InviteFriendsSection';
+// import InviteFriendsSection from '../components/InviteFriendsSection';
 import OfficialChatGroup from '../components/OfficialChatGroup';
 
 import { useJoinOfficialGroupAndAiChatTipModal } from 'hooks/guide';
@@ -129,7 +129,7 @@ export default function ChatHomePage() {
         <View style={[BGStyles.bg1, GStyles.flex1]}>
           {hasFinishInit && channelList?.length === 0 ? (
             <>
-              <InviteFriendsSection />
+              {/* <InviteFriendsSection /> */}
               <OfficialChatGroup />
               <KeyGenieChat />
             </>

@@ -21,7 +21,7 @@ import Lottie from 'lottie-react-native';
 import Touchable from 'components/Touchable';
 import { useInputFocus } from 'hooks/useInputFocus';
 import CommonToast from 'components/CommonToast';
-import InviteFriendsSection from '../components/InviteFriendsSection';
+// import InviteFriendsSection from '../components/InviteFriendsSection';
 import OfficialChatGroup from '../components/OfficialChatGroup';
 import KeyGenieChat from '../components/KeyGenieChat';
 
@@ -118,7 +118,7 @@ const FindMorePeople = () => {
       </View>
       {!debounceWord && (
         <>
-          <InviteFriendsSection />
+          {/* <InviteFriendsSection /> */}
           <OfficialChatGroup />
           <KeyGenieChat />
         </>

@@ -26,6 +26,7 @@ import { SvgXml } from 'react-native-svg';
 import svgs from 'assets/image/svgs';
 import { TabRouteNameEnum } from 'types/navigate';
 import myEvents from 'utils/deviceEvent';
+import { hideReferral } from '@portkey-wallet/constants/referral';
 
 const Tab = createBottomTabNavigator();
 
@@ -194,7 +195,7 @@ export default function TabRoot() {
             } else if (tabMenu?.name === TabRouteNameEnum.SETTINGS) {
               return (
                 <View style={styles.chatWrap}>
-                  {(isImputation || viewReferralStatus === ReferralStatusEnum.UN_VIEWED) && (
+                  {(isImputation || (!hideReferral && viewReferralStatus === ReferralStatusEnum.UN_VIEWED)) && (
                     <TextS style={styles.warningCycle} />
                   )}
                   <Svg

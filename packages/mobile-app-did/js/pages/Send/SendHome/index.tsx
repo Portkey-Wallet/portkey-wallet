@@ -451,9 +451,8 @@ const SendHome: React.FC = () => {
       }
     } catch (err) {
       CommonToast.failError(err);
-      return { status: false };
-    } finally {
       Loading.hide();
+      return { status: false };
     }
 
     // checkTransferLimitResult
@@ -594,7 +593,7 @@ const SendHome: React.FC = () => {
         buttons: [
           { title: 'Cancel', type: 'outline' },
           {
-            title: 'Confirm',
+            title: 'OK',
             onPress: () => {
               navigationService.navigate('SendPreview', {
                 ...previewParamsWithoutFee,

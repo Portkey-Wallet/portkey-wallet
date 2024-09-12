@@ -13,6 +13,7 @@ import clsx from 'clsx';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import UnReadBadge from 'pages/components/UnReadBadge';
 import { useReferral } from '@portkey-wallet/hooks/hooks-ca/referral';
+import { hideReferral } from '@portkey-wallet/constants/referral';
 // import { useClickReferral } from 'hooks/referral';
 
 interface MyMenuItemInfo {
@@ -83,7 +84,7 @@ export default function PromptMy() {
 
   return (
     <div className="prompt-my-page flex-column">
-      <PortKeyHeader unReadShow={isImputation || !viewReferralStatus} onUserClick={backCb} />
+      <PortKeyHeader unReadShow={isImputation || (!hideReferral && !viewReferralStatus)} onUserClick={backCb} />
 
       <div className="prompt-my-frame">
         <CommonHeader title={t('My')} onLeftBack={backCb} />

@@ -20,6 +20,7 @@ import HomeHeader from 'pages/components/HomeHeader';
 import BottomBar from 'pages/components/BottomBar';
 import SetNewWalletNameModal from './components/SetNewWalletNameModal';
 import { useBlockAndReport } from '@portkey-wallet/hooks/hooks-ca/im';
+import { hideReferral } from '@portkey-wallet/constants/referral';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -67,7 +68,7 @@ export default function Home() {
       {isPrompt && isNotLessThan768 ? (
         <PortKeyHeader unReadShow={isImputation || !viewReferralStatus} onUserClick={onUserClick} />
       ) : (
-        <HomeHeader unReadShow={isImputation || !viewReferralStatus} onUserClick={onUserClick} />
+        <HomeHeader unReadShow={isImputation || (!hideReferral && !viewReferralStatus)} onUserClick={onUserClick} />
       )}
       <div className={clsx('portkey-body', isPrompt ? '' : 'flex-1')}>
         <MyBalance />

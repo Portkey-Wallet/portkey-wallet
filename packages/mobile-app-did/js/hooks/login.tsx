@@ -4,6 +4,7 @@ import {
   useOriginChainId,
   useOtherNetworkLogged,
   useTmpWalletInfo,
+  useVerifyManagerAddress,
   useWallet,
 } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import {
@@ -61,6 +62,7 @@ import { CreateAddressLoading } from '@portkey-wallet/constants/constants-ca/wal
 import { AuthTypes } from 'constants/guardian';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 import { TVerifierAuthParams } from 'types/authentication';
 
 export function useOnResultFail() {
@@ -257,6 +259,8 @@ export function useGoGuardianApproval(isLogin?: boolean) {
   const dispatch = useAppDispatch();
   const onRequestOrSetPin = useOnRequestOrSetPin();
   const onVerifierAuth = useVerifierAuth();
+  const verifyManagerAddress = useVerifyManagerAddress();
+  const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
 
   const requestOrSetPin = useCallback(
     async ({ guardianItem, originChainId, authenticationInfo }: TVerifierAuthParams) => {
@@ -290,6 +294,9 @@ export function useGoGuardianApproval(isLogin?: boolean) {
           verifierId: guardianItem.verifier?.id,
           chainId: originChainId,
           operationType: OperationTypeEnum.communityRecovery,
+          operationDetails: getOperationDetails(OperationTypeEnum.communityRecovery, {
+            verifyManagerAddress: latestVerifyManagerAddress.current,
+          }),
         },
       });
       if (!req?.verifierSessionId) throw new Error('verifierSessionId does not exist');
@@ -301,9 +308,12 @@ export function useGoGuardianApproval(isLogin?: boolean) {
         guardianItem,
         requestCodeResult: req,
         verificationType: VerificationType.communityRecovery,
+        operationDetails: getOperationDetails(OperationTypeEnum.communityRecovery, {
+          verifyManagerAddress: latestVerifyManagerAddress.current,
+        }),
       });
     },
-    [dispatch],
+    [dispatch, latestVerifyManagerAddress],
   );
   return useCallback(
     async ({
@@ -395,6 +405,8 @@ export function useGoSelectVerifier(isLogin?: boolean) {
   const { address } = useCurrentWalletInfo();
   const verifyToken = useVerifyToken();
   const onRequestOrSetPin = useOnRequestOrSetPin();
+  const verifyManagerAddress = useVerifyManagerAddress();
+  const latestVerifyManagerAddress = useLatestRef(verifyManagerAddress);
   const onConfirmAuth = useCallback(
     async ({ loginAccount, loginType, authenticationInfo, selectedVerifier, chainId }: LoginAuthParams) => {
       const isRequestResult = !!(pin && address);
@@ -453,6 +465,9 @@ export function useGoSelectVerifier(isLogin?: boolean) {
               guardianAccount: loginAccount,
               guardianType: loginType,
             },
+            operationDetails: getOperationDetails(OperationTypeEnum.register, {
+              verifyManagerAddress: latestVerifyManagerAddress.current,
+            }),
           });
         } else {
           throw new Error('send fail');

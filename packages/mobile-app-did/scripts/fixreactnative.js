@@ -14,6 +14,9 @@ const ExpoDevicesPath = path.resolve(
 const BoostPath = path.resolve(__dirname, '../node_modules/react-native/third-party-podspecs/boost.podspec');
 const ExpoBoostPath = path.resolve(__dirname, '../node_modules/expo-modules-core/android/build.gradle');
 
+// modify rsa file
+const RSAPath = path.resolve(__dirname, '../../../node_modules/@portkey/utils/dist/commonjs/rsa.js');
+console.log('RSAPath is:', RSAPath);
 function fixStr(str, from, to) {
   if (!str.includes(from)) return str;
   return str.replace(from, to);
@@ -61,12 +64,18 @@ function fixExpoBoost(str) {
     '/boost_',
   );
 }
-
+function fixRsaFile(str) {
+  console.log('rsa content: ', str);
+  const to = `const crypto_1 = __importDefault(require("react-native-crypto"));`;
+  const from = `const crypto_1 = __importDefault(require("crypto"));`;
+  return fixStr(str, from, to);
+}
 const FIX_LIST = [
   { filePath: VirtualizedListPath, fun: data => fixScaleY(fixImport(data)) },
   { filePath: ExpoDevicesPath, fun: data => fixDeviceName(data) },
   { filePath: BoostPath, fun: data => fixReactNativeBoost(data) },
   { filePath: ExpoBoostPath, fun: data => fixExpoBoost(data) },
+  { filePath: RSAPath, fun: data => fixRsaFile(data) },
 ];
 
 FIX_LIST.forEach(({ filePath, fun }) => {

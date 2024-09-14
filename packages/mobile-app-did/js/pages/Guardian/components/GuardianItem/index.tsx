@@ -51,6 +51,20 @@ interface GuardianAccountItemProps {
   approvalType?: ApprovalType;
   authenticationInfo?: AuthenticationInfo;
   targetChainId?: ChainId;
+  extra?: {
+    identifierHash?: string;
+    guardianType?: string;
+    verifierId?: string;
+    preVerifierId?: string;
+    newVerifierId?: string;
+    symbol?: string;
+    amount?: string | number;
+    toAddress?: string;
+    singleLimit?: string;
+    dailyLimit?: string;
+    spender?: string;
+    verifyManagerAddress?: string;
+  };
 }
 
 function GuardianItemButton({
@@ -62,6 +76,7 @@ function GuardianItemButton({
   disabled,
   authenticationInfo,
   targetChainId,
+  extra,
 }: GuardianAccountItemProps & {
   disabled?: boolean;
 }) {
@@ -101,6 +116,7 @@ function GuardianItemButton({
           chainId: originChainId,
           operationType,
           targetChainId,
+          operationDetails: JSON.stringify({ ...extra }),
         },
       });
       if (req.verifierSessionId) {
@@ -114,6 +130,7 @@ function GuardianItemButton({
           ...guardianInfo,
           requestCodeResult: req,
           targetChainId,
+          operationDetails: JSON.stringify({ ...extra }),
         });
       } else {
         throw new Error('send fail');
@@ -124,7 +141,7 @@ function GuardianItemButton({
       CommonToast.failError(error);
     }
     Loading.hide();
-  }, [guardianInfo, originChainId, operationType, targetChainId, onSetGuardianStatus]);
+  }, [guardianInfo, originChainId, operationType, targetChainId, onSetGuardianStatus, extra]);
 
   const onVerifierAuth = useCallback(async () => {
     try {
@@ -140,6 +157,7 @@ function GuardianItemButton({
         chainId: originChainId,
         operationType,
         targetChainId,
+        operationDetails: JSON.stringify({ ...extra }),
       });
 
       if (rst.accessToken) {
@@ -160,6 +178,7 @@ function GuardianItemButton({
     Loading.hide();
   }, [
     authenticationInfo,
+    extra,
     guardianItem.guardianAccount,
     guardianItem.guardianType,
     guardianItem.salt,
@@ -185,11 +204,12 @@ function GuardianItemButton({
           requestCodeResult,
           targetChainId,
           startResend: true,
+          operationDetails: JSON.stringify({ ...extra }),
         });
         break;
       }
     }
-  }, [guardianItem.guardianType, onVerifierAuth, guardianInfo, requestCodeResult, targetChainId]);
+  }, [guardianItem.guardianType, onVerifierAuth, guardianInfo, requestCodeResult, targetChainId, extra]);
   const buttonProps: CommonButtonProps = useMemo(() => {
     // expired
     if (isExpired && status !== VerifyStatus.Verified) {
@@ -250,6 +270,7 @@ export default function GuardianItem({
   approvalType = ApprovalType.communityRecovery,
   authenticationInfo,
   targetChainId,
+  extra,
 }: GuardianAccountItemProps) {
   const itemStatus = useMemo(() => guardiansStatus?.[guardianItem.key], [guardianItem.key, guardiansStatus]);
   const disabled = isSuccess && itemStatus?.status !== VerifyStatus.Verified;
@@ -336,6 +357,7 @@ export default function GuardianItem({
           approvalType={approvalType}
           authenticationInfo={authenticationInfo}
           targetChainId={targetChainId}
+          extra={extra}
         />
       )}
       {renderBtn && renderBtn(guardianItem)}

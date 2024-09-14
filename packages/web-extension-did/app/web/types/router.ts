@@ -61,11 +61,12 @@ export type TGuardianApprovalFromPage =
   | FromPageEnum.setTransferLimit;
 
 export type TGuardianApprovalLocationState = {
-  previousPage: TGuardianApprovalFromPage;
+  previousPage?: TGuardianApprovalFromPage;
   targetChainId?: ChainId;
   accelerateChainId?: ChainId;
   extra?: string;
   manageAddress?: string;
+  operationDetails?: string;
 };
 
 export type TGuardianApprovalLocationSearch = TGuardianApprovalLocationState;
@@ -94,6 +95,7 @@ export type TGuardianItemFromPage =
 
 export type TGuardianItemLocationState = {
   previousPage: TGuardianItemFromPage;
+  operationDetails?: string;
 };
 
 export type TGuardianItemLocationSearch = TGuardianItemLocationState;
@@ -110,10 +112,11 @@ export type TVerifierAccountFromPage =
   | FromPageEnum.setTransferLimit;
 
 export type TVerifierAccountLocationState = {
-  previousPage: TVerifierAccountFromPage;
+  previousPage?: TVerifierAccountFromPage;
   targetChainId?: ChainId;
   accelerateChainId?: ChainId;
   extra?: string;
+  operationDetails?: string;
 };
 
 // Account Cancelation Verify Code
@@ -316,4 +319,14 @@ export type TCryptoGiftSuccessLocationState = {
 export type TFreeMintLocationState = {
   itemId: string;
   status: FreeMintStatus;
+};
+
+// SecondaryMailbox verify
+export type TSecondaryMailboxVerifyState = {
+  email: string;
+  sessionid: string;
+};
+
+export type TSecondaryMailboxEditState = {
+  email?: string;
 };

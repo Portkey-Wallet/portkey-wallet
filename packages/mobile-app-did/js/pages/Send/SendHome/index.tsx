@@ -174,13 +174,10 @@ const SendHome: React.FC = () => {
     }
     const etransferFee = await getEtransferMaxFee({ amount: balanceStr, toInfo, tokenInfo: assetInfo });
 
-    if (fee) {
-      setMaxAmountSend(balanceBN.minus(etransferFee).toString());
-    } else {
-      setMaxAmountSend(
-        ZERO.plus(divDecimals(balance, assetInfo.decimals)).minus(maxFee).minus(etransferFee).toString(),
-      );
-    }
+    const _max = fee
+      ? balanceBN.minus(etransferFee)
+      : ZERO.plus(divDecimals(balance, assetInfo.decimals)).minus(maxFee).minus(etransferFee);
+    setMaxAmountSend(_max.gt(ZERO) ? _max.toString() : '0');
   }, [
     balance,
     assetInfo,
@@ -454,9 +451,8 @@ const SendHome: React.FC = () => {
       }
     } catch (err) {
       CommonToast.failError(err);
-      return { status: false };
-    } finally {
       Loading.hide();
+      return { status: false };
     }
 
     // checkTransferLimitResult
@@ -568,6 +564,7 @@ const SendHome: React.FC = () => {
     defaultToken.decimals,
     crossFee,
     securitySafeCheckAndToast,
+    showDialog,
     getCAContract,
     checkTransferLimitWithJump,
     previewParamsWithoutFee,
@@ -579,17 +576,50 @@ const SendHome: React.FC = () => {
   const preview = useCallback(async () => {
     const result = await checkCanPreview();
     if (!result?.status) return;
-
-    navigationService.navigate('SendPreview', {
-      ...previewParamsWithoutFee,
-      transactionFee: result?.fee || '0',
-      receiveAmount: result?.receiveAmount,
-      receiveAmountUsd: result?.receiveAmountUsd,
-      isEtransferCrossInLimit: result?.isEtransferCrossInLimit,
-      crossChainFee: result?.transactionFee || crossFee,
-      crossChainFeeUnit: result?.transactionUnit || '',
-    });
-  }, [checkCanPreview, crossFee, previewParamsWithoutFee]);
+    if (sendType === 'token' && assetInfo.chainId === 'AELF' && assetInfo.symbol !== 'ELF') {
+      ActionSheet.alert({
+        title: 'Send to exchange account?',
+        message: (
+          <TextM style={[styles.alertMessage]}>
+            {`Please note that `}
+            <TextM
+              style={[
+                styles.alertMessage,
+                FontStyles.functionalRedDefault,
+              ]}>{`only MainChain ELF can be sent directly to exchanges`}</TextM>
+            {`. If you are sending another asset, please swap it to ELF first or try the withdrawal function in ETransfer.`}
+          </TextM>
+        ),
+        buttons: [
+          { title: 'Cancel', type: 'outline' },
+          {
+            title: 'OK',
+            onPress: () => {
+              navigationService.navigate('SendPreview', {
+                ...previewParamsWithoutFee,
+                transactionFee: result?.fee || '0',
+                receiveAmount: result?.receiveAmount,
+                receiveAmountUsd: result?.receiveAmountUsd,
+                isEtransferCrossInLimit: result?.isEtransferCrossInLimit,
+                crossChainFee: result?.transactionFee || crossFee,
+                crossChainFeeUnit: result?.transactionUnit || '',
+              });
+            },
+          },
+        ],
+      });
+    } else {
+      navigationService.navigate('SendPreview', {
+        ...previewParamsWithoutFee,
+        transactionFee: result?.fee || '0',
+        receiveAmount: result?.receiveAmount,
+        receiveAmountUsd: result?.receiveAmountUsd,
+        isEtransferCrossInLimit: result?.isEtransferCrossInLimit,
+        crossChainFee: result?.transactionFee || crossFee,
+        crossChainFeeUnit: result?.transactionUnit || '',
+      });
+    }
+  }, [assetInfo.chainId, assetInfo.symbol, checkCanPreview, crossFee, previewParamsWithoutFee, sendType]);
 
   const ButtonUI = useMemo(() => {
     return (

@@ -16,6 +16,7 @@ import { LoginInfo } from 'store/reducers/loginCache/type';
 import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from './router';
 import { FromPageEnum, TVerifierAccountLocationState } from 'types/router';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 
 /**
  * Provides two verification processes
@@ -50,6 +51,9 @@ const useCheckVerifier = () => {
             verifierId: verifierItem.id,
             chainId: DefaultChainId,
             operationType: OperationTypeEnum.register,
+            operationDetails: getOperationDetails(OperationTypeEnum.register, {
+              verifyManagerAddress: managerAddress,
+            }),
           },
         });
         setLoading(false);
@@ -83,7 +87,7 @@ const useCheckVerifier = () => {
         singleMessage.error(_error);
       }
     },
-    [dispatch, navigate, setLoading],
+    [dispatch, managerAddress, navigate, setLoading],
   );
 
   const verifyToken = useVerifyToken();

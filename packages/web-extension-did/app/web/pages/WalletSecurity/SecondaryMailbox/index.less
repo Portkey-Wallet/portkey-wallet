@@ -1,0 +1,34 @@
+@import '../../../assets/theme/color.less';
+
+.secondary-mailbox-prompt {
+  width: 100%;
+  flex: 1;
+  border-left: 1px solid @neutral-divider;
+  overflow-y: auto;
+}
+.secondary-mailbox-popup {
+  height: 100%;
+}
+
+.secondary-mailbox-page {
+  .secondary-mailbox-body {
+    padding: 16px 24px;
+    font-size: 14px;
+    line-height: 20px;
+    &.secondary-mailbox-body-popup {
+      padding: 16px;
+    }
+    .mailbox-label {
+      color: @neutral-secondary-text;
+      margin-bottom: 8px;
+    }
+    .mailbox-tip {
+      margin-top: 24px;
+      gap: 12px;
+      color: @neutral-tertiary-text;
+    }
+    .portkey-btn-primary {
+      height: 48px;
+    }
+  }
+}

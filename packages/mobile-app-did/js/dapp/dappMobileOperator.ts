@@ -20,7 +20,7 @@ import { Operator } from '@portkey/providers';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { getCurrentCaHash, getManagerAccount, getPin } from 'utils/redux';
-import { handleErrorMessage } from '@portkey-wallet/utils';
+import { checkIsCipherText, handleErrorMessage } from '@portkey-wallet/utils';
 import { isEqDapp } from '@portkey-wallet/utils/dapp/browser';
 import {
   ApproveMethod,
@@ -47,6 +47,7 @@ const SEND_METHOD: { [key: string]: true } = {
   [MethodsBase.SET_WALLET_CONFIG_OPTIONS]: true,
   [MethodsWallet.GET_WALLET_SIGNATURE]: true,
   [MethodsWallet.GET_WALLET_TRANSACTION_SIGNATURE]: true,
+  [MethodsWallet.GET_WALLET_MANAGER_SIGNATURE]: true,
 };
 
 const ACTIVE_VIEW_METHOD: { [key: string]: true } = {
@@ -109,12 +110,14 @@ export default class DappMobileOperator extends Operator {
     eventName,
     params,
     method,
+    isCipherText,
   }: {
     eventName: string;
     params: any;
     method: keyof IDappOverlay;
+    isCipherText?: boolean;
   }): Promise<IResponseType | undefined> => {
-    const authorized = await this.dappOverlay[method](this.dapp, params);
+    const authorized = await this.dappOverlay[method](this.dapp, params, isCipherText || false);
     if (!authorized) return this.userDenied(eventName);
   };
   protected isActive = async () => {
@@ -351,16 +354,38 @@ export default class DappMobileOperator extends Operator {
       });
     }
   };
+  protected handleManagerSignature: SendRequest<GetSignatureParams> = async (eventName, params) => {
+    try {
+      if (!params.data) return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+      const manager = getManager();
+      if (!manager?.keyPair) return generateErrorResponse({ eventName, code: ResponseCode.INTERNAL_ERROR });
+      const data = manager.keyPair.sign(AElf.utils.sha256(params.data), {
+        canonical: true,
+      });
+      return generateNormalResponse({
+        eventName,
+        data,
+      });
+    } catch (error) {
+      return generateErrorResponse({
+        eventName,
+        code: ResponseCode.CONTRACT_ERROR,
+        msg: handleErrorMessage(error),
+      });
+    }
+  };
   protected async sendRequest({
     eventName,
     params,
     method,
     callBack,
+    isCipherText,
   }: {
     eventName: string;
     params: any;
     method: keyof IDappOverlay;
     callBack: SendRequest;
+    isCipherText?: boolean;
   }) {
     // is whitelist && is whitelist actions
     if (this.dappWhiteList.includes(this.dapp.origin) && DAPP_WHITELIST_ACTION_WHITELIST.includes(method))
@@ -372,7 +397,7 @@ export default class DappMobileOperator extends Operator {
     if (validSession && REMEMBER_ME_ACTION_WHITELIST.includes(method)) return callBack(eventName, params);
 
     // user confirm
-    const response = await this.userConfirmation({ eventName, method, params });
+    const response = await this.userConfirmation({ eventName, method, params, isCipherText });
     if (response) return response;
     return callBack(eventName, params);
   }
@@ -442,6 +467,7 @@ export default class DappMobileOperator extends Operator {
   protected handleSendRequest = async (request: IRequestParams): Promise<IResponseType> => {
     const { eventName, origin } = request;
     let method = request.method;
+    let isCipherText = true;
     if (this.dapp.origin !== origin)
       return generateErrorResponse({
         eventName,
@@ -508,6 +534,7 @@ export default class DappMobileOperator extends Operator {
         if (!isActive) return this.unauthenticated(eventName);
         callBack = this.handleSignature;
         payload = { data: request.payload.data };
+        isCipherText = checkIsCipherText(payload.data);
         if (!payload || (typeof payload.data !== 'string' && typeof payload.data !== 'number'))
           return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
         break;
@@ -515,8 +542,20 @@ export default class DappMobileOperator extends Operator {
       case MethodsWallet.GET_WALLET_TRANSACTION_SIGNATURE: {
         if (request.payload.hexData && !request.payload.data) request.payload.data = request.payload.hexData;
         method = MethodsWallet.GET_WALLET_SIGNATURE;
+        isCipherText = true;
         if (!isActive) return this.unauthenticated(eventName);
         callBack = this.handleTransactionSignature;
+        payload = { data: request.payload.data };
+        if (!payload || (typeof payload.data !== 'string' && typeof payload.data !== 'number'))
+          return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+        break;
+      }
+      case MethodsWallet.GET_WALLET_MANAGER_SIGNATURE: {
+        if (request.payload.hexData && !request.payload.data) request.payload.data = request.payload.hexData;
+        method = MethodsWallet.GET_WALLET_SIGNATURE;
+        isCipherText = false;
+        if (!isActive) return this.unauthenticated(eventName);
+        callBack = this.handleManagerSignature;
         payload = { data: request.payload.data };
         if (!payload || (typeof payload.data !== 'string' && typeof payload.data !== 'number'))
           return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
@@ -528,6 +567,7 @@ export default class DappMobileOperator extends Operator {
       params: payload,
       method: method as any,
       callBack: callBack!,
+      isCipherText,
     });
   };
   protected handleNativeDeviceRequest = async (request: IRequestParams): Promise<IResponseType> => {

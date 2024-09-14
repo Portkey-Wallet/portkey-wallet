@@ -32,6 +32,7 @@ import singleMessage from 'utils/singleMessage';
 import { useNavigateState } from 'hooks/router';
 import { FromPageEnum, TGuardianApprovalLocationState, TVerifierAccountLocationState } from 'types/router';
 import BaseGuardianTypeIcon from 'components/BaseGuardianTypeIcon';
+import { getOperationDetails } from '@portkey-wallet/utils/operation.util';
 import './index.less';
 
 export default function GuardiansEdit() {
@@ -165,6 +166,12 @@ export default function GuardiansEdit() {
       navigate('/setting/guardians/guardian-approval', {
         state: {
           previousPage: FromPageEnum.guardiansEdit,
+          operationDetails: getOperationDetails(OperationTypeEnum.unsetLoginAccount, {
+            identifierHash: preGuardian?.identifierHash as string,
+            guardianType: LoginType[opGuardian?.guardianType as LoginType],
+            preVerifierId: preGuardian?.verifier?.id || '',
+            newVerifierId: opGuardian?.verifier?.id || '',
+          }),
         },
       });
     } catch (error: any) {
@@ -178,6 +185,8 @@ export default function GuardiansEdit() {
     dispatch,
     navigate,
     opGuardian,
+    preGuardian?.identifierHash,
+    preGuardian?.verifier?.id,
     selectVal,
     setLoading,
     targetVerifier,
@@ -203,13 +212,32 @@ export default function GuardiansEdit() {
     navigate('/setting/guardians/guardian-approval', {
       state: {
         previousPage: FromPageEnum.guardiansDel,
+        operationDetails: getOperationDetails(OperationTypeEnum.deleteGuardian, {
+          identifierHash: preGuardian?.identifierHash as string,
+          guardianType: LoginType[preGuardian?.guardianType as LoginType],
+          verifierId: preGuardian?.verifier?.id || '',
+        }),
       },
     });
-  }, [opGuardian, dispatch, navigate, userGuardianList, walletInfo.caHash]);
+  }, [
+    dispatch,
+    opGuardian,
+    userGuardianList,
+    walletInfo.caHash,
+    navigate,
+    preGuardian?.identifierHash,
+    preGuardian?.guardianType,
+    preGuardian?.verifier?.id,
+  ]);
 
   const handleSocialVerify = useCallback(async () => {
     try {
       setLoading(true);
+      const operationDetails = getOperationDetails(OperationTypeEnum.unsetLoginAccount, {
+        identifierHash: preGuardian?.identifierHash as string,
+        guardianType: LoginType[opGuardian?.guardianType as LoginType],
+        verifierId: preGuardian?.verifier?.id || '',
+      });
 
       const verifiedInfo = await socialVerify({
         operateGuardian: preGuardian as UserGuardianItem,
@@ -217,6 +245,7 @@ export default function GuardiansEdit() {
         originChainId,
         loginAccount,
         targetChainId: originChainId,
+        operationDetails,
       });
       verifiedInfo && dispatch(setUserGuardianItemStatus(verifiedInfo));
 
@@ -225,6 +254,7 @@ export default function GuardiansEdit() {
         state: {
           previousPage: FromPageEnum.guardiansLoginGuardian,
           extra: 'edit',
+          operationDetails,
         },
       });
     } catch (error) {
@@ -233,11 +263,25 @@ export default function GuardiansEdit() {
       singleMessage.error(_error);
       console.log('===handleSocialVerify error', error);
     }
-  }, [setLoading, socialVerify, preGuardian, originChainId, loginAccount, dispatch, navigate]);
+  }, [
+    setLoading,
+    socialVerify,
+    preGuardian,
+    originChainId,
+    loginAccount,
+    opGuardian?.guardianType,
+    dispatch,
+    navigate,
+  ]);
 
   const handleCommonVerify = useCallback(async () => {
     try {
       setLoading(true);
+      const operationDetails = getOperationDetails(OperationTypeEnum.unsetLoginAccount, {
+        identifierHash: preGuardian?.identifierHash as string,
+        guardianType: LoginType[opGuardian?.guardianType as LoginType],
+        verifierId: preGuardian?.verifier?.id || '',
+      });
       const result = await verification.sendVerificationCode({
         params: {
           guardianIdentifier: preGuardian?.guardianAccount as string,
@@ -245,6 +289,7 @@ export default function GuardiansEdit() {
           verifierId: preGuardian?.verifier?.id || '',
           chainId: originChainId,
           operationType: OperationTypeEnum.unsetLoginAccount,
+          operationDetails,
         },
       });
 
@@ -264,6 +309,7 @@ export default function GuardiansEdit() {
           state: {
             previousPage: FromPageEnum.guardiansLoginGuardian,
             extra: 'edit',
+            operationDetails,
           },
         });
       } else {

@@ -12,6 +12,7 @@ export type VerifyTokenParams = {
   id: string;
   operationType: OperationTypeEnum;
   targetChainId?: ChainId;
+  caHash?: string;
   operationDetails?: string;
 };
 
@@ -22,6 +23,9 @@ export type VerifyZKPortkeyParams = {
   verifierId?: string;
   chainId: ChainId;
   operationType: OperationTypeEnum;
+  caHash?: string;
+  operationDetails?: string;
+  targetChainId?: string;
 };
 
 export type VerifyZKLoginParams = {

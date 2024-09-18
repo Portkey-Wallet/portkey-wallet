@@ -3,11 +3,11 @@ import { StyleSheet } from 'react-native';
 import navigationService from 'utils/navigationService';
 import { View, FlatList } from 'react-native';
 // import Svg from 'components/Svg';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { TokenItemShowType, ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
 import { TextM } from 'components/CommonText';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
-import TokenListItem from 'components/TokenListItem';
+import TokenListUnionItem from 'components/TokenListUnionItem';
 import { useLanguage } from 'i18n/hooks';
 import { PAGE_SIZE_IN_ACCOUNT_TOKEN, REFRESH_TIME } from '@portkey-wallet/constants/constants-ca/assets';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
@@ -32,22 +32,27 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
   const caAddressInfos = useCaAddressInfoList();
   const caAddressInfosList = useLatestRef(caAddressInfos);
 
-  const onNavigate = useCallback((tokenItem: TokenItemShowType) => {
-    navigationService.navigate('TokenDetail', { tokenInfo: tokenItem });
+  // todo_wade: remove this
+  // const onNavigate = useCallback((tokenItem: TokenItemShowType) => {
+  //   navigationService.navigate('TokenDetail', { tokenInfo: tokenItem });
+  // }, []);
+
+  const onExpand = useCallback((tokenItem: ITokenSectionResponse) => {
+    // todo_wade
   }, []);
 
   const renderItem = useCallback(
-    ({ item }: { item: TokenItemShowType }) => {
+    ({ item }: { item: ITokenSectionResponse }) => {
       return (
-        <TokenListItem
+        <TokenListUnionItem
           key={item.symbol}
           item={item}
-          onPress={() => onNavigate(item)}
+          onPress={() => onExpand(item)}
           hideBalance={userInfo.hideAssets}
         />
       );
     },
-    [onNavigate, userInfo.hideAssets],
+    [onExpand, userInfo.hideAssets],
   );
 
   const getAccountTokenList = useLockCallback(

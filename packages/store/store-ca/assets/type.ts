@@ -1,6 +1,10 @@
 import { ChainId, NetworkType } from '@portkey-wallet/types';
 import { NFTCollectionItemShowType, SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
-import { IAccountCryptoBoxAssetItem, TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import {
+  IAccountCryptoBoxAssetItem,
+  TokenItemShowType,
+  ITokenSectionResponse,
+} from '@portkey-wallet/types/types-ca/token';
 
 export interface ITokenInfoType {
   balance: string;
@@ -42,7 +46,7 @@ export enum AddressCheckError {
 export type TAccountTokenInfo = {
   skipCount: number;
   maxResultCount: number;
-  accountTokenList: TokenItemShowType[];
+  accountTokenList: ITokenSectionResponse[];
   totalRecordCount: number;
 };
 

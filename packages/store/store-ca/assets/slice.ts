@@ -80,6 +80,8 @@ export const fetchTokenListAsync = createAsyncThunk(
     },
     { getState },
   ) => {
+    const { wallet } = getState() as { wallet: WalletState };
+    currentNetwork = currentNetwork || wallet.currentNetwork || 'MAINNET';
     // todo_wade: mock data
     return {
       list: NEW_CLIENT_MOCK_ELF_LIST,
@@ -89,8 +91,6 @@ export const fetchTokenListAsync = createAsyncThunk(
       currentNetwork,
       totalBalanceInUsd: '',
     };
-    const { wallet } = getState() as { wallet: WalletState };
-    currentNetwork = currentNetwork || wallet.currentNetwork || 'MAINNET';
     const response = await fetchTokenList({ caAddressInfos, skipCount, maxResultCount });
 
     // // mock data fro new account
@@ -345,7 +345,7 @@ export const assetsSlice = createSlice({
           totalRecordCount,
           skipCount,
           maxResultCount,
-          currentNetwork,
+          currentNetwork = 'MAINNET',
           totalBalanceInUsd = '',
         } = action.payload;
         const preAccountTokenList = state.accountToken.accountTokenInfo?.[currentNetwork]?.accountTokenList || [];
@@ -499,10 +499,14 @@ export const assetsSlice = createSlice({
       .addCase(fetchTargetTokenBalanceAsync.fulfilled, (state, action) => {
         const { chainId, symbol, response, currentNetwork = 'MAINNET' } = action.payload;
 
+        // todo_wade: confirm the logic
+        // const tmpList = state.accountToken?.accountTokenInfo?.[currentNetwork]?.accountTokenList?.map(ele =>
+        //   ele.chainId === chainId && ele.symbol === symbol
+        //     ? { ...ele, balance: response.balance, balanceInUsd: response.balanceInUsd }
+        //     : ele,
+        // );
         const tmpList = state.accountToken?.accountTokenInfo?.[currentNetwork]?.accountTokenList?.map(ele =>
-          ele.chainId === chainId && ele.symbol === symbol
-            ? { ...ele, balance: response.balance, balanceInUsd: response.balanceInUsd }
-            : ele,
+          ele.symbol === symbol ? { ...ele, balance: response.balance, balanceInUsd: response.balanceInUsd } : ele,
         );
 
         state.accountToken.accountTokenInfo = {

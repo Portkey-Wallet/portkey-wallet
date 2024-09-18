@@ -36,6 +36,19 @@ export interface TokenItemShowType extends TokenItemType {
   userTokenId?: string;
 }
 
+export type ITokenItemResponse = Omit<TokenItemShowType, 'name' | 'address'>;
+
+export type ITokenSectionResponse = {
+  symbol: string;
+  price?: number;
+  balance: string;
+  decimals: number;
+  balanceInUsd: string;
+  label?: string;
+  imageUrl?: string;
+  tokens: ITokenItemResponse[];
+};
+
 export type UserTokenItemTokenType = Omit<BaseToken, 'name'> & { chainId: string };
 
 export interface UserTokenItemType {

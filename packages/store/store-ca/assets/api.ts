@@ -1,5 +1,5 @@
 import { request } from '@portkey-wallet/api/api-did';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
 import { IAssetItemType } from './type';
 import { NFT_SMALL_SIZE, NFT_MIDDLE_SIZE, NFT_LARGE_SIZE } from '@portkey-wallet/constants/constants-ca/assets';
 import { ICryptoBoxAssetItemType } from '@portkey-wallet/types/types-ca/crypto';
@@ -7,8 +7,6 @@ import { NFTItemBaseType } from '@portkey-wallet/types/types-ca/assets';
 import { ChainId } from '@portkey-wallet/types';
 import { ITokenAllowance } from '@portkey-wallet/types/types-ca/allowance';
 import { SendType } from '@portkey-wallet/types/types-ca/send';
-
-type ITokenItemResponse = Omit<TokenItemShowType, 'name' | 'address'>;
 
 export function fetchTokenList({
   // todo maybe remote tokenList change
@@ -20,11 +18,11 @@ export function fetchTokenList({
   maxResultCount?: number;
   caAddressInfos: { chainId: string; caAddress: string }[];
 }): Promise<{
-  data: ITokenItemResponse[];
+  data: ITokenSectionResponse[];
   totalRecordCount: number;
   totalBalanceInUsd?: string;
 }> {
-  return request.assets.fetchAccountTokenList({
+  return request.assets.fetchAccountTokenListV2({
     params: {
       caAddressInfos,
       skipCount,

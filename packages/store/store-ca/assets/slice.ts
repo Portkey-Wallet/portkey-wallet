@@ -9,7 +9,7 @@ import {
   fetchTokenPrices,
   fetchTokenBalance,
 } from './api';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
 import { TAssetsState } from './type';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
 import { NEW_CLIENT_MOCK_ELF_LIST, PAGE_SIZE_IN_NFT_ITEM } from '@portkey-wallet/constants/constants-ca/assets';
@@ -80,6 +80,15 @@ export const fetchTokenListAsync = createAsyncThunk(
     },
     { getState },
   ) => {
+    // todo_wade: mock data
+    return {
+      list: NEW_CLIENT_MOCK_ELF_LIST,
+      totalRecordCount: NEW_CLIENT_MOCK_ELF_LIST.length,
+      skipCount,
+      maxResultCount,
+      currentNetwork,
+      totalBalanceInUsd: '',
+    };
     const { wallet } = getState() as { wallet: WalletState };
     currentNetwork = currentNetwork || wallet.currentNetwork || 'MAINNET';
     const response = await fetchTokenList({ caAddressInfos, skipCount, maxResultCount });
@@ -362,7 +371,7 @@ export const assetsSlice = createSlice({
 
         if (!state.accountToken.accountTokenInfo) state.accountToken.accountTokenInfo = {};
         state.accountToken.accountTokenInfo[currentNetwork] = {
-          accountTokenList: newTokenList as TokenItemShowType[],
+          accountTokenList: newTokenList as ITokenSectionResponse[],
           skipCount,
           totalRecordCount,
           maxResultCount,

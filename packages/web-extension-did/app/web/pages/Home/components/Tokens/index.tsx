@@ -116,7 +116,10 @@ export default function TokenList() {
                   {getAmountUSDShow(item)}
                 </div>
               </div>
-              <CustomSvg className={openPanel.includes(index.toString()) ? 'is-active' : ''} type="NewRightArrow" />
+              <CustomSvg
+                className={openPanel.includes(index.toString()) ? 'is-active' : ''}
+                type={openPanel.includes(index.toString()) ? 'ActiveMore' : 'InteractiveMore'}
+              />
             </li>
           }>
           <div className="item-wrapper">

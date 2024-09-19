@@ -4,14 +4,7 @@ import './index.less';
 
 type ICustomChainSelectModalProps = ModalProps & ICustomChainSelectProps;
 
-export default function CustomTokenModal({
-  onChange,
-  onClose,
-  title,
-  searchPlaceHolder,
-  drawerType,
-  ...props
-}: ICustomChainSelectModalProps) {
+export default function CustomChainSelectModal({ onChange, onClose, ...props }: ICustomChainSelectModalProps) {
   return (
     <Modal
       destroyOnClose
@@ -22,13 +15,7 @@ export default function CustomTokenModal({
       centered={true}
       onCancel={onClose}
       footer={null}>
-      <CustomChainSelect
-        drawerType={drawerType}
-        title={title}
-        searchPlaceHolder={searchPlaceHolder}
-        onClose={onClose}
-        onChange={onChange}
-      />
+      <CustomChainSelect onClose={onClose} onChange={onChange} item={props.item} />
     </Modal>
   );
 }

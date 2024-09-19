@@ -1,32 +1,14 @@
-import { IUserTokenItemResponse, TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
 import CustomSvg from 'components/CustomSvg';
-import CommonHeader, { CustomSvgPlaceholderSize } from 'components/CommonHeader';
-import DropdownSearch from 'components/DropdownSearch';
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
-import { useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import TokenImageDisplay from '../TokenImageDisplay';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { NFTSizeEnum, getSeedTypeTag } from 'utils/assets';
-import { IAssetItemType } from '@portkey-wallet/store/store-ca/assets/type';
-import LoadingMore from 'components/LoadingMore/LoadingMore';
-import { PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
-import { useDebounceCallback, useEffectOnce } from '@portkey-wallet/hooks';
-import { useTokenLegacy } from '@portkey-wallet/hooks/hooks-ca/useToken';
-import { useAccountAssetsInfo } from '@portkey-wallet/hooks/hooks-ca/assets';
-import { fetchAssetsListByFilter, fetchTokenListByFilter } from './utils';
-import { useCommonState } from 'store/Provider/hooks';
-import clsx from 'clsx';
-import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import './index.less';
-import useGAReport from 'hooks/useGAReport';
 import { Switch } from 'antd';
 
 export interface ICustomChainSelectProps {
-  onChange?: (v: IAssetItemType, type: 'token' | 'nft') => void;
+  onChange?: (display: boolean, id?: string) => void;
   onClose?: () => void;
   item?: IUserTokenItemResponse;
 }
@@ -34,238 +16,45 @@ export interface ICustomChainSelectProps {
 export default function CustomChainSelect({ onChange, onClose, item }: ICustomChainSelectProps) {
   const { t } = useTranslation();
   const isMainnet = useIsMainnet();
-  // const { tokenDataShowInMarket, totalRecordCount: tokenTotalRecordCount, fetchTokenInfoList } = useTokenLegacy();
-  // const {
-  //   accountAssetsList,
-  //   totalRecordCount: assetsTotalRecordCount,
-  //   fetchAccountAssetsInfoList,
-  // } = useAccountAssetsInfo();
-  // const [openDrop, setOpenDrop] = useState<boolean>(false);
-  // const { isPrompt } = useCommonState();
-  // const [filterWord, setFilterWord] = useState<string>('');
-  // const [assetList, setAssetList] = useState<TokenItemShowType[] | IAssetItemType[]>([]);
-  // const chainIdArray = useChainIdList();
-  // const caAddressInfos = useCaAddressInfoList();
-  // const [initData, setInitData] = useState(false);
-  // const hasMoreData = useMemo(() => {
-  //   if (!initData) return false;
-  //   if (drawerType === 'send') {
-  //     return accountAssetsList.length < assetsTotalRecordCount;
-  //   } else {
-  //     return tokenDataShowInMarket.length < tokenTotalRecordCount;
-  //   }
-  // }, [
-  //   initData,
-  //   drawerType,
-  //   accountAssetsList.length,
-  //   assetsTotalRecordCount,
-  //   tokenDataShowInMarket.length,
-  //   tokenTotalRecordCount,
-  // ]);
-  // useFreshTokenPrice();
-
-  // const { startReport, endReport } = useGAReport();
-
-  // useEffectOnce(() => {
-  //   startReport(drawerType === 'send' ? 'Send-TokenList' : 'Receive-TokenList');
-  // });
-
-  // const getInitData = useCallback(async () => {
-  //   try {
-  //     if (drawerType === 'send') {
-  //       await fetchAccountAssetsInfoList({
-  //         keyword: '',
-  //         caAddressInfos,
-  //         skipCount: 0,
-  //         maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
-  //       });
-  //     } else {
-  //       await fetchTokenInfoList({
-  //         chainIdArray,
-  //         keyword: '',
-  //         skipCount: 0,
-  //         maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
-  //       });
-  //     }
-  //     setInitData(true);
-  //   } catch (error) {
-  //     console.log('===getInitData error', error);
-  //   }
-  //   return drawerType;
-  // }, [caAddressInfos, chainIdArray, drawerType, fetchAccountAssetsInfoList, fetchTokenInfoList]);
-
-  // useEffectOnce(() => {
-  //   setFilterWord('');
-  //   getInitData().then((res) => endReport(res === 'send' ? 'Send-TokenList' : 'Receive-TokenList'));
-  // });
-
-  // const setData = useCallback(() => {
-  //   if (drawerType === 'send') {
-  //     setAssetList(accountAssetsList);
-  //   } else {
-  //     setAssetList(tokenDataShowInMarket);
-  //   }
-  // }, [accountAssetsList, drawerType, tokenDataShowInMarket]);
-
-  // useEffect(() => {
-  //   setData();
-  // }, [setData]);
-
-  // const handleSearch = useDebounceCallback(
-  //   async (keyword: string) => {
-  //     if (!keyword) return setData();
-  //     let res;
-  //     if (drawerType === 'send') {
-  //       res = await fetchAssetsListByFilter({ keyword, caAddressInfos });
-  //     } else {
-  //       res = await fetchTokenListByFilter({ chainIdArray, keyword });
-  //     }
-  //     setAssetList(res.data);
-  //   },
-  //   [caAddressInfos, chainIdArray, drawerType, setData],
-  //   500,
-  // );
-
-  // const getMoreData = useLockCallback(async () => {
-  //   if (drawerType === 'send') {
-  //     if (accountAssetsList.length && accountAssetsList.length < assetsTotalRecordCount) {
-  //       await fetchAccountAssetsInfoList({
-  //         keyword: '',
-  //         caAddressInfos,
-  //         skipCount: accountAssetsList.length,
-  //         maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
-  //       });
-  //     }
-  //   } else {
-  //     if (tokenDataShowInMarket.length && tokenDataShowInMarket.length < tokenTotalRecordCount) {
-  //       await fetchTokenInfoList({
-  //         chainIdArray,
-  //         keyword: '',
-  //         skipCount: tokenDataShowInMarket.length,
-  //         maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
-  //       });
-  //     }
-  //   }
-  // }, [
-  //   drawerType,
-  //   accountAssetsList.length,
-  //   assetsTotalRecordCount,
-  //   fetchAccountAssetsInfoList,
-  //   caAddressInfos,
-  //   tokenDataShowInMarket.length,
-  //   tokenTotalRecordCount,
-  //   fetchTokenInfoList,
-  //   chainIdArray,
-  // ]);
-
-  // const renderSendToken = useCallback(
-  //   (token: IAssetItemType) => {
-  //     return (
-  //       <div
-  //         className="item"
-  //         key={`${token.symbol}_${token.chainId}`}
-  //         onClick={onChange?.bind(undefined, token, 'token')}>
-  //         <div className="icon flex-center">
-  //           <TokenImageDisplay symbol={token.label ?? token?.symbol} src={token.tokenInfo?.imageUrl} />
-  //         </div>
-  //         <div className="info flex-column">
-  //           <p className="symbol">{`${token.label ?? token.symbol}`}</p>
-  //           <p className="network">{transNetworkText(token.chainId, !isMainnet)}</p>
-  //         </div>
-  //         <div className="amount flex-column">
-  //           <p className="quantity">
-  //             {formatTokenAmountShowWithDecimals(token.tokenInfo?.balance, token.tokenInfo?.decimals)}
-  //           </p>
-  //           <p className="convert">{isMainnet && formatAmountUSDShow(token.tokenInfo?.balanceInUsd)}</p>
-  //         </div>
-  //       </div>
-  //     );
-  //   },
-  //   [isMainnet, onChange],
-  // );
-
-  // const renderReceiveToken = useCallback(
-  //   (token: TokenItemShowType) => {
-  //     const tokenTmp: IAssetItemType = {
-  //       chainId: token.chainId,
-  //       symbol: token.symbol,
-  //       address: token.address,
-  //       tokenInfo: {
-  //         imageUrl: token.imageUrl,
-  //         balance: token.balance || '',
-  //         decimals: token.decimals,
-  //         balanceInUsd: token.balanceInUsd || '',
-  //         tokenContractAddress: token.address,
-  //       },
-  //       label: token.label,
-  //     };
-  //     return (
-  //       <div
-  //         className="item"
-  //         key={`${token.symbol}_${token.chainId}`}
-  //         onClick={onChange?.bind(undefined, tokenTmp, 'token')}>
-  //         <div className="icon flex-center">
-  //           <TokenImageDisplay symbol={token.label ?? token?.symbol} src={token?.imageUrl} />
-  //         </div>
-  //         <div className="info">
-  //           <p className="symbol">{`${token.label ?? token.symbol}`}</p>
-  //           <p className="network">{transNetworkText(token.chainId, !isMainnet)}</p>
-  //         </div>
-  //       </div>
-  //     );
-  //   },
-  //   [isMainnet, onChange],
-  // );
-
-  // const renderNft = useCallback(
-  //   (token: IAssetItemType) => {
-  //     const seedTypeTag = token.nftInfo ? getSeedTypeTag(token.nftInfo, NFTSizeEnum.small) : '';
-  //     const alias = `${token.nftInfo?.alias} #${token.nftInfo?.tokenId}`;
-  //     const aliasClassName = !isPrompt && alias.length > 15 ? 'mul-line' : '';
-  //     return (
-  //       <div
-  //         key={`${token.chainId}_${token.nftInfo?.alias}_${token.nftInfo?.tokenId}`}
-  //         className="item protocol"
-  //         onClick={onChange?.bind(undefined, token, 'nft')}>
-  //         <div className="avatar flex-center">
-  //           {seedTypeTag && <CustomSvg type={seedTypeTag} />}
-  //           {token.nftInfo?.imageUrl ? <img src={token.nftInfo.imageUrl} /> : token.nftInfo?.alias?.slice(0, 1)}
-  //         </div>
-  //         <div className="info">
-  //           <p className={clsx('alias', aliasClassName)}>{alias}</p>
-  //           <p className="network">{transNetworkText(token.chainId, !isMainnet)}</p>
-  //         </div>
-  //         <div className="amount">
-  //           <div className="balance">
-  //             {formatTokenAmountShowWithDecimals(token.nftInfo?.balance, token.nftInfo?.decimals || 0)}
-  //           </div>
-  //         </div>
-  //       </div>
-  //     );
-  //   },
-  //   [isMainnet, isPrompt, onChange],
-  // );
-
+  const calDisplayStatusText = useCallback(
+    (item?: IUserTokenItemResponse) => {
+      return item?.displayStatus === 'All'
+        ? t('All Networks')
+        : item?.displayStatus === 'Partial'
+        ? t('MainChain AELF')
+        : t('None');
+    },
+    [t],
+  );
+  if (item?.isDefault) {
+    return null;
+  }
   return (
-    <div>
-      <div>
+    <div className="chain-select-container">
+      <div className="header">
+        <TokenImageDisplay className="custom-logo" width={32} symbol={item?.symbol} src={item?.imageUrl} />
         <div className="text-container">
-          <div className="main-text">ETH</div>
-          <div className="sub-text">All Networks</div>
+          <div className="main-text">{item?.symbol}</div>
+          <div className="sub-text">{calDisplayStatusText(item)}</div>
         </div>
-        <div className="status-icon">
-          <div className="status-background"></div>
-        </div>
+        <CustomSvg type="CloseNew" onClick={onClose} />
       </div>
       <div className="content">
-        <div className="content-item">
-          <div className="content-text">MainChain AELF</div>
-          <Switch defaultChecked className="switch" />
-        </div>
-        <div className="content-item">
-          <div className="content-text">SideChain tDVV</div>
-          <Switch className="switch" />
-        </div>
+        {item?.tokens?.map((chainItem) => {
+          return (
+            <div className="content-item" key={`${chainItem.id}_${chainItem.symbol}`}>
+              <div className="content-text">{transNetworkText(chainItem.chainId, !isMainnet)}</div>
+              <Switch
+                defaultChecked={chainItem.isDisplay}
+                className="switch"
+                onChange={() => {
+                  onClose?.();
+                  onChange?.(!chainItem.isDisplay, chainItem.id);
+                }}
+              />
+            </div>
+          );
+        })}
       </div>
     </div>
   );

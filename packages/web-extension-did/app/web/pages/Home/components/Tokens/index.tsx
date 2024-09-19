@@ -112,7 +112,7 @@ export default function TokenList() {
                   <span>{getTokenAmount(item)}</span>
                 </div>
                 <div className="amount flex-between">
-                  {!!item.price && <span>${item.price}</span>}
+                  {!!item.price && isMainnet && <span>${item.price}</span>}
                   {getAmountUSDShow(item)}
                 </div>
               </div>

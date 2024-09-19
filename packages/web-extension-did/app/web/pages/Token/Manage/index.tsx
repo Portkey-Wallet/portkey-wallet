@@ -173,8 +173,6 @@ export default function AddToken() {
   );
   const renderTokenItemBtn = useCallback(
     (item: IUserTokenItemResponse) => {
-      // const { isDefault = false, isAdded = true } = item;
-      console.log('item is:', item);
       const isDefault = item?.isDefault || item?.tokens?.[0].isDefault || false;
       const isAdded = item.displayStatus !== 'None' || false;
       if (isDefault) {
@@ -202,13 +200,6 @@ export default function AddToken() {
             onChange={() => handleUserTokenDisplay(item)}
           />
         </div>
-        // <Button
-        //   className="add-token-btn"
-        //   onClick={() => {
-        //     handleUserTokenDisplay(item);
-        //   }}>
-        //   {t(isAdded ? 'Hide' : 'Add')}
-        // </Button>
       );
     },
     [handleUserTokenDisplay],

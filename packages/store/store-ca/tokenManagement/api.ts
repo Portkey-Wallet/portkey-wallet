@@ -16,7 +16,7 @@ export function fetchAllTokenList({
     symbol: string;
     imageUrl?: string;
     label?: string;
-    displayStatus?: 'all' | 'partial' | 'none';
+    displayStatus?: 'All' | 'Partial' | 'None';
     tokens?: {
       id: string;
       chainId: ChainId;
@@ -29,7 +29,7 @@ export function fetchAllTokenList({
       label?: string;
     }[];
   }[];
-  totalCount: number;
+  totalRecordCount: number;
 }> {
   return request.token.fetchPopularTokenV2({
     params: {

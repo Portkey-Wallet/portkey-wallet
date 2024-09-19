@@ -46,7 +46,7 @@ export type ITokenSectionResponse = {
   balanceInUsd?: string;
   label?: string;
   imageUrl?: string;
-  displayStatus?: 'all' | 'partial' | 'none';
+  displayStatus?: 'All' | 'Partial' | 'None';
   tokens?: ITokenItemResponse[];
 };
 export type IUserTokenItemResponse = {
@@ -57,7 +57,8 @@ export type IUserTokenItemResponse = {
   balanceInUsd?: string;
   label?: string;
   imageUrl?: string;
-  displayStatus?: 'all' | 'partial' | 'none';
+  isDefault?: boolean;
+  displayStatus?: 'All' | 'Partial' | 'None';
   tokens?: IUserTokenItem[];
 };
 

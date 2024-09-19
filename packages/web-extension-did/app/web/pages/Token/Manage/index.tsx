@@ -21,6 +21,8 @@ import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { PAGE_SIZE_DEFAULT, PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/constants/constants-ca/assets';
 import './index.less';
+import CustomChainSelectDrawer from 'pages/components/CustomChainSelectDrawer';
+import CustomChainSelectModal from 'pages/components/CustomChainSelectModal';
 
 export default function AddToken() {
   const { t } = useTranslation();
@@ -80,12 +82,8 @@ export default function AddToken() {
             version: '1.11.1',
           },
         });
-        // const _target = (res || []).map((item: any) => ({
-        //   ...item,
-        //   isAdded: item.isDisplay,
-        //   userTokenId: item.id,
-        // }));
-        setTokenShowList(res);
+        console.log('search result:', res);
+        setTokenShowList(res.data);
       } catch (error) {
         setTokenShowList([]);
         console.log('filter search error', error);
@@ -108,12 +106,13 @@ export default function AddToken() {
     async (item: IUserTokenItemResponse) => {
       try {
         setLoading(true);
-        // await request.token.displayUserToken({
-        //   resourceUrl: `${item.userTokenId}/display`,
-        //   params: {
-        //     isDisplay: !item.isAdded,
-        //   },
-        // });
+        const displayParam = item.displayStatus === 'None' ? true : false;
+        await request.token.userTokensDisplaySwitch({
+          params: {
+            isDisplay: displayParam,
+            ids: [item?.tokens?.[0].id, item?.tokens?.[1].id],
+          },
+        });
         await sleep(1000);
         if (!filterWord) {
           await fetchTokenInfoList({
@@ -137,15 +136,47 @@ export default function AddToken() {
     },
     [chainIdArray, fetchTokenInfoList, filterWord, handleSearch, setLoading],
   );
-
+  const handleUserTokenSingleDisplay = useCallback(
+    async (display: boolean, id: string) => {
+      if (!id) {
+        return;
+      }
+      try {
+        setLoading(true);
+        await request.token.userTokensDisplaySwitch({
+          params: {
+            isDisplay: display,
+            ids: [id],
+          },
+        });
+        await sleep(1000);
+        if (!filterWord) {
+          await fetchTokenInfoList({
+            chainIdArray,
+            keyword: '',
+            skipCount: 0,
+            maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS,
+          });
+        } else {
+          await handleSearch(filterWord);
+        }
+        singleMessage.success('success');
+      } catch (error: any) {
+        const err = handleErrorMessage(error, 'handle display error');
+        singleMessage.error(err);
+        console.log('=== userToken display', error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [chainIdArray, fetchTokenInfoList, filterWord, handleSearch, setLoading],
+  );
   const renderTokenItemBtn = useCallback(
     (item: IUserTokenItemResponse) => {
       // const { isDefault = false, isAdded = true } = item;
-      const isDefault = item?.tokens?.[0]?.isDefault || false;
-      const isAdded =
-        (item?.tokens?.[0]?.isAdded && item?.tokens?.[1]?.isAdded) ||
-        (item?.tokens?.[0]?.isDisplay && item?.tokens?.[1]?.isDisplay) ||
-        false;
+      console.log('item is:', item);
+      const isDefault = item?.isDefault || item?.tokens?.[0].isDefault || false;
+      const isAdded = item.displayStatus !== 'None' || false;
       if (isDefault) {
         return (
           <span className="add-token-btn-icon">
@@ -157,7 +188,13 @@ export default function AddToken() {
       return (
         <div className="flex-row-center">
           <span className="edit-btn-icon">
-            <CustomSvg type="InteractiveEdit" />
+            <CustomSvg
+              type="InteractiveEdit"
+              onClick={() => {
+                setChainOpen(true);
+                setCurrentToken(item);
+              }}
+            />
           </span>
           <Switch
             checked={isAdded}
@@ -177,7 +214,7 @@ export default function AddToken() {
     [handleUserTokenDisplay],
   );
   const calDisplayStatusText = useCallback((item: IUserTokenItemResponse) => {
-    return item.displayStatus === 'all' ? 'All Networks' : item.displayStatus === 'partial' ? 'MainChain AELF' : 'None';
+    return item.displayStatus === 'All' ? 'All Networks' : item.displayStatus === 'Partial' ? 'MainChain AELF' : 'None';
   }, []);
   const renderTokenItem = useCallback(
     (item: IUserTokenItemResponse) => (
@@ -251,6 +288,39 @@ export default function AddToken() {
   );
 
   const { isNotLessThan768, isPrompt } = useCommonState();
+  const [chainOpen, setChainOpen] = useState(false);
+  const [currentToken, setCurrentToken] = useState<IUserTokenItemResponse | undefined>(undefined);
+  const SelectChainELe = useMemo(() => {
+    return isNotLessThan768 ? (
+      <CustomChainSelectModal
+        open={chainOpen}
+        item={currentToken}
+        onClose={() => {
+          setChainOpen(false);
+          setCurrentToken(undefined);
+        }}
+        onChange={async (display, id) => {
+          await handleUserTokenSingleDisplay(display, id || '');
+        }}
+      />
+    ) : (
+      <CustomChainSelectDrawer
+        open={chainOpen}
+        height="208"
+        maskClosable={true}
+        item={currentToken}
+        placement="bottom"
+        onClose={() => {
+          setChainOpen(false);
+          setCurrentToken(undefined);
+        }}
+        onChange={async (display, id) => {
+          await handleUserTokenSingleDisplay(display, id || '');
+        }}
+      />
+    );
+  }, [chainOpen, currentToken, handleUserTokenSingleDisplay, isNotLessThan768]);
+
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['add-token', isPrompt && 'detail-page-prompt'])}>
@@ -274,9 +344,10 @@ export default function AddToken() {
           />
         </div>
         {renderTokenList}
+        {SelectChainELe}
       </div>
     );
-  }, [filterWord, handleAddCustomToken, isPrompt, navigate, renderTokenList, searchDebounce, t]);
+  }, [SelectChainELe, filterWord, handleAddCustomToken, isPrompt, navigate, renderTokenList, searchDebounce, t]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { TokenItemShowType, TokenState } from '@portkey-wallet/types/types-ca/token';
-import { fetchAllTokenListAsync, getSymbolImagesAsync, resetTokenInfo } from './action';
+import { IUserTokenItemResponse, TokenItemShowType, TokenState } from '@portkey-wallet/types/types-ca/token';
+import { fetchAllTokenListAsync, fetchAllTokenListV2Async, getSymbolImagesAsync, resetTokenInfo } from './action';
 
 export const INITIAL_TOKEN_INFO = {
   tokenDataShowInMarket: [],
@@ -64,6 +64,34 @@ export const tokenManagementSlice = createSlice({
         state.isFetching = false;
       })
       .addCase(fetchAllTokenListAsync.rejected, state => {
+        state.isFetching = false;
+      })
+      .addCase(fetchAllTokenListV2Async.pending, state => {
+        state.isFetching = true;
+      })
+      .addCase(fetchAllTokenListV2Async.fulfilled, (state, action) => {
+        const { list, totalRecordCount, skipCount, maxResultCount, currentNetwork = 'MAINNET' } = action.payload;
+        const preTokenDataShowInMarket = state.tokenInfoV2?.[currentNetwork]?.tokenDataShowInMarket || [];
+        if (skipCount !== 0 && preTokenDataShowInMarket?.length === totalRecordCount) return;
+        const tmpToken: IUserTokenItemResponse[] = list.map(item => ({
+          tokens: item.tokens,
+          symbol: item.symbol,
+          displayStatus: item.displayStatus,
+          label: item.label,
+          imageUrl: item.imageUrl,
+        }));
+        const newList = skipCount === 0 ? tmpToken : [...preTokenDataShowInMarket, ...tmpToken];
+        if (!state.tokenInfoV2) state.tokenInfoV2 = {};
+        state.tokenInfoV2[currentNetwork] = {
+          tokenDataShowInMarket: newList,
+          totalRecordCount,
+          skipCount,
+          maxResultCount,
+          isFetching: false,
+        };
+        state.isFetching = false;
+      })
+      .addCase(fetchAllTokenListV2Async.rejected, state => {
         state.isFetching = false;
       })
       .addCase(resetTokenInfo, (state, action) => {

@@ -7,6 +7,10 @@ export default {
     target: '/api/app/userTokens',
     config: { method: 'GET' },
   },
+  fetchPopularTokenV2: {
+    target: '/api/app/v2/userTokens',
+    config: { method: 'GET' },
+  },
   displayUserToken: {
     target: '/api/app/userTokens',
     config: { method: 'PUT' },
@@ -38,5 +42,9 @@ export default {
   zeroHoldingsTokenStatus: {
     target: '/api/app/assets/zeroHoldings/status',
     config: { method: 'GET' },
+  },
+  userTokensDisplaySwitch: {
+    target: '/api/app/v2/userTokens/display',
+    config: { method: 'POST' },
   },
 } as const;

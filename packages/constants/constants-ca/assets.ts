@@ -19,7 +19,7 @@ export const NEW_CLIENT_MOCK_ELF_LIST: ITokenSectionResponse[] = [
     symbol: 'ELF',
     tokens: [
       {
-        balance: '0',
+        balance: '2000000000',
         balanceInUsd: '3.000000',
         chainId: 'AELF',
         decimals: 8,
@@ -28,7 +28,7 @@ export const NEW_CLIENT_MOCK_ELF_LIST: ITokenSectionResponse[] = [
         tokenContractAddress: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
       },
       {
-        balance: '0',
+        balance: '300000000',
         balanceInUsd: '8.000000',
         chainId: 'tDVV',
         decimals: 8,
@@ -47,7 +47,7 @@ export const NEW_CLIENT_MOCK_ELF_LIST: ITokenSectionResponse[] = [
     symbol: 'USDT',
     tokens: [
       {
-        balance: '2',
+        balance: '200000000',
         balanceInUsd: '2.000000',
         chainId: 'AELF',
         decimals: 8,
@@ -56,7 +56,7 @@ export const NEW_CLIENT_MOCK_ELF_LIST: ITokenSectionResponse[] = [
         tokenContractAddress: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
       },
       {
-        balance: '8',
+        balance: '800000000',
         balanceInUsd: '8.000000',
         chainId: 'tDVV',
         decimals: 8,

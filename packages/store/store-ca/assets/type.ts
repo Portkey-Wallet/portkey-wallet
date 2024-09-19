@@ -1,10 +1,6 @@
 import { ChainId, NetworkType } from '@portkey-wallet/types';
 import { NFTCollectionItemShowType, SeedTypeEnum } from '@portkey-wallet/types/types-ca/assets';
-import {
-  IAccountCryptoBoxAssetItem,
-  TokenItemShowType,
-  ITokenSectionResponse,
-} from '@portkey-wallet/types/types-ca/token';
+import { IAccountCryptoBoxAssetItem, ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
 
 export interface ITokenInfoType {
   balance: string;

@@ -1,17 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Button } from 'antd';
+import { Button, Switch } from 'antd';
 import CommonHeader from 'components/CommonHeader';
 import CustomSvg from 'components/CustomSvg';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
 import DropdownSearch from 'components/DropdownSearch';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useCommonState, useLoading, useUserInfo } from 'store/Provider/hooks';
 import { useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { transNetworkText } from '@portkey-wallet/utils/activity';
+// import { transNetworkText } from '@portkey-wallet/utils/activity';
 import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+// import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { request } from '@portkey-wallet/api/api-did';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
@@ -30,9 +30,9 @@ export default function AddToken() {
   const { passwordSeed } = useUserInfo();
   const appDispatch = useAppDispatch();
   const chainIdArray = useChainIdList();
-  const isMainnet = useIsMainnet();
+  // const isMainnet = useIsMainnet();
   const { setLoading } = useLoading();
-  const [tokenShowList, setTokenShowList] = useState<TokenItemShowType[]>(tokenDataShowInMarket);
+  const [tokenShowList, setTokenShowList] = useState<IUserTokenItemResponse[]>(tokenDataShowInMarket);
   const hasMoreToken = useMemo(
     () => tokenDataShowInMarket.length < totalRecordCount,
     [tokenDataShowInMarket.length, totalRecordCount],
@@ -56,6 +56,7 @@ export default function AddToken() {
   }, [filterWord, tokenDataShowInMarket]);
 
   useEffect(() => {
+    console.log('filterWord is', !filterWord);
     if (!filterWord) {
       fetchTokenInfoList({ keyword: '', chainIdArray, skipCount: 0, maxResultCount: PAGE_SIZE_IN_ACCOUNT_ASSETS });
     }
@@ -70,7 +71,7 @@ export default function AddToken() {
     async (keyword: string) => {
       try {
         if (!keyword) return;
-        const res = await request.token.fetchTokenListBySearch({
+        const res = await request.token.fetchTokenListBySearchV2({
           params: {
             symbol: keyword,
             chainIds: chainIdArray,
@@ -79,12 +80,12 @@ export default function AddToken() {
             version: '1.11.1',
           },
         });
-        const _target = (res || []).map((item: any) => ({
-          ...item,
-          isAdded: item.isDisplay,
-          userTokenId: item.id,
-        }));
-        setTokenShowList(_target);
+        // const _target = (res || []).map((item: any) => ({
+        //   ...item,
+        //   isAdded: item.isDisplay,
+        //   userTokenId: item.id,
+        // }));
+        setTokenShowList(res);
       } catch (error) {
         setTokenShowList([]);
         console.log('filter search error', error);
@@ -104,15 +105,15 @@ export default function AddToken() {
   );
 
   const handleUserTokenDisplay = useCallback(
-    async (item: TokenItemShowType) => {
+    async (item: IUserTokenItemResponse) => {
       try {
         setLoading(true);
-        await request.token.displayUserToken({
-          resourceUrl: `${item.userTokenId}/display`,
-          params: {
-            isDisplay: !item.isAdded,
-          },
-        });
+        // await request.token.displayUserToken({
+        //   resourceUrl: `${item.userTokenId}/display`,
+        //   params: {
+        //     isDisplay: !item.isAdded,
+        //   },
+        // });
         await sleep(1000);
         if (!filterWord) {
           await fetchTokenInfoList({
@@ -125,6 +126,7 @@ export default function AddToken() {
           await handleSearch(filterWord);
         }
         singleMessage.success('success');
+        // setTokenShowList((prev)=> {...prev, })
       } catch (error: any) {
         const err = handleErrorMessage(error, 'handle display error');
         singleMessage.error(err);
@@ -137,8 +139,13 @@ export default function AddToken() {
   );
 
   const renderTokenItemBtn = useCallback(
-    (item: TokenItemShowType) => {
-      const { isDefault = false, isAdded = true } = item;
+    (item: IUserTokenItemResponse) => {
+      // const { isDefault = false, isAdded = true } = item;
+      const isDefault = item?.tokens?.[0]?.isDefault || false;
+      const isAdded =
+        (item?.tokens?.[0]?.isAdded && item?.tokens?.[1]?.isAdded) ||
+        (item?.tokens?.[0]?.isDisplay && item?.tokens?.[1]?.isDisplay) ||
+        false;
       if (isDefault) {
         return (
           <span className="add-token-btn-icon">
@@ -148,32 +155,44 @@ export default function AddToken() {
       }
 
       return (
-        <Button
-          className="add-token-btn"
-          onClick={() => {
-            handleUserTokenDisplay(item);
-          }}>
-          {t(isAdded ? 'Hide' : 'Add')}
-        </Button>
+        <div className="flex-row-center">
+          <span className="edit-btn-icon">
+            <CustomSvg type="InteractiveEdit" />
+          </span>
+          <Switch
+            checked={isAdded}
+            className={isAdded ? 'checked-true' : 'checked-false'}
+            onChange={() => handleUserTokenDisplay(item)}
+          />
+        </div>
+        // <Button
+        //   className="add-token-btn"
+        //   onClick={() => {
+        //     handleUserTokenDisplay(item);
+        //   }}>
+        //   {t(isAdded ? 'Hide' : 'Add')}
+        // </Button>
       );
     },
-    [handleUserTokenDisplay, t],
+    [handleUserTokenDisplay],
   );
-
+  const calDisplayStatusText = useCallback((item: IUserTokenItemResponse) => {
+    return item.displayStatus === 'all' ? 'All Networks' : item.displayStatus === 'partial' ? 'MainChain AELF' : 'None';
+  }, []);
   const renderTokenItem = useCallback(
-    (item: TokenItemShowType) => (
-      <div className="token-item" key={`${item.symbol}-${item.chainId}`}>
+    (item: IUserTokenItemResponse) => (
+      <div className="token-item" key={`${item.symbol}-${item.imageUrl}`}>
         <div className="token-item-content">
           <TokenImageDisplay className="custom-logo" width={28} symbol={item.symbol} src={item.imageUrl} />
           <p className="token-info">
             <span className="token-item-symbol">{item.label ?? item.symbol}</span>
-            <span className="token-item-net">{transNetworkText(item.chainId, !isMainnet)}</span>
+            <span className="token-item-net">{calDisplayStatusText(item)}</span>
           </p>
         </div>
         <div className="token-item-action">{renderTokenItemBtn(item)}</div>
       </div>
     ),
-    [isMainnet, renderTokenItemBtn],
+    [calDisplayStatusText, renderTokenItemBtn],
   );
 
   const renderNoSearchResult = useMemo(
@@ -231,7 +250,7 @@ export default function AddToken() {
     ],
   );
 
-  const { isPrompt } = useCommonState();
+  const { isNotLessThan768, isPrompt } = useCommonState();
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['add-token', isPrompt && 'detail-page-prompt'])}>

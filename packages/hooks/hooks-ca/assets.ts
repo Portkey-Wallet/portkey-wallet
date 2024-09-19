@@ -140,11 +140,14 @@ export const useAccountNFTCollectionInfo = () => {
 
 export const useTokenInfoFromStore = (symbol: string, chainId: ChainId) => {
   const { accountTokenList } = useAccountTokenInfo();
-
-  return useMemo(
-    () => accountTokenList?.find(ele => ele.symbol === symbol && ele.chainId === chainId),
-    [accountTokenList, chainId, symbol],
-  );
+  return useMemo(() => {
+    const _target = accountTokenList?.find(ele => ele.symbol === symbol);
+    const _token = _target?.tokens?.find(ele => ele.chainId === chainId);
+    return {
+      ..._target,
+      ..._token,
+    };
+  }, [accountTokenList, chainId, symbol]);
 };
 
 export function useFetchTokenAllowanceList() {

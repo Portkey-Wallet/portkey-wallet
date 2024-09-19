@@ -112,14 +112,19 @@ export default function TokenList() {
                   <span>{getTokenAmount(item)}</span>
                 </div>
                 <div className="amount flex-between">
-                  <span>${item.price}</span>
+                  {!!item.price && <span>${item.price}</span>}
                   {getAmountUSDShow(item)}
                 </div>
               </div>
-              <CustomSvg
-                className={openPanel.includes(index.toString()) ? 'is-active' : ''}
-                type={openPanel.includes(index.toString()) ? 'ActiveMore' : 'InteractiveMore'}
-              />
+              <div
+                className={
+                  openPanel.includes(index.toString()) ? 'more-wrapper' : 'more-wrapper more-wrapper-transparent'
+                }>
+                <CustomSvg
+                  // className={openPanel.includes(index.toString()) ? 'is-active' : ''}
+                  type={openPanel.includes(index.toString()) ? 'ActiveMore' : 'InteractiveMore'}
+                />
+              </div>
             </li>
           }>
           {/* <span>{transNetworkText(item.chainId, !isMainnet)}</span> */}
@@ -139,7 +144,11 @@ export default function TokenList() {
             </div>);
             }} */}
             {item?.tokens?.map((tokenItem, index) => (
-              <div className="container" key={`${tokenItem.symbol}_${index}`} onClick={() => onNavigate(tokenItem)}>
+              <div
+                className="container"
+                style={{ marginTop: index !== 0 ? 4 : 0 }}
+                key={`${tokenItem.symbol}_${index}`}
+                onClick={() => onNavigate(tokenItem)}>
                 <Row className="row">
                   <Col className="text" span={12}>
                     {transNetworkText(tokenItem.chainId, !isMainnet)}

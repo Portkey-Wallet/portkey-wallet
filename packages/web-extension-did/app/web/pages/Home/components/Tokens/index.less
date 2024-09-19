@@ -6,6 +6,18 @@
       gap: 10px;
       cursor: pointer;
       padding: 12px 16px;
+      .more-wrapper {
+        background-color: @brand-light;
+        border-radius: 4px;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .more-wrapper-transparent {
+        background-color: transparent;
+      }
       &:hover {
         background-color: @neutral-hover-bg;
       }
@@ -39,9 +51,6 @@
             .text-overflow(1);
           }
         }
-      }
-      .is-active {
-        transform: rotate(90deg);
       }
     }
   .add-token-wrapper {
@@ -129,9 +138,7 @@
           display: none;
           width: 16px;
           height: 16px;
-          .is-active {
-            transform: rotate(90deg);
-          }
+         
         }
         .@{app-prefix}-collapse-header-text {
           overflow: hidden;

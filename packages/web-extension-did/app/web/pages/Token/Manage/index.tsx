@@ -8,10 +8,8 @@ import DropdownSearch from 'components/DropdownSearch';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useCommonState, useLoading, useUserInfo } from 'store/Provider/hooks';
 import { useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-// import { transNetworkText } from '@portkey-wallet/utils/activity';
 import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
-// import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { request } from '@portkey-wallet/api/api-did';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
@@ -23,6 +21,8 @@ import { PAGE_SIZE_DEFAULT, PAGE_SIZE_IN_ACCOUNT_ASSETS } from '@portkey-wallet/
 import './index.less';
 import CustomChainSelectDrawer from 'pages/components/CustomChainSelectDrawer';
 import CustomChainSelectModal from 'pages/components/CustomChainSelectModal';
+import { transNetworkText } from '@portkey-wallet/utils/activity';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export default function AddToken() {
   const { t } = useTranslation();
@@ -32,7 +32,7 @@ export default function AddToken() {
   const { passwordSeed } = useUserInfo();
   const appDispatch = useAppDispatch();
   const chainIdArray = useChainIdList();
-  // const isMainnet = useIsMainnet();
+  const isMainnet = useIsMainnet();
   const { setLoading } = useLoading();
   const [tokenShowList, setTokenShowList] = useState<IUserTokenItemResponse[]>(tokenDataShowInMarket);
   const hasMoreToken = useMemo(
@@ -213,9 +213,22 @@ export default function AddToken() {
     },
     [handleUserTokenDisplay],
   );
-  const calDisplayStatusText = useCallback((item: IUserTokenItemResponse) => {
-    return item.displayStatus === 'All' ? 'All Networks' : item.displayStatus === 'Partial' ? 'MainChain AELF' : 'None';
-  }, []);
+  const calDisplayStatusText = useCallback(
+    (item: IUserTokenItemResponse) => {
+      let partialChainId = undefined;
+      if (item?.tokens && item?.tokens.length > 1) {
+        partialChainId = item?.tokens?.[0]?.isDisplay ? item?.tokens?.[0]?.chainId : item?.tokens?.[1]?.chainId;
+      } else {
+        partialChainId = item?.tokens?.[0]?.chainId;
+      }
+      return item.displayStatus === 'All'
+        ? 'All Networks'
+        : item.displayStatus === 'Partial'
+        ? transNetworkText(partialChainId || 'AELF', !isMainnet)
+        : 'Balance Hidden';
+    },
+    [isMainnet],
+  );
   const renderTokenItem = useCallback(
     (item: IUserTokenItemResponse) => (
       <div className="token-item" key={`${item.symbol}-${item.imageUrl}`}>

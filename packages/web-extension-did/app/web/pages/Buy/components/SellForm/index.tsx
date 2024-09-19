@@ -257,7 +257,7 @@ export default function SellFrom() {
       const chainId = cryptoSelectedRef.current.chainId;
       const currentChain = getCurrentChain(chainId);
       if (!currentChain) return setLoading(false);
-      const _address = accountTokenList[0].tokens.find((ele) => ele.chainId === chainId)?.tokenContractAddress;
+      const _address = accountTokenList[0]?.tokens?.find((ele) => ele.chainId === chainId)?.tokenContractAddress;
       // search balance from contract
       const result = await getBalance({
         rpcUrl: currentChain.endPoint,

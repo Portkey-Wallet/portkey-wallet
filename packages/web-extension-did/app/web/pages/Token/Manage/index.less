@@ -70,7 +70,13 @@
           justify-content: center;
           height: 16px;
         }
-
+        .edit-btn-icon {
+          display: flex;
+          width: 16px;
+          justify-content: center;
+          height: 16px;
+          margin-right: 12px;
+        }
         .add-token-btn {
           min-width: 48px;
           padding: 2px 8px;
@@ -85,6 +91,43 @@
             line-height: 16px;
           }
         }
+      }
+    }
+    .checked-true {
+      background-color: @brand-normal;
+      border: 2px solid @brand-normal;
+    }
+    .checked-false {
+      background-color: @neutral-border;
+      border: 2px solid @neutral-border;
+    }
+    .@{app-prefix}-switch {
+      width: 43px;
+      height: 24px;
+      // background-color: @brand-normal;
+      // border: 2px solid @brand-normal;
+      position: relative;
+    
+      &:focus {
+        box-shadow: none;
+      }
+    
+      .@{app-prefix}-switch-handle {
+        top: 1px;
+      }
+    
+      .@{app-prefix}-switch-inner {
+        font-size: 16px;
+        line-height: 22px;
+        color: @neutral-secondary-text;
+        margin-left: 16px;
+        position: absolute;
+        top: 0;
+        right: -46px;
+      }
+    
+      .@{app-prefix}-switch-handle::before {
+        background-color: @neutral-default-bg;
       }
     }
   }

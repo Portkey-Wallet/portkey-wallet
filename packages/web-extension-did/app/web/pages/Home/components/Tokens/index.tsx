@@ -1,4 +1,4 @@
-import { ITokenItemResponse, ITokenSectionResponse, TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { ITokenItemResponse, ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { useCallback, useEffect, useMemo, useState } from 'react';

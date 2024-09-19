@@ -23,7 +23,7 @@ export const useHandleAchSell = () => {
   const { accountTokenList } = useAccountTokenInfo();
   const aelfToken = useMemo(() => {
     const _target = accountTokenList.find((item) => item.symbol === ELF_SYMBOL);
-    const _token = _target?.tokens.find((ele) => ele.chainId === MAIN_CHAIN_ID);
+    const _token = _target?.tokens?.find((ele) => ele.chainId === MAIN_CHAIN_ID);
     return { ..._target, ..._token };
   }, [accountTokenList]);
   const chainInfo = useCurrentChain(MAIN_CHAIN_ID);

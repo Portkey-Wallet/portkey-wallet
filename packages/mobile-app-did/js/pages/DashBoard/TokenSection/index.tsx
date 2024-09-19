@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import navigationService from 'utils/navigationService';
 import { View, FlatList } from 'react-native';
@@ -17,6 +17,7 @@ import { useLatestRef } from '@portkey-wallet/hooks';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import TokenItem from 'pages/Token/components/TokenItem';
 
 export interface TokenSectionProps {
   getAccountBalance?: () => void;
@@ -31,15 +32,24 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const caAddressInfos = useCaAddressInfoList();
   const caAddressInfosList = useLatestRef(caAddressInfos);
+  const [extraIndex, setExtraIndex] = useState<number>(0);
+  const [selectedItem] = useState(new Map<string, boolean>());
 
-  // todo_wade: remove this
-  // const onNavigate = useCallback((tokenItem: TokenItemShowType) => {
-  //   navigationService.navigate('TokenDetail', { tokenInfo: tokenItem });
-  // }, []);
-
-  const onExpand = useCallback((tokenItem: ITokenSectionResponse) => {
-    // todo_wade
+  const onNavigate = useCallback((tokenItem: TokenItemShowType) => {
+    navigationService.navigate('TokenDetail', { tokenInfo: tokenItem });
   }, []);
+
+  const reload = useCallback(() => {
+    setExtraIndex(extraIndex + 1);
+  }, [extraIndex]);
+
+  const onExpand = useCallback(
+    (tokenItem: ITokenSectionResponse) => {
+      selectedItem.set(tokenItem.symbol, !selectedItem.get(tokenItem.symbol));
+      reload();
+    },
+    [reload, selectedItem],
+  );
 
   const renderItem = useCallback(
     ({ item }: { item: ITokenSectionResponse }) => {
@@ -47,12 +57,14 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
         <TokenListUnionItem
           key={item.symbol}
           item={item}
-          onPress={() => onExpand(item)}
+          onPress={onNavigate}
+          onExpand={onExpand}
           hideBalance={userInfo.hideAssets}
+          selected={selectedItem.get(item.symbol) ?? false}
         />
       );
     },
-    [onExpand, userInfo.hideAssets],
+    [onExpand, onNavigate, selectedItem, userInfo.hideAssets],
   );
 
   const getAccountTokenList = useLockCallback(
@@ -92,9 +104,10 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
       <FlatList
         nestedScrollEnabled
         refreshing={false}
+        extraData={extraIndex}
         data={accountTokenList || []}
         renderItem={renderItem}
-        keyExtractor={(item: TokenItemShowType) => item.symbol + item.chainId}
+        keyExtractor={(item: ITokenSectionResponse) => item.symbol}
         onEndReached={() => getAccountTokenList()}
         onRefresh={() => {
           getAccountBalance?.();

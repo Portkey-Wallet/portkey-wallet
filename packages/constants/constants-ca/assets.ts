@@ -11,56 +11,20 @@ export const REFRESH_TIME = 5 * 60 * 1000; // 5min refresh
 
 export const NEW_CLIENT_MOCK_ELF_LIST: ITokenSectionResponse[] = [
   {
-    balance: '2300000000',
-    balanceInUsd: '11.000000',
-    price: 0.3713, // todo_wade: confirm
+    balance: '0',
+    balanceInUsd: '0.000000',
+    price: 0,
     decimals: 8,
     imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf_token_logo.png',
     symbol: 'ELF',
     tokens: [
       {
-        balance: '2000000000',
-        balanceInUsd: '3.000000',
+        address: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
+        balance: '0',
+        balanceInUsd: '0.000000',
         chainId: 'AELF',
         decimals: 8,
         imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf_token_logo.png',
-        symbol: 'ELF',
-        tokenContractAddress: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
-      },
-      {
-        balance: '300000000',
-        balanceInUsd: '8.000000',
-        chainId: 'tDVV',
-        decimals: 8,
-        imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf_token_logo.png',
-        symbol: 'ELF',
-        tokenContractAddress: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
-      },
-    ],
-  },
-  {
-    balance: '1000000000',
-    balanceInUsd: '0.000000',
-    price: 1,
-    decimals: 8,
-    imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf/Coin-USDT.png',
-    symbol: 'USDT',
-    tokens: [
-      {
-        balance: '200000000',
-        balanceInUsd: '2.000000',
-        chainId: 'AELF',
-        decimals: 8,
-        imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf/Coin-USDT.png',
-        symbol: 'ELF',
-        tokenContractAddress: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
-      },
-      {
-        balance: '800000000',
-        balanceInUsd: '8.000000',
-        chainId: 'tDVV',
-        decimals: 8,
-        imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf/Coin-USDT.png',
         symbol: 'ELF',
         tokenContractAddress: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
       },

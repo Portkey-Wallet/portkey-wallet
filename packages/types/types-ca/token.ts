@@ -46,7 +46,7 @@ export type ITokenSectionResponse = {
   balanceInUsd: string;
   label?: string;
   imageUrl?: string;
-  tokens: ITokenItemResponse[];
+  tokens: TokenItemShowType[];
 };
 
 export type UserTokenItemTokenType = Omit<BaseToken, 'name'> & { chainId: string };

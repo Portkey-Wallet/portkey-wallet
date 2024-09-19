@@ -12,7 +12,7 @@ export const REFRESH_TIME = 5 * 60 * 1000; // 5min refresh
 export const NEW_CLIENT_MOCK_ELF_LIST: ITokenSectionResponse[] = [
   {
     balance: '2300000000',
-    balanceInUsd: '11.000000',
+    balanceInUsd: '110000000',
     price: 0.3713, // todo_wade: confirm
     decimals: 8,
     imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf_token_logo.png',
@@ -40,7 +40,7 @@ export const NEW_CLIENT_MOCK_ELF_LIST: ITokenSectionResponse[] = [
   },
   {
     balance: '1000000000',
-    balanceInUsd: '0.000000',
+    balanceInUsd: '340000000',
     price: 1,
     decimals: 8,
     imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf/Coin-USDT.png',

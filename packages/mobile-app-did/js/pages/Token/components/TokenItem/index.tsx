@@ -19,9 +19,10 @@ type TokenItemProps = {
   networkType: NetworkType;
   item: TokenItemShowType;
   onHandleToken: (item: TokenItemShowType, isDisplay: boolean) => void;
+  onEditToken?: (item: TokenItemShowType) => void;
 };
 
-const TokenItem = ({ networkType, item, onHandleToken }: TokenItemProps) => {
+const TokenItem = ({ networkType, item, onHandleToken, onEditToken }: TokenItemProps) => {
   const symbolImages = useSymbolImages();
   const defaultToken = useDefaultToken();
 
@@ -54,14 +55,22 @@ const TokenItem = ({ networkType, item, onHandleToken }: TokenItemProps) => {
         {item.isDefault ? (
           <Svg icon="lock" size={pTd(20)} iconStyle={itemStyle.addedStyle} />
         ) : (
-          <Touchable
-            onPress={() => {
-              onHandleToken(item, !!item.isAdded);
-            }}>
-            <View pointerEvents="none">
-              <CommonSwitch value={!!item.isAdded} />
-            </View>
-          </Touchable>
+          <View style={itemStyle.switchWrap}>
+            <Touchable
+              onPress={() => {
+                onEditToken && onEditToken(item);
+              }}>
+              <Svg icon="edit_token" size={pTd(16)} iconStyle={itemStyle.editStyle} />
+            </Touchable>
+            <Touchable
+              onPress={() => {
+                onHandleToken(item, !!item.isAdded);
+              }}>
+              <View pointerEvents="none">
+                <CommonSwitch value={!!item.isAdded} />
+              </View>
+            </Touchable>
+          </View>
         )}
       </View>
     </Touchable>
@@ -92,6 +101,13 @@ const itemStyle = StyleSheet.create({
     alignItems: 'center',
     borderBottomColor: defaultColors.border6,
     borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  switchWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  editStyle: {
+    marginRight: pTd(12),
   },
   addedStyle: {
     marginRight: pTd(14),

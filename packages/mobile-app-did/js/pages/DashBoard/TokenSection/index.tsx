@@ -17,7 +17,6 @@ import { useLatestRef } from '@portkey-wallet/hooks';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import TokenItem from 'pages/Token/components/TokenItem';
 
 export interface TokenSectionProps {
   getAccountBalance?: () => void;

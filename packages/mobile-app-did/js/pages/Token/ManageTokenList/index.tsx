@@ -1,5 +1,5 @@
 import PageContainer from 'components/PageContainer';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItemResponse, TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import CommonInput from 'components/CommonInput';
 import { StyleSheet, View } from 'react-native';
 import gStyles from 'assets/theme/GStyles';
@@ -14,6 +14,7 @@ import { useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hook
 import Loading from 'components/Loading';
 import FilterTokenSection from '../components/FilterToken';
 import PopularTokenSection from '../components/PopularToken';
+import { showManageToken } from '../components/ManageToken';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
@@ -67,7 +68,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
     try {
       setIsSearching(true);
 
-      const res = await request.token.fetchTokenListBySearch({
+      const res = await request.token.fetchTokenListBySearchV2({
         params: {
           symbol: keyword,
           chainIds: chainIdArray,
@@ -76,7 +77,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
           maxResultCount: PAGE_SIZE_DEFAULT,
         },
       });
-      const _target = (res || []).map((item: any) => ({
+      const _target = (res.data || []).map((item: any) => ({
         ...item,
         isAdded: item.isDisplay,
         userTokenId: item.id,
@@ -95,7 +96,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
       Loading.showOnce();
 
       try {
-        await request.token.displayUserToken({
+        await request.token.displayUserTokenV2({
           resourceUrl: `${item.userTokenId}/display`,
           params: {
             isDisplay,
@@ -123,6 +124,10 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
     },
     [caAddressInfos, debounceWord, fetchAccountTokenInfoList, getTokenList, searchToken],
   );
+
+  const onEditPolularToken = useCallback((item: IUserTokenItemResponse) => {
+    showManageToken({ item });
+  }, []);
 
   // search token with keyword
   useEffect(() => {
@@ -184,6 +189,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
           tokenDataShowInMarket={tokenDataShowInMarket}
           getTokenList={getTokenList}
           onHandleTokenItem={onHandleTokenItem}
+          onEditToken={onEditPolularToken}
         />
       )}
     </PageContainer>

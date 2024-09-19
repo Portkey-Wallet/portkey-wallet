@@ -1,4 +1,4 @@
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
 import { StyleSheet } from 'react-native';
 import gStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
@@ -6,7 +6,6 @@ import React, { useCallback } from 'react';
 import { FlatList } from 'react-native';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import TokenItem from '../TokenItem';
 import { TextL, TextM } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';
@@ -21,14 +20,13 @@ enum TipsEnum {
 interface IFilterTokenSectionProps {
   tokenList: any[];
   onHandleTokenItem: (item: any, added: boolean) => void;
+  onEditToken?: (item: IUserTokenItemResponse) => void;
 }
 
 const FilterTokenSection: React.FC<IFilterTokenSectionProps> = (props: IFilterTokenSectionProps) => {
-  const { tokenList, onHandleTokenItem } = props;
+  const { tokenList, onHandleTokenItem, onEditToken } = props;
 
   const { t } = useLanguage();
-
-  const { currentNetwork } = useWallet();
 
   const CustomTokenTips = useCallback(
     (v: TipsEnum) => (
@@ -53,14 +51,10 @@ const FilterTokenSection: React.FC<IFilterTokenSectionProps> = (props: IFilterTo
       data={tokenList || []}
       ListEmptyComponent={() => CustomTokenTips(TipsEnum.NO_RESULT)}
       ListFooterComponent={() => (tokenList?.length > 0 ? CustomTokenTips(TipsEnum.TRY) : null)}
-      renderItem={({ item }: { item: TokenItemShowType }) => (
-        <TokenItem
-          networkType={currentNetwork}
-          item={item}
-          onHandleToken={() => onHandleTokenItem(item, !item?.isAdded)}
-        />
+      renderItem={({ item }: { item: IUserTokenItemResponse }) => (
+        <TokenItem item={item} onHandleToken={onHandleTokenItem} onEditToken={onEditToken} />
       )}
-      keyExtractor={(item: TokenItemShowType) => item?.id || item?.symbol}
+      keyExtractor={(item: IUserTokenItemResponse) => item?.symbol}
     />
   );
 };

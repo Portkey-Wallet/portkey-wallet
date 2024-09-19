@@ -1,8 +1,8 @@
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
 import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TextL, TextS } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
@@ -10,26 +10,43 @@ import CommonSwitch from 'components/CommonSwitch';
 import CommonAvatar from 'components/CommonAvatar';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { FontStyles } from 'assets/theme/styles';
-import { NetworkType } from '@portkey-wallet/types';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
 
 type TokenItemProps = {
-  networkType: NetworkType;
-  item: TokenItemShowType;
-  onHandleToken: (item: TokenItemShowType, isDisplay: boolean) => void;
-  onEditToken?: (item: TokenItemShowType) => void;
+  item: IUserTokenItemResponse;
+  onHandleToken: (item: IUserTokenItemResponse, isDisplay: boolean) => void;
+  onEditToken?: (item: IUserTokenItemResponse) => void;
 };
 
-const TokenItem = ({ networkType, item, onHandleToken, onEditToken }: TokenItemProps) => {
+const TokenItem = ({ item, onHandleToken, onEditToken }: TokenItemProps) => {
   const symbolImages = useSymbolImages();
   const defaultToken = useDefaultToken();
+
+  const displayStatus = useMemo(() => {
+    if (item.displayStatus === 'all') {
+      return 'All Networks';
+    } else if (item.displayStatus === 'none') {
+      return 'Balance Hidden';
+    } else {
+      const chainId = item.tokens?.find(token => token.isDisplay)?.chainId;
+      if (chainId) {
+        return formatChainInfoToShow(chainId);
+      } else {
+        return '';
+      }
+    }
+  }, [item.displayStatus, item.tokens]);
+
+  const isAdded = useMemo(() => {
+    return item.displayStatus === 'all' || item.displayStatus === 'partial';
+  }, [item.displayStatus]);
 
   return (
     // if not touchable, can not scroll
 
-    <Touchable style={itemStyle.wrap} key={`${item.symbol}${item.address}${item.chainId}}`}>
+    <Touchable style={itemStyle.wrap} key={item.symbol}>
       <CommonAvatar
         hasBorder
         shapeType="circular"
@@ -48,7 +65,7 @@ const TokenItem = ({ networkType, item, onHandleToken, onEditToken }: TokenItemP
             {item.label || item.symbol}
           </TextL>
           <TextS numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font3]}>
-            {`${formatChainInfoToShow(item.chainId, networkType)}`}
+            {displayStatus}
           </TextS>
         </View>
 
@@ -64,10 +81,10 @@ const TokenItem = ({ networkType, item, onHandleToken, onEditToken }: TokenItemP
             </Touchable>
             <Touchable
               onPress={() => {
-                onHandleToken(item, !!item.isAdded);
+                onHandleToken(item, isAdded);
               }}>
               <View pointerEvents="none">
-                <CommonSwitch value={!!item.isAdded} />
+                <CommonSwitch value={isAdded} />
               </View>
             </Touchable>
           </View>

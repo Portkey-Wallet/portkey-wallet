@@ -57,6 +57,7 @@ export type IUserTokenItemResponse = {
   balanceInUsd?: string;
   label?: string;
   imageUrl?: string;
+  isDefault?: boolean;
   displayStatus?: 'all' | 'partial' | 'none';
   tokens?: IUserTokenItem[];
 };

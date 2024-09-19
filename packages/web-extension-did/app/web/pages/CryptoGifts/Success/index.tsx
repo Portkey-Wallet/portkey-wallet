@@ -13,12 +13,14 @@ import { useLocation } from 'react-router';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import googleAnalytics from 'utils/googleAnalytics';
 import './index.less';
+import { useGetCryptoGiftTgLink } from '@portkey-wallet/hooks/hooks-ca/cryptogift';
 
 export default function SuccessPage() {
   const navigate = useNavigateState<TCryptoGiftDetailLocationState>();
   const { state } = useLocationState<TCryptoGiftDetailLocationState>();
   const { cryptoGiftUrl } = useCurrentNetworkInfo();
   const location = useLocation();
+  const getCryptoGiftTgLink = useGetCryptoGiftTgLink();
 
   useEffectOnce(() => {
     googleAnalytics.firePageViewEvent('CryptoGift-Success', location.pathname);
@@ -35,6 +37,11 @@ export default function SuccessPage() {
     setCopied(`${cryptoGiftUrl}/cryptoGift?id=${state.id}`);
     singleMessage.success('Copy Success');
   }, [cryptoGiftUrl, setCopied, state.id]);
+
+  const onClickTgShare = useCallback(() => {
+    setCopied(getCryptoGiftTgLink(state.id));
+    singleMessage.success('Copy TgLink Success');
+  }, [getCryptoGiftTgLink, setCopied, state.id]);
 
   const mainContent = useMemo(
     () => (
@@ -64,10 +71,14 @@ export default function SuccessPage() {
             <CustomSvg type="CopyInteractive" />
             Copy Link
           </Button>
+          <Button type="primary" className="flex-center" onClick={onClickTgShare}>
+            <CustomSvg type="CopyInteractive" />
+            Copy Tg Link
+          </Button>
         </div>
       </div>
     ),
-    [isPrompt, navigate, onClickShare, state],
+    [isPrompt, navigate, onClickShare, onClickTgShare, state.id],
   );
   return <>{isPrompt ? <PromptFrame content={mainContent} /> : mainContent}</>;
 }

@@ -488,7 +488,7 @@ export const assetsSlice = createSlice({
         state.accountToken.isFetching = false;
       })
       .addCase(fetchTargetTokenBalanceAsync.fulfilled, (state, action) => {
-        const { chainId, symbol, response, currentNetwork = 'MAINNET' } = action.payload;
+        const { symbol, response, currentNetwork = 'MAINNET' } = action.payload;
 
         // todo_wade: confirm the logic
         // const tmpList = state.accountToken?.accountTokenInfo?.[currentNetwork]?.accountTokenList?.map(ele =>

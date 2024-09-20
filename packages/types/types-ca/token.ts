@@ -47,7 +47,7 @@ export type ITokenSectionResponse = {
   label?: string;
   imageUrl?: string;
   displayStatus?: 'All' | 'Partial' | 'None';
-  tokens?: ITokenItemResponse[];
+  tokens?: TokenItemShowType[];
 };
 export type IUserTokenItemResponse = {
   symbol: string;

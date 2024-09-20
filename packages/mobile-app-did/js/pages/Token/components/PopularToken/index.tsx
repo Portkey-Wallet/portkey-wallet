@@ -1,4 +1,4 @@
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import React from 'react';
@@ -6,7 +6,6 @@ import { FlatList } from 'react-native';
 import { TextL } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import TokenItem from '../TokenItem';
 import fonts from 'assets/theme/fonts';
 import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
@@ -14,30 +13,26 @@ import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
 interface IPopularTokenSectionProps {
   tokenDataShowInMarket: any[];
   getTokenList: () => Promise<void>;
-  onHandleTokenItem: (item: any, added: boolean) => void;
+  onHandleTokenItem: (item: IUserTokenItemResponse, added: boolean) => void;
+  onEditToken?: (item: IUserTokenItemResponse) => void;
 }
 
 const PopularTokenSection: React.FC<IPopularTokenSectionProps> = (props: IPopularTokenSectionProps) => {
   const { t } = useLanguage();
 
-  const { getTokenList, onHandleTokenItem } = props;
+  const { getTokenList, onHandleTokenItem, onEditToken } = props;
   const { tokenDataShowInMarket } = useToken();
-  const { currentNetwork } = useWallet();
 
   return (
     <FlatList
       style={pageStyles.list}
       ListHeaderComponent={<TextL style={pageStyles.header}>{t('Popular Assets')}</TextL>}
       data={tokenDataShowInMarket || []}
-      renderItem={({ item }: { item: TokenItemShowType }) => (
-        <TokenItem
-          networkType={currentNetwork}
-          item={item}
-          onHandleToken={() => onHandleTokenItem(item, !item?.isAdded)}
-        />
+      renderItem={({ item }: { item: IUserTokenItemResponse }) => (
+        <TokenItem item={item} onHandleToken={onHandleTokenItem} onEditToken={onEditToken} />
       )}
       onEndReached={() => getTokenList()}
-      keyExtractor={(item: TokenItemShowType) => item?.id || item?.symbol}
+      keyExtractor={(item: IUserTokenItemResponse) => item?.symbol}
     />
   );
 };

@@ -1,5 +1,5 @@
 import PageContainer from 'components/PageContainer';
-import { IUserTokenItemResponse, TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItemResponse, TokenItemShowType, IUserTokenItem } from '@portkey-wallet/types/types-ca/token';
 import CommonInput from 'components/CommonInput';
 import { StyleSheet, View } from 'react-native';
 import gStyles from 'assets/theme/GStyles';
@@ -91,15 +91,15 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
     }
   }, [chainIdArray, debounceWord, keyword]);
 
-  const onHandleTokenItem = useCallback(
-    async (item: TokenItemShowType, isDisplay: boolean) => {
+  const onSwitchTokenDisplay = useCallback(
+    async (ids: string[], isDisplay: boolean) => {
       Loading.showOnce();
 
       try {
-        await request.token.displayUserTokenV2({
-          resourceUrl: `${item.userTokenId}/display`,
+        await request.token.userTokensDisplaySwitch({
           params: {
-            isDisplay,
+            isDisplay: !isDisplay,
+            ids,
           },
         });
         timerRef.current = setTimeout(async () => {
@@ -125,9 +125,26 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
     [caAddressInfos, debounceWord, fetchAccountTokenInfoList, getTokenList, searchToken],
   );
 
-  const onEditPolularToken = useCallback((item: IUserTokenItemResponse) => {
-    showManageToken({ item });
-  }, []);
+  const onHandleToken = useCallback(
+    (item: IUserTokenItemResponse, isDisplay: boolean) => {
+      onSwitchTokenDisplay(item.tokens?.map((token: any) => token.id) ?? [], isDisplay);
+    },
+    [onSwitchTokenDisplay],
+  );
+
+  const onHandleTokenItem = useCallback(
+    (item: IUserTokenItem, isDisplay: boolean) => {
+      item.id && onSwitchTokenDisplay([item.id], isDisplay);
+    },
+    [onSwitchTokenDisplay],
+  );
+
+  const onEditToken = useCallback(
+    (item: IUserTokenItemResponse) => {
+      showManageToken({ item, onHandleTokenItem });
+    },
+    [onHandleTokenItem],
+  );
 
   // search token with keyword
   useEffect(() => {
@@ -183,13 +200,13 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
       </View>
 
       {debounceWord ? (
-        <FilterTokenSection tokenList={filterTokenList} onHandleTokenItem={onHandleTokenItem} />
+        <FilterTokenSection tokenList={filterTokenList} onHandleTokenItem={onHandleToken} onEditToken={onEditToken} />
       ) : (
         <PopularTokenSection
           tokenDataShowInMarket={tokenDataShowInMarket}
           getTokenList={getTokenList}
-          onHandleTokenItem={onHandleTokenItem}
-          onEditToken={onEditPolularToken}
+          onHandleTokenItem={onHandleToken}
+          onEditToken={onEditToken}
         />
       )}
     </PageContainer>

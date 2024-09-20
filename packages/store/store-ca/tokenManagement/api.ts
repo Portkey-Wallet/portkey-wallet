@@ -17,6 +17,7 @@ export function fetchAllTokenList({
     imageUrl?: string;
     label?: string;
     displayStatus?: 'All' | 'Partial' | 'None';
+    isDefault?: boolean;
     tokens?: {
       id: string;
       chainId: ChainId;

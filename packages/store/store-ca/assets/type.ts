@@ -64,7 +64,7 @@ export type TAccountAssetsInfo = {
 export type TAssetsState = {
   accountToken: TAccountTokenInfo & {
     isFetching: boolean;
-    accountTokenInfo?: {
+    accountTokenInfoV2?: {
       [key in NetworkType]?: TAccountTokenInfo;
     };
   };

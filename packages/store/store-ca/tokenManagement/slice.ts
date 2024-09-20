@@ -79,6 +79,7 @@ export const tokenManagementSlice = createSlice({
           displayStatus: item.displayStatus,
           label: item.label,
           imageUrl: item.imageUrl,
+          isDefault: item.isDefault,
         }));
         const newList = skipCount === 0 ? tmpToken : [...preTokenDataShowInMarket, ...tmpToken];
         if (!state.tokenInfoV2) state.tokenInfoV2 = {};

@@ -315,9 +315,9 @@ export const assetsSlice = createSlice({
       state.accountNFT.accountNFTInfo = NFTCollectionInfo;
     },
     clearAccountTokenInfo: (state, action: PayloadAction<NetworkType>) => {
-      const tokenInfo = state.accountToken.accountTokenInfo;
+      const tokenInfo = state.accountToken.accountTokenInfoV2;
       if (tokenInfo?.[action.payload]) delete tokenInfo[action.payload];
-      state.accountToken.accountTokenInfo = tokenInfo;
+      state.accountToken.accountTokenInfoV2 = tokenInfo;
     },
     clearAccountAssetsInfo: (state, action: PayloadAction<NetworkType>) => {
       const assetsInfo = state.accountAssets.accountAssetsInfo;
@@ -339,7 +339,7 @@ export const assetsSlice = createSlice({
           currentNetwork = 'MAINNET',
           totalBalanceInUsd = '',
         } = action.payload;
-        const preAccountTokenList = state.accountToken.accountTokenInfo?.[currentNetwork]?.accountTokenList || [];
+        const preAccountTokenList = state.accountToken.accountTokenInfoV2?.[currentNetwork]?.accountTokenList || [];
         if (skipCount !== 0 && preAccountTokenList.length === totalRecordCount) {
           state.accountToken.isFetching = false;
           return;
@@ -360,8 +360,8 @@ export const assetsSlice = createSlice({
         const newTokenList = skipCount === 0 ? list : [...preAccountTokenList, ...list];
         state.tokenPrices.tokenPriceObject = { ...state.tokenPrices.tokenPriceObject, ...priceObj };
 
-        if (!state.accountToken.accountTokenInfo) state.accountToken.accountTokenInfo = {};
-        state.accountToken.accountTokenInfo[currentNetwork] = {
+        if (!state.accountToken.accountTokenInfoV2) state.accountToken.accountTokenInfoV2 = {};
+        state.accountToken.accountTokenInfoV2[currentNetwork] = {
           accountTokenList: newTokenList as ITokenSectionResponse[],
           skipCount,
           totalRecordCount,
@@ -496,14 +496,14 @@ export const assetsSlice = createSlice({
         //     ? { ...ele, balance: response.balance, balanceInUsd: response.balanceInUsd }
         //     : ele,
         // );
-        const tmpList = state.accountToken?.accountTokenInfo?.[currentNetwork]?.accountTokenList?.map(ele =>
+        const tmpList = state.accountToken?.accountTokenInfoV2?.[currentNetwork]?.accountTokenList?.map(ele =>
           ele.symbol === symbol ? { ...ele, balance: response.balance, balanceInUsd: response.balanceInUsd } : ele,
         );
 
-        state.accountToken.accountTokenInfo = {
-          ...(state.accountToken.accountTokenInfo || {}),
+        state.accountToken.accountTokenInfoV2 = {
+          ...(state.accountToken.accountTokenInfoV2 || {}),
           [currentNetwork]: {
-            ...(state?.accountToken?.accountTokenInfo?.[currentNetwork] || {}),
+            ...(state?.accountToken?.accountTokenInfoV2?.[currentNetwork] || {}),
             accountTokenList: tmpList,
           },
         };

@@ -7,15 +7,16 @@ import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
-import { IUserTokenItemResponse } from '@portkey-wallet/types/types-ca/token';
+import { IUserTokenItemResponse, IUserTokenItem } from '@portkey-wallet/types/types-ca/token';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 
 interface IManageTokenProps {
+  onHandleTokenItem?: (item: IUserTokenItem, added: boolean) => void;
   item: IUserTokenItemResponse;
 }
 
-const ManageToken: React.FC<IManageTokenProps> = ({ item }) => {
+const ManageToken: React.FC<IManageTokenProps> = ({ item, onHandleTokenItem }) => {
   const displayStatus = useMemo(() => {
     if (item.displayStatus === 'All') {
       return 'All Networks';
@@ -58,7 +59,13 @@ const ManageToken: React.FC<IManageTokenProps> = ({ item }) => {
         return (
           <View key={token.chainId} style={styles.itemWrap}>
             <Text style={styles.chainText}>{formatChainInfoToShow(token.chainId)}</Text>
-            <CommonSwitch value={token.isDisplay} />
+            <CommonSwitch
+              value={token.isDisplay}
+              onValueChange={() => {
+                onHandleTokenItem && onHandleTokenItem(token, token.isDisplay ?? false);
+                OverlayModal.hide();
+              }}
+            />
           </View>
         );
       })}
@@ -114,9 +121,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export const showManageToken = ({ item }: IManageTokenProps) => {
+export const showManageToken = ({ item, onHandleTokenItem }: IManageTokenProps) => {
   Keyboard.dismiss();
-  OverlayModal.show(<ManageToken item={item} />, {
+  OverlayModal.show(<ManageToken item={item} onHandleTokenItem={onHandleTokenItem} />, {
     position: 'bottom',
     animated: true,
   });

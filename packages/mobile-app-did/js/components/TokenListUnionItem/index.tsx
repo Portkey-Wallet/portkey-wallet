@@ -31,7 +31,7 @@ const TokenListUnionItem: React.FC<TokenListItemType> = props => {
 
   return (
     <View>
-      <View style={itemStyle.wrap}>
+      <Touchable style={itemStyle.wrap} onPress={() => onExpand?.(item)}>
         <CommonAvatar
           hasBorder
           style={itemStyle.left}
@@ -48,9 +48,11 @@ const TokenListUnionItem: React.FC<TokenListItemType> = props => {
             <TextL numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.tokenName}>
               {item?.label || item?.symbol}
             </TextL>
-            <TextS numberOfLines={1} style={[FontStyles.font11, itemStyle.chainInfo]}>
-              {'$' + item.price}
-            </TextS>
+            {isMainnet && typeof item.price === 'number' && item.price > 0 && (
+              <TextS numberOfLines={1} style={[FontStyles.font11, itemStyle.chainInfo]}>
+                {'$' + item.price}
+              </TextS>
+            )}
           </View>
 
           <View style={itemStyle.balanceWrap}>
@@ -65,13 +67,13 @@ const TokenListUnionItem: React.FC<TokenListItemType> = props => {
           </View>
         </View>
         <View style={itemStyle.right}>
-          <Touchable style={itemStyle.moreButton} onPress={() => onExpand?.(item)}>
+          <View style={itemStyle.moreButton}>
             {selected ? <Svg icon="more_selected" size={pTd(20)} /> : <Svg icon="more_normal" size={pTd(20)} />}
-          </Touchable>
+          </View>
         </View>
-      </View>
+      </Touchable>
       {selected &&
-        item.tokens.map((token, index) => (
+        item.tokens?.map((token, index) => (
           <TokenItem
             key={index}
             item={token}

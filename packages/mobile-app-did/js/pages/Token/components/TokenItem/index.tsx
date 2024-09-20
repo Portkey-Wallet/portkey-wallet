@@ -25,9 +25,9 @@ const TokenItem = ({ item, onHandleToken, onEditToken }: TokenItemProps) => {
   const defaultToken = useDefaultToken();
 
   const displayStatus = useMemo(() => {
-    if (item.displayStatus === 'all') {
+    if (item.displayStatus === 'All') {
       return 'All Networks';
-    } else if (item.displayStatus === 'none') {
+    } else if (item.displayStatus === 'None') {
       return 'Balance Hidden';
     } else {
       const chainId = item.tokens?.find(token => token.isDisplay)?.chainId;
@@ -40,7 +40,7 @@ const TokenItem = ({ item, onHandleToken, onEditToken }: TokenItemProps) => {
   }, [item.displayStatus, item.tokens]);
 
   const isAdded = useMemo(() => {
-    return item.displayStatus === 'all' || item.displayStatus === 'partial';
+    return item.displayStatus === 'All' || item.displayStatus === 'Partial';
   }, [item.displayStatus]);
 
   return (

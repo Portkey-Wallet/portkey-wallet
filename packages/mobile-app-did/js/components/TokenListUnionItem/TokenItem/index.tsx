@@ -1,13 +1,14 @@
 import { formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { defaultColors } from 'assets/theme';
 import { TextM } from 'components/CommonText';
+import Touchable from 'components/Touchable';
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import Svg from 'components/Svg';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
-import Touchable from 'components/Touchable';
+import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 interface TokenListItemType {
   item: TokenItemShowType;
@@ -18,10 +19,11 @@ interface TokenListItemType {
 
 const TokenItem: React.FC<TokenListItemType> = props => {
   const { onPress, item, hideBalance = false, showTopSeparator } = props;
+  const { currentNetwork } = useWallet();
 
   return (
     <Touchable style={[itemStyle.wrap, showTopSeparator && { marginTop: pTd(4) }]} onPress={() => onPress?.(item)}>
-      <TextM style={itemStyle.chainText}>{formatChainInfoToShow(item.chainId)}</TextM>
+      <TextM style={itemStyle.chainText}>{formatChainInfoToShow(item.chainId, currentNetwork)}</TextM>
       <View style={itemStyle.right}>
         <TextM style={itemStyle.balanceText}>
           {hideBalance ? '****' : formatTokenAmountShowWithDecimals(item.balance, item.decimals)}

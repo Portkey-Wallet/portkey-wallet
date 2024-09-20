@@ -13,7 +13,7 @@ import useToken from '@portkey-wallet/hooks/hooks-ca/useToken';
 interface IPopularTokenSectionProps {
   tokenDataShowInMarket: any[];
   getTokenList: () => Promise<void>;
-  onHandleTokenItem: (item: any, added: boolean) => void;
+  onHandleTokenItem: (item: IUserTokenItemResponse, added: boolean) => void;
   onEditToken?: (item: IUserTokenItemResponse) => void;
 }
 

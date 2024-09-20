@@ -63,8 +63,8 @@ export const useAccountTokenInfo = () => {
   const currentNetworkInfo = useCurrentNetworkInfo();
   const assetsState = useAssets();
   const accountTokenInfo = useMemo(
-    () => assetsState.accountToken.accountTokenInfo?.[currentNetworkInfo.networkType] || INIT_ACCOUNT_TOKEN_INFO,
-    [assetsState.accountToken.accountTokenInfo, currentNetworkInfo.networkType],
+    () => assetsState.accountToken.accountTokenInfoV2?.[currentNetworkInfo.networkType] || INIT_ACCOUNT_TOKEN_INFO,
+    [assetsState.accountToken.accountTokenInfoV2, currentNetworkInfo.networkType],
   );
 
   const fetchAccountTokenInfoList = useCallback(

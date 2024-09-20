@@ -19,7 +19,7 @@ export const NEW_CLIENT_MOCK_ELF_LIST: ITokenSectionResponse[] = [
     symbol: 'ELF',
     tokens: [
       {
-        // address: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
+        address: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
         balance: '0',
         balanceInUsd: '0.000000',
         chainId: 'AELF',

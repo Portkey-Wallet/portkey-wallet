@@ -35,7 +35,6 @@ export interface TokenItemShowType extends TokenItemType {
   price?: string | number;
   userTokenId?: string;
 }
-export type ITokenItemResponse = Omit<TokenItemShowType, 'name' | 'address'>;
 export type IUserTokenItem = Omit<TokenItemShowType, 'name' | 'address'> & { isDisplay?: boolean; address?: string };
 
 export type ITokenSectionResponse = {
@@ -47,7 +46,7 @@ export type ITokenSectionResponse = {
   label?: string;
   imageUrl?: string;
   displayStatus?: 'All' | 'Partial' | 'None';
-  tokens?: ITokenItemResponse[];
+  tokens?: TokenItemShowType[];
 };
 export type IUserTokenItemResponse = {
   symbol: string;

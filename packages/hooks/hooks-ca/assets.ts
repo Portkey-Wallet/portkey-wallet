@@ -143,10 +143,7 @@ export const useTokenInfoFromStore = (symbol: string, chainId: ChainId) => {
   return useMemo(() => {
     const _target = accountTokenList?.find(ele => ele.symbol === symbol);
     const _token = _target?.tokens?.find(ele => ele.chainId === chainId);
-    return {
-      ..._target,
-      ..._token,
-    };
+    return _token;
   }, [accountTokenList, chainId, symbol]);
 };
 

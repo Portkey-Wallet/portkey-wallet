@@ -1,4 +1,4 @@
-import { ITokenItemResponse, ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
+import { TokenItemShowType, ITokenSectionResponse } from '@portkey-wallet/types/types-ca/token';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { formatAmountUSDShow, formatTokenAmountShowWithDecimals } from '@portkey-wallet/utils/converter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -43,7 +43,7 @@ export default function TokenList() {
   }, [caAddressInfos, endReport, fetchAccountTokenInfoList]);
 
   const onNavigate = useCallback(
-    (tokenInfo: ITokenItemResponse) => {
+    (tokenInfo: TokenItemShowType) => {
       navigate('/token-detail', { state: tokenInfo });
     },
     [navigate],

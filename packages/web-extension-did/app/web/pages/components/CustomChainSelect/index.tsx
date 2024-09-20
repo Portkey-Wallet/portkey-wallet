@@ -6,6 +6,7 @@ import { transNetworkText } from '@portkey-wallet/utils/activity';
 import TokenImageDisplay from '../TokenImageDisplay';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { Switch } from 'antd';
+import './index.less';
 
 export interface ICustomChainSelectProps {
   onChange?: (display: boolean, id?: string) => void;
@@ -18,13 +19,19 @@ export default function CustomChainSelect({ onChange, onClose, item }: ICustomCh
   const isMainnet = useIsMainnet();
   const calDisplayStatusText = useCallback(
     (item?: IUserTokenItemResponse) => {
+      let partialChainId = undefined;
+      if (item?.tokens && item?.tokens.length > 1) {
+        partialChainId = item?.tokens?.[0]?.isDisplay ? item?.tokens?.[0]?.chainId : item?.tokens?.[1]?.chainId;
+      } else {
+        partialChainId = item?.tokens?.[0]?.chainId;
+      }
       return item?.displayStatus === 'All'
         ? t('All Networks')
         : item?.displayStatus === 'Partial'
-        ? t('MainChain AELF')
-        : t('None');
+        ? t(transNetworkText(partialChainId || 'AELF', !isMainnet))
+        : t('Balance Hidden');
     },
-    [t],
+    [isMainnet, t],
   );
   if (item?.isDefault) {
     return null;
